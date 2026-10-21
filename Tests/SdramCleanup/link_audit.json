@@ -1,0 +1,17 @@
+{
+  "CM7": {
+    "forbidden_symbols": [],
+    "kept_symbols": {
+      "BSP_SDRAM_Init": "0x8000871",
+      "g_framework_init_BSP_SDRAM_Init": "0x800575c",
+      "MPU_ConfigSdram": "0x80038c1",
+      "g_ipc": "0x38000000"
+    }
+  },
+  "CM4": {
+    "forbidden_symbols": [],
+    "kept_symbols": {
+      "g_ipc": "0x38000000"
+    }
+  }
+}

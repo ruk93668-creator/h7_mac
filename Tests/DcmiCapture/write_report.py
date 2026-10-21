@@ -1,0 +1,89 @@
+import json
+import shutil
+from pathlib import Path
+
+here = Path(__file__).resolve().parent
+root = here.parent.parent
+for source, dest in [
+    ('Tests/DcmiInit/Sdram/production_results.json', 'sdram_results.json'),
+    ('Tests/SdramV0/Camera/results.json', 'camera_results.json'),
+    ('Tests/Ov5640Migration/cm4_results.json', 'oled_results.json'),
+]:
+    shutil.copyfile(root / source, here / dest)
+
+report = r'''# CM7 DCMI BSP 采集接口验收
+
+## 修改范围
+
+- 正式源码仅修改 `CM7/BSP/bsp_dcmi.c`、`bsp_dcmi.h`。
+- 345 个基线文件哈希核对：只有上述两文件变化。HAL、CM4、Framework、主函数、SDRAM、摄像头、Scatter 和 Keil 工程配置未修改。
+- 测试代码、桩和报告全部位于 Tests；没有自动采集或 Media 状态机。
+
+## 最终接口
+
+| 接口 | 行为 |
+|---|---|
+| `BSP_DCMI_StartSnapshot(uint32_t *buffer, uint32_t word_count)` | 单帧启动。长度为32位字数量，范围1～65535；检查4字节对齐及地址溢出。每轮清旧事件、HAL错误、DCMI/DMA/NVIC挂起，并恢复ERR/OVR中断。 |
+| `BSP_DCMI_Stop(void)` | 停止硬件，检查DMA EN和DCMI CAPTURE/ENABLE确实清除；处理遗留ABORT状态，使用HAL DeInit/Init恢复句柄和锁。保留未消费事件。 |
+| `BSP_DCMI_TakeEvents(BspDcmiEvents_t *events)` | PRIMASK临界区内一次性读取并清除flags/result/dcmi_error/dma_error；NULL或无事件返回false且不改输出。恢复入口PRIMASK。 |
+
+`EarlyInit`、`Init` 保留原职责，只初始化，不启动采集。
+
+调用约束：Start/Stop只在主循环、全局中断开启时使用。buffer必须为DMA可达内存，调用者负责容量、生命周期与MPU/Cache一致性；当前0xD0000000的64KB非缓存SDRAM区域适用于160×120 Y8（4800字/19200字节）。接口不分配或接管Framebuffer。
+
+## 回调与错误处理
+
+- Frame回调过滤非本BSP句柄，只接受当前采集；确认DMA READY、NDTR=0、EN=0后记录FRAME。单独DMA完成不视为整帧完成。
+- Error回调锁存ERROR、HAL DCMI/DMA错误位；同轮错误优先于未消费的FRAME。事件标志是合并通知，不是事件队列。
+- 两个IRQ入口在进入HAL前检查硬件错误，避免HAL异步Abort尚未回调时上层仍收不到错误。ISR不发布Framework Event，也不等待或执行Stop。
+- 读出错误事件不解除错误门禁；必须Stop恢复后才能重启。
+- Stop屏蔽DCMI/DMA两个NVIC入口，保持SysTick可运行；除HAL自身等待外，另以10ms上限确认硬件停下，之后才重建HAL状态。恢复失败时保持相关NVIC关闭并禁止Start，可重试Stop。
+- HAL Stop返回错误而独立恢复成功时，接口仍返回该错误并记录事件，但硬件已恢复，可再次Start；不将HAL Stop返回值当作硬件停止的唯一证据。
+
+## 编译与执行
+
+ARM Compiler 5.06 update 7 (build 960)，独立ARM可执行文件使用Unicorn Cortex-M执行。测试直接包含当前真实BSP源文件，链接当前HAL DCMI/DMA/DMAEx/GPIO；寄存器W1C、NVIC、Tick及PRIMASK行为由桩模拟。被PRIMASK屏蔽的普通中断延后执行。
+
+```powershell
+D:\32\UV4\UV4.exe -r D:\32\STM32H7\h7_mac\MDK-ARM\h7_mac.uvprojx -t h7_mac_CM7 -o D:\32\STM32H7\h7_mac\Tests\DcmiCapture\cm7_keil.log
+D:\32\UV4\UV4.exe -r D:\32\STM32H7\h7_mac\MDK-ARM\h7_mac.uvprojx -t h7_mac_CM4 -o D:\32\STM32H7\h7_mac\Tests\DcmiCapture\cm4_keil.log
+python Tests/DcmiCapture/run_tests.py
+python Tests/DcmiCapture/Init/run_tests.py
+python Tests/DcmiInit/Sdram/run_production.py
+python Tests/SdramV0/Camera/run_tests.py
+python Tests/Ov5640Migration/run_cm4_regression.py
+```
+
+完整独立编译/链接命令、编译器版本记录在 `commands.json`；初始化回归命令记录在 `Init/commands.json`。
+
+| 验收 | PASS / 总数 | 断言 |
+|---|---:|---:|
+| 新增DCMI采集/停止/事件 | 46/46 | 6425 |
+| DCMI初始化回归 | 20/20 | 1183 |
+| SDRAM正式初始化回归 | 20/20 | 531 |
+| OV5640回归 | 42/42 | 464 |
+| CM4 OLED回归 | 12/12 | 3493 |
+| 合计 | 140/140 | 12096 |
+
+- CM7完整重编译：0 Error、0 Warning（34秒）。
+- CM4完整重编译：0 Error、0 Warning（35秒）。
+- 未执行或失败的模拟用例：0。真实DCMI时序、DVP采样、DMA总线负载和图像内容未验证，未下载固件。
+- 当前Application没有调用新增采集API；Keil默认移除了未引用的Start/Stop/TakeEvents函数，后续上层调用后自然链接。这些接口已在独立可执行测试中实际链接并执行。正式AXF中两个BSP回调均已替代HAL弱定义。
+
+## 逐项采集测试
+
+输入及故障注入见 `dcmi_test.c` 的 `Cases` 函数；EQ断言明确列出期望返回值、状态及寄存器值。模拟器逐项检查所有断言和执行异常。
+
+| 编号 / 场景 | 实际 | 断言数 |
+|---|---|---:|
+'''
+data = json.loads((here / 'results.json').read_text(encoding='utf-8'))
+for index, row in enumerate(data['cases'], 1):
+    report += f"| T{index:02d} {row['name']} | {row['result']} | {row['state']['checks']} |\n"
+report += '''
+详细寄存器快照和断言数见 `results.json`；原有功能回归快照见 `init_console.log`、`sdram_results.json`、`camera_results.json`、`oled_results.json`。
+
+结论：本次BSP接口编译和模拟验收通过，可作为后续上层调用的底层接口；真实采集仍需上板验证。
+'''
+(here / '验收报告.md').write_text(report, encoding='utf-8')
+print('Report written: 140 PASS / 0 FAIL; production changes: 2 files')

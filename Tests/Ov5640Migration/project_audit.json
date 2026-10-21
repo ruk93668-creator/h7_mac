@@ -1,0 +1,34 @@
+{
+  "changed_existing_files": [
+    "CM7\\Application\\app_main.c",
+    "CM7\\Application\\app_main.h",
+    "CM7\\Core\\Src\\main.c",
+    "MDK-ARM\\h7_mac.uvprojx",
+    "h7_mac.ioc"
+  ],
+  "new_business_files": [
+    "CM7/BSP/bsp_camera.c",
+    "CM7/BSP/bsp_camera.h",
+    "CM7/Device/Inc/ov5640_device.h",
+    "CM7/Device/Src/ov5640_device.c",
+    "CM7/Application/app_ov5640.c",
+    "CM7/Application/app_ov5640.h"
+  ],
+  "cm4_source_changed": false,
+  "dual_core_boot_order_preserved": true,
+  "cm4_cpu_hz": 240000000,
+  "pclk1_hz": 120000000,
+  "m7_cpu_hz": 480000000,
+  "pll1q_hz": 240000000,
+  "mco1_xclk_hz": 24000000,
+  "clock_values": "derived from source configuration; not measured",
+  "linked_symbols": {
+    "BSP_Camera_EarlyInit": "0x8000651",
+    "BSP_Camera_Init": "0x8000715",
+    "BSP_Camera_ReadReg": "0x80007e9",
+    "App_Ov5640Init": "0x8000521",
+    "App_Ov5640Run": "0x80005b1",
+    "g_ov5640_probe": "0x20000050"
+  },
+  "archive_sha256": "078607e6e6f0802fbe355a97b6399147d0234d46d88cd756c8c9a47af0586d10"
+}

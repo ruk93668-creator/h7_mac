@@ -1,0 +1,422 @@
+[
+  {
+    "case": 0,
+    "name": "成功配置、硬件顺序及重复Init",
+    "result": "Pass",
+    "state": {
+      "failure_line": 0,
+      "result": 0,
+      "nested_result": 0,
+      "rcc_calls": 1,
+      "init_calls": 1,
+      "analog_calls": 1,
+      "digital_calls": 1,
+      "deinit_calls": 0,
+      "gpio_calls": 1,
+      "gpio_deinit_calls": 0,
+      "device_stage_calls": 0,
+      "trace": 1234567
+    },
+    "emulator_error": null
+  },
+  {
+    "case": 1,
+    "name": "错误内核频率拒绝初始化",
+    "result": "Pass",
+    "state": {
+      "failure_line": 0,
+      "result": -4,
+      "nested_result": 0,
+      "rcc_calls": 1,
+      "init_calls": 0,
+      "analog_calls": 0,
+      "digital_calls": 0,
+      "deinit_calls": 0,
+      "gpio_calls": 0,
+      "gpio_deinit_calls": 0,
+      "device_stage_calls": 0,
+      "trace": 1
+    },
+    "emulator_error": null
+  },
+  {
+    "case": 2,
+    "name": "RCC ERROR→IO及失败后重试",
+    "result": "Pass",
+    "state": {
+      "failure_line": 0,
+      "result": -9,
+      "nested_result": 0,
+      "rcc_calls": 2,
+      "init_calls": 1,
+      "analog_calls": 1,
+      "digital_calls": 1,
+      "deinit_calls": 0,
+      "gpio_calls": 1,
+      "gpio_deinit_calls": 0,
+      "device_stage_calls": 0,
+      "trace": 11234567
+    },
+    "emulator_error": null
+  },
+  {
+    "case": 3,
+    "name": "RCC BUSY→BUSY及失败后重试",
+    "result": "Pass",
+    "state": {
+      "failure_line": 0,
+      "result": -5,
+      "nested_result": 0,
+      "rcc_calls": 2,
+      "init_calls": 1,
+      "analog_calls": 1,
+      "digital_calls": 1,
+      "deinit_calls": 0,
+      "gpio_calls": 1,
+      "gpio_deinit_calls": 0,
+      "device_stage_calls": 0,
+      "trace": 11234567
+    },
+    "emulator_error": null
+  },
+  {
+    "case": 4,
+    "name": "RCC TIMEOUT→TIMEOUT及失败后重试",
+    "result": "Pass",
+    "state": {
+      "failure_line": 0,
+      "result": -8,
+      "nested_result": 0,
+      "rcc_calls": 2,
+      "init_calls": 1,
+      "analog_calls": 1,
+      "digital_calls": 1,
+      "deinit_calls": 0,
+      "gpio_calls": 1,
+      "gpio_deinit_calls": 0,
+      "device_stage_calls": 0,
+      "trace": 11234567
+    },
+    "emulator_error": null
+  },
+  {
+    "case": 5,
+    "name": "HAL_I2C_Init ERROR→IO及失败后重试",
+    "result": "Pass",
+    "state": {
+      "failure_line": 0,
+      "result": -9,
+      "nested_result": 0,
+      "rcc_calls": 2,
+      "init_calls": 2,
+      "analog_calls": 1,
+      "digital_calls": 1,
+      "deinit_calls": 1,
+      "gpio_calls": 2,
+      "gpio_deinit_calls": 1,
+      "device_stage_calls": 0,
+      "trace": 3192150279
+    },
+    "emulator_error": null
+  },
+  {
+    "case": 6,
+    "name": "HAL_I2C_Init BUSY→BUSY及失败后重试",
+    "result": "Pass",
+    "state": {
+      "failure_line": 0,
+      "result": -5,
+      "nested_result": 0,
+      "rcc_calls": 2,
+      "init_calls": 2,
+      "analog_calls": 1,
+      "digital_calls": 1,
+      "deinit_calls": 1,
+      "gpio_calls": 2,
+      "gpio_deinit_calls": 1,
+      "device_stage_calls": 0,
+      "trace": 3192150279
+    },
+    "emulator_error": null
+  },
+  {
+    "case": 7,
+    "name": "HAL_I2C_Init TIMEOUT→TIMEOUT及失败后重试",
+    "result": "Pass",
+    "state": {
+      "failure_line": 0,
+      "result": -8,
+      "nested_result": 0,
+      "rcc_calls": 2,
+      "init_calls": 2,
+      "analog_calls": 1,
+      "digital_calls": 1,
+      "deinit_calls": 1,
+      "gpio_calls": 2,
+      "gpio_deinit_calls": 1,
+      "device_stage_calls": 0,
+      "trace": 3192150279
+    },
+    "emulator_error": null
+  },
+  {
+    "case": 8,
+    "name": "模拟滤波 ERROR→IO及失败后重试",
+    "result": "Pass",
+    "state": {
+      "failure_line": 0,
+      "result": -9,
+      "nested_result": 0,
+      "rcc_calls": 2,
+      "init_calls": 2,
+      "analog_calls": 2,
+      "digital_calls": 1,
+      "deinit_calls": 1,
+      "gpio_calls": 2,
+      "gpio_deinit_calls": 1,
+      "device_stage_calls": 0,
+      "trace": 1905620615
+    },
+    "emulator_error": null
+  },
+  {
+    "case": 9,
+    "name": "模拟滤波 BUSY→BUSY及失败后重试",
+    "result": "Pass",
+    "state": {
+      "failure_line": 0,
+      "result": -5,
+      "nested_result": 0,
+      "rcc_calls": 2,
+      "init_calls": 2,
+      "analog_calls": 2,
+      "digital_calls": 1,
+      "deinit_calls": 1,
+      "gpio_calls": 2,
+      "gpio_deinit_calls": 1,
+      "device_stage_calls": 0,
+      "trace": 1905620615
+    },
+    "emulator_error": null
+  },
+  {
+    "case": 10,
+    "name": "模拟滤波 TIMEOUT→TIMEOUT及失败后重试",
+    "result": "Pass",
+    "state": {
+      "failure_line": 0,
+      "result": -8,
+      "nested_result": 0,
+      "rcc_calls": 2,
+      "init_calls": 2,
+      "analog_calls": 2,
+      "digital_calls": 1,
+      "deinit_calls": 1,
+      "gpio_calls": 2,
+      "gpio_deinit_calls": 1,
+      "device_stage_calls": 0,
+      "trace": 1905620615
+    },
+    "emulator_error": null
+  },
+  {
+    "case": 11,
+    "name": "数字滤波 ERROR→IO及失败后重试",
+    "result": "Pass",
+    "state": {
+      "failure_line": 0,
+      "result": -9,
+      "nested_result": 0,
+      "rcc_calls": 2,
+      "init_calls": 2,
+      "analog_calls": 2,
+      "digital_calls": 2,
+      "deinit_calls": 1,
+      "gpio_calls": 2,
+      "gpio_deinit_calls": 1,
+      "device_stage_calls": 0,
+      "trace": 1935225863
+    },
+    "emulator_error": null
+  },
+  {
+    "case": 12,
+    "name": "数字滤波 BUSY→BUSY及失败后重试",
+    "result": "Pass",
+    "state": {
+      "failure_line": 0,
+      "result": -5,
+      "nested_result": 0,
+      "rcc_calls": 2,
+      "init_calls": 2,
+      "analog_calls": 2,
+      "digital_calls": 2,
+      "deinit_calls": 1,
+      "gpio_calls": 2,
+      "gpio_deinit_calls": 1,
+      "device_stage_calls": 0,
+      "trace": 1935225863
+    },
+    "emulator_error": null
+  },
+  {
+    "case": 13,
+    "name": "数字滤波 TIMEOUT→TIMEOUT及失败后重试",
+    "result": "Pass",
+    "state": {
+      "failure_line": 0,
+      "result": -8,
+      "nested_result": 0,
+      "rcc_calls": 2,
+      "init_calls": 2,
+      "analog_calls": 2,
+      "digital_calls": 2,
+      "deinit_calls": 1,
+      "gpio_calls": 2,
+      "gpio_deinit_calls": 1,
+      "device_stage_calls": 0,
+      "trace": 1935225863
+    },
+    "emulator_error": null
+  },
+  {
+    "case": 14,
+    "name": "初始化重入返回BUSY",
+    "result": "Pass",
+    "state": {
+      "failure_line": 0,
+      "result": 0,
+      "nested_result": -5,
+      "rcc_calls": 1,
+      "init_calls": 1,
+      "analog_calls": 1,
+      "digital_calls": 1,
+      "deinit_calls": 0,
+      "gpio_calls": 1,
+      "gpio_deinit_calls": 0,
+      "device_stage_calls": 0,
+      "trace": 1234567
+    },
+    "emulator_error": null
+  },
+  {
+    "case": 15,
+    "name": "MSP忽略NULL和非I2C2",
+    "result": "Pass",
+    "state": {
+      "failure_line": 0,
+      "result": 0,
+      "nested_result": 0,
+      "rcc_calls": 0,
+      "init_calls": 0,
+      "analog_calls": 0,
+      "digital_calls": 0,
+      "deinit_calls": 0,
+      "gpio_calls": 0,
+      "gpio_deinit_calls": 0,
+      "device_stage_calls": 0,
+      "trace": 0
+    },
+    "emulator_error": null
+  },
+  {
+    "case": 16,
+    "name": "成功后频率变化拒绝复用Timing",
+    "result": "Pass",
+    "state": {
+      "failure_line": 0,
+      "result": 0,
+      "nested_result": 0,
+      "rcc_calls": 1,
+      "init_calls": 1,
+      "analog_calls": 1,
+      "digital_calls": 1,
+      "deinit_calls": 0,
+      "gpio_calls": 1,
+      "gpio_deinit_calls": 0,
+      "device_stage_calls": 0,
+      "trace": 1234567
+    },
+    "emulator_error": null
+  },
+  {
+    "case": 17,
+    "name": "MSP DeInit释放管脚和I2C2时钟",
+    "result": "Pass",
+    "state": {
+      "failure_line": 0,
+      "result": 0,
+      "nested_result": 0,
+      "rcc_calls": 1,
+      "init_calls": 1,
+      "analog_calls": 1,
+      "digital_calls": 1,
+      "deinit_calls": 0,
+      "gpio_calls": 1,
+      "gpio_deinit_calls": 1,
+      "device_stage_calls": 0,
+      "trace": 1234567
+    },
+    "emulator_error": null
+  },
+  {
+    "case": 18,
+    "name": "BUS注册项",
+    "result": "Pass",
+    "state": {
+      "failure_line": 0,
+      "result": 0,
+      "nested_result": 0,
+      "rcc_calls": 0,
+      "init_calls": 0,
+      "analog_calls": 0,
+      "digital_calls": 0,
+      "deinit_calls": 0,
+      "gpio_calls": 0,
+      "gpio_deinit_calls": 0,
+      "device_stage_calls": 0,
+      "trace": 0
+    },
+    "emulator_error": null
+  },
+  {
+    "case": 19,
+    "name": "BUS成功后才执行DEVICE",
+    "result": "Pass",
+    "state": {
+      "failure_line": 0,
+      "result": 0,
+      "nested_result": 0,
+      "rcc_calls": 1,
+      "init_calls": 1,
+      "analog_calls": 1,
+      "digital_calls": 1,
+      "deinit_calls": 0,
+      "gpio_calls": 1,
+      "gpio_deinit_calls": 0,
+      "device_stage_calls": 1,
+      "trace": 1234567
+    },
+    "emulator_error": null
+  },
+  {
+    "case": 20,
+    "name": "BUS失败中止DEVICE",
+    "result": "Pass",
+    "state": {
+      "failure_line": 0,
+      "result": -9,
+      "nested_result": 0,
+      "rcc_calls": 1,
+      "init_calls": 0,
+      "analog_calls": 0,
+      "digital_calls": 0,
+      "deinit_calls": 0,
+      "gpio_calls": 0,
+      "gpio_deinit_calls": 0,
+      "device_stage_calls": 0,
+      "trace": 1
+    },
+    "emulator_error": null
+  }
+]

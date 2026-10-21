@@ -1,0 +1,13 @@
+{
+  "scope": "isolated CM4 link probe with test-only missing OLED operation stubs; not production Target",
+  "image": "C:\\Users\\29062\\AppData\\Local\\Temp\\h7_cm4_export_wisdiosm\\export_probe.axf",
+  "section": "ER_DEVICE_EXPORT",
+  "export_address": "0x0810008C",
+  "load_address": "0x0810008C",
+  "section_size": 4,
+  "stored_bytes": "00 00 00 10",
+  "stored_pointer": "0x10000000",
+  "oled_base_address": "0x10000000",
+  "flash": true,
+  "pointer_matches": true
+}

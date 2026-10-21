@@ -1,0 +1,510 @@
+{
+  "summary": {
+    "total": 20,
+    "passed": 20,
+    "failed": 0,
+    "assertions": 1183
+  },
+  "cases": [
+    {
+      "name": "真实HAL初始化/AF13/DMA/DCMI/NVIC",
+      "result": "PASS",
+      "state": {
+        "fail_line": 0,
+        "checks": 125,
+        "dma_init": 1,
+        "dcmi_init": 1,
+        "dma_deinit": 0,
+        "nvic_enabled": 3,
+        "nvic_cleared": 3,
+        "dma_callback": 0,
+        "dcmi_callback": 0,
+        "dma_cr": 152576,
+        "dcmi_cr": 224,
+        "request": 75,
+        "ready": 1,
+        "result": 0
+      },
+      "access": {
+        "sdram": 0,
+        "started": false
+      },
+      "error": null
+    },
+    {
+      "name": "重复EarlyInit和Init幂等",
+      "result": "PASS",
+      "state": {
+        "fail_line": 0,
+        "checks": 130,
+        "dma_init": 1,
+        "dcmi_init": 1,
+        "dma_deinit": 0,
+        "nvic_enabled": 3,
+        "nvic_cleared": 3,
+        "dma_callback": 0,
+        "dcmi_callback": 0,
+        "dma_cr": 152576,
+        "dcmi_cr": 224,
+        "request": 75,
+        "ready": 1,
+        "result": 0
+      },
+      "access": {
+        "sdram": 0,
+        "started": false
+      },
+      "error": null
+    },
+    {
+      "name": "直接Init补齐引脚",
+      "result": "PASS",
+      "state": {
+        "fail_line": 0,
+        "checks": 125,
+        "dma_init": 1,
+        "dcmi_init": 1,
+        "dma_deinit": 0,
+        "nvic_enabled": 3,
+        "nvic_cleared": 3,
+        "dma_callback": 0,
+        "dcmi_callback": 0,
+        "dma_cr": 152576,
+        "dcmi_cr": 224,
+        "request": 75,
+        "ready": 1,
+        "result": 0
+      },
+      "access": {
+        "sdram": 0,
+        "started": false
+      },
+      "error": null
+    },
+    {
+      "name": "DMA Stream运行中拒绝",
+      "result": "PASS",
+      "state": {
+        "fail_line": 0,
+        "checks": 5,
+        "dma_init": 0,
+        "dcmi_init": 0,
+        "dma_deinit": 0,
+        "nvic_enabled": 0,
+        "nvic_cleared": 0,
+        "dma_callback": 0,
+        "dcmi_callback": 0,
+        "dma_cr": 1,
+        "dcmi_cr": 0,
+        "request": 0,
+        "ready": 0,
+        "result": -5
+      },
+      "access": {
+        "sdram": 0,
+        "started": false
+      },
+      "error": null
+    },
+    {
+      "name": "DCMI已使能拒绝",
+      "result": "PASS",
+      "state": {
+        "fail_line": 0,
+        "checks": 5,
+        "dma_init": 0,
+        "dcmi_init": 0,
+        "dma_deinit": 0,
+        "nvic_enabled": 0,
+        "nvic_cleared": 0,
+        "dma_callback": 0,
+        "dcmi_callback": 0,
+        "dma_cr": 0,
+        "dcmi_cr": 16384,
+        "request": 0,
+        "ready": 0,
+        "result": -5
+      },
+      "access": {
+        "sdram": 0,
+        "started": false
+      },
+      "error": null
+    },
+    {
+      "name": "DCMI Capture运行中拒绝",
+      "result": "PASS",
+      "state": {
+        "fail_line": 0,
+        "checks": 5,
+        "dma_init": 0,
+        "dcmi_init": 0,
+        "dma_deinit": 0,
+        "nvic_enabled": 0,
+        "nvic_cleared": 0,
+        "dma_callback": 0,
+        "dcmi_callback": 0,
+        "dma_cr": 0,
+        "dcmi_cr": 1,
+        "request": 0,
+        "ready": 0,
+        "result": -5
+      },
+      "access": {
+        "sdram": 0,
+        "started": false
+      },
+      "error": null
+    },
+    {
+      "name": "DMA HAL_ERROR",
+      "result": "PASS",
+      "state": {
+        "fail_line": 0,
+        "checks": 4,
+        "dma_init": 1,
+        "dcmi_init": 0,
+        "dma_deinit": 0,
+        "nvic_enabled": 0,
+        "nvic_cleared": 0,
+        "dma_callback": 0,
+        "dcmi_callback": 0,
+        "dma_cr": 0,
+        "dcmi_cr": 0,
+        "request": 75,
+        "ready": 0,
+        "result": -9
+      },
+      "access": {
+        "sdram": 0,
+        "started": false
+      },
+      "error": null
+    },
+    {
+      "name": "DMA HAL_BUSY",
+      "result": "PASS",
+      "state": {
+        "fail_line": 0,
+        "checks": 4,
+        "dma_init": 1,
+        "dcmi_init": 0,
+        "dma_deinit": 0,
+        "nvic_enabled": 0,
+        "nvic_cleared": 0,
+        "dma_callback": 0,
+        "dcmi_callback": 0,
+        "dma_cr": 0,
+        "dcmi_cr": 0,
+        "request": 75,
+        "ready": 0,
+        "result": -5
+      },
+      "access": {
+        "sdram": 0,
+        "started": false
+      },
+      "error": null
+    },
+    {
+      "name": "DMA HAL_TIMEOUT",
+      "result": "PASS",
+      "state": {
+        "fail_line": 0,
+        "checks": 4,
+        "dma_init": 1,
+        "dcmi_init": 0,
+        "dma_deinit": 0,
+        "nvic_enabled": 0,
+        "nvic_cleared": 0,
+        "dma_callback": 0,
+        "dcmi_callback": 0,
+        "dma_cr": 0,
+        "dcmi_cr": 0,
+        "request": 75,
+        "ready": 0,
+        "result": -8
+      },
+      "access": {
+        "sdram": 0,
+        "started": false
+      },
+      "error": null
+    },
+    {
+      "name": "DCMI HAL_ERROR及DMA清理",
+      "result": "PASS",
+      "state": {
+        "fail_line": 0,
+        "checks": 4,
+        "dma_init": 1,
+        "dcmi_init": 1,
+        "dma_deinit": 1,
+        "nvic_enabled": 0,
+        "nvic_cleared": 0,
+        "dma_callback": 0,
+        "dcmi_callback": 0,
+        "dma_cr": 0,
+        "dcmi_cr": 0,
+        "request": 75,
+        "ready": 0,
+        "result": -9
+      },
+      "access": {
+        "sdram": 0,
+        "started": false
+      },
+      "error": null
+    },
+    {
+      "name": "DCMI HAL_BUSY",
+      "result": "PASS",
+      "state": {
+        "fail_line": 0,
+        "checks": 4,
+        "dma_init": 1,
+        "dcmi_init": 1,
+        "dma_deinit": 1,
+        "nvic_enabled": 0,
+        "nvic_cleared": 0,
+        "dma_callback": 0,
+        "dcmi_callback": 0,
+        "dma_cr": 0,
+        "dcmi_cr": 0,
+        "request": 75,
+        "ready": 0,
+        "result": -5
+      },
+      "access": {
+        "sdram": 0,
+        "started": false
+      },
+      "error": null
+    },
+    {
+      "name": "DCMI HAL_TIMEOUT",
+      "result": "PASS",
+      "state": {
+        "fail_line": 0,
+        "checks": 4,
+        "dma_init": 1,
+        "dcmi_init": 1,
+        "dma_deinit": 1,
+        "nvic_enabled": 0,
+        "nvic_cleared": 0,
+        "dma_callback": 0,
+        "dcmi_callback": 0,
+        "dma_cr": 0,
+        "dcmi_cr": 0,
+        "request": 75,
+        "ready": 0,
+        "result": -8
+      },
+      "access": {
+        "sdram": 0,
+        "started": false
+      },
+      "error": null
+    },
+    {
+      "name": "失败后DMA清理失败",
+      "result": "PASS",
+      "state": {
+        "fail_line": 0,
+        "checks": 4,
+        "dma_init": 1,
+        "dcmi_init": 1,
+        "dma_deinit": 1,
+        "nvic_enabled": 0,
+        "nvic_cleared": 0,
+        "dma_callback": 0,
+        "dcmi_callback": 0,
+        "dma_cr": 152576,
+        "dcmi_cr": 0,
+        "request": 75,
+        "ready": 0,
+        "result": -9
+      },
+      "access": {
+        "sdram": 0,
+        "started": false
+      },
+      "error": null
+    },
+    {
+      "name": "DMA失败后重试",
+      "result": "PASS",
+      "state": {
+        "fail_line": 0,
+        "checks": 127,
+        "dma_init": 2,
+        "dcmi_init": 1,
+        "dma_deinit": 0,
+        "nvic_enabled": 3,
+        "nvic_cleared": 3,
+        "dma_callback": 0,
+        "dcmi_callback": 0,
+        "dma_cr": 152576,
+        "dcmi_cr": 224,
+        "request": 75,
+        "ready": 1,
+        "result": -9
+      },
+      "access": {
+        "sdram": 0,
+        "started": false
+      },
+      "error": null
+    },
+    {
+      "name": "DCMI失败后重试",
+      "result": "PASS",
+      "state": {
+        "fail_line": 0,
+        "checks": 127,
+        "dma_init": 2,
+        "dcmi_init": 2,
+        "dma_deinit": 1,
+        "nvic_enabled": 3,
+        "nvic_cleared": 3,
+        "dma_callback": 0,
+        "dcmi_callback": 0,
+        "dma_cr": 152576,
+        "dcmi_cr": 224,
+        "request": 75,
+        "ready": 1,
+        "result": -9
+      },
+      "access": {
+        "sdram": 0,
+        "started": false
+      },
+      "error": null
+    },
+    {
+      "name": "真实DMA/DCMI IRQ路由",
+      "result": "PASS",
+      "state": {
+        "fail_line": 0,
+        "checks": 129,
+        "dma_init": 1,
+        "dcmi_init": 1,
+        "dma_deinit": 0,
+        "nvic_enabled": 3,
+        "nvic_cleared": 3,
+        "dma_callback": 1,
+        "dcmi_callback": 1,
+        "dma_cr": 152576,
+        "dcmi_cr": 224,
+        "request": 75,
+        "ready": 1,
+        "result": 0
+      },
+      "access": {
+        "sdram": 0,
+        "started": false
+      },
+      "error": null
+    },
+    {
+      "name": "非DCMI MSP不操作硬件",
+      "result": "PASS",
+      "state": {
+        "fail_line": 0,
+        "checks": 2,
+        "dma_init": 0,
+        "dcmi_init": 0,
+        "dma_deinit": 0,
+        "nvic_enabled": 0,
+        "nvic_cleared": 0,
+        "dma_callback": 0,
+        "dcmi_callback": 0,
+        "dma_cr": 0,
+        "dcmi_cr": 0,
+        "request": 0,
+        "ready": 0,
+        "result": 0
+      },
+      "access": {
+        "sdram": 0,
+        "started": false
+      },
+      "error": null
+    },
+    {
+      "name": "BUS Initcall/无采集无Framebuffer",
+      "result": "PASS",
+      "state": {
+        "fail_line": 0,
+        "checks": 125,
+        "dma_init": 1,
+        "dcmi_init": 1,
+        "dma_deinit": 0,
+        "nvic_enabled": 3,
+        "nvic_cleared": 3,
+        "dma_callback": 0,
+        "dcmi_callback": 0,
+        "dma_cr": 152576,
+        "dcmi_cr": 224,
+        "request": 75,
+        "ready": 1,
+        "result": 0
+      },
+      "access": {
+        "sdram": 0,
+        "started": false
+      },
+      "error": null
+    },
+    {
+      "name": "旧NVIC挂起先清理",
+      "result": "PASS",
+      "state": {
+        "fail_line": 0,
+        "checks": 125,
+        "dma_init": 1,
+        "dcmi_init": 1,
+        "dma_deinit": 0,
+        "nvic_enabled": 3,
+        "nvic_cleared": 3,
+        "dma_callback": 0,
+        "dcmi_callback": 0,
+        "dma_cr": 152576,
+        "dcmi_cr": 224,
+        "request": 75,
+        "ready": 1,
+        "result": 0
+      },
+      "access": {
+        "sdram": 0,
+        "started": false
+      },
+      "error": null
+    },
+    {
+      "name": "不改变SDRAM/SCCB/I2C引脚和PLL",
+      "result": "PASS",
+      "state": {
+        "fail_line": 0,
+        "checks": 125,
+        "dma_init": 1,
+        "dcmi_init": 1,
+        "dma_deinit": 0,
+        "nvic_enabled": 3,
+        "nvic_cleared": 3,
+        "dma_callback": 0,
+        "dcmi_callback": 0,
+        "dma_cr": 152576,
+        "dcmi_cr": 224,
+        "request": 75,
+        "ready": 1,
+        "result": 0
+      },
+      "access": {
+        "sdram": 0,
+        "started": false
+      },
+      "error": null
+    }
+  ]
+}

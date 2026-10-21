@@ -1,0 +1,8 @@
+{
+  "checked": 345,
+  "changed": [
+    "CM7\\BSP\\bsp_dcmi.c",
+    "CM7\\BSP\\bsp_dcmi.h"
+  ],
+  "hal_unchanged": true
+}

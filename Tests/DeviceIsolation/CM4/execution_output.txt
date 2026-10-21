@@ -1,0 +1,11 @@
+01 Pass: 完整生命周期: 最终READY; 回调次数Init/Start/Stop=1/1/1; 顺序=123; 链表检查=2; 四次操作结果=0/0/0/0; Find返回原对象=True; 全部预期断言通过
+02 Pass: 注册、查找及重复项: 最终UNINIT; 回调次数Init/Start/Stop=0/0/0; 顺序=0; 链表检查=2; 全部预期断言通过
+03 Pass: 非法参数: 最终UNINIT; 回调次数Init/Start/Stop=0/0/0; 顺序=0; 链表检查=1; 全部预期断言通过
+04 Pass: 未注册及对象身份: 最终UNINIT; 回调次数Init/Start/Stop=0/0/0; 顺序=0; 链表检查=1; 全部预期断言通过
+05 Pass: 状态顺序及重启: 最终READY; 回调次数Init/Start/Stop=1/2/2; 顺序=12323; 链表检查=1; 全部预期断言通过
+06 Pass: 缺失生命周期回调: 最终RUNNING; 回调次数Init/Start/Stop=1/1/0; 顺序=12; 链表检查=1; 全部预期断言通过
+07 Pass: Init回调失败: 最终ERROR; 回调次数Init/Start/Stop=1/0/0; 顺序=1; 链表检查=1; 全部预期断言通过
+08 Pass: Start回调失败: 最终ERROR; 回调次数Init/Start/Stop=1/1/0; 顺序=12; 链表检查=1; 全部预期断言通过
+09 Pass: Stop回调失败: 最终ERROR; 回调次数Init/Start/Stop=1/1/1; 顺序=123; 链表检查=1; 全部预期断言通过
+10 Pass: 首次注册状态: 最终ERROR; 回调次数Init/Start/Stop=0/0/0; 顺序=0; 链表检查=1; 全部预期断言通过
+Total: 10/10 Pass

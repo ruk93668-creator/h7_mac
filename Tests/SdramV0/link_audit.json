@@ -1,0 +1,18 @@
+{
+  "CM7": {
+    "g_sdram_init_result": "0x2000004c",
+    "g_sdram_sdclk_hz": "0x20000050",
+    "g_sdram_check_state": "0x20000054",
+    "g_sdram_check_result": "0x20000058",
+    "g_sdram_check_words": "0x2000005c",
+    "g_sdram_check_fail_address": "0x20000060",
+    "g_sdram_check_expected": "0x20000064",
+    "g_sdram_check_actual": "0x20000068",
+    "g_framework_init_BSP_SDRAM_Init": "0x80064a4",
+    "g_framework_init_SDRAM_CheckRun": "0x80064b0",
+    "g_ipc": "0x38000000"
+  },
+  "CM4": {
+    "g_ipc": "0x38000000"
+  }
+}

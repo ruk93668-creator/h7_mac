@@ -1,0 +1,16 @@
+01 Pass: 正常自动启动: 返回0；第二次/回调内操作返回0；注册3；回调次数2，顺序13；后续等级轨迹1456；a/b/c/extra状态=READY/UNINIT/READY/UNINIT
+02 Pass: 全部手动初始化: 返回0；第二次/回调内操作返回0；注册3；回调次数0，顺序0；后续等级轨迹1456；a/b/c/extra状态=UNINIT/UNINIT/UNINIT/UNINIT
+03 Pass: 空导出指针: 返回-1；第二次/回调内操作返回0；注册1；回调次数0，顺序0；后续等级轨迹1；a/b/c/extra状态=UNINIT/UNINIT/UNINIT/UNINIT
+04 Pass: 重复导出指针: 返回-3；第二次/回调内操作返回0；注册1；回调次数0，顺序0；后续等级轨迹1；a/b/c/extra状态=UNINIT/UNINIT/UNINIT/UNINIT
+05 Pass: 无效设备名称: 返回-1；第二次/回调内操作返回0；注册1；回调次数0，顺序0；后续等级轨迹1；a/b/c/extra状态=UNINIT/UNINIT/UNINIT/UNINIT
+06 Pass: 非法首次注册状态: 返回-4；第二次/回调内操作返回0；注册1；回调次数0，顺序0；后续等级轨迹1；a/b/c/extra状态=UNINIT/READY/UNINIT/UNINIT
+07 Pass: 跳过无回调的手动设备: 返回0；第二次/回调内操作返回0；注册3；回调次数2，顺序13；后续等级轨迹1456；a/b/c/extra状态=READY/UNINIT/READY/UNINIT
+08 Pass: 自动设备缺失回调: 返回-7；第二次/回调内操作返回0；注册3；回调次数1，顺序1；后续等级轨迹1；a/b/c/extra状态=READY/UNINIT/UNINIT/UNINIT
+09 Pass: 初始化回调失败: 返回-9；第二次/回调内操作返回0；注册3；回调次数2，顺序13；后续等级轨迹1；a/b/c/extra状态=READY/UNINIT/ERROR/UNINIT
+10 Pass: 重复RegisterAll: 返回0；第二次/回调内操作返回-3；注册3；回调次数0，顺序0；后续等级轨迹0；a/b/c/extra状态=UNINIT/UNINIT/UNINIT/UNINIT
+11 Pass: 重复InitAll: 返回-4；第二次/回调内操作返回0；注册3；回调次数2，顺序13；后续等级轨迹0；a/b/c/extra状态=READY/UNINIT/READY/UNINIT
+12 Pass: 提前手动初始化: 返回-4；第二次/回调内操作返回0；注册3；回调次数1，顺序1；后续等级轨迹0；a/b/c/extra状态=READY/UNINIT/UNINIT/UNINIT
+13 Pass: 未注册先InitAll: 返回0；第二次/回调内操作返回0；注册0；回调次数0，顺序0；后续等级轨迹0；a/b/c/extra状态=UNINIT/UNINIT/UNINIT/UNINIT
+14 Fail: Init回调重入自身: 返回0；第二次/回调内操作返回0；注册3；回调次数3，顺序113；后续等级轨迹1456；a/b/c/extra状态=READY/UNINIT/READY/UNINIT；失败断言行140；仿真异常=None
+15 Pass: 初始化时追加设备: 返回0；第二次/回调内操作返回0；注册4；回调次数3，顺序134；后续等级轨迹1456；a/b/c/extra状态=READY/UNINIT/READY/READY
+Completed diagnosis: 14/15 Pass; unexpected failures=0

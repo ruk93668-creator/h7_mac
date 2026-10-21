@@ -1,0 +1,52 @@
+[
+  {
+    "argv": [
+      "D:\\32\\ARM\\ARMCC\\Bin\\armcc.exe",
+      "--vsn"
+    ],
+    "command": "D:\\32\\ARM\\ARMCC\\Bin\\armcc.exe --vsn",
+    "exit_code": 0,
+    "output": "Product: MDK Plus 5.32\r\nComponent: ARM Compiler 5.06 update 7 (build 960)\r\nTool: armcc [4d365d]\r\nFor support see http://www.arm.com/support\r\nSoftware supplied by: ARM Limited\r\n"
+  },
+  {
+    "argv": [
+      "D:\\32\\ARM\\ARMCC\\Bin\\armcc.exe",
+      "--cpu",
+      "Cortex-M4",
+      "--c99",
+      "-O0",
+      "-I",
+      "D:\\32\\STM32H7\\h7_mac\\Tests\\BspIicCommunication\\stubs",
+      "-I",
+      "D:\\32\\STM32H7\\h7_mac\\CM4\\BSP",
+      "-I",
+      "D:\\32\\STM32H7\\h7_mac\\CM4\\Framework",
+      "-I",
+      "D:\\32\\STM32H7\\h7_mac\\Common\\Inc",
+      "-c",
+      "D:\\32\\STM32H7\\h7_mac\\Tests\\BspIicCommunication\\communication_test.c",
+      "-o",
+      "D:\\32\\STM32H7\\h7_mac\\Tests\\BspIicCommunication\\communication_test.o"
+    ],
+    "command": "D:\\32\\ARM\\ARMCC\\Bin\\armcc.exe --cpu Cortex-M4 --c99 -O0 -I D:\\32\\STM32H7\\h7_mac\\Tests\\BspIicCommunication\\stubs -I D:\\32\\STM32H7\\h7_mac\\CM4\\BSP -I D:\\32\\STM32H7\\h7_mac\\CM4\\Framework -I D:\\32\\STM32H7\\h7_mac\\Common\\Inc -c D:\\32\\STM32H7\\h7_mac\\Tests\\BspIicCommunication\\communication_test.c -o D:\\32\\STM32H7\\h7_mac\\Tests\\BspIicCommunication\\communication_test.o",
+    "exit_code": 0,
+    "output": ""
+  },
+  {
+    "argv": [
+      "D:\\32\\ARM\\ARMCC\\Bin\\armlink.exe",
+      "D:\\32\\STM32H7\\h7_mac\\Tests\\BspIicCommunication\\communication_test.o",
+      "--entry",
+      "Communication_TestRun",
+      "--scatter",
+      "D:\\32\\STM32H7\\h7_mac\\Tests\\BspIicCommunication\\test.sct",
+      "--keep=*(.framework_init)",
+      "--no_scanlib",
+      "-o",
+      "D:\\32\\STM32H7\\h7_mac\\Tests\\BspIicCommunication\\communication_test.axf"
+    ],
+    "command": "D:\\32\\ARM\\ARMCC\\Bin\\armlink.exe D:\\32\\STM32H7\\h7_mac\\Tests\\BspIicCommunication\\communication_test.o --entry Communication_TestRun --scatter D:\\32\\STM32H7\\h7_mac\\Tests\\BspIicCommunication\\test.sct --keep=*(.framework_init) --no_scanlib -o D:\\32\\STM32H7\\h7_mac\\Tests\\BspIicCommunication\\communication_test.axf",
+    "exit_code": 0,
+    "output": ""
+  }
+]

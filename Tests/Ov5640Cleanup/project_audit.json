@@ -1,0 +1,30 @@
+{
+  "deleted_business_files": [
+    "CM7\\Application\\app_ov5640.c",
+    "CM7\\Application\\app_ov5640.h"
+  ],
+  "modified_business_and_project_files": [
+    "CM7\\Application\\app_main.c",
+    "MDK-ARM\\h7_mac.uvprojx"
+  ],
+  "bsp_device_framework_boot_cm4_unchanged": true,
+  "removed_axf_symbols": [
+    "App_Ov5640Init",
+    "App_Ov5640Run",
+    "g_ov5640_probe",
+    "s_probe_timer",
+    "Probe_Due",
+    "s_probe_due"
+  ],
+  "retained_axf_symbols": [
+    "BSP_Camera_EarlyInit",
+    "BSP_Camera_Init",
+    "BSP_Camera_ReadReg",
+    "Ov5640_ReadId",
+    "g_device_export_s_ov5640",
+    "g_framework_init_App_Init"
+  ],
+  "historical_tests_fixture": "Tests/Ov5640Migration/fixtures",
+  "uvoptx_removed_file_entries": 2,
+  "uvoptx_target_debug_options_unchanged": true
+}

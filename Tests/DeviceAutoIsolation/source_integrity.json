@@ -1,0 +1,9 @@
+{
+  "files_checked": 67,
+  "concurrent_changes": [
+    "CM4/Device/Src/oled_device.c"
+  ],
+  "tested_sources_unchanged": true,
+  "tool_modified_production_sources": false,
+  "device_c_sha256": "05885c2c32643a002eab3a1af73da7014bf97e1aa5dff714253b0e6e8bc9e438"
+}

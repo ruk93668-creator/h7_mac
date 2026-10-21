@@ -1,0 +1,16 @@
+test_bad_bin_length_rejected (__main__.RealDumpChecks.test_bad_bin_length_rejected) ... ok
+test_checksum_rejected (__main__.RealDumpChecks.test_checksum_rejected) ... ok
+test_conflicting_duplicate_rejected (__main__.RealDumpChecks.test_conflicting_duplicate_rejected) ... ok
+test_export_range_and_watch (__main__.RealDumpChecks.test_export_range_and_watch) ... ok
+test_missing_data_not_padded (__main__.RealDumpChecks.test_missing_data_not_padded) ... ok
+test_missing_eof_rejected (__main__.RealDumpChecks.test_missing_eof_rejected) ... ok
+test_original_png_roundtrip (__main__.RealDumpChecks.test_original_png_roundtrip) ... ok
+test_preserved_source_and_bin (__main__.RealDumpChecks.test_preserved_source_and_bin) ... ok
+test_preview_nearest_roundtrip (__main__.RealDumpChecks.test_preview_nearest_roundtrip) ... ok
+test_raw_bin_read (__main__.RealDumpChecks.test_raw_bin_read) ... ok
+test_vertical_bars_not_false_duplicate_fault (__main__.RealDumpChecks.test_vertical_bars_not_false_duplicate_fault) ... ok
+
+----------------------------------------------------------------------
+Ran 11 tests in 0.094s
+
+OK

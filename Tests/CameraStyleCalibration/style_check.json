@@ -1,0 +1,14 @@
+{
+  "files": [
+    "CM7/BSP/bsp_camera.c",
+    "CM7/BSP/bsp_camera.h",
+    "CM7/Device/Src/ov5640_device.c",
+    "CM7/Device/Inc/ov5640_device.h",
+    "CM7/Application/app_ov5640.c",
+    "CM7/Application/app_ov5640.h",
+    "CM7/Application/app_main.c",
+    "CM7/Application/app_main.h"
+  ],
+  "backup": "C:\\Users\\29062\\AppData\\Local\\Temp\\h7_camera_style_e_j3ismy",
+  "tokens_identical_after_split_declaration_normalization": true
+}

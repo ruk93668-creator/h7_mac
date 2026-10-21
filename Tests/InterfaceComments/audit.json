@@ -1,0 +1,129 @@
+{
+  "modified_files": 20,
+  "added_interface_comments": 52,
+  "all_code_tokens_unchanged": true,
+  "files": [
+    {
+      "path": "CM7/Application/app_main.h",
+      "before_sha256": "5ad497d6b579078ec1a389a74e8f96581f3e04e98eb1a0c3953c16e1ce8e0a6b",
+      "after_sha256": "9a22baf2c18af9ac751438aeb0cf65f96a3fcd316ccdb3a0aab5d47ed1745a3b",
+      "code_tokens_unchanged": true
+    },
+    {
+      "path": "CM7/Device/Inc/device.h",
+      "before_sha256": "61484c890dc7018fdbd8a520f82c2d729f0f4b8bc77fb9cb960ac71388560557",
+      "after_sha256": "3b7127cd144ea14bf1501784f880fe3fc2c2a4513cd77bf84396f6e00da97700",
+      "code_tokens_unchanged": true
+    },
+    {
+      "path": "CM7/Framework/framework_init.h",
+      "before_sha256": "8e19746a83ca2eb341c1120a0278277506931520d1c8ddb72f1174bbcd515dce",
+      "after_sha256": "64c0c0b8f9f7a45850377f71f1022f392b6d57c485cea3f79a1bf0f11c80b227",
+      "code_tokens_unchanged": true
+    },
+    {
+      "path": "CM7/Platform/ipc_platform.h",
+      "before_sha256": "142f6db79ef41434c4755a8be99ec85035bbe9a3c4597f65b71b7ea791d119f5",
+      "after_sha256": "96f43514ecdd098adaa4cb890245db0b2dee94b7731e40bc6d428bba77381b98",
+      "code_tokens_unchanged": true
+    },
+    {
+      "path": "CM7/Platform/platform_time.h",
+      "before_sha256": "6a8a58249a88242edec9760ed9629c4484c57d1d7355e592fad685041f296e5b",
+      "after_sha256": "d96b1cae6c854bb70dba5e585b98b691ab9b14367f68304c4e0cd3a0803346fc",
+      "code_tokens_unchanged": true
+    },
+    {
+      "path": "CM4/Application/app_main.h",
+      "before_sha256": "502bee64d945316889b159794a24f4be6acbd9b3e593ee74fc89ded5655aba4e",
+      "after_sha256": "34a1de100bc7fe9539f95ce78df76fa66a50bdee9a789ae5bfa87a8a62139600",
+      "code_tokens_unchanged": true
+    },
+    {
+      "path": "CM4/Device/Inc/device.h",
+      "before_sha256": "8d6307654c0f45f56d221ee86017eeb490acf67d6e9dd5eeae98b869f3988f13",
+      "after_sha256": "1ec50a9a3c3088ee717ec4b88bf038b123a5740e230d561eed2bc8384535950f",
+      "code_tokens_unchanged": true
+    },
+    {
+      "path": "CM4/Framework/framework_init.h",
+      "before_sha256": "726e64a132b2580eaa75b1e9b439784130f0de5295442328606135380faffdce",
+      "after_sha256": "75355bbb7c2314306d93f13fa969eef034fae361961272b8d82e3d8aa57c111f",
+      "code_tokens_unchanged": true
+    },
+    {
+      "path": "CM4/Platform/ipc_platform.h",
+      "before_sha256": "4bda5f21dcddf9f19098fdeef8c6b63cfd21ba5f9aa4d13e56f09db7145c5be3",
+      "after_sha256": "33501479953c1b00acea5dbe8629a1dfe75645c9c45e03f5fb0df096901ad8c7",
+      "code_tokens_unchanged": true
+    },
+    {
+      "path": "CM4/Platform/platform_time.h",
+      "before_sha256": "767ab11411b1f8b051dc404e66f4bf489fd257bf431b7f13795e5e1ae77480ab",
+      "after_sha256": "fcd4d48dbc44bd06d04bceeb8d2c2f8fb1388b2b706447a8c5c351a93ddf09ef",
+      "code_tokens_unchanged": true
+    },
+    {
+      "path": "CM7/BSP/bsp_sdram.h",
+      "before_sha256": "cf566ab631ae267e29645a71da03740c798b5ae53a87f27bb72c462ad39a0d65",
+      "after_sha256": "f4105de55f02b239503d0f5688dce49a93f7dc9d924b2d05344b66ce9c201e47",
+      "code_tokens_unchanged": true
+    },
+    {
+      "path": "CM7/BSP/bsp_dcmi.h",
+      "before_sha256": "69ab0c8e33e94d1c4af68eec19089323f9d8b6ec96236084ee4aed53113a1dc3",
+      "after_sha256": "8c96a1052f60a9a4298ed705784ef271f60871e08007aa7f4100d3bb565b7ffc",
+      "code_tokens_unchanged": true
+    },
+    {
+      "path": "CM7/Service/ipc_service.h",
+      "before_sha256": "d1241e09eead573ec9e8388ec95d586152b7f7a16d88b914fd39021a5f46deb7",
+      "after_sha256": "7bda0999dbbdc4670e24f68b7aa4eccd51e5e33ed88f7a9211ad6aad638dfef2",
+      "code_tokens_unchanged": true
+    },
+    {
+      "path": "CM4/Application/app_oled.h",
+      "before_sha256": "af21b3d193e03904f3c2a4e406b4caea144136341828a7720ad2be3bb9604db4",
+      "after_sha256": "5deba9b8b5449023f1be969ef281733b7e65e9407c4e05304487ec0819d71c32",
+      "code_tokens_unchanged": true
+    },
+    {
+      "path": "CM4/BSP/bsp_iic.h",
+      "before_sha256": "ae0cc63ee3af3fe1aa65329fb526e9a942d375173f030d14ea059062253fe362",
+      "after_sha256": "77f68c2fea4e4b56f2ba91041061d46ffca54f279d751f6fe3fa47289eddad9c",
+      "code_tokens_unchanged": true
+    },
+    {
+      "path": "Common/Inc/framework_event.h",
+      "before_sha256": "454901fb6e3a36277c4d616affe6bfaf1703f9bd6a003c446c62415f8b8bd857",
+      "after_sha256": "09d4ded2d80fa317a42b118bbc77671e8cce2a56b144506974822fe56fa43702",
+      "code_tokens_unchanged": true
+    },
+    {
+      "path": "Common/Inc/framework_list.h",
+      "before_sha256": "7df5b090ed5328b9f619ccf576d8f595c1b747072d28a91464e462fb5c0ff483",
+      "after_sha256": "a546df649f7cd5b2cc968084c42c579a0f4acab02c844dcbd7d2567ece66b703",
+      "code_tokens_unchanged": true
+    },
+    {
+      "path": "Common/Inc/framework_runtime.h",
+      "before_sha256": "eb9609b17721e91f9401b477913f043733471339102eefff3b5cfc88b779b952",
+      "after_sha256": "55f40765ebf4ecf770753a102b2cb04afe981d2a6c1f32aa85d4e2c5c0402003",
+      "code_tokens_unchanged": true
+    },
+    {
+      "path": "Common/Inc/framework_timer.h",
+      "before_sha256": "ddfd11d9105bf3481d73879cd1c9156113a1b0715bbcf9c26ac419a5dd7bf0ea",
+      "after_sha256": "ea11d227b839ae242c3d9c2356fb3bd2042b0448f7cfccce6ba323c531dea043",
+      "code_tokens_unchanged": true
+    },
+    {
+      "path": "Common/Inc/ipc_shared.h",
+      "before_sha256": "af489082a83423d0e63f06f5fcaa7ce348b19504549dad65cd4fb675b04bce67",
+      "after_sha256": "2feef0a973a139f699391af318e9d762766b0a59053e7cb01e13e56de033a546",
+      "code_tokens_unchanged": true
+    }
+  ],
+  "public_functions_and_inline_helpers_checked": 62,
+  "missing_interface_comments": 0
+}

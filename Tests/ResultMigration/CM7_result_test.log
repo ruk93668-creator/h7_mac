@@ -1,0 +1,6 @@
+CM7 PASS: Initcall success ordering; assertion line=0
+CM7 PASS: Initcall first failure preserves -9 and skips remaining calls/levels; assertion line=0
+CM7 PASS: Return constants, IPC fault OR, shared layout, IPC service; assertion line=0
+CM7 PASS: Event return semantics; assertion line=0
+CM7 PASS: Timer parameter, stale handle and capacity return semantics; assertion line=0
+CM7 PASS: Unimplemented Device returns; assertion line=0

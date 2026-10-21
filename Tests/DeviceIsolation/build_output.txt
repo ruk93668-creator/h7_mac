@@ -1,0 +1,3 @@
+Current isolated test build:
+armcc exit code: 0
+armlink exit code: 0

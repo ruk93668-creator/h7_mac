@@ -1,0 +1,1 @@
+Whole-session hash verification: 58 existing source/config files unchanged.

@@ -1,0 +1,12 @@
+{
+  "entry_section": "ER_FW_INIT",
+  "entry_address": "0x08103C10",
+  "level": 1,
+  "function_pointer": "0x0810056D",
+  "msp_init_binding": "STB_GLOBAL",
+  "msp_deinit_binding": "STB_GLOBAL",
+  "existing_modified_files": [
+    "MDK-ARM/h7_mac.uvprojx"
+  ],
+  "existing_core_cm7_hal_scatter_unchanged": true
+}

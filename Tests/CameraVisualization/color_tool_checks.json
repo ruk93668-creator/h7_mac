@@ -1,0 +1,7 @@
+{
+  "tests": 11,
+  "failures": 0,
+  "errors": 0,
+  "all_passed": true,
+  "note": "Synthetic decoder unit vectors and historical real Y8 roundtrip only; no new real RGB565/YUV422 capture acceptance."
+}

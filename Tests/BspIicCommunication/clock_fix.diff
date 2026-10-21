@@ -1,0 +1,27 @@
+--- before/bsp_iic.c
++++ after/bsp_iic.c
+@@ -61,7 +61,10 @@
+     if (s_initialized)
+     {
+         /* Do not silently reuse a timing value after a clock-tree change. */
+-        return HAL_RCCEx_GetPeriphCLKFreq(RCC_PERIPHCLK_I2C2) == BSP_IIC_KERNEL_HZ
++        if (__HAL_RCC_GET_I2C2_SOURCE() != RCC_I2C123CLKSOURCE_D2PCLK1)
++            return SYS_ERR_INVALID_STATE;
++
++        return HAL_RCC_GetPCLK1Freq() == BSP_IIC_KERNEL_HZ
+                ? SYS_OK : SYS_ERR_INVALID_STATE;
+     }
+ 
+@@ -78,7 +81,11 @@
+     if (result != SYS_OK)
+         goto finish;
+ 
+-    if (HAL_RCCEx_GetPeriphCLKFreq(RCC_PERIPHCLK_I2C2) != BSP_IIC_KERNEL_HZ)
++    /* This HAL version cannot query I2C2 with GetPeriphCLKFreq.
++     * Validate the kernel mux before treating PCLK1 as the I2C2 clock.
++     */
++    if ((__HAL_RCC_GET_I2C2_SOURCE() != RCC_I2C123CLKSOURCE_D2PCLK1) ||
++        (HAL_RCC_GetPCLK1Freq() != BSP_IIC_KERNEL_HZ))
+     {
+         result = SYS_ERR_INVALID_STATE;
+         goto finish;

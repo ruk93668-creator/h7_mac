@@ -1,0 +1,33 @@
+T01 PASS: 异步正常启动 — 断言14项；最终TRANSFERRING；HAL同步/异步/Abort=0/1/0；IRQ交付/屏蔽挂起=0/0；PRIMASK=0
+T02 PASS: 正常完成 — 断言14项；最终IDLE；HAL同步/异步/Abort=0/1/0；IRQ交付/屏蔽挂起=1/0；PRIMASK=0
+T03 PASS: 结果只交付一次 — 断言16项；最终IDLE；HAL同步/异步/Abort=0/1/0；IRQ交付/屏蔽挂起=1/0；PRIMASK=0
+T04 PASS: 发送期间重入发送 — 断言14项；最终TRANSFERRING；HAL同步/异步/Abort=0/1/0；IRQ交付/屏蔽挂起=0/0；PRIMASK=0
+T05 PASS: 99ms未超时 — 断言14项；最终TRANSFERRING；HAL同步/异步/Abort=0/1/0；IRQ交付/屏蔽挂起=0/0；PRIMASK=0
+T06 PASS: 100ms请求Abort — 断言16项；最终ABORTING；HAL同步/异步/Abort=0/1/1；IRQ交付/屏蔽挂起=0/0；PRIMASK=0
+T07 PASS: Abort成功及完成 — 断言21项；最终IDLE；HAL同步/异步/Abort=0/1/1；IRQ交付/屏蔽挂起=1/1；PRIMASK=0
+T08 PASS: Abort启动失败 — 断言18项；最终FAULT；HAL同步/异步/Abort=0/1/1；IRQ交付/屏蔽挂起=0/0；PRIMASK=0
+T09 PASS: FAULT拒绝发送 — 断言20项；最终FAULT；HAL同步/异步/Abort=0/1/1；IRQ交付/屏蔽挂起=0/0；PRIMASK=0
+T10 PASS: 普通HAL错误 — 断言15项；最终IDLE；HAL同步/异步/Abort=0/1/0；IRQ交付/屏蔽挂起=1/0；PRIMASK=0
+T11 PASS: HAL超时错误 — 断言15项；最终IDLE；HAL同步/异步/Abort=0/1/0；IRQ交付/屏蔽挂起=1/0；PRIMASK=0
+T12 PASS: 连续不同地址 — 断言26项；最终IDLE；HAL同步/异步/Abort=3/3/0；IRQ交付/屏蔽挂起=3/0；PRIMASK=0
+T13 PASS: Abort使用当前地址 — 断言18项；最终ABORTING；HAL同步/异步/Abort=0/2/1；IRQ交付/屏蔽挂起=1/0；PRIMASK=0
+T14 PASS: 129字节边界 — 断言272项；最终IDLE；HAL同步/异步/Abort=0/1/0；IRQ交付/屏蔽挂起=1/0；PRIMASK=0
+T15 PASS: 130字节越界 — 断言10项；最终IDLE；HAL同步/异步/Abort=0/0/0；IRQ交付/屏蔽挂起=0/0；PRIMASK=0
+T16 PASS: 非法参数矩阵 — 断言302项；最终IDLE；HAL同步/异步/Abort=0/0/0；IRQ交付/屏蔽挂起=0/0；PRIMASK=0
+T17 PASS: 完成与超时交错 — 断言17项；最终IDLE；HAL同步/异步/Abort=0/1/0；IRQ交付/屏蔽挂起=1/0；PRIMASK=0
+T18 PASS: 恢复初始PRIMASK — 断言24项；最终IDLE；HAL同步/异步/Abort=0/2/2；IRQ交付/屏蔽挂起=2/2；PRIMASK=0
+T19 PASS: HAL_BUSY启动失败可重试 — 断言14项；最终IDLE；HAL同步/异步/Abort=0/2/0；IRQ交付/屏蔽挂起=1/0；PRIMASK=0
+T20 PASS: Abort成功但无回调 — 断言35项；最终ABORTING；HAL同步/异步/Abort=0/1/1；IRQ交付/屏蔽挂起=0/0；PRIMASK=0
+E01 PASS: 同步返回值映射 — 断言21项；最终IDLE；HAL同步/异步/Abort=4/0/0；IRQ交付/屏蔽挂起=0/0；PRIMASK=0
+E02 PASS: HAL状态准入 — 断言14项；最终IDLE；HAL同步/异步/Abort=0/0/0；IRQ交付/屏蔽挂起=0/0；PRIMASK=0
+E03 PASS: NVIC反初始化 — 断言13项；最终IDLE；HAL同步/异步/Abort=0/0/0；IRQ交付/屏蔽挂起=0/1；PRIMASK=0
+E04 PASS: Tick 32位回绕 — 断言19项；最终IDLE；HAL同步/异步/Abort=0/1/1；IRQ交付/屏蔽挂起=1/0；PRIMASK=0
+E05 PASS: PRIMASK调度器自检 — 断言17项；最终IDLE；HAL同步/异步/Abort=0/1/0；IRQ交付/屏蔽挂起=1/1；PRIMASK=0
+E06 PASS: TakeResult空指针 — 断言17项；最终IDLE；HAL同步/异步/Abort=0/1/0；IRQ交付/屏蔽挂起=1/0；PRIMASK=0
+E07 PASS: HAL_ERROR/TIMEOUT启动重试 — 断言17项；最终TRANSFERRING；HAL同步/异步/Abort=0/4/0；IRQ交付/屏蔽挂起=1/0；PRIMASK=0
+E08 PASS: Tick读取时完成竞态 — 断言17项；最终IDLE；HAL同步/异步/Abort=0/1/0；IRQ交付/屏蔽挂起=1/0；PRIMASK=0
+E09 PASS: CPSID前最后边界完成 — 断言17项；最终IDLE；HAL同步/异步/Abort=0/1/0；IRQ交付/屏蔽挂起=1/0；PRIMASK=0
+E10 PASS: 初始化拒绝错误时钟源 — 断言7项；最终IDLE；HAL同步/异步/Abort=0/0/0；IRQ交付/屏蔽挂起=0/0；PRIMASK=0
+E11 PASS: 初始化拒绝错误频率 — 断言7项；最终IDLE；HAL同步/异步/Abort=0/0/0；IRQ交付/屏蔽挂起=0/0；PRIMASK=0
+E12 PASS: 重复初始化时钟校验 — 断言8项；最终IDLE；HAL同步/异步/Abort=0/0/0；IRQ交付/屏蔽挂起=0/0；PRIMASK=0
+{'total': 32, 'pass': 32, 'fail': 0, 'not_run': 0, 'assertions': 1069, 'compiler': 'Product: MDK Plus 5.32\r\nComponent: ARM Compiler 5.06 update 7 (build 960)\r\nTool: armcc [4d365d]\r\nFor support see http://www.arm.com/support\r\nSoftware supplied by: ARM Limited\r\n', 'unicorn_version': '2.1.4'}

@@ -1,0 +1,3 @@
+Isolated ARMCC build (current run):
+armcc: exit code 0; no diagnostics.
+armlink: exit code 0; no diagnostics.

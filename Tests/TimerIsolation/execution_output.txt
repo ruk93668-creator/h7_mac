@@ -1,0 +1,15 @@
+01 Pass: One-Shot order: 2@100, 3@200, 1@300; pool/heap=3/0; invariants=18
+02 Pass: Delete root: 4@200, 6@300, 7@400, 5@500, 3@600, 1@700; pool/heap=6/0; invariants=30
+03 Pass: Delete middle: 2@100, 4@200, 7@400, 5@500, 3@600, 1@700; pool/heap=6/0; invariants=30
+04 Pass: Delete tail: 2@100, 4@200, 6@300, 5@500, 3@600, 1@700; pool/heap=6/0; invariants=30
+05 Pass: Active repeated Start: 1@150, 2@150; pool/heap=2/0; invariants=62
+06 Pass: One-Shot callback Stop: 1@100, 2@150; pool/heap=2/0; invariants=14
+07 Pass: One-Shot callback Start: 1@100, 2@150, 1@200; pool/heap=2/0; invariants=15
+08 Pass: One-Shot callback Delete: 1@100, 2@150; pool/heap=1/0; invariants=14
+09 Pass: Periodic callback Stop: 1@100, 2@150; pool/heap=2/0; invariants=14
+10 Pass: Periodic callback Start: 1@100, 2@150, 1@200; pool/heap=2/1; invariants=15
+11 Pass: Periodic callback Delete: 1@100, 2@150; pool/heap=1/0; invariants=14
+12 Pass: Generation stale handle: 2@200; pool/heap=1/0; invariants=13; handle 0x00000100->0x00000200
+13 Pass: Tick rollover: 2@4294967268, 3@72, 1@172; pool/heap=3/0; invariants=19
+14 Pass: Capacity and lifecycle: 1@100, 2@101, 3@102, 4@103, 5@104, 6@105, 7@106, 8@107, 9@108, 10@109, 11@110, 12@111, 13@112, 14@113, 15@114, 16@115; pool/heap=0/0; invariants=123
+Total: 14/14 Pass; source/config unchanged=True

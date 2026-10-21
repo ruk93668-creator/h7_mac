@@ -1,0 +1,9 @@
+[
+  "CM7\\Application\\app_main.c",
+  "CM7\\Application\\app_ov5640.c",
+  "CM7\\Application\\app_ov5640.h",
+  "CM7\\BSP\\bsp_camera.c",
+  "CM7\\BSP\\bsp_camera.h",
+  "CM7\\Device\\Inc\\ov5640_device.h",
+  "CM7\\Device\\Src\\ov5640_device.c"
+]

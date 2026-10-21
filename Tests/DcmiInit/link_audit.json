@@ -1,0 +1,20 @@
+{
+  "DMA1_Stream0_IRQHandler": {
+    "irq": 11,
+    "function": "0x8000cb1",
+    "vector": "0x8000cb1",
+    "binding": "GLOBAL"
+  },
+  "DCMI_IRQHandler": {
+    "irq": 78,
+    "function": "0x8000ca1",
+    "vector": "0x8000ca1",
+    "binding": "GLOBAL"
+  },
+  "initcall": {
+    "level": 1,
+    "function": "0x8000979"
+  },
+  "capture_start_linked": [],
+  "init_error_global": "0x20000000"
+}

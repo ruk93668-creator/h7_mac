@@ -1,0 +1,26 @@
+{
+  "changed_existing_files": [
+    "CM4\\Application\\app_main.c",
+    "MDK-ARM\\h7_mac.uvprojx"
+  ],
+  "new_business_files": [
+    "CM4/Application/app_oled.c",
+    "CM4/Application/app_oled.h"
+  ],
+  "cm7_source_changed": false,
+  "cm4_main_calls": [
+    "Framework_Run",
+    "App_Run"
+  ],
+  "framework_runtime_changed": false,
+  "app_initcall_level": 5,
+  "global_symbols_verified": [
+    "App_Init",
+    "App_Run",
+    "App_OledInit",
+    "App_OledRun",
+    "BSP_IIC_WriteAsync",
+    "BSP_IIC_TakeResult",
+    "HAL_I2C_MasterTxCpltCallback"
+  ]
+}

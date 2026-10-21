@@ -1,0 +1,15 @@
+01 Pass: 正常状态转换: 返回0；嵌套Init/Start/Stop=0/0/0；回调次数=1/1/1；回调见BUSY=3；manual/automatic=READY/UNINIT；Registry=2
+02 Pass: Init回调重入及交叉调用: 返回0；嵌套Init/Start/Stop=-5/-5/-5；回调次数=1/0/0；回调见BUSY=1；manual/automatic=READY/UNINIT；Registry=2
+03 Pass: Start回调重入及交叉调用: 返回0；嵌套Init/Start/Stop=-5/-5/-5；回调次数=1/1/0；回调见BUSY=2；manual/automatic=RUNNING/UNINIT；Registry=2
+04 Pass: Stop回调重入及交叉调用: 返回0；嵌套Init/Start/Stop=-5/-5/-5；回调次数=1/1/1；回调见BUSY=3；manual/automatic=READY/UNINIT；Registry=2
+05 Pass: 已有BUSY状态拒绝操作: 返回0；嵌套Init/Start/Stop=-5/-5/-5；回调次数=0/0/0；回调见BUSY=0；manual/automatic=BUSY/UNINIT；Registry=2
+06 Pass: 缺失Init Ops: 返回-7；嵌套Init/Start/Stop=0/0/0；回调次数=0/0/0；回调见BUSY=0；manual/automatic=UNINIT/UNINIT；Registry=2
+07 Pass: 缺失Start Ops: 返回-7；嵌套Init/Start/Stop=0/0/0；回调次数=1/0/0；回调见BUSY=1；manual/automatic=READY/UNINIT；Registry=2
+08 Pass: 缺失Stop Ops: 返回-7；嵌套Init/Start/Stop=0/0/0；回调次数=1/1/0；回调见BUSY=2；manual/automatic=RUNNING/UNINIT；Registry=2
+09 Pass: 静态导出自动注册: 返回0；嵌套Init/Start/Stop=0/0/0；回调次数=0/0/0；回调见BUSY=0；manual/automatic=UNINIT/UNINIT；Registry=2
+10 Pass: auto_init策略: 返回0；嵌套Init/Start/Stop=0/0/0；回调次数=1/0/0；回调见BUSY=1；manual/automatic=UNINIT/READY；Registry=2
+11 Pass: 真实Initcall链: 返回0；嵌套Init/Start/Stop=0/0/0；回调次数=1/0/0；回调见BUSY=1；manual/automatic=UNINIT/READY；Registry=2
+12 Pass: Init回调失败: 返回-9；嵌套Init/Start/Stop=0/0/0；回调次数=1/0/0；回调见BUSY=1；manual/automatic=ERROR/UNINIT；Registry=2
+13 Pass: Start回调失败: 返回-9；嵌套Init/Start/Stop=0/0/0；回调次数=1/1/0；回调见BUSY=2；manual/automatic=ERROR/UNINIT；Registry=2
+14 Pass: Stop回调失败: 返回-9；嵌套Init/Start/Stop=0/0/0；回调次数=1/1/1；回调见BUSY=3；manual/automatic=ERROR/UNINIT；Registry=2
+Total: 14/14 Pass

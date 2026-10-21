@@ -1,0 +1,38 @@
+# Keil build output
+/MDK-ARM/h7_mac_CM7/
+/MDK-ARM/h7_mac_CM4/
+*.o
+*.obj
+*.axf
+*.elf
+*.crf
+*.d
+*.dep
+*.lnp
+*.map
+*.lst
+*.build_log.htm
+*.uvguix.*
+
+# Local Python runtimes and caches; retain test source and reports
+**/python_deps/
+**/__pycache__/
+*.pyc
+.venv/
+venv/
+
+# Historical input archive; current source is tracked
+/Common.tar
+
+# Local credentials and editor/system state
+.env
+.env.*
+!.env.example
+*.pem
+*.pfx
+id_rsa
+id_ed25519
+.vscode/
+.idea/
+Thumbs.db
+.DS_Store

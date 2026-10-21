@@ -1,0 +1,29 @@
+LR_IROM1 0x08100000 0x00100000
+{
+    ER_IROM1 0x08100000 0x00100000
+    {
+        *.o (RESET, +First)
+        *(InRoot$$Sections)
+        .ANY (+RO)
+    }
+
+    ER_FW_INIT +0
+    {
+        *(.framework_init)
+    }
+
+   ER_DEVICE_EXPORT +0
+   {
+        *(.device_export)
+    }
+
+    RW_SHARED 0x38000000 UNINIT 0x00001000
+    {
+        *(.shared)
+    }
+
+    RW_IRAM1 0x10000000 0x00048000
+    {
+        .ANY (+RW +ZI)
+    }
+}

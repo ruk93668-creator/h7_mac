@@ -1,0 +1,15 @@
+{
+  "changed_or_removed_files": [
+    "CM7\\BSP\\bsp_sdram.c",
+    "CM7\\BSP\\bsp_sdram.h",
+    "CM7\\Diagnostics\\sdram_check.c",
+    "CM7\\Diagnostics\\sdram_check.h",
+    "MDK-ARM\\h7_mac.uvprojx",
+    "MDK-ARM\\h7_mac.uvoptx"
+  ],
+  "protected_sources_unchanged": true,
+  "mpu_region2_main_unchanged": true,
+  "bsp_only_removes_diagnostic_state": true,
+  "formal_diagnostic_references": [],
+  "test_diagnostics_path": "Tests/SdramV0/diagnostics"
+}

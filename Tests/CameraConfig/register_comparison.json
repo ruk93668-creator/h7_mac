@@ -1,0 +1,511 @@
+{
+  "total": 42,
+  "passed": 42,
+  "failed": 0,
+  "cases": [
+    {
+      "case": "正常Initcall配置160x120 Y8彩条",
+      "checks": {
+        "write_trace_count": true,
+        "write_trace_sha256": true,
+        "register_map_sha256": true,
+        "sccb_tx_prefix": true
+      },
+      "result": "PASS",
+      "writes_before": 544,
+      "writes_after": 544
+    },
+    {
+      "case": "错误芯片ID禁止写表",
+      "checks": {
+        "write_trace_count": true,
+        "write_trace_sha256": true,
+        "register_map_sha256": true,
+        "sccb_tx_prefix": true
+      },
+      "result": "PASS",
+      "writes_before": 0,
+      "writes_after": 0
+    },
+    {
+      "case": "SCCB读ID地址NACK",
+      "checks": {
+        "write_trace_count": true,
+        "write_trace_sha256": true,
+        "register_map_sha256": true,
+        "sccb_tx_prefix": true
+      },
+      "result": "PASS",
+      "writes_before": 0,
+      "writes_after": 0
+    },
+    {
+      "case": "关键寄存器回读不一致-0",
+      "checks": {
+        "write_trace_count": true,
+        "write_trace_sha256": true,
+        "register_map_sha256": true,
+        "sccb_tx_prefix": true
+      },
+      "result": "PASS",
+      "writes_before": 272,
+      "writes_after": 272
+    },
+    {
+      "case": "关键寄存器回读不一致-1",
+      "checks": {
+        "write_trace_count": true,
+        "write_trace_sha256": true,
+        "register_map_sha256": true,
+        "sccb_tx_prefix": true
+      },
+      "result": "PASS",
+      "writes_before": 272,
+      "writes_after": 272
+    },
+    {
+      "case": "关键寄存器回读不一致-2",
+      "checks": {
+        "write_trace_count": true,
+        "write_trace_sha256": true,
+        "register_map_sha256": true,
+        "sccb_tx_prefix": true
+      },
+      "result": "PASS",
+      "writes_before": 272,
+      "writes_after": 272
+    },
+    {
+      "case": "关键寄存器回读不一致-3",
+      "checks": {
+        "write_trace_count": true,
+        "write_trace_sha256": true,
+        "register_map_sha256": true,
+        "sccb_tx_prefix": true
+      },
+      "result": "PASS",
+      "writes_before": 272,
+      "writes_after": 272
+    },
+    {
+      "case": "关键寄存器回读不一致-4",
+      "checks": {
+        "write_trace_count": true,
+        "write_trace_sha256": true,
+        "register_map_sha256": true,
+        "sccb_tx_prefix": true
+      },
+      "result": "PASS",
+      "writes_before": 272,
+      "writes_after": 272
+    },
+    {
+      "case": "关键寄存器回读不一致-5",
+      "checks": {
+        "write_trace_count": true,
+        "write_trace_sha256": true,
+        "register_map_sha256": true,
+        "sccb_tx_prefix": true
+      },
+      "result": "PASS",
+      "writes_before": 272,
+      "writes_after": 272
+    },
+    {
+      "case": "关键寄存器回读不一致-6",
+      "checks": {
+        "write_trace_count": true,
+        "write_trace_sha256": true,
+        "register_map_sha256": true,
+        "sccb_tx_prefix": true
+      },
+      "result": "PASS",
+      "writes_before": 272,
+      "writes_after": 272
+    },
+    {
+      "case": "关键寄存器回读不一致-7",
+      "checks": {
+        "write_trace_count": true,
+        "write_trace_sha256": true,
+        "register_map_sha256": true,
+        "sccb_tx_prefix": true
+      },
+      "result": "PASS",
+      "writes_before": 272,
+      "writes_after": 272
+    },
+    {
+      "case": "关键寄存器回读不一致-8",
+      "checks": {
+        "write_trace_count": true,
+        "write_trace_sha256": true,
+        "register_map_sha256": true,
+        "sccb_tx_prefix": true
+      },
+      "result": "PASS",
+      "writes_before": 272,
+      "writes_after": 272
+    },
+    {
+      "case": "关键寄存器回读不一致-9",
+      "checks": {
+        "write_trace_count": true,
+        "write_trace_sha256": true,
+        "register_map_sha256": true,
+        "sccb_tx_prefix": true
+      },
+      "result": "PASS",
+      "writes_before": 272,
+      "writes_after": 272
+    },
+    {
+      "case": "关键寄存器回读不一致-10",
+      "checks": {
+        "write_trace_count": true,
+        "write_trace_sha256": true,
+        "register_map_sha256": true,
+        "sccb_tx_prefix": true
+      },
+      "result": "PASS",
+      "writes_before": 272,
+      "writes_after": 272
+    },
+    {
+      "case": "关键寄存器回读不一致-11",
+      "checks": {
+        "write_trace_count": true,
+        "write_trace_sha256": true,
+        "register_map_sha256": true,
+        "sccb_tx_prefix": true
+      },
+      "result": "PASS",
+      "writes_before": 272,
+      "writes_after": 272
+    },
+    {
+      "case": "关键寄存器回读不一致-12",
+      "checks": {
+        "write_trace_count": true,
+        "write_trace_sha256": true,
+        "register_map_sha256": true,
+        "sccb_tx_prefix": true
+      },
+      "result": "PASS",
+      "writes_before": 272,
+      "writes_after": 272
+    },
+    {
+      "case": "关键寄存器回读不一致-13",
+      "checks": {
+        "write_trace_count": true,
+        "write_trace_sha256": true,
+        "register_map_sha256": true,
+        "sccb_tx_prefix": true
+      },
+      "result": "PASS",
+      "writes_before": 272,
+      "writes_after": 272
+    },
+    {
+      "case": "关键寄存器回读不一致-14",
+      "checks": {
+        "write_trace_count": true,
+        "write_trace_sha256": true,
+        "register_map_sha256": true,
+        "sccb_tx_prefix": true
+      },
+      "result": "PASS",
+      "writes_before": 272,
+      "writes_after": 272
+    },
+    {
+      "case": "关键寄存器回读不一致-15",
+      "checks": {
+        "write_trace_count": true,
+        "write_trace_sha256": true,
+        "register_map_sha256": true,
+        "sccb_tx_prefix": true
+      },
+      "result": "PASS",
+      "writes_before": 272,
+      "writes_after": 272
+    },
+    {
+      "case": "关键寄存器回读不一致-16",
+      "checks": {
+        "write_trace_count": true,
+        "write_trace_sha256": true,
+        "register_map_sha256": true,
+        "sccb_tx_prefix": true
+      },
+      "result": "PASS",
+      "writes_before": 272,
+      "writes_after": 272
+    },
+    {
+      "case": "写地址NACK",
+      "checks": {
+        "write_trace_count": true,
+        "write_trace_sha256": true,
+        "register_map_sha256": true,
+        "sccb_tx_prefix": true
+      },
+      "result": "PASS",
+      "writes_before": 0,
+      "writes_after": 0
+    },
+    {
+      "case": "寄存器高字节NACK",
+      "checks": {
+        "write_trace_count": true,
+        "write_trace_sha256": true,
+        "register_map_sha256": true,
+        "sccb_tx_prefix": true
+      },
+      "result": "PASS",
+      "writes_before": 0,
+      "writes_after": 0
+    },
+    {
+      "case": "寄存器低字节NACK",
+      "checks": {
+        "write_trace_count": true,
+        "write_trace_sha256": true,
+        "register_map_sha256": true,
+        "sccb_tx_prefix": true
+      },
+      "result": "PASS",
+      "writes_before": 0,
+      "writes_after": 0
+    },
+    {
+      "case": "数据字节NACK",
+      "checks": {
+        "write_trace_count": true,
+        "write_trace_sha256": true,
+        "register_map_sha256": true,
+        "sccb_tx_prefix": true
+      },
+      "result": "PASS",
+      "writes_before": 0,
+      "writes_after": 0
+    },
+    {
+      "case": "真实SCCB写后读",
+      "checks": {
+        "write_trace_count": true,
+        "write_trace_sha256": true,
+        "register_map_sha256": true,
+        "sccb_tx_prefix": true
+      },
+      "result": "PASS",
+      "writes_before": 1,
+      "writes_after": 1
+    },
+    {
+      "case": "初始化前禁止写",
+      "checks": {
+        "write_trace_count": true,
+        "write_trace_sha256": true,
+        "register_map_sha256": true,
+        "sccb_tx_prefix": true
+      },
+      "result": "PASS",
+      "writes_before": 0,
+      "writes_after": 0
+    },
+    {
+      "case": "SDA忙拒绝写",
+      "checks": {
+        "write_trace_count": true,
+        "write_trace_sha256": true,
+        "register_map_sha256": true,
+        "sccb_tx_prefix": true
+      },
+      "result": "PASS",
+      "writes_before": 0,
+      "writes_after": 0
+    },
+    {
+      "case": "SCL忙拒绝写",
+      "checks": {
+        "write_trace_count": true,
+        "write_trace_sha256": true,
+        "register_map_sha256": true,
+        "sccb_tx_prefix": true
+      },
+      "result": "PASS",
+      "writes_before": 0,
+      "writes_after": 0
+    },
+    {
+      "case": "软件复位等待5ms",
+      "checks": {
+        "write_trace_count": true,
+        "write_trace_sha256": true,
+        "register_map_sha256": true,
+        "sccb_tx_prefix": true
+      },
+      "result": "PASS",
+      "writes_before": 1,
+      "writes_after": 1
+    },
+    {
+      "case": "组件多字节和参数边界",
+      "checks": {
+        "write_trace_count": true,
+        "write_trace_sha256": true,
+        "register_map_sha256": true,
+        "sccb_tx_prefix": true
+      },
+      "result": "PASS",
+      "writes_before": 2,
+      "writes_after": 2
+    },
+    {
+      "case": "组件写表故障保留IO",
+      "checks": {
+        "write_trace_count": true,
+        "write_trace_sha256": true,
+        "register_map_sha256": true,
+        "sccb_tx_prefix": true
+      },
+      "result": "PASS",
+      "writes_before": 253,
+      "writes_after": 253
+    },
+    {
+      "case": "关键寄存器回读NACK",
+      "checks": {
+        "write_trace_count": true,
+        "write_trace_sha256": true,
+        "register_map_sha256": true,
+        "sccb_tx_prefix": true
+      },
+      "result": "PASS",
+      "writes_before": 272,
+      "writes_after": 272
+    },
+    {
+      "case": "配置失败后重试",
+      "checks": {
+        "write_trace_count": true,
+        "write_trace_sha256": true,
+        "register_map_sha256": true,
+        "sccb_tx_prefix": true
+      },
+      "result": "PASS",
+      "writes_before": 797,
+      "writes_after": 797
+    },
+    {
+      "case": "主循环不重复配置，显式App_Init重新配置",
+      "checks": {
+        "write_trace_count": true,
+        "write_trace_sha256": true,
+        "register_map_sha256": true,
+        "sccb_tx_prefix": true
+      },
+      "result": "PASS",
+      "writes_before": 544,
+      "writes_after": 544
+    },
+    {
+      "case": "Device参数和状态检查",
+      "checks": {
+        "write_trace_count": true,
+        "write_trace_sha256": true,
+        "register_map_sha256": true,
+        "sccb_tx_prefix": true
+      },
+      "result": "PASS",
+      "writes_before": 0,
+      "writes_after": 0
+    },
+    {
+      "case": "PLL错误阻止初始化",
+      "checks": {
+        "write_trace_count": true,
+        "write_trace_sha256": true,
+        "register_map_sha256": true,
+        "sccb_tx_prefix": true
+      },
+      "result": "PASS",
+      "writes_before": 0,
+      "writes_after": 0
+    },
+    {
+      "case": "DWT停止阻止初始化",
+      "checks": {
+        "write_trace_count": true,
+        "write_trace_sha256": true,
+        "register_map_sha256": true,
+        "sccb_tx_prefix": true
+      },
+      "result": "PASS",
+      "writes_before": 0,
+      "writes_after": 0
+    },
+    {
+      "case": "SCCB读地址NACK",
+      "checks": {
+        "write_trace_count": true,
+        "write_trace_sha256": true,
+        "register_map_sha256": true,
+        "sccb_tx_prefix": true
+      },
+      "result": "PASS",
+      "writes_before": 0,
+      "writes_after": 0
+    },
+    {
+      "case": "DWT回绕仍能完整配置",
+      "checks": {
+        "write_trace_count": true,
+        "write_trace_sha256": true,
+        "register_map_sha256": true,
+        "sccb_tx_prefix": true
+      },
+      "result": "PASS",
+      "writes_before": 544,
+      "writes_after": 544
+    },
+    {
+      "case": "应用缺少摄像头设备",
+      "checks": {
+        "write_trace_count": true,
+        "write_trace_sha256": true,
+        "register_map_sha256": true,
+        "sccb_tx_prefix": true
+      },
+      "result": "PASS",
+      "writes_before": 0,
+      "writes_after": 0
+    },
+    {
+      "case": "应用Ops缺失及恢复",
+      "checks": {
+        "write_trace_count": true,
+        "write_trace_sha256": true,
+        "register_map_sha256": true,
+        "sccb_tx_prefix": true
+      },
+      "result": "PASS",
+      "writes_before": 272,
+      "writes_after": 272
+    },
+    {
+      "case": "应用配置函数缺失及恢复",
+      "checks": {
+        "write_trace_count": true,
+        "write_trace_sha256": true,
+        "register_map_sha256": true,
+        "sccb_tx_prefix": true
+      },
+      "result": "PASS",
+      "writes_before": 272,
+      "writes_after": 272
+    }
+  ]
+}

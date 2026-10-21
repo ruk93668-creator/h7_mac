@@ -1,0 +1,151 @@
+[
+  {
+    "file": "CM7/Device/Src/ov5640_device.c",
+    "internal_functions": [
+      "Ov5640_MapPixelFormat",
+      "Ov5640_Init",
+      "Ov5640_ReadId",
+      "Ov5640_BusInit",
+      "Ov5640_BusTransfer",
+      "Ov5640_BusWrite",
+      "Ov5640_BusRead",
+      "Ov5640_GetTick",
+      "Ov5640_Configure"
+    ],
+    "declarations": 9,
+    "all_function_bodies_identical": true,
+    "before_sha256": "2dfc5693861b4d08c56d12da27e81807390871fac09ce389c17c8bc9d6a1ad6e",
+    "after_sha256": "20630139484a2aea68b7861c07d7ef4f7f1f8e2330cb44ac2769d258a26df18e"
+  },
+  {
+    "file": "CM7/Media/Src/camera_capture.c",
+    "internal_functions": [
+      "CameraCapture_CalcSize",
+      "CameraStream_Init",
+      "CameraStream_FindReplaceable"
+    ],
+    "declarations": 4,
+    "all_function_bodies_identical": true,
+    "before_sha256": "a4c9d6f41ce1b8477420c1438fae00a2bbcf697dc57704efd56fcacdb2b93a43",
+    "after_sha256": "80f0e4b87b926021d082f6ae4fc4ed4c7016658ab06fbdf5ac9f77fccb55a882"
+  },
+  {
+    "file": "CM7/BSP/bsp_camera.c",
+    "internal_functions": [
+      "Camera_DelayUs",
+      "Camera_Sda",
+      "Camera_Scl",
+      "Camera_Start",
+      "Camera_Stop",
+      "Camera_WriteByte",
+      "Camera_ReadByte"
+    ],
+    "declarations": 7,
+    "all_function_bodies_identical": true,
+    "before_sha256": "346e72e1f30a254c29a4597c54b825a5ef8d253f23762dad265757e332051bd9",
+    "after_sha256": "5db686df2cd0e2b7b557a85dc343c37ef121ad5224ea2f1370737b6044ce5a62"
+  },
+  {
+    "file": "CM7/BSP/bsp_dcmi.c",
+    "internal_functions": [
+      "Dcmi_ConfigPin",
+      "Dcmi_HalResult",
+      "Dcmi_RecordError",
+      "Dcmi_CheckErrors",
+      "Dcmi_ClearPending",
+      "Dcmi_WaitStopped",
+      "Dcmi_RecoverHal"
+    ],
+    "declarations": 7,
+    "all_function_bodies_identical": true,
+    "before_sha256": "7ef2eee1b0f621b2ef6fcd6a479e0bc2f631cae8648171081d73f80e8c856d91",
+    "after_sha256": "63bd386ab51c37f51224bfcc3044c6d9339e75a15ca333fb63ac1b16319670e4"
+  },
+  {
+    "file": "CM7/BSP/bsp_sdram.c",
+    "internal_functions": [
+      "Sdram_ConfigClock",
+      "Sdram_SendCommand",
+      "Sdram_Init"
+    ],
+    "declarations": 3,
+    "all_function_bodies_identical": true,
+    "before_sha256": "71033614a4fe68273ffdd7337dc0328ad2fae2afd7889c489cb5ff10c245bc63",
+    "after_sha256": "82e8d0dd061e4803c0ebd9334c50b141d0f89c27d11effc449996babd2ca5984"
+  },
+  {
+    "file": "CM4/Application/app_oled.c",
+    "internal_functions": [
+      "App_OledRefresh"
+    ],
+    "declarations": 1,
+    "all_function_bodies_identical": true,
+    "before_sha256": "c870b35de3a23f24ebc33081a494b42d4f6e987f6259d248f1ed7668c6bd60ea",
+    "after_sha256": "bfedf8a2cf140f2dbe3c0607886a888569302b90227e0e580005a531dd79b09f"
+  },
+  {
+    "file": "CM4/Device/Src/oled_device.c",
+    "internal_functions": [
+      "Oled_Init",
+      "Oled_ClearImpl",
+      "Oled_DrawPixelImpl",
+      "Oled_RefreshImpl",
+      "Oled_ProcessImpl",
+      "Oled_WriteCommand"
+    ],
+    "declarations": 6,
+    "all_function_bodies_identical": true,
+    "before_sha256": "269ea75045e5f2f206644ddb2ffe5090cf9b0e225e9db7da054203d8405b411e",
+    "after_sha256": "eb33ed4c6a1ff279ececb2d116365960247c1d0036189e36682ad7ec741aef0b"
+  },
+  {
+    "file": "CM4/BSP/bsp_iic.c",
+    "internal_functions": [
+      "BSP_IIC_MapStatus",
+      "BSP_IIC_Init"
+    ],
+    "declarations": 2,
+    "all_function_bodies_identical": true,
+    "before_sha256": "2ea8975d737e5348cd7c66f71a2f3ab1e7f38a0b39824026678ce0984ab02e81",
+    "after_sha256": "b62e36063eb80b4af21990618f44e6772604de19682b0bb4d8c49daeb7e83a70"
+  },
+  {
+    "file": "CM4/Framework/framework_init.c",
+    "internal_functions": [
+      "Framework_InitLevel"
+    ],
+    "declarations": 1,
+    "all_function_bodies_identical": true,
+    "before_sha256": "ae5990eff9f7ccbe1b70f9296e166f2fc5caede69eee0c7a6268d70b7ae9feed",
+    "after_sha256": "d410e058ea8dcbce1d2afc298eb760c22e4b8914ef1d4569e4430a15176824b1"
+  },
+  {
+    "file": "CM4/Framework/framework_timer.c",
+    "internal_functions": [
+      "Timer_HeapSwap",
+      "Timer_HeapSiftUp",
+      "Timer_HeapSiftDown",
+      "Timer_HeapRemove",
+      "Timer_HandleEncode",
+      "Timer_HandleGetIndex",
+      "Timer_HandleGetGeneration",
+      "Timer_HandleValidate",
+      "Timer_DeadlineEarlier",
+      "Timer_DeadlineReached"
+    ],
+    "declarations": 10,
+    "all_function_bodies_identical": true,
+    "before_sha256": "21613657f723bc89efb9ae0a7509da8cdbf2e7cb14b17418385e3704734d94e9",
+    "after_sha256": "4508c6148055ba6141bb996c95d50abf00adc7e406889c0e612e087496fdff41"
+  },
+  {
+    "file": "CM4/Service/ipc_service.c",
+    "internal_functions": [
+      "IPC_Service_Init"
+    ],
+    "declarations": 1,
+    "all_function_bodies_identical": true,
+    "before_sha256": "0acb3f860490faa023fd7adc982738122d7f88372299b74b66215d45bb53109b",
+    "after_sha256": "51bb44f102f403d15b385184b1677bd410cd88c2b44fc7a21f51c1392f0c91a5"
+  }
+]

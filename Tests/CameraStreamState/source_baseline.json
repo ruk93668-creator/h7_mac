@@ -1,0 +1,7 @@
+{
+  "CM7/Media/Src/camera_capture.c": "0f5daf5d59a11d0dcfb7885342f2a84c11c73e6aa961870a6ad765526535b6b8",
+  "CM7/Media/Inc/camera_capture.h": "34c21677685b0e25262c0f716fe658e42f935c0a43c9fa96cdc882980ca1dbfc",
+  "CM7/BSP/bsp_dcmi.h": "8c96a1052f60a9a4298ed705784ef271f60871e08007aa7f4100d3bb565b7ffc",
+  "Common/Inc/camera_config.h": "db87c849127aee85c2898d0ebc6bfb266aa950ca7e2cacc15be56cc25a4c4480",
+  "Common/Inc/sys_result.h": "c918262915a7389bd3d4014dacbb8bf9ef5d28b456b3c65b956c0970a5bad30b"
+}

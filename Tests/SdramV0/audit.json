@@ -1,0 +1,25 @@
+{
+  "changed_existing_files": [
+    "CM7\\Core\\Src\\main.c",
+    "MDK-ARM\\h7_mac.uvprojx"
+  ],
+  "main_changes_inside_user_sections": true,
+  "dual_boot_unchanged": true,
+  "targets": {
+    "h7_mac_CM4": {
+      "CM7\\BSP": "0",
+      "CM7\\Diagnostics": "0"
+    },
+    "h7_mac_CM7": {
+      "CM7\\BSP": null,
+      "CM7\\Diagnostics": null
+    }
+  },
+  "new_files": [
+    "CM7/BSP/bsp_sdram.c",
+    "CM7/BSP/bsp_sdram.h",
+    "CM7/BSP/bsp_sdram_hal_config.h",
+    "CM7/Diagnostics/sdram_check.c",
+    "CM7/Diagnostics/sdram_check.h"
+  ]
+}

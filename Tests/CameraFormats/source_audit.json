@@ -1,0 +1,30 @@
+{
+  "protected_count": 1529,
+  "protected_changed": [],
+  "changed_files": [
+    {
+      "path": "CM7/Application/app_camera.c",
+      "sha256": "2ff78ce0e26aaef75fe2f39c80b5c397f2b54b24c901d7afe8300e6e785faf5c"
+    },
+    {
+      "path": "CM7/Application/app_camera.h",
+      "sha256": "2d907d95e35c253483f5f27607a3cb29c13ac5e1da7fc1966b27a7b07393f697"
+    },
+    {
+      "path": "CM7/Device/Inc/ov5640_device.h",
+      "sha256": "883b99eac5b2eccc6c0dd8bac0444468e9fdb6d24b8218c821ef98e423eb262b"
+    },
+    {
+      "path": "CM7/Device/Src/ov5640_device.c",
+      "sha256": "2dfc5693861b4d08c56d12da27e81807390871fac09ce389c17c8bc9d6a1ad6e"
+    },
+    {
+      "path": "CM7/Media/Src/camera_capture.c",
+      "sha256": "bc094974de95ba7a37983034820eef2d58e5bbfc7b6d87000e1672721cf58343"
+    },
+    {
+      "path": "Common/Inc/camera_config.h",
+      "sha256": "db87c849127aee85c2898d0ebc6bfb266aa950ca7e2cacc15be56cc25a4c4480"
+    }
+  ]
+}

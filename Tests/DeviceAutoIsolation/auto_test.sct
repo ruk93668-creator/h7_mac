@@ -1,0 +1,19 @@
+LR_TEST 0x08100000 0x00100000
+{
+    ER_DEVICE_EXPORT 0x08100000
+    {
+        *(.device_export)
+    }
+    ER_FW_INIT +0
+    {
+        *(.framework_init)
+    }
+    ER_TEST +0
+    {
+        .ANY (+RO)
+    }
+    RW_TEST 0x10000000 0x00048000
+    {
+        .ANY (+RW +ZI)
+    }
+}

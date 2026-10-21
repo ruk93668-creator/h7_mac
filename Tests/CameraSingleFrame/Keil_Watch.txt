@@ -1,0 +1,17 @@
+g_camera_check
+init_error
+g_camera_check.finished
+g_camera_check.success
+g_camera_check.start_result
+g_camera_check.capture_result
+g_camera_check.stop_result
+g_camera_check.frame_result
+g_camera_check.release_result
+g_camera_check.frame_address
+g_camera_check.size_bytes
+g_camera_check.sampled_bytes
+g_camera_check.pixel_min
+g_camera_check.pixel_max
+g_camera_check.pixel_sum
+g_camera_check.crc32
+g_camera_check.attempted_steps

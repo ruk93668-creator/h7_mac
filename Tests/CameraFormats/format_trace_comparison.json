@@ -1,0 +1,40 @@
+[
+  {
+    "case": "开机配置、帧长、完成交付及无热切换 / Y8",
+    "differences": [],
+    "trace_count": 272,
+    "sha256": "a3579d2ee07bb8ea8d55a48a364329c6a7c21768554daefa77fecba538f04c83"
+  },
+  {
+    "case": "开机配置、帧长、完成交付及无热切换 / RGB565",
+    "differences": [
+      {
+        "position": 260,
+        "register": "0x4300",
+        "y8": "0x10",
+        "actual": "0x6f"
+      },
+      {
+        "position": 261,
+        "register": "0x501f",
+        "y8": "0x0",
+        "actual": "0x1"
+      }
+    ],
+    "trace_count": 272,
+    "sha256": "c774fc123f7fa13964d2c1daecd81cb0081784c210017e96ceb1716227e11966"
+  },
+  {
+    "case": "开机配置、帧长、完成交付及无热切换 / YUV422",
+    "differences": [
+      {
+        "position": 260,
+        "register": "0x4300",
+        "y8": "0x10",
+        "actual": "0x30"
+      }
+    ],
+    "trace_count": 272,
+    "sha256": "29685153104ddae38e669ab2ba0782c7abc2e15fb8f26cf83bc015eb8f184b7c"
+  }
+]

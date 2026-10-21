@@ -1,0 +1,21 @@
+D:/32/ARM/ARMCC/Bin/armcc.exe --vsn
+Product: MDK Plus 5.32
+Component: ARM Compiler 5.06 update 7 (build 960)
+Tool: armcc [4d365d]
+For support see http://www.arm.com/support
+Software supplied by: ARM Limited
+D:/32/ARM/ARMCC/Bin/armcc.exe --cpu Cortex-M4 --c99 -O0 -I D:\32\STM32H7\h7_mac\CM4\Device\Inc -I D:\32\STM32H7\h7_mac\CM4\BSP -I D:\32\STM32H7\h7_mac\Common\Inc -I D:\32\STM32H7\h7_mac\Board\Inc -I D:\32\STM32H7\h7_mac\CM4\Application -I D:\32\STM32H7\h7_mac\CM4\Framework -I D:\32\STM32H7\h7_mac\CM4\Platform -c D:\32\STM32H7\h7_mac\Tests\Ov5640Migration\cm4_app_test.c -o D:\32\STM32H7\h7_mac\Tests\Ov5640Migration\cm4_app_test.o
+D:/32/ARM/ARMCC/Bin/armlink.exe D:\32\STM32H7\h7_mac\Tests\Ov5640Migration\cm4_app_test.o --entry App_TestRun --scatter D:\32\STM32H7\h7_mac\Tests\Ov5640Migration\test.sct --keep=*(.framework_init) --keep=*(.device_export) --no_scanlib -o D:\32\STM32H7\h7_mac\Tests\Ov5640Migration\cm4_app_test.axf
+01 PASS: 当前CM4初始化和清屏: 事务0笔；Timer池/堆=1/1；刷新/轮询结果=0/0；断言523项; fail_line=0; error=None
+02 PASS: 重复初始化: 事务0笔；Timer池/堆=1/1；刷新/轮询结果=0/0；断言14项; fail_line=0; error=None
+03 PASS: 初始化前运行: 事务0笔；Timer池/堆=0/0；刷新/轮询结果=0/0；断言3项; fail_line=0; error=None
+04 PASS: 100ms边界: 事务16笔；Timer池/堆=1/1；刷新/轮询结果=0/0；断言1151项; fail_line=0; error=None
+05 PASS: 忙时跳过: 事务9笔；Timer池/堆=1/1；刷新/轮询结果=0/0；断言587项; fail_line=0; error=None
+06 PASS: 错误记录: 事务2笔；Timer池/堆=1/1；刷新/轮询结果=-9/-9；断言17项; fail_line=0; error=None
+07 PASS: Timer池满: 事务0笔；Timer池/堆=16/0；刷新/轮询结果=0/0；断言20项; fail_line=0; error=None
+08 PASS: 设备未READY: 事务0笔；Timer池/堆=1/1；刷新/轮询结果=0/0；断言5项; fail_line=0; error=None
+09 PASS: 设备不存在: 事务0笔；Timer池/堆=0/0；刷新/轮询结果=0/0；断言2项; fail_line=0; error=None
+10 PASS: Ops缺失: 事务0笔；Timer池/堆=0/0；刷新/轮询结果=0/0；断言3项; fail_line=0; error=None
+11 PASS: 连续两帧横线字节: 事务16笔；Timer池/堆=1/1；刷新/轮询结果=0/0；断言1151项; fail_line=0; error=None
+12 PASS: App_Run持续轮询: 事务2笔；Timer池/堆=1/1；刷新/轮询结果=0/0；断言17项; fail_line=0; error=None
+TOTAL {'total': 12, 'passed': 12, 'failed': 0, 'assertions': 3493}

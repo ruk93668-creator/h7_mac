@@ -1,0 +1,57 @@
+{
+  "hashed_formal_files": 1239,
+  "changed_files": [],
+  "scope": "CM4/CM7/Common/Board/Drivers sources, MDK sources/scatters/uvprojx and h7_mac.ioc; generated build output excluded",
+  "cm4_strong_definitions": {
+    "I2C2_EV_IRQHandler": [
+      "CM4\\BSP\\bsp_iic.c"
+    ],
+    "I2C2_ER_IRQHandler": [
+      "CM4\\BSP\\bsp_iic.c"
+    ],
+    "HAL_I2C_MasterTxCpltCallback": [
+      "CM4\\BSP\\bsp_iic.c"
+    ],
+    "HAL_I2C_AbortCpltCallback": [
+      "CM4\\BSP\\bsp_iic.c"
+    ],
+    "HAL_I2C_ErrorCallback": [
+      "CM4\\BSP\\bsp_iic.c"
+    ]
+  },
+  "vectors": {
+    "I2C2_EV_IRQHandler": {
+      "external_irq": 33,
+      "vector_index": 49,
+      "vector": "0x8103b7d",
+      "binding": "STB_GLOBAL"
+    },
+    "I2C2_ER_IRQHandler": {
+      "external_irq": 34,
+      "vector_index": 50,
+      "vector": "0x8103b6d",
+      "binding": "STB_GLOBAL"
+    }
+  },
+  "callbacks_in_formal_axf": {
+    "HAL_I2C_MasterTxCpltCallback": "not retained (unreferenced async path)",
+    "HAL_I2C_AbortCpltCallback": "STB_GLOBAL",
+    "HAL_I2C_ErrorCallback": "STB_GLOBAL"
+  },
+  "async_apis_in_formal_axf": {
+    "BSP_IIC_WriteAsync": false,
+    "BSP_IIC_TakeResult": false
+  },
+  "hi2c2_binding": "STB_LOCAL",
+  "initcall": {
+    "level": 1,
+    "address": "0x8105120",
+    "function": "0x810056d"
+  },
+  "callbacks_in_bsp_object": {
+    "HAL_I2C_MasterTxCpltCallback": "STB_GLOBAL",
+    "HAL_I2C_AbortCpltCallback": "STB_GLOBAL",
+    "HAL_I2C_ErrorCallback": "STB_GLOBAL"
+  },
+  "result": "PASS"
+}

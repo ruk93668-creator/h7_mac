@@ -1,0 +1,53 @@
+{
+  "changed_protected_files": [],
+  "component_identical_to_old": {
+    "ov5640.c": true,
+    "ov5640_reg.c": true,
+    "ov5640.h": true,
+    "ov5640_reg.h": true
+  },
+  "groups": {
+    "h7_mac_CM4": {
+      "CM7\\Application": {
+        "include": "0",
+        "files": [
+          "app_main.c",
+          "app_camera.c",
+          "app_camera.h"
+        ]
+      },
+      "CM7\\Device": {
+        "include": "0",
+        "files": [
+          "device.c",
+          "device.h",
+          "ov5640_device.c",
+          "ov5640_device.h",
+          "ov5640.c",
+          "ov5640_reg.c"
+        ]
+      }
+    },
+    "h7_mac_CM7": {
+      "CM7\\Application": {
+        "include": null,
+        "files": [
+          "app_main.c",
+          "app_camera.c",
+          "app_camera.h"
+        ]
+      },
+      "CM7\\Device": {
+        "include": null,
+        "files": [
+          "device.c",
+          "device.h",
+          "ov5640_device.c",
+          "ov5640_device.h",
+          "ov5640.c",
+          "ov5640_reg.c"
+        ]
+      }
+    }
+  }
+}

@@ -1,0 +1,21 @@
+01 Pass: 成功配置、硬件顺序及重复Init; result=0; fail_line=0
+02 Pass: 错误内核频率拒绝初始化; result=-4; fail_line=0
+03 Pass: RCC ERROR→IO及失败后重试; result=-9; fail_line=0
+04 Pass: RCC BUSY→BUSY及失败后重试; result=-5; fail_line=0
+05 Pass: RCC TIMEOUT→TIMEOUT及失败后重试; result=-8; fail_line=0
+06 Pass: HAL_I2C_Init ERROR→IO及失败后重试; result=-9; fail_line=0
+07 Pass: HAL_I2C_Init BUSY→BUSY及失败后重试; result=-5; fail_line=0
+08 Pass: HAL_I2C_Init TIMEOUT→TIMEOUT及失败后重试; result=-8; fail_line=0
+09 Pass: 模拟滤波 ERROR→IO及失败后重试; result=-9; fail_line=0
+10 Pass: 模拟滤波 BUSY→BUSY及失败后重试; result=-5; fail_line=0
+11 Pass: 模拟滤波 TIMEOUT→TIMEOUT及失败后重试; result=-8; fail_line=0
+12 Pass: 数字滤波 ERROR→IO及失败后重试; result=-9; fail_line=0
+13 Pass: 数字滤波 BUSY→BUSY及失败后重试; result=-5; fail_line=0
+14 Pass: 数字滤波 TIMEOUT→TIMEOUT及失败后重试; result=-8; fail_line=0
+15 Pass: 初始化重入返回BUSY; result=0; fail_line=0
+16 Pass: MSP忽略NULL和非I2C2; result=0; fail_line=0
+17 Pass: 成功后频率变化拒绝复用Timing; result=0; fail_line=0
+18 Pass: MSP DeInit释放管脚和I2C2时钟; result=0; fail_line=0
+19 Pass: BUS注册项; result=0; fail_line=0
+20 Pass: BUS成功后才执行DEVICE; result=0; fail_line=0
+21 Pass: BUS失败中止DEVICE; result=-9; fail_line=0

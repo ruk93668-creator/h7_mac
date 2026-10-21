@@ -1,0 +1,44 @@
+{
+  "unique_total": 152,
+  "passed": 152,
+  "failed": 0,
+  "assertions": 12227,
+  "groups": {
+    "camera": {
+      "total": 54,
+      "passed": 54,
+      "failed": 0,
+      "assertions": 595
+    },
+    "dcmi": {
+      "total": 46,
+      "passed": 46,
+      "failed": 0,
+      "assertions": 6425
+    },
+    "dcmi_init": {
+      "total": 20,
+      "passed": 20,
+      "failed": 0,
+      "assertions": 1183
+    },
+    "sdram": {
+      "total": 20,
+      "passed": 20,
+      "failed": 0,
+      "assertions": 531
+    },
+    "oled": {
+      "total": 12,
+      "passed": 12,
+      "failed": 0,
+      "assertions": 3493
+    },
+    "existing_camera": {
+      "total": 42,
+      "passed": 42,
+      "failed": 0,
+      "assertions": 464
+    }
+  }
+}

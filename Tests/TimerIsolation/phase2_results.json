@@ -1,0 +1,543 @@
+{
+  "scope": "CM7 actual source; ARMCC 5.06; Unicorn ARM Thumb M-class; controlled mock tick; no STM32 peripherals",
+  "framework_sha256": "21613657f723bc89efb9ae0a7509da8cdbf2e7cb14b17418385e3704734d94e9",
+  "project_sources_unchanged": true,
+  "results": [
+    {
+      "case_id": 0,
+      "name": "One-Shot order",
+      "input": "A=300, B=100, C=200 ms; start at 0",
+      "expected": "B@100, C@200, A@300; no later repeats",
+      "actual": "2@100, 3@200, 1@300; pool/heap=3/0; invariants=18",
+      "result": "Pass",
+      "callbacks": [
+        {
+          "id": 2,
+          "tick": 100
+        },
+        {
+          "id": 3,
+          "tick": 200
+        },
+        {
+          "id": 1,
+          "tick": 300
+        }
+      ],
+      "state": {
+        "failure_line": 0,
+        "invariant_checks": 18,
+        "callback_count": 3,
+        "callback_order": 231,
+        "pool_count": 3,
+        "heap_size": 0,
+        "old_handle": 0,
+        "new_handle": 0,
+        "action_result": 0,
+        "first_callback_tick": 100
+      }
+    },
+    {
+      "case_id": 1,
+      "name": "Delete root",
+      "input": "Periods 700,100,600,200,500,300,400; delete heap[0] at 50",
+      "expected": "Remaining callbacks sorted by deadline; pool/heap 6/0 at finish",
+      "actual": "4@200, 6@300, 7@400, 5@500, 3@600, 1@700; pool/heap=6/0; invariants=30",
+      "result": "Pass",
+      "callbacks": [
+        {
+          "id": 4,
+          "tick": 200
+        },
+        {
+          "id": 6,
+          "tick": 300
+        },
+        {
+          "id": 7,
+          "tick": 400
+        },
+        {
+          "id": 5,
+          "tick": 500
+        },
+        {
+          "id": 3,
+          "tick": 600
+        },
+        {
+          "id": 1,
+          "tick": 700
+        }
+      ],
+      "state": {
+        "failure_line": 0,
+        "invariant_checks": 30,
+        "callback_count": 6,
+        "callback_order": 467531,
+        "pool_count": 6,
+        "heap_size": 0,
+        "old_handle": 0,
+        "new_handle": 0,
+        "action_result": 0,
+        "first_callback_tick": 200
+      }
+    },
+    {
+      "case_id": 2,
+      "name": "Delete middle",
+      "input": "Same seven timers; delete heap[2] at 50",
+      "expected": "Remaining callbacks sorted by deadline; pool/heap 6/0 at finish",
+      "actual": "2@100, 4@200, 7@400, 5@500, 3@600, 1@700; pool/heap=6/0; invariants=30",
+      "result": "Pass",
+      "callbacks": [
+        {
+          "id": 2,
+          "tick": 100
+        },
+        {
+          "id": 4,
+          "tick": 200
+        },
+        {
+          "id": 7,
+          "tick": 400
+        },
+        {
+          "id": 5,
+          "tick": 500
+        },
+        {
+          "id": 3,
+          "tick": 600
+        },
+        {
+          "id": 1,
+          "tick": 700
+        }
+      ],
+      "state": {
+        "failure_line": 0,
+        "invariant_checks": 30,
+        "callback_count": 6,
+        "callback_order": 247531,
+        "pool_count": 6,
+        "heap_size": 0,
+        "old_handle": 0,
+        "new_handle": 0,
+        "action_result": 0,
+        "first_callback_tick": 100
+      }
+    },
+    {
+      "case_id": 3,
+      "name": "Delete tail",
+      "input": "Same seven timers; delete heap[size-1] at 50",
+      "expected": "Remaining callbacks sorted by deadline; pool/heap 6/0 at finish",
+      "actual": "2@100, 4@200, 6@300, 5@500, 3@600, 1@700; pool/heap=6/0; invariants=30",
+      "result": "Pass",
+      "callbacks": [
+        {
+          "id": 2,
+          "tick": 100
+        },
+        {
+          "id": 4,
+          "tick": 200
+        },
+        {
+          "id": 6,
+          "tick": 300
+        },
+        {
+          "id": 5,
+          "tick": 500
+        },
+        {
+          "id": 3,
+          "tick": 600
+        },
+        {
+          "id": 1,
+          "tick": 700
+        }
+      ],
+      "state": {
+        "failure_line": 0,
+        "invariant_checks": 30,
+        "callback_count": 6,
+        "callback_order": 246531,
+        "pool_count": 6,
+        "heap_size": 0,
+        "old_handle": 0,
+        "new_handle": 0,
+        "action_result": 0,
+        "first_callback_tick": 100
+      }
+    },
+    {
+      "case_id": 4,
+      "name": "Active repeated Start",
+      "input": "A=100,B=150; restart A at each tick 1..50",
+      "expected": "Heap stays 2; no callback before 150; exactly two at 150",
+      "actual": "1@150, 2@150; pool/heap=2/0; invariants=62",
+      "result": "Pass",
+      "callbacks": [
+        {
+          "id": 1,
+          "tick": 150
+        },
+        {
+          "id": 2,
+          "tick": 150
+        }
+      ],
+      "state": {
+        "failure_line": 0,
+        "invariant_checks": 62,
+        "callback_count": 2,
+        "callback_order": 12,
+        "pool_count": 2,
+        "heap_size": 0,
+        "old_handle": 0,
+        "new_handle": 0,
+        "action_result": 0,
+        "first_callback_tick": 150
+      }
+    },
+    {
+      "case_id": 5,
+      "name": "One-Shot callback Stop",
+      "input": "A=100,B=150; A callback stops itself",
+      "expected": "A once at 100, B once at 150; heap=0, pool=2",
+      "actual": "1@100, 2@150; pool/heap=2/0; invariants=14",
+      "result": "Pass",
+      "callbacks": [
+        {
+          "id": 1,
+          "tick": 100
+        },
+        {
+          "id": 2,
+          "tick": 150
+        }
+      ],
+      "state": {
+        "failure_line": 0,
+        "invariant_checks": 14,
+        "callback_count": 2,
+        "callback_order": 12,
+        "pool_count": 2,
+        "heap_size": 0,
+        "old_handle": 0,
+        "new_handle": 0,
+        "action_result": 0,
+        "first_callback_tick": 100
+      }
+    },
+    {
+      "case_id": 6,
+      "name": "One-Shot callback Start",
+      "input": "A=100,B=150; first A callback restarts itself",
+      "expected": "A@100,B@150,A@200; heap=0, pool=2",
+      "actual": "1@100, 2@150, 1@200; pool/heap=2/0; invariants=15",
+      "result": "Pass",
+      "callbacks": [
+        {
+          "id": 1,
+          "tick": 100
+        },
+        {
+          "id": 2,
+          "tick": 150
+        },
+        {
+          "id": 1,
+          "tick": 200
+        }
+      ],
+      "state": {
+        "failure_line": 0,
+        "invariant_checks": 15,
+        "callback_count": 3,
+        "callback_order": 121,
+        "pool_count": 2,
+        "heap_size": 0,
+        "old_handle": 0,
+        "new_handle": 0,
+        "action_result": 0,
+        "first_callback_tick": 100
+      }
+    },
+    {
+      "case_id": 7,
+      "name": "One-Shot callback Delete",
+      "input": "A=100,B=150; A callback deletes itself",
+      "expected": "A@100,B@150; old handle rejected; heap=0, pool=1",
+      "actual": "1@100, 2@150; pool/heap=1/0; invariants=14",
+      "result": "Pass",
+      "callbacks": [
+        {
+          "id": 1,
+          "tick": 100
+        },
+        {
+          "id": 2,
+          "tick": 150
+        }
+      ],
+      "state": {
+        "failure_line": 0,
+        "invariant_checks": 14,
+        "callback_count": 2,
+        "callback_order": 12,
+        "pool_count": 1,
+        "heap_size": 0,
+        "old_handle": 0,
+        "new_handle": 0,
+        "action_result": 0,
+        "first_callback_tick": 100
+      }
+    },
+    {
+      "case_id": 8,
+      "name": "Periodic callback Stop",
+      "input": "A periodic=100,B one-shot=150; A callback stops itself",
+      "expected": "A@100,B@150; heap=0, pool=2",
+      "actual": "1@100, 2@150; pool/heap=2/0; invariants=14",
+      "result": "Pass",
+      "callbacks": [
+        {
+          "id": 1,
+          "tick": 100
+        },
+        {
+          "id": 2,
+          "tick": 150
+        }
+      ],
+      "state": {
+        "failure_line": 0,
+        "invariant_checks": 14,
+        "callback_count": 2,
+        "callback_order": 12,
+        "pool_count": 2,
+        "heap_size": 0,
+        "old_handle": 0,
+        "new_handle": 0,
+        "action_result": 0,
+        "first_callback_tick": 100
+      }
+    },
+    {
+      "case_id": 9,
+      "name": "Periodic callback Start",
+      "input": "A periodic=100,B one-shot=150; first A callback restarts itself",
+      "expected": "A@100,B@150,A@200; one active A; heap=1, pool=2",
+      "actual": "1@100, 2@150, 1@200; pool/heap=2/1; invariants=15",
+      "result": "Pass",
+      "callbacks": [
+        {
+          "id": 1,
+          "tick": 100
+        },
+        {
+          "id": 2,
+          "tick": 150
+        },
+        {
+          "id": 1,
+          "tick": 200
+        }
+      ],
+      "state": {
+        "failure_line": 0,
+        "invariant_checks": 15,
+        "callback_count": 3,
+        "callback_order": 121,
+        "pool_count": 2,
+        "heap_size": 1,
+        "old_handle": 0,
+        "new_handle": 0,
+        "action_result": 0,
+        "first_callback_tick": 100
+      }
+    },
+    {
+      "case_id": 10,
+      "name": "Periodic callback Delete",
+      "input": "A periodic=100,B one-shot=150; A callback deletes itself",
+      "expected": "A@100,B@150; old handle rejected; heap=0, pool=1",
+      "actual": "1@100, 2@150; pool/heap=1/0; invariants=14",
+      "result": "Pass",
+      "callbacks": [
+        {
+          "id": 1,
+          "tick": 100
+        },
+        {
+          "id": 2,
+          "tick": 150
+        }
+      ],
+      "state": {
+        "failure_line": 0,
+        "invariant_checks": 14,
+        "callback_count": 2,
+        "callback_order": 12,
+        "pool_count": 1,
+        "heap_size": 0,
+        "old_handle": 0,
+        "new_handle": 0,
+        "action_result": 0,
+        "first_callback_tick": 100
+      }
+    },
+    {
+      "case_id": 11,
+      "name": "Generation stale handle",
+      "input": "Create/start/delete A; recreate B in same slot; use old handle",
+      "expected": "Generation 1->2; old Start/Stop/Delete rejected; new B@200",
+      "actual": "2@200; pool/heap=1/0; invariants=13; handle 0x00000100->0x00000200",
+      "result": "Pass",
+      "callbacks": [
+        {
+          "id": 2,
+          "tick": 200
+        }
+      ],
+      "state": {
+        "failure_line": 0,
+        "invariant_checks": 13,
+        "callback_count": 1,
+        "callback_order": 2,
+        "pool_count": 1,
+        "heap_size": 0,
+        "old_handle": 256,
+        "new_handle": 512,
+        "action_result": 0,
+        "first_callback_tick": 200
+      }
+    },
+    {
+      "case_id": 12,
+      "name": "Tick rollover",
+      "input": "Start at 0xFFFFFF80; A=300,B=100,C=200",
+      "expected": "B@FFFFFFE4,C@00000048,A@000000AC; no early callbacks",
+      "actual": "2@4294967268, 3@72, 1@172; pool/heap=3/0; invariants=19",
+      "result": "Pass",
+      "callbacks": [
+        {
+          "id": 2,
+          "tick": 4294967268
+        },
+        {
+          "id": 3,
+          "tick": 72
+        },
+        {
+          "id": 1,
+          "tick": 172
+        }
+      ],
+      "state": {
+        "failure_line": 0,
+        "invariant_checks": 19,
+        "callback_count": 3,
+        "callback_order": 231,
+        "pool_count": 3,
+        "heap_size": 0,
+        "old_handle": 0,
+        "new_handle": 0,
+        "action_result": 0,
+        "first_callback_tick": 4294967268
+      }
+    },
+    {
+      "case_id": 13,
+      "name": "Capacity and lifecycle",
+      "input": "Create/start 16; stop evens; delete odds; refill; expire all; delete all",
+      "expected": "17th create rejected; counts 16/0->16/16->16/8->8/0->16/16->16/0->0/0",
+      "actual": "1@100, 2@101, 3@102, 4@103, 5@104, 6@105, 7@106, 8@107, 9@108, 10@109, 11@110, 12@111, 13@112, 14@113, 15@114, 16@115; pool/heap=0/0; invariants=123",
+      "result": "Pass",
+      "callbacks": [
+        {
+          "id": 1,
+          "tick": 100
+        },
+        {
+          "id": 2,
+          "tick": 101
+        },
+        {
+          "id": 3,
+          "tick": 102
+        },
+        {
+          "id": 4,
+          "tick": 103
+        },
+        {
+          "id": 5,
+          "tick": 104
+        },
+        {
+          "id": 6,
+          "tick": 105
+        },
+        {
+          "id": 7,
+          "tick": 106
+        },
+        {
+          "id": 8,
+          "tick": 107
+        },
+        {
+          "id": 9,
+          "tick": 108
+        },
+        {
+          "id": 10,
+          "tick": 109
+        },
+        {
+          "id": 11,
+          "tick": 110
+        },
+        {
+          "id": 12,
+          "tick": 111
+        },
+        {
+          "id": 13,
+          "tick": 112
+        },
+        {
+          "id": 14,
+          "tick": 113
+        },
+        {
+          "id": 15,
+          "tick": 114
+        },
+        {
+          "id": 16,
+          "tick": 115
+        }
+      ],
+      "state": {
+        "failure_line": 0,
+        "invariant_checks": 123,
+        "callback_count": 16,
+        "callback_order": 1026835846,
+        "pool_count": 0,
+        "heap_size": 0,
+        "old_handle": 0,
+        "new_handle": 0,
+        "action_result": 0,
+        "first_callback_tick": 100
+      }
+    }
+  ]
+}

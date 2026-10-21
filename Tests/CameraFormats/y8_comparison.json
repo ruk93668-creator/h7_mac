@@ -1,0 +1,7 @@
+{
+  "baseline_note": "Input Device contained incomplete rename and direct enum pass. Isolated baseline restores only old callback name and OV5640_Y8 argument; production source was not used as a valid pre-change build. Cross-checked with previously accepted 272-write trace.",
+  "baseline": "a3579d2ee07bb8ea8d55a48a364329c6a7c21768554daefa77fecba538f04c83",
+  "previous_accepted": "a3579d2ee07bb8ea8d55a48a364329c6a7c21768554daefa77fecba538f04c83",
+  "new_y8": "a3579d2ee07bb8ea8d55a48a364329c6a7c21768554daefa77fecba538f04c83",
+  "identical": true
+}

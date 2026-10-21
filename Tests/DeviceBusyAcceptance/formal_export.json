@@ -1,0 +1,9 @@
+{
+  "scope": "actual Keil CM4 Target AXF, not isolated probe",
+  "section": "ER_DEVICE_EXPORT",
+  "table_address": "0x08101364",
+  "stored_bytes": "20 00 00 10",
+  "stored_pointer": "0x10000020",
+  "oled_base": "0x10000020",
+  "pointer_matches": true
+}

@@ -1,0 +1,126 @@
+from pathlib import Path
+import json,shutil,sys
+sys.stdout.reconfigure(encoding='utf-8');t=Path('Tests/SdramV0')
+for f in ['cm4_results.json','cm4_results.md','cm4_commands.json']:
+ shutil.copyfile(Path('Tests/Ov5640Migration')/f,t/f)
+data=json.loads((t/'results.json').read_text(encoding='utf-8'))
+lines=['# V0 SDRAM 隔离模拟验收','','真实 main MPU函数、BSP、Diagnostics 和 Framework Initcall；HAL接口及寄存器状态由Mock提供。','', '| 测试输入 | 预期 | 实际 | 结果 |','|---|---|---|---|']
+for i,row in enumerate(data['cases']):
+ state=row['state']
+ if i in [0,18]:expected='初始化0，SDCLK计算110MHz，验收0/状态2；恢复原数据，仅访问首1KB'
+ elif i in [20,21]:expected='初始化BSP成功；诊断返回IO/状态3，定位0xD0000000；保留首错'
+ elif i==19:expected='返回INVALID_STATE，不访问SDRAM'
+ elif i==22:expected='返回BUSY，不访问SDRAM'
+ else:expected='返回对应BUSY/INVALID_STATE/IO/TIMEOUT，后续命令及诊断停止'
+ actual=f"Initcall={state['init_result']}，检查={state['check_result']}/状态{state['check_state']}，命令{state['command_calls']}，校验{state['words']}字，恢复={row['restored']}，越界={row['accesses']['outside']}，断言{state['checks']}"
+ lines.append(f"| {row['name']} | {expected} | {actual} | {row['result']} |")
+lines+=['',str(data['summary']),'','恢复失败注入用例预期为检测出恢复错误，不要求错误硬件模型中的数据恢复成功。模拟不证明真实硬件已可用。']
+(t/'results.md').write_text('\n'.join(lines)+'\n',encoding='utf-8')
+report='''# V0 SDRAM 接入及验收
+
+## 交付结果
+
+- CM7、CM4 正式 Target 完整 Rebuild：0 Error、0 Warning。
+- 最终 CM7 USER CODE 字节保留调整后再次增量编译：0 Error、0 Warning，见 cm7_final_keil.log。
+- ARMCC 5.06 update 7（build 960）。
+- SDRAM：23/23 PASS，1056 项断言；OV5640 当前源码：42/42 PASS，464 项断言；CM4 OLED：12/12 PASS，3493 项断言。
+- 未下载或运行实板。模拟通过不能作为本次正式工程已通过110MHz实板验收的结论。
+
+## 修改文件
+
+| 文件 | 修改 |
+|---|---|
+| CM7/BSP/bsp_sdram.c/.h | V0 FMC Bank2、GPIO、PLL2、110MHz初始化；BUS Initcall；初始化结果和SDCLK计算值 |
+| CM7/BSP/bsp_sdram_hal_config.h | CM7 --preinclude 启用HAL SDRAM，独立于CubeMX生成的HAL配置 |
+| CM7/Diagnostics/sdram_check.c/.h | 独立首1KB读写验收；备份恢复；实板观察变量；MEDIA Initcall |
+| CM7/Core/Src/main.c | 仅USER CODE内增加MPU_ConfigSdram及调用、BSP头文件，Region0/1及双核启动段不变 |
+| MDK-ARM/h7_mac.uvprojx | CM7加入BSP/Diagnostics、HAL SDRAM/LL FMC源码、Include Path及--preinclude；CM4排除CM7新增分组 |
+
+旧代码参考 D:/codex_proe/h7_codex/h7_mac/CM7/Core/Src/sdram_test.c，已保存只读来源副本v0_reference.c。保留旧110MHz引脚、几何参数、时序、命令及刷新计数，不迁入旧EXTI/GPIO探针、50/100MHz配置和整片压力测试。
+
+## 内存配置
+
+Region2：0xD0000000～0xD000FFFF，64KB，对齐64KB，TEX=1、C=0、B=0、S=1，Normal/Non-cacheable/Shareable，Full Access，XN。
+
+Region0仍使用4GB/SRD=0x87禁止未开放外部地址；Region2以更高编号覆盖首64KB。0xD0010000及其后仍受Region0限制。Region1 IPC 0x38000000/4KB不变。没有启用I/D-Cache，没有更改Scatter；普通全局变量、备份数组、Stack/Heap仍在DTCM。
+
+V0配置描述物理64MiB（10列、13行、4内部Bank、16位），但本轮仅开放64KB，不能将整片视为已开放/已验收。首1KB保留为诊断区，不交给未来Framebuffer。
+
+## 时钟、引脚和初始化
+
+HSI64MHz /16 ×165 = PLL2 VCO660MHz；PLL2R /3 = FMC220MHz；SDClockPeriod /2 = SDCLK110MHz。P/Q均为6，FRACN=0，输入范围和VCO模式沿用旧工程。
+
+初始化检查PLL共用源为HSI、HSI未分频且就绪；若PLL2已被其他模块开启，返回BUSY，不改写它。配置后校验FMC选择PLL2并通过HAL_RCCEx_GetPeriphCLKFreq检查220MHz。g_sdram_sdclk_hz为HAL计算值，不是示波器实测值。
+
+未更改PLL1、HSI源选择和HSI分频；摄像头PLL1Q/MCO与CM4 I2C2时钟维持现状。没有SDRAM动态调频和自动恢复机制。
+
+GPIO：GPIOD 0/1/8/9/10/14/15；GPIOE 0/1/7～15；GPIOF 0～5/11～15；GPIOG 0/1/2/4/5/8/15；GPIOH 5/6/7。全部AF12、推挽、无上下拉、Very High。未操作GPIOB，也不操作PH15摄像头复位脚。
+
+Bank2、CAS2、16位、10列13行、4内部Bank；ReadBurst关闭、ReadPipe=0。
+
+tMRD=2、tXSR=10、tRAS=6、tRC=9、tWR=3、tRP=3、tRCD=3；CLK_ENABLE → 等待1ms → PALL → AUTOREFRESH(8) → LOAD_MODE(0x0220) → RefreshRate=839。
+
+启动顺序：
+
+```text
+原MPU Region0/1、HAL、PLL1及双核启动
+    → USER SysInit：MPU_ConfigSdram（Region2）
+    → Framework BUS：BSP_SDRAM_Init
+    → DEVICE：原Device自动初始化
+    → MEDIA：SDRAM_CheckRun（仅首1KB）
+    → SERVICE：原IPC Service
+    → APPLICATION：原摄像头配置
+```
+
+BUS同等级内不依赖BSP Camera与SDRAM的先后次序：两者共享源已由SystemClock_Config建立，SDRAM只配置PLL2。
+
+## 1KB独立验收
+
+自动在MEDIA执行一次；范围0xD0000000～0xD00003FF。先备份256个32位字，再测试0、全1、0xAAAAAAAA、0x55555555、地址值、地址反码，最后恢复并回读原数据。正常g_sdram_check_words=1792（6×256图案校验+256恢复校验）。不测试整片或64KB全部地址。
+
+第一次错误保留地址、期望和实际值；即使图案失败也执行恢复。若硬件本身不能可靠读写，无法保证恢复成功，恢复校验会报错；该例已做故障注入。未初始化拒绝访问，重入返回BUSY。
+
+初始化或MEDIA验收失败均遵循现有Framework Fail-fast，main的init_error收到错误；后续等级停止。这不是修改IPC协议或启动握手逻辑。BSP初始化成功只说明HAL初始化序列完成，仍应结合验收状态判断存储器读写是否通过。
+
+## 实板观察变量
+
+| 变量 | 正常预期 |
+|---|---|
+| main::init_error | SYS_OK（后续IPC/摄像头也需成功） |
+| g_sdram_init_result | 0 |
+| g_sdram_sdclk_hz | 110000000（计算值） |
+| g_sdram_check_state | 2；0未运行、1运行中、3失败 |
+| g_sdram_check_result | 0 |
+| g_sdram_check_words | 1792 |
+| g_sdram_check_fail_address | 0 |
+| g_sdram_check_expected / actual | 失败时查看首错值 |
+
+若停在运行中或MemManage/BusFault/HardFault，应检查硬件和故障寄存器，不把未结束的测试当作通过。仅下载并运行后观察这些变量；本轮没有执行下载。
+
+## 命令和覆盖范围
+
+```powershell
+python Tests/SdramV0/run_tests.py
+python Tests/SdramV0/Camera/run_tests.py
+python Tests/Ov5640Migration/run_cm4_regression.py
+python Tests/SdramV0/audit.py
+D:\\32\\UV4\\UV4.exe -r D:\\32\\STM32H7\\h7_mac\\MDK-ARM\\h7_mac.uvprojx -t h7_mac_CM7 -o D:\\32\\STM32H7\\h7_mac\\Tests\\SdramV0\\cm7_keil.log
+D:\\32\\UV4\\UV4.exe -r D:\\32\\STM32H7\\h7_mac\\MDK-ARM\\h7_mac.uvprojx -t h7_mac_CM4 -o D:\\32\\STM32H7\\h7_mac\\Tests\\SdramV0\\cm4_keil.log
+```
+
+完整隔离编译/链接命令及版本：commands.json；逐项结果：results.md/json。摄像头：Camera/results.md/json；OLED：cm4_results.md/json。
+
+SDRAM测试实际执行ARMCC编译的正式BSP/Diagnostics、main中的两个MPU函数及真实Framework Initcall。HAL MPU/RCC/GPIO/SDRAM为Mock，核对入参、顺序和错误传播；Unicorn内存模型执行真实1KB读写，监控访问范围并注入图案/恢复错误。没有模拟模拟电气、真实PLL锁定、FMC总线时序、刷新保持或真实MPU硬件权限。
+
+覆盖PLL2占用、HSI错误/分频/未就绪、PLL配置错误/超时、频率错误、HAL初始化错误/超时、MSP缺失、各命令失败/超时、刷新计数错误/超时、重复初始化、读写恢复、重入及未初始化访问。确认PLL1寄存器和I2C时钟选择未变。
+
+最初尝试历史摄像头测试发现它引用了当前正式App中已删除的s_camera_initialized；保留camera_console.log失败记录。仅在本目录Camera创建适配当前接口/行为的测试，不恢复旧变量，不更改OV5640。当前App显式再次Init会重新配置，普通主循环不会重复配置。
+
+## 保护检查与限制
+
+对照本轮开始哈希，仅已有main.c和uvprojx发生变化；CM4、IPC、OV5640、Common、Framework、Scatter均未改。main修改全部位于USER CODE，三个双核Boot段字节不变。新增业务模块均为独立文件。CubeMX重生成Keil工程后仍需保留自定义Group、Include Path和--preinclude配置。
+
+未接入DCMI或DMA；没有Framebuffer，没有把SDRAM加入C运行库RW/ZI初始化区。PLL2现阶段由SDRAM独占，后续增加PLL2用户必须统一规划。仅首1KB验收不覆盖整片容量/全地址线/长时间保持和110MHz温压裕量。
+'''
+(t/'验收报告.md').write_text(report,encoding='utf-8')
+print('reports written')

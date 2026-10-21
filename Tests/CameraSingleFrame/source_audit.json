@@ -1,0 +1,15 @@
+{
+  "checked": 1123,
+  "changed": [
+    "CM7\\Application\\app_camera.c",
+    "CM7\\Application\\app_camera.h",
+    "CM7\\Application\\app_main.c",
+    "CM7\\Media\\Inc\\camera_capture.h",
+    "CM7\\Media\\Src\\camera_capture.c",
+    "MDK-ARM\\h7_mac.uvprojx"
+  ],
+  "added": [
+    "CM7\\Application\\app_camera_check.c",
+    "CM7\\Application\\app_camera_check.h"
+  ]
+}

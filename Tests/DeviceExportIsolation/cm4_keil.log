@@ -1,0 +1,26 @@
+*** Using Compiler 'V5.06 update 7 (build 960)', folder: 'D:\32\ARM\ARMCC\Bin'
+Build target 'h7_mac_CM4'
+compiling ipc_service.c...
+compiling device.c...
+compiling oled_device.c...
+../CM4/Device/Src/oled_device.c(63): warning:  #111-D: statement is unreachable
+  	return SYS_OK;
+../CM4/Device/Src/oled_device.c(6): warning:  #2816-D: static function "Oled_ClearImpl"  treated as extern because it was referenced but not defined
+  static SysResult_t Oled_ClearImpl(
+../CM4/Device/Src/oled_device.c(9): warning:  #2816-D: static function "Oled_DrawPixelImpl"  treated as extern because it was referenced but not defined
+  static SysResult_t Oled_DrawPixelImpl(
+../CM4/Device/Src/oled_device.c(15): warning:  #2816-D: static function "Oled_RefreshImpl"  treated as extern because it was referenced but not defined
+  static SysResult_t Oled_RefreshImpl(
+../CM4/Device/Src/oled_device.c: 4 warnings, 0 errors
+linking...
+h7_mac_CM4\h7_mac_CM4.axf: Error: L6218E: Undefined symbol Device_InitAll (referred from device.o).
+h7_mac_CM4\h7_mac_CM4.axf: Error: L6218E: Undefined symbol Device_RegisterAll (referred from device.o).
+h7_mac_CM4\h7_mac_CM4.axf: Error: L6218E: Undefined symbol Oled_ClearImpl (referred from oled_device.o).
+h7_mac_CM4\h7_mac_CM4.axf: Error: L6218E: Undefined symbol Oled_DrawPixelImpl (referred from oled_device.o).
+h7_mac_CM4\h7_mac_CM4.axf: Error: L6218E: Undefined symbol Oled_RefreshImpl (referred from oled_device.o).
+Not enough information to list image symbols.
+Not enough information to list load addresses in the image map.
+Finished: 2 information, 0 warning and 5 error messages.
+"h7_mac_CM4\h7_mac_CM4.axf" - 5 Error(s), 4 Warning(s).
+Target not created.
+Build Time Elapsed:  00:00:02

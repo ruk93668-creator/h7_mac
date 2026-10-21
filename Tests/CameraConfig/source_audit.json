@@ -1,0 +1,13 @@
+{
+  "checked": 1120,
+  "changed": [
+    "CM7\\Application\\app_camera.c",
+    "CM7\\Application\\app_camera.h",
+    "CM7\\Device\\Inc\\ov5640_device.h",
+    "CM7\\Device\\Src\\ov5640_device.c",
+    "MDK-ARM\\h7_mac.uvprojx"
+  ],
+  "added": [
+    "Common\\Inc\\camera_config.h"
+  ]
+}

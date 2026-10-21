@@ -1,0 +1,3 @@
+Isolated ARMCC5 build:
+armcc exit=0
+armlink exit=0

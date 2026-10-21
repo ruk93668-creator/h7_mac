@@ -1,0 +1,37 @@
+[
+  {
+    "command": "D:/32/ARM/ARMCC/Bin/armcc.exe --vsn",
+    "code": 0,
+    "output": "Product: MDK Plus 5.32\r\nComponent: ARM Compiler 5.06 update 7 (build 960)\r\nTool: armcc [4d365d]\r\nFor support see http://www.arm.com/support\r\nSoftware supplied by: ARM Limited\r\n"
+  },
+  {
+    "command": "D:/32/ARM/ARMCC/Bin/armcc.exe --cpu Cortex-M7 --c99 -O0 -DSTM32H747xx -DCORE_CM7 -DUSE_HAL_DRIVER --preinclude D:\\32\\STM32H7\\h7_mac\\CM7\\BSP\\bsp_dcmi_hal_config.h -I D:\\32\\STM32H7\\h7_mac\\CM7\\Core\\Inc -I D:\\32\\STM32H7\\h7_mac\\Drivers\\STM32H7xx_HAL_Driver\\Inc -I D:\\32\\STM32H7\\h7_mac\\Drivers\\STM32H7xx_HAL_Driver\\Inc\\Legacy -I D:\\32\\STM32H7\\h7_mac\\Drivers\\CMSIS\\Device\\ST\\STM32H7xx\\Include -I D:\\32\\STM32H7\\h7_mac\\Drivers\\CMSIS\\Include -I D:\\32\\STM32H7\\h7_mac\\CM7\\BSP -I D:\\32\\STM32H7\\h7_mac\\CM7\\Platform -I D:\\32\\STM32H7\\h7_mac\\CM7\\Framework -I D:\\32\\STM32H7\\h7_mac\\Common\\Inc -I D:\\32\\STM32H7\\h7_mac\\Board\\Inc -c D:\\32\\STM32H7\\h7_mac\\Tests\\DcmiCapture\\Init\\dcmi_test.c -o D:\\32\\STM32H7\\h7_mac\\Tests\\DcmiCapture\\Init\\dcmi_test.o",
+    "code": 0,
+    "output": ""
+  },
+  {
+    "command": "D:/32/ARM/ARMCC/Bin/armcc.exe --cpu Cortex-M7 --c99 -O0 -DSTM32H747xx -DCORE_CM7 -DUSE_HAL_DRIVER --preinclude D:\\32\\STM32H7\\h7_mac\\CM7\\BSP\\bsp_dcmi_hal_config.h -I D:\\32\\STM32H7\\h7_mac\\CM7\\Core\\Inc -I D:\\32\\STM32H7\\h7_mac\\Drivers\\STM32H7xx_HAL_Driver\\Inc -I D:\\32\\STM32H7\\h7_mac\\Drivers\\STM32H7xx_HAL_Driver\\Inc\\Legacy -I D:\\32\\STM32H7\\h7_mac\\Drivers\\CMSIS\\Device\\ST\\STM32H7xx\\Include -I D:\\32\\STM32H7\\h7_mac\\Drivers\\CMSIS\\Include -I D:\\32\\STM32H7\\h7_mac\\CM7\\BSP -I D:\\32\\STM32H7\\h7_mac\\CM7\\Platform -I D:\\32\\STM32H7\\h7_mac\\CM7\\Framework -I D:\\32\\STM32H7\\h7_mac\\Common\\Inc -I D:\\32\\STM32H7\\h7_mac\\Board\\Inc -c D:\\32\\STM32H7\\h7_mac\\Drivers\\STM32H7xx_HAL_Driver\\Src\\stm32h7xx_hal_dcmi.c -o D:\\32\\STM32H7\\h7_mac\\Tests\\DcmiCapture\\Init\\stm32h7xx_hal_dcmi.o",
+    "code": 0,
+    "output": ""
+  },
+  {
+    "command": "D:/32/ARM/ARMCC/Bin/armcc.exe --cpu Cortex-M7 --c99 -O0 -DSTM32H747xx -DCORE_CM7 -DUSE_HAL_DRIVER --preinclude D:\\32\\STM32H7\\h7_mac\\CM7\\BSP\\bsp_dcmi_hal_config.h -I D:\\32\\STM32H7\\h7_mac\\CM7\\Core\\Inc -I D:\\32\\STM32H7\\h7_mac\\Drivers\\STM32H7xx_HAL_Driver\\Inc -I D:\\32\\STM32H7\\h7_mac\\Drivers\\STM32H7xx_HAL_Driver\\Inc\\Legacy -I D:\\32\\STM32H7\\h7_mac\\Drivers\\CMSIS\\Device\\ST\\STM32H7xx\\Include -I D:\\32\\STM32H7\\h7_mac\\Drivers\\CMSIS\\Include -I D:\\32\\STM32H7\\h7_mac\\CM7\\BSP -I D:\\32\\STM32H7\\h7_mac\\CM7\\Platform -I D:\\32\\STM32H7\\h7_mac\\CM7\\Framework -I D:\\32\\STM32H7\\h7_mac\\Common\\Inc -I D:\\32\\STM32H7\\h7_mac\\Board\\Inc -c D:\\32\\STM32H7\\h7_mac\\Drivers\\STM32H7xx_HAL_Driver\\Src\\stm32h7xx_hal_dma.c -o D:\\32\\STM32H7\\h7_mac\\Tests\\DcmiCapture\\Init\\stm32h7xx_hal_dma.o",
+    "code": 0,
+    "output": ""
+  },
+  {
+    "command": "D:/32/ARM/ARMCC/Bin/armcc.exe --cpu Cortex-M7 --c99 -O0 -DSTM32H747xx -DCORE_CM7 -DUSE_HAL_DRIVER --preinclude D:\\32\\STM32H7\\h7_mac\\CM7\\BSP\\bsp_dcmi_hal_config.h -I D:\\32\\STM32H7\\h7_mac\\CM7\\Core\\Inc -I D:\\32\\STM32H7\\h7_mac\\Drivers\\STM32H7xx_HAL_Driver\\Inc -I D:\\32\\STM32H7\\h7_mac\\Drivers\\STM32H7xx_HAL_Driver\\Inc\\Legacy -I D:\\32\\STM32H7\\h7_mac\\Drivers\\CMSIS\\Device\\ST\\STM32H7xx\\Include -I D:\\32\\STM32H7\\h7_mac\\Drivers\\CMSIS\\Include -I D:\\32\\STM32H7\\h7_mac\\CM7\\BSP -I D:\\32\\STM32H7\\h7_mac\\CM7\\Platform -I D:\\32\\STM32H7\\h7_mac\\CM7\\Framework -I D:\\32\\STM32H7\\h7_mac\\Common\\Inc -I D:\\32\\STM32H7\\h7_mac\\Board\\Inc -c D:\\32\\STM32H7\\h7_mac\\Drivers\\STM32H7xx_HAL_Driver\\Src\\stm32h7xx_hal_dma_ex.c -o D:\\32\\STM32H7\\h7_mac\\Tests\\DcmiCapture\\Init\\stm32h7xx_hal_dma_ex.o",
+    "code": 0,
+    "output": ""
+  },
+  {
+    "command": "D:/32/ARM/ARMCC/Bin/armcc.exe --cpu Cortex-M7 --c99 -O0 -DSTM32H747xx -DCORE_CM7 -DUSE_HAL_DRIVER --preinclude D:\\32\\STM32H7\\h7_mac\\CM7\\BSP\\bsp_dcmi_hal_config.h -I D:\\32\\STM32H7\\h7_mac\\CM7\\Core\\Inc -I D:\\32\\STM32H7\\h7_mac\\Drivers\\STM32H7xx_HAL_Driver\\Inc -I D:\\32\\STM32H7\\h7_mac\\Drivers\\STM32H7xx_HAL_Driver\\Inc\\Legacy -I D:\\32\\STM32H7\\h7_mac\\Drivers\\CMSIS\\Device\\ST\\STM32H7xx\\Include -I D:\\32\\STM32H7\\h7_mac\\Drivers\\CMSIS\\Include -I D:\\32\\STM32H7\\h7_mac\\CM7\\BSP -I D:\\32\\STM32H7\\h7_mac\\CM7\\Platform -I D:\\32\\STM32H7\\h7_mac\\CM7\\Framework -I D:\\32\\STM32H7\\h7_mac\\Common\\Inc -I D:\\32\\STM32H7\\h7_mac\\Board\\Inc -c D:\\32\\STM32H7\\h7_mac\\Drivers\\STM32H7xx_HAL_Driver\\Src\\stm32h7xx_hal_gpio.c -o D:\\32\\STM32H7\\h7_mac\\Tests\\DcmiCapture\\Init\\stm32h7xx_hal_gpio.o",
+    "code": 0,
+    "output": ""
+  },
+  {
+    "command": "D:/32/ARM/ARMCC/Bin/armlink.exe D:\\32\\STM32H7\\h7_mac\\Tests\\DcmiCapture\\Init\\dcmi_test.o D:\\32\\STM32H7\\h7_mac\\Tests\\DcmiCapture\\Init\\stm32h7xx_hal_dcmi.o D:\\32\\STM32H7\\h7_mac\\Tests\\DcmiCapture\\Init\\stm32h7xx_hal_dma.o D:\\32\\STM32H7\\h7_mac\\Tests\\DcmiCapture\\Init\\stm32h7xx_hal_dma_ex.o D:\\32\\STM32H7\\h7_mac\\Tests\\DcmiCapture\\Init\\stm32h7xx_hal_gpio.o --entry Dcmi_TestRun --scatter D:\\32\\STM32H7\\h7_mac\\Tests\\DcmiCapture\\Init\\test.sct --keep=*(.framework_init) -o D:\\32\\STM32H7\\h7_mac\\Tests\\DcmiCapture\\Init\\dcmi_test.axf",
+    "code": 0,
+    "output": "\"D:\\32\\STM32H7\\h7_mac\\Tests\\DcmiCapture\\Init\\test.sct\", line 4 (column 26): Warning: L6314W: No section matches pattern *(.device_export).\r\nFinished: 0 information, 1 warning and 0 error messages.\r\n"
+  }
+]

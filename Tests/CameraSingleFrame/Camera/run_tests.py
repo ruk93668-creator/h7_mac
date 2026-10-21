@@ -1,0 +1,109 @@
+import argparse,json,struct,subprocess,sys,hashlib,zlib
+from pathlib import Path
+sys.stdout.reconfigure(encoding='utf-8')
+here=Path(__file__).resolve().parent;root=here.parents[2]
+sys.path.insert(0,str(root/'Tests/OledAsyncAcceptance/python_deps'))
+from unicorn import Uc,UC_ARCH_ARM,UC_MODE_THUMB,UC_MODE_MCLASS,UC_HOOK_MEM_READ,UC_HOOK_MEM_WRITE
+from unicorn.arm_const import UC_ARM_REG_SP,UC_ARM_REG_LR,UC_ARM_REG_R0,UC_ARM_REG_PC
+from elftools.elf.elffile import ELFFile
+names=['正常Initcall配置160x120 Y8彩条', '错误芯片ID禁止写表', 'SCCB读ID地址NACK', '关键寄存器回读不一致-0', '关键寄存器回读不一致-1', '关键寄存器回读不一致-2', '关键寄存器回读不一致-3', '关键寄存器回读不一致-4', '关键寄存器回读不一致-5', '关键寄存器回读不一致-6', '关键寄存器回读不一致-7', '关键寄存器回读不一致-8', '关键寄存器回读不一致-9', '关键寄存器回读不一致-10', '关键寄存器回读不一致-11', '关键寄存器回读不一致-12', '关键寄存器回读不一致-13', '关键寄存器回读不一致-14', '关键寄存器回读不一致-15', '关键寄存器回读不一致-16', '写地址NACK', '寄存器高字节NACK', '寄存器低字节NACK', '数据字节NACK', '真实SCCB写后读', '初始化前禁止写', 'SDA忙拒绝写', 'SCL忙拒绝写', '软件复位等待5ms', '组件多字节和参数边界', '组件写表故障保留IO', '关键寄存器回读NACK', '配置失败后重试', '主循环不重复配置，显式App_Init重新配置', 'Device参数和状态检查', 'PLL错误阻止初始化', 'DWT停止阻止初始化', 'SCCB读地址NACK', 'DWT回绕仍能完整配置']
+names+=['应用缺少摄像头设备','应用Ops缺失及恢复','应用配置函数缺失及恢复']
+names += ['只读配置来源及取值', 'NULL配置拒绝', '零宽度拒绝', '零高度拒绝',
+          '未支持宽度拒绝', '未支持高度拒绝', '未知格式拒绝', '负数格式拒绝',
+          '未支持分辨率组合拒绝', '有效配置不被Device修改', 'Application向Device传递同一配置指针',
+          '未支持配置先于SCCB访问拒绝']
+names += ['单帧完成与19200字节统计', '99ms仍等待', '100ms超时并恢复', '采集IO错误并恢复',
+          '采集TIMEOUT错误并恢复', '采集IO错误且Stop失败', '超时且Stop超时', '启动IO失败且恢复成功',
+          '启动BUSY且恢复失败', '启动超时且恢复超时', 'Frame与错误同到错误优先', '恢复重试不改原失败记录',
+          '100ms边界完成优先', 'Tick回绕100ms超时', 'Tick回绕99ms等待', '全零图像拒绝彩条验收',
+          '全FF图像拒绝彩条验收', '八级模拟条纹统计', '确定性伪随机图像CRC', '错误帧长度拒绝读取',
+          'NULL图像指针拒绝读取', '错误像素格式拒绝读取', '错误图像宽度拒绝读取', '释放失败不能算成功',
+          'Media初始化失败不启动', '重复App初始化不重启不重配', '未初始化App_Run无副作用', '统计参数空指针拒绝']
+commands=[]
+def run(cmd):
+ p=subprocess.run([str(x) for x in cmd],cwd=root,capture_output=True);text=(p.stdout+p.stderr).decode('utf-8',errors='replace')
+ commands.append({'command':subprocess.list2cmdline([str(x) for x in cmd]),'code':p.returncode,'output':text})
+ (here/'commands.json').write_text(json.dumps(commands,ensure_ascii=False,indent=2),encoding='utf-8')
+ print(commands[-1]['command']);print(text,end='')
+ if p.returncode:raise RuntimeError('Build failed')
+run(['D:/32/ARM/ARMCC/Bin/armcc.exe','--vsn'])
+args=['D:/32/ARM/ARMCC/Bin/armcc.exe','--cpu','Cortex-M7','--c99','-O0']
+for inc in ['Tests/CameraSingleFrame/Camera/stubs','Drivers/CMSIS/Include','CM7/BSP','CM7/Device/Components/OV5640','CM7/Device/Inc','CM7/Application','CM7/Media/Inc','CM7/Framework','CM7/Platform','Common/Inc','Board/Inc']:args+=['-I',root/inc]
+run(args+['-c',here/'camera_test.c','-o',here/'camera_test.o'])
+for source in ['ov5640','ov5640_reg']:
+ run(args+['-c',root/('CM7/Device/Components/OV5640/'+source+'.c'),'-o',here/(source+'.o')])
+run(['D:/32/ARM/ARMCC/Bin/armlink.exe',here/'ov5640.o',here/'ov5640_reg.o',here/'camera_test.o','--entry','Camera_TestRun','--scatter',here/'test.sct','--keep=*(.framework_init)','--keep=*(.device_export)','--no_scanlib','-o',here/'camera_test.axf'])
+with (here/'camera_test.axf').open('rb') as f:
+ e=ELFFile(f);entry=e.header['e_entry'];syms={s.name:s['st_value'] for s in e.get_section_by_name('.symtab').iter_symbols()}
+ sections=[(s['sh_addr'],s.data()) for s in e.iter_sections() if s['sh_flags']&2 and s['sh_type']=='SHT_PROGBITS' and s['sh_size']]
+fields=['fail_line','checks','tx_count','starts','stops','nacks','reads','reset_high','mco','delays','writes','verify_result_raw','verified_count','failed_reg','heap','last_bus_error','init_result']
+rows=[]
+for id,name in enumerate(names):
+ u=Uc(UC_ARCH_ARM,UC_MODE_THUMB|UC_MODE_MCLASS);u.mem_map(0x08000000,0x100000);u.mem_map(0x20000000,0x40000);u.mem_map(0x01000000,0x1000)
+ u.mem_map(0xE0000000,0x10000);u.mem_map(0x58024000,0x1000)
+ u.mem_map(0xD0000000,0x10000)
+ image=bytes(i%256 for i in range(19200))
+ if id==69:image=bytes(19200)
+ if id==70:image=bytes([255])*19200
+ if id==71:image=bytes((i%160//20)*32 for i in range(19200))
+ if id==72:image=bytes(((i*37)^(i>>3)^0xA5)&255 for i in range(19200))
+ initial=bytes([0xA5])*0x400+image+bytes([0x5A])*(0x10000-0x400-19200)
+ u.mem_write(0xD0000000,initial)
+ memory={'reads':0,'writes':0,'out_of_frame':0}
+ def image_access(uc,access,address,size,value,data):
+  memory['reads' if access==16 else 'writes']+=size
+  if address<0xD0000400 or address+size>0xD0000400+19200:memory['out_of_frame']+=1
+ u.hook_add(UC_HOOK_MEM_READ|UC_HOOK_MEM_WRITE,image_access,begin=0xD0000000,end=0xD000FFFF)
+ for a,d in sections:u.mem_write(a,d)
+ u.mem_write(0x58024400,struct.pack('<I',1))
+ u.mem_write(0xE0001004,struct.pack('<I',0xFFFFFFF0 if id==38 else 0))
+ def counter(uc,access,addr,size,value,data):
+  if id!=36 and struct.unpack('<I',uc.mem_read(0xE0001000,4))[0]&1:
+   n=struct.unpack('<I',uc.mem_read(0xE0001004,4))[0]
+   uc.mem_write(0xE0001004,struct.pack('<I',(n+4800)&0xFFFFFFFF))
+ u.hook_add(UC_HOOK_MEM_READ,counter,begin=0xE0001004,end=0xE0001007)
+ u.reg_write(UC_ARM_REG_SP,0x2003FFF0);u.reg_write(UC_ARM_REG_LR,0x01000001);u.reg_write(UC_ARM_REG_R0,id)
+ error=None
+ try:u.emu_start(entry|1,0x01000000,count=100000000,timeout=30000000)
+ except Exception as exc:error=str(exc)
+ state=dict(zip(fields,struct.unpack('<16Ii',u.mem_read(syms['g_result'],68))))
+ passed=error is None and u.reg_read(UC_ARM_REG_PC)==0x01000000 and u.reg_read(UC_ARM_REG_R0)==0 and not state['fail_line']
+ watch_fields=['attempted_steps','last_step','finished','success','sensor_result','media_result','start_result',
+               'capture_result','frame_result','release_result','stop_result','frame_count','frame_address','width','height',
+               'format','size_bytes','sampled_bytes','pixel_min','pixel_max','pixel_sum','crc32','stats_valid']
+ watch=dict(zip(watch_fields,struct.unpack('<4I7i12I',u.mem_read(syms['g_camera_check'],92))))
+ immutable=bytes(u.mem_read(0xD0000000,0x10000))==initial
+ stats_match=None
+ if watch['stats_valid']:
+  stats_match=(watch['sampled_bytes']==len(image) and watch['pixel_min']==min(image) and
+               watch['pixel_max']==max(image) and watch['pixel_sum']==sum(image) and watch['crc32']==zlib.crc32(image))
+  passed=passed and stats_match and memory['reads']==19200
+ else:passed=passed and memory['reads']==0
+ passed=passed and memory['writes']==0 and memory['out_of_frame']==0 and immutable
+ verified=state['verify_result_raw'] if state['verify_result_raw']<0x80000000 else state['verify_result_raw']-0x100000000
+ actual=f"写入{state['writes']}次，首次Initcall={state['init_result']}，独立验收={verified}，已校验{state['verified_count']}项，失败寄存器0x{state['failed_reg']:04X}，Timer堆={state['heap']}，断言{state['checks']}项"
+ if id>=54: expected='真实App/Media状态、分阶段结果、无自动重启断言成立；统计与Python CRC32一致；SDRAM只读且无越界'
+ elif id>=42: expected='公共配置取值、参数拒绝、不支持语义、无副作用或同一指针传递断言成立'
+ elif 3<=id<=19: expected='正式Initcall成功；独立回读返回PROTOCOL，准确定位第'+str(id-3)+'项；不影响正式初始化'
+ elif id==31: expected='正式Initcall成功；独立回读返回IO；不影响正式初始化'
+ elif id in [0,32,33,38]: expected='真实启动配置成功；生产路径无17项验收读；独立回读17项通过；不创建Timer；主循环不重复配置，重复App_Init不重启单帧采集'
+ elif id in [1,2,30,35,36]: expected='生产初始化保留并返回原错误；失败不标记应用初始化成功'
+ elif id in [39,40,41]: expected='缺失设备/接口返回NOT_FOUND或NOT_SUPPORTED；不误标成功；接口恢复可重试'
+ else: expected='对应SCCB、接口参数或状态断言全部成立'
+
+ observed={hex(reg):u.mem_read(syms['registers']+reg,1)[0] for reg in [0x3808,0x3809,0x380A,0x380B,0x4300,0x501F,0x503D,0x3008,0x3037]}
+ rows.append({'name':name,'input':name,'expected':expected,'result':'PASS' if passed else 'FAIL','actual':actual,'registers':observed,'state':state,'error':error,'sccb_tx_prefix':bytes(u.mem_read(syms['g_wire_tx'],min(128,state['tx_count']))).hex(' ')})
+ rows[-1].update(watch=watch,memory=memory,stats_match=stats_match,framebuffer_unchanged=immutable)
+ trace_count=struct.unpack('<I',u.mem_read(syms['g_write_trace_count'],4))[0]
+ rows[-1]['write_trace_count']=trace_count
+ rows[-1]['write_trace_sha256']=hashlib.sha256(u.mem_read(syms['g_write_trace'],trace_count*4)).hexdigest()
+ rows[-1]['register_map_sha256']=hashlib.sha256(u.mem_read(syms['registers'],65536)).hexdigest()
+ print(f"{id+1:02d} {rows[-1]['result']}: {name}: {actual}; line={state['fail_line']}; error={error}")
+summary={'total':len(rows),'passed':sum(r['result']=='PASS' for r in rows),'failed':sum(r['result']=='FAIL' for r in rows),'assertions':sum(r['state']['checks'] for r in rows)}
+(here/'results.json').write_text(json.dumps({'summary':summary,'cases':rows},ensure_ascii=False,indent=2),encoding='utf-8')
+lines=['# OV5640最小迁移模拟测试','','编译当前真实BSP、Device、组件、Application及Framework；17项回读函数和报告仅在本测试中。GPIO模型逐位解码SCCB并模拟寄存器；不代替真实电气及图像验收。','', '| 测试输入 | 预期 | 实际结果 | 判定 |','|---|---|---|---|']
+lines += [f"| {r['name']} | {r['expected']} | {r['actual']} | {r['result']} |" for r in rows]
+lines += ['',str(summary),'','仅为模拟。未连接或测量真实摄像头供电、XCLK及芯片ID。GPIO模型不模拟模拟电气边沿、外部上拉和时钟延展。']
+(here/'results.md').write_text('\n'.join(lines)+'\n',encoding='utf-8')
+print('TOTAL',summary)
+raise SystemExit(0 if not summary['failed'] else 1)

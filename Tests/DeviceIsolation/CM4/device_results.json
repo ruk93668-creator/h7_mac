@@ -1,0 +1,212 @@
+[
+  {
+    "name": "完整生命周期",
+    "input": "注册 camera_sim→查找→Init→Start→Stop",
+    "expected": "返回0；找到原对象；UNINIT→READY→RUNNING→READY；回调各1次，顺序123",
+    "actual": "最终READY; 回调次数Init/Start/Stop=1/1/1; 顺序=123; 链表检查=2; 四次操作结果=0/0/0/0; Find返回原对象=True; 全部预期断言通过",
+    "result": "Pass",
+    "state": {
+      "failure_line": 0,
+      "init_calls": 1,
+      "start_calls": 1,
+      "stop_calls": 1,
+      "callback_trace": 123,
+      "list_checks": 2,
+      "final_state": 1,
+      "register_result": 0,
+      "find_same_object": 1,
+      "init_result": 0,
+      "start_result": 0,
+      "stop_result": 0
+    }
+  },
+  {
+    "name": "注册、查找及重复项",
+    "input": "注册两个设备；查询不同字符串地址的同名设备、缺失名称；重复对象/同名注册",
+    "expected": "正确返回原对象或NULL；重复返回-3；链表保持2节点",
+    "actual": "最终UNINIT; 回调次数Init/Start/Stop=0/0/0; 顺序=0; 链表检查=2; 全部预期断言通过",
+    "result": "Pass",
+    "state": {
+      "failure_line": 0,
+      "init_calls": 0,
+      "start_calls": 0,
+      "stop_calls": 0,
+      "callback_trace": 0,
+      "list_checks": 2,
+      "final_state": 0,
+      "register_result": 0,
+      "find_same_object": 0,
+      "init_result": 0,
+      "start_result": 0,
+      "stop_result": 0
+    }
+  },
+  {
+    "name": "非法参数",
+    "input": "NULL设备、NULL/空名称及NULL/空查找名称",
+    "expected": "操作返回-1；查找返回NULL；无回调、无节点",
+    "actual": "最终UNINIT; 回调次数Init/Start/Stop=0/0/0; 顺序=0; 链表检查=1; 全部预期断言通过",
+    "result": "Pass",
+    "state": {
+      "failure_line": 0,
+      "init_calls": 0,
+      "start_calls": 0,
+      "stop_calls": 0,
+      "callback_trace": 0,
+      "list_checks": 1,
+      "final_state": 0,
+      "register_result": 0,
+      "find_same_object": 0,
+      "init_result": 0,
+      "start_result": 0,
+      "stop_result": 0
+    }
+  },
+  {
+    "name": "未注册及对象身份",
+    "input": "操作未注册对象；操作与已注册设备同名的另一个对象",
+    "expected": "Init/Start/Stop均返回-2；不调用生命周期回调",
+    "actual": "最终UNINIT; 回调次数Init/Start/Stop=0/0/0; 顺序=0; 链表检查=1; 全部预期断言通过",
+    "result": "Pass",
+    "state": {
+      "failure_line": 0,
+      "init_calls": 0,
+      "start_calls": 0,
+      "stop_calls": 0,
+      "callback_trace": 0,
+      "list_checks": 1,
+      "final_state": 0,
+      "register_result": 0,
+      "find_same_object": 0,
+      "init_result": 0,
+      "start_result": 0,
+      "stop_result": 0
+    }
+  },
+  {
+    "name": "状态顺序及重启",
+    "input": "未初始化Start/Stop；重复Init/Start/Stop；停止后重新Start/Stop",
+    "expected": "非法顺序返回-4；合法回调顺序12323，最终READY",
+    "actual": "最终READY; 回调次数Init/Start/Stop=1/2/2; 顺序=12323; 链表检查=1; 全部预期断言通过",
+    "result": "Pass",
+    "state": {
+      "failure_line": 0,
+      "init_calls": 1,
+      "start_calls": 2,
+      "stop_calls": 2,
+      "callback_trace": 12323,
+      "list_checks": 1,
+      "final_state": 1,
+      "register_result": 0,
+      "find_same_object": 0,
+      "init_result": 0,
+      "start_result": 0,
+      "stop_result": 0
+    }
+  },
+  {
+    "name": "缺失生命周期回调",
+    "input": "在对应合法状态下使用NULL lifecycle或缺失init/start/stop",
+    "expected": "返回-7；保留原状态；只执行存在的合法回调",
+    "actual": "最终RUNNING; 回调次数Init/Start/Stop=1/1/0; 顺序=12; 链表检查=1; 全部预期断言通过",
+    "result": "Pass",
+    "state": {
+      "failure_line": 0,
+      "init_calls": 1,
+      "start_calls": 1,
+      "stop_calls": 0,
+      "callback_trace": 12,
+      "list_checks": 1,
+      "final_state": 2,
+      "register_result": 0,
+      "find_same_object": 0,
+      "init_result": 0,
+      "start_result": 0,
+      "stop_result": 0
+    }
+  },
+  {
+    "name": "Init回调失败",
+    "input": "模拟init返回IO=-9",
+    "expected": "原样返回-9，进入ERROR，拒绝后续生命周期操作",
+    "actual": "最终ERROR; 回调次数Init/Start/Stop=1/0/0; 顺序=1; 链表检查=1; 全部预期断言通过",
+    "result": "Pass",
+    "state": {
+      "failure_line": 0,
+      "init_calls": 1,
+      "start_calls": 0,
+      "stop_calls": 0,
+      "callback_trace": 1,
+      "list_checks": 1,
+      "final_state": 3,
+      "register_result": 0,
+      "find_same_object": 0,
+      "init_result": 0,
+      "start_result": 0,
+      "stop_result": 0
+    }
+  },
+  {
+    "name": "Start回调失败",
+    "input": "模拟start返回BUSY=-5",
+    "expected": "原样返回-5，进入ERROR，拒绝后续生命周期操作",
+    "actual": "最终ERROR; 回调次数Init/Start/Stop=1/1/0; 顺序=12; 链表检查=1; 全部预期断言通过",
+    "result": "Pass",
+    "state": {
+      "failure_line": 0,
+      "init_calls": 1,
+      "start_calls": 1,
+      "stop_calls": 0,
+      "callback_trace": 12,
+      "list_checks": 1,
+      "final_state": 3,
+      "register_result": 0,
+      "find_same_object": 0,
+      "init_result": 0,
+      "start_result": 0,
+      "stop_result": 0
+    }
+  },
+  {
+    "name": "Stop回调失败",
+    "input": "模拟stop返回TIMEOUT=-8",
+    "expected": "原样返回-8，进入ERROR，拒绝后续生命周期操作",
+    "actual": "最终ERROR; 回调次数Init/Start/Stop=1/1/1; 顺序=123; 链表检查=1; 全部预期断言通过",
+    "result": "Pass",
+    "state": {
+      "failure_line": 0,
+      "init_calls": 1,
+      "start_calls": 1,
+      "stop_calls": 1,
+      "callback_trace": 123,
+      "list_checks": 1,
+      "final_state": 3,
+      "register_result": 0,
+      "find_same_object": 0,
+      "init_result": 0,
+      "start_result": 0,
+      "stop_result": 0
+    }
+  },
+  {
+    "name": "首次注册状态",
+    "input": "使用READY/RUNNING/ERROR状态进行首次注册",
+    "expected": "返回-4，不入链表，不调用回调",
+    "actual": "最终ERROR; 回调次数Init/Start/Stop=0/0/0; 顺序=0; 链表检查=1; 全部预期断言通过",
+    "result": "Pass",
+    "state": {
+      "failure_line": 0,
+      "init_calls": 0,
+      "start_calls": 0,
+      "stop_calls": 0,
+      "callback_trace": 0,
+      "list_checks": 1,
+      "final_state": 3,
+      "register_result": 0,
+      "find_same_object": 0,
+      "init_result": 0,
+      "start_result": 0,
+      "stop_result": 0
+    }
+  }
+]

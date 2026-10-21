@@ -1,0 +1,34 @@
+{
+  "checked_production_files": 1125,
+  "changed": [
+    "CM7\\Application\\app_camera.c",
+    "CM7\\Application\\app_camera.h",
+    "CM7\\Device\\Inc\\ov5640_device.h",
+    "CM7\\Device\\Src\\ov5640_device.c",
+    "CM7\\Media\\Inc\\camera_capture.h",
+    "CM7\\Media\\Src\\camera_capture.c",
+    "MDK-ARM\\h7_mac.uvprojx"
+  ],
+  "deleted": [
+    "CM7\\Application\\app_camera_check.c",
+    "CM7\\Application\\app_camera_check.h"
+  ],
+  "cleanup_changed": [
+    "CM7\\Application\\app_camera.c",
+    "CM7\\Application\\app_camera.h",
+    "CM7\\Device\\Inc\\ov5640_device.h",
+    "CM7\\Media\\Inc\\camera_capture.h",
+    "CM7\\Media\\Src\\camera_capture.c",
+    "MDK-ARM\\h7_mac.uvprojx"
+  ],
+  "concurrent_changes_preserved": [
+    "CM7\\Device\\Src\\ov5640_device.c"
+  ],
+  "preserved_files": 76,
+  "missing_preserved_files": [],
+  "updated_live_test_reports": [
+    "Tests\\CameraSingleFrame\\Camera\\results.md"
+  ],
+  "retired_interface_code_hits": [],
+  "diagnostics_absent_from_final_map": true
+}

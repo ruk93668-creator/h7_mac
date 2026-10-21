@@ -1,0 +1,9 @@
+{
+  "tests": 11,
+  "failures": 0,
+  "errors": 0,
+  "all_passed": true,
+  "source": "D:\\32\\STM32H7\\h7_mac\\Tests\\CameraVisualization\\captures\\20261020_160039_979921\\source.hex",
+  "source_sha256": "87201b545ab56c3a2c55d7852a2b8c57b62f9692e574e1005e4504789bddf837",
+  "note": "Real exported frame used for PNG roundtrip; malformed HEX/BIN copies only test rejection and are temporary."
+}
