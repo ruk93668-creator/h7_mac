@@ -2,6 +2,7 @@
 #define CM7_BSP_DCMI_H
 
 #include "sys_result.h"
+#include <stdint.h>
 #include <stdbool.h>
 
 #define BSP_DCMI_EVENT_FRAME (1UL << 0)
@@ -51,7 +52,9 @@ typedef SysResult_t (*BspDcmiFrameCallback_t)(
     void *context
 );
 
-//启动连续双目标DMA
+//连续采集入口，当前仅检查参数和空闲状态，通过后返回NOT_SUPPORTED
+//两个缓冲区须4字节对齐、互不重叠，容量和DMA可访问性由调用方保证
+//callback不能为空，context允许为NULL
 SysResult_t BSP_DCMI_StartContinuous(
     uint32_t *buffer_m0,
     uint32_t *buffer_m1,

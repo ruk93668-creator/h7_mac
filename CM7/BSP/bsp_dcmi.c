@@ -10,9 +10,64 @@
 #define DCMI_STOP_TIMEOUT_MS 10U
 #define DCMI_ALL_INTERRUPTS (DCMI_IT_FRAME | DCMI_IT_OVR | DCMI_IT_ERR | DCMI_IT_VSYNC | DCMI_IT_LINE)
 
+//DCMI采集模式
+typedef enum
+{
+    BSP_DCMI_MODE_NONE = 0,    //未进入采集模式
+    BSP_DCMI_MODE_SNAPSHOT,    //单帧采集
+    BSP_DCMI_MODE_CONTINUOUS   //连续采集
+} BspDcmiMode_t;
+
+typedef enum
+{
+	//连续采集运行状态
+    BSP_DCMI_STREAM_STOPPED = 0,
+    BSP_DCMI_STREAM_STARTING,
+    BSP_DCMI_STREAM_RUNNING,
+    BSP_DCMI_STREAM_ERROR
+} BspDcmiStreamState_t;
+
+typedef struct
+{
+    //当前采集模式：未采集、单帧或连续
+    BspDcmiMode_t mode;
+    //连续采集的运行状态
+    BspDcmiStreamState_t state;
+
+    //单帧DMA传输数量，单位为32位Word
+    uint32_t frame_words;
+
+    //完整帧确认后调用的上层回调
+    BspDcmiFrameCallback_t callback;
+    //传给回调的上层私有对象指针，BSP不解析其内容
+    void *context;
+
+    //发生异常后要求先停止并恢复，再允许启动
+    bool stop_required;
+
+} BspDcmiStream_t;
+
+//CM7 DCMI连续采集运行上下文
+static BspDcmiStream_t s_stream =
+{
+    .mode = BSP_DCMI_MODE_NONE,
+    .state = BSP_DCMI_STREAM_STOPPED,
+    .frame_words = 0U,
+    .callback = NULL,
+    .context = NULL,
+    .stop_required = false
+};
+
+//DCMI句柄，保存外设配置、状态和DMA关联
 static DCMI_HandleTypeDef s_dcmi;
+
+//DCMI使用的DMA句柄，保存传输配置、状态和回调
 static DMA_HandleTypeDef s_dcmi_dma;
+
+//DCMI引脚是否已完成初始化，避免重复配置
 static bool s_dcmi_pins_ready;
+
+//DCMI与DMA是否已完成初始化，允许执行采集操作
 static bool s_dcmi_ready;
 
 //ISR只锁存事件，主循环负责停止和恢复
@@ -266,6 +321,89 @@ SysResult_t BSP_DCMI_StartSnapshot(
 	return result;
 }
 
+//当前只检查参数和空闲状态，不启动连续采集
+SysResult_t BSP_DCMI_StartContinuous(
+    uint32_t *buffer_m0,
+    uint32_t *buffer_m1,
+    uint32_t word_count,
+    BspDcmiFrameCallback_t callback,
+    void *context)
+{
+	uint32_t address_m0;
+	uint32_t address_m1;
+	uint32_t byte_count;
+	uint32_t primask;
+
+	//第一阶段：参数检查
+	if ( buffer_m0 == NULL || buffer_m1 == NULL || callback == NULL ||
+		word_count == 0U || word_count > 0xFFFFU)
+		return SYS_ERR_INVALID_ARG;
+
+	address_m0 = (uint32_t)buffer_m0;
+	address_m1 = (uint32_t)buffer_m1;
+
+	//DMA按32位Word传输，两个目标都必须4字节对齐
+	if ( (address_m0 & 3U) != 0U || (address_m1 & 3U) != 0U)
+		return SYS_ERR_INVALID_ARG;
+
+	byte_count = word_count * sizeof(uint32_t);
+
+	//防止任一缓冲区末地址超出32位地址范围
+	if ( address_m0 > UINT32_MAX - (byte_count - 1U) ||
+		address_m1 > UINT32_MAX - (byte_count - 1U))
+		return SYS_ERR_INVALID_ARG;
+
+	//两块缓冲区不能相同或部分重叠，首尾相邻允许使用
+	if ( address_m0 <= address_m1 + byte_count - 1U &&
+		address_m1 <= address_m0 + byte_count - 1U)
+		return SYS_ERR_INVALID_ARG;
+
+	//context只原样传给回调，允许为空，本阶段不保存
+	(void)context;
+
+	//第二阶段：确认DCMI和DMA空闲
+	if ( !s_dcmi_ready || __get_IPSR() != 0U || __get_PRIMASK() != 0U)
+		return SYS_ERR_INVALID_STATE;
+
+	//保护软件状态和硬件状态的检查，不清除事件或占用控制流程
+	primask = __get_PRIMASK();
+	__disable_irq();
+
+	//存在未恢复错误时，不能开始新的连续采集
+	if ( s_stop_required || s_stream.stop_required ||
+		s_stream.state == BSP_DCMI_STREAM_ERROR)
+	{
+		__set_PRIMASK(primask);
+		return SYS_ERR_INVALID_STATE;
+	}
+
+	//软件上下文、硬件使能位和HAL句柄均空闲才允许继续
+	if ( s_control_busy || s_capture_active ||
+		s_stream.mode != BSP_DCMI_MODE_NONE ||
+		s_stream.state != BSP_DCMI_STREAM_STOPPED ||
+		(DMA1_Stream0->CR & DMA_SxCR_EN) != 0U ||
+		(DCMI->CR & (DCMI_CR_CAPTURE | DCMI_CR_ENABLE)) != 0U ||
+		s_dcmi.State != HAL_DCMI_STATE_READY ||
+		s_dcmi_dma.State != HAL_DMA_STATE_READY ||
+		s_dcmi.Lock != HAL_UNLOCKED || s_dcmi_dma.Lock != HAL_UNLOCKED)
+	{
+		__set_PRIMASK(primask);
+		return SYS_ERR_BUSY;
+	}
+
+	__set_PRIMASK(primask);
+
+	//第三阶段：建立STARTING状态，待实现
+
+	//第四阶段：配置并启动DMA DBM，待实现
+
+	//第五阶段：使能DCMI Continuous采集，待实现
+
+	//第六阶段：进入RUNNING状态，待实现
+
+	//尚未启动硬件，不能返回启动成功
+	return SYS_ERR_NOT_SUPPORTED;
+}
 
 SysResult_t BSP_DCMI_Stop(void)
 {
