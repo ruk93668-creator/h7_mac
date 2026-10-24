@@ -65,15 +65,9 @@ static CameraCapture_t s_capture;
 
 //实现三缓冲区
 
-typedef enum
-{
-    CAMERA_DMA_SLOT_M0 = 0,
-    CAMERA_DMA_SLOT_M1
-} CameraDmaSlot_t;
-
 //由BSP实现硬件目标地址切换
 typedef SysResult_t (*CameraStream_ReplaceTargetFn)(
-    CameraDmaSlot_t completed_slot,
+    BspDcmiTarget_t completed_slot,
     uint32_t *new_buffer,
     void *context
 );
@@ -117,6 +111,9 @@ typedef struct
 
 } CameraStream_t;
 
+//CM7连续采集三缓冲实例
+static CameraStream_t s_camera_stream;
+
 //内部功能函数声明
 //计算当前格式的完整帧字节数
 static SysResult_t CameraCapture_CalcSize(
@@ -135,7 +132,7 @@ static uint8_t CameraStream_FindReplaceable(
 //处理DMA完整帧，安全轮换物理缓冲区
 static SysResult_t CameraStream_OnFrameComplete(
     CameraStream_t *me,
-    CameraDmaSlot_t completed_slot,
+    BspDcmiTarget_t completed_slot,
     CameraStream_ReplaceTargetFn replace_target,
     void *context);
 
@@ -646,7 +643,7 @@ static uint8_t CameraStream_FindReplaceable(
 //处理DMA完整帧，安全轮换物理缓冲区
 static SysResult_t CameraStream_OnFrameComplete(
     CameraStream_t *me,
-    CameraDmaSlot_t completed_slot,
+    BspDcmiTarget_t completed_slot,
     CameraStream_ReplaceTargetFn replace_target,
     void *context)
 {

@@ -682,19 +682,19 @@ SysResult_t BSP_DCMI_ReplaceTarget(
 	//保护回调授权和软件状态，关中断不会暂停DMA
 	primask = __get_PRIMASK();
 	__disable_irq();
-	if ( !s_dcmi_ready || //底层初始化完成后才能替换DMA目标
-		s_stream.mode != BSP_DCMI_MODE_CONTINUOUS || //仅允许连续采集模式
-		s_stream.state != BSP_DCMI_STREAM_RUNNING || //连续采集必须正在运行
-		!s_accept_events || //不再接收采集事件时禁止替换
-		!s_capture_active || //采集停止后禁止替换
-		s_stop_required || //存在全局未恢复故障时，先执行Stop
-		s_stream.stop_required || //存在连续采集未恢复故障时，先执行Stop
-		!s_frame_sync.replace_allowed || //只允许当前完整帧回调使用本次替换授权
-		!s_frame_sync.tc_pending || //必须存在本次DMA完成事件
-		!s_frame_sync.frame_pending || //必须存在本次FRAME事件
+	if ( !s_dcmi_ready || 								//底层初始化完成后才能替换DMA目标
+		s_stream.mode != BSP_DCMI_MODE_CONTINUOUS || 	//仅允许连续采集模式
+		s_stream.state != BSP_DCMI_STREAM_RUNNING || 	//连续采集必须正在运行
+		!s_accept_events || 							//不再接收采集事件时禁止替换
+		!s_capture_active || 							//采集停止后禁止替换
+		s_stop_required || 								//存在全局未恢复故障时，先执行Stop
+		s_stream.stop_required || 						//存在连续采集未恢复故障时，先执行Stop
+		!s_frame_sync.replace_allowed || 				//只允许当前完整帧回调使用本次替换授权
+		!s_frame_sync.tc_pending || 					//必须存在本次DMA完成事件
+		!s_frame_sync.frame_pending || 					//必须存在本次FRAME事件
 		completed_target != s_frame_sync.completed_target || //只能替换本次配对确认的完成目标
-		s_stream.frame_words == 0U || //整帧Word数不能为零
-		s_stream.frame_words > 0xFFFFU) //整帧Word数不能超过DMA支持范围
+		s_stream.frame_words == 0U || 					//整帧Word数不能为零
+		s_stream.frame_words > 0xFFFFU) 				//整帧Word数不能超过DMA支持范围
 	{
 		__set_PRIMASK(primask);
 		return SYS_ERR_INVALID_STATE;
@@ -747,12 +747,12 @@ SysResult_t BSP_DCMI_ReplaceTarget(
 	}
 	control = DMA1_Stream0->CR;
 	remaining = DMA1_Stream0->NDTR;
-	if ( (control & DMA_SxCR_EN) == 0U || //DMA必须保持使能，停止后不能继续替换
-		(control & DMA_SxCR_DBM) == 0U || //确认DMA仍处于双缓冲模式
-		(control & DMA_SxCR_CT) == target_bit || //完成目标已重新成为活动目标，切换窗口已错过
-		remaining <= DCMI_REPLACE_GUARD_WORDS || //当前目标剩余传输量必须留出地址切换余量
-		remaining > s_stream.frame_words || //剩余Word数不应超过本次配置的整帧长度
-		(DMA1->LISR & DMA_FLAG_TCIF0_4) != 0U) //又有TC事件挂起，不能继续使用本次配对结果
+	if ( (control & DMA_SxCR_EN) == 0U || 			//DMA必须保持使能，停止后不能继续替换
+		(control & DMA_SxCR_DBM) == 0U || 			//确认DMA仍处于双缓冲模式
+		(control & DMA_SxCR_CT) == target_bit || 	//完成目标已重新成为活动目标，切换窗口已错过
+		remaining <= DCMI_REPLACE_GUARD_WORDS || 	//当前目标剩余传输量必须留出地址切换余量
+		remaining > s_stream.frame_words || 		//剩余Word数不应超过本次配置的整帧长度
+		(DMA1->LISR & DMA_FLAG_TCIF0_4) != 0U) 		//又有TC事件挂起，不能继续使用本次配对结果
 	{
 		result = SYS_ERR_PROTOCOL;
 		goto replace_failed;
@@ -765,18 +765,19 @@ SysResult_t BSP_DCMI_ReplaceTarget(
 		result = Dcmi_HalResult(status);
 		goto replace_failed;
 	}
+	
 	//等待前面的寄存器写入完成，再读取硬件状态
 	__DSB();
 	control = DMA1_Stream0->CR;
 	remaining_after = DMA1_Stream0->NDTR;
 
-	if ( *target_address != address || //读回目标地址，确认新地址已写入
-		(control & DMA_SxCR_EN) == 0U || //确认写入期间DMA没有停止
-		(control & DMA_SxCR_DBM) == 0U || //确认写入后仍处于双缓冲模式
-		(control & DMA_SxCR_CT) == target_bit || //完成目标已重新成为活动目标，切换窗口已错过
-		remaining_after <= DCMI_REPLACE_GUARD_WORDS || //写入后仍需保留足够的传输余量
-		remaining_after > remaining || //剩余量增加说明可能发生重装，不能确认仍在原切换窗口
-		(DMA1->LISR & DMA_FLAG_TCIF0_4) != 0U) //写入期间又有TC事件挂起，交给Stop恢复
+	if ( *target_address != address || 					//读回目标地址，确认新地址已写入
+		(control & DMA_SxCR_EN) == 0U || 				//确认写入期间DMA没有停止
+		(control & DMA_SxCR_DBM) == 0U || 				//确认写入后仍处于双缓冲模式
+		(control & DMA_SxCR_CT) == target_bit || 		//完成目标已重新成为活动目标，切换窗口已错过
+		remaining_after <= DCMI_REPLACE_GUARD_WORDS ||  //写入后仍需保留足够的传输余量
+		remaining_after > remaining || 					//剩余量增加说明可能发生重装，不能确认仍在原切换窗口
+		(DMA1->LISR & DMA_FLAG_TCIF0_4) != 0U) 			//写入期间又有TC事件挂起，交给Stop恢复
 	{
 		result = SYS_ERR_PROTOCOL;
 		goto replace_failed;
