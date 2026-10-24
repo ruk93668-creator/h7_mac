@@ -493,52 +493,97 @@ SysResult_t CameraCapture_ReleaseFrame(void)
     return SYS_OK;
 }
 
-//停止当前采集，必要时恢复底层硬件
+//停止采集并恢复硬件，保留未释放缓冲区的所有权
 SysResult_t CameraCapture_Stop(void)
 {
     SysResult_t result;
+    bool has_in_use = false;
+    uint32_t i;
 
-    //模块尚未初始化
+    //1. 检查初始化与模式
     if (!s_capture.initialized)
         return SYS_ERR_INVALID_STATE;
 
-    //完整图像尚未释放，不能直接回收缓冲区
+    if (s_capture.mode == CAMERA_CAPTURE_MODE_NONE)
+    {
+        return (s_capture.state == CAMERA_CAPTURE_IDLE)
+            ? SYS_OK : SYS_ERR_INVALID_STATE;
+    }
+
+    if (s_capture.mode != CAMERA_CAPTURE_MODE_SNAPSHOT &&
+        s_capture.mode != CAMERA_CAPTURE_MODE_STREAM)
+        return SYS_ERR_INVALID_STATE;
+
+    //2. 已停止硬件，正在等待消费者归还缓冲区
+    if (s_capture.state == CAMERA_CAPTURE_DRAINING)
+    {
+        return (s_capture.mode == CAMERA_CAPTURE_MODE_STREAM)
+            ? SYS_ERR_BUSY : SYS_ERR_INVALID_STATE;
+    }
+
+    //Snapshot完整帧应通过ReleaseFrame释放
     if (s_capture.state == CAMERA_CAPTURE_READY)
         return SYS_ERR_BUSY;
 
-    //没有正在进行的采集
-    if (s_capture.mode == CAMERA_CAPTURE_MODE_NONE &&
-        s_capture.state == CAMERA_CAPTURE_IDLE)
-        return SYS_OK;
-
-    //仅CAPTURING和ERROR需要停止硬件
     if (s_capture.state != CAMERA_CAPTURE_CAPTURING &&
         s_capture.state != CAMERA_CAPTURE_ERROR)
-    {
         return SYS_ERR_INVALID_STATE;
+
+    //3. 检查Stream是否有Application持有的缓冲区
+    if (s_capture.mode == CAMERA_CAPTURE_MODE_STREAM)
+    {
+        for (i = 0U; i < CAMERA_STREAM_BUFFER_COUNT; i++)
+        {
+            if (s_capture.stream.buffers[i].state ==
+                CAMERA_BUFFER_IN_USE)
+            {
+                has_in_use = true;
+                break;
+            }
+        }
+
+        //正常主动停止：先要求Application释放图像
+        if (s_capture.state == CAMERA_CAPTURE_CAPTURING &&
+            has_in_use)
+        {
+            return SYS_ERR_BUSY;
+        }
+
+        //ERROR状态不在此处拒绝，必须尝试停止硬件
     }
 
-    //由BSP负责停止DCMI、DMA及恢复HAL状态
+    //4. 停止DCMI和DMA
     result = BSP_DCMI_Stop();
 
     if (result != SYS_OK)
     {
-        //停止失败，禁止下一次采集
-        s_capture.snapshot.valid_bytes = 0U;
         s_capture.state = CAMERA_CAPTURE_ERROR;
 
-        //保留先前发生的采集错误
+        //保留最早的故障原因
         if (s_capture.last_result == SYS_OK)
             s_capture.last_result = result;
 
         return result;
     }
 
-    //停止成功，当前缓冲区不再包含有效图像
-    s_capture.snapshot.valid_bytes = 0U;
-    s_capture.snapshot.start_tick = 0U;
+    //5. Snapshot清理
+    if (s_capture.mode == CAMERA_CAPTURE_MODE_SNAPSHOT)
+    {
+        s_capture.snapshot.valid_bytes = 0U;
+        s_capture.snapshot.start_tick = 0U;
+    }
 
-    //硬件恢复完成，允许下一次采集
+    //6. Stream故障停止后仍有IN_USE
+    if (s_capture.mode == CAMERA_CAPTURE_MODE_STREAM &&
+        has_in_use)
+    {
+        //硬件已停止，但Buffer仍归Application所有
+        s_capture.state = CAMERA_CAPTURE_DRAINING;
+
+        return SYS_OK;
+    }
+
+    //7. 没有消费者持有Buffer，彻底释放采集模式
     s_capture.mode = CAMERA_CAPTURE_MODE_NONE;
     s_capture.state = CAMERA_CAPTURE_IDLE;
 
