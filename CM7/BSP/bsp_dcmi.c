@@ -447,19 +447,25 @@ SysResult_t BSP_DCMI_StartContinuous(
 		word_count
 	);
 	
-	if ( status != HAL_OK)
+	if (status != HAL_OK)
 	{
-		//确认DMA停止后，回退本次启动状态
-		s_stream.mode = BSP_DCMI_MODE_NONE;
-		s_stream.state = BSP_DCMI_STREAM_STOPPED;
-		s_stream.frame_words = 0U;
-		s_stream.callback = NULL;
-		s_stream.context = NULL;
+		SysResult_t result = Dcmi_HalResult(status);
 
-		//最后释放控制权
+		primask = __get_PRIMASK();
+		__disable_irq();
+
+		//启动失败，保留故障状态
+		s_stream.state = BSP_DCMI_STREAM_ERROR;
+		s_stream.stop_required = true;
+
+		Dcmi_RecordError(result);
+
+		//释放控制权，允许主循环执行Stop
 		s_control_busy = false;
 
-		return Dcmi_HalResult(status);
+		__set_PRIMASK(primask);
+
+		return result;
 	}
 //第五阶段：使能DCMI Continuous采集，待实现
 
@@ -507,17 +513,16 @@ SysResult_t BSP_DCMI_Stop(void)
 	if ( result == SYS_OK)
 		result = Dcmi_RecoverHal();
 
+	//硬件停止与HAL恢复均成功后，再检查HAL Stop结果
+	if ( result == SYS_OK && status != HAL_OK)
+		result = Dcmi_HalResult(status);
+
 	primask = __get_PRIMASK();
 	__disable_irq();
 	if ( result == SYS_OK)
 	{
 		__HAL_DCMI_DISABLE_IT(&s_dcmi, DCMI_ALL_INTERRUPTS);
 		Dcmi_ClearPending();
-		if ( status != HAL_OK)
-		{
-			result = Dcmi_HalResult(status);
-			Dcmi_RecordError(result);
-		}
 		//硬件和HAL状态已恢复，保留已锁存事件供上层读取
 		s_stop_required = false;
 		
@@ -536,17 +541,14 @@ SysResult_t BSP_DCMI_Stop(void)
 	}
 	else
 	{
-		//连续采集上下文恢复为空闲状态
-		s_stream.mode = BSP_DCMI_MODE_NONE;
-		s_stream.state = BSP_DCMI_STREAM_STOPPED;
+		//保留连续采集故障状态，允许再次尝试Stop
+		if ( s_stream.mode == BSP_DCMI_MODE_CONTINUOUS)
+		{
+			s_stream.state = BSP_DCMI_STREAM_ERROR;
+			s_stream.stop_required = true;
+		}
 
-		s_stream.frame_words = 0U;
-		s_stream.callback = NULL;
-		s_stream.context = NULL;
-
-		s_stream.stop_required = false;
-		
-		//未恢复时保持IRQ关闭，禁止直接开始下一轮
+		//锁存错误，保持IRQ关闭并禁止重新采集
 		Dcmi_RecordError(result);
 	}
 	s_control_busy = false;
