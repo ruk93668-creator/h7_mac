@@ -413,7 +413,7 @@
       "input": "关键寄存器回读不一致-0",
       "expected": "正式Initcall成功；独立回读返回PROTOCOL，准确定位第0项；不影响正式初始化",
       "result": "PASS",
-      "actual": "写入272次，首次Initcall=0，独立验收=-10，已校验0项，失败寄存器0x3808，Timer堆=0，断言11项",
+      "actual": "写入272次，首次Initcall=0，独立验收=-10，已校验0项，失败寄存器0x0000，Timer堆=0，断言11项",
       "registers": {
         "0x3808": 0,
         "0x3809": 160,
@@ -439,7 +439,7 @@
         "writes": 272,
         "verify_result_raw": 4294967286,
         "verified_count": 0,
-        "failed_reg": 14344,
+        "failed_reg": 0,
         "heap": 0,
         "last_bus_error": 0,
         "init_result": 0
@@ -6519,7 +6519,7 @@
       "input": "关键寄存器回读NACK",
       "expected": "正式Initcall成功；独立回读返回IO；不影响正式初始化",
       "result": "PASS",
-      "actual": "写入272次，首次Initcall=0，独立验收=-9，已校验0项，失败寄存器0x3808，Timer堆=0，断言10项",
+      "actual": "写入272次，首次Initcall=0，独立验收=-9，已校验0项，失败寄存器0x0000，Timer堆=0，断言10项",
       "registers": {
         "0x3808": 0,
         "0x3809": 160,
@@ -6545,7 +6545,7 @@
         "writes": 272,
         "verify_result_raw": 4294967287,
         "verified_count": 0,
-        "failed_reg": 14344,
+        "failed_reg": 0,
         "heap": 0,
         "last_bus_error": 32,
         "init_result": 0

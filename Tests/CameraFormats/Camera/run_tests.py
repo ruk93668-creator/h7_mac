@@ -41,7 +41,7 @@ for id,name in enumerate(names):
  u=Uc(UC_ARCH_ARM,UC_MODE_THUMB|UC_MODE_MCLASS);u.mem_map(0x08000000,0x100000);u.mem_map(0x20000000,0x40000);u.mem_map(0x01000000,0x1000)
  u.mem_map(0xE0000000,0x10000);u.mem_map(0x58024000,0x1000)
  for a,d in sections:u.mem_write(a,d)
- if id>=54: u.mem_write(syms['s_camera_config']+4,struct.pack('<I',(id-54)%3))
+ u.mem_write(syms['s_camera_config']+4,struct.pack('<I',(id-54)%3 if id>=54 else 0))
  u.mem_write(0x58024400,struct.pack('<I',1))
  u.mem_write(0xE0001004,struct.pack('<I',0xFFFFFFF0 if id==38 else 0))
  def counter(uc,access,addr,size,value,data):

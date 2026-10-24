@@ -182,7 +182,7 @@ static int CleanupCases(uint32_t id)
  if(id==54){App_Run();EQ(mock_starts,0);EQ(mock_stops,0);EQ(mock_takes,0);return 0;}
  EQ(Framework_InitRuntime(),SYS_OK);EQ(writes,272);EQ(s_camera_initialized,true);
  EQ(s_capture.initialized,true);EQ(s_capture.state,CAMERA_CAPTURE_IDLE);
- EQ(s_capture.frame_bytes,19200);EQ(s_capture.valid_bytes,0);
+ EQ(s_capture.snapshot.frame_bytes,19200);EQ(s_capture.snapshot.valid_bytes,0);
  EQ(mock_starts,0);EQ(mock_stops,0);EQ(mock_takes,0);
  if(id==55 || id==56){
   n=writes;
@@ -206,12 +206,12 @@ static int CleanupCases(uint32_t id)
   EQ(CameraCapture_GetLastResult(),SYS_ERR_IO);EQ(mock_starts,1);return 0;
  }
  if(id==60){
-  now=s_capture.start_tick+100;App_Run();EQ(mock_stops,1);
+  now=s_capture.snapshot.start_tick+100;App_Run();EQ(mock_stops,1);
   EQ(s_capture.state,CAMERA_CAPTURE_IDLE);EQ(CameraCapture_GetLastResult(),SYS_ERR_TIMEOUT);
   EQ(CameraCapture_GetFrame(&frame),false);EQ(mock_starts,1);return 0;
  }
  mock_flags=BSP_DCMI_EVENT_FRAME;App_Run();EQ(s_capture.state,CAMERA_CAPTURE_READY);
- EQ(s_capture.valid_bytes,19200);EQ(CameraCapture_GetFrame(&frame),true);
+ EQ(s_capture.snapshot.valid_bytes,19200);EQ(CameraCapture_GetFrame(&frame),true);
  EQ(frame.size_bytes,19200);EQ((uint32_t)frame.data,0xD0000400UL);
  n=mock_takes;
  for(i=0;i<100;i++){App_Run();if(id==61)EQ(App_Init(),SYS_OK);}

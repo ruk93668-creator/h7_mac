@@ -1,0 +1,1163 @@
+{
+  "summary": {
+    "total": 72,
+    "passed": 72,
+    "failed": 0,
+    "assertions": 1095
+  },
+  "formal_source_changed": [],
+  "cases": [
+    {
+      "id": 0,
+      "name": "结构与初始化 / Y8",
+      "input": "结构与初始化",
+      "expected": "状态与返回值符合约定",
+      "result": "PASS",
+      "actual": {
+        "fail_line": 0,
+        "checks": 9,
+        "operations": 0,
+        "replaces": 0,
+        "deferred": 0,
+        "case_id": 0
+      },
+      "error": null
+    },
+    {
+      "id": 1,
+      "name": "结构与初始化 / RGB565",
+      "input": "结构与初始化",
+      "expected": "状态与返回值符合约定",
+      "result": "PASS",
+      "actual": {
+        "fail_line": 0,
+        "checks": 9,
+        "operations": 0,
+        "replaces": 0,
+        "deferred": 0,
+        "case_id": 1
+      },
+      "error": null
+    },
+    {
+      "id": 2,
+      "name": "结构与初始化 / YUV422",
+      "input": "结构与初始化",
+      "expected": "状态与返回值符合约定",
+      "result": "PASS",
+      "actual": {
+        "fail_line": 0,
+        "checks": 9,
+        "operations": 0,
+        "replaces": 0,
+        "deferred": 0,
+        "case_id": 2
+      },
+      "error": null
+    },
+    {
+      "id": 3,
+      "name": "Snapshot释放后启动Stream / Y8",
+      "input": "Snapshot释放后启动Stream",
+      "expected": "状态与返回值符合约定",
+      "result": "PASS",
+      "actual": {
+        "fail_line": 0,
+        "checks": 16,
+        "operations": 0,
+        "replaces": 0,
+        "deferred": 0,
+        "case_id": 3
+      },
+      "error": null
+    },
+    {
+      "id": 4,
+      "name": "Snapshot释放后启动Stream / RGB565",
+      "input": "Snapshot释放后启动Stream",
+      "expected": "状态与返回值符合约定",
+      "result": "PASS",
+      "actual": {
+        "fail_line": 0,
+        "checks": 16,
+        "operations": 0,
+        "replaces": 0,
+        "deferred": 0,
+        "case_id": 4
+      },
+      "error": null
+    },
+    {
+      "id": 5,
+      "name": "Snapshot释放后启动Stream / YUV422",
+      "input": "Snapshot释放后启动Stream",
+      "expected": "状态与返回值符合约定",
+      "result": "PASS",
+      "actual": {
+        "fail_line": 0,
+        "checks": 16,
+        "operations": 0,
+        "replaces": 0,
+        "deferred": 0,
+        "case_id": 5
+      },
+      "error": null
+    },
+    {
+      "id": 6,
+      "name": "Stream停止后启动Snapshot / Y8",
+      "input": "Stream停止后启动Snapshot",
+      "expected": "状态与返回值符合约定",
+      "result": "PASS",
+      "actual": {
+        "fail_line": 0,
+        "checks": 18,
+        "operations": 0,
+        "replaces": 0,
+        "deferred": 0,
+        "case_id": 6
+      },
+      "error": null
+    },
+    {
+      "id": 7,
+      "name": "Stream停止后启动Snapshot / RGB565",
+      "input": "Stream停止后启动Snapshot",
+      "expected": "状态与返回值符合约定",
+      "result": "PASS",
+      "actual": {
+        "fail_line": 0,
+        "checks": 18,
+        "operations": 0,
+        "replaces": 0,
+        "deferred": 0,
+        "case_id": 7
+      },
+      "error": null
+    },
+    {
+      "id": 8,
+      "name": "Stream停止后启动Snapshot / YUV422",
+      "input": "Stream停止后启动Snapshot",
+      "expected": "状态与返回值符合约定",
+      "result": "PASS",
+      "actual": {
+        "fail_line": 0,
+        "checks": 18,
+        "operations": 0,
+        "replaces": 0,
+        "deferred": 0,
+        "case_id": 8
+      },
+      "error": null
+    },
+    {
+      "id": 9,
+      "name": "Snapshot停止后启动Stream / Y8",
+      "input": "Snapshot停止后启动Stream",
+      "expected": "状态与返回值符合约定",
+      "result": "PASS",
+      "actual": {
+        "fail_line": 0,
+        "checks": 13,
+        "operations": 0,
+        "replaces": 0,
+        "deferred": 0,
+        "case_id": 9
+      },
+      "error": null
+    },
+    {
+      "id": 10,
+      "name": "Snapshot停止后启动Stream / RGB565",
+      "input": "Snapshot停止后启动Stream",
+      "expected": "状态与返回值符合约定",
+      "result": "PASS",
+      "actual": {
+        "fail_line": 0,
+        "checks": 13,
+        "operations": 0,
+        "replaces": 0,
+        "deferred": 0,
+        "case_id": 10
+      },
+      "error": null
+    },
+    {
+      "id": 11,
+      "name": "Snapshot停止后启动Stream / YUV422",
+      "input": "Snapshot停止后启动Stream",
+      "expected": "状态与返回值符合约定",
+      "result": "PASS",
+      "actual": {
+        "fail_line": 0,
+        "checks": 13,
+        "operations": 0,
+        "replaces": 0,
+        "deferred": 0,
+        "case_id": 11
+      },
+      "error": null
+    },
+    {
+      "id": 12,
+      "name": "Stream启动IO错误 / Y8",
+      "input": "Stream启动IO错误",
+      "expected": "状态与返回值符合约定",
+      "result": "PASS",
+      "actual": {
+        "fail_line": 0,
+        "checks": 17,
+        "operations": 0,
+        "replaces": 0,
+        "deferred": 0,
+        "case_id": 12
+      },
+      "error": null
+    },
+    {
+      "id": 13,
+      "name": "Stream启动IO错误 / RGB565",
+      "input": "Stream启动IO错误",
+      "expected": "状态与返回值符合约定",
+      "result": "PASS",
+      "actual": {
+        "fail_line": 0,
+        "checks": 17,
+        "operations": 0,
+        "replaces": 0,
+        "deferred": 0,
+        "case_id": 13
+      },
+      "error": null
+    },
+    {
+      "id": 14,
+      "name": "Stream启动IO错误 / YUV422",
+      "input": "Stream启动IO错误",
+      "expected": "状态与返回值符合约定",
+      "result": "PASS",
+      "actual": {
+        "fail_line": 0,
+        "checks": 17,
+        "operations": 0,
+        "replaces": 0,
+        "deferred": 0,
+        "case_id": 14
+      },
+      "error": null
+    },
+    {
+      "id": 15,
+      "name": "Stop失败保留Stream与首次错误 / Y8",
+      "input": "Stop失败保留Stream与首次错误",
+      "expected": "状态与返回值符合约定",
+      "result": "PASS",
+      "actual": {
+        "fail_line": 0,
+        "checks": 21,
+        "operations": 0,
+        "replaces": 0,
+        "deferred": 0,
+        "case_id": 15
+      },
+      "error": null
+    },
+    {
+      "id": 16,
+      "name": "Stop失败保留Stream与首次错误 / RGB565",
+      "input": "Stop失败保留Stream与首次错误",
+      "expected": "状态与返回值符合约定",
+      "result": "PASS",
+      "actual": {
+        "fail_line": 0,
+        "checks": 21,
+        "operations": 0,
+        "replaces": 0,
+        "deferred": 0,
+        "case_id": 16
+      },
+      "error": null
+    },
+    {
+      "id": 17,
+      "name": "Stop失败保留Stream与首次错误 / YUV422",
+      "input": "Stop失败保留Stream与首次错误",
+      "expected": "状态与返回值符合约定",
+      "result": "PASS",
+      "actual": {
+        "fail_line": 0,
+        "checks": 21,
+        "operations": 0,
+        "replaces": 0,
+        "deferred": 0,
+        "case_id": 17
+      },
+      "error": null
+    },
+    {
+      "id": 18,
+      "name": "Stream不使用Snapshot超时 / Y8",
+      "input": "Stream不使用Snapshot超时",
+      "expected": "状态与返回值符合约定",
+      "result": "PASS",
+      "actual": {
+        "fail_line": 0,
+        "checks": 15,
+        "operations": 0,
+        "replaces": 0,
+        "deferred": 0,
+        "case_id": 18
+      },
+      "error": null
+    },
+    {
+      "id": 19,
+      "name": "Stream不使用Snapshot超时 / RGB565",
+      "input": "Stream不使用Snapshot超时",
+      "expected": "状态与返回值符合约定",
+      "result": "PASS",
+      "actual": {
+        "fail_line": 0,
+        "checks": 15,
+        "operations": 0,
+        "replaces": 0,
+        "deferred": 0,
+        "case_id": 19
+      },
+      "error": null
+    },
+    {
+      "id": 20,
+      "name": "Stream不使用Snapshot超时 / YUV422",
+      "input": "Stream不使用Snapshot超时",
+      "expected": "状态与返回值符合约定",
+      "result": "PASS",
+      "actual": {
+        "fail_line": 0,
+        "checks": 15,
+        "operations": 0,
+        "replaces": 0,
+        "deferred": 0,
+        "case_id": 20
+      },
+      "error": null
+    },
+    {
+      "id": 21,
+      "name": "Stream不处理Snapshot FRAME / Y8",
+      "input": "Stream不处理Snapshot FRAME",
+      "expected": "状态与返回值符合约定",
+      "result": "PASS",
+      "actual": {
+        "fail_line": 0,
+        "checks": 16,
+        "operations": 0,
+        "replaces": 0,
+        "deferred": 0,
+        "case_id": 21
+      },
+      "error": null
+    },
+    {
+      "id": 22,
+      "name": "Stream不处理Snapshot FRAME / RGB565",
+      "input": "Stream不处理Snapshot FRAME",
+      "expected": "状态与返回值符合约定",
+      "result": "PASS",
+      "actual": {
+        "fail_line": 0,
+        "checks": 16,
+        "operations": 0,
+        "replaces": 0,
+        "deferred": 0,
+        "case_id": 22
+      },
+      "error": null
+    },
+    {
+      "id": 23,
+      "name": "Stream不处理Snapshot FRAME / YUV422",
+      "input": "Stream不处理Snapshot FRAME",
+      "expected": "状态与返回值符合约定",
+      "result": "PASS",
+      "actual": {
+        "fail_line": 0,
+        "checks": 16,
+        "operations": 0,
+        "replaces": 0,
+        "deferred": 0,
+        "case_id": 23
+      },
+      "error": null
+    },
+    {
+      "id": 24,
+      "name": "Stream错误恢复 / Y8",
+      "input": "Stream错误恢复",
+      "expected": "状态与返回值符合约定",
+      "result": "PASS",
+      "actual": {
+        "fail_line": 0,
+        "checks": 18,
+        "operations": 0,
+        "replaces": 0,
+        "deferred": 0,
+        "case_id": 24
+      },
+      "error": null
+    },
+    {
+      "id": 25,
+      "name": "Stream错误恢复 / RGB565",
+      "input": "Stream错误恢复",
+      "expected": "状态与返回值符合约定",
+      "result": "PASS",
+      "actual": {
+        "fail_line": 0,
+        "checks": 18,
+        "operations": 0,
+        "replaces": 0,
+        "deferred": 0,
+        "case_id": 25
+      },
+      "error": null
+    },
+    {
+      "id": 26,
+      "name": "Stream错误恢复 / YUV422",
+      "input": "Stream错误恢复",
+      "expected": "状态与返回值符合约定",
+      "result": "PASS",
+      "actual": {
+        "fail_line": 0,
+        "checks": 18,
+        "operations": 0,
+        "replaces": 0,
+        "deferred": 0,
+        "case_id": 26
+      },
+      "error": null
+    },
+    {
+      "id": 27,
+      "name": "Stream错误且恢复重试 / Y8",
+      "input": "Stream错误且恢复重试",
+      "expected": "状态与返回值符合约定",
+      "result": "PASS",
+      "actual": {
+        "fail_line": 0,
+        "checks": 21,
+        "operations": 0,
+        "replaces": 0,
+        "deferred": 0,
+        "case_id": 27
+      },
+      "error": null
+    },
+    {
+      "id": 28,
+      "name": "Stream错误且恢复重试 / RGB565",
+      "input": "Stream错误且恢复重试",
+      "expected": "状态与返回值符合约定",
+      "result": "PASS",
+      "actual": {
+        "fail_line": 0,
+        "checks": 21,
+        "operations": 0,
+        "replaces": 0,
+        "deferred": 0,
+        "case_id": 28
+      },
+      "error": null
+    },
+    {
+      "id": 29,
+      "name": "Stream错误且恢复重试 / YUV422",
+      "input": "Stream错误且恢复重试",
+      "expected": "状态与返回值符合约定",
+      "result": "PASS",
+      "actual": {
+        "fail_line": 0,
+        "checks": 21,
+        "operations": 0,
+        "replaces": 0,
+        "deferred": 0,
+        "case_id": 29
+      },
+      "error": null
+    },
+    {
+      "id": 30,
+      "name": "嵌套回调上下文验证 / Y8",
+      "input": "嵌套回调上下文验证",
+      "expected": "状态与返回值符合约定",
+      "result": "PASS",
+      "actual": {
+        "fail_line": 0,
+        "checks": 19,
+        "operations": 0,
+        "replaces": 1,
+        "deferred": 0,
+        "case_id": 30
+      },
+      "error": null
+    },
+    {
+      "id": 31,
+      "name": "嵌套回调上下文验证 / RGB565",
+      "input": "嵌套回调上下文验证",
+      "expected": "状态与返回值符合约定",
+      "result": "PASS",
+      "actual": {
+        "fail_line": 0,
+        "checks": 19,
+        "operations": 0,
+        "replaces": 1,
+        "deferred": 0,
+        "case_id": 31
+      },
+      "error": null
+    },
+    {
+      "id": 32,
+      "name": "嵌套回调上下文验证 / YUV422",
+      "input": "嵌套回调上下文验证",
+      "expected": "状态与返回值符合约定",
+      "result": "PASS",
+      "actual": {
+        "fail_line": 0,
+        "checks": 19,
+        "operations": 0,
+        "replaces": 1,
+        "deferred": 0,
+        "case_id": 32
+      },
+      "error": null
+    },
+    {
+      "id": 33,
+      "name": "Snapshot完整Get Release及再次启动 / Y8",
+      "input": "Snapshot完整Get Release及再次启动",
+      "expected": "状态与返回值符合约定",
+      "result": "PASS",
+      "actual": {
+        "fail_line": 0,
+        "checks": 21,
+        "operations": 0,
+        "replaces": 0,
+        "deferred": 0,
+        "case_id": 33
+      },
+      "error": null
+    },
+    {
+      "id": 34,
+      "name": "Snapshot完整Get Release及再次启动 / RGB565",
+      "input": "Snapshot完整Get Release及再次启动",
+      "expected": "状态与返回值符合约定",
+      "result": "PASS",
+      "actual": {
+        "fail_line": 0,
+        "checks": 21,
+        "operations": 0,
+        "replaces": 0,
+        "deferred": 0,
+        "case_id": 34
+      },
+      "error": null
+    },
+    {
+      "id": 35,
+      "name": "Snapshot完整Get Release及再次启动 / YUV422",
+      "input": "Snapshot完整Get Release及再次启动",
+      "expected": "状态与返回值符合约定",
+      "result": "PASS",
+      "actual": {
+        "fail_line": 0,
+        "checks": 21,
+        "operations": 0,
+        "replaces": 0,
+        "deferred": 0,
+        "case_id": 35
+      },
+      "error": null
+    },
+    {
+      "id": 36,
+      "name": "Snapshot失败恢复保留模式 / Y8",
+      "input": "Snapshot失败恢复保留模式",
+      "expected": "状态与返回值符合约定",
+      "result": "PASS",
+      "actual": {
+        "fail_line": 0,
+        "checks": 16,
+        "operations": 0,
+        "replaces": 0,
+        "deferred": 0,
+        "case_id": 36
+      },
+      "error": null
+    },
+    {
+      "id": 37,
+      "name": "Snapshot失败恢复保留模式 / RGB565",
+      "input": "Snapshot失败恢复保留模式",
+      "expected": "状态与返回值符合约定",
+      "result": "PASS",
+      "actual": {
+        "fail_line": 0,
+        "checks": 16,
+        "operations": 0,
+        "replaces": 0,
+        "deferred": 0,
+        "case_id": 37
+      },
+      "error": null
+    },
+    {
+      "id": 38,
+      "name": "Snapshot失败恢复保留模式 / YUV422",
+      "input": "Snapshot失败恢复保留模式",
+      "expected": "状态与返回值符合约定",
+      "result": "PASS",
+      "actual": {
+        "fail_line": 0,
+        "checks": 16,
+        "operations": 0,
+        "replaces": 0,
+        "deferred": 0,
+        "case_id": 38
+      },
+      "error": null
+    },
+    {
+      "id": 39,
+      "name": "READY拒绝Stream和Stop / Y8",
+      "input": "READY拒绝Stream和Stop",
+      "expected": "状态与返回值符合约定",
+      "result": "PASS",
+      "actual": {
+        "fail_line": 0,
+        "checks": 13,
+        "operations": 0,
+        "replaces": 0,
+        "deferred": 0,
+        "case_id": 39
+      },
+      "error": null
+    },
+    {
+      "id": 40,
+      "name": "READY拒绝Stream和Stop / RGB565",
+      "input": "READY拒绝Stream和Stop",
+      "expected": "状态与返回值符合约定",
+      "result": "PASS",
+      "actual": {
+        "fail_line": 0,
+        "checks": 13,
+        "operations": 0,
+        "replaces": 0,
+        "deferred": 0,
+        "case_id": 40
+      },
+      "error": null
+    },
+    {
+      "id": 41,
+      "name": "READY拒绝Stream和Stop / YUV422",
+      "input": "READY拒绝Stream和Stop",
+      "expected": "状态与返回值符合约定",
+      "result": "PASS",
+      "actual": {
+        "fail_line": 0,
+        "checks": 13,
+        "operations": 0,
+        "replaces": 0,
+        "deferred": 0,
+        "case_id": 41
+      },
+      "error": null
+    },
+    {
+      "id": 42,
+      "name": "Stream拒绝Snapshot及重复启动 / Y8",
+      "input": "Stream拒绝Snapshot及重复启动",
+      "expected": "状态与返回值符合约定",
+      "result": "PASS",
+      "actual": {
+        "fail_line": 0,
+        "checks": 17,
+        "operations": 0,
+        "replaces": 0,
+        "deferred": 0,
+        "case_id": 42
+      },
+      "error": null
+    },
+    {
+      "id": 43,
+      "name": "Stream拒绝Snapshot及重复启动 / RGB565",
+      "input": "Stream拒绝Snapshot及重复启动",
+      "expected": "状态与返回值符合约定",
+      "result": "PASS",
+      "actual": {
+        "fail_line": 0,
+        "checks": 17,
+        "operations": 0,
+        "replaces": 0,
+        "deferred": 0,
+        "case_id": 43
+      },
+      "error": null
+    },
+    {
+      "id": 44,
+      "name": "Stream拒绝Snapshot及重复启动 / YUV422",
+      "input": "Stream拒绝Snapshot及重复启动",
+      "expected": "状态与返回值符合约定",
+      "result": "PASS",
+      "actual": {
+        "fail_line": 0,
+        "checks": 17,
+        "operations": 0,
+        "replaces": 0,
+        "deferred": 0,
+        "case_id": 44
+      },
+      "error": null
+    },
+    {
+      "id": 45,
+      "name": "空闲Stop无硬件调用 / Y8",
+      "input": "空闲Stop无硬件调用",
+      "expected": "状态与返回值符合约定",
+      "result": "PASS",
+      "actual": {
+        "fail_line": 0,
+        "checks": 12,
+        "operations": 0,
+        "replaces": 0,
+        "deferred": 0,
+        "case_id": 45
+      },
+      "error": null
+    },
+    {
+      "id": 46,
+      "name": "空闲Stop无硬件调用 / RGB565",
+      "input": "空闲Stop无硬件调用",
+      "expected": "状态与返回值符合约定",
+      "result": "PASS",
+      "actual": {
+        "fail_line": 0,
+        "checks": 12,
+        "operations": 0,
+        "replaces": 0,
+        "deferred": 0,
+        "case_id": 46
+      },
+      "error": null
+    },
+    {
+      "id": 47,
+      "name": "空闲Stop无硬件调用 / YUV422",
+      "input": "空闲Stop无硬件调用",
+      "expected": "状态与返回值符合约定",
+      "result": "PASS",
+      "actual": {
+        "fail_line": 0,
+        "checks": 12,
+        "operations": 0,
+        "replaces": 0,
+        "deferred": 0,
+        "case_id": 47
+      },
+      "error": null
+    },
+    {
+      "id": 48,
+      "name": "非法配置不初始化 / Y8",
+      "input": "非法配置不初始化",
+      "expected": "状态与返回值符合约定",
+      "result": "PASS",
+      "actual": {
+        "fail_line": 0,
+        "checks": 3,
+        "operations": 0,
+        "replaces": 0,
+        "deferred": 0,
+        "case_id": 48
+      },
+      "error": null
+    },
+    {
+      "id": 49,
+      "name": "非法配置不初始化 / RGB565",
+      "input": "非法配置不初始化",
+      "expected": "状态与返回值符合约定",
+      "result": "PASS",
+      "actual": {
+        "fail_line": 0,
+        "checks": 3,
+        "operations": 0,
+        "replaces": 0,
+        "deferred": 0,
+        "case_id": 49
+      },
+      "error": null
+    },
+    {
+      "id": 50,
+      "name": "非法配置不初始化 / YUV422",
+      "input": "非法配置不初始化",
+      "expected": "状态与返回值符合约定",
+      "result": "PASS",
+      "actual": {
+        "fail_line": 0,
+        "checks": 3,
+        "operations": 0,
+        "replaces": 0,
+        "deferred": 0,
+        "case_id": 50
+      },
+      "error": null
+    },
+    {
+      "id": 51,
+      "name": "Stream初始化失败不占模式 / Y8",
+      "input": "Stream初始化失败不占模式",
+      "expected": "状态与返回值符合约定",
+      "result": "PASS",
+      "actual": {
+        "fail_line": 0,
+        "checks": 12,
+        "operations": 0,
+        "replaces": 0,
+        "deferred": 0,
+        "case_id": 51
+      },
+      "error": null
+    },
+    {
+      "id": 52,
+      "name": "Stream初始化失败不占模式 / RGB565",
+      "input": "Stream初始化失败不占模式",
+      "expected": "状态与返回值符合约定",
+      "result": "PASS",
+      "actual": {
+        "fail_line": 0,
+        "checks": 12,
+        "operations": 0,
+        "replaces": 0,
+        "deferred": 0,
+        "case_id": 52
+      },
+      "error": null
+    },
+    {
+      "id": 53,
+      "name": "Stream初始化失败不占模式 / YUV422",
+      "input": "Stream初始化失败不占模式",
+      "expected": "状态与返回值符合约定",
+      "result": "PASS",
+      "actual": {
+        "fail_line": 0,
+        "checks": 12,
+        "operations": 0,
+        "replaces": 0,
+        "deferred": 0,
+        "case_id": 53
+      },
+      "error": null
+    },
+    {
+      "id": 54,
+      "name": "Stream启动BUSY恢复 / Y8",
+      "input": "Stream启动BUSY恢复",
+      "expected": "状态与返回值符合约定",
+      "result": "PASS",
+      "actual": {
+        "fail_line": 0,
+        "checks": 17,
+        "operations": 0,
+        "replaces": 0,
+        "deferred": 0,
+        "case_id": 54
+      },
+      "error": null
+    },
+    {
+      "id": 55,
+      "name": "Stream启动BUSY恢复 / RGB565",
+      "input": "Stream启动BUSY恢复",
+      "expected": "状态与返回值符合约定",
+      "result": "PASS",
+      "actual": {
+        "fail_line": 0,
+        "checks": 17,
+        "operations": 0,
+        "replaces": 0,
+        "deferred": 0,
+        "case_id": 55
+      },
+      "error": null
+    },
+    {
+      "id": 56,
+      "name": "Stream启动BUSY恢复 / YUV422",
+      "input": "Stream启动BUSY恢复",
+      "expected": "状态与返回值符合约定",
+      "result": "PASS",
+      "actual": {
+        "fail_line": 0,
+        "checks": 17,
+        "operations": 0,
+        "replaces": 0,
+        "deferred": 0,
+        "case_id": 56
+      },
+      "error": null
+    },
+    {
+      "id": 57,
+      "name": "Stream启动TIMEOUT恢复 / Y8",
+      "input": "Stream启动TIMEOUT恢复",
+      "expected": "状态与返回值符合约定",
+      "result": "PASS",
+      "actual": {
+        "fail_line": 0,
+        "checks": 17,
+        "operations": 0,
+        "replaces": 0,
+        "deferred": 0,
+        "case_id": 57
+      },
+      "error": null
+    },
+    {
+      "id": 58,
+      "name": "Stream启动TIMEOUT恢复 / RGB565",
+      "input": "Stream启动TIMEOUT恢复",
+      "expected": "状态与返回值符合约定",
+      "result": "PASS",
+      "actual": {
+        "fail_line": 0,
+        "checks": 17,
+        "operations": 0,
+        "replaces": 0,
+        "deferred": 0,
+        "case_id": 58
+      },
+      "error": null
+    },
+    {
+      "id": 59,
+      "name": "Stream启动TIMEOUT恢复 / YUV422",
+      "input": "Stream启动TIMEOUT恢复",
+      "expected": "状态与返回值符合约定",
+      "result": "PASS",
+      "actual": {
+        "fail_line": 0,
+        "checks": 17,
+        "operations": 0,
+        "replaces": 0,
+        "deferred": 0,
+        "case_id": 59
+      },
+      "error": null
+    },
+    {
+      "id": 60,
+      "name": "Rotate失败不提交对象 / Y8",
+      "input": "Rotate失败不提交对象",
+      "expected": "状态与返回值符合约定",
+      "result": "PASS",
+      "actual": {
+        "fail_line": 0,
+        "checks": 15,
+        "operations": 0,
+        "replaces": 1,
+        "deferred": 0,
+        "case_id": 60
+      },
+      "error": null
+    },
+    {
+      "id": 61,
+      "name": "Rotate失败不提交对象 / RGB565",
+      "input": "Rotate失败不提交对象",
+      "expected": "状态与返回值符合约定",
+      "result": "PASS",
+      "actual": {
+        "fail_line": 0,
+        "checks": 15,
+        "operations": 0,
+        "replaces": 1,
+        "deferred": 0,
+        "case_id": 61
+      },
+      "error": null
+    },
+    {
+      "id": 62,
+      "name": "Rotate失败不提交对象 / YUV422",
+      "input": "Rotate失败不提交对象",
+      "expected": "状态与返回值符合约定",
+      "result": "PASS",
+      "actual": {
+        "fail_line": 0,
+        "checks": 15,
+        "operations": 0,
+        "replaces": 1,
+        "deferred": 0,
+        "case_id": 62
+      },
+      "error": null
+    },
+    {
+      "id": 63,
+      "name": "Snapshot Tick回绕99ms / Y8",
+      "input": "Snapshot Tick回绕99ms",
+      "expected": "状态与返回值符合约定",
+      "result": "PASS",
+      "actual": {
+        "fail_line": 0,
+        "checks": 10,
+        "operations": 0,
+        "replaces": 0,
+        "deferred": 0,
+        "case_id": 63
+      },
+      "error": null
+    },
+    {
+      "id": 64,
+      "name": "Snapshot Tick回绕99ms / RGB565",
+      "input": "Snapshot Tick回绕99ms",
+      "expected": "状态与返回值符合约定",
+      "result": "PASS",
+      "actual": {
+        "fail_line": 0,
+        "checks": 10,
+        "operations": 0,
+        "replaces": 0,
+        "deferred": 0,
+        "case_id": 64
+      },
+      "error": null
+    },
+    {
+      "id": 65,
+      "name": "Snapshot Tick回绕99ms / YUV422",
+      "input": "Snapshot Tick回绕99ms",
+      "expected": "状态与返回值符合约定",
+      "result": "PASS",
+      "actual": {
+        "fail_line": 0,
+        "checks": 10,
+        "operations": 0,
+        "replaces": 0,
+        "deferred": 0,
+        "case_id": 65
+      },
+      "error": null
+    },
+    {
+      "id": 66,
+      "name": "Snapshot Tick回绕100ms / Y8",
+      "input": "Snapshot Tick回绕100ms",
+      "expected": "状态与返回值符合约定",
+      "result": "PASS",
+      "actual": {
+        "fail_line": 0,
+        "checks": 12,
+        "operations": 0,
+        "replaces": 0,
+        "deferred": 0,
+        "case_id": 66
+      },
+      "error": null
+    },
+    {
+      "id": 67,
+      "name": "Snapshot Tick回绕100ms / RGB565",
+      "input": "Snapshot Tick回绕100ms",
+      "expected": "状态与返回值符合约定",
+      "result": "PASS",
+      "actual": {
+        "fail_line": 0,
+        "checks": 12,
+        "operations": 0,
+        "replaces": 0,
+        "deferred": 0,
+        "case_id": 67
+      },
+      "error": null
+    },
+    {
+      "id": 68,
+      "name": "Snapshot Tick回绕100ms / YUV422",
+      "input": "Snapshot Tick回绕100ms",
+      "expected": "状态与返回值符合约定",
+      "result": "PASS",
+      "actual": {
+        "fail_line": 0,
+        "checks": 12,
+        "operations": 0,
+        "replaces": 0,
+        "deferred": 0,
+        "case_id": 68
+      },
+      "error": null
+    },
+    {
+      "id": 69,
+      "name": "Stream临界区保持PRIMASK / Y8",
+      "input": "Stream临界区保持PRIMASK",
+      "expected": "状态与返回值符合约定",
+      "result": "PASS",
+      "actual": {
+        "fail_line": 0,
+        "checks": 17,
+        "operations": 0,
+        "replaces": 0,
+        "deferred": 0,
+        "case_id": 69
+      },
+      "error": null
+    },
+    {
+      "id": 70,
+      "name": "Stream临界区保持PRIMASK / RGB565",
+      "input": "Stream临界区保持PRIMASK",
+      "expected": "状态与返回值符合约定",
+      "result": "PASS",
+      "actual": {
+        "fail_line": 0,
+        "checks": 17,
+        "operations": 0,
+        "replaces": 0,
+        "deferred": 0,
+        "case_id": 70
+      },
+      "error": null
+    },
+    {
+      "id": 71,
+      "name": "Stream临界区保持PRIMASK / YUV422",
+      "input": "Stream临界区保持PRIMASK",
+      "expected": "状态与返回值符合约定",
+      "result": "PASS",
+      "actual": {
+        "fail_line": 0,
+        "checks": 17,
+        "operations": 0,
+        "replaces": 0,
+        "deferred": 0,
+        "case_id": 71
+      },
+      "error": null
+    }
+  ]
+}

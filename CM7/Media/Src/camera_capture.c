@@ -47,32 +47,16 @@ typedef enum
 	CAMERA_CAPTURE_ERROR
 } CameraCaptureState_t;
 
-//图像采集对象
+//单帧采集上下文
 typedef struct
 {
-	CameraConfig_t config;
-
-    CameraCaptureMode_t mode;  //当前采集模式
-    CameraCaptureState_t state; //当前采集状态
-
-	uint8_t *framebuffer;
-	uint32_t frame_capacity;
-	
+    uint8_t *framebuffer;
+    uint32_t frame_capacity;
     uint32_t frame_bytes;
     uint32_t valid_bytes;
-	
-	uint32_t start_tick;
-	uint32_t timeout_ms;
-
-	SysResult_t last_result;
-	bool initialized;
-
-} CameraCapture_t;
-
-//CM7唯一的图像采集实例
-static CameraCapture_t s_capture;
-
-//实现三缓冲区
+    uint32_t start_tick;
+    uint32_t timeout_ms;
+} CameraSnapshot_t;
 
 //DMA目标地址替换接口
 typedef SysResult_t (*CameraStream_ReplaceFn)(
@@ -119,8 +103,21 @@ typedef struct
 
 } CameraStream_t;
 
-//CM7连续采集三缓冲实例
-static CameraStream_t s_camera_stream;
+//统一管理单帧与连续采集上下文
+typedef struct
+{
+    CameraConfig_t config;
+    CameraCaptureMode_t mode;
+    CameraCaptureState_t state;
+    SysResult_t last_result;
+    bool initialized;
+
+    CameraSnapshot_t snapshot;
+    CameraStream_t stream;
+} CameraCapture_t;
+
+//CM7唯一的图像采集实例
+static CameraCapture_t s_capture;
 
 //内部功能函数声明
 //计算当前格式的完整帧字节数
@@ -206,18 +203,19 @@ SysResult_t CameraCapture_Init(const CameraConfig_t *config)
     s_capture.config = *config;
 
     //绑定Media管理的SDRAM区域
-    s_capture.framebuffer = (uint8_t *)(uintptr_t)CAMERA_BUFFER_BASE;
-    s_capture.frame_capacity = CAMERA_BUFFER_POOL_SIZE;
+    s_capture.snapshot.framebuffer = (uint8_t *)(uintptr_t)CAMERA_BUFFER_BASE;
+    s_capture.snapshot.frame_capacity = CAMERA_BUFFER_POOL_SIZE;
 
     //保存当前帧长度，尚未产生有效图像
-    s_capture.frame_bytes = required_bytes;
-    s_capture.valid_bytes = 0U;
+    s_capture.snapshot.frame_bytes = required_bytes;
+    s_capture.snapshot.valid_bytes = 0U;
 
     //初始化超时管理
-    s_capture.start_tick = 0U;
-    s_capture.timeout_ms = CAMERA_CAPTURE_TIMEOUT_MS;
+    s_capture.snapshot.start_tick = 0U;
+    s_capture.snapshot.timeout_ms = CAMERA_CAPTURE_TIMEOUT_MS;
 
     //初始化采集状态
+    s_capture.mode = CAMERA_CAPTURE_MODE_NONE;
     s_capture.state = CAMERA_CAPTURE_IDLE;
     s_capture.last_result = SYS_OK;
 
@@ -242,22 +240,23 @@ SysResult_t CameraCapture_Start(void)
         return SYS_ERR_INVALID_STATE;
 
     //正在采集或图像尚未释放时禁止重新启动
-    if (s_capture.state != CAMERA_CAPTURE_IDLE)
+    if (s_capture.mode != CAMERA_CAPTURE_MODE_NONE ||
+        s_capture.state != CAMERA_CAPTURE_IDLE)
         return SYS_ERR_BUSY;
 
     //检查Framebuffer是否有效
-    if (s_capture.framebuffer == NULL ||
-        s_capture.frame_bytes == 0U ||
-        s_capture.frame_bytes > s_capture.frame_capacity)
+    if (s_capture.snapshot.framebuffer == NULL ||
+        s_capture.snapshot.frame_bytes == 0U ||
+        s_capture.snapshot.frame_bytes > s_capture.snapshot.frame_capacity)
     {
         return SYS_ERR_INVALID_STATE;
     }
 
     //检查DMA传输长度是否满足32位Word要求
-    if ((s_capture.frame_bytes % sizeof(uint32_t)) != 0U)
+    if ((s_capture.snapshot.frame_bytes % sizeof(uint32_t)) != 0U)
         return SYS_ERR_INVALID_STATE;
 
-    dma_words = s_capture.frame_bytes / sizeof(uint32_t);
+    dma_words = s_capture.snapshot.frame_bytes / sizeof(uint32_t);
 
     if (dma_words == 0U ||
         dma_words > CAMERA_DMA_MAX_WORDS)
@@ -266,18 +265,18 @@ SysResult_t CameraCapture_Start(void)
     }
 
     //新一轮采集开始，上一帧数据失效
-    s_capture.valid_bytes = 0U;
+    s_capture.snapshot.valid_bytes = 0U;
     s_capture.last_result = SYS_OK;
 
     //记录采集开始时间
-    s_capture.start_tick = Platform_TimeGetMs();
+    s_capture.snapshot.start_tick = Platform_TimeGetMs();
 
     //先标记采集中，再启动硬件
     s_capture.state = CAMERA_CAPTURE_CAPTURING;
 
 	s_capture.mode = CAMERA_CAPTURE_MODE_SNAPSHOT;
     result = BSP_DCMI_StartSnapshot(
-        (uint32_t *)s_capture.framebuffer,
+        (uint32_t *)s_capture.snapshot.framebuffer,
         dma_words
     );
 
@@ -297,11 +296,15 @@ SysResult_t CameraCapture_Start(void)
 SysResult_t CameraCapture_StartStream(void)
 {
     SysResult_t result;
-    CameraStream_t *stream = &s_camera_stream;
+    CameraStream_t *stream = &s_capture.stream;
     uint32_t dma_words;
 
     //1. 检查Media初始化
     if (!s_capture.initialized)
+        return SYS_ERR_INVALID_STATE;
+
+    //故障恢复后才能重新启动
+    if (s_capture.state == CAMERA_CAPTURE_ERROR)
         return SYS_ERR_INVALID_STATE;
 
     //2. 防止Snapshot与Stream同时运行
@@ -323,8 +326,9 @@ SysResult_t CameraCapture_StartStream(void)
     //4. 单帧字节数转换为DMA Word数量
     dma_words = stream->frame_bytes / sizeof(uint32_t);
 
-    //5. 启动前先占用Stream模式
+    //5. 启动前先占用Stream模式和采集状态
     s_capture.mode = CAMERA_CAPTURE_MODE_STREAM;
+    s_capture.state = CAMERA_CAPTURE_CAPTURING;
 
     //6. 注册完整帧回调并启动DMA DBM
     result = BSP_DCMI_StartContinuous(
@@ -346,9 +350,10 @@ SysResult_t CameraCapture_StartStream(void)
     if (result != SYS_OK)
     {
         s_capture.last_result = result;
+        s_capture.state = CAMERA_CAPTURE_ERROR;
 
         //BSP可能已部分启动
-        //保留模式占用，后续必须通过StopStream恢复
+        //保留模式占用，后续必须通过Stop恢复
         return result;
     }
 
@@ -383,31 +388,33 @@ void CameraCapture_Process(void)
         if ((events.flags & BSP_DCMI_EVENT_ERROR) != 0U ||
             events.result != SYS_OK)
         {
-            s_capture.valid_bytes = 0U;
+            s_capture.snapshot.valid_bytes = 0U;
             s_capture.last_result =
                 (events.result != SYS_OK) ? events.result : SYS_ERR_IO;
 
             s_capture.state = CAMERA_CAPTURE_ERROR;
         }
         //本次采集正常完成
-        else if ((events.flags & BSP_DCMI_EVENT_FRAME) != 0U)
+        else if (s_capture.mode == CAMERA_CAPTURE_MODE_SNAPSHOT &&
+                 (events.flags & BSP_DCMI_EVENT_FRAME) != 0U)
         {
-            s_capture.valid_bytes = s_capture.frame_bytes;
+            s_capture.snapshot.valid_bytes = s_capture.snapshot.frame_bytes;
             s_capture.last_result = SYS_OK;
             s_capture.state = CAMERA_CAPTURE_READY;
             return;
         }
     }
 
-    //没有完成时检查采集超时
-    if (s_capture.state == CAMERA_CAPTURE_CAPTURING)
+    //只有Snapshot使用单帧采集超时
+    if (s_capture.mode == CAMERA_CAPTURE_MODE_SNAPSHOT &&
+        s_capture.state == CAMERA_CAPTURE_CAPTURING)
     {
         uint32_t elapsed =
-            (uint32_t)(Platform_TimeGetMs() - s_capture.start_tick);
+            (uint32_t)(Platform_TimeGetMs() - s_capture.snapshot.start_tick);
 
-        if (elapsed >= s_capture.timeout_ms)
+        if (elapsed >= s_capture.snapshot.timeout_ms)
         {
-            s_capture.valid_bytes = 0U;
+            s_capture.snapshot.valid_bytes = 0U;
             s_capture.last_result = SYS_ERR_TIMEOUT;
             s_capture.state = CAMERA_CAPTURE_ERROR;
         }
@@ -428,13 +435,14 @@ bool CameraCapture_GetFrame(CameraFrame_t *frame)
         return false;
 
     //只有READY状态才能交付图像
-    if (s_capture.state != CAMERA_CAPTURE_READY)
+    if (s_capture.mode != CAMERA_CAPTURE_MODE_SNAPSHOT ||
+        s_capture.state != CAMERA_CAPTURE_READY)
         return false;
 
     //检查图像数据是否有效
-    if (s_capture.framebuffer == NULL ||
-        s_capture.valid_bytes == 0U ||
-        s_capture.valid_bytes > s_capture.frame_capacity)
+    if (s_capture.snapshot.framebuffer == NULL ||
+        s_capture.snapshot.valid_bytes == 0U ||
+        s_capture.snapshot.valid_bytes > s_capture.snapshot.frame_capacity)
     {
         return false;
     }
@@ -444,8 +452,8 @@ bool CameraCapture_GetFrame(CameraFrame_t *frame)
     frame->height = s_capture.config.height;
     frame->format = s_capture.config.format;
 
-    frame->data = s_capture.framebuffer;
-    frame->size_bytes = s_capture.valid_bytes;
+    frame->data = s_capture.snapshot.framebuffer;
+    frame->size_bytes = s_capture.snapshot.valid_bytes;
 
     return true;
 }
@@ -458,13 +466,15 @@ SysResult_t CameraCapture_ReleaseFrame(void)
         return SYS_ERR_INVALID_STATE;
 
     //只有READY状态才允许释放完整帧
-    if (s_capture.state != CAMERA_CAPTURE_READY)
+    if (s_capture.mode != CAMERA_CAPTURE_MODE_SNAPSHOT ||
+        s_capture.state != CAMERA_CAPTURE_READY)
         return SYS_ERR_INVALID_STATE;
 
     //当前图像不再有效
-    s_capture.valid_bytes = 0U;
+    s_capture.snapshot.valid_bytes = 0U;
 
     //归还缓冲区，允许DMA下一次写入
+    s_capture.mode = CAMERA_CAPTURE_MODE_NONE;
     s_capture.state = CAMERA_CAPTURE_IDLE;
 
     return SYS_OK;
@@ -484,7 +494,8 @@ SysResult_t CameraCapture_Stop(void)
         return SYS_ERR_BUSY;
 
     //没有正在进行的采集
-    if (s_capture.state == CAMERA_CAPTURE_IDLE)
+    if (s_capture.mode == CAMERA_CAPTURE_MODE_NONE &&
+        s_capture.state == CAMERA_CAPTURE_IDLE)
         return SYS_OK;
 
     //仅CAPTURING和ERROR需要停止硬件
@@ -500,7 +511,7 @@ SysResult_t CameraCapture_Stop(void)
     if (result != SYS_OK)
     {
         //停止失败，禁止下一次采集
-        s_capture.valid_bytes = 0U;
+        s_capture.snapshot.valid_bytes = 0U;
         s_capture.state = CAMERA_CAPTURE_ERROR;
 
         //保留先前发生的采集错误
@@ -511,10 +522,11 @@ SysResult_t CameraCapture_Stop(void)
     }
 
     //停止成功，当前缓冲区不再包含有效图像
-    s_capture.valid_bytes = 0U;
-    s_capture.start_tick = 0U;
+    s_capture.snapshot.valid_bytes = 0U;
+    s_capture.snapshot.start_tick = 0U;
 
     //硬件恢复完成，允许下一次采集
+    s_capture.mode = CAMERA_CAPTURE_MODE_NONE;
     s_capture.state = CAMERA_CAPTURE_IDLE;
 
     return SYS_OK;
@@ -970,7 +982,7 @@ static SysResult_t CameraStream_OnFrameComplete(
     CameraStream_t *stream = (CameraStream_t *)context;
 
     //只接受当前Media三缓冲实例
-    if (stream != &s_camera_stream)
+    if (stream != &s_capture.stream)
         return SYS_ERR_INVALID_ARG;
 
     //由Media负责轮换，BSP负责修改DMA地址

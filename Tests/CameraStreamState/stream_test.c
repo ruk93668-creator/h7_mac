@@ -31,12 +31,12 @@ static int Eq(uint32_t line,uint32_t a,uint32_t b){g_result.checks++;if(a!=b){if
 #define EQ(a,b) do{if(!Eq(__LINE__,(uint32_t)(a),(uint32_t)(b)))return 1;}while(0)
 #define SAME(a,b) EQ(memcmp(&(a),&(b),sizeof(a)),0)
 
-static SysResult_t Replace(CameraDmaSlot_t slot,uint32_t *buffer,void *context)
+static SysResult_t Replace(BspDcmiTarget_t slot,uint32_t *buffer)
 {
- uint32_t idx=slot==CAMERA_DMA_SLOT_M0?stream.dma_m0_index:stream.dma_m1_index;
+ uint32_t idx=slot==BSP_DCMI_TARGET_M0?stream.dma_m0_index:stream.dma_m1_index;
  g_result.replaces++;
  //切换回调发生时，正式状态机尚未提交软件映射与所有权
- if(context!=&stream || idx>=3 || targets[slot]!=(uint32_t *)stream.buffers[idx].data || stream.buffers[idx].state!=CAMERA_BUFFER_DMA){callback_error=1;return SYS_ERR_IO;}
+ if(idx>=3 || targets[slot]!=(uint32_t *)stream.buffers[idx].data || stream.buffers[idx].state!=CAMERA_BUFFER_DMA){callback_error=1;return SYS_ERR_IO;}
  if(replace_result!=SYS_OK)return replace_result;
  targets[slot]=buffer;return SYS_OK;
 }
@@ -68,7 +68,7 @@ static int Complete(uint32_t slot)
  uint32_t i;uint8_t *bytes=(uint8_t *)targets[slot];
  pattern++;for(i=0;i<stream.frame_bytes;i++)bytes[i]=(uint8_t)pattern;
  g_result.operations++;
- return CameraStream_OnFrameComplete(&stream,(CameraDmaSlot_t)slot,Replace,&stream);
+ return CameraStream_Rotate(&stream,(BspDcmiTarget_t)slot,Replace);
 }
 static void Dispatch(void)
 {
@@ -165,28 +165,28 @@ int Stream_TestRun(uint32_t id)
   bad=config;bad.format=(CameraPixelFormat_t)99;EQ(CameraStream_Init(&stream,&bad),SYS_ERR_INVALID_ARG);SAME(stream,before);return 0;
  }
  if(kind==9){
-  before=stream;EQ(CameraStream_OnFrameComplete(NULL,CAMERA_DMA_SLOT_M0,Replace,&stream),SYS_ERR_INVALID_ARG);
-  EQ(CameraStream_OnFrameComplete(&stream,CAMERA_DMA_SLOT_M0,NULL,&stream),SYS_ERR_INVALID_ARG);
-  EQ(CameraStream_OnFrameComplete(&stream,(CameraDmaSlot_t)2,Replace,&stream),SYS_ERR_INVALID_ARG);SAME(stream,before);EQ(g_result.replaces,0);return 0;
+  before=stream;EQ(CameraStream_Rotate(NULL,BSP_DCMI_TARGET_M0,Replace),SYS_ERR_INVALID_ARG);
+  EQ(CameraStream_Rotate(&stream,BSP_DCMI_TARGET_M0,NULL),SYS_ERR_INVALID_ARG);
+  EQ(CameraStream_Rotate(&stream,(BspDcmiTarget_t)2,Replace),SYS_ERR_INVALID_ARG);SAME(stream,before);EQ(g_result.replaces,0);return 0;
  }
  if(kind==10 || kind==11 || kind==12){
   if(kind==10)stream.dma_m0_index=3;
   if(kind==11)stream.dma_m1_index=stream.dma_m0_index;
   if(kind==12)stream.buffers[stream.dma_m0_index].state=CAMERA_BUFFER_READY;
-  before=stream;EQ(CameraStream_OnFrameComplete(&stream,CAMERA_DMA_SLOT_M0,Replace,&stream),SYS_ERR_INVALID_STATE);SAME(stream,before);EQ(g_result.replaces,0);return 0;
+  before=stream;EQ(CameraStream_Rotate(&stream,BSP_DCMI_TARGET_M0,Replace),SYS_ERR_INVALID_STATE);SAME(stream,before);EQ(g_result.replaces,0);return 0;
  }
  if(kind==13 || kind==14 || kind==15 || kind==16){
   if(kind==13)stream.consumer_index=3;
   if(kind==14)stream.consumer_index=stream.dma_m0_index;
   if(kind==15){stream.consumer_index=2;stream.buffers[2].state=CAMERA_BUFFER_FREE;}
   if(kind==16){stream.consumer_index=255;stream.buffers[2].state=CAMERA_BUFFER_READY;}
-  before=stream;EQ(CameraStream_OnFrameComplete(&stream,CAMERA_DMA_SLOT_M0,Replace,&stream),SYS_ERR_INVALID_STATE);SAME(stream,before);EQ(g_result.replaces,0);return 0;
+  before=stream;EQ(CameraStream_Rotate(&stream,BSP_DCMI_TARGET_M0,Replace),SYS_ERR_INVALID_STATE);SAME(stream,before);EQ(g_result.replaces,0);return 0;
  }
  if(kind==17){
   for(i=0;i<4;i++){
    EQ(Begin(format),0);if(i==0)stream.buffers[2].data=NULL;
    if(i==1)stream.frame_bytes=0;if(i==2)stream.buffers[2].capacity=1;if(i==3)stream.frame_bytes=3;
-   before=stream;EQ(CameraStream_OnFrameComplete(&stream,CAMERA_DMA_SLOT_M0,Replace,&stream),SYS_ERR_INVALID_STATE);SAME(stream,before);EQ(g_result.replaces,0);
+   before=stream;EQ(CameraStream_Rotate(&stream,BSP_DCMI_TARGET_M0,Replace),SYS_ERR_INVALID_STATE);SAME(stream,before);EQ(g_result.replaces,0);
   }return 0;
  }
  if(kind==18){
@@ -216,3 +216,6 @@ int Stream_TestRun(uint32_t id)
  if(kind==24)return ModelRun();
  return 1;
 }
+
+SysResult_t BSP_DCMI_StartContinuous(uint32_t *m0,uint32_t *m1,uint32_t n,BspDcmiFrameCallback_t cb,void *context){(void)m0;(void)m1;(void)n;(void)cb;(void)context;return SYS_ERR_NOT_SUPPORTED;}
+SysResult_t BSP_DCMI_ReplaceTarget(BspDcmiTarget_t target,uint32_t *buffer){(void)target;(void)buffer;return SYS_ERR_NOT_SUPPORTED;}

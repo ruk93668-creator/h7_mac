@@ -1,0 +1,73 @@
+01 PASS 结构与初始化/Y8: {'fail_line': 0, 'checks': 9, 'operations': 0, 'replaces': 0, 'deferred': 0, 'case_id': 0}; None
+02 PASS 结构与初始化/RGB565: {'fail_line': 0, 'checks': 9, 'operations': 0, 'replaces': 0, 'deferred': 0, 'case_id': 1}; None
+03 PASS 结构与初始化/YUV422: {'fail_line': 0, 'checks': 9, 'operations': 0, 'replaces': 0, 'deferred': 0, 'case_id': 2}; None
+04 PASS Snapshot释放后启动Stream/Y8: {'fail_line': 0, 'checks': 16, 'operations': 0, 'replaces': 0, 'deferred': 0, 'case_id': 3}; None
+05 PASS Snapshot释放后启动Stream/RGB565: {'fail_line': 0, 'checks': 16, 'operations': 0, 'replaces': 0, 'deferred': 0, 'case_id': 4}; None
+06 PASS Snapshot释放后启动Stream/YUV422: {'fail_line': 0, 'checks': 16, 'operations': 0, 'replaces': 0, 'deferred': 0, 'case_id': 5}; None
+07 PASS Stream停止后启动Snapshot/Y8: {'fail_line': 0, 'checks': 18, 'operations': 0, 'replaces': 0, 'deferred': 0, 'case_id': 6}; None
+08 PASS Stream停止后启动Snapshot/RGB565: {'fail_line': 0, 'checks': 18, 'operations': 0, 'replaces': 0, 'deferred': 0, 'case_id': 7}; None
+09 PASS Stream停止后启动Snapshot/YUV422: {'fail_line': 0, 'checks': 18, 'operations': 0, 'replaces': 0, 'deferred': 0, 'case_id': 8}; None
+10 PASS Snapshot停止后启动Stream/Y8: {'fail_line': 0, 'checks': 13, 'operations': 0, 'replaces': 0, 'deferred': 0, 'case_id': 9}; None
+11 PASS Snapshot停止后启动Stream/RGB565: {'fail_line': 0, 'checks': 13, 'operations': 0, 'replaces': 0, 'deferred': 0, 'case_id': 10}; None
+12 PASS Snapshot停止后启动Stream/YUV422: {'fail_line': 0, 'checks': 13, 'operations': 0, 'replaces': 0, 'deferred': 0, 'case_id': 11}; None
+13 PASS Stream启动IO错误/Y8: {'fail_line': 0, 'checks': 17, 'operations': 0, 'replaces': 0, 'deferred': 0, 'case_id': 12}; None
+14 PASS Stream启动IO错误/RGB565: {'fail_line': 0, 'checks': 17, 'operations': 0, 'replaces': 0, 'deferred': 0, 'case_id': 13}; None
+15 PASS Stream启动IO错误/YUV422: {'fail_line': 0, 'checks': 17, 'operations': 0, 'replaces': 0, 'deferred': 0, 'case_id': 14}; None
+16 PASS Stop失败保留Stream与首次错误/Y8: {'fail_line': 0, 'checks': 21, 'operations': 0, 'replaces': 0, 'deferred': 0, 'case_id': 15}; None
+17 PASS Stop失败保留Stream与首次错误/RGB565: {'fail_line': 0, 'checks': 21, 'operations': 0, 'replaces': 0, 'deferred': 0, 'case_id': 16}; None
+18 PASS Stop失败保留Stream与首次错误/YUV422: {'fail_line': 0, 'checks': 21, 'operations': 0, 'replaces': 0, 'deferred': 0, 'case_id': 17}; None
+19 PASS Stream不使用Snapshot超时/Y8: {'fail_line': 0, 'checks': 15, 'operations': 0, 'replaces': 0, 'deferred': 0, 'case_id': 18}; None
+20 PASS Stream不使用Snapshot超时/RGB565: {'fail_line': 0, 'checks': 15, 'operations': 0, 'replaces': 0, 'deferred': 0, 'case_id': 19}; None
+21 PASS Stream不使用Snapshot超时/YUV422: {'fail_line': 0, 'checks': 15, 'operations': 0, 'replaces': 0, 'deferred': 0, 'case_id': 20}; None
+22 PASS Stream不处理Snapshot FRAME/Y8: {'fail_line': 0, 'checks': 16, 'operations': 0, 'replaces': 0, 'deferred': 0, 'case_id': 21}; None
+23 PASS Stream不处理Snapshot FRAME/RGB565: {'fail_line': 0, 'checks': 16, 'operations': 0, 'replaces': 0, 'deferred': 0, 'case_id': 22}; None
+24 PASS Stream不处理Snapshot FRAME/YUV422: {'fail_line': 0, 'checks': 16, 'operations': 0, 'replaces': 0, 'deferred': 0, 'case_id': 23}; None
+25 PASS Stream错误恢复/Y8: {'fail_line': 0, 'checks': 18, 'operations': 0, 'replaces': 0, 'deferred': 0, 'case_id': 24}; None
+26 PASS Stream错误恢复/RGB565: {'fail_line': 0, 'checks': 18, 'operations': 0, 'replaces': 0, 'deferred': 0, 'case_id': 25}; None
+27 PASS Stream错误恢复/YUV422: {'fail_line': 0, 'checks': 18, 'operations': 0, 'replaces': 0, 'deferred': 0, 'case_id': 26}; None
+28 PASS Stream错误且恢复重试/Y8: {'fail_line': 0, 'checks': 21, 'operations': 0, 'replaces': 0, 'deferred': 0, 'case_id': 27}; None
+29 PASS Stream错误且恢复重试/RGB565: {'fail_line': 0, 'checks': 21, 'operations': 0, 'replaces': 0, 'deferred': 0, 'case_id': 28}; None
+30 PASS Stream错误且恢复重试/YUV422: {'fail_line': 0, 'checks': 21, 'operations': 0, 'replaces': 0, 'deferred': 0, 'case_id': 29}; None
+31 PASS 嵌套回调上下文验证/Y8: {'fail_line': 0, 'checks': 19, 'operations': 0, 'replaces': 1, 'deferred': 0, 'case_id': 30}; None
+32 PASS 嵌套回调上下文验证/RGB565: {'fail_line': 0, 'checks': 19, 'operations': 0, 'replaces': 1, 'deferred': 0, 'case_id': 31}; None
+33 PASS 嵌套回调上下文验证/YUV422: {'fail_line': 0, 'checks': 19, 'operations': 0, 'replaces': 1, 'deferred': 0, 'case_id': 32}; None
+34 PASS Snapshot完整Get Release及再次启动/Y8: {'fail_line': 0, 'checks': 21, 'operations': 0, 'replaces': 0, 'deferred': 0, 'case_id': 33}; None
+35 PASS Snapshot完整Get Release及再次启动/RGB565: {'fail_line': 0, 'checks': 21, 'operations': 0, 'replaces': 0, 'deferred': 0, 'case_id': 34}; None
+36 PASS Snapshot完整Get Release及再次启动/YUV422: {'fail_line': 0, 'checks': 21, 'operations': 0, 'replaces': 0, 'deferred': 0, 'case_id': 35}; None
+37 PASS Snapshot失败恢复保留模式/Y8: {'fail_line': 0, 'checks': 16, 'operations': 0, 'replaces': 0, 'deferred': 0, 'case_id': 36}; None
+38 PASS Snapshot失败恢复保留模式/RGB565: {'fail_line': 0, 'checks': 16, 'operations': 0, 'replaces': 0, 'deferred': 0, 'case_id': 37}; None
+39 PASS Snapshot失败恢复保留模式/YUV422: {'fail_line': 0, 'checks': 16, 'operations': 0, 'replaces': 0, 'deferred': 0, 'case_id': 38}; None
+40 PASS READY拒绝Stream和Stop/Y8: {'fail_line': 0, 'checks': 13, 'operations': 0, 'replaces': 0, 'deferred': 0, 'case_id': 39}; None
+41 PASS READY拒绝Stream和Stop/RGB565: {'fail_line': 0, 'checks': 13, 'operations': 0, 'replaces': 0, 'deferred': 0, 'case_id': 40}; None
+42 PASS READY拒绝Stream和Stop/YUV422: {'fail_line': 0, 'checks': 13, 'operations': 0, 'replaces': 0, 'deferred': 0, 'case_id': 41}; None
+43 PASS Stream拒绝Snapshot及重复启动/Y8: {'fail_line': 0, 'checks': 17, 'operations': 0, 'replaces': 0, 'deferred': 0, 'case_id': 42}; None
+44 PASS Stream拒绝Snapshot及重复启动/RGB565: {'fail_line': 0, 'checks': 17, 'operations': 0, 'replaces': 0, 'deferred': 0, 'case_id': 43}; None
+45 PASS Stream拒绝Snapshot及重复启动/YUV422: {'fail_line': 0, 'checks': 17, 'operations': 0, 'replaces': 0, 'deferred': 0, 'case_id': 44}; None
+46 PASS 空闲Stop无硬件调用/Y8: {'fail_line': 0, 'checks': 12, 'operations': 0, 'replaces': 0, 'deferred': 0, 'case_id': 45}; None
+47 PASS 空闲Stop无硬件调用/RGB565: {'fail_line': 0, 'checks': 12, 'operations': 0, 'replaces': 0, 'deferred': 0, 'case_id': 46}; None
+48 PASS 空闲Stop无硬件调用/YUV422: {'fail_line': 0, 'checks': 12, 'operations': 0, 'replaces': 0, 'deferred': 0, 'case_id': 47}; None
+49 PASS 非法配置不初始化/Y8: {'fail_line': 0, 'checks': 3, 'operations': 0, 'replaces': 0, 'deferred': 0, 'case_id': 48}; None
+50 PASS 非法配置不初始化/RGB565: {'fail_line': 0, 'checks': 3, 'operations': 0, 'replaces': 0, 'deferred': 0, 'case_id': 49}; None
+51 PASS 非法配置不初始化/YUV422: {'fail_line': 0, 'checks': 3, 'operations': 0, 'replaces': 0, 'deferred': 0, 'case_id': 50}; None
+52 PASS Stream初始化失败不占模式/Y8: {'fail_line': 0, 'checks': 12, 'operations': 0, 'replaces': 0, 'deferred': 0, 'case_id': 51}; None
+53 PASS Stream初始化失败不占模式/RGB565: {'fail_line': 0, 'checks': 12, 'operations': 0, 'replaces': 0, 'deferred': 0, 'case_id': 52}; None
+54 PASS Stream初始化失败不占模式/YUV422: {'fail_line': 0, 'checks': 12, 'operations': 0, 'replaces': 0, 'deferred': 0, 'case_id': 53}; None
+55 PASS Stream启动BUSY恢复/Y8: {'fail_line': 0, 'checks': 17, 'operations': 0, 'replaces': 0, 'deferred': 0, 'case_id': 54}; None
+56 PASS Stream启动BUSY恢复/RGB565: {'fail_line': 0, 'checks': 17, 'operations': 0, 'replaces': 0, 'deferred': 0, 'case_id': 55}; None
+57 PASS Stream启动BUSY恢复/YUV422: {'fail_line': 0, 'checks': 17, 'operations': 0, 'replaces': 0, 'deferred': 0, 'case_id': 56}; None
+58 PASS Stream启动TIMEOUT恢复/Y8: {'fail_line': 0, 'checks': 17, 'operations': 0, 'replaces': 0, 'deferred': 0, 'case_id': 57}; None
+59 PASS Stream启动TIMEOUT恢复/RGB565: {'fail_line': 0, 'checks': 17, 'operations': 0, 'replaces': 0, 'deferred': 0, 'case_id': 58}; None
+60 PASS Stream启动TIMEOUT恢复/YUV422: {'fail_line': 0, 'checks': 17, 'operations': 0, 'replaces': 0, 'deferred': 0, 'case_id': 59}; None
+61 PASS Rotate失败不提交对象/Y8: {'fail_line': 0, 'checks': 15, 'operations': 0, 'replaces': 1, 'deferred': 0, 'case_id': 60}; None
+62 PASS Rotate失败不提交对象/RGB565: {'fail_line': 0, 'checks': 15, 'operations': 0, 'replaces': 1, 'deferred': 0, 'case_id': 61}; None
+63 PASS Rotate失败不提交对象/YUV422: {'fail_line': 0, 'checks': 15, 'operations': 0, 'replaces': 1, 'deferred': 0, 'case_id': 62}; None
+64 PASS Snapshot Tick回绕99ms/Y8: {'fail_line': 0, 'checks': 10, 'operations': 0, 'replaces': 0, 'deferred': 0, 'case_id': 63}; None
+65 PASS Snapshot Tick回绕99ms/RGB565: {'fail_line': 0, 'checks': 10, 'operations': 0, 'replaces': 0, 'deferred': 0, 'case_id': 64}; None
+66 PASS Snapshot Tick回绕99ms/YUV422: {'fail_line': 0, 'checks': 10, 'operations': 0, 'replaces': 0, 'deferred': 0, 'case_id': 65}; None
+67 PASS Snapshot Tick回绕100ms/Y8: {'fail_line': 0, 'checks': 12, 'operations': 0, 'replaces': 0, 'deferred': 0, 'case_id': 66}; None
+68 PASS Snapshot Tick回绕100ms/RGB565: {'fail_line': 0, 'checks': 12, 'operations': 0, 'replaces': 0, 'deferred': 0, 'case_id': 67}; None
+69 PASS Snapshot Tick回绕100ms/YUV422: {'fail_line': 0, 'checks': 12, 'operations': 0, 'replaces': 0, 'deferred': 0, 'case_id': 68}; None
+70 PASS Stream临界区保持PRIMASK/Y8: {'fail_line': 0, 'checks': 17, 'operations': 0, 'replaces': 0, 'deferred': 0, 'case_id': 69}; None
+71 PASS Stream临界区保持PRIMASK/RGB565: {'fail_line': 0, 'checks': 17, 'operations': 0, 'replaces': 0, 'deferred': 0, 'case_id': 70}; None
+72 PASS Stream临界区保持PRIMASK/YUV422: {'fail_line': 0, 'checks': 17, 'operations': 0, 'replaces': 0, 'deferred': 0, 'case_id': 71}; None
+TOTAL {'total': 72, 'passed': 72, 'failed': 0, 'assertions': 1095} formal source changed: []

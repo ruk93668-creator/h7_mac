@@ -7,6 +7,7 @@ from unicorn import Uc,UC_ARCH_ARM,UC_MODE_THUMB,UC_MODE_MCLASS
 from unicorn.arm_const import UC_ARM_REG_SP,UC_ARM_REG_LR,UC_ARM_REG_R0,UC_ARM_REG_PC
 from elftools.elf.elffile import ELFFile
 commands=[]
+source_before={f:hashlib.sha256((root/f).read_bytes()).hexdigest() for f in json.loads((here/"source_baseline.json").read_text()).keys()}
 def run(cmd):
  p=subprocess.run(list(map(str,cmd)),cwd=root,capture_output=True)
  output=(p.stdout+p.stderr).decode('utf-8',errors='replace')
@@ -63,7 +64,7 @@ for kind,(name,input_,expected) in enumerate(groups):
   print(f"{id+1:02d} {rows[-1]['result']} {name}/{label}: {state}; {error}",flush=True)
   (here/'results.json').write_text(json.dumps({'cases':rows},ensure_ascii=False,indent=2),encoding='utf-8')
 summary={'total':len(rows),'passed':sum(r['result']=='PASS' for r in rows),'failed':sum(r['result']=='FAIL' for r in rows),'assertions':sum(r['actual']['checks'] for r in rows)}
-baseline=json.loads((here/'source_baseline.json').read_text());changed=[f for f,h in baseline.items() if hashlib.sha256((root/f).read_bytes()).hexdigest()!=h]
+baseline=source_before;changed=[f for f,h in baseline.items() if hashlib.sha256((root/f).read_bytes()).hexdigest()!=h]
 (here/'results.json').write_text(json.dumps({'summary':summary,'formal_source_changed':changed,'cases':rows},ensure_ascii=False,indent=2),encoding='utf-8')
 lines=['# CameraStream隔离状态机测试','','真实camera_capture.c直接编译到测试翻译单元；不链接HAL。测试在Unicorn执行ARMCC5生成的ARM机器码。','', '| 用例 | 输入 | 预期 | 实际 | 结果 |','|---|---|---|---|---|']
 for row in rows:lines.append('| '+row['name']+' | '+row['input']+' | '+row['expected']+' | '+str(row['actual'])+' | '+row['result']+' |')

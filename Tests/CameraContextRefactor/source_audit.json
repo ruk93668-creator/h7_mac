@@ -1,0 +1,13 @@
+{
+  "CameraStream_Init": true,
+  "CameraStream_FindReplaceable": true,
+  "CameraStream_Rotate": true,
+  "CameraStream_GetFrame": true,
+  "CameraStream_ReleaseFrame": true,
+  "no_old_global": true,
+  "no_old_snapshot_paths": true,
+  "nested_callback_context": true,
+  "CM7/BSP/bsp_dcmi.c unchanged": true,
+  "CM7/BSP/bsp_dcmi.h unchanged": true,
+  "CM7/Media/Inc/camera_capture.h unchanged": true
+}

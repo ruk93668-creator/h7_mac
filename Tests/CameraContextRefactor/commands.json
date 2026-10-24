@@ -1,0 +1,17 @@
+[
+  {
+    "command": "D:/32/ARM/ARMCC/Bin/armcc.exe --vsn",
+    "returncode": 0,
+    "output": "Product: MDK Plus 5.32\r\nComponent: ARM Compiler 5.06 update 7 (build 960)\r\nTool: armcc [4d365d]\r\nFor support see http://www.arm.com/support\r\nSoftware supplied by: ARM Limited\r\n"
+  },
+  {
+    "command": "D:/32/ARM/ARMCC/Bin/armcc.exe --cpu Cortex-M7 --c99 -O0 -I D:\\32\\STM32H7\\h7_mac\\Tests\\CameraStreamState\\stubs -I D:\\32\\STM32H7\\h7_mac\\Common\\Inc -I D:\\32\\STM32H7\\h7_mac\\CM7\\Media\\Inc -I D:\\32\\STM32H7\\h7_mac\\CM7\\BSP -I D:\\32\\STM32H7\\h7_mac\\CM7\\Platform -c D:\\32\\STM32H7\\h7_mac\\Tests\\CameraContextRefactor\\context_test.c -o D:\\32\\STM32H7\\h7_mac\\Tests\\CameraContextRefactor\\stream_test.o",
+    "returncode": 0,
+    "output": ""
+  },
+  {
+    "command": "D:/32/ARM/ARMCC/Bin/armlink.exe D:\\32\\STM32H7\\h7_mac\\Tests\\CameraContextRefactor\\stream_test.o --entry Stream_TestRun --scatter D:\\32\\STM32H7\\h7_mac\\Tests\\CameraContextRefactor\\test.sct --no_scanlib -o D:\\32\\STM32H7\\h7_mac\\Tests\\CameraContextRefactor\\stream_test.axf",
+    "returncode": 0,
+    "output": ""
+  }
+]

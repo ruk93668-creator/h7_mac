@@ -227,7 +227,7 @@ static int FormatCases(uint32_t id)
   EQ(CameraCapture_GetLastResult(),SYS_ERR_IO);return 0;
  }
  EQ(g_result.init_result,SYS_OK);EQ(writes,272);EQ(mock_starts,1);
- EQ(s_capture.state,CAMERA_CAPTURE_CAPTURING);EQ(s_capture.frame_bytes,expected_bytes);
+ EQ(s_capture.state,CAMERA_CAPTURE_CAPTURING);EQ(s_capture.snapshot.frame_bytes,expected_bytes);
  EQ(mock_words,expected_bytes/4);EQ(mock_address,0xD0000400UL);
  EQ(registers[0x4300],expected_format);EQ(registers[0x501F],format==1?1:0);
  EQ(registers[0x503D],0);EQ(registers[0x3008],2);
@@ -245,18 +245,18 @@ static int FormatCases(uint32_t id)
   EQ(mock_stops,2);EQ(mock_starts,1);return 0;
  }
  if(group==5){
-  now=s_capture.start_tick+100;App_Run();EQ(s_capture.state,CAMERA_CAPTURE_IDLE);
+  now=s_capture.snapshot.start_tick+100;App_Run();EQ(s_capture.state,CAMERA_CAPTURE_IDLE);
   EQ(CameraCapture_GetLastResult(),SYS_ERR_TIMEOUT);EQ(mock_stops,1);
   EQ(CameraCapture_GetFrame(&frame),false);EQ(mock_starts,1);return 0;
  }
  if(group==6){
   EQ(CameraCapture_Stop(),SYS_OK);EQ(s_capture.state,CAMERA_CAPTURE_IDLE);
-  s_capture.frame_bytes=3;EQ(CameraCapture_Start(),SYS_ERR_INVALID_STATE);
-  s_capture.frame_bytes=0;EQ(CameraCapture_Start(),SYS_ERR_INVALID_STATE);
-  s_capture.frame_bytes=s_capture.frame_capacity+4;EQ(CameraCapture_Start(),SYS_ERR_INVALID_STATE);
-  s_capture.frame_capacity=0x40000;s_capture.frame_bytes=0x40000;
+  s_capture.snapshot.frame_bytes=3;EQ(CameraCapture_Start(),SYS_ERR_INVALID_STATE);
+  s_capture.snapshot.frame_bytes=0;EQ(CameraCapture_Start(),SYS_ERR_INVALID_STATE);
+  s_capture.snapshot.frame_bytes=s_capture.snapshot.frame_capacity+4;EQ(CameraCapture_Start(),SYS_ERR_INVALID_STATE);
+  s_capture.snapshot.frame_capacity=0x40000;s_capture.snapshot.frame_bytes=0x40000;
   EQ(CameraCapture_Start(),SYS_ERR_INVALID_STATE);
-  s_capture.frame_capacity=63*1024;s_capture.frame_bytes=expected_bytes;s_capture.framebuffer=NULL;
+  s_capture.snapshot.frame_capacity=63*1024;s_capture.snapshot.frame_bytes=expected_bytes;s_capture.snapshot.framebuffer=NULL;
   EQ(CameraCapture_Start(),SYS_ERR_INVALID_STATE);EQ(mock_starts,1);return 0;
  }
  //保持完整帧，既不自动释放，也不再次采集
