@@ -739,14 +739,19 @@ SysResult_t BSP_DCMI_ReplaceTarget(
 		return SYS_ERR_INVALID_STATE;
 	}
 
+	
+	//将整帧Word数换算为字节数，检查新缓冲区末地址是否溢出
 	byte_count = s_stream.frame_words * sizeof(uint32_t);
 	if ( address > UINT32_MAX - (byte_count - 1U))
 	{
 		__set_PRIMASK(primask);
 		return SYS_ERR_INVALID_ARG;
 	}
+
+	//按完成目标选择CT位、地址寄存器及HAL更新参数
 	if ( completed_target == BSP_DCMI_TARGET_M0)
 	{
+		//替换M0，使用M1地址检查缓冲区重叠
 		target_bit = 0U;
 		target_address = &DMA1_Stream0->M0AR;
 		other_address = DMA1_Stream0->M1AR;
@@ -754,6 +759,7 @@ SysResult_t BSP_DCMI_ReplaceTarget(
 	}
 	else
 	{
+		//替换M1，使用M0地址检查缓冲区重叠
 		target_bit = DMA_SxCR_CT;
 		target_address = &DMA1_Stream0->M1AR;
 		other_address = DMA1_Stream0->M0AR;
