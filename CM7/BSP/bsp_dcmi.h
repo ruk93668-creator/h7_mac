@@ -63,7 +63,8 @@ SysResult_t BSP_DCMI_StartContinuous(
     void *context
 );
 
-//替换刚完成的非活动DMA目标
+//仅在完整帧回调内替换本次完成的非活动DMA目标，一帧成功一次
+//新缓冲区需满足整帧容量、DMA访问和Cache属性要求；失败交给Stop恢复
 SysResult_t BSP_DCMI_ReplaceTarget(
     BspDcmiTarget_t completed_target,
     uint32_t *new_buffer

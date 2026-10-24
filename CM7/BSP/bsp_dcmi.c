@@ -8,6 +8,8 @@
 #define DCMI_IRQ_PRIORITY 5U
 #define DCMI_DMA_IRQ_PRIORITY 5U
 #define DCMI_STOP_TIMEOUT_MS 10U
+//地址切换前后至少保留32个Word，实际时序仍需实板验收
+#define DCMI_REPLACE_GUARD_WORDS 32U
 #define DCMI_ALL_INTERRUPTS (DCMI_IT_FRAME | DCMI_IT_OVR | DCMI_IT_ERR | DCMI_IT_VSYNC | DCMI_IT_LINE)
 
 //DCMI采集模式
@@ -71,6 +73,9 @@ typedef struct
 
     //成功完成配对的帧数
     uint32_t paired_frames;
+	
+	//只允许当前完整帧回调更换DMA目标
+	bool replace_allowed;
 
 } DcmiFrameSync_t;
 //DMA TC + DCMI FRAME 配对状态机
@@ -436,6 +441,7 @@ SysResult_t BSP_DCMI_StartContinuous(
 	s_frame_sync.frame_pending = false;
 	s_frame_sync.completed_target = BSP_DCMI_TARGET_M0;
 	s_frame_sync.paired_frames = 0U;
+	s_frame_sync.replace_allowed = false;
 	
 	//保存本次DMA传输参数
 	s_stream.frame_words = word_count;
@@ -647,6 +653,140 @@ bool BSP_DCMI_TakeEvents(BspDcmiEvents_t *events)
 	__set_PRIMASK(primask);
 	return true;
 }
+
+SysResult_t BSP_DCMI_ReplaceTarget(
+    BspDcmiTarget_t completed_target,
+    uint32_t *new_buffer)
+{
+	uint32_t address;
+	uint32_t byte_count;
+	uint32_t other_address;
+	uint32_t primask;
+	uint32_t control;
+	uint32_t remaining;
+	uint32_t remaining_after;
+	uint32_t target_bit;
+	volatile uint32_t *target_address;
+	HAL_DMA_MemoryTypeDef memory;
+	HAL_StatusTypeDef status;
+	SysResult_t result = SYS_OK;
+
+	//检查目标编号和新缓冲区地址
+	if ( (completed_target != BSP_DCMI_TARGET_M0 &&
+		completed_target != BSP_DCMI_TARGET_M1) || new_buffer == NULL)
+		return SYS_ERR_INVALID_ARG;
+	address = (uint32_t)new_buffer;
+	if ( (address & 3U) != 0U)
+		return SYS_ERR_INVALID_ARG;
+
+	//保护回调授权和软件状态，关中断不会暂停DMA
+	primask = __get_PRIMASK();
+	__disable_irq();
+	if ( !s_dcmi_ready || s_stream.mode != BSP_DCMI_MODE_CONTINUOUS ||
+		s_stream.state != BSP_DCMI_STREAM_RUNNING || !s_accept_events ||
+		!s_capture_active || s_stop_required || s_stream.stop_required ||
+		!s_frame_sync.replace_allowed || !s_frame_sync.tc_pending ||
+		!s_frame_sync.frame_pending ||
+		completed_target != s_frame_sync.completed_target ||
+		s_stream.frame_words == 0U || s_stream.frame_words > 0xFFFFU)
+	{
+		__set_PRIMASK(primask);
+		return SYS_ERR_INVALID_STATE;
+	}
+
+	byte_count = s_stream.frame_words * sizeof(uint32_t);
+	if ( address > UINT32_MAX - (byte_count - 1U))
+	{
+		__set_PRIMASK(primask);
+		return SYS_ERR_INVALID_ARG;
+	}
+	if ( completed_target == BSP_DCMI_TARGET_M0)
+	{
+		target_bit = 0U;
+		target_address = &DMA1_Stream0->M0AR;
+		other_address = DMA1_Stream0->M1AR;
+		memory = MEMORY0;
+	}
+	else
+	{
+		target_bit = DMA_SxCR_CT;
+		target_address = &DMA1_Stream0->M1AR;
+		other_address = DMA1_Stream0->M0AR;
+		memory = MEMORY1;
+	}
+
+	//禁止新缓冲区与另一DMA目标重叠
+	if ( other_address > UINT32_MAX - (byte_count - 1U))
+	{
+		result = SYS_ERR_PROTOCOL;
+		goto replace_failed;
+	}
+	if ( address <= other_address + byte_count - 1U &&
+		other_address <= address + byte_count - 1U)
+	{
+		__set_PRIMASK(primask);
+		return SYS_ERR_INVALID_ARG;
+	}
+
+	//错误优先，故障帧不能更新地址或交付
+	if ( Dcmi_CheckErrors())
+	{
+		result = s_event_result;
+		goto replace_failed;
+	}
+	control = DMA1_Stream0->CR;
+	remaining = DMA1_Stream0->NDTR;
+	if ( (control & (DMA_SxCR_EN | DMA_SxCR_DBM)) !=
+		(DMA_SxCR_EN | DMA_SxCR_DBM) ||
+		(control & DMA_SxCR_CT) == target_bit ||
+		remaining <= DCMI_REPLACE_GUARD_WORDS ||
+		remaining > s_stream.frame_words ||
+		(DMA1->LISR & DMA_FLAG_TCIF0_4) != 0U)
+	{
+		result = SYS_ERR_PROTOCOL;
+		goto replace_failed;
+	}
+
+	//HAL只写地址，切换窗口由本接口前后检查
+	status = HAL_DMAEx_ChangeMemory(&s_dcmi_dma, address, memory);
+	if ( status != HAL_OK)
+	{
+		result = Dcmi_HalResult(status);
+		goto replace_failed;
+	}
+	__DSB();
+	control = DMA1_Stream0->CR;
+	remaining_after = DMA1_Stream0->NDTR;
+	if ( *target_address != address ||
+		(control & (DMA_SxCR_EN | DMA_SxCR_DBM)) !=
+		(DMA_SxCR_EN | DMA_SxCR_DBM) ||
+		(control & DMA_SxCR_CT) == target_bit ||
+		remaining_after <= DCMI_REPLACE_GUARD_WORDS ||
+		remaining_after > remaining ||
+		(DMA1->LISR & DMA_FLAG_TCIF0_4) != 0U)
+	{
+		result = SYS_ERR_PROTOCOL;
+		goto replace_failed;
+	}
+	if ( Dcmi_CheckErrors())
+	{
+		result = s_event_result;
+		goto replace_failed;
+	}
+
+	//本帧只允许成功替换一次
+	s_frame_sync.replace_allowed = false;
+	__set_PRIMASK(primask);
+	return SYS_OK;
+
+replace_failed:
+	//写入结果不确定时不回滚地址，由主循环Stop恢复
+	s_frame_sync.replace_allowed = false;
+	Dcmi_RecordError(result);
+	__set_PRIMASK(primask);
+	return result;
+}
+
 void HAL_DCMI_FrameEventCallback(DCMI_HandleTypeDef *hdcmi)
 {
     if (hdcmi != &s_dcmi ||
@@ -826,7 +966,8 @@ static void Dcmi_ConfigPin(
 static void Dcmi_StreamTryPair(void)
 {
 	uint32_t current_target;
-
+	SysResult_t result;
+	
 	//停止或故障后不再确认完整帧
 	if ( s_stream.mode != BSP_DCMI_MODE_CONTINUOUS ||
 		s_stream.state != BSP_DCMI_STREAM_RUNNING ||
@@ -852,8 +993,23 @@ static void Dcmi_StreamTryPair(void)
 		Dcmi_RecordError(SYS_ERR_PROTOCOL);
 		return;
 	}
+	
+	s_frame_sync.replace_allowed = true;
 
-	//本轮配对成功，只累计计数，暂不交付Media
+	result = s_stream.callback(
+		s_frame_sync.completed_target,
+		s_stream.context
+	);
+
+	s_frame_sync.replace_allowed = false;
+
+	if (result != SYS_OK)
+	{
+		Dcmi_RecordError(result);
+		return;
+	}
+
+	//BSP完成一次有效的帧交付处理
 	s_frame_sync.paired_frames++;
 	s_frame_sync.tc_pending = false;
 	s_frame_sync.frame_pending = false;
