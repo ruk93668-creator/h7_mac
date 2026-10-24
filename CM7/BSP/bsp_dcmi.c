@@ -95,6 +95,15 @@ static void Dcmi_ConfigPin(
 	uint32_t pins
 );
 
+//处理M0目标传输完成，此时DMA通常已切换到M1
+static void Dcmi_StreamM0Complete(DMA_HandleTypeDef *hdma);
+
+//处理M1目标传输完成，此时DMA通常已切换到M0
+static void Dcmi_StreamM1Complete(DMA_HandleTypeDef *hdma);
+
+//记录连续采集的DMA错误，请求主循环停止并恢复
+static void Dcmi_StreamDmaError(DMA_HandleTypeDef *hdma);
+
 //将HAL状态转换为通用返回码
 static SysResult_t Dcmi_HalResult(HAL_StatusTypeDef status);
 
@@ -391,10 +400,24 @@ SysResult_t BSP_DCMI_StartContinuous(
 		return SYS_ERR_BUSY;
 	}
 
+	//第三阶段：建立STARTING状态并占用控制流程
+	s_control_busy = true;
+	
+	//标记为连续采集启动阶段
+	s_stream.mode = BSP_DCMI_MODE_CONTINUOUS;
+	s_stream.state = BSP_DCMI_STREAM_STARTING;
+	
+	//保存本次DMA传输参数
+	s_stream.frame_words = word_count;
+	
+	//保存完整帧回调及其上下文
+	s_stream.callback = callback;
+	s_stream.context = context;
+	
+	s_stream.stop_required = false;
+	
+	//软件状态提交完成，恢复中断
 	__set_PRIMASK(primask);
-
-	//第三阶段：建立STARTING状态，待实现
-
 	//第四阶段：配置并启动DMA DBM，待实现
 
 	//第五阶段：使能DCMI Continuous采集，待实现
