@@ -58,6 +58,24 @@ static BspDcmiStream_t s_stream =
     .stop_required = false
 };
 
+typedef struct
+{
+    //是否存在尚未配对的DMA完成事件
+    bool tc_pending;
+
+    //是否存在尚未配对的DCMI帧结束事件
+    bool frame_pending;
+
+    //待配对DMA目标
+    BspDcmiTarget_t completed_target;
+
+    //成功完成配对的帧数
+    uint32_t paired_frames;
+
+} DcmiFrameSync_t;
+//DMA TC + DCMI FRAME 配对状态机
+static DcmiFrameSync_t s_frame_sync;
+
 //DCMI句柄，保存外设配置、状态和DMA关联
 static DCMI_HandleTypeDef s_dcmi;
 
@@ -103,6 +121,9 @@ static void Dcmi_StreamM1Complete(DMA_HandleTypeDef *hdma);
 
 //记录连续采集的DMA错误，请求主循环停止并恢复
 static void Dcmi_StreamDmaError(DMA_HandleTypeDef *hdma);
+
+//配对DMA完成与FRAME事件，确认完成目标仍未被DMA使用
+static void Dcmi_StreamTryPair(void);
 
 //将HAL状态转换为通用返回码
 static SysResult_t Dcmi_HalResult(HAL_StatusTypeDef status);
@@ -409,6 +430,12 @@ SysResult_t BSP_DCMI_StartContinuous(
 	//标记为连续采集启动阶段
 	s_stream.mode = BSP_DCMI_MODE_CONTINUOUS;
 	s_stream.state = BSP_DCMI_STREAM_STARTING;
+
+	//新一轮采集清除旧配对状态
+	s_frame_sync.tc_pending = false;
+	s_frame_sync.frame_pending = false;
+	s_frame_sync.completed_target = BSP_DCMI_TARGET_M0;
+	s_frame_sync.paired_frames = 0U;
 	
 	//保存本次DMA传输参数
 	s_stream.frame_words = word_count;
@@ -485,6 +512,9 @@ SysResult_t BSP_DCMI_StartContinuous(
 	
 //第六阶段：进入RUNNING状态，待实现
 	
+	primask = __get_PRIMASK();
+	__disable_irq();
+	
 	s_dcmi.State = HAL_DCMI_STATE_BUSY;
 
 	s_stream.state = BSP_DCMI_STREAM_RUNNING;
@@ -500,7 +530,10 @@ SysResult_t BSP_DCMI_StartContinuous(
 	//最后开放图像采集
 	SET_BIT(DCMI->CR, DCMI_CR_CAPTURE);
 	
-//尚未启动硬件，不能返回启动成功
+	s_control_busy = false;
+	
+	__set_PRIMASK(primask);
+	
 	return SYS_OK;
 }
 
@@ -632,12 +665,24 @@ void HAL_DCMI_FrameEventCallback(DCMI_HandleTypeDef *hdcmi)
 
         if (Dcmi_CheckErrors())
             return;
-		//后续添加代码，仅用于调试
+		
+		if (s_frame_sync.frame_pending)
+		{
+			//上一帧的FRAME事件尚未完成配对，又收到FRAME
+			Dcmi_RecordError(SYS_ERR_PROTOCOL);
+			return;
+		}
+
+		//记录本次FRAME事件，等待与DMA完成事件配对
+		s_frame_sync.frame_pending = true;
+		Dcmi_StreamTryPair();
+		if ( s_stop_required)
+			return;
 
         //HAL处理FRAME时会关闭该中断，需要重新使能
         __HAL_DCMI_ENABLE_IT(hdcmi, DCMI_IT_FRAME);
         return;
-    }else if (s_stream.mode == BSP_DCMI_MODE_SNAPSHOT){
+    }else{
 		//Snapshot完整帧判断
 		if ( hdcmi != &s_dcmi || !s_accept_events || !s_capture_active || s_stop_required)
 			return;
@@ -670,8 +715,22 @@ static void Dcmi_StreamM0Complete(DMA_HandleTypeDef *hdma)
         return;
     }
 
-    //后续阶段记录M0的DMA TC事件
-    //此时不能直接通知Media
+	//确认硬件切换状态
+    if ((DMA1_Stream0->CR & DMA_SxCR_CT) == 0U)
+	{
+		Dcmi_RecordError(SYS_ERR_PROTOCOL);
+		return;
+	}
+	//检查是否已有未配对 TC
+	if (s_frame_sync.tc_pending)
+	{
+		Dcmi_RecordError(SYS_ERR_PROTOCOL);
+		return;
+	}
+	//记录 M0 完成事件
+	s_frame_sync.completed_target = BSP_DCMI_TARGET_M0;
+	s_frame_sync.tc_pending = true;
+	Dcmi_StreamTryPair();
 }
 
 static void Dcmi_StreamM1Complete(DMA_HandleTypeDef *hdma)
@@ -688,8 +747,22 @@ static void Dcmi_StreamM1Complete(DMA_HandleTypeDef *hdma)
         return;
     }
 
-    //后续阶段记录M1的DMA TC事件
-    //此时不能直接通知Media
+	//确认硬件切换状态
+    if ((DMA1_Stream0->CR & DMA_SxCR_CT) != 0U)
+	{
+		Dcmi_RecordError(SYS_ERR_PROTOCOL);
+		return;
+	}
+	//检查是否已有未配对 TC
+	if (s_frame_sync.tc_pending)
+	{
+		Dcmi_RecordError(SYS_ERR_PROTOCOL);
+		return;
+	}
+	//记录 M1 完成事件
+	s_frame_sync.completed_target = BSP_DCMI_TARGET_M1;
+	s_frame_sync.tc_pending = true;
+	Dcmi_StreamTryPair();
 }
 
 void HAL_DCMI_ErrorCallback(DCMI_HandleTypeDef *hdcmi)
@@ -747,6 +820,43 @@ static void Dcmi_ConfigPin(
 	gpio.Speed = GPIO_SPEED_FREQ_VERY_HIGH;
 	gpio.Alternate = GPIO_AF13_DCMI;
 	HAL_GPIO_Init(port, &gpio);
+}
+
+//三个事件入口使用相同IRQ优先级，配对期间不会相互抢占
+static void Dcmi_StreamTryPair(void)
+{
+	uint32_t current_target;
+
+	//停止或故障后不再确认完整帧
+	if ( s_stream.mode != BSP_DCMI_MODE_CONTINUOUS ||
+		s_stream.state != BSP_DCMI_STREAM_RUNNING ||
+		!s_accept_events || !s_capture_active ||
+		s_stop_required || s_stream.stop_required)
+		return;
+
+	//两个事件都到达后才进行配对
+	if ( !s_frame_sync.tc_pending || !s_frame_sync.frame_pending)
+		return;
+
+	//配对前再次检查错误，错误帧不计数
+	if ( Dcmi_CheckErrors())
+		return;
+
+	//CT指向DMA当前使用的目标，完成目标必须是另一个
+	current_target = DMA1_Stream0->CR & DMA_SxCR_CT;
+	if ( (s_frame_sync.completed_target != BSP_DCMI_TARGET_M0 &&
+		s_frame_sync.completed_target != BSP_DCMI_TARGET_M1) ||
+		(s_frame_sync.completed_target == BSP_DCMI_TARGET_M0 && current_target == 0U) ||
+		(s_frame_sync.completed_target == BSP_DCMI_TARGET_M1 && current_target != 0U))
+	{
+		Dcmi_RecordError(SYS_ERR_PROTOCOL);
+		return;
+	}
+
+	//本轮配对成功，只累计计数，暂不交付Media
+	s_frame_sync.paired_frames++;
+	s_frame_sync.tc_pending = false;
+	s_frame_sync.frame_pending = false;
 }
 
 static SysResult_t Dcmi_HalResult(HAL_StatusTypeDef status)
