@@ -1,5 +1,7 @@
 # BSP_DCMI_ReplaceTarget验收
 
+最新补充：旧目标缓冲区禁止同址或部分重叠，当前133/133通过，两核增量构建均0 Error、0 Warning。详见[补充验收](old_overlap_report.md)。以下保留初次实现验收记录。
+
 ## 实现
 - 保留当前用户新增的完整帧回调及replace_allowed授权机制。
 - 检查目标编号、NULL、4字节对齐、整帧地址溢出及与另一DMA目标重叠。

@@ -482,9 +482,38 @@ static int ReplaceCases(uint32_t id)
  return 0;
 }
 
+
+//新地址不能与本次完成目标旧缓冲区相同或重叠
+static int OldTargetOverlapCases(uint32_t id)
+{
+ uint32_t kind=id%7,old_address=0xD0008000U,other=0xD0016000U;
+ BspDcmiTarget_t target=id<7?BSP_DCMI_TARGET_M0:BSP_DCMI_TARGET_M1;
+ uint32_t address=old_address,mask=kind==6?1U:0U;
+ SysResult_t expected=SYS_ERR_INVALID_ARG;
+ EQ(Framework_InitRuntime(),SYS_OK);
+ s_stream.mode=BSP_DCMI_MODE_CONTINUOUS;s_stream.state=BSP_DCMI_STREAM_RUNNING;
+ s_stream.frame_words=4800;s_accept_events=true;s_capture_active=true;
+ s_frame_sync.tc_pending=true;s_frame_sync.frame_pending=true;s_frame_sync.replace_allowed=true;s_frame_sync.completed_target=target;
+ DMA1_Stream0->CR|=DMA_SxCR_EN|DMA_SxCR_DBM;
+ if(target==BSP_DCMI_TARGET_M0)DMA1_Stream0->CR|=DMA_SxCR_CT;else DMA1_Stream0->CR&=~DMA_SxCR_CT;
+ if(kind==1)address=old_address+4;
+ if(kind==2)address=old_address-4;
+ if(kind==3){address=old_address+19200;expected=SYS_OK;}
+ if(kind==4){address=old_address-19200;expected=SYS_OK;}
+ if(kind==5){old_address=0xFFFFFFFC;address=0xD000A000;expected=SYS_ERR_PROTOCOL;}
+ DMA1_Stream0->M0AR=target==BSP_DCMI_TARGET_M0?old_address:other;
+ DMA1_Stream0->M1AR=target==BSP_DCMI_TARGET_M1?old_address:other;
+ DMA1_Stream0->NDTR=4600;mock_primask=mask;
+ EQ(BSP_DCMI_ReplaceTarget(target,(uint32_t *)address),expected);EQ(mock_primask,mask);
+ if(expected==SYS_OK){EQ(replace_calls,1);EQ(s_frame_sync.replace_allowed,0);EQ(s_stop_required,0);}
+ else{EQ(replace_calls,0);EQ(DMA1_Stream0->M0AR,target==BSP_DCMI_TARGET_M0?old_address:other);EQ(DMA1_Stream0->M1AR,target==BSP_DCMI_TARGET_M1?old_address:other);
+  if(expected==SYS_ERR_INVALID_ARG){EQ(s_stop_required,0);EQ(s_frame_sync.replace_allowed,1);}else{EQ(s_stop_required,1);EQ(s_stream.state,BSP_DCMI_STREAM_ERROR);}}
+ return 0;
+}
+
 int Dcmi_TestRun(uint32_t id)
 {
- int result=id<46?Cases(id):id<62?StopCommitCases(id-46):id<82?PairCases(id-62):ReplaceCases(id-82);
+ int result=id<46?Cases(id):id<62?StopCommitCases(id-46):id<82?PairCases(id-62):id<119?ReplaceCases(id-82):OldTargetOverlapCases(id-119);
  g_result.dma_cr=DMA1_Stream0->CR;g_result.dcmi_cr=DCMI->CR;g_result.request=s_dcmi_dma.Init.Request;g_result.ready=s_dcmi_ready;
  g_result.stop_required=s_stop_required;g_result.primask=mock_primask;g_result.active=s_capture_active;
  return result;

@@ -661,6 +661,7 @@ SysResult_t BSP_DCMI_ReplaceTarget(
 	uint32_t address;
 	uint32_t byte_count;
 	uint32_t other_address;
+	uint32_t old_address;
 	uint32_t primask;
 	uint32_t control;
 	uint32_t remaining;
@@ -724,6 +725,22 @@ SysResult_t BSP_DCMI_ReplaceTarget(
 		target_address = &DMA1_Stream0->M1AR;
 		other_address = DMA1_Stream0->M0AR;
 		memory = MEMORY1;
+	}
+
+	//读取本次完成目标的旧地址，确认整帧地址范围有效
+	old_address = *target_address;
+	if ( old_address > UINT32_MAX - (byte_count - 1U))
+	{
+		result = SYS_ERR_PROTOCOL;
+		goto replace_failed;
+	}
+
+	//新旧缓冲区不能相同或部分重叠，避免交付后仍被DMA覆盖
+	if ( address <= old_address + byte_count - 1U &&
+		old_address <= address + byte_count - 1U)
+	{
+		__set_PRIMASK(primask);
+		return SYS_ERR_INVALID_ARG;
 	}
 
 	//禁止新缓冲区与另一DMA目标重叠
