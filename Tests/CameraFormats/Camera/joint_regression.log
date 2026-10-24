@@ -1,0 +1,94 @@
+D:/32/ARM/ARMCC/Bin/armcc.exe --vsn
+Product: MDK Plus 5.32
+
+Component: ARM Compiler 5.06 update 7 (build 960)
+
+Tool: armcc [4d365d]
+
+For support see http://www.arm.com/support
+
+Software supplied by: ARM Limited
+
+D:/32/ARM/ARMCC/Bin/armcc.exe --cpu Cortex-M7 --c99 -O0 -I D:\32\STM32H7\h7_mac\Tests\CameraFormats\Camera\stubs -I D:\32\STM32H7\h7_mac\Drivers\CMSIS\Include -I D:\32\STM32H7\h7_mac\CM7\BSP -I D:\32\STM32H7\h7_mac\CM7\Device\Components\OV5640 -I D:\32\STM32H7\h7_mac\CM7\Device\Inc -I D:\32\STM32H7\h7_mac\CM7\Application -I D:\32\STM32H7\h7_mac\CM7\Media\Inc -I D:\32\STM32H7\h7_mac\CM7\Framework -I D:\32\STM32H7\h7_mac\CM7\Platform -I D:\32\STM32H7\h7_mac\Common\Inc -I D:\32\STM32H7\h7_mac\Board\Inc -c D:\32\STM32H7\h7_mac\Tests\CameraFormats\Camera\camera_test.c -o D:\32\STM32H7\h7_mac\Tests\CameraFormats\Camera\camera_test.o
+D:/32/ARM/ARMCC/Bin/armcc.exe --cpu Cortex-M7 --c99 -O0 -I D:\32\STM32H7\h7_mac\Tests\CameraFormats\Camera\stubs -I D:\32\STM32H7\h7_mac\Drivers\CMSIS\Include -I D:\32\STM32H7\h7_mac\CM7\BSP -I D:\32\STM32H7\h7_mac\CM7\Device\Components\OV5640 -I D:\32\STM32H7\h7_mac\CM7\Device\Inc -I D:\32\STM32H7\h7_mac\CM7\Application -I D:\32\STM32H7\h7_mac\CM7\Media\Inc -I D:\32\STM32H7\h7_mac\CM7\Framework -I D:\32\STM32H7\h7_mac\CM7\Platform -I D:\32\STM32H7\h7_mac\Common\Inc -I D:\32\STM32H7\h7_mac\Board\Inc -c D:\32\STM32H7\h7_mac\CM7\Device\Components\OV5640\ov5640.c -o D:\32\STM32H7\h7_mac\Tests\CameraFormats\Camera\ov5640.o
+D:/32/ARM/ARMCC/Bin/armcc.exe --cpu Cortex-M7 --c99 -O0 -I D:\32\STM32H7\h7_mac\Tests\CameraFormats\Camera\stubs -I D:\32\STM32H7\h7_mac\Drivers\CMSIS\Include -I D:\32\STM32H7\h7_mac\CM7\BSP -I D:\32\STM32H7\h7_mac\CM7\Device\Components\OV5640 -I D:\32\STM32H7\h7_mac\CM7\Device\Inc -I D:\32\STM32H7\h7_mac\CM7\Application -I D:\32\STM32H7\h7_mac\CM7\Media\Inc -I D:\32\STM32H7\h7_mac\CM7\Framework -I D:\32\STM32H7\h7_mac\CM7\Platform -I D:\32\STM32H7\h7_mac\Common\Inc -I D:\32\STM32H7\h7_mac\Board\Inc -c D:\32\STM32H7\h7_mac\CM7\Device\Components\OV5640\ov5640_reg.c -o D:\32\STM32H7\h7_mac\Tests\CameraFormats\Camera\ov5640_reg.o
+D:/32/ARM/ARMCC/Bin/armlink.exe D:\32\STM32H7\h7_mac\Tests\CameraFormats\Camera\ov5640.o D:\32\STM32H7\h7_mac\Tests\CameraFormats\Camera\ov5640_reg.o D:\32\STM32H7\h7_mac\Tests\CameraFormats\Camera\camera_test.o --entry Camera_TestRun --scatter D:\32\STM32H7\h7_mac\Tests\CameraFormats\Camera\test.sct --keep=*(.framework_init) --keep=*(.device_export) --no_scanlib -o D:\32\STM32H7\h7_mac\Tests\CameraFormats\Camera\camera_test.axf
+01 PASS: 正常Initcall配置160x120 Y8，彩条关闭: 写入272次，首次Initcall=0，独立验收=0，已校验17项，失败寄存器0x0000，Timer堆=0，断言36项; line=0; error=None
+02 PASS: 错误芯片ID禁止写表: 写入0次，首次Initcall=-10，独立验收=0，已校验0项，失败寄存器0x0000，Timer堆=0，断言8项; line=0; error=None
+03 PASS: SCCB读ID地址NACK: 写入0次，首次Initcall=-9，独立验收=0，已校验0项，失败寄存器0x0000，Timer堆=0，断言7项; line=0; error=None
+04 PASS: 关键寄存器回读不一致-0: 写入272次，首次Initcall=0，独立验收=-10，已校验0项，失败寄存器0x0000，Timer堆=0，断言11项; line=0; error=None
+05 PASS: 关键寄存器回读不一致-1: 写入272次，首次Initcall=0，独立验收=-10，已校验1项，失败寄存器0x3809，Timer堆=0，断言11项; line=0; error=None
+06 PASS: 关键寄存器回读不一致-2: 写入272次，首次Initcall=0，独立验收=-10，已校验2项，失败寄存器0x380A，Timer堆=0，断言11项; line=0; error=None
+07 PASS: 关键寄存器回读不一致-3: 写入272次，首次Initcall=0，独立验收=-10，已校验3项，失败寄存器0x380B，Timer堆=0，断言11项; line=0; error=None
+08 PASS: 关键寄存器回读不一致-4: 写入272次，首次Initcall=0，独立验收=-10，已校验4项，失败寄存器0x4300，Timer堆=0，断言11项; line=0; error=None
+09 PASS: 关键寄存器回读不一致-5: 写入272次，首次Initcall=0，独立验收=-10，已校验5项，失败寄存器0x501F，Timer堆=0，断言11项; line=0; error=None
+10 PASS: 关键寄存器回读不一致-6: 写入272次，首次Initcall=0，独立验收=-10，已校验6项，失败寄存器0x503D，Timer堆=0，断言11项; line=0; error=None
+11 PASS: 关键寄存器回读不一致-7: 写入272次，首次Initcall=0，独立验收=-10，已校验7项，失败寄存器0x5584，Timer堆=0，断言11项; line=0; error=None
+12 PASS: 关键寄存器回读不一致-8: 写入272次，首次Initcall=0，独立验收=-10，已校验8项，失败寄存器0x3008，Timer堆=0，断言11项; line=0; error=None
+13 PASS: 关键寄存器回读不一致-9: 写入272次，首次Initcall=0，独立验收=-10，已校验9项，失败寄存器0x380C，Timer堆=0，断言11项; line=0; error=None
+14 PASS: 关键寄存器回读不一致-10: 写入272次，首次Initcall=0，独立验收=-10，已校验10项，失败寄存器0x380D，Timer堆=0，断言11项; line=0; error=None
+15 PASS: 关键寄存器回读不一致-11: 写入272次，首次Initcall=0，独立验收=-10，已校验11项，失败寄存器0x380E，Timer堆=0，断言11项; line=0; error=None
+16 PASS: 关键寄存器回读不一致-12: 写入272次，首次Initcall=0，独立验收=-10，已校验12项，失败寄存器0x380F，Timer堆=0，断言11项; line=0; error=None
+17 PASS: 关键寄存器回读不一致-13: 写入272次，首次Initcall=0，独立验收=-10，已校验13项，失败寄存器0x3035，Timer堆=0，断言11项; line=0; error=None
+18 PASS: 关键寄存器回读不一致-14: 写入272次，首次Initcall=0，独立验收=-10，已校验14项，失败寄存器0x3036，Timer堆=0，断言11项; line=0; error=None
+19 PASS: 关键寄存器回读不一致-15: 写入272次，首次Initcall=0，独立验收=-10，已校验15项，失败寄存器0x3017，Timer堆=0，断言11项; line=0; error=None
+20 PASS: 关键寄存器回读不一致-16: 写入272次，首次Initcall=0，独立验收=-10，已校验16项，失败寄存器0x3018，Timer堆=0，断言11项; line=0; error=None
+21 PASS: 写地址NACK: 写入0次，首次Initcall=0，独立验收=0，已校验0项，失败寄存器0x0000，Timer堆=0，断言8项; line=0; error=None
+22 PASS: 寄存器高字节NACK: 写入0次，首次Initcall=0，独立验收=0，已校验0项，失败寄存器0x0000，Timer堆=0，断言9项; line=0; error=None
+23 PASS: 寄存器低字节NACK: 写入0次，首次Initcall=0，独立验收=0，已校验0项，失败寄存器0x0000，Timer堆=0，断言10项; line=0; error=None
+24 PASS: 数据字节NACK: 写入0次，首次Initcall=0，独立验收=0，已校验0项，失败寄存器0x0000，Timer堆=0，断言11项; line=0; error=None
+25 PASS: 真实SCCB写后读: 写入1次，首次Initcall=0，独立验收=0，已校验0项，失败寄存器0x0000，Timer堆=0，断言12项; line=0; error=None
+26 PASS: 初始化前禁止写: 写入0次，首次Initcall=0，独立验收=0，已校验0项，失败寄存器0x0000，Timer堆=0，断言2项; line=0; error=None
+27 PASS: SDA忙拒绝写: 写入0次，首次Initcall=0，独立验收=0，已校验0项，失败寄存器0x0000，Timer堆=0，断言3项; line=0; error=None
+28 PASS: SCL忙拒绝写: 写入0次，首次Initcall=0，独立验收=0，已校验0项，失败寄存器0x0000，Timer堆=0，断言3项; line=0; error=None
+29 PASS: 软件复位等待5ms: 写入1次，首次Initcall=0，独立验收=0，已校验0项，失败寄存器0x0000，Timer堆=0，断言4项; line=0; error=None
+30 PASS: 组件多字节和参数边界: 写入2次，首次Initcall=0，独立验收=0，已校验0项，失败寄存器0x0000，Timer堆=0，断言11项; line=0; error=None
+31 PASS: 组件写表故障保留IO: 写入253次，首次Initcall=-9，独立验收=0，已校验0项，失败寄存器0x0000，Timer堆=0，断言7项; line=0; error=None
+32 PASS: 关键寄存器回读NACK: 写入272次，首次Initcall=0，独立验收=-9，已校验0项，失败寄存器0x0000，Timer堆=0，断言10项; line=0; error=None
+33 PASS: 配置失败后重试: 写入525次，首次Initcall=-9，独立验收=0，已校验17项，失败寄存器0x0000，Timer堆=0，断言37项; line=0; error=None
+34 PASS: 主循环及重复App_Init不重配不重启: 写入272次，首次Initcall=0，独立验收=0，已校验17项，失败寄存器0x0000，Timer堆=0，断言36项; line=0; error=None
+35 PASS: Device参数和状态检查: 写入0次，首次Initcall=0，独立验收=0，已校验0项，失败寄存器0x0000，Timer堆=0，断言5项; line=0; error=None
+36 PASS: PLL错误阻止初始化: 写入0次，首次Initcall=-4，独立验收=0，已校验0项，失败寄存器0x0000，Timer堆=0，断言2项; line=0; error=None
+37 PASS: DWT停止阻止初始化: 写入0次，首次Initcall=-7，独立验收=0，已校验0项，失败寄存器0x0000，Timer堆=0，断言2项; line=0; error=None
+38 PASS: SCCB读地址NACK: 写入0次，首次Initcall=0，独立验收=0，已校验0项，失败寄存器0x0000，Timer堆=0，断言3项; line=0; error=None
+39 PASS: DWT回绕仍能完整配置: 写入272次，首次Initcall=0，独立验收=0，已校验17项，失败寄存器0x0000，Timer堆=0，断言36项; line=0; error=None
+40 PASS: 应用缺少摄像头设备: 写入0次，首次Initcall=0，独立验收=0，已校验0项，失败寄存器0x0000，Timer堆=0，断言3项; line=0; error=None
+41 PASS: 应用Ops缺失及恢复: 写入272次，首次Initcall=0，独立验收=0，已校验0项，失败寄存器0x0000，Timer堆=0，断言6项; line=0; error=None
+42 PASS: 应用配置函数缺失及恢复: 写入272次，首次Initcall=0，独立验收=0，已校验0项，失败寄存器0x0000，Timer堆=0，断言6项; line=0; error=None
+43 PASS: 只读配置来源及取值: 写入0次，首次Initcall=0，独立验收=0，已校验0项，失败寄存器0x0000，Timer堆=0，断言6项; line=0; error=None
+44 PASS: NULL配置拒绝: 写入0次，首次Initcall=0，独立验收=0，已校验0项，失败寄存器0x0000，Timer堆=0，断言9项; line=0; error=None
+45 PASS: 零宽度拒绝: 写入0次，首次Initcall=0，独立验收=0，已校验0项，失败寄存器0x0000，Timer堆=0，断言11项; line=0; error=None
+46 PASS: 零高度拒绝: 写入0次，首次Initcall=0，独立验收=0，已校验0项，失败寄存器0x0000，Timer堆=0，断言11项; line=0; error=None
+47 PASS: 未支持宽度拒绝: 写入0次，首次Initcall=0，独立验收=0，已校验0项，失败寄存器0x0000，Timer堆=0，断言11项; line=0; error=None
+48 PASS: 未支持高度拒绝: 写入0次，首次Initcall=0，独立验收=0，已校验0项，失败寄存器0x0000，Timer堆=0，断言11项; line=0; error=None
+49 PASS: 未知格式拒绝: 写入0次，首次Initcall=0，独立验收=0，已校验0项，失败寄存器0x0000，Timer堆=0，断言11项; line=0; error=None
+50 PASS: 负数格式拒绝: 写入0次，首次Initcall=0，独立验收=0，已校验0项，失败寄存器0x0000，Timer堆=0，断言11项; line=0; error=None
+51 PASS: 未支持分辨率组合拒绝: 写入0次，首次Initcall=0，独立验收=0，已校验0项，失败寄存器0x0000，Timer堆=0，断言11项; line=0; error=None
+52 PASS: 有效配置不被Device修改: 写入272次，首次Initcall=0，独立验收=0，已校验0项，失败寄存器0x0000，Timer堆=0，断言18项; line=0; error=None
+53 PASS: Application向Device传递同一配置指针: 写入272次，首次Initcall=0，独立验收=0，已校验0项，失败寄存器0x0000，Timer堆=0，断言10项; line=0; error=None
+54 PASS: 未支持配置先于SCCB访问拒绝: 写入0次，首次Initcall=0，独立验收=0，已校验0项，失败寄存器0x0000，Timer堆=0，断言11项; line=0; error=None
+55 PASS: 开机配置、帧长、完成交付及无热切换 / Y8: 写入272次，首次Initcall=0，独立验收=0，已校验0项，失败寄存器0x0000，Timer堆=0，断言137项; line=0; error=None
+56 PASS: 开机配置、帧长、完成交付及无热切换 / RGB565: 写入272次，首次Initcall=0，独立验收=0，已校验0项，失败寄存器0x0000，Timer堆=0，断言137项; line=0; error=None
+57 PASS: 开机配置、帧长、完成交付及无热切换 / YUV422: 写入272次，首次Initcall=0，独立验收=0，已校验0项，失败寄存器0x0000，Timer堆=0，断言137项; line=0; error=None
+58 PASS: 格式写入失败及重新配置 / Y8: 写入360次，首次Initcall=-9，独立验收=0，已校验0项，失败寄存器0x0000，Timer堆=0，断言7项; line=0; error=None
+59 PASS: 格式写入失败及重新配置 / RGB565: 写入360次，首次Initcall=-9，独立验收=0，已校验0项，失败寄存器0x0000，Timer堆=0，断言7项; line=0; error=None
+60 PASS: 格式写入失败及重新配置 / YUV422: 写入360次，首次Initcall=-9，独立验收=0，已校验0项，失败寄存器0x0000，Timer堆=0，断言7项; line=0; error=None
+61 PASS: 错误芯片ID及恢复 / Y8: 写入272次，首次Initcall=-10，独立验收=0，已校验0项，失败寄存器0x0000，Timer堆=0，断言8项; line=0; error=None
+62 PASS: 错误芯片ID及恢复 / RGB565: 写入272次，首次Initcall=-10，独立验收=0，已校验0项，失败寄存器0x0000，Timer堆=0，断言8项; line=0; error=None
+63 PASS: 错误芯片ID及恢复 / YUV422: 写入272次，首次Initcall=-10，独立验收=0，已校验0项，失败寄存器0x0000，Timer堆=0，断言8项; line=0; error=None
+64 PASS: 采集启动失败向上传递 / Y8: 写入272次，首次Initcall=-9，独立验收=0，已校验0项，失败寄存器0x0000，Timer堆=0，断言8项; line=0; error=None
+65 PASS: 采集启动失败向上传递 / RGB565: 写入272次，首次Initcall=-9，独立验收=0，已校验0项，失败寄存器0x0000，Timer堆=0，断言8项; line=0; error=None
+66 PASS: 采集启动失败向上传递 / YUV422: 写入272次，首次Initcall=-9，独立验收=0，已校验0项，失败寄存器0x0000，Timer堆=0，断言8项; line=0; error=None
+67 PASS: 通信错误优先及Media恢复 / Y8: 写入272次，首次Initcall=0，独立验收=0，已校验0项，失败寄存器0x0000，Timer堆=0，断言29项; line=0; error=None
+68 PASS: 通信错误优先及Media恢复 / RGB565: 写入272次，首次Initcall=0，独立验收=0，已校验0项，失败寄存器0x0000，Timer堆=0，断言29项; line=0; error=None
+69 PASS: 通信错误优先及Media恢复 / YUV422: 写入272次，首次Initcall=0，独立验收=0，已校验0项，失败寄存器0x0000，Timer堆=0，断言29项; line=0; error=None
+70 PASS: 超时及Media恢复 / Y8: 写入272次，首次Initcall=0，独立验收=0，已校验0项，失败寄存器0x0000，Timer堆=0，断言28项; line=0; error=None
+71 PASS: 超时及Media恢复 / RGB565: 写入272次，首次Initcall=0，独立验收=0，已校验0项，失败寄存器0x0000，Timer堆=0，断言28项; line=0; error=None
+72 PASS: 超时及Media恢复 / YUV422: 写入272次，首次Initcall=0，独立验收=0，已校验0项，失败寄存器0x0000，Timer堆=0，断言28项; line=0; error=None
+73 PASS: DMA长度与缓冲区保护 / Y8: 写入272次，首次Initcall=0，独立验收=0，已校验0项，失败寄存器0x0000，Timer堆=0，断言31项; line=0; error=None
+74 PASS: DMA长度与缓冲区保护 / RGB565: 写入272次，首次Initcall=0，独立验收=0，已校验0项，失败寄存器0x0000，Timer堆=0，断言31项; line=0; error=None
+75 PASS: DMA长度与缓冲区保护 / YUV422: 写入272次，首次Initcall=0，独立验收=0，已校验0项，失败寄存器0x0000，Timer堆=0，断言31项; line=0; error=None
+76 PASS: NULL、奇数YUV宽度及非法配置 / Y8: 写入0次，首次Initcall=0，独立验收=0，已校验0项，失败寄存器0x0000，Timer堆=0，断言15项; line=0; error=None
+77 PASS: NULL、奇数YUV宽度及非法配置 / RGB565: 写入0次，首次Initcall=0，独立验收=0，已校验0项，失败寄存器0x0000，Timer堆=0，断言15项; line=0; error=None
+78 PASS: NULL、奇数YUV宽度及非法配置 / YUV422: 写入0次，首次Initcall=0，独立验收=0，已校验0项，失败寄存器0x0000，Timer堆=0，断言15项; line=0; error=None
+TOTAL {'total': 78, 'passed': 78, 'failed': 0, 'assertions': 1384}

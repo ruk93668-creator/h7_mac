@@ -329,6 +329,7 @@ static int StopCommitCases(uint32_t id)
 }
 
 
+static SysResult_t PairNotify(BspDcmiTarget_t target,void *context){(void)target;(void)context;return SYS_OK;}
 static int PairCases(uint32_t id)
 {
  uint32_t i;
@@ -339,7 +340,7 @@ static int PairCases(uint32_t id)
   EQ(s_frame_sync.tc_pending,0);EQ(s_frame_sync.frame_pending,0);EQ(s_frame_sync.paired_frames,0);return 0;
  }
  s_stream.mode=BSP_DCMI_MODE_CONTINUOUS;s_stream.state=BSP_DCMI_STREAM_RUNNING;
- s_accept_events=true;s_capture_active=true;
+ s_accept_events=true;s_capture_active=true;s_stream.callback=PairNotify;
  DMA1_Stream0->CR|=DMA_SxCR_DBM|DMA_SxCR_EN|DMA_SxCR_CT;
  if(id==0){Dcmi_StreamTryPair();EQ(s_frame_sync.paired_frames,0);return 0;}
  if(id==1){Dcmi_StreamM0Complete(&s_dcmi_dma);EQ(s_frame_sync.tc_pending,1);EQ(s_frame_sync.paired_frames,0);return 0;}

@@ -1,0 +1,8 @@
+{
+  "formal_changed": [
+    "CM7/BSP/bsp_dcmi.c"
+  ],
+  "replace_target_unchanged": true,
+  "stop_unchanged": true,
+  "head_unchanged": true
+}

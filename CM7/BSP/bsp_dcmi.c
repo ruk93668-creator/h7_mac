@@ -371,6 +371,7 @@ SysResult_t BSP_DCMI_StartContinuous(
 	uint32_t address_m1;
 	uint32_t byte_count;
 	uint32_t primask;
+	HAL_StatusTypeDef status;
 
 //第一阶段：参数检查
 	if ( buffer_m0 == NULL || buffer_m1 == NULL || callback == NULL ||
@@ -431,6 +432,22 @@ SysResult_t BSP_DCMI_StartContinuous(
 
 //第三阶段：建立STARTING状态并占用控制流程
 	s_control_busy = true;
+	s_accept_events = false;
+	s_capture_active = false;
+
+	//新采集确认接管后，清除旧事件、HAL错误和硬件挂起
+	__HAL_DCMI_DISABLE_IT(&s_dcmi, DCMI_ALL_INTERRUPTS);
+	__HAL_DCMI_DISABLE(&s_dcmi);
+	Dcmi_ClearPending();
+	s_event_flags = 0U;
+	s_event_result = SYS_OK;
+	s_event_dcmi_error = 0U;
+	s_event_dma_error = 0U;
+	s_dcmi.ErrorCode = HAL_DCMI_ERROR_NONE;
+	s_dcmi_dma.ErrorCode = HAL_DMA_ERROR_NONE;
+
+	//DMA已确认停止，新一轮从M0开始
+	CLEAR_BIT(DMA1_Stream0->CR, DMA_SxCR_CT);
 	
 	//标记为连续采集启动阶段
 	s_stream.mode = BSP_DCMI_MODE_CONTINUOUS;
@@ -452,10 +469,9 @@ SysResult_t BSP_DCMI_StartContinuous(
 	
 	s_stream.stop_required = false;
 	
-	//软件状态提交完成，恢复中断
-	__set_PRIMASK(primask);
+	//保持临界区，直到RUNNING与CAPTURE均已提交
 	
-//第四阶段：配置并启动DMA DBM，待实现
+//第四阶段：配置并启动DMA DBM
 
 	//连续采集使用独立DMA完成回调
 	s_dcmi_dma.XferCpltCallback = Dcmi_StreamM0Complete;
@@ -470,8 +486,6 @@ SysResult_t BSP_DCMI_StartContinuous(
 	s_dcmi_dma.XferAbortCallback = NULL;
 
 	//启动DBM
-	HAL_StatusTypeDef status;
-
 	status = HAL_DMAEx_MultiBufferStart_IT(
 		&s_dcmi_dma,
 		(uint32_t)&DCMI->DR,
@@ -483,9 +497,6 @@ SysResult_t BSP_DCMI_StartContinuous(
 	if (status != HAL_OK)
 	{
 		SysResult_t result = Dcmi_HalResult(status);
-
-		primask = __get_PRIMASK();
-		__disable_irq();
 
 		//启动失败，保留故障状态
 		s_stream.state = BSP_DCMI_STREAM_ERROR;
@@ -516,10 +527,7 @@ SysResult_t BSP_DCMI_StartContinuous(
 	//使能DCMI外设，但尚未开始CAPTURE
 	__HAL_DCMI_ENABLE(&s_dcmi);
 	
-//第六阶段：进入RUNNING状态，待实现
-	
-	primask = __get_PRIMASK();
-	__disable_irq();
+//第六阶段：提交RUNNING后开启采集
 	
 	s_dcmi.State = HAL_DCMI_STATE_BUSY;
 
@@ -1013,6 +1021,13 @@ static void Dcmi_StreamTryPair(void)
 	//配对前再次检查错误，错误帧不计数
 	if ( Dcmi_CheckErrors())
 		return;
+
+	//又有TC挂起说明旧配对已延迟，丢帧分支也不能跳过此检查
+	if ( (DMA1->LISR & DMA_FLAG_TCIF0_4) != 0U)
+	{
+		Dcmi_RecordError(SYS_ERR_PROTOCOL);
+		return;
+	}
 
 	//CT指向DMA当前使用的目标，完成目标必须是另一个
 	current_target = DMA1_Stream0->CR & DMA_SxCR_CT;
