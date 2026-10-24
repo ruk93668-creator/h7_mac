@@ -467,8 +467,22 @@ SysResult_t BSP_DCMI_StartContinuous(
 
 		return result;
 	}
-//第五阶段：使能DCMI Continuous采集，待实现
+	
+//第五阶段：使能DCMI Continuous采集
+	
+	//关闭采集，确保配置期间不会接收图像
+	CLEAR_BIT(DCMI->CR, DCMI_CR_CAPTURE);
 
+	//选择DCMI连续采集模式
+	MODIFY_REG(
+		DCMI->CR,
+		DCMI_CR_CM,
+		DCMI_MODE_CONTINUOUS
+	);
+
+	//使能DCMI外设，但尚未开始CAPTURE
+	__HAL_DCMI_ENABLE(&s_dcmi);
+	
 //第六阶段：进入RUNNING状态，待实现
 
 //尚未启动硬件，不能返回启动成功
