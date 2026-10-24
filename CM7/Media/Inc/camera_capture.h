@@ -19,6 +19,9 @@ SysResult_t CameraCapture_ReleaseFrame(void);
 
 //三缓存区轮询采集
 
+//启动连续采集，使用Media三缓冲
+SysResult_t CameraCapture_StartStream(void);
+
 //停止当前采集，必要时恢复底层硬件
 SysResult_t CameraCapture_Stop(void);
 

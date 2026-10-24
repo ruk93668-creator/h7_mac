@@ -30,6 +30,14 @@
 //单帧采集超时时间，单位ms
 #define CAMERA_CAPTURE_TIMEOUT_MS   100U
 
+typedef enum
+{
+    CAMERA_CAPTURE_MODE_NONE = 0,
+    CAMERA_CAPTURE_MODE_SNAPSHOT,
+    CAMERA_CAPTURE_MODE_STREAM
+
+} CameraCaptureMode_t;
+
 //采集状态
 typedef enum
 {
@@ -44,7 +52,8 @@ typedef struct
 {
 	CameraConfig_t config;
 
-	CameraCaptureState_t state;
+    CameraCaptureMode_t mode;  //当前采集模式
+    CameraCaptureState_t state; //当前采集状态
 
 	uint8_t *framebuffer;
 	uint32_t frame_capacity;
@@ -266,6 +275,7 @@ SysResult_t CameraCapture_Start(void)
     //先标记采集中，再启动硬件
     s_capture.state = CAMERA_CAPTURE_CAPTURING;
 
+	s_capture.mode = CAMERA_CAPTURE_MODE_SNAPSHOT;
     result = BSP_DCMI_StartSnapshot(
         (uint32_t *)s_capture.framebuffer,
         dma_words
@@ -280,6 +290,70 @@ SysResult_t CameraCapture_Start(void)
     }
 
     //只表示启动成功，不代表已经收到完整图像
+    return SYS_OK;
+}
+
+//启动连续采集
+SysResult_t CameraCapture_StartStream(void)
+{
+    SysResult_t result;
+    CameraStream_t *stream = &s_camera_stream;
+    uint32_t dma_words;
+
+    //1. 检查Media初始化
+    if (!s_capture.initialized)
+        return SYS_ERR_INVALID_STATE;
+
+    //2. 防止Snapshot与Stream同时运行
+    if (s_capture.mode != CAMERA_CAPTURE_MODE_NONE ||
+        s_capture.state != CAMERA_CAPTURE_IDLE)
+    {
+        return SYS_ERR_BUSY;
+    }
+
+    //3. 初始化三缓冲状态
+    result = CameraStream_Init(
+        stream,
+        &s_capture.config
+    );
+
+    if (result != SYS_OK)
+        return result;
+
+    //4. 单帧字节数转换为DMA Word数量
+    dma_words = stream->frame_bytes / sizeof(uint32_t);
+
+    //5. 启动前先占用Stream模式
+    s_capture.mode = CAMERA_CAPTURE_MODE_STREAM;
+
+    //6. 注册完整帧回调并启动DMA DBM
+    result = BSP_DCMI_StartContinuous(
+        (uint32_t *)stream->buffers[
+            stream->dma_m0_index
+        ].data,
+
+        (uint32_t *)stream->buffers[
+            stream->dma_m1_index
+        ].data,
+
+        dma_words,
+
+        CameraStream_OnFrameComplete,
+
+        stream
+    );
+
+    if (result != SYS_OK)
+    {
+        s_capture.last_result = result;
+
+        //BSP可能已部分启动
+        //保留模式占用，后续必须通过StopStream恢复
+        return result;
+    }
+
+    s_capture.last_result = SYS_OK;
+
     return SYS_OK;
 }
 
