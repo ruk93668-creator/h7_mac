@@ -65,11 +65,10 @@ static CameraCapture_t s_capture;
 
 //实现三缓冲区
 
-//由BSP实现硬件目标地址切换
-typedef SysResult_t (*CameraStream_ReplaceTargetFn)(
-    BspDcmiTarget_t completed_slot,
-    uint32_t *new_buffer,
-    void *context
+//DMA目标地址替换接口
+typedef SysResult_t (*CameraStream_ReplaceFn)(
+    BspDcmiTarget_t completed_target,
+    uint32_t *new_buffer
 );
 
 typedef enum
@@ -130,10 +129,14 @@ static uint8_t CameraStream_FindReplaceable(
     const CameraStream_t *me);
 
 //处理DMA完整帧，安全轮换物理缓冲区
-static SysResult_t CameraStream_OnFrameComplete(
+static SysResult_t CameraStream_Rotate(
     CameraStream_t *me,
-    BspDcmiTarget_t completed_slot,
-    CameraStream_ReplaceTargetFn replace_target,
+    BspDcmiTarget_t completed_target,
+    CameraStream_ReplaceFn replace_target);
+
+//BSP完整帧回调，运行于中断上下文
+static SysResult_t CameraStream_OnFrameComplete(
+    BspDcmiTarget_t completed_target,
     void *context);
 
 //获取完整帧，并取得缓冲区读取权
@@ -641,11 +644,10 @@ static uint8_t CameraStream_FindReplaceable(
 }
 
 //处理DMA完整帧，安全轮换物理缓冲区
-static SysResult_t CameraStream_OnFrameComplete(
+static SysResult_t CameraStream_Rotate(
     CameraStream_t *me,
-    BspDcmiTarget_t completed_slot,
-    CameraStream_ReplaceTargetFn replace_target,
-    void *context)
+    BspDcmiTarget_t completed_target,
+    CameraStream_ReplaceFn replace_target)
 {
 	//本次DMA传输完成的缓冲区索引
 	uint8_t completed_index;
@@ -661,8 +663,8 @@ static SysResult_t CameraStream_OnFrameComplete(
         return SYS_ERR_INVALID_ARG;
 
     //检查DMA槽位
-    if ((completed_slot != CAMERA_DMA_SLOT_M0) &&
-        (completed_slot != CAMERA_DMA_SLOT_M1))
+    if ((completed_target != BSP_DCMI_TARGET_M0) &&
+        (completed_target != BSP_DCMI_TARGET_M1))
     {
         return SYS_ERR_INVALID_ARG;
     }
@@ -706,7 +708,7 @@ static SysResult_t CameraStream_OnFrameComplete(
 
     //取得刚刚完成传输的物理缓冲区
     completed_index =
-        (completed_slot == CAMERA_DMA_SLOT_M0) ?
+        (completed_target == BSP_DCMI_TARGET_M0) ?
         me->dma_m0_index :
         me->dma_m1_index;
 
@@ -762,9 +764,8 @@ static SysResult_t CameraStream_OnFrameComplete(
 
     //请求BSP安全更换已经完成的DMA目标地址
     result = replace_target(
-        completed_slot,
-        (uint32_t *)me->buffers[replacement_index].data,
-        context
+		   completed_target,
+		   (uint32_t *)me->buffers[replacement_index].data
     );
 
     if (result != SYS_OK)
@@ -785,7 +786,7 @@ static SysResult_t CameraStream_OnFrameComplete(
     me->buffers[completed_index].sequence = ++me->next_sequence;
 
     //更新DMA目标槽位到物理Buffer的映射
-    if (completed_slot == CAMERA_DMA_SLOT_M0)
+    if (completed_target == BSP_DCMI_TARGET_M0)
     {
         me->dma_m0_index = replacement_index;
     }
@@ -885,4 +886,23 @@ static SysResult_t CameraStream_ReleaseFrame(
     __set_PRIMASK(primask);
 
     return SYS_OK;
+}
+
+//BSP完整帧回调，运行于中断上下文
+static SysResult_t CameraStream_OnFrameComplete(
+    BspDcmiTarget_t completed_target,
+    void *context)
+{
+    CameraStream_t *stream = (CameraStream_t *)context;
+
+    //只接受当前Media三缓冲实例
+    if (stream != &s_camera_stream)
+        return SYS_ERR_INVALID_ARG;
+
+    //由Media负责轮换，BSP负责修改DMA地址
+    return CameraStream_Rotate(
+        stream,
+        completed_target,
+        BSP_DCMI_ReplaceTarget
+    );
 }
