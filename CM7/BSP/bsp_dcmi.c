@@ -501,7 +501,7 @@ SysResult_t BSP_DCMI_StartContinuous(
 	SET_BIT(DCMI->CR, DCMI_CR_CAPTURE);
 	
 //尚未启动硬件，不能返回启动成功
-	return SYS_ERR_NOT_SUPPORTED;
+	return SYS_OK;
 }
 
 SysResult_t BSP_DCMI_Stop(void)
