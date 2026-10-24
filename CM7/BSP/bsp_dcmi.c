@@ -682,64 +682,24 @@ SysResult_t BSP_DCMI_ReplaceTarget(
 	//保护回调授权和软件状态，关中断不会暂停DMA
 	primask = __get_PRIMASK();
 	__disable_irq();
-	//底层初始化完成后才能替换DMA目标
-	if ( !s_dcmi_ready)
+	if ( !s_dcmi_ready || //底层初始化完成后才能替换DMA目标
+		s_stream.mode != BSP_DCMI_MODE_CONTINUOUS || //仅允许连续采集模式
+		s_stream.state != BSP_DCMI_STREAM_RUNNING || //连续采集必须正在运行
+		!s_accept_events || //不再接收采集事件时禁止替换
+		!s_capture_active || //采集停止后禁止替换
+		s_stop_required || //存在全局未恢复故障时，先执行Stop
+		s_stream.stop_required || //存在连续采集未恢复故障时，先执行Stop
+		!s_frame_sync.replace_allowed || //只允许当前完整帧回调使用本次替换授权
+		!s_frame_sync.tc_pending || //必须存在本次DMA完成事件
+		!s_frame_sync.frame_pending || //必须存在本次FRAME事件
+		completed_target != s_frame_sync.completed_target || //只能替换本次配对确认的完成目标
+		s_stream.frame_words == 0U || //整帧Word数不能为零
+		s_stream.frame_words > 0xFFFFU) //整帧Word数不能超过DMA支持范围
 	{
 		__set_PRIMASK(primask);
 		return SYS_ERR_INVALID_STATE;
 	}
 
-	//仅允许正在运行的连续采集
-	if ( s_stream.mode != BSP_DCMI_MODE_CONTINUOUS ||
-		s_stream.state != BSP_DCMI_STREAM_RUNNING)
-	{
-		__set_PRIMASK(primask);
-		return SYS_ERR_INVALID_STATE;
-	}
-
-	//停止或不再接收采集事件时禁止替换
-	if ( !s_accept_events || !s_capture_active)
-	{
-		__set_PRIMASK(primask);
-		return SYS_ERR_INVALID_STATE;
-	}
-
-	//存在未恢复故障时，先执行Stop
-	if ( s_stop_required || s_stream.stop_required)
-	{
-		__set_PRIMASK(primask);
-		return SYS_ERR_INVALID_STATE;
-	}
-
-	//只允许当前完整帧回调使用本次替换授权
-	if ( !s_frame_sync.replace_allowed)
-	{
-		__set_PRIMASK(primask);
-		return SYS_ERR_INVALID_STATE;
-	}
-
-	//DMA完成和FRAME事件必须同时存在
-	if ( !s_frame_sync.tc_pending || !s_frame_sync.frame_pending)
-	{
-		__set_PRIMASK(primask);
-		return SYS_ERR_INVALID_STATE;
-	}
-
-	//只能替换本次配对确认的完成目标
-	if ( completed_target != s_frame_sync.completed_target)
-	{
-		__set_PRIMASK(primask);
-		return SYS_ERR_INVALID_STATE;
-	}
-
-	//确认本次采集的Word数在DMA支持范围内
-	if ( s_stream.frame_words == 0U || s_stream.frame_words > 0xFFFFU)
-	{
-		__set_PRIMASK(primask);
-		return SYS_ERR_INVALID_STATE;
-	}
-
-	
 	//将整帧Word数换算为字节数，检查新缓冲区末地址是否溢出
 	byte_count = s_stream.frame_words * sizeof(uint32_t);
 	if ( address > UINT32_MAX - (byte_count - 1U))
