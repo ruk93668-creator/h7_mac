@@ -767,7 +767,7 @@ SysResult_t BSP_DCMI_ReplaceTarget(
 		goto replace_failed;
 	}
 	if ( address <= other_address + byte_count - 1U &&
-		other_address <= address + byte_count - 1U)
+		 other_address <= address + byte_count - 1U)
 	{
 		__set_PRIMASK(primask);
 		return SYS_ERR_INVALID_ARG;
@@ -781,12 +781,43 @@ SysResult_t BSP_DCMI_ReplaceTarget(
 	}
 	control = DMA1_Stream0->CR;
 	remaining = DMA1_Stream0->NDTR;
-	if ( (control & (DMA_SxCR_EN | DMA_SxCR_DBM)) !=
-		(DMA_SxCR_EN | DMA_SxCR_DBM) ||
-		(control & DMA_SxCR_CT) == target_bit ||
-		remaining <= DCMI_REPLACE_GUARD_WORDS ||
-		remaining > s_stream.frame_words ||
-		(DMA1->LISR & DMA_FLAG_TCIF0_4) != 0U)
+	//DMA必须保持使能，停止后不能继续替换
+	if ( (control & DMA_SxCR_EN) == 0U)
+	{
+		result = SYS_ERR_PROTOCOL;
+		goto replace_failed;
+	}
+
+	//确认DMA仍处于双缓冲模式
+	if ( (control & DMA_SxCR_DBM) == 0U)
+	{
+		result = SYS_ERR_PROTOCOL;
+		goto replace_failed;
+	}
+
+	//完成目标已重新成为活动目标，切换窗口已错过
+	if ( (control & DMA_SxCR_CT) == target_bit)
+	{
+		result = SYS_ERR_PROTOCOL;
+		goto replace_failed;
+	}
+
+	//当前目标剩余传输量必须留出地址切换余量
+	if ( remaining <= DCMI_REPLACE_GUARD_WORDS)
+	{
+		result = SYS_ERR_PROTOCOL;
+		goto replace_failed;
+	}
+
+	//剩余Word数不应超过本次配置的整帧长度
+	if ( remaining > s_stream.frame_words)
+	{
+		result = SYS_ERR_PROTOCOL;
+		goto replace_failed;
+	}
+
+	//又有TC事件挂起，不能继续使用本次配对结果
+	if ( (DMA1->LISR & DMA_FLAG_TCIF0_4) != 0U)
 	{
 		result = SYS_ERR_PROTOCOL;
 		goto replace_failed;
