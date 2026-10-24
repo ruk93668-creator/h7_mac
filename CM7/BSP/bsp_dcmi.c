@@ -343,7 +343,7 @@ SysResult_t BSP_DCMI_StartContinuous(
 	uint32_t byte_count;
 	uint32_t primask;
 
-	//第一阶段：参数检查
+//第一阶段：参数检查
 	if ( buffer_m0 == NULL || buffer_m1 == NULL || callback == NULL ||
 		word_count == 0U || word_count > 0xFFFFU)
 		return SYS_ERR_INVALID_ARG;
@@ -370,7 +370,7 @@ SysResult_t BSP_DCMI_StartContinuous(
 	//context只原样传给回调，允许为空，本阶段不保存
 	(void)context;
 
-	//第二阶段：确认DCMI和DMA空闲
+//第二阶段：确认DCMI和DMA空闲
 	if ( !s_dcmi_ready || __get_IPSR() != 0U || __get_PRIMASK() != 0U)
 		return SYS_ERR_INVALID_STATE;
 
@@ -400,7 +400,7 @@ SysResult_t BSP_DCMI_StartContinuous(
 		return SYS_ERR_BUSY;
 	}
 
-	//第三阶段：建立STARTING状态并占用控制流程
+//第三阶段：建立STARTING状态并占用控制流程
 	s_control_busy = true;
 	
 	//标记为连续采集启动阶段
@@ -418,13 +418,41 @@ SysResult_t BSP_DCMI_StartContinuous(
 	
 	//软件状态提交完成，恢复中断
 	__set_PRIMASK(primask);
-	//第四阶段：配置并启动DMA DBM，待实现
+	
+//第四阶段：配置并启动DMA DBM，待实现
 
-	//第五阶段：使能DCMI Continuous采集，待实现
+	//连续采集使用独立DMA完成回调
+	s_dcmi_dma.XferCpltCallback = Dcmi_StreamM0Complete;
+	s_dcmi_dma.XferM1CpltCallback = Dcmi_StreamM1Complete;
 
-	//第六阶段：进入RUNNING状态，待实现
+	//暂不使用半传输中断
+	s_dcmi_dma.XferHalfCpltCallback = NULL;
+	s_dcmi_dma.XferM1HalfCpltCallback = NULL;
 
-	//尚未启动硬件，不能返回启动成功
+	//DMA错误处理
+	s_dcmi_dma.XferErrorCallback = Dcmi_StreamDmaError;
+	s_dcmi_dma.XferAbortCallback = NULL;
+
+	//启动DBM
+	HAL_StatusTypeDef status;
+
+	status = HAL_DMAEx_MultiBufferStart_IT(
+		&s_dcmi_dma,
+		(uint32_t)&DCMI->DR,
+		address_m0,
+		address_m1,
+		word_count
+	);
+	
+	if ( status != HAL_OK)
+	{
+		return Dcmi_HalResult(status);
+	}
+//第五阶段：使能DCMI Continuous采集，待实现
+
+//第六阶段：进入RUNNING状态，待实现
+
+//尚未启动硬件，不能返回启动成功
 	return SYS_ERR_NOT_SUPPORTED;
 }
 
