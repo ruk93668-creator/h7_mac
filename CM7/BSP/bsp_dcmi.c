@@ -836,16 +836,55 @@ SysResult_t BSP_DCMI_ReplaceTarget(
 		result = Dcmi_HalResult(status);
 		goto replace_failed;
 	}
+	//等待前面的寄存器写入完成，再读取硬件状态
 	__DSB();
 	control = DMA1_Stream0->CR;
 	remaining_after = DMA1_Stream0->NDTR;
-	if ( *target_address != address ||
-		(control & (DMA_SxCR_EN | DMA_SxCR_DBM)) !=
-		(DMA_SxCR_EN | DMA_SxCR_DBM) ||
-		(control & DMA_SxCR_CT) == target_bit ||
-		remaining_after <= DCMI_REPLACE_GUARD_WORDS ||
-		remaining_after > remaining ||
-		(DMA1->LISR & DMA_FLAG_TCIF0_4) != 0U)
+
+	//读回目标地址，确认新地址已写入
+	if ( *target_address != address)
+	{
+		result = SYS_ERR_PROTOCOL;
+		goto replace_failed;
+	}
+
+	//确认写入期间DMA没有停止
+	if ( (control & DMA_SxCR_EN) == 0U)
+	{
+		result = SYS_ERR_PROTOCOL;
+		goto replace_failed;
+	}
+
+	//确认写入后仍处于双缓冲模式
+	if ( (control & DMA_SxCR_DBM) == 0U)
+	{
+		result = SYS_ERR_PROTOCOL;
+		goto replace_failed;
+	}
+
+	//完成目标已重新成为活动目标，切换窗口已错过
+	if ( (control & DMA_SxCR_CT) == target_bit)
+	{
+		result = SYS_ERR_PROTOCOL;
+		goto replace_failed;
+	}
+
+	//写入后仍需保留足够的传输余量
+	if ( remaining_after <= DCMI_REPLACE_GUARD_WORDS)
+	{
+		result = SYS_ERR_PROTOCOL;
+		goto replace_failed;
+	}
+
+	//剩余量增加说明可能发生重装，不能确认仍在原切换窗口
+	if ( remaining_after > remaining)
+	{
+		result = SYS_ERR_PROTOCOL;
+		goto replace_failed;
+	}
+
+	//写入期间又有TC事件挂起，交给Stop恢复
+	if ( (DMA1->LISR & DMA_FLAG_TCIF0_4) != 0U)
 	{
 		result = SYS_ERR_PROTOCOL;
 		goto replace_failed;
