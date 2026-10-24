@@ -484,7 +484,22 @@ SysResult_t BSP_DCMI_StartContinuous(
 	__HAL_DCMI_ENABLE(&s_dcmi);
 	
 //第六阶段：进入RUNNING状态，待实现
+	
+	s_dcmi.State = HAL_DCMI_STATE_BUSY;
 
+	s_stream.state = BSP_DCMI_STREAM_RUNNING;
+
+	s_accept_events = true;
+	s_capture_active = true;
+
+	__HAL_DCMI_ENABLE_IT(
+		&s_dcmi,
+		DCMI_IT_FRAME | DCMI_IT_ERR | DCMI_IT_OVR
+	);
+
+	//最后开放图像采集
+	SET_BIT(DCMI->CR, DCMI_CR_CAPTURE);
+	
 //尚未启动硬件，不能返回启动成功
 	return SYS_ERR_NOT_SUPPORTED;
 }
@@ -599,23 +614,46 @@ bool BSP_DCMI_TakeEvents(BspDcmiEvents_t *events)
 	__set_PRIMASK(primask);
 	return true;
 }
-
 void HAL_DCMI_FrameEventCallback(DCMI_HandleTypeDef *hdcmi)
 {
-	if ( hdcmi != &s_dcmi || !s_accept_events || !s_capture_active || s_stop_required)
-		return;
-	if ( Dcmi_CheckErrors())
-		return;
+    if (hdcmi != &s_dcmi ||
+        !s_accept_events ||
+        s_stop_required)
+        return;
 
-	//只交付DMA数量完成后的帧事件，READY本身不是整帧完成证明
-	if ( s_dcmi_dma.State != HAL_DMA_STATE_READY ||
-		DMA1_Stream0->NDTR != 0U || (DMA1_Stream0->CR & DMA_SxCR_EN) != 0U)
-	{
-		Dcmi_RecordError(SYS_ERR_PROTOCOL);
-		return;
+    if (s_stream.mode == BSP_DCMI_MODE_CONTINUOUS)
+    {
+        if (s_stream.state != BSP_DCMI_STREAM_RUNNING ||
+            !s_capture_active)
+        {
+            Dcmi_RecordError(SYS_ERR_PROTOCOL);
+            return;
+        }
+
+        if (Dcmi_CheckErrors())
+            return;
+		//后续添加代码，仅用于调试
+
+        //HAL处理FRAME时会关闭该中断，需要重新使能
+        __HAL_DCMI_ENABLE_IT(hdcmi, DCMI_IT_FRAME);
+        return;
+    }else if (s_stream.mode == BSP_DCMI_MODE_SNAPSHOT){
+		//Snapshot完整帧判断
+		if ( hdcmi != &s_dcmi || !s_accept_events || !s_capture_active || s_stop_required)
+			return;
+		if ( Dcmi_CheckErrors())
+			return;
+
+		//只交付DMA数量完成后的帧事件，READY本身不是整帧完成证明
+		if ( s_dcmi_dma.State != HAL_DMA_STATE_READY ||
+			DMA1_Stream0->NDTR != 0U || (DMA1_Stream0->CR & DMA_SxCR_EN) != 0U)
+		{
+			Dcmi_RecordError(SYS_ERR_PROTOCOL);
+			return;
+		}
+		s_event_flags |= BSP_DCMI_EVENT_FRAME;
+		s_capture_active = false;
 	}
-	s_event_flags |= BSP_DCMI_EVENT_FRAME;
-	s_capture_active = false;
 }
 
 static void Dcmi_StreamM0Complete(DMA_HandleTypeDef *hdma)
@@ -725,6 +763,13 @@ static SysResult_t Dcmi_HalResult(HAL_StatusTypeDef status)
 //仅在临界区、IRQ或已屏蔽两个IRQ时调用
 static void Dcmi_RecordError(SysResult_t result)
 {
+	//连续采集发生错误时同步锁存Stream故障
+	if (s_stream.mode == BSP_DCMI_MODE_CONTINUOUS)
+	{
+		s_stream.state = BSP_DCMI_STREAM_ERROR;
+		s_stream.stop_required = true;
+	}
+		
 	s_event_dcmi_error |= s_dcmi.ErrorCode;
 	s_event_dma_error |= s_dcmi_dma.ErrorCode;
 	s_event_flags &= ~BSP_DCMI_EVENT_FRAME;
