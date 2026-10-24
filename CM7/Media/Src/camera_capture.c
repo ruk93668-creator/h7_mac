@@ -44,6 +44,7 @@ typedef enum
 	CAMERA_CAPTURE_IDLE = 0,
 	CAMERA_CAPTURE_CAPTURING,
 	CAMERA_CAPTURE_READY,
+	CAMERA_CAPTURE_DRAINING,
 	CAMERA_CAPTURE_ERROR
 } CameraCaptureState_t;
 
@@ -1004,15 +1005,33 @@ static SysResult_t CameraStream_ReleaseFrame(
 
 SysResult_t CameraCapture_StreamReleaseFrame(void)
 {
+    SysResult_t result;
+    bool draining;
+
     if (!s_capture.initialized ||
-        s_capture.mode != CAMERA_CAPTURE_MODE_STREAM ||
-        s_capture.state != CAMERA_CAPTURE_CAPTURING)
+        s_capture.mode != CAMERA_CAPTURE_MODE_STREAM)
+        return SYS_ERR_INVALID_STATE;
+
+    if (s_capture.state != CAMERA_CAPTURE_CAPTURING &&
+        s_capture.state != CAMERA_CAPTURE_ERROR &&
+        s_capture.state != CAMERA_CAPTURE_DRAINING)
+        return SYS_ERR_INVALID_STATE;
+
+    draining = (s_capture.state == CAMERA_CAPTURE_DRAINING);
+
+    result = CameraStream_ReleaseFrame(&s_capture.stream);
+
+    if (result != SYS_OK)
+        return result;
+
+    //只有硬件已经停止，才能结束Stream生命周期
+    if (draining)
     {
-        return false;
+        s_capture.mode = CAMERA_CAPTURE_MODE_NONE;
+        s_capture.state = CAMERA_CAPTURE_IDLE;
     }
 
-    return CameraStream_ReleaseFrame(
-        &s_capture.stream);	
+    return SYS_OK;
 }
 
 //BSP完整帧回调，运行于中断上下文
