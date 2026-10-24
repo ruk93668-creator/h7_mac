@@ -256,7 +256,10 @@ SysResult_t BSP_DCMI_StartSnapshot(
 	uint32_t primask;
 	HAL_StatusTypeDef status;
 	SysResult_t result;
-
+	
+	//连续模式互斥
+	if ( s_stream.mode != BSP_DCMI_MODE_NONE)
+		return SYS_ERR_BUSY;
 	//检查缓冲区、4字节对齐和DMA传输字数
 	if ( buffer == NULL || ((uint32_t)buffer & 3U) != 0U ||
 		word_count == 0U || word_count > 0xFFFFU)
@@ -446,6 +449,16 @@ SysResult_t BSP_DCMI_StartContinuous(
 	
 	if ( status != HAL_OK)
 	{
+		//确认DMA停止后，回退本次启动状态
+		s_stream.mode = BSP_DCMI_MODE_NONE;
+		s_stream.state = BSP_DCMI_STREAM_STOPPED;
+		s_stream.frame_words = 0U;
+		s_stream.callback = NULL;
+		s_stream.context = NULL;
+
+		//最后释放控制权
+		s_control_busy = false;
+
 		return Dcmi_HalResult(status);
 	}
 //第五阶段：使能DCMI Continuous采集，待实现
@@ -507,11 +520,32 @@ SysResult_t BSP_DCMI_Stop(void)
 		}
 		//硬件和HAL状态已恢复，保留已锁存事件供上层读取
 		s_stop_required = false;
+		
+		//连续采集上下文恢复为空闲状态
+		s_stream.mode = BSP_DCMI_MODE_NONE;
+		s_stream.state = BSP_DCMI_STREAM_STOPPED;
+
+		s_stream.frame_words = 0U;
+		s_stream.callback = NULL;
+		s_stream.context = NULL;
+
+		s_stream.stop_required = false;
+		
 		HAL_NVIC_EnableIRQ(DMA1_Stream0_IRQn);
 		HAL_NVIC_EnableIRQ(DCMI_IRQn);
 	}
 	else
 	{
+		//连续采集上下文恢复为空闲状态
+		s_stream.mode = BSP_DCMI_MODE_NONE;
+		s_stream.state = BSP_DCMI_STREAM_STOPPED;
+
+		s_stream.frame_words = 0U;
+		s_stream.callback = NULL;
+		s_stream.context = NULL;
+
+		s_stream.stop_required = false;
+		
 		//未恢复时保持IRQ关闭，禁止直接开始下一轮
 		Dcmi_RecordError(result);
 	}
@@ -568,6 +602,42 @@ void HAL_DCMI_FrameEventCallback(DCMI_HandleTypeDef *hdcmi)
 	s_capture_active = false;
 }
 
+static void Dcmi_StreamM0Complete(DMA_HandleTypeDef *hdma)
+{
+    if (hdma != &s_dcmi_dma ||
+        s_stream.mode != BSP_DCMI_MODE_CONTINUOUS)
+        return;
+
+    if (s_stream.state != BSP_DCMI_STREAM_RUNNING)
+    {
+        s_stream.state = BSP_DCMI_STREAM_ERROR;
+        s_stream.stop_required = true;
+        Dcmi_RecordError(SYS_ERR_PROTOCOL);
+        return;
+    }
+
+    //后续阶段记录M0的DMA TC事件
+    //此时不能直接通知Media
+}
+
+static void Dcmi_StreamM1Complete(DMA_HandleTypeDef *hdma)
+{
+    if (hdma != &s_dcmi_dma ||
+        s_stream.mode != BSP_DCMI_MODE_CONTINUOUS)
+        return;
+
+    if (s_stream.state != BSP_DCMI_STREAM_RUNNING)
+    {
+        s_stream.state = BSP_DCMI_STREAM_ERROR;
+        s_stream.stop_required = true;
+        Dcmi_RecordError(SYS_ERR_PROTOCOL);
+        return;
+    }
+
+    //后续阶段记录M1的DMA TC事件
+    //此时不能直接通知Media
+}
+
 void HAL_DCMI_ErrorCallback(DCMI_HandleTypeDef *hdcmi)
 {
 	if ( hdcmi != &s_dcmi || !s_accept_events)
@@ -580,6 +650,19 @@ void DMA1_Stream0_IRQHandler(void)
 	if ( s_accept_events)
 		Dcmi_CheckErrors();
 	HAL_DMA_IRQHandler(&s_dcmi_dma);
+}
+
+//连续采集DMA异常，等待主循环执行Stop
+static void Dcmi_StreamDmaError(DMA_HandleTypeDef *hdma)
+{
+    if (hdma != &s_dcmi_dma ||
+        s_stream.mode != BSP_DCMI_MODE_CONTINUOUS)
+        return;
+
+    s_stream.state = BSP_DCMI_STREAM_ERROR;
+    s_stream.stop_required = true;
+
+    Dcmi_RecordError(SYS_ERR_IO);
 }
 
 void DCMI_IRQHandler(void)
