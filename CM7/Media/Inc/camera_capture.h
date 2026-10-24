@@ -18,6 +18,11 @@ bool CameraCapture_GetFrame(CameraFrame_t *frame);
 SysResult_t CameraCapture_ReleaseFrame(void);
 
 //三缓存区轮询采集
+//获取完整图像，成功时填写frame
+bool CameraCapture_StreamGetFrame(CameraFrame_t *frame);
+
+//释放当前完整帧，允许下一次采集
+SysResult_t CameraCapture_StreamReleaseFrame(void);
 
 //启动连续采集，使用Media三缓冲
 SysResult_t CameraCapture_StartStream(void);

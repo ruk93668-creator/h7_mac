@@ -470,6 +470,18 @@ SysResult_t CameraCapture_ReleaseFrame(void)
         s_capture.state != CAMERA_CAPTURE_READY)
         return SYS_ERR_INVALID_STATE;
 
+	SysResult_t result;
+
+	result = BSP_DCMI_Stop();
+
+	if (result != SYS_OK)
+	{
+		s_capture.last_result = result;
+		s_capture.state = CAMERA_CAPTURE_ERROR;
+		s_capture.snapshot.valid_bytes = 0U;
+		return result;
+	}
+	
     //当前图像不再有效
     s_capture.snapshot.valid_bytes = 0U;
 
@@ -938,6 +950,22 @@ static bool CameraStream_GetFrame(
     return success;
 }
 
+bool CameraCapture_StreamGetFrame(CameraFrame_t *frame)
+{
+    if (!s_capture.initialized ||
+        s_capture.mode != CAMERA_CAPTURE_MODE_STREAM ||
+        s_capture.state != CAMERA_CAPTURE_CAPTURING)
+    {
+        return false;
+    }
+
+    return CameraStream_GetFrame(
+        &s_capture.stream,
+        &s_capture.config,
+        frame
+    );
+}
+
 //释放Application正在使用的图像
 static SysResult_t CameraStream_ReleaseFrame(
     CameraStream_t *me)
@@ -972,6 +1000,19 @@ static SysResult_t CameraStream_ReleaseFrame(
     __set_PRIMASK(primask);
 
     return SYS_OK;
+}
+
+SysResult_t CameraCapture_StreamReleaseFrame(void)
+{
+    if (!s_capture.initialized ||
+        s_capture.mode != CAMERA_CAPTURE_MODE_STREAM ||
+        s_capture.state != CAMERA_CAPTURE_CAPTURING)
+    {
+        return false;
+    }
+
+    return CameraStream_ReleaseFrame(
+        &s_capture.stream);	
 }
 
 //BSP完整帧回调，运行于中断上下文
