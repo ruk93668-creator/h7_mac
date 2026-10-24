@@ -787,43 +787,12 @@ SysResult_t BSP_DCMI_ReplaceTarget(
 	}
 	control = DMA1_Stream0->CR;
 	remaining = DMA1_Stream0->NDTR;
-	//DMA必须保持使能，停止后不能继续替换
-	if ( (control & DMA_SxCR_EN) == 0U)
-	{
-		result = SYS_ERR_PROTOCOL;
-		goto replace_failed;
-	}
-
-	//确认DMA仍处于双缓冲模式
-	if ( (control & DMA_SxCR_DBM) == 0U)
-	{
-		result = SYS_ERR_PROTOCOL;
-		goto replace_failed;
-	}
-
-	//完成目标已重新成为活动目标，切换窗口已错过
-	if ( (control & DMA_SxCR_CT) == target_bit)
-	{
-		result = SYS_ERR_PROTOCOL;
-		goto replace_failed;
-	}
-
-	//当前目标剩余传输量必须留出地址切换余量
-	if ( remaining <= DCMI_REPLACE_GUARD_WORDS)
-	{
-		result = SYS_ERR_PROTOCOL;
-		goto replace_failed;
-	}
-
-	//剩余Word数不应超过本次配置的整帧长度
-	if ( remaining > s_stream.frame_words)
-	{
-		result = SYS_ERR_PROTOCOL;
-		goto replace_failed;
-	}
-
-	//又有TC事件挂起，不能继续使用本次配对结果
-	if ( (DMA1->LISR & DMA_FLAG_TCIF0_4) != 0U)
+	if ( (control & DMA_SxCR_EN) == 0U || //DMA必须保持使能，停止后不能继续替换
+		(control & DMA_SxCR_DBM) == 0U || //确认DMA仍处于双缓冲模式
+		(control & DMA_SxCR_CT) == target_bit || //完成目标已重新成为活动目标，切换窗口已错过
+		remaining <= DCMI_REPLACE_GUARD_WORDS || //当前目标剩余传输量必须留出地址切换余量
+		remaining > s_stream.frame_words || //剩余Word数不应超过本次配置的整帧长度
+		(DMA1->LISR & DMA_FLAG_TCIF0_4) != 0U) //又有TC事件挂起，不能继续使用本次配对结果
 	{
 		result = SYS_ERR_PROTOCOL;
 		goto replace_failed;
@@ -841,50 +810,13 @@ SysResult_t BSP_DCMI_ReplaceTarget(
 	control = DMA1_Stream0->CR;
 	remaining_after = DMA1_Stream0->NDTR;
 
-	//读回目标地址，确认新地址已写入
-	if ( *target_address != address)
-	{
-		result = SYS_ERR_PROTOCOL;
-		goto replace_failed;
-	}
-
-	//确认写入期间DMA没有停止
-	if ( (control & DMA_SxCR_EN) == 0U)
-	{
-		result = SYS_ERR_PROTOCOL;
-		goto replace_failed;
-	}
-
-	//确认写入后仍处于双缓冲模式
-	if ( (control & DMA_SxCR_DBM) == 0U)
-	{
-		result = SYS_ERR_PROTOCOL;
-		goto replace_failed;
-	}
-
-	//完成目标已重新成为活动目标，切换窗口已错过
-	if ( (control & DMA_SxCR_CT) == target_bit)
-	{
-		result = SYS_ERR_PROTOCOL;
-		goto replace_failed;
-	}
-
-	//写入后仍需保留足够的传输余量
-	if ( remaining_after <= DCMI_REPLACE_GUARD_WORDS)
-	{
-		result = SYS_ERR_PROTOCOL;
-		goto replace_failed;
-	}
-
-	//剩余量增加说明可能发生重装，不能确认仍在原切换窗口
-	if ( remaining_after > remaining)
-	{
-		result = SYS_ERR_PROTOCOL;
-		goto replace_failed;
-	}
-
-	//写入期间又有TC事件挂起，交给Stop恢复
-	if ( (DMA1->LISR & DMA_FLAG_TCIF0_4) != 0U)
+	if ( *target_address != address || //读回目标地址，确认新地址已写入
+		(control & DMA_SxCR_EN) == 0U || //确认写入期间DMA没有停止
+		(control & DMA_SxCR_DBM) == 0U || //确认写入后仍处于双缓冲模式
+		(control & DMA_SxCR_CT) == target_bit || //完成目标已重新成为活动目标，切换窗口已错过
+		remaining_after <= DCMI_REPLACE_GUARD_WORDS || //写入后仍需保留足够的传输余量
+		remaining_after > remaining || //剩余量增加说明可能发生重装，不能确认仍在原切换窗口
+		(DMA1->LISR & DMA_FLAG_TCIF0_4) != 0U) //写入期间又有TC事件挂起，交给Stop恢复
 	{
 		result = SYS_ERR_PROTOCOL;
 		goto replace_failed;
