@@ -1,0 +1,7 @@
+{
+  "source_zip": "C:\\Users\\29062\\Desktop\\获奖证书\\SVG_Schematic1_2026-10-25.zip",
+  "sha256": "6e734e11d31b9f30d463811b3543d75aad8d6af6b3fbabd84b348cbc591f4bc2",
+  "sheet_1": "电源管理",
+  "sheet_2": "主控",
+  "confirmed": "USB2 FS embedded PHY; PA11 DM PA12 DP; VDD33USB/VDD50USB=VCC; no MCU VBUS sensing"
+}

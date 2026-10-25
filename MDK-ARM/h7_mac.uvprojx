@@ -642,6 +642,9 @@
               <FileType>1</FileType>
               <FilePath>../Drivers/STM32H7xx_HAL_Driver/Src/stm32h7xx_hal_dcmi.c</FilePath>
             </File>
+            <File><FileName>stm32h7xx_hal_pcd.c</FileName><FileType>1</FileType><FilePath>../Drivers/STM32H7xx_HAL_Driver/Src/stm32h7xx_hal_pcd.c</FilePath><FileOption><CommonProperty><IncludeInBuild>0</IncludeInBuild></CommonProperty></FileOption></File>
+            <File><FileName>stm32h7xx_hal_pcd_ex.c</FileName><FileType>1</FileType><FilePath>../Drivers/STM32H7xx_HAL_Driver/Src/stm32h7xx_hal_pcd_ex.c</FilePath><FileOption><CommonProperty><IncludeInBuild>0</IncludeInBuild></CommonProperty></FileOption></File>
+            <File><FileName>stm32h7xx_ll_usb.c</FileName><FileType>1</FileType><FilePath>../Drivers/STM32H7xx_HAL_Driver/Src/stm32h7xx_ll_usb.c</FilePath><FileOption><CommonProperty><IncludeInBuild>0</IncludeInBuild></CommonProperty></FileOption></File>
           </Files>
         </Group>
         <Group>
@@ -1498,7 +1501,16 @@
         <Group>
           <GroupName>::CMSIS</GroupName>
         </Group>
-      </Groups>
+            <Group>
+        <GroupName>Middlewares/USB_Device_Core</GroupName>
+        <GroupOption><CommonProperty><IncludeInBuild>0</IncludeInBuild></CommonProperty></GroupOption>
+        <Files>
+          <File><FileName>usbd_core.c</FileName><FileType>1</FileType><FilePath>../Middlewares/ST/STM32_USB_Device_Library/Core/Src/usbd_core.c</FilePath></File>
+          <File><FileName>usbd_ctlreq.c</FileName><FileType>1</FileType><FilePath>../Middlewares/ST/STM32_USB_Device_Library/Core/Src/usbd_ctlreq.c</FilePath></File>
+          <File><FileName>usbd_ioreq.c</FileName><FileType>1</FileType><FilePath>../Middlewares/ST/STM32_USB_Device_Library/Core/Src/usbd_ioreq.c</FilePath></File>
+        </Files>
+      </Group>
+    </Groups>
     </Target>
     <Target>
       <TargetName>h7_mac_CM7</TargetName>
@@ -1830,10 +1842,10 @@
             <v6WtE>0</v6WtE>
             <v6Rtti>0</v6Rtti>
             <VariousControls>
-              <MiscControls>--preinclude ../CM7/BSP/bsp_sdram_hal_config.h --preinclude ../CM7/BSP/bsp_dcmi_hal_config.h </MiscControls>
+              <MiscControls>--preinclude ../CM7/BSP/bsp_sdram_hal_config.h --preinclude ../CM7/BSP/bsp_dcmi_hal_config.h --preinclude ../CM7/BSP/bsp_usb_hal_config.h </MiscControls>
               <Define>CORE_CM7,USE_HAL_DRIVER,STM32H747xx,USE_PWR_LDO_SUPPLY</Define>
               <Undefine></Undefine>
-              <IncludePath>../CM7/Core/Inc;../Drivers/STM32H7xx_HAL_Driver/Inc;../Drivers/STM32H7xx_HAL_Driver/Inc/Legacy;../Drivers/CMSIS/Device/ST/STM32H7xx/Include;../Drivers/CMSIS/Include;..\Common\Inc;..\Board\Inc;..\CM7\Application;..\CM7\Service;..\CM7\Device\Inc;..\CM7\Media\Inc;..\CM7\Platform;..\CM7\BSP;..\CM7\Framework;..\CM7\Device\Components\OV5640</IncludePath>
+              <IncludePath>../CM7/Core/Inc;../Drivers/STM32H7xx_HAL_Driver/Inc;../Drivers/STM32H7xx_HAL_Driver/Inc/Legacy;../Drivers/CMSIS/Device/ST/STM32H7xx/Include;../Drivers/CMSIS/Include;..\Common\Inc;..\Board\Inc;..\CM7\Application;..\CM7\Service;..\CM7\Device\Inc;..\CM7\Media\Inc;..\CM7\Platform;..\CM7\BSP;..\CM7\Framework;..\CM7\Device\Components\OV5640;../Middlewares/ST/STM32_USB_Device_Library/Core/Inc</IncludePath>
             </VariousControls>
           </Cads>
           <Aads>
@@ -2135,6 +2147,21 @@
               <FileName>stm32h7xx_hal_dcmi.c</FileName>
               <FileType>1</FileType>
               <FilePath>../Drivers/STM32H7xx_HAL_Driver/Src/stm32h7xx_hal_dcmi.c</FilePath>
+            </File>
+            <File>
+              <FileName>stm32h7xx_hal_pcd.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>../Drivers/STM32H7xx_HAL_Driver/Src/stm32h7xx_hal_pcd.c</FilePath>
+            </File>
+            <File>
+              <FileName>stm32h7xx_hal_pcd_ex.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>../Drivers/STM32H7xx_HAL_Driver/Src/stm32h7xx_hal_pcd_ex.c</FilePath>
+            </File>
+            <File>
+              <FileName>stm32h7xx_ll_usb.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>../Drivers/STM32H7xx_HAL_Driver/Src/stm32h7xx_ll_usb.c</FilePath>
             </File>
           </Files>
         </Group>
@@ -2873,6 +2900,21 @@
               <FileType>5</FileType>
               <FilePath>../CM7/Platform/platform_time.h</FilePath>
             </File>
+            <File>
+              <FileName>usb_device.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>../CM7/Platform/usb_device.c</FilePath>
+            </File>
+            <File>
+              <FileName>usb_device.h</FileName>
+              <FileType>5</FileType>
+              <FilePath>../CM7/Platform/usb_device.h</FilePath>
+            </File>
+            <File>
+              <FileName>usbd_conf.h</FileName>
+              <FileType>5</FileType>
+              <FilePath>../CM7/Platform/usbd_conf.h</FilePath>
+            </File>
           </Files>
         </Group>
         <Group>
@@ -2918,12 +2960,35 @@
               <FileType>5</FileType>
               <FilePath>../CM7/BSP/bsp_sdram_hal_config.h</FilePath>
             </File>
+            <File>
+              <FileName>bsp_usb.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>../CM7/BSP/bsp_usb.c</FilePath>
+            </File>
+            <File>
+              <FileName>bsp_usb.h</FileName>
+              <FileType>5</FileType>
+              <FilePath>../CM7/BSP/bsp_usb.h</FilePath>
+            </File>
+            <File>
+              <FileName>bsp_usb_hal_config.h</FileName>
+              <FileType>5</FileType>
+              <FilePath>../CM7/BSP/bsp_usb_hal_config.h</FilePath>
+            </File>
           </Files>
         </Group>
         <Group>
           <GroupName>::CMSIS</GroupName>
         </Group>
-      </Groups>
+            <Group>
+        <GroupName>Middlewares/USB_Device_Core</GroupName>
+        <Files>
+          <File><FileName>usbd_core.c</FileName><FileType>1</FileType><FilePath>../Middlewares/ST/STM32_USB_Device_Library/Core/Src/usbd_core.c</FilePath></File>
+          <File><FileName>usbd_ctlreq.c</FileName><FileType>1</FileType><FilePath>../Middlewares/ST/STM32_USB_Device_Library/Core/Src/usbd_ctlreq.c</FilePath></File>
+          <File><FileName>usbd_ioreq.c</FileName><FileType>1</FileType><FilePath>../Middlewares/ST/STM32_USB_Device_Library/Core/Src/usbd_ioreq.c</FilePath></File>
+        </Files>
+      </Group>
+    </Groups>
     </Target>
   </Targets>
 

@@ -1,0 +1,843 @@
+{
+  "summary": {
+    "total": 52,
+    "passed": 52,
+    "failed": 0,
+    "assertions": 428
+  },
+  "formal_source_changed": [],
+  "cases": [
+    {
+      "id": 0,
+      "name": "未初始化接口 / FS",
+      "input": "未初始化接口",
+      "expected": "断言通过",
+      "result": "PASS",
+      "actual": {
+        "fail_line": 0,
+        "checks": 3,
+        "operations": 0,
+        "replaces": 0,
+        "deferred": 0,
+        "case_id": 0
+      },
+      "error": null
+    },
+    {
+      "id": 1,
+      "name": "硬件时钟GPIO配置保持PLL / FS",
+      "input": "硬件时钟GPIO配置保持PLL",
+      "expected": "断言通过",
+      "result": "PASS",
+      "actual": {
+        "fail_line": 0,
+        "checks": 20,
+        "operations": 0,
+        "replaces": 0,
+        "deferred": 0,
+        "case_id": 1
+      },
+      "error": null
+    },
+    {
+      "id": 2,
+      "name": "HSI48失败 / FS",
+      "input": "HSI48失败",
+      "expected": "断言通过",
+      "result": "PASS",
+      "actual": {
+        "fail_line": 0,
+        "checks": 3,
+        "operations": 0,
+        "replaces": 0,
+        "deferred": 0,
+        "case_id": 2
+      },
+      "error": null
+    },
+    {
+      "id": 3,
+      "name": "USB时钟选择失败 / FS",
+      "input": "USB时钟选择失败",
+      "expected": "断言通过",
+      "result": "PASS",
+      "actual": {
+        "fail_line": 0,
+        "checks": 3,
+        "operations": 0,
+        "replaces": 0,
+        "deferred": 0,
+        "case_id": 3
+      },
+      "error": null
+    },
+    {
+      "id": 4,
+      "name": "时钟频率错误 / FS",
+      "input": "时钟频率错误",
+      "expected": "断言通过",
+      "result": "PASS",
+      "actual": {
+        "fail_line": 0,
+        "checks": 3,
+        "operations": 0,
+        "replaces": 0,
+        "deferred": 0,
+        "case_id": 4
+      },
+      "error": null
+    },
+    {
+      "id": 5,
+      "name": "PCD初始化失败 / FS",
+      "input": "PCD初始化失败",
+      "expected": "断言通过",
+      "result": "PASS",
+      "actual": {
+        "fail_line": 0,
+        "checks": 3,
+        "operations": 0,
+        "replaces": 0,
+        "deferred": 0,
+        "case_id": 5
+      },
+      "error": null
+    },
+    {
+      "id": 6,
+      "name": "Rx FIFO失败 / FS",
+      "input": "Rx FIFO失败",
+      "expected": "断言通过",
+      "result": "PASS",
+      "actual": {
+        "fail_line": 0,
+        "checks": 3,
+        "operations": 0,
+        "replaces": 0,
+        "deferred": 0,
+        "case_id": 6
+      },
+      "error": null
+    },
+    {
+      "id": 7,
+      "name": "Tx FIFO失败 / FS",
+      "input": "Tx FIFO失败",
+      "expected": "断言通过",
+      "result": "PASS",
+      "actual": {
+        "fail_line": 0,
+        "checks": 3,
+        "operations": 0,
+        "replaces": 0,
+        "deferred": 0,
+        "case_id": 7
+      },
+      "error": null
+    },
+    {
+      "id": 8,
+      "name": "重复初始化 / FS",
+      "input": "重复初始化",
+      "expected": "断言通过",
+      "result": "PASS",
+      "actual": {
+        "fail_line": 0,
+        "checks": 7,
+        "operations": 0,
+        "replaces": 0,
+        "deferred": 0,
+        "case_id": 8
+      },
+      "error": null
+    },
+    {
+      "id": 9,
+      "name": "启动与停止NVIC / FS",
+      "input": "启动与停止NVIC",
+      "expected": "断言通过",
+      "result": "PASS",
+      "actual": {
+        "fail_line": 0,
+        "checks": 9,
+        "operations": 0,
+        "replaces": 0,
+        "deferred": 0,
+        "case_id": 9
+      },
+      "error": null
+    },
+    {
+      "id": 10,
+      "name": "启动HAL_BUSY / FS",
+      "input": "启动HAL_BUSY",
+      "expected": "断言通过",
+      "result": "PASS",
+      "actual": {
+        "fail_line": 0,
+        "checks": 7,
+        "operations": 0,
+        "replaces": 0,
+        "deferred": 0,
+        "case_id": 10
+      },
+      "error": null
+    },
+    {
+      "id": 11,
+      "name": "Stop底层错误保留 / FS",
+      "input": "Stop底层错误保留",
+      "expected": "断言通过",
+      "result": "PASS",
+      "actual": {
+        "fail_line": 0,
+        "checks": 9,
+        "operations": 0,
+        "replaces": 0,
+        "deferred": 0,
+        "case_id": 11
+      },
+      "error": null
+    },
+    {
+      "id": 12,
+      "name": "Reset打开EP0 / FS",
+      "input": "Reset打开EP0",
+      "expected": "断言通过",
+      "result": "PASS",
+      "actual": {
+        "fail_line": 0,
+        "checks": 9,
+        "operations": 0,
+        "replaces": 0,
+        "deferred": 0,
+        "case_id": 12
+      },
+      "error": null
+    },
+    {
+      "id": 13,
+      "name": "完整设备描述符 / FS",
+      "input": "完整设备描述符",
+      "expected": "断言通过",
+      "result": "PASS",
+      "actual": {
+        "fail_line": 0,
+        "checks": 11,
+        "operations": 0,
+        "replaces": 0,
+        "deferred": 0,
+        "case_id": 13
+      },
+      "error": null
+    },
+    {
+      "id": 14,
+      "name": "设备描述符前8字节 / FS",
+      "input": "设备描述符前8字节",
+      "expected": "断言通过",
+      "result": "PASS",
+      "actual": {
+        "fail_line": 0,
+        "checks": 11,
+        "operations": 0,
+        "replaces": 0,
+        "deferred": 0,
+        "case_id": 14
+      },
+      "error": null
+    },
+    {
+      "id": 15,
+      "name": "配置描述符头 / FS",
+      "input": "配置描述符头",
+      "expected": "断言通过",
+      "result": "PASS",
+      "actual": {
+        "fail_line": 0,
+        "checks": 9,
+        "operations": 0,
+        "replaces": 0,
+        "deferred": 0,
+        "case_id": 15
+      },
+      "error": null
+    },
+    {
+      "id": 16,
+      "name": "完整配置描述符 / FS",
+      "input": "完整配置描述符",
+      "expected": "断言通过",
+      "result": "PASS",
+      "actual": {
+        "fail_line": 0,
+        "checks": 11,
+        "operations": 0,
+        "replaces": 0,
+        "deferred": 0,
+        "case_id": 16
+      },
+      "error": null
+    },
+    {
+      "id": 17,
+      "name": "语言描述符 / FS",
+      "input": "语言描述符",
+      "expected": "断言通过",
+      "result": "PASS",
+      "actual": {
+        "fail_line": 0,
+        "checks": 9,
+        "operations": 0,
+        "replaces": 0,
+        "deferred": 0,
+        "case_id": 17
+      },
+      "error": null
+    },
+    {
+      "id": 18,
+      "name": "厂家字符串 / FS",
+      "input": "厂家字符串",
+      "expected": "断言通过",
+      "result": "PASS",
+      "actual": {
+        "fail_line": 0,
+        "checks": 9,
+        "operations": 0,
+        "replaces": 0,
+        "deferred": 0,
+        "case_id": 18
+      },
+      "error": null
+    },
+    {
+      "id": 19,
+      "name": "产品字符串 / FS",
+      "input": "产品字符串",
+      "expected": "断言通过",
+      "result": "PASS",
+      "actual": {
+        "fail_line": 0,
+        "checks": 9,
+        "operations": 0,
+        "replaces": 0,
+        "deferred": 0,
+        "case_id": 19
+      },
+      "error": null
+    },
+    {
+      "id": 20,
+      "name": "序列号字符串 / FS",
+      "input": "序列号字符串",
+      "expected": "断言通过",
+      "result": "PASS",
+      "actual": {
+        "fail_line": 0,
+        "checks": 9,
+        "operations": 0,
+        "replaces": 0,
+        "deferred": 0,
+        "case_id": 20
+      },
+      "error": null
+    },
+    {
+      "id": 21,
+      "name": "设置地址 / FS",
+      "input": "设置地址",
+      "expected": "断言通过",
+      "result": "PASS",
+      "actual": {
+        "fail_line": 0,
+        "checks": 9,
+        "operations": 0,
+        "replaces": 0,
+        "deferred": 0,
+        "case_id": 21
+      },
+      "error": null
+    },
+    {
+      "id": 22,
+      "name": "非法地址STALL / FS",
+      "input": "非法地址STALL",
+      "expected": "断言通过",
+      "result": "PASS",
+      "actual": {
+        "fail_line": 0,
+        "checks": 8,
+        "operations": 0,
+        "replaces": 0,
+        "deferred": 0,
+        "case_id": 22
+      },
+      "error": null
+    },
+    {
+      "id": 23,
+      "name": "未寻址禁止配置 / FS",
+      "input": "未寻址禁止配置",
+      "expected": "断言通过",
+      "result": "PASS",
+      "actual": {
+        "fail_line": 0,
+        "checks": 8,
+        "operations": 0,
+        "replaces": 0,
+        "deferred": 0,
+        "case_id": 23
+      },
+      "error": null
+    },
+    {
+      "id": 24,
+      "name": "配置完成 / FS",
+      "input": "配置完成",
+      "expected": "断言通过",
+      "result": "PASS",
+      "actual": {
+        "fail_line": 0,
+        "checks": 8,
+        "operations": 0,
+        "replaces": 0,
+        "deferred": 0,
+        "case_id": 24
+      },
+      "error": null
+    },
+    {
+      "id": 25,
+      "name": "取消配置 / FS",
+      "input": "取消配置",
+      "expected": "断言通过",
+      "result": "PASS",
+      "actual": {
+        "fail_line": 0,
+        "checks": 9,
+        "operations": 0,
+        "replaces": 0,
+        "deferred": 0,
+        "case_id": 25
+      },
+      "error": null
+    },
+    {
+      "id": 26,
+      "name": "GET_CONFIGURATION / FS",
+      "input": "GET_CONFIGURATION",
+      "expected": "断言通过",
+      "result": "PASS",
+      "actual": {
+        "fail_line": 0,
+        "checks": 9,
+        "operations": 0,
+        "replaces": 0,
+        "deferred": 0,
+        "case_id": 26
+      },
+      "error": null
+    },
+    {
+      "id": 27,
+      "name": "GET_STATUS / FS",
+      "input": "GET_STATUS",
+      "expected": "断言通过",
+      "result": "PASS",
+      "actual": {
+        "fail_line": 0,
+        "checks": 9,
+        "operations": 0,
+        "replaces": 0,
+        "deferred": 0,
+        "case_id": 27
+      },
+      "error": null
+    },
+    {
+      "id": 28,
+      "name": "未知描述符STALL / FS",
+      "input": "未知描述符STALL",
+      "expected": "断言通过",
+      "result": "PASS",
+      "actual": {
+        "fail_line": 0,
+        "checks": 8,
+        "operations": 0,
+        "replaces": 0,
+        "deferred": 0,
+        "case_id": 28
+      },
+      "error": null
+    },
+    {
+      "id": 29,
+      "name": "厂商请求STALL / FS",
+      "input": "厂商请求STALL",
+      "expected": "断言通过",
+      "result": "PASS",
+      "actual": {
+        "fail_line": 0,
+        "checks": 8,
+        "operations": 0,
+        "replaces": 0,
+        "deferred": 0,
+        "case_id": 29
+      },
+      "error": null
+    },
+    {
+      "id": 30,
+      "name": "UVC Probe不支持 / FS",
+      "input": "UVC Probe不支持",
+      "expected": "断言通过",
+      "result": "PASS",
+      "actual": {
+        "fail_line": 0,
+        "checks": 8,
+        "operations": 0,
+        "replaces": 0,
+        "deferred": 0,
+        "case_id": 30
+      },
+      "error": null
+    },
+    {
+      "id": 31,
+      "name": "SET_INTERFACE视频切换不支持 / FS",
+      "input": "SET_INTERFACE视频切换不支持",
+      "expected": "断言通过",
+      "result": "PASS",
+      "actual": {
+        "fail_line": 0,
+        "checks": 8,
+        "operations": 0,
+        "replaces": 0,
+        "deferred": 0,
+        "case_id": 31
+      },
+      "error": null
+    },
+    {
+      "id": 32,
+      "name": "GET_INTERFACE零 / FS",
+      "input": "GET_INTERFACE零",
+      "expected": "断言通过",
+      "result": "PASS",
+      "actual": {
+        "fail_line": 0,
+        "checks": 9,
+        "operations": 0,
+        "replaces": 0,
+        "deferred": 0,
+        "case_id": 32
+      },
+      "error": null
+    },
+    {
+      "id": 33,
+      "name": "挂起与恢复 / FS",
+      "input": "挂起与恢复",
+      "expected": "断言通过",
+      "result": "PASS",
+      "actual": {
+        "fail_line": 0,
+        "checks": 9,
+        "operations": 0,
+        "replaces": 0,
+        "deferred": 0,
+        "case_id": 33
+      },
+      "error": null
+    },
+    {
+      "id": 34,
+      "name": "Reset清除配置 / FS",
+      "input": "Reset清除配置",
+      "expected": "断言通过",
+      "result": "PASS",
+      "actual": {
+        "fail_line": 0,
+        "checks": 9,
+        "operations": 0,
+        "replaces": 0,
+        "deferred": 0,
+        "case_id": 34
+      },
+      "error": null
+    },
+    {
+      "id": 35,
+      "name": "停止重新枚举 / FS",
+      "input": "停止重新枚举",
+      "expected": "断言通过",
+      "result": "PASS",
+      "actual": {
+        "fail_line": 0,
+        "checks": 12,
+        "operations": 0,
+        "replaces": 0,
+        "deferred": 0,
+        "case_id": 35
+      },
+      "error": null
+    },
+    {
+      "id": 36,
+      "name": "DeInit关闭资源 / FS",
+      "input": "DeInit关闭资源",
+      "expected": "断言通过",
+      "result": "PASS",
+      "actual": {
+        "fail_line": 0,
+        "checks": 11,
+        "operations": 0,
+        "replaces": 0,
+        "deferred": 0,
+        "case_id": 36
+      },
+      "error": null
+    },
+    {
+      "id": 37,
+      "name": "非法Class注册 / FS",
+      "input": "非法Class注册",
+      "expected": "断言通过",
+      "result": "PASS",
+      "actual": {
+        "fail_line": 0,
+        "checks": 6,
+        "operations": 0,
+        "replaces": 0,
+        "deferred": 0,
+        "case_id": 37
+      },
+      "error": null
+    },
+    {
+      "id": 38,
+      "name": "运行中禁止注册 / FS",
+      "input": "运行中禁止注册",
+      "expected": "断言通过",
+      "result": "PASS",
+      "actual": {
+        "fail_line": 0,
+        "checks": 8,
+        "operations": 0,
+        "replaces": 0,
+        "deferred": 0,
+        "case_id": 38
+      },
+      "error": null
+    },
+    {
+      "id": 39,
+      "name": "停止时Class注册 / FS",
+      "input": "停止时Class注册",
+      "expected": "断言通过",
+      "result": "PASS",
+      "actual": {
+        "fail_line": 0,
+        "checks": 5,
+        "operations": 0,
+        "replaces": 0,
+        "deferred": 0,
+        "case_id": 39
+      },
+      "error": null
+    },
+    {
+      "id": 40,
+      "name": "固定内存分配 / FS",
+      "input": "固定内存分配",
+      "expected": "断言通过",
+      "result": "PASS",
+      "actual": {
+        "fail_line": 0,
+        "checks": 8,
+        "operations": 0,
+        "replaces": 0,
+        "deferred": 0,
+        "case_id": 40
+      },
+      "error": null
+    },
+    {
+      "id": 41,
+      "name": "非零端点未启用 / FS",
+      "input": "非零端点未启用",
+      "expected": "断言通过",
+      "result": "PASS",
+      "actual": {
+        "fail_line": 0,
+        "checks": 8,
+        "operations": 0,
+        "replaces": 0,
+        "deferred": 0,
+        "case_id": 41
+      },
+      "error": null
+    },
+    {
+      "id": 42,
+      "name": "LL错误传播 / FS",
+      "input": "LL错误传播",
+      "expected": "断言通过",
+      "result": "PASS",
+      "actual": {
+        "fail_line": 0,
+        "checks": 10,
+        "operations": 0,
+        "replaces": 0,
+        "deferred": 0,
+        "case_id": 42
+      },
+      "error": null
+    },
+    {
+      "id": 43,
+      "name": "其他PCD回调隔离 / FS",
+      "input": "其他PCD回调隔离",
+      "expected": "断言通过",
+      "result": "PASS",
+      "actual": {
+        "fail_line": 0,
+        "checks": 8,
+        "operations": 0,
+        "replaces": 0,
+        "deferred": 0,
+        "case_id": 43
+      },
+      "error": null
+    },
+    {
+      "id": 44,
+      "name": "IRQ调用PCD / FS",
+      "input": "IRQ调用PCD",
+      "expected": "断言通过",
+      "result": "PASS",
+      "actual": {
+        "fail_line": 0,
+        "checks": 8,
+        "operations": 0,
+        "replaces": 0,
+        "deferred": 0,
+        "case_id": 44
+      },
+      "error": null
+    },
+    {
+      "id": 45,
+      "name": "仅FS拒绝Qualifier / FS",
+      "input": "仅FS拒绝Qualifier",
+      "expected": "断言通过",
+      "result": "PASS",
+      "actual": {
+        "fail_line": 0,
+        "checks": 8,
+        "operations": 0,
+        "replaces": 0,
+        "deferred": 0,
+        "case_id": 45
+      },
+      "error": null
+    },
+    {
+      "id": 46,
+      "name": "STALL清除 / FS",
+      "input": "STALL清除",
+      "expected": "断言通过",
+      "result": "PASS",
+      "actual": {
+        "fail_line": 0,
+        "checks": 11,
+        "operations": 0,
+        "replaces": 0,
+        "deferred": 0,
+        "case_id": 46
+      },
+      "error": null
+    },
+    {
+      "id": 47,
+      "name": "EP0数据及状态阶段回调 / FS",
+      "input": "EP0数据及状态阶段回调",
+      "expected": "断言通过",
+      "result": "PASS",
+      "actual": {
+        "fail_line": 0,
+        "checks": 10,
+        "operations": 0,
+        "replaces": 0,
+        "deferred": 0,
+        "case_id": 47
+      },
+      "error": null
+    },
+    {
+      "id": 48,
+      "name": "配置描述符长度截断 / FS",
+      "input": "配置描述符长度截断",
+      "expected": "断言通过",
+      "result": "PASS",
+      "actual": {
+        "fail_line": 0,
+        "checks": 8,
+        "operations": 0,
+        "replaces": 0,
+        "deferred": 0,
+        "case_id": 48
+      },
+      "error": null
+    },
+    {
+      "id": 49,
+      "name": "非法配置值STALL / FS",
+      "input": "非法配置值STALL",
+      "expected": "断言通过",
+      "result": "PASS",
+      "actual": {
+        "fail_line": 0,
+        "checks": 8,
+        "operations": 0,
+        "replaces": 0,
+        "deferred": 0,
+        "case_id": 49
+      },
+      "error": null
+    },
+    {
+      "id": 50,
+      "name": "Class字符串回调完整性 / FS",
+      "input": "Class字符串回调完整性",
+      "expected": "断言通过",
+      "result": "PASS",
+      "actual": {
+        "fail_line": 0,
+        "checks": 9,
+        "operations": 0,
+        "replaces": 0,
+        "deferred": 0,
+        "case_id": 50
+      },
+      "error": null
+    },
+    {
+      "id": 51,
+      "name": "重复Class注册数量 / FS",
+      "input": "重复Class注册数量",
+      "expected": "断言通过",
+      "result": "PASS",
+      "actual": {
+        "fail_line": 0,
+        "checks": 11,
+        "operations": 0,
+        "replaces": 0,
+        "deferred": 0,
+        "case_id": 51
+      },
+      "error": null
+    }
+  ]
+}

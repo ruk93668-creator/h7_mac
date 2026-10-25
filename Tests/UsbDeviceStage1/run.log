@@ -1,0 +1,53 @@
+01 PASS 未初始化接口/FS: {'fail_line': 0, 'checks': 3, 'operations': 0, 'replaces': 0, 'deferred': 0, 'case_id': 0}; None
+02 PASS 硬件时钟GPIO配置保持PLL/FS: {'fail_line': 0, 'checks': 20, 'operations': 0, 'replaces': 0, 'deferred': 0, 'case_id': 1}; None
+03 PASS HSI48失败/FS: {'fail_line': 0, 'checks': 3, 'operations': 0, 'replaces': 0, 'deferred': 0, 'case_id': 2}; None
+04 PASS USB时钟选择失败/FS: {'fail_line': 0, 'checks': 3, 'operations': 0, 'replaces': 0, 'deferred': 0, 'case_id': 3}; None
+05 PASS 时钟频率错误/FS: {'fail_line': 0, 'checks': 3, 'operations': 0, 'replaces': 0, 'deferred': 0, 'case_id': 4}; None
+06 PASS PCD初始化失败/FS: {'fail_line': 0, 'checks': 3, 'operations': 0, 'replaces': 0, 'deferred': 0, 'case_id': 5}; None
+07 PASS Rx FIFO失败/FS: {'fail_line': 0, 'checks': 3, 'operations': 0, 'replaces': 0, 'deferred': 0, 'case_id': 6}; None
+08 PASS Tx FIFO失败/FS: {'fail_line': 0, 'checks': 3, 'operations': 0, 'replaces': 0, 'deferred': 0, 'case_id': 7}; None
+09 PASS 重复初始化/FS: {'fail_line': 0, 'checks': 7, 'operations': 0, 'replaces': 0, 'deferred': 0, 'case_id': 8}; None
+10 PASS 启动与停止NVIC/FS: {'fail_line': 0, 'checks': 9, 'operations': 0, 'replaces': 0, 'deferred': 0, 'case_id': 9}; None
+11 PASS 启动HAL_BUSY/FS: {'fail_line': 0, 'checks': 7, 'operations': 0, 'replaces': 0, 'deferred': 0, 'case_id': 10}; None
+12 PASS Stop底层错误保留/FS: {'fail_line': 0, 'checks': 9, 'operations': 0, 'replaces': 0, 'deferred': 0, 'case_id': 11}; None
+13 PASS Reset打开EP0/FS: {'fail_line': 0, 'checks': 9, 'operations': 0, 'replaces': 0, 'deferred': 0, 'case_id': 12}; None
+14 PASS 完整设备描述符/FS: {'fail_line': 0, 'checks': 11, 'operations': 0, 'replaces': 0, 'deferred': 0, 'case_id': 13}; None
+15 PASS 设备描述符前8字节/FS: {'fail_line': 0, 'checks': 11, 'operations': 0, 'replaces': 0, 'deferred': 0, 'case_id': 14}; None
+16 PASS 配置描述符头/FS: {'fail_line': 0, 'checks': 9, 'operations': 0, 'replaces': 0, 'deferred': 0, 'case_id': 15}; None
+17 PASS 完整配置描述符/FS: {'fail_line': 0, 'checks': 11, 'operations': 0, 'replaces': 0, 'deferred': 0, 'case_id': 16}; None
+18 PASS 语言描述符/FS: {'fail_line': 0, 'checks': 9, 'operations': 0, 'replaces': 0, 'deferred': 0, 'case_id': 17}; None
+19 PASS 厂家字符串/FS: {'fail_line': 0, 'checks': 9, 'operations': 0, 'replaces': 0, 'deferred': 0, 'case_id': 18}; None
+20 PASS 产品字符串/FS: {'fail_line': 0, 'checks': 9, 'operations': 0, 'replaces': 0, 'deferred': 0, 'case_id': 19}; None
+21 PASS 序列号字符串/FS: {'fail_line': 0, 'checks': 9, 'operations': 0, 'replaces': 0, 'deferred': 0, 'case_id': 20}; None
+22 PASS 设置地址/FS: {'fail_line': 0, 'checks': 9, 'operations': 0, 'replaces': 0, 'deferred': 0, 'case_id': 21}; None
+23 PASS 非法地址STALL/FS: {'fail_line': 0, 'checks': 8, 'operations': 0, 'replaces': 0, 'deferred': 0, 'case_id': 22}; None
+24 PASS 未寻址禁止配置/FS: {'fail_line': 0, 'checks': 8, 'operations': 0, 'replaces': 0, 'deferred': 0, 'case_id': 23}; None
+25 PASS 配置完成/FS: {'fail_line': 0, 'checks': 8, 'operations': 0, 'replaces': 0, 'deferred': 0, 'case_id': 24}; None
+26 PASS 取消配置/FS: {'fail_line': 0, 'checks': 9, 'operations': 0, 'replaces': 0, 'deferred': 0, 'case_id': 25}; None
+27 PASS GET_CONFIGURATION/FS: {'fail_line': 0, 'checks': 9, 'operations': 0, 'replaces': 0, 'deferred': 0, 'case_id': 26}; None
+28 PASS GET_STATUS/FS: {'fail_line': 0, 'checks': 9, 'operations': 0, 'replaces': 0, 'deferred': 0, 'case_id': 27}; None
+29 PASS 未知描述符STALL/FS: {'fail_line': 0, 'checks': 8, 'operations': 0, 'replaces': 0, 'deferred': 0, 'case_id': 28}; None
+30 PASS 厂商请求STALL/FS: {'fail_line': 0, 'checks': 8, 'operations': 0, 'replaces': 0, 'deferred': 0, 'case_id': 29}; None
+31 PASS UVC Probe不支持/FS: {'fail_line': 0, 'checks': 8, 'operations': 0, 'replaces': 0, 'deferred': 0, 'case_id': 30}; None
+32 PASS SET_INTERFACE视频切换不支持/FS: {'fail_line': 0, 'checks': 8, 'operations': 0, 'replaces': 0, 'deferred': 0, 'case_id': 31}; None
+33 PASS GET_INTERFACE零/FS: {'fail_line': 0, 'checks': 9, 'operations': 0, 'replaces': 0, 'deferred': 0, 'case_id': 32}; None
+34 PASS 挂起与恢复/FS: {'fail_line': 0, 'checks': 9, 'operations': 0, 'replaces': 0, 'deferred': 0, 'case_id': 33}; None
+35 PASS Reset清除配置/FS: {'fail_line': 0, 'checks': 9, 'operations': 0, 'replaces': 0, 'deferred': 0, 'case_id': 34}; None
+36 PASS 停止重新枚举/FS: {'fail_line': 0, 'checks': 12, 'operations': 0, 'replaces': 0, 'deferred': 0, 'case_id': 35}; None
+37 PASS DeInit关闭资源/FS: {'fail_line': 0, 'checks': 11, 'operations': 0, 'replaces': 0, 'deferred': 0, 'case_id': 36}; None
+38 PASS 非法Class注册/FS: {'fail_line': 0, 'checks': 6, 'operations': 0, 'replaces': 0, 'deferred': 0, 'case_id': 37}; None
+39 PASS 运行中禁止注册/FS: {'fail_line': 0, 'checks': 8, 'operations': 0, 'replaces': 0, 'deferred': 0, 'case_id': 38}; None
+40 PASS 停止时Class注册/FS: {'fail_line': 0, 'checks': 5, 'operations': 0, 'replaces': 0, 'deferred': 0, 'case_id': 39}; None
+41 PASS 固定内存分配/FS: {'fail_line': 0, 'checks': 8, 'operations': 0, 'replaces': 0, 'deferred': 0, 'case_id': 40}; None
+42 PASS 非零端点未启用/FS: {'fail_line': 0, 'checks': 8, 'operations': 0, 'replaces': 0, 'deferred': 0, 'case_id': 41}; None
+43 PASS LL错误传播/FS: {'fail_line': 0, 'checks': 10, 'operations': 0, 'replaces': 0, 'deferred': 0, 'case_id': 42}; None
+44 PASS 其他PCD回调隔离/FS: {'fail_line': 0, 'checks': 8, 'operations': 0, 'replaces': 0, 'deferred': 0, 'case_id': 43}; None
+45 PASS IRQ调用PCD/FS: {'fail_line': 0, 'checks': 8, 'operations': 0, 'replaces': 0, 'deferred': 0, 'case_id': 44}; None
+46 PASS 仅FS拒绝Qualifier/FS: {'fail_line': 0, 'checks': 8, 'operations': 0, 'replaces': 0, 'deferred': 0, 'case_id': 45}; None
+47 PASS STALL清除/FS: {'fail_line': 0, 'checks': 11, 'operations': 0, 'replaces': 0, 'deferred': 0, 'case_id': 46}; None
+48 PASS EP0数据及状态阶段回调/FS: {'fail_line': 0, 'checks': 10, 'operations': 0, 'replaces': 0, 'deferred': 0, 'case_id': 47}; None
+49 PASS 配置描述符长度截断/FS: {'fail_line': 0, 'checks': 8, 'operations': 0, 'replaces': 0, 'deferred': 0, 'case_id': 48}; None
+50 PASS 非法配置值STALL/FS: {'fail_line': 0, 'checks': 8, 'operations': 0, 'replaces': 0, 'deferred': 0, 'case_id': 49}; None
+51 PASS Class字符串回调完整性/FS: {'fail_line': 0, 'checks': 9, 'operations': 0, 'replaces': 0, 'deferred': 0, 'case_id': 50}; None
+52 PASS 重复Class注册数量/FS: {'fail_line': 0, 'checks': 11, 'operations': 0, 'replaces': 0, 'deferred': 0, 'case_id': 51}; None
+TOTAL {'total': 52, 'passed': 52, 'failed': 0, 'assertions': 428} formal source changed: []

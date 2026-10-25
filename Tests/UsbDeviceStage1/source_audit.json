@@ -1,0 +1,65 @@
+{
+  "unchanged_existing_sources": true,
+  "only_existing_configuration_changed": [
+    "MDK-ARM/h7_mac.uvprojx"
+  ],
+  "middleware_unmodified": true,
+  "targets": {
+    "h7_mac_CM4": {
+      "usb_sources": [
+        {
+          "file": "stm32h7xx_hal_pcd.c",
+          "disabled": true
+        },
+        {
+          "file": "stm32h7xx_hal_pcd_ex.c",
+          "disabled": true
+        },
+        {
+          "file": "stm32h7xx_ll_usb.c",
+          "disabled": true
+        },
+        {
+          "file": "usbd_core.c",
+          "disabled": true
+        },
+        {
+          "file": "usbd_ctlreq.c",
+          "disabled": true
+        },
+        {
+          "file": "usbd_ioreq.c",
+          "disabled": true
+        }
+      ]
+    },
+    "h7_mac_CM7": {
+      "usb_sources": [
+        {
+          "file": "stm32h7xx_hal_pcd.c",
+          "disabled": false
+        },
+        {
+          "file": "stm32h7xx_hal_pcd_ex.c",
+          "disabled": false
+        },
+        {
+          "file": "stm32h7xx_ll_usb.c",
+          "disabled": false
+        },
+        {
+          "file": "usbd_core.c",
+          "disabled": false
+        },
+        {
+          "file": "usbd_ctlreq.c",
+          "disabled": false
+        },
+        {
+          "file": "usbd_ioreq.c",
+          "disabled": false
+        }
+      ]
+    }
+  }
+}
