@@ -65,6 +65,7 @@ static void Timer_HeapSwap(uint8_t index_a, uint8_t index_b);
 static void Timer_HeapSiftUp(uint8_t index);
 static void Timer_HeapSiftDown(uint8_t index);
 static void Timer_HeapRemove(uint8_t index);
+
 /*
  * 32 位定时器 Handle 布局：
  * [31:8] generation：用于识别定时器槽位的不同生命周期

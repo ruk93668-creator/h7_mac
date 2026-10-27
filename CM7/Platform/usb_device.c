@@ -66,49 +66,70 @@ static uint8_t s_interface_alt;
 //官方Core描述符回调
 //返回设备描述符，仅发送有效的18字节，不发送尾部补齐空间
 static uint8_t *Usb_DeviceDesc(USBD_SpeedTypeDef speed, uint16_t *length);
+
 //返回字符串支持的语言编号，0x0409表示英语
 static uint8_t *Usb_LangDesc(USBD_SpeedTypeDef speed, uint16_t *length);
+
 //将厂家名称转换为USB使用的UTF-16LE字符串描述符
 static uint8_t *Usb_Manufacturer(USBD_SpeedTypeDef speed, uint16_t *length);
+
 //返回主机设备列表中使用的产品名称
 static uint8_t *Usb_Product(USBD_SpeedTypeDef speed, uint16_t *length);
+
 //返回当前阶段固定测试序列号，不代表芯片唯一编号
 static uint8_t *Usb_Serial(USBD_SpeedTypeDef speed, uint16_t *length);
+
 //返回基础枚举配置的名称
 static uint8_t *Usb_ConfigString(USBD_SpeedTypeDef speed, uint16_t *length);
+
 //返回接口名称，说明本阶段仅有EP0控制通信
 static uint8_t *Usb_InterfaceString(USBD_SpeedTypeDef speed, uint16_t *length);
+
 //基础Class只处理接口0的标准请求
 //SET_CONFIGURATION时调用，基础Class只接受配置1
 static uint8_t Usb_ClassInit(USBD_HandleTypeDef *device, uint8_t config);
+
 //取消配置时调用，基础Class没有额外端点或资源需要释放
 static uint8_t Usb_ClassDeInit(USBD_HandleTypeDef *device, uint8_t config);
+
 //处理接口0的标准查询，其他请求通过EP0 STALL拒绝
 static uint8_t Usb_ClassSetup(USBD_HandleTypeDef *device, USBD_SetupReqTypedef *request);
+
 //返回Full-Speed配置和接口描述符，共18字节
 static uint8_t *Usb_ConfigDesc(uint16_t *length);
+
 //返回空描述符，本设备不提供高速和其他速度配置
 static uint8_t *Usb_NoDesc(uint16_t *length);
+
 //PCD事件转交官方Core
 //PCD收到SETUP后进入这里，由官方Core分发设备或接口请求
 static void Usb_Setup(uint8_t *data);
+
 //把OUT完成事件交给官方Core，推进接收或状态阶段
 static void Usb_DataOut(uint8_t ep, uint8_t *data);
+
 //把IN完成事件交给官方Core，推进发送或状态阶段
 static void Usb_DataIn(uint8_t ep, uint8_t *data);
+
 //固定为Full-Speed，再由官方Core复位状态并打开EP0
 static void Usb_Reset(void);
+
 //把总线挂起事件转交官方Core
 static void Usb_Suspend(void);
+
 //把总线恢复事件转交官方Core
 static void Usb_Resume(void);
+
 //把设备连接事件转交官方Core
 static void Usb_Connect(void);
+
 //把设备断开事件转交官方Core
 static void Usb_Disconnect(void);
+
 //记录BSP错误并转换为USBD结果
 //锁存底层失败原因，并转换为官方Core返回状态
 static USBD_StatusTypeDef Usb_LlResult(SysResult_t result);
+
 //在Application等级启动，不改Application源码
 //在Application初始化等级启动USB，供主机开始枚举
 static SysResult_t Usb_AutoStart(void);

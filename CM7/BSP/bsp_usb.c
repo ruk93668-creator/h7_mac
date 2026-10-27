@@ -18,8 +18,10 @@ static volatile bool s_started;
 
 //使用独立HSI48，并用USB2每毫秒SOF作为CRS校准参考
 static SysResult_t Usb_ClockInit(void);
+
 //把HAL状态转换为工程统一的SysResult_t返回码
 static SysResult_t Usb_HalResult(HAL_StatusTypeDef status);
+
 //只接受EP0 OUT的0x00和EP0 IN的0x80地址
 static bool Usb_ValidEp(uint8_t ep);
 

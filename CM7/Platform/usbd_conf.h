@@ -19,6 +19,7 @@
 #define USBD_DbgLog(...)
 //固定内存供后续Class使用，不使用malloc
 void *USB_Device_Alloc(uint32_t size);
+
 //归还固定Class内存
 void USB_Device_Free(void *memory);
 #endif
