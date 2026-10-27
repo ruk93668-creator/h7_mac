@@ -150,16 +150,22 @@ static USBD_ClassTypeDef s_base_class =
 {
     //主机选择配置后初始化Class
     .Init = Usb_ClassInit,
+
     //主机取消配置时释放Class
     .DeInit = Usb_ClassDeInit,
+
     //处理发给接口的控制请求
     .Setup = Usb_ClassSetup,
+
     //不提供高速配置
     .GetHSConfigDescriptor = Usb_NoDesc,
+
     //返回实际使用的全速配置
     .GetFSConfigDescriptor = Usb_ConfigDesc,
+
     //不提供其他速度配置
     .GetOtherSpeedConfigDescriptor = Usb_NoDesc,
+
     //不提供高速设备限定描述符
     .GetDeviceQualifierDescriptor = Usb_NoDesc
 };
