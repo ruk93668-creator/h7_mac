@@ -208,12 +208,20 @@ SysResult_t USB_Device_RegisterClass(USBD_ClassTypeDef *driver, USBD_Descriptors
 {
     uint16_t length = 0U;
     uint8_t *config;
-    if (driver == NULL || descriptors == NULL || driver->Init == NULL ||
-        driver->DeInit == NULL || driver->Setup == NULL || driver->GetFSConfigDescriptor == NULL ||
-        descriptors->GetDeviceDescriptor == NULL || descriptors->GetLangIDStrDescriptor == NULL ||
-        descriptors->GetManufacturerStrDescriptor == NULL || descriptors->GetProductStrDescriptor == NULL ||
-        descriptors->GetSerialStrDescriptor == NULL || descriptors->GetConfigurationStrDescriptor == NULL ||
-        descriptors->GetInterfaceStrDescriptor == NULL)
+    //检查操作表、描述符表及Core需要的回调，空表检查必须在成员访问之前
+    if (driver == NULL ||                                      //Class操作表不能为空
+        descriptors == NULL ||                                 //描述符查询表不能为空
+        driver->Init == NULL ||                                //主机选择配置时初始化Class
+        driver->DeInit == NULL ||                              //取消配置或复位时释放Class资源
+        driver->Setup == NULL ||                               //处理分发给Class的控制请求
+        driver->GetFSConfigDescriptor == NULL ||                //提供全速配置描述符
+        descriptors->GetDeviceDescriptor == NULL ||             //提供设备描述符
+        descriptors->GetLangIDStrDescriptor == NULL ||           //提供字符串支持的语言编号
+        descriptors->GetManufacturerStrDescriptor == NULL ||     //提供厂家名称字符串
+        descriptors->GetProductStrDescriptor == NULL ||          //提供产品名称字符串
+        descriptors->GetSerialStrDescriptor == NULL ||           //提供设备序列号字符串
+        descriptors->GetConfigurationStrDescriptor == NULL ||    //提供配置名称字符串
+        descriptors->GetInterfaceStrDescriptor == NULL)          //提供接口名称字符串
         return SYS_ERR_INVALID_ARG;
     if (!s_initialized || s_started)
         return SYS_ERR_INVALID_STATE;
