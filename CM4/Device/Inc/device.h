@@ -45,6 +45,7 @@ typedef enum
 	DEVICE_STATE_BUSY,
     DEVICE_STATE_ERROR
 } DeviceState_t;
+
 struct Device
 {
     const char * name; 

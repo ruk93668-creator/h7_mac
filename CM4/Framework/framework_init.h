@@ -25,7 +25,6 @@ typedef struct
     InitLevel_t          level;
     FrameworkInitFunc_t  init;
 } FrameworkInitEntry_t;
-
 //将初始化函数和等级登记到自动初始化表
 #define FRAMEWORK_INIT_REGISTER(func, init_level)               \
     static const FrameworkInitEntry_t                           \
