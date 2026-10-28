@@ -3,6 +3,7 @@
 #include "sys_result.h"
 #include "usbd_def.h"
 #include <stdbool.h>
+
 //初始化官方USB Device Core及基础枚举Class，不连接主机
 SysResult_t USB_Device_Init(void);
 
