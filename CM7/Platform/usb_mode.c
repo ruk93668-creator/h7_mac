@@ -8,7 +8,7 @@ typedef struct
 {
 
     //当前模式，暂时只支持TEST
-    UsbMode_t mode;
+    UsbMode_t mode, target_mode;
 
     //管理状态，RUNNING表示已启动，不代表主机枚举完成
     UsbModeState_t state;
@@ -82,15 +82,35 @@ SysResult_t USB_Mode_Start(void)
 }
 
 //预留重连请求，不接受尚未实现的切换操作
-SysResult_t USB_Mode_RequestReconnect(void)
+SysResult_t USB_Mode_RequestReconnect(UsbMode_t target_mode)
 {
-
     //未初始化时不能请求重连
     if (!s_usb_mode.initialized)
         return SYS_ERR_INVALID_STATE;
+    //UVC和MSC尚未接入Class，不能作为重连目标
+    if (target_mode != USB_MODE_TEST)
+        return SYS_ERR_NOT_SUPPORTED;
 
-    //TODO：由用户实现请求记录和状态检查，当前不改变运行状态
-    return SYS_ERR_NOT_SUPPORTED;
+    //启动流程未完成时不能打断
+    if (s_usb_mode.state == USB_MODE_STATE_STARTING)
+        return SYS_ERR_BUSY;
+
+    //重连流程已经进行中，拒绝第二次请求
+    if (s_usb_mode.state == USB_MODE_STATE_STOPPING ||
+        s_usb_mode.state == USB_MODE_STATE_WAIT_RECONNECT ||
+        s_usb_mode.state == USB_MODE_STATE_REGISTERING)
+        return SYS_ERR_BUSY;
+
+    //空闲状态没有已建立的连接，重连没有意义
+    if (s_usb_mode.state == USB_MODE_STATE_IDLE)
+        return SYS_ERR_INVALID_STATE;
+
+    //RUNNING、WAIT_CONFIGURED和ERROR允许受理：
+    //ERROR受理是停止或启动失败后的唯一恢复入口
+    s_usb_mode.target_mode = target_mode;
+    s_usb_mode.state = USB_MODE_STATE_STOPPING;
+	
+    return SYS_OK;
 }
 
 //非阻塞主循环入口，暂不执行任何模式切换

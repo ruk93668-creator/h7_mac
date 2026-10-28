@@ -17,6 +17,7 @@ typedef enum
     USB_MODE_STATE_UNINITIALIZED = 0,
     USB_MODE_STATE_IDLE,
     USB_MODE_STATE_STARTING,
+	USB_MODE_STATE_WAIT_CONFIGURED,
     USB_MODE_STATE_RUNNING,
     USB_MODE_STATE_STOPPING,
     USB_MODE_STATE_WAIT_RECONNECT,
@@ -31,7 +32,7 @@ SysResult_t USB_Mode_Init(void);
 SysResult_t USB_Mode_Start(void);
 
 //预留重连接口，当前返回SYS_ERR_NOT_SUPPORTED
-SysResult_t USB_Mode_RequestReconnect(void);
+SysResult_t USB_Mode_RequestReconnect(UsbMode_t target_mode);
 
 //主循环处理入口，切换状态机由用户实现
 void USB_Mode_Process(void);
