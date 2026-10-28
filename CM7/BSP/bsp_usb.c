@@ -69,7 +69,7 @@ SysResult_t BSP_USB_Init(void)
     //关闭USB LPM链路电源管理
     s_pcd.Init.lpm_enable = DISABLE;
 
-    //原理图没有将VBUS接入PA9，关闭硬件VBUS检测
+    //关闭硬件VBUS检测
     s_pcd.Init.vbus_sensing_enable = DISABLE;
 
     //不使用EP1独立中断
@@ -372,31 +372,38 @@ static SysResult_t Usb_ClockInit(void)
     RCC_PeriphCLKInitTypeDef clock = {0};
     RCC_CRSInitTypeDef crs = {0};
     HAL_StatusTypeDef status;
-
+	
     //只启用独立HSI48，不改PLL1/PLL2及公共PLL输入
 
     //只配置独立48MHz内部振荡器
     osc.OscillatorType = RCC_OSCILLATORTYPE_HSI48;
-
+	
     //开启HSI48
     osc.HSI48State = RCC_HSI48_ON;
-
+	
     //保持现有PLL设置，避免影响相机和SDRAM
     osc.PLL.PLLState = RCC_PLL_NONE;
     status = HAL_RCC_OscConfig(&osc);
     if (status != HAL_OK)
         return Usb_HalResult(status);
-
+	
     //只修改USB外设内核时钟选择
     clock.PeriphClockSelection = RCC_PERIPHCLK_USB;
-
+	
     //将USB内核时钟接到HSI48
     clock.UsbClockSelection = RCC_USBCLKSOURCE_HSI48;
     status = HAL_RCCEx_PeriphCLKConfig(&clock);
     if (status != HAL_OK)
         return Usb_HalResult(status);
-    if (HAL_RCCEx_GetPeriphCLKFreq(RCC_PERIPHCLK_USB) != 48000000U)
-        return SYS_ERR_INVALID_STATE;
+	
+	// 检查USB内核时钟源是否选择HSI48
+	if (__HAL_RCC_GET_USB_SOURCE() != RCC_USBCLKSOURCE_HSI48)
+		return SYS_ERR_INVALID_STATE;
+
+	// 检查HSI48振荡器是否就绪
+	if (__HAL_RCC_GET_FLAG(RCC_FLAG_HSI48RDY) == 0U)
+		return SYS_ERR_INVALID_STATE;
+	
     __HAL_RCC_CRS_CLK_ENABLE();
 
     //SOF同步信号不分频

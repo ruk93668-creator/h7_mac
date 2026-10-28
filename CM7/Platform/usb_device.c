@@ -146,11 +146,6 @@ static void Usb_Disconnect(void);
 //锁存底层失败原因，并转换为官方Core返回状态
 static USBD_StatusTypeDef Usb_LlResult(SysResult_t result);
 
-//在Application等级启动，不改Application源码
-
-//在Application初始化等级启动USB，供主机开始枚举
-static SysResult_t Usb_AutoStart(void);
-
 //描述符查询表：主机GET_DESCRIPTOR时，Core按类型调用对应函数
 static USBD_DescriptorsTypeDef s_descriptors =
 {
@@ -252,12 +247,12 @@ SysResult_t USB_Device_RegisterClass(USBD_ClassTypeDef *driver, USBD_Descriptors
     config = driver->GetFSConfigDescriptor(&length);
     if (config == NULL || length < 9U || config[0] != 9U || config[1] != USB_DESC_TYPE_CONFIGURATION)
         return SYS_ERR_INVALID_ARG;
-
+	
     //单Class模式替换注册，不累计旧Class数量
     s_device.NumClasses = 0U;
     if (USBD_RegisterClass(&s_device, driver) != USBD_OK)
         return SYS_ERR_IO;
-
+	
     //绑定新Class配套的设备和字符串描述符
     s_device.pDesc = descriptors;
     return SYS_OK;
@@ -446,17 +441,10 @@ void USB_Device_Free(void *memory)
         s_class_memory_used = false;
 }
 
-//DEVICE阶段准备Core和Class，APPLICATION阶段才对主机启动连接
+//DEVICE阶段准备Core和Class，启动交给模式管理器
 FRAMEWORK_INIT_REGISTER(USB_Device_Init, INIT_LEVEL_DEVICE);
-FRAMEWORK_INIT_REGISTER(Usb_AutoStart, INIT_LEVEL_APPLICATION);
 
 //内部功能函数实现
-
-//在Application初始化等级启动USB，供主机开始枚举
-static SysResult_t Usb_AutoStart(void)
-{
-    return USB_Device_Start();
-}
 
 //锁存底层失败原因，并转换为官方Core返回状态
 static USBD_StatusTypeDef Usb_LlResult(SysResult_t result)

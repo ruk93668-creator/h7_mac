@@ -23,6 +23,7 @@
 /* USER CODE BEGIN Includes */
 #include "framework_init.h"
 #include "framework_runtime.h"
+#include "usb_mode.h"
 #include "app_main.h"
 #include "bsp_camera.h"
 #include "bsp_dcmi.h"
@@ -88,6 +89,10 @@ static void MPU_ConfigSdram(void)
 static void Main_Run(void)
 {
     Framework_Run();
+
+    //处理USB模式管理，切换逻辑待实现
+    USB_Mode_Process();
+
     App_Run();
 }
 SysResult_t init_error;
@@ -159,7 +164,7 @@ Error_Handler();
   /* USER CODE BEGIN SysInit */
 	MPU_ConfigSdram();
 	init_error = Framework_InitRuntime();
-	if (init_error != SYS_OK)
+	if (init_error != SYS_OK )
 	{
 		while(1);
 		/*  System Fault Policy */
