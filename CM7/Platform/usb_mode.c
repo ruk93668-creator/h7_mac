@@ -2,6 +2,9 @@
 #include "usb_device.h"
 #include "framework_init.h"
 #include <stdbool.h>
+#include "platform_time.h"
+
+#define USB_MODE_CONFIGURED_TIMEOUT_MS    (5000U)
 
 //USB模式运行上下文，仅由主循环和初始化流程管理
 typedef struct
@@ -16,6 +19,9 @@ typedef struct
     //模式管理器已初始化
     bool initialized;
 
+	// 进入当前状态的时间，用于非阻塞超时判断
+	uint32_t state_enter_ms;
+	
     //最近一次启动结果，供调试观察
     SysResult_t last_result;
 } UsbModeContext_t;
@@ -76,7 +82,9 @@ SysResult_t USB_Mode_Start(void)
         return result;
     }
 
-    //这里只确认软件启动成功，枚举状态仍由Core维护
+	// 记录等待主机完成枚举的起始时间
+    //这里只确认软件启动成功
+	s_usb_mode.state_enter_ms = Platform_TimeGetMs();
     s_usb_mode.state = USB_MODE_STATE_WAIT_CONFIGURED;
     return SYS_OK;
 }
@@ -116,16 +124,54 @@ SysResult_t USB_Mode_RequestReconnect(UsbMode_t target_mode)
 //非阻塞主循环入口，暂不执行任何模式切换
 void USB_Mode_Process(void)
 {
-
+    uint32_t now_ms;
+    SysResult_t usb_result;
+	
     //初始化未完成时不处理
     if (!s_usb_mode.initialized)
         return;
 
-    //TODO：由用户建立重连请求和目标模式的处理逻辑
+    switch (s_usb_mode.state)
+    {
+        case USB_MODE_STATE_WAIT_CONFIGURED:
+        {
+            // 主机已经完成配置，正式进入运行状态
+            if (USB_Device_IsConfigured())
+            {
+                s_usb_mode.state = USB_MODE_STATE_RUNNING;
+                s_usb_mode.last_result = SYS_OK;
+                break;
+            }
 
-    //TODO：由用户实现停止、断开等待、Class注册和重新启动状态机
+            // 底层发生错误时，不必继续等待超时
+            usb_result = USB_Device_GetLastResult();
 
-    //TODO：由用户处理停止失败、注册失败和启动失败的恢复策略
+            if (usb_result != SYS_OK)
+            {
+                s_usb_mode.last_result = usb_result;
+                s_usb_mode.state = USB_MODE_STATE_ERROR;
+                break;
+            }
+
+            // 非阻塞检查枚举超时
+            now_ms = Platform_TimeGetMs();
+
+            if ((uint32_t)(now_ms - s_usb_mode.state_enter_ms)
+                >= USB_MODE_CONFIGURED_TIMEOUT_MS)
+            {
+                s_usb_mode.last_result = SYS_ERR_TIMEOUT;
+                s_usb_mode.state = USB_MODE_STATE_ERROR;
+            }
+
+            break;
+        }
+
+        default:
+        {
+            // 其他状态由后续状态机阶段实现
+            break;
+        }
+    }
 }
 
 //Core在DEVICE阶段就绪，管理器在SERVICE阶段初始化
