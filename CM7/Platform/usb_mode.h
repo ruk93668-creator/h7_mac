@@ -31,7 +31,7 @@ SysResult_t USB_Mode_Init(void);
 //启动已有TEST Class，不重复启动
 SysResult_t USB_Mode_Start(void);
 
-//预留重连接口，当前返回SYS_ERR_NOT_SUPPORTED
+//请求断开并以目标模式重新枚举，只记录请求不执行硬件操作
 SysResult_t USB_Mode_RequestReconnect(UsbMode_t target_mode);
 
 //主循环处理入口，切换状态机由用户实现

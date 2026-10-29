@@ -77,11 +77,11 @@ SysResult_t USB_Mode_Start(void)
     }
 
     //这里只确认软件启动成功，枚举状态仍由Core维护
-    s_usb_mode.state = USB_MODE_STATE_RUNNING;
+    s_usb_mode.state = USB_MODE_STATE_WAIT_CONFIGURED;
     return SYS_OK;
 }
 
-//预留重连请求，不接受尚未实现的切换操作
+//请求断开并以目标模式重新枚举，只记录请求不执行硬件操作
 SysResult_t USB_Mode_RequestReconnect(UsbMode_t target_mode)
 {
     //未初始化时不能请求重连
