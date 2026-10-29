@@ -13,7 +13,7 @@ typedef struct
     //当前模式，暂时只支持TEST
     UsbMode_t mode, target_mode;
 
-    //管理状态，RUNNING表示已启动，不代表主机枚举完成
+    //// RUNNING表示主机已完成配置
     UsbModeState_t state;
 
     //模式管理器已初始化
@@ -203,9 +203,12 @@ void USB_Mode_Process(void)
 			if ( usb_result != SYS_OK)
 			{
 				s_usb_mode.last_result = usb_result;
+				s_usb_mode.state = USB_MODE_STATE_ERROR;
 				return;
 			}
 			
+			//更新时间
+			s_usb_mode.state_enter_ms = Platform_TimeGetMs();
 			s_usb_mode.state = USB_MODE_STATE_WAIT_CONFIGURED;
 			break;
 		}

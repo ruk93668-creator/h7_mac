@@ -1,13 +1,13 @@
 {
   "summary": {
     "total": 84,
-    "passed": 80,
-    "failed": 4,
-    "assertions": 849
+    "passed": 84,
+    "failed": 0,
+    "assertions": 850
   },
   "source_changed": [],
   "source_sha256": {
-    "CM7/Platform/usb_mode.c": "da09bb3df54e8e8c1ddcf12a546ebc4125c12528a818eed10df29f506c541a74",
+    "CM7/Platform/usb_mode.c": "1b059134f8232129edb3491dcbc90bc3a87cd64c4556ad7807f46e81fc126d9f",
     "CM7/Platform/usb_mode.h": "fbb1397c90949c559e26e4cfa258afbdc9c07ea128feb63f2f985b5eb0cdb877",
     "CM7/Platform/usb_device.c": "7f45f7c661f0f5e57181ee87fc79c7c898d370f43a031232cda5804aec4d5aa5",
     "CM7/BSP/bsp_usb.c": "9242393c42d4e84b153dd954b052d2c81ec27ae8f04b14150b8953ccd81b07ef"
@@ -1821,7 +1821,7 @@
         "mode": 0,
         "target_mode": 0,
         "last_result": 0,
-        "state_enter_ms": 1000,
+        "state_enter_ms": 1500,
         "tick": 1500,
         "start_calls": 2,
         "stop_calls": 1,
@@ -1833,20 +1833,20 @@
       },
       "id": 120,
       "name": "重启更新时间戳",
-      "result": "FAIL",
+      "result": "PASS",
       "checks": 20,
-      "fail_line": 230,
+      "fail_line": 0,
       "error": null
     },
     {
       "input": "1500重启，6499处理",
       "expected": "4999ms，仍等待配置",
       "actual": {
-        "state": 8,
+        "state": 3,
         "mode": 0,
         "target_mode": 0,
-        "last_result": -8,
-        "state_enter_ms": 1000,
+        "last_result": 0,
+        "state_enter_ms": 1500,
         "tick": 6499,
         "start_calls": 2,
         "stop_calls": 1,
@@ -1854,20 +1854,20 @@
         "core_result": 0,
         "nvic": 1,
         "initialized": 1,
-        "state_name": "ERROR"
+        "state_name": "WAIT_CONFIGURED"
       },
       "id": 121,
       "name": "重启享有完整枚举窗口",
-      "result": "FAIL",
+      "result": "PASS",
       "checks": 20,
-      "fail_line": 234,
+      "fail_line": 0,
       "error": null
     },
     {
       "input": "重启HAL返回BUSY",
       "expected": "ERROR，保留BUSY",
       "actual": {
-        "state": 2,
+        "state": 8,
         "mode": 0,
         "target_mode": 0,
         "last_result": -5,
@@ -1879,38 +1879,38 @@
         "core_result": -5,
         "nvic": 0,
         "initialized": 1,
-        "state_name": "STARTING"
+        "state_name": "ERROR"
       },
       "id": 122,
       "name": "重启失败进入ERROR",
-      "result": "FAIL",
-      "checks": 19,
-      "fail_line": 226,
+      "result": "PASS",
+      "checks": 20,
+      "fail_line": 0,
       "error": null
     },
     {
       "input": "重启失败再Process",
       "expected": "Start总计两次，不再自动启动",
       "actual": {
-        "state": 2,
+        "state": 8,
         "mode": 0,
         "target_mode": 0,
         "last_result": -5,
         "state_enter_ms": 1000,
         "tick": 1500,
-        "start_calls": 3,
+        "start_calls": 2,
         "stop_calls": 1,
         "core_state": 1,
         "core_result": -5,
         "nvic": 0,
         "initialized": 1,
-        "state_name": "STARTING"
+        "state_name": "ERROR"
       },
       "id": 123,
       "name": "重启失败不逐轮重试",
-      "result": "FAIL",
+      "result": "PASS",
       "checks": 19,
-      "fail_line": 228,
+      "fail_line": 0,
       "error": null
     },
     {
@@ -2071,7 +2071,7 @@
         "mode": 0,
         "target_mode": 0,
         "last_result": 0,
-        "state_enter_ms": 1000,
+        "state_enter_ms": 1500,
         "tick": 1500,
         "start_calls": 2,
         "stop_calls": 1,
@@ -2096,7 +2096,7 @@
         "mode": 0,
         "target_mode": 0,
         "last_result": 0,
-        "state_enter_ms": 1000,
+        "state_enter_ms": 1500,
         "tick": 1500,
         "start_calls": 2,
         "stop_calls": 1,
