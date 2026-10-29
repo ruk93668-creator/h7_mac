@@ -58,17 +58,9 @@ SysResult_t USB_Mode_Start(void)
     if (!s_usb_mode.initialized)
         return SYS_ERR_INVALID_STATE;
 
-    //UVC和MSC仅预留枚举，尚未接入Class
-    if (s_usb_mode.mode != USB_MODE_TEST)
-        return SYS_ERR_NOT_SUPPORTED;
-
     //已经启动时拒绝第二次启动
     if (s_usb_mode.state == USB_MODE_STATE_RUNNING)
         return SYS_ERR_BUSY;
-
-    //切换和故障恢复流程尚未实现，只允许空闲时启动
-    if (s_usb_mode.state != USB_MODE_STATE_IDLE)
-        return SYS_ERR_INVALID_STATE;
 
     //记录启动过程，调用既有Core启动接口
     s_usb_mode.state = USB_MODE_STATE_STARTING;
@@ -115,6 +107,10 @@ SysResult_t USB_Mode_RequestReconnect(UsbMode_t target_mode)
 
     //RUNNING、WAIT_CONFIGURED和ERROR允许受理：
     //ERROR受理是停止或启动失败后的唯一恢复入口
+	
+	if ( s_usb_mode.state != USB_MODE_STATE_RUNNING)
+		return SYS_ERR_BUSY;
+	
     s_usb_mode.target_mode = target_mode;
     s_usb_mode.state = USB_MODE_STATE_STOPPING;
 	
@@ -131,7 +127,7 @@ void USB_Mode_Process(void)
     if (!s_usb_mode.initialized)
         return;
 
-    switch (s_usb_mode.state)
+    switch ((uint8_t)s_usb_mode.state)
     {
         case USB_MODE_STATE_WAIT_CONFIGURED:
         {
@@ -165,12 +161,43 @@ void USB_Mode_Process(void)
 
             break;
         }
-
-        default:
-        {
-            // 其他状态由后续状态机阶段实现
-            break;
-        }
+        case USB_MODE_STATE_STOPPING:
+		{
+			//停止USB驱动
+			usb_result = USB_Device_Stop();
+			
+			if ( usb_result != SYS_OK)
+			{
+				s_usb_mode.last_result = usb_result;
+				return;
+			}
+			
+			//记录停止时间
+			s_usb_mode.state_enter_ms = Platform_TimeGetMs();
+			
+			s_usb_mode.state = USB_MODE_STATE_WAIT_RECONNECT;
+			break;
+		}
+		case USB_MODE_STATE_WAIT_RECONNECT:
+		{
+			//断开等待500MS
+			if ( Platform_TimeGetMs() - 
+				 s_usb_mode.state_enter_ms >= 500)
+				s_usb_mode.state = USB_MODE_STATE_STARTING;
+			break;
+		}
+		case USB_MODE_STATE_STARTING:
+		{
+			//开始配置USB
+			usb_result = USB_Mode_Start();
+			
+			if ( usb_result != SYS_OK)
+			{
+				s_usb_mode.last_result = usb_result;
+				return;
+			}
+			break;
+		}
     }
 }
 
