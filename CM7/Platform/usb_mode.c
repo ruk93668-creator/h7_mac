@@ -58,9 +58,17 @@ SysResult_t USB_Mode_Start(void)
     if (!s_usb_mode.initialized)
         return SYS_ERR_INVALID_STATE;
 
+    //UVC和MSC仅预留枚举，尚未接入Class
+    if (s_usb_mode.mode != USB_MODE_TEST)
+        return SYS_ERR_NOT_SUPPORTED;
+
     //已经启动时拒绝第二次启动
     if (s_usb_mode.state == USB_MODE_STATE_RUNNING)
         return SYS_ERR_BUSY;
+
+    //切换和故障恢复流程尚未实现，只允许空闲时启动
+    if (s_usb_mode.state != USB_MODE_STATE_IDLE)
+        return SYS_ERR_INVALID_STATE;
 
     //记录启动过程，调用既有Core启动接口
     s_usb_mode.state = USB_MODE_STATE_STARTING;
@@ -169,6 +177,7 @@ void USB_Mode_Process(void)
 			if ( usb_result != SYS_OK)
 			{
 				s_usb_mode.last_result = usb_result;
+				s_usb_mode.state = USB_MODE_STATE_ERROR;
 				return;
 			}
 			
@@ -189,13 +198,15 @@ void USB_Mode_Process(void)
 		case USB_MODE_STATE_STARTING:
 		{
 			//开始配置USB
-			usb_result = USB_Mode_Start();
+			usb_result = USB_Device_Start();
 			
 			if ( usb_result != SYS_OK)
 			{
 				s_usb_mode.last_result = usb_result;
 				return;
 			}
+			
+			s_usb_mode.state = USB_MODE_STATE_WAIT_CONFIGURED;
 			break;
 		}
     }
