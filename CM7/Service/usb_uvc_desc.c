@@ -82,6 +82,17 @@ static uint8_t s_uvc_config_desc[] __attribute__((used, aligned(4))) =
     0x00U, 0x00U,//bmControls：暂不声明图像处理控制能力
     0x00U,//iProcessing：不设置处理单元描述字符串
 
+    //Output Terminal Descriptor，共9字节
+
+    0x09U,//bLength：输出终端描述符长度
+    0x24U,//bDescriptorType：CS_INTERFACE类专用接口描述符
+    0x03U,//bDescriptorSubtype：VC_OUTPUT_TERMINAL输出终端
+    0x03U,//bTerminalID：输出终端编号3
+    0x01U, 0x01U,//wTerminalType：USB Streaming类型0x0101，小端存放
+    0x00U,//bAssocTerminal：不关联其他终端
+    0x02U,//bSourceID：输入来自Processing Unit 2
+    0x00U,//iTerminal：不设置终端描述字符串
+
     //TODO：在此继续补齐VC的Unit和Terminal描述符
 
     //VideoStreaming Interface Descriptor，共9字节
