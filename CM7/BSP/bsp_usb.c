@@ -390,6 +390,22 @@ void HAL_PCD_DisconnectCallback(PCD_HandleTypeDef *pcd)
         s_callbacks->disconnect();
 }
 
+//HAL报告IN等时包未完成，不在BSP解释Class协议
+void HAL_PCD_ISOINIncompleteCallback(PCD_HandleTypeDef *pcd, uint8_t ep)
+{
+    if (pcd == &s_pcd && s_callbacks != NULL &&
+        s_callbacks->iso_incomplete_in != NULL)
+        s_callbacks->iso_incomplete_in(ep);
+}
+
+//HAL报告OUT等时包未完成
+void HAL_PCD_ISOOUTIncompleteCallback(PCD_HandleTypeDef *pcd, uint8_t ep)
+{
+    if (pcd == &s_pcd && s_callbacks != NULL &&
+        s_callbacks->iso_incomplete_out != NULL)
+        s_callbacks->iso_incomplete_out(ep);
+}
+
 //BUS阶段只准备硬件，待Platform和Class就绪后再启动连接
 FRAMEWORK_INIT_REGISTER(BSP_USB_Init, INIT_LEVEL_BUS);
 

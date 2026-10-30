@@ -21,6 +21,12 @@ typedef struct
     void (*resume)(void);
     void (*connect)(void);
     void (*disconnect)(void);
+
+    //等时端点未完成，由Platform转交当前Class
+    void (*iso_incomplete_in)(uint8_t ep);
+
+    //OUT方向同样只上报端点编号
+    void (*iso_incomplete_out)(uint8_t ep);
 } BspUsbCallbacks_t;
 
 //初始化USB2 FS内部PHY、时钟和PCD，不连接主机
