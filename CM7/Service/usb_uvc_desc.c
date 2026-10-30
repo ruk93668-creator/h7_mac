@@ -58,6 +58,8 @@ static uint8_t s_uvc_config_desc[] __attribute__((used, aligned(4))) =
 
     //iFunction：不引用功能名称字符串
     0x00U
+
+    //VideoControl Interface Descriptor，共9字节
 };
 
 //TODO：继续补齐VC和VS描述符，再回填wTotalLength
