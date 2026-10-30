@@ -1,5 +1,5 @@
 # Framework 使用说明
-
+基于https://github.com/ruk93668-creator/h7_mac
 适用于当前裁减后的独立副本。无 HAL、无 RTOS、无动态内存，初始化使用手动表，不使用自动注册或特殊链接段。
 
 ## 1. 当前目录
@@ -124,8 +124,8 @@ PLATFORM → BUS → DEVICE → MEDIA → SERVICE → APPLICATION
 
 static FrameworkTimerHandle_t s_timer = FRAMEWORK_TIMER_INVALID_HANDLE;
 static uint32_t s_tick_count;
-static uint32_t s_handled_count;
-static SysResult_t s_post_result;
+static volatile uint32_t s_handled_count;
+static volatile SysResult_t s_post_result;
 
 //处理应用事件
 static void App_OnEvent(const FrameworkEvent_t *event);
@@ -175,7 +175,7 @@ static void App_OnTimer(void *context)
 }
 ```
 
-示例中的 `context` 指向静态变量，Timer 回调期间始终有效。事件入队失败不会自动重试或暂停 Timer，实际应用应根据 `s_post_result` 决定丢弃、重试或上报。
+示例中的 `context` 指向静态变量，Timer 回调期间始终有效。两个 volatile 变量用于调试观察，不代表线程安全。事件入队失败不会自动重试或暂停 Timer，实际应用应根据 `s_post_result` 决定丢弃、重试或上报。
 
 ## 6. 主循环接入
 
