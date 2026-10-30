@@ -2,8 +2,6 @@
 #define FRAMEWORK_INIT_H
 #include "sys_result.h"
 
-#define FRAMEWORK_INIT_SECTION    ".framework_init"
-
 typedef enum
 {
     INIT_LEVEL_PLATFORM = 0,
@@ -25,21 +23,6 @@ typedef struct
     InitLevel_t          level;
     FrameworkInitFunc_t  init;
 } FrameworkInitEntry_t;
-
-//将初始化函数和等级登记到自动初始化表
-#if defined(FRAMEWORK_USE_ARMCC5_INITCALL)
-#define FRAMEWORK_INIT_REGISTER(func, init_level)               \
-    static const FrameworkInitEntry_t                           \
-    g_framework_init_##func                                     \
-    __attribute__((used, section(FRAMEWORK_INIT_SECTION),       \
-                   aligned(4))) =                               \
-    {                                                           \
-        #func,                                                  \
-        (init_level),                                           \
-        (func)                                                  \
-    }
-
-#endif
 
 //按等级执行模块初始化，首次失败即返回
 SysResult_t Framework_InitRuntime(void);

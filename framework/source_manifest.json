@@ -38,10 +38,5 @@
     "source": "Common/Inc/sys_result.h",
     "sha256": "c918262915a7389bd3d4014dacbb8bf9ef5d28b456b3c65b956c0970a5bad30b",
     "exact_copy": true
-  },
-  "Ports/ARMCC5/framework_init.c": {
-    "source": "CM7/Framework/framework_init.c",
-    "sha256": "ae5990eff9f7ccbe1b70f9296e166f2fc5caede69eee0c7a6268d70b7ae9feed",
-    "exact_copy": true
   }
 }
