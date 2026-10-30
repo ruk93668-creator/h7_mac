@@ -121,7 +121,38 @@ static uint8_t s_uvc_config_desc[] __attribute__((used, aligned(4))) =
     0x00U,//bTriggerSupport：不支持硬件触发
     0x00U,//bTriggerUsage：未启用硬件触发
     0x01U,//bControlSize：每个格式的控制位图占1字节
-    0x00U//bmaControls：第1个格式暂不声明控制能力
+    0x00U,//bmaControls：第1个格式暂不声明控制能力
+
+    //Uncompressed Format Descriptor，共27字节，YUY2格式
+
+    0x1BU,//bLength：非压缩格式描述符长度
+    0x24U,//bDescriptorType：CS_INTERFACE类专用接口描述符
+    0x04U,//bDescriptorSubtype：VS_FORMAT_UNCOMPRESSED
+    0x01U,//bFormatIndex：格式编号1
+    0x01U,//bNumFrameDescriptors：本格式包含1个Frame描述符
+    0x59U, 0x55U, 0x59U, 0x32U, 0x00U, 0x00U, 0x10U, 0x00U, 0x80U, 0x00U, 0x00U, 0xAAU, 0x00U, 0x38U, 0x9BU, 0x71U,//guidFormat：YUY2标准GUID
+    0x10U,//bBitsPerPixel：每像素16位
+    0x01U,//bDefaultFrameIndex：默认使用Frame 1
+    0x00U,//bAspectRatioX：不声明宽高比横向分量
+    0x00U,//bAspectRatioY：不声明宽高比纵向分量
+    0x00U,//bmInterlaceFlags：逐行扫描，非交错
+    0x00U,//bCopyProtect：不限制复制
+
+    //Uncompressed Frame Descriptor，共30字节，160x120、10fps
+
+    0x1EU,//bLength：26字节固定字段加1个4字节离散帧间隔
+    0x24U,//bDescriptorType：CS_INTERFACE类专用接口描述符
+    0x05U,//bDescriptorSubtype：VS_FRAME_UNCOMPRESSED
+    0x01U,//bFrameIndex：帧配置编号1
+    0x00U,//bmCapabilities：不支持静态图像捕获，UVC 1.0保留位为0
+    0xA0U, 0x00U,//wWidth：160像素，小端存放
+    0x78U, 0x00U,//wHeight：120像素，小端存放
+    0x00U, 0xE0U, 0x2EU, 0x00U,//dwMinBitRate：160x120x16x10=3072000bit/s
+    0x00U, 0xE0U, 0x2EU, 0x00U,//dwMaxBitRate：仅支持10fps，与最小比特率相同
+    0x00U, 0x96U, 0x00U, 0x00U,//dwMaxVideoFrameBufferSize：160x120x2=38400字节
+    0x40U, 0x42U, 0x0FU, 0x00U,//dwDefaultFrameInterval：1000000个100ns，即100ms
+    0x01U,//bFrameIntervalType：支持1个离散帧间隔
+    0x40U, 0x42U, 0x0FU, 0x00U//dwFrameInterval：1000000个100ns，对应10fps
 };
 
 //TODO：继续补齐VC和VS描述符，再回填wTotalLength
