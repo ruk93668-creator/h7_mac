@@ -152,7 +152,16 @@ static uint8_t s_uvc_config_desc[] __attribute__((used, aligned(4))) =
     0x00U, 0x96U, 0x00U, 0x00U,//dwMaxVideoFrameBufferSize：160x120x2=38400字节
     0x40U, 0x42U, 0x0FU, 0x00U,//dwDefaultFrameInterval：1000000个100ns，即100ms
     0x01U,//bFrameIntervalType：支持1个离散帧间隔
-    0x40U, 0x42U, 0x0FU, 0x00U//dwFrameInterval：1000000个100ns，对应10fps
+    0x40U, 0x42U, 0x0FU, 0x00U,//dwFrameInterval：1000000个100ns，对应10fps
+
+    //Color Matching Descriptor，共6字节
+
+    0x06U,//bLength：颜色匹配描述符长度
+    0x24U,//bDescriptorType：CS_INTERFACE类专用接口描述符
+    0x0DU,//bDescriptorSubtype：VS_COLORFORMAT
+    0x00U,//bColorPrimaries：未指定
+    0x00U,//bTransferCharacteristics：未指定
+    0x00U//bMatrixCoefficients：未指定
 };
 
 //TODO：继续补齐VC和VS描述符，再回填wTotalLength
