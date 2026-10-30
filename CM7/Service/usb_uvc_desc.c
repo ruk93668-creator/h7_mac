@@ -161,7 +161,28 @@ static uint8_t s_uvc_config_desc[] __attribute__((used, aligned(4))) =
     0x0DU,//bDescriptorSubtype：VS_COLORFORMAT
     0x00U,//bColorPrimaries：未指定
     0x00U,//bTransferCharacteristics：未指定
-    0x00U//bMatrixCoefficients：未指定
+    0x00U,//bMatrixCoefficients：未指定
+
+    //VideoStreaming Alt 1 Interface Descriptor，共9字节
+
+    0x09U,//bLength：标准接口描述符长度
+    0x04U,//bDescriptorType：Interface
+    0x01U,//bInterfaceNumber：VS接口1
+    0x01U,//bAlternateSetting：备用设置1
+    0x01U,//bNumEndpoints：使用1个视频数据端点
+    0x0EU,//bInterfaceClass：Video类
+    0x02U,//bInterfaceSubClass：VideoStreaming
+    0x00U,//bInterfaceProtocol：未指定协议
+    0x00U,//iInterface：无字符串索引
+
+    //VideoStreaming Endpoint Descriptor，共7字节
+
+    0x07U,//bLength：端点描述符长度
+    0x05U,//bDescriptorType：Endpoint
+    0x81U,//bEndpointAddress：EP1 IN，设备向主机发送视频
+    0x05U,//bmAttributes：等时传输，异步同步类型，数据端点
+    0x00U, 0x02U,//wMaxPacketSize：512字节，小端存放
+    0x01U//bInterval：全速模式每1个USB帧提供一次传输机会
 };
 
 //TODO：继续补齐VC和VS描述符，再回填wTotalLength
