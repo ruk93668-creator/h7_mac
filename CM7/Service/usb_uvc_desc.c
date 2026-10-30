@@ -105,7 +105,23 @@ static uint8_t s_uvc_config_desc[] __attribute__((used, aligned(4))) =
     0x0EU,//bInterfaceClass：Video类
     0x02U,//bInterfaceSubClass：VideoStreaming
     0x00U,//bInterfaceProtocol：未指定协议
-    0x00U//iInterface：不引用接口名称字符串
+    0x00U,//iInterface：不引用接口名称字符串
+
+    //VS Input Header Descriptor，共14字节，暂按1个视频格式填写
+
+    0x0EU,//bLength：13字节固定字段加1字节格式控制位图
+    0x24U,//bDescriptorType：CS_INTERFACE类专用接口描述符
+    0x01U,//bDescriptorSubtype：VS_INPUT_HEADER
+    0x01U,//bNumFormats：后续填写1个视频格式描述符
+    0x00U, 0x00U,//wTotalLength：VS类专用总长度，待Format和Frame补齐后计算
+    0x81U,//bEndpointAddress：视频数据使用EP1 IN，后续接入端点
+    0x00U,//bmInfo：不支持动态切换格式
+    0x03U,//bTerminalLink：关联VC中的Output Terminal 3
+    0x00U,//bStillCaptureMethod：不支持静态图像捕获
+    0x00U,//bTriggerSupport：不支持硬件触发
+    0x00U,//bTriggerUsage：未启用硬件触发
+    0x01U,//bControlSize：每个格式的控制位图占1字节
+    0x00U//bmaControls：第1个格式暂不声明控制能力
 };
 
 //TODO：继续补齐VC和VS描述符，再回填wTotalLength
