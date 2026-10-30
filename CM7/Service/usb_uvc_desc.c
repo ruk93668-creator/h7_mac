@@ -70,6 +70,18 @@ static uint8_t s_uvc_config_desc[] __attribute__((used, aligned(4))) =
     0x03U,//bControlSize：控制能力位图占3字节
     0x00U, 0x00U, 0x00U,//bmControls：暂不声明摄像头控制能力
 
+    //Processing Unit Descriptor，共11字节，使用UVC 1.0
+
+    0x0BU,//bLength：9字节固定字段加2字节控制位图
+    0x24U,//bDescriptorType：CS_INTERFACE类专用接口描述符
+    0x05U,//bDescriptorSubtype：VC_PROCESSING_UNIT处理单元
+    0x02U,//bUnitID：处理单元编号2
+    0x01U,//bSourceID：输入来自Camera Terminal 1
+    0x00U, 0x00U,//wMaxMultiplier：暂不声明数字倍增能力
+    0x02U,//bControlSize：控制能力位图占2字节
+    0x00U, 0x00U,//bmControls：暂不声明图像处理控制能力
+    0x00U,//iProcessing：不设置处理单元描述字符串
+
     //TODO：在此继续补齐VC的Unit和Terminal描述符
 
     //VideoStreaming Interface Descriptor，共9字节
