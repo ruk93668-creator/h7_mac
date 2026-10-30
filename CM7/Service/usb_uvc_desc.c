@@ -116,6 +116,44 @@ static uint8_t s_uvc_config_desc[] __attribute__((used, aligned(4))) =
     //baInterfaceNr：关联VS接口1
     0x01U,
 
+    //Camera Terminal Descriptor，共18字节
+
+    //bLength：15字节固定字段加3字节控制位图
+    0x12U,
+
+    //bDescriptorType：CS_INTERFACE类专用接口描述符
+    0x24U,
+
+    //bDescriptorSubtype：VC_INPUT_TERMINAL输入终端
+    0x02U,
+
+    //bTerminalID：摄像头终端编号1
+    0x01U,
+
+    //wTerminalType：Camera类型0x0201，小端存放
+    0x01U, 0x02U,
+
+    //bAssocTerminal：不关联其他终端
+    0x00U,
+
+    //iTerminal：不设置终端描述字符串
+    0x00U,
+
+    //wObjectiveFocalLengthMin：暂不声明最小物镜焦距
+    0x00U, 0x00U,
+
+    //wObjectiveFocalLengthMax：暂不声明最大物镜焦距
+    0x00U, 0x00U,
+
+    //wOcularFocalLength：暂不声明目镜焦距
+    0x00U, 0x00U,
+
+    //bControlSize：控制能力位图占3字节
+    0x03U,
+
+    //bmControls：暂不声明摄像头控制能力
+    0x00U, 0x00U, 0x00U,
+
     //TODO：在此继续补齐VC的Unit和Terminal描述符
 
     //VideoStreaming Interface Descriptor，共9字节
