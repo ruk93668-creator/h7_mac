@@ -88,7 +88,35 @@ static uint8_t s_uvc_config_desc[] __attribute__((used, aligned(4))) =
     //iInterface：不引用接口名称字符串
     0x00U,
 
-    //TODO：在此补齐VC类专用描述符
+    //VC Header Descriptor，共13字节，使用UVC 1.0
+
+    //bLength：12字节固定字段加1个VS接口编号
+    0x0DU,
+
+    //bDescriptorType：CS_INTERFACE类专用接口描述符
+    0x24U,
+
+    //bDescriptorSubtype：VC_HEADER
+    0x01U,
+
+    //bcdUVC：UVC 1.0，0x0100按小端存放
+    0x00U, 0x01U,
+
+    //wTotalLength：VC类专用总长度，待所有Unit和Terminal补齐后计算
+    0x00U, 0x00U,
+
+    //dwClockFrequency：声明48MHz的UVC时间戳参考时钟，小端存放
+    0x00U, 0x6CU, 0xDCU, 0x02U,
+
+    //TODO：后续PTS和SCR计数必须匹配上述48MHz时间基准
+
+    //bInCollection：当前VC管理1个VS接口
+    0x01U,
+
+    //baInterfaceNr：关联VS接口1
+    0x01U,
+
+    //TODO：在此继续补齐VC的Unit和Terminal描述符
 
     //VideoStreaming Interface Descriptor，共9字节
 
