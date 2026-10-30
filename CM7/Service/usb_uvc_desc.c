@@ -11,7 +11,7 @@ static uint8_t s_uvc_config_desc[] __attribute__((used, aligned(4))) =
 
     0x09U,//bLength：配置描述符自身长度
     0x02U,//bDescriptorType：Configuration
-    0x00U, 0x00U,//wTotalLength：小端总长度，待VC和VS描述符补齐后计算
+    0xB3U, 0x00U,//wTotalLength：整个Configuration共179字节，小端存放
     0x02U,//bNumInterfaces：VC和VS两个接口
     0x01U,//bConfigurationValue：主机选择配置时使用编号1
     0x00U,//iConfiguration：不引用配置名称字符串
