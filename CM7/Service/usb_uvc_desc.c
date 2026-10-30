@@ -1,10 +1,34 @@
-#include <stdint.h>
-#include "usbd_def.h"
+#include "usb_uvc_desc.h"
+#include <stddef.h>
 
-//UVC全速配置描述符，当前填写配置头、IAD和VC、VS标准接口
+//UVC 1.0描述符，当前仅提供数据，不注册或启动Class
 
-//used保留尚未引用的数组，aligned保证4字节对齐
-static uint8_t s_uvc_config_desc[] __attribute__((used, aligned(4))) =
+//独立UVC设备身份，TEST描述符继续由Platform保留
+static uint8_t s_uvc_device_desc[20] __attribute__((aligned(4))) =
+{
+    0x12U,//bLength：设备描述符有效长度18字节
+    0x01U,//bDescriptorType：Device
+    0x00U, 0x02U,//bcdUSB：USB 2.00
+    0xEFU,//bDeviceClass：Miscellaneous，配合IAD
+    0x02U,//bDeviceSubClass：Common Class
+    0x01U,//bDeviceProtocol：Interface Association Descriptor
+    0x40U,//bMaxPacketSize0：EP0最大包长64字节
+    0x09U, 0x12U,//idVendor：沿用内部测试VID 0x1209
+    0x01U, 0x00U,//idProduct：沿用内部测试PID 0x0001
+    0x00U, 0x01U,//bcdDevice：设备版本1.00
+    0x00U,//iManufacturer：本模块暂不提供厂商字符串
+    0x00U,//iProduct：本模块暂不提供产品字符串
+    0x00U,//iSerialNumber：本模块暂不提供序列号字符串
+    0x01U//bNumConfigurations：1个配置
+};
+
+//179字节描述符后补1字节，保证PIO最后一次Word读取可访问
+static struct
+{
+    uint8_t descriptor[USB_UVC_FS_CONFIG_DESC_SIZE];
+    uint8_t padding;
+} s_uvc_config_storage __attribute__((aligned(4))) =
+{
 {
 
     //Configuration Descriptor，共9字节
@@ -40,18 +64,15 @@ static uint8_t s_uvc_config_desc[] __attribute__((used, aligned(4))) =
     0x01U,//bInterfaceSubClass：VideoControl
     0x00U,//bInterfaceProtocol：未指定协议
     0x00U,//iInterface：不引用接口名称字符串
-
-    //TODO：后续PTS和SCR计数必须匹配上述48MHz时间基准
-
+	
     //VC Header Descriptor，共13字节，使用UVC 1.0
 
     0x0DU,//bLength：12字节固定字段加1个VS接口编号
     0x24U,//bDescriptorType：CS_INTERFACE类专用接口描述符
     0x01U,//bDescriptorSubtype：VC_HEADER
     0x00U, 0x01U,//bcdUVC：UVC 1.0，0x0100按小端存放
-    0x00U, 0x00U,//wTotalLength：VC类专用总长度，待所有Unit和Terminal补齐后计算
+    0x33U, 0x00U,//wTotalLength：VC类专用13+18+11+9=51字节，小端存放
     0x00U, 0x6CU, 0xDCU, 0x02U,//dwClockFrequency：声明48MHz的UVC时间戳参考时钟，小端存放
-
     0x01U,//bInCollection：当前VC管理1个VS接口
     0x01U,//baInterfaceNr：关联VS接口1
 
@@ -93,15 +114,13 @@ static uint8_t s_uvc_config_desc[] __attribute__((used, aligned(4))) =
     0x02U,//bSourceID：输入来自Processing Unit 2
     0x00U,//iTerminal：不设置终端描述字符串
 
-    //TODO：在此继续补齐VC的Unit和Terminal描述符
-
     //VideoStreaming Interface Descriptor，共9字节
 
     0x09U,//bLength：标准接口描述符长度
     0x04U,//bDescriptorType：Interface
     0x01U,//bInterfaceNumber：VS使用接口1，接口0预留给VC
-    0x00U,//bAlternateSetting：备用设置0，暂不开启视频传输
-    0x00U,//bNumEndpoints：备用设置0不声明视频数据端点
+    0x00U,//bAlternateSetting：设置0，不开启视频传输
+    0x00U,//bNumEndpoints：设置0，不作为声明视频数据端点
     0x0EU,//bInterfaceClass：Video类
     0x02U,//bInterfaceSubClass：VideoStreaming
     0x00U,//bInterfaceProtocol：未指定协议
@@ -113,7 +132,7 @@ static uint8_t s_uvc_config_desc[] __attribute__((used, aligned(4))) =
     0x24U,//bDescriptorType：CS_INTERFACE类专用接口描述符
     0x01U,//bDescriptorSubtype：VS_INPUT_HEADER
     0x01U,//bNumFormats：后续填写1个视频格式描述符
-    0x00U, 0x00U,//wTotalLength：VS类专用总长度，待Format和Frame补齐后计算
+    0x4DU, 0x00U,//wTotalLength：VS类专用14+27+30+6=77字节，小端存放
     0x81U,//bEndpointAddress：视频数据使用EP1 IN，后续接入端点
     0x00U,//bmInfo：不支持动态切换格式
     0x03U,//bTerminalLink：关联VC中的Output Terminal 3
@@ -130,7 +149,11 @@ static uint8_t s_uvc_config_desc[] __attribute__((used, aligned(4))) =
     0x04U,//bDescriptorSubtype：VS_FORMAT_UNCOMPRESSED
     0x01U,//bFormatIndex：格式编号1
     0x01U,//bNumFrameDescriptors：本格式包含1个Frame描述符
-    0x59U, 0x55U, 0x59U, 0x32U, 0x00U, 0x00U, 0x10U, 0x00U, 0x80U, 0x00U, 0x00U, 0xAAU, 0x00U, 0x38U, 0x9BU, 0x71U,//guidFormat：YUY2标准GUID
+    0x59U, 0x55U, 0x59U, 0x32U,
+	0x00U, 0x00U, 
+	0x10U, 0x00U, 
+	0x80U, 0x00U, 
+	0x00U, 0xAAU, 0x00U, 0x38U, 0x9BU, 0x71U,//guidFormat：YUY2标准GUID
     0x10U,//bBitsPerPixel：每像素16位
     0x01U,//bDefaultFrameIndex：默认使用Frame 1
     0x00U,//bAspectRatioX：不声明宽高比横向分量
@@ -183,6 +206,38 @@ static uint8_t s_uvc_config_desc[] __attribute__((used, aligned(4))) =
     0x05U,//bmAttributes：等时传输，异步同步类型，数据端点
     0x00U, 0x02U,//wMaxPacketSize：512字节，小端存放
     0x01U//bInterval：全速模式每1个USB帧提供一次传输机会
+},
+    0U
 };
 
-//TODO：继续补齐VC和VS描述符，再回填wTotalLength
+
+//编译期核对有效长度和PIO补齐空间
+typedef char UvcConfigLengthCheck[
+    sizeof(s_uvc_config_storage.descriptor) == USB_UVC_FS_CONFIG_DESC_SIZE ? 1 : -1];
+
+typedef char UvcConfigPaddingCheck[
+    sizeof(s_uvc_config_storage) == 180U ? 1 : -1];
+
+//供后续UVC Class的GetFSConfigDescriptor回调使用
+uint8_t *USB_UVC_GetFSConfigDescriptor(uint16_t *length)
+{
+    if (length == NULL)
+        return NULL;
+
+    *length = sizeof(s_uvc_config_storage.descriptor);
+    return s_uvc_config_storage.descriptor;
+}
+
+//供后续UVC设备描述符回调使用，保持TEST身份独立
+uint8_t *USB_UVC_GetDeviceDescriptor(USBD_SpeedTypeDef speed, uint16_t *length)
+{
+    if (length == NULL)
+        return NULL;
+
+    *length = 0U;
+    if (speed != USBD_SPEED_FULL)
+        return NULL;
+
+    *length = USB_UVC_DEVICE_DESC_SIZE;
+    return s_uvc_device_desc;
+}

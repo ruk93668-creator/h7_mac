@@ -1,0 +1,13 @@
+{
+  "summary": {
+    "total": 20,
+    "passed": 20,
+    "failures": 0,
+    "errors": 0
+  },
+  "source_sha256": {
+    "CM7/Service/usb_uvc_desc.c": "4d1bf41a4c2443f957eee31a04850d7dfe25b5b2492f334e99ae218422abc4be",
+    "CM7/Service/usb_uvc_desc.h": "c2b40e2b2965e9be8e39d8b7c725379b2db2e2ef55a0f8e6ef801e0dc3a4c210"
+  },
+  "output": "test_01_configuration_length (__main__.DescriptorTests.test_01_configuration_length) ... ok\ntest_02_all_descriptor_boundaries (__main__.DescriptorTests.test_02_all_descriptor_boundaries) ... ok\ntest_03_iad (__main__.DescriptorTests.test_03_iad) ... ok\ntest_04_interfaces_and_alternates (__main__.DescriptorTests.test_04_interfaces_and_alternates) ... ok\ntest_05_vc_length_and_version (__main__.DescriptorTests.test_05_vc_length_and_version) ... ok\ntest_06_terminal_topology (__main__.DescriptorTests.test_06_terminal_topology) ... ok\ntest_07_camera_controls (__main__.DescriptorTests.test_07_camera_controls) ... ok\ntest_08_processing_controls (__main__.DescriptorTests.test_08_processing_controls) ... ok\ntest_09_vs_length_and_link (__main__.DescriptorTests.test_09_vs_length_and_link) ... ok\ntest_10_yuy2_format (__main__.DescriptorTests.test_10_yuy2_format) ... ok\ntest_11_frame_dimensions (__main__.DescriptorTests.test_11_frame_dimensions) ... ok\ntest_12_frame_rate_size_bitrate (__main__.DescriptorTests.test_12_frame_rate_size_bitrate) ... ok\ntest_13_color_matching (__main__.DescriptorTests.test_13_color_matching) ... ok\ntest_14_endpoint (__main__.DescriptorTests.test_14_endpoint) ... ok\ntest_15_iad_device_identity (__main__.DescriptorTests.test_15_iad_device_identity) ... ok\ntest_16_null_length (__main__.DescriptorTests.test_16_null_length) ... ok\ntest_17_unsupported_speeds (__main__.DescriptorTests.test_17_unsupported_speeds) ... ok\ntest_18_static_pointers (__main__.DescriptorTests.test_18_static_pointers) ... ok\ntest_19_alignment_and_pio_padding (__main__.DescriptorTests.test_19_alignment_and_pio_padding) ... ok\ntest_20_initializer_count (__main__.DescriptorTests.test_20_initializer_count) ... ok\n\n----------------------------------------------------------------------\nRan 20 tests in 0.602s\n\nOK\n"
+}

@@ -1,0 +1,17 @@
+[
+  {
+    "command": "D:\\32\\ARM\\ARMCC\\Bin\\armcc.exe --vsn",
+    "returncode": 0,
+    "output": "Product: MDK Plus 5.32\r\nComponent: ARM Compiler 5.06 update 7 (build 960)\r\nTool: armcc [4d365d]\r\nFor support see http://www.arm.com/support\r\nSoftware supplied by: ARM Limited\r\n"
+  },
+  {
+    "command": "D:\\32\\ARM\\ARMCC\\Bin\\armcc.exe --cpu Cortex-M7 --c99 -O0 -DSTM32H747xx -DCORE_CM7 -I D:\\32\\STM32H7\\h7_mac\\CM7\\Service -I D:\\32\\STM32H7\\h7_mac\\CM7\\Platform -I D:\\32\\STM32H7\\h7_mac\\Drivers\\CMSIS\\Include -I D:\\32\\STM32H7\\h7_mac\\Drivers\\CMSIS\\Device\\ST\\STM32H7xx\\Include -I D:\\32\\STM32H7\\h7_mac\\Middlewares\\ST\\STM32_USB_Device_Library\\Core\\Inc -c D:\\32\\STM32H7\\h7_mac\\CM7\\Service\\usb_uvc_desc.c -o C:\\Users\\29062\\AppData\\Local\\Temp\\UsbUvcDescriptors_fdxk8y0y\\descriptor.o",
+    "returncode": 0,
+    "output": ""
+  },
+  {
+    "command": "D:\\32\\ARM\\ARMCC\\Bin\\armlink.exe C:\\Users\\29062\\AppData\\Local\\Temp\\UsbUvcDescriptors_fdxk8y0y\\descriptor.o --entry USB_UVC_GetFSConfigDescriptor --keep=USB_UVC_GetDeviceDescriptor --scatter C:\\Users\\29062\\AppData\\Local\\Temp\\UsbUvcDescriptors_fdxk8y0y\\test.sct --no_scanlib -o C:\\Users\\29062\\AppData\\Local\\Temp\\UsbUvcDescriptors_fdxk8y0y\\descriptor.axf",
+    "returncode": 0,
+    "output": ""
+  }
+]
