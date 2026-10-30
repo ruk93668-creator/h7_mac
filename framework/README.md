@@ -11,7 +11,6 @@ framework/
 │   ├── framework_runtime.h    主循环调度入口
 │   ├── framework_event.h      事件发布、订阅接口
 │   ├── framework_timer.h      软件定时器接口
-│   ├── framework_list.h       双向循环链表工具
 │   └── sys_result.h           通用返回码
 ├── Src/
 │   ├── framework_init.c       按等级执行初始化表
@@ -23,8 +22,6 @@ framework/
     ├── platform_time.h         毫秒时钟接口
     └── platform_time.c         调用目标板 Board_TimeGetMs
 ```
-
-`framework_list.h` 是可选基础工具，当前 Event/Timer 调度不依赖它。
 
 ## 2. 加入其他单片机工程
 
