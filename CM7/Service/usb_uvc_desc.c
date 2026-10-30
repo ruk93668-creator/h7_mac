@@ -1,7 +1,7 @@
 #include <stdint.h>
 #include "usbd_def.h"
 
-//UVC全速配置描述符，当前填写配置头、IAD和VS备用设置0
+//UVC全速配置描述符，当前填写配置头、IAD和VC、VS标准接口
 
 //used保留尚未引用的数组，aligned保证4字节对齐
 static uint8_t s_uvc_config_desc[] __attribute__((used, aligned(4))) =
@@ -61,7 +61,34 @@ static uint8_t s_uvc_config_desc[] __attribute__((used, aligned(4))) =
 
     //VideoControl Interface Descriptor，共9字节
 
-    //TODO：在此补齐VC接口及类专用描述符
+    //bLength：标准接口描述符长度
+    0x09U,
+
+    //bDescriptorType：Interface
+    0x04U,
+
+    //bInterfaceNumber：VC使用接口0
+    0x00U,
+
+    //bAlternateSetting：备用设置0
+    0x00U,
+
+    //bNumEndpoints：当前VC不声明中断端点
+    0x00U,
+
+    //bInterfaceClass：Video类
+    0x0EU,
+
+    //bInterfaceSubClass：VideoControl
+    0x01U,
+
+    //bInterfaceProtocol：未指定协议
+    0x00U,
+
+    //iInterface：不引用接口名称字符串
+    0x00U,
+
+    //TODO：在此补齐VC类专用描述符
 
     //VideoStreaming Interface Descriptor，共9字节
 
