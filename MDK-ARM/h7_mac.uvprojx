@@ -1270,6 +1270,26 @@
               <FileType>5</FileType>
               <FilePath>../CM7/Service/ipc_service.h</FilePath>
             </File>
+            <File>
+              <FileName>usb_uvc.h</FileName>
+              <FileType>5</FileType>
+              <FilePath>../CM7/Service/usb_uvc.h</FilePath>
+            </File>
+            <File>
+              <FileName>usb_uvc_desc.h</FileName>
+              <FileType>5</FileType>
+              <FilePath>../CM7/Service/usb_uvc_desc.h</FilePath>
+            </File>
+            <File>
+              <FileName>usb_uvc_desc.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>../CM7/Service/usb_uvc_desc.c</FilePath>
+            </File>
+            <File>
+              <FileName>usb_uvc_class.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>../CM7/Service/usb_uvc_class.c</FilePath>
+            </File>
           </Files>
         </Group>
         <Group>
@@ -3114,6 +3134,26 @@
               <FileName>ipc_service.h</FileName>
               <FileType>5</FileType>
               <FilePath>../CM7/Service/ipc_service.h</FilePath>
+            </File>
+            <File>
+              <FileName>usb_uvc.h</FileName>
+              <FileType>5</FileType>
+              <FilePath>../CM7/Service/usb_uvc.h</FilePath>
+            </File>
+            <File>
+              <FileName>usb_uvc_desc.h</FileName>
+              <FileType>5</FileType>
+              <FilePath>../CM7/Service/usb_uvc_desc.h</FilePath>
+            </File>
+            <File>
+              <FileName>usb_uvc_desc.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>../CM7/Service/usb_uvc_desc.c</FilePath>
+            </File>
+            <File>
+              <FileName>usb_uvc_class.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>../CM7/Service/usb_uvc_class.c</FilePath>
             </File>
           </Files>
         </Group>
