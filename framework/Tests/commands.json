@@ -1,0 +1,97 @@
+[
+  {
+    "command": "D:\\32\\ARM\\ARMCC\\Bin\\armcc.exe --vsn",
+    "returncode": 0,
+    "output": "Product: MDK Plus 5.32\r\nComponent: ARM Compiler 5.06 update 7 (build 960)\r\nTool: armcc [4d365d]\r\nFor support see http://www.arm.com/support\r\nSoftware supplied by: ARM Limited\r\n"
+  },
+  {
+    "command": "D:\\32\\ARM\\ARMCC\\Bin\\armcc.exe --cpu Cortex-M7 --c99 -O0 -I D:\\32\\STM32H7\\h7_mac\\framework\\Inc -I D:\\32\\STM32H7\\h7_mac\\framework\\Port -c D:\\32\\STM32H7\\h7_mac\\framework\\Src\\framework_event.c -o D:\\32\\STM32H7\\h7_mac\\framework\\Tests\\manual_0.o",
+    "returncode": 0,
+    "output": ""
+  },
+  {
+    "command": "D:\\32\\ARM\\ARMCC\\Bin\\armcc.exe --cpu Cortex-M7 --c99 -O0 -I D:\\32\\STM32H7\\h7_mac\\framework\\Inc -I D:\\32\\STM32H7\\h7_mac\\framework\\Port -c D:\\32\\STM32H7\\h7_mac\\framework\\Src\\framework_timer.c -o D:\\32\\STM32H7\\h7_mac\\framework\\Tests\\manual_1.o",
+    "returncode": 0,
+    "output": ""
+  },
+  {
+    "command": "D:\\32\\ARM\\ARMCC\\Bin\\armcc.exe --cpu Cortex-M7 --c99 -O0 -I D:\\32\\STM32H7\\h7_mac\\framework\\Inc -I D:\\32\\STM32H7\\h7_mac\\framework\\Port -c D:\\32\\STM32H7\\h7_mac\\framework\\Src\\framework_runtime.c -o D:\\32\\STM32H7\\h7_mac\\framework\\Tests\\manual_2.o",
+    "returncode": 0,
+    "output": ""
+  },
+  {
+    "command": "D:\\32\\ARM\\ARMCC\\Bin\\armcc.exe --cpu Cortex-M7 --c99 -O0 -I D:\\32\\STM32H7\\h7_mac\\framework\\Inc -I D:\\32\\STM32H7\\h7_mac\\framework\\Port -c D:\\32\\STM32H7\\h7_mac\\framework\\Src\\framework_init.c -o D:\\32\\STM32H7\\h7_mac\\framework\\Tests\\manual_3.o",
+    "returncode": 0,
+    "output": ""
+  },
+  {
+    "command": "D:\\32\\ARM\\ARMCC\\Bin\\armcc.exe --cpu Cortex-M7 --c99 -O0 -I D:\\32\\STM32H7\\h7_mac\\framework\\Inc -I D:\\32\\STM32H7\\h7_mac\\framework\\Port -c D:\\32\\STM32H7\\h7_mac\\framework\\Port\\platform_time.c -o D:\\32\\STM32H7\\h7_mac\\framework\\Tests\\manual_4.o",
+    "returncode": 0,
+    "output": ""
+  },
+  {
+    "command": "D:\\32\\ARM\\ARMCC\\Bin\\armcc.exe --cpu Cortex-M7 --c99 -O0 -I D:\\32\\STM32H7\\h7_mac\\framework\\Inc -I D:\\32\\STM32H7\\h7_mac\\framework\\Port -c D:\\32\\STM32H7\\h7_mac\\framework\\Tests\\framework_test.c -o D:\\32\\STM32H7\\h7_mac\\framework\\Tests\\manual_5.o",
+    "returncode": 0,
+    "output": ""
+  },
+  {
+    "command": "D:\\32\\ARM\\ARMCC\\Bin\\armcc.exe --cpu Cortex-M7 --c99 -O0 -I D:\\32\\STM32H7\\h7_mac\\framework\\Inc -I D:\\32\\STM32H7\\h7_mac\\framework\\Port -c D:\\32\\STM32H7\\h7_mac\\framework\\Port\\framework_init_table.c -o D:\\32\\STM32H7\\h7_mac\\framework\\Tests\\manual_framework_init_table_compile.o",
+    "returncode": 0,
+    "output": ""
+  },
+  {
+    "command": "D:\\32\\ARM\\ARMCC\\Bin\\armcc.exe --cpu Cortex-M7 --c99 -O0 -I D:\\32\\STM32H7\\h7_mac\\framework\\Inc -I D:\\32\\STM32H7\\h7_mac\\framework\\Port -c D:\\32\\STM32H7\\h7_mac\\framework\\Examples\\main_example.c -o D:\\32\\STM32H7\\h7_mac\\framework\\Tests\\manual_main_example_compile.o",
+    "returncode": 0,
+    "output": ""
+  },
+  {
+    "command": "D:\\32\\ARM\\ARMCC\\Bin\\armlink.exe D:\\32\\STM32H7\\h7_mac\\framework\\Tests\\manual_0.o D:\\32\\STM32H7\\h7_mac\\framework\\Tests\\manual_1.o D:\\32\\STM32H7\\h7_mac\\framework\\Tests\\manual_2.o D:\\32\\STM32H7\\h7_mac\\framework\\Tests\\manual_3.o D:\\32\\STM32H7\\h7_mac\\framework\\Tests\\manual_4.o D:\\32\\STM32H7\\h7_mac\\framework\\Tests\\manual_5.o --entry Framework_TestRun --scatter D:\\32\\STM32H7\\h7_mac\\framework\\Tests\\test.sct --no_scanlib -o D:\\32\\STM32H7\\h7_mac\\framework\\Tests\\manual.axf",
+    "returncode": 0,
+    "output": ""
+  },
+  {
+    "command": "D:\\32\\ARM\\ARMCC\\Bin\\armcc.exe --cpu Cortex-M7 --c99 -O0 -I D:\\32\\STM32H7\\h7_mac\\framework\\Inc -I D:\\32\\STM32H7\\h7_mac\\framework\\Port -DFRAMEWORK_USE_ARMCC5_INITCALL -c D:\\32\\STM32H7\\h7_mac\\framework\\Src\\framework_event.c -o D:\\32\\STM32H7\\h7_mac\\framework\\Tests\\armcc5_0.o",
+    "returncode": 0,
+    "output": ""
+  },
+  {
+    "command": "D:\\32\\ARM\\ARMCC\\Bin\\armcc.exe --cpu Cortex-M7 --c99 -O0 -I D:\\32\\STM32H7\\h7_mac\\framework\\Inc -I D:\\32\\STM32H7\\h7_mac\\framework\\Port -DFRAMEWORK_USE_ARMCC5_INITCALL -c D:\\32\\STM32H7\\h7_mac\\framework\\Src\\framework_timer.c -o D:\\32\\STM32H7\\h7_mac\\framework\\Tests\\armcc5_1.o",
+    "returncode": 0,
+    "output": ""
+  },
+  {
+    "command": "D:\\32\\ARM\\ARMCC\\Bin\\armcc.exe --cpu Cortex-M7 --c99 -O0 -I D:\\32\\STM32H7\\h7_mac\\framework\\Inc -I D:\\32\\STM32H7\\h7_mac\\framework\\Port -DFRAMEWORK_USE_ARMCC5_INITCALL -c D:\\32\\STM32H7\\h7_mac\\framework\\Src\\framework_runtime.c -o D:\\32\\STM32H7\\h7_mac\\framework\\Tests\\armcc5_2.o",
+    "returncode": 0,
+    "output": ""
+  },
+  {
+    "command": "D:\\32\\ARM\\ARMCC\\Bin\\armcc.exe --cpu Cortex-M7 --c99 -O0 -I D:\\32\\STM32H7\\h7_mac\\framework\\Inc -I D:\\32\\STM32H7\\h7_mac\\framework\\Port -DFRAMEWORK_USE_ARMCC5_INITCALL -c D:\\32\\STM32H7\\h7_mac\\framework\\Ports\\ARMCC5\\framework_init.c -o D:\\32\\STM32H7\\h7_mac\\framework\\Tests\\armcc5_3.o",
+    "returncode": 0,
+    "output": ""
+  },
+  {
+    "command": "D:\\32\\ARM\\ARMCC\\Bin\\armcc.exe --cpu Cortex-M7 --c99 -O0 -I D:\\32\\STM32H7\\h7_mac\\framework\\Inc -I D:\\32\\STM32H7\\h7_mac\\framework\\Port -DFRAMEWORK_USE_ARMCC5_INITCALL -c D:\\32\\STM32H7\\h7_mac\\framework\\Port\\platform_time.c -o D:\\32\\STM32H7\\h7_mac\\framework\\Tests\\armcc5_4.o",
+    "returncode": 0,
+    "output": ""
+  },
+  {
+    "command": "D:\\32\\ARM\\ARMCC\\Bin\\armcc.exe --cpu Cortex-M7 --c99 -O0 -I D:\\32\\STM32H7\\h7_mac\\framework\\Inc -I D:\\32\\STM32H7\\h7_mac\\framework\\Port -DFRAMEWORK_USE_ARMCC5_INITCALL -c D:\\32\\STM32H7\\h7_mac\\framework\\Tests\\framework_test.c -o D:\\32\\STM32H7\\h7_mac\\framework\\Tests\\armcc5_5.o",
+    "returncode": 0,
+    "output": ""
+  },
+  {
+    "command": "D:\\32\\ARM\\ARMCC\\Bin\\armcc.exe --cpu Cortex-M7 --c99 -O0 -I D:\\32\\STM32H7\\h7_mac\\framework\\Inc -I D:\\32\\STM32H7\\h7_mac\\framework\\Port -DFRAMEWORK_USE_ARMCC5_INITCALL -c D:\\32\\STM32H7\\h7_mac\\framework\\Port\\framework_init_table.c -o D:\\32\\STM32H7\\h7_mac\\framework\\Tests\\armcc5_framework_init_table_compile.o",
+    "returncode": 0,
+    "output": ""
+  },
+  {
+    "command": "D:\\32\\ARM\\ARMCC\\Bin\\armcc.exe --cpu Cortex-M7 --c99 -O0 -I D:\\32\\STM32H7\\h7_mac\\framework\\Inc -I D:\\32\\STM32H7\\h7_mac\\framework\\Port -DFRAMEWORK_USE_ARMCC5_INITCALL -c D:\\32\\STM32H7\\h7_mac\\framework\\Examples\\main_example.c -o D:\\32\\STM32H7\\h7_mac\\framework\\Tests\\armcc5_main_example_compile.o",
+    "returncode": 0,
+    "output": ""
+  },
+  {
+    "command": "D:\\32\\ARM\\ARMCC\\Bin\\armlink.exe D:\\32\\STM32H7\\h7_mac\\framework\\Tests\\armcc5_0.o D:\\32\\STM32H7\\h7_mac\\framework\\Tests\\armcc5_1.o D:\\32\\STM32H7\\h7_mac\\framework\\Tests\\armcc5_2.o D:\\32\\STM32H7\\h7_mac\\framework\\Tests\\armcc5_3.o D:\\32\\STM32H7\\h7_mac\\framework\\Tests\\armcc5_4.o D:\\32\\STM32H7\\h7_mac\\framework\\Tests\\armcc5_5.o --entry Framework_TestRun --scatter D:\\32\\STM32H7\\h7_mac\\framework\\Tests\\armcc5.sct --no_scanlib -o D:\\32\\STM32H7\\h7_mac\\framework\\Tests\\armcc5.axf --keep=*(.framework_init)",
+    "returncode": 0,
+    "output": ""
+  }
+]
