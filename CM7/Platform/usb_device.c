@@ -250,6 +250,8 @@ SysResult_t USB_Device_AbortEp(uint8_t ep)
         }
         else entry->last_result = result;
     }
+    s_operation_result = result;
+    if (result == SYS_ERR_IO || result == SYS_ERR_TIMEOUT) s_last_result = result;
     Usb_Unlock(enabled);
     return result;
 }

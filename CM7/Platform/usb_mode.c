@@ -130,8 +130,7 @@ SysResult_t USB_Mode_RequestReconnect(UsbMode_t target_mode)
     if (s_usb_mode.state == USB_MODE_STATE_IDLE)
         return SYS_ERR_INVALID_STATE;
 
-    //RUNNING、WAIT_CONFIGURED和ERROR允许受理：
-    //允许从RUNNING或ERROR进入受控Stop/重新枚举
+    //RUNNING或ERROR允许进入受控Stop/重新枚举
     if (s_usb_mode.state != USB_MODE_STATE_RUNNING && s_usb_mode.state != USB_MODE_STATE_ERROR)
         return SYS_ERR_BUSY;
 
