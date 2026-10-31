@@ -1,4 +1,4 @@
-//Í¨ÓÃUSB¹ÜÀí£º¹Ù·½Core¸ºÔğĞ­Òé£¬BSP¸ºÔğÓ²¼ş
+//é€šç”¨USBç®¡ç†ï¼šå®˜æ–¹Coreè´Ÿè´£åè®®ï¼ŒBSPè´Ÿè´£ç¡¬ä»¶
 #include "usb_device.h"
 #include "bsp_usb.h"
 #include "framework_init.h"
@@ -8,7 +8,7 @@
 #include <stddef.h>
 #include <string.h>
 
-//¶ÔÓ¦¹Ù·½CoreµÄ16¸ö¶Ëµã±àºÅ£¬²»Ô¤ÉèClassÓÃÍ¾
+//å¯¹åº”å®˜æ–¹Coreçš„16ä¸ªç«¯ç‚¹ç¼–å·ï¼Œä¸é¢„è®¾Classç”¨é€”
 #define USB_DEVICE_EP_COUNT 16U
 
 static USBD_HandleTypeDef s_device;
@@ -17,11 +17,12 @@ static volatile bool s_started;
 static volatile bool s_registered;
 static volatile bool s_stop_required;
 
-//ÉúÃüÖÜÆÚ»Øµ÷Ö´ĞĞÆÚ¼ä½ûÖ¹ÖØÈëInit¡¢Register¡¢StartºÍStop
+//ç”Ÿå‘½å‘¨æœŸå›è°ƒæ‰§è¡ŒæœŸé—´ç¦æ­¢é‡å…¥Initã€Registerã€Startå’ŒStop
 static volatile bool s_control_busy;
 static volatile SysResult_t s_last_result;
+static volatile SysResult_t s_operation_result;
 
-//¸´ÖÆÍâ²¿²Ù×÷±í£¬ÅäÖÃÊı¾İ±¾ÉíÓÉµ÷ÓÃÕß±£³Ö¾²Ì¬ÓĞĞ§
+//å¤åˆ¶å¤–éƒ¨æ“ä½œè¡¨ï¼Œé…ç½®æ•°æ®æœ¬èº«ç”±è°ƒç”¨è€…ä¿æŒé™æ€æœ‰æ•ˆ
 typedef enum
 {
     USB_CLASS_INACTIVE = 0,
@@ -36,7 +37,7 @@ static volatile UsbClassState_t s_class_state;
 static USBD_ClassTypeDef s_class_callbacks;
 static USBD_ClassTypeDef s_class_driver;
 
-//¹Ù·½DeInit»áÇå¿ÕpUserData£¬Ê§°ÜÊ±±£ÁôClassµ±Ç°µÄÍâ²¿°ó¶¨
+//å®˜æ–¹DeInitä¼šæ¸…ç©ºpUserDataï¼Œå¤±è´¥æ—¶ä¿ç•™Classå½“å‰çš„å¤–éƒ¨ç»‘å®š
 static void *s_class_user_data;
 static volatile bool s_hardware_stop_failed;
 static volatile bool s_class_free_pending;
@@ -44,86 +45,88 @@ static USBD_DescriptorsTypeDef s_descriptor_driver;
 static uint8_t *s_configuration;
 static uint16_t s_configuration_length;
 
-//±£Áô¹Ì¶¨ClassÄÚ´æ¿é£¬²»Ê¹ÓÃmalloc
+//ä¿ç•™å›ºå®šClasså†…å­˜å—ï¼Œä¸ä½¿ç”¨malloc
 static uint8_t s_class_memory[1024] __attribute__((aligned(32)));
 static volatile bool s_class_memory_used;
 
-//Á½¸ö·½Ïò¶ÀÁ¢¹ÜÀí×ÊÔ´£¬²»¹æ¶¨¾ßÌå¶ËµãÀàĞÍ»òµØÖ·
+//ä¸¤ä¸ªæ–¹å‘ç‹¬ç«‹ç®¡ç†èµ„æºï¼Œä¸è§„å®šå…·ä½“ç«¯ç‚¹ç±»å‹æˆ–åœ°å€
 static volatile UsbDeviceEndpointState_t s_endpoints[2][USB_DEVICE_EP_COUNT];
 
-//×¼±¸Ó²¼şÓë¹Ù·½Core£¬²»µÇ¼Ç¾ßÌå¹¦ÄÜ
+//å‡†å¤‡ç¡¬ä»¶ä¸å®˜æ–¹Coreï¼Œä¸ç™»è®°å…·ä½“åŠŸèƒ½
 static SysResult_t Usb_InitDevice(void);
 
-//Ğ£Ñé²¢µÇ¼ÇÍâ²¿ClassºÍÃèÊö·û
+//æ ¡éªŒå¹¶ç™»è®°å¤–éƒ¨Classå’Œæè¿°ç¬¦
 static SysResult_t Usb_RegisterClass(USBD_ClassTypeDef *driver, USBD_DescriptorsTypeDef *descriptors);
 
-//ÔÚÉúÃüÖÜÆÚ±£»¤ÄÚÆô¶¯Á¬½Ó
+//åœ¨ç”Ÿå‘½å‘¨æœŸä¿æŠ¤å†…å¯åŠ¨è¿æ¥
 static SysResult_t Usb_StartDevice(void);
 
-//ÔÚÉúÃüÖÜÆÚ±£»¤ÄÚÍ£Ö¹²¢ÊÍ·Å×ÊÔ´
+//åœ¨ç”Ÿå‘½å‘¨æœŸä¿æŠ¤å†…åœæ­¢å¹¶é‡Šæ”¾èµ„æº
 static SysResult_t Usb_StopDevice(void);
 
-//°ü×°Íâ²¿ÉúÃüÖÜÆÚ£¬³É¹¦Init²ÅĞÎ³ÉÒ»´Î»î¶¯ÉúÃüÖÜÆÚ
+//åŒ…è£…å¤–éƒ¨ç”Ÿå‘½å‘¨æœŸï¼ŒæˆåŠŸInitæ‰å½¢æˆä¸€æ¬¡æ´»åŠ¨ç”Ÿå‘½å‘¨æœŸ
 static uint8_t Usb_ManagedClassInit(USBD_HandleTypeDef *device, uint8_t config);
 
-//Í¬Ò»´Î³É¹¦ÊÍ·ÅÖ»µ÷ÓÃÍâ²¿DeInitÒ»´Î£¬Ê§°Ü±£ÁôËùÓĞÈ¨
+//åŒä¸€æ¬¡æˆåŠŸé‡Šæ”¾åªè°ƒç”¨å¤–éƒ¨DeInitä¸€æ¬¡ï¼Œå¤±è´¥ä¿ç•™æ‰€æœ‰æƒ
 static uint8_t Usb_ManagedClassDeInit(USBD_HandleTypeDef *device, uint8_t config);
 
-//´ÓÍ¨ÓÃEndpoint DescriptorÌáÈ¡ĞèÇó£¬²»Àí½âClass×¨ÓÃÃèÊö·û
+//ä»é€šç”¨Endpoint Descriptoræå–éœ€æ±‚ï¼Œä¸ç†è§£Classä¸“ç”¨æè¿°ç¬¦
 static SysResult_t Usb_PlanEndpoints(uint8_t *config, uint16_t length);
 
-//Ğ£ÑéÍâ²¿ÅäÖÃ±ß½ç¡¢½Ó¿ÚºÍ¶ËµãÊıÁ¿
+//æ ¡éªŒå¤–éƒ¨é…ç½®è¾¹ç•Œã€æ¥å£å’Œç«¯ç‚¹æ•°é‡
 static SysResult_t Usb_ValidateConfig(uint8_t *config, uint16_t length);
 
-//°´µØÖ·È¡µÃ¶Ëµã£¬²»½ÓÊÜ±£ÁôµØÖ·Î»
+//æŒ‰åœ°å€å–å¾—ç«¯ç‚¹ï¼Œä¸æ¥å—ä¿ç•™åœ°å€ä½
 static volatile UsbDeviceEndpointState_t *Usb_Endpoint(uint8_t ep);
 
-//ClassÊı¾İ½Ó¿Ú²»ÄÜÖ±½ÓÉêÇë»ò¹Ø±ÕEP0
+//Classæ•°æ®æ¥å£ä¸èƒ½ç›´æ¥ç”³è¯·æˆ–å…³é—­EP0
 static bool Usb_ClassEndpoint(uint8_t ep);
 
-//Ö»ÆÁ±ÎUSB IRQ£¬±£ÁôSysTickÒÔ¹©HAL³¬Ê±Ê¹ÓÃ
+//åªå±è”½USB IRQï¼Œä¿ç•™SysTickä»¥ä¾›HALè¶…æ—¶ä½¿ç”¨
 static uint32_t Usb_Lock(void);
 
-//»Ö¸´½øÈë½Ó¿ÚÇ°µÄUSB IRQÊ¹ÄÜ×´Ì¬
+//æ¢å¤è¿›å…¥æ¥å£å‰çš„USB IRQä½¿èƒ½çŠ¶æ€
 static void Usb_Unlock(uint32_t enabled);
 
-//ÇåÀíClassÎ´ÊÍ·ÅµÄ·ÇEP0¶Ëµã
+//æ¸…ç†Classæœªé‡Šæ”¾çš„éEP0ç«¯ç‚¹
 static SysResult_t Usb_ReleaseEndpoints(void);
 
-//½«¹Ù·½×´Ì¬×ª»»Îª×î½üÒ»´ÎÍ¨ÓÃ½á¹û
+//å°†å®˜æ–¹çŠ¶æ€è½¬æ¢ä¸ºæœ€è¿‘ä¸€æ¬¡é€šç”¨ç»“æœ
 static SysResult_t Usb_PublicResult(USBD_StatusTypeDef status);
 
-//Ëø´æµ×²ãÊ§°Ü²¢×ª»»Îª¹Ù·½Core×´Ì¬
+//é”å­˜åº•å±‚å¤±è´¥å¹¶è½¬æ¢ä¸ºå®˜æ–¹CoreçŠ¶æ€
 static USBD_StatusTypeDef Usb_LlResult(SysResult_t result);
 
-//×ª½»SETUP²¢±£Ö¤Ê§°ÜÇëÇóSTALL
+//è½¬äº¤SETUPå¹¶ä¿è¯å¤±è´¥è¯·æ±‚STALL
 static void Usb_Setup(uint8_t *data);
 
-//ÊÍ·ÅOUT»º³åÇøºó×ª½»Íâ²¿DataOut
+//é‡Šæ”¾OUTç¼“å†²åŒºåè½¬äº¤å¤–éƒ¨DataOut
 static void Usb_DataOut(uint8_t ep, uint8_t *data);
 
-//ÊÍ·ÅIN»º³åÇøºó×ª½»Íâ²¿DataIn
+//é‡Šæ”¾INç¼“å†²åŒºåè½¬äº¤å¤–éƒ¨DataIn
 static void Usb_DataIn(uint8_t ep, uint8_t *data);
+static void Usb_DataInError(uint8_t ep, SysResult_t result);
+static void Usb_HardwareError(SysResult_t result);
 
-//×ÜÏß¸´Î»ÓÉ¹Ù·½CoreÖØ½¨EP0
+//æ€»çº¿å¤ä½ç”±å®˜æ–¹Coreé‡å»ºEP0
 static void Usb_Reset(void);
 
-//½«¹ÒÆğÊÂ¼ş½»¸ø¹Ù·½Core
+//å°†æŒ‚èµ·äº‹ä»¶äº¤ç»™å®˜æ–¹Core
 static void Usb_Suspend(void);
 
-//½«»Ö¸´ÊÂ¼ş½»¸ø¹Ù·½Core
+//å°†æ¢å¤äº‹ä»¶äº¤ç»™å®˜æ–¹Core
 static void Usb_Resume(void);
 
-//½«Á¬½ÓÊÂ¼ş½»¸ø¹Ù·½Core
+//å°†è¿æ¥äº‹ä»¶äº¤ç»™å®˜æ–¹Core
 static void Usb_Connect(void);
 
-//¶ÏÏßÊ±ÊÍ·ÅClassºÍ¶Ëµã×ÊÔ´
+//æ–­çº¿æ—¶é‡Šæ”¾Classå’Œç«¯ç‚¹èµ„æº
 static void Usb_Disconnect(void);
 
-//½«INÎ´Íê³ÉÊÂ¼ş½»¸øÍâ²¿IsoINIncomplete
+//å°†INæœªå®Œæˆäº‹ä»¶äº¤ç»™å¤–éƒ¨IsoINIncomplete
 static void Usb_IsoInIncomplete(uint8_t ep);
 
-//½«OUTÎ´Íê³ÉÊÂ¼ş½»¸øÍâ²¿IsoOUTIncomplete
+//å°†OUTæœªå®Œæˆäº‹ä»¶äº¤ç»™å¤–éƒ¨IsoOUTIncomplete
 static void Usb_IsoOutIncomplete(uint8_t ep);
 
 static const BspUsbCallbacks_t s_callbacks =
@@ -137,7 +140,9 @@ static const BspUsbCallbacks_t s_callbacks =
     Usb_Connect,
     Usb_Disconnect,
     Usb_IsoInIncomplete,
-    Usb_IsoOutIncomplete
+    Usb_IsoOutIncomplete,
+    Usb_DataInError,
+    Usb_HardwareError
 };
 
 SysResult_t USB_Device_Init(void)
@@ -210,11 +215,40 @@ SysResult_t USB_Device_GetLastResult(void)
     return s_last_result;
 }
 
+SysResult_t USB_Device_GetLastOperationResult(void)
+{
+    return s_operation_result;
+}
+
 SysResult_t USB_Device_OpenEp(uint8_t ep, uint8_t type, uint16_t size)
 {
     if (!Usb_ClassEndpoint(ep))
         return SYS_ERR_INVALID_ARG;
     return Usb_PublicResult(USBD_LL_OpenEP(&s_device, ep, type, size));
+}
+
+SysResult_t USB_Device_AbortEp(uint8_t ep)
+{
+    volatile UsbDeviceEndpointState_t *entry = Usb_Endpoint(ep);
+    SysResult_t result;
+    uint32_t enabled;
+    if (!Usb_ClassEndpoint(ep) || entry == NULL)
+        return SYS_ERR_INVALID_ARG;
+    enabled = Usb_Lock();
+    if (!s_initialized || !entry->opened)
+        result = SYS_ERR_INVALID_STATE;
+    else
+    {
+        result = BSP_USB_AbortEp(ep);
+        if (result == SYS_OK)
+        {
+            entry->busy = false;
+            entry->last_result = SYS_OK;
+        }
+        else entry->last_result = result;
+    }
+    Usb_Unlock(enabled);
+    return result;
 }
 
 SysResult_t USB_Device_CloseEp(uint8_t ep)
@@ -296,7 +330,7 @@ USBD_StatusTypeDef USBD_LL_DeInit(USBD_HandleTypeDef *device)
     if (device != &s_device)
         return USBD_FAIL;
 
-    //¹Ù·½DeInitºöÂÔÍâ²¿ÊÍ·Å´íÎó£¬²»ÄÜÒò´ËÇ¿ÖÆ¶ªÆú¾É×ÊÔ´
+    //å®˜æ–¹DeInitå¿½ç•¥å¤–éƒ¨é‡Šæ”¾é”™è¯¯ï¼Œä¸èƒ½å› æ­¤å¼ºåˆ¶ä¸¢å¼ƒæ—§èµ„æº
     if (s_hardware_stop_failed || s_class_state != USB_CLASS_INACTIVE || s_class_memory_used)
         goto deinit_failed;
     result = BSP_USB_DeInit();
@@ -315,7 +349,7 @@ USBD_StatusTypeDef USBD_LL_DeInit(USBD_HandleTypeDef *device)
 
 deinit_failed:
 
-    //PCD·´³õÊ¼»¯Ò²¿ÉÄÜÊ§°Ü£¬ËùÓĞÊ§°Ü³ö¿Ú¶¼»Ö¸´ÈÔĞèÊ¹ÓÃµÄ×¢²á°ó¶¨
+    //PCDååˆå§‹åŒ–ä¹Ÿå¯èƒ½å¤±è´¥ï¼Œæ‰€æœ‰å¤±è´¥å‡ºå£éƒ½æ¢å¤ä»éœ€ä½¿ç”¨çš„æ³¨å†Œç»‘å®š
     s_device.pClass[0] = s_registered ? &s_class_driver : NULL;
     s_device.pDesc = s_registered ? &s_descriptor_driver : NULL;
     s_device.pConfDesc = s_configuration;
@@ -429,10 +463,10 @@ USBD_StatusTypeDef USBD_LL_FlushEP(USBD_HandleTypeDef *device, uint8_t ep)
         return Usb_LlResult(SYS_ERR_INVALID_STATE);
     }
 
-    //Flush²»µÈÓÚÈ¡Ïû´«Êä£¬busyÆÚ¼ä²»ÄÜÊÍ·Å»º³åÇøËùÓĞÈ¨
+    //Flushä¸ç­‰äºå–æ¶ˆä¼ è¾“ï¼ŒbusyæœŸé—´ä¸èƒ½é‡Šæ”¾ç¼“å†²åŒºæ‰€æœ‰æƒ
     result = entry->busy ? SYS_ERR_BUSY : SYS_OK;
 
-    //ËùÓĞOUT¹²ÏíRX FIFO£¬²»ÄÜ¶ªÆúÁíÒ»OUTÉĞÎ´½»¸¶µÄÊı¾İ
+    //æ‰€æœ‰OUTå…±äº«RX FIFOï¼Œä¸èƒ½ä¸¢å¼ƒå¦ä¸€OUTå°šæœªäº¤ä»˜çš„æ•°æ®
     if ((ep & 0x80U) == 0U)
         for (index = 0U; index < USB_DEVICE_EP_COUNT; ++index)
             if (s_endpoints[0][index].busy)
@@ -515,7 +549,7 @@ USBD_StatusTypeDef USBD_LL_Transmit(USBD_HandleTypeDef *device, uint8_t ep, uint
         return Usb_LlResult(SYS_ERR_INVALID_STATE);
     }
 
-    //EP0¶à½×¶ÎÓÉ¹Ù·½CoreÍÆ½ø£¬Êı¾İ¶Ëµã½ûÖ¹¸²¸ÇÎ´Íê³ÉÊÂÎñ
+    //EP0å¤šé˜¶æ®µç”±å®˜æ–¹Coreæ¨è¿›ï¼Œæ•°æ®ç«¯ç‚¹ç¦æ­¢è¦†ç›–æœªå®Œæˆäº‹åŠ¡
     if ((ep & 0x0FU) != 0U && (entry->busy || entry->stalled))
     {
         result = entry->busy ? SYS_ERR_BUSY : SYS_ERR_INVALID_STATE;
@@ -547,7 +581,7 @@ USBD_StatusTypeDef USBD_LL_PrepareReceive(USBD_HandleTypeDef *device, uint8_t ep
         return Usb_LlResult(SYS_ERR_INVALID_STATE);
     }
 
-    //EP0¶à½×¶ÎÓÉ¹Ù·½CoreÍÆ½ø£¬Êı¾İ¶Ëµã½ûÖ¹¸²¸ÇÎ´Íê³ÉÊÂÎñ
+    //EP0å¤šé˜¶æ®µç”±å®˜æ–¹Coreæ¨è¿›ï¼Œæ•°æ®ç«¯ç‚¹ç¦æ­¢è¦†ç›–æœªå®Œæˆäº‹åŠ¡
     if ((ep & 0x0FU) != 0U && (entry->busy || entry->stalled))
     {
         result = entry->busy ? SYS_ERR_BUSY : SYS_ERR_INVALID_STATE;
@@ -595,7 +629,7 @@ void USB_Device_Free(void *memory)
     uint32_t enabled = Usb_Lock();
     if (memory == s_class_memory && s_class_memory_used)
     {
-        //DeInit³É¹¦Ç°Ö»µÇ¼ÇÊÍ·ÅÒâÏò£¬Ê§°ÜÊ±±£Áô·ÖÅä±êÖ¾
+        //DeInitæˆåŠŸå‰åªç™»è®°é‡Šæ”¾æ„å‘ï¼Œå¤±è´¥æ—¶ä¿ç•™åˆ†é…æ ‡å¿—
         if (s_class_state == USB_CLASS_DEINITIALIZING)
             s_class_free_pending = true;
         else if (s_class_state != USB_CLASS_RELEASE_FAILED && s_class_state != USB_CLASS_RELEASING)
@@ -604,24 +638,24 @@ void USB_Device_Free(void *memory)
     Usb_Unlock(enabled);
 }
 
-//DEVICE½×¶ÎÖ»×¼±¸Í¨ÓÃCore£¬²»Ö¸¶¨Éè±¸ÓÃÍ¾
+//DEVICEé˜¶æ®µåªå‡†å¤‡é€šç”¨Coreï¼Œä¸æŒ‡å®šè®¾å¤‡ç”¨é€”
 FRAMEWORK_INIT_REGISTER(USB_Device_Init, INIT_LEVEL_DEVICE);
 
-//ÄÚ²¿¹¦ÄÜº¯ÊıÊµÏÖ
+//å†…éƒ¨åŠŸèƒ½å‡½æ•°å®ç°
 
 static USBD_StatusTypeDef Usb_LlResult(SysResult_t result)
 {
-    if (result == SYS_OK)
-        return USBD_OK;
-    s_last_result = result;
+    s_operation_result = result;
+    if (result == SYS_OK) return USBD_OK;
+    //åªæœ‰çœŸæ­£çš„åº•å±‚I/Oæ•…éšœå‡çº§ä¸ºè®¾å¤‡çº§æ•…éšœ
+    if (result == SYS_ERR_IO) s_last_result = result;
     return result == SYS_ERR_BUSY ? USBD_BUSY : USBD_FAIL;
 }
 
 static SysResult_t Usb_PublicResult(USBD_StatusTypeDef status)
 {
-    if (status == USBD_OK)
-        return SYS_OK;
-    return s_last_result != SYS_OK ? s_last_result : SYS_ERR_IO;
+    (void)status;
+    return s_operation_result;
 }
 
 static volatile UsbDeviceEndpointState_t *Usb_Endpoint(uint8_t ep)
@@ -708,7 +742,7 @@ static SysResult_t Usb_ValidateConfig(uint8_t *config, uint16_t length)
             if (desc[0] < 7U || !have_interface || !Usb_ClassEndpoint(desc[2]) ||
                 endpoint_count == 255U)
                 return SYS_ERR_INVALID_ARG;
-            //Í¬Ò»±¸ÓÃÉèÖÃ²»ÄÜÖØ¸´ÉùÃ÷Í¬·½ÏòµÄÍ¬Ò»¶Ëµã
+            //åŒä¸€å¤‡ç”¨è®¾ç½®ä¸èƒ½é‡å¤å£°æ˜åŒæ–¹å‘çš„åŒä¸€ç«¯ç‚¹
             endpoint_bit = 1UL << ((desc[2] & 0x0FU) + ((desc[2] & 0x80U) != 0U ? 16U : 0U));
             if ((endpoint_mask & endpoint_bit) != 0U)
                 return SYS_ERR_INVALID_ARG;
@@ -733,11 +767,11 @@ static void Usb_Setup(uint8_t *data)
         return;
     recipient = data[0] & 0x1FU;
 
-    //ĞÂSETUP¿ªÊ¼ĞÂ¿ØÖÆÊÂÎñ£¬Ç°Ò»ÂÖEP0ËùÓĞÈ¨×÷·Ï
+    //æ–°SETUPå¼€å§‹æ–°æ§åˆ¶äº‹åŠ¡ï¼Œå‰ä¸€è½®EP0æ‰€æœ‰æƒä½œåºŸ
     s_endpoints[0][0].busy = false;
     s_endpoints[1][0].busy = false;
 
-    //USBĞÂSETUP½â³ıÉÏÒ»ÂÖ¿ØÖÆSTALL£¬×´Ì¬¿ìÕÕÍ¬²½¸´Î»
+    //USBæ–°SETUPè§£é™¤ä¸Šä¸€è½®æ§åˆ¶STALLï¼ŒçŠ¶æ€å¿«ç…§åŒæ­¥å¤ä½
     s_endpoints[0][0].stalled = false;
     s_endpoints[1][0].stalled = false;
     if ((data[0] & USB_REQ_TYPE_MASK) == USB_REQ_TYPE_MASK)
@@ -751,7 +785,7 @@ static void Usb_Setup(uint8_t *data)
         volatile UsbDeviceEndpointState_t *entry;
         ep = data[4];
         entry = Usb_Endpoint(ep);
-        //USB¹æ·¶²»ÔÊĞí¶ÔµÈÊ±¶ËµãÉèÖÃ»òÇå³ıHALT
+        //USBè§„èŒƒä¸å…è®¸å¯¹ç­‰æ—¶ç«¯ç‚¹è®¾ç½®æˆ–æ¸…é™¤HALT
         if (entry != NULL && entry->type == USBD_EP_TYPE_ISOC &&
             (data[0] & USB_REQ_TYPE_MASK) == USB_REQ_TYPE_STANDARD &&
             (data[1] == USB_REQ_SET_FEATURE || data[1] == USB_REQ_CLEAR_FEATURE) &&
@@ -769,7 +803,7 @@ static void Usb_Setup(uint8_t *data)
         }
     }
 
-    //±ê×¼ÇëÇó±£Áô¹Ù·½ÊµÏÖ£¬ClassºÍVendorÓÉÒÑ×¢²áSetupÍ¨ÓÃ·Ö·¢
+    //æ ‡å‡†è¯·æ±‚ä¿ç•™å®˜æ–¹å®ç°ï¼ŒClasså’ŒVendorç”±å·²æ³¨å†ŒSetupé€šç”¨åˆ†å‘
     status = USBD_LL_SetupStage(&s_device, data);
     if (status != USBD_OK)
         USBD_CtlError(&s_device, &s_device.request);
@@ -801,22 +835,38 @@ static void Usb_DataIn(uint8_t ep, uint8_t *data)
     }
 }
 
+//åˆ†åŒ…ç»­ä¼ å¤±è´¥åªå½±å“å¯¹åº”ç«¯ç‚¹ï¼Œä¸æ±¡æŸ“è®¾å¤‡çº§æ•…éšœ
+static void Usb_DataInError(uint8_t ep, SysResult_t result)
+{
+    if (ep >= USB_DEVICE_EP_COUNT || !s_endpoints[1][ep].opened) return;
+    s_endpoints[1][ep].busy = false;
+    s_endpoints[1][ep].last_result = result;
+}
+
+//PCDå…¨å±€é”™è¯¯å±äºè®¾å¤‡çº§æ•…éšœ
+static void Usb_HardwareError(SysResult_t result)
+{
+    s_last_result = result;
+    s_stop_required = true;
+}
+
+
 static void Usb_Reset(void)
 {
     USBD_StatusTypeDef reset_result;
     SysResult_t release_result;
     if (!s_registered)
         return;
-    //×ÜÏßÒÑ¸´Î»£¬¾ÉEP0´ò¿ª×´Ì¬²»ÄÜ´ú±í±¾ÂÖÖØ½¨³É¹¦
+    //æ€»çº¿å·²å¤ä½ï¼Œæ—§EP0æ‰“å¼€çŠ¶æ€ä¸èƒ½ä»£è¡¨æœ¬è½®é‡å»ºæˆåŠŸ
     memset((void *)&s_endpoints[0][0], 0, sizeof(s_endpoints[0][0]));
     memset((void *)&s_endpoints[1][0], 0, sizeof(s_endpoints[1][0]));
     (void)USBD_LL_SetSpeed(&s_device, USBD_SPEED_FULL);
     reset_result = USBD_LL_Reset(&s_device);
 
-    //¼´Ê¹ClassÊÍ·ÅÊ§°Ü£¬Ò²¼ÌĞøÇåÀíÊ£ÓàÊı¾İ¶Ëµã
+    //å³ä½¿Classé‡Šæ”¾å¤±è´¥ï¼Œä¹Ÿç»§ç»­æ¸…ç†å‰©ä½™æ•°æ®ç«¯ç‚¹
     release_result = Usb_ReleaseEndpoints();
 
-    //¹Ù·½ResetºöÂÔOpenEP·µ»ØÖµ£¬±ØĞëºË¶ÔEP0Êµ¼Ê×ÊÔ´×´Ì¬
+    //å®˜æ–¹Resetå¿½ç•¥OpenEPè¿”å›å€¼ï¼Œå¿…é¡»æ ¸å¯¹EP0å®é™…èµ„æºçŠ¶æ€
     if (reset_result != USBD_OK || release_result != SYS_OK ||
         !s_endpoints[0][0].opened || !s_endpoints[1][0].opened)
     {
@@ -863,7 +913,7 @@ static void Usb_IsoInIncomplete(uint8_t ep)
     s_endpoints[1][ep].last_result = SYS_ERR_TIMEOUT;
     if (USBD_LL_IsoINIncomplete(&s_device, ep) != USBD_OK)
     {
-        //¹Ù·½CoreÎŞ·¨·Ö·¢ÊÂ¼şÊ±£¬¼ÇÂ¼ÕæÕıµÄCore´íÎó
+        //å®˜æ–¹Coreæ— æ³•åˆ†å‘äº‹ä»¶æ—¶ï¼Œè®°å½•çœŸæ­£çš„Coreé”™è¯¯
         s_endpoints[1][ep].last_result = SYS_ERR_IO;
         s_last_result = SYS_ERR_IO;
     }
@@ -883,15 +933,16 @@ static void Usb_IsoOutIncomplete(uint8_t ep)
     }
 }
 
-//×¼±¸CoreºÍBSP
+//å‡†å¤‡Coreå’ŒBSP
 SysResult_t Usb_InitDevice(void)
 {
     USBD_StatusTypeDef status;
     if (s_initialized)
         return SYS_OK;
 
-    //Ö»×¼±¸CoreºÍBSP£¬Î´×¢²áClassÊ±½ûÖ¹Start
+    //åªå‡†å¤‡Coreå’ŒBSPï¼Œæœªæ³¨å†ŒClassæ—¶ç¦æ­¢Start
     s_last_result = SYS_OK;
+    s_operation_result = SYS_OK;
     status = USBD_Init(&s_device, NULL, 0U);
     if (status != USBD_OK)
         return Usb_PublicResult(status);
@@ -899,7 +950,7 @@ SysResult_t Usb_InitDevice(void)
     return SYS_OK;
 }
 
-//µÇ¼ÇÍâ²¿Class
+//ç™»è®°å¤–éƒ¨Class
 SysResult_t Usb_RegisterClass(USBD_ClassTypeDef *driver, USBD_DescriptorsTypeDef *descriptors)
 {
     uint8_t *config;
@@ -908,7 +959,7 @@ SysResult_t Usb_RegisterClass(USBD_ClassTypeDef *driver, USBD_DescriptorsTypeDef
     uint16_t device_length = 0U;
     SysResult_t result;
 
-    //±ØĞè»Øµ÷ÏÈÅĞ¿Õ£¬×Ö·û´®»Øµ÷¿É°´Êµ¼ÊÃèÊö·ûÑ¡ÔñÌá¹©
+    //å¿…éœ€å›è°ƒå…ˆåˆ¤ç©ºï¼Œå­—ç¬¦ä¸²å›è°ƒå¯æŒ‰å®é™…æè¿°ç¬¦é€‰æ‹©æä¾›
     if (driver == NULL || descriptors == NULL ||
         driver->Init == NULL || driver->DeInit == NULL ||
         driver->Setup == NULL || driver->GetFSConfigDescriptor == NULL ||
@@ -927,7 +978,7 @@ SysResult_t Usb_RegisterClass(USBD_ClassTypeDef *driver, USBD_DescriptorsTypeDef
         device_desc[7] != USB_MAX_EP0_SIZE || device_desc[17] != 1U)
         return SYS_ERR_INVALID_ARG;
 
-    //ÉùÃ÷ÁË×Ö·û´®Ë÷Òı£¬¾Í±ØĞëÌá¹©ÏàÓ¦²éÑ¯»Øµ÷
+    //å£°æ˜äº†å­—ç¬¦ä¸²ç´¢å¼•ï¼Œå°±å¿…é¡»æä¾›ç›¸åº”æŸ¥è¯¢å›è°ƒ
     if ((device_desc[14] != 0U && descriptors->GetManufacturerStrDescriptor == NULL) ||
         (device_desc[15] != 0U && descriptors->GetProductStrDescriptor == NULL) ||
         (device_desc[16] != 0U && descriptors->GetSerialStrDescriptor == NULL) ||
@@ -935,7 +986,7 @@ SysResult_t Usb_RegisterClass(USBD_ClassTypeDef *driver, USBD_DescriptorsTypeDef
          descriptors->GetLangIDStrDescriptor == NULL))
         return SYS_ERR_INVALID_ARG;
 
-    //ÔÚĞŞ¸ÄÒÑµÇ¼Ç¶ÔÏóÇ°Íê³ÉĞ£Ñé£¬²»µ÷ÓÃÍâ²¿Init»òÆô¶¯Ó²¼ş
+    //åœ¨ä¿®æ”¹å·²ç™»è®°å¯¹è±¡å‰å®Œæˆæ ¡éªŒï¼Œä¸è°ƒç”¨å¤–éƒ¨Initæˆ–å¯åŠ¨ç¡¬ä»¶
     if (s_class_state != USB_CLASS_INACTIVE || s_class_memory_used)
         return SYS_ERR_BUSY;
     result = Usb_PlanEndpoints(config, length);
@@ -956,7 +1007,7 @@ SysResult_t Usb_RegisterClass(USBD_ClassTypeDef *driver, USBD_DescriptorsTypeDef
     s_configuration = config;
     s_configuration_length = length;
 
-    //¹Ù·½CoreÍ¨¹ıÍ¨ÓÃÈë¿Ú¶ÁÈ¡ÒÑÑéÖ¤µÄÅäÖÃ£¬²»°ó¶¨¾ßÌåÊı×é
+    //å®˜æ–¹Coreé€šè¿‡é€šç”¨å…¥å£è¯»å–å·²éªŒè¯çš„é…ç½®ï¼Œä¸ç»‘å®šå…·ä½“æ•°ç»„
     s_class_driver.GetFSConfigDescriptor = USB_Device_GetConfigDescriptor;
     s_device.classId = 0U;
     s_device.NumClasses = 0U;
@@ -967,7 +1018,7 @@ SysResult_t Usb_RegisterClass(USBD_ClassTypeDef *driver, USBD_DescriptorsTypeDef
     return SYS_OK;
 }
 
-//Æô¶¯Á¬½Ó
+//å¯åŠ¨è¿æ¥
 SysResult_t Usb_StartDevice(void)
 {
     USBD_StatusTypeDef status;
@@ -976,10 +1027,11 @@ SysResult_t Usb_StartDevice(void)
     if (s_started)
         return SYS_ERR_BUSY;
     s_last_result = SYS_OK;
+    s_operation_result = SYS_OK;
     s_device.dev_state = USBD_STATE_DEFAULT;
     s_device.dev_config = 0U;
 
-    //ÏÈÌá½»ÔÊĞí·Ö·¢×´Ì¬£¬ÔÙÓÉBSP¿ª·ÅÓ²¼şIRQ
+    //å…ˆæäº¤å…è®¸åˆ†å‘çŠ¶æ€ï¼Œå†ç”±BSPå¼€æ”¾ç¡¬ä»¶IRQ
     s_started = true;
     status = USBD_Start(&s_device);
     if (status != USBD_OK)
@@ -992,7 +1044,7 @@ SysResult_t Usb_StartDevice(void)
     return s_last_result;
 }
 
-//Í£Ö¹²¢ÊÍ·Å×ÊÔ´
+//åœæ­¢å¹¶é‡Šæ”¾èµ„æº
 SysResult_t Usb_StopDevice(void)
 {
     SysResult_t result;
@@ -1002,7 +1054,7 @@ SysResult_t Usb_StopDevice(void)
     if (!s_started && !s_stop_required)
         return SYS_OK;
 
-    //¹Ù·½StopºöÂÔLL½á¹û£¬ÏÈÈ·ÈÏÓ²¼şÍ£Ö¹ÔÙÊÍ·ÅClass
+    //å®˜æ–¹Stopå¿½ç•¥LLç»“æœï¼Œå…ˆç¡®è®¤ç¡¬ä»¶åœæ­¢å†é‡Šæ”¾Class
     s_last_result = SYS_OK;
     s_class_user_data = s_device.pUserData[0];
     result = BSP_USB_Stop();
@@ -1027,7 +1079,7 @@ SysResult_t Usb_StopDevice(void)
         return result;
     }
 
-    //Ó²¼şÒÑÍ£¡¢ClassÒÑÊÍ·Å£¬»Ö¸´±¾ClassÍêÕûFIFO²¼¾Öºó²ÅÔÊĞíÖØÆô
+    //ç¡¬ä»¶å·²åœã€Classå·²é‡Šæ”¾ï¼Œæ¢å¤æœ¬Classå®Œæ•´FIFOå¸ƒå±€åæ‰å…è®¸é‡å¯
     result = Usb_PlanEndpoints(s_configuration, s_configuration_length);
     if (result != SYS_OK)
     {
@@ -1045,7 +1097,7 @@ SysResult_t Usb_StopDevice(void)
     return SYS_OK;
 }
 
-//ÌáÈ¡ËùÓĞ±¸ÓÃÉèÖÃµÄ×î´óĞèÇó£¬Í¬Ò»µØÖ·ºÍÀàĞÍºÏ²¢
+//æå–æ‰€æœ‰å¤‡ç”¨è®¾ç½®çš„æœ€å¤§éœ€æ±‚ï¼ŒåŒä¸€åœ°å€å’Œç±»å‹åˆå¹¶
 static SysResult_t Usb_PlanEndpoints(uint8_t *config, uint16_t length)
 {
     BspUsbEndpointConfig_t entries[BSP_USB_MAX_ENDPOINT_CONFIGS];
@@ -1083,7 +1135,7 @@ static SysResult_t Usb_PlanEndpoints(uint8_t *config, uint16_t length)
     return BSP_USB_ConfigureEndpoints(entries, count);
 }
 
-//Ö»°ü×°ÉúÃüÖÜÆÚ£¬²»ÊµÏÖÈÎºÎClass¹¦ÄÜ
+//åªåŒ…è£…ç”Ÿå‘½å‘¨æœŸï¼Œä¸å®ç°ä»»ä½•ClassåŠŸèƒ½
 static uint8_t Usb_ManagedClassInit(USBD_HandleTypeDef *device, uint8_t config)
 {
     uint8_t status;
@@ -1100,7 +1152,7 @@ static uint8_t Usb_ManagedClassInit(USBD_HandleTypeDef *device, uint8_t config)
         s_class_state = USB_CLASS_ACTIVE;
     else
     {
-        //Ê§°ÜInitÒ²¿ÉÄÜ³ÖÓĞ²¿·Ö×ÊÔ´£¬Áô¸øStopÇåÀí
+        //å¤±è´¥Initä¹Ÿå¯èƒ½æŒæœ‰éƒ¨åˆ†èµ„æºï¼Œç•™ç»™Stopæ¸…ç†
         s_class_state = USB_CLASS_RELEASE_FAILED;
         s_stop_required = true;
         s_last_result = SYS_ERR_IO;
@@ -1108,7 +1160,7 @@ static uint8_t Usb_ManagedClassInit(USBD_HandleTypeDef *device, uint8_t config)
     return status;
 }
 
-//È·ÈÏÍâ²¿³É¹¦ÊÍ·Åºó²ÅÌá½»ÄÚ´æ»ØÊÕ
+//ç¡®è®¤å¤–éƒ¨æˆåŠŸé‡Šæ”¾åæ‰æäº¤å†…å­˜å›æ”¶
 static uint8_t Usb_ManagedClassDeInit(USBD_HandleTypeDef *device, uint8_t config)
 {
     uint8_t status;
@@ -1121,7 +1173,7 @@ static uint8_t Usb_ManagedClassDeInit(USBD_HandleTypeDef *device, uint8_t config
         if (!s_class_memory_used)
             return Usb_ReleaseEndpoints() == SYS_OK ? USBD_OK : USBD_FAIL;
 
-        //Íâ²¿DeInitÒÑ³É¹¦µ«Î´Free£¬±¨¸æĞ¹Â©£¬²»ÖØ¸´µ÷ÓÃ»Øµ÷
+        //å¤–éƒ¨DeInitå·²æˆåŠŸä½†æœªFreeï¼ŒæŠ¥å‘Šæ³„æ¼ï¼Œä¸é‡å¤è°ƒç”¨å›è°ƒ
         s_last_result = SYS_ERR_IO;
         s_stop_required = true;
         return USBD_FAIL;
@@ -1142,14 +1194,14 @@ static uint8_t Usb_ManagedClassDeInit(USBD_HandleTypeDef *device, uint8_t config
             s_stop_required = true;
             s_last_result = SYS_ERR_IO;
 
-            //ÊÍ·ÅÊ§°ÜÈÔÇåÀí¿É¹Ø±ÕµÄÊı¾İ¶Ëµã£¬ÄÚ´æËùÓĞÈ¨¼ÌĞø±£Áô
+            //é‡Šæ”¾å¤±è´¥ä»æ¸…ç†å¯å…³é—­çš„æ•°æ®ç«¯ç‚¹ï¼Œå†…å­˜æ‰€æœ‰æƒç»§ç»­ä¿ç•™
             (void)Usb_ReleaseEndpoints();
             return status;
         }
         s_class_state = USB_CLASS_RELEASING;
     }
 
-    //Íâ²¿»Øµ÷ÒÑ³É¹¦£¬Ê£Óà¶ËµãÊ§°ÜÊ±Ö»ÖØÊÔÇåÀí£¬²»ÖØ¸´DeInit
+    //å¤–éƒ¨å›è°ƒå·²æˆåŠŸï¼Œå‰©ä½™ç«¯ç‚¹å¤±è´¥æ—¶åªé‡è¯•æ¸…ç†ï¼Œä¸é‡å¤DeInit
     if (Usb_ReleaseEndpoints() != SYS_OK)
     {
         s_stop_required = true;
