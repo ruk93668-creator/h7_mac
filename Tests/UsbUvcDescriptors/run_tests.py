@@ -47,7 +47,8 @@ def compile_module():
         obj, image = temp / 'descriptor.o', temp / 'descriptor.axf'
         run(args + ['-c', ROOT / 'CM7/Service/usb_uvc_desc.c', '-o', obj])
         run([TOOL / 'armlink.exe', obj, '--entry', 'USB_UVC_GetFSConfigDescriptor',
-             '--keep=USB_UVC_GetDeviceDescriptor', '--scatter', scatter, '--no_scanlib', '-o', image])
+             '--keep=USB_UVC_GetDeviceDescriptor', '--keep=USB_UVC_GetLangIDStrDescriptor',
+             '--keep=USB_UVC_GetInterfaceStrDescriptor', '--scatter', scatter, '--no_scanlib', '-o', image])
         with image.open('rb') as f:
             elf = ELFFile(f)
             symbols = {s.name: s['st_value'] for s in elf.get_section_by_name('.symtab').iter_symbols()}
@@ -119,7 +120,7 @@ class DescriptorTests(unittest.TestCase):
         self.assertEqual(sum(d[0] for _, _, _, d in self.entries), 180)
 
     def test_03_iad(self):
-        self.assertEqual(self.config[9:17], bytes.fromhex('08 0B 00 02 0E 03 00 00'))
+        self.assertEqual(self.config[9:17], bytes.fromhex('08 0B 00 02 0E 03 00 05'))
 
     def test_04_interfaces_and_alternates(self):
         entries = [d for _, _, _, d in self.entries if d[1] == 4]
@@ -240,6 +241,8 @@ class DescriptorTests(unittest.TestCase):
     def test_24_only_intended_wire_changes(self):
         # Reconstruct the compiled UVC 1.0 baseline; all other wire bytes must match.
         wire = bytearray(self.config)
+        self.assertEqual((wire[16], wire[25]), (5, 5))
+        wire[16] = wire[25] = 0
         pu_offset = next(offset for offset, i, _, d in self.entries if i == 0 and d[1:3] == b'\x24\x05')
         self.assertEqual(pu_offset, 57)
         del wire[pu_offset + 11]
@@ -251,15 +254,95 @@ class DescriptorTests(unittest.TestCase):
                          '51e1059633a0a727cb4d828c595f6a39c47c5aa50671f018392fd3393ad08a1e')
 
 
+    @classmethod
+    def string_get(cls, name, speed=1):
+        cls.cpu.mem_write(cls.length_address, b'\xff\xff')
+        pointer = cls.invoke(name, speed, cls.length_address)
+        length = struct.unpack('<H', cls.cpu.mem_read(cls.length_address, 2))[0]
+        return pointer, length, bytes(cls.cpu.mem_read(pointer, length)) if pointer else b''
+
+    def test_25_langid_descriptor(self):
+        pointer, length, data = self.string_get('USB_UVC_GetLangIDStrDescriptor')
+        self.assertNotEqual(pointer, 0)
+        self.assertEqual(length, 4)
+        self.assertEqual(data, bytes.fromhex('04 03 09 04'))
+
+    def test_26_function_name_utf16le(self):
+        _, length, data = self.string_get('USB_UVC_GetInterfaceStrDescriptor')
+        self.assertEqual(length, 22)
+        self.assertEqual(data, bytes([22, 3]) + 'UVC Camera'.encode('utf-16le'))
+        self.assertEqual(data[2:].decode('utf-16le'), 'UVC Camera')
+        self.assertNotIn('\x00', data[2:].decode('utf-16le'))
+
+    def test_27_function_and_interface_indices(self):
+        iad = next(d for _, _, _, d in self.entries if d[1] == 0x0B)
+        vc = next(d for _, _, _, d in self.entries if d[1] == 4 and d[2] == 0)
+        vs = [d for _, _, _, d in self.entries if d[1] == 4 and d[2] == 1]
+        self.assertEqual(iad[7], 5)
+        self.assertEqual(vc[8], 5)
+        self.assertEqual(iad[7], vc[8])
+        self.assertEqual([d[8] for d in vs], [0, 0])
+
+    def test_28_static_string_pointers(self):
+        for name in ['USB_UVC_GetLangIDStrDescriptor', 'USB_UVC_GetInterfaceStrDescriptor']:
+            first = self.string_get(name)
+            self.assertEqual(self.string_get(name), first)
+
+    def test_29_string_storage_alignment_and_pio_tail(self):
+        for name, symbol, size in [('USB_UVC_GetLangIDStrDescriptor', 's_uvc_langid_desc', 4),
+                                    ('USB_UVC_GetInterfaceStrDescriptor', 's_uvc_function_desc', 24)]:
+            pointer, length, data = self.string_get(name)
+            self.assertEqual(pointer % 4, 0)
+            self.assertEqual(pointer, self.symbols[symbol])
+            self.assertEqual(self.sizes[symbol], size)
+            self.assertLessEqual(((length + 3) // 4) * 4, size)
+            self.assertEqual(bytes(self.cpu.mem_read(pointer + length, size - length)), bytes(size - length))
+
+    def test_30_string_null_length_and_unsupported_speed(self):
+        for name in ['USB_UVC_GetLangIDStrDescriptor', 'USB_UVC_GetInterfaceStrDescriptor']:
+            self.assertEqual(self.invoke(name, 1, 0), 0)
+            for speed in [0, 2, 255]:
+                self.assertEqual(self.string_get(name, speed), (0, 0, b''))
+
+    def test_31_optional_identity_and_entity_strings_remain_zero(self):
+        self.assertEqual(self.device[14:17], bytes(3))
+        self.assertEqual(self.config[6], 0)
+        self.assertEqual(self.cs(0, 2)[7], 0)
+        self.assertEqual(self.cs(0, 5)[10], 0)
+        self.assertEqual(self.cs(0, 3)[8], 0)
+
+    def test_32_only_two_configuration_string_indices_changed(self):
+        wire = bytearray(self.config)
+        self.assertEqual((wire[16], wire[25]), (5, 5))
+        wire[16] = wire[25] = 0
+        self.assertEqual(hashlib.sha256(wire).hexdigest(),
+                         '46d26e057a5505aeed5b2bac3f8d1f740548f6419586f66590babb89e1561813')
+
+
 if __name__ == '__main__':
     capture = io.StringIO()
     suite = unittest.defaultTestLoader.loadTestsFromTestCase(DescriptorTests)
     result = unittest.TextTestRunner(stream=capture, verbosity=2).run(suite)
     output = capture.getvalue()
     print(output)
-    summary = dict(total=result.testsRun, passed=result.testsRun - len(result.failures) - len(result.errors),
-                   failures=len(result.failures), errors=len(result.errors))
-    sources = ['CM7/Service/usb_uvc_desc.c', 'CM7/Service/usb_uvc_desc.h']
-    record = dict(summary=summary, source_sha256={p: hashlib.sha256((ROOT / p).read_bytes()).hexdigest() for p in sources}, output=output)
+    # Execute real Core string requests as part of this same acceptance command.
+    core_path = HERE / 'string_results.json'
+    core_path.unlink(missing_ok=True)
+    core_run = subprocess.run([sys.executable, str(HERE / 'run_string_tests.py')], cwd=ROOT, capture_output=True)
+    core_output = (core_run.stdout + core_run.stderr).decode('utf-8', errors='replace')
+    print(core_output)
+    if (HERE / 'string_commands.json').exists():
+        COMMANDS.extend(json.loads((HERE / 'string_commands.json').read_text(encoding='utf-8')))
+        (HERE / 'commands.json').write_text(json.dumps(COMMANDS, indent=2), encoding='utf-8')
+    core = json.loads(core_path.read_text(encoding='utf-8')) if core_path.exists() else {'summary': {'total': 8, 'passed': 0, 'failed': 0}, 'cases': []}
+    core_cases = core.get('cases', [])
+    summary = dict(total=result.testsRun + 8,
+                   passed=result.testsRun - len(result.failures) - len(result.errors) + core['summary']['passed'],
+                   failures=len(result.failures) + core['summary']['failed'],
+                   errors=len(result.errors) + 8 - len(core_cases))
+    sources = ['CM7/Service/usb_uvc_desc.c', 'CM7/Service/usb_uvc_desc.h', 'CM7/Service/usb_uvc_class.c']
+    record = dict(summary=summary, original_descriptor_tests=24, new_native_string_tests=8, new_core_string_tests=8,
+                  source_sha256={p: hashlib.sha256((ROOT / p).read_bytes()).hexdigest() for p in sources},
+                  core_returncode=core_run.returncode, core_cases=core_cases, output=output + core_output)
     (HERE / 'results.json').write_text(json.dumps(record, indent=2), encoding='utf-8')
-    sys.exit(not result.wasSuccessful())
+    sys.exit(not result.wasSuccessful() or core_run.returncode != 0 or summary['failures'] != 0 or summary['errors'] != 0)

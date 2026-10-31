@@ -61,13 +61,13 @@ static USBD_ClassTypeDef s_uvc_class =
 //设备描述符回调表。
 static USBD_DescriptorsTypeDef s_uvc_descriptors =
 {
-    USB_UVC_GetDeviceDescriptor,
-    NULL,
-    NULL,
-    NULL,
-    NULL,
-    NULL,
-    NULL
+    USB_UVC_GetDeviceDescriptor,//设备身份保持不变
+    USB_UVC_GetLangIDStrDescriptor,//索引0，支持English (United States)
+    NULL,//不提供厂商字符串
+    NULL,//不提供产品字符串
+    NULL,//不提供序列号字符串
+    NULL,//不提供配置字符串
+    USB_UVC_GetInterfaceStrDescriptor//索引5，UVC Camera功能名称
 };
 
 SysResult_t USB_UVC_Register(void)

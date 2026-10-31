@@ -22,6 +22,28 @@ static uint8_t s_uvc_device_desc[20] __attribute__((aligned(4))) =
     0x01U//bNumConfigurations：1个配置
 };
 
+//语言描述符，English (United States)
+static uint8_t s_uvc_langid_desc[4] __attribute__((aligned(4))) =
+{
+    0x04U, 0x03U, 0x09U, 0x04U
+};
+
+//功能名称有效22字节，末尾保留2字节PIO读取空间
+static uint8_t s_uvc_function_desc[24] __attribute__((aligned(4))) =
+{
+    0x16U, 0x03U,//有效长度22，STRING类型
+    0x55U, 0x00U,//U
+    0x56U, 0x00U,//V
+    0x43U, 0x00U,//C
+    0x20U, 0x00U,//空格
+    0x43U, 0x00U,//C
+    0x61U, 0x00U,//a
+    0x6DU, 0x00U,//m
+    0x65U, 0x00U,//e
+    0x72U, 0x00U,//r
+    0x61U, 0x00U//a，协议数据不包含结束符
+};
+
 //180字节有效数据，保留显式padding，结构按4字节对齐
 static struct __attribute__((aligned(4)))
 {
@@ -51,7 +73,7 @@ static struct __attribute__((aligned(4)))
     0x0EU,//bFunctionClass：Video类
     0x03U,//bFunctionSubClass：Video Interface Collection
     0x00U,//bFunctionProtocol：未指定协议
-    0x00U,//iFunction：不引用功能名称字符串
+    0x05U,//iFunction：索引5，UVC Camera功能名称
 
     //VideoControl Interface Descriptor，共9字节
 
@@ -63,7 +85,7 @@ static struct __attribute__((aligned(4)))
     0x0EU,//bInterfaceClass：Video类
     0x01U,//bInterfaceSubClass：VideoControl
     0x00U,//bInterfaceProtocol：未指定协议
-    0x00U,//iInterface：不引用接口名称字符串
+    0x05U,//iInterface：与IAD共用索引5的功能名称
 	
     //VC Header Descriptor，共13字节，使用UVC 1.1
 
@@ -241,4 +263,32 @@ uint8_t *USB_UVC_GetDeviceDescriptor(USBD_SpeedTypeDef speed, uint16_t *length)
 
     *length = USB_UVC_DEVICE_DESC_SIZE;
     return s_uvc_device_desc;
+}
+
+//返回静态语言描述符
+uint8_t *USB_UVC_GetLangIDStrDescriptor(USBD_SpeedTypeDef speed, uint16_t *length)
+{
+    if (length == NULL)
+        return NULL;
+
+    *length = 0U;
+    if (speed != USBD_SPEED_FULL)
+        return NULL;
+
+    *length = USB_UVC_LANGID_DESC_SIZE;
+    return s_uvc_langid_desc;
+}
+
+//返回静态功能名称，有效数据不包含PIO补齐空间
+uint8_t *USB_UVC_GetInterfaceStrDescriptor(USBD_SpeedTypeDef speed, uint16_t *length)
+{
+    if (length == NULL)
+        return NULL;
+
+    *length = 0U;
+    if (speed != USBD_SPEED_FULL)
+        return NULL;
+
+    *length = USB_UVC_FUNCTION_STR_DESC_SIZE;
+    return s_uvc_function_desc;
 }

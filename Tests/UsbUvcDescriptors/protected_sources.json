@@ -1,11 +1,12 @@
 {
-  "baseline": "b49be0471cb5dcf663578d5c10a70faa40bc1fa6",
-  "protected_files": 2344,
-  "changed_protected_files": [],
-  "formal_worktree_unchanged": true,
-  "main_and_HEAD_unchanged": true,
-  "index_empty": true,
-  "original_test_ids_preserved": [
+  "task": "UVC-05",
+  "baseline": "036f667eafb1ca048e277e12b8d62db4d0b8b069",
+  "protected_files": 2343,
+  "protected_source_changes": [],
+  "class_only_descriptor_callback_table_changed": true,
+  "probe_commit_arrays_unchanged": true,
+  "formal_pending_class_change_preserved": true,
+  "original_24_test_ids_preserved": [
     "test_01_configuration_length",
     "test_02_all_descriptor_boundaries",
     "test_03_iad",
@@ -25,13 +26,14 @@
     "test_17_unsupported_speeds",
     "test_18_static_pointers",
     "test_19_alignment_and_pio_padding",
-    "test_20_initializer_count"
+    "test_20_initializer_count",
+    "test_21_deprecated_clock_bytes_preserved",
+    "test_22_processing_unit_field_offsets",
+    "test_23_compiled_storage_and_last_pio_word",
+    "test_24_only_intended_wire_changes"
   ],
-  "current_test_count": 24,
-  "baseline_wire_sha256": "51e1059633a0a727cb4d828c595f6a39c47c5aa50671f018392fd3393ad08a1e",
-  "allowed_production_changes": [
-    "CM7/Service/usb_uvc_desc.c",
-    "CM7/Service/usb_uvc_desc.h"
-  ],
-  "protected_files_aggregate_sha256": "bfa8c6080d764bdae47ea9419a2b0e661f8f7636b5cd8fe06c9ee38694657825"
+  "new_string_native_tests": 8,
+  "new_string_core_cases": 8,
+  "aggregate_protected_sha256": "62b1d8b9a9890e69e4cc26b464e178617a332eaacd6f8840ce602c942d2375b7",
+  "phase": "pre-commit verification snapshot, not a reusable CI baseline"
 }

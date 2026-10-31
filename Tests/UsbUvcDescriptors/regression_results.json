@@ -1,6 +1,16 @@
 {
-  "task": "UVC-04 descriptor-only migration",
-  "baseline": "b49be0471cb5dcf663578d5c10a70faa40bc1fa6",
+  "task": "UVC-05 function strings",
+  "baseline": "036f667eafb1ca048e277e12b8d62db4d0b8b069",
+  "descriptor_original": {
+    "total": 24,
+    "passed": 24,
+    "failed": 0
+  },
+  "new_string_tests": {
+    "total": 16,
+    "passed": 16,
+    "failed": 0
+  },
   "usb_core": {
     "total": 204,
     "passed": 204,
@@ -17,13 +27,6 @@
     "passed": 40,
     "failed": 0
   },
-  "production_source_changed_during_test": [],
-  "hardware_validation": "not performed",
-  "commands": [
-    "python Tests/UsbCoreDecoupling/run_tests.py",
-    "python Tests/Ep0IrqRace/run_race.py",
-    "python Tests/UvcLifecycle/run_tests.py"
-  ],
   "builds": {
     "cm7": {
       "errors": 0,
@@ -37,5 +40,6 @@
       "mode": "full rebuild (-r)",
       "program_size": "Program Size: Code=20334 RO-data=914 RW-data=636 ZI-data=2580"
     }
-  }
+  },
+  "hardware_validation": "not performed"
 }

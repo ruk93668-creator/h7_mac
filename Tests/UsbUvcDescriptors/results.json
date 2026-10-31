@@ -1,13 +1,416 @@
 {
   "summary": {
-    "total": 24,
-    "passed": 24,
+    "total": 40,
+    "passed": 40,
     "failures": 0,
     "errors": 0
   },
+  "original_descriptor_tests": 24,
+  "new_native_string_tests": 8,
+  "new_core_string_tests": 8,
   "source_sha256": {
-    "CM7/Service/usb_uvc_desc.c": "cdb5c2ec38d46fd052b5a347715c82215ab7b91a76baf0546f748e6bae6d4e6f",
-    "CM7/Service/usb_uvc_desc.h": "45e182cb09425bf3d8602aad481c198ea8df772979760471a12a58a18bb4c3fa"
+    "CM7/Service/usb_uvc_desc.c": "0b8b7a12bbba7a7dff9ced98c85e09f1fd24f9b14a2c5e25c09b57d8c44dd6c8",
+    "CM7/Service/usb_uvc_desc.h": "18ca76cc09d4e99529e799a7139a9f79023ece3165b8ae536ed482b4b6cb75eb",
+    "CM7/Service/usb_uvc_class.c": "99cd9c9510517f7594520d66c10ae5d12342cd9eb7b942c899096dcfda491034"
   },
-  "output": "test_01_configuration_length (__main__.DescriptorTests.test_01_configuration_length) ... ok\ntest_02_all_descriptor_boundaries (__main__.DescriptorTests.test_02_all_descriptor_boundaries) ... ok\ntest_03_iad (__main__.DescriptorTests.test_03_iad) ... ok\ntest_04_interfaces_and_alternates (__main__.DescriptorTests.test_04_interfaces_and_alternates) ... ok\ntest_05_vc_length_and_version (__main__.DescriptorTests.test_05_vc_length_and_version) ... ok\ntest_06_terminal_topology (__main__.DescriptorTests.test_06_terminal_topology) ... ok\ntest_07_camera_controls (__main__.DescriptorTests.test_07_camera_controls) ... ok\ntest_08_processing_controls (__main__.DescriptorTests.test_08_processing_controls) ... ok\ntest_09_vs_length_and_link (__main__.DescriptorTests.test_09_vs_length_and_link) ... ok\ntest_10_yuy2_format (__main__.DescriptorTests.test_10_yuy2_format) ... ok\ntest_11_frame_dimensions (__main__.DescriptorTests.test_11_frame_dimensions) ... ok\ntest_12_frame_rate_size_bitrate (__main__.DescriptorTests.test_12_frame_rate_size_bitrate) ... ok\ntest_13_color_matching (__main__.DescriptorTests.test_13_color_matching) ... ok\ntest_14_endpoint (__main__.DescriptorTests.test_14_endpoint) ... ok\ntest_15_iad_device_identity (__main__.DescriptorTests.test_15_iad_device_identity) ... ok\ntest_16_null_length (__main__.DescriptorTests.test_16_null_length) ... ok\ntest_17_unsupported_speeds (__main__.DescriptorTests.test_17_unsupported_speeds) ... ok\ntest_18_static_pointers (__main__.DescriptorTests.test_18_static_pointers) ... ok\ntest_19_alignment_and_pio_padding (__main__.DescriptorTests.test_19_alignment_and_pio_padding) ... ok\ntest_20_initializer_count (__main__.DescriptorTests.test_20_initializer_count) ... ok\ntest_21_deprecated_clock_bytes_preserved (__main__.DescriptorTests.test_21_deprecated_clock_bytes_preserved) ... ok\ntest_22_processing_unit_field_offsets (__main__.DescriptorTests.test_22_processing_unit_field_offsets) ... ok\ntest_23_compiled_storage_and_last_pio_word (__main__.DescriptorTests.test_23_compiled_storage_and_last_pio_word) ... ok\ntest_24_only_intended_wire_changes (__main__.DescriptorTests.test_24_only_intended_wire_changes) ... ok\n\n----------------------------------------------------------------------\nRan 24 tests in 0.498s\n\nOK\n"
+  "core_returncode": 0,
+  "core_cases": [
+    {
+      "id": 0,
+      "name": "\u6b63\u5f0fUVC\u6ce8\u518c\u53ca\u56de\u8c03\u7ed1\u5b9a",
+      "passed": true,
+      "checks": 13,
+      "failed_line": 0,
+      "actual": 0,
+      "expected": 0,
+      "error": null,
+      "source_reads": [],
+      "storage_read_safe": true
+    },
+    {
+      "id": 1,
+      "name": "Core\u8bed\u8a00\u63cf\u8ff0\u7b26",
+      "passed": true,
+      "checks": 16,
+      "failed_line": 0,
+      "actual": 0,
+      "expected": 0,
+      "error": null,
+      "source_reads": [],
+      "storage_read_safe": true
+    },
+    {
+      "id": 2,
+      "name": "Core\u529f\u80fd\u540d\u79f022\u5b57\u8282",
+      "passed": true,
+      "checks": 37,
+      "failed_line": 0,
+      "actual": 0,
+      "expected": 0,
+      "error": null,
+      "source_reads": [
+        [
+          0,
+          1
+        ],
+        [
+          1,
+          1
+        ],
+        [
+          2,
+          1
+        ],
+        [
+          3,
+          1
+        ],
+        [
+          4,
+          1
+        ],
+        [
+          5,
+          1
+        ],
+        [
+          6,
+          1
+        ],
+        [
+          7,
+          1
+        ],
+        [
+          8,
+          1
+        ],
+        [
+          9,
+          1
+        ],
+        [
+          10,
+          1
+        ],
+        [
+          11,
+          1
+        ],
+        [
+          12,
+          1
+        ],
+        [
+          13,
+          1
+        ],
+        [
+          14,
+          1
+        ],
+        [
+          15,
+          1
+        ],
+        [
+          16,
+          1
+        ],
+        [
+          17,
+          1
+        ],
+        [
+          18,
+          1
+        ],
+        [
+          19,
+          1
+        ],
+        [
+          20,
+          1
+        ],
+        [
+          21,
+          1
+        ]
+      ],
+      "storage_read_safe": true
+    },
+    {
+      "id": 3,
+      "name": "\u4e3b\u673a\u8bf7\u6c42255\u4ecd\u53ea\u8fd4\u56de22",
+      "passed": true,
+      "checks": 37,
+      "failed_line": 0,
+      "actual": 0,
+      "expected": 0,
+      "error": null,
+      "source_reads": [
+        [
+          0,
+          1
+        ],
+        [
+          1,
+          1
+        ],
+        [
+          2,
+          1
+        ],
+        [
+          3,
+          1
+        ],
+        [
+          4,
+          1
+        ],
+        [
+          5,
+          1
+        ],
+        [
+          6,
+          1
+        ],
+        [
+          7,
+          1
+        ],
+        [
+          8,
+          1
+        ],
+        [
+          9,
+          1
+        ],
+        [
+          10,
+          1
+        ],
+        [
+          11,
+          1
+        ],
+        [
+          12,
+          1
+        ],
+        [
+          13,
+          1
+        ],
+        [
+          14,
+          1
+        ],
+        [
+          15,
+          1
+        ],
+        [
+          16,
+          1
+        ],
+        [
+          17,
+          1
+        ],
+        [
+          18,
+          1
+        ],
+        [
+          19,
+          1
+        ],
+        [
+          20,
+          1
+        ],
+        [
+          21,
+          1
+        ]
+      ],
+      "storage_read_safe": true
+    },
+    {
+      "id": 4,
+      "name": "\u77ed\u8bf7\u6c42\u53ea\u8fd4\u56de8\u5b57\u8282",
+      "passed": true,
+      "checks": 23,
+      "failed_line": 0,
+      "actual": 0,
+      "expected": 0,
+      "error": null,
+      "source_reads": [
+        [
+          0,
+          1
+        ],
+        [
+          1,
+          1
+        ],
+        [
+          2,
+          1
+        ],
+        [
+          3,
+          1
+        ],
+        [
+          4,
+          1
+        ],
+        [
+          5,
+          1
+        ],
+        [
+          6,
+          1
+        ],
+        [
+          7,
+          1
+        ]
+      ],
+      "storage_read_safe": true
+    },
+    {
+      "id": 5,
+      "name": "\u4e0d\u652f\u6301\u7d22\u5f15\u6309Core\u89c4\u5219STALL",
+      "passed": true,
+      "checks": 22,
+      "failed_line": 0,
+      "actual": 0,
+      "expected": 0,
+      "error": null,
+      "source_reads": [],
+      "storage_read_safe": true
+    },
+    {
+      "id": 6,
+      "name": "PIO\u5bf9\u9f50\u5c3e\u90e8\u53ca\u8bfb\u53d6\u8fb9\u754c",
+      "passed": true,
+      "checks": 43,
+      "failed_line": 0,
+      "actual": 0,
+      "expected": 0,
+      "error": null,
+      "source_reads": [
+        [
+          0,
+          1
+        ],
+        [
+          1,
+          1
+        ],
+        [
+          2,
+          1
+        ],
+        [
+          3,
+          1
+        ],
+        [
+          4,
+          1
+        ],
+        [
+          5,
+          1
+        ],
+        [
+          6,
+          1
+        ],
+        [
+          7,
+          1
+        ],
+        [
+          8,
+          1
+        ],
+        [
+          9,
+          1
+        ],
+        [
+          10,
+          1
+        ],
+        [
+          11,
+          1
+        ],
+        [
+          12,
+          1
+        ],
+        [
+          13,
+          1
+        ],
+        [
+          14,
+          1
+        ],
+        [
+          15,
+          1
+        ],
+        [
+          16,
+          1
+        ],
+        [
+          17,
+          1
+        ],
+        [
+          18,
+          1
+        ],
+        [
+          19,
+          1
+        ],
+        [
+          20,
+          1
+        ],
+        [
+          21,
+          1
+        ]
+      ],
+      "storage_read_safe": true
+    },
+    {
+      "id": 7,
+      "name": "\u4ea4\u9519\u91cd\u590d\u8bf7\u6c42\u4e0e\u9759\u6001\u5730\u5740",
+      "passed": true,
+      "checks": 22,
+      "failed_line": 0,
+      "actual": 0,
+      "expected": 0,
+      "error": null,
+      "source_reads": [],
+      "storage_read_safe": true
+    }
+  ],
+  "output": "test_01_configuration_length (__main__.DescriptorTests.test_01_configuration_length) ... ok\ntest_02_all_descriptor_boundaries (__main__.DescriptorTests.test_02_all_descriptor_boundaries) ... ok\ntest_03_iad (__main__.DescriptorTests.test_03_iad) ... ok\ntest_04_interfaces_and_alternates (__main__.DescriptorTests.test_04_interfaces_and_alternates) ... ok\ntest_05_vc_length_and_version (__main__.DescriptorTests.test_05_vc_length_and_version) ... ok\ntest_06_terminal_topology (__main__.DescriptorTests.test_06_terminal_topology) ... ok\ntest_07_camera_controls (__main__.DescriptorTests.test_07_camera_controls) ... ok\ntest_08_processing_controls (__main__.DescriptorTests.test_08_processing_controls) ... ok\ntest_09_vs_length_and_link (__main__.DescriptorTests.test_09_vs_length_and_link) ... ok\ntest_10_yuy2_format (__main__.DescriptorTests.test_10_yuy2_format) ... ok\ntest_11_frame_dimensions (__main__.DescriptorTests.test_11_frame_dimensions) ... ok\ntest_12_frame_rate_size_bitrate (__main__.DescriptorTests.test_12_frame_rate_size_bitrate) ... ok\ntest_13_color_matching (__main__.DescriptorTests.test_13_color_matching) ... ok\ntest_14_endpoint (__main__.DescriptorTests.test_14_endpoint) ... ok\ntest_15_iad_device_identity (__main__.DescriptorTests.test_15_iad_device_identity) ... ok\ntest_16_null_length (__main__.DescriptorTests.test_16_null_length) ... ok\ntest_17_unsupported_speeds (__main__.DescriptorTests.test_17_unsupported_speeds) ... ok\ntest_18_static_pointers (__main__.DescriptorTests.test_18_static_pointers) ... ok\ntest_19_alignment_and_pio_padding (__main__.DescriptorTests.test_19_alignment_and_pio_padding) ... ok\ntest_20_initializer_count (__main__.DescriptorTests.test_20_initializer_count) ... ok\ntest_21_deprecated_clock_bytes_preserved (__main__.DescriptorTests.test_21_deprecated_clock_bytes_preserved) ... ok\ntest_22_processing_unit_field_offsets (__main__.DescriptorTests.test_22_processing_unit_field_offsets) ... ok\ntest_23_compiled_storage_and_last_pio_word (__main__.DescriptorTests.test_23_compiled_storage_and_last_pio_word) ... ok\ntest_24_only_intended_wire_changes (__main__.DescriptorTests.test_24_only_intended_wire_changes) ... ok\ntest_25_langid_descriptor (__main__.DescriptorTests.test_25_langid_descriptor) ... ok\ntest_26_function_name_utf16le (__main__.DescriptorTests.test_26_function_name_utf16le) ... ok\ntest_27_function_and_interface_indices (__main__.DescriptorTests.test_27_function_and_interface_indices) ... ok\ntest_28_static_string_pointers (__main__.DescriptorTests.test_28_static_string_pointers) ... ok\ntest_29_string_storage_alignment_and_pio_tail (__main__.DescriptorTests.test_29_string_storage_alignment_and_pio_tail) ... ok\ntest_30_string_null_length_and_unsupported_speed (__main__.DescriptorTests.test_30_string_null_length_and_unsupported_speed) ... ok\ntest_31_optional_identity_and_entity_strings_remain_zero (__main__.DescriptorTests.test_31_optional_identity_and_entity_strings_remain_zero) ... ok\ntest_32_only_two_configuration_string_indices_changed (__main__.DescriptorTests.test_32_only_two_configuration_string_indices_changed) ... ok\n\n----------------------------------------------------------------------\nRan 32 tests in 1.116s\n\nOK\n\u6b63\u5f0fUVC\u6ce8\u518c\u53ca\u56de\u8c03\u7ed1\u5b9a True line 0 (0, 0) None\r\nCore\u8bed\u8a00\u63cf\u8ff0\u7b26 True line 0 (0, 0) None\r\nCore\u529f\u80fd\u540d\u79f022\u5b57\u8282 True line 0 (0, 0) None\r\n\u4e3b\u673a\u8bf7\u6c42255\u4ecd\u53ea\u8fd4\u56de22 True line 0 (0, 0) None\r\n\u77ed\u8bf7\u6c42\u53ea\u8fd4\u56de8\u5b57\u8282 True line 0 (0, 0) None\r\n\u4e0d\u652f\u6301\u7d22\u5f15\u6309Core\u89c4\u5219STALL True line 0 (0, 0) None\r\nPIO\u5bf9\u9f50\u5c3e\u90e8\u53ca\u8bfb\u53d6\u8fb9\u754c True line 0 (0, 0) None\r\n\u4ea4\u9519\u91cd\u590d\u8bf7\u6c42\u4e0e\u9759\u6001\u5730\u5740 True line 0 (0, 0) None\r\n{'total': 8, 'passed': 8, 'failed': 0}\r\n"
 }
