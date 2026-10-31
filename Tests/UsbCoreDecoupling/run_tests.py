@@ -145,7 +145,7 @@ stage2_specs = {int(case): (name.strip(), data.strip(), expected.strip())
                 for case, name, data, expected in re.findall(
                     r"//CASE (\d+) \| ([^|\n]+) \| ([^|\n]+) \| ([^\n]+)",
                     (HERE / "endpoint_lifecycle_test.c").read_text(encoding="utf-8"))}
-assert set(stage2_specs) == set(range(300, 360))
+assert set(stage2_specs) == set(range(300, 363))
 cases += [(case, spec[0]) for case, spec in sorted(stage2_specs.items())]
 rows = []
 for case_id, name in cases:

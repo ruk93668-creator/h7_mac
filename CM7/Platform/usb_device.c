@@ -111,7 +111,6 @@ static void Usb_DataOut(uint8_t ep, uint8_t *data);
 //释放IN缓冲区后转交外部DataIn
 static void Usb_DataIn(uint8_t ep, uint8_t *data);
 static void Usb_DataInError(uint8_t ep, SysResult_t result);
-static void Usb_HardwareError(SysResult_t result);
 
 //总线复位由官方Core重建EP0
 static void Usb_Reset(void);
@@ -146,8 +145,7 @@ static const BspUsbCallbacks_t s_callbacks =
     Usb_Disconnect,
     Usb_IsoInIncomplete,
     Usb_IsoOutIncomplete,
-    Usb_DataInError,
-    Usb_HardwareError
+    Usb_DataInError
 };
 
 SysResult_t USB_Device_Init(void)
@@ -665,7 +663,7 @@ static USBD_StatusTypeDef Usb_LlResult(SysResult_t result)
     s_operation_result = result;
     if (result == SYS_OK) return USBD_OK;
     //只有真正的底层I/O故障升级为设备级故障
-    if (result == SYS_ERR_IO) s_last_result = result;
+    if (result == SYS_ERR_IO || result == SYS_ERR_TIMEOUT) s_last_result = result;
     return result == SYS_ERR_BUSY ? USBD_BUSY : USBD_FAIL;
 }
 
@@ -884,12 +882,6 @@ static void Usb_DataInError(uint8_t ep, SysResult_t result)
 }
 
 //PCD全局错误属于设备级故障
-static void Usb_HardwareError(SysResult_t result)
-{
-    s_last_result = result;
-    s_stop_required = true;
-}
-
 
 static void Usb_Reset(void)
 {

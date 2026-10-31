@@ -665,13 +665,6 @@ void HAL_PCD_ISOINIncompleteCallback(PCD_HandleTypeDef *pcd, uint8_t ep)
     }
 }
 
-//HAL报告PCD全局硬件错误
-void HAL_PCD_ErrorCallback(PCD_HandleTypeDef *pcd)
-{
-    if (pcd == &s_pcd && s_callbacks != NULL && s_callbacks->error != NULL)
-        s_callbacks->error(SYS_ERR_IO);
-}
-
 //HAL报告OUT等时包未完成
 void HAL_PCD_ISOOUTIncompleteCallback(PCD_HandleTypeDef *pcd, uint8_t ep)
 {

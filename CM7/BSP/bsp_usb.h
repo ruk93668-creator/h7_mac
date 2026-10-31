@@ -44,8 +44,6 @@ typedef struct
     //普通IN传输分包续传失败
     void (*data_in_error)(uint8_t ep, SysResult_t result);
 
-    //PCD全局硬件错误
-    void (*error)(SysResult_t result);
 } BspUsbCallbacks_t;
 
 //初始化USB2 FS内部PHY、时钟和PCD，不连接主机
