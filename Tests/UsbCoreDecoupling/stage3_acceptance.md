@@ -51,14 +51,11 @@
 - Existing multi-packet case 327 updated to drive all 16 packet completions.
 - Existing tests updated for endpoint-scoped transient errors and pUserData clearing.
 
-## Not yet verified
+## 验收状态更新（2026-10-31）
 
-本分支由远程源码编辑生成；当前会话未在目标 Windows/Keil 环境运行 ARMCC5/Unicorn，也未连接 STM32H747 实板。因此：
-- 不得把已有 stage2 的 192/192 结果视为 stage3 测试结果。
-- 必须在目标开发机运行 `Tests/UsbCoreDecoupling/run_tests.py`。
-- 必须进行 CM7 ARMCC5 完整编译，检查 0 Error / 0 Warning。
-- 必须实板验证 EP0 枚举、Bulk/Interrupt 多包、Abort/Close、Reset/Disconnect、OUT 并发和 FIFO 行为。
-- PCD Abort 的测试桩仅用于软件回归，不替代真实 HAL/PCD 时序验收。
+后续修复及Stage 4迁移已在Windows ARMCC5/Unicorn环境完成204/204和EP0 IRQ 4/4验收；CM7、CM4完整重编均0 Error、0 Warning。完整成果以dbf3e9b合并推送main。原“未在目标环境运行”的状态已失效。
+
+实板USB枚举、总线时序、PIO/FIFO及Abort恢复尚未验证，不能将模拟结果等同硬件验收。详见[Stage 4合并记录](../UsbStage4Migration/verification_report.md)。
 
 ## Important limitation
 

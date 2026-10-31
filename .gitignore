@@ -36,3 +36,9 @@ id_ed25519
 .idea/
 Thumbs.db
 .DS_Store
+
+# One-time USB migration outputs; evidence remains in commit dbf3e9b
+/Tests/UsbStage4Migration/*.log
+/Tests/UsbStage4Migration/*.json
+/Tests/UsbStage4Migration/*.patch
+/usb-stage4-history.zip
