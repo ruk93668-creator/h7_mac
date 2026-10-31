@@ -169,8 +169,9 @@ static int Mode_RunCase(uint32_t id)
             HAL_PCD_ResetCallback(&s_pcd);
             fault = 9U;
             EQ(USBD_LL_Transmit(&s_device, 0x80U, tx_data, 1U), USBD_BUSY);
-            USB_Mode_Process(); EQ(s_usb_mode.state, USB_MODE_STATE_ERROR);
-            EQ(s_usb_mode.last_result, SYS_ERR_BUSY); return 0;
+            USB_Mode_Process(); EQ(s_usb_mode.state, USB_MODE_STATE_WAIT_CONFIGURED);
+            EQ(USB_Device_GetLastResult(), SYS_OK);
+            EQ(USB_Device_GetLastOperationResult(), SYS_ERR_BUSY); return 0;
         }
         s_test_tick += 4999U; USB_Mode_Process(); EQ(s_usb_mode.state, USB_MODE_STATE_WAIT_CONFIGURED);
         if (id == 112U) return 0;
