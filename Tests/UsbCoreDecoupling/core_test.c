@@ -191,8 +191,8 @@ static int Mode_RunCase(uint32_t id)
     if (id == 124U)
     {
         s_usb_mode.state = USB_MODE_STATE_ERROR;
-        EQ(USB_Mode_RequestReconnect(USB_MODE_TEST), SYS_ERR_BUSY);
-        EQ(s_usb_mode.state, USB_MODE_STATE_ERROR); return 0;
+        EQ(USB_Mode_RequestReconnect(USB_MODE_TEST), SYS_OK);
+        EQ(s_usb_mode.state, USB_MODE_STATE_STOPPING); return 0;
     }
     if (id == 126U)
     {
