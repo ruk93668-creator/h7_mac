@@ -1,21 +1,22 @@
-//USBÓ²¼ş²ã£ºÅäÖÃÊ±ÖÓºÍPCD£¬Í¨¹ıÊÂ¼ş±íÍ¨ÖªPlatform
+//USBç¡¬ä»¶å±‚ï¼šé…ç½®æ—¶é’Ÿå’ŒPCDï¼Œé€šè¿‡äº‹ä»¶è¡¨é€šçŸ¥Platform
 
-//Ö÷»úÇëÇó£ºIRQ -> HAL PCD -> »Øµ÷±í -> USB Device Core
+//ä¸»æœºè¯·æ±‚ï¼šIRQ -> HAL PCD -> å›è°ƒè¡¨ -> USB Device Core
 #include "bsp_usb.h"
 #include "framework_init.h"
 #include "stm32h7xx_hal.h"
 #include <stddef.h>
+#include <string.h>
 
-//µÍÓÚDCMI/DMAµÄ5£¬ÑØÓÃ¾ÉUSB²âÊÔ¹¤³ÌµÄ6
+//ä½äºDCMI/DMAçš„5ï¼Œæ²¿ç”¨æ—§USBæµ‹è¯•å·¥ç¨‹çš„6
 #define USB_IRQ_PRIORITY 6U
 
-//USB2 FIFO¹²1024¸öWord£¬RXÓÉËùÓĞOUT¶Ëµã¹²Ïí
+//USB2 FIFOå…±1024ä¸ªWordï¼ŒRXç”±æ‰€æœ‰OUTç«¯ç‚¹å…±äº«
 #define USB_FIFO_TOTAL_WORDS 1024U
 #define USB_RX_FIFO_WORDS    320U
 #define USB_TX0_FIFO_WORDS   64U
 #define USB_TX_MIN_WORDS     16U
 
-//¹Ì¶¨RXÈİÄÉ1023×Ö½Ú×î´óOUT°ü¼°9×é¶Ëµã×´Ì¬ĞÅÏ¢
+//å›ºå®šRXå®¹çº³1023å­—èŠ‚æœ€å¤§OUTåŒ…åŠ9ç»„ç«¯ç‚¹çŠ¶æ€ä¿¡æ¯
 #if USB_RX_FIFO_WORDS < (13U + 257U + 2U * BSP_USB_ENDPOINT_COUNT + 1U)
 #error USB_RX_FIFO_too_small
 #endif
@@ -23,37 +24,59 @@
 static uint16_t s_tx_fifo_words[BSP_USB_ENDPOINT_COUNT];
 static bool s_fifo_valid;
 
-//BSPË½ÓĞPCD¾ä±ú£¬±£´æUSBÓ²¼şºÍ¶ËµãÔËĞĞ×´Ì¬
+//æ¯ä¸ªINç«¯ç‚¹ç‹¬å ä¸€ä¸ªPIOåŒ…ç¼“å†²ï¼Œå°¾éƒ¨è¡¥é½åˆ°32ä½è¯»å–è¾¹ç•Œ
+#define BSP_USB_PIO_PACKET_SIZE (1023U + 3U)
+static uint8_t s_tx_pio_pool[BSP_USB_ENDPOINT_COUNT][BSP_USB_PIO_PACKET_SIZE] __attribute__((aligned(32)));
+
+typedef struct
+{
+    const uint8_t *source;
+    uint32_t total;
+    uint32_t offset;
+    uint16_t packet_length;
+    bool active;
+} UsbTxTransfer_t;
+
+static UsbTxTransfer_t s_tx_transfer[BSP_USB_ENDPOINT_COUNT];
+static bool s_rx_active[BSP_USB_ENDPOINT_COUNT];
+
+//BSPç§æœ‰PCDå¥æŸ„ï¼Œä¿å­˜USBç¡¬ä»¶å’Œç«¯ç‚¹è¿è¡ŒçŠ¶æ€
 static PCD_HandleTypeDef s_pcd;
 
-//PlatformÌá¹©µÄÊÂ¼ş±í£¬ISRÍ¨¹ıËüÏòÉÏÍ¨Öª£¬²»ÒÀÀµUSB CoreÍ·ÎÄ¼ş
+//Platformæä¾›çš„äº‹ä»¶è¡¨ï¼ŒISRé€šè¿‡å®ƒå‘ä¸Šé€šçŸ¥ï¼Œä¸ä¾èµ–USB Coreå¤´æ–‡ä»¶
 static const BspUsbCallbacks_t * volatile s_callbacks;
 
-//PCD¼°FIFOÒÑ³õÊ¼»¯£¬¿ÉÒÔ°ó¶¨»Øµ÷ºÍÆô¶¯USB
+//PCDåŠFIFOå·²åˆå§‹åŒ–ï¼Œå¯ä»¥ç»‘å®šå›è°ƒå’Œå¯åŠ¨USB
 static volatile bool s_ready;
 
-//USBÒÑÆô¶¯£¬ÓÃÓÚ¿ØÖÆÖĞ¶ÏÈë¿ÚÊÇ·ñ½»¸øHAL´¦Àí
+//USBå·²å¯åŠ¨ï¼Œç”¨äºæ§åˆ¶ä¸­æ–­å…¥å£æ˜¯å¦äº¤ç»™HALå¤„ç†
 static volatile bool s_started;
 
-//Ğ£ÑéFull-Speed¶ËµãµØÖ·¡¢ÀàĞÍºÍ×î´ó°ü³¤
+//æ ¡éªŒFull-Speedç«¯ç‚¹åœ°å€ã€ç±»å‹å’Œæœ€å¤§åŒ…é•¿
 static SysResult_t Usb_ValidateEp(uint8_t ep, uint8_t type, uint16_t size);
 
-//Í£Ö¹Ê±ÉèÖÃÍêÕûFIFO²¼¾Ö£¬³É¹¦ºó²ÅÌá½»ÈİÁ¿
+//åœæ­¢æ—¶è®¾ç½®å®Œæ•´FIFOå¸ƒå±€ï¼ŒæˆåŠŸåæ‰æäº¤å®¹é‡
 static SysResult_t Usb_ConfigureFifos(const BspUsbEndpointConfig_t *config, uint32_t count);
 
-//°´INºÍOUT·½Ïò·ÃÎÊÍ¬±àºÅ¶Ëµã¸÷×ÔµÄPCDÉÏÏÂÎÄ
+//æŒ‰INå’ŒOUTæ–¹å‘è®¿é—®åŒç¼–å·ç«¯ç‚¹å„è‡ªçš„PCDä¸Šä¸‹æ–‡
 static USB_OTG_EPTypeDef *Usb_PcdEp(uint8_t ep);
 
-//Ê¹ÓÃ¶ÀÁ¢HSI48£¬²¢ÓÃUSB2Ã¿ºÁÃëSOF×÷ÎªCRSĞ£×¼²Î¿¼
+//å¤åˆ¶ä¸€ä¸ªUSBåŒ…å¹¶è¡¥é½PIOçš„32ä½è¯»å–å°¾éƒ¨
+static void Usb_PrepareTxPacket(uint8_t ep, const uint8_t *source, uint16_t length);
+
+//åˆ¤æ–­é™¤ç›®æ ‡ç«¯ç‚¹å¤–æ˜¯å¦ä»æœ‰OUTæ¥æ”¶å ç”¨å…±äº«RX FIFO
+static bool Usb_OtherRxActive(uint8_t ep);
+
+//ä½¿ç”¨ç‹¬ç«‹HSI48ï¼Œå¹¶ç”¨USB2æ¯æ¯«ç§’SOFä½œä¸ºCRSæ ¡å‡†å‚è€ƒ
 static SysResult_t Usb_ClockInit(void);
 
-//°ÑHAL×´Ì¬×ª»»Îª¹¤³ÌÍ³Ò»µÄSysResult_t·µ»ØÂë
+//æŠŠHALçŠ¶æ€è½¬æ¢ä¸ºå·¥ç¨‹ç»Ÿä¸€çš„SysResult_tè¿”å›ç 
 static SysResult_t Usb_HalResult(HAL_StatusTypeDef status);
 
-//¶Ëµã±àºÅ0µ½8£¬·½ÏòÎ»¶ÀÁ¢£¬ÆäÓàµØÖ·Î»±ØĞëÎª0
+//ç«¯ç‚¹ç¼–å·0åˆ°8ï¼Œæ–¹å‘ä½ç‹¬ç«‹ï¼Œå…¶ä½™åœ°å€ä½å¿…é¡»ä¸º0
 static bool Usb_ValidEp(uint8_t ep);
 
-//³õÊ¼»¯USBÊ±ÖÓ¡¢PCDºÍFIFO£¬´ËÊ±²»Á¬½ÓÖ÷»ú
+//åˆå§‹åŒ–USBæ—¶é’Ÿã€PCDå’ŒFIFOï¼Œæ­¤æ—¶ä¸è¿æ¥ä¸»æœº
 SysResult_t BSP_USB_Init(void)
 {
     HAL_StatusTypeDef status;
@@ -64,38 +87,38 @@ SysResult_t BSP_USB_Init(void)
     if (result != SYS_OK)
         return result;
 
-    //VDD33USBÓëVDD50USBÖ±½Ó½Ó3.3V£¬²»ÆôÓÃÄÚ²¿5VÎÈÑ¹Æ÷
+    //VDD33USBä¸VDD50USBç›´æ¥æ¥3.3Vï¼Œä¸å¯ç”¨å†…éƒ¨5Vç¨³å‹å™¨
     HAL_PWREx_DisableUSBReg();
     HAL_PWREx_EnableUSBVoltageDetector();
 
-    //Ê¹ÓÃPA11/PA12¶ÔÓ¦µÄUSB2 OTG FS¿ØÖÆÆ÷
+    //ä½¿ç”¨PA11/PA12å¯¹åº”çš„USB2 OTG FSæ§åˆ¶å™¨
     s_pcd.Instance = USB2_OTG_FS;
 
-    //±£Áô¿ØÖÆÆ÷9×é¶ËµãÄÜÁ¦£¬¶ËµãÓÉCoreºÍClass°´Ğè´ò¿ª
+    //ä¿ç•™æ§åˆ¶å™¨9ç»„ç«¯ç‚¹èƒ½åŠ›ï¼Œç«¯ç‚¹ç”±Coreå’ŒClassæŒ‰éœ€æ‰“å¼€
     s_pcd.Init.dev_endpoints = BSP_USB_ENDPOINT_COUNT;
 
-    //Ê¹ÓÃ12Mbit/s Full-Speed
+    //ä½¿ç”¨12Mbit/s Full-Speed
     s_pcd.Init.speed = PCD_SPEED_FULL;
 
-    //CPU¶ÁĞ´USB FIFO£¬²»Ê¹ÓÃUSBÄÚ²¿DMA
+    //CPUè¯»å†™USB FIFOï¼Œä¸ä½¿ç”¨USBå†…éƒ¨DMA
     s_pcd.Init.dma_enable = DISABLE;
 
-    //Ê¹ÓÃÆ¬ÄÚFS PHY£¬²»Ê¹ÓÃÍâ²¿ULPI PHY
+    //ä½¿ç”¨ç‰‡å†…FS PHYï¼Œä¸ä½¿ç”¨å¤–éƒ¨ULPI PHY
     s_pcd.Init.phy_itface = PCD_PHY_EMBEDDED;
 
-    //²»ÏòÈí¼şÉÏ±¨SOF»Øµ÷£¬Ó²¼şCRSÈÔ¿ÉÊ¹ÓÃSOFĞ£×¼
+    //ä¸å‘è½¯ä»¶ä¸ŠæŠ¥SOFå›è°ƒï¼Œç¡¬ä»¶CRSä»å¯ä½¿ç”¨SOFæ ¡å‡†
     s_pcd.Init.Sof_enable = DISABLE;
 
-    //²»ÔÚUSB¹ÒÆğÊ±ÇĞ»»ÏµÍ³µÍ¹¦ºÄ×´Ì¬
+    //ä¸åœ¨USBæŒ‚èµ·æ—¶åˆ‡æ¢ç³»ç»Ÿä½åŠŸè€—çŠ¶æ€
     s_pcd.Init.low_power_enable = DISABLE;
 
-    //¹Ø±ÕUSB LPMÁ´Â·µçÔ´¹ÜÀí
+    //å…³é—­USB LPMé“¾è·¯ç”µæºç®¡ç†
     s_pcd.Init.lpm_enable = DISABLE;
 
-    //¹Ø±ÕÓ²¼şVBUS¼ì²â
+    //å…³é—­ç¡¬ä»¶VBUSæ£€æµ‹
     s_pcd.Init.vbus_sensing_enable = DISABLE;
 
-    //EP1Ê¹ÓÃOTG_FS¹«¹²ÖĞ¶Ï£¬²»Ê¹ÓÃ¶ÀÁ¢ÖĞ¶ÏÈë¿Ú
+    //EP1ä½¿ç”¨OTG_FSå…¬å…±ä¸­æ–­ï¼Œä¸ä½¿ç”¨ç‹¬ç«‹ä¸­æ–­å…¥å£
     s_pcd.Init.use_dedicated_ep1 = DISABLE;
     HAL_NVIC_DisableIRQ(OTG_FS_IRQn);
     status = HAL_PCD_Init(&s_pcd);
@@ -110,7 +133,7 @@ SysResult_t BSP_USB_Init(void)
     return SYS_OK;
 }
 
-//½öÔÚÍ£Ö¹ÇÒÎ´´ò¿ªÊı¾İ¶ËµãÊ±¹æ»®£¬¾Ü¾øÆÆ»µ»î¶¯FIFO
+//ä»…åœ¨åœæ­¢ä¸”æœªæ‰“å¼€æ•°æ®ç«¯ç‚¹æ—¶è§„åˆ’ï¼Œæ‹’ç»ç ´åæ´»åŠ¨FIFO
 SysResult_t BSP_USB_ConfigureEndpoints(const BspUsbEndpointConfig_t *config, uint32_t count)
 {
     uint8_t i;
@@ -124,7 +147,7 @@ SysResult_t BSP_USB_ConfigureEndpoints(const BspUsbEndpointConfig_t *config, uin
     return Usb_ConfigureFifos(config, count);
 }
 
-//°ó¶¨PlatformÊÂ¼ş±í£¬±ØĞëÔÚUSBÍ£Ö¹Ê±µ÷ÓÃ
+//ç»‘å®šPlatformäº‹ä»¶è¡¨ï¼Œå¿…é¡»åœ¨USBåœæ­¢æ—¶è°ƒç”¨
 SysResult_t BSP_USB_SetCallbacks(const BspUsbCallbacks_t *callbacks)
 {
     if (callbacks == NULL || callbacks->setup == NULL || callbacks->reset == NULL ||
@@ -133,12 +156,12 @@ SysResult_t BSP_USB_SetCallbacks(const BspUsbCallbacks_t *callbacks)
     if (!s_ready || s_started)
         return SYS_ERR_INVALID_STATE;
 
-    //Ö»±£´æ±íÖ¸Õë£¬²»¸´ÖÆ¶ÔÏó£¬ÊÂ¼ş±í±ØĞë³ÖĞøÓĞĞ§
+    //åªä¿å­˜è¡¨æŒ‡é’ˆï¼Œä¸å¤åˆ¶å¯¹è±¡ï¼Œäº‹ä»¶è¡¨å¿…é¡»æŒç»­æœ‰æ•ˆ
     s_callbacks = callbacks;
     return SYS_OK;
 }
 
-//Æô¶¯USBÉè±¸Á¬½Ó£¬×¼±¸ºÃÈí¼ş×´Ì¬ºóÔÙ¿ª·ÅÖĞ¶Ï
+//å¯åŠ¨USBè®¾å¤‡è¿æ¥ï¼Œå‡†å¤‡å¥½è½¯ä»¶çŠ¶æ€åå†å¼€æ”¾ä¸­æ–­
 SysResult_t BSP_USB_Start(void)
 {
     HAL_StatusTypeDef status;
@@ -151,27 +174,57 @@ SysResult_t BSP_USB_Start(void)
     if (status != HAL_OK)
         return Usb_HalResult(status);
 
-    //Æô¶¯³É¹¦ºóÌá½»Èí¼ş×´Ì¬
+    //å¯åŠ¨æˆåŠŸåæäº¤è½¯ä»¶çŠ¶æ€
     s_started = true;
     HAL_NVIC_EnableIRQ(OTG_FS_IRQn);
     return SYS_OK;
 }
 
-//ÆÁ±ÎUSBÖĞ¶Ï²¢Í£Ö¹PCD£¬·µ»ØÊµ¼ÊÍ£Ö¹½á¹û
+//å±è”½USBä¸­æ–­å¹¶åœæ­¢PCDï¼Œè¿”å›å®é™…åœæ­¢ç»“æœ
 SysResult_t BSP_USB_Stop(void)
 {
     HAL_StatusTypeDef status;
+    uint8_t ep;
+    bool have_out = false;
     if (!s_ready)
         return SYS_ERR_INVALID_STATE;
     HAL_NVIC_DisableIRQ(OTG_FS_IRQn);
+
+    //å…ˆåœæ­¢æ‰€æœ‰å·²æ‰“å¼€æ–¹å‘ï¼Œä¸èƒ½åœ¨ç¡¬ä»¶ä»å¼•ç”¨ç¼“å†²åŒºæ—¶é‡Šæ”¾æ‰€æœ‰æƒ
+    for (ep = 0U; ep < BSP_USB_ENDPOINT_COUNT; ++ep)
+    {
+        if (s_pcd.IN_ep[ep].maxpacket != 0U)
+        {
+            status = HAL_PCD_EP_Abort(&s_pcd, (uint8_t)(0x80U | ep));
+            if (status != HAL_OK)
+                return Usb_HalResult(status);
+        }
+        if (s_pcd.OUT_ep[ep].maxpacket != 0U)
+        {
+            status = HAL_PCD_EP_Abort(&s_pcd, ep);
+            if (status != HAL_OK)
+                return Usb_HalResult(status);
+            have_out = true;
+        }
+    }
+    if (have_out)
+    {
+        status = HAL_PCD_EP_Flush(&s_pcd, 0U);
+        if (status != HAL_OK)
+            return Usb_HalResult(status);
+    }
     status = HAL_PCD_Stop(&s_pcd);
     HAL_NVIC_ClearPendingIRQ(OTG_FS_IRQn);
     if (status == HAL_OK)
+    {
         s_started = false;
+        memset(s_tx_transfer, 0, sizeof(s_tx_transfer));
+        memset(s_rx_active, 0, sizeof(s_rx_active));
+    }
     return Usb_HalResult(status);
 }
 
-//ÏÈÍ£Ö¹Í¨ĞÅ£¬ÔÙÊÍ·ÅPCD¡¢GPIOºÍÊÂ¼ş°ó¶¨
+//å…ˆåœæ­¢é€šä¿¡ï¼Œå†é‡Šæ”¾PCDã€GPIOå’Œäº‹ä»¶ç»‘å®š
 SysResult_t BSP_USB_DeInit(void)
 {
     SysResult_t result;
@@ -190,7 +243,7 @@ SysResult_t BSP_USB_DeInit(void)
     return SYS_OK;
 }
 
-//°´Ó²¼şÄÜÁ¦¼°µ±Ç°FIFO²¼¾Ö´ò¿ª¶Ëµã
+//æŒ‰ç¡¬ä»¶èƒ½åŠ›åŠå½“å‰FIFOå¸ƒå±€æ‰“å¼€ç«¯ç‚¹
 SysResult_t BSP_USB_OpenEp(uint8_t ep, uint8_t type, uint16_t size)
 {
     SysResult_t result;
@@ -208,39 +261,127 @@ SysResult_t BSP_USB_OpenEp(uint8_t ep, uint8_t type, uint16_t size)
     previous = *entry;
     status = HAL_PCD_EP_Open(&s_pcd, ep, size, type);
 
-    //HALÏÈĞ´ÉÏÏÂÎÄÔÙ¼ì²éËø£¬Ê§°ÜÊ±»Ö¸´£¬±ÜÃâ²ĞÁôĞé¼ÙÕ¼ÓÃ
+    //HALå…ˆå†™ä¸Šä¸‹æ–‡å†æ£€æŸ¥é”ï¼Œå¤±è´¥æ—¶æ¢å¤ï¼Œé¿å…æ®‹ç•™è™šå‡å ç”¨
     if (status != HAL_OK)
         *entry = previous;
     return Usb_HalResult(status);
 }
 
-//¹Ø±ÕÖ¸¶¨·½ÏòµÄ¶Ëµã£¬²»Ó°ÏìÁíÒ»·½Ïò
+//å–æ¶ˆä¼ è¾“å¹¶æ¸…ç†FIFOæˆåŠŸåï¼Œæ‰å…è®¸å…³é—­ç«¯ç‚¹
 SysResult_t BSP_USB_CloseEp(uint8_t ep)
 {
     HAL_StatusTypeDef status;
     USB_OTG_EPTypeDef *entry;
+    SysResult_t result;
     if (!s_ready || !Usb_ValidEp(ep))
         return SYS_ERR_INVALID_ARG;
     entry = Usb_PcdEp(ep);
+    if (entry->maxpacket == 0U)
+        return SYS_ERR_INVALID_STATE;
+    result = BSP_USB_AbortEp(ep);
+    if (result != SYS_OK)
+        return result;
     status = HAL_PCD_EP_Close(&s_pcd, ep);
     if (status == HAL_OK)
     {
         entry->maxpacket = 0U;
         entry->is_stall = 0U;
         entry->xfer_buff = NULL;
+        if ((ep & 0x80U) != 0U)
+            memset(&s_tx_transfer[ep & 0x0FU], 0, sizeof(s_tx_transfer[0]));
+        else
+            s_rx_active[ep & 0x0FU] = false;
     }
     return Usb_HalResult(status);
 }
+//å–æ¶ˆæŒ‡å®šæ–¹å‘çš„ä¼ è¾“ï¼›OUTåªæœ‰åœ¨å…¶ä»–æ¥æ”¶ç©ºé—²æ—¶æ‰æ¸…ç©ºå…±äº«RX FIFO
+SysResult_t BSP_USB_AbortEp(uint8_t ep)
+{
+    HAL_StatusTypeDef status;
+    uint8_t index;
+    if (!s_ready || !Usb_ValidEp(ep) || (ep & 0x0FU) == 0U)
+        return SYS_ERR_INVALID_ARG;
+    index = ep & 0x0FU;
+    if (Usb_PcdEp(ep)->maxpacket == 0U)
+        return SYS_ERR_INVALID_STATE;
+    if ((ep & 0x80U) == 0U && s_rx_active[index] && Usb_OtherRxActive(ep))
+        return SYS_ERR_BUSY;
+    status = HAL_PCD_EP_Abort(&s_pcd, ep);
+    if (status != HAL_OK)
+        return Usb_HalResult(status);
+    if ((ep & 0x80U) != 0U || s_rx_active[index])
+    {
+        status = HAL_PCD_EP_Flush(&s_pcd, ep);
+        if (status != HAL_OK)
+            return Usb_HalResult(status);
+    }
+    if ((ep & 0x80U) != 0U)
+        memset(&s_tx_transfer[index], 0, sizeof(s_tx_transfer[index]));
+    else
+        s_rx_active[index] = false;
+    return SYS_OK;
+}
 
-//Çå¿Õ¶ËµãFIFO£¬¶ªÆúÉĞÎ´´¦ÀíµÄÊı¾İ
+//ç”Ÿå‘½å‘¨æœŸæ¸…ç†å…ˆåœæ­¢æ‰€æœ‰æ•°æ®ç«¯ç‚¹ï¼Œå†åˆ†åˆ«æ¸…IN FIFOå¹¶ç»Ÿä¸€æ¸…OUTå…±äº«FIFO
+SysResult_t BSP_USB_AbortAll(void)
+{
+    HAL_StatusTypeDef status;
+    uint8_t ep;
+    bool have_out = false;
+    for (ep = 1U; ep < BSP_USB_ENDPOINT_COUNT; ++ep)
+    {
+        if (s_pcd.IN_ep[ep].maxpacket != 0U)
+        {
+            status = HAL_PCD_EP_Abort(&s_pcd, (uint8_t)(0x80U | ep));
+            if (status != HAL_OK) return Usb_HalResult(status);
+        }
+        if (s_pcd.OUT_ep[ep].maxpacket != 0U)
+        {
+            status = HAL_PCD_EP_Abort(&s_pcd, ep);
+            if (status != HAL_OK) return Usb_HalResult(status);
+            have_out = true;
+        }
+    }
+    for (ep = 1U; ep < BSP_USB_ENDPOINT_COUNT; ++ep)
+    {
+        if (s_pcd.IN_ep[ep].maxpacket != 0U)
+        {
+            status = HAL_PCD_EP_Flush(&s_pcd, (uint8_t)(0x80U | ep));
+            if (status != HAL_OK) return Usb_HalResult(status);
+        }
+    }
+    if (have_out)
+    {
+        status = HAL_PCD_EP_Flush(&s_pcd, 0U);
+        if (status != HAL_OK) return Usb_HalResult(status);
+    }
+    memset(s_tx_transfer, 0, sizeof(s_tx_transfer));
+    memset(s_rx_active, 0, sizeof(s_rx_active));
+    return SYS_OK;
+}
+
+
+//æ¸…ç©ºç©ºé—²ç«¯ç‚¹FIFOï¼›OUTæ–¹å‘å…±äº«RXï¼Œå­˜åœ¨ä»»ä¸€æ¥æ”¶æ—¶ç¦æ­¢æ¸…ç©º
 SysResult_t BSP_USB_FlushEp(uint8_t ep)
 {
+    uint8_t i;
     if (!s_ready || !Usb_ValidEp(ep))
         return SYS_ERR_INVALID_ARG;
+    if (Usb_PcdEp(ep)->maxpacket == 0U)
+        return SYS_ERR_INVALID_STATE;
+    if ((ep & 0x80U) != 0U)
+    {
+        if (s_tx_transfer[ep & 0x0FU].active) return SYS_ERR_BUSY;
+    }
+    else
+    {
+        for (i = 1U; i < BSP_USB_ENDPOINT_COUNT; ++i)
+            if (s_rx_active[i]) return SYS_ERR_BUSY;
+    }
     return Usb_HalResult(HAL_PCD_EP_Flush(&s_pcd, ep));
 }
 
-//ÉèÖÃ¶ËµãSTALL£¬Í¨ÖªÖ÷»úµ±Ç°ÇëÇó²»ÄÜ´¦Àí
+//è®¾ç½®ç«¯ç‚¹STALLï¼Œé€šçŸ¥ä¸»æœºå½“å‰è¯·æ±‚ä¸èƒ½å¤„ç†
 SysResult_t BSP_USB_StallEp(uint8_t ep)
 {
     if (!s_ready || !Usb_ValidEp(ep))
@@ -249,13 +390,13 @@ SysResult_t BSP_USB_StallEp(uint8_t ep)
     if (Usb_PcdEp(ep)->maxpacket == 0U)
         return SYS_ERR_INVALID_STATE;
 
-    //°´Êµ¼Ê¶ËµãÀàĞÍ¾Ü¾øµÈÊ±HALT£¬²»°ó¶¨¶Ëµã±àºÅ
+    //æŒ‰å®é™…ç«¯ç‚¹ç±»å‹æ‹’ç»ç­‰æ—¶HALTï¼Œä¸ç»‘å®šç«¯ç‚¹ç¼–å·
     if ((ep & 0x0FU) != 0U && Usb_PcdEp(ep)->type == EP_TYPE_ISOC)
         return SYS_ERR_NOT_SUPPORTED;
     return Usb_HalResult(HAL_PCD_EP_SetStall(&s_pcd, ep));
 }
 
-//Çå³ı¶ËµãSTALL£¬ÔÊĞíºóĞø¿ØÖÆ´«Êä
+//æ¸…é™¤ç«¯ç‚¹STALLï¼Œå…è®¸åç»­æ§åˆ¶ä¼ è¾“
 SysResult_t BSP_USB_ClearStallEp(uint8_t ep)
 {
     if (!s_ready || !Usb_ValidEp(ep))
@@ -264,25 +405,42 @@ SysResult_t BSP_USB_ClearStallEp(uint8_t ep)
     if (Usb_PcdEp(ep)->maxpacket == 0U)
         return SYS_ERR_INVALID_STATE;
 
-    //°´Êµ¼Ê¶ËµãÀàĞÍ¾Ü¾øµÈÊ±HALT£¬²»°ó¶¨¶Ëµã±àºÅ
+    //æŒ‰å®é™…ç«¯ç‚¹ç±»å‹æ‹’ç»ç­‰æ—¶HALTï¼Œä¸ç»‘å®šç«¯ç‚¹ç¼–å·
     if ((ep & 0x0FU) != 0U && Usb_PcdEp(ep)->type == EP_TYPE_ISOC)
         return SYS_ERR_NOT_SUPPORTED;
     return Usb_HalResult(HAL_PCD_EP_ClrStall(&s_pcd, ep));
 }
 
-//°´µØÖ·×î¸ßÎ»Çø·ÖINºÍOUT£¬²éÑ¯¶ËµãSTALL×´Ì¬
+//å‡†å¤‡PIOåŒ…ï¼Œä¿è¯HALæŒ‰32ä½è¯»å–æ—¶å°¾éƒ¨ä»å¤„äºå·²åˆ†é…å†…å­˜
+static void Usb_PrepareTxPacket(uint8_t ep, const uint8_t *source, uint16_t length)
+{
+    uint32_t padded = ((uint32_t)length + 3U) & ~3UL;
+    if (length != 0U) memcpy(s_tx_pio_pool[ep], source, length);
+    if (padded > length) memset(&s_tx_pio_pool[ep][length], 0, padded - length);
+}
+
+//åˆ¤æ–­é™¤ç›®æ ‡ç«¯ç‚¹å¤–æ˜¯å¦ä»æœ‰OUTæ¥æ”¶å ç”¨å…±äº«RX FIFO
+static bool Usb_OtherRxActive(uint8_t ep)
+{
+    uint8_t i;
+    for (i = 1U; i < BSP_USB_ENDPOINT_COUNT; ++i)
+        if (i != (ep & 0x0FU) && s_rx_active[i]) return true;
+    return false;
+}
+
+//æŒ‰åœ°å€æœ€é«˜ä½åŒºåˆ†INå’ŒOUTï¼ŒæŸ¥è¯¢ç«¯ç‚¹STALLçŠ¶æ€
 bool BSP_USB_IsStallEp(uint8_t ep)
 {
     if (!s_ready || !Usb_ValidEp(ep))
         return false;
 
-    //·½ÏòÎ»Ñ¡ÔñIN»òOUTÊı×é£¬µÍ4Î»Ñ¡ÔñÊµ¼Ê¶Ëµã±àºÅ
+    //æ–¹å‘ä½é€‰æ‹©INæˆ–OUTæ•°ç»„ï¼Œä½4ä½é€‰æ‹©å®é™…ç«¯ç‚¹ç¼–å·
     if ((ep & 0x80U) != 0U)
         return s_pcd.IN_ep[ep & 0x0FU].is_stall != 0U;
     return s_pcd.OUT_ep[ep & 0x0FU].is_stall != 0U;
 }
 
-//ÉèÖÃÖ÷»ú·ÖÅäµÄ7Î»USBÉè±¸µØÖ·
+//è®¾ç½®ä¸»æœºåˆ†é…çš„7ä½USBè®¾å¤‡åœ°å€
 SysResult_t BSP_USB_SetAddress(uint8_t address)
 {
     if (!s_ready || address > 127U)
@@ -290,27 +448,40 @@ SysResult_t BSP_USB_SetAddress(uint8_t address)
     return Usb_HalResult(HAL_PCD_SetAddress(&s_pcd, address));
 }
 
-//°²ÅÅÉè±¸ÏòÖ÷»ú·¢ËÍÊı¾İ£¬³¤¶ÈÎª0Ê±·¢ËÍ×´Ì¬°ü
+//æ¯æ¬¡åªæäº¤ä¸€ä¸ªæœ‰å°¾éƒ¨è¡¥é½çš„PIOåŒ…ï¼Œå¤šåŒ…ä¼ è¾“ç”±å®Œæˆå›è°ƒé€åŒ…æ¨è¿›
 SysResult_t BSP_USB_Transmit(uint8_t ep, uint8_t *data, uint32_t size)
 {
     USB_OTG_EPTypeDef *entry;
+    UsbTxTransfer_t *transfer;
+    uint8_t index;
+    uint16_t packet;
+    HAL_StatusTypeDef status;
     if (ep == 0U) ep = 0x80U;
     if (!s_ready || !Usb_ValidEp(ep) || (ep & 0x80U) == 0U ||
         (data == NULL && size != 0U))
         return SYS_ERR_INVALID_ARG;
     entry = Usb_PcdEp(ep);
-    if (entry->maxpacket == 0U)
-        return SYS_ERR_INVALID_STATE;
+    if (entry->maxpacket == 0U) return SYS_ERR_INVALID_STATE;
+    index = ep & 0x0FU;
+    transfer = &s_tx_transfer[index];
+    if (transfer->active) return SYS_ERR_BUSY;
+    if (entry->type == EP_TYPE_ISOC && size > entry->maxpacket) return SYS_ERR_INVALID_ARG;
+    if (size > 0x7FFFFU || (index != 0U && size > entry->maxpacket * 1023U))
+        return SYS_ERR_INVALID_ARG;
 
-    //PIOµÈÊ±Ö±½ÓĞ´Õû¸ö°ü£¬ÆäÓàÀàĞÍÓÉTX¿ÕÖĞ¶ÏÖğ°üÌî³ä
-    if (entry->type == EP_TYPE_ISOC && size > entry->maxpacket)
-        return SYS_ERR_INVALID_ARG;
-    if (size > 0x7FFFFU || ((ep & 0x0FU) != 0U && size > entry->maxpacket * 1023U))
-        return SYS_ERR_INVALID_ARG;
-    return Usb_HalResult(HAL_PCD_EP_Transmit(&s_pcd, ep, data, size));
+    packet = (uint16_t)(size > entry->maxpacket ? entry->maxpacket : size);
+    transfer->source = data;
+    transfer->total = size;
+    transfer->offset = packet;
+    transfer->packet_length = packet;
+    transfer->active = true;
+    Usb_PrepareTxPacket(index, data, packet);
+    status = HAL_PCD_EP_Transmit(&s_pcd, ep, s_tx_pio_pool[index], packet);
+    if (status != HAL_OK) memset(transfer, 0, sizeof(*transfer));
+    return Usb_HalResult(status);
 }
 
-//×¼±¸Ö¸¶¨OUT¶Ëµã½ÓÊÕ£¬EP0Ö§³ÖÁã³¤¶È×´Ì¬°ü
+//å‡†å¤‡æŒ‡å®šOUTç«¯ç‚¹æ¥æ”¶ï¼ŒEP0æ”¯æŒé›¶é•¿åº¦çŠ¶æ€åŒ…
 SysResult_t BSP_USB_Receive(uint8_t ep, uint8_t *data, uint32_t size)
 {
     USB_OTG_EPTypeDef *entry;
@@ -322,17 +493,21 @@ SysResult_t BSP_USB_Receive(uint8_t ep, uint8_t *data, uint32_t size)
         return SYS_ERR_INVALID_STATE;
     if ((ep & 0x0FU) != 0U)
     {
-        //HAL»áÏòÉÏÈ¡Õû½ÓÊÕÁ¿£¬µ÷ÓÃÕß°´Õû°üÈİÁ¿Ìá¹©»º³åÇø
+        //HALä¼šå‘ä¸Šå–æ•´æ¥æ”¶é‡ï¼Œè°ƒç”¨è€…æŒ‰æ•´åŒ…å®¹é‡æä¾›ç¼“å†²åŒº
         if (size == 0U || size % entry->maxpacket != 0U ||
             size > 0x7FFFFU || size > entry->maxpacket * 1023U)
             return SYS_ERR_INVALID_ARG;
         if (entry->type == EP_TYPE_ISOC && size != entry->maxpacket)
             return SYS_ERR_INVALID_ARG;
     }
-    return Usb_HalResult(HAL_PCD_EP_Receive(&s_pcd, ep, data, size));
+    {
+        HAL_StatusTypeDef status = HAL_PCD_EP_Receive(&s_pcd, ep, data, size);
+        if (status == HAL_OK && (ep & 0x0FU) != 0U) s_rx_active[ep & 0x0FU] = true;
+        return Usb_HalResult(status);
+    }
 }
 
-//¶ÁÈ¡Ö¸¶¨OUT¶ËµãÊµ¼Ê½ÓÊÕµÄ×Ö½ÚÊı
+//è¯»å–æŒ‡å®šOUTç«¯ç‚¹å®é™…æ¥æ”¶çš„å­—èŠ‚æ•°
 uint32_t BSP_USB_GetRxSize(uint8_t ep)
 {
     if (!s_ready || !Usb_ValidEp(ep) || (ep & 0x80U) != 0U ||
@@ -341,35 +516,35 @@ uint32_t BSP_USB_GetRxSize(uint8_t ep)
     return HAL_PCD_EP_GetRxCount(&s_pcd, ep);
 }
 
-//ÓÉHAL_PCD_Initµ÷ÓÃ£¬ÅäÖÃUSBÒı½Å¡¢Ê±ÖÓºÍÖĞ¶ÏÓÅÏÈ¼¶
+//ç”±HAL_PCD_Initè°ƒç”¨ï¼Œé…ç½®USBå¼•è„šã€æ—¶é’Ÿå’Œä¸­æ–­ä¼˜å…ˆçº§
 void HAL_PCD_MspInit(PCD_HandleTypeDef *pcd)
 {
     GPIO_InitTypeDef gpio = {0};
     if (pcd->Instance != USB2_OTG_FS) return;
     __HAL_RCC_GPIOA_CLK_ENABLE();
 
-    //Ô­ÀíÍ¼½öÁ¬½ÓPA11/PA12£¬²»ÅäÖÃÎ´½ÓÏßµÄPA9ºÍPA10
+    //åŸç†å›¾ä»…è¿æ¥PA11/PA12ï¼Œä¸é…ç½®æœªæ¥çº¿çš„PA9å’ŒPA10
 
-    //PA11ÎªD-£¬PA12ÎªD+
+    //PA11ä¸ºD-ï¼ŒPA12ä¸ºD+
     gpio.Pin = GPIO_PIN_11 | GPIO_PIN_12;
 
-    //USB¸´ÓÃÍÆÍì£¬ÓÉUSB PHY¿ØÖÆÒı½Å
+    //USBå¤ç”¨æ¨æŒ½ï¼Œç”±USB PHYæ§åˆ¶å¼•è„š
     gpio.Mode = GPIO_MODE_AF_PP;
 
-    //²»Ê¹ÓÃGPIOÉÏÏÂÀ­£¬Á¬½Ó¿ØÖÆÓÉUSB PHY¸ºÔğ
+    //ä¸ä½¿ç”¨GPIOä¸Šä¸‹æ‹‰ï¼Œè¿æ¥æ§åˆ¶ç”±USB PHYè´Ÿè´£
     gpio.Pull = GPIO_NOPULL;
 
-    //ÉèÖÃGPIOÊä³öËÙ¶ÈµÈ¼¶
+    //è®¾ç½®GPIOè¾“å‡ºé€Ÿåº¦ç­‰çº§
     gpio.Speed = GPIO_SPEED_FREQ_VERY_HIGH;
 
-    //Ñ¡ÔñAF10 USB2 OTG FS¸´ÓÃ¹¦ÄÜ
+    //é€‰æ‹©AF10 USB2 OTG FSå¤ç”¨åŠŸèƒ½
     gpio.Alternate = GPIO_AF10_OTG2_FS;
     HAL_GPIO_Init(GPIOA, &gpio);
     __HAL_RCC_USB2_OTG_FS_CLK_ENABLE();
     HAL_NVIC_SetPriority(OTG_FS_IRQn, USB_IRQ_PRIORITY, 0U);
 }
 
-//ÓÉHAL_PCD_DeInitµ÷ÓÃ£¬¹Ø±ÕUSBÖĞ¶Ï²¢ÊÍ·ÅÒı½Å
+//ç”±HAL_PCD_DeInitè°ƒç”¨ï¼Œå…³é—­USBä¸­æ–­å¹¶é‡Šæ”¾å¼•è„š
 void HAL_PCD_MspDeInit(PCD_HandleTypeDef *pcd)
 {
     if (pcd->Instance != USB2_OTG_FS) return;
@@ -379,97 +554,145 @@ void HAL_PCD_MspDeInit(PCD_HandleTypeDef *pcd)
     HAL_GPIO_DeInit(GPIOA, GPIO_PIN_11 | GPIO_PIN_12);
 }
 
-//USBÖĞ¶ÏÈë¿Ú£¬½»¸øHALÊ¶±ğ¾ßÌåÊÂ¼ş
+//USBä¸­æ–­å…¥å£ï¼Œäº¤ç»™HALè¯†åˆ«å…·ä½“äº‹ä»¶
 void OTG_FS_IRQHandler(void)
 {
     if (s_ready && s_started)
         HAL_PCD_IRQHandler(&s_pcd);
 }
 
-//ÊÕµ½8×Ö½ÚSETUPÇëÇó£¬×ª½»Platform½âÎö±ê×¼ÇëÇó
+//æ”¶åˆ°8å­—èŠ‚SETUPè¯·æ±‚ï¼Œè½¬äº¤Platformè§£ææ ‡å‡†è¯·æ±‚
 void HAL_PCD_SetupStageCallback(PCD_HandleTypeDef *pcd)
 {
     if (pcd == &s_pcd && s_callbacks != NULL)
         s_callbacks->setup((uint8_t *)pcd->Setup);
 }
 
-//Éè±¸·¢ËÍ½×¶ÎÍê³É£¬½«¶ËµãºÍ·¢ËÍ»º³åÇø×ª½»Platform
+//è®¾å¤‡å‘é€é˜¶æ®µå®Œæˆï¼Œå°†ç«¯ç‚¹å’Œå‘é€ç¼“å†²åŒºè½¬äº¤Platform
 void HAL_PCD_DataInStageCallback(PCD_HandleTypeDef *pcd, uint8_t ep)
 {
-    if (pcd == &s_pcd && s_callbacks != NULL)
+    UsbTxTransfer_t *transfer;
+    uint8_t *callback_data;
+    uint16_t packet;
+    HAL_StatusTypeDef status;
+    if (pcd != &s_pcd || s_callbacks == NULL || ep >= BSP_USB_ENDPOINT_COUNT) return;
+    transfer = &s_tx_transfer[ep];
+    if (!transfer->active)
+    {
         s_callbacks->data_in(ep, pcd->IN_ep[ep].xfer_buff);
+        return;
+    }
+    if (ep == 0U)
+    {
+        callback_data = transfer->source == NULL ? NULL :
+                       (uint8_t *)(transfer->source + transfer->packet_length);
+        memset(transfer, 0, sizeof(*transfer));
+        s_callbacks->data_in(ep, callback_data);
+        return;
+    }
+    if (transfer->offset < transfer->total)
+    {
+        packet = (uint16_t)((transfer->total - transfer->offset) > pcd->IN_ep[ep].maxpacket ?
+                            pcd->IN_ep[ep].maxpacket : (transfer->total - transfer->offset));
+        Usb_PrepareTxPacket(ep, transfer->source + transfer->offset, packet);
+        transfer->offset += packet;
+        transfer->packet_length = packet;
+        status = HAL_PCD_EP_Transmit(&s_pcd, (uint8_t)(0x80U | ep), s_tx_pio_pool[ep], packet);
+        if (status == HAL_OK) return;
+        memset(transfer, 0, sizeof(*transfer));
+        if (s_callbacks->data_in_error != NULL)
+            s_callbacks->data_in_error(ep, Usb_HalResult(status));
+        return;
+    }
+    callback_data = transfer->source == NULL ? NULL : (uint8_t *)(transfer->source + transfer->total);
+    memset(transfer, 0, sizeof(*transfer));
+    s_callbacks->data_in(ep, callback_data);
 }
 
-//Ö÷»ú·¢ËÍ½×¶ÎÍê³É£¬½«¶ËµãºÍ½ÓÊÕ»º³åÇø×ª½»Platform
+//ä¸»æœºå‘é€é˜¶æ®µå®Œæˆï¼Œå°†ç«¯ç‚¹å’Œæ¥æ”¶ç¼“å†²åŒºè½¬äº¤Platform
 void HAL_PCD_DataOutStageCallback(PCD_HandleTypeDef *pcd, uint8_t ep)
 {
     if (pcd == &s_pcd && s_callbacks != NULL)
+    {
+        if (ep < BSP_USB_ENDPOINT_COUNT) s_rx_active[ep] = false;
         s_callbacks->data_out(ep, pcd->OUT_ep[ep].xfer_buff);
+    }
 }
 
-//USB×ÜÏß¸´Î»£¬Í¨ÖªPlatformÖØ½¨EP0ºÍÃ¶¾Ù×´Ì¬
+//USBæ€»çº¿å¤ä½ï¼Œé€šçŸ¥Platformé‡å»ºEP0å’Œæšä¸¾çŠ¶æ€
 void HAL_PCD_ResetCallback(PCD_HandleTypeDef *pcd)
 {
     if (pcd == &s_pcd && s_callbacks != NULL)
         s_callbacks->reset();
 }
 
-//×ÜÏß¹ÒÆğ£¬´æÔÚ¶ÔÓ¦ÉÏ²ã»Øµ÷Ê±²ÅÍ¨Öª
+//æ€»çº¿æŒ‚èµ·ï¼Œå­˜åœ¨å¯¹åº”ä¸Šå±‚å›è°ƒæ—¶æ‰é€šçŸ¥
 void HAL_PCD_SuspendCallback(PCD_HandleTypeDef *pcd)
 {
     if (pcd == &s_pcd && s_callbacks != NULL && s_callbacks->suspend != NULL)
         s_callbacks->suspend();
 }
 
-//×ÜÏß»Ö¸´£¬Í¨ÖªÉÏ²ã»Ö¸´USBĞ­Òé×´Ì¬
+//æ€»çº¿æ¢å¤ï¼Œé€šçŸ¥ä¸Šå±‚æ¢å¤USBåè®®çŠ¶æ€
 void HAL_PCD_ResumeCallback(PCD_HandleTypeDef *pcd)
 {
     if (pcd == &s_pcd && s_callbacks != NULL && s_callbacks->resume != NULL)
         s_callbacks->resume();
 }
 
-//¼ì²âµ½Á¬½ÓÊÂ¼ş£¬Í¨ÖªÉÏ²ãUSB Device Core
+//æ£€æµ‹åˆ°è¿æ¥äº‹ä»¶ï¼Œé€šçŸ¥ä¸Šå±‚USB Device Core
 void HAL_PCD_ConnectCallback(PCD_HandleTypeDef *pcd)
 {
     if (pcd == &s_pcd && s_callbacks != NULL && s_callbacks->connect != NULL)
         s_callbacks->connect();
 }
 
-//¼ì²âµ½¶Ï¿ªÊÂ¼ş£¬Í¨ÖªÉÏ²ãÇå³ıÁ¬½Ó×´Ì¬
+//æ£€æµ‹åˆ°æ–­å¼€äº‹ä»¶ï¼Œé€šçŸ¥ä¸Šå±‚æ¸…é™¤è¿æ¥çŠ¶æ€
 void HAL_PCD_DisconnectCallback(PCD_HandleTypeDef *pcd)
 {
     if (pcd == &s_pcd && s_callbacks != NULL && s_callbacks->disconnect != NULL)
         s_callbacks->disconnect();
 }
 
-//HAL±¨¸æINµÈÊ±°üÎ´Íê³É£¬²»ÔÚBSP½âÊÍClassĞ­Òé
+//HALæŠ¥å‘ŠINç­‰æ—¶åŒ…æœªå®Œæˆï¼Œä¸åœ¨BSPè§£é‡ŠClassåè®®
 void HAL_PCD_ISOINIncompleteCallback(PCD_HandleTypeDef *pcd, uint8_t ep)
 {
-    if (pcd == &s_pcd && s_callbacks != NULL &&
-        s_callbacks->iso_incomplete_in != NULL)
-        s_callbacks->iso_incomplete_in(ep);
+    if (pcd == &s_pcd && s_callbacks != NULL)
+    {
+        if (ep < BSP_USB_ENDPOINT_COUNT) memset(&s_tx_transfer[ep], 0, sizeof(s_tx_transfer[ep]));
+        if (s_callbacks->iso_incomplete_in != NULL) s_callbacks->iso_incomplete_in(ep);
+    }
 }
 
-//HAL±¨¸æOUTµÈÊ±°üÎ´Íê³É
+//HALæŠ¥å‘ŠPCDå…¨å±€ç¡¬ä»¶é”™è¯¯
+void HAL_PCD_ErrorCallback(PCD_HandleTypeDef *pcd)
+{
+    if (pcd == &s_pcd && s_callbacks != NULL && s_callbacks->error != NULL)
+        s_callbacks->error(SYS_ERR_IO);
+}
+
+//HALæŠ¥å‘ŠOUTç­‰æ—¶åŒ…æœªå®Œæˆ
 void HAL_PCD_ISOOUTIncompleteCallback(PCD_HandleTypeDef *pcd, uint8_t ep)
 {
-    if (pcd == &s_pcd && s_callbacks != NULL &&
-        s_callbacks->iso_incomplete_out != NULL)
-        s_callbacks->iso_incomplete_out(ep);
+    if (pcd == &s_pcd && s_callbacks != NULL)
+    {
+        if (ep < BSP_USB_ENDPOINT_COUNT) s_rx_active[ep] = false;
+        if (s_callbacks->iso_incomplete_out != NULL) s_callbacks->iso_incomplete_out(ep);
+    }
 }
 
-//BUS½×¶ÎÖ»×¼±¸Ó²¼ş£¬´ıPlatformºÍClass¾ÍĞ÷ºóÔÙÆô¶¯Á¬½Ó
+//BUSé˜¶æ®µåªå‡†å¤‡ç¡¬ä»¶ï¼Œå¾…Platformå’ŒClasså°±ç»ªåå†å¯åŠ¨è¿æ¥
 FRAMEWORK_INIT_REGISTER(BSP_USB_Init, INIT_LEVEL_BUS);
 
-//ÄÚ²¿¹¦ÄÜº¯ÊıÊµÏÖ
+//å†…éƒ¨åŠŸèƒ½å‡½æ•°å®ç°
 
-//¶Ëµã±àºÅ0µ½8£¬·½ÏòÎ»¶ÀÁ¢£¬ÆäÓàµØÖ·Î»±ØĞëÎª0
+//ç«¯ç‚¹ç¼–å·0åˆ°8ï¼Œæ–¹å‘ä½ç‹¬ç«‹ï¼Œå…¶ä½™åœ°å€ä½å¿…é¡»ä¸º0
 static bool Usb_ValidEp(uint8_t ep)
 {
     return (ep & 0x70U) == 0U && (ep & 0x0FU) < BSP_USB_ENDPOINT_COUNT;
 }
 
-//°ÑHAL×´Ì¬×ª»»Îª¹¤³ÌÍ³Ò»µÄSysResult_t·µ»ØÂë
+//æŠŠHALçŠ¶æ€è½¬æ¢ä¸ºå·¥ç¨‹ç»Ÿä¸€çš„SysResult_tè¿”å›ç 
 static SysResult_t Usb_HalResult(HAL_StatusTypeDef status)
 {
     if (status == HAL_OK)
@@ -481,7 +704,7 @@ static SysResult_t Usb_HalResult(HAL_StatusTypeDef status)
     return SYS_ERR_IO;
 }
 
-//Ê¹ÓÃ¶ÀÁ¢HSI48£¬²¢ÓÃUSB2Ã¿ºÁÃëSOF×÷ÎªCRSĞ£×¼²Î¿¼
+//ä½¿ç”¨ç‹¬ç«‹HSI48ï¼Œå¹¶ç”¨USB2æ¯æ¯«ç§’SOFä½œä¸ºCRSæ ¡å‡†å‚è€ƒ
 static SysResult_t Usb_ClockInit(void)
 {
     RCC_OscInitTypeDef osc = {0};
@@ -489,67 +712,67 @@ static SysResult_t Usb_ClockInit(void)
     RCC_CRSInitTypeDef crs = {0};
     HAL_StatusTypeDef status;
 	
-    //Ö»ÆôÓÃ¶ÀÁ¢HSI48£¬²»¸ÄPLL1/PLL2¼°¹«¹²PLLÊäÈë
+    //åªå¯ç”¨ç‹¬ç«‹HSI48ï¼Œä¸æ”¹PLL1/PLL2åŠå…¬å…±PLLè¾“å…¥
 
-    //Ö»ÅäÖÃ¶ÀÁ¢48MHzÄÚ²¿Õñµ´Æ÷
+    //åªé…ç½®ç‹¬ç«‹48MHzå†…éƒ¨æŒ¯è¡å™¨
     osc.OscillatorType = RCC_OSCILLATORTYPE_HSI48;
 	
-    //¿ªÆôHSI48
+    //å¼€å¯HSI48
     osc.HSI48State = RCC_HSI48_ON;
 	
-    //±£³ÖÏÖÓĞPLLÉèÖÃ£¬±ÜÃâÓ°ÏìÏà»úºÍSDRAM
+    //ä¿æŒç°æœ‰PLLè®¾ç½®ï¼Œé¿å…å½±å“ç›¸æœºå’ŒSDRAM
     osc.PLL.PLLState = RCC_PLL_NONE;
     status = HAL_RCC_OscConfig(&osc);
     if (status != HAL_OK)
         return Usb_HalResult(status);
 	
-    //Ö»ĞŞ¸ÄUSBÍâÉèÄÚºËÊ±ÖÓÑ¡Ôñ
+    //åªä¿®æ”¹USBå¤–è®¾å†…æ ¸æ—¶é’Ÿé€‰æ‹©
     clock.PeriphClockSelection = RCC_PERIPHCLK_USB;
 	
-    //½«USBÄÚºËÊ±ÖÓ½Óµ½HSI48
+    //å°†USBå†…æ ¸æ—¶é’Ÿæ¥åˆ°HSI48
     clock.UsbClockSelection = RCC_USBCLKSOURCE_HSI48;
     status = HAL_RCCEx_PeriphCLKConfig(&clock);
     if (status != HAL_OK)
         return Usb_HalResult(status);
 	
-	// ¼ì²éUSBÄÚºËÊ±ÖÓÔ´ÊÇ·ñÑ¡ÔñHSI48
+	// æ£€æŸ¥USBå†…æ ¸æ—¶é’Ÿæºæ˜¯å¦é€‰æ‹©HSI48
 	if (__HAL_RCC_GET_USB_SOURCE() != RCC_USBCLKSOURCE_HSI48)
 		return SYS_ERR_INVALID_STATE;
 
-	// ¼ì²éHSI48Õñµ´Æ÷ÊÇ·ñ¾ÍĞ÷
+	// æ£€æŸ¥HSI48æŒ¯è¡å™¨æ˜¯å¦å°±ç»ª
 	if (__HAL_RCC_GET_FLAG(RCC_FLAG_HSI48RDY) == 0U)
 		return SYS_ERR_INVALID_STATE;
 	
     __HAL_RCC_CRS_CLK_ENABLE();
 
-    //SOFÍ¬²½ĞÅºÅ²»·ÖÆµ
+    //SOFåŒæ­¥ä¿¡å·ä¸åˆ†é¢‘
     crs.Prescaler = RCC_CRS_SYNC_DIV1;
 
-    //Ñ¡USB2 SOF×÷ÎªĞ£×¼²Î¿¼£¬Á¬½ÓÖ÷»úºó²ÅÓĞ¸ÃĞÅºÅ
+    //é€‰USB2 SOFä½œä¸ºæ ¡å‡†å‚è€ƒï¼Œè¿æ¥ä¸»æœºåæ‰æœ‰è¯¥ä¿¡å·
     crs.Source = RCC_CRS_SYNC_SOURCE_USB2;
 
-    //ÔÚ²Î¿¼ĞÅºÅÉÏÉıÑØ½øĞĞÍ¬²½
+    //åœ¨å‚è€ƒä¿¡å·ä¸Šå‡æ²¿è¿›è¡ŒåŒæ­¥
     crs.Polarity = RCC_CRS_SYNC_POLARITY_RISING;
 
-    //°´48MHzÊ±ÖÓºÍ1kHz SOF¼ÆËãĞ£×¼¼ÆÊıÖÜÆÚ
+    //æŒ‰48MHzæ—¶é’Ÿå’Œ1kHz SOFè®¡ç®—æ ¡å‡†è®¡æ•°å‘¨æœŸ
     crs.ReloadValue = __HAL_RCC_CRS_RELOADVALUE_CALCULATE(48000000U, 1000U);
 
-    //Ê¹ÓÃHALÄ¬ÈÏÔÊĞíÎó²î¼ÆÊı
+    //ä½¿ç”¨HALé»˜è®¤å…è®¸è¯¯å·®è®¡æ•°
     crs.ErrorLimitValue = RCC_CRS_ERRORLIMIT_DEFAULT;
 
-    //Ê¹ÓÃÄ¬ÈÏHSI48³õÊ¼ĞŞµ÷Öµ£¬ºóĞøÓÉCRS×Ô¶¯Ğ£×¼
+    //ä½¿ç”¨é»˜è®¤HSI48åˆå§‹ä¿®è°ƒå€¼ï¼Œåç»­ç”±CRSè‡ªåŠ¨æ ¡å‡†
     crs.HSI48CalibrationValue = RCC_CRS_HSI48CALIBRATION_DEFAULT;
     HAL_RCCEx_CRSConfig(&crs);
     return SYS_OK;
 }
 
-//°´·½Ïò¶¨Î»PCD×ÊÔ´
+//æŒ‰æ–¹å‘å®šä½PCDèµ„æº
 static USB_OTG_EPTypeDef *Usb_PcdEp(uint8_t ep)
 {
     return (ep & 0x80U) != 0U ? &s_pcd.IN_ep[ep & 0x0FU] : &s_pcd.OUT_ep[ep & 0x0FU];
 }
 
-//FS¹æ·¶£ºBulkÎª8/16/32/64£¬InterruptÎª1µ½64£¬ISOÎª1µ½1023
+//FSè§„èŒƒï¼šBulkä¸º8/16/32/64ï¼ŒInterruptä¸º1åˆ°64ï¼ŒISOä¸º1åˆ°1023
 static SysResult_t Usb_ValidateEp(uint8_t ep, uint8_t type, uint16_t size)
 {
     if (!Usb_ValidEp(ep))
@@ -565,7 +788,7 @@ static SysResult_t Usb_ValidateEp(uint8_t ep, uint8_t type, uint16_t size)
     return SYS_ERR_NOT_SUPPORTED;
 }
 
-//Ã¿¸öIN¶ÔÓ¦Í¬±àºÅTX FIFO£¬Î´Ê¹ÓÃµÄFIFOÒ²±£Áô16¸öWord
+//æ¯ä¸ªINå¯¹åº”åŒç¼–å·TX FIFOï¼Œæœªä½¿ç”¨çš„FIFOä¹Ÿä¿ç•™16ä¸ªWord
 static SysResult_t Usb_ConfigureFifos(const BspUsbEndpointConfig_t *config, uint32_t count)
 {
     uint16_t words[BSP_USB_ENDPOINT_COUNT];
@@ -596,7 +819,7 @@ static SysResult_t Usb_ConfigureFifos(const BspUsbEndpointConfig_t *config, uint
     if (total > USB_FIFO_TOTAL_WORDS)
         return SYS_ERR_NO_RESOURCE;
 
-    //ÏÈÍêÕûĞ£Ñé£¬ÔÙĞ´Ó²¼ş£»Ê§°ÜÊ±½ûÖ¹ÓÃ°ëÌ×FIFOÆô¶¯
+    //å…ˆå®Œæ•´æ ¡éªŒï¼Œå†å†™ç¡¬ä»¶ï¼›å¤±è´¥æ—¶ç¦æ­¢ç”¨åŠå¥—FIFOå¯åŠ¨
     s_fifo_valid = false;
     status = HAL_PCDEx_SetRxFiFo(&s_pcd, USB_RX_FIFO_WORDS);
     for (i = 0U; status == HAL_OK && i < BSP_USB_ENDPOINT_COUNT; ++i)
