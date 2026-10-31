@@ -16,6 +16,8 @@ typedef struct
     SysResult_t last_result;
 } UsbDeviceEndpointState_t;
 
+//生命周期接口只允许主循环调用，操作未结束时重入返回BUSY
+
 //初始化Core和BSP，不绑定具体描述符或Class
 SysResult_t USB_Device_Init(void);
 

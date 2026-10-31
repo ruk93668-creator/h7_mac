@@ -15,7 +15,8 @@ from unicorn.arm_const import UC_ARM_REG_SP, UC_ARM_REG_LR, UC_ARM_REG_R0, UC_AR
 from elftools.elf.elffile import ELFFile
 
 files = ["CM7/Platform/usb_mode.c", "CM7/Platform/usb_mode.h",
-         "CM7/Platform/usb_device.c", "CM7/BSP/bsp_usb.c"]
+         "CM7/Platform/usb_device.c", "CM7/BSP/bsp_usb.c",
+         "CM7/Platform/usb_device.h", "CM7/BSP/bsp_usb.h", "CM7/Service/usb_test_device.c"]
 before = {f: hashlib.sha256((ROOT / f).read_bytes()).hexdigest() for f in files}
 commands = []
 
@@ -90,7 +91,54 @@ mode_specs = [
     ("重连后产品身份", "TEST重连后GET产品字符串", "原38字节产品名称仍可读取"),
 ]
 cases += [(100+i, spec[0]) for i, spec in enumerate(mode_specs)]
-core_specs = [('无Class禁止Start', '执行Core_RunCase(200)，参数见core_test.c', '未注册且零硬件Start'), ('Initcall保留TEST启动', '执行Core_RunCase(201)，参数见core_test.c', 'SERVICE注册，APPLICATION只启动一次'), ('配置总长不匹配拒绝', '执行Core_RunCase(202)，参数见core_test.c', '原注册对象保持不变'), ('bLength为0拒绝', '执行Core_RunCase(203)，参数见core_test.c', '拒绝无限循环或越界描述符'), ('端点数量不匹配拒绝', '执行Core_RunCase(204)，参数见core_test.c', '拒绝声明与实际端点数量不同'), ('外部配置返回及EP0截断', '执行Core_RunCase(205)，参数见core_test.c', '静态指针25字节，主机请求255只返回25'), ('运行中禁止换Class', '执行Core_RunCase(206)，参数见core_test.c', '返回INVALID_STATE，当前配置不变'), ('Class不能占用EP0', '执行Core_RunCase(207)，参数见core_test.c', '拒绝Class关闭或申请控制端点'), ('端点申请与状态快照', '执行Core_RunCase(208)，参数见core_test.c', 'is_used、opened、类型、最大包长一致'), ('重复申请拒绝', '执行Core_RunCase(209)，参数见core_test.c', '返回ALREADY_EXISTS，不重复操作硬件'), ('能力限制交给BSP', '执行Core_RunCase(210)，参数见core_test.c', 'Bulk/其他地址由当前BSP返回NOT_SUPPORTED'), ('关闭状态禁止发送', '执行Core_RunCase(211)，参数见core_test.c', '不调用HAL发送'), ('busy防覆盖且仍已配置', '执行Core_RunCase(212)，参数见core_test.c', '返回BUSY，原事务仍busy，设备保持CONFIGURED'), ('完成回调释放busy', '执行Core_RunCase(213)，参数见core_test.c', '先清busy，再调用外部DataIn'), ('关闭后忽略迟到完成', '执行Core_RunCase(214)，参数见core_test.c', '不再调用已释放端点的DataIn'), ('关闭取消事务并释放资源', '执行Core_RunCase(215)，参数见core_test.c', 'opened/busy清除，EP0保留'), ('Flush不取消busy事务', '执行Core_RunCase(216)，参数见core_test.c', 'busy时返回BUSY，Close/Open后Flush成功'), ('非法端点地址拒绝', '执行Core_RunCase(217)，参数见core_test.c', '拒绝保留地址位及空状态指针'), ('INOUT方向检查', '执行Core_RunCase(218)，参数见core_test.c', 'Transmit仅IN，Receive仅OUT'), ('未完成事件转交Class', '执行Core_RunCase(219)，参数见core_test.c', 'busy清除，记录TIMEOUT并回调外部IsoINIncomplete'), ('HAL失败不残留busy', '执行Core_RunCase(220)，参数见core_test.c', '保留HAL BUSY错误且busy清除'), ('关闭失败保留所有权', '执行Core_RunCase(221)，参数见core_test.c', 'opened/busy保持，禁止错误释放缓冲区'), ('Stop清理与重启', '执行Core_RunCase(222)，参数见core_test.c', '所有数据资源释放，重启不自动打开数据端点'), ('Stop失败锁存及重试', '执行Core_RunCase(223)，参数见core_test.c', '停止失败不DeInit，禁止Start/Register，重试成功可恢复'), ('复位重建EP0并清理数据端点', '执行Core_RunCase(224)，参数见core_test.c', 'EP0双向重开，非EP0释放'), ('断线清理资源', '执行Core_RunCase(225)，参数见core_test.c', '非EP0资源释放'), ('未知端点请求STALL', '执行Core_RunCase(226)，参数见core_test.c', '通过EP0 STALL拒绝，不访问无效端点'), ('等时HALT请求STALL', '执行Core_RunCase(227)，参数见core_test.c', '控制传输STALL，不对等时端点做HALT'), ('保留请求类型STALL', '执行Core_RunCase(228)，参数见core_test.c', '不分发给Class'), ('Class失败自动STALL', '执行Core_RunCase(229)，参数见core_test.c', '即使Class只返回FAIL，Core也执行STALL'), ('Class通用Setup入口', '执行Core_RunCase(230)，参数见core_test.c', '调用外部Setup并完成零长度状态阶段'), ('缺少必要回调拒绝', '执行Core_RunCase(231)，参数见core_test.c', '保持旧注册对象不变'), ('空length与未注册配置', '执行Core_RunCase(232)，参数见core_test.c', '返回NULL，未注册时长度为0'), ('异设备句柄拒绝', '执行Core_RunCase(233)，参数见core_test.c', '不操作其他设备的端点'), ('等时端点拒绝STALL接口', '执行Core_RunCase(234)，参数见core_test.c', '返回NOT_SUPPORTED'), ('完成回调内重新提交', '执行Core_RunCase(235)，参数见core_test.c', '回调内可再提交，busy正确恢复true'), ('HAL返回前完成中断延迟交付', '执行Core_RunCase(236)，参数见core_test.c', '屏蔽USB IRQ直到提交，回调后busy为false'), ('关闭期间迟到完成被忽略', '执行Core_RunCase(237)，参数见core_test.c', '资源释放后迟到事件不调用Class'), ('恢复原USB IRQ及PRIMASK', '执行Core_RunCase(238)，参数见core_test.c', '原USB IRQ关闭时保持关闭，不屏蔽全局IRQ'), ('设备描述符长度错误拒绝', '执行Core_RunCase(239)，参数见core_test.c', '拒绝17字节设备描述符，保留旧配置'), ('已验证配置不被换getter影响', '执行Core_RunCase(240)，参数见core_test.c', '官方Core使用注册时缓存，不再次取变更getter'), ('忽略其他PCD的错误回调', '执行Core_RunCase(241)，参数见core_test.c', '不转交外部Class')]
+core_specs = [('无Class禁止Start', '执行Core_RunCase(200)，参数见core_test.c', '未注册且零硬件Start'),
+ ('Initcall保留TEST启动', '执行Core_RunCase(201)，参数见core_test.c', 'SERVICE注册，APPLICATION只启动一次'),
+ ('配置总长不匹配拒绝', '执行Core_RunCase(202)，参数见core_test.c', '原注册对象保持不变'),
+ ('bLength为0拒绝', '执行Core_RunCase(203)，参数见core_test.c', '拒绝无限循环或越界描述符'),
+ ('端点数量不匹配拒绝', '执行Core_RunCase(204)，参数见core_test.c', '拒绝声明与实际端点数量不同'),
+ ('外部配置返回及EP0截断', '执行Core_RunCase(205)，参数见core_test.c', '静态指针25字节，主机请求255只返回25'),
+ ('运行中禁止换Class', '执行Core_RunCase(206)，参数见core_test.c', '返回INVALID_STATE，当前配置不变'),
+ ('Class不能占用EP0', '执行Core_RunCase(207)，参数见core_test.c', '拒绝Class关闭或申请控制端点'),
+ ('端点申请与状态快照', '执行Core_RunCase(208)，参数见core_test.c', 'is_used、opened、类型、最大包长一致'),
+ ('重复申请拒绝', '执行Core_RunCase(209)，参数见core_test.c', '返回ALREADY_EXISTS，不重复操作硬件'),
+ ('能力限制交给BSP', '执行Core_RunCase(210)，参数见core_test.c', 'Bulk/其他地址由当前BSP返回NOT_SUPPORTED'),
+ ('关闭状态禁止发送', '执行Core_RunCase(211)，参数见core_test.c', '不调用HAL发送'),
+ ('busy防覆盖且仍已配置', '执行Core_RunCase(212)，参数见core_test.c', '返回BUSY，原事务仍busy，设备保持CONFIGURED'),
+ ('完成回调释放busy', '执行Core_RunCase(213)，参数见core_test.c', '先清busy，再调用外部DataIn'),
+ ('关闭后忽略迟到完成', '执行Core_RunCase(214)，参数见core_test.c', '不再调用已释放端点的DataIn'),
+ ('关闭取消事务并释放资源', '执行Core_RunCase(215)，参数见core_test.c', 'opened/busy清除，EP0保留'),
+ ('Flush不取消busy事务', '执行Core_RunCase(216)，参数见core_test.c', 'busy时返回BUSY，Close/Open后Flush成功'),
+ ('非法端点地址拒绝', '执行Core_RunCase(217)，参数见core_test.c', '拒绝保留地址位及空状态指针'),
+ ('INOUT方向检查', '执行Core_RunCase(218)，参数见core_test.c', 'Transmit仅IN，Receive仅OUT'),
+ ('未完成事件转交Class', '执行Core_RunCase(219)，参数见core_test.c', 'busy清除，记录TIMEOUT并回调外部IsoINIncomplete'),
+ ('HAL失败不残留busy', '执行Core_RunCase(220)，参数见core_test.c', '保留HAL BUSY错误且busy清除'),
+ ('关闭失败保留所有权', '执行Core_RunCase(221)，参数见core_test.c', 'opened/busy保持，禁止错误释放缓冲区'),
+ ('Stop清理与重启', '执行Core_RunCase(222)，参数见core_test.c', '所有数据资源释放，重启不自动打开数据端点'),
+ ('Stop失败锁存及重试', '执行Core_RunCase(223)，参数见core_test.c', '停止失败不DeInit，禁止Start/Register，重试成功可恢复'),
+ ('复位重建EP0并清理数据端点', '执行Core_RunCase(224)，参数见core_test.c', 'EP0双向重开，非EP0释放'),
+ ('断线清理资源', '执行Core_RunCase(225)，参数见core_test.c', '非EP0资源释放'),
+ ('未知端点请求STALL', '执行Core_RunCase(226)，参数见core_test.c', '通过EP0 STALL拒绝，不访问无效端点'),
+ ('等时HALT请求STALL', '执行Core_RunCase(227)，参数见core_test.c', '控制传输STALL，不对等时端点做HALT'),
+ ('保留请求类型STALL', '执行Core_RunCase(228)，参数见core_test.c', '不分发给Class'),
+ ('Class失败自动STALL', '执行Core_RunCase(229)，参数见core_test.c', '即使Class只返回FAIL，Core也执行STALL'),
+ ('Class通用Setup入口', '执行Core_RunCase(230)，参数见core_test.c', '调用外部Setup并完成零长度状态阶段'),
+ ('缺少必要回调拒绝', '执行Core_RunCase(231)，参数见core_test.c', '保持旧注册对象不变'),
+ ('空length与未注册配置', '执行Core_RunCase(232)，参数见core_test.c', '返回NULL，未注册时长度为0'),
+ ('异设备句柄拒绝', '执行Core_RunCase(233)，参数见core_test.c', '不操作其他设备的端点'),
+ ('等时端点拒绝STALL接口', '执行Core_RunCase(234)，参数见core_test.c', '返回NOT_SUPPORTED'),
+ ('完成回调内重新提交', '执行Core_RunCase(235)，参数见core_test.c', '回调内可再提交，busy正确恢复true'),
+ ('HAL返回前完成中断延迟交付', '执行Core_RunCase(236)，参数见core_test.c', '屏蔽USB IRQ直到提交，回调后busy为false'),
+ ('关闭期间迟到完成被忽略', '执行Core_RunCase(237)，参数见core_test.c', '资源释放后迟到事件不调用Class'),
+ ('恢复原USB IRQ及PRIMASK', '执行Core_RunCase(238)，参数见core_test.c', '原USB IRQ关闭时保持关闭，不屏蔽全局IRQ'),
+ ('设备描述符长度错误拒绝', '执行Core_RunCase(239)，参数见core_test.c', '拒绝17字节设备描述符，保留旧配置'),
+ ('已验证配置不被换getter影响', '执行Core_RunCase(240)，参数见core_test.c', '官方Core使用注册时缓存，不再次取变更getter'),
+ ('忽略其他PCD的错误回调', '执行Core_RunCase(241)，参数见core_test.c', '不转交外部Class'),
+ ('EP0打开失败锁存恢复要求', 'HAL Open返回ERROR', '禁止重启，Stop成功后可恢复'),
+ ('Reset失败仍清理数据端点', '外部DeInit返回FAIL', '非EP0端点释放，故障锁存'),
+ ('释放回调拒绝生命周期重入', 'DeInit内调用Init/Start/Stop/Register', '四项均BUSY，硬件保持停止'),
+ ('注册回调拒绝生命周期重入', '配置getter内调用生命周期接口', '四项均BUSY，尚未启动硬件'),
+ ('新SETUP清理EP0状态', '先STALL，再发新控制请求', 'EP0 stalled快照清零'),
+ ('Start过程拒绝嵌套Stop', 'HAL Start中重入Stop', '返回BUSY，启动正常完成')]
 cases += [(200+i, spec[0]) for i, spec in enumerate(core_specs)]
 rows = []
 for case_id, name in cases:

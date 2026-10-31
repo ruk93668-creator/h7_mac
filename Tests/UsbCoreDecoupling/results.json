@@ -1,16 +1,19 @@
 {
   "summary": {
-    "total": 126,
-    "passed": 126,
+    "total": 132,
+    "passed": 132,
     "failed": 0,
-    "assertions": 1290
+    "assertions": 1341
   },
   "source_changed": [],
   "source_sha256": {
     "CM7/Platform/usb_mode.c": "1b059134f8232129edb3491dcbc90bc3a87cd64c4556ad7807f46e81fc126d9f",
     "CM7/Platform/usb_mode.h": "fbb1397c90949c559e26e4cfa258afbdc9c07ea128feb63f2f985b5eb0cdb877",
-    "CM7/Platform/usb_device.c": "429ae7cdb2234a5c3252ef513a41506fc123cbd7993b74311acd0edcc5a4dc96",
-    "CM7/BSP/bsp_usb.c": "2825b9ca5ac63534d71521a31c624c35030594a667101cb60415359840269d46"
+    "CM7/Platform/usb_device.c": "c526023937aed514ed153656eca39ae91f55ee341ed2ecce672fceefebf3fc2f",
+    "CM7/BSP/bsp_usb.c": "2825b9ca5ac63534d71521a31c624c35030594a667101cb60415359840269d46",
+    "CM7/Platform/usb_device.h": "889bb96cf22f33e13fd430c366cf0824d0731005e51756f48fdcf202fde862ab",
+    "CM7/BSP/bsp_usb.h": "80a8b5a31aae829d638771e07dea5ec0d56476f7284a27e5de950f4091d0478d",
+    "CM7/Service/usb_test_device.c": "da86d9895d9cc83e15023611dc15a521e6d598778f82bb21b906659192297771"
   },
   "cases": [
     {
@@ -3160,6 +3163,156 @@
       "name": "忽略其他PCD的错误回调",
       "result": "PASS",
       "checks": 7,
+      "fail_line": 0,
+      "error": null
+    },
+    {
+      "input": "HAL Open返回ERROR",
+      "expected": "禁止重启，Stop成功后可恢复",
+      "actual": {
+        "state": 0,
+        "mode": 0,
+        "target_mode": 0,
+        "last_result": 0,
+        "state_enter_ms": 0,
+        "tick": 0,
+        "start_calls": 1,
+        "stop_calls": 1,
+        "core_state": 1,
+        "core_result": 0,
+        "nvic": 0,
+        "initialized": 0,
+        "state_name": "UNINITIALIZED"
+      },
+      "id": 242,
+      "name": "EP0打开失败锁存恢复要求",
+      "result": "PASS",
+      "checks": 9,
+      "fail_line": 0,
+      "error": null
+    },
+    {
+      "input": "外部DeInit返回FAIL",
+      "expected": "非EP0端点释放，故障锁存",
+      "actual": {
+        "state": 0,
+        "mode": 0,
+        "target_mode": 0,
+        "last_result": 0,
+        "state_enter_ms": 0,
+        "tick": 0,
+        "start_calls": 1,
+        "stop_calls": 0,
+        "core_state": 1,
+        "core_result": -9,
+        "nvic": 1,
+        "initialized": 0,
+        "state_name": "UNINITIALIZED"
+      },
+      "id": 243,
+      "name": "Reset失败仍清理数据端点",
+      "result": "PASS",
+      "checks": 9,
+      "fail_line": 0,
+      "error": null
+    },
+    {
+      "input": "DeInit内调用Init/Start/Stop/Register",
+      "expected": "四项均BUSY，硬件保持停止",
+      "actual": {
+        "state": 0,
+        "mode": 0,
+        "target_mode": 0,
+        "last_result": 0,
+        "state_enter_ms": 0,
+        "tick": 0,
+        "start_calls": 1,
+        "stop_calls": 1,
+        "core_state": 1,
+        "core_result": 0,
+        "nvic": 0,
+        "initialized": 0,
+        "state_name": "UNINITIALIZED"
+      },
+      "id": 244,
+      "name": "释放回调拒绝生命周期重入",
+      "result": "PASS",
+      "checks": 11,
+      "fail_line": 0,
+      "error": null
+    },
+    {
+      "input": "配置getter内调用生命周期接口",
+      "expected": "四项均BUSY，尚未启动硬件",
+      "actual": {
+        "state": 0,
+        "mode": 0,
+        "target_mode": 0,
+        "last_result": 0,
+        "state_enter_ms": 0,
+        "tick": 0,
+        "start_calls": 0,
+        "stop_calls": 0,
+        "core_state": 1,
+        "core_result": 0,
+        "nvic": 0,
+        "initialized": 0,
+        "state_name": "UNINITIALIZED"
+      },
+      "id": 245,
+      "name": "注册回调拒绝生命周期重入",
+      "result": "PASS",
+      "checks": 8,
+      "fail_line": 0,
+      "error": null
+    },
+    {
+      "input": "先STALL，再发新控制请求",
+      "expected": "EP0 stalled快照清零",
+      "actual": {
+        "state": 0,
+        "mode": 0,
+        "target_mode": 0,
+        "last_result": 0,
+        "state_enter_ms": 0,
+        "tick": 0,
+        "start_calls": 1,
+        "stop_calls": 0,
+        "core_state": 3,
+        "core_result": 0,
+        "nvic": 1,
+        "initialized": 0,
+        "state_name": "UNINITIALIZED"
+      },
+      "id": 246,
+      "name": "新SETUP清理EP0状态",
+      "result": "PASS",
+      "checks": 9,
+      "fail_line": 0,
+      "error": null
+    },
+    {
+      "input": "HAL Start中重入Stop",
+      "expected": "返回BUSY，启动正常完成",
+      "actual": {
+        "state": 0,
+        "mode": 0,
+        "target_mode": 0,
+        "last_result": 0,
+        "state_enter_ms": 0,
+        "tick": 0,
+        "start_calls": 1,
+        "stop_calls": 0,
+        "core_state": 1,
+        "core_result": 0,
+        "nvic": 1,
+        "initialized": 0,
+        "state_name": "UNINITIALIZED"
+      },
+      "id": 247,
+      "name": "Start过程拒绝嵌套Stop",
+      "result": "PASS",
+      "checks": 5,
       "fail_line": 0,
       "error": null
     }

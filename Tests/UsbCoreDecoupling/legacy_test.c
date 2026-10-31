@@ -9,6 +9,7 @@
 typedef struct {uint32_t fail_line,checks,operations,replaces,deferred,case_id;} TestResult;
 volatile TestResult g_result;
 static uint32_t pending_in;
+static SysResult_t reentry_from_start;
 static uint32_t seen_rx_fifo,seen_tx_fifo[2],last_ep,close_count,flush_count;
 static uint32_t fault,nvic,priority,init_count,start_count,stop_count,irq_count,open_count,stall_count,address_value,tx_size,rx_size;
 static uint8_t tx_data[128];
@@ -43,7 +44,7 @@ HAL_StatusTypeDef HAL_PCD_Init(PCD_HandleTypeDef *p){init_count++;HAL_PCD_MspIni
 HAL_StatusTypeDef HAL_PCD_DeInit(PCD_HandleTypeDef *p){if(fault==11)return HAL_ERROR;HAL_PCD_MspDeInit(p);return HAL_OK;}
 HAL_StatusTypeDef HAL_PCDEx_SetRxFiFo(PCD_HandleTypeDef *p,uint16_t n){(void)p;seen_rx_fifo=n;return fault==5 || n!=128?HAL_ERROR:HAL_OK;}
 HAL_StatusTypeDef HAL_PCDEx_SetTxFiFo(PCD_HandleTypeDef *p,uint8_t ep,uint16_t n){(void)p;if(ep<2)seen_tx_fifo[ep]=n;return fault==6 || (fault==12 && ep==1) || ep>1 || n!=(ep?128:64)?HAL_ERROR:HAL_OK;}
-HAL_StatusTypeDef HAL_PCD_Start(PCD_HandleTypeDef *p){(void)p;start_count++;return fault==7?HAL_BUSY:HAL_OK;}
+HAL_StatusTypeDef HAL_PCD_Start(PCD_HandleTypeDef *p){(void)p;start_count++;if(fault==18)reentry_from_start=USB_Device_Stop();return fault==7?HAL_BUSY:HAL_OK;}
 HAL_StatusTypeDef HAL_PCD_Stop(PCD_HandleTypeDef *p){(void)p;stop_count++;return fault==8?HAL_ERROR:HAL_OK;}
 HAL_StatusTypeDef HAL_PCD_EP_Open(PCD_HandleTypeDef *p,uint8_t ep,uint16_t size,uint8_t type){PCD_EPTypeDef *e=(ep&0x80)?&p->IN_ep[ep&15]:&p->OUT_ep[ep&15];last_ep=ep;open_count++;if(fault==13)return HAL_ERROR;e->maxpacket=size;e->type=type;return HAL_OK;}
 HAL_StatusTypeDef HAL_PCD_EP_Close(PCD_HandleTypeDef *p,uint8_t ep){(void)p;last_ep=ep;close_count++;if(fault==17 && ep==0x81)pending_in=1;return fault==14?HAL_ERROR:HAL_OK;}

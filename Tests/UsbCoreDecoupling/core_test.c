@@ -254,12 +254,38 @@ static int Mode_RunCase(uint32_t id)
 static uint8_t core_packet[512];
 static uint32_t core_in_count,core_in_ep,core_iso_count,core_setup_count,core_deinit_count;
 static bool core_rearm;
+static uint32_t core_lifecycle_action;
+static SysResult_t core_nested[4];
+static USBD_ClassTypeDef core_driver;
+static USBD_DescriptorsTypeDef core_descriptors;
+
+//只用于验证Core生命周期重入，不实现设备协议
+static void Core_NestedLifecycle(void)
+{
+    core_nested[0] = USB_Device_Init();
+    core_nested[1] = USB_Device_Start();
+    core_nested[2] = USB_Device_Stop();
+    core_nested[3] = USB_Device_RegisterClass(&core_driver, &core_descriptors);
+}
+
 static uint8_t core_config[25]={9,2,25,0,1,1,0,0x80,250,9,4,0,0,1,0xff,0,0,0,7,5,0x81,1,0,2,1};
-static uint8_t *Core_Config(uint16_t *length){*length=25;return core_config;}
+static uint8_t *Core_Config(uint16_t *length)
+{
+    if (core_lifecycle_action == 2U)
+    {
+        core_lifecycle_action = 0U;
+        Core_NestedLifecycle();
+    }
+    *length = 25U;
+    return core_config;
+}
 static uint8_t *Core_Device(USBD_SpeedTypeDef speed,uint16_t *length){static uint8_t desc[20]={18,1,0,2,0,0,0,64,9,18,1,0,0,1,0,0,0,1};(void)speed;*length=18;return desc;}
 static uint8_t *Core_BadDevice(USBD_SpeedTypeDef speed,uint16_t *length){(void)speed;*length=17;return s_device_desc;}
 static uint8_t Core_Init(USBD_HandleTypeDef *p,uint8_t c){(void)p;(void)c;return USBD_OK;}
-static uint8_t Core_Deinit(USBD_HandleTypeDef *p,uint8_t c){(void)p;(void)c;core_deinit_count++;return USB_Device_CloseEp(0x81)==SYS_OK?USBD_OK:USBD_FAIL;}
+static uint8_t Core_Deinit(USBD_HandleTypeDef *p,uint8_t c){(void)p;(void)c;core_deinit_count++;
+if(core_lifecycle_action==1U){core_lifecycle_action=0U;Core_NestedLifecycle();}
+if(core_lifecycle_action==5U)return USBD_FAIL;
+return USB_Device_CloseEp(0x81)==SYS_OK?USBD_OK:USBD_FAIL;}
 static uint8_t Core_Setup(USBD_HandleTypeDef *p,USBD_SetupReqTypedef *q){core_setup_count++;if(q->bRequest==0x55){USBD_CtlSendStatus(p);return USBD_OK;}return USBD_FAIL;}
 static uint8_t Core_In(USBD_HandleTypeDef *p,uint8_t ep){(void)p;core_in_count++;core_in_ep=ep;if(core_rearm)return USB_Device_Transmit(0x81,core_packet,512)==SYS_OK?USBD_OK:USBD_FAIL;return USBD_OK;}
 static uint8_t Core_Iso(USBD_HandleTypeDef *p,uint8_t ep){(void)p;core_iso_count++;core_in_ep=ep;return USBD_OK;}
@@ -285,7 +311,12 @@ static int Core_RunCase(uint32_t id)
  }
  if(id==232){EQ(USB_Device_GetConfigDescriptor(NULL),NULL);EQ(USB_Device_GetConfigDescriptor(&length),NULL);EQ(length,0);return 0;}
  if(id==239){EQ(USB_Device_Init(),SYS_OK);EQ(Usb_TestRegister(),SYS_OK);core_descriptors.GetDeviceDescriptor=Core_BadDevice;EQ(USB_Device_RegisterClass(&core_driver,&core_descriptors),SYS_ERR_INVALID_ARG);EQ(USB_Device_GetConfigDescriptor(&length),s_config_desc);return 0;}
+ if(id==245){EQ(USB_Device_Init(),SYS_OK);EQ(Usb_TestRegister(),SYS_OK);core_lifecycle_action=2U;EQ(USB_Device_RegisterClass(&core_driver,&core_descriptors),SYS_OK);for(calls=0;calls<4;calls++)EQ(core_nested[calls],SYS_ERR_BUSY);EQ(start_count,0);return 0;}
+ if(id==247){EQ(USB_Device_Init(),SYS_OK);EQ(Usb_TestRegister(),SYS_OK);fault=18;EQ(USB_Device_Start(),SYS_OK);EQ(reentry_from_start,SYS_ERR_BUSY);EQ(s_started,true);return 0;}
  EQ(Core_Boot(),0);
+ if(id==242){fault=13;HAL_PCD_ResetCallback(&s_pcd);EQ(s_stop_required,true);EQ(USB_Device_IsConfigured(),false);EQ(USB_Device_Start(),SYS_ERR_INVALID_STATE);fault=0;EQ(USB_Device_Stop(),SYS_OK);return 0;}
+ if(id==244){core_lifecycle_action=1U;EQ(USB_Device_Stop(),SYS_OK);for(calls=0;calls<4;calls++)EQ(core_nested[calls],SYS_ERR_BUSY);EQ(s_started,false);return 0;}
+ if(id==246){Request(0x21,0x77,0,0,0);EQ(USB_Device_GetEpState(0x80,&state),SYS_OK);EQ(state.stalled,true);Request(0x80,USB_REQ_GET_DESCRIPTOR,0x100,0,18);EQ(USB_Device_GetEpState(0x80,&state),SYS_OK);EQ(state.stalled,false);return 0;}
  if(id==205){EQ(USB_Device_GetConfigDescriptor(&length),core_config);EQ(length,25);Request(0x80,USB_REQ_GET_DESCRIPTOR,0x200,0,255);EQ(tx_size,25);EQ(tx_data[2],25);return 0;}
  if(id==206){EQ(USB_Device_RegisterClass(&s_base_class,&s_descriptors),SYS_ERR_INVALID_STATE);EQ(USB_Device_GetConfigDescriptor(&length),core_config);return 0;}
  if(id==207){EQ(USB_Device_OpenEp(0,0,64),SYS_ERR_INVALID_ARG);EQ(USB_Device_CloseEp(0x80),SYS_ERR_INVALID_ARG);EQ(USB_Device_Transmit(0x80,core_packet,1),SYS_ERR_INVALID_ARG);EQ(USB_Device_Receive(0,core_packet,1),SYS_ERR_INVALID_ARG);EQ(USB_Device_GetEpState(0x80,&state),SYS_OK);EQ(state.opened,true);return 0;}
@@ -298,6 +329,7 @@ static int Core_RunCase(uint32_t id)
  if(id==233){USBD_HandleTypeDef foreign={0};EQ(USBD_LL_OpenEP(&foreign,0x81,1,512),USBD_FAIL);return 0;}
  if(id==238)HAL_NVIC_DisableIRQ(OTG_FS_IRQn);
  EQ(USB_Device_OpenEp(0x81,USBD_EP_TYPE_ISOC,512),SYS_OK);
+ if(id==243){core_lifecycle_action=5U;HAL_PCD_ResetCallback(&s_pcd);EQ(s_stop_required,true);EQ(USB_Device_GetEpState(0x81,&state),SYS_OK);EQ(state.opened,false);return 0;}
  if(id==238){EQ(nvic,0);EQ(USB_Device_GetEpState(0x81,&state),SYS_OK);EQ(nvic,0);EQ(__get_PRIMASK(),0);return 0;}
  if(id==240){core_driver.GetFSConfigDescriptor=Usb_ConfigDesc;Request(0x80,USB_REQ_GET_DESCRIPTOR,0x200,0,255);EQ(tx_size,25);EQ(USB_Device_GetConfigDescriptor(&length),core_config);EQ(length,25);return 0;}
  if(id==241){PCD_HandleTypeDef foreign={0};HAL_PCD_ISOINIncompleteCallback(&foreign,1);EQ(core_iso_count,0);return 0;}

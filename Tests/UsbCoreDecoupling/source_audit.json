@@ -47,5 +47,7 @@
     "CM7/Service/usb_uvc_class.c": "691d783e70a722015a2b093364da3c1ba79d9e5cb0aeafd482f3790a18f22c53",
     "CM7/Service/usb_uvc_desc.c": "4d1bf41a4c2443f957eee31a04850d7dfe25b5b2492f334e99ae218422abc4be",
     "CM7/Service/usb_uvc_desc.h": "c2b40e2b2965e9be8e39d8b7c725379b2db2e2ef55a0f8e6ef801e0dc3a4c210"
-  }
+  },
+  "migrated_function_count": 12,
+  "final_review_date": "2026-10-31"
 }

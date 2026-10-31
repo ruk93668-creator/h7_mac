@@ -1,6 +1,6 @@
 # USB Device Core 解耦模拟验收
 
-{'total': 126, 'passed': 126, 'failed': 0, 'assertions': 1290}
+{'total': 132, 'passed': 132, 'failed': 0, 'assertions': 1341}
 
 |编号|场景|输入|预期|实际|结果|
 |---|---|---|---|---|---|
@@ -130,3 +130,9 @@
 |239|设备描述符长度错误拒绝|执行Core_RunCase(239)，参数见core_test.c|拒绝17字节设备描述符，保留旧配置|{'state': 0, 'mode': 0, 'target_mode': 0, 'last_result': 0, 'state_enter_ms': 0, 'tick': 0, 'start_calls': 0, 'stop_calls': 0, 'core_state': 1, 'core_result': 0, 'nvic': 0, 'initialized': 0, 'state_name': 'UNINITIALIZED'}|PASS|
 |240|已验证配置不被换getter影响|执行Core_RunCase(240)，参数见core_test.c|官方Core使用注册时缓存，不再次取变更getter|{'state': 0, 'mode': 0, 'target_mode': 0, 'last_result': 0, 'state_enter_ms': 0, 'tick': 0, 'start_calls': 1, 'stop_calls': 0, 'core_state': 3, 'core_result': 0, 'nvic': 1, 'initialized': 0, 'state_name': 'UNINITIALIZED'}|PASS|
 |241|忽略其他PCD的错误回调|执行Core_RunCase(241)，参数见core_test.c|不转交外部Class|{'state': 0, 'mode': 0, 'target_mode': 0, 'last_result': 0, 'state_enter_ms': 0, 'tick': 0, 'start_calls': 1, 'stop_calls': 0, 'core_state': 3, 'core_result': 0, 'nvic': 1, 'initialized': 0, 'state_name': 'UNINITIALIZED'}|PASS|
+|242|EP0打开失败锁存恢复要求|HAL Open返回ERROR|禁止重启，Stop成功后可恢复|{'state': 0, 'mode': 0, 'target_mode': 0, 'last_result': 0, 'state_enter_ms': 0, 'tick': 0, 'start_calls': 1, 'stop_calls': 1, 'core_state': 1, 'core_result': 0, 'nvic': 0, 'initialized': 0, 'state_name': 'UNINITIALIZED'}|PASS|
+|243|Reset失败仍清理数据端点|外部DeInit返回FAIL|非EP0端点释放，故障锁存|{'state': 0, 'mode': 0, 'target_mode': 0, 'last_result': 0, 'state_enter_ms': 0, 'tick': 0, 'start_calls': 1, 'stop_calls': 0, 'core_state': 1, 'core_result': -9, 'nvic': 1, 'initialized': 0, 'state_name': 'UNINITIALIZED'}|PASS|
+|244|释放回调拒绝生命周期重入|DeInit内调用Init/Start/Stop/Register|四项均BUSY，硬件保持停止|{'state': 0, 'mode': 0, 'target_mode': 0, 'last_result': 0, 'state_enter_ms': 0, 'tick': 0, 'start_calls': 1, 'stop_calls': 1, 'core_state': 1, 'core_result': 0, 'nvic': 0, 'initialized': 0, 'state_name': 'UNINITIALIZED'}|PASS|
+|245|注册回调拒绝生命周期重入|配置getter内调用生命周期接口|四项均BUSY，尚未启动硬件|{'state': 0, 'mode': 0, 'target_mode': 0, 'last_result': 0, 'state_enter_ms': 0, 'tick': 0, 'start_calls': 0, 'stop_calls': 0, 'core_state': 1, 'core_result': 0, 'nvic': 0, 'initialized': 0, 'state_name': 'UNINITIALIZED'}|PASS|
+|246|新SETUP清理EP0状态|先STALL，再发新控制请求|EP0 stalled快照清零|{'state': 0, 'mode': 0, 'target_mode': 0, 'last_result': 0, 'state_enter_ms': 0, 'tick': 0, 'start_calls': 1, 'stop_calls': 0, 'core_state': 3, 'core_result': 0, 'nvic': 1, 'initialized': 0, 'state_name': 'UNINITIALIZED'}|PASS|
+|247|Start过程拒绝嵌套Stop|HAL Start中重入Stop|返回BUSY，启动正常完成|{'state': 0, 'mode': 0, 'target_mode': 0, 'last_result': 0, 'state_enter_ms': 0, 'tick': 0, 'start_calls': 1, 'stop_calls': 0, 'core_state': 1, 'core_result': 0, 'nvic': 1, 'initialized': 0, 'state_name': 'UNINITIALIZED'}|PASS|
