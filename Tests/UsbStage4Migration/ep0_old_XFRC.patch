@@ -1,0 +1,32 @@
+--- a/CM7/BSP/bsp_usb.c
++++ b/CM7/BSP/bsp_usb.c
+@@ -282,6 +282,13 @@
+     //EP0由Core关闭，不经过仅供数据端点使用的Abort接口
+     if ((ep & 0x0FU) == 0U)
+     {
++        uint32_t USBx_BASE = (uint32_t)s_pcd.Instance;
++        uint32_t interrupt = (ep & 0x80U) != 0U ? 1U : (1UL << 16);
++
++        //先屏蔽本方向，取消失败也不把旧完成交给后续事务
++        USBx_DEVICE->DAINTMSK &= ~interrupt;
++        if ((ep & 0x80U) != 0U)
++            USBx_DEVICE->DIEPEMPMSK &= ~1UL;
+         status = HAL_PCD_EP_Abort(&s_pcd, ep);
+         if (status != HAL_OK)
+             return Usb_HalResult(status);
+@@ -293,6 +300,15 @@
+             if (status != HAL_OK)
+                 return Usb_HalResult(status);
+         }
++
++        //确认停止后按W1C应答旧事务；不清SETUP位或其他端点
++        if ((ep & 0x80U) != 0U)
++            USBx_INEP(0U)->DIEPINT = USB_OTG_DIEPINT_XFRC |
++                USB_OTG_DIEPINT_EPDISD | USB_OTG_DIEPINT_TOC;
++        else
++            USBx_OUTEP(0U)->DOEPINT = USB_OTG_DOEPINT_XFRC |
++                USB_OTG_DOEPINT_EPDISD;
++        __DSB();
+     }
+     else
+     {

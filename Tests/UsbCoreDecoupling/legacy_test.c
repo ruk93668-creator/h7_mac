@@ -15,9 +15,12 @@ volatile TestResult g_result;
 #undef HAL_PCDEx_SetRxFiFo
 #undef HAL_PCDEx_SetTxFiFo
 
+static uint32_t flush_by_ep[2][BSP_USB_ENDPOINT_COUNT];
+static uint16_t hal_trace_count;
+static uint8_t hal_trace[1024], hal_trace_ep[1024];
 static uint32_t pending_in;
 static SysResult_t reentry_from_start;
-static uint32_t seen_rx_fifo,seen_tx_fifo[BSP_USB_ENDPOINT_COUNT],last_ep,close_count,flush_count;
+static uint32_t seen_rx_fifo,seen_tx_fifo[BSP_USB_ENDPOINT_COUNT],last_ep,close_count,flush_count,abort_count;
 static uint32_t fault,nvic,priority,init_count,start_count,stop_count,irq_count,open_count,stall_count,address_value,tx_size,rx_size;
 static uint8_t tx_data[128];
 static RCC_OscInitTypeDef seen_osc;
@@ -35,6 +38,12 @@ void __aeabi_memcpy4(void *d,const void *s,size_t n){volatile uint8_t *p=d;const
 
 static int Eq(uint32_t line,uint32_t a,uint32_t b){g_result.checks++;if(a!=b){if(!g_result.fail_line){g_result.fail_line=line;g_result.operations=a;g_result.replaces=b;}return 0;}return 1;}
 #define EQ(a,b) do{if(!Eq(__LINE__,(uint32_t)(a),(uint32_t)(b)))return 1;}while(0)
+//只观察真实调用顺序，不改变HAL桩的成功或失败行为
+static void Mock_Trace(uint8_t operation, uint8_t ep)
+{
+ if(hal_trace_count<sizeof(hal_trace)){hal_trace[hal_trace_count]=operation;hal_trace_ep[hal_trace_count++]=ep;}
+ else g_result.deferred++;
+}
 HAL_StatusTypeDef HAL_RCC_OscConfig(RCC_OscInitTypeDef *c){seen_osc=*c;return fault==1?HAL_ERROR:HAL_OK;}
 HAL_StatusTypeDef HAL_RCCEx_PeriphCLKConfig(RCC_PeriphCLKInitTypeDef *c){seen_clock=*c;return fault==2?HAL_TIMEOUT:HAL_OK;}
 uint32_t HAL_RCCEx_GetPeriphCLKFreq(uint64_t p){(void)p;return fault==3?47000000:48000000;}
@@ -54,8 +63,9 @@ HAL_StatusTypeDef HAL_PCDEx_SetTxFiFo(PCD_HandleTypeDef *p,uint8_t ep,uint16_t n
 HAL_StatusTypeDef HAL_PCD_Start(PCD_HandleTypeDef *p){(void)p;start_count++;if(fault==18)reentry_from_start=USB_Device_Stop();return fault==7?HAL_BUSY:HAL_OK;}
 HAL_StatusTypeDef HAL_PCD_Stop(PCD_HandleTypeDef *p){(void)p;stop_count++;return fault==8?HAL_ERROR:HAL_OK;}
 HAL_StatusTypeDef HAL_PCD_EP_Open(PCD_HandleTypeDef *p,uint8_t ep,uint16_t size,uint8_t type){PCD_EPTypeDef *e=(ep&0x80)?&p->IN_ep[ep&15]:&p->OUT_ep[ep&15];last_ep=ep;open_count++;if(fault==13)return HAL_ERROR;e->maxpacket=size;e->type=type;return fault==19?HAL_BUSY:HAL_OK;}
-HAL_StatusTypeDef HAL_PCD_EP_Close(PCD_HandleTypeDef *p,uint8_t ep){(void)p;last_ep=ep;close_count++;if(fault==17 && ep==0x81)pending_in=1;return fault==14?HAL_ERROR:HAL_OK;}
-HAL_StatusTypeDef HAL_PCD_EP_Flush(PCD_HandleTypeDef *p,uint8_t ep){(void)p;last_ep=ep;flush_count++;return fault==15?HAL_ERROR:HAL_OK;}
+HAL_StatusTypeDef HAL_PCD_EP_Abort(PCD_HandleTypeDef *p,uint8_t ep){(void)p;last_ep=ep;abort_count++;Mock_Trace(1,ep);return fault==20?HAL_ERROR:HAL_OK;}
+HAL_StatusTypeDef HAL_PCD_EP_Close(PCD_HandleTypeDef *p,uint8_t ep){(void)p;last_ep=ep;close_count++;Mock_Trace(3,ep);if(fault==17 && ep==0x81)pending_in=1;return fault==14?HAL_ERROR:HAL_OK;}
+HAL_StatusTypeDef HAL_PCD_EP_Flush(PCD_HandleTypeDef *p,uint8_t ep){(void)p;last_ep=ep;flush_count++;Mock_Trace(2,ep);flush_by_ep[(ep&0x80)!=0][ep&15]++;return fault==15?HAL_ERROR:HAL_OK;}
 HAL_StatusTypeDef HAL_PCD_EP_SetStall(PCD_HandleTypeDef *p,uint8_t ep){stall_count++;if(ep&0x80)p->IN_ep[ep&15].is_stall=1;else p->OUT_ep[ep&15].is_stall=1;return HAL_OK;}
 HAL_StatusTypeDef HAL_PCD_EP_ClrStall(PCD_HandleTypeDef *p,uint8_t ep){if(ep&0x80)p->IN_ep[ep&15].is_stall=0;else p->OUT_ep[ep&15].is_stall=0;return HAL_OK;}
 HAL_StatusTypeDef HAL_PCD_SetAddress(PCD_HandleTypeDef *p,uint8_t a){(void)p;address_value=a;return HAL_OK;}
@@ -72,7 +82,8 @@ static void Request(uint8_t bm,uint8_t req,uint16_t val,uint16_t idx,uint16_t le
  s_pcd.IN_ep[0].is_stall=0;s_pcd.OUT_ep[0].is_stall=0;tx_size=999;stall_count=0;
  HAL_PCD_SetupStageCallback(&s_pcd);
 }
-static void Configured(void){Request(0,USB_REQ_SET_ADDRESS,7,0,0);Request(0,USB_REQ_SET_CONFIGURATION,1,0,0);}
+//正常主机先完成上一控制事务的状态阶段，再发下一SETUP
+static void Configured(void){Request(0,USB_REQ_SET_ADDRESS,7,0,0);HAL_PCD_DataInStageCallback(&s_pcd,0);Request(0,USB_REQ_SET_CONFIGURATION,1,0,0);HAL_PCD_DataInStageCallback(&s_pcd,0);}
 int Stream_TestRun(uint32_t id)
 {
  uint32_t i;void *memory;PCD_HandleTypeDef foreign={0};
@@ -117,7 +128,18 @@ int Stream_TestRun(uint32_t id)
  if(id==36){EQ(USBD_DeInit(&s_device),USBD_OK);EQ(s_ready,false);EQ(nvic,0);EQ(bsp_callbacks,NULL);return 0;}
  if(id==38){EQ(USB_Device_RegisterClass(&s_base_class,&s_descriptors),SYS_ERR_INVALID_STATE);return 0;}
  if(id==41){EQ(BSP_USB_OpenEp(0x81,EP_TYPE_ISOC,1024),SYS_ERR_NOT_SUPPORTED);return 0;}
- if(id==42){fault=9;EQ(USBD_LL_Transmit(&s_device,0x80,tx_data,8),USBD_BUSY);EQ(USB_Device_GetLastResult(),SYS_ERR_BUSY);EQ(USB_Device_IsConfigured(),true);return 0;}
+ if(id==42){
+  UsbDeviceEndpointState_t state;
+  fault=9;EQ(USBD_LL_Transmit(&s_device,0x80,tx_data,8),USBD_BUSY);
+  EQ(USB_Device_GetLastOperationResult(),SYS_ERR_BUSY);EQ(USB_Device_GetLastResult(),SYS_OK);
+  EQ(USB_Device_IsConfigured(),true);EQ(USB_Device_GetEpState(0x80,&state),SYS_OK);EQ(state.busy,false);
+  fault=0;EQ(USBD_LL_Transmit(&s_device,0x80,tx_data,8),USBD_OK);
+  EQ(USB_Device_GetLastOperationResult(),SYS_OK);EQ(USB_Device_GetLastResult(),SYS_OK);
+  HAL_PCD_DataInStageCallback(&s_pcd,0);
+  //真实底层IO错误仍升级为设备故障，与普通BUSY分开
+  fault=15;EQ(USBD_LL_FlushEP(&s_device,0x80),USBD_FAIL);
+  EQ(USB_Device_GetLastOperationResult(),SYS_ERR_IO);EQ(USB_Device_GetLastResult(),SYS_ERR_IO);return 0;
+ }
  if(id==43){i=s_device.dev_state;HAL_PCD_ResetCallback(&foreign);HAL_PCD_SuspendCallback(&foreign);EQ(s_device.dev_state,i);return 0;}
  if(id==44){OTG_FS_IRQHandler();EQ(irq_count,1);return 0;}
  if(id==45){Request(0x80,USB_REQ_GET_DESCRIPTOR,0x600,0,10);EQ(stall_count>0,1);return 0;}

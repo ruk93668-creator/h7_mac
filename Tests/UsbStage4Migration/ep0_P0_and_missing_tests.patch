@@ -1,0 +1,54 @@
+--- a/CM7/BSP/bsp_usb.c
++++ b/CM7/BSP/bsp_usb.c
+@@ -279,9 +279,27 @@
+     entry = Usb_PcdEp(ep);
+     if (entry->maxpacket == 0U)
+         return SYS_ERR_INVALID_STATE;
+-    result = BSP_USB_AbortEp(ep);
+-    if (result != SYS_OK)
+-        return result;
++    //EP0由Core关闭，不经过仅供数据端点使用的Abort接口
++    if ((ep & 0x0FU) == 0U)
++    {
++        status = HAL_PCD_EP_Abort(&s_pcd, ep);
++        if (status != HAL_OK)
++            return Usb_HalResult(status);
++
++        //IN只清TX0，OUT不清共享RX，避免影响其他端点
++        if ((ep & 0x80U) != 0U)
++        {
++            status = HAL_PCD_EP_Flush(&s_pcd, ep);
++            if (status != HAL_OK)
++                return Usb_HalResult(status);
++        }
++    }
++    else
++    {
++        result = BSP_USB_AbortEp(ep);
++        if (result != SYS_OK)
++            return result;
++    }
+     status = HAL_PCD_EP_Close(&s_pcd, ep);
+     if (status == HAL_OK)
+     {
+--- a/CM7/Platform/usb_device.c
++++ b/CM7/Platform/usb_device.c
+@@ -403,7 +403,8 @@
+         Usb_Unlock(enabled);
+         return Usb_LlResult(SYS_ERR_ALREADY_EXISTS);
+     }
+-    //Open必须与注册时某个Alternate Setting的端点声明完全匹配
++    //EP0由Core管理；只有Class数据端点需要匹配注册声明
++    if ((ep & 0x0FU) != 0U)
+     {
+         uint32_t i;
+         bool declared = false;
+@@ -449,7 +450,7 @@
+     if (!s_initialized)
+         return Usb_LlResult(SYS_ERR_INVALID_STATE);
+     enabled = Usb_Lock();
+-    if (entry->opened && entry->busy)
++    if (entry->opened && entry->busy && (ep & 0x0FU) != 0U)
+     {
+         //Abort成功后硬件不再持有缓冲区，即使后续Close失败也归还传输所有权
+         result = BSP_USB_AbortEp(ep);

@@ -1,0 +1,205 @@
+000 PASS 未初始化接口 / FS: checks=3, fail_line=0, error=None
+001 PASS 硬件时钟GPIO配置保持PLL / FS: checks=21, fail_line=0, error=None
+002 PASS HSI48失败 / FS: checks=3, fail_line=0, error=None
+003 PASS USB时钟选择失败 / FS: checks=3, fail_line=0, error=None
+004 PASS HSI48未就绪（适配当前BSP检查）: checks=3, fail_line=0, error=None
+005 PASS PCD初始化失败 / FS: checks=3, fail_line=0, error=None
+006 PASS Rx FIFO失败 / FS: checks=3, fail_line=0, error=None
+007 PASS Tx FIFO失败 / FS: checks=3, fail_line=0, error=None
+008 PASS 重复初始化 / FS: checks=9, fail_line=0, error=None
+009 PASS 启动与停止NVIC / FS: checks=10, fail_line=0, error=None
+010 PASS 启动HAL_BUSY / FS: checks=8, fail_line=0, error=None
+011 PASS Stop底层错误保留 / FS: checks=10, fail_line=0, error=None
+012 PASS Reset打开EP0 / FS: checks=10, fail_line=0, error=None
+013 PASS 完整设备描述符 / FS: checks=12, fail_line=0, error=None
+014 PASS 设备描述符前8字节 / FS: checks=12, fail_line=0, error=None
+015 PASS 配置描述符头 / FS: checks=10, fail_line=0, error=None
+016 PASS 完整配置描述符 / FS: checks=12, fail_line=0, error=None
+017 PASS 语言描述符 / FS: checks=10, fail_line=0, error=None
+018 PASS 厂家字符串 / FS: checks=10, fail_line=0, error=None
+019 PASS 产品字符串 / FS: checks=10, fail_line=0, error=None
+020 PASS 序列号字符串 / FS: checks=10, fail_line=0, error=None
+021 PASS 设置地址 / FS: checks=10, fail_line=0, error=None
+022 PASS 非法地址STALL / FS: checks=9, fail_line=0, error=None
+023 PASS 未寻址禁止配置 / FS: checks=9, fail_line=0, error=None
+024 PASS 配置完成 / FS: checks=9, fail_line=0, error=None
+025 PASS 取消配置 / FS: checks=10, fail_line=0, error=None
+026 PASS GET_CONFIGURATION / FS: checks=10, fail_line=0, error=None
+027 PASS GET_STATUS / FS: checks=10, fail_line=0, error=None
+028 PASS 未知描述符STALL / FS: checks=9, fail_line=0, error=None
+029 PASS 厂商请求STALL / FS: checks=9, fail_line=0, error=None
+030 PASS UVC Probe不支持 / FS: checks=9, fail_line=0, error=None
+031 PASS SET_INTERFACE视频切换不支持 / FS: checks=9, fail_line=0, error=None
+032 PASS GET_INTERFACE零 / FS: checks=10, fail_line=0, error=None
+033 PASS 挂起与恢复 / FS: checks=10, fail_line=0, error=None
+034 PASS Reset清除配置 / FS: checks=10, fail_line=0, error=None
+035 PASS 停止重新枚举 / FS: checks=13, fail_line=0, error=None
+036 PASS DeInit关闭资源 / FS: checks=12, fail_line=0, error=None
+037 PASS 非法Class注册 / FS: checks=7, fail_line=0, error=None
+038 PASS 运行中禁止注册 / FS: checks=9, fail_line=0, error=None
+039 PASS 停止时Class注册 / FS: checks=6, fail_line=0, error=None
+040 PASS 固定内存分配 / FS: checks=9, fail_line=0, error=None
+041 PASS 非零端点未启用 / FS: checks=9, fail_line=0, error=None
+042 PASS LL错误传播 / FS: checks=20, fail_line=0, error=None
+043 PASS 其他PCD回调隔离 / FS: checks=9, fail_line=0, error=None
+044 PASS IRQ调用PCD / FS: checks=9, fail_line=0, error=None
+045 PASS 仅FS拒绝Qualifier / FS: checks=9, fail_line=0, error=None
+046 PASS STALL清除 / FS: checks=12, fail_line=0, error=None
+047 PASS EP0数据及状态阶段回调 / FS: checks=11, fail_line=0, error=None
+048 PASS 配置描述符长度截断 / FS: checks=9, fail_line=0, error=None
+049 PASS 非法配置值STALL / FS: checks=9, fail_line=0, error=None
+050 PASS Class字符串回调完整性 / FS: checks=10, fail_line=0, error=None
+051 PASS 重复Class注册数量 / FS: checks=12, fail_line=0, error=None
+100 PASS 未初始化拒绝启动: checks=4, fail_line=0, error=None
+101 PASS Core就绪后Mode初始化幂等: checks=10, fail_line=0, error=None
+102 PASS RUNNING拒绝重复Start: checks=11, fail_line=0, error=None
+103 PASS 重复Init保留运行状态: checks=12, fail_line=0, error=None
+104 PASS 重连请求只记录: checks=12, fail_line=0, error=None
+105 PASS RUNNING主循环无额外操作: checks=11, fail_line=0, error=None
+106 PASS 首次启动失败锁存: checks=8, fail_line=0, error=None
+107 PASS Core未初始化: checks=10, fail_line=0, error=None
+108 PASS UVC/MSC未支持: checks=6, fail_line=0, error=None
+109 PASS Initcall等级顺序: checks=14, fail_line=0, error=None
+110 PASS 产品名称与配置请求: checks=54, fail_line=0, error=None
+111 PASS REGISTERING仍为占位: checks=6, fail_line=0, error=None
+112 PASS 枚举等待4999ms: checks=7, fail_line=0, error=None
+113 PASS 枚举等待5000ms: checks=9, fail_line=0, error=None
+114 PASS 期限边界配置完成: checks=9, fail_line=0, error=None
+115 PASS 底层错误优先: checks=10, fail_line=0, error=None
+116 PASS Stop成功: checks=16, fail_line=0, error=None
+117 PASS Stop失败: checks=14, fail_line=0, error=None
+118 PASS 断开499ms: checks=16, fail_line=0, error=None
+119 PASS 断开500ms: checks=18, fail_line=0, error=None
+120 PASS 重启更新时间戳: checks=21, fail_line=0, error=None
+121 PASS 重启享有完整枚举窗口: checks=21, fail_line=0, error=None
+122 PASS 重启失败进入ERROR: checks=21, fail_line=0, error=None
+123 PASS 重启失败不逐轮重试: checks=20, fail_line=0, error=None
+124 PASS ERROR允许显式请求受控恢复: checks=9, fail_line=0, error=None
+125 PASS WAIT_CONFIGURED拒绝重连: checks=9, fail_line=0, error=None
+126 PASS 不接受UVC/MSC目标: checks=11, fail_line=0, error=None
+127 PASS 拒绝重复重连请求: checks=13, fail_line=0, error=None
+128 PASS 断开间隔跨Tick回绕: checks=18, fail_line=0, error=None
+129 PASS 枚举超时跨Tick回绕: checks=9, fail_line=0, error=None
+130 PASS TEST完整重连: checks=24, fail_line=0, error=None
+131 PASS 重连后产品身份: checks=26, fail_line=0, error=None
+200 PASS 无Class禁止Start: checks=4, fail_line=0, error=None
+201 PASS Initcall保留TEST启动: checks=4, fail_line=0, error=None
+202 PASS 配置总长不匹配拒绝: checks=6, fail_line=0, error=None
+203 PASS bLength为0拒绝: checks=6, fail_line=0, error=None
+204 PASS 端点数量不匹配拒绝: checks=6, fail_line=0, error=None
+205 PASS 外部配置返回及EP0截断: checks=9, fail_line=0, error=None
+206 PASS 运行中禁止换Class: checks=7, fail_line=0, error=None
+207 PASS Class不能占用EP0: checks=11, fail_line=0, error=None
+208 PASS 端点申请与状态快照: checks=13, fail_line=0, error=None
+209 PASS 重复申请拒绝: checks=8, fail_line=0, error=None
+210 PASS 通用Bulk和其他IN端点可用: checks=10, fail_line=0, error=None
+211 PASS 关闭状态禁止发送: checks=6, fail_line=0, error=None
+212 PASS busy防覆盖且仍已配置: checks=12, fail_line=0, error=None
+213 PASS 完成回调释放busy: checks=11, fail_line=0, error=None
+214 PASS 关闭后忽略迟到完成: checks=9, fail_line=0, error=None
+215 PASS 关闭取消事务并释放资源: checks=12, fail_line=0, error=None
+216 PASS Flush和Close资源所有权: checks=68, fail_line=0, error=None
+217 PASS 非法端点地址拒绝: checks=8, fail_line=0, error=None
+218 PASS INOUT方向检查: checks=8, fail_line=0, error=None
+219 PASS 未完成事件转交Class: checks=12, fail_line=0, error=None
+220 PASS HAL失败不残留busy: checks=10, fail_line=0, error=None
+221 PASS 关闭失败保留所有权: checks=11, fail_line=0, error=None
+222 PASS Stop清理与重启: checks=15, fail_line=0, error=None
+223 PASS Stop失败锁存及重试: checks=13, fail_line=0, error=None
+224 PASS 复位重建EP0并清理数据端点: checks=12, fail_line=0, error=None
+225 PASS 断线清理资源: checks=9, fail_line=0, error=None
+226 PASS 未知端点请求STALL: checks=7, fail_line=0, error=None
+227 PASS 等时HALT请求STALL: checks=8, fail_line=0, error=None
+228 PASS 保留请求类型STALL: checks=7, fail_line=0, error=None
+229 PASS Class失败自动STALL: checks=7, fail_line=0, error=None
+230 PASS Class通用Setup入口: checks=8, fail_line=0, error=None
+231 PASS 缺少必要回调拒绝: checks=6, fail_line=0, error=None
+232 PASS 空length与未注册配置: checks=3, fail_line=0, error=None
+233 PASS 异设备句柄拒绝: checks=6, fail_line=0, error=None
+234 PASS 等时端点拒绝STALL接口: checks=8, fail_line=0, error=None
+235 PASS 完成回调内重新提交: checks=11, fail_line=0, error=None
+236 PASS HAL返回前完成中断延迟交付: checks=11, fail_line=0, error=None
+237 PASS 关闭期间迟到完成被忽略: checks=11, fail_line=0, error=None
+238 PASS 恢复原USB IRQ及PRIMASK: checks=10, fail_line=0, error=None
+239 PASS 设备描述符长度错误拒绝: checks=4, fail_line=0, error=None
+240 PASS 已验证配置不被换getter影响: checks=9, fail_line=0, error=None
+241 PASS 忽略其他PCD的错误回调: checks=7, fail_line=0, error=None
+242 PASS EP0打开失败锁存恢复要求: checks=9, fail_line=0, error=None
+243 PASS Reset失败仍清理数据端点: checks=9, fail_line=0, error=None
+244 PASS 释放回调拒绝生命周期重入: checks=11, fail_line=0, error=None
+245 PASS 注册回调拒绝生命周期重入: checks=8, fail_line=0, error=None
+246 PASS 新SETUP清理EP0状态: checks=9, fail_line=0, error=None
+247 PASS Start过程拒绝嵌套Stop: checks=5, fail_line=0, error=None
+300 PASS IN等时未完成保持设备健康: checks=15, fail_line=0, error=None
+301 PASS OUT等时未完成保持设备健康: checks=16, fail_line=0, error=None
+302 PASS 非等时端点忽略ISO通知: checks=12, fail_line=0, error=None
+303 PASS 初次Reset不释放未初始化Class: checks=11, fail_line=0, error=None
+304 PASS Reset后Stop不重复释放: checks=14, fail_line=0, error=None
+305 PASS Disconnect后Stop不重复释放: checks=14, fail_line=0, error=None
+306 PASS 连续Stop幂等并可再启动: checks=15, fail_line=0, error=None
+307 PASS Disconnect释放失败保留池: checks=21, fail_line=0, error=None
+308 PASS Reset释放失败仍重建EP0: checks=25, fail_line=0, error=None
+309 PASS Stop释放失败保留所有权: checks=22, fail_line=0, error=None
+310 PASS 硬件Stop失败不提前释放: checks=19, fail_line=0, error=None
+311 PASS 官方Stop忽略返回值仍不误释放: checks=19, fail_line=0, error=None
+312 PASS 官方DeInit遇到Class释放失败: checks=15, fail_line=0, error=None
+313 PASS 官方DeInit遇到硬件停止失败: checks=19, fail_line=0, error=None
+314 PASS 官方DeInit成功后可重新初始化: checks=16, fail_line=0, error=None
+315 PASS 固定池地址与重复释放边界: checks=6, fail_line=0, error=None
+316 PASS DeInit中的Free延后提交: checks=11, fail_line=0, error=None
+317 PASS 成功DeInit漏Free不静默回收: checks=16, fail_line=0, error=None
+318 PASS Init失败保留部分资源: checks=14, fail_line=0, error=None
+319 PASS Init回调拒绝生命周期重入: checks=13, fail_line=0, error=None
+320 PASS Reset释放回调拒绝重入: checks=13, fail_line=0, error=None
+321 PASS 端点关闭失败不重复成功DeInit: checks=15, fail_line=0, error=None
+322 PASS 同编号IN和OUT独立完成: checks=160, fail_line=0, error=None
+323 PASS EP8支持且EP9拒绝: checks=14, fail_line=0, error=None
+324 PASS Bulk全部合法FS包长: checks=23, fail_line=0, error=None
+325 PASS Interrupt及ISO包长边界: checks=23, fail_line=0, error=None
+326 PASS 非法传输类型及包长拒绝: checks=14, fail_line=0, error=None
+327 PASS Bulk IN多包不受512字节限制: checks=44, fail_line=0, error=None
+328 PASS Bulk OUT实际长度和编号: checks=13, fail_line=0, error=None
+329 PASS OUT缓冲容量防HAL取整溢出: checks=14, fail_line=0, error=None
+330 PASS ISO单次整包限制: checks=13, fail_line=0, error=None
+331 PASS STALL按类型而非EP1判断: checks=16, fail_line=0, error=None
+332 PASS 同编号IN的Flush不影响OUT: checks=18, fail_line=0, error=None
+333 PASS 共享RX Flush保护其他OUT: checks=14, fail_line=0, error=None
+334 PASS 关闭一个方向失败保留资源: checks=18, fail_line=0, error=None
+335 PASS HAL发送BUSY后能继续使用: checks=12, fail_line=0, error=None
+336 PASS 运行期间禁止重排FIFO: checks=9, fail_line=0, error=None
+337 PASS 默认FIFO真实寄存器布局: checks=24, fail_line=0, error=None
+338 PASS EP1 ISO512兼容原能力: checks=34, fail_line=0, error=None
+339 PASS EP7最大ISO包及OUT最大包: checks=33, fail_line=0, error=None
+340 PASS 512字节FIFO组合容量边界: checks=28, fail_line=0, error=None
+341 PASS 1023字节FIFO组合容量边界: checks=28, fail_line=0, error=None
+342 PASS 备用设置取最大FIFO需求: checks=12, fail_line=0, error=None
+343 PASS OUT不占用额外TX FIFO: checks=31, fail_line=0, error=None
+344 PASS 描述符中的非法端点拒绝: checks=8, fail_line=0, error=None
+345 PASS FIFO硬件配置失败禁止启动: checks=9, fail_line=0, error=None
+346 PASS 官方Stop兜底清理通用端点: checks=14, fail_line=0, error=None
+347 PASS 多轮启停无泄漏: checks=136, fail_line=0, error=None
+348 PASS 描述符中的重复地址拒绝: checks=5, fail_line=0, error=None
+349 PASS 全部8组双向Bulk端点: checks=95, fail_line=0, error=None
+350 PASS ISO通知不清除已有真实错误: checks=13, fail_line=0, error=None
+351 PASS 可选ISO回调为空: checks=11, fail_line=0, error=None
+352 PASS 注册拒绝旧池占用: checks=6, fail_line=0, error=None
+353 PASS Reset时发现内存泄漏: checks=15, fail_line=0, error=None
+354 PASS 取消配置和再次配置生命周期: checks=14, fail_line=0, error=None
+355 PASS 多个OUT接收长度互不影响: checks=16, fail_line=0, error=None
+356 PASS 官方DeInit失败保留Class外部绑定: checks=21, fail_line=0, error=None
+357 PASS Core分发失败仍记录真实错误: checks=14, fail_line=0, error=None
+358 PASS HAL打开BUSY回滚PCD上下文: checks=14, fail_line=0, error=None
+359 PASS PCD反初始化失败恢复注册绑定: checks=18, fail_line=0, error=None
+360 PASS PIO尾部补齐且多包续传: checks=21, fail_line=0, error=None
+361 PASS Abort释放传输所有权但保留端点: checks=14, fail_line=0, error=None
+362 PASS Abort失败保留缓冲所有权: checks=17, fail_line=0, error=None
+363 PASS 未声明端点不进入HAL: checks=15, fail_line=0, error=None
+364 PASS Close中Abort失败保留所有权并重试: checks=25, fail_line=0, error=None
+365 PASS 描述符属性和备用设置重复校验: checks=8, fail_line=0, error=None
+366 PASS EP0复位重开及Control边界: checks=30, fail_line=0, error=None
+367 PASS EP0复位后的描述符请求: checks=23, fail_line=0, error=None
+368 PASS EP0复位后的地址设置: checks=10, fail_line=0, error=None
+369 PASS Class接口不得管理EP0生命周期: checks=19, fail_line=0, error=None
+370 PASS Core关闭并重开EP0: checks=22, fail_line=0, error=None
+371 PASS Class控制请求仍经EP0处理: checks=19, fail_line=0, error=None
+TOTAL {'total': 204, 'passed': 204, 'failed': 0, 'assertions': 2984} source changed: []

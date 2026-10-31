@@ -1,145 +1,144 @@
-//Ô­ÓĞTESTÃ¶¾Ù¼æÈİÄ£¿é£¬½öÇ¨ÒÆ¼ÈÓĞĞĞÎª
+//åŸæœ‰TESTæšä¸¾å…¼å®¹æ¨¡å—ï¼Œä»…è¿ç§»æ—¢æœ‰è¡Œä¸º
 #include "usb_device.h"
 #include "framework_init.h"
 #include "usbd_ctlreq.h"
 #include "usbd_ioreq.h"
 #include <stddef.h>
 
-//1209:0001Ö»¹©ÄÚ²¿²âÊÔ£¬²»Î¨Ò»£¬²»µÃÓÃÓÚÉú²ú»ò·Ö·¢
+//1209:0001åªä¾›å†…éƒ¨æµ‹è¯•ï¼Œä¸å”¯ä¸€ï¼Œä¸å¾—ç”¨äºç”Ÿäº§æˆ–åˆ†å‘
 #define USB_TEST_VID 0x1209U
 #define USB_TEST_PID 0x0001U
 
-//ÃèÊö·û¶îÍâÁô³öÎ²²¿¿Õ¼ä£¬ÊÊÅäPIOµÄWord¶ÁÈ¡
+//æè¿°ç¬¦é¢å¤–ç•™å‡ºå°¾éƒ¨ç©ºé—´ï¼Œé€‚é…PIOçš„Wordè¯»å–
 static uint8_t s_device_desc[20] __attribute__((aligned(4))) =
 {
-    18U, USB_DESC_TYPE_DEVICE, //Éè±¸ÃèÊö·û³¤¶ÈºÍÀàĞÍ
-    0x00U, 0x02U,             //USB°æ±¾2.00£¬µÍ×Ö½ÚÔÚÇ°
-    0U, 0U, 0U,              //Éè±¸¼¶²»Ö¸¶¨Àà±ğ£¬ÓÉ½Ó¿ÚÃèÊö·ûÉùÃ÷
-    64U,                     //EP0×î´ó°ü³¤64×Ö½Ú
-    LOBYTE(USB_TEST_VID), HIBYTE(USB_TEST_VID), //²âÊÔ³§ÉÌ±àºÅ
-    LOBYTE(USB_TEST_PID), HIBYTE(USB_TEST_PID), //²âÊÔ²úÆ·±àºÅ
-    0x00U, 0x01U, //Éè±¸°æ±¾1.00
-    1U, 2U, 3U,   //³§¼Ò¡¢²úÆ·ºÍĞòÁĞºÅ×Ö·û´®Ë÷Òı
-    1U            //Ö»ÓĞÒ»¸öÅäÖÃ
+    18U, USB_DESC_TYPE_DEVICE, //è®¾å¤‡æè¿°ç¬¦é•¿åº¦å’Œç±»å‹
+    0x00U, 0x02U,             //USBç‰ˆæœ¬2.00ï¼Œä½å­—èŠ‚åœ¨å‰
+    0U, 0U, 0U,              //è®¾å¤‡çº§ä¸æŒ‡å®šç±»åˆ«ï¼Œç”±æ¥å£æè¿°ç¬¦å£°æ˜
+    64U,                     //EP0æœ€å¤§åŒ…é•¿64å­—èŠ‚
+    LOBYTE(USB_TEST_VID), HIBYTE(USB_TEST_VID), //æµ‹è¯•å‚å•†ç¼–å·
+    LOBYTE(USB_TEST_PID), HIBYTE(USB_TEST_PID), //æµ‹è¯•äº§å“ç¼–å·
+    0x00U, 0x01U, //è®¾å¤‡ç‰ˆæœ¬1.00
+    1U, 2U, 3U,   //å‚å®¶ã€äº§å“å’Œåºåˆ—å·å­—ç¬¦ä¸²ç´¢å¼•
+    1U            //åªæœ‰ä¸€ä¸ªé…ç½®
 };
 
-//Ò»¸öVendor½Ó¿Ú£¬ÎŞ·ÇÁã¶Ëµã£¬²»ÉùÃ÷ÊÓÆµÄÜÁ¦
+//ä¸€ä¸ªVendoræ¥å£ï¼Œæ— éé›¶ç«¯ç‚¹ï¼Œä¸å£°æ˜è§†é¢‘èƒ½åŠ›
 static uint8_t s_config_desc[20] __attribute__((aligned(4))) =
 {
-    9U, USB_DESC_TYPE_CONFIGURATION, //ÅäÖÃÃèÊö·û³¤¶ÈºÍÀàĞÍ
-    18U, 0U, //ÅäÖÃÓë½Ó¿ÚÃèÊö·û×Ü³¤¶È18×Ö½Ú£¬µÍ×Ö½ÚÔÚÇ°
-    1U,      //Ò»¸ö½Ó¿Ú
-    1U,      //ÅäÖÃÖµ1£¬¹©SET_CONFIGURATIONÑ¡Ôñ
-    0U,      //²»Ìá¹©ÅäÖÃÃû³Æ×Ö·û´®Ë÷Òı
-    0x80U,   //×ÜÏß¹©µç£¬²»ÉùÃ÷Ô¶³Ì»½ĞÑ
-    250U,    //×î´óµçÁ÷µ¥Î»Îª2mA£¬´Ë´¦ÉùÃ÷500mA
-    9U, USB_DESC_TYPE_INTERFACE, //½Ó¿ÚÃèÊö·û³¤¶ÈºÍÀàĞÍ
-    0U, 0U, //½Ó¿Ú±àºÅ0¡¢±¸ÓÃÉèÖÃ0
-    0U,     //²»ÅäÖÃ·ÇÁã¶Ëµã£¬EP0²»¼ÆÈëÕâÀï
-    0xFFU,  //³§ÉÌ×Ô¶¨Òå½Ó¿Ú£¬ÉĞÎ´ÉùÃ÷ÎªUVC
-    0U, 0U, //×ÓÀàºÍĞ­Òé¾ùÎª0
-    0U      //²»Ìá¹©½Ó¿ÚÃû³Æ×Ö·û´®Ë÷Òı
+    9U, USB_DESC_TYPE_CONFIGURATION, //é…ç½®æè¿°ç¬¦é•¿åº¦å’Œç±»å‹
+    18U, 0U, //é…ç½®ä¸æ¥å£æè¿°ç¬¦æ€»é•¿åº¦18å­—èŠ‚ï¼Œä½å­—èŠ‚åœ¨å‰
+    1U,      //ä¸€ä¸ªæ¥å£
+    1U,      //é…ç½®å€¼1ï¼Œä¾›SET_CONFIGURATIONé€‰æ‹©
+    0U,      //ä¸æä¾›é…ç½®åç§°å­—ç¬¦ä¸²ç´¢å¼•
+    0x80U,   //æ€»çº¿ä¾›ç”µï¼Œä¸å£°æ˜è¿œç¨‹å”¤é†’
+    250U,    //æœ€å¤§ç”µæµå•ä½ä¸º2mAï¼Œæ­¤å¤„å£°æ˜500mA
+    9U, USB_DESC_TYPE_INTERFACE, //æ¥å£æè¿°ç¬¦é•¿åº¦å’Œç±»å‹
+    0U, 0U, //æ¥å£ç¼–å·0ã€å¤‡ç”¨è®¾ç½®0
+    0U,     //ä¸é…ç½®éé›¶ç«¯ç‚¹ï¼ŒEP0ä¸è®¡å…¥è¿™é‡Œ
+    0xFFU,  //å‚å•†è‡ªå®šä¹‰æ¥å£ï¼Œå°šæœªå£°æ˜ä¸ºUVC
+    0U, 0U, //å­ç±»å’Œåè®®å‡ä¸º0
+    0U      //ä¸æä¾›æ¥å£åç§°å­—ç¬¦ä¸²ç´¢å¼•
 };
 
-//ÓïÑÔÃèÊö·û£º³¤¶È4¡¢×Ö·û´®ÀàĞÍ¡¢ÓïÑÔ±àºÅ0x0409
+//è¯­è¨€æè¿°ç¬¦ï¼šé•¿åº¦4ã€å­—ç¬¦ä¸²ç±»å‹ã€è¯­è¨€ç¼–å·0x0409
 static uint8_t s_lang_desc[4] = {4U, USB_DESC_TYPE_STRING, 0x09U, 0x04U};
 
-//¸÷×Ö·û´®²éÑ¯¹²ÓÃµÄ·¢ËÍ»º³åÇø£¬ÓÉEP0Ë³Ğò´¦ÀíÇëÇó
+//å„å­—ç¬¦ä¸²æŸ¥è¯¢å…±ç”¨çš„å‘é€ç¼“å†²åŒºï¼Œç”±EP0é¡ºåºå¤„ç†è¯·æ±‚
 static uint8_t s_string_desc[64] __attribute__((aligned(4)));
 
-//½Ó¿Ú0µ±Ç°±¸ÓÃÉèÖÃ£¬»ù´¡Ã¶¾Ù¹Ì¶¨Îª0
+//æ¥å£0å½“å‰å¤‡ç”¨è®¾ç½®ï¼ŒåŸºç¡€æšä¸¾å›ºå®šä¸º0
 static uint8_t s_interface_alt;
 
-//·µ»ØÉè±¸ÃèÊö·û£¬½ö·¢ËÍÓĞĞ§µÄ18×Ö½Ú£¬²»·¢ËÍÎ²²¿²¹Æë¿Õ¼ä
+//è¿”å›è®¾å¤‡æè¿°ç¬¦ï¼Œä»…å‘é€æœ‰æ•ˆçš„18å­—èŠ‚ï¼Œä¸å‘é€å°¾éƒ¨è¡¥é½ç©ºé—´
 static uint8_t *Usb_DeviceDesc(USBD_SpeedTypeDef speed, uint16_t *length);
 
-//·µ»Ø×Ö·û´®Ö§³ÖµÄÓïÑÔ±àºÅ£¬0x0409±íÊ¾Ó¢Óï
+//è¿”å›å­—ç¬¦ä¸²æ”¯æŒçš„è¯­è¨€ç¼–å·ï¼Œ0x0409è¡¨ç¤ºè‹±è¯­
 static uint8_t *Usb_LangDesc(USBD_SpeedTypeDef speed, uint16_t *length);
 
-//½«³§¼ÒÃû³Æ×ª»»ÎªUSBÊ¹ÓÃµÄUTF-16LE×Ö·û´®ÃèÊö·û
+//å°†å‚å®¶åç§°è½¬æ¢ä¸ºUSBä½¿ç”¨çš„UTF-16LEå­—ç¬¦ä¸²æè¿°ç¬¦
 static uint8_t *Usb_Manufacturer(USBD_SpeedTypeDef speed, uint16_t *length);
 
-//·µ»ØÖ÷»úÉè±¸ÁĞ±íÖĞÊ¹ÓÃµÄ²úÆ·Ãû³Æ
+//è¿”å›ä¸»æœºè®¾å¤‡åˆ—è¡¨ä¸­ä½¿ç”¨çš„äº§å“åç§°
 static uint8_t *Usb_Product(USBD_SpeedTypeDef speed, uint16_t *length);
 
-//·µ»Øµ±Ç°½×¶Î¹Ì¶¨²âÊÔĞòÁĞºÅ£¬²»´ú±íĞ¾Æ¬Î¨Ò»±àºÅ
+//è¿”å›å½“å‰é˜¶æ®µå›ºå®šæµ‹è¯•åºåˆ—å·ï¼Œä¸ä»£è¡¨èŠ¯ç‰‡å”¯ä¸€ç¼–å·
 static uint8_t *Usb_Serial(USBD_SpeedTypeDef speed, uint16_t *length);
 
-//·µ»Ø»ù´¡Ã¶¾ÙÅäÖÃµÄÃû³Æ
+//è¿”å›åŸºç¡€æšä¸¾é…ç½®çš„åç§°
 static uint8_t *Usb_ConfigString(USBD_SpeedTypeDef speed, uint16_t *length);
 
-//·µ»Ø½Ó¿ÚÃû³Æ£¬ËµÃ÷±¾½×¶Î½öÓĞEP0¿ØÖÆÍ¨ĞÅ
+//è¿”å›æ¥å£åç§°ï¼Œè¯´æ˜æœ¬é˜¶æ®µä»…æœ‰EP0æ§åˆ¶é€šä¿¡
 static uint8_t *Usb_InterfaceString(USBD_SpeedTypeDef speed, uint16_t *length);
 
-//»ù´¡ClassÖ»´¦Àí½Ó¿Ú0µÄ±ê×¼ÇëÇó
+//åŸºç¡€Classåªå¤„ç†æ¥å£0çš„æ ‡å‡†è¯·æ±‚
 
-//SET_CONFIGURATIONÊ±µ÷ÓÃ£¬»ù´¡ClassÖ»½ÓÊÜÅäÖÃ1
+//SET_CONFIGURATIONæ—¶è°ƒç”¨ï¼ŒåŸºç¡€Classåªæ¥å—é…ç½®1
 static uint8_t Usb_ClassInit(USBD_HandleTypeDef *device, uint8_t config);
 
-//È¡ÏûÅäÖÃÊ±µ÷ÓÃ£¬»ù´¡ClassÃ»ÓĞ¶îÍâ¶Ëµã»ò×ÊÔ´ĞèÒªÊÍ·Å
+//å–æ¶ˆé…ç½®æ—¶è°ƒç”¨ï¼ŒåŸºç¡€Classæ²¡æœ‰é¢å¤–ç«¯ç‚¹æˆ–èµ„æºéœ€è¦é‡Šæ”¾
 static uint8_t Usb_ClassDeInit(USBD_HandleTypeDef *device, uint8_t config);
 
-//´¦Àí½Ó¿Ú0µÄ±ê×¼²éÑ¯£¬ÆäËûÇëÇóÍ¨¹ıEP0 STALL¾Ü¾ø
+//å¤„ç†æ¥å£0çš„æ ‡å‡†æŸ¥è¯¢ï¼Œå…¶ä»–è¯·æ±‚é€šè¿‡EP0 STALLæ‹’ç»
 static uint8_t Usb_ClassSetup(USBD_HandleTypeDef *device, USBD_SetupReqTypedef *request);
 
-//·µ»ØFull-SpeedÅäÖÃºÍ½Ó¿ÚÃèÊö·û£¬¹²18×Ö½Ú
+//è¿”å›Full-Speedé…ç½®å’Œæ¥å£æè¿°ç¬¦ï¼Œå…±18å­—èŠ‚
 static uint8_t *Usb_ConfigDesc(uint16_t *length);
 
-//·µ»Ø¿ÕÃèÊö·û£¬±¾Éè±¸²»Ìá¹©¸ßËÙºÍÆäËûËÙ¶ÈÅäÖÃ
+//è¿”å›ç©ºæè¿°ç¬¦ï¼Œæœ¬è®¾å¤‡ä¸æä¾›é«˜é€Ÿå’Œå…¶ä»–é€Ÿåº¦é…ç½®
 static uint8_t *Usb_NoDesc(uint16_t *length);
 
-//SERVICE½×¶ÎµÇ¼ÇÔ­ÓĞTEST£¬²»ÒÀÀµModeÊµÏÖ
-static SysResult_t Usb_TestRegister(void);
+//SERVICEé˜¶æ®µç™»è®°åŸæœ‰TESTï¼Œä¸ä¾èµ–Modeå®ç°
+SysResult_t Usb_TestRegister(void);
 
-//ÃèÊö·û²éÑ¯±í£ºÖ÷»úGET_DESCRIPTORÊ±£¬Core°´ÀàĞÍµ÷ÓÃ¶ÔÓ¦º¯Êı
+//æè¿°ç¬¦æŸ¥è¯¢è¡¨ï¼šä¸»æœºGET_DESCRIPTORæ—¶ï¼ŒCoreæŒ‰ç±»å‹è°ƒç”¨å¯¹åº”å‡½æ•°
 static USBD_DescriptorsTypeDef s_descriptors =
 {
-    Usb_DeviceDesc,      //Éè±¸ÃèÊö·û
-    Usb_LangDesc,        //×Ö·û´®ÓïÑÔ±àºÅ
-    Usb_Manufacturer,    //³§¼ÒÃû³Æ
-    Usb_Product,         //²úÆ·Ãû³Æ
-    Usb_Serial,          //Éè±¸ĞòÁĞºÅ
-    Usb_ConfigString,    //ÅäÖÃÃû³Æ
-    Usb_InterfaceString  //½Ó¿ÚÃû³Æ
+    Usb_DeviceDesc,      //è®¾å¤‡æè¿°ç¬¦
+    Usb_LangDesc,        //å­—ç¬¦ä¸²è¯­è¨€ç¼–å·
+    Usb_Manufacturer,    //å‚å®¶åç§°
+    Usb_Product,         //äº§å“åç§°
+    Usb_Serial,          //è®¾å¤‡åºåˆ—å·
+    Usb_ConfigString,    //é…ç½®åç§°
+    Usb_InterfaceString  //æ¥å£åç§°
 };
 
-//»ù´¡Class²Ù×÷±í£ºCore´¦ÀíÅäÖÃºÍ½Ó¿ÚÇëÇóÊ±µ÷ÓÃ£¬²»¸ºÔğÊÓÆµ´«Êä
+//åŸºç¡€Classæ“ä½œè¡¨ï¼šCoreå¤„ç†é…ç½®å’Œæ¥å£è¯·æ±‚æ—¶è°ƒç”¨ï¼Œä¸è´Ÿè´£è§†é¢‘ä¼ è¾“
 static USBD_ClassTypeDef s_base_class =
 {
 
-    //Ö÷»úÑ¡ÔñÅäÖÃºó³õÊ¼»¯Class
+    //ä¸»æœºé€‰æ‹©é…ç½®ååˆå§‹åŒ–Class
     .Init = Usb_ClassInit,
 
-    //Ö÷»úÈ¡ÏûÅäÖÃÊ±ÊÍ·ÅClass
+    //ä¸»æœºå–æ¶ˆé…ç½®æ—¶é‡Šæ”¾Class
     .DeInit = Usb_ClassDeInit,
 
-    //´¦Àí·¢¸ø½Ó¿ÚµÄ¿ØÖÆÇëÇó
+    //å¤„ç†å‘ç»™æ¥å£çš„æ§åˆ¶è¯·æ±‚
     .Setup = Usb_ClassSetup,
 
-    //²»Ìá¹©¸ßËÙÅäÖÃ
+    //ä¸æä¾›é«˜é€Ÿé…ç½®
     .GetHSConfigDescriptor = Usb_NoDesc,
 
-    //·µ»ØÊµ¼ÊÊ¹ÓÃµÄÈ«ËÙÅäÖÃ
+    //è¿”å›å®é™…ä½¿ç”¨çš„å…¨é€Ÿé…ç½®
     .GetFSConfigDescriptor = Usb_ConfigDesc,
 
-    //²»Ìá¹©ÆäËûËÙ¶ÈÅäÖÃ
+    //ä¸æä¾›å…¶ä»–é€Ÿåº¦é…ç½®
     .GetOtherSpeedConfigDescriptor = Usb_NoDesc,
 
-    //²»Ìá¹©¸ßËÙÉè±¸ÏŞ¶¨ÃèÊö·û
+    //ä¸æä¾›é«˜é€Ÿè®¾å¤‡é™å®šæè¿°ç¬¦
     .GetDeviceQualifierDescriptor = Usb_NoDesc
 };
 
-//CoreÒÑÔÚDEVICE½×¶Î³õÊ¼»¯£¬´Ë´¦Ö»×¢²áÔ­ÓĞTEST
-static SysResult_t Usb_TestRegister(void)
+//Coreå·²åœ¨DEVICEé˜¶æ®µåˆå§‹åŒ–ï¼Œæ­¤å¤„åªæ³¨å†ŒåŸæœ‰TEST
+SysResult_t Usb_TestRegister(void)
 {
     return USB_Device_RegisterClass(&s_base_class, &s_descriptors);
 }
 
-FRAMEWORK_INIT_REGISTER(Usb_TestRegister, INIT_LEVEL_SERVICE);
 
-//ÄÚ²¿¹¦ÄÜº¯ÊıÊµÏÖ
+//å†…éƒ¨åŠŸèƒ½å‡½æ•°å®ç°
 
-//·µ»ØÉè±¸ÃèÊö·û£¬½ö·¢ËÍÓĞĞ§µÄ18×Ö½Ú£¬²»·¢ËÍÎ²²¿²¹Æë¿Õ¼ä
+//è¿”å›è®¾å¤‡æè¿°ç¬¦ï¼Œä»…å‘é€æœ‰æ•ˆçš„18å­—èŠ‚ï¼Œä¸å‘é€å°¾éƒ¨è¡¥é½ç©ºé—´
 static uint8_t *Usb_DeviceDesc(USBD_SpeedTypeDef speed, uint16_t *length)
 {
     (void)speed;
@@ -147,7 +146,7 @@ static uint8_t *Usb_DeviceDesc(USBD_SpeedTypeDef speed, uint16_t *length)
     return s_device_desc;
 }
 
-//·µ»Ø×Ö·û´®Ö§³ÖµÄÓïÑÔ±àºÅ£¬0x0409±íÊ¾Ó¢Óï
+//è¿”å›å­—ç¬¦ä¸²æ”¯æŒçš„è¯­è¨€ç¼–å·ï¼Œ0x0409è¡¨ç¤ºè‹±è¯­
 static uint8_t *Usb_LangDesc(USBD_SpeedTypeDef speed, uint16_t *length)
 {
     (void)speed;
@@ -155,7 +154,7 @@ static uint8_t *Usb_LangDesc(USBD_SpeedTypeDef speed, uint16_t *length)
     return s_lang_desc;
 }
 
-//½«³§¼ÒÃû³Æ×ª»»ÎªUSBÊ¹ÓÃµÄUTF-16LE×Ö·û´®ÃèÊö·û
+//å°†å‚å®¶åç§°è½¬æ¢ä¸ºUSBä½¿ç”¨çš„UTF-16LEå­—ç¬¦ä¸²æè¿°ç¬¦
 static uint8_t *Usb_Manufacturer(USBD_SpeedTypeDef speed, uint16_t *length)
 {
     (void)speed;
@@ -163,7 +162,7 @@ static uint8_t *Usb_Manufacturer(USBD_SpeedTypeDef speed, uint16_t *length)
     return s_string_desc;
 }
 
-//·µ»ØÖ÷»úÉè±¸ÁĞ±íÖĞÊ¹ÓÃµÄ²úÆ·Ãû³Æ
+//è¿”å›ä¸»æœºè®¾å¤‡åˆ—è¡¨ä¸­ä½¿ç”¨çš„äº§å“åç§°
 static uint8_t *Usb_Product(USBD_SpeedTypeDef speed, uint16_t *length)
 {
     (void)speed;
@@ -171,7 +170,7 @@ static uint8_t *Usb_Product(USBD_SpeedTypeDef speed, uint16_t *length)
     return s_string_desc;
 }
 
-//·µ»Øµ±Ç°½×¶Î¹Ì¶¨²âÊÔĞòÁĞºÅ£¬²»´ú±íĞ¾Æ¬Î¨Ò»±àºÅ
+//è¿”å›å½“å‰é˜¶æ®µå›ºå®šæµ‹è¯•åºåˆ—å·ï¼Œä¸ä»£è¡¨èŠ¯ç‰‡å”¯ä¸€ç¼–å·
 static uint8_t *Usb_Serial(USBD_SpeedTypeDef speed, uint16_t *length)
 {
     (void)speed;
@@ -179,7 +178,7 @@ static uint8_t *Usb_Serial(USBD_SpeedTypeDef speed, uint16_t *length)
     return s_string_desc;
 }
 
-//·µ»Ø»ù´¡Ã¶¾ÙÅäÖÃµÄÃû³Æ
+//è¿”å›åŸºç¡€æšä¸¾é…ç½®çš„åç§°
 static uint8_t *Usb_ConfigString(USBD_SpeedTypeDef speed, uint16_t *length)
 {
     (void)speed;
@@ -187,7 +186,7 @@ static uint8_t *Usb_ConfigString(USBD_SpeedTypeDef speed, uint16_t *length)
     return s_string_desc;
 }
 
-//·µ»Ø½Ó¿ÚÃû³Æ£¬ËµÃ÷±¾½×¶Î½öÓĞEP0¿ØÖÆÍ¨ĞÅ
+//è¿”å›æ¥å£åç§°ï¼Œè¯´æ˜æœ¬é˜¶æ®µä»…æœ‰EP0æ§åˆ¶é€šä¿¡
 static uint8_t *Usb_InterfaceString(USBD_SpeedTypeDef speed, uint16_t *length)
 {
     (void)speed;
@@ -195,28 +194,28 @@ static uint8_t *Usb_InterfaceString(USBD_SpeedTypeDef speed, uint16_t *length)
     return s_string_desc;
 }
 
-//·µ»ØFull-SpeedÅäÖÃºÍ½Ó¿ÚÃèÊö·û£¬¹²18×Ö½Ú
+//è¿”å›Full-Speedé…ç½®å’Œæ¥å£æè¿°ç¬¦ï¼Œå…±18å­—èŠ‚
 static uint8_t *Usb_ConfigDesc(uint16_t *length)
 {
     *length = 18U;
     return s_config_desc;
 }
 
-//·µ»Ø¿ÕÃèÊö·û£¬±¾Éè±¸²»Ìá¹©¸ßËÙºÍÆäËûËÙ¶ÈÅäÖÃ
+//è¿”å›ç©ºæè¿°ç¬¦ï¼Œæœ¬è®¾å¤‡ä¸æä¾›é«˜é€Ÿå’Œå…¶ä»–é€Ÿåº¦é…ç½®
 static uint8_t *Usb_NoDesc(uint16_t *length)
 {
     *length = 0U;
     return NULL;
 }
 
-//SET_CONFIGURATIONÊ±µ÷ÓÃ£¬»ù´¡ClassÖ»½ÓÊÜÅäÖÃ1
+//SET_CONFIGURATIONæ—¶è°ƒç”¨ï¼ŒåŸºç¡€Classåªæ¥å—é…ç½®1
 static uint8_t Usb_ClassInit(USBD_HandleTypeDef *device, uint8_t config)
 {
     (void)device;
     return config == 1U ? USBD_OK : USBD_FAIL;
 }
 
-//È¡ÏûÅäÖÃÊ±µ÷ÓÃ£¬»ù´¡ClassÃ»ÓĞ¶îÍâ¶Ëµã»ò×ÊÔ´ĞèÒªÊÍ·Å
+//å–æ¶ˆé…ç½®æ—¶è°ƒç”¨ï¼ŒåŸºç¡€Classæ²¡æœ‰é¢å¤–ç«¯ç‚¹æˆ–èµ„æºéœ€è¦é‡Šæ”¾
 static uint8_t Usb_ClassDeInit(USBD_HandleTypeDef *device, uint8_t config)
 {
     (void)device;
@@ -224,14 +223,14 @@ static uint8_t Usb_ClassDeInit(USBD_HandleTypeDef *device, uint8_t config)
     return USBD_OK;
 }
 
-//´¦Àí½Ó¿Ú0µÄ±ê×¼²éÑ¯£¬ÆäËûÇëÇóÍ¨¹ıEP0 STALL¾Ü¾ø
+//å¤„ç†æ¥å£0çš„æ ‡å‡†æŸ¥è¯¢ï¼Œå…¶ä»–è¯·æ±‚é€šè¿‡EP0 STALLæ‹’ç»
 static uint8_t Usb_ClassSetup(USBD_HandleTypeDef *device, USBD_SetupReqTypedef *request)
 {
 
-    //Ó¦´ğÓÉÖĞ¶ÏÒì²½·¢ËÍ£¬Ê¹ÓÃ¾²Ì¬´æ´¢±£Ö¤·µ»ØºóÊı¾İÈÔÓĞĞ§
+    //åº”ç­”ç”±ä¸­æ–­å¼‚æ­¥å‘é€ï¼Œä½¿ç”¨é™æ€å­˜å‚¨ä¿è¯è¿”å›åæ•°æ®ä»æœ‰æ•ˆ
     static uint16_t status;
 
-    //½öÓĞ½Ó¿Ú0¡¢±¸ÓÃÉèÖÃ0£¬Ã»ÓĞUVCÇĞ»»»ò³§ÉÌÃüÁî
+    //ä»…æœ‰æ¥å£0ã€å¤‡ç”¨è®¾ç½®0ï¼Œæ²¡æœ‰UVCåˆ‡æ¢æˆ–å‚å•†å‘½ä»¤
     if ((request->bmRequest & USB_REQ_TYPE_MASK) == USB_REQ_TYPE_STANDARD && request->wIndex == 0U)
     {
         if (request->bRequest == USB_REQ_GET_INTERFACE && request->wLength == 1U)
@@ -248,7 +247,7 @@ static uint8_t Usb_ClassSetup(USBD_HandleTypeDef *device, USBD_SetupReqTypedef *
         }
     }
 
-    //Î´Ö§³ÖµÄÇëÇóÉèÖÃSTALL£¬²»ÄÜÎ±×°Îª´¦Àí³É¹¦
+    //æœªæ”¯æŒçš„è¯·æ±‚è®¾ç½®STALLï¼Œä¸èƒ½ä¼ªè£…ä¸ºå¤„ç†æˆåŠŸ
     USBD_CtlError(device, request);
     return USBD_FAIL;
 }

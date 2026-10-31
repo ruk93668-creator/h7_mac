@@ -1,0 +1,182 @@
+[
+  {
+    "path": "CM7/BSP/bsp_usb.c",
+    "status": "M",
+    "reason": "PIO按包暂存和尾部补齐；多包续传；Abort/Close所有权；共享RX保护；EP0定向屏蔽与旧XFRC/EPDISD清除。"
+  },
+  {
+    "path": "CM7/BSP/bsp_usb.h",
+    "status": "M",
+    "reason": "导出Abort与PIO/端点通用接口，保留硬件能力约束。"
+  },
+  {
+    "path": "CM7/Platform/usb_device.c",
+    "status": "M",
+    "reason": "严格配置/Endpoint声明检查；Core管理EP0；新SETUP取消旧事务；数据端点所有权；Class私有数据隔离；设备错误与操作错误分域。"
+  },
+  {
+    "path": "CM7/Platform/usb_device.h",
+    "status": "M",
+    "reason": "补齐通用Abort、最近操作结果等公开声明和语义说明。"
+  },
+  {
+    "path": "CM7/Service/usb_mode.c",
+    "status": "M",
+    "reason": "集中选择默认TEST；不覆盖显式Class；仅设备级故障触发恢复判断；保留main的Service目录。"
+  },
+  {
+    "path": "CM7/Service/usb_test_device.c",
+    "status": "M",
+    "reason": "移除Class自行SERVICE自动注册，由Mode Manager统一选择；TEST描述符和Class留在Service。"
+  },
+  {
+    "path": "Tests/Ep0IrqRace/commands.json",
+    "status": "A",
+    "reason": "四项IRQ测试实际编译命令。"
+  },
+  {
+    "path": "Tests/Ep0IrqRace/race_test.c",
+    "status": "A",
+    "reason": "新增A/B/C/D四项真实HAL IRQ调度回归，覆盖新真实完成、Abort失败所有权及其他端点保护。"
+  },
+  {
+    "path": "Tests/Ep0IrqRace/results.json",
+    "status": "A",
+    "reason": "四项IRQ测试逐项事件顺序、观察值、断言结果。"
+  },
+  {
+    "path": "Tests/Ep0IrqRace/run_race.py",
+    "status": "A",
+    "reason": "编译未改动HAL IRQ/LL并运行W1C寄存器模型，适配Service路径。"
+  },
+  {
+    "path": "Tests/UsbCoreDecoupling/commands.json",
+    "status": "M",
+    "reason": "本轮实际ARMCC5编译/链接命令、输出与退出码。"
+  },
+  {
+    "path": "Tests/UsbCoreDecoupling/core_test.c",
+    "status": "M",
+    "reason": "迁移完整204项驱动及正常/取消控制事务夹具；适配Service路径和默认Class初始化前置条件。"
+  },
+  {
+    "path": "Tests/UsbCoreDecoupling/endpoint_lifecycle_test.c",
+    "status": "M",
+    "reason": "保留363/364实际测试体、365至371 EP0边界等断言，迁移全部19项相关测试修正。"
+  },
+  {
+    "path": "Tests/UsbCoreDecoupling/legacy_test.c",
+    "status": "M",
+    "reason": "适配真实Class注册/控制事务及端点声明前置条件。"
+  },
+  {
+    "path": "Tests/UsbCoreDecoupling/results.json",
+    "status": "M",
+    "reason": "本轮204项逐项输入、预期、实际、PASS/FAIL与源文件哈希。"
+  },
+  {
+    "path": "Tests/UsbCoreDecoupling/results.md",
+    "status": "M",
+    "reason": "204项可阅读结果清单。"
+  },
+  {
+    "path": "Tests/UsbCoreDecoupling/run_tests.py",
+    "status": "M",
+    "reason": "保留204项执行集合与编号完整性检查；Service引用路径和include path适配。"
+  },
+  {
+    "path": "Tests/UsbCoreDecoupling/stage3_acceptance.md",
+    "status": "A",
+    "reason": "保留Stage3设计及最初未验收说明，属于历史文档；本轮结果以本报告为准。"
+  },
+  {
+    "path": "Tests/UsbStage4Migration/audit.json",
+    "status": "A",
+    "reason": "迁移过程、分层差异、SHA审计、构建或回归证据；不加入Keil固件编译。"
+  },
+  {
+    "path": "Tests/UsbStage4Migration/audit.py",
+    "status": "A",
+    "reason": "可重复执行范围、受保护SHA、正式工作区保护、204/4结果及构建日志审计。"
+  },
+  {
+    "path": "Tests/UsbStage4Migration/build_h7_mac_CM4.log",
+    "status": "A",
+    "reason": "迁移过程、分层差异、SHA审计、构建或回归证据；不加入Keil固件编译。"
+  },
+  {
+    "path": "Tests/UsbStage4Migration/build_h7_mac_CM7.log",
+    "status": "A",
+    "reason": "迁移过程、分层差异、SHA审计、构建或回归证据；不加入Keil固件编译。"
+  },
+  {
+    "path": "Tests/UsbStage4Migration/ep0_P0_and_missing_tests.patch",
+    "status": "A",
+    "reason": "单层规范化文本差异，用于依赖审查；实际应用请使用工作树外的完整累计补丁。"
+  },
+  {
+    "path": "Tests/UsbStage4Migration/ep0_old_XFRC.patch",
+    "status": "A",
+    "reason": "单层规范化文本差异，用于依赖审查；实际应用请使用工作树外的完整累计补丁。"
+  },
+  {
+    "path": "Tests/UsbStage4Migration/file_manifest.json",
+    "status": "A",
+    "reason": "完整迁移文件清单与逐文件原因。"
+  },
+  {
+    "path": "Tests/UsbStage4Migration/formal_before.json",
+    "status": "A",
+    "reason": "迁移过程、分层差异、SHA审计、构建或回归证据；不加入Keil固件编译。"
+  },
+  {
+    "path": "Tests/UsbStage4Migration/make_report.py",
+    "status": "A",
+    "reason": "迁移过程、分层差异、SHA审计、构建或回归证据；不加入Keil固件编译。"
+  },
+  {
+    "path": "Tests/UsbStage4Migration/migrate.py",
+    "status": "A",
+    "reason": "本机本轮迁移记录脚本：从公共祖先分四层三方合并；依赖旧隔离副本，不应在已迁移工作树再次执行。"
+  },
+  {
+    "path": "Tests/UsbStage4Migration/migration_manifest.json",
+    "status": "A",
+    "reason": "迁移过程、分层差异、SHA审计、构建或回归证据；不加入Keil固件编译。"
+  },
+  {
+    "path": "Tests/UsbStage4Migration/protected_sha256.json",
+    "status": "A",
+    "reason": "迁移过程、分层差异、SHA审计、构建或回归证据；不加入Keil固件编译。"
+  },
+  {
+    "path": "Tests/UsbStage4Migration/regression_204.log",
+    "status": "A",
+    "reason": "迁移过程、分层差异、SHA审计、构建或回归证据；不加入Keil固件编译。"
+  },
+  {
+    "path": "Tests/UsbStage4Migration/regression_irq.log",
+    "status": "A",
+    "reason": "迁移过程、分层差异、SHA审计、构建或回归证据；不加入Keil固件编译。"
+  },
+  {
+    "path": "Tests/UsbStage4Migration/remaining19.patch",
+    "status": "A",
+    "reason": "单层规范化文本差异，用于依赖审查；实际应用请使用工作树外的完整累计补丁。"
+  },
+  {
+    "path": "Tests/UsbStage4Migration/stage3_architecture.patch",
+    "status": "A",
+    "reason": "单层规范化文本差异，用于依赖审查；实际应用请使用工作树外的完整累计补丁。"
+  },
+  {
+    "path": "Tests/UsbStage4Migration/verification_report.md",
+    "status": "A",
+    "reason": "本轮迁移基线、文件原因、验收、冲突及限制。"
+  },
+  {
+    "path": "Tests/UsbStage4Migration/whitespace_check.log",
+    "status": "A",
+    "reason": "迁移过程、分层差异、SHA审计、构建或回归证据；不加入Keil固件编译。"
+  }
+]

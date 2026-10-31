@@ -4,134 +4,149 @@
 #include <stdbool.h>
 #include "platform_time.h"
 
+//ç”±Mode Manageré€‰æ‹©å¹¶æ³¨å†Œå½“å‰Class
+SysResult_t Usb_TestRegister(void);
+
+static SysResult_t UsbMode_RegisterClass(UsbMode_t mode);
+
 #define USB_MODE_CONFIGURED_TIMEOUT_MS    (5000U)
 
-//USBÄ£Ê½ÔËĞĞÉÏÏÂÎÄ£¬½öÓÉÖ÷Ñ­»·ºÍ³õÊ¼»¯Á÷³Ì¹ÜÀí
+//USBæ¨¡å¼è¿è¡Œä¸Šä¸‹æ–‡ï¼Œä»…ç”±ä¸»å¾ªç¯å’Œåˆå§‹åŒ–æµç¨‹ç®¡ç†
 typedef struct
 {
 
-    //µ±Ç°Ä£Ê½£¬ÔİÊ±Ö»Ö§³ÖTEST
+    //å½“å‰æ¨¡å¼ï¼Œæš‚æ—¶åªæ”¯æŒTEST
     UsbMode_t mode, target_mode;
 
-    //// RUNNING±íÊ¾Ö÷»úÒÑÍê³ÉÅäÖÃ
+    //// RUNNINGè¡¨ç¤ºä¸»æœºå·²å®Œæˆé…ç½®
     UsbModeState_t state;
 
-    //Ä£Ê½¹ÜÀíÆ÷ÒÑ³õÊ¼»¯
+    //æ¨¡å¼ç®¡ç†å™¨å·²åˆå§‹åŒ–
     bool initialized;
 
-	// ½øÈëµ±Ç°×´Ì¬µÄÊ±¼ä£¬ÓÃÓÚ·Ç×èÈû³¬Ê±ÅĞ¶Ï
+	// è¿›å…¥å½“å‰çŠ¶æ€çš„æ—¶é—´ï¼Œç”¨äºéé˜»å¡è¶…æ—¶åˆ¤æ–­
 	uint32_t state_enter_ms;
 	
-    //×î½üÒ»´ÎÆô¶¯½á¹û£¬¹©µ÷ÊÔ¹Û²ì
+    //æœ€è¿‘ä¸€æ¬¡å¯åŠ¨ç»“æœï¼Œä¾›è°ƒè¯•è§‚å¯Ÿ
     SysResult_t last_result;
 } UsbModeContext_t;
 
-//¾²Ì¬Ä£Ê½¹ÜÀí¶ÔÏó£¬¸´Î»ºó×´Ì¬ÎªUNINITIALIZED
+//é™æ€æ¨¡å¼ç®¡ç†å¯¹è±¡ï¼Œå¤ä½åçŠ¶æ€ä¸ºUNINITIALIZED
 static UsbModeContext_t s_usb_mode;
 
-//ÔÚAPPLICATIONµÈ¼¶Æô¶¯µ±Ç°USBÄ£Ê½
+//åœ¨APPLICATIONç­‰çº§å¯åŠ¨å½“å‰USBæ¨¡å¼
 static SysResult_t UsbMode_AppStart(void);
 
-//SERVICEµÈ¼¶×¼±¸¹ÜÀí×´Ì¬£¬²»ÖØ¸´³õÊ¼»¯Core
+//SERVICEç­‰çº§å‡†å¤‡ç®¡ç†çŠ¶æ€ï¼Œä¸é‡å¤åˆå§‹åŒ–Core
 SysResult_t USB_Mode_Init(void)
 {
 
-    //ÖØ¸´³õÊ¼»¯²»ÄÜÇå³ıÕıÔÚÔËĞĞµÄ×´Ì¬
+    //é‡å¤åˆå§‹åŒ–ä¸èƒ½æ¸…é™¤æ­£åœ¨è¿è¡Œçš„çŠ¶æ€
     if (s_usb_mode.initialized)
         return SYS_OK;
 
-    //DEVICEµÈ¼¶ÒÑ¾­×¢²áÏÖÓĞTEST Class
+    //å·²æœ‰ä¸Šå±‚æ˜¾å¼æ³¨å†Œçš„Classä¸è¦†ç›–ï¼›å¦åˆ™ç”±Mode Manageré€‰æ‹©é»˜è®¤TEST
     s_usb_mode.mode = USB_MODE_TEST;
+    {
+        uint16_t descriptor_length = 0U;
+        if (USB_Device_GetConfigDescriptor(&descriptor_length) == NULL)
+        {
+            SysResult_t result = UsbMode_RegisterClass(s_usb_mode.mode);
+            if (result != SYS_OK)
+            {
+                s_usb_mode.last_result = result;
+                s_usb_mode.state = USB_MODE_STATE_ERROR;
+                return result;
+            }
+        }
+    }
     s_usb_mode.state = USB_MODE_STATE_IDLE;
     s_usb_mode.last_result = SYS_OK;
     s_usb_mode.initialized = true;
-
     return SYS_OK;
 }
 
-//Æô¶¯ÏÖÓĞTESTÉè±¸£¬±£ÁôÔ­ÓĞÃèÊö·ûºÍ¶ËµãÅäÖÃ
+//å¯åŠ¨ç°æœ‰TESTè®¾å¤‡ï¼Œä¿ç•™åŸæœ‰æè¿°ç¬¦å’Œç«¯ç‚¹é…ç½®
 SysResult_t USB_Mode_Start(void)
 {
     SysResult_t result;
 
-    //±ØĞëÏÈÍê³ÉÄ£Ê½¹ÜÀí³õÊ¼»¯
+    //å¿…é¡»å…ˆå®Œæˆæ¨¡å¼ç®¡ç†åˆå§‹åŒ–
     if (!s_usb_mode.initialized)
         return SYS_ERR_INVALID_STATE;
 
-    //UVCºÍMSC½öÔ¤ÁôÃ¶¾Ù£¬ÉĞÎ´½ÓÈëClass
+    //UVCå’ŒMSCä»…é¢„ç•™æšä¸¾ï¼Œå°šæœªæ¥å…¥Class
     if (s_usb_mode.mode != USB_MODE_TEST)
         return SYS_ERR_NOT_SUPPORTED;
 
-    //ÒÑ¾­Æô¶¯Ê±¾Ü¾øµÚ¶ş´ÎÆô¶¯
+    //å·²ç»å¯åŠ¨æ—¶æ‹’ç»ç¬¬äºŒæ¬¡å¯åŠ¨
     if (s_usb_mode.state == USB_MODE_STATE_RUNNING)
         return SYS_ERR_BUSY;
 
-    //ÇĞ»»ºÍ¹ÊÕÏ»Ö¸´Á÷³ÌÉĞÎ´ÊµÏÖ£¬Ö»ÔÊĞí¿ÕÏĞÊ±Æô¶¯
+    //åˆ‡æ¢å’Œæ•…éšœæ¢å¤æµç¨‹å°šæœªå®ç°ï¼Œåªå…è®¸ç©ºé—²æ—¶å¯åŠ¨
     if (s_usb_mode.state != USB_MODE_STATE_IDLE)
         return SYS_ERR_INVALID_STATE;
 
-    //¼ÇÂ¼Æô¶¯¹ı³Ì£¬µ÷ÓÃ¼ÈÓĞCoreÆô¶¯½Ó¿Ú
+    //è®°å½•å¯åŠ¨è¿‡ç¨‹ï¼Œè°ƒç”¨æ—¢æœ‰Coreå¯åŠ¨æ¥å£
     s_usb_mode.state = USB_MODE_STATE_STARTING;
     result = USB_Device_Start();
     s_usb_mode.last_result = result;
 
-    //Æô¶¯Ê§°Ü±£Áô´íÎó£¬²»×Ô¶¯ÖØÊÔ»ò»Ö¸´
+    //å¯åŠ¨å¤±è´¥ä¿ç•™é”™è¯¯ï¼Œä¸è‡ªåŠ¨é‡è¯•æˆ–æ¢å¤
     if (result != SYS_OK)
     {
         s_usb_mode.state = USB_MODE_STATE_ERROR;
         return result;
     }
 
-	// ¼ÇÂ¼µÈ´ıÖ÷»úÍê³ÉÃ¶¾ÙµÄÆğÊ¼Ê±¼ä
-    //ÕâÀïÖ»È·ÈÏÈí¼şÆô¶¯³É¹¦
+	// è®°å½•ç­‰å¾…ä¸»æœºå®Œæˆæšä¸¾çš„èµ·å§‹æ—¶é—´
+    //è¿™é‡Œåªç¡®è®¤è½¯ä»¶å¯åŠ¨æˆåŠŸ
 	s_usb_mode.state_enter_ms = Platform_TimeGetMs();
     s_usb_mode.state = USB_MODE_STATE_WAIT_CONFIGURED;
     return SYS_OK;
 }
 
-//ÇëÇó¶Ï¿ª²¢ÒÔÄ¿±êÄ£Ê½ÖØĞÂÃ¶¾Ù£¬Ö»¼ÇÂ¼ÇëÇó²»Ö´ĞĞÓ²¼ş²Ù×÷
+//è¯·æ±‚æ–­å¼€å¹¶ä»¥ç›®æ ‡æ¨¡å¼é‡æ–°æšä¸¾ï¼Œåªè®°å½•è¯·æ±‚ä¸æ‰§è¡Œç¡¬ä»¶æ“ä½œ
 SysResult_t USB_Mode_RequestReconnect(UsbMode_t target_mode)
 {
-    //Î´³õÊ¼»¯Ê±²»ÄÜÇëÇóÖØÁ¬
+    //æœªåˆå§‹åŒ–æ—¶ä¸èƒ½è¯·æ±‚é‡è¿
     if (!s_usb_mode.initialized)
         return SYS_ERR_INVALID_STATE;
-    //UVCºÍMSCÉĞÎ´½ÓÈëClass£¬²»ÄÜ×÷ÎªÖØÁ¬Ä¿±ê
+    //UVCå’ŒMSCå°šæœªæ¥å…¥Classï¼Œä¸èƒ½ä½œä¸ºé‡è¿ç›®æ ‡
     if (target_mode != USB_MODE_TEST)
         return SYS_ERR_NOT_SUPPORTED;
 
-    //Æô¶¯Á÷³ÌÎ´Íê³ÉÊ±²»ÄÜ´ò¶Ï
+    //å¯åŠ¨æµç¨‹æœªå®Œæˆæ—¶ä¸èƒ½æ‰“æ–­
     if (s_usb_mode.state == USB_MODE_STATE_STARTING)
         return SYS_ERR_BUSY;
 
-    //ÖØÁ¬Á÷³ÌÒÑ¾­½øĞĞÖĞ£¬¾Ü¾øµÚ¶ş´ÎÇëÇó
+    //é‡è¿æµç¨‹å·²ç»è¿›è¡Œä¸­ï¼Œæ‹’ç»ç¬¬äºŒæ¬¡è¯·æ±‚
     if (s_usb_mode.state == USB_MODE_STATE_STOPPING ||
         s_usb_mode.state == USB_MODE_STATE_WAIT_RECONNECT ||
         s_usb_mode.state == USB_MODE_STATE_REGISTERING)
         return SYS_ERR_BUSY;
 
-    //¿ÕÏĞ×´Ì¬Ã»ÓĞÒÑ½¨Á¢µÄÁ¬½Ó£¬ÖØÁ¬Ã»ÓĞÒâÒå
+    //ç©ºé—²çŠ¶æ€æ²¡æœ‰å·²å»ºç«‹çš„è¿æ¥ï¼Œé‡è¿æ²¡æœ‰æ„ä¹‰
     if (s_usb_mode.state == USB_MODE_STATE_IDLE)
         return SYS_ERR_INVALID_STATE;
 
-    //RUNNING¡¢WAIT_CONFIGUREDºÍERRORÔÊĞíÊÜÀí£º
-    //ERRORÊÜÀíÊÇÍ£Ö¹»òÆô¶¯Ê§°ÜºóµÄÎ¨Ò»»Ö¸´Èë¿Ú
-	
-	if ( s_usb_mode.state != USB_MODE_STATE_RUNNING)
-		return SYS_ERR_BUSY;
-	
+    //RUNNINGæˆ–ERRORå…è®¸è¿›å…¥å—æ§Stop/é‡æ–°æšä¸¾
+    if (s_usb_mode.state != USB_MODE_STATE_RUNNING && s_usb_mode.state != USB_MODE_STATE_ERROR)
+        return SYS_ERR_BUSY;
+
     s_usb_mode.target_mode = target_mode;
     s_usb_mode.state = USB_MODE_STATE_STOPPING;
 	
     return SYS_OK;
 }
 
-//·Ç×èÈûÖ÷Ñ­»·Èë¿Ú£¬Ôİ²»Ö´ĞĞÈÎºÎÄ£Ê½ÇĞ»»
+//éé˜»å¡ä¸»å¾ªç¯å…¥å£ï¼Œæš‚ä¸æ‰§è¡Œä»»ä½•æ¨¡å¼åˆ‡æ¢
 void USB_Mode_Process(void)
 {
     uint32_t now_ms;
     SysResult_t usb_result;
 	
-    //³õÊ¼»¯Î´Íê³ÉÊ±²»´¦Àí
+    //åˆå§‹åŒ–æœªå®Œæˆæ—¶ä¸å¤„ç†
     if (!s_usb_mode.initialized)
         return;
 
@@ -139,7 +154,7 @@ void USB_Mode_Process(void)
     {
         case USB_MODE_STATE_WAIT_CONFIGURED:
         {
-            // Ö÷»úÒÑ¾­Íê³ÉÅäÖÃ£¬ÕıÊ½½øÈëÔËĞĞ×´Ì¬
+            // ä¸»æœºå·²ç»å®Œæˆé…ç½®ï¼Œæ­£å¼è¿›å…¥è¿è¡ŒçŠ¶æ€
             if (USB_Device_IsConfigured())
             {
                 s_usb_mode.state = USB_MODE_STATE_RUNNING;
@@ -147,7 +162,7 @@ void USB_Mode_Process(void)
                 break;
             }
 
-            // µ×²ã·¢Éú´íÎóÊ±£¬²»±Ø¼ÌĞøµÈ´ı³¬Ê±
+            // åº•å±‚å‘ç”Ÿé”™è¯¯æ—¶ï¼Œä¸å¿…ç»§ç»­ç­‰å¾…è¶…æ—¶
             usb_result = USB_Device_GetLastResult();
 
             if (usb_result != SYS_OK)
@@ -157,7 +172,7 @@ void USB_Mode_Process(void)
                 break;
             }
 
-            // ·Ç×èÈû¼ì²éÃ¶¾Ù³¬Ê±
+            // éé˜»å¡æ£€æŸ¥æšä¸¾è¶…æ—¶
             now_ms = Platform_TimeGetMs();
 
             if ((uint32_t)(now_ms - s_usb_mode.state_enter_ms)
@@ -169,9 +184,20 @@ void USB_Mode_Process(void)
 
             break;
         }
+        case USB_MODE_STATE_RUNNING:
+        {
+            //è¿è¡ŒæœŸé—´åªå“åº”è®¾å¤‡çº§è‡´å‘½é”™è¯¯ï¼Œç«¯ç‚¹BUSYå’ŒISOä¸¢åŒ…ä¸ä¼šè§¦å‘æ¢å¤
+            usb_result = USB_Device_GetLastResult();
+            if (usb_result != SYS_OK)
+            {
+                s_usb_mode.last_result = usb_result;
+                s_usb_mode.state = USB_MODE_STATE_ERROR;
+            }
+            break;
+        }
         case USB_MODE_STATE_STOPPING:
 		{
-			//Í£Ö¹USBÇı¶¯
+			//åœæ­¢USBé©±åŠ¨
 			usb_result = USB_Device_Stop();
 			
 			if ( usb_result != SYS_OK)
@@ -181,7 +207,7 @@ void USB_Mode_Process(void)
 				return;
 			}
 			
-			//¼ÇÂ¼Í£Ö¹Ê±¼ä
+			//è®°å½•åœæ­¢æ—¶é—´
 			s_usb_mode.state_enter_ms = Platform_TimeGetMs();
 			
 			s_usb_mode.state = USB_MODE_STATE_WAIT_RECONNECT;
@@ -189,7 +215,7 @@ void USB_Mode_Process(void)
 		}
 		case USB_MODE_STATE_WAIT_RECONNECT:
 		{
-			//¶Ï¿ªµÈ´ı500MS
+			//æ–­å¼€ç­‰å¾…500MS
 			if ( Platform_TimeGetMs() - 
 				 s_usb_mode.state_enter_ms >= 500)
 				s_usb_mode.state = USB_MODE_STATE_STARTING;
@@ -197,7 +223,7 @@ void USB_Mode_Process(void)
 		}
 		case USB_MODE_STATE_STARTING:
 		{
-			//¿ªÊ¼ÅäÖÃUSB
+			//å¼€å§‹é…ç½®USB
 			usb_result = USB_Device_Start();
 			
 			if ( usb_result != SYS_OK)
@@ -207,7 +233,7 @@ void USB_Mode_Process(void)
 				return;
 			}
 			
-			//¸üĞÂÊ±¼ä
+			//æ›´æ–°æ—¶é—´
 			s_usb_mode.state_enter_ms = Platform_TimeGetMs();
 			s_usb_mode.state = USB_MODE_STATE_WAIT_CONFIGURED;
 			break;
@@ -215,15 +241,29 @@ void USB_Mode_Process(void)
     }
 }
 
-//CoreÔÚDEVICE½×¶Î¾ÍĞ÷£¬¹ÜÀíÆ÷ÔÚSERVICE½×¶Î³õÊ¼»¯
+//Coreåœ¨DEVICEé˜¶æ®µå°±ç»ªï¼Œç®¡ç†å™¨åœ¨SERVICEé˜¶æ®µåˆå§‹åŒ–
 FRAMEWORK_INIT_REGISTER(USB_Mode_Init, INIT_LEVEL_SERVICE);
 
-//±£ÁôÎ¨Ò»µÄAPPLICATIONµÈ¼¶USBÆô¶¯Èë¿Ú
+//ä¿ç•™å”¯ä¸€çš„APPLICATIONç­‰çº§USBå¯åŠ¨å…¥å£
 FRAMEWORK_INIT_REGISTER(UsbMode_AppStart, INIT_LEVEL_APPLICATION);
 
-//ÄÚ²¿¹¦ÄÜº¯ÊıÊµÏÖ
+//å†…éƒ¨åŠŸèƒ½å‡½æ•°å®ç°
 
-//APPLICATIONµÈ¼¶Ö»×ª½»Ä£Ê½¹ÜÀíÆ÷£¬²»Ö±½ÓÆô¶¯Core
+//é›†ä¸­é€‰æ‹©Classï¼›å°šæœªæ¥å…¥çš„æ¨¡å¼æ˜ç¡®æ‹’ç»æ³¨å†Œ
+static SysResult_t UsbMode_RegisterClass(UsbMode_t mode)
+{
+    switch (mode)
+    {
+        case USB_MODE_TEST:
+            return Usb_TestRegister();
+        case USB_MODE_UVC:
+        case USB_MODE_MSC:
+        default:
+            return SYS_ERR_NOT_SUPPORTED;
+    }
+}
+
+//APPLICATIONç­‰çº§åªè½¬äº¤æ¨¡å¼ç®¡ç†å™¨ï¼Œä¸ç›´æ¥å¯åŠ¨Core
 static SysResult_t UsbMode_AppStart(void)
 {
     return USB_Mode_Start();

@@ -58,7 +58,7 @@ cases = [(c["id"], c["name"]) for c in legacy]
 cases[4] = (4, "HSI48未就绪（适配当前BSP检查）")
 mode_specs = [
     ("未初始化拒绝启动", "未Init", "INVALID_STATE，无硬件调用"),
-    ("Init幂等且不启动Core", "重复Init", "TEST/IDLE，零启动"),
+    ("Core就绪后Mode初始化幂等", "先Init Core，再重复Mode Init", "默认TEST仅注册一次，零硬件启动"),
     ("RUNNING拒绝重复Start", "已配置后Start", "BUSY，仅启动一次"),
     ("重复Init保留运行状态", "RUNNING再次Init", "保持RUNNING"),
     ("重连请求只记录", "RUNNING请求TEST", "STOPPING，尚未Stop"),
@@ -81,7 +81,7 @@ mode_specs = [
     ("重启享有完整枚举窗口", "1500重启，6499处理", "4999ms，仍等待配置"),
     ("重启失败进入ERROR", "重启HAL返回BUSY", "ERROR，保留BUSY"),
     ("重启失败不逐轮重试", "重启失败再Process", "Start总计两次，不再自动启动"),
-    ("ERROR当前拒绝恢复请求", "ERROR请求TEST重连", "BUSY，记录当前限制"),
+    ("ERROR允许显式请求受控恢复", "ERROR请求TEST重连", "BUSY，记录当前限制"),
     ("WAIT_CONFIGURED拒绝重连", "未配置时请求TEST", "BUSY，无Stop"),
     ("不接受UVC/MSC目标", "RUNNING请求UVC及MSC", "NOT_SUPPORTED，不改变状态"),
     ("拒绝重复重连请求", "STOPPING再次请求", "BUSY，无额外硬件动作"),
@@ -101,13 +101,13 @@ core_specs = [('无Class禁止Start', '执行Core_RunCase(200)，参数见core_t
  ('Class不能占用EP0', '执行Core_RunCase(207)，参数见core_test.c', '拒绝Class关闭或申请控制端点'),
  ('端点申请与状态快照', '执行Core_RunCase(208)，参数见core_test.c', 'is_used、opened、类型、最大包长一致'),
  ('重复申请拒绝', '执行Core_RunCase(209)，参数见core_test.c', '返回ALREADY_EXISTS，不重复操作硬件'),
- ('通用Bulk和其他IN端点可用', '执行Core_RunCase(210)，参数见core_test.c', '合法Bulk/其他地址按实际FIFO容量打开'),
+ ('通用Bulk和其他IN端点可用', '执行Core_RunCase(210)，参数见core_test.c', '已精确声明的Bulk和Interrupt端点正常打开'),
  ('关闭状态禁止发送', '执行Core_RunCase(211)，参数见core_test.c', '不调用HAL发送'),
  ('busy防覆盖且仍已配置', '执行Core_RunCase(212)，参数见core_test.c', '返回BUSY，原事务仍busy，设备保持CONFIGURED'),
  ('完成回调释放busy', '执行Core_RunCase(213)，参数见core_test.c', '先清busy，再调用外部DataIn'),
  ('关闭后忽略迟到完成', '执行Core_RunCase(214)，参数见core_test.c', '不再调用已释放端点的DataIn'),
  ('关闭取消事务并释放资源', '执行Core_RunCase(215)，参数见core_test.c', 'opened/busy清除，EP0保留'),
- ('Flush不取消busy事务', '执行Core_RunCase(216)，参数见core_test.c', 'busy时返回BUSY，Close/Open后Flush成功'),
+ ('Flush和Close资源所有权', '活动IN及同编号OUT，观察HAL顺序与上下文', 'busy Flush不执行；Abort及Flush先于Close，OUT所有权保持'),
  ('非法端点地址拒绝', '执行Core_RunCase(217)，参数见core_test.c', '拒绝保留地址位及空状态指针'),
  ('INOUT方向检查', '执行Core_RunCase(218)，参数见core_test.c', 'Transmit仅IN，Receive仅OUT'),
  ('未完成事件转交Class', '执行Core_RunCase(219)，参数见core_test.c', 'busy清除，记录TIMEOUT并回调外部IsoINIncomplete'),
@@ -145,7 +145,7 @@ stage2_specs = {int(case): (name.strip(), data.strip(), expected.strip())
                 for case, name, data, expected in re.findall(
                     r"//CASE (\d+) \| ([^|\n]+) \| ([^|\n]+) \| ([^\n]+)",
                     (HERE / "endpoint_lifecycle_test.c").read_text(encoding="utf-8"))}
-assert set(stage2_specs) == set(range(300, 360))
+assert set(stage2_specs) == set(range(300, 372))
 cases += [(case, spec[0]) for case, spec in sorted(stage2_specs.items())]
 rows = []
 for case_id, name in cases:
@@ -177,6 +177,7 @@ for case_id, name in cases:
             ["class_state", "pool_used", "class_init", "class_deinit", "data_in", "data_out",
              "iso_incomplete_in", "iso_incomplete_out", "rx_words", "fifo_words", "bsp_started", "stop_required"],
             struct.unpack("<12I", uc.mem_read(symbols["g_stage2_observation"], 48))))
+    if case_id == 371: observation["control"] = list(struct.unpack("<12I",uc.mem_read(symbols["g_control_observation"],48)))
     rows.append({"input": spec[1], "expected": spec[2], "actual": observation, "id": case_id, "name": name, "result": "PASS" if passed else "FAIL",
                  "failure_actual": values[2] if not passed else None, "failure_expected": values[3] if not passed else None,
                  "checks": values[1], "fail_line": values[0], "error": error})
