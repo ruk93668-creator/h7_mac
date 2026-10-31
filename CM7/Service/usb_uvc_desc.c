@@ -1,7 +1,7 @@
 #include "usb_uvc_desc.h"
 #include <stddef.h>
 
-//UVC 1.0描述符，当前仅提供数据，不注册或启动Class
+//UVC 1.1描述符，当前仅提供数据，不注册或启动Class
 
 //独立UVC设备身份，TEST描述符继续由Platform保留
 static uint8_t s_uvc_device_desc[20] __attribute__((aligned(4))) =
@@ -22,8 +22,8 @@ static uint8_t s_uvc_device_desc[20] __attribute__((aligned(4))) =
     0x01U//bNumConfigurations：1个配置
 };
 
-//179字节描述符后补1字节，保证PIO最后一次Word读取可访问
-static struct
+//180字节有效数据，保留显式padding，结构按4字节对齐
+static struct __attribute__((aligned(4)))
 {
     uint8_t descriptor[USB_UVC_FS_CONFIG_DESC_SIZE];
     uint8_t padding;
@@ -35,7 +35,7 @@ static struct
 
     0x09U,//bLength：配置描述符自身长度
     0x02U,//bDescriptorType：Configuration
-    0xB3U, 0x00U,//wTotalLength：整个Configuration共179字节，小端存放
+    0xB4U, 0x00U,//wTotalLength：整个Configuration共180字节，小端存放
     0x02U,//bNumInterfaces：VC和VS两个接口
     0x01U,//bConfigurationValue：主机选择配置时使用编号1
     0x00U,//iConfiguration：不引用配置名称字符串
@@ -65,14 +65,14 @@ static struct
     0x00U,//bInterfaceProtocol：未指定协议
     0x00U,//iInterface：不引用接口名称字符串
 	
-    //VC Header Descriptor，共13字节，使用UVC 1.0
+    //VC Header Descriptor，共13字节，使用UVC 1.1
 
     0x0DU,//bLength：12字节固定字段加1个VS接口编号
     0x24U,//bDescriptorType：CS_INTERFACE类专用接口描述符
     0x01U,//bDescriptorSubtype：VC_HEADER
-    0x00U, 0x01U,//bcdUVC：UVC 1.0，0x0100按小端存放
-    0x33U, 0x00U,//wTotalLength：VC类专用13+18+11+9=51字节，小端存放
-    0x00U, 0x6CU, 0xDCU, 0x02U,//dwClockFrequency：声明48MHz的UVC时间戳参考时钟，小端存放
+    0x10U, 0x01U,//bcdUVC：UVC 1.1，0x0110按小端存放
+    0x34U, 0x00U,//wTotalLength：VC类专用13+18+12+9=52字节，小端存放
+    0x00U, 0x6CU, 0xDCU, 0x02U,//dwClockFrequency：1.1已废弃，保留旧值，不作为Probe/Commit时钟依据
     0x01U,//bInCollection：当前VC管理1个VS接口
     0x01U,//baInterfaceNr：关联VS接口1
 
@@ -91,9 +91,9 @@ static struct
     0x03U,//bControlSize：控制能力位图占3字节
     0x00U, 0x00U, 0x00U,//bmControls：暂不声明摄像头控制能力
 
-    //Processing Unit Descriptor，共11字节，使用UVC 1.0
+    //Processing Unit Descriptor，共12字节，使用UVC 1.1
 
-    0x0BU,//bLength：9字节固定字段加2字节控制位图
+    0x0CU,//bLength：10字节固定字段加2字节控制位图
     0x24U,//bDescriptorType：CS_INTERFACE类专用接口描述符
     0x05U,//bDescriptorSubtype：VC_PROCESSING_UNIT处理单元
     0x02U,//bUnitID：处理单元编号2
@@ -102,6 +102,7 @@ static struct
     0x02U,//bControlSize：控制能力位图占2字节
     0x00U, 0x00U,//bmControls：暂不声明图像处理控制能力
     0x00U,//iProcessing：不设置处理单元描述字符串
+    0x00U,//bmVideoStandards：值为0，忽略模拟视频制式位图
 
     //Output Terminal Descriptor，共9字节
 
@@ -167,7 +168,7 @@ static struct
     0x24U,//bDescriptorType：CS_INTERFACE类专用接口描述符
     0x05U,//bDescriptorSubtype：VS_FRAME_UNCOMPRESSED
     0x01U,//bFrameIndex：帧配置编号1
-    0x00U,//bmCapabilities：不支持静态图像捕获，UVC 1.0保留位为0
+    0x00U,//bmCapabilities：保留当前帧能力位图为0
     0xA0U, 0x00U,//wWidth：160像素，小端存放
     0x78U, 0x00U,//wHeight：120像素，小端存放
     0x00U, 0xE0U, 0x2EU, 0x00U,//dwMinBitRate：160x120x16x10=3072000bit/s
@@ -216,7 +217,7 @@ typedef char UvcConfigLengthCheck[
     sizeof(s_uvc_config_storage.descriptor) == USB_UVC_FS_CONFIG_DESC_SIZE ? 1 : -1];
 
 typedef char UvcConfigPaddingCheck[
-    sizeof(s_uvc_config_storage) == 180U ? 1 : -1];
+    sizeof(s_uvc_config_storage) == 184U ? 1 : -1];
 
 //供后续UVC Class的GetFSConfigDescriptor回调使用
 uint8_t *USB_UVC_GetFSConfigDescriptor(uint16_t *length)

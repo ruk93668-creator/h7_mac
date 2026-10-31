@@ -51,15 +51,16 @@ def compile_module():
         with image.open('rb') as f:
             elf = ELFFile(f)
             symbols = {s.name: s['st_value'] for s in elf.get_section_by_name('.symtab').iter_symbols()}
+            sizes = {s.name: s['st_size'] for s in elf.get_section_by_name('.symtab').iter_symbols()}
             sections = [(s['sh_addr'], s.data()) for s in elf.iter_sections()
                         if s['sh_flags'] & 2 and s['sh_type'] == 'SHT_PROGBITS' and s['sh_size']]
-    return symbols, sections
+    return symbols, sizes, sections
 
 
 class DescriptorTests(unittest.TestCase):
     @classmethod
     def setUpClass(cls):
-        cls.symbols, sections = compile_module()
+        cls.symbols, cls.sizes, sections = compile_module()
         cls.cpu = Uc(UC_ARCH_ARM, UC_MODE_THUMB | UC_MODE_MCLASS)
         for address, size in [(0x08000000, 0x100000), (0x20000000, 0x40000), (0x01000000, 0x1000)]:
             cls.cpu.mem_map(address, size)
@@ -110,12 +111,12 @@ class DescriptorTests(unittest.TestCase):
         return found[0]
 
     def test_01_configuration_length(self):
-        self.assertEqual(self.config_length, 179)
-        self.assertEqual(struct.unpack_from('<H', self.config, 2)[0], 179)
+        self.assertEqual(self.config_length, 180)
+        self.assertEqual(struct.unpack_from('<H', self.config, 2)[0], 180)
 
     def test_02_all_descriptor_boundaries(self):
-        self.assertEqual([d[0] for _, _, _, d in self.entries], [9, 8, 9, 13, 18, 11, 9, 9, 14, 27, 30, 6, 9, 7])
-        self.assertEqual(sum(d[0] for _, _, _, d in self.entries), 179)
+        self.assertEqual([d[0] for _, _, _, d in self.entries], [9, 8, 9, 13, 18, 12, 9, 9, 14, 27, 30, 6, 9, 7])
+        self.assertEqual(sum(d[0] for _, _, _, d in self.entries), 180)
 
     def test_03_iad(self):
         self.assertEqual(self.config[9:17], bytes.fromhex('08 0B 00 02 0E 03 00 00'))
@@ -127,8 +128,8 @@ class DescriptorTests(unittest.TestCase):
 
     def test_05_vc_length_and_version(self):
         header = self.cs(0, 1)
-        self.assertEqual(header[3:7], bytes.fromhex('00 01 33 00'))
-        self.assertEqual(sum(len(d) for _, i, _, d in self.entries if i == 0 and d[1] == 0x24), 51)
+        self.assertEqual(header[3:7], bytes.fromhex('10 01 34 00'))
+        self.assertEqual(sum(len(d) for _, i, _, d in self.entries if i == 0 and d[1] == 0x24), 52)
         self.assertEqual(header[11:13], b'\x01\x01')
 
     def test_06_terminal_topology(self):
@@ -144,7 +145,7 @@ class DescriptorTests(unittest.TestCase):
         self.assertEqual(camera[14:], b'\x03\x00\x00\x00')
 
     def test_08_processing_controls(self):
-        self.assertEqual(self.cs(0, 5), bytes.fromhex('0B 24 05 02 01 00 00 02 00 00 00'))
+        self.assertEqual(self.cs(0, 5), bytes.fromhex('0C 24 05 02 01 00 00 02 00 00 00 00'))
 
     def test_09_vs_length_and_link(self):
         header = self.cs(1, 1)
@@ -192,13 +193,13 @@ class DescriptorTests(unittest.TestCase):
             self.assertEqual(self.device_get(speed), (0, 0))
 
     def test_18_static_pointers(self):
-        self.assertEqual(self.config_get(), (self.config_address, 179))
+        self.assertEqual(self.config_get(), (self.config_address, 180))
         self.assertEqual(self.device_get(1), (self.device_address, 18))
 
     def test_19_alignment_and_pio_padding(self):
         self.assertEqual(self.config_address % 4, 0)
         self.assertEqual(self.device_address % 4, 0)
-        self.assertEqual(bytes(self.cpu.mem_read(self.config_address + 179, 1)), b'\x00')
+        self.assertEqual(bytes(self.cpu.mem_read(self.config_address + 180, 1)), b'\x00')
         self.assertEqual(bytes(self.cpu.mem_read(self.device_address + 18, 2)), bytes(2))
 
     def test_20_initializer_count(self):
@@ -206,8 +207,48 @@ class DescriptorTests(unittest.TestCase):
         body = source.split('s_uvc_config_storage', 1)[1].split('};', 1)[0]
         body = re.sub(r'//[^\r\n]*', '', body)
         literal = bytes(int(x, 16) for x in re.findall(r'0x([0-9A-Fa-f]+)U', body))
-        self.assertEqual(len(literal), 179)
+        self.assertEqual(len(literal), 180)
         self.assertEqual(literal, self.config)
+
+    def test_21_deprecated_clock_bytes_preserved(self):
+        header = self.cs(0, 1)
+        self.assertEqual(len(header), 13)
+        self.assertEqual(header[7:11], bytes.fromhex('00 6C DC 02'))
+        self.assertEqual(header[11:13], bytes.fromhex('01 01'))
+
+    def test_22_processing_unit_field_offsets(self):
+        unit = self.cs(0, 5)
+        self.assertEqual(len(unit), 12)
+        fields = [(0, 1, b'\x0c'), (1, 1, b'\x24'), (2, 1, b'\x05'),
+                  (3, 1, b'\x02'), (4, 1, b'\x01'), (5, 2, bytes(2)),
+                  (7, 1, b'\x02'), (8, 2, bytes(2)), (10, 1, b'\x00'),
+                  (11, 1, b'\x00')]
+        for offset, size, expected in fields:
+            with self.subTest(offset=offset):
+                self.assertEqual(unit[offset:offset + size], expected)
+
+    def test_23_compiled_storage_and_last_pio_word(self):
+        self.assertEqual(self.symbols['s_uvc_config_storage'], self.config_address)
+        self.assertEqual(self.sizes['s_uvc_config_storage'], 184)
+        self.assertEqual(self.config_length % 4, 0)
+        last_word_offset = ((self.config_length - 1) // 4) * 4
+        self.assertEqual(last_word_offset, 176)
+        self.assertLessEqual(last_word_offset + 4, self.sizes['s_uvc_config_storage'])
+        self.assertEqual(bytes(self.cpu.mem_read(self.config_address + 176, 4)), self.config[176:180])
+        self.assertEqual(bytes(self.cpu.mem_read(self.config_address + 180, 4)), bytes(4))
+
+    def test_24_only_intended_wire_changes(self):
+        # Reconstruct the compiled UVC 1.0 baseline; all other wire bytes must match.
+        wire = bytearray(self.config)
+        pu_offset = next(offset for offset, i, _, d in self.entries if i == 0 and d[1:3] == b'\x24\x05')
+        self.assertEqual(pu_offset, 57)
+        del wire[pu_offset + 11]
+        wire[pu_offset] = 11
+        wire[2] = 0xB3
+        wire[29] = 0x00
+        wire[31] = 0x33
+        self.assertEqual(hashlib.sha256(wire).hexdigest(),
+                         '51e1059633a0a727cb4d828c595f6a39c47c5aa50671f018392fd3393ad08a1e')
 
 
 if __name__ == '__main__':

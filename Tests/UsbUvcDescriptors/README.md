@@ -1,67 +1,132 @@
-# UVC 描述符验收
+# UVC-04：UVC 1.1描述符迁移验收
 
-对象：当前 `CM7/Service/usb_uvc_desc.c/.h`，保持 UVC 1.0、YUY2 160×120、10FPS。
+基线：`b49be0471cb5dcf663578d5c10a70faa40bc1fa6`。本报告记录该基线上的Descriptor迁移验收。用户随后确认上传，本报告随UVC-04成果提交；不实现UVC 1.1 Class协议。
 
-## 导出接口
+## 规范依据
 
-```c
-uint8_t *USB_UVC_GetFSConfigDescriptor(uint16_t *length);
-uint8_t *USB_UVC_GetDeviceDescriptor(USBD_SpeedTypeDef speed, uint16_t *length);
+已取得[USB-IF官方UVC 1.1文档集](https://www.usb.org/sites/default/files/USB_Video_Class_1_1_090711.zip)，核对USB_Video_Class_1.1.pdf（Revision 1.1，June 1, 2005）：
+
+- Table 3-3，印刷页50（PDF页63）：VC Header仍保留4字节dwClockFrequency，字段用途已废弃。
+- Table 3-8，印刷页56至57（PDF页69至70）：PU长度10+n；iProcessing位于8+n，bmVideoStandards位于9+n。位图为0表示忽略该位图。
+
+本轮不处理Probe/Commit，也不把VC Header保留的48MHz旧值当作后续协商时钟来源。
+
+## 修改文件
+
+|文件|修改原因|
+|---|---|
+|CM7/Service/usb_uvc_desc.c|更新版本、PU字段及级联长度；保留时钟字段/旧值；明确结构类型4字节对齐，实际存储184字节|
+|CM7/Service/usb_uvc_desc.h|有效配置长度宏和接口注释更新为180|
+|Tests/UsbUvcDescriptors/run_tests.py|保留原20项并更新预期；新增4项实际编译数据检查|
+|Tests/UsbUvcDescriptors/README.md|本报告与新长度、偏移和PIO说明|
+|Tests/UsbUvcDescriptors/results.json|本轮24项专项结果及两份描述符源码SHA|
+|Tests/UsbUvcDescriptors/commands.json|本轮ARMCC5编译、链接命令及输出|
+|Tests/UsbUvcDescriptors/regression_results.json|204+4+40回归及两核完整重编摘要|
+|Tests/UsbUvcDescriptors/protected_sources.json|禁止范围与正式工作区保护、原20项编号保留审计|
+|Tests/UsbUvcDescriptors/cm7_keil.log|CM7完整重编日志|
+|Tests/UsbUvcDescriptors/cm4_keil.log|CM4完整重编日志|
+
+## 修改前后
+
+|项目|UVC 1.0基线|UVC 1.1本轮|
+|---|---:|---:|
+|bcdUVC|0x0100（00 01）|0x0110（10 01）|
+|VC Header bLength|13|13|
+|PU bLength|11|12|
+|PU bControlSize|2|2|
+|PU bmControls|00 00|00 00|
+|PU bmVideoStandards|不存在|0，忽略位图|
+|VC类专用wTotalLength|51（33 00）|52（34 00）|
+|VS类专用wTotalLength|77（4D 00）|77（4D 00）|
+|Configuration wTotalLength/返回长度|179（B3 00）|180（B4 00）|
+|配置存储结构sizeof|180|184|
+|返回地址对齐|4字节|4字节|
+
+## PU字段偏移
+
+PU起始于Configuration偏移57。bmControls保留原两个字节。
+
+|字段|PU内偏移|配置内偏移|长度|字节|
+|---|---:|---:|---:|---|
+|bLength|0|57|1|0C|
+|bDescriptorType|1|58|1|24|
+|bDescriptorSubtype|2|59|1|05|
+|bUnitID|3|60|1|02|
+|bSourceID|4|61|1|01|
+|wMaxMultiplier|5|62|2|00 00|
+|bControlSize|7|64|1|02|
+|bmControls|8|65|2|00 00|
+|iProcessing|10|67|1|00|
+|bmVideoStandards|11|68|1|00|
+
+## 完整长度核算
+
+- VC类专用：13 + 18 + 12 + 9 = **52**。
+- VS类专用：14 + 27 + 30 + 6 = **77**。
+- Configuration：9 + 8 + 9 + 52 + 9 + 77 + 9 + 7 = **180**。
+- 完整14段bLength：9、8、9、13、18、12、9、9、14、27、30、6、9、7。
+
+接口/Alt布局、1→2→3拓扑、YUY2 GUID、Format 1、Frame 1、160×120、10FPS、38400字节、1000000×100ns、EP1 IN、FS等时512字节与间隔1全部保留。不增加JPEG/MJPEG。
+
+VC Header的时钟字段仍在相对偏移7，字节仍是00 6C DC 02；后面的接口集合字段仍在11/12，没有删除或移位。
+
+## PIO和存储边界
+
+```text
+s_uvc_config_storage（类型和对象均4字节对齐，sizeof=184）
+  descriptor[180]   偏移0..179，全部返回Core
+  padding           偏移180，显式保留1字节
+  类型尾部对齐空间   偏移181..183
 ```
 
-- FS 配置接口可直接用于后续 Class 的 GetFSConfigDescriptor 回调；返回静态指针和179字节长度。
-- 设备接口可用于后续 UVC 设备描述符表的 GetDeviceDescriptor 回调；仅接受 USBD_SPEED_FULL，返回18字节。
-- length 为空时返回NULL；设备速度不支持时返回NULL且长度为0。
-- 返回数据不释放、不由调用者修改。此模块不创建或注册 UVC Class，也不替换当前 TEST 描述符表。
+180可被4整除，最后一个Word覆盖偏移176..179；若按EP0 64字节分包，最后一包52字节，也不需要读取偏移180。仍保留显式padding，并对结构类型施加4字节对齐；不能仅凭变量地址对齐推断结构sizeof。编译期断言与ELF对象符号st_size均确认184。
 
-## 长度核算
+专项测试检查实际返回指针、ELF符号地址/大小、最后一个Word及尾部存储；有效返回长度始终180，不把padding返回主机。设备描述符仍返回18字节、存储20字节。
 
-| 范围 | 组成 | 有效长度 | 小端字段 |
-|---|---|---:|---|
-| VC 类专用 | Header 13 + Camera 18 + Processing 11 + Output 9 | 51 | 33 00 |
-| VS 类专用 | Header 14 + Format 27 + Frame 30 + Color 6 | 77 | 4D 00 |
-| Configuration | 配置头9 + IAD8 + VC标准接口9 + VC类专用51 + VS Alt0标准接口9 + VS类专用77 + VS Alt1标准接口9 + 端点7 | 179 | B3 00 |
+没有修改BSP、HAL或FIFO配置来规避边界问题。
 
-VC/VS 类专用总长度不包含标准接口和标准端点。配置数组成员本身为179字节；外围存储结构增加1字节padding，占180字节，避免PIO最后一次32位读取越过已分配存储。设备描述符有效18字节，存储20字节。补齐字节不返回给USB Core。
+## 实际验收
 
-## IAD 设备身份
+使用ARMCC 5.06 update7 build960编译真实描述符模块，在Unicorn执行导出函数，再逐字节解析返回数据；不是只检查注释或宏。
 
-独立UVC设备描述符设置 bDeviceClass/bDeviceSubClass/bDeviceProtocol 为 EF/02/01。依据：
+|测试|执行|PASS|FAIL|
+|---|---:|---:|---:|
+|迁移前原专项基线|20|20|0|
+|迁移后专项：原20项+新增4项|24|24|0|
+|USB Core|204|204|0|
+|EP0 IRQ竞态|4|4|0|
+|UVC Lifecycle及接口请求|40|40|0|
 
-- [USB-IF Defined Class Codes](https://www.usb.org/defined-class-codes)
-- [Microsoft USB Interface Association Descriptor](https://learn.microsoft.com/en-us/windows-hardware/drivers/usbcon/usb-interface-association-descriptor)
+新增21：13字节VC Header、旧时钟字节与字段布局不变。
+新增22：PU每个字段偏移及新增bmVideoStandards逐项正确。
+新增23：ELF实际存储184、指针4字节对齐、有效长度180、尾部Word及保留空间安全。
+新增24：将本轮编译所得配置移除新增字节、恢复四处版本/长度字节，SHA与迁移前编译的179字节配置一致，证明其他线格式参数未变化。
 
-暂沿用内部测试 VID/PID 1209:0001，字符串索引均为0；本模块不声明尚未提供的字符串。Platform 中现有 TEST 设备描述符、产品字符串和默认注册方式均不变。
+原20项编号、主体及安全检查全部保留，更新的是迁移后版本/长度/新增字段的正确预期。没有跳过或降低测试统计。
 
-## 自动检查
+执行命令（仓库根目录，Unicorn/pyelftools需可导入）：
 
 ```powershell
 python Tests/UsbUvcDescriptors/run_tests.py
+python Tests/UsbCoreDecoupling/run_tests.py
+python Tests/Ep0IrqRace/run_race.py
+python Tests/UvcLifecycle/run_tests.py
 ```
 
-实际使用 ARMCC5 V5.06 update7 build960 编译正式描述符源码，并在 Unicorn 执行导出函数；不是只用Python解析注释。HAL和硬件不参与该专项测试。运行器依赖现有 Tests/OledAsyncAcceptance/python_deps 下的 Unicorn、pyelftools；这些本机依赖不提交。
+|Keil Target|构建方式|Errors|Warnings|Code|RO-data|RW-data|ZI-data|
+|---|---|---:|---:|---:|---:|---:|---:|
+|h7_mac_CM7|完整重编-r|0|0|59518|2522|332|16340|
+|h7_mac_CM4|完整重编-r|0|0|20334|914|636|2580|
 
-20/20通过，检查：
+## 范围及未验证项
 
-- 配置长度、14段bLength边界、接口编号与Alt设置、IAD。
-- VC/VS类专用长度、UVC版本、Terminal/Unit唯一编号与1→2→3拓扑。
-- Camera/Processing控制位图与保留字段。
-- YUY2 GUID、小端字段、16bpp、分辨率、3072000bit/s、38400字节、1000000×100ns。
-- Color Matching、EP1 IN、512字节包长。
-- IAD设备身份、有效长度、静态指针、4字节对齐与尾部补齐。
-- 空length、不支持的速度，以及179个显式初始化字节与实际返回数据逐字节一致。
+除两份描述符源码及本专项目录外，2344个已跟踪文件与修改前SHA一致。Class、Platform/Core、Mode、BSP、官方HAL/LL和USB Core、Camera/DCMI/DMA/Media、CM4均未修改；Keil工程配置不变。
 
-实际命令、编译器版本见 commands.json；专项结果与源码哈希见 results.json。
+正式D:/32/STM32H7/h7_mac工作区未写入：其原有未提交Class结构体保持原样。验收完成时开发工作树HEAD/main仍为b49be04，Git暂存区为空；这是当次保护检查的历史状态，不是上传后的当前状态。
 
-另外运行既有 USB 枚举/Mode 测试及EP1检查，使用仅调整FIFO/端点索引的隔离HAL桩：100/100通过，2441项断言。实际命令为 `python tmp/UsbEp1Acceptance/run_tests.py`；相关脚本保留在当前本机tmp目录，不属于本专项测试的运行依赖。结果摘要存档为 regression_results.json。
-
-Keil正式目标：CM7 0 Error、0 Warning；CM4 0 Error、0 Warning。日志见 cm7_keil.log、cm4_keil.log。保护范围40个文件SHA256均无变化，见 protected_sources.json，包括CM4、官方USB Core、现有Platform/Mode及BSP源文件。
-
-## 未验收范围
-
-- 未实现Probe/Commit、SET_INTERFACE处理或UVC发送，未注册新的UVC描述符表。默认仍运行TEST；不能据此宣称Windows已识别UVC摄像头。
-- 后续Class需要组装完整的USBD_DescriptorsTypeDef表，将设备回调与Class配置回调一起注册。本轮提供两个导出函数，不提供完整字符串回调表。
-- usbd_conf.h 的 USBD_MAX_NUM_INTERFACES 仍为1，本轮未修改。当前官方Core使用接口编号 <= 该宏判断，因此不能仅据宏值断言接口1会被拒绝；后续双接口Class接入时应统一接口数量配置并验证路由。
-- 48MHz时间戳基准仍需后续PTS/SCR实现匹配。描述符声明10FPS不等于当前传感器及USB链路已实测10FPS；真实YUY2排列、色彩与传输时序尚待实板验收。
-
-本轮没有修改USB Core、BSP发送、Mode、CameraCapture、CM4源码或Keil工程配置。
+- 本轮没有Probe/Commit、GET_INFO、EP1 Open、SET_INTERFACE Alt1、Payload或视频发送。
+- 仅描述符宣告升级，不代表整个Class已经实现UVC 1.1协议，也不把34字节Probe/Commit接口加入本轮代码。
+- 默认TEST设备组织不变，未进行Windows UVC枚举、真实YUY2字节排列、USB视频、PTS/SCR或10FPS实板验收。
+- 既有usbd_conf.h接口数量宏与Class协议实现留待后续独立任务，不在本轮修改。
+- 验收阶段未提交、未推送、未合并；后续用户已明确确认上传，按该指令提交并推送这10个审核范围文件，Class未提交改动继续保留。
+- protected_sources.json记录验收时的保护结果，不是可在任意后续提交直接套用的CI基线。
