@@ -10,7 +10,7 @@
     "CM7/Service/usb_mode.c": "b61d9d97c714bbf6e4b8664d4fb515914c89f6c26df8a9197595d69aa3975e7f",
     "CM7/Service/usb_mode.h": "fbb1397c90949c559e26e4cfa258afbdc9c07ea128feb63f2f985b5eb0cdb877",
     "CM7/Platform/usb_device.c": "99d79cb385537c4ba6a529880eaa71a7bd206a56c7d676329ff94c4b79cab432",
-    "CM7/BSP/bsp_usb.c": "bc523a8388cb496435b52434426b7e7a79117760e7967680f902db10aa03089f",
+    "CM7/BSP/bsp_usb.c": "5103aaa67e8446d9007736cc156cd4b2113a64b2ea71780d3cf97e6c77850aee",
     "CM7/Platform/usb_device.h": "8eda3844d422c51c364e29d47575e91cf103459458128386783c269e5790cf5c",
     "CM7/BSP/bsp_usb.h": "0e526715e82f31faeda3068ed424006955838ac8db20a62669461818f4900a42",
     "CM7/Service/usb_test_device.c": "9c7f468089c00805f67199ed7080daa5c07948f555aff246eca3470c83855def"

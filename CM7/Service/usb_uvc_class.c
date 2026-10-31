@@ -2,6 +2,7 @@
 #include "usb_uvc_desc.h"
 #include "usb_device.h"
 #include "usbd_conf.h"
+#include "usbd_ioreq.h"
 
 #include <string.h>
 
@@ -146,8 +147,59 @@ static uint8_t UVC_Setup(
     USBD_SetupReqTypedef *req
 )
 {
-    (void)pdev;
-    (void)req;
+    UsbUvcContext_t *ctx;
 
-    return USBD_FAIL;
+    //检查设备句柄和请求指针
+    if (pdev == NULL || req == NULL)
+        return USBD_FAIL;
+
+    //接口请求只能在已配置且上下文有效时处理
+    ctx = pdev->pUserData[0];
+    if (ctx == NULL || !ctx->configured ||
+        pdev->dev_state != USBD_STATE_CONFIGURED)
+        return USBD_FAIL;
+
+    //本轮只处理标准请求
+    if ((req->bmRequest & USB_REQ_TYPE_MASK) != USB_REQ_TYPE_STANDARD)
+        return USBD_FAIL;
+
+    //接收对象必须是接口，不能忽略保留位
+    if ((req->bmRequest & 0x1FU) != USB_REQ_RECIPIENT_INTERFACE)
+        return USBD_FAIL;
+
+    //检查完整接口编号，拒绝非零高字节
+    if (req->wIndex > 1U)
+        return USBD_FAIL;
+
+    switch (req->bRequest)
+    {
+        case USB_REQ_GET_INTERFACE:
+        {
+            //GET_INTERFACE必须为IN请求，返回一个字节
+            if (req->bmRequest != 0x81U || req->wValue != 0U ||
+                req->wLength != 1U)
+                return USBD_FAIL;
+
+            //使用上下文中的持久数据，不能发送栈上临时变量
+            return USBD_CtlSendData(pdev,
+                &ctx->interface_alt[req->wIndex], 1U);
+        }
+
+        case USB_REQ_SET_INTERFACE:
+        {
+            //SET_INTERFACE必须为OUT请求，本轮只接受Alt 0
+            if (req->bmRequest != 0x01U || req->wValue != 0U ||
+                req->wLength != 0U)
+                return USBD_FAIL;
+
+            //只更新接口状态，不打开视频端点
+            ctx->interface_alt[req->wIndex] = 0U;
+
+            //零长度请求的状态阶段由Core发送
+            return USBD_OK;
+        }
+
+        default:
+            return USBD_FAIL;
+    }
 }

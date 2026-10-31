@@ -54,6 +54,7 @@ with (HERE / "mode_test.axf").open("rb") as f:
                 if s["sh_flags"] & 2 and s["sh_type"] == "SHT_PROGBITS" and s["sh_size"]]
 
 names = ["Init空句柄", "Init配置0", "Init配置2", "重复Init保持原上下文", "固定池耗尽", "完整清零与Alt0", "DeInit空句柄", "空上下文DeInit", "正常及重复DeInit", "Core延迟归还", "释放后可重新Init", "Class操作表14项映射"]
+names += ['Setup空句柄', 'Setup空请求', 'Setup空上下文', 'Setup未配置上下文', 'Setup设备未配置', '拒绝Class请求', '拒绝Vendor请求', '拒绝Device对象', '拒绝Endpoint对象', '拒绝保留对象位', '拒绝接口2', '拒绝接口高字节', 'GET方向错误', 'GET非零Value', 'GET零长度', 'GET长度2', 'SET Alt1', 'SET Alt高字节', 'SET方向错误', 'SET非零长度', '拒绝其他标准请求', 'SET接口0由Core负责状态', 'SET接口1由Core负责状态', 'Core GET接口0', 'Core GET接口1', 'Core SET接口0单次状态', 'Core SET接口1单次状态', 'Core拒绝Alt1且不开EP1']
 rows = []
 for case_id, name in enumerate(names):
     uc = Uc(UC_ARCH_ARM, UC_MODE_THUMB | UC_MODE_MCLASS)
