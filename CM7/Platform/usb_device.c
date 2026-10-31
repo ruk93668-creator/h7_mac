@@ -447,7 +447,16 @@ USBD_StatusTypeDef USBD_LL_CloseEP(USBD_HandleTypeDef *device, uint8_t ep)
     if (!s_initialized)
         return Usb_LlResult(SYS_ERR_INVALID_STATE);
     enabled = Usb_Lock();
-    result = entry->opened ? BSP_USB_CloseEp(ep) : SYS_OK;
+    if (entry->opened && entry->busy)
+    {
+        //Abort成功后硬件不再持有缓冲区，即使后续Close失败也归还传输所有权
+        result = BSP_USB_AbortEp(ep);
+        if (result == SYS_OK)
+            entry->busy = false;
+    }
+    else result = SYS_OK;
+    if (result == SYS_OK && entry->opened)
+        result = BSP_USB_CloseEp(ep);
     entry->last_result = result;
     if (result == SYS_OK)
     {
