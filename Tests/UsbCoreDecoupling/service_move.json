@@ -1,0 +1,12 @@
+{
+  "source_bytes_unchanged": true,
+  "sha256": {
+    "usb_mode.c": "1b059134f8232129edb3491dcbc90bc3a87cd64c4556ad7807f46e81fc126d9f",
+    "usb_mode.h": "fbb1397c90949c559e26e4cfa258afbdc9c07ea128feb63f2f985b5eb0cdb877"
+  },
+  "project_groups": "CM7/Service",
+  "include_path": "existing CM7/Service retained",
+  "tests": "192 PASS, 2500 assertions",
+  "build": "CM7 0 Error, 0 Warning",
+  "unrelated_user_changes": "not staged; project user addition preserved only in working tree"
+}

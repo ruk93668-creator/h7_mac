@@ -2,7 +2,7 @@
 #define Stream_TestRun UsbLegacy_TestRun
 #include "../UsbDeviceStage1/usb_test.c"
 #undef Stream_TestRun
-#include "../../CM7/Platform/usb_mode.c"
+#include "../../CM7/Service/usb_mode.c"
 #include "../../CM7/Framework/framework_init.c"
 
 //可控制的32位毫秒时钟

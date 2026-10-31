@@ -31,7 +31,7 @@ ARMCC 5.06 update7 build960编译当前正式USB BSP、Platform、Mode Manager�
 
 ### 问题1：重新启动后未重置枚举计时
 
-位置：CM7/Platform/usb_mode.c，USB_Mode_Process的STARTING成功分支，约第209行。
+位置：CM7/Service/usb_mode.c，USB_Mode_Process的STARTING成功分支，约第209行。
 
 | 用例 | 输入及执行 | 预期 | 上一轮实际 |
 |---|---|---|---|
@@ -44,7 +44,7 @@ ARMCC 5.06 update7 build960编译当前正式USB BSP、Platform、Mode Manager�
 
 ### 问题2：重新启动失败后仍处于STARTING
 
-位置：CM7/Platform/usb_mode.c，USB_Mode_Process的STARTING失败分支，约第203-206行。
+位置：CM7/Service/usb_mode.c，USB_Mode_Process的STARTING失败分支，约第203-206行。
 
 | 用例 | 输入及执行 | 预期 | 上一轮实际 |
 |---|---|---|---|

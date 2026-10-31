@@ -1290,6 +1290,16 @@
               <FileType>1</FileType>
               <FilePath>../CM7/Service/usb_uvc_class.c</FilePath>
             </File>
+            <File>
+              <FileName>usb_mode.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>../CM7/Service/usb_mode.c</FilePath>
+            </File>
+            <File>
+              <FileName>usb_mode.h</FileName>
+              <FileType>5</FileType>
+              <FilePath>../CM7/Service/usb_mode.h</FilePath>
+            </File>
           </Files>
         </Group>
         <Group>
@@ -1581,16 +1591,6 @@
               <FileName>usbd_conf.h</FileName>
               <FileType>5</FileType>
               <FilePath>../CM7/Platform/usbd_conf.h</FilePath>
-            </File>
-            <File>
-              <FileName>usb_mode.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>../CM7/Platform/usb_mode.c</FilePath>
-            </File>
-            <File>
-              <FileName>usb_mode.h</FileName>
-              <FileType>5</FileType>
-              <FilePath>../CM7/Platform/usb_mode.h</FilePath>
             </File>
           </Files>
         </Group>
@@ -3160,6 +3160,16 @@
               <FileType>1</FileType>
               <FilePath>../CM7/Service/usb_test_device.c</FilePath>
             </File>
+            <File>
+              <FileName>usb_mode.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>../CM7/Service/usb_mode.c</FilePath>
+            </File>
+            <File>
+              <FileName>usb_mode.h</FileName>
+              <FileType>5</FileType>
+              <FilePath>../CM7/Service/usb_mode.h</FilePath>
+            </File>
           </Files>
         </Group>
         <Group>
@@ -3244,16 +3254,6 @@
               <FileName>usbd_conf.h</FileName>
               <FileType>5</FileType>
               <FilePath>../CM7/Platform/usbd_conf.h</FilePath>
-            </File>
-            <File>
-              <FileName>usb_mode.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>../CM7/Platform/usb_mode.c</FilePath>
-            </File>
-            <File>
-              <FileName>usb_mode.h</FileName>
-              <FileType>5</FileType>
-              <FilePath>../CM7/Platform/usb_mode.h</FilePath>
             </File>
           </Files>
         </Group>

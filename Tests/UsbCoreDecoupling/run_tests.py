@@ -14,7 +14,7 @@ from unicorn import Uc, UC_ARCH_ARM, UC_MODE_THUMB, UC_MODE_MCLASS
 from unicorn.arm_const import UC_ARM_REG_SP, UC_ARM_REG_LR, UC_ARM_REG_R0, UC_ARM_REG_PC
 from elftools.elf.elffile import ELFFile
 
-files = ["CM7/Platform/usb_mode.c", "CM7/Platform/usb_mode.h",
+files = ["CM7/Service/usb_mode.c", "CM7/Service/usb_mode.h",
          "CM7/Platform/usb_device.c", "CM7/BSP/bsp_usb.c",
          "CM7/Platform/usb_device.h", "CM7/BSP/bsp_usb.h", "CM7/Service/usb_test_device.c"]
 before = {f: hashlib.sha256((ROOT / f).read_bytes()).hexdigest() for f in files}
@@ -33,7 +33,7 @@ run(["D:/32/ARM/ARMCC/Bin/armcc.exe", "--vsn"])
 args = ["D:/32/ARM/ARMCC/Bin/armcc.exe", "--cpu", "Cortex-M7", "--c99", "-O0",
         "-DSTM32H747xx", "-DCORE_CM7", "-DUSE_HAL_DRIVER", "--preinclude",
         ROOT / "CM7/BSP/bsp_usb_hal_config.h"]
-for inc in ["CM7/Core/Inc", "CM7/BSP", "CM7/Platform", "CM7/Framework", "Common/Inc",
+for inc in ["CM7/Core/Inc", "CM7/BSP", "CM7/Platform", "CM7/Service", "CM7/Framework", "Common/Inc",
             "Drivers/STM32H7xx_HAL_Driver/Inc", "Drivers/CMSIS/Include",
             "Drivers/CMSIS/Device/ST/STM32H7xx/Include",
             "Middlewares/ST/STM32_USB_Device_Library/Core/Inc"]:
