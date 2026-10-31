@@ -31,6 +31,57 @@ static uint8_t UVC_DeInit(
     uint8_t config
 );
 
+//Setup 回调
+static uint8_t UVC_Setup(
+    USBD_HandleTypeDef *pdev,
+    USBD_SetupReqTypedef *req
+);
+
+//绑定UVC Class操作
+static USBD_ClassTypeDef s_uvc_class =
+{
+    //初始化UVC上下文
+    UVC_Init,
+
+    //归还UVC上下文
+    UVC_DeInit,
+
+    //处理控制请求
+    UVC_Setup,
+
+    //EP0发送完成，暂不处理
+    NULL,
+
+    //EP0接收完成，暂不处理
+    NULL,
+
+    //IN传输完成，暂不处理
+    NULL,
+
+    //OUT传输完成，暂不处理
+    NULL,
+
+    //SOF帧事件，暂不处理
+    NULL,
+
+    //等时IN未完成，暂不处理
+    NULL,
+
+    //等时OUT未完成，暂不处理
+    NULL,
+
+    //不提供高速配置描述符
+    NULL,
+
+    //返回全速配置描述符
+    USB_UVC_GetFSConfigDescriptor,
+
+    //不提供其他速度配置描述符
+    NULL,
+
+    //不提供设备限定描述符
+    NULL
+};
 
 //内部功能函数实现
 
@@ -57,6 +108,9 @@ static uint8_t UVC_Init(
 
     //清零接口Alt及其他运行状态
     memset(ctx, 0, sizeof(UsbUvcContext_t));
+	
+	// SET_CONFIGURATION成功后进入已配置状态
+	ctx->configured = true;
 
     //保存上下文，供后续UVC回调使用
     pdev->pUserData[0] = ctx;
@@ -91,4 +145,15 @@ static uint8_t UVC_DeInit(
     pdev->pUserData[0] = NULL;
 
     return USBD_OK;
+}
+
+static uint8_t UVC_Setup(
+    USBD_HandleTypeDef *pdev,
+    USBD_SetupReqTypedef *req
+)
+{
+    (void)pdev;
+    (void)req;
+
+    return USBD_FAIL;
 }

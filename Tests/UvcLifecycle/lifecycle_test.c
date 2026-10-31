@@ -41,7 +41,9 @@ int UvcLifecycle_TestRun(uint32_t id)
         EQ(UVC_Init(&device, 1U), USBD_OK); ctx = device.pUserData[0];
         EQ(ctx, s_class_memory); EQ(s_class_memory_used, true);
         EQ(ctx->interface_alt[0], 0U); EQ(ctx->interface_alt[1], 0U);
-        for (i = 0U; i < sizeof(*ctx); i++) EQ(((uint8_t *)ctx)[i], 0U);
+        EQ(ctx->configured, true);
+        for (i = 0U; i < sizeof(*ctx); i++)
+            EQ(((uint8_t *)ctx)[i], i == offsetof(UsbUvcContext_t, configured) ? 1U : 0U);
     }
     else if (id == 6U) { EQ(UVC_DeInit(NULL, 1U), USBD_FAIL); EQ(s_class_memory_used, false); }
     else if (id == 7U) { EQ(UVC_DeInit(&device, 1U), USBD_OK); EQ(s_class_memory_used, false); }
@@ -61,6 +63,22 @@ int UvcLifecycle_TestRun(uint32_t id)
     {
         EQ(UVC_Init(&device, 1U), USBD_OK); EQ(UVC_DeInit(&device, 1U), USBD_OK);
         EQ(UVC_Init(&device, 1U), USBD_OK); EQ(s_class_memory_used, true);
+    }
+    else if (id == 11U)
+    {
+        uint16_t length = 0U;
+        EQ(s_uvc_class.Init, UVC_Init); EQ(s_uvc_class.DeInit, UVC_DeInit);
+        EQ(s_uvc_class.Setup, UVC_Setup); EQ(s_uvc_class.EP0_TxSent, NULL);
+        EQ(s_uvc_class.EP0_RxReady, NULL); EQ(s_uvc_class.DataIn, NULL);
+        EQ(s_uvc_class.DataOut, NULL); EQ(s_uvc_class.SOF, NULL);
+        EQ(s_uvc_class.IsoINIncomplete, NULL); EQ(s_uvc_class.IsoOUTIncomplete, NULL);
+        EQ(s_uvc_class.GetHSConfigDescriptor, NULL);
+        EQ(s_uvc_class.GetFSConfigDescriptor, USB_UVC_GetFSConfigDescriptor);
+        EQ(s_uvc_class.GetOtherSpeedConfigDescriptor, NULL);
+        EQ(s_uvc_class.GetDeviceQualifierDescriptor, NULL);
+        EQ(s_uvc_class.GetFSConfigDescriptor(&length) != NULL, true);
+        EQ(length, USB_UVC_FS_CONFIG_DESC_SIZE);
+        EQ(s_uvc_class.Setup(NULL, NULL), USBD_FAIL);
     }
     else { EQ(0U, 1U); }
     return 0;

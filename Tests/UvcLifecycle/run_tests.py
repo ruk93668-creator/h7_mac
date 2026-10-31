@@ -39,7 +39,7 @@ for inc in ["CM7/Core/Inc", "CM7/BSP", "CM7/Platform", "CM7/Service", "CM7/Frame
             "Middlewares/ST/STM32_USB_Device_Library/Core/Inc"]:
     args += ["-I", ROOT / inc]
 objects = []
-for source in [HERE / "lifecycle_test.c"] + list((ROOT / "Middlewares/ST/STM32_USB_Device_Library/Core/Src").glob("*.c")):
+for source in [HERE / "lifecycle_test.c", ROOT / "CM7/Service/usb_uvc_desc.c"] + list((ROOT / "Middlewares/ST/STM32_USB_Device_Library/Core/Src").glob("*.c")):
     obj = HERE / (source.stem + ".o")
     run(args + ["-c", source, "-o", obj])
     objects.append(obj)
@@ -53,7 +53,7 @@ with (HERE / "mode_test.axf").open("rb") as f:
     sections = [(s["sh_addr"], s.data()) for s in elf.iter_sections()
                 if s["sh_flags"] & 2 and s["sh_type"] == "SHT_PROGBITS" and s["sh_size"]]
 
-names = ["Init空句柄", "Init配置0", "Init配置2", "重复Init保持原上下文", "固定池耗尽", "完整清零与Alt0", "DeInit空句柄", "空上下文DeInit", "正常及重复DeInit", "Core延迟归还", "释放后可重新Init"]
+names = ["Init空句柄", "Init配置0", "Init配置2", "重复Init保持原上下文", "固定池耗尽", "完整清零与Alt0", "DeInit空句柄", "空上下文DeInit", "正常及重复DeInit", "Core延迟归还", "释放后可重新Init", "Class操作表14项映射"]
 rows = []
 for case_id, name in enumerate(names):
     uc = Uc(UC_ARCH_ARM, UC_MODE_THUMB | UC_MODE_MCLASS)
