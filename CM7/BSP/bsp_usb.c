@@ -26,7 +26,8 @@ static bool s_fifo_valid;
 
 //每个IN端点独占一个PIO包缓冲，尾部补齐到32位读取边界
 #define BSP_USB_PIO_PACKET_SIZE (1023U + 3U)
-static uint8_t s_tx_pio_pool[BSP_USB_ENDPOINT_COUNT][BSP_USB_PIO_PACKET_SIZE] __attribute__((aligned(32)));
+#define BSP_USB_PIO_SLOT_SIZE ((BSP_USB_PIO_PACKET_SIZE + 31U) & ~31U)
+static uint8_t s_tx_pio_pool[BSP_USB_ENDPOINT_COUNT][BSP_USB_PIO_SLOT_SIZE] __attribute__((aligned(32)));
 
 typedef struct
 {

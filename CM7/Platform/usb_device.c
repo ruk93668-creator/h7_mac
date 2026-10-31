@@ -712,7 +712,7 @@ static SysResult_t Usb_ReleaseEndpoints(void)
             if (s_endpoints[direction][index].opened &&
                 USBD_LL_CloseEP(&s_device, index | (direction ? 0x80U : 0U)) != USBD_OK &&
                 result == SYS_OK)
-                result = s_last_result;
+                result = s_operation_result;
         }
     }
     return result;
