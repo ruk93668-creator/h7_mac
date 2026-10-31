@@ -45,15 +45,19 @@ SysResult_t USB_Mode_Init(void)
     if (s_usb_mode.initialized)
         return SYS_OK;
 
-    //Mode Manager统一选择并注册Class，不再由各Class自行抢占Initcall
+    //已有上层显式注册的Class不覆盖；否则由Mode Manager选择默认TEST
     s_usb_mode.mode = USB_MODE_TEST;
     {
-        SysResult_t result = UsbMode_RegisterClass(s_usb_mode.mode);
-        if (result != SYS_OK)
+        uint16_t descriptor_length = 0U;
+        if (USB_Device_GetConfigDescriptor(&descriptor_length) == NULL)
         {
-            s_usb_mode.last_result = result;
-            s_usb_mode.state = USB_MODE_STATE_ERROR;
-            return result;
+            SysResult_t result = UsbMode_RegisterClass(s_usb_mode.mode);
+            if (result != SYS_OK)
+            {
+                s_usb_mode.last_result = result;
+                s_usb_mode.state = USB_MODE_STATE_ERROR;
+                return result;
+            }
         }
     }
     s_usb_mode.state = USB_MODE_STATE_IDLE;
