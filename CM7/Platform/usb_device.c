@@ -737,13 +737,16 @@ static SysResult_t Usb_ValidateConfig(uint8_t *config, uint16_t length,
     uint8_t interface_number = 0U, alternate = 0U, type;
     uint16_t packet;
     bool have_interface = false;
+    bool have_string_index;
     if (config == NULL || descriptors == NULL || length < 9U ||
         config[0] != 9U || config[1] != USB_DESC_TYPE_CONFIGURATION ||
         ((uint16_t)config[2] | ((uint16_t)config[3] << 8)) != length ||
         config[4] == 0U || config[4] > 16U || config[5] == 0U ||
+        (config[7] & 0x80U) == 0U || (config[7] & 0x1FU) != 0U ||
         (config[6] != 0U && descriptors->GetConfigurationStrDescriptor == NULL))
         return SYS_ERR_INVALID_ARG;
     if ((uint32_t)config[4] - 1U > USBD_MAX_NUM_INTERFACES) return SYS_ERR_NOT_SUPPORTED;
+    have_string_index = config[6] != 0U;
     while (offset < length)
     {
         uint8_t *desc = config + offset;
@@ -762,6 +765,7 @@ static SysResult_t Usb_ValidateConfig(uint8_t *config, uint16_t length,
                     return SYS_ERR_INVALID_ARG;
                 previous += old[0];
             }
+            if (desc[8] != 0U) have_string_index = true;
             interface_number = desc[2]; alternate = desc[3];
             interfaces |= (uint16_t)(1UL << interface_number);
             if (alternate == 0U) alt_zero |= (uint16_t)(1UL << interface_number);
@@ -775,6 +779,11 @@ static SysResult_t Usb_ValidateConfig(uint8_t *config, uint16_t length,
             packet = (uint16_t)desc[4] | ((uint16_t)desc[5] << 8);
             if ((desc[3] & 0xC0U) != 0U || (packet & 0xF800U) != 0U)
                 return SYS_ERR_INVALID_ARG;
+            if (type != EP_TYPE_ISOC && (desc[3] & 0xFCU) != 0U)
+                return SYS_ERR_INVALID_ARG;
+            if (type == EP_TYPE_ISOC &&
+                (((desc[3] >> 2) & 3U) == 3U || ((desc[3] >> 4) & 3U) == 3U))
+                return SYS_ERR_INVALID_ARG;
             packet &= 0x07FFU;
             if (type == EP_TYPE_CTRL) return SYS_ERR_NOT_SUPPORTED;
             if (type == EP_TYPE_BULK && !(packet == 8U || packet == 16U || packet == 32U || packet == 64U))
@@ -783,7 +792,8 @@ static SysResult_t Usb_ValidateConfig(uint8_t *config, uint16_t length,
                 return SYS_ERR_NOT_SUPPORTED;
             if (type == EP_TYPE_ISOC && (packet == 0U || packet > 1023U))
                 return SYS_ERR_NOT_SUPPORTED;
-            if ((type == EP_TYPE_INTR || type == EP_TYPE_ISOC) && (desc[6] == 0U || desc[6] > 16U))
+            if ((type == EP_TYPE_INTR && desc[6] == 0U) ||
+                (type == EP_TYPE_ISOC && (desc[6] == 0U || desc[6] > 16U)))
                 return SYS_ERR_INVALID_ARG;
             endpoint_bit = 1UL << ((desc[2] & 0x0FU) +
                             ((desc[2] & 0x80U) != 0U ? 16U : 0U));
@@ -797,9 +807,12 @@ static SysResult_t Usb_ValidateConfig(uint8_t *config, uint16_t length,
             if (desc[0] != 8U || (uint16_t)desc[2] + desc[3] > config[4] ||
                 desc[3] == 0U || (desc[7] != 0U && descriptors->GetInterfaceStrDescriptor == NULL))
                 return SYS_ERR_INVALID_ARG;
+            if (desc[7] != 0U) have_string_index = true;
         }
         offset += desc[0];
     }
+    if (have_string_index && descriptors->GetLangIDStrDescriptor == NULL)
+        return SYS_ERR_INVALID_ARG;
     if (!have_interface || endpoint_count != declared_endpoints ||
         interfaces != (uint16_t)((1UL << config[4]) - 1UL) ||
         alt_zero != (uint16_t)((1UL << config[4]) - 1UL))
