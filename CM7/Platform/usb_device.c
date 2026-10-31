@@ -45,6 +45,10 @@ static USBD_DescriptorsTypeDef s_descriptor_driver;
 static uint8_t *s_configuration;
 static uint16_t s_configuration_length;
 
+//注册描述符声明的精确端点集合，包含不同Alternate Setting
+static BspUsbEndpointConfig_t s_endpoint_requirements[BSP_USB_MAX_ENDPOINT_CONFIGS];
+static uint32_t s_endpoint_requirement_count;
+
 //保留固定Class内存块，不使用malloc
 static uint8_t s_class_memory[1024] __attribute__((aligned(32)));
 static volatile bool s_class_memory_used;
@@ -398,6 +402,18 @@ USBD_StatusTypeDef USBD_LL_OpenEP(USBD_HandleTypeDef *device, uint8_t ep, uint8_
         Usb_Unlock(enabled);
         return Usb_LlResult(SYS_ERR_ALREADY_EXISTS);
     }
+    //Open必须与注册时某个Alternate Setting的端点声明完全匹配
+    {
+        uint32_t i;
+        bool declared = false;
+        for (i = 0U; i < s_endpoint_requirement_count; ++i)
+        {
+            const BspUsbEndpointConfig_t *requirement = &s_endpoint_requirements[i];
+            if (requirement->address == ep && requirement->type == type && requirement->max_packet == size)
+            { declared = true; break; }
+        }
+        if (!declared) { Usb_Unlock(enabled); return Usb_LlResult(SYS_ERR_NOT_SUPPORTED); }
+    }
     result = BSP_USB_OpenEp(ep, type, size);
     entry->last_result = result;
     if (result == SYS_OK)
@@ -701,24 +717,22 @@ static SysResult_t Usb_ReleaseEndpoints(void)
     return result;
 }
 
-static SysResult_t Usb_ValidateConfig(uint8_t *config, uint16_t length)
+static SysResult_t Usb_ValidateConfig(uint8_t *config, uint16_t length,
+                                             USBD_DescriptorsTypeDef *descriptors)
 {
-    uint32_t offset = 0U;
-    uint16_t interfaces = 0U;
-    uint16_t alt_zero = 0U;
-    uint32_t endpoint_mask = 0U;
-    uint32_t endpoint_bit;
-    uint16_t expected_mask;
-    uint8_t endpoint_count = 0U;
-    uint8_t declared_endpoints = 0U;
+    uint32_t offset = 0U, previous;
+    uint16_t interfaces = 0U, alt_zero = 0U;
+    uint8_t endpoint_count = 0U, declared_endpoints = 0U;
+    uint8_t interface_number = 0U, alternate = 0U, type;
+    uint16_t packet;
     bool have_interface = false;
-    if (config == NULL || length < 9U || config[0] != 9U ||
-        config[1] != USB_DESC_TYPE_CONFIGURATION ||
+    if (config == NULL || descriptors == NULL || length < 9U ||
+        config[0] != 9U || config[1] != USB_DESC_TYPE_CONFIGURATION ||
         ((uint16_t)config[2] | ((uint16_t)config[3] << 8)) != length ||
-        config[4] == 0U || config[4] > 16U || config[5] != 1U)
+        config[4] == 0U || config[4] > 16U || config[5] == 0U ||
+        (config[6] != 0U && descriptors->GetConfigurationStrDescriptor == NULL))
         return SYS_ERR_INVALID_ARG;
-    if ((uint32_t)config[4] - 1U > USBD_MAX_NUM_INTERFACES)
-        return SYS_ERR_NOT_SUPPORTED;
+    if ((uint32_t)config[4] - 1U > USBD_MAX_NUM_INTERFACES) return SYS_ERR_NOT_SUPPORTED;
     while (offset < length)
     {
         uint8_t *desc = config + offset;
@@ -727,33 +741,61 @@ static SysResult_t Usb_ValidateConfig(uint8_t *config, uint16_t length)
         if (desc[1] == USB_DESC_TYPE_INTERFACE)
         {
             if (desc[0] != 9U || desc[2] >= config[4] ||
-                (have_interface && endpoint_count != declared_endpoints))
+                (have_interface && endpoint_count != declared_endpoints) ||
+                (desc[8] != 0U && descriptors->GetInterfaceStrDescriptor == NULL))
                 return SYS_ERR_INVALID_ARG;
-            interfaces |= (uint16_t)(1UL << desc[2]);
-            if (desc[3] == 0U)
-                alt_zero |= (uint16_t)(1UL << desc[2]);
-            declared_endpoints = desc[4];
-            endpoint_count = 0U;
-            endpoint_mask = 0U;
-            have_interface = true;
+            for (previous = 9U; previous < offset; )
+            {
+                uint8_t *old = config + previous;
+                if (old[1] == USB_DESC_TYPE_INTERFACE && old[2] == desc[2] && old[3] == desc[3])
+                    return SYS_ERR_INVALID_ARG;
+                previous += old[0];
+            }
+            interface_number = desc[2]; alternate = desc[3];
+            interfaces |= (uint16_t)(1UL << interface_number);
+            if (alternate == 0U) alt_zero |= (uint16_t)(1UL << interface_number);
+            declared_endpoints = desc[4]; endpoint_count = 0U; have_interface = true;
         }
         else if (desc[1] == USB_DESC_TYPE_ENDPOINT)
         {
-            if (desc[0] < 7U || !have_interface || !Usb_ClassEndpoint(desc[2]) ||
-                endpoint_count == 255U)
+            if (desc[0] < 7U || !have_interface || (desc[2] & 0x70U) != 0U ||
+                !Usb_ClassEndpoint(desc[2])) return SYS_ERR_INVALID_ARG;
+            type = desc[3] & 3U;
+            packet = (uint16_t)desc[4] | ((uint16_t)desc[5] << 8);
+            if ((desc[3] & 0xC0U) != 0U || (packet & 0xF800U) != 0U)
                 return SYS_ERR_INVALID_ARG;
-            //同一备用设置不能重复声明同方向的同一端点
-            endpoint_bit = 1UL << ((desc[2] & 0x0FU) + ((desc[2] & 0x80U) != 0U ? 16U : 0U));
-            if ((endpoint_mask & endpoint_bit) != 0U)
+            packet &= 0x07FFU;
+            if (type == EP_TYPE_CTRL) return SYS_ERR_NOT_SUPPORTED;
+            if (type == EP_TYPE_BULK && !(packet == 8U || packet == 16U || packet == 32U || packet == 64U))
+                return SYS_ERR_NOT_SUPPORTED;
+            if (type == EP_TYPE_INTR && (packet == 0U || packet > 64U))
+                return SYS_ERR_NOT_SUPPORTED;
+            if (type == EP_TYPE_ISOC && (packet == 0U || packet > 1023U))
+                return SYS_ERR_NOT_SUPPORTED;
+            if ((type == EP_TYPE_INTR || type == EP_TYPE_ISOC) && (desc[6] == 0U || desc[6] > 16U))
                 return SYS_ERR_INVALID_ARG;
-            endpoint_mask |= endpoint_bit;
+            for (previous = 9U; previous < offset; )
+            {
+                uint8_t *old = config + previous;
+                if (old[1] == USB_DESC_TYPE_INTERFACE && old[2] == interface_number && old[3] == alternate)
+                    break;
+                if (old[1] == USB_DESC_TYPE_ENDPOINT && old[2] == desc[2])
+                    return SYS_ERR_INVALID_ARG;
+                previous += old[0];
+            }
             ++endpoint_count;
+        }
+        else if (desc[1] == 0x0BU)
+        {
+            if (desc[0] != 8U || (uint16_t)desc[2] + desc[3] > config[4] ||
+                desc[3] == 0U || (desc[7] != 0U && descriptors->GetInterfaceStrDescriptor == NULL))
+                return SYS_ERR_INVALID_ARG;
         }
         offset += desc[0];
     }
-    expected_mask = (uint16_t)((1UL << config[4]) - 1U);
     if (!have_interface || endpoint_count != declared_endpoints ||
-        interfaces != expected_mask || alt_zero != expected_mask)
+        interfaces != (uint16_t)((1UL << config[4]) - 1UL) ||
+        alt_zero != (uint16_t)((1UL << config[4]) - 1UL))
         return SYS_ERR_INVALID_ARG;
     return SYS_OK;
 }
@@ -969,7 +1011,7 @@ SysResult_t Usb_RegisterClass(USBD_ClassTypeDef *driver, USBD_DescriptorsTypeDef
         return SYS_ERR_INVALID_STATE;
 
     config = driver->GetFSConfigDescriptor(&length);
-    result = Usb_ValidateConfig(config, length);
+    result = Usb_ValidateConfig(config, length, descriptors);
     if (result != SYS_OK)
         return result;
     device_desc = descriptors->GetDeviceDescriptor(USBD_SPEED_FULL, &device_length);
@@ -1101,38 +1143,34 @@ SysResult_t Usb_StopDevice(void)
 static SysResult_t Usb_PlanEndpoints(uint8_t *config, uint16_t length)
 {
     BspUsbEndpointConfig_t entries[BSP_USB_MAX_ENDPOINT_CONFIGS];
-    uint32_t count = 0U;
-    uint32_t offset = 0U;
-    uint32_t i;
-    uint16_t size;
-    uint8_t type;
+    uint32_t count = 0U, offset = 0U;
+    SysResult_t result;
     if (config == NULL && length == 0U)
-        return BSP_USB_ConfigureEndpoints(NULL, 0U);
+    {
+        result = BSP_USB_ConfigureEndpoints(NULL, 0U);
+        if (result == SYS_OK) s_endpoint_requirement_count = 0U;
+        return result;
+    }
     while (offset < length)
     {
         uint8_t *desc = config + offset;
         if (desc[1] == USB_DESC_TYPE_ENDPOINT)
         {
-            type = desc[3] & 3U;
-            size = (uint16_t)desc[4] | ((uint16_t)desc[5] << 8);
-            for (i = 0U; i < count; ++i)
-                if (entries[i].address == desc[2] && entries[i].type == type)
-                    break;
-            if (i == count)
-            {
-                if (count == BSP_USB_MAX_ENDPOINT_CONFIGS)
-                    return SYS_ERR_NO_RESOURCE;
-                entries[count].address = desc[2];
-                entries[count].type = type;
-                entries[count].max_packet = size;
-                ++count;
-            }
-            else if (size > entries[i].max_packet)
-                entries[i].max_packet = size;
+            if (count == BSP_USB_MAX_ENDPOINT_CONFIGS) return SYS_ERR_NO_RESOURCE;
+            entries[count].address = desc[2];
+            entries[count].type = desc[3] & 3U;
+            entries[count].max_packet = ((uint16_t)desc[4] | ((uint16_t)desc[5] << 8)) & 0x07FFU;
+            ++count;
         }
         offset += desc[0];
     }
-    return BSP_USB_ConfigureEndpoints(entries, count);
+    result = BSP_USB_ConfigureEndpoints(entries, count);
+    if (result == SYS_OK)
+    {
+        memcpy(s_endpoint_requirements, entries, count * sizeof(entries[0]));
+        s_endpoint_requirement_count = count;
+    }
+    return result;
 }
 
 //只包装生命周期，不实现任何Class功能
@@ -1184,11 +1222,13 @@ static uint8_t Usb_ManagedClassDeInit(USBD_HandleTypeDef *device, uint8_t config
         s_class_free_pending = false;
         control_busy = s_control_busy;
         s_control_busy = true;
-        status = s_class_callbacks.DeInit(device, config);
+        //先保存外部绑定，DeInit失败时恢复其所有权
         s_class_user_data = s_device.pUserData[0];
+        status = s_class_callbacks.DeInit(device, config);
         s_control_busy = control_busy;
         if (status != USBD_OK)
         {
+            s_device.pUserData[0] = s_class_user_data;
             s_class_state = USB_CLASS_RELEASE_FAILED;
             s_class_free_pending = false;
             s_stop_required = true;
@@ -1198,6 +1238,8 @@ static uint8_t Usb_ManagedClassDeInit(USBD_HandleTypeDef *device, uint8_t config
             (void)Usb_ReleaseEndpoints();
             return status;
         }
+        s_device.pUserData[0] = NULL;
+        s_class_user_data = NULL;
         s_class_state = USB_CLASS_RELEASING;
     }
 
