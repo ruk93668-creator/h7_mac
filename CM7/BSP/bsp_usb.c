@@ -251,6 +251,7 @@ SysResult_t BSP_USB_OpenEp(uint8_t ep, uint8_t type, uint16_t size)
     HAL_StatusTypeDef status;
     USB_OTG_EPTypeDef *entry;
     USB_OTG_EPTypeDef previous;
+	
     if (!s_ready || !s_fifo_valid)
         return SYS_ERR_INVALID_STATE;
     result = Usb_ValidateEp(ep, type, size);

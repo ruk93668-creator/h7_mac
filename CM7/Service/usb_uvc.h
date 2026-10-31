@@ -3,6 +3,9 @@
 
 #include "sys_result.h"
 
-//TODO：声明UVC服务对外接口
+
+
+//注册UVC Class
+SysResult_t USB_UVC_Register(void);
 
 #endif

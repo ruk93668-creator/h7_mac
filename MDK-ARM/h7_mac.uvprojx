@@ -1291,6 +1291,11 @@
               <FilePath>../CM7/Service/usb_uvc_class.c</FilePath>
             </File>
             <File>
+              <FileName>usb_test_device.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>../CM7/Service/usb_test_device.c</FilePath>
+            </File>
+            <File>
               <FileName>usb_mode.c</FileName>
               <FileType>1</FileType>
               <FilePath>../CM7/Service/usb_mode.c</FilePath>
