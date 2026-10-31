@@ -15,6 +15,7 @@ static int Mode_Boot(bool configure);
 
 static int Mode_RunCase(uint32_t id);
 static int Core_RunCase(uint32_t id);
+static int Stage2_RunCase(uint32_t id);
 
 uint32_t Platform_TimeGetMs(void)
 {
@@ -67,6 +68,7 @@ static int Mode_RunCase(uint32_t id)
     //准备当前正式BSP直接检查的RCC寄存器
     __HAL_RCC_USB_CONFIG(RCC_USBCLKSOURCE_HSI48);
     RCC->CR |= RCC_CR_HSI48RDY;
+    if (id >= 300U) return Stage2_RunCase(id);
     if (id >= 200U) return Core_RunCase(id);
     if (id < 52U)
     {
@@ -320,7 +322,7 @@ static int Core_RunCase(uint32_t id)
  if(id==205){EQ(USB_Device_GetConfigDescriptor(&length),core_config);EQ(length,25);Request(0x80,USB_REQ_GET_DESCRIPTOR,0x200,0,255);EQ(tx_size,25);EQ(tx_data[2],25);return 0;}
  if(id==206){EQ(USB_Device_RegisterClass(&s_base_class,&s_descriptors),SYS_ERR_INVALID_STATE);EQ(USB_Device_GetConfigDescriptor(&length),core_config);return 0;}
  if(id==207){EQ(USB_Device_OpenEp(0,0,64),SYS_ERR_INVALID_ARG);EQ(USB_Device_CloseEp(0x80),SYS_ERR_INVALID_ARG);EQ(USB_Device_Transmit(0x80,core_packet,1),SYS_ERR_INVALID_ARG);EQ(USB_Device_Receive(0,core_packet,1),SYS_ERR_INVALID_ARG);EQ(USB_Device_GetEpState(0x80,&state),SYS_OK);EQ(state.opened,true);return 0;}
- if(id==210){EQ(USB_Device_OpenEp(0x81,USBD_EP_TYPE_BULK,64),SYS_ERR_NOT_SUPPORTED);EQ(USB_Device_GetEpState(0x81,&state),SYS_OK);EQ(state.opened,false);EQ(USB_Device_OpenEp(0x82,USBD_EP_TYPE_INTR,16),SYS_ERR_NOT_SUPPORTED);return 0;}
+ if(id==210){EQ(USB_Device_OpenEp(0x81,USBD_EP_TYPE_BULK,64),SYS_OK);EQ(USB_Device_GetEpState(0x81,&state),SYS_OK);EQ(state.opened,true);EQ(USB_Device_CloseEp(0x81),SYS_OK);EQ(USB_Device_OpenEp(0x82,USBD_EP_TYPE_INTR,16),SYS_OK);return 0;}
  if(id==211){EQ(USB_Device_Transmit(0x81,core_packet,512),SYS_ERR_INVALID_STATE);return 0;}
  if(id==217){EQ(USB_Device_OpenEp(0x91,1,512),SYS_ERR_INVALID_ARG);EQ(USB_Device_GetEpState(0x91,&state),SYS_ERR_INVALID_ARG);EQ(USB_Device_GetEpState(0x81,NULL),SYS_ERR_INVALID_ARG);return 0;}
  if(id==228){Request(0x60,0x55,0,0,0);EQ(stall_count>0,1);EQ(core_setup_count,0);return 0;}
@@ -357,3 +359,5 @@ static int Core_RunCase(uint32_t id)
  if(id==225){HAL_PCD_DisconnectCallback(&s_pcd);EQ(USB_Device_GetEpState(0x81,&state),SYS_OK);EQ(state.opened,false);return 0;}
  EQ(0,1);return 1;
 }
+
+#include "endpoint_lifecycle_test.c"

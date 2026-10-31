@@ -1,3 +1,17 @@
+# USB 通用端点与生命周期验收
+
+当前第二阶段：见 [stage2_acceptance.md](stage2_acceptance.md)。
+
+- 192项执行测试：原132项完整保留，新增60项。
+- BSP支持EP0到EP8双向；非零端点支持FS等时、Bulk和Interrupt。
+- 按外部Endpoint Descriptor在注册时规划FIFO，运行中不重排。
+- Class生命周期包装、失败保留资源、成功后提交池释放。
+- 最新结果：results.md / results.json；命令：commands.json；正式编译：cm7_keil.log。
+
+下面保留第一阶段解耦说明，历史能力及统计以第二阶段报告为准。
+
+---
+
 # USB Device Core 解耦验收与接入说明
 
 当前范围：通用 USB Device 管理、外部描述符注册、EP0 分发、端点资源管理。没有开发 UVC/MSC Class 或运行时模式切换。
@@ -136,7 +150,7 @@ HAL DataIn/DataOut → BSP → Platform清busy
 - HAL等时未完成：BSP新增转发 → Platform清busy并记录TIMEOUT → 官方Core → 外部IsoINIncomplete/IsoOUTIncomplete。
 - 当前HAL没有统一的所有端点异步错误回调，本轮没有虚构一个不存在的硬件事件入口。
 
-当前BSP的实际能力仍是EP0双向CTRL 64字节、EP1 IN ISOC 512字节；OUT接收仍只有EP0。Core接口没有绑定这些业务场景，但不支持的硬件申请会返回BSP错误。**通用Core不等于Bulk/MSC硬件支持已经完成。**
+第一阶段BSP只支持EP0双向CTRL64和EP1 IN ISO512；第二阶段已扩展到EP1至EP8双向，完整包长与FIFO限制见stage2_acceptance.md。
 
 Class按描述符确定端点、包长、间隔及提交节奏。OpenEp复用HAL既有地址/类型/包长接口，不替Class实现bInterval调度，也不在Core改FIFO。
 
@@ -175,4 +189,4 @@ Keil CM7最终编译：**0 Error、0 Warning**，日志见cm7_keil.log；保护�
 
 默认固件暂由迁移后的TEST兼容模块注册；接入自己的Class时，需要在外部启动组织中决定注册对象，不能让两个模块在SERVICE阶段互相覆盖。本轮没有修改Mode Manager，也没有实现这项选择或运行时切换。
 
-保留限制：Full-Speed、单一活动Class、一个配置、固定Class内存池；当前BSP尚无Bulk及数据OUT端点能力。Windows实板枚举、总线时序及未来具体Class仍需实板验收。
+保留限制：Full-Speed、单一活动Class、一个配置、固定Class内存池；第二阶段已补Bulk及非零OUT端点能力，尚未开发MSC协议。Windows实板枚举、总线时序及未来具体Class仍需实板验收。

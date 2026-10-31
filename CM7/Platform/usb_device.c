@@ -12,24 +12,41 @@
 #define USB_DEVICE_EP_COUNT 16U
 
 static USBD_HandleTypeDef s_device;
-static bool s_initialized;
-static bool s_started;
-static bool s_registered;
-static bool s_stop_required;
+static volatile bool s_initialized;
+static volatile bool s_started;
+static volatile bool s_registered;
+static volatile bool s_stop_required;
 
 //生命周期回调执行期间禁止重入Init、Register、Start和Stop
 static volatile bool s_control_busy;
 static volatile SysResult_t s_last_result;
 
 //复制外部操作表，配置数据本身由调用者保持静态有效
+typedef enum
+{
+    USB_CLASS_INACTIVE = 0,
+    USB_CLASS_INITIALIZING,
+    USB_CLASS_ACTIVE,
+    USB_CLASS_DEINITIALIZING,
+    USB_CLASS_RELEASE_FAILED,
+    USB_CLASS_RELEASING
+} UsbClassState_t;
+
+static volatile UsbClassState_t s_class_state;
+static USBD_ClassTypeDef s_class_callbacks;
 static USBD_ClassTypeDef s_class_driver;
+
+//官方DeInit会清空pUserData，失败时保留Class当前的外部绑定
+static void *s_class_user_data;
+static volatile bool s_hardware_stop_failed;
+static volatile bool s_class_free_pending;
 static USBD_DescriptorsTypeDef s_descriptor_driver;
 static uint8_t *s_configuration;
 static uint16_t s_configuration_length;
 
 //保留固定Class内存块，不使用malloc
 static uint8_t s_class_memory[1024] __attribute__((aligned(32)));
-static bool s_class_memory_used;
+static volatile bool s_class_memory_used;
 
 //两个方向独立管理资源，不规定具体端点类型或地址
 static volatile UsbDeviceEndpointState_t s_endpoints[2][USB_DEVICE_EP_COUNT];
@@ -45,6 +62,15 @@ static SysResult_t Usb_StartDevice(void);
 
 //在生命周期保护内停止并释放资源
 static SysResult_t Usb_StopDevice(void);
+
+//包装外部生命周期，成功Init才形成一次活动生命周期
+static uint8_t Usb_ManagedClassInit(USBD_HandleTypeDef *device, uint8_t config);
+
+//同一次成功释放只调用外部DeInit一次，失败保留所有权
+static uint8_t Usb_ManagedClassDeInit(USBD_HandleTypeDef *device, uint8_t config);
+
+//从通用Endpoint Descriptor提取需求，不理解Class专用描述符
+static SysResult_t Usb_PlanEndpoints(uint8_t *config, uint16_t length);
 
 //校验外部配置边界、接口和端点数量
 static SysResult_t Usb_ValidateConfig(uint8_t *config, uint16_t length);
@@ -266,20 +292,35 @@ USBD_StatusTypeDef USBD_LL_Init(USBD_HandleTypeDef *device)
 
 USBD_StatusTypeDef USBD_LL_DeInit(USBD_HandleTypeDef *device)
 {
-    SysResult_t result;
+    SysResult_t result = SYS_ERR_IO;
     if (device != &s_device)
         return USBD_FAIL;
+
+    //官方DeInit忽略外部释放错误，不能因此强制丢弃旧资源
+    if (s_hardware_stop_failed || s_class_state != USB_CLASS_INACTIVE || s_class_memory_used)
+        goto deinit_failed;
     result = BSP_USB_DeInit();
-    if (result == SYS_OK)
-    {
-        s_initialized = false;
-        s_started = false;
-        s_registered = false;
-        s_stop_required = false;
-        s_configuration = NULL;
-        s_configuration_length = 0U;
-        memset((void *)s_endpoints, 0, sizeof(s_endpoints));
-    }
+    if (result != SYS_OK)
+        goto deinit_failed;
+    s_initialized = false;
+    s_started = false;
+    s_registered = false;
+    s_stop_required = false;
+    s_configuration = NULL;
+    s_configuration_length = 0U;
+    s_class_free_pending = false;
+    s_class_user_data = NULL;
+    memset((void *)s_endpoints, 0, sizeof(s_endpoints));
+    return Usb_LlResult(SYS_OK);
+
+deinit_failed:
+
+    //PCD反初始化也可能失败，所有失败出口都恢复仍需使用的注册绑定
+    s_device.pClass[0] = s_registered ? &s_class_driver : NULL;
+    s_device.pDesc = s_registered ? &s_descriptor_driver : NULL;
+    s_device.pConfDesc = s_configuration;
+    s_device.pUserData[0] = s_class_user_data;
+    s_stop_required = true;
     return Usb_LlResult(result);
 }
 
@@ -292,9 +333,17 @@ USBD_StatusTypeDef USBD_LL_Start(USBD_HandleTypeDef *device)
 
 USBD_StatusTypeDef USBD_LL_Stop(USBD_HandleTypeDef *device)
 {
+    SysResult_t result;
     if (device != &s_device)
         return USBD_FAIL;
-    return Usb_LlResult(BSP_USB_Stop());
+    s_class_user_data = s_device.pUserData[0];
+    result = BSP_USB_Stop();
+    s_hardware_stop_failed = result != SYS_OK;
+    if (result == SYS_OK)
+        s_started = false;
+    else
+        s_stop_required = true;
+    return Usb_LlResult(result);
 }
 
 USBD_StatusTypeDef USBD_LL_OpenEP(USBD_HandleTypeDef *device, uint8_t ep, uint8_t type, uint16_t size)
@@ -370,6 +419,7 @@ USBD_StatusTypeDef USBD_LL_FlushEP(USBD_HandleTypeDef *device, uint8_t ep)
     volatile UsbDeviceEndpointState_t *entry = Usb_Endpoint(ep);
     SysResult_t result;
     uint32_t enabled;
+    uint32_t index;
     if (device != &s_device || entry == NULL)
         return Usb_LlResult(SYS_ERR_INVALID_ARG);
     enabled = Usb_Lock();
@@ -380,7 +430,15 @@ USBD_StatusTypeDef USBD_LL_FlushEP(USBD_HandleTypeDef *device, uint8_t ep)
     }
 
     //Flush不等于取消传输，busy期间不能释放缓冲区所有权
-    result = entry->busy ? SYS_ERR_BUSY : BSP_USB_FlushEp(ep);
+    result = entry->busy ? SYS_ERR_BUSY : SYS_OK;
+
+    //所有OUT共享RX FIFO，不能丢弃另一OUT尚未交付的数据
+    if ((ep & 0x80U) == 0U)
+        for (index = 0U; index < USB_DEVICE_EP_COUNT; ++index)
+            if (s_endpoints[0][index].busy)
+                result = SYS_ERR_BUSY;
+    if (result == SYS_OK)
+        result = BSP_USB_FlushEp(ep);
     entry->last_result = result;
     Usb_Unlock(enabled);
     return Usb_LlResult(result);
@@ -520,16 +578,30 @@ void USBD_LL_Delay(uint32_t delay)
 
 void *USB_Device_Alloc(uint32_t size)
 {
-    if (size == 0U || size > sizeof(s_class_memory) || s_class_memory_used)
-        return NULL;
-    s_class_memory_used = true;
-    return s_class_memory;
+    void *memory = NULL;
+    uint32_t enabled = Usb_Lock();
+    if (size != 0U && size <= sizeof(s_class_memory) && !s_class_memory_used &&
+        s_class_state != USB_CLASS_DEINITIALIZING && s_class_state != USB_CLASS_RELEASE_FAILED && s_class_state != USB_CLASS_RELEASING)
+    {
+        s_class_memory_used = true;
+        memory = s_class_memory;
+    }
+    Usb_Unlock(enabled);
+    return memory;
 }
 
 void USB_Device_Free(void *memory)
 {
-    if (memory == s_class_memory)
-        s_class_memory_used = false;
+    uint32_t enabled = Usb_Lock();
+    if (memory == s_class_memory && s_class_memory_used)
+    {
+        //DeInit成功前只登记释放意向，失败时保留分配标志
+        if (s_class_state == USB_CLASS_DEINITIALIZING)
+            s_class_free_pending = true;
+        else if (s_class_state != USB_CLASS_RELEASE_FAILED && s_class_state != USB_CLASS_RELEASING)
+            s_class_memory_used = false;
+    }
+    Usb_Unlock(enabled);
 }
 
 //DEVICE阶段只准备通用Core，不指定设备用途
@@ -600,6 +672,8 @@ static SysResult_t Usb_ValidateConfig(uint8_t *config, uint16_t length)
     uint32_t offset = 0U;
     uint16_t interfaces = 0U;
     uint16_t alt_zero = 0U;
+    uint32_t endpoint_mask = 0U;
+    uint32_t endpoint_bit;
     uint16_t expected_mask;
     uint8_t endpoint_count = 0U;
     uint8_t declared_endpoints = 0U;
@@ -626,6 +700,7 @@ static SysResult_t Usb_ValidateConfig(uint8_t *config, uint16_t length)
                 alt_zero |= (uint16_t)(1UL << desc[2]);
             declared_endpoints = desc[4];
             endpoint_count = 0U;
+            endpoint_mask = 0U;
             have_interface = true;
         }
         else if (desc[1] == USB_DESC_TYPE_ENDPOINT)
@@ -633,6 +708,11 @@ static SysResult_t Usb_ValidateConfig(uint8_t *config, uint16_t length)
             if (desc[0] < 7U || !have_interface || !Usb_ClassEndpoint(desc[2]) ||
                 endpoint_count == 255U)
                 return SYS_ERR_INVALID_ARG;
+            //同一备用设置不能重复声明同方向的同一端点
+            endpoint_bit = 1UL << ((desc[2] & 0x0FU) + ((desc[2] & 0x80U) != 0U ? 16U : 0U));
+            if ((endpoint_mask & endpoint_bit) != 0U)
+                return SYS_ERR_INVALID_ARG;
+            endpoint_mask |= endpoint_bit;
             ++endpoint_count;
         }
         offset += desc[0];
@@ -697,7 +777,8 @@ static void Usb_Setup(uint8_t *data)
 
 static void Usb_DataOut(uint8_t ep, uint8_t *data)
 {
-    if (!s_registered || ep >= USB_DEVICE_EP_COUNT || !s_endpoints[0][ep].opened)
+    if (!s_registered || ep >= USB_DEVICE_EP_COUNT || !s_endpoints[0][ep].opened ||
+        (ep != 0U && s_class_state != USB_CLASS_ACTIVE))
         return;
     s_endpoints[0][ep].busy = false;
     if (USBD_LL_DataOutStage(&s_device, ep, data) != USBD_OK)
@@ -709,7 +790,8 @@ static void Usb_DataOut(uint8_t ep, uint8_t *data)
 
 static void Usb_DataIn(uint8_t ep, uint8_t *data)
 {
-    if (!s_registered || ep >= USB_DEVICE_EP_COUNT || !s_endpoints[1][ep].opened)
+    if (!s_registered || ep >= USB_DEVICE_EP_COUNT || !s_endpoints[1][ep].opened ||
+        (ep != 0U && s_class_state != USB_CLASS_ACTIVE))
         return;
     s_endpoints[1][ep].busy = false;
     if (USBD_LL_DataInStage(&s_device, ep, data) != USBD_OK)
@@ -763,29 +845,42 @@ static void Usb_Disconnect(void)
 {
     if (!s_registered)
         return;
-    (void)USBD_LL_DevDisconnected(&s_device);
+    if (USBD_LL_DevDisconnected(&s_device) != USBD_OK)
+    {
+        s_last_result = SYS_ERR_IO;
+        s_stop_required = true;
+    }
     if (Usb_ReleaseEndpoints() != SYS_OK)
         s_stop_required = true;
 }
 
 static void Usb_IsoInIncomplete(uint8_t ep)
 {
-    if (!s_registered || ep == 0U || ep >= USB_DEVICE_EP_COUNT || !s_endpoints[1][ep].opened)
+    if (!s_registered || ep == 0U || ep >= USB_DEVICE_EP_COUNT || !s_endpoints[1][ep].opened ||
+        (ep != 0U && s_class_state != USB_CLASS_ACTIVE) || s_endpoints[1][ep].type != USBD_EP_TYPE_ISOC)
         return;
     s_endpoints[1][ep].busy = false;
     s_endpoints[1][ep].last_result = SYS_ERR_TIMEOUT;
-    s_last_result = SYS_ERR_TIMEOUT;
-    (void)USBD_LL_IsoINIncomplete(&s_device, ep);
+    if (USBD_LL_IsoINIncomplete(&s_device, ep) != USBD_OK)
+    {
+        //官方Core无法分发事件时，记录真正的Core错误
+        s_endpoints[1][ep].last_result = SYS_ERR_IO;
+        s_last_result = SYS_ERR_IO;
+    }
 }
 
 static void Usb_IsoOutIncomplete(uint8_t ep)
 {
-    if (!s_registered || ep == 0U || ep >= USB_DEVICE_EP_COUNT || !s_endpoints[0][ep].opened)
+    if (!s_registered || ep == 0U || ep >= USB_DEVICE_EP_COUNT || !s_endpoints[0][ep].opened ||
+        (ep != 0U && s_class_state != USB_CLASS_ACTIVE) || s_endpoints[0][ep].type != USBD_EP_TYPE_ISOC)
         return;
     s_endpoints[0][ep].busy = false;
     s_endpoints[0][ep].last_result = SYS_ERR_TIMEOUT;
-    s_last_result = SYS_ERR_TIMEOUT;
-    (void)USBD_LL_IsoOUTIncomplete(&s_device, ep);
+    if (USBD_LL_IsoOUTIncomplete(&s_device, ep) != USBD_OK)
+    {
+        s_endpoints[0][ep].last_result = SYS_ERR_IO;
+        s_last_result = SYS_ERR_IO;
+    }
 }
 
 //准备Core和BSP
@@ -841,7 +936,22 @@ SysResult_t Usb_RegisterClass(USBD_ClassTypeDef *driver, USBD_DescriptorsTypeDef
         return SYS_ERR_INVALID_ARG;
 
     //在修改已登记对象前完成校验，不调用外部Init或启动硬件
+    if (s_class_state != USB_CLASS_INACTIVE || s_class_memory_used)
+        return SYS_ERR_BUSY;
+    result = Usb_PlanEndpoints(config, length);
+    if (result != SYS_OK)
+    {
+        if (result == SYS_ERR_IO || result == SYS_ERR_TIMEOUT)
+        {
+            s_last_result = result;
+            s_stop_required = true;
+        }
+        return result;
+    }
+    s_class_callbacks = *driver;
     s_class_driver = *driver;
+    s_class_driver.Init = Usb_ManagedClassInit;
+    s_class_driver.DeInit = Usb_ManagedClassDeInit;
     s_descriptor_driver = *descriptors;
     s_configuration = config;
     s_configuration_length = length;
@@ -894,7 +1004,9 @@ SysResult_t Usb_StopDevice(void)
 
     //官方Stop忽略LL结果，先确认硬件停止再释放Class
     s_last_result = SYS_OK;
+    s_class_user_data = s_device.pUserData[0];
     result = BSP_USB_Stop();
+    s_hardware_stop_failed = result != SYS_OK;
     if (result != SYS_OK)
     {
         s_stop_required = true;
@@ -915,6 +1027,14 @@ SysResult_t Usb_StopDevice(void)
         return result;
     }
 
+    //硬件已停、Class已释放，恢复本Class完整FIFO布局后才允许重启
+    result = Usb_PlanEndpoints(s_configuration, s_configuration_length);
+    if (result != SYS_OK)
+    {
+        s_stop_required = true;
+        s_last_result = result;
+        return result;
+    }
     memset((void *)s_endpoints, 0, sizeof(s_endpoints));
     memset(s_device.ep_in, 0, sizeof(s_device.ep_in));
     memset(s_device.ep_out, 0, sizeof(s_device.ep_out));
@@ -923,4 +1043,127 @@ SysResult_t Usb_StopDevice(void)
     s_device.ep0_state = USBD_EP0_IDLE;
     s_stop_required = false;
     return SYS_OK;
+}
+
+//提取所有备用设置的最大需求，同一地址和类型合并
+static SysResult_t Usb_PlanEndpoints(uint8_t *config, uint16_t length)
+{
+    BspUsbEndpointConfig_t entries[BSP_USB_MAX_ENDPOINT_CONFIGS];
+    uint32_t count = 0U;
+    uint32_t offset = 0U;
+    uint32_t i;
+    uint16_t size;
+    uint8_t type;
+    if (config == NULL && length == 0U)
+        return BSP_USB_ConfigureEndpoints(NULL, 0U);
+    while (offset < length)
+    {
+        uint8_t *desc = config + offset;
+        if (desc[1] == USB_DESC_TYPE_ENDPOINT)
+        {
+            type = desc[3] & 3U;
+            size = (uint16_t)desc[4] | ((uint16_t)desc[5] << 8);
+            for (i = 0U; i < count; ++i)
+                if (entries[i].address == desc[2] && entries[i].type == type)
+                    break;
+            if (i == count)
+            {
+                if (count == BSP_USB_MAX_ENDPOINT_CONFIGS)
+                    return SYS_ERR_NO_RESOURCE;
+                entries[count].address = desc[2];
+                entries[count].type = type;
+                entries[count].max_packet = size;
+                ++count;
+            }
+            else if (size > entries[i].max_packet)
+                entries[i].max_packet = size;
+        }
+        offset += desc[0];
+    }
+    return BSP_USB_ConfigureEndpoints(entries, count);
+}
+
+//只包装生命周期，不实现任何Class功能
+static uint8_t Usb_ManagedClassInit(USBD_HandleTypeDef *device, uint8_t config)
+{
+    uint8_t status;
+    if (device != &s_device || s_stop_required || s_class_state != USB_CLASS_INACTIVE || s_class_memory_used)
+        return USBD_FAIL;
+    s_class_state = USB_CLASS_INITIALIZING;
+    {
+        bool control_busy = s_control_busy;
+        s_control_busy = true;
+        status = s_class_callbacks.Init(device, config);
+        s_control_busy = control_busy;
+    }
+    if (status == USBD_OK)
+        s_class_state = USB_CLASS_ACTIVE;
+    else
+    {
+        //失败Init也可能持有部分资源，留给Stop清理
+        s_class_state = USB_CLASS_RELEASE_FAILED;
+        s_stop_required = true;
+        s_last_result = SYS_ERR_IO;
+    }
+    return status;
+}
+
+//确认外部成功释放后才提交内存回收
+static uint8_t Usb_ManagedClassDeInit(USBD_HandleTypeDef *device, uint8_t config)
+{
+    uint8_t status;
+    bool control_busy;
+    if (device != &s_device || s_hardware_stop_failed ||
+        s_class_state == USB_CLASS_INITIALIZING || s_class_state == USB_CLASS_DEINITIALIZING)
+        return USBD_FAIL;
+    if (s_class_state == USB_CLASS_INACTIVE)
+    {
+        if (!s_class_memory_used)
+            return Usb_ReleaseEndpoints() == SYS_OK ? USBD_OK : USBD_FAIL;
+
+        //外部DeInit已成功但未Free，报告泄漏，不重复调用回调
+        s_last_result = SYS_ERR_IO;
+        s_stop_required = true;
+        return USBD_FAIL;
+    }
+    if (s_class_state != USB_CLASS_RELEASING)
+    {
+        s_class_state = USB_CLASS_DEINITIALIZING;
+        s_class_free_pending = false;
+        control_busy = s_control_busy;
+        s_control_busy = true;
+        status = s_class_callbacks.DeInit(device, config);
+        s_class_user_data = s_device.pUserData[0];
+        s_control_busy = control_busy;
+        if (status != USBD_OK)
+        {
+            s_class_state = USB_CLASS_RELEASE_FAILED;
+            s_class_free_pending = false;
+            s_stop_required = true;
+            s_last_result = SYS_ERR_IO;
+
+            //释放失败仍清理可关闭的数据端点，内存所有权继续保留
+            (void)Usb_ReleaseEndpoints();
+            return status;
+        }
+        s_class_state = USB_CLASS_RELEASING;
+    }
+
+    //外部回调已成功，剩余端点失败时只重试清理，不重复DeInit
+    if (Usb_ReleaseEndpoints() != SYS_OK)
+    {
+        s_stop_required = true;
+        return USBD_FAIL;
+    }
+    s_class_state = USB_CLASS_INACTIVE;
+    if (s_class_free_pending)
+        s_class_memory_used = false;
+    s_class_free_pending = false;
+    if (s_class_memory_used)
+    {
+        s_stop_required = true;
+        s_last_result = SYS_ERR_IO;
+        return USBD_FAIL;
+    }
+    return USBD_OK;
 }

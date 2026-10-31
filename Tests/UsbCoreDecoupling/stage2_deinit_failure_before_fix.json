@@ -1,0 +1,53 @@
+{
+  "cause": "USBD_DeInit clears descriptors before BSP DeInit can fail; old LL error branch did not restore them",
+  "source_sha256": {
+    "CM7/Platform/usb_mode.c": "1b059134f8232129edb3491dcbc90bc3a87cd64c4556ad7807f46e81fc126d9f",
+    "CM7/Platform/usb_mode.h": "fbb1397c90949c559e26e4cfa258afbdc9c07ea128feb63f2f985b5eb0cdb877",
+    "CM7/Platform/usb_device.c": "f23f50afff2256c5e4d78c78d0bb8052ed78a05a184d8b2c00595e7d56ffac96",
+    "CM7/BSP/bsp_usb.c": "0a56d8d6a15d593ce35efda1393602aaef716ea5cb00c6e8349d0c03d5010716",
+    "CM7/Platform/usb_device.h": "abc0de5bb16ec126e74c80f4e98a0043ebe8f5cfa82532a3c8b7f487e90b6605",
+    "CM7/BSP/bsp_usb.h": "4194bbd05f816e826ba29e348112e067a2f6d72a49fbb8c7a0659d7a7ab057b1",
+    "CM7/Service/usb_test_device.c": "da86d9895d9cc83e15023611dc15a521e6d598778f82bb21b906659192297771"
+  },
+  "case": {
+    "input": "Class已成功释放，但HAL PCD DeInit返回ERROR",
+    "expected": "描述符及外部绑定保留，Stop恢复后可重新枚举",
+    "actual": {
+      "state": 4,
+      "mode": 0,
+      "target_mode": 0,
+      "last_result": 0,
+      "state_enter_ms": 0,
+      "tick": 0,
+      "start_calls": 1,
+      "stop_calls": 2,
+      "core_state": 1,
+      "core_result": -9,
+      "nvic": 0,
+      "initialized": 1,
+      "state_name": "RUNNING",
+      "stage2": {
+        "class_state": 0,
+        "pool_used": 0,
+        "class_init": 1,
+        "class_deinit": 1,
+        "data_in": 0,
+        "data_out": 0,
+        "iso_incomplete_in": 0,
+        "iso_incomplete_out": 0,
+        "rx_words": 320,
+        "fifo_words": 624,
+        "bsp_started": 0,
+        "stop_required": 1
+      }
+    },
+    "id": 359,
+    "name": "PCD反初始化失败恢复注册绑定",
+    "result": "FAIL",
+    "failure_actual": 0,
+    "failure_expected": 536873572,
+    "checks": 11,
+    "fail_line": 611,
+    "error": null
+  }
+}

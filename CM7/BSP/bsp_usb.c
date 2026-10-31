@@ -9,19 +9,19 @@
 //低于DCMI/DMA的5，沿用旧USB测试工程的6
 #define USB_IRQ_PRIORITY 6U
 
-//H747 USB2控制器FIFO共4KB，单位为32位Word
+//USB2 FIFO共1024个Word，RX由所有OUT端点共享
 #define USB_FIFO_TOTAL_WORDS 1024U
-#define USB_RX_FIFO_WORDS   128U
-#define USB_TX0_FIFO_WORDS  64U
-#define USB_TX1_FIFO_WORDS  128U
+#define USB_RX_FIFO_WORDS    320U
+#define USB_TX0_FIFO_WORDS   64U
+#define USB_TX_MIN_WORDS     16U
 
-#if (USB_RX_FIFO_WORDS + USB_TX0_FIFO_WORDS + USB_TX1_FIFO_WORDS) > USB_FIFO_TOTAL_WORDS
-#error USB_FIFO_allocation_exceeds_capacity
+//固定RX容纳1023字节最大OUT包及9组端点状态信息
+#if USB_RX_FIFO_WORDS < (13U + 257U + 2U * BSP_USB_ENDPOINT_COUNT + 1U)
+#error USB_RX_FIFO_too_small
 #endif
 
-#if (USB_TX1_FIFO_WORDS * 4U) < BSP_USB_EP1_MAX_PACKET_SIZE
-#error USB_EP1_FIFO_cannot_hold_one_packet
-#endif
+static uint16_t s_tx_fifo_words[BSP_USB_ENDPOINT_COUNT];
+static bool s_fifo_valid;
 
 //BSP私有PCD句柄，保存USB硬件和端点运行状态
 static PCD_HandleTypeDef s_pcd;
@@ -35,13 +35,22 @@ static volatile bool s_ready;
 //USB已启动，用于控制中断入口是否交给HAL处理
 static volatile bool s_started;
 
+//校验Full-Speed端点地址、类型和最大包长
+static SysResult_t Usb_ValidateEp(uint8_t ep, uint8_t type, uint16_t size);
+
+//停止时设置完整FIFO布局，成功后才提交容量
+static SysResult_t Usb_ConfigureFifos(const BspUsbEndpointConfig_t *config, uint32_t count);
+
+//按IN和OUT方向访问同编号端点各自的PCD上下文
+static USB_OTG_EPTypeDef *Usb_PcdEp(uint8_t ep);
+
 //使用独立HSI48，并用USB2每毫秒SOF作为CRS校准参考
 static SysResult_t Usb_ClockInit(void);
 
 //把HAL状态转换为工程统一的SysResult_t返回码
 static SysResult_t Usb_HalResult(HAL_StatusTypeDef status);
 
-//支持EP0 OUT、EP0 IN和EP1 IN
+//端点编号0到8，方向位独立，其余地址位必须为0
 static bool Usb_ValidEp(uint8_t ep);
 
 //初始化USB时钟、PCD和FIFO，此时不连接主机
@@ -63,7 +72,7 @@ SysResult_t BSP_USB_Init(void)
     s_pcd.Instance = USB2_OTG_FS;
 
     //保留控制器9组端点能力，端点由Core和Class按需打开
-    s_pcd.Init.dev_endpoints = 9U;
+    s_pcd.Init.dev_endpoints = BSP_USB_ENDPOINT_COUNT;
 
     //使用12Mbit/s Full-Speed
     s_pcd.Init.speed = PCD_SPEED_FULL;
@@ -90,26 +99,29 @@ SysResult_t BSP_USB_Init(void)
     s_pcd.Init.use_dedicated_ep1 = DISABLE;
     HAL_NVIC_DisableIRQ(OTG_FS_IRQn);
     status = HAL_PCD_Init(&s_pcd);
-    if (status == HAL_OK)
-
-        //接收FIFO分配128个32位Word
-        status = HAL_PCDEx_SetRxFiFo(&s_pcd, USB_RX_FIFO_WORDS);
-    if (status == HAL_OK)
-
-        //EP0发送FIFO分配64个32位Word
-        status = HAL_PCDEx_SetTxFiFo(&s_pcd, 0U, USB_TX0_FIFO_WORDS);
-    if (status == HAL_OK)
-
-        //EP1发送FIFO为128个Word，可容纳1个512字节等时包
-        status = HAL_PCDEx_SetTxFiFo(&s_pcd, 1U, USB_TX1_FIFO_WORDS);
-    if (status != HAL_OK)
+    result = status == HAL_OK ? Usb_ConfigureFifos(NULL, 0U) : Usb_HalResult(status);
+    if (result != SYS_OK)
     {
         (void)HAL_PCD_DeInit(&s_pcd);
-        return Usb_HalResult(status);
+        return result;
     }
     HAL_NVIC_ClearPendingIRQ(OTG_FS_IRQn);
     s_ready = true;
     return SYS_OK;
+}
+
+//仅在停止且未打开数据端点时规划，拒绝破坏活动FIFO
+SysResult_t BSP_USB_ConfigureEndpoints(const BspUsbEndpointConfig_t *config, uint32_t count)
+{
+    uint8_t i;
+    if (!s_ready)
+        return SYS_ERR_INVALID_STATE;
+    if (s_started)
+        return SYS_ERR_BUSY;
+    for (i = 1U; i < BSP_USB_ENDPOINT_COUNT; ++i)
+        if (s_pcd.IN_ep[i].maxpacket != 0U || s_pcd.OUT_ep[i].maxpacket != 0U)
+            return SYS_ERR_BUSY;
+    return Usb_ConfigureFifos(config, count);
 }
 
 //绑定Platform事件表，必须在USB停止时调用
@@ -130,7 +142,7 @@ SysResult_t BSP_USB_SetCallbacks(const BspUsbCallbacks_t *callbacks)
 SysResult_t BSP_USB_Start(void)
 {
     HAL_StatusTypeDef status;
-    if (!s_ready || s_callbacks == NULL)
+    if (!s_ready || !s_fifo_valid || s_callbacks == NULL)
         return SYS_ERR_INVALID_STATE;
     if (s_started)
         return SYS_ERR_BUSY;
@@ -174,39 +186,50 @@ SysResult_t BSP_USB_DeInit(void)
         return Usb_HalResult(status);
     s_callbacks = NULL;
     s_ready = false;
+    s_fifo_valid = false;
     return SYS_OK;
 }
 
-//按端点地址校验类型和包长，EP1由Class按需打开
+//按硬件能力及当前FIFO布局打开端点
 SysResult_t BSP_USB_OpenEp(uint8_t ep, uint8_t type, uint16_t size)
 {
-    if (!s_ready)
+    SysResult_t result;
+    HAL_StatusTypeDef status;
+    USB_OTG_EPTypeDef *entry;
+    USB_OTG_EPTypeDef previous;
+    if (!s_ready || !s_fifo_valid)
         return SYS_ERR_INVALID_STATE;
-    if (!Usb_ValidEp(ep))
-        return SYS_ERR_NOT_SUPPORTED;
+    result = Usb_ValidateEp(ep, type, size);
+    if (result != SYS_OK)
+        return result;
+    if ((ep & 0x80U) != 0U && (size + 3U) / 4U > s_tx_fifo_words[ep & 0x0FU])
+        return SYS_ERR_NO_RESOURCE;
+    entry = Usb_PcdEp(ep);
+    previous = *entry;
+    status = HAL_PCD_EP_Open(&s_pcd, ep, size, type);
 
-    //EP0双向保留64字节控制传输
-    if (ep == 0x00U || ep == 0x80U)
-    {
-        if (type != EP_TYPE_CTRL || size != BSP_USB_EP0_MAX_PACKET_SIZE)
-            return SYS_ERR_NOT_SUPPORTED;
-    }
-    else
-    {
-
-        //EP1仅允许512字节IN等时传输
-        if (type != EP_TYPE_ISOC || size != BSP_USB_EP1_MAX_PACKET_SIZE)
-            return SYS_ERR_NOT_SUPPORTED;
-    }
-    return Usb_HalResult(HAL_PCD_EP_Open(&s_pcd, ep, size, type));
+    //HAL先写上下文再检查锁，失败时恢复，避免残留虚假占用
+    if (status != HAL_OK)
+        *entry = previous;
+    return Usb_HalResult(status);
 }
 
-//关闭指定方向的EP0或EP1 IN端点
+//关闭指定方向的端点，不影响另一方向
 SysResult_t BSP_USB_CloseEp(uint8_t ep)
 {
+    HAL_StatusTypeDef status;
+    USB_OTG_EPTypeDef *entry;
     if (!s_ready || !Usb_ValidEp(ep))
         return SYS_ERR_INVALID_ARG;
-    return Usb_HalResult(HAL_PCD_EP_Close(&s_pcd, ep));
+    entry = Usb_PcdEp(ep);
+    status = HAL_PCD_EP_Close(&s_pcd, ep);
+    if (status == HAL_OK)
+    {
+        entry->maxpacket = 0U;
+        entry->is_stall = 0U;
+        entry->xfer_buff = NULL;
+    }
+    return Usb_HalResult(status);
 }
 
 //清空端点FIFO，丢弃尚未处理的数据
@@ -223,8 +246,11 @@ SysResult_t BSP_USB_StallEp(uint8_t ep)
     if (!s_ready || !Usb_ValidEp(ep))
         return SYS_ERR_INVALID_ARG;
 
-    //等时端点不使用STALL握手，仅保留EP0的STALL操作
-    if (ep == 0x81U)
+    if (Usb_PcdEp(ep)->maxpacket == 0U)
+        return SYS_ERR_INVALID_STATE;
+
+    //按实际端点类型拒绝等时HALT，不绑定端点编号
+    if ((ep & 0x0FU) != 0U && Usb_PcdEp(ep)->type == EP_TYPE_ISOC)
         return SYS_ERR_NOT_SUPPORTED;
     return Usb_HalResult(HAL_PCD_EP_SetStall(&s_pcd, ep));
 }
@@ -235,8 +261,11 @@ SysResult_t BSP_USB_ClearStallEp(uint8_t ep)
     if (!s_ready || !Usb_ValidEp(ep))
         return SYS_ERR_INVALID_ARG;
 
-    //等时端点不使用STALL握手，仅保留EP0的STALL操作
-    if (ep == 0x81U)
+    if (Usb_PcdEp(ep)->maxpacket == 0U)
+        return SYS_ERR_INVALID_STATE;
+
+    //按实际端点类型拒绝等时HALT，不绑定端点编号
+    if ((ep & 0x0FU) != 0U && Usb_PcdEp(ep)->type == EP_TYPE_ISOC)
         return SYS_ERR_NOT_SUPPORTED;
     return Usb_HalResult(HAL_PCD_EP_ClrStall(&s_pcd, ep));
 }
@@ -264,27 +293,50 @@ SysResult_t BSP_USB_SetAddress(uint8_t address)
 //安排设备向主机发送数据，长度为0时发送状态包
 SysResult_t BSP_USB_Transmit(uint8_t ep, uint8_t *data, uint32_t size)
 {
-    if (!s_ready || !Usb_ValidEp(ep) || (data == NULL && size != 0U))
+    USB_OTG_EPTypeDef *entry;
+    if (ep == 0U) ep = 0x80U;
+    if (!s_ready || !Usb_ValidEp(ep) || (ep & 0x80U) == 0U ||
+        (data == NULL && size != 0U))
         return SYS_ERR_INVALID_ARG;
+    entry = Usb_PcdEp(ep);
+    if (entry->maxpacket == 0U)
+        return SYS_ERR_INVALID_STATE;
 
-    //当前PIO等时发送一次提交一个包，避免整帧写入单包FIFO
-    if (ep == 0x81U && size > BSP_USB_EP1_MAX_PACKET_SIZE)
+    //PIO等时直接写整个包，其余类型由TX空中断逐包填充
+    if (entry->type == EP_TYPE_ISOC && size > entry->maxpacket)
+        return SYS_ERR_INVALID_ARG;
+    if (size > 0x7FFFFU || ((ep & 0x0FU) != 0U && size > entry->maxpacket * 1023U))
         return SYS_ERR_INVALID_ARG;
     return Usb_HalResult(HAL_PCD_EP_Transmit(&s_pcd, ep, data, size));
 }
 
-//安排EP0接收主机数据，长度为0时接收状态包
+//准备指定OUT端点接收，EP0支持零长度状态包
 SysResult_t BSP_USB_Receive(uint8_t ep, uint8_t *data, uint32_t size)
 {
-    if (!s_ready || ep != 0U || (data == NULL && size != 0U))
+    USB_OTG_EPTypeDef *entry;
+    if (!s_ready || !Usb_ValidEp(ep) || (ep & 0x80U) != 0U ||
+        (data == NULL && size != 0U))
         return SYS_ERR_INVALID_ARG;
+    entry = Usb_PcdEp(ep);
+    if (entry->maxpacket == 0U)
+        return SYS_ERR_INVALID_STATE;
+    if ((ep & 0x0FU) != 0U)
+    {
+        //HAL会向上取整接收量，调用者按整包容量提供缓冲区
+        if (size == 0U || size % entry->maxpacket != 0U ||
+            size > 0x7FFFFU || size > entry->maxpacket * 1023U)
+            return SYS_ERR_INVALID_ARG;
+        if (entry->type == EP_TYPE_ISOC && size != entry->maxpacket)
+            return SYS_ERR_INVALID_ARG;
+    }
     return Usb_HalResult(HAL_PCD_EP_Receive(&s_pcd, ep, data, size));
 }
 
-//读取最近一次EP0 OUT实际接收的字节数
+//读取指定OUT端点实际接收的字节数
 uint32_t BSP_USB_GetRxSize(uint8_t ep)
 {
-    if (!s_ready || ep != 0U)
+    if (!s_ready || !Usb_ValidEp(ep) || (ep & 0x80U) != 0U ||
+        Usb_PcdEp(ep)->maxpacket == 0U)
         return 0U;
     return HAL_PCD_EP_GetRxCount(&s_pcd, ep);
 }
@@ -411,10 +463,10 @@ FRAMEWORK_INIT_REGISTER(BSP_USB_Init, INIT_LEVEL_BUS);
 
 //内部功能函数实现
 
-//支持EP0 OUT、EP0 IN和EP1 IN
+//端点编号0到8，方向位独立，其余地址位必须为0
 static bool Usb_ValidEp(uint8_t ep)
 {
-    return ep == 0x00U || ep == 0x80U || ep == 0x81U;
+    return (ep & 0x70U) == 0U && (ep & 0x0FU) < BSP_USB_ENDPOINT_COUNT;
 }
 
 //把HAL状态转换为工程统一的SysResult_t返回码
@@ -488,5 +540,71 @@ static SysResult_t Usb_ClockInit(void)
     //使用默认HSI48初始修调值，后续由CRS自动校准
     crs.HSI48CalibrationValue = RCC_CRS_HSI48CALIBRATION_DEFAULT;
     HAL_RCCEx_CRSConfig(&crs);
+    return SYS_OK;
+}
+
+//按方向定位PCD资源
+static USB_OTG_EPTypeDef *Usb_PcdEp(uint8_t ep)
+{
+    return (ep & 0x80U) != 0U ? &s_pcd.IN_ep[ep & 0x0FU] : &s_pcd.OUT_ep[ep & 0x0FU];
+}
+
+//FS规范：Bulk为8/16/32/64，Interrupt为1到64，ISO为1到1023
+static SysResult_t Usb_ValidateEp(uint8_t ep, uint8_t type, uint16_t size)
+{
+    if (!Usb_ValidEp(ep))
+        return SYS_ERR_INVALID_ARG;
+    if ((ep & 0x0FU) == 0U)
+        return type == EP_TYPE_CTRL && size == BSP_USB_EP0_MAX_PACKET_SIZE ? SYS_OK : SYS_ERR_NOT_SUPPORTED;
+    if (type == EP_TYPE_BULK)
+        return size == 8U || size == 16U || size == 32U || size == 64U ? SYS_OK : SYS_ERR_NOT_SUPPORTED;
+    if (type == EP_TYPE_INTR)
+        return size >= 1U && size <= 64U ? SYS_OK : SYS_ERR_NOT_SUPPORTED;
+    if (type == EP_TYPE_ISOC)
+        return size >= 1U && size <= 1023U ? SYS_OK : SYS_ERR_NOT_SUPPORTED;
+    return SYS_ERR_NOT_SUPPORTED;
+}
+
+//每个IN对应同编号TX FIFO，未使用的FIFO也保留16个Word
+static SysResult_t Usb_ConfigureFifos(const BspUsbEndpointConfig_t *config, uint32_t count)
+{
+    uint16_t words[BSP_USB_ENDPOINT_COUNT];
+    uint32_t total = USB_RX_FIFO_WORDS + USB_TX0_FIFO_WORDS;
+    uint32_t i;
+    uint32_t required;
+    HAL_StatusTypeDef status;
+    SysResult_t result;
+    if ((config == NULL && count != 0U) || count > BSP_USB_MAX_ENDPOINT_CONFIGS)
+        return SYS_ERR_INVALID_ARG;
+    words[0] = USB_TX0_FIFO_WORDS;
+    for (i = 1U; i < BSP_USB_ENDPOINT_COUNT; ++i)
+        words[i] = USB_TX_MIN_WORDS;
+    for (i = 0U; i < count; ++i)
+    {
+        result = Usb_ValidateEp(config[i].address, config[i].type, config[i].max_packet);
+        if (result != SYS_OK)
+            return result;
+        if ((config[i].address & 0x80U) != 0U)
+        {
+            required = (config[i].max_packet + 3U) / 4U;
+            if (required > words[config[i].address & 0x0FU])
+                words[config[i].address & 0x0FU] = (uint16_t)required;
+        }
+    }
+    for (i = 1U; i < BSP_USB_ENDPOINT_COUNT; ++i)
+        total += words[i];
+    if (total > USB_FIFO_TOTAL_WORDS)
+        return SYS_ERR_NO_RESOURCE;
+
+    //先完整校验，再写硬件；失败时禁止用半套FIFO启动
+    s_fifo_valid = false;
+    status = HAL_PCDEx_SetRxFiFo(&s_pcd, USB_RX_FIFO_WORDS);
+    for (i = 0U; status == HAL_OK && i < BSP_USB_ENDPOINT_COUNT; ++i)
+        status = HAL_PCDEx_SetTxFiFo(&s_pcd, (uint8_t)i, words[i]);
+    if (status != HAL_OK)
+        return Usb_HalResult(status);
+    for (i = 0U; i < BSP_USB_ENDPOINT_COUNT; ++i)
+        s_tx_fifo_words[i] = words[i];
+    s_fifo_valid = true;
     return SYS_OK;
 }

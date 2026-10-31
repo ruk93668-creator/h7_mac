@@ -1,0 +1,53 @@
+{
+  "cause": "HAL_PCD_EP_Open writes endpoint context before __HAL_LOCK can return HAL_BUSY",
+  "source_sha256": {
+    "CM7/Platform/usb_mode.c": "1b059134f8232129edb3491dcbc90bc3a87cd64c4556ad7807f46e81fc126d9f",
+    "CM7/Platform/usb_mode.h": "fbb1397c90949c559e26e4cfa258afbdc9c07ea128feb63f2f985b5eb0cdb877",
+    "CM7/Platform/usb_device.c": "f23f50afff2256c5e4d78c78d0bb8052ed78a05a184d8b2c00595e7d56ffac96",
+    "CM7/BSP/bsp_usb.c": "4d670c10f69a51e1dc703392c206d2256cbd9262984fb69482a6d2fa3266a846",
+    "CM7/Platform/usb_device.h": "abc0de5bb16ec126e74c80f4e98a0043ebe8f5cfa82532a3c8b7f487e90b6605",
+    "CM7/BSP/bsp_usb.h": "4194bbd05f816e826ba29e348112e067a2f6d72a49fbb8c7a0659d7a7ab057b1",
+    "CM7/Service/usb_test_device.c": "da86d9895d9cc83e15023611dc15a521e6d598778f82bb21b906659192297771"
+  },
+  "case": {
+    "input": "HAL按真实顺序先写PCD再因锁忙返回，随后Stop重试",
+    "expected": "Core不占用，PCD恢复旧值，Stop和FIFO重规划成功",
+    "actual": {
+      "state": 4,
+      "mode": 0,
+      "target_mode": 0,
+      "last_result": 0,
+      "state_enter_ms": 0,
+      "tick": 0,
+      "start_calls": 1,
+      "stop_calls": 0,
+      "core_state": 3,
+      "core_result": -5,
+      "nvic": 1,
+      "initialized": 1,
+      "state_name": "RUNNING",
+      "stage2": {
+        "class_state": 2,
+        "pool_used": 0,
+        "class_init": 1,
+        "class_deinit": 0,
+        "data_in": 0,
+        "data_out": 0,
+        "iso_incomplete_in": 0,
+        "iso_incomplete_out": 0,
+        "rx_words": 320,
+        "fifo_words": 512,
+        "bsp_started": 1,
+        "stop_required": 0
+      }
+    },
+    "id": 358,
+    "name": "HAL打开BUSY回滚PCD上下文",
+    "result": "FAIL",
+    "failure_actual": 64,
+    "failure_expected": 0,
+    "checks": 11,
+    "fail_line": 603,
+    "error": null
+  }
+}

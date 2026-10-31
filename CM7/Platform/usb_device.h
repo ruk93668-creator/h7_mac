@@ -60,7 +60,7 @@ SysResult_t USB_Device_StallEp(uint8_t ep);
 //清除非EP0端点STALL
 SysResult_t USB_Device_ClearStallEp(uint8_t ep);
 
-//取得端点状态快照，包括Core管理的EP0
+//取得端点状态快照，包括Core管理的EP0；等时未完成只记录端点结果
 SysResult_t USB_Device_GetEpState(uint8_t ep, UsbDeviceEndpointState_t *state);
 
 //读取最近一次OUT接收长度

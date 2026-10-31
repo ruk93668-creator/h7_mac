@@ -8,9 +8,16 @@
 #include <string.h>
 typedef struct {uint32_t fail_line,checks,operations,replaces,deferred,case_id;} TestResult;
 volatile TestResult g_result;
+//实际执行未修改的HAL FIFO寄存器配置，便于核对布局
+#define HAL_PCDEx_SetRxFiFo Usb_RealRxFifo
+#define HAL_PCDEx_SetTxFiFo Usb_RealTxFifo
+#include "../../Drivers/STM32H7xx_HAL_Driver/Src/stm32h7xx_hal_pcd_ex.c"
+#undef HAL_PCDEx_SetRxFiFo
+#undef HAL_PCDEx_SetTxFiFo
+
 static uint32_t pending_in;
 static SysResult_t reentry_from_start;
-static uint32_t seen_rx_fifo,seen_tx_fifo[2],last_ep,close_count,flush_count;
+static uint32_t seen_rx_fifo,seen_tx_fifo[BSP_USB_ENDPOINT_COUNT],last_ep,close_count,flush_count;
 static uint32_t fault,nvic,priority,init_count,start_count,stop_count,irq_count,open_count,stall_count,address_value,tx_size,rx_size;
 static uint8_t tx_data[128];
 static RCC_OscInitTypeDef seen_osc;
@@ -26,7 +33,7 @@ void __aeabi_memclr(void *d,size_t n){volatile uint8_t *p=d;while(n--)*p++=0;}
 void __aeabi_memcpy(void *d,const void *s,size_t n){volatile uint8_t *p=d;const volatile uint8_t *q=s;while(n--)*p++=*q++;}
 void __aeabi_memcpy4(void *d,const void *s,size_t n){volatile uint8_t *p=d;const volatile uint8_t *q=s;while(n--)*p++=*q++;}
 
-static int Eq(uint32_t line,uint32_t a,uint32_t b){g_result.checks++;if(a!=b){if(!g_result.fail_line)g_result.fail_line=line;return 0;}return 1;}
+static int Eq(uint32_t line,uint32_t a,uint32_t b){g_result.checks++;if(a!=b){if(!g_result.fail_line){g_result.fail_line=line;g_result.operations=a;g_result.replaces=b;}return 0;}return 1;}
 #define EQ(a,b) do{if(!Eq(__LINE__,(uint32_t)(a),(uint32_t)(b)))return 1;}while(0)
 HAL_StatusTypeDef HAL_RCC_OscConfig(RCC_OscInitTypeDef *c){seen_osc=*c;return fault==1?HAL_ERROR:HAL_OK;}
 HAL_StatusTypeDef HAL_RCCEx_PeriphCLKConfig(RCC_PeriphCLKInitTypeDef *c){seen_clock=*c;return fault==2?HAL_TIMEOUT:HAL_OK;}
@@ -40,22 +47,23 @@ void HAL_NVIC_SetPriority(IRQn_Type irq,uint32_t pre,uint32_t sub){(void)irq;(vo
 void HAL_NVIC_EnableIRQ(IRQn_Type irq){(void)irq;nvic=1;NVIC->ISER[((uint32_t)irq)>>5] |= 1UL << (((uint32_t)irq)&31U);if(pending_in){pending_in=0;HAL_PCD_DataInStageCallback(&s_pcd,1);}}
 void HAL_NVIC_DisableIRQ(IRQn_Type irq){(void)irq;nvic=0;NVIC->ISER[((uint32_t)irq)>>5] &= ~(1UL << (((uint32_t)irq)&31U));}
 void HAL_NVIC_ClearPendingIRQ(IRQn_Type irq){(void)irq;}
-HAL_StatusTypeDef HAL_PCD_Init(PCD_HandleTypeDef *p){init_count++;HAL_PCD_MspInit(p);return fault==4?HAL_ERROR:HAL_OK;}
+HAL_StatusTypeDef HAL_PCD_Init(PCD_HandleTypeDef *p){init_count++;memset(p->IN_ep,0,sizeof(p->IN_ep));memset(p->OUT_ep,0,sizeof(p->OUT_ep));HAL_PCD_MspInit(p);return fault==4?HAL_ERROR:HAL_OK;}
 HAL_StatusTypeDef HAL_PCD_DeInit(PCD_HandleTypeDef *p){if(fault==11)return HAL_ERROR;HAL_PCD_MspDeInit(p);return HAL_OK;}
-HAL_StatusTypeDef HAL_PCDEx_SetRxFiFo(PCD_HandleTypeDef *p,uint16_t n){(void)p;seen_rx_fifo=n;return fault==5 || n!=128?HAL_ERROR:HAL_OK;}
-HAL_StatusTypeDef HAL_PCDEx_SetTxFiFo(PCD_HandleTypeDef *p,uint8_t ep,uint16_t n){(void)p;if(ep<2)seen_tx_fifo[ep]=n;return fault==6 || (fault==12 && ep==1) || ep>1 || n!=(ep?128:64)?HAL_ERROR:HAL_OK;}
+HAL_StatusTypeDef HAL_PCDEx_SetRxFiFo(PCD_HandleTypeDef *p,uint16_t n){(void)p;seen_rx_fifo=n;return fault==5?HAL_ERROR:Usb_RealRxFifo(p,n);}
+HAL_StatusTypeDef HAL_PCDEx_SetTxFiFo(PCD_HandleTypeDef *p,uint8_t ep,uint16_t n){if(ep<BSP_USB_ENDPOINT_COUNT)seen_tx_fifo[ep]=n;return fault==6 || (fault==12 && ep==1)?HAL_ERROR:Usb_RealTxFifo(p,ep,n);}
 HAL_StatusTypeDef HAL_PCD_Start(PCD_HandleTypeDef *p){(void)p;start_count++;if(fault==18)reentry_from_start=USB_Device_Stop();return fault==7?HAL_BUSY:HAL_OK;}
 HAL_StatusTypeDef HAL_PCD_Stop(PCD_HandleTypeDef *p){(void)p;stop_count++;return fault==8?HAL_ERROR:HAL_OK;}
-HAL_StatusTypeDef HAL_PCD_EP_Open(PCD_HandleTypeDef *p,uint8_t ep,uint16_t size,uint8_t type){PCD_EPTypeDef *e=(ep&0x80)?&p->IN_ep[ep&15]:&p->OUT_ep[ep&15];last_ep=ep;open_count++;if(fault==13)return HAL_ERROR;e->maxpacket=size;e->type=type;return HAL_OK;}
+HAL_StatusTypeDef HAL_PCD_EP_Open(PCD_HandleTypeDef *p,uint8_t ep,uint16_t size,uint8_t type){PCD_EPTypeDef *e=(ep&0x80)?&p->IN_ep[ep&15]:&p->OUT_ep[ep&15];last_ep=ep;open_count++;if(fault==13)return HAL_ERROR;e->maxpacket=size;e->type=type;return fault==19?HAL_BUSY:HAL_OK;}
 HAL_StatusTypeDef HAL_PCD_EP_Close(PCD_HandleTypeDef *p,uint8_t ep){(void)p;last_ep=ep;close_count++;if(fault==17 && ep==0x81)pending_in=1;return fault==14?HAL_ERROR:HAL_OK;}
 HAL_StatusTypeDef HAL_PCD_EP_Flush(PCD_HandleTypeDef *p,uint8_t ep){(void)p;last_ep=ep;flush_count++;return fault==15?HAL_ERROR:HAL_OK;}
 HAL_StatusTypeDef HAL_PCD_EP_SetStall(PCD_HandleTypeDef *p,uint8_t ep){stall_count++;if(ep&0x80)p->IN_ep[ep&15].is_stall=1;else p->OUT_ep[ep&15].is_stall=1;return HAL_OK;}
 HAL_StatusTypeDef HAL_PCD_EP_ClrStall(PCD_HandleTypeDef *p,uint8_t ep){if(ep&0x80)p->IN_ep[ep&15].is_stall=0;else p->OUT_ep[ep&15].is_stall=0;return HAL_OK;}
 HAL_StatusTypeDef HAL_PCD_SetAddress(PCD_HandleTypeDef *p,uint8_t a){(void)p;address_value=a;return HAL_OK;}
 HAL_StatusTypeDef HAL_PCD_EP_Transmit(PCD_HandleTypeDef *p,uint8_t ep,uint8_t *data,uint32_t n){uint32_t i;last_ep=ep;if(fault==16 && ep==0x81){if(NVIC_GetEnableIRQ(OTG_FS_IRQn))HAL_PCD_DataInStageCallback(p,1);else pending_in=1;}tx_size=n;p->IN_ep[ep&15].xfer_buff=data;for(i=0;i<n && i<128;i++)tx_data[i]=data[i];return fault==9?HAL_BUSY:HAL_OK;}
-HAL_StatusTypeDef HAL_PCD_EP_Receive(PCD_HandleTypeDef *p,uint8_t ep,uint8_t *data,uint32_t n){(void)ep;p->OUT_ep[0].xfer_buff=data;rx_size=n;return HAL_OK;}
-uint32_t HAL_PCD_EP_GetRxCount(PCD_HandleTypeDef const *p,uint8_t ep){(void)p;(void)ep;return rx_size;}
+HAL_StatusTypeDef HAL_PCD_EP_Receive(PCD_HandleTypeDef *p,uint8_t ep,uint8_t *data,uint32_t n){p->OUT_ep[ep&15].xfer_buff=data;p->OUT_ep[ep&15].xfer_count=n;rx_size=n;return HAL_OK;}
+uint32_t HAL_PCD_EP_GetRxCount(PCD_HandleTypeDef const *p,uint8_t ep){return p->OUT_ep[ep&15].xfer_count;}
 void HAL_PCD_IRQHandler(PCD_HandleTypeDef *p){(void)p;irq_count++;}
+uint32_t HAL_GetTick(void){static uint32_t tick;return ++tick;}
 void HAL_Delay(uint32_t n){(void)n;}
 static void Request(uint8_t bm,uint8_t req,uint16_t val,uint16_t idx,uint16_t len)
 {
@@ -108,7 +116,7 @@ int Stream_TestRun(uint32_t id)
  if(id==35){EQ(USB_Device_Stop(),SYS_OK);EQ(USB_Device_IsConfigured(),false);EQ(USB_Device_Start(),SYS_OK);EQ(USB_Device_IsConfigured(),false);HAL_PCD_ResetCallback(&s_pcd);Configured();EQ(USB_Device_IsConfigured(),true);return 0;}
  if(id==36){EQ(USBD_DeInit(&s_device),USBD_OK);EQ(s_ready,false);EQ(nvic,0);EQ(bsp_callbacks,NULL);return 0;}
  if(id==38){EQ(USB_Device_RegisterClass(&s_base_class,&s_descriptors),SYS_ERR_INVALID_STATE);return 0;}
- if(id==41){EQ(BSP_USB_OpenEp(0x81,EP_TYPE_ISOC,64),SYS_ERR_NOT_SUPPORTED);return 0;}
+ if(id==41){EQ(BSP_USB_OpenEp(0x81,EP_TYPE_ISOC,1024),SYS_ERR_NOT_SUPPORTED);return 0;}
  if(id==42){fault=9;EQ(USBD_LL_Transmit(&s_device,0x80,tx_data,8),USBD_BUSY);EQ(USB_Device_GetLastResult(),SYS_ERR_BUSY);EQ(USB_Device_IsConfigured(),true);return 0;}
  if(id==43){i=s_device.dev_state;HAL_PCD_ResetCallback(&foreign);HAL_PCD_SuspendCallback(&foreign);EQ(s_device.dev_state,i);return 0;}
  if(id==44){OTG_FS_IRQHandler();EQ(irq_count,1);return 0;}

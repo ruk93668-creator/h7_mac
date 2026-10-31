@@ -101,7 +101,7 @@ core_specs = [('无Class禁止Start', '执行Core_RunCase(200)，参数见core_t
  ('Class不能占用EP0', '执行Core_RunCase(207)，参数见core_test.c', '拒绝Class关闭或申请控制端点'),
  ('端点申请与状态快照', '执行Core_RunCase(208)，参数见core_test.c', 'is_used、opened、类型、最大包长一致'),
  ('重复申请拒绝', '执行Core_RunCase(209)，参数见core_test.c', '返回ALREADY_EXISTS，不重复操作硬件'),
- ('能力限制交给BSP', '执行Core_RunCase(210)，参数见core_test.c', 'Bulk/其他地址由当前BSP返回NOT_SUPPORTED'),
+ ('通用Bulk和其他IN端点可用', '执行Core_RunCase(210)，参数见core_test.c', '合法Bulk/其他地址按实际FIFO容量打开'),
  ('关闭状态禁止发送', '执行Core_RunCase(211)，参数见core_test.c', '不调用HAL发送'),
  ('busy防覆盖且仍已配置', '执行Core_RunCase(212)，参数见core_test.c', '返回BUSY，原事务仍busy，设备保持CONFIGURED'),
  ('完成回调释放busy', '执行Core_RunCase(213)，参数见core_test.c', '先清busy，再调用外部DataIn'),
@@ -140,11 +140,18 @@ core_specs = [('无Class禁止Start', '执行Core_RunCase(200)，参数见core_t
  ('新SETUP清理EP0状态', '先STALL，再发新控制请求', 'EP0 stalled快照清零'),
  ('Start过程拒绝嵌套Stop', 'HAL Start中重入Stop', '返回BUSY，启动正常完成')]
 cases += [(200+i, spec[0]) for i, spec in enumerate(core_specs)]
+import re
+stage2_specs = {int(case): (name.strip(), data.strip(), expected.strip())
+                for case, name, data, expected in re.findall(
+                    r"//CASE (\d+) \| ([^|\n]+) \| ([^|\n]+) \| ([^\n]+)",
+                    (HERE / "endpoint_lifecycle_test.c").read_text(encoding="utf-8"))}
+assert set(stage2_specs) == set(range(300, 360))
+cases += [(case, spec[0]) for case, spec in sorted(stage2_specs.items())]
 rows = []
 for case_id, name in cases:
     uc = Uc(UC_ARCH_ARM, UC_MODE_THUMB | UC_MODE_MCLASS)
     for address, size in [(0x08000000, 0x100000), (0x20000000, 0x40000),
-                          (0xD0000000, 0x20000), (0x01000000, 0x1000), (0x58020000, 0x10000), (0xE000E000, 0x2000)]:
+                          (0xD0000000, 0x20000), (0x01000000, 0x1000), (0x58020000, 0x10000), (0xE000E000, 0x2000), (0x40080000, 0x40000)]:
         uc.mem_map(address, size)
     for address, data in sections:
         uc.mem_write(address, data)
@@ -164,8 +171,14 @@ for case_id, name in cases:
     for key in ["last_result", "core_result"]:
         if observation[key] >= 0x80000000:
             observation[key] -= 0x100000000
-    spec = core_specs[case_id-200] if case_id >= 200 else mode_specs[case_id-100] if case_id >= 100 else (name, "沿用既有USB测试输入；显式注册迁移后的TEST", "既有断言通过；端点BUSY不再清除CONFIGURED状态")
+    spec = stage2_specs[case_id] if case_id >= 300 else core_specs[case_id-200] if case_id >= 200 else mode_specs[case_id-100] if case_id >= 100 else (name, "沿用既有USB测试输入；显式注册迁移后的TEST", "既有断言通过；端点BUSY不再清除CONFIGURED状态")
+    if case_id >= 300:
+        observation["stage2"] = dict(zip(
+            ["class_state", "pool_used", "class_init", "class_deinit", "data_in", "data_out",
+             "iso_incomplete_in", "iso_incomplete_out", "rx_words", "fifo_words", "bsp_started", "stop_required"],
+            struct.unpack("<12I", uc.mem_read(symbols["g_stage2_observation"], 48))))
     rows.append({"input": spec[1], "expected": spec[2], "actual": observation, "id": case_id, "name": name, "result": "PASS" if passed else "FAIL",
+                 "failure_actual": values[2] if not passed else None, "failure_expected": values[3] if not passed else None,
                  "checks": values[1], "fail_line": values[0], "error": error})
     print(f"{case_id:03d} {rows[-1]['result']} {name}: checks={values[1]}, fail_line={values[0]}, error={error}")
 summary = {"total": len(rows), "passed": sum(r["result"] == "PASS" for r in rows),
