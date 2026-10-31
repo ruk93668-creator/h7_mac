@@ -357,8 +357,14 @@ static int Stage2_Case(uint32_t id)
     {
         entries[0].address=0x88;entries[0].type=2;entries[0].max_packet=64;
         Stage2_ConfigBuild(entries,1);EQ(Stage2_Boot(true),0);EQ(USB_Device_OpenEp(0x88,2,64),SYS_OK);
-        EQ(USB_Device_Transmit(0x88,stage2_data,1024),SYS_OK);EQ(tx_size,1024);EQ(last_ep,0x88);
-        HAL_PCD_DataInStageCallback(&s_pcd,8);EQ(USB_Device_GetEpState(0x88,&state),SYS_OK);EQ(state.busy,false);return 0;
+        EQ(USB_Device_Transmit(0x88,stage2_data,1024),SYS_OK);EQ(tx_size,64);EQ(last_ep,0x88);
+        for(i=0;i<16;i++)
+        {
+            HAL_PCD_DataInStageCallback(&s_pcd,8);
+            EQ(USB_Device_GetEpState(0x88,&state),SYS_OK);
+            EQ(state.busy,i!=15);
+        }
+        EQ(stage2_in_calls,1);return 0;
     }
     //CASE 328 | Bulk OUT实际长度和编号 | OUT4准备64字节缓冲，模拟收到31字节 | GetRxSize返回31，不读取OUT0上下文
     if (id == 328)
@@ -612,6 +618,39 @@ static int Stage2_Case(uint32_t id)
         fault=0;EQ(USB_Device_Stop(),SYS_OK);EQ(stage2_deinit_calls,1);EQ(USB_Device_Start(),SYS_OK);
         HAL_PCD_ResetCallback(&s_pcd);Configured();EQ(USB_Device_IsConfigured(),true);
         Request(0x80,USB_REQ_GET_DESCRIPTOR,0x100,0,18);EQ(tx_size,18);return 0;
+    }
+    //CASE 360 | PIO尾部补齐且多包续传 | Bulk64发送67字节，检查第二包3字节及补齐字节 | HAL只读有界对齐暂存区，第二包尾部补0，完成后才回调
+    if (id == 360)
+    {
+        entries[0].address=0x81;entries[0].type=2;entries[0].max_packet=64;
+        Stage2_ConfigBuild(entries,1);EQ(Stage2_Boot(true),0);EQ(USB_Device_OpenEp(0x81,2,64),SYS_OK);
+        EQ(USB_Device_Transmit(0x81,stage2_data,67),SYS_OK);EQ(tx_size,64);
+        HAL_PCD_DataInStageCallback(&s_pcd,1);EQ(tx_size,3);
+        EQ(s_pcd.IN_ep[1].xfer_buff,s_tx_pio_pool[1]);EQ(s_tx_pio_pool[1][0],stage2_data[64]);
+        EQ(s_tx_pio_pool[1][1],stage2_data[65]);EQ(s_tx_pio_pool[1][2],stage2_data[66]);
+        EQ(s_tx_pio_pool[1][3],0);EQ(USB_Device_GetEpState(0x81,&state),SYS_OK);EQ(state.busy,true);
+        HAL_PCD_DataInStageCallback(&s_pcd,1);EQ(stage2_in_calls,1);
+        EQ(USB_Device_GetEpState(0x81,&state),SYS_OK);EQ(state.busy,false);return 0;
+    }
+    //CASE 361 | Abort释放传输所有权但保留端点 | 活动Bulk IN执行Abort后再次发送 | Abort成功清busy、保留opened并允许重用
+    if (id == 361)
+    {
+        entries[0].address=0x81;entries[0].type=2;entries[0].max_packet=64;
+        Stage2_ConfigBuild(entries,1);EQ(Stage2_Boot(true),0);EQ(USB_Device_OpenEp(0x81,2,64),SYS_OK);
+        EQ(USB_Device_Transmit(0x81,stage2_data,64),SYS_OK);EQ(USB_Device_AbortEp(0x81),SYS_OK);
+        EQ(USB_Device_GetEpState(0x81,&state),SYS_OK);EQ(state.opened,true);EQ(state.busy,false);
+        EQ(USB_Device_Transmit(0x81,stage2_data,64),SYS_OK);return 0;
+    }
+    //CASE 362 | Abort失败保留缓冲所有权 | 活动Bulk IN注入HAL Abort失败，再恢复后Abort | 首次失败保持busy和opened，重试成功才释放
+    if (id == 362)
+    {
+        entries[0].address=0x81;entries[0].type=2;entries[0].max_packet=64;
+        Stage2_ConfigBuild(entries,1);EQ(Stage2_Boot(true),0);EQ(USB_Device_OpenEp(0x81,2,64),SYS_OK);
+        EQ(USB_Device_Transmit(0x81,stage2_data,64),SYS_OK);fault=20;
+        EQ(USB_Device_AbortEp(0x81),SYS_ERR_IO);EQ(USB_Device_GetEpState(0x81,&state),SYS_OK);
+        EQ(state.opened,true);EQ(state.busy,true);fault=0;
+        EQ(USB_Device_AbortEp(0x81),SYS_OK);EQ(USB_Device_GetEpState(0x81,&state),SYS_OK);
+        EQ(state.opened,true);EQ(state.busy,false);return 0;
     }
     EQ(0,1); return 1;
 }
