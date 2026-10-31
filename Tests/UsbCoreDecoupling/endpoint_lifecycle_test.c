@@ -652,6 +652,22 @@ static int Stage2_Case(uint32_t id)
         EQ(USB_Device_AbortEp(0x81),SYS_OK);EQ(USB_Device_GetEpState(0x81,&state),SYS_OK);
         EQ(state.opened,true);EQ(state.busy,false);return 0;
     }
+    //CASE 365 | 描述符属性和备用设置重复校验 | 保留属性位、零Interval、重复Alt0和缺失配置字符串回调 | 均拒绝注册且旧Class保持有效
+    if (id == 365)
+    {
+        EQ(USB_Device_Init(),SYS_OK);EQ(Usb_TestRegister(),SYS_OK);
+        entries[0].address=0x81;entries[0].type=2;entries[0].max_packet=64;
+        Stage2_ConfigBuild(entries,1);stage2_config[21]=0xC2;
+        EQ(USB_Device_RegisterClass(&stage2_driver,&core_descriptors),SYS_ERR_INVALID_ARG);
+        Stage2_ConfigBuild(entries,1);stage2_config[24]=0;
+        EQ(USB_Device_RegisterClass(&stage2_driver,&core_descriptors),SYS_ERR_INVALID_ARG);
+        Stage2_ConfigBuild(NULL,0);memcpy(stage2_config+18,stage2_config+9,9);
+        stage2_config_length=27;stage2_config[2]=27;
+        EQ(USB_Device_RegisterClass(&stage2_driver,&core_descriptors),SYS_ERR_INVALID_ARG);
+        Stage2_ConfigBuild(NULL,0);stage2_config[6]=1;
+        EQ(USB_Device_RegisterClass(&stage2_driver,&core_descriptors),SYS_ERR_INVALID_ARG);
+        EQ(USB_Device_GetConfigDescriptor(&length),s_config_desc);EQ(length,18);return 0;
+    }
     EQ(0,1); return 1;
 }
 

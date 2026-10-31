@@ -81,7 +81,7 @@ mode_specs = [
     ("重启享有完整枚举窗口", "1500重启，6499处理", "4999ms，仍等待配置"),
     ("重启失败进入ERROR", "重启HAL返回BUSY", "ERROR，保留BUSY"),
     ("重启失败不逐轮重试", "重启失败再Process", "Start总计两次，不再自动启动"),
-    ("ERROR当前拒绝恢复请求", "ERROR请求TEST重连", "BUSY，记录当前限制"),
+    ("ERROR允许显式请求受控恢复", "ERROR请求TEST重连", "BUSY，记录当前限制"),
     ("WAIT_CONFIGURED拒绝重连", "未配置时请求TEST", "BUSY，无Stop"),
     ("不接受UVC/MSC目标", "RUNNING请求UVC及MSC", "NOT_SUPPORTED，不改变状态"),
     ("拒绝重复重连请求", "STOPPING再次请求", "BUSY，无额外硬件动作"),
@@ -145,7 +145,7 @@ stage2_specs = {int(case): (name.strip(), data.strip(), expected.strip())
                 for case, name, data, expected in re.findall(
                     r"//CASE (\d+) \| ([^|\n]+) \| ([^|\n]+) \| ([^\n]+)",
                     (HERE / "endpoint_lifecycle_test.c").read_text(encoding="utf-8"))}
-assert set(stage2_specs) == set(range(300, 365))
+assert set(stage2_specs) == set(range(300, 366))
 cases += [(case, spec[0]) for case, spec in sorted(stage2_specs.items())]
 rows = []
 for case_id, name in cases:
