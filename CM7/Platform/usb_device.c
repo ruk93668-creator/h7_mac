@@ -78,7 +78,8 @@ static uint8_t Usb_ManagedClassDeInit(USBD_HandleTypeDef *device, uint8_t config
 static SysResult_t Usb_PlanEndpoints(uint8_t *config, uint16_t length);
 
 //校验外部配置边界、接口和端点数量
-static SysResult_t Usb_ValidateConfig(uint8_t *config, uint16_t length);
+static SysResult_t Usb_ValidateConfig(uint8_t *config, uint16_t length,
+                                             USBD_DescriptorsTypeDef *descriptors);
 
 //按地址取得端点，不接受保留地址位
 static volatile UsbDeviceEndpointState_t *Usb_Endpoint(uint8_t ep);
@@ -722,6 +723,7 @@ static SysResult_t Usb_ValidateConfig(uint8_t *config, uint16_t length,
 {
     uint32_t offset = 0U, previous;
     uint16_t interfaces = 0U, alt_zero = 0U;
+    uint32_t endpoint_mask = 0U, endpoint_bit;
     uint8_t endpoint_count = 0U, declared_endpoints = 0U;
     uint8_t interface_number = 0U, alternate = 0U, type;
     uint16_t packet;
@@ -754,7 +756,7 @@ static SysResult_t Usb_ValidateConfig(uint8_t *config, uint16_t length,
             interface_number = desc[2]; alternate = desc[3];
             interfaces |= (uint16_t)(1UL << interface_number);
             if (alternate == 0U) alt_zero |= (uint16_t)(1UL << interface_number);
-            declared_endpoints = desc[4]; endpoint_count = 0U; have_interface = true;
+            declared_endpoints = desc[4]; endpoint_count = 0U; endpoint_mask = 0U; have_interface = true;
         }
         else if (desc[1] == USB_DESC_TYPE_ENDPOINT)
         {
@@ -774,15 +776,11 @@ static SysResult_t Usb_ValidateConfig(uint8_t *config, uint16_t length,
                 return SYS_ERR_NOT_SUPPORTED;
             if ((type == EP_TYPE_INTR || type == EP_TYPE_ISOC) && (desc[6] == 0U || desc[6] > 16U))
                 return SYS_ERR_INVALID_ARG;
-            for (previous = 9U; previous < offset; )
-            {
-                uint8_t *old = config + previous;
-                if (old[1] == USB_DESC_TYPE_INTERFACE && old[2] == interface_number && old[3] == alternate)
-                    break;
-                if (old[1] == USB_DESC_TYPE_ENDPOINT && old[2] == desc[2])
-                    return SYS_ERR_INVALID_ARG;
-                previous += old[0];
-            }
+            endpoint_bit = 1UL << ((desc[2] & 0x0FU) +
+                            ((desc[2] & 0x80U) != 0U ? 16U : 0U));
+            if ((endpoint_mask & endpoint_bit) != 0U)
+                return SYS_ERR_INVALID_ARG;
+            endpoint_mask |= endpoint_bit;
             ++endpoint_count;
         }
         else if (desc[1] == 0x0BU)
