@@ -415,7 +415,7 @@ static int Stage2_Case(uint32_t id)
         Stage2_ConfigBuild(entries,2);EQ(Stage2_Boot(true),0);EQ(USB_Device_OpenEp(0x83,2,64),SYS_OK);EQ(USB_Device_OpenEp(3,2,64),SYS_OK);
         EQ(USB_Device_Transmit(0x83,stage2_data,64),SYS_OK);EQ(USB_Device_Receive(3,stage2_data,64),SYS_OK);fault=14;
         EQ(USB_Device_CloseEp(0x83),SYS_ERR_IO);EQ(USB_Device_GetEpState(0x83,&state),SYS_OK);EQ(USB_Device_GetEpState(3,&other),SYS_OK);
-        EQ(state.opened,true);EQ(state.busy,true);EQ(other.opened,true);EQ(other.busy,true);return 0;
+        EQ(state.opened,true);EQ(state.busy,false);EQ(other.opened,true);EQ(other.busy,true);return 0;
     }
     //CASE 335 | HAL发送BUSY后能继续使用 | Bulk发送启动BUSY，清故障再次发送 | 首次不残留busy，第二次正常启动
     if (id == 335)

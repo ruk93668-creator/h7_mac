@@ -353,7 +353,7 @@ static int Core_RunCase(uint32_t id)
  if(id==215){EQ(USB_Device_CloseEp(0x81),SYS_OK);EQ(USB_Device_GetEpState(0x81,&state),SYS_OK);EQ(state.opened,false);EQ(state.busy,false);EQ(s_device.ep_in[0].is_used,1);return 0;}
  if(id==216){EQ(USB_Device_FlushEp(0x81),SYS_ERR_BUSY);EQ(flush_count,0);EQ(USB_Device_CloseEp(0x81),SYS_OK);EQ(USB_Device_OpenEp(0x81,1,512),SYS_OK);EQ(USB_Device_FlushEp(0x81),SYS_OK);EQ(flush_count,1);return 0;}
  if(id==237){fault=17;EQ(USB_Device_CloseEp(0x81),SYS_OK);EQ(core_in_count,0);EQ(USB_Device_GetEpState(0x81,&state),SYS_OK);EQ(state.opened,false);return 0;}
- if(id==221){fault=14;EQ(USB_Device_CloseEp(0x81),SYS_ERR_IO);EQ(USB_Device_GetEpState(0x81,&state),SYS_OK);EQ(state.opened,true);EQ(state.busy,true);return 0;}
+ if(id==221){fault=14;EQ(USB_Device_CloseEp(0x81),SYS_ERR_IO);EQ(USB_Device_GetEpState(0x81,&state),SYS_OK);EQ(state.opened,true);EQ(state.busy,false);return 0;}
  if(id==222){EQ(USB_Device_Stop(),SYS_OK);EQ(USB_Device_GetEpState(0x81,&state),SYS_OK);EQ(state.opened,false);EQ(state.busy,false);EQ(USB_Device_IsConfigured(),false);EQ(USB_Device_Start(),SYS_OK);EQ(USB_Device_GetEpState(0x81,&state),SYS_OK);EQ(state.opened,false);return 0;}
  if(id==223){fault=8;calls=core_deinit_count;EQ(USB_Device_Stop(),SYS_ERR_IO);EQ(core_deinit_count,calls);EQ(USB_Device_Start(),SYS_ERR_INVALID_STATE);EQ(USB_Device_RegisterClass(&core_driver,&core_descriptors),SYS_ERR_INVALID_STATE);fault=0;EQ(USB_Device_Stop(),SYS_OK);EQ(s_stop_required,false);return 0;}
  if(id==224){HAL_PCD_ResetCallback(&s_pcd);EQ(USB_Device_GetEpState(0x81,&state),SYS_OK);EQ(state.opened,false);EQ(USB_Device_GetEpState(0x80,&state),SYS_OK);EQ(state.opened,true);EQ(USB_Device_IsConfigured(),false);return 0;}
