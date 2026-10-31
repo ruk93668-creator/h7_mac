@@ -659,7 +659,7 @@ static int Stage2_Case(uint32_t id)
         entries[0].address=0x81;entries[0].type=2;entries[0].max_packet=64;
         Stage2_ConfigBuild(entries,1);stage2_config[21]=0xC2;
         EQ(USB_Device_RegisterClass(&stage2_driver,&core_descriptors),SYS_ERR_INVALID_ARG);
-        Stage2_ConfigBuild(entries,1);stage2_config[24]=0;
+        entries[0].type=3;Stage2_ConfigBuild(entries,1);stage2_config[24]=0;
         EQ(USB_Device_RegisterClass(&stage2_driver,&core_descriptors),SYS_ERR_INVALID_ARG);
         Stage2_ConfigBuild(NULL,0);memcpy(stage2_config+18,stage2_config+9,9);
         stage2_config_length=27;stage2_config[2]=27;
