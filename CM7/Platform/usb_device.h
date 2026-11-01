@@ -72,4 +72,15 @@ SysResult_t USB_Device_GetEpState(uint8_t ep, UsbDeviceEndpointState_t *state);
 //读取最近一次OUT接收长度
 uint32_t USB_Device_GetRxSize(uint8_t ep);
 
+//单调SOF序号，同一硬件帧号不重复计数
+uint32_t USB_Device_GetSofSequence(void);
+
+//IN传输提交及真实完成序号，跨连接保持单调
+uint32_t USB_Device_GetInSequence(uint8_t ep);
+uint32_t USB_Device_GetInCompleteSequence(uint8_t ep);
+
+//只屏蔽USB IRQ的嵌套临界区，保留其他外设中断
+uint32_t USB_Device_Lock(void);
+void USB_Device_Unlock(uint32_t saved);
+
 #endif

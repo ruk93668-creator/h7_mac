@@ -24,6 +24,7 @@
 #include "framework_init.h"
 #include "framework_runtime.h"
 #include "usb_mode.h"
+#include "usb_uvc.h"
 #include "app_main.h"
 #include "bsp_camera.h"
 #include "bsp_dcmi.h"
@@ -92,6 +93,9 @@ static void Main_Run(void)
 
     //处理USB模式管理，切换逻辑待实现
     USB_Mode_Process();
+
+    //主循环处理UVC异步事件，TEST模式下直接返回
+    USB_UVC_Process();
 
     App_Run();
 }

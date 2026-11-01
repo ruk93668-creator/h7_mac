@@ -36,6 +36,7 @@ typedef struct
     uint32_t offset;
     uint16_t packet_length;
     bool active;
+    bool failed;
 } UsbTxTransfer_t;
 
 static UsbTxTransfer_t s_tx_transfer[BSP_USB_ENDPOINT_COUNT];
@@ -107,8 +108,8 @@ SysResult_t BSP_USB_Init(void)
     //使用片内FS PHY，不使用外部ULPI PHY
     s_pcd.Init.phy_itface = PCD_PHY_EMBEDDED;
 
-    //不向软件上报SOF回调，硬件CRS仍可使用SOF校准
-    s_pcd.Init.Sof_enable = DISABLE;
+    //开启1ms SOF事件，BSP只向上转交
+    s_pcd.Init.Sof_enable = ENABLE;
 
     //不在USB挂起时切换系统低功耗状态
     s_pcd.Init.low_power_enable = DISABLE;
@@ -352,7 +353,15 @@ SysResult_t BSP_USB_AbortEp(uint8_t ep)
             return Usb_HalResult(status);
     }
     if ((ep & 0x80U) != 0U)
+    {
+        uint32_t USBx_BASE = (uint32_t)s_pcd.Instance;
+
+        //停止并清FIFO后只应答本端点旧事件，保留其他端点
+        USBx_INEP(index)->DIEPINT = USB_OTG_DIEPINT_XFRC | USB_OTG_DIEPINT_EPDISD | USB_OTG_DIEPINT_TOC;
+        s_pcd.IN_ep[index].is_iso_incomplete = 0U;
+        __DSB();
         memset(&s_tx_transfer[index], 0, sizeof(s_tx_transfer[index]));
+    }
     else
         s_rx_active[index] = false;
     return SYS_OK;
@@ -506,6 +515,15 @@ SysResult_t BSP_USB_Transmit(uint8_t ep, uint8_t *data, uint32_t size)
         return SYS_ERR_INVALID_ARG;
 
     packet = (uint16_t)(size > entry->maxpacket ? entry->maxpacket : size);
+    //新事务前清除本端点旧完成，防止旧XFRC归到新缓冲区
+    if (index != 0U && entry->type == EP_TYPE_ISOC)
+    {
+        uint32_t USBx_BASE = (uint32_t)s_pcd.Instance;
+        USBx_INEP(index)->DIEPINT = USB_OTG_DIEPINT_XFRC | USB_OTG_DIEPINT_EPDISD | USB_OTG_DIEPINT_TOC;
+        entry->is_iso_incomplete = 0U;
+        __DSB();
+    }
+    transfer->failed = false;
     transfer->source = data;
     transfer->total = size;
     transfer->offset = packet;
@@ -613,6 +631,7 @@ void HAL_PCD_DataInStageCallback(PCD_HandleTypeDef *pcd, uint8_t ep)
     HAL_StatusTypeDef status;
     if (pcd != &s_pcd || s_callbacks == NULL || ep >= BSP_USB_ENDPOINT_COUNT) return;
     transfer = &s_tx_transfer[ep];
+    if (ep != 0U && (!transfer->active || transfer->failed)) return;
     if (!transfer->active)
     {
         s_callbacks->data_in(ep, pcd->IN_ep[ep].xfer_buff);
@@ -690,12 +709,19 @@ void HAL_PCD_DisconnectCallback(PCD_HandleTypeDef *pcd)
         s_callbacks->disconnect();
 }
 
-//HAL报告IN等时包未完成，不在BSP解释Class协议
+//SOF仅通知上层，不构包、不提交数据
+void HAL_PCD_SOFCallback(PCD_HandleTypeDef *pcd)
+{
+    if (pcd == &s_pcd && s_callbacks != NULL && s_callbacks->sof != NULL)
+        s_callbacks->sof((uint16_t)pcd->FrameNumber);
+}
+
+//Incomplete保留PIO所有权，必须由明确Abort归还
 void HAL_PCD_ISOINIncompleteCallback(PCD_HandleTypeDef *pcd, uint8_t ep)
 {
     if (pcd == &s_pcd && s_callbacks != NULL)
     {
-        if (ep < BSP_USB_ENDPOINT_COUNT) memset(&s_tx_transfer[ep], 0, sizeof(s_tx_transfer[ep]));
+        if (ep < BSP_USB_ENDPOINT_COUNT) s_tx_transfer[ep].failed = true;
         if (s_callbacks->iso_incomplete_in != NULL) s_callbacks->iso_incomplete_in(ep);
     }
 }

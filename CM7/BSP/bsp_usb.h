@@ -44,6 +44,9 @@ typedef struct
     //普通IN传输分包续传失败
     void (*data_in_error)(uint8_t ep, SysResult_t result);
 
+    //通用1ms总线事件，不解释Class协议
+    void (*sof)(uint16_t frame);
+
 } BspUsbCallbacks_t;
 
 //初始化USB2 FS内部PHY、时钟和PCD，不连接主机

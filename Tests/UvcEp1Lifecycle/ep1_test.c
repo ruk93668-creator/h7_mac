@@ -302,7 +302,7 @@ int UvcEp1_TestRun(uint32_t id)
     }
     else EQ(0U, 1U);
     if (s_device.pUserData[0] != NULL) EQ(((UsbUvcContext_t *)s_device.pUserData[0])->streaming, false);
-    EQ(s_uvc_class.DataIn, NULL); EQ(s_uvc_class.SOF, NULL);
+    EQ(s_uvc_class.DataIn, UVC_DataIn); EQ(s_uvc_class.SOF, UVC_Sof);
     return 0;
 }
 

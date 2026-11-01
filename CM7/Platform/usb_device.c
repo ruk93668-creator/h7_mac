@@ -133,6 +133,42 @@ static void Usb_IsoInIncomplete(uint8_t ep);
 //将OUT未完成事件交给外部IsoOUTIncomplete
 static void Usb_IsoOutIncomplete(uint8_t ep);
 
+uint32_t USB_Device_Lock(void)
+{
+    return Usb_Lock();
+}
+
+void USB_Device_Unlock(uint32_t saved)
+{
+    Usb_Unlock(saved);
+}
+
+static volatile uint32_t s_in_sequence[USB_DEVICE_EP_COUNT];
+static volatile uint32_t s_in_completed[USB_DEVICE_EP_COUNT];
+
+uint32_t USB_Device_GetInSequence(uint8_t ep)
+{
+    return (ep & 0x80U) && (ep & 0x7FU) < USB_DEVICE_EP_COUNT ? s_in_sequence[ep & 0x7FU] : 0U;
+}
+
+uint32_t USB_Device_GetInCompleteSequence(uint8_t ep)
+{
+    return (ep & 0x80U) && (ep & 0x7FU) < USB_DEVICE_EP_COUNT ? s_in_completed[ep & 0x7FU] : 0U;
+}
+
+static volatile uint32_t s_sof_sequence;
+static uint16_t s_sof_frame;
+static bool s_sof_valid;
+
+//向官方Core转交去重后的SOF
+static void Usb_Sof(uint16_t frame);
+
+uint32_t USB_Device_GetSofSequence(void)
+{
+    return s_sof_sequence;
+}
+
+
 static const BspUsbCallbacks_t s_callbacks =
 {
     Usb_Setup,
@@ -145,7 +181,8 @@ static const BspUsbCallbacks_t s_callbacks =
     Usb_Disconnect,
     Usb_IsoInIncomplete,
     Usb_IsoOutIncomplete,
-    Usb_DataInError
+    Usb_DataInError,
+    Usb_Sof
 };
 
 SysResult_t USB_Device_Init(void)
@@ -586,6 +623,12 @@ USBD_StatusTypeDef USBD_LL_Transmit(USBD_HandleTypeDef *device, uint8_t ep, uint
         Usb_Unlock(enabled);
         return Usb_LlResult(result);
     }
+    if ((ep & 0x7FU) != 0U)
+    {
+        if (s_in_sequence[ep & 0x7FU] == UINT32_MAX)
+        { Usb_Unlock(enabled); return Usb_LlResult(SYS_ERR_NO_RESOURCE); }
+        s_in_sequence[ep & 0x7FU]++;
+    }
     entry->busy = true;
     result = BSP_USB_Transmit(ep, buffer, size);
     entry->last_result = result;
@@ -909,6 +952,11 @@ static void Usb_DataIn(uint8_t ep, uint8_t *data)
     if (!s_registered || ep >= USB_DEVICE_EP_COUNT || !s_endpoints[1][ep].opened ||
         (ep != 0U && s_class_state != USB_CLASS_ACTIVE))
         return;
+    if (ep != 0U)
+    {
+        if (!s_endpoints[1][ep].busy) return;
+        s_in_completed[ep] = s_in_sequence[ep];
+    }
     s_endpoints[1][ep].busy = false;
     if (USBD_LL_DataInStage(&s_device, ep, data) != USBD_OK)
     {
@@ -985,7 +1033,7 @@ static void Usb_IsoInIncomplete(uint8_t ep)
     if (!s_registered || ep == 0U || ep >= USB_DEVICE_EP_COUNT || !s_endpoints[1][ep].opened ||
         (ep != 0U && s_class_state != USB_CLASS_ACTIVE) || s_endpoints[1][ep].type != USBD_EP_TYPE_ISOC)
         return;
-    s_endpoints[1][ep].busy = false;
+    //Incomplete并不证明Abort成功，busy和缓冲区继续保留
     s_endpoints[1][ep].last_result = SYS_ERR_TIMEOUT;
     if (USBD_LL_IsoINIncomplete(&s_device, ep) != USBD_OK)
     {
@@ -1294,4 +1342,14 @@ static uint8_t Usb_ManagedClassDeInit(USBD_HandleTypeDef *device, uint8_t config
         return USBD_FAIL;
     }
     return USBD_OK;
+}
+
+//通用SOF中断只更新时间序号并通知官方Core
+static void Usb_Sof(uint16_t frame)
+{
+    if (s_sof_valid && frame == s_sof_frame) return;
+    s_sof_valid = true;
+    s_sof_frame = frame;
+    s_sof_sequence++;
+    (void)USBD_LL_SOF(&s_device);
 }
