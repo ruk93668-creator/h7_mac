@@ -39,7 +39,7 @@ for inc in ["CM7/Core/Inc", "CM7/BSP", "CM7/Platform", "CM7/Service", "CM7/Frame
             "Middlewares/ST/STM32_USB_Device_Library/Core/Inc"]:
     args += ["-I", ROOT / inc]
 objects = []
-for source in [HERE / "cancellation_test.c", ROOT / "CM7/Service/usb_uvc_desc.c"] + list((ROOT / "Middlewares/ST/STM32_USB_Device_Library/Core/Src").glob("*.c")):
+for source in [HERE / "cancellation_test.c", ROOT / "CM7/Service/usb_uvc_desc.c", ROOT / "CM7/Service/usb_uvc_payload.c"] + list((ROOT / "Middlewares/ST/STM32_USB_Device_Library/Core/Src").glob("*.c")):
     obj = HERE / (source.stem + ".o")
     run(args + ["-c", source, "-o", obj])
     objects.append(obj)

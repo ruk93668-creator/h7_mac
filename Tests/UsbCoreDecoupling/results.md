@@ -1,6 +1,6 @@
 # USB Device Core 解耦模拟验收
 
-{'total': 204, 'passed': 204, 'failed': 0, 'assertions': 2984}
+{'total': 204, 'passed': 204, 'failed': 0, 'assertions': 2989}
 
 |编号|场景|输入|预期|实际|结果|
 |---|---|---|---|---|---|

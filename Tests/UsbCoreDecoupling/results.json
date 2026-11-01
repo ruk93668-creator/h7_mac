@@ -3,16 +3,16 @@
     "total": 204,
     "passed": 204,
     "failed": 0,
-    "assertions": 2984
+    "assertions": 2989
   },
   "source_changed": [],
   "source_sha256": {
     "CM7/Service/usb_mode.c": "b61d9d97c714bbf6e4b8664d4fb515914c89f6c26df8a9197595d69aa3975e7f",
     "CM7/Service/usb_mode.h": "fbb1397c90949c559e26e4cfa258afbdc9c07ea128feb63f2f985b5eb0cdb877",
-    "CM7/Platform/usb_device.c": "38174eb7320edfde6b3f054d24aa517edbe5eca182ae357c11f53e25507098fb",
-    "CM7/BSP/bsp_usb.c": "5103aaa67e8446d9007736cc156cd4b2113a64b2ea71780d3cf97e6c77850aee",
-    "CM7/Platform/usb_device.h": "8eda3844d422c51c364e29d47575e91cf103459458128386783c269e5790cf5c",
-    "CM7/BSP/bsp_usb.h": "0e526715e82f31faeda3068ed424006955838ac8db20a62669461818f4900a42",
+    "CM7/Platform/usb_device.c": "336f630eaac024c580425d10cd49cb3ea6104f40381697197d0f8f261bcf8149",
+    "CM7/BSP/bsp_usb.c": "b3896fe05236105b65bc3c48b36e5d3d1bc6d94f0eed0763b2095b578557c08e",
+    "CM7/Platform/usb_device.h": "69badef3d00680df03e0062d794e37390ffd767a885af1ec37219ebe184f59ab",
+    "CM7/BSP/bsp_usb.h": "7a9d16e9803b6bd896129c767b8732409569a816b1e1c466855a6d345f430531",
     "CM7/Service/usb_test_device.c": "9c7f468089c00805f67199ed7080daa5c07948f555aff246eca3470c83855def"
   },
   "cases": [
@@ -2820,7 +2820,7 @@
       "result": "PASS",
       "failure_actual": null,
       "failure_expected": null,
-      "checks": 12,
+      "checks": 15,
       "fail_line": 0,
       "error": null
     },
@@ -3617,7 +3617,7 @@
       "result": "PASS",
       "failure_actual": null,
       "failure_expected": null,
-      "checks": 15,
+      "checks": 16,
       "fail_line": 0,
       "error": null
     },
@@ -5954,7 +5954,7 @@
       "result": "PASS",
       "failure_actual": null,
       "failure_expected": null,
-      "checks": 14,
+      "checks": 15,
       "fail_line": 0,
       "error": null
     },

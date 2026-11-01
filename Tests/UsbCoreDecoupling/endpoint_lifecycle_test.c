@@ -181,7 +181,7 @@ static int Stage2_Case(uint32_t id)
         EQ(USB_Device_OpenEp(0x81,1,512),SYS_OK);
         EQ(USB_Device_Transmit(0x81,stage2_data,512),SYS_OK);
         HAL_PCD_ISOINIncompleteCallback(&s_pcd,1);
-        EQ(USB_Device_GetEpState(0x81,&state),SYS_OK); EQ(state.busy,false);
+        EQ(USB_Device_GetEpState(0x81,&state),SYS_OK); EQ(state.busy,true);EQ(s_tx_transfer[1].active,true);
         EQ(state.last_result,SYS_ERR_TIMEOUT); EQ(stage2_iso_in,1);
         EQ(USB_Device_GetLastResult(),SYS_OK); USB_Mode_Process();
         EQ(s_usb_mode.state,USB_MODE_STATE_RUNNING); return 0;
@@ -666,7 +666,7 @@ static int Stage2_Case(uint32_t id)
         Stage2_ConfigBuild(entries,1);EQ(Stage2_Boot(true),0);EQ(USB_Device_OpenEp(0x81,1,512),SYS_OK);
         EQ(USB_Device_Transmit(0x81,stage2_data,512),SYS_OK);s_device.pClass[0]=NULL;HAL_PCD_ISOINIncompleteCallback(&s_pcd,1);
         EQ(USB_Device_GetLastResult(),SYS_ERR_IO);EQ(USB_Device_GetEpState(0x81,&state),SYS_OK);EQ(state.last_result,SYS_ERR_IO);
-        EQ(state.busy,false);USB_Mode_Process();EQ(s_usb_mode.state,USB_MODE_STATE_ERROR);return 0;
+        EQ(state.busy,true);EQ(s_tx_transfer[1].active,true);USB_Mode_Process();EQ(s_usb_mode.state,USB_MODE_STATE_ERROR);return 0;
     }
     //CASE 358 | HAL打开BUSY回滚PCD上下文 | HAL按真实顺序先写PCD再因锁忙返回，随后Stop重试 | Core不占用，PCD恢复旧值，Stop和FIFO重规划成功
     if (id == 358)

@@ -69,7 +69,7 @@ HAL_StatusTypeDef HAL_PCD_EP_Flush(PCD_HandleTypeDef *p,uint8_t ep){(void)p;last
 HAL_StatusTypeDef HAL_PCD_EP_SetStall(PCD_HandleTypeDef *p,uint8_t ep){stall_count++;if(ep&0x80)p->IN_ep[ep&15].is_stall=1;else p->OUT_ep[ep&15].is_stall=1;return HAL_OK;}
 HAL_StatusTypeDef HAL_PCD_EP_ClrStall(PCD_HandleTypeDef *p,uint8_t ep){if(ep&0x80)p->IN_ep[ep&15].is_stall=0;else p->OUT_ep[ep&15].is_stall=0;return HAL_OK;}
 HAL_StatusTypeDef HAL_PCD_SetAddress(PCD_HandleTypeDef *p,uint8_t a){(void)p;address_value=a;return HAL_OK;}
-HAL_StatusTypeDef HAL_PCD_EP_Transmit(PCD_HandleTypeDef *p,uint8_t ep,uint8_t *data,uint32_t n){uint32_t i;last_ep=ep;if(fault==16 && ep==0x81){if(NVIC_GetEnableIRQ(OTG_FS_IRQn))HAL_PCD_DataInStageCallback(p,1);else pending_in=1;}tx_size=n;p->IN_ep[ep&15].xfer_buff=data;for(i=0;i<n && i<128;i++)tx_data[i]=data[i];return fault==9?HAL_BUSY:HAL_OK;}
+HAL_StatusTypeDef HAL_PCD_EP_Transmit(PCD_HandleTypeDef *p,uint8_t ep,uint8_t *data,uint32_t n){uint32_t i;last_ep=ep;if(fault==16 && ep==0x81){if(NVIC_GetEnableIRQ(OTG_FS_IRQn))HAL_PCD_DataInStageCallback(p,1);else pending_in=1;}tx_size=n;p->IN_ep[ep&15].xfer_buff=data;for(i=0;i<n && i<128;i++)tx_data[i]=data[i];return fault==9?HAL_BUSY:(fault==21 && ep==0x81)?HAL_ERROR:HAL_OK;}
 HAL_StatusTypeDef HAL_PCD_EP_Receive(PCD_HandleTypeDef *p,uint8_t ep,uint8_t *data,uint32_t n){p->OUT_ep[ep&15].xfer_buff=data;p->OUT_ep[ep&15].xfer_count=n;rx_size=n;return HAL_OK;}
 uint32_t HAL_PCD_EP_GetRxCount(PCD_HandleTypeDef const *p,uint8_t ep){return p->OUT_ep[ep&15].xfer_count;}
 void HAL_PCD_IRQHandler(PCD_HandleTypeDef *p){(void)p;irq_count++;}

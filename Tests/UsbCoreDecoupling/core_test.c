@@ -356,7 +356,7 @@ static int Core_RunCase(uint32_t id)
  if(id==208){EQ(USB_Device_GetEpState(0x81,&state),SYS_OK);EQ(state.opened,true);EQ(state.busy,false);EQ(state.type,USBD_EP_TYPE_ISOC);EQ(state.max_packet,512);EQ(s_device.ep_in[1].is_used,1);EQ(nvic,1);return 0;}
  if(id==209){calls=open_count;EQ(USB_Device_OpenEp(0x81,1,512),SYS_ERR_ALREADY_EXISTS);EQ(open_count,calls);return 0;}
  if(id==218){EQ(USB_Device_Transmit(1,core_packet,512),SYS_ERR_INVALID_ARG);EQ(USB_Device_Receive(0x81,core_packet,512),SYS_ERR_INVALID_ARG);return 0;}
- if(id==219){EQ(USB_Device_Transmit(0x81,core_packet,512),SYS_OK);HAL_PCD_ISOINIncompleteCallback(&s_pcd,1);EQ(core_iso_count,1);EQ(core_in_ep,1);EQ(USB_Device_GetEpState(0x81,&state),SYS_OK);EQ(state.busy,false);EQ(state.last_result,SYS_ERR_TIMEOUT);return 0;}
+ if(id==219){EQ(USB_Device_Transmit(0x81,core_packet,512),SYS_OK);HAL_PCD_ISOINIncompleteCallback(&s_pcd,1);EQ(core_iso_count,1);EQ(core_in_ep,1);EQ(USB_Device_GetEpState(0x81,&state),SYS_OK);EQ(state.busy,true);EQ(s_tx_transfer[1].active,true);EQ(state.last_result,SYS_ERR_TIMEOUT);EQ(USB_Device_AbortEp(0x81),SYS_OK);EQ(s_tx_transfer[1].active,false);return 0;}
  if(id==220){fault=9;EQ(USB_Device_Transmit(0x81,core_packet,512),SYS_ERR_BUSY);EQ(USB_Device_GetEpState(0x81,&state),SYS_OK);EQ(state.busy,false);EQ(state.last_result,SYS_ERR_BUSY);return 0;}
  if(id==226){Request(0x82,USB_REQ_GET_STATUS,0,0x82,2);EQ(stall_count>0,1);return 0;}
  if(id==227){Request(2,USB_REQ_SET_FEATURE,USB_FEATURE_EP_HALT,0x81,0);EQ(stall_count>0,1);EQ(s_pcd.IN_ep[1].is_stall,0);return 0;}

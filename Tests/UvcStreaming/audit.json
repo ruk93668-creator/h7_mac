@@ -1,0 +1,27 @@
+{
+  "base": "18f30d243f532ddca913297f92a90a1ecdc852c4",
+  "production_files": [
+    "CM7/BSP/bsp_usb.c",
+    "CM7/BSP/bsp_usb.h",
+    "CM7/Core/Src/main.c",
+    "CM7/Platform/usb_device.c",
+    "CM7/Platform/usb_device.h",
+    "CM7/Service/usb_uvc.h",
+    "CM7/Service/usb_uvc_class.c"
+  ],
+  "probe_commit_functions_identical": true,
+  "payload_identical": true,
+  "protected_sources_unchanged": true,
+  "sha256": {
+    "CM7/BSP/bsp_usb.c": "b3896fe05236105b65bc3c48b36e5d3d1bc6d94f0eed0763b2095b578557c08e",
+    "CM7/BSP/bsp_usb.h": "7a9d16e9803b6bd896129c767b8732409569a816b1e1c466855a6d345f430531",
+    "CM7/Core/Src/main.c": "d533138e66eef0542ac06d0fa3db44ee0c049396c6f6fa33cc03bb26846dce97",
+    "CM7/Platform/usb_device.c": "336f630eaac024c580425d10cd49cb3ea6104f40381697197d0f8f261bcf8149",
+    "CM7/Platform/usb_device.h": "69badef3d00680df03e0062d794e37390ffd767a885af1ec37219ebe184f59ab",
+    "CM7/Service/usb_uvc.h": "a398bcff54dd2e05d89506205b536f02ba00a299457b9fdd258e59474b57786b",
+    "CM7/Service/usb_uvc_class.c": "073da2877e5eef361d92eb127c3ce11d60aade5ab18c35b35e7e517352cb975c"
+  },
+  "class_context_size": 208,
+  "class_pool_limit": 1024,
+  "main_HEAD": "11f2ac93ee9dc08afa28b48b6b3cbfb395fc3997"
+}
