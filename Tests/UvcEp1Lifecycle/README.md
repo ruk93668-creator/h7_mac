@@ -1,3 +1,5 @@
+> 主线集成状态：用户已批准UVC-07合并main。验收代码提交为`99a77c5b2a28d8a96c8fad3efc590044547b8399`；本文下方“不直接合并main”描述的是开发阶段边界，已由此次合并授权取代。实际main及origin/main提交号以Git历史和合并交付报告为准。461项软件回归及两核完整重编结果保持有效，未进行实板验收。
+
 # UVC-07：SET_INTERFACE与EP1 IN生命周期
 
 基线：`3e4c0ddd3f097123224740e01dafcb0929b39e1e`。分支：`codex/uvc-07-ep1`。工作树：`C:\Users\29062\.codex\worktrees\uvc-07\h7_mac`。按AGENTS完成检查后提交并推送本分支，不直接合并main；准确SHA见Git历史及最终交付报告。
