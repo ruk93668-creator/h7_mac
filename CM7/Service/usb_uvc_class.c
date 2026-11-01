@@ -867,6 +867,11 @@ SysResult_t USB_UVC_GetStreamStatus(UsbUvcStreamStatus_t *status)
     status->frame_offset = s_uvc_payload.frame_offset;
     status->token = ctx->packet.token;
     status->frame_owned = s_uvc_payload.frame != NULL;
+
+    //在同一个USB临界区内查询，Application不直接读取Class内部状态
+    status->can_submit = USB_Device_IsConfigured() && ctx->commit_valid &&
+        ctx->ep1_opened && ctx->interface_alt[1] == 1U && !ctx->ep1_close_pending &&
+        ctx->stream_state == USB_UVC_WAIT_FRAME && !status->frame_owned;
     status->completed_frames = ctx->completed_frames;
     USB_Device_Unlock(mask);
     return SYS_OK;

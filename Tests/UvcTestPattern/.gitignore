@@ -1,0 +1,6 @@
+*.o
+*.axf
+*.log
+!cm7_keil.log
+!cm7_uvc_keil.log
+!cm4_keil.log

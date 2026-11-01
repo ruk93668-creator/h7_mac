@@ -1,0 +1,33 @@
+{
+  "base": "9ee405e465c8f29c9fe9e6665edb05bae7970c2a",
+  "branch": "codex/uvc-09c-test-pattern",
+  "production_files": [
+    "CM7/Application/app_main.c",
+    "CM7/Application/app_uvc_test.c",
+    "CM7/Application/app_uvc_test.h",
+    "CM7/Service/usb_mode.c",
+    "CM7/Service/usb_mode.h",
+    "CM7/Service/usb_uvc.h",
+    "CM7/Service/usb_uvc_class.c",
+    "MDK-ARM/h7_mac.uvprojx"
+  ],
+  "protected_sources_unchanged": true,
+  "cm4_target_unchanged": true,
+  "main_unchanged": true,
+  "original_output_tmp_preserved": true,
+  "source_sha256": {
+    "CM7/Application/app_main.c": "197a55ff55c26e409f16629bc6e9870adb0c844f2964ea31495e343b85ca60a5",
+    "CM7/Application/app_uvc_test.c": "2b744758fd7a8f20075e7fa9f39d358705dcd6bc553a37c792c99940b7942f3e",
+    "CM7/Application/app_uvc_test.h": "23757fcc318d376d5c4c93b700cafe0f944bb715288fe29a46f3768d17306634",
+    "CM7/Service/usb_mode.c": "33d8c9e04f66aab380cd59e8a8bce94d9a845f9a21304c0a1d0ea467daf80a6d",
+    "CM7/Service/usb_mode.h": "c477eadd48c009ed7ee731cbc65dbee62605f55b0482b1de6c064a27032c4a88",
+    "CM7/Service/usb_uvc.h": "be0d70dae37a8f9655070a80b2c4b8ab59ceba241425880d02950fb06caa07b5",
+    "CM7/Service/usb_uvc_class.c": "46f5f2e52d40eb79076e877a9a8e3d05d6b2a78edf42a6f49918adff949511ec",
+    "MDK-ARM/h7_mac.uvprojx": "45435dd2166181ace73defcce0ee36e0d9f634b33188bc3ee54bdf7918a7eb02"
+  },
+  "optimization_base": "171479f",
+  "optimization_production_files": [
+    "CM7/Application/app_uvc_test.c"
+  ],
+  "test_firmware_has_no_pattern_symbols": true
+}

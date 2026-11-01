@@ -28,6 +28,9 @@ typedef struct
     uint32_t token;
     uint32_t completed_frames;
     bool frame_owned;
+
+    //Commit、Alt1和端点状态均允许接收下一帧
+    bool can_submit;
 } UsbUvcStreamStatus_t;
 
 //主循环处理构包、完成确认及错误恢复，不在IRQ构包
