@@ -1,0 +1,56 @@
+{
+  "base": "9ee405e465c8f29c9fe9e6665edb05bae7970c2a",
+  "original_regression": 621,
+  "stage09c": 24,
+  "total_executions": 645,
+  "passed": 645,
+  "failed": 0,
+  "builds": {
+    "CM7_UVC": {
+      "full_rebuild": true,
+      "target": "h7_mac_CM7",
+      "errors": 0,
+      "warnings": 0,
+      "log": "cm7_uvc_keil.log",
+      "program_size": {
+        "code": 65294,
+        "ro": 2558,
+        "rw": 668,
+        "zi": 55396
+      }
+    },
+    "CM4": {
+      "full_rebuild": true,
+      "target": "h7_mac_CM4",
+      "errors": 0,
+      "warnings": 0,
+      "log": "cm4_keil.log",
+      "program_size": {
+        "code": 20334,
+        "ro": 914,
+        "rw": 636,
+        "zi": 2580
+      }
+    },
+    "CM7_TEST": {
+      "full_rebuild": true,
+      "target": "h7_mac_CM7",
+      "errors": 0,
+      "warnings": 0,
+      "log": "cm7_keil.log",
+      "program_size": {
+        "code": 65270,
+        "ro": 2558,
+        "rw": 668,
+        "zi": 55396
+      }
+    },
+    "frame_memory": {
+      "address": "0x2000027c",
+      "size": 38400,
+      "region": "CM7 DTCM; CPU PIO access",
+      "alignment": 4
+    }
+  },
+  "hardware_verified": false
+}
