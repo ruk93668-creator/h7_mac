@@ -1,0 +1,15 @@
+{
+  "base": "3e4c0ddd3f097123224740e01dafcb0929b39e1e",
+  "changed_production_files": [
+    "CM7/Service/usb_uvc_class.c"
+  ],
+  "no_platform_bsp_core_hal_ll_descriptor_camera_media_cm4_changes": true,
+  "original_test_sources_unchanged": true,
+  "formal_main_unchanged": true,
+  "formal_user_comment_preserved": true,
+  "class_source_sha256": "8fe13640d514ca823032019e65e52591e8fe2a206c2bd10099a9e767d71a3ba3",
+  "original_cases": 416,
+  "new_cases": 45,
+  "class_ep1_transmit_count": 0,
+  "mock_busy_fixture_transmit_count": 12
+}

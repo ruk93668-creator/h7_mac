@@ -39,6 +39,9 @@ typedef struct
     bool ep1_opened;
     bool streaming;
 
+    //关闭失败后只能先重试Alt 0，不能把旧Alt 1当成正常运行
+    bool ep1_close_pending;
+
     uint8_t probe[UVC_CONTROL_SIZE];
     uint8_t commit[UVC_CONTROL_SIZE];
 
@@ -86,6 +89,9 @@ static bool UVC_ProbeSet(UsbUvcContext_t *ctx, const uint8_t *data);
 
 //提交已通过GET_CUR读取的Probe结果
 static bool UVC_CommitSet(UsbUvcContext_t *ctx, const uint8_t *data);
+
+//切换VS备用设置，端点操作成功后才提交Class状态
+static uint8_t UVC_SetStreamAlt(UsbUvcContext_t *ctx, uint8_t alternate);
 
 //处理VS控制请求，不启动视频端点
 static uint8_t UVC_ControlSetup(USBD_HandleTypeDef *pdev, USBD_SetupReqTypedef *req);
@@ -214,6 +220,17 @@ static uint8_t UVC_DeInit(
     if (ctx == NULL)
         return USBD_OK;
 
+    //先关闭视频端点，失败时保留上下文及缓冲区所有权
+    if (ctx->ep1_opened && UVC_SetStreamAlt(ctx, 0U) != USBD_OK)
+    {
+        //官方Core忽略取消配置时的DeInit错误，显式STALL阻止成功状态包
+        if (pdev->ep0_state == USBD_EP0_SETUP &&
+            pdev->request.bmRequest == 0x00U &&
+            pdev->request.bRequest == USB_REQ_SET_CONFIGURATION)
+            USBD_CtlError(pdev, &pdev->request);
+        return USBD_FAIL;
+    }
+
     //申请归还固定内存池，实际回收由Core协调
     USBD_free(ctx);
 
@@ -288,16 +305,22 @@ static uint8_t UVC_Setup(
 
         case USB_REQ_SET_INTERFACE:
         {
-            //SET_INTERFACE必须为OUT请求，本轮只接受Alt 0
-            if (req->bmRequest != 0x01U || req->wValue != 0U ||
+            //完整检查OUT请求和Alt，不能忽略wValue高字节
+            if (req->bmRequest != 0x01U || req->wValue > 1U ||
                 req->wLength != 0U)
                 return USBD_FAIL;
 
-            //只更新接口状态，不打开视频端点
-            ctx->interface_alt[req->wIndex] = 0U;
+            //VC接口0只支持Alt 0，不影响VS端点
+            if (req->wIndex == 0U)
+            {
+                if (req->wValue != 0U)
+                    return USBD_FAIL;
+                ctx->interface_alt[0] = 0U;
+                return USBD_OK;
+            }
 
-            //零长度请求的状态阶段由Core发送
-            return USBD_OK;
+            //成功才由Core发送状态阶段，失败交由Core STALL
+            return UVC_SetStreamAlt(ctx, (uint8_t)req->wValue);
         }
 
         default:
@@ -321,7 +344,7 @@ static uint8_t UVC_ControlSetup(USBD_HandleTypeDef *pdev, USBD_SetupReqTypedef *
 
     if (req->bRequest == 0x01U)
     {
-        //只接收34字节结构，拒绝旧26字节数据
+        //只接收34字节结构
         if (req->bmRequest != 0x21U || req->wLength != UVC_CONTROL_SIZE)
             return USBD_FAIL;
         memset(ctx->control_rx, 0, sizeof(ctx->control_rx));
@@ -634,4 +657,51 @@ static bool UVC_IsControlRequest(
     if (direction == 0x21U)
         return req->wLength == UVC_CONTROL_SIZE;
     return req->wLength >= UVC_CONTROL_SIZE;
+}
+
+//只管理视频端点生命周期，不启动Payload发送
+static uint8_t UVC_SetStreamAlt(UsbUvcContext_t *ctx, uint8_t alternate)
+{
+    SysResult_t result;
+
+    if (alternate == 0U)
+    {
+        if (ctx->ep1_opened)
+        {
+            //Close已包含取消和FIFO清理，不额外重复调用Abort
+            result = USB_Device_CloseEp(0x81U);
+            if (result != SYS_OK)
+            {
+                //保留Alt和端点所有权，允许主机重试Alt 0
+                ctx->ep1_close_pending = true;
+                return USBD_FAIL;
+            }
+        }
+
+        //实际关闭成功后再发布Alt 0
+        ctx->ep1_opened = false;
+        ctx->ep1_close_pending = false;
+        ctx->interface_alt[1] = 0U;
+        ctx->streaming = false;
+        return USBD_OK;
+    }
+
+    //进入Alt 1必须已有Commit，关闭故障必须先恢复
+    if (alternate != 1U || !ctx->commit_valid || ctx->ep1_close_pending)
+        return USBD_FAIL;
+
+    //同一Alt重复请求不重复申请端点
+    if (ctx->ep1_opened)
+        return ctx->interface_alt[1] == 1U ? USBD_OK : USBD_FAIL;
+
+    //参数与当前描述符EP1 IN等时512字节一致
+    result = USB_Device_OpenEp(0x81U, USBD_EP_TYPE_ISOC, 512U);
+    if (result != SYS_OK)
+        return USBD_FAIL;
+
+    //打开成功只代表资源就绪，本轮不开始视频发送
+    ctx->ep1_opened = true;
+    ctx->interface_alt[1] = 1U;
+    ctx->streaming = false;
+    return USBD_OK;
 }

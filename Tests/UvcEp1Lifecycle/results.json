@@ -1,0 +1,640 @@
+{
+  "summary": {
+    "total": 45,
+    "passed": 45,
+    "failed": 0
+  },
+  "source_changed": [],
+  "cases": [
+    {
+      "id": 0,
+      "name": "未Commit拒绝Alt1",
+      "pass": true,
+      "assertions": 17,
+      "failed_line": 0,
+      "actual": 0,
+      "expected": 0,
+      "error": null,
+      "ep1_transmit_trace": {
+        "fixture_ep1_tx": 0,
+        "class_ep1_tx": 0
+      }
+    },
+    {
+      "id": 1,
+      "name": "Alt0到Alt1到Alt0",
+      "pass": true,
+      "assertions": 58,
+      "failed_line": 0,
+      "actual": 0,
+      "expected": 0,
+      "error": null,
+      "ep1_transmit_trace": {
+        "fixture_ep1_tx": 0,
+        "class_ep1_tx": 0
+      }
+    },
+    {
+      "id": 2,
+      "name": "打开参数严格匹配编译后描述符",
+      "pass": true,
+      "assertions": 62,
+      "failed_line": 0,
+      "actual": 0,
+      "expected": 0,
+      "error": null,
+      "ep1_transmit_trace": {
+        "fixture_ep1_tx": 0,
+        "class_ep1_tx": 0
+      }
+    },
+    {
+      "id": 3,
+      "name": "重复Alt1不重复Open",
+      "pass": true,
+      "assertions": 45,
+      "failed_line": 0,
+      "actual": 0,
+      "expected": 0,
+      "error": null,
+      "ep1_transmit_trace": {
+        "fixture_ep1_tx": 0,
+        "class_ep1_tx": 0
+      }
+    },
+    {
+      "id": 4,
+      "name": "重复Alt0不重复Close",
+      "pass": true,
+      "assertions": 34,
+      "failed_line": 0,
+      "actual": 0,
+      "expected": 0,
+      "error": null,
+      "ep1_transmit_trace": {
+        "fixture_ep1_tx": 0,
+        "class_ep1_tx": 0
+      }
+    },
+    {
+      "id": 5,
+      "name": "VC Alt0不影响VS Alt1",
+      "pass": true,
+      "assertions": 45,
+      "failed_line": 0,
+      "actual": 0,
+      "expected": 0,
+      "error": null,
+      "ep1_transmit_trace": {
+        "fixture_ep1_tx": 0,
+        "class_ep1_tx": 0
+      }
+    },
+    {
+      "id": 6,
+      "name": "VC拒绝Alt1",
+      "pass": true,
+      "assertions": 34,
+      "failed_line": 0,
+      "actual": 0,
+      "expected": 0,
+      "error": null,
+      "ep1_transmit_trace": {
+        "fixture_ep1_tx": 0,
+        "class_ep1_tx": 0
+      }
+    },
+    {
+      "id": 7,
+      "name": "VS拒绝Alt2",
+      "pass": true,
+      "assertions": 34,
+      "failed_line": 0,
+      "actual": 0,
+      "expected": 0,
+      "error": null,
+      "ep1_transmit_trace": {
+        "fixture_ep1_tx": 0,
+        "class_ep1_tx": 0
+      }
+    },
+    {
+      "id": 8,
+      "name": "拒绝Alt高字节",
+      "pass": true,
+      "assertions": 34,
+      "failed_line": 0,
+      "actual": 0,
+      "expected": 0,
+      "error": null,
+      "ep1_transmit_trace": {
+        "fixture_ep1_tx": 0,
+        "class_ep1_tx": 0
+      }
+    },
+    {
+      "id": 9,
+      "name": "拒绝接口2",
+      "pass": true,
+      "assertions": 34,
+      "failed_line": 0,
+      "actual": 0,
+      "expected": 0,
+      "error": null,
+      "ep1_transmit_trace": {
+        "fixture_ep1_tx": 0,
+        "class_ep1_tx": 0
+      }
+    },
+    {
+      "id": 10,
+      "name": "拒绝接口高字节",
+      "pass": true,
+      "assertions": 34,
+      "failed_line": 0,
+      "actual": 0,
+      "expected": 0,
+      "error": null,
+      "ep1_transmit_trace": {
+        "fixture_ep1_tx": 0,
+        "class_ep1_tx": 0
+      }
+    },
+    {
+      "id": 11,
+      "name": "拒绝SET方向错误",
+      "pass": true,
+      "assertions": 34,
+      "failed_line": 0,
+      "actual": 0,
+      "expected": 0,
+      "error": null,
+      "ep1_transmit_trace": {
+        "fixture_ep1_tx": 0,
+        "class_ep1_tx": 0
+      }
+    },
+    {
+      "id": 12,
+      "name": "拒绝SET非零长度",
+      "pass": true,
+      "assertions": 34,
+      "failed_line": 0,
+      "actual": 0,
+      "expected": 0,
+      "error": null,
+      "ep1_transmit_trace": {
+        "fixture_ep1_tx": 0,
+        "class_ep1_tx": 0
+      }
+    },
+    {
+      "id": 13,
+      "name": "Open HAL_ERROR后重试",
+      "pass": true,
+      "assertions": 48,
+      "failed_line": 0,
+      "actual": 0,
+      "expected": 0,
+      "error": null,
+      "ep1_transmit_trace": {
+        "fixture_ep1_tx": 0,
+        "class_ep1_tx": 0
+      }
+    },
+    {
+      "id": 14,
+      "name": "Open HAL_BUSY后重试",
+      "pass": true,
+      "assertions": 48,
+      "failed_line": 0,
+      "actual": 0,
+      "expected": 0,
+      "error": null,
+      "ep1_transmit_trace": {
+        "fixture_ep1_tx": 0,
+        "class_ep1_tx": 0
+      }
+    },
+    {
+      "id": 15,
+      "name": "空闲Close失败保留状态并重试",
+      "pass": true,
+      "assertions": 71,
+      "failed_line": 0,
+      "actual": 0,
+      "expected": 0,
+      "error": null,
+      "ep1_transmit_trace": {
+        "fixture_ep1_tx": 0,
+        "class_ep1_tx": 0
+      }
+    },
+    {
+      "id": 16,
+      "name": "busy Abort失败保留PIO及重试",
+      "pass": true,
+      "assertions": 77,
+      "failed_line": 0,
+      "actual": 0,
+      "expected": 0,
+      "error": null,
+      "ep1_transmit_trace": {
+        "fixture_ep1_tx": 1,
+        "class_ep1_tx": 0
+      }
+    },
+    {
+      "id": 17,
+      "name": "busy Flush失败保留PIO及重试",
+      "pass": true,
+      "assertions": 77,
+      "failed_line": 0,
+      "actual": 0,
+      "expected": 0,
+      "error": null,
+      "ep1_transmit_trace": {
+        "fixture_ep1_tx": 1,
+        "class_ep1_tx": 0
+      }
+    },
+    {
+      "id": 18,
+      "name": "busy Close失败只归还已取消传输",
+      "pass": true,
+      "assertions": 76,
+      "failed_line": 0,
+      "actual": 0,
+      "expected": 0,
+      "error": null,
+      "ep1_transmit_trace": {
+        "fixture_ep1_tx": 1,
+        "class_ep1_tx": 0
+      }
+    },
+    {
+      "id": 19,
+      "name": "DeInit关闭Alt1并归还上下文",
+      "pass": true,
+      "assertions": 37,
+      "failed_line": 0,
+      "actual": 0,
+      "expected": 0,
+      "error": null,
+      "ep1_transmit_trace": {
+        "fixture_ep1_tx": 0,
+        "class_ep1_tx": 0
+      }
+    },
+    {
+      "id": 20,
+      "name": "DeInit Abort失败保留上下文",
+      "pass": true,
+      "assertions": 51,
+      "failed_line": 0,
+      "actual": 0,
+      "expected": 0,
+      "error": null,
+      "ep1_transmit_trace": {
+        "fixture_ep1_tx": 1,
+        "class_ep1_tx": 0
+      }
+    },
+    {
+      "id": 21,
+      "name": "DeInit Close失败保留上下文",
+      "pass": true,
+      "assertions": 51,
+      "failed_line": 0,
+      "actual": 0,
+      "expected": 0,
+      "error": null,
+      "ep1_transmit_trace": {
+        "fixture_ep1_tx": 1,
+        "class_ep1_tx": 0
+      }
+    },
+    {
+      "id": 22,
+      "name": "Reset回收并要求重新Commit",
+      "pass": true,
+      "assertions": 48,
+      "failed_line": 0,
+      "actual": 0,
+      "expected": 0,
+      "error": null,
+      "ep1_transmit_trace": {
+        "fixture_ep1_tx": 0,
+        "class_ep1_tx": 0
+      }
+    },
+    {
+      "id": 23,
+      "name": "Reset Abort失败和Stop恢复",
+      "pass": true,
+      "assertions": 46,
+      "failed_line": 0,
+      "actual": 0,
+      "expected": 0,
+      "error": null,
+      "ep1_transmit_trace": {
+        "fixture_ep1_tx": 1,
+        "class_ep1_tx": 0
+      }
+    },
+    {
+      "id": 24,
+      "name": "Reset Close失败和Stop恢复",
+      "pass": true,
+      "assertions": 46,
+      "failed_line": 0,
+      "actual": 0,
+      "expected": 0,
+      "error": null,
+      "ep1_transmit_trace": {
+        "fixture_ep1_tx": 1,
+        "class_ep1_tx": 0
+      }
+    },
+    {
+      "id": 25,
+      "name": "重复Alt1保留busy缓冲区",
+      "pass": true,
+      "assertions": 56,
+      "failed_line": 0,
+      "actual": 0,
+      "expected": 0,
+      "error": null,
+      "ep1_transmit_trace": {
+        "fixture_ep1_tx": 1,
+        "class_ep1_tx": 0
+      }
+    },
+    {
+      "id": 26,
+      "name": "新Probe独立于当前Commit",
+      "pass": true,
+      "assertions": 63,
+      "failed_line": 0,
+      "actual": 0,
+      "expected": 0,
+      "error": null,
+      "ep1_transmit_trace": {
+        "fixture_ep1_tx": 0,
+        "class_ep1_tx": 0
+      }
+    },
+    {
+      "id": 27,
+      "name": "Alt0后保留Commit可重新Alt1",
+      "pass": true,
+      "assertions": 53,
+      "failed_line": 0,
+      "actual": 0,
+      "expected": 0,
+      "error": null,
+      "ep1_transmit_trace": {
+        "fixture_ep1_tx": 0,
+        "class_ep1_tx": 0
+      }
+    },
+    {
+      "id": 28,
+      "name": "GET_INTERFACE反映实际Alt",
+      "pass": true,
+      "assertions": 52,
+      "failed_line": 0,
+      "actual": 0,
+      "expected": 0,
+      "error": null,
+      "ep1_transmit_trace": {
+        "fixture_ep1_tx": 0,
+        "class_ep1_tx": 0
+      }
+    },
+    {
+      "id": 29,
+      "name": "Open失败STALL后GET_DESCRIPTOR恢复",
+      "pass": true,
+      "assertions": 32,
+      "failed_line": 0,
+      "actual": 0,
+      "expected": 0,
+      "error": null,
+      "ep1_transmit_trace": {
+        "fixture_ep1_tx": 0,
+        "class_ep1_tx": 0
+      }
+    },
+    {
+      "id": 30,
+      "name": "Close失败STALL后GET_STATUS恢复",
+      "pass": true,
+      "assertions": 43,
+      "failed_line": 0,
+      "actual": 0,
+      "expected": 0,
+      "error": null,
+      "ep1_transmit_trace": {
+        "fixture_ep1_tx": 0,
+        "class_ep1_tx": 0
+      }
+    },
+    {
+      "id": 31,
+      "name": "失败后强制Status仍被Platform拒绝",
+      "pass": true,
+      "assertions": 34,
+      "failed_line": 0,
+      "actual": 0,
+      "expected": 0,
+      "error": null,
+      "ep1_transmit_trace": {
+        "fixture_ep1_tx": 0,
+        "class_ep1_tx": 0
+      }
+    },
+    {
+      "id": 32,
+      "name": "重复DeInit不重复释放",
+      "pass": true,
+      "assertions": 38,
+      "failed_line": 0,
+      "actual": 0,
+      "expected": 0,
+      "error": null,
+      "ep1_transmit_trace": {
+        "fixture_ep1_tx": 0,
+        "class_ep1_tx": 0
+      }
+    },
+    {
+      "id": 33,
+      "name": "SET_CONFIGURATION0正常释放",
+      "pass": true,
+      "assertions": 43,
+      "failed_line": 0,
+      "actual": 0,
+      "expected": 0,
+      "error": null,
+      "ep1_transmit_trace": {
+        "fixture_ep1_tx": 0,
+        "class_ep1_tx": 0
+      }
+    },
+    {
+      "id": 34,
+      "name": "SET_CONFIGURATION0 Abort失败不得成功Status",
+      "pass": true,
+      "assertions": 55,
+      "failed_line": 0,
+      "actual": 0,
+      "expected": 0,
+      "error": null,
+      "ep1_transmit_trace": {
+        "fixture_ep1_tx": 1,
+        "class_ep1_tx": 0
+      }
+    },
+    {
+      "id": 35,
+      "name": "SET_CONFIGURATION0 Close失败不得成功Status",
+      "pass": true,
+      "assertions": 55,
+      "failed_line": 0,
+      "actual": 0,
+      "expected": 0,
+      "error": null,
+      "ep1_transmit_trace": {
+        "fixture_ep1_tx": 1,
+        "class_ep1_tx": 0
+      }
+    },
+    {
+      "id": 36,
+      "name": "Device Stop后可重新配置",
+      "pass": true,
+      "assertions": 41,
+      "failed_line": 0,
+      "actual": 0,
+      "expected": 0,
+      "error": null,
+      "ep1_transmit_trace": {
+        "fixture_ep1_tx": 0,
+        "class_ep1_tx": 0
+      }
+    },
+    {
+      "id": 37,
+      "name": "Device Stop失败不释放busy资源",
+      "pass": true,
+      "assertions": 52,
+      "failed_line": 0,
+      "actual": 0,
+      "expected": 0,
+      "error": null,
+      "ep1_transmit_trace": {
+        "fixture_ep1_tx": 1,
+        "class_ep1_tx": 0
+      }
+    },
+    {
+      "id": 38,
+      "name": "DataIn完成不自动发送下一包",
+      "pass": true,
+      "assertions": 44,
+      "failed_line": 0,
+      "actual": 0,
+      "expected": 0,
+      "error": null,
+      "ep1_transmit_trace": {
+        "fixture_ep1_tx": 1,
+        "class_ep1_tx": 0
+      }
+    },
+    {
+      "id": 39,
+      "name": "Disconnect正常回收",
+      "pass": true,
+      "assertions": 36,
+      "failed_line": 0,
+      "actual": 0,
+      "expected": 0,
+      "error": null,
+      "ep1_transmit_trace": {
+        "fixture_ep1_tx": 0,
+        "class_ep1_tx": 0
+      }
+    },
+    {
+      "id": 40,
+      "name": "Alt0 DeInit不操作EP1",
+      "pass": true,
+      "assertions": 27,
+      "failed_line": 0,
+      "actual": 0,
+      "expected": 0,
+      "error": null,
+      "ep1_transmit_trace": {
+        "fixture_ep1_tx": 0,
+        "class_ep1_tx": 0
+      }
+    },
+    {
+      "id": 41,
+      "name": "关闭失败后Alt1必须拒绝直到Alt0恢复",
+      "pass": true,
+      "assertions": 68,
+      "failed_line": 0,
+      "actual": 0,
+      "expected": 0,
+      "error": null,
+      "ep1_transmit_trace": {
+        "fixture_ep1_tx": 0,
+        "class_ep1_tx": 0
+      }
+    },
+    {
+      "id": 42,
+      "name": "Alt1时非法SET保持端点状态",
+      "pass": true,
+      "assertions": 45,
+      "failed_line": 0,
+      "actual": 0,
+      "expected": 0,
+      "error": null,
+      "ep1_transmit_trace": {
+        "fixture_ep1_tx": 0,
+        "class_ep1_tx": 0
+      }
+    },
+    {
+      "id": 43,
+      "name": "失败新Probe不清除活动Commit",
+      "pass": true,
+      "assertions": 56,
+      "failed_line": 0,
+      "actual": 0,
+      "expected": 0,
+      "error": null,
+      "ep1_transmit_trace": {
+        "fixture_ep1_tx": 0,
+        "class_ep1_tx": 0
+      }
+    },
+    {
+      "id": 44,
+      "name": "失败新Commit保留原活动Commit",
+      "pass": true,
+      "assertions": 62,
+      "failed_line": 0,
+      "actual": 0,
+      "expected": 0,
+      "error": null,
+      "ep1_transmit_trace": {
+        "fixture_ep1_tx": 0,
+        "class_ep1_tx": 0
+      }
+    }
+  ]
+}
