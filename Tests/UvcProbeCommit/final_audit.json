@@ -1,0 +1,29 @@
+{
+  "baseline": "UVC-06 isolated uncommitted worktree at start of final review",
+  "HEAD": "8abc24530a7b7d55953eed797f11ee16134ea719",
+  "changed_production_files_this_round": [
+    "CM7/Service/usb_uvc_class.c"
+  ],
+  "preserved_platform_sha256": "38174eb7320edfde6b3f054d24aa517edbe5eca182ae357c11f53e25507098fb",
+  "protected_tracked_file_count": 2354,
+  "all_other_tracked_production_files_unchanged": true,
+  "source_sha256": {
+    "CM7/Service/usb_uvc_class.c": {
+      "before": "f80768736e3866f1a8c13e07d8d4c927d49c5e9d5b6dbd3aac1cb5a37e90a911",
+      "after": "6c8185f383ba5fceb0b4a797406d7ad1aeaae4c73d8296bcf5ea8eea5d204627"
+    }
+  },
+  "formal_main_HEAD": "8abc24530a7b7d55953eed797f11ee16134ea719",
+  "formal_user_diff": "16\t0\tCM7/Service/usb_uvc_class.c",
+  "no_commit_push_merge": true,
+  "before_tests": {
+    "total": 39,
+    "passed": 15,
+    "failed": 24
+  },
+  "after_tests": {
+    "total": 39,
+    "passed": 39,
+    "failed": 0
+  }
+}

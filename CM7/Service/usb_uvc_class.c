@@ -6,6 +6,30 @@
 
 #include <string.h>
 
+//UVC 1.1线上的长度，不依赖C结构体大小
+#define UVC_CONTROL_SIZE 34U
+
+//按字段保存参数，不直接映射USB数据
+typedef struct
+{
+    uint16_t bmHint;
+    uint8_t bFormatIndex;
+    uint8_t bFrameIndex;
+    uint32_t dwFrameInterval;
+    uint16_t wKeyFrameRate;
+    uint16_t wPFrameRate;
+    uint16_t wCompQuality;
+    uint16_t wCompWindowSize;
+    uint16_t wDelay;
+    uint32_t dwMaxVideoFrameSize;
+    uint32_t dwMaxPayloadTransferSize;
+    uint32_t dwClockFrequency;
+    uint8_t bmFramingInfo;
+    uint8_t bPreferredVersion;
+    uint8_t bMinVersion;
+    uint8_t bMaxVersion;
+} UvcStreamingControl_t;
+
 //class内部上下文
 typedef struct
 {
@@ -15,8 +39,18 @@ typedef struct
     bool ep1_opened;
     bool streaming;
 
-    uint8_t probe[26];
-    uint8_t commit[26];
+    uint8_t probe[UVC_CONTROL_SIZE];
+    uint8_t commit[UVC_CONTROL_SIZE];
+
+    //持久EP0缓冲区，尾部补齐32位PIO读取
+    uint8_t control_rx[36] __attribute__((aligned(4)));
+    uint8_t control_tx[36] __attribute__((aligned(4)));
+
+    uint8_t pending_selector;
+    bool probe_valid;
+    bool probe_observed;
+    bool probe_reply_pending;
+    bool commit_valid;
 
 } UsbUvcContext_t;
 
@@ -38,6 +72,53 @@ static uint8_t UVC_Setup(
     USBD_SetupReqTypedef *req
 );
 
+//解码34字节小端控制数据
+static bool UVC_DecodeControl(const uint8_t *data, UvcStreamingControl_t *control);
+
+//编码34字节小端控制数据
+static bool UVC_EncodeControl(const UvcStreamingControl_t *control, uint8_t *data);
+
+//检查当前唯一视频配置
+static bool UVC_ValidateControl(const UvcStreamingControl_t *control);
+
+//协商Probe，不信任主机提供的只读字段
+static bool UVC_ProbeSet(UsbUvcContext_t *ctx, const uint8_t *data);
+
+//提交已通过GET_CUR读取的Probe结果
+static bool UVC_CommitSet(UsbUvcContext_t *ctx, const uint8_t *data);
+
+//处理VS控制请求，不启动视频端点
+static uint8_t UVC_ControlSetup(USBD_HandleTypeDef *pdev, USBD_SetupReqTypedef *req);
+
+//接收并验证SET_CUR数据
+static uint8_t UVC_EP0_RxReady(USBD_HandleTypeDef *pdev);
+
+//确认Probe GET_CUR数据阶段完成
+static uint8_t UVC_EP0_TxSent(USBD_HandleTypeDef *pdev);
+
+//核对当前EP0请求，避免其他请求的完成事件使用旧授权
+static bool UVC_IsControlRequest(
+    const USBD_SetupReqTypedef *req,
+    uint8_t direction,
+    uint8_t request,
+    uint8_t selector
+);
+
+//建立唯一支持的默认配置
+static void UVC_DefaultControl(UvcStreamingControl_t *control);
+
+//读取小端16位字段
+static uint16_t UVC_Read16(const uint8_t *data);
+
+//读取小端32位字段
+static uint32_t UVC_Read32(const uint8_t *data);
+
+//写入小端16位字段
+static void UVC_Write16(uint8_t *data, uint16_t value);
+
+//写入小端32位字段
+static void UVC_Write32(uint8_t *data, uint32_t value);
+
 //绑定UVC Class操作
 static USBD_ClassTypeDef s_uvc_class =
 {
@@ -45,8 +126,8 @@ static USBD_ClassTypeDef s_uvc_class =
     UVC_Init,//初始化UVC上下文
     UVC_DeInit,//归还UVC上下文
     UVC_Setup,//处理控制请求
-    NULL, //EP0发送完成，暂不处理
-    NULL,//EP0接收完成，暂不处理
+    UVC_EP0_TxSent,//确认Probe读取完成
+    UVC_EP0_RxReady,//接收Probe和Commit
     NULL, //IN传输完成，暂不处理
     NULL,//OUT传输完成，暂不处理
     NULL,//SOF帧事件，暂不处理
@@ -159,7 +240,15 @@ static uint8_t UVC_Setup(
         pdev->dev_state != USBD_STATE_CONFIGURED)
         return USBD_FAIL;
 
-    //本轮只处理标准请求
+    //新SETUP取消上一笔未完成的数据阶段
+    ctx->pending_selector = 0U;
+    ctx->probe_reply_pending = false;
+
+    //VS类请求独立分发
+    if ((req->bmRequest & USB_REQ_TYPE_MASK) == USB_REQ_TYPE_CLASS)
+        return UVC_ControlSetup(pdev, req);
+
+    //其余仅处理标准请求
     if ((req->bmRequest & USB_REQ_TYPE_MASK) != USB_REQ_TYPE_STANDARD)
         return USBD_FAIL;
 
@@ -173,6 +262,18 @@ static uint8_t UVC_Setup(
 
     switch (req->bRequest)
     {
+        case USB_REQ_GET_STATUS:
+        {
+            //接口0和1均无状态位，严格返回两个零字节
+            if (req->bmRequest != 0x81U || req->wValue != 0U ||
+                req->wLength != 2U)
+                return USBD_FAIL;
+
+            //沿用持久响应缓冲区，清零尾部保证PIO读取安全
+            memset(ctx->control_tx, 0, sizeof(ctx->control_tx));
+            return USBD_CtlSendData(pdev, ctx->control_tx, 2U);
+        }
+
         case USB_REQ_GET_INTERFACE:
         {
             //GET_INTERFACE必须为IN请求，返回一个字节
@@ -202,4 +303,335 @@ static uint8_t UVC_Setup(
         default:
             return USBD_FAIL;
     }
+}
+
+//处理Table 4-48和4-49定义的VS请求
+static uint8_t UVC_ControlSetup(USBD_HandleTypeDef *pdev, USBD_SetupReqTypedef *req)
+{
+    UsbUvcContext_t *ctx = pdev->pUserData[0];
+    UvcStreamingControl_t control;
+    uint8_t selector = (uint8_t)(req->wValue >> 8);
+    uint16_t length = UVC_CONTROL_SIZE;
+    uint8_t status;
+
+    //只接受VS接口1，控制通道低字节为0
+    if (req->wIndex != 1U || (req->wValue & 0xFFU) != 0U ||
+        (selector != 1U && selector != 2U))
+        return USBD_FAIL;
+
+    if (req->bRequest == 0x01U)
+    {
+        //只接收34字节结构，拒绝旧26字节数据
+        if (req->bmRequest != 0x21U || req->wLength != UVC_CONTROL_SIZE)
+            return USBD_FAIL;
+        memset(ctx->control_rx, 0, sizeof(ctx->control_rx));
+        status = (uint8_t)USBD_CtlPrepareRx(pdev, ctx->control_rx, UVC_CONTROL_SIZE);
+        if (status == USBD_OK)
+            ctx->pending_selector = selector;
+        return status;
+    }
+
+    //GET必须为接口IN请求，不能返回超过主机要求的长度
+    if (req->bmRequest != 0xA1U || req->wLength == 0U)
+        return USBD_FAIL;
+    memset(ctx->control_tx, 0, sizeof(ctx->control_tx));
+    switch (req->bRequest)
+    {
+        case 0x81U:
+            if ((selector == 1U && !ctx->probe_valid) ||
+                (selector == 2U && !ctx->commit_valid))
+                return USBD_FAIL;
+            memcpy(ctx->control_tx, selector == 1U ? ctx->probe : ctx->commit, UVC_CONTROL_SIZE);
+            break;
+
+        case 0x82U:
+        case 0x83U:
+        case 0x87U:
+            //唯一能力使MIN、MAX、DEF一致
+            if (selector != 1U)
+                return USBD_FAIL;
+            UVC_DefaultControl(&control);
+            UVC_EncodeControl(&control, ctx->control_tx);
+            break;
+
+        case 0x84U:
+            //固定能力无可调步长，各字段分辨率为0
+            if (selector != 1U)
+                return USBD_FAIL;
+            break;
+
+        case 0x85U:
+            UVC_Write16(ctx->control_tx, UVC_CONTROL_SIZE);
+            length = 2U;
+            break;
+
+        case 0x86U:
+            //GET_INFO：GET和SET能力位置1，其余位为0
+            ctx->control_tx[0] = 0x03U;
+            length = 1U;
+            break;
+
+        default:
+            return USBD_FAIL;
+    }
+    if (length > req->wLength)
+        length = req->wLength;
+    status = (uint8_t)USBD_CtlSendData(pdev, ctx->control_tx, length);
+
+    //仅完整Probe GET_CUR数据完成后授权Commit
+    if (status == USBD_OK && selector == 1U && req->bRequest == 0x81U &&
+        length == UVC_CONTROL_SIZE)
+        ctx->probe_reply_pending = true;
+    return status;
+}
+
+//SET_CUR数据阶段结束后才能更新控制状态
+static uint8_t UVC_EP0_RxReady(USBD_HandleTypeDef *pdev)
+{
+    UsbUvcContext_t *ctx;
+    uint8_t selector;
+    bool valid;
+    if (pdev == NULL || pdev->dev_state != USBD_STATE_CONFIGURED)
+        return USBD_FAIL;
+    ctx = pdev->pUserData[0];
+    if (ctx == NULL || !ctx->configured || ctx->pending_selector == 0U)
+        return USBD_FAIL;
+    selector = ctx->pending_selector;
+
+    //不论当前回调属于谁，旧接收授权都只能消费一次
+    ctx->pending_selector = 0U;
+
+    //设备级请求不会进入UVC_Setup，必须在完成回调再次核对事务
+    if (!UVC_IsControlRequest(&pdev->request, 0x21U, 0x01U, selector) ||
+        pdev->ep0_state != USBD_EP0_DATA_OUT ||
+        pdev->ep_out[0].total_length != UVC_CONTROL_SIZE)
+        return USBD_FAIL;
+
+    valid = USBD_GetRxCount(pdev, 0U) == UVC_CONTROL_SIZE;
+    if (valid)
+        valid = selector == 1U ? UVC_ProbeSet(ctx, ctx->control_rx) :
+            UVC_CommitSet(ctx, ctx->control_rx);
+    if (!valid)
+    {
+        //Probe数据不完整时，旧协商结果也不能继续授权Commit
+        if (selector == 1U)
+        {
+            ctx->probe_valid = false;
+            ctx->probe_observed = false;
+            ctx->probe_reply_pending = false;
+        }
+
+        //Core忽略返回值，显式STALL，由Platform阻止状态包
+        USBD_CtlError(pdev, &pdev->request);
+        return USBD_FAIL;
+    }
+    return USBD_OK;
+}
+
+//Core完成整段EP0 IN数据后调用
+static uint8_t UVC_EP0_TxSent(USBD_HandleTypeDef *pdev)
+{
+    UsbUvcContext_t *ctx;
+    if (pdev == NULL || pdev->dev_state != USBD_STATE_CONFIGURED)
+        return USBD_FAIL;
+    ctx = pdev->pUserData[0];
+    if (ctx == NULL || !ctx->configured)
+        return USBD_FAIL;
+    if (ctx->probe_reply_pending)
+    {
+        //其他设备请求也会触发本回调，只有完整Probe GET_CUR才能授权
+        if (ctx->probe_valid &&
+            UVC_IsControlRequest(&pdev->request, 0xA1U, 0x81U, 1U) &&
+            pdev->ep0_state == USBD_EP0_DATA_IN &&
+            pdev->ep_in[0].total_length == UVC_CONTROL_SIZE)
+            ctx->probe_observed = true;
+
+        //完成事件与旧授权不匹配时仅取消授权，不改动协商或提交值
+        ctx->probe_reply_pending = false;
+    }
+    return USBD_OK;
+}
+
+//不支持的Probe值归一为描述符已声明的能力
+static bool UVC_ProbeSet(UsbUvcContext_t *ctx, const uint8_t *data)
+{
+    UvcStreamingControl_t requested;
+    UvcStreamingControl_t negotiated;
+    if (ctx == NULL || !UVC_DecodeControl(data, &requested))
+        return false;
+    //新一轮协商不能继续使用上次的读取授权
+    ctx->probe_valid = false;
+    ctx->probe_observed = false;
+    ctx->probe_reply_pending = false;
+
+    //唯一配置无法满足更低带宽时，不能反向增加数据率
+    if (requested.dwFrameInterval > 1000000UL ||
+        (requested.dwMaxPayloadTransferSize != 0U && requested.dwMaxPayloadTransferSize < 512UL))
+        return false;
+
+    //全零版本表示重新协商，其他版本必须属于已支持范围
+    if ((requested.bPreferredVersion != 0U || requested.bMinVersion != 0U ||
+        requested.bMaxVersion != 0U) &&
+        (requested.bPreferredVersion != 1U || requested.bMinVersion != 1U ||
+        requested.bMaxVersion != 1U))
+        return false;
+    UVC_DefaultControl(&negotiated);
+
+    //只保留未压缩格式适用的帧间隔提示位
+    negotiated.bmHint = requested.bmHint & 0x01U;
+    if (!UVC_ValidateControl(&negotiated))
+        return false;
+    UVC_EncodeControl(&negotiated, ctx->probe);
+    ctx->probe_valid = true;
+    ctx->probe_observed = false;
+    ctx->probe_reply_pending = false;
+    return true;
+}
+
+//Commit必须完整匹配已读取的Probe，不再协商
+static bool UVC_CommitSet(UsbUvcContext_t *ctx, const uint8_t *data)
+{
+    UvcStreamingControl_t control;
+    if (ctx == NULL || !ctx->probe_valid || !ctx->probe_observed ||
+        !UVC_DecodeControl(data, &control) || !UVC_ValidateControl(&control))
+        return false;
+    if (memcmp(data, ctx->probe, UVC_CONTROL_SIZE) != 0)
+        return false;
+    UVC_EncodeControl(&control, ctx->commit);
+    ctx->commit_valid = true;
+    return true;
+}
+
+//唯一的视频能力，时钟与旧VC Header无关
+static void UVC_DefaultControl(UvcStreamingControl_t *control)
+{
+    memset(control, 0, sizeof(*control));
+    control->bFormatIndex = 1U;
+    control->bFrameIndex = 1U;
+    control->dwFrameInterval = 1000000UL;
+    control->dwMaxVideoFrameSize = 38400UL;
+
+    //FS单个等时事务上限512字节，包含Payload头
+    control->dwMaxPayloadTransferSize = 512UL;
+
+    //未来PTS/SCR使用Platform_TimeGetMs毫秒时基，本轮不生成时间戳
+    control->dwClockFrequency = 1000UL;
+
+    //未来未压缩帧使用FID和EOF，本轮不发送Payload
+    control->bmFramingInfo = 3U;
+
+    //未压缩Payload规范Revision 1.1，minor版本为1
+    control->bPreferredVersion = 1U;
+    control->bMinVersion = 1U;
+    control->bMaxVersion = 1U;
+}
+
+//检查Commit能否由当前能力满足
+static bool UVC_ValidateControl(const UvcStreamingControl_t *control)
+{
+    if (control == NULL)
+        return false;
+    return (control->bmHint & ~1U) == 0U &&
+        control->bFormatIndex == 1U && control->bFrameIndex == 1U &&
+        control->dwFrameInterval == 1000000UL &&
+        control->wKeyFrameRate == 0U && control->wPFrameRate == 0U &&
+        control->wCompQuality == 0U && control->wCompWindowSize == 0U &&
+        control->wDelay == 0U && control->dwMaxVideoFrameSize == 38400UL &&
+        control->dwMaxPayloadTransferSize == 512UL &&
+        control->dwClockFrequency == 1000UL && control->bmFramingInfo == 3U &&
+        control->bPreferredVersion == 1U && control->bMinVersion == 1U &&
+        control->bMaxVersion == 1U;
+}
+
+//逐字段解码，禁止把USB缓冲区强制转换为结构体
+static bool UVC_DecodeControl(const uint8_t *data, UvcStreamingControl_t *control)
+{
+    if (data == NULL || control == NULL)
+        return false;
+    control->bmHint = UVC_Read16(data);
+    control->bFormatIndex = data[2];
+    control->bFrameIndex = data[3];
+    control->dwFrameInterval = UVC_Read32(data + 4);
+    control->wKeyFrameRate = UVC_Read16(data + 8);
+    control->wPFrameRate = UVC_Read16(data + 10);
+    control->wCompQuality = UVC_Read16(data + 12);
+    control->wCompWindowSize = UVC_Read16(data + 14);
+    control->wDelay = UVC_Read16(data + 16);
+    control->dwMaxVideoFrameSize = UVC_Read32(data + 18);
+    control->dwMaxPayloadTransferSize = UVC_Read32(data + 22);
+    control->dwClockFrequency = UVC_Read32(data + 26);
+    control->bmFramingInfo = data[30];
+    control->bPreferredVersion = data[31];
+    control->bMinVersion = data[32];
+    control->bMaxVersion = data[33];
+    return true;
+}
+
+//编码只写有效34字节，PIO尾部由持久缓冲区补齐
+static bool UVC_EncodeControl(const UvcStreamingControl_t *control, uint8_t *data)
+{
+    if (control == NULL || data == NULL)
+        return false;
+    UVC_Write16(data, control->bmHint);
+    data[2] = control->bFormatIndex;
+    data[3] = control->bFrameIndex;
+    UVC_Write32(data + 4, control->dwFrameInterval);
+    UVC_Write16(data + 8, control->wKeyFrameRate);
+    UVC_Write16(data + 10, control->wPFrameRate);
+    UVC_Write16(data + 12, control->wCompQuality);
+    UVC_Write16(data + 14, control->wCompWindowSize);
+    UVC_Write16(data + 16, control->wDelay);
+    UVC_Write32(data + 18, control->dwMaxVideoFrameSize);
+    UVC_Write32(data + 22, control->dwMaxPayloadTransferSize);
+    UVC_Write32(data + 26, control->dwClockFrequency);
+    data[30] = control->bmFramingInfo;
+    data[31] = control->bPreferredVersion;
+    data[32] = control->bMinVersion;
+    data[33] = control->bMaxVersion;
+    return true;
+}
+
+static uint16_t UVC_Read16(const uint8_t *data)
+{
+    return (uint16_t)((uint16_t)data[0] | ((uint16_t)data[1] << 8));
+}
+
+static uint32_t UVC_Read32(const uint8_t *data)
+{
+    return (uint32_t)data[0] | ((uint32_t)data[1] << 8) |
+        ((uint32_t)data[2] << 16) | ((uint32_t)data[3] << 24);
+}
+
+static void UVC_Write16(uint8_t *data, uint16_t value)
+{
+    data[0] = (uint8_t)value;
+    data[1] = (uint8_t)(value >> 8);
+}
+
+static void UVC_Write32(uint8_t *data, uint32_t value)
+{
+    data[0] = (uint8_t)value;
+    data[1] = (uint8_t)(value >> 8);
+    data[2] = (uint8_t)(value >> 16);
+    data[3] = (uint8_t)(value >> 24);
+}
+
+//完整核对方向、类型、对象、操作、接口、selector和长度
+static bool UVC_IsControlRequest(
+    const USBD_SetupReqTypedef *req,
+    uint8_t direction,
+    uint8_t request,
+    uint8_t selector
+)
+{
+    if (req == NULL || (selector != 1U && selector != 2U))
+        return false;
+    if (req->bmRequest != direction || req->bRequest != request ||
+        req->wIndex != 1U || req->wValue != ((uint16_t)selector << 8))
+        return false;
+
+    //SET_CUR只允许34字节，GET_CUR允许主机给出更大的接收上限
+    if (direction == 0x21U)
+        return req->wLength == UVC_CONTROL_SIZE;
+    return req->wLength >= UVC_CONTROL_SIZE;
 }

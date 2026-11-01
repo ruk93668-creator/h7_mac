@@ -1,0 +1,16 @@
+{
+  "baseline": "8abc24530a7b7d55953eed797f11ee16134ea719",
+  "changed_production_files": [
+    "CM7/Platform/usb_device.c",
+    "CM7/Service/usb_uvc_class.c"
+  ],
+  "all_other_tracked_production_files_unchanged": true,
+  "descriptor_unchanged": true,
+  "official_core_hal_ll_unchanged": true,
+  "commit_push_merge_executed": false,
+  "sha256": {
+    "CM7/Platform/usb_device.c": "38174eb7320edfde6b3f054d24aa517edbe5eca182ae357c11f53e25507098fb",
+    "CM7/Service/usb_uvc_class.c": "6c8185f383ba5fceb0b4a797406d7ad1aeaae4c73d8296bcf5ea8eea5d204627"
+  },
+  "phase": "UVC-06 final review"
+}

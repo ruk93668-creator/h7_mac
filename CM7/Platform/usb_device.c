@@ -576,9 +576,12 @@ USBD_StatusTypeDef USBD_LL_Transmit(USBD_HandleTypeDef *device, uint8_t ep, uint
         return Usb_LlResult(SYS_ERR_INVALID_STATE);
     }
 
-    //EP0也不能覆盖未完成IN；重复提交不能丢失旧事务busy所有权
-    if (entry->busy || ((ep & 0x0FU) != 0U && entry->stalled))
+    //所有IN端点均禁止STALL后继续发送，防止Core补交失败请求的状态包
+    if (entry->busy || entry->stalled)
     {
+        //官方Core可能先写STATUS_IN，EP0被STALL时恢复真实状态
+        if ((ep & 0x0FU) == 0U && entry->stalled)
+            device->ep0_state = USBD_EP0_STALL;
         result = entry->busy ? SYS_ERR_BUSY : SYS_ERR_INVALID_STATE;
         Usb_Unlock(enabled);
         return Usb_LlResult(result);

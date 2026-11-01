@@ -71,8 +71,8 @@ int UvcLifecycle_TestRun(uint32_t id)
     {
         uint16_t length = 0U;
         EQ(s_uvc_class.Init, UVC_Init); EQ(s_uvc_class.DeInit, UVC_DeInit);
-        EQ(s_uvc_class.Setup, UVC_Setup); EQ(s_uvc_class.EP0_TxSent, NULL);
-        EQ(s_uvc_class.EP0_RxReady, NULL); EQ(s_uvc_class.DataIn, NULL);
+        EQ(s_uvc_class.Setup, UVC_Setup); EQ(s_uvc_class.EP0_TxSent, UVC_EP0_TxSent);
+        EQ(s_uvc_class.EP0_RxReady, UVC_EP0_RxReady); EQ(s_uvc_class.DataIn, NULL);
         EQ(s_uvc_class.DataOut, NULL); EQ(s_uvc_class.SOF, NULL);
         EQ(s_uvc_class.IsoINIncomplete, NULL); EQ(s_uvc_class.IsoOUTIncomplete, NULL);
         EQ(s_uvc_class.GetHSConfigDescriptor, NULL);

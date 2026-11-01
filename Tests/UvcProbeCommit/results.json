@@ -1,0 +1,900 @@
+{
+  "summary": {
+    "total": 89,
+    "passed": 89,
+    "failed": 0
+  },
+  "source_changed": [],
+  "cases": [
+    {
+      "id": 0,
+      "name": "编解码每字节往返",
+      "pass": true,
+      "assertions": 62,
+      "failed_line": 0,
+      "actual": 0,
+      "expected": 0,
+      "error": null
+    },
+    {
+      "id": 1,
+      "name": "编解码空指针",
+      "pass": true,
+      "assertions": 15,
+      "failed_line": 0,
+      "actual": 0,
+      "expected": 0,
+      "error": null
+    },
+    {
+      "id": 2,
+      "name": "唯一能力字段与时钟",
+      "pass": true,
+      "assertions": 23,
+      "failed_line": 0,
+      "actual": 0,
+      "expected": 0,
+      "error": null
+    },
+    {
+      "id": 3,
+      "name": "Commit前必须协商",
+      "pass": true,
+      "assertions": 9,
+      "failed_line": 0,
+      "actual": 0,
+      "expected": 0,
+      "error": null
+    },
+    {
+      "id": 4,
+      "name": "Probe请求81",
+      "pass": true,
+      "assertions": 13,
+      "failed_line": 0,
+      "actual": 0,
+      "expected": 0,
+      "error": null
+    },
+    {
+      "id": 5,
+      "name": "Probe请求82",
+      "pass": true,
+      "assertions": 13,
+      "failed_line": 0,
+      "actual": 0,
+      "expected": 0,
+      "error": null
+    },
+    {
+      "id": 6,
+      "name": "Probe请求83",
+      "pass": true,
+      "assertions": 13,
+      "failed_line": 0,
+      "actual": 0,
+      "expected": 0,
+      "error": null
+    },
+    {
+      "id": 7,
+      "name": "Probe请求84",
+      "pass": true,
+      "assertions": 46,
+      "failed_line": 0,
+      "actual": 0,
+      "expected": 0,
+      "error": null
+    },
+    {
+      "id": 8,
+      "name": "Probe请求87",
+      "pass": true,
+      "assertions": 13,
+      "failed_line": 0,
+      "actual": 0,
+      "expected": 0,
+      "error": null
+    },
+    {
+      "id": 9,
+      "name": "Probe请求85",
+      "pass": true,
+      "assertions": 14,
+      "failed_line": 0,
+      "actual": 0,
+      "expected": 0,
+      "error": null
+    },
+    {
+      "id": 10,
+      "name": "Probe请求86",
+      "pass": true,
+      "assertions": 13,
+      "failed_line": 0,
+      "actual": 0,
+      "expected": 0,
+      "error": null
+    },
+    {
+      "id": 11,
+      "name": "Probe请求01",
+      "pass": true,
+      "assertions": 16,
+      "failed_line": 0,
+      "actual": 0,
+      "expected": 0,
+      "error": null
+    },
+    {
+      "id": 12,
+      "name": "Commit请求81",
+      "pass": true,
+      "assertions": 13,
+      "failed_line": 0,
+      "actual": 0,
+      "expected": 0,
+      "error": null
+    },
+    {
+      "id": 13,
+      "name": "Commit请求85",
+      "pass": true,
+      "assertions": 14,
+      "failed_line": 0,
+      "actual": 0,
+      "expected": 0,
+      "error": null
+    },
+    {
+      "id": 14,
+      "name": "Commit请求86",
+      "pass": true,
+      "assertions": 13,
+      "failed_line": 0,
+      "actual": 0,
+      "expected": 0,
+      "error": null
+    },
+    {
+      "id": 15,
+      "name": "Commit请求01",
+      "pass": true,
+      "assertions": 16,
+      "failed_line": 0,
+      "actual": 0,
+      "expected": 0,
+      "error": null
+    },
+    {
+      "id": 16,
+      "name": "Commit拒绝请求82",
+      "pass": true,
+      "assertions": 12,
+      "failed_line": 0,
+      "actual": 0,
+      "expected": 0,
+      "error": null
+    },
+    {
+      "id": 17,
+      "name": "Commit拒绝请求83",
+      "pass": true,
+      "assertions": 12,
+      "failed_line": 0,
+      "actual": 0,
+      "expected": 0,
+      "error": null
+    },
+    {
+      "id": 18,
+      "name": "Commit拒绝请求84",
+      "pass": true,
+      "assertions": 12,
+      "failed_line": 0,
+      "actual": 0,
+      "expected": 0,
+      "error": null
+    },
+    {
+      "id": 19,
+      "name": "Commit拒绝请求87",
+      "pass": true,
+      "assertions": 12,
+      "failed_line": 0,
+      "actual": 0,
+      "expected": 0,
+      "error": null
+    },
+    {
+      "id": 20,
+      "name": "非法请求字段0",
+      "pass": true,
+      "assertions": 10,
+      "failed_line": 0,
+      "actual": 0,
+      "expected": 0,
+      "error": null
+    },
+    {
+      "id": 21,
+      "name": "非法请求字段1",
+      "pass": true,
+      "assertions": 10,
+      "failed_line": 0,
+      "actual": 0,
+      "expected": 0,
+      "error": null
+    },
+    {
+      "id": 22,
+      "name": "非法请求字段2",
+      "pass": true,
+      "assertions": 10,
+      "failed_line": 0,
+      "actual": 0,
+      "expected": 0,
+      "error": null
+    },
+    {
+      "id": 23,
+      "name": "非法请求字段3",
+      "pass": true,
+      "assertions": 10,
+      "failed_line": 0,
+      "actual": 0,
+      "expected": 0,
+      "error": null
+    },
+    {
+      "id": 24,
+      "name": "非法请求字段4",
+      "pass": true,
+      "assertions": 10,
+      "failed_line": 0,
+      "actual": 0,
+      "expected": 0,
+      "error": null
+    },
+    {
+      "id": 25,
+      "name": "非法请求字段5",
+      "pass": true,
+      "assertions": 10,
+      "failed_line": 0,
+      "actual": 0,
+      "expected": 0,
+      "error": null
+    },
+    {
+      "id": 26,
+      "name": "非法请求字段6",
+      "pass": true,
+      "assertions": 10,
+      "failed_line": 0,
+      "actual": 0,
+      "expected": 0,
+      "error": null
+    },
+    {
+      "id": 27,
+      "name": "非法请求字段7",
+      "pass": true,
+      "assertions": 10,
+      "failed_line": 0,
+      "actual": 0,
+      "expected": 0,
+      "error": null
+    },
+    {
+      "id": 28,
+      "name": "非法请求字段8",
+      "pass": true,
+      "assertions": 10,
+      "failed_line": 0,
+      "actual": 0,
+      "expected": 0,
+      "error": null
+    },
+    {
+      "id": 29,
+      "name": "非法请求字段9",
+      "pass": true,
+      "assertions": 10,
+      "failed_line": 0,
+      "actual": 0,
+      "expected": 0,
+      "error": null
+    },
+    {
+      "id": 30,
+      "name": "非法请求字段10",
+      "pass": true,
+      "assertions": 10,
+      "failed_line": 0,
+      "actual": 0,
+      "expected": 0,
+      "error": null
+    },
+    {
+      "id": 31,
+      "name": "非法请求字段11",
+      "pass": true,
+      "assertions": 10,
+      "failed_line": 0,
+      "actual": 0,
+      "expected": 0,
+      "error": null
+    },
+    {
+      "id": 32,
+      "name": "Commit字节0变更拒绝",
+      "pass": true,
+      "assertions": 12,
+      "failed_line": 0,
+      "actual": 0,
+      "expected": 0,
+      "error": null
+    },
+    {
+      "id": 33,
+      "name": "Commit字节1变更拒绝",
+      "pass": true,
+      "assertions": 12,
+      "failed_line": 0,
+      "actual": 0,
+      "expected": 0,
+      "error": null
+    },
+    {
+      "id": 34,
+      "name": "Commit字节2变更拒绝",
+      "pass": true,
+      "assertions": 12,
+      "failed_line": 0,
+      "actual": 0,
+      "expected": 0,
+      "error": null
+    },
+    {
+      "id": 35,
+      "name": "Commit字节3变更拒绝",
+      "pass": true,
+      "assertions": 12,
+      "failed_line": 0,
+      "actual": 0,
+      "expected": 0,
+      "error": null
+    },
+    {
+      "id": 36,
+      "name": "Commit字节4变更拒绝",
+      "pass": true,
+      "assertions": 12,
+      "failed_line": 0,
+      "actual": 0,
+      "expected": 0,
+      "error": null
+    },
+    {
+      "id": 37,
+      "name": "Commit字节5变更拒绝",
+      "pass": true,
+      "assertions": 12,
+      "failed_line": 0,
+      "actual": 0,
+      "expected": 0,
+      "error": null
+    },
+    {
+      "id": 38,
+      "name": "Commit字节6变更拒绝",
+      "pass": true,
+      "assertions": 12,
+      "failed_line": 0,
+      "actual": 0,
+      "expected": 0,
+      "error": null
+    },
+    {
+      "id": 39,
+      "name": "Commit字节7变更拒绝",
+      "pass": true,
+      "assertions": 12,
+      "failed_line": 0,
+      "actual": 0,
+      "expected": 0,
+      "error": null
+    },
+    {
+      "id": 40,
+      "name": "Commit字节8变更拒绝",
+      "pass": true,
+      "assertions": 12,
+      "failed_line": 0,
+      "actual": 0,
+      "expected": 0,
+      "error": null
+    },
+    {
+      "id": 41,
+      "name": "Commit字节9变更拒绝",
+      "pass": true,
+      "assertions": 12,
+      "failed_line": 0,
+      "actual": 0,
+      "expected": 0,
+      "error": null
+    },
+    {
+      "id": 42,
+      "name": "Commit字节10变更拒绝",
+      "pass": true,
+      "assertions": 12,
+      "failed_line": 0,
+      "actual": 0,
+      "expected": 0,
+      "error": null
+    },
+    {
+      "id": 43,
+      "name": "Commit字节11变更拒绝",
+      "pass": true,
+      "assertions": 12,
+      "failed_line": 0,
+      "actual": 0,
+      "expected": 0,
+      "error": null
+    },
+    {
+      "id": 44,
+      "name": "Commit字节12变更拒绝",
+      "pass": true,
+      "assertions": 12,
+      "failed_line": 0,
+      "actual": 0,
+      "expected": 0,
+      "error": null
+    },
+    {
+      "id": 45,
+      "name": "Commit字节13变更拒绝",
+      "pass": true,
+      "assertions": 12,
+      "failed_line": 0,
+      "actual": 0,
+      "expected": 0,
+      "error": null
+    },
+    {
+      "id": 46,
+      "name": "Commit字节14变更拒绝",
+      "pass": true,
+      "assertions": 12,
+      "failed_line": 0,
+      "actual": 0,
+      "expected": 0,
+      "error": null
+    },
+    {
+      "id": 47,
+      "name": "Commit字节15变更拒绝",
+      "pass": true,
+      "assertions": 12,
+      "failed_line": 0,
+      "actual": 0,
+      "expected": 0,
+      "error": null
+    },
+    {
+      "id": 48,
+      "name": "Commit字节16变更拒绝",
+      "pass": true,
+      "assertions": 12,
+      "failed_line": 0,
+      "actual": 0,
+      "expected": 0,
+      "error": null
+    },
+    {
+      "id": 49,
+      "name": "Commit字节17变更拒绝",
+      "pass": true,
+      "assertions": 12,
+      "failed_line": 0,
+      "actual": 0,
+      "expected": 0,
+      "error": null
+    },
+    {
+      "id": 50,
+      "name": "Commit字节18变更拒绝",
+      "pass": true,
+      "assertions": 12,
+      "failed_line": 0,
+      "actual": 0,
+      "expected": 0,
+      "error": null
+    },
+    {
+      "id": 51,
+      "name": "Commit字节19变更拒绝",
+      "pass": true,
+      "assertions": 12,
+      "failed_line": 0,
+      "actual": 0,
+      "expected": 0,
+      "error": null
+    },
+    {
+      "id": 52,
+      "name": "Commit字节20变更拒绝",
+      "pass": true,
+      "assertions": 12,
+      "failed_line": 0,
+      "actual": 0,
+      "expected": 0,
+      "error": null
+    },
+    {
+      "id": 53,
+      "name": "Commit字节21变更拒绝",
+      "pass": true,
+      "assertions": 12,
+      "failed_line": 0,
+      "actual": 0,
+      "expected": 0,
+      "error": null
+    },
+    {
+      "id": 54,
+      "name": "Commit字节22变更拒绝",
+      "pass": true,
+      "assertions": 12,
+      "failed_line": 0,
+      "actual": 0,
+      "expected": 0,
+      "error": null
+    },
+    {
+      "id": 55,
+      "name": "Commit字节23变更拒绝",
+      "pass": true,
+      "assertions": 12,
+      "failed_line": 0,
+      "actual": 0,
+      "expected": 0,
+      "error": null
+    },
+    {
+      "id": 56,
+      "name": "Commit字节24变更拒绝",
+      "pass": true,
+      "assertions": 12,
+      "failed_line": 0,
+      "actual": 0,
+      "expected": 0,
+      "error": null
+    },
+    {
+      "id": 57,
+      "name": "Commit字节25变更拒绝",
+      "pass": true,
+      "assertions": 12,
+      "failed_line": 0,
+      "actual": 0,
+      "expected": 0,
+      "error": null
+    },
+    {
+      "id": 58,
+      "name": "Commit字节26变更拒绝",
+      "pass": true,
+      "assertions": 12,
+      "failed_line": 0,
+      "actual": 0,
+      "expected": 0,
+      "error": null
+    },
+    {
+      "id": 59,
+      "name": "Commit字节27变更拒绝",
+      "pass": true,
+      "assertions": 12,
+      "failed_line": 0,
+      "actual": 0,
+      "expected": 0,
+      "error": null
+    },
+    {
+      "id": 60,
+      "name": "Commit字节28变更拒绝",
+      "pass": true,
+      "assertions": 12,
+      "failed_line": 0,
+      "actual": 0,
+      "expected": 0,
+      "error": null
+    },
+    {
+      "id": 61,
+      "name": "Commit字节29变更拒绝",
+      "pass": true,
+      "assertions": 12,
+      "failed_line": 0,
+      "actual": 0,
+      "expected": 0,
+      "error": null
+    },
+    {
+      "id": 62,
+      "name": "Commit字节30变更拒绝",
+      "pass": true,
+      "assertions": 12,
+      "failed_line": 0,
+      "actual": 0,
+      "expected": 0,
+      "error": null
+    },
+    {
+      "id": 63,
+      "name": "Commit字节31变更拒绝",
+      "pass": true,
+      "assertions": 12,
+      "failed_line": 0,
+      "actual": 0,
+      "expected": 0,
+      "error": null
+    },
+    {
+      "id": 64,
+      "name": "Commit字节32变更拒绝",
+      "pass": true,
+      "assertions": 12,
+      "failed_line": 0,
+      "actual": 0,
+      "expected": 0,
+      "error": null
+    },
+    {
+      "id": 65,
+      "name": "Commit字节33变更拒绝",
+      "pass": true,
+      "assertions": 12,
+      "failed_line": 0,
+      "actual": 0,
+      "expected": 0,
+      "error": null
+    },
+    {
+      "id": 66,
+      "name": "协商归一",
+      "pass": true,
+      "assertions": 11,
+      "failed_line": 0,
+      "actual": 0,
+      "expected": 0,
+      "error": null
+    },
+    {
+      "id": 67,
+      "name": "禁止增加带宽",
+      "pass": true,
+      "assertions": 10,
+      "failed_line": 0,
+      "actual": 0,
+      "expected": 0,
+      "error": null
+    },
+    {
+      "id": 68,
+      "name": "拒绝过小Payload",
+      "pass": true,
+      "assertions": 10,
+      "failed_line": 0,
+      "actual": 0,
+      "expected": 0,
+      "error": null
+    },
+    {
+      "id": 69,
+      "name": "版本非法",
+      "pass": true,
+      "assertions": 10,
+      "failed_line": 0,
+      "actual": 0,
+      "expected": 0,
+      "error": null
+    },
+    {
+      "id": 70,
+      "name": "未读Probe拒绝Commit",
+      "pass": true,
+      "assertions": 11,
+      "failed_line": 0,
+      "actual": 0,
+      "expected": 0,
+      "error": null
+    },
+    {
+      "id": 71,
+      "name": "短读Probe拒绝Commit",
+      "pass": true,
+      "assertions": 13,
+      "failed_line": 0,
+      "actual": 0,
+      "expected": 0,
+      "error": null
+    },
+    {
+      "id": 72,
+      "name": "新SETUP取消SET",
+      "pass": true,
+      "assertions": 14,
+      "failed_line": 0,
+      "actual": 0,
+      "expected": 0,
+      "error": null
+    },
+    {
+      "id": 73,
+      "name": "新Probe撤销授权",
+      "pass": true,
+      "assertions": 11,
+      "failed_line": 0,
+      "actual": 0,
+      "expected": 0,
+      "error": null
+    },
+    {
+      "id": 74,
+      "name": "完整Core协商提交",
+      "pass": true,
+      "assertions": 18,
+      "failed_line": 0,
+      "actual": 0,
+      "expected": 0,
+      "error": null
+    },
+    {
+      "id": 75,
+      "name": "Core拒绝非法Commit边界",
+      "pass": true,
+      "assertions": 16,
+      "failed_line": 0,
+      "actual": 0,
+      "expected": 0,
+      "error": null
+    },
+    {
+      "id": 76,
+      "name": "Core接收短包边界",
+      "pass": true,
+      "assertions": 16,
+      "failed_line": 0,
+      "actual": 0,
+      "expected": 0,
+      "error": null
+    },
+    {
+      "id": 77,
+      "name": "缓冲区对齐与尾部",
+      "pass": true,
+      "assertions": 16,
+      "failed_line": 0,
+      "actual": 0,
+      "expected": 0,
+      "error": null
+    },
+    {
+      "id": 78,
+      "name": "两个Selector初始CUR拒绝",
+      "pass": true,
+      "assertions": 10,
+      "failed_line": 0,
+      "actual": 0,
+      "expected": 0,
+      "error": null
+    },
+    {
+      "id": 79,
+      "name": "GET短读截断",
+      "pass": true,
+      "assertions": 11,
+      "failed_line": 0,
+      "actual": 0,
+      "expected": 0,
+      "error": null
+    },
+    {
+      "id": 80,
+      "name": "GET_LEN和INFO截断",
+      "pass": true,
+      "assertions": 11,
+      "failed_line": 0,
+      "actual": 0,
+      "expected": 0,
+      "error": null
+    },
+    {
+      "id": 81,
+      "name": "DeInit释放状态",
+      "pass": true,
+      "assertions": 15,
+      "failed_line": 0,
+      "actual": 0,
+      "expected": 0,
+      "error": null
+    },
+    {
+      "id": 82,
+      "name": "STALL后新SETUP恢复",
+      "pass": true,
+      "assertions": 15,
+      "failed_line": 0,
+      "actual": 0,
+      "expected": 0,
+      "error": null
+    },
+    {
+      "id": 83,
+      "name": "协商失败不返回旧Probe",
+      "pass": true,
+      "assertions": 15,
+      "failed_line": 0,
+      "actual": 0,
+      "expected": 0,
+      "error": null
+    },
+    {
+      "id": 84,
+      "name": "Probe只读字段归一",
+      "pass": true,
+      "assertions": 10,
+      "failed_line": 0,
+      "actual": 0,
+      "expected": 0,
+      "error": null
+    },
+    {
+      "id": 85,
+      "name": "Core拒绝26字节SET",
+      "pass": true,
+      "assertions": 12,
+      "failed_line": 0,
+      "actual": 0,
+      "expected": 0,
+      "error": null
+    },
+    {
+      "id": 86,
+      "name": "Core拒绝超长实际数据",
+      "pass": true,
+      "assertions": 12,
+      "failed_line": 0,
+      "actual": 0,
+      "expected": 0,
+      "error": null
+    },
+    {
+      "id": 87,
+      "name": "Core拒绝Commit GET_DEF",
+      "pass": true,
+      "assertions": 11,
+      "failed_line": 0,
+      "actual": 0,
+      "expected": 0,
+      "error": null
+    },
+    {
+      "id": 88,
+      "name": "短Probe撤销旧协商与Commit授权",
+      "pass": true,
+      "assertions": 13,
+      "failed_line": 0,
+      "actual": 0,
+      "expected": 0,
+      "error": null
+    }
+  ]
+}
