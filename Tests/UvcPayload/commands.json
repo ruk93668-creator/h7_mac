@@ -1,0 +1,37 @@
+[
+  {
+    "command": "D:\\32\\ARM\\ARMCC\\Bin\\armcc.exe --vsn",
+    "returncode": 0,
+    "output": "Product: MDK Plus 5.32\r\nComponent: ARM Compiler 5.06 update 7 (build 960)\r\nTool: armcc [4d365d]\r\nFor support see http://www.arm.com/support\r\nSoftware supplied by: ARM Limited\r\n"
+  },
+  {
+    "command": "D:\\32\\ARM\\ARMCC\\Bin\\armcc.exe --cpu Cortex-M7 --c99 -O0 -I C:\\Users\\29062\\.codex\\worktrees\\uvc-09a\\h7_mac\\CM7\\Service -I C:\\Users\\29062\\.codex\\worktrees\\uvc-09a\\h7_mac\\Common\\Inc -c C:\\Users\\29062\\.codex\\worktrees\\uvc-09a\\h7_mac\\Tests\\UvcPayload\\payload_test.c -o C:\\Users\\29062\\.codex\\worktrees\\uvc-09a\\h7_mac\\Tests\\UvcPayload\\payload_test-O0.o",
+    "returncode": 0,
+    "output": ""
+  },
+  {
+    "command": "D:\\32\\ARM\\ARMCC\\Bin\\armcc.exe --cpu Cortex-M7 --c99 -O0 -I C:\\Users\\29062\\.codex\\worktrees\\uvc-09a\\h7_mac\\CM7\\Service -I C:\\Users\\29062\\.codex\\worktrees\\uvc-09a\\h7_mac\\Common\\Inc -c C:\\Users\\29062\\.codex\\worktrees\\uvc-09a\\h7_mac\\CM7\\Service\\usb_uvc_payload.c -o C:\\Users\\29062\\.codex\\worktrees\\uvc-09a\\h7_mac\\Tests\\UvcPayload\\usb_uvc_payload-O0.o",
+    "returncode": 0,
+    "output": ""
+  },
+  {
+    "command": "D:\\32\\ARM\\ARMCC\\Bin\\armlink.exe C:\\Users\\29062\\.codex\\worktrees\\uvc-09a\\h7_mac\\Tests\\UvcPayload\\payload_test-O0.o C:\\Users\\29062\\.codex\\worktrees\\uvc-09a\\h7_mac\\Tests\\UvcPayload\\usb_uvc_payload-O0.o --entry Payload_TestRun --scatter C:\\Users\\29062\\.codex\\worktrees\\uvc-09a\\h7_mac\\Tests\\UsbDeviceStage1\\test.sct --no_scanlib -o C:\\Users\\29062\\.codex\\worktrees\\uvc-09a\\h7_mac\\Tests\\UvcPayload\\payload-O0.axf",
+    "returncode": 0,
+    "output": "\"C:\\Users\\29062\\.codex\\worktrees\\uvc-09a\\h7_mac\\Tests\\UsbDeviceStage1\\test.sct\", line 2 (column 28): Warning: L6314W: No section matches pattern *(.framework_init).\r\nFinished: 0 information, 1 warning and 0 error messages.\r\n"
+  },
+  {
+    "command": "D:\\32\\ARM\\ARMCC\\Bin\\armcc.exe --cpu Cortex-M7 --c99 -O2 -I C:\\Users\\29062\\.codex\\worktrees\\uvc-09a\\h7_mac\\CM7\\Service -I C:\\Users\\29062\\.codex\\worktrees\\uvc-09a\\h7_mac\\Common\\Inc -c C:\\Users\\29062\\.codex\\worktrees\\uvc-09a\\h7_mac\\Tests\\UvcPayload\\payload_test.c -o C:\\Users\\29062\\.codex\\worktrees\\uvc-09a\\h7_mac\\Tests\\UvcPayload\\payload_test-O2.o",
+    "returncode": 0,
+    "output": ""
+  },
+  {
+    "command": "D:\\32\\ARM\\ARMCC\\Bin\\armcc.exe --cpu Cortex-M7 --c99 -O2 -I C:\\Users\\29062\\.codex\\worktrees\\uvc-09a\\h7_mac\\CM7\\Service -I C:\\Users\\29062\\.codex\\worktrees\\uvc-09a\\h7_mac\\Common\\Inc -c C:\\Users\\29062\\.codex\\worktrees\\uvc-09a\\h7_mac\\CM7\\Service\\usb_uvc_payload.c -o C:\\Users\\29062\\.codex\\worktrees\\uvc-09a\\h7_mac\\Tests\\UvcPayload\\usb_uvc_payload-O2.o",
+    "returncode": 0,
+    "output": ""
+  },
+  {
+    "command": "D:\\32\\ARM\\ARMCC\\Bin\\armlink.exe C:\\Users\\29062\\.codex\\worktrees\\uvc-09a\\h7_mac\\Tests\\UvcPayload\\payload_test-O2.o C:\\Users\\29062\\.codex\\worktrees\\uvc-09a\\h7_mac\\Tests\\UvcPayload\\usb_uvc_payload-O2.o --entry Payload_TestRun --scatter C:\\Users\\29062\\.codex\\worktrees\\uvc-09a\\h7_mac\\Tests\\UsbDeviceStage1\\test.sct --no_scanlib -o C:\\Users\\29062\\.codex\\worktrees\\uvc-09a\\h7_mac\\Tests\\UvcPayload\\payload-O2.axf",
+    "returncode": 0,
+    "output": "\"C:\\Users\\29062\\.codex\\worktrees\\uvc-09a\\h7_mac\\Tests\\UsbDeviceStage1\\test.sct\", line 2 (column 28): Warning: L6314W: No section matches pattern *(.framework_init).\r\nFinished: 0 information, 1 warning and 0 error messages.\r\n"
+  }
+]

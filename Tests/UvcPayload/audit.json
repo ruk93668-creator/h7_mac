@@ -1,0 +1,19 @@
+{
+  "base": "11f2ac93ee9dc08afa28b48b6b3cbfb395fc3997",
+  "new_production_files": [
+    "CM7/Service/usb_uvc_payload.c",
+    "CM7/Service/usb_uvc_payload.h"
+  ],
+  "existing_production_source_files_unchanged": true,
+  "keil_change": "Only two entries in CM7 Service group",
+  "cm4_target_xml_identical": true,
+  "no_bsp_platform_sof_class_descriptor_probe_camera_media_modifications": true,
+  "new_sources_sha256": {
+    "CM7\\Service\\usb_uvc_payload.c": "5d31a66887acb844213b407332296cb91121080c023012286de4c95a34c86760",
+    "CM7\\Service\\usb_uvc_payload.h": "c4cb09a16b8afef63dc2ecb06496615f82c06fc030344027f5b7be9bc953aefc"
+  },
+  "standalone_tests_without_hal_core": true,
+  "bounds_violations": 0,
+  "image_writes": 0,
+  "main_modified_or_merged": false
+}
