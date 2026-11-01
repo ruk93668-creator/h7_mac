@@ -3,6 +3,9 @@
 #include "usb_uvc.h"
 #include <stdbool.h>
 
+//仅UVC实验编译图像和应用状态，TEST不分配彩条内存
+#if USB_MODE_UVC_TEST_ENABLED
+
 #define UVC_TEST_WIDTH        160U
 #define UVC_TEST_HEIGHT       120U
 #define UVC_TEST_FRAME_BYTES  (UVC_TEST_WIDTH * UVC_TEST_HEIGHT * 2U)
@@ -90,3 +93,17 @@ static void UvcTest_GeneratePattern(void)
         }
     }
 }
+
+#else
+
+//TEST保留无状态接口，不生成或提交图像
+SysResult_t App_UvcTestInit(void)
+{
+    return SYS_OK;
+}
+
+void App_UvcTestRun(void)
+{
+}
+
+#endif

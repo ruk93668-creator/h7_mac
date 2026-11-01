@@ -18,8 +18,11 @@ SysResult_t App_CameraInit(void) { camera_init_count++; return camera_init_resul
 void App_CameraRun(void) { camera_run_count++; }
 
 static int Pattern_Boot(bool configured);
+static bool Pattern_Ready(void);
+#if USB_MODE_UVC_TEST_ENABLED
 static int Pattern_SendFrame(void);
 static int Pattern_CheckImage(void);
+#endif
 
 int UvcPattern_TestRun(uint32_t id)
 {
@@ -52,21 +55,23 @@ int UvcPattern_TestRun(uint32_t id)
         EQ(USB_Mode_Init(), SYS_OK);
         return 0;
     }
+    #if USB_MODE_UVC_TEST_ENABLED
     if (id == 26U)
     {
         EQ(USB_Device_Init(), SYS_OK); EQ(USB_Mode_Init(), SYS_OK);
         camera_init_result = SYS_ERR_IO;
         EQ(App_Init(), SYS_OK);
-        EQ(camera_init_count, 0U); EQ(s_pattern_ready, true);
+        EQ(camera_init_count, 0U); EQ(Pattern_Ready(), true);
         return 0;
     }
+    #endif
     EQ(Pattern_Boot(id != 13U), 0U);
 
     if (id < 10U)
     {
         EQ(USB_Mode_GetMode(), USB_MODE_TEST);
         EQ(s_class_callbacks.Init, Usb_ClassInit); EQ(s_uvc_active, NULL);
-        EQ(s_pattern_ready, false);
+        EQ(Pattern_Ready(), false);
         if (id == 1U)
         {
             starts = start_count;
@@ -87,14 +92,16 @@ int UvcPattern_TestRun(uint32_t id)
             s_test_tick++; USB_Mode_Process(); USB_Mode_Process(); EQ(start_count, 2U);
         }
         for (i = 0U; i < 200U; i++) { Tick(); USB_UVC_Process(); App_Run(); }
-        EQ(s_pattern_ready, false); EQ(s_tx_transfer[1].active, false);
-        for (i = 0U; i < sizeof(s_test_frame); i++) EQ(s_test_frame[i], 0U);
+        EQ(Pattern_Ready(), false); EQ(s_tx_transfer[1].active, false);
+        //TEST不再有图像符号，由执行器检查ELF中确实不存在
+        EQ(App_UvcTestInit(), SYS_OK); App_UvcTestRun();
         return 0;
     }
 
+    #if USB_MODE_UVC_TEST_ENABLED
     EQ(USB_Mode_GetMode(), USB_MODE_UVC); EQ(s_class_callbacks.Init, UVC_Init);
     EQ(camera_init_count, 0U); EQ(camera_run_count, 0U);
-    EQ(s_pattern_ready, true); EQ(Pattern_CheckImage(), 0U);
+    EQ(Pattern_Ready(), true); EQ(Pattern_CheckImage(), 0U);
     if (id == 13U)
     {
         EQ(s_usb_mode.state, USB_MODE_STATE_WAIT_CONFIGURED);
@@ -202,13 +209,14 @@ int UvcPattern_TestRun(uint32_t id)
         EQ(s_uvc_payload.frame_offset, 510U); EQ(s_uvc_payload.frame, s_test_frame);
         fault = 0U; Tick(); USB_UVC_Process(); EQ(ctx->stream_state, USB_UVC_IN_FLIGHT); return 0;
     }
+    #endif
     EQ(0U, 1U); return 1;
 }
 
 static int Pattern_Boot(bool configured)
 {
     EQ(USB_Mode_Start(), SYS_ERR_INVALID_STATE);
-    App_Run(); EQ(s_pattern_ready, false);
+    App_Run(); EQ(Pattern_Ready(), false);
     EQ(USB_Device_Init(), SYS_OK); EQ(USB_Mode_Init(), SYS_OK);
     EQ(s_usb_mode.state, USB_MODE_STATE_IDLE); EQ(start_count, 0U);
     EQ(App_Init(), SYS_OK); EQ(camera_init_count, USB_MODE_UVC_TEST_ENABLED ? 0U : 1U);
@@ -223,6 +231,16 @@ static int Pattern_Boot(bool configured)
     return 0;
 }
 
+static bool Pattern_Ready(void)
+{
+#if USB_MODE_UVC_TEST_ENABLED
+    return s_pattern_ready;
+#else
+    return false;
+#endif
+}
+
+#if USB_MODE_UVC_TEST_ENABLED
 static int Pattern_SendFrame(void)
 {
     uint32_t i, j, length, offset = 0U, wait;
@@ -263,3 +281,5 @@ static int Pattern_CheckImage(void)
     }
     return 0;
 }
+
+#endif

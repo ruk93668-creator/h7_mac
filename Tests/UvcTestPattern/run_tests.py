@@ -92,14 +92,17 @@ for mode in (0, 1):
         for address, data in sections: uc.mem_write(address, data)
         uc.reg_write(UC_ARM_REG_SP, 0x2003FFF0); uc.reg_write(UC_ARM_REG_LR, 0x01000001); uc.reg_write(UC_ARM_REG_R0, case_id)
         counts = {"register_class":0, "generate":0, "submit_frame":0, "image_written_bytes":0, "writes_after_freeze":0, "generator_out_of_bounds":0}
-        frame, frame_size = syms["s_test_frame"]
-        generate, generate_size = syms["UvcTest_GeneratePattern"]; generate &= ~1
+        if mode == 0:
+            assert all(n not in syms for n in ["s_test_frame", "s_color_bars", "UvcTest_GeneratePattern", "pattern_initialized", "s_pattern_ready", "pattern_last_result"])
+        frame, frame_size = syms.get("s_test_frame", (0, 0))
+        generate, generate_size = syms.get("UvcTest_GeneratePattern", (0, 0)); generate &= ~1
 
         def code(cpu, addr, size, user):
             for key, symbol in [("register_class", "USBD_RegisterClass"), ("generate", "UvcTest_GeneratePattern"), ("submit_frame", "USB_UVC_SubmitFrame")]:
-                if addr == (syms[symbol][0] & ~1): counts[key] += 1
+                if symbol in syms and addr == (syms[symbol][0] & ~1): counts[key] += 1
 
         for symbol in ["USBD_RegisterClass", "UvcTest_GeneratePattern", "USB_UVC_SubmitFrame"]:
+            if symbol not in syms: continue
             addr = syms[symbol][0] & ~1
             uc.hook_add(UC_HOOK_CODE, code, begin=addr, end=addr)
 
@@ -124,7 +127,7 @@ for mode in (0, 1):
         if case_id in [10,11,13,26]: passed = passed and counts["submit_frame"] == 0
         count = struct.unpack("<I", uc.mem_read(syms["g_packet_count"][0], 4))[0]
         trace = {key: list(struct.unpack(f"<{count}I", uc.mem_read(syms[symbol][0], count * 4))) if count else [] for key, symbol in [("lengths","g_lengths"),("headers","g_headers"),("sofs","g_sofs")]}
-        rows.append({"id":case_id,"name":name,"mode":"UVC" if mode else "TEST","pass":passed,"assertions":result[1],"failed_line":result[0],"actual":result[2],"expected":result[3],"error":error,"trace":counts,"packets":trace,"image_crc32":f"{zlib.crc32(uc.mem_read(frame,frame_size)):08X}"})
+        rows.append({"id":case_id,"name":name,"mode":"UVC" if mode else "TEST","pass":passed,"assertions":result[1],"failed_line":result[0],"actual":result[2],"expected":result[3],"error":error,"trace":counts,"packets":trace,"image_crc32":f"{zlib.crc32(uc.mem_read(frame,frame_size)):08X}" if frame_size else None})
         print(case_id, name, "PASS" if passed else "FAIL", result[:4], counts, error)
 
 changed = [str(p.relative_to(ROOT)) for p in sources if hashlib.sha256(p.read_bytes()).hexdigest() != before[str(p.relative_to(ROOT))]]

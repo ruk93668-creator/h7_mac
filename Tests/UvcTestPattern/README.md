@@ -40,7 +40,7 @@ Initcall 的 APPLICATION 同等级条目先后不作为依赖；图像 Init 不�
 
 ## 静态图像与所有权
 
-图像位于 Application 私有静态 `s_test_frame[38400]`，4字节对齐，由 CM7 CPU/USB PIO 读取，不使用 USB 内部 DMA、SDRAM 或摄像头。默认 TEST 不生成、不提交图像，但静态数组仍占用 38400B ZI RAM。生成完成后不再写入，重复 Init 不重建。
+图像位于 Application 私有静态 `s_test_frame[38400]`，4字节对齐，由 CM7 CPU/USB PIO 读取，不使用 USB 内部 DMA、SDRAM 或摄像头。默认 TEST 不编译图像、颜色表或应用状态，只保留无状态空接口，不分配彩条缓冲区。生成完成后不再写入，重复 Init 不重建。
 
 160×120、YUY2，顺序 `Y0 U Y1 V`，每行320B。8条竖向彩条，每条20像素，各行相同。使用 BT.601 有限范围的整数样值，颜色顺序为白、黄、青、绿、品红、红、蓝、黑：
 
@@ -97,7 +97,7 @@ powershell -NoProfile -ExecutionPolicy Bypass -File Tests/UvcTestPattern/build.p
 
 专项24项：默认TEST零生成零提交；显式注册与初始化顺序；幂等Init和重复Start；同模式500ms重连；拒绝热切换；无Configured/Commit/Alt1不提交；两帧完整包序列；借用期间不改写；Alt0/Reset/Disconnect恢复；Incomplete、Abort失败、Reset释放失败和受控Stop；中途BUSY；UVC应用不依赖Camera初始化。
 
-监视真实函数入口，确认每个启动变体只执行一次成功的 `USBD_RegisterClass`；逐像素独立比对38400B。Unicorn写监视确认生成器只写图像/自身栈、只生成一次、冻结后零写入；两帧逐字节核对Payload图像内容和EOF/FID。结果保留实际断言数量及失败行，不跳过旧用例。
+监视真实函数入口，确认每个启动变体只执行一次成功的 `USBD_RegisterClass`；逐像素独立比对38400B；TEST变体额外断言ELF不存在图像、颜色表、生成函数和应用状态符号。Unicorn写监视确认生成器只写图像/自身栈、只生成一次、冻结后零写入；两帧逐字节核对Payload图像内容和EOF/FID。结果保留实际断言数量及失败行，不跳过旧用例。
 
 回归执行原621次（Payload62×O0/O2=124、Streaming36、原USB461），并加09C专项24次。完整执行清单和控制台结果在 `regression_results.json`，逐例结果在 `results.json`，编译命令在 `commands.json`，Keil完整重编分别在 `cm7_uvc_keil.log`、`cm7_keil.log`、`cm4_keil.log`。
 
@@ -145,3 +145,17 @@ powershell -NoProfile -ExecutionPolicy Bypass -File Tests/UvcTestPattern/build.p
 |实板|未执行Windows枚举和视频显示验收|
 
 实际构建大小、静态图像地址及汇总见 `verification_results.json`；代码SHA、CM4 Target和main保护检查见 `audit.json`。本轮只提交开发分支并创建PR，等待审核；不合并main。
+
+## PR #3 内存优化（基于171479f）
+
+仅对app_uvc_test.c增加编译期隔离。宏为0时不编译彩条缓冲区、颜色表、生成器和应用状态；对外保留无状态空接口。宏为1时原生成及发送行为保持不变，不修改Payload、SOF、EP1、Probe/Commit或描述符。
+
+原24项专项编号及621次回归均保留，共645/645 PASS。TEST原先检查38400B零值的断言，改为检查实际ELF不存在对应存储及生成器符号；UVC逐字节和两帧76包测试不变。正式TEST AXF也确认不存在彩条符号。
+
+|配置|优化前ZI|优化后ZI|ZI减少|RW+ZI减少|
+|---|---:|---:|---:|---:|
+|CM7 TEST|55396B|17004B|38392B|38400B|
+|CM7 UVC|55396B|55396B|0|0|
+|CM4|2580B|2580B|0|0|
+
+TEST的RW由668B降至660B，故ZI减少38392B、RW减少8B，链接器报告的RW+ZI合计减少38400B（37.5KiB）。UVC维持原38400B图像、160×120 YUY2、10FPS。三个配置完整重编均0 Error、0 Warning。明细见verification_results.json，原始日志已更新；未执行实板视频验收。不合并main，output/、tmp/保持原样。

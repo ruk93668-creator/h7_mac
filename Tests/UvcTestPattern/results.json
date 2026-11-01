@@ -11,7 +11,7 @@
       "name": "TEST默认枚举，200SOF不生成或提交视频",
       "mode": "TEST",
       "pass": true,
-      "assertions": 38419,
+      "assertions": 20,
       "failed_line": 0,
       "actual": 0,
       "expected": 0,
@@ -29,14 +29,14 @@
         "headers": [],
         "sofs": []
       },
-      "image_crc32": "2062FA5F"
+      "image_crc32": null
     },
     {
       "id": 1,
       "name": "TEST重复Init/Start不重复启动",
       "mode": "TEST",
       "pass": true,
-      "assertions": 38424,
+      "assertions": 25,
       "failed_line": 0,
       "actual": 0,
       "expected": 0,
@@ -54,14 +54,14 @@
         "headers": [],
         "sofs": []
       },
-      "image_crc32": "2062FA5F"
+      "image_crc32": null
     },
     {
       "id": 2,
       "name": "TEST拒绝运行时切换UVC",
       "mode": "TEST",
       "pass": true,
-      "assertions": 38421,
+      "assertions": 22,
       "failed_line": 0,
       "actual": 0,
       "expected": 0,
@@ -79,14 +79,14 @@
         "headers": [],
         "sofs": []
       },
-      "image_crc32": "2062FA5F"
+      "image_crc32": null
     },
     {
       "id": 3,
       "name": "TEST保留500ms非阻塞同模式重连",
       "mode": "TEST",
       "pass": true,
-      "assertions": 38423,
+      "assertions": 24,
       "failed_line": 0,
       "actual": 0,
       "expected": 0,
@@ -104,7 +104,7 @@
         "headers": [],
         "sofs": []
       },
-      "image_crc32": "2062FA5F"
+      "image_crc32": null
     },
     {
       "id": 4,
@@ -129,7 +129,7 @@
         "headers": [],
         "sofs": []
       },
-      "image_crc32": "2062FA5F"
+      "image_crc32": null
     },
     {
       "id": 5,
@@ -154,7 +154,7 @@
         "headers": [],
         "sofs": []
       },
-      "image_crc32": "2062FA5F"
+      "image_crc32": null
     },
     {
       "id": 10,
