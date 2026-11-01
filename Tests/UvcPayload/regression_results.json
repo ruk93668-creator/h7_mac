@@ -1,0 +1,68 @@
+{
+  "base": "11f2ac93ee9dc08afa28b48b6b3cbfb395fc3997",
+  "payload": {
+    "unique_cases": 62,
+    "executions": 124,
+    "passed": 124,
+    "failed": 0
+  },
+  "existing_suites": {
+    "UvcEp1Lifecycle": {
+      "total": 45,
+      "passed": 45,
+      "failed": 0
+    },
+    "ProbeCommit": {
+      "total": 89,
+      "passed": 89,
+      "failed": 0
+    },
+    "Cancellation": {
+      "total": 39,
+      "passed": 39,
+      "failed": 0
+    },
+    "UsbCore": {
+      "total": 204,
+      "passed": 204,
+      "failed": 0,
+      "assertions": 2984
+    },
+    "UvcLifecycle": {
+      "total": 40,
+      "passed": 40,
+      "failed": 0
+    },
+    "Descriptors": {
+      "total": 40,
+      "passed": 40,
+      "failures": 0,
+      "errors": 0
+    },
+    "Ep0Irq": {
+      "total": 4,
+      "passed": 4,
+      "failed": 0
+    }
+  },
+  "summary": {
+    "original_unique_cases": 461,
+    "new_unique_cases": 62,
+    "unique_total": 523,
+    "actual_executions": 585,
+    "passed_executions": 585,
+    "failed": 0
+  },
+  "builds": {
+    "cm7": {
+      "full_rebuild": true,
+      "errors": 0,
+      "warnings": 0
+    },
+    "cm4": {
+      "full_rebuild": true,
+      "errors": 0,
+      "warnings": 0
+    }
+  }
+}
