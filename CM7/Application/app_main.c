@@ -5,7 +5,7 @@
 //初始化CM7正式应用模块
 SysResult_t App_Init(void)
 {
-	return App_CameraInit();
+	return App_CameraInitStream();
 }
 
 //统一轮询CM7正式应用模块
