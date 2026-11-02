@@ -19,7 +19,7 @@
   ],
   "source_sha256": {
     "CM7\\Service\\usb_uvc_payload.c": "5d31a66887acb844213b407332296cb91121080c023012286de4c95a34c86760",
-    "CM7\\Service\\usb_uvc_payload.h": "c4cb09a16b8afef63dc2ecb06496615f82c06fc030344027f5b7be9bc953aefc"
+    "CM7\\Service\\usb_uvc_payload.h": "8c54eb376715253c8e984f94e639d2c692b8393f13d9fc588bd7a4391f55cc22"
   },
   "source_changed_during_tests": [],
   "cases": [

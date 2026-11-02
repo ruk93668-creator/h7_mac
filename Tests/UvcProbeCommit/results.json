@@ -788,9 +788,9 @@
     },
     {
       "id": 78,
-      "name": "两个Selector初始CUR拒绝",
+      "name": "两个Selector初始CUR返回默认且不授权",
       "pass": true,
-      "assertions": 10,
+      "assertions": 16,
       "failed_line": 0,
       "actual": 0,
       "expected": 0,
@@ -838,9 +838,9 @@
     },
     {
       "id": 83,
-      "name": "协商失败不返回旧Probe",
+      "name": "协商失败返回默认且不继承旧授权",
       "pass": true,
-      "assertions": 15,
+      "assertions": 19,
       "failed_line": 0,
       "actual": 0,
       "expected": 0,

@@ -86,11 +86,11 @@ SysResult_t USB_Mode_Start(void)
     if (s_usb_mode.state == USB_MODE_STATE_RUNNING)
         return SYS_ERR_BUSY;
 
-    //切换和故障恢复流程尚未实现，只允许空闲时启动
+    //公开Start只接受冷启动IDLE，同模式重连由Process推进
     if (s_usb_mode.state != USB_MODE_STATE_IDLE)
         return SYS_ERR_INVALID_STATE;
 
-    //记录启动过程，调用既有Core启动接口
+    //Start只确认软件启动成功，枚举完成由WAIT_CONFIGURED确认
     s_usb_mode.state = USB_MODE_STATE_STARTING;
     result = USB_Device_Start();
     s_usb_mode.last_result = result;
