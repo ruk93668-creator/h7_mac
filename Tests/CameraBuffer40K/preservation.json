@@ -1,0 +1,12 @@
+{
+  "MDK-ARM/h7_mac.uvoptx": "98f6d0acc254ef0555d89aaae7377f9cb68e35f71e25c72dd64cb7f572867498",
+  "MDK-ARM/h7_mac.uvprojx": "b4f7d73ad217fcc172c3b6b99aaa767dd1c148b12c807fabea9b5eb813674660",
+  "CM7/BSP/bsp_dcmi.c": "e61f9d4a000fd2af57f1548794588418ba191e121e7bfb839c59851e7c3a591b",
+  "CM7/BSP/bsp_sdram.c": "82e8d0dd061e4803c0ebd9334c50b141d0f89c27d11effc449996babd2ca5984",
+  "CM7/Service/usb_uvc_class.c": "8b8a32e0d6b31620b7898540c2c5e02ae6ae57e6d08852bb09d54677a2e6ebc2",
+  "CM7/Service/usb_uvc_desc.c": "05948efac144bda468ec876598929fcacf10cbf8eab3501cec4fe140cba62ee9",
+  "CM7/Service/usb_uvc_payload.h": "1d7216ea926d2b7799e0162382fa4e67cf7cf194e2ce081a20942ae3c8170433",
+  "CM7/Application/app_main.c": "278f1bc4519fbcfda33419ff93ab72831f21c7c8b62ec71baebcda02d4d7a9d5",
+  "CM7/Application/app_camera.c": "7d9127d229646be00d3ef60783dac9da9161c73bdfebb166486945db4759becc",
+  "CM7/Application/app_uvc_bridge.c": "be51c4982686d21f58478fb7063db3b4b0f79508f3c9be35bfa14f1c03370344"
+}

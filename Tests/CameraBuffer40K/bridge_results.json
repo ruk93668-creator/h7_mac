@@ -1,0 +1,217 @@
+{
+  "total": 35,
+  "pass": 35,
+  "fail": 0,
+  "cases": [
+    {
+      "id": 1,
+      "name": "USB not ready",
+      "pass": true,
+      "failure_line": 0
+    },
+    {
+      "id": 2,
+      "name": "query error in IDLE",
+      "pass": true,
+      "failure_line": 0
+    },
+    {
+      "id": 3,
+      "name": "no Media frame",
+      "pass": true,
+      "failure_line": 0
+    },
+    {
+      "id": 4,
+      "name": "valid acquisition to HELD",
+      "pass": true,
+      "failure_line": 0
+    },
+    {
+      "id": 5,
+      "name": "successful loan",
+      "pass": true,
+      "failure_line": 0
+    },
+    {
+      "id": 6,
+      "name": "Submit BUSY",
+      "pass": true,
+      "failure_line": 0
+    },
+    {
+      "id": 7,
+      "name": "Submit invalid state",
+      "pass": true,
+      "failure_line": 0
+    },
+    {
+      "id": 8,
+      "name": "Submit IO",
+      "pass": true,
+      "failure_line": 0
+    },
+    {
+      "id": 9,
+      "name": "Submit invalid arg",
+      "pass": true,
+      "failure_line": 0
+    },
+    {
+      "id": 10,
+      "name": "Release failure no resubmit",
+      "pass": true,
+      "failure_line": 0
+    },
+    {
+      "id": 11,
+      "name": "invalid width",
+      "pass": true,
+      "failure_line": 0
+    },
+    {
+      "id": 12,
+      "name": "invalid height",
+      "pass": true,
+      "failure_line": 0
+    },
+    {
+      "id": 13,
+      "name": "invalid format",
+      "pass": true,
+      "failure_line": 0
+    },
+    {
+      "id": 14,
+      "name": "invalid byte length",
+      "pass": true,
+      "failure_line": 0
+    },
+    {
+      "id": 15,
+      "name": "null data",
+      "pass": true,
+      "failure_line": 0
+    },
+    {
+      "id": 16,
+      "name": "invalid frame Release retry",
+      "pass": true,
+      "failure_line": 0
+    },
+    {
+      "id": 17,
+      "name": "owned WAIT_FRAME",
+      "pass": true,
+      "failure_line": 0
+    },
+    {
+      "id": 18,
+      "name": "owned WAIT_SLOT",
+      "pass": true,
+      "failure_line": 0
+    },
+    {
+      "id": 19,
+      "name": "owned IN_FLIGHT",
+      "pass": true,
+      "failure_line": 0
+    },
+    {
+      "id": 20,
+      "name": "owned WAIT_CONFIRM",
+      "pass": true,
+      "failure_line": 0
+    },
+    {
+      "id": 21,
+      "name": "owned CANCELLING",
+      "pass": true,
+      "failure_line": 0
+    },
+    {
+      "id": 22,
+      "name": "owned RECOVERY",
+      "pass": true,
+      "failure_line": 0
+    },
+    {
+      "id": 23,
+      "name": "ownership returned",
+      "pass": true,
+      "failure_line": 0
+    },
+    {
+      "id": 24,
+      "name": "safe Class destruction",
+      "pass": true,
+      "failure_line": 0
+    },
+    {
+      "id": 25,
+      "name": "loan query IO",
+      "pass": true,
+      "failure_line": 0
+    },
+    {
+      "id": 26,
+      "name": "loan query BUSY",
+      "pass": true,
+      "failure_line": 0
+    },
+    {
+      "id": 27,
+      "name": "loan query TIMEOUT",
+      "pass": true,
+      "failure_line": 0
+    },
+    {
+      "id": 28,
+      "name": "Media release retry after USB return",
+      "pass": true,
+      "failure_line": 0
+    },
+    {
+      "id": 29,
+      "name": "IRQ cannot interpret class absence",
+      "pass": true,
+      "failure_line": 0
+    },
+    {
+      "id": 30,
+      "name": "PRIMASK cannot interpret class absence",
+      "pass": true,
+      "failure_line": 0
+    },
+    {
+      "id": 31,
+      "name": "IRQ no side effects",
+      "pass": true,
+      "failure_line": 0
+    },
+    {
+      "id": 32,
+      "name": "PRIMASK no side effects",
+      "pass": true,
+      "failure_line": 0
+    },
+    {
+      "id": 33,
+      "name": "two frame cycles",
+      "pass": true,
+      "failure_line": 0
+    },
+    {
+      "id": 34,
+      "name": "Alt0 between acquisition and submit",
+      "pass": true,
+      "failure_line": 0
+    },
+    {
+      "id": 35,
+      "name": "class absent in IDLE",
+      "pass": true,
+      "failure_line": 0
+    }
+  ]
+}

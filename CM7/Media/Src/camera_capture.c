@@ -9,8 +9,8 @@
 //图像缓冲区数量
 #define CAMERA_STREAM_BUFFER_COUNT     3U
 
-//单个缓冲区容量，容纳160x120的RGB565或YUV422图像
-#define CAMERA_STREAM_BUFFER_CAPACITY  (160U * 120U * 2U)
+//单个缓冲区预留40KiB，实际帧长度仍由图像配置计算
+#define CAMERA_STREAM_BUFFER_CAPACITY  (40U * 1024U)
 
 //缓冲区可用SDRAM范围的结束地址，不包含该地址
 #define CAMERA_STREAM_SDRAM_END         BSP_SDRAM_END

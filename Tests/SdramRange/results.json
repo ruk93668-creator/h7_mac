@@ -1,6 +1,6 @@
 {
-  "total": 18,
-  "pass": 18,
+  "total": 22,
+  "pass": 22,
   "fail": 0,
   "compiled_values": [
     3489660928,
@@ -10,22 +10,22 @@
     3489661952,
     3489792000,
     3,
-    38400,
+    40960,
     32,
     64512
   ],
   "buffers": [
     [
       3489661952,
-      3489700352
+      3489702912
     ],
     [
-      3489700352,
-      3489738752
+      3489702912,
+      3489743872
     ],
     [
-      3489738752,
-      3489777152
+      3489743872,
+      3489784832
     ]
   ],
   "command": "D:/32/ARM/ARMCC/Bin/armcc.exe --cpu Cortex-M7 --c99 -O0 -I D:\\32\\STM32H7\\h7_mac\\Tests\\CameraStreamState\\stubs -I D:\\32\\STM32H7\\h7_mac\\Common\\Inc -I D:\\32\\STM32H7\\h7_mac\\CM7\\Media\\Inc -I D:\\32\\STM32H7\\h7_mac\\CM7\\BSP -I D:\\32\\STM32H7\\h7_mac\\CM7\\Platform -c D:\\32\\STM32H7\\h7_mac\\Tests\\SdramRange\\layout_probe.c -o D:\\32\\STM32H7\\h7_mac\\Tests\\SdramRange\\layout_probe.o",
@@ -55,7 +55,7 @@
       "pass": true
     },
     {
-      "name": "Stream count/capacity preserved",
+      "name": "Three 40KiB stream buffers",
       "pass": true
     },
     {
@@ -76,6 +76,22 @@
     },
     {
       "name": "Exact stream end",
+      "pass": true
+    },
+    {
+      "name": "Buffer0 exact address",
+      "pass": true
+    },
+    {
+      "name": "Buffer1 exact address",
+      "pass": true
+    },
+    {
+      "name": "Buffer2 exact address",
+      "pass": true
+    },
+    {
+      "name": "Window tail 7KiB",
       "pass": true
     },
     {

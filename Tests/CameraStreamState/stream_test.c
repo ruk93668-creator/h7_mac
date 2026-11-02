@@ -54,7 +54,7 @@ static int Valid(void)
  EQ(stream.dma_m0_index<3,1);EQ(stream.dma_m1_index<3,1);EQ(stream.dma_m0_index!=stream.dma_m1_index,1);
  EQ(targets[0],stream.buffers[stream.dma_m0_index].data);EQ(targets[1],stream.buffers[stream.dma_m1_index].data);
  for(i=0;i<3;i++){
-  EQ((uint32_t)stream.buffers[i].data,0xD0000400U+i*38400U);EQ(stream.buffers[i].capacity,38400);
+  EQ((uint32_t)stream.buffers[i].data,0xD0000400U+i*40960U);EQ(stream.buffers[i].capacity,40960);
   if(i==stream.dma_m0_index || i==stream.dma_m1_index){EQ(stream.buffers[i].state,CAMERA_BUFFER_DMA);dma++;}
   else {other++;EQ(stream.buffers[i].state==CAMERA_BUFFER_FREE || stream.buffers[i].state==CAMERA_BUFFER_READY || stream.buffers[i].state==CAMERA_BUFFER_IN_USE,1);
    if(stream.buffers[i].state==CAMERA_BUFFER_FREE)EQ(stream.consumer_index,UINT8_MAX);
@@ -125,7 +125,7 @@ int Stream_TestRun(uint32_t id)
  g_result.case_id=id;EQ(Begin(format),0);
  if(kind==0){
   EQ(stream.frame_bytes,format==0?19200:38400);EQ(stream.next_sequence,0);EQ(stream.dropped_frames,0);
-  EQ(((uint32_t)stream.buffers[2].data+38400)<=0xD0020000,1);
+  EQ(((uint32_t)stream.buffers[2].data+40960)<=0xD0020000,1);
   for(i=0;i<3;i++)EQ(((uint32_t)stream.buffers[i].data%32),0);
   EQ(Valid(),0);return 0;
  }

@@ -66,7 +66,8 @@ static void MPU_Config(void);
 
 /* Private user code ---------------------------------------------------------*/
 /* USER CODE BEGIN 0 */
-//Region2开放首128KB，范围必须与BSP业务窗口一致
+//Region2保持128KiB，覆盖首1KiB保留区和3块40KiB缓冲区
+//范围必须与BSP业务窗口一致，不改变原有内存属性
 typedef char SdramMpuWindowCheck_t[
 	(BSP_SDRAM_WINDOW == (1UL << (MPU_REGION_SIZE_128KB + 1U))) ? 1 : -1
 ];

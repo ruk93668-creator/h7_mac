@@ -1,0 +1,65 @@
+{
+  "base": "a2c108ff6a9af0db86ab119e64c9899f3dd38e02",
+  "capacity_each_bytes": 40960,
+  "buffer_bases": [
+    "0xD0000400",
+    "0xD000A400",
+    "0xD0014400"
+  ],
+  "stream_end_exclusive": "0xD001E400",
+  "mpu_window_bytes": 131072,
+  "tail_free_bytes": 7168,
+  "actual_yuv_frame_bytes": 38400,
+  "dma_frame_words": 9600,
+  "snapshot_capacity_unchanged_bytes": 64512,
+  "production_files": [
+    "CM7/Media/Src/camera_capture.c",
+    "CM7/BSP/bsp_sdram.h",
+    "CM7/Core/Src/main.c"
+  ],
+  "sha256": {
+    "CM7/Media/Src/camera_capture.c": "4e8895affa34d4e6f4dc61a64232786e48e1b0b9aa48bb02918e7a122edabdb7",
+    "CM7/BSP/bsp_sdram.h": "39e8486bcb1695ec185cb4832f679e234223e279d71bc76d8153ef2bcb187d9f",
+    "CM7/Core/Src/main.c": "809b2b71537bb0c17682f1b7284699b59601b25a8cc94e3258e8d182332a4272"
+  },
+  "user_files_preserved": true,
+  "media_function_bodies_unchanged": true,
+  "builds": {
+    "CM7_TEST": {
+      "errors": 0,
+      "warnings": 0,
+      "full_rebuild": true,
+      "program_size": "Code=65286 RO-data=2526 RW-data=660 ZI-data=17548  ",
+      "log": "cm7_test_keil.log"
+    },
+    "CM7_UVC": {
+      "errors": 0,
+      "warnings": 0,
+      "full_rebuild": true,
+      "program_size": "Code=65310 RO-data=2526 RW-data=660 ZI-data=17548  ",
+      "log": "cm7_uvc_keil.log"
+    },
+    "CM4": {
+      "errors": 0,
+      "warnings": 0,
+      "full_rebuild": true,
+      "program_size": "Code=20350 RO-data=914 RW-data=636 ZI-data=2580  ",
+      "log": "cm4_keil.log"
+    },
+    "CM7_CURRENT": {
+      "errors": 0,
+      "warnings": 0,
+      "full_rebuild": false,
+      "program_size": "Code=65310 RO-data=2526 RW-data=660 ZI-data=17548  ",
+      "log": "cm7_current_keil.log"
+    }
+  },
+  "tests": {
+    "range": 22,
+    "stream": 75,
+    "media": 72,
+    "bridge": 35
+  },
+  "hardware_test": "NOT RUN",
+  "usb_full_regression": "NOT RUN: existing fixed-512B expectations predate user 1023B change"
+}

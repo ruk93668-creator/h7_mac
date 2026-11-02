@@ -23,12 +23,16 @@ check('Business window exactly 128KiB',window==0x20000 and end==base+window)
 check('Media end derives from same window',stream_end==end)
 check('Reserved first 1KiB',start==base+1024)
 check('MPU base alignment',base%window==0)
-check('Stream count/capacity preserved',count==3 and size==38400)
+check('Three 40KiB stream buffers',count==3 and size==40960)
 buffers=[(start+i*size,start+(i+1)*size) for i in range(count)]
 for i,(a,b) in enumerate(buffers):
  check('Buffer %d aligned and in window'%i,a%align==0 and a%4==0 and base<=a<b<=end)
 check('No stream buffer overlap',all(buffers[i][1]<=buffers[i+1][0] for i in range(count-1)))
-check('Exact stream end',buffers[-1][1]==0xD001C600)
+check('Exact stream end',buffers[-1][1]==0xD001E400)
+check('Buffer0 exact address',buffers[0][0]==0xD0000400)
+check('Buffer1 exact address',buffers[1][0]==0xD000A400)
+check('Buffer2 exact address',buffers[2][0]==0xD0014400)
+check('Window tail 7KiB',end-buffers[-1][1]==7*1024)
 check('Snapshot preserved and bounded',snapshot==63*1024 and start+snapshot<=end)
 check('Window smaller than physical chip',window<=capacity)
 # Compile the actual Media source with isolated invalid BSP headers.

@@ -1,0 +1,22 @@
+FMC Bank2 base PASS
+Physical geometry capacity PASS
+Business window exactly 128KiB PASS
+Media end derives from same window PASS
+Reserved first 1KiB PASS
+MPU base alignment PASS
+Three 40KiB stream buffers PASS
+Buffer 0 aligned and in window PASS
+Buffer 1 aligned and in window PASS
+Buffer 2 aligned and in window PASS
+No stream buffer overlap PASS
+Exact stream end PASS
+Buffer0 exact address PASS
+Buffer1 exact address PASS
+Buffer2 exact address PASS
+Window tail 7KiB PASS
+Snapshot preserved and bounded PASS
+Window smaller than physical chip PASS
+64KiB window cannot fit stream PASS
+zero window rejected PASS
+non power-of-two window rejected PASS
+window beyond chip rejected PASS
