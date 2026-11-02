@@ -227,7 +227,7 @@ static struct __attribute__((aligned(4)))
     0x05U,//bDescriptorType：Endpoint
     0x81U,//bEndpointAddress：EP1 IN，设备向主机发送视频
     0x05U,//bmAttributes：等时传输，异步同步类型，数据端点
-    0x00U, 0x02U,//wMaxPacketSize：512字节，小端存放
+    0xFFU, 0x03U,//wMaxPacketSize：1023字节，小端存放
     0x01U//bInterval：全速模式每1个USB帧提供一次传输机会
 },
     0U

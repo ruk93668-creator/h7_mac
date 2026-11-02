@@ -15,7 +15,7 @@
 //固定视频能力，与描述符保持一致，不依赖图像来源
 #define UVC_VIDEO_EP_ADDRESS 0x81U
 #define UVC_VIDEO_FRAME_BYTES 38400U
-#define UVC_VIDEO_PACKET_BYTES 512U
+#define UVC_VIDEO_PACKET_BYTES 1023U
 
 //按字段保存参数，不直接映射USB数据
 typedef struct
@@ -761,7 +761,7 @@ static bool UVC_ProbeSet(UsbUvcContext_t *ctx, const uint8_t *data)
 
     //唯一配置无法满足更低带宽时，不能反向增加数据率
     if (requested.dwFrameInterval > 1000000UL ||
-        (requested.dwMaxPayloadTransferSize != 0U && requested.dwMaxPayloadTransferSize < 512UL))
+        (requested.dwMaxPayloadTransferSize != 0U && requested.dwMaxPayloadTransferSize < UVC_VIDEO_PACKET_BYTES))
         return false;
 
     //全零版本表示重新协商，其他版本必须属于已支持范围
@@ -806,8 +806,8 @@ static void UVC_DefaultControl(UvcStreamingControl_t *control)
     control->dwFrameInterval = 1000000UL;
     control->dwMaxVideoFrameSize = 38400UL;
 
-    //FS单个等时事务上限512字节，包含Payload头
-    control->dwMaxPayloadTransferSize = 512UL;
+    //FS单个等时事务上限字节，包含Payload头
+    control->dwMaxPayloadTransferSize = UVC_VIDEO_PACKET_BYTES;
 
     //协商声明1kHz时基，当前Payload不携带PTS或SCR
     control->dwClockFrequency = 1000UL;
@@ -832,7 +832,7 @@ static bool UVC_ValidateControl(const UvcStreamingControl_t *control)
         control->wKeyFrameRate == 0U && control->wPFrameRate == 0U &&
         control->wCompQuality == 0U && control->wCompWindowSize == 0U &&
         control->wDelay == 0U && control->dwMaxVideoFrameSize == 38400UL &&
-        control->dwMaxPayloadTransferSize == 512UL &&
+        control->dwMaxPayloadTransferSize == UVC_VIDEO_PACKET_BYTES &&
         control->dwClockFrequency == 1000UL && control->bmFramingInfo == 3U &&
         control->bPreferredVersion == 1U && control->bMinVersion == 1U &&
         control->bMaxVersion == 1U;
@@ -974,7 +974,7 @@ static uint8_t UVC_SetStreamAlt(UsbUvcContext_t *ctx, uint8_t alternate)
     if (ctx->ep1_opened)
         return ctx->interface_alt[1] == 1U ? USBD_OK : USBD_FAIL;
 
-    //参数与当前描述符EP1 IN等时512字节一致
+    //参数与当前描述符EP1 IN等时字节一致
     result = USB_Device_OpenEp(UVC_VIDEO_EP_ADDRESS, USBD_EP_TYPE_ISOC, UVC_VIDEO_PACKET_BYTES);
     if (result != SYS_OK)
         return USBD_FAIL;

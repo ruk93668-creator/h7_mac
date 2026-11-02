@@ -224,10 +224,12 @@ SysResult_t BSP_DCMI_Init(void)
 	s_dcmi_dma.Init.Mode = DMA_NORMAL;
 	//设置DMA硬件仲裁优先级为高，与NVIC优先级独立
 	s_dcmi_dma.Init.Priority = DMA_PRIORITY_HIGH;
-	//关闭DMA FIFO，使用直接模式
-	s_dcmi_dma.Init.FIFOMode = DMA_FIFOMODE_DISABLE;
-	//内存侧使用单次传输，不使用突发传输
-	s_dcmi_dma.Init.MemBurst = DMA_MBURST_SINGLE;
+	//启用DMA内部FIFO，缓冲DCMI到SDRAM的数据传输
+	s_dcmi_dma.Init.FIFOMode = DMA_FIFOMODE_ENABLE;
+	//FIFO阈值设为满，先保持原有单次Burst配置
+	s_dcmi_dma.Init.FIFOThreshold = DMA_FIFO_THRESHOLD_FULL;
+	//内存端每次突发写入4个Word，提高FIFO排空效率
+	s_dcmi_dma.Init.MemBurst = DMA_MBURST_INC4;	
 	//外设侧使用单次传输，不使用突发传输
 	s_dcmi_dma.Init.PeriphBurst = DMA_PBURST_SINGLE;
 	status = HAL_DMA_Init(&s_dcmi_dma);

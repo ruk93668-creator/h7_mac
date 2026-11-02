@@ -33,7 +33,7 @@ void App_UvcBridgeProcess(void)
 {
     UsbUvcStreamStatus_t status;
     SysResult_t result;
-
+	
     //仅允许CM7正常主循环调用，IRQ返回值不能作为归还证明
     if ( __get_IPSR() != 0U || __get_PRIMASK() != 0U)
         return;

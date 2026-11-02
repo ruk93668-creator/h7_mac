@@ -7,7 +7,11 @@
 
 //长度均包含2字节Header，不包含USB协议开销
 #define USB_UVC_PAYLOAD_HEADER_SIZE 2U
-#define USB_UVC_PAYLOAD_MAX_PACKET_SIZE 512U
+#define USB_UVC_PAYLOAD_MAX_PACKET_SIZE 1023U
+
+//内部存储向上对齐，供32位PIO安全读取
+#define USB_UVC_PAYLOAD_STORAGE_SIZE \
+    ((USB_UVC_PAYLOAD_MAX_PACKET_SIZE + 3U) & ~3U)
 
 //纯软件分包器，不注册USB、不操作端点、不知道Camera或Media
 //同一对象必须串行调用，不同对象互不影响；Class负责USB IRQ串行化
@@ -48,7 +52,7 @@ typedef struct
     bool frame_started;
     UsbUvcPayloadState_t state;
 
-    uint8_t packet[USB_UVC_PAYLOAD_MAX_PACKET_SIZE] __attribute__((aligned(4)));
+    uint8_t packet[USB_UVC_PAYLOAD_STORAGE_SIZE] __attribute__((aligned(4)));
 } UsbUvcPayload_t;
 
 //初始化零值对象，FID从0开始，重复初始化返回ALREADY_EXISTS
