@@ -1087,6 +1087,16 @@
               <FileType>5</FileType>
               <FilePath>../CM7/Application/app_camera.h</FilePath>
             </File>
+            <File>
+              <FileName>app_uvc_bridge.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>../CM7/Application/app_uvc_bridge.c</FilePath>
+            </File>
+            <File>
+              <FileName>app_uvc_bridge.h</FileName>
+              <FileType>5</FileType>
+              <FilePath>../CM7/Application/app_uvc_bridge.h</FilePath>
+            </File>
           </Files>
         </Group>
         <Group>
@@ -3094,6 +3104,16 @@
               <FileName>app_camera.h</FileName>
               <FileType>5</FileType>
               <FilePath>../CM7/Application/app_camera.h</FilePath>
+            </File>
+            <File>
+              <FileName>app_uvc_bridge.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>../CM7/Application/app_uvc_bridge.c</FilePath>
+            </File>
+            <File>
+              <FileName>app_uvc_bridge.h</FileName>
+              <FileType>5</FileType>
+              <FilePath>../CM7/Application/app_uvc_bridge.h</FilePath>
             </File>
           </Files>
         </Group>
