@@ -1,0 +1,106 @@
+{
+  "total": 18,
+  "pass": 18,
+  "fail": 0,
+  "compiled_values": [
+    3489660928,
+    67108864,
+    131072,
+    3489792000,
+    3489661952,
+    3489792000,
+    3,
+    38400,
+    32,
+    64512
+  ],
+  "buffers": [
+    [
+      3489661952,
+      3489700352
+    ],
+    [
+      3489700352,
+      3489738752
+    ],
+    [
+      3489738752,
+      3489777152
+    ]
+  ],
+  "command": "D:/32/ARM/ARMCC/Bin/armcc.exe --cpu Cortex-M7 --c99 -O0 -I D:\\32\\STM32H7\\h7_mac\\Tests\\CameraStreamState\\stubs -I D:\\32\\STM32H7\\h7_mac\\Common\\Inc -I D:\\32\\STM32H7\\h7_mac\\CM7\\Media\\Inc -I D:\\32\\STM32H7\\h7_mac\\CM7\\BSP -I D:\\32\\STM32H7\\h7_mac\\CM7\\Platform -c D:\\32\\STM32H7\\h7_mac\\Tests\\SdramRange\\layout_probe.c -o D:\\32\\STM32H7\\h7_mac\\Tests\\SdramRange\\layout_probe.o",
+  "cases": [
+    {
+      "name": "FMC Bank2 base",
+      "pass": true
+    },
+    {
+      "name": "Physical geometry capacity",
+      "pass": true
+    },
+    {
+      "name": "Business window exactly 128KiB",
+      "pass": true
+    },
+    {
+      "name": "Media end derives from same window",
+      "pass": true
+    },
+    {
+      "name": "Reserved first 1KiB",
+      "pass": true
+    },
+    {
+      "name": "MPU base alignment",
+      "pass": true
+    },
+    {
+      "name": "Stream count/capacity preserved",
+      "pass": true
+    },
+    {
+      "name": "Buffer 0 aligned and in window",
+      "pass": true
+    },
+    {
+      "name": "Buffer 1 aligned and in window",
+      "pass": true
+    },
+    {
+      "name": "Buffer 2 aligned and in window",
+      "pass": true
+    },
+    {
+      "name": "No stream buffer overlap",
+      "pass": true
+    },
+    {
+      "name": "Exact stream end",
+      "pass": true
+    },
+    {
+      "name": "Snapshot preserved and bounded",
+      "pass": true
+    },
+    {
+      "name": "Window smaller than physical chip",
+      "pass": true
+    },
+    {
+      "name": "64KiB window cannot fit stream",
+      "pass": true
+    },
+    {
+      "name": "zero window rejected",
+      "pass": true
+    },
+    {
+      "name": "non power-of-two window rejected",
+      "pass": true
+    },
+    {
+      "name": "window beyond chip rejected",
+      "pass": true
+    }
+  ]
+}

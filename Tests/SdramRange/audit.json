@@ -1,0 +1,48 @@
+{
+  "branch": "main",
+  "baseline": "cfa5cca82a7a2538ec7ee3e360a96b9a56ca880e",
+  "production_files": [
+    "CM7/BSP/bsp_sdram.h",
+    "CM7/Core/Src/main.c",
+    "CM7/Media/Src/camera_capture.c"
+  ],
+  "sha256": {
+    "CM7/BSP/bsp_sdram.h": "8fba9469f55b3e266beb0172b307ef0d0e02cc29ad564ac28b10dd308e18d70a",
+    "CM7/Core/Src/main.c": "445beb3b06eb43fab82b8c7b625132be69ed263b9c4f64d2309453048481294d",
+    "CM7/Media/Src/camera_capture.c": "1d8e1b815082918a4b5cff62e2932aad77bac2a1e32d56befee77c651aee190d"
+  },
+  "local_changes_preserved": {
+    "CM7/Application/app_main.c": "0ce15ba269ee652a91936a3d8f6c4d5c2b14f3aeec1a467ff635a1bd942ae845",
+    "MDK-ARM/h7_mac.uvprojx": "eb8026fc557f5d80cb8a8b72798fcad8e3c0f994882782c54a11a19daf4f6738",
+    "MDK-ARM/h7_mac.uvoptx": "498a0c5ba36293a76570703eb1e43996df5ea0b0b5784c74a427dd95c0a1267a"
+  },
+  "builds": {
+    "CM7_TEST": {
+      "errors": 0,
+      "warnings": 0,
+      "program_size": "Code=64106 RO-data=2526 RW-data=660 ZI-data=17004  ",
+      "log": "cm7_keil.log"
+    },
+    "CM7_UVC": {
+      "errors": 0,
+      "warnings": 0,
+      "program_size": "Code=64130 RO-data=2526 RW-data=660 ZI-data=17004  ",
+      "log": "cm7_uvc_keil.log"
+    },
+    "CM4": {
+      "errors": 0,
+      "warnings": 0,
+      "program_size": "Code=20350 RO-data=914 RW-data=636 ZI-data=2580  ",
+      "log": "cm4_keil.log"
+    }
+  },
+  "hardware_high_address_test": "NOT RUN",
+  "tests": {
+    "range": 18,
+    "sdram_initialization": 20,
+    "media_lifecycle": 72,
+    "stream_state": 75,
+    "usb": 635
+  },
+  "test_failures": 0
+}

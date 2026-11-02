@@ -4,9 +4,21 @@
 #include "sys_result.h"
 #include <stdbool.h>
 
-//仅开放Bank2起始64KB，不代表整片可供业务使用
+//V0芯片64MiB，FMC Bank2映射基址
 #define BSP_SDRAM_BASE       0xD0000000UL
-#define BSP_SDRAM_WINDOW     0x00010000UL
+#define BSP_SDRAM_CAPACITY   0x04000000UL
+
+//当前业务只开放首128KB，必须与CM7 MPU Region2一致
+#define BSP_SDRAM_WINDOW     0x00020000UL
+#define BSP_SDRAM_END        (BSP_SDRAM_BASE + BSP_SDRAM_WINDOW)
+
+#if BSP_SDRAM_WINDOW == 0UL || \
+    (BSP_SDRAM_WINDOW & (BSP_SDRAM_WINDOW - 1UL)) != 0UL || \
+    BSP_SDRAM_WINDOW > BSP_SDRAM_CAPACITY || \
+    (BSP_SDRAM_BASE & (BSP_SDRAM_WINDOW - 1UL)) != 0UL
+#error Invalid SDRAM business window
+#endif
+
 #define BSP_SDRAM_SDCLK_HZ   110000000UL
 
 //初始化FMC、SDRAM时钟和芯片时序

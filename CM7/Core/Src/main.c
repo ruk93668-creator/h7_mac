@@ -66,7 +66,10 @@ static void MPU_Config(void);
 
 /* Private user code ---------------------------------------------------------*/
 /* USER CODE BEGIN 0 */
-//Region2覆盖默认禁止区，仅开放SDRAM首64KB
+//Region2开放首128KB，范围必须与BSP业务窗口一致
+typedef char SdramMpuWindowCheck_t[
+	(BSP_SDRAM_WINDOW == (1UL << (MPU_REGION_SIZE_128KB + 1U))) ? 1 : -1
+];
 static void MPU_ConfigSdram(void)
 {
 	MPU_Region_InitTypeDef region = {0};

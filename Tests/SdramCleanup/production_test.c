@@ -93,7 +93,7 @@ static int VerifyConfig(void)
  EQ(mpu_seen,7);EQ(mpu_enabled,2);EQ(mpu_disabled,2);
  EQ(mpu_regions[0].SubRegionDisable,0x87);EQ(mpu_regions[0].AccessPermission,MPU_REGION_NO_ACCESS);
  EQ(mpu_regions[1].BaseAddress,0x38000000);EQ(mpu_regions[1].Size,MPU_REGION_SIZE_4KB);
- EQ(mpu_regions[2].BaseAddress,0xD0000000);EQ(mpu_regions[2].Size,MPU_REGION_SIZE_64KB);
+ EQ(mpu_regions[2].BaseAddress,0xD0000000);EQ(mpu_regions[2].Size,MPU_REGION_SIZE_128KB);
  EQ(mpu_regions[2].Enable,MPU_REGION_ENABLE);EQ(mpu_regions[2].SubRegionDisable,0);
  EQ(mpu_regions[2].TypeExtField,MPU_TEX_LEVEL1);EQ(mpu_regions[2].IsCacheable,MPU_ACCESS_NOT_CACHEABLE);
  EQ(mpu_regions[2].IsBufferable,MPU_ACCESS_NOT_BUFFERABLE);EQ(mpu_regions[2].IsShareable,MPU_ACCESS_SHAREABLE);
@@ -190,3 +190,8 @@ uint32_t HAL_RCC_GetPCLK1Freq(void){return 120000000;}
 uint32_t HAL_RCC_GetPCLK2Freq(void){return 120000000;}
 
 uint32_t HAL_RCCEx_GetD3PCLK1Freq(void){return 120000000;}
+
+/* Current main adds unrelated boot/USB hooks; no-op in SDRAM isolation. */
+void BSP_DCMI_EarlyInit(void){}
+void USB_Mode_Process(void){}
+void USB_UVC_Process(void){}

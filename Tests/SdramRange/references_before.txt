@@ -1,0 +1,17 @@
+CM7/BSP/bsp_sdram.h:8:#define BSP_SDRAM_BASE       0xD0000000UL
+CM7/BSP/bsp_sdram.h:9:#define BSP_SDRAM_WINDOW     0x00010000UL
+CM7/Core/Src/main.c:77:	region.BaseAddress = BSP_SDRAM_BASE;
+CM7/Media/Src/camera_capture.c:15:#define CAMERA_STREAM_SDRAM_END         0xD0020000UL
+CM7/Media/Src/camera_capture.c:706:    if (buffer_end > (uintptr_t)CAMERA_STREAM_SDRAM_END)
+Tests/CameraFunctionLayout/before/CM7/Media/Src/camera_capture.c:14:#define CAMERA_STREAM_SDRAM_END         0xD0020000UL
+Tests/CameraFunctionLayout/before/CM7/Media/Src/camera_capture.c:210:    if (buffer_end > (uintptr_t)CAMERA_STREAM_SDRAM_END)
+Tests/DcmiInit/before/CM7/Core/Src/main.c:74:	region.BaseAddress = BSP_SDRAM_BASE;
+Tests/SdramCleanup/before/CM7/BSP/bsp_sdram.h:8:#define BSP_SDRAM_BASE       0xD0000000UL
+Tests/SdramCleanup/before/CM7/BSP/bsp_sdram.h:9:#define BSP_SDRAM_WINDOW     0x00010000UL
+Tests/SdramV0/diagnostics/sdram_check.c:8:#if SDRAM_CHECK_BYTES > BSP_SDRAM_WINDOW || (SDRAM_CHECK_BYTES % 4U) != 0U
+Tests/SdramV0/diagnostics/sdram_check.c:46:	volatile uint32_t *memory = (volatile uint32_t *)BSP_SDRAM_BASE;
+Tests/sdram_v0_implement.py:18:#define BSP_SDRAM_BASE       0xD0000000UL
+Tests/sdram_v0_implement.py:19:#define BSP_SDRAM_WINDOW     0x00010000UL
+Tests/sdram_v0_implement.py:269:#if SDRAM_CHECK_BYTES > BSP_SDRAM_WINDOW || (SDRAM_CHECK_BYTES % 4U) != 0U
+Tests/sdram_v0_implement.py:307:	volatile uint32_t *memory = (volatile uint32_t *)BSP_SDRAM_BASE;
+Tests/sdram_v0_implement.py:386:	region.BaseAddress = BSP_SDRAM_BASE;

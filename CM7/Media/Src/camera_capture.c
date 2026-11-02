@@ -1,5 +1,6 @@
 #include "camera_capture.h"
 #include "bsp_dcmi.h"
+#include "bsp_sdram.h"
 #include "platform_time.h"
 #include "stm32h7xx.h"
 #include <stddef.h>
@@ -12,7 +13,7 @@
 #define CAMERA_STREAM_BUFFER_CAPACITY  (160U * 120U * 2U)
 
 //缓冲区可用SDRAM范围的结束地址，不包含该地址
-#define CAMERA_STREAM_SDRAM_END         0xD0020000UL
+#define CAMERA_STREAM_SDRAM_END         BSP_SDRAM_END
 
 //缓冲区起始地址按32字节对齐
 #define CAMERA_STREAM_BUFFER_ALIGN     32U
@@ -20,9 +21,20 @@
 //无效缓冲区索引，表示未关联缓冲区
 #define CAMERA_BUFFER_INDEX_INVALID    UINT8_MAX
 
-//Media管理的SDRAM缓冲区
-#define CAMERA_BUFFER_BASE      0xD0000400UL
+//首1KB保留，Snapshot与Stream复用其后的空间
+#define CAMERA_BUFFER_OFFSET    0x00000400UL
+#define CAMERA_BUFFER_BASE      (BSP_SDRAM_BASE + CAMERA_BUFFER_OFFSET)
+
+//保留Snapshot原有63KB容量，不代表整个SDRAM业务窗口
 #define CAMERA_BUFFER_POOL_SIZE (63U * 1024U)
+
+#if (CAMERA_BUFFER_BASE % CAMERA_STREAM_BUFFER_ALIGN) != 0U || \
+    (CAMERA_STREAM_BUFFER_CAPACITY % CAMERA_STREAM_BUFFER_ALIGN) != 0U || \
+    (CAMERA_BUFFER_OFFSET + CAMERA_STREAM_BUFFER_COUNT * \
+     CAMERA_STREAM_BUFFER_CAPACITY) > BSP_SDRAM_WINDOW || \
+    (CAMERA_BUFFER_OFFSET + CAMERA_BUFFER_POOL_SIZE) > BSP_SDRAM_WINDOW
+#error Camera buffers must fit the aligned SDRAM business window
+#endif
 
 //DMA单次传输最大Word数量
 #define CAMERA_DMA_MAX_WORDS        0xFFFFU

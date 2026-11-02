@@ -1,0 +1,8 @@
+{
+  "schematic_file": "C:\\Users\\29062\\Desktop\\获奖证书\\SVG_Schematic1_2026-10-25.zip",
+  "sheet": "SCH_Schematic1_3-SDRAM存储_2026-10-25.svg",
+  "sheet_sha256": "c808644dd2a93562f5c8ca343cd91e5cb6f070686ef4797a14fd753c473599e8",
+  "part": "IS42S16320F-7BLI",
+  "datasheet": "https://www.issi.com/WW/pdf/42-45R-S_86400F-16320F.pdf",
+  "reference_manual": "https://www.st.com/resource/en/reference_manual/rm0399-stm32h745755-and-stm32h747757-advanced-armbased-32bit-mcus-stmicroelectronics.pdf"
+}
