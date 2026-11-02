@@ -1,0 +1,108 @@
+{
+  "base": "9ee405e465c8f29c9fe9e6665edb05bae7970c2a",
+  "original_regression": 621,
+  "stage09c": 24,
+  "total_executions": 645,
+  "passed": 645,
+  "failed": 0,
+  "builds": {
+    "CM7_UVC": {
+      "full_rebuild": true,
+      "target": "h7_mac_CM7",
+      "errors": 0,
+      "warnings": 0,
+      "log": "cm7_uvc_keil.log",
+      "program_size": {
+        "code": 65294,
+        "ro": 2558,
+        "rw": 668,
+        "zi": 55396
+      }
+    },
+    "CM4": {
+      "full_rebuild": true,
+      "target": "h7_mac_CM4",
+      "errors": 0,
+      "warnings": 0,
+      "log": "cm4_keil.log",
+      "program_size": {
+        "code": 20334,
+        "ro": 914,
+        "rw": 636,
+        "zi": 2580
+      }
+    },
+    "CM7_TEST": {
+      "full_rebuild": true,
+      "target": "h7_mac_CM7",
+      "errors": 0,
+      "warnings": 0,
+      "log": "cm7_keil.log",
+      "program_size": {
+        "code": 64514,
+        "ro": 2526,
+        "rw": 660,
+        "zi": 17004
+      }
+    },
+    "frame_memory": {
+      "configuration": "TEST",
+      "allocated": false,
+      "symbols_absent": true
+    }
+  },
+  "hardware_verified": false,
+  "memory_optimization": {
+    "base": "171479f7ecb49bcf5530ce07925e5a3af700485a",
+    "comparison": {
+      "CM7_TEST": {
+        "before": {
+          "code": 65270,
+          "ro": 2558,
+          "rw": 668,
+          "zi": 55396
+        },
+        "after": {
+          "code": 64514,
+          "ro": 2526,
+          "rw": 660,
+          "zi": 17004
+        },
+        "zi_saved": 38392,
+        "rw_zi_saved": 38400
+      },
+      "CM7_UVC": {
+        "before": {
+          "code": 65294,
+          "ro": 2558,
+          "rw": 668,
+          "zi": 55396
+        },
+        "after": {
+          "code": 65294,
+          "ro": 2558,
+          "rw": 668,
+          "zi": 55396
+        },
+        "zi_saved": 0,
+        "rw_zi_saved": 0
+      },
+      "CM4": {
+        "before": {
+          "code": 20334,
+          "ro": 914,
+          "rw": 636,
+          "zi": 2580
+        },
+        "after": {
+          "code": 20334,
+          "ro": 914,
+          "rw": 636,
+          "zi": 2580
+        },
+        "zi_saved": 0,
+        "rw_zi_saved": 0
+      }
+    }
+  }
+}

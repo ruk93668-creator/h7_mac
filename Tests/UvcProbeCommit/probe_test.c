@@ -226,8 +226,15 @@ int UvcProbe_TestRun(uint32_t id)
     }
     else if (id == 78U)
     {
-        EQ(UvcTest_Setup(&req), USBD_FAIL); req.wValue = 0x200U;
-        EQ(UvcTest_Setup(&req), USBD_FAIL);
+        //未协商查询返回默认能力，读取成功仍不能授权Commit
+        Request(0xA1U, 0x81U, 0x100U, 1U, 34U);
+        EQ(tx_size, 34U); EQ(memcmp(tx_data, data, 34U), 0);
+        EQ(ctx->probe_valid, false); EQ(ctx->probe_reply_pending, false);
+        HAL_PCD_DataInStageCallback(&s_pcd, 0U);
+        HAL_PCD_DataOutStageCallback(&s_pcd, 0U);
+        Request(0xA1U, 0x81U, 0x200U, 1U, 34U);
+        EQ(tx_size, 34U); EQ(memcmp(tx_data, data, 34U), 0);
+        EQ(ctx->commit_valid, false); EQ(ctx->probe_observed, false);
     }
     else if (id == 79U || id == 80U)
     {
@@ -255,12 +262,15 @@ int UvcProbe_TestRun(uint32_t id)
     }
     else if (id == 83U)
     {
-        //新Probe失败必须让GET_CUR失败，不交付旧协商值
+        //新Probe失败后返回默认能力，不交付旧授权或覆盖有效Commit
         EQ(UVC_ProbeSet(ctx, data), true); ctx->probe_observed = true;
         EQ(UVC_CommitSet(ctx, data), true); memcpy(saved, ctx->commit, 34U);
         UVC_Write32(data + 4, 2000000U);
         EQ(UVC_ProbeSet(ctx, data), false);
-        EQ(UvcTest_Setup(&req), USBD_FAIL);
+        EQ(UvcTest_Setup(&req), USBD_OK);
+        UVC_DefaultControl(&c); UVC_EncodeControl(&c, data);
+        EQ(tx_size, 34U); EQ(memcmp(tx_data, data, 34U), 0);
+        EQ(ctx->probe_valid, false); EQ(ctx->probe_reply_pending, false);
         EQ(ctx->probe_observed, false); EQ(ctx->commit_valid, true);
         EQ(memcmp(saved, ctx->commit, 34U), 0);
     }

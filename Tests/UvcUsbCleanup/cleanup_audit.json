@@ -1,0 +1,103 @@
+{
+  "preserved_local_fix_sha256": "db90efa9281f6792abaf8dffb06695c0db1c1fb25152f9e881fa7ef0db14f39a",
+  "public_api_token_equivalent_to_hardware_fix": [
+    "USB_UVC_SubmitFrame",
+    "USB_UVC_CancelFrame",
+    "USB_UVC_GetStreamStatus",
+    "USB_UVC_Process"
+  ],
+  "base": "24a633f5283c091e2172eb0681e81a947c95e2b1",
+  "production_files": [
+    "CM7/Service/usb_mode.c",
+    "CM7/Service/usb_mode.h",
+    "CM7/Service/usb_uvc.h",
+    "CM7/Service/usb_uvc_class.c",
+    "CM7/Service/usb_uvc_desc.c",
+    "CM7/Service/usb_uvc_desc.h",
+    "CM7/Service/usb_uvc_payload.h"
+  ],
+  "all_class_function_token_equivalent_to_hardware_fix": [
+    "USB_UVC_Register",
+    "UVC_Init",
+    "UVC_DeInit",
+    "UVC_Setup",
+    "UVC_ControlSetup",
+    "UVC_EP0_RxReady",
+    "UVC_EP0_TxSent",
+    "UVC_ProbeSet",
+    "UVC_CommitSet",
+    "UVC_DefaultControl",
+    "UVC_ValidateControl",
+    "UVC_DecodeControl",
+    "UVC_EncodeControl",
+    "UVC_Read16",
+    "UVC_Read32",
+    "UVC_Write16",
+    "UVC_Write32",
+    "UVC_IsControlRequest",
+    "UVC_SetStreamAlt",
+    "UVC_DataIn",
+    "UVC_Sof",
+    "UVC_Incomplete",
+    "UVC_ReleaseFrame",
+    "USB_UVC_SubmitFrame",
+    "USB_UVC_CancelFrame",
+    "USB_UVC_GetStreamStatus",
+    "USB_UVC_Process"
+  ],
+  "protected_sources_unchanged": true,
+  "mode_tokens_unchanged": true,
+  "descriptor_tokens_unchanged": true,
+  "payload_c_unchanged": true,
+  "source_sha256": {
+    "CM7/Service/usb_mode.c": "4ba592e56c717fdd5fddc400fbd8bf26b4d9d34e523173f1d1597e47329818a4",
+    "CM7/Service/usb_mode.h": "348675629ef8756d707064b289357661e87dff5c52faa5939112ee2bfb34667b",
+    "CM7/Service/usb_uvc.h": "3a77bab3cd05b24ae0e6612255f42176707b651bb991b5011aff8da79e4829e9",
+    "CM7/Service/usb_uvc_class.c": "000bd91cf91f4c820ea6be929c6fe17a1ed1bed0d3728d61f2c7a732bd9030fd",
+    "CM7/Service/usb_uvc_desc.c": "2f8c05e0c95bdb7a86a52b7f46bf8c04e1c7937ffcae15a819c43194504d98c2",
+    "CM7/Service/usb_uvc_desc.h": "69ef0018e0d2bf7643e7b22dd455e997e21bde9c875a37b811c306bd2698ce6e",
+    "CM7/Service/usb_uvc_payload.h": "8c54eb376715253c8e984f94e639d2c692b8393f13d9fc588bd7a4391f55cc22"
+  },
+  "regression_executions": 659,
+  "builds": {
+    "CM7_UVC": {
+      "full_rebuild": true,
+      "errors": 0,
+      "warnings": 0,
+      "log": "Tests/UvcTestPattern/cm7_uvc_keil.log",
+      "program_size": {
+        "code": 65314,
+        "ro": 2558,
+        "rw": 668,
+        "zi": 55396
+      },
+      "sha256": "ec322639a6884bb8ef9e08fd148109588bb9dccc6bb0054286b63ccf5e0d9b7f"
+    },
+    "CM7_TEST": {
+      "full_rebuild": true,
+      "errors": 0,
+      "warnings": 0,
+      "log": "Tests/UvcTestPattern/cm7_keil.log",
+      "program_size": {
+        "code": 64534,
+        "ro": 2526,
+        "rw": 660,
+        "zi": 17004
+      },
+      "sha256": "590cc471a252bcca6e1bcaaa4efcd3e94dc13d19d6c2c7f2a96f68c55e8d7a8d"
+    },
+    "CM4": {
+      "full_rebuild": true,
+      "errors": 0,
+      "warnings": 0,
+      "log": "Tests/UvcTestPattern/cm4_keil.log",
+      "program_size": {
+        "code": 20334,
+        "ro": 914,
+        "rw": 636,
+        "zi": 2580
+      },
+      "sha256": "be243b68bc409a0455ac4f679e117b211e052f0bc2373f40db5648155442d490"
+    }
+  }
+}
