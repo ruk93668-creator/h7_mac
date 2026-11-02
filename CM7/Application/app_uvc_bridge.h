@@ -3,6 +3,7 @@
 
 #include "sys_result.h"
 
-//相机与UVC应用桥接接口，后续由用户实现
+//CM7正常主循环持续调用，借用Media完整帧交给UVC，确认归还后再释放
+void App_UvcBridgeProcess(void);
 
 #endif

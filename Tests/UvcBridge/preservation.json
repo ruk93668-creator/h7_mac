@@ -1,0 +1,7 @@
+{
+  "MDK-ARM/h7_mac.uvprojx": "957135e50789c97e59d464a34c5ef3830008ce5f531d9c1ea6977ec59f5e8958",
+  "MDK-ARM/h7_mac.uvoptx": "498a0c5ba36293a76570703eb1e43996df5ea0b0b5784c74a427dd95c0a1267a",
+  "CM7/Application/app_main.c": "0ce15ba269ee652a91936a3d8f6c4d5c2b14f3aeec1a467ff635a1bd942ae845",
+  "CM7/Service/usb_uvc_class.c": "000bd91cf91f4c820ea6be929c6fe17a1ed1bed0d3728d61f2c7a732bd9030fd",
+  "CM7/Media/Src/camera_capture.c": "1d8e1b815082918a4b5cff62e2932aad77bac2a1e32d56befee77c651aee190d"
+}
