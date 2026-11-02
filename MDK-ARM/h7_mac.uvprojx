@@ -1315,6 +1315,16 @@
               <FileType>5</FileType>
               <FilePath>../CM7/Service/usb_mode.h</FilePath>
             </File>
+            <File>
+              <FileName>usb_uvc_payload.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>../CM7/Service/usb_uvc_payload.c</FilePath>
+            </File>
+            <File>
+              <FileName>usb_uvc_payload.h</FileName>
+              <FileType>5</FileType>
+              <FilePath>../CM7/Service/usb_uvc_payload.h</FilePath>
+            </File>
           </Files>
         </Group>
         <Group>
@@ -2163,7 +2173,7 @@
             <v6Rtti>0</v6Rtti>
             <VariousControls>
               <MiscControls>--preinclude ../CM7/BSP/bsp_sdram_hal_config.h --preinclude ../CM7/BSP/bsp_dcmi_hal_config.h --preinclude ../CM7/BSP/bsp_usb_hal_config.h </MiscControls>
-              <Define>CORE_CM7,USE_HAL_DRIVER,STM32H747xx,USE_PWR_LDO_SUPPLY</Define>
+              <Define>CORE_CM7,USE_HAL_DRIVER,STM32H747xx,USE_PWR_LDO_SUPPLY,USB_MODE_BOOT_UVC=1</Define>
               <Undefine></Undefine>
               <IncludePath>../CM7/Core/Inc;../Drivers/STM32H7xx_HAL_Driver/Inc;../Drivers/STM32H7xx_HAL_Driver/Inc/Legacy;../Drivers/CMSIS/Device/ST/STM32H7xx/Include;../Drivers/CMSIS/Include;..\Common\Inc;..\Board\Inc;..\CM7\Application;..\CM7\Service;..\CM7\Device\Inc;..\CM7\Media\Inc;..\CM7\Platform;..\CM7\BSP;..\CM7\Framework;..\CM7\Device\Components\OV5640;../Middlewares/ST/STM32_USB_Device_Library/Core/Inc</IncludePath>
             </VariousControls>
@@ -3181,16 +3191,6 @@
               <FilePath>../CM7/Service/usb_uvc_class.c</FilePath>
             </File>
             <File>
-              <FileName>usb_uvc_payload.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>../CM7/Service/usb_uvc_payload.c</FilePath>
-            </File>
-            <File>
-              <FileName>usb_uvc_payload.h</FileName>
-              <FileType>5</FileType>
-              <FilePath>../CM7/Service/usb_uvc_payload.h</FilePath>
-            </File>
-            <File>
               <FileName>usb_test_device.c</FileName>
               <FileType>1</FileType>
               <FilePath>../CM7/Service/usb_test_device.c</FilePath>
@@ -3204,6 +3204,16 @@
               <FileName>usb_mode.h</FileName>
               <FileType>5</FileType>
               <FilePath>../CM7/Service/usb_mode.h</FilePath>
+            </File>
+            <File>
+              <FileName>usb_uvc_payload.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>../CM7/Service/usb_uvc_payload.c</FilePath>
+            </File>
+            <File>
+              <FileName>usb_uvc_payload.h</FileName>
+              <FileType>5</FileType>
+              <FilePath>../CM7/Service/usb_uvc_payload.h</FilePath>
             </File>
           </Files>
         </Group>

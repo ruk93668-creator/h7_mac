@@ -1,6 +1,8 @@
 #include "app_main.h"
-#include "app_camera.h"
 #include "framework_init.h"
+
+#include "app_camera.h"
+#include "app_uvc_bridge.h"
 
 //初始化CM7正式应用模块
 SysResult_t App_Init(void)
@@ -12,6 +14,8 @@ SysResult_t App_Init(void)
 void App_Run(void)
 {
 	App_CameraRun();
+	
+	App_UvcBridgeProcess();
 }
 
 //保留Application初始化入口
