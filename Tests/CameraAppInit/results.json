@@ -1,0 +1,79 @@
+{
+  "total": 12,
+  "pass": 12,
+  "fail": 0,
+  "cases": [
+    {
+      "id": 1,
+      "name": "Snapshot/config identity",
+      "pass": true,
+      "failure_line": 0
+    },
+    {
+      "id": 2,
+      "name": "Stream repeat",
+      "pass": true,
+      "failure_line": 0
+    },
+    {
+      "id": 3,
+      "name": "Snapshot repeat and cross start",
+      "pass": true,
+      "failure_line": 0
+    },
+    {
+      "id": 4,
+      "name": "Stream cross start",
+      "pass": true,
+      "failure_line": 0
+    },
+    {
+      "id": 5,
+      "name": "missing device retry",
+      "pass": true,
+      "failure_line": 0
+    },
+    {
+      "id": 6,
+      "name": "missing ops",
+      "pass": true,
+      "failure_line": 0
+    },
+    {
+      "id": 7,
+      "name": "sensor failure retry",
+      "pass": true,
+      "failure_line": 0
+    },
+    {
+      "id": 8,
+      "name": "Media failure retry without reconfigure",
+      "pass": true,
+      "failure_line": 0
+    },
+    {
+      "id": 9,
+      "name": "start error propagation",
+      "pass": true,
+      "failure_line": 0
+    },
+    {
+      "id": 10,
+      "name": "Snapshot release then Stream",
+      "pass": true,
+      "failure_line": 0
+    },
+    {
+      "id": 11,
+      "name": "Stream stop then Snapshot",
+      "pass": true,
+      "failure_line": 0
+    },
+    {
+      "id": 12,
+      "name": "Process forwarding",
+      "pass": true,
+      "failure_line": 0
+    }
+  ]
+}
