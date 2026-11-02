@@ -178,7 +178,6 @@ FULL FIFO为4 Word，32位×INCR4为16B；当前缓冲区地址和帧长满足�
 - CM7/BSP/bsp_sdram.c：FMC、PLL2与SDRAM时序。
 - CM7/Service/usb_uvc_payload.c：PayloadBuildPacket图像复制。
 - Drivers/STM32H7xx_HAL_Driver/Src/stm32h7xx_hal_dma.c：FIFO错误检测与XferErrorCallback。
-- Docs/Debug/UVC-10_USB接口设计.md：UVC帧借用及安全归还契约。
 - Tests/SdramRange/verification_report.md：128KB业务窗口、三缓冲布局验收。
 
 [ST AN5020：DCMI DMA FIFO与Burst配置](https://www.st.com/content/st_com/en/technical-documents/an5020-introduction-to-digital-camera-interface-dcmi-for-stm32-mcus-stmicroelectronics_asset/chunk-007-topic-an5020-dcmi-configuration-details.html)
