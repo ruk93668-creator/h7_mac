@@ -1,6 +1,5 @@
 #include "usb_mode.h"
 #include "usb_device.h"
-#include "usb_uvc.h"
 #include "framework_init.h"
 #include <stdbool.h>
 #include "platform_time.h"
@@ -32,12 +31,33 @@ typedef struct
 
 //静态模式管理对象，复位后状态为UNINITIALIZED
 static UsbModeContext_t s_usb_mode;
+static UsbMode_t s_boot_mode;
+static bool s_boot_mode_selected;
+static SysResult_t (*s_boot_register)(void);
+
+//保持原有APPLICATION阶段唯一USB启动入口
+static SysResult_t UsbMode_AppStart(void);
 
 //按冷启动配置注册唯一Class
 static SysResult_t UsbMode_RegisterClass(UsbMode_t mode);
 
-//在APPLICATION等级启动当前USB模式
-static SysResult_t UsbMode_AppStart(void);
+
+//仅保存冷启动选择，不初始化硬件，不反向读取业务配置
+SysResult_t USB_Mode_SelectBootMode(UsbMode_t mode, SysResult_t (*register_class)(void))
+{
+    uint16_t length = 0U;
+    if (s_usb_mode.initialized || s_boot_mode_selected ||
+        USB_Device_GetConfigDescriptor(&length) != NULL)
+        return SYS_ERR_INVALID_STATE;
+    if (mode != USB_MODE_TEST && mode != USB_MODE_UVC && mode != USB_MODE_NONE)
+        return SYS_ERR_NOT_SUPPORTED;
+    if (mode == USB_MODE_UVC && register_class == NULL)
+        return SYS_ERR_INVALID_ARG;
+    s_boot_register = register_class;
+    s_boot_mode = mode;
+    s_boot_mode_selected = true;
+    return SYS_OK;
+}
 
 //SERVICE等级准备管理状态，不重复初始化Core
 SysResult_t USB_Mode_Init(void)
@@ -50,6 +70,13 @@ SysResult_t USB_Mode_Init(void)
     //保留上层已注册的Class，否则按编译期开关注册
     s_usb_mode.mode = USB_Mode_GetMode();
     s_usb_mode.target_mode = s_usb_mode.mode;
+    if (s_usb_mode.mode == USB_MODE_NONE)
+    {
+        s_usb_mode.state = USB_MODE_STATE_IDLE;
+        s_usb_mode.last_result = SYS_OK;
+        s_usb_mode.initialized = true;
+        return SYS_OK;
+    }
     {
         uint16_t descriptor_length = 0U;
         if (USB_Device_GetConfigDescriptor(&descriptor_length) == NULL)
@@ -78,9 +105,16 @@ SysResult_t USB_Mode_Start(void)
     if (!s_usb_mode.initialized)
         return SYS_ERR_INVALID_STATE;
 
-    //只允许启动编译期选定的模式，不接受运行时改写模式
-    if (s_usb_mode.mode != (USB_MODE_BOOT_UVC ? USB_MODE_UVC : USB_MODE_TEST))
+    if (s_usb_mode.mode != USB_MODE_TEST && s_usb_mode.mode != USB_MODE_UVC &&
+        s_usb_mode.mode != USB_MODE_NONE)
         return SYS_ERR_NOT_SUPPORTED;
+
+    if (s_usb_mode.mode == USB_MODE_UVC && s_boot_register == NULL)
+        return SYS_ERR_NOT_SUPPORTED;
+
+    //无输出时保持USB断开
+    if (s_usb_mode.mode == USB_MODE_NONE)
+        return SYS_OK;
 
     //已经启动时拒绝第二次启动
     if (s_usb_mode.state == USB_MODE_STATE_RUNNING)
@@ -149,7 +183,7 @@ UsbMode_t USB_Mode_GetMode(void)
     if (s_usb_mode.initialized)
         return s_usb_mode.mode;
 
-    return USB_MODE_BOOT_UVC ? USB_MODE_UVC : USB_MODE_TEST;
+    return s_boot_mode_selected ? s_boot_mode : (USB_MODE_BOOT_UVC ? USB_MODE_UVC : USB_MODE_TEST);
 }
 
 //非阻塞处理枚举和当前模式重连
@@ -256,7 +290,7 @@ void USB_Mode_Process(void)
 //Core在DEVICE阶段就绪，管理器在SERVICE阶段初始化
 FRAMEWORK_INIT_REGISTER(USB_Mode_Init, INIT_LEVEL_SERVICE);
 
-//保留唯一的APPLICATION等级USB启动入口
+//配置由上层APP传入，本模块保留唯一USB启动入口
 FRAMEWORK_INIT_REGISTER(UsbMode_AppStart, INIT_LEVEL_APPLICATION);
 
 //内部功能函数实现
@@ -269,18 +303,14 @@ static SysResult_t UsbMode_RegisterClass(UsbMode_t mode)
         case USB_MODE_TEST:
             return Usb_TestRegister();
         case USB_MODE_UVC:
-#if USB_MODE_BOOT_UVC
-            return USB_UVC_Register();
-#else
-            return SYS_ERR_NOT_SUPPORTED;
-#endif
+            return s_boot_register != NULL ? s_boot_register() : SYS_ERR_NOT_SUPPORTED;
         case USB_MODE_MSC:
         default:
             return SYS_ERR_NOT_SUPPORTED;
     }
 }
 
-//APPLICATION等级只转交模式管理器，不直接启动Core
+
 static SysResult_t UsbMode_AppStart(void)
 {
     return USB_Mode_Start();

@@ -241,6 +241,21 @@ static int32_t Ov5640_GetTick(void)
 	return (int32_t)Platform_TimeGetMs();
 }
 
+SysResult_t Ov5640_ValidateConfig(const CameraConfig_t *config)
+{
+    uint32_t format;
+    uint32_t bytes;
+    SysResult_t result = CameraConfig_GetFrameSize(config, &bytes);
+
+    if (result != SYS_OK)
+        return result;
+
+    if (config->width != 160U || config->height != 120U)
+        return SYS_ERR_NOT_SUPPORTED;
+
+    return Ov5640_MapPixelFormat(config->format, &format);
+}
+
 static SysResult_t Ov5640_Configure(
 	Ov5640Device_t *camera,
 	const CameraConfig_t *config

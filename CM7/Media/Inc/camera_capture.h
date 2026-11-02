@@ -5,6 +5,9 @@
 #include "sys_result.h"
 #include <stdbool.h>
 
+//启动前校验三缓冲容量和DMA长度，不修改采集状态
+SysResult_t CameraCapture_ValidateStreamConfig(const CameraConfig_t *config);
+
 //初始化图像采集模块
 SysResult_t CameraCapture_Init(const CameraConfig_t *config);
 

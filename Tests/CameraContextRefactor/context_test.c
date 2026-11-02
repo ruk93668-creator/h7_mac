@@ -36,7 +36,7 @@ int Stream_TestRun(uint32_t id)
  uint32_t kind=id/3,fmt=id%3,bytes=fmt==0?19200:38400;
  CameraFrame_t frame={0};CameraStream_t foreign={0},saved;
  g_result.case_id=id;config.width=160;config.height=120;config.format=(CameraPixelFormat_t)fmt;
- if(kind==16){CameraConfig_t bad=config;bad.width=159;EQ(CameraCapture_Init(&bad),SYS_ERR_INVALID_ARG);EQ(s_capture.initialized,0);EQ(s_capture.mode,CAMERA_CAPTURE_MODE_NONE);return 0;}
+ if(kind==16){CameraConfig_t bad=config;bad.width=0;EQ(CameraCapture_Init(&bad),SYS_ERR_INVALID_ARG);EQ(s_capture.initialized,0);EQ(s_capture.mode,CAMERA_CAPTURE_MODE_NONE);return 0;}
  EQ(CameraCapture_Init(&config),SYS_OK);EQ(NoneIdle(),0);
  EQ(s_capture.snapshot.frame_bytes,bytes);EQ(s_capture.snapshot.valid_bytes,0);EQ(s_capture.snapshot.framebuffer,0xD0000400);
  if(kind==0){EQ(s_capture.snapshot.frame_capacity,63*1024);EQ(s_capture.snapshot.timeout_ms,100);return 0;}
@@ -46,7 +46,7 @@ int Stream_TestRun(uint32_t id)
  if(kind==12){start_result=SYS_ERR_IO;EQ(CameraCapture_Start(),SYS_ERR_IO);stop_result=SYS_ERR_TIMEOUT;EQ(CameraCapture_Stop(),SYS_ERR_TIMEOUT);EQ(s_capture.mode,CAMERA_CAPTURE_MODE_SNAPSHOT);EQ(s_capture.state,CAMERA_CAPTURE_ERROR);EQ(CameraCapture_GetLastResult(),SYS_ERR_IO);stop_result=SYS_OK;EQ(CameraCapture_Stop(),SYS_OK);EQ(NoneIdle(),0);return 0;}
  if(kind==13){EQ(Ready(),0);EQ(CameraCapture_StartStream(),SYS_ERR_BUSY);EQ(CameraCapture_Stop(),SYS_ERR_BUSY);EQ(starts,0);return 0;}
  if(kind==15){EQ(CameraCapture_Stop(),SYS_OK);EQ(stops,0);EQ(NoneIdle(),0);return 0;}
- if(kind==17){s_capture.config.width=159;EQ(CameraCapture_StartStream(),SYS_ERR_INVALID_ARG);EQ(NoneIdle(),0);EQ(starts,0);return 0;}
+ if(kind==17){s_capture.config.width=0;EQ(CameraCapture_StartStream(),SYS_ERR_INVALID_ARG);EQ(NoneIdle(),0);EQ(starts,0);return 0;}
  if(kind==21 || kind==22){tick=0xFFFFFFF0;EQ(CameraCapture_Start(),SYS_OK);tick=kind==21?0x53:0x54;CameraCapture_Process();EQ(s_capture.state,kind==21?CAMERA_CAPTURE_CAPTURING:CAMERA_CAPTURE_IDLE);EQ(stops,kind==21?0:1);if(kind==22){EQ(s_capture.mode,CAMERA_CAPTURE_MODE_NONE);EQ(CameraCapture_GetLastResult(),SYS_ERR_TIMEOUT);}return 0;}
  if(kind==4 || kind==5 || kind==18 || kind==19){
   start_result=kind==18?SYS_ERR_BUSY:kind==19?SYS_ERR_TIMEOUT:SYS_ERR_IO;

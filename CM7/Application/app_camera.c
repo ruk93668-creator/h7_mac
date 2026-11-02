@@ -1,16 +1,13 @@
 #include "app_camera.h"
+#include "video_config.h"
 #include "camera_capture.h"
 #include "ov5640_device.h"
 #include <stddef.h>
 #include <stdbool.h>
 
-//统一选择当前分辨率和像素格式
-static const CameraConfig_t s_camera_config =
-{
-	.width  = 160U,
-	.height = 120U,
-	.format = CAMERA_PIXEL_FORMAT_YUV422
-};
+//相机APP保存已接受配置，底层不读取业务默认值
+static CameraConfig_t s_camera_config;
+static bool s_camera_config_set;
 
 //分别记录传感器配置和公共初始化结果，失败重试不重复已成功步骤
 static bool s_camera_configured;
@@ -19,9 +16,29 @@ static bool s_camera_initialized;
 //公共初始化，只配置OV5640和Media，不启动采集
 static SysResult_t App_CameraPrepare(void);
 
+SysResult_t App_CameraConfigure(const CameraConfig_t *config)
+{
+    SysResult_t result;
+
+    if (s_camera_config_set || s_camera_configured || s_camera_initialized)
+        return SYS_ERR_INVALID_STATE;
+
+    result = Ov5640_ValidateConfig(config);
+    if (result != SYS_OK)
+        return result;
+
+    result = CameraCapture_ValidateStreamConfig(config);
+    if (result != SYS_OK)
+        return result;
+
+    s_camera_config = *config;
+    s_camera_config_set = true;
+    return SYS_OK;
+}
+
 const CameraConfig_t *App_CameraGetConfig(void)
 {
-	return &s_camera_config;
+	return s_camera_config_set ? &s_camera_config : &VideoConfig_GetDefault()->camera;
 }
 
 SysResult_t App_CameraInit(void)
@@ -59,6 +76,14 @@ static SysResult_t App_CameraPrepare(void)
 	Device_t *device;
 	Ov5640Device_t *camera;
 	SysResult_t result;
+
+    //相机APP自行读取默认配置，向Device和Media显式传递
+    if (!s_camera_config_set)
+    {
+        result = App_CameraConfigure(&VideoConfig_GetDefault()->camera);
+        if (result != SYS_OK)
+            return result;
+    }
 
 	//公共初始化成功后，不再重复配置传感器和Media
 	if ( s_camera_initialized)

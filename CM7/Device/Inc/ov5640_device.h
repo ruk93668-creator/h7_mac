@@ -4,6 +4,9 @@
 #include "device.h"
 #include "camera_config.h"
 
+//只校验当前驱动能力，不访问传感器
+SysResult_t Ov5640_ValidateConfig(const CameraConfig_t *config);
+
 #define OV5640_CHIP_ID 0x5640U
 
 typedef struct Ov5640Device Ov5640Device_t;

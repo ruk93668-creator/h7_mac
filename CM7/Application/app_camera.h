@@ -4,6 +4,9 @@
 #include "sys_result.h"
 #include "camera_config.h"
 
+//冷启动显式传入相机配置，不允许运行中覆盖
+SysResult_t App_CameraConfigure(const CameraConfig_t *config);
+
 //获取当前只读配置，供Device与Media共用
 const CameraConfig_t *App_CameraGetConfig(void);
 

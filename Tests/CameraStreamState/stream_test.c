@@ -161,7 +161,7 @@ int Stream_TestRun(uint32_t id)
  }
  if(kind==8){
   before=stream;EQ(CameraStream_Init(NULL,&config),SYS_ERR_INVALID_ARG);EQ(CameraStream_Init(&stream,NULL),SYS_ERR_INVALID_ARG);SAME(stream,before);
-  bad=config;bad.width=159;EQ(CameraStream_Init(&stream,&bad),SYS_ERR_INVALID_ARG);SAME(stream,before);
+  bad=config;bad.width=0;EQ(CameraStream_Init(&stream,&bad),SYS_ERR_INVALID_ARG);SAME(stream,before);
   bad=config;bad.format=(CameraPixelFormat_t)99;EQ(CameraStream_Init(&stream,&bad),SYS_ERR_INVALID_ARG);SAME(stream,before);return 0;
  }
  if(kind==9){

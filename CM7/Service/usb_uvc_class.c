@@ -14,8 +14,12 @@
 
 //固定视频能力，与描述符保持一致，不依赖图像来源
 #define UVC_VIDEO_EP_ADDRESS 0x81U
-#define UVC_VIDEO_FRAME_BYTES 38400U
-#define UVC_VIDEO_PACKET_BYTES 1023U
+#define UVC_VIDEO_PACKET_BYTES USB_UVC_VIDEO_PACKET_SIZE
+
+//与描述符共用冷启动配置，不保存业务配置指针
+static uint32_t s_video_frame_bytes;
+static uint32_t s_video_interval;
+static bool s_video_configured;
 
 //按字段保存参数，不直接映射USB数据
 typedef struct
@@ -202,8 +206,35 @@ static USBD_DescriptorsTypeDef s_uvc_descriptors =
     USB_UVC_GetInterfaceStrDescriptor//索引5，UVC Camera功能名称
 };
 
+SysResult_t USB_UVC_ValidateConfig(const VideoStreamConfig_t *config)
+{
+    return USB_UVC_ValidateFSConfig(config);
+}
+
+SysResult_t USB_UVC_Configure(const VideoStreamConfig_t *config)
+{
+    uint32_t bytes;
+    SysResult_t result;
+
+    if (__get_IPSR() != 0U || s_video_configured)
+        return SYS_ERR_INVALID_STATE;
+    result = USB_UVC_ValidateConfig(config);
+    if (result != SYS_OK)
+        return result;
+    result = USB_UVC_ConfigureFSDescriptor(config);
+    if (result != SYS_OK)
+        return result;
+    (void)CameraConfig_GetFrameSize(&config->camera, &bytes);
+    s_video_frame_bytes = bytes;
+    s_video_interval = 10000000UL / config->fps;
+    s_video_configured = true;
+    return SYS_OK;
+}
+
 SysResult_t USB_UVC_Register(void)
 {
+    if (!s_video_configured)
+        return SYS_ERR_INVALID_STATE;
     return USB_Device_RegisterClass(
         &s_uvc_class,
         &s_uvc_descriptors
@@ -218,7 +249,7 @@ SysResult_t USB_UVC_SubmitFrame(const uint8_t *frame, uint32_t length)
     UsbUvcContext_t *ctx;
 
     //仅接收当前描述符声明的完整YUY2帧
-    if (frame == NULL || length != UVC_VIDEO_FRAME_BYTES)
+    if (frame == NULL || length != s_video_frame_bytes)
         return SYS_ERR_INVALID_ARG;
     if (__get_IPSR() != 0U)
         return SYS_ERR_INVALID_STATE;
@@ -760,7 +791,7 @@ static bool UVC_ProbeSet(UsbUvcContext_t *ctx, const uint8_t *data)
     ctx->probe_reply_pending = false;
 
     //唯一配置无法满足更低带宽时，不能反向增加数据率
-    if (requested.dwFrameInterval > 1000000UL ||
+    if (requested.dwFrameInterval > s_video_interval ||
         (requested.dwMaxPayloadTransferSize != 0U && requested.dwMaxPayloadTransferSize < UVC_VIDEO_PACKET_BYTES))
         return false;
 
@@ -803,8 +834,8 @@ static void UVC_DefaultControl(UvcStreamingControl_t *control)
     memset(control, 0, sizeof(*control));
     control->bFormatIndex = 1U;
     control->bFrameIndex = 1U;
-    control->dwFrameInterval = 1000000UL;
-    control->dwMaxVideoFrameSize = 38400UL;
+    control->dwFrameInterval = s_video_interval;
+    control->dwMaxVideoFrameSize = s_video_frame_bytes;
 
     //FS单个等时事务上限字节，包含Payload头
     control->dwMaxPayloadTransferSize = UVC_VIDEO_PACKET_BYTES;
@@ -828,10 +859,10 @@ static bool UVC_ValidateControl(const UvcStreamingControl_t *control)
         return false;
     return (control->bmHint & ~1U) == 0U &&
         control->bFormatIndex == 1U && control->bFrameIndex == 1U &&
-        control->dwFrameInterval == 1000000UL &&
+        control->dwFrameInterval == s_video_interval &&
         control->wKeyFrameRate == 0U && control->wPFrameRate == 0U &&
         control->wCompQuality == 0U && control->wCompWindowSize == 0U &&
-        control->wDelay == 0U && control->dwMaxVideoFrameSize == 38400UL &&
+        control->wDelay == 0U && control->dwMaxVideoFrameSize == s_video_frame_bytes &&
         control->dwMaxPayloadTransferSize == UVC_VIDEO_PACKET_BYTES &&
         control->dwClockFrequency == 1000UL && control->bmFramingInfo == 3U &&
         control->bPreferredVersion == 1U && control->bMinVersion == 1U &&

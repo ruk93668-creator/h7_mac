@@ -2,6 +2,16 @@
 #define CM7_USB_UVC_DESC_H
 
 #include "usbd_def.h"
+#include "video_config_types.h"
+
+//USB FS包长，与业务分辨率和帧率无关
+#define USB_UVC_VIDEO_PACKET_SIZE 1023U
+
+//校验YUY2、帧率、字段溢出和FS发送时隙
+SysResult_t USB_UVC_ValidateFSConfig(const VideoStreamConfig_t *config);
+
+//冷启动一次写入描述符，参数复制到静态存储
+SysResult_t USB_UVC_ConfigureFSDescriptor(const VideoStreamConfig_t *config);
 
 //只返回模块持有的静态数据，调用者不得改写或释放
 //由Core/控制请求上下文调用，不触发Class注册或端点操作

@@ -1,5 +1,6 @@
 #include "usb_uvc_desc.h"
 #include <stddef.h>
+#include <stdbool.h>
 
 //UVC 1.1描述符，当前仅提供数据，不注册或启动Class
 
@@ -184,21 +185,21 @@ static struct __attribute__((aligned(4)))
     0x00U,//bmInterlaceFlags：逐行扫描，非交错
     0x00U,//bCopyProtect：不限制复制
 
-    //Uncompressed Frame Descriptor，共30字节，160x120、10fps
+    //Uncompressed Frame Descriptor，共30字节，启动时填入视频配置
 
     0x1EU,//bLength：26字节固定字段加1个4字节离散帧间隔
     0x24U,//bDescriptorType：CS_INTERFACE类专用接口描述符
     0x05U,//bDescriptorSubtype：VS_FRAME_UNCOMPRESSED
     0x01U,//bFrameIndex：帧配置编号1
     0x00U,//bmCapabilities：保留当前帧能力位图为0
-    0xA0U, 0x00U,//wWidth：160像素，小端存放
-    0x78U, 0x00U,//wHeight：120像素，小端存放
-    0x00U, 0xE0U, 0x2EU, 0x00U,//dwMinBitRate：160x120x16x10=3072000bit/s
-    0x00U, 0xE0U, 0x2EU, 0x00U,//dwMaxBitRate：仅支持10fps，与最小比特率相同
-    0x00U, 0x96U, 0x00U, 0x00U,//dwMaxVideoFrameBufferSize：160x120x2=38400字节
-    0x40U, 0x42U, 0x0FU, 0x00U,//dwDefaultFrameInterval：1000000个100ns，即100ms
-    0x01U,//bFrameIntervalType：支持1个离散帧间隔
-    0x40U, 0x42U, 0x0FU, 0x00U,//dwFrameInterval：1000000个100ns，对应10fps
+    0x00U, 0x00U,//wWidth：配置写入
+    0x00U, 0x00U,//wHeight：配置写入
+    0x00U, 0x00U, 0x00U, 0x00U,//dwMinBitRate：配置计算
+    0x00U, 0x00U, 0x00U, 0x00U,//dwMaxBitRate：单一帧率
+    0x00U, 0x00U, 0x00U, 0x00U,//dwMaxVideoFrameBufferSize
+    0x00U, 0x00U, 0x00U, 0x00U,//dwDefaultFrameInterval
+    0x01U,//bFrameIntervalType：一个离散间隔
+    0x00U, 0x00U, 0x00U, 0x00U,//dwFrameInterval
 
     //Color Matching Descriptor，共6字节
 
@@ -241,10 +242,87 @@ typedef char UvcConfigLengthCheck[
 typedef char UvcConfigPaddingCheck[
     sizeof(s_uvc_config_storage) == 184U ? 1 : -1];
 
+static bool s_video_descriptor_configured;
+
+//按小端写入双字节字段
+static void UvcDesc_Write16(uint8_t *p, uint16_t value);
+
+//按小端写入四字节字段
+static void UvcDesc_Write32(uint8_t *p, uint32_t value);
+
+SysResult_t USB_UVC_ValidateFSConfig(const VideoStreamConfig_t *config)
+{
+    uint32_t bytes;
+    uint32_t packets;
+    SysResult_t result;
+
+    if (config == NULL || config->fps == 0U)
+        return SYS_ERR_INVALID_ARG;
+    result = CameraConfig_GetFrameSize(&config->camera, &bytes);
+    if (result != SYS_OK)
+        return result;
+    if (config->camera.format != CAMERA_PIXEL_FORMAT_YUV422 || config->fps > 1000U)
+        return SYS_ERR_NOT_SUPPORTED;
+    if (bytes > UINT32_MAX / 8U / config->fps)
+        return SYS_ERR_INVALID_ARG;
+
+    //每SOF最多一包，2字节UVC头也占用空间
+    packets = (bytes - 1U) / (USB_UVC_VIDEO_PACKET_SIZE - 2U) + 1U;
+    if (packets > 1000U / config->fps)
+        return SYS_ERR_NOT_SUPPORTED;
+    return SYS_OK;
+}
+
+SysResult_t USB_UVC_ConfigureFSDescriptor(const VideoStreamConfig_t *config)
+{
+    uint32_t bytes;
+    uint32_t interval;
+    uint32_t rate;
+    uint16_t offset;
+    uint8_t interface_number = 0U;
+    uint8_t *data = s_uvc_config_storage.descriptor;
+    SysResult_t result = USB_UVC_ValidateFSConfig(config);
+
+    if (result != SYS_OK)
+        return result;
+    if (s_video_descriptor_configured)
+        return SYS_ERR_INVALID_STATE;
+    (void)CameraConfig_GetFrameSize(&config->camera, &bytes);
+    interval = 10000000UL / config->fps;
+    rate = bytes * 8U * config->fps;
+
+    //按边界查找VS Frame，不依赖整个数组的固定偏移
+    for (offset = 0U; offset + 2U <= USB_UVC_FS_CONFIG_DESC_SIZE; offset += data[offset])
+    {
+        uint8_t length = data[offset];
+        uint8_t *entry = data + offset;
+        if (length < 2U || offset + length > USB_UVC_FS_CONFIG_DESC_SIZE)
+            return SYS_ERR_PROTOCOL;
+        if (entry[1] == 0x04U && length >= 9U)
+            interface_number = entry[2];
+        if (interface_number == 1U && entry[1] == 0x24U && length == 30U && entry[2] == 0x05U)
+        {
+            UvcDesc_Write16(entry + 5U, config->camera.width);
+            UvcDesc_Write16(entry + 7U, config->camera.height);
+            UvcDesc_Write32(entry + 9U, rate);
+            UvcDesc_Write32(entry + 13U, rate);
+            UvcDesc_Write32(entry + 17U, bytes);
+            UvcDesc_Write32(entry + 21U, interval);
+            UvcDesc_Write32(entry + 26U, interval);
+            s_video_descriptor_configured = true;
+            return SYS_OK;
+        }
+    }
+    return SYS_ERR_PROTOCOL;
+}
+
 //提供Class配置描述符，返回指针不转移存储所有权
 uint8_t *USB_UVC_GetFSConfigDescriptor(uint16_t *length)
 {
     if (length == NULL)
+        return NULL;
+    *length = 0U;
+    if (!s_video_descriptor_configured)
         return NULL;
 
     *length = sizeof(s_uvc_config_storage.descriptor);
@@ -291,4 +369,19 @@ uint8_t *USB_UVC_GetInterfaceStrDescriptor(USBD_SpeedTypeDef speed, uint16_t *le
 
     *length = USB_UVC_FUNCTION_STR_DESC_SIZE;
     return s_uvc_function_desc;
+}
+
+//内部功能函数实现
+static void UvcDesc_Write16(uint8_t *p, uint16_t value)
+{
+    p[0] = (uint8_t)value;
+    p[1] = (uint8_t)(value >> 8);
+}
+
+static void UvcDesc_Write32(uint8_t *p, uint32_t value)
+{
+    p[0] = (uint8_t)value;
+    p[1] = (uint8_t)(value >> 8);
+    p[2] = (uint8_t)(value >> 16);
+    p[3] = (uint8_t)(value >> 24);
 }

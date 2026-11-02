@@ -1,0 +1,27 @@
+{
+  "tests": {
+    "total": 431,
+    "passed": 431,
+    "failed": 0
+  },
+  "builds": {
+    "cm7_test_keil.log": {
+      "errors": 0,
+      "warnings": 0,
+      "size": "Program Size: Code=67070 RO-data=2570 RW-data=708 ZI-data=17564"
+    },
+    "h7_mac_CM7_keil.log": {
+      "errors": 0,
+      "warnings": 0,
+      "size": "Program Size: Code=67070 RO-data=2570 RW-data=708 ZI-data=17564"
+    },
+    "h7_mac_CM4_keil.log": {
+      "errors": 0,
+      "warnings": 0,
+      "size": "Program Size: Code=20350 RO-data=914 RW-data=636 ZI-data=2580"
+    }
+  },
+  "hardware_verified": false,
+  "default_restored": "VIDEO_OUTPUT_USB_UVC",
+  "historical_fixed_512B_suites_rerun": false
+}

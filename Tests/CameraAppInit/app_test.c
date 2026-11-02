@@ -1,4 +1,8 @@
 #include "../../CM7/Application/app_camera.c"
+#include "../../CM7/Application/video_config.c"
+
+SysResult_t Ov5640_ValidateConfig(const CameraConfig_t *c) { uint32_t n; return CameraConfig_GetFrameSize(c,&n); }
+SysResult_t CameraCapture_ValidateStreamConfig(const CameraConfig_t *c) { uint32_t n; return CameraConfig_GetFrameSize(c,&n); }
 
 static unsigned config_calls, init_calls, start_calls, stream_calls, process_calls;
 static unsigned mode;
@@ -103,6 +107,11 @@ int App_TestRun(unsigned id)
     case 11:
         App_CameraRun(); CHECK(process_calls==1);
         CHECK(!config_calls && !init_calls && !start_calls && !stream_calls);
+        break;
+    case 12:
+        CHECK(VideoConfig_RequestUpdate(NULL)==SYS_ERR_INVALID_ARG);
+        CHECK(VideoConfig_RequestUpdate(VideoConfig_GetDefault())==SYS_ERR_NOT_SUPPORTED);
+        CHECK(VideoConfig_GetDefault()->output_fps==10);
         break;
     default: return -1;
     }

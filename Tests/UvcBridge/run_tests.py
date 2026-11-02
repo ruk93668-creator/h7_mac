@@ -14,7 +14,7 @@ def run(args):
     if p.returncode: raise RuntimeError(commands[-1])
 run(['D:/32/ARM/ARMCC/Bin/armcc.exe','--vsn'])
 a=['D:/32/ARM/ARMCC/Bin/armcc.exe','--cpu','Cortex-M7','--c99','-O0']
-for p in ['Tests/UvcBridge/stubs','Common/Inc','CM7/Media/Inc','CM7/Service']: a+=['-I',root/p]
+for p in ['Tests/UvcBridge/stubs','Common/Inc','CM7/Media/Inc','CM7/Service','CM7/Framework']: a+=['-I',root/p]
 run(a+['-c',here/'bridge_test.c','-o',here/'bridge_test.o'])
 run(['D:/32/ARM/ARMCC/Bin/armlink.exe',here/'bridge_test.o','--entry','Bridge_TestRun','--scatter',here/'test.sct','--no_scanlib','-o',here/'bridge_test.axf'])
 with (here/'bridge_test.axf').open('rb') as f:

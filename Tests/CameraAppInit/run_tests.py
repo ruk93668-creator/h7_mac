@@ -20,7 +20,7 @@ run(['D:/32/ARM/ARMCC/Bin/armlink.exe',here/'app_test.o','--entry','App_TestRun'
 with (here/'app_test.axf').open('rb') as f:
     e=ELFFile(f); entry=e.header['e_entry']
     sections=[(s['sh_addr'],s.data()) for s in e.iter_sections() if s['sh_flags']&2 and s['sh_type']=='SHT_PROGBITS' and s['sh_size']]
-names=['Snapshot/config identity','Stream repeat','Snapshot repeat and cross start','Stream cross start','missing device retry','missing ops','sensor failure retry','Media failure retry without reconfigure','start error propagation','Snapshot release then Stream','Stream stop then Snapshot','Process forwarding']
+names=['Snapshot/config identity','Stream repeat','Snapshot repeat and cross start','Stream cross start','missing device retry','missing ops','sensor failure retry','Media failure retry without reconfigure','start error propagation','Snapshot release then Stream','Stream stop then Snapshot','Process forwarding', 'runtime update rejected']
 rows=[]
 for i,name in enumerate(names):
     u=Uc(UC_ARCH_ARM,UC_MODE_THUMB|UC_MODE_MCLASS)

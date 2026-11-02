@@ -2,6 +2,7 @@
 #define CM7_USB_UVC_H
 
 #include "sys_result.h"
+#include "video_config_types.h"
 #include <stdbool.h>
 #include <stdint.h>
 
@@ -31,11 +32,17 @@ typedef struct
     bool can_submit;
 } UsbUvcStreamStatus_t;
 
+//纯校验输出能力，不改变描述符或活动Class
+SysResult_t USB_UVC_ValidateConfig(const VideoStreamConfig_t *config);
+
+//注册Class前冷启动配置视频参数，配置后不可覆盖
+SysResult_t USB_UVC_Configure(const VideoStreamConfig_t *config);
+
 //启动线程中调用：Core Init之后、USB Start之前注册唯一Class
 //返回Core注册结果；不初始化摄像头、不启动USB或视频发送
 SysResult_t USB_UVC_Register(void);
 
-//CM7主循环调用：借用只读160x120 YUY2整帧，length必须38400B
+//CM7主循环调用：借用与已接受配置一致的YUY2整帧，length必须匹配帧长
 //SYS_OK只代表接受借用，不代表USB完成；保持图像有效且不可改写
 //BUSY表示已有帧；INVALID_STATE表示未就绪；INVALID_ARG表示参数非法
 //失败不接受新帧；成功后的归还以有效状态查询frame_owned=false为准

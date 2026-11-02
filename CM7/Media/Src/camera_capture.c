@@ -617,57 +617,22 @@ static SysResult_t CameraCapture_CalcSize(
     const CameraConfig_t *config,
     uint32_t *required_bytes)
 {
-	uint32_t bytes_per_pixel;
-	uint32_t pixels;
-	
-	if (config == NULL || required_bytes == NULL)
-		return SYS_ERR_INVALID_ARG;
-	
-	//YUV422每两个像素共享一组色度
-	if (config->format == CAMERA_PIXEL_FORMAT_YUV422 &&
-		(config->width & 1U) != 0U)
-		return SYS_ERR_INVALID_ARG;
+    return CameraConfig_GetFrameSize(config, required_bytes);
+}
 
-	if (config->width != 160U ||
-		config->height != 120U)
-	{
-		return SYS_ERR_INVALID_ARG;
-	}	
-	
-	switch (config->format)
-	{
-		case CAMERA_PIXEL_FORMAT_Y8:
-			bytes_per_pixel = 1U;
-			break;
-		
-		case CAMERA_PIXEL_FORMAT_RGB565:
-		case CAMERA_PIXEL_FORMAT_YUV422:
-			bytes_per_pixel = 2U;
-			break;
+SysResult_t CameraCapture_ValidateStreamConfig(const CameraConfig_t *config)
+{
+    uint32_t bytes;
+    SysResult_t result = CameraCapture_CalcSize(config, &bytes);
 
-		default:
-			return SYS_ERR_INVALID_ARG;
-	}	
+    if (result != SYS_OK)
+        return result;
 
-	//先检查宽度乘高度是否溢出
-	if ((uint32_t)config->width >
-		UINT32_MAX / (uint32_t)config->height)
-	{
-		return SYS_ERR_INVALID_ARG;
-	}
+    if (bytes > CAMERA_STREAM_BUFFER_CAPACITY || (bytes % 4U) != 0U ||
+        bytes / 4U > CAMERA_DMA_MAX_WORDS)
+        return SYS_ERR_NOT_SUPPORTED;
 
-	pixels = (uint32_t)config->width *
-			 (uint32_t)config->height;
-
-	//再检查像素数量乘每像素字节数是否溢出
-	if (pixels > UINT32_MAX / bytes_per_pixel)
-	{
-		return SYS_ERR_INVALID_ARG;
-	}
-
-	*required_bytes = pixels * bytes_per_pixel;
-	
-	return SYS_OK;
+    return SYS_OK;
 }
 
 static SysResult_t CameraStream_Init(

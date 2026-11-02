@@ -1,4 +1,10 @@
 #include "../../CM7/Application/app_uvc_bridge.c"
+#include "../../CM7/Application/video_config.c"
+
+SysResult_t USB_Mode_SelectBootMode(UsbMode_t m, SysResult_t (*f)(void)) {(void)m;(void)f;return SYS_OK;}
+SysResult_t USB_UVC_ValidateConfig(const VideoStreamConfig_t *c) {(void)c;return SYS_OK;}
+SysResult_t USB_UVC_Configure(const VideoStreamConfig_t *c) {(void)c;return SYS_OK;}
+SysResult_t USB_UVC_Register(void) {return SYS_OK;}
 
 static uint32_t ipsr, primask;
 static unsigned queries, gets, submits, releases;
@@ -59,6 +65,8 @@ static int Loan(void)
 }
 int Bridge_TestRun(unsigned id)
 {
+    CameraConfig_t config = {160U,120U,CAMERA_PIXEL_FORMAT_YUV422};
+    CHECK(App_UvcBridgeConfigure(&config)==SYS_OK);
     int r; unsigned i;
     switch(id)
     {

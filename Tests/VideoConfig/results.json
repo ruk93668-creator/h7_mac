@@ -1,0 +1,290 @@
+{
+  "summary": {
+    "total": 28,
+    "passed": 28,
+    "failed": 0
+  },
+  "source_changed": [],
+  "cases": [
+    {
+      "id": 0,
+      "name": "descriptor and control 5FPS",
+      "pass": true,
+      "assertions": 44,
+      "failed_line": 0,
+      "actual": 0,
+      "expected": 0,
+      "error": null
+    },
+    {
+      "id": 1,
+      "name": "descriptor and control 10FPS",
+      "pass": true,
+      "assertions": 44,
+      "failed_line": 0,
+      "actual": 0,
+      "expected": 0,
+      "error": null
+    },
+    {
+      "id": 2,
+      "name": "descriptor and control 15FPS",
+      "pass": true,
+      "assertions": 44,
+      "failed_line": 0,
+      "actual": 0,
+      "expected": 0,
+      "error": null
+    },
+    {
+      "id": 3,
+      "name": "descriptor and control 20FPS",
+      "pass": true,
+      "assertions": 44,
+      "failed_line": 0,
+      "actual": 0,
+      "expected": 0,
+      "error": null
+    },
+    {
+      "id": 4,
+      "name": "descriptor and control 25FPS",
+      "pass": true,
+      "assertions": 44,
+      "failed_line": 0,
+      "actual": 0,
+      "expected": 0,
+      "error": null
+    },
+    {
+      "id": 5,
+      "name": "null config",
+      "pass": true,
+      "assertions": 1,
+      "failed_line": 0,
+      "actual": 0,
+      "expected": 0,
+      "error": null
+    },
+    {
+      "id": 6,
+      "name": "zero FPS",
+      "pass": true,
+      "assertions": 1,
+      "failed_line": 0,
+      "actual": 0,
+      "expected": 0,
+      "error": null
+    },
+    {
+      "id": 7,
+      "name": "FS bandwidth rejection",
+      "pass": true,
+      "assertions": 1,
+      "failed_line": 0,
+      "actual": 0,
+      "expected": 0,
+      "error": null
+    },
+    {
+      "id": 8,
+      "name": "unsupported Y8 UVC",
+      "pass": true,
+      "assertions": 1,
+      "failed_line": 0,
+      "actual": 0,
+      "expected": 0,
+      "error": null
+    },
+    {
+      "id": 9,
+      "name": "odd YUV width",
+      "pass": true,
+      "assertions": 1,
+      "failed_line": 0,
+      "actual": 0,
+      "expected": 0,
+      "error": null
+    },
+    {
+      "id": 10,
+      "name": "zero height",
+      "pass": true,
+      "assertions": 1,
+      "failed_line": 0,
+      "actual": 0,
+      "expected": 0,
+      "error": null
+    },
+    {
+      "id": 11,
+      "name": "Register requires configuration",
+      "pass": true,
+      "assertions": 1,
+      "failed_line": 0,
+      "actual": 0,
+      "expected": 0,
+      "error": null
+    },
+    {
+      "id": 12,
+      "name": "descriptor unavailable before configure",
+      "pass": true,
+      "assertions": 2,
+      "failed_line": 0,
+      "actual": 0,
+      "expected": 0,
+      "error": null
+    },
+    {
+      "id": 13,
+      "name": "APP default forwarding",
+      "pass": true,
+      "assertions": 7,
+      "failed_line": 0,
+      "actual": 0,
+      "expected": 0,
+      "error": null
+    },
+    {
+      "id": 14,
+      "name": "NONE output",
+      "pass": true,
+      "assertions": 4,
+      "failed_line": 0,
+      "actual": 0,
+      "expected": 0,
+      "error": null
+    },
+    {
+      "id": 15,
+      "name": "TEST output",
+      "pass": true,
+      "assertions": 4,
+      "failed_line": 0,
+      "actual": 0,
+      "expected": 0,
+      "error": null
+    },
+    {
+      "id": 16,
+      "name": "ETH unsupported",
+      "pass": true,
+      "assertions": 1,
+      "failed_line": 0,
+      "actual": 0,
+      "expected": 0,
+      "error": null
+    },
+    {
+      "id": 17,
+      "name": "WiFi unsupported",
+      "pass": true,
+      "assertions": 1,
+      "failed_line": 0,
+      "actual": 0,
+      "expected": 0,
+      "error": null
+    },
+    {
+      "id": 18,
+      "name": "real startup and cold configuration freeze",
+      "pass": true,
+      "assertions": 8,
+      "failed_line": 0,
+      "actual": 0,
+      "expected": 0,
+      "error": null
+    },
+    {
+      "id": 19,
+      "name": "NONE never starts USB",
+      "pass": true,
+      "assertions": 4,
+      "failed_line": 0,
+      "actual": 0,
+      "expected": 0,
+      "error": null
+    },
+    {
+      "id": 20,
+      "name": "UVC source-independent dimensions",
+      "pass": true,
+      "assertions": 2,
+      "failed_line": 0,
+      "actual": 0,
+      "expected": 0,
+      "error": null
+    },
+    {
+      "id": 21,
+      "name": "image size overflow",
+      "pass": true,
+      "assertions": 1,
+      "failed_line": 0,
+      "actual": 0,
+      "expected": 0,
+      "error": null
+    },
+    {
+      "id": 22,
+      "name": "boot callback validation",
+      "pass": true,
+      "assertions": 2,
+      "failed_line": 0,
+      "actual": 0,
+      "expected": 0,
+      "error": null
+    },
+    {
+      "id": 23,
+      "name": "invalid configuration does not poison retry",
+      "pass": true,
+      "assertions": 2,
+      "failed_line": 0,
+      "actual": 0,
+      "expected": 0,
+      "error": null
+    },
+    {
+      "id": 24,
+      "name": "configured Probe acceptance",
+      "pass": true,
+      "assertions": 2,
+      "failed_line": 0,
+      "actual": 0,
+      "expected": 0,
+      "error": null
+    },
+    {
+      "id": 25,
+      "name": "two frames at 5FPS",
+      "pass": true,
+      "assertions": 472,
+      "failed_line": 0,
+      "actual": 0,
+      "expected": 0,
+      "error": null
+    },
+    {
+      "id": 26,
+      "name": "two frames at 10FPS",
+      "pass": true,
+      "assertions": 472,
+      "failed_line": 0,
+      "actual": 0,
+      "expected": 0,
+      "error": null
+    },
+    {
+      "id": 27,
+      "name": "two frames at 20FPS",
+      "pass": true,
+      "assertions": 472,
+      "failed_line": 0,
+      "actual": 0,
+      "expected": 0,
+      "error": null
+    }
+  ]
+}

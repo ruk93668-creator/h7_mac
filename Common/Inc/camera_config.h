@@ -2,6 +2,8 @@
 #define CAMERA_CONFIG_H
 
 #include <stdint.h>
+#include <stddef.h>
+#include "sys_result.h"
 
 //固定长度图像格式，开机时选择
 typedef enum
@@ -31,5 +33,36 @@ typedef struct
     uint32_t size_bytes;
 
 } CameraFrame_t;
+
+//仅计算图像内存长度，不代表传感器或输出支持该配置
+static inline SysResult_t CameraConfig_GetFrameSize(
+    const CameraConfig_t *config,
+    uint32_t *bytes)
+{
+    uint32_t bpp;
+    uint32_t pixels;
+
+    if (config == NULL || bytes == NULL || config->width == 0U || config->height == 0U)
+        return SYS_ERR_INVALID_ARG;
+
+    switch (config->format)
+    {
+        case CAMERA_PIXEL_FORMAT_Y8: bpp = 1U; break;
+        case CAMERA_PIXEL_FORMAT_RGB565: bpp = 2U; break;
+        case CAMERA_PIXEL_FORMAT_YUV422:
+            if ((config->width & 1U) != 0U)
+                return SYS_ERR_INVALID_ARG;
+            bpp = 2U;
+            break;
+        default: return SYS_ERR_INVALID_ARG;
+    }
+
+    pixels = (uint32_t)config->width * config->height;
+    if (pixels > UINT32_MAX / bpp)
+        return SYS_ERR_INVALID_ARG;
+
+    *bytes = pixels * bpp;
+    return SYS_OK;
+}
 
 #endif

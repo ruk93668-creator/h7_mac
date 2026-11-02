@@ -17,7 +17,8 @@ typedef enum
 {
     USB_MODE_TEST = 0,
     USB_MODE_UVC,
-    USB_MODE_MSC
+    USB_MODE_MSC,
+    USB_MODE_NONE
 } UsbMode_t;
 
 //模式管理状态，RUNNING仅表示主机已配置，不代表视频正在发送
@@ -33,6 +34,9 @@ typedef enum
     USB_MODE_STATE_REGISTERING,
     USB_MODE_STATE_ERROR
 } UsbModeState_t;
+
+//冷启动显式选择模式，初始化后拒绝更改；NONE不连接USB
+SysResult_t USB_Mode_SelectBootMode(UsbMode_t mode, SysResult_t (*register_class)(void));
 
 //启动主循环中调用：Core的DEVICE阶段后执行，不启动USB
 //已初始化返回SYS_OK，不覆盖已有Class；SERVICE Initcall使用此入口

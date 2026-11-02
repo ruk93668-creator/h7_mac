@@ -1097,6 +1097,16 @@
               <FileType>5</FileType>
               <FilePath>../CM7/Application/app_uvc_bridge.h</FilePath>
             </File>
+            <File>
+              <FileName>video_config.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>../CM7/Application/video_config.c</FilePath>
+            </File>
+            <File>
+              <FileName>video_config.h</FileName>
+              <FileType>5</FileType>
+              <FilePath>../CM7/Application/video_config.h</FilePath>
+            </File>
           </Files>
         </Group>
         <Group>
@@ -2173,7 +2183,7 @@
             <v6Rtti>0</v6Rtti>
             <VariousControls>
               <MiscControls>--preinclude ../CM7/BSP/bsp_sdram_hal_config.h --preinclude ../CM7/BSP/bsp_dcmi_hal_config.h --preinclude ../CM7/BSP/bsp_usb_hal_config.h </MiscControls>
-              <Define>CORE_CM7,USE_HAL_DRIVER,STM32H747xx,USE_PWR_LDO_SUPPLY,USB_MODE_BOOT_UVC=1</Define>
+              <Define>CORE_CM7,USE_HAL_DRIVER,STM32H747xx,USE_PWR_LDO_SUPPLY</Define>
               <Undefine></Undefine>
               <IncludePath>../CM7/Core/Inc;../Drivers/STM32H7xx_HAL_Driver/Inc;../Drivers/STM32H7xx_HAL_Driver/Inc/Legacy;../Drivers/CMSIS/Device/ST/STM32H7xx/Include;../Drivers/CMSIS/Include;..\Common\Inc;..\Board\Inc;..\CM7\Application;..\CM7\Service;..\CM7\Device\Inc;..\CM7\Media\Inc;..\CM7\Platform;..\CM7\BSP;..\CM7\Framework;..\CM7\Device\Components\OV5640;../Middlewares/ST/STM32_USB_Device_Library/Core/Inc</IncludePath>
             </VariousControls>
@@ -3124,6 +3134,16 @@
               <FileName>app_uvc_bridge.h</FileName>
               <FileType>5</FileType>
               <FilePath>../CM7/Application/app_uvc_bridge.h</FilePath>
+            </File>
+            <File>
+              <FileName>video_config.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>../CM7/Application/video_config.c</FilePath>
+            </File>
+            <File>
+              <FileName>video_config.h</FileName>
+              <FileType>5</FileType>
+              <FilePath>../CM7/Application/video_config.h</FilePath>
             </File>
           </Files>
         </Group>
