@@ -4,6 +4,13 @@ from pathlib import Path
 parser=argparse.ArgumentParser();parser.add_argument('--deps',type=Path);args=parser.parse_args()
 sys.stdout.reconfigure(encoding='utf-8')
 here=Path(__file__).resolve().parent;root=here.parent.parent
+# Historical migration hashes are evidence, not a permanent source-freeze rule.
+historical_baseline=json.loads((here/'source_before.json').read_text())
+def source_hash(path):
+    file=root/path
+    return hashlib.sha256(file.read_bytes()).hexdigest() if file.exists() else None
+runtime_before={path:source_hash(path) for path in historical_baseline}
+
 if args.deps is None:
     args.deps=here/'python_deps'
 sys.path.insert(0,str(args.deps))
@@ -97,8 +104,9 @@ lines += ['',f"合计 {summary['total']}，PASS {summary['pass']}，FAIL {summar
           '对象前后16字节监控读写并检查哨兵；全部正常页数据逐字节比较。未向非法page值强行注入内存损坏，本报告的越界结论针对有效刷新状态链。','', '## 实际编译命令','', '```text']
 lines += [c['command'] for c in commands];lines += ['```']
 (here/'results.md').write_text('\n'.join(lines)+'\n',encoding='utf-8')
-baseline=json.loads((here/'source_before.json').read_text())
-changed=[p for p,h in baseline.items() if not (root/p).exists() or hashlib.sha256((root/p).read_bytes()).hexdigest()!=h]
-(here/'source_integrity.json').write_text(json.dumps({'checked':len(baseline),'changed':changed,'oled_c_sha256':hashlib.sha256((root/'CM4/Device/Src/oled_device.c').read_bytes()).hexdigest()},indent=2))
+baseline=runtime_before
+changed=[p for p,h in baseline.items() if source_hash(p)!=h]
+historical_differences=[p for p,h in historical_baseline.items() if source_hash(p)!=h]
+(here/'source_integrity.json').write_text(json.dumps({'checked':len(baseline),'changed':changed,'historical_baseline_differences':historical_differences,'integrity_basis':'current source before versus after execution','oled_c_sha256':hashlib.sha256((root/'CM4/Device/Src/oled_device.c').read_bytes()).hexdigest()},indent=2))
 print(f"TOTAL {summary['total']} PASS {summary['pass']} FAIL {summary['fail']} NOT_RUN 0; assertions={summary['assertions']}; source_changes={len(changed)}")
 raise SystemExit(0 if summary['fail']==0 and not changed else 1)

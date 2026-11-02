@@ -201,10 +201,10 @@ static SysResult_t Oled_Init(Device_t *dev)
 	if (result != SYS_OK) return result;
 
 
-//	//18. 临时测试：强制点亮全部像素
-//	result = Oled_WriteCommand(oled, SSD1306_CMD_ENTIRE_DISPLAY_ON);
-//	if (result != SYS_OK)
-//		return result;
+	//18. 临时测试：强制点亮全部像素
+	result = Oled_WriteCommand(oled, SSD1306_CMD_ENTIRE_DISPLAY_ON);
+	if (result != SYS_OK)
+		return result;
 
 	return SYS_OK;
 }

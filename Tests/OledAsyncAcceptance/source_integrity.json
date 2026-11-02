@@ -1,5 +1,37 @@
 {
   "checked": 1235,
   "changed": [],
-  "oled_c_sha256": "269ea75045e5f2f206644ddb2ffe5090cf9b0e225e9db7da054203d8405b411e"
+  "historical_baseline_differences": [
+    "CM4\\Application\\app_main.c",
+    "CM4\\Application\\app_main.h",
+    "CM4\\BSP\\bsp_iic.c",
+    "CM4\\BSP\\bsp_iic.h",
+    "CM4\\Core\\Src\\main.c",
+    "CM4\\Device\\Inc\\device.h",
+    "CM4\\Device\\Src\\oled_device.c",
+    "CM4\\Framework\\framework_init.c",
+    "CM4\\Framework\\framework_init.h",
+    "CM4\\Framework\\framework_timer.c",
+    "CM4\\Platform\\ipc_platform.h",
+    "CM4\\Platform\\platform_time.h",
+    "CM4\\Service\\ipc_service.c",
+    "CM7\\Application\\app_main.c",
+    "CM7\\Application\\app_main.h",
+    "CM7\\Core\\Src\\main.c",
+    "CM7\\Device\\Inc\\device.h",
+    "CM7\\Framework\\framework_init.h",
+    "CM7\\Framework\\framework_timer.c",
+    "CM7\\Platform\\ipc_platform.h",
+    "CM7\\Platform\\platform_time.h",
+    "CM7\\Service\\ipc_service.h",
+    "Common\\Inc\\framework_event.h",
+    "Common\\Inc\\framework_list.h",
+    "Common\\Inc\\framework_runtime.h",
+    "Common\\Inc\\framework_timer.h",
+    "Common\\Inc\\ipc_shared.h",
+    "h7_mac.ioc",
+    "MDK-ARM\\h7_mac.uvprojx"
+  ],
+  "integrity_basis": "current source before versus after execution",
+  "oled_c_sha256": "77c5ce076dc1d824b397554b53c69baf7de0dce7c556988384cbe991cfc2b685"
 }

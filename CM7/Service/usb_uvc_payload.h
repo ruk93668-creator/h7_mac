@@ -9,7 +9,8 @@
 #define USB_UVC_PAYLOAD_HEADER_SIZE 2U
 #define USB_UVC_PAYLOAD_MAX_PACKET_SIZE 512U
 
-//同一对象必须串行调用，不同对象互不影响
+//纯软件分包器，不注册USB、不操作端点、不知道Camera或Media
+//同一对象必须串行调用，不同对象互不影响；Class负责USB IRQ串行化
 typedef enum
 {
     USB_UVC_PAYLOAD_UNINITIALIZED = 0,
@@ -80,6 +81,7 @@ SysResult_t USB_UVC_PayloadCompletePacket(UsbUvcPayload_t *payload, uint32_t tok
 SysResult_t USB_UVC_PayloadCancel(UsbUvcPayload_t *payload);
 
 //底层确认Abort结束或明确从未接受发送后，匹配Token结束取消
+//本函数不停止硬件；不得把普通错误或busy=false当成Abort确认
 SysResult_t USB_UVC_PayloadAbortPacket(UsbUvcPayload_t *payload, uint32_t token);
 
 #endif

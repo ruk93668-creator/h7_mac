@@ -3,7 +3,7 @@
 
 //UVC 1.1描述符，当前仅提供数据，不注册或启动Class
 
-//独立UVC设备身份，TEST描述符继续由Platform保留
+//UVC设备描述符；TEST描述符由独立usb_test_device模块维护
 static uint8_t s_uvc_device_desc[20] __attribute__((aligned(4))) =
 {
     0x12U,//bLength：设备描述符有效长度18字节
@@ -241,7 +241,7 @@ typedef char UvcConfigLengthCheck[
 typedef char UvcConfigPaddingCheck[
     sizeof(s_uvc_config_storage) == 184U ? 1 : -1];
 
-//供后续UVC Class的GetFSConfigDescriptor回调使用
+//提供Class配置描述符，返回指针不转移存储所有权
 uint8_t *USB_UVC_GetFSConfigDescriptor(uint16_t *length)
 {
     if (length == NULL)
@@ -251,7 +251,7 @@ uint8_t *USB_UVC_GetFSConfigDescriptor(uint16_t *length)
     return s_uvc_config_storage.descriptor;
 }
 
-//供后续UVC设备描述符回调使用，保持TEST身份独立
+//提供UVC设备描述符，TEST描述符单独维护
 uint8_t *USB_UVC_GetDeviceDescriptor(USBD_SpeedTypeDef speed, uint16_t *length)
 {
     if (length == NULL)

@@ -1,5 +1,6 @@
 #include "usb_mode.h"
 #include "usb_device.h"
+#include "usb_uvc.h"
 #include "framework_init.h"
 #include <stdbool.h>
 #include "platform_time.h"
@@ -7,18 +8,16 @@
 //由Mode Manager选择并注册当前Class
 SysResult_t Usb_TestRegister(void);
 
-static SysResult_t UsbMode_RegisterClass(UsbMode_t mode);
-
 #define USB_MODE_CONFIGURED_TIMEOUT_MS    (5000U)
 
 //USB模式运行上下文，仅由主循环和初始化流程管理
 typedef struct
 {
 
-    //当前模式，暂时只支持TEST
+    //冷启动模式和同模式重连目标
     UsbMode_t mode, target_mode;
 
-    //// RUNNING表示主机已完成配置
+    //RUNNING表示主机已完成配置
     UsbModeState_t state;
 
     //模式管理器已初始化
@@ -34,6 +33,9 @@ typedef struct
 //静态模式管理对象，复位后状态为UNINITIALIZED
 static UsbModeContext_t s_usb_mode;
 
+//按冷启动配置注册唯一Class
+static SysResult_t UsbMode_RegisterClass(UsbMode_t mode);
+
 //在APPLICATION等级启动当前USB模式
 static SysResult_t UsbMode_AppStart(void);
 
@@ -45,8 +47,9 @@ SysResult_t USB_Mode_Init(void)
     if (s_usb_mode.initialized)
         return SYS_OK;
 
-    //已有上层显式注册的Class不覆盖；否则由Mode Manager选择默认TEST
-    s_usb_mode.mode = USB_MODE_TEST;
+    //保留上层已注册的Class，否则按编译期开关注册
+    s_usb_mode.mode = USB_Mode_GetMode();
+    s_usb_mode.target_mode = s_usb_mode.mode;
     {
         uint16_t descriptor_length = 0U;
         if (USB_Device_GetConfigDescriptor(&descriptor_length) == NULL)
@@ -66,7 +69,7 @@ SysResult_t USB_Mode_Init(void)
     return SYS_OK;
 }
 
-//启动现有TEST设备，保留原有描述符和端点配置
+//启动已注册的冷启动模式，保留原有端点生命周期
 SysResult_t USB_Mode_Start(void)
 {
     SysResult_t result;
@@ -75,19 +78,19 @@ SysResult_t USB_Mode_Start(void)
     if (!s_usb_mode.initialized)
         return SYS_ERR_INVALID_STATE;
 
-    //UVC和MSC仅预留枚举，尚未接入Class
-    if (s_usb_mode.mode != USB_MODE_TEST)
+    //只允许启动编译期选定的模式，不接受运行时改写模式
+    if (s_usb_mode.mode != (USB_MODE_BOOT_UVC ? USB_MODE_UVC : USB_MODE_TEST))
         return SYS_ERR_NOT_SUPPORTED;
 
     //已经启动时拒绝第二次启动
     if (s_usb_mode.state == USB_MODE_STATE_RUNNING)
         return SYS_ERR_BUSY;
 
-    //切换和故障恢复流程尚未实现，只允许空闲时启动
+    //公开Start只接受冷启动IDLE，同模式重连由Process推进
     if (s_usb_mode.state != USB_MODE_STATE_IDLE)
         return SYS_ERR_INVALID_STATE;
 
-    //记录启动过程，调用既有Core启动接口
+    //Start只确认软件启动成功，枚举完成由WAIT_CONFIGURED确认
     s_usb_mode.state = USB_MODE_STATE_STARTING;
     result = USB_Device_Start();
     s_usb_mode.last_result = result;
@@ -112,8 +115,8 @@ SysResult_t USB_Mode_RequestReconnect(UsbMode_t target_mode)
     //未初始化时不能请求重连
     if (!s_usb_mode.initialized)
         return SYS_ERR_INVALID_STATE;
-    //UVC和MSC尚未接入Class，不能作为重连目标
-    if (target_mode != USB_MODE_TEST)
+    //只允许当前模式重连，不实现跨模式热切换
+    if (target_mode != s_usb_mode.mode)
         return SYS_ERR_NOT_SUPPORTED;
 
     //启动流程未完成时不能打断
@@ -140,7 +143,16 @@ SysResult_t USB_Mode_RequestReconnect(UsbMode_t target_mode)
     return SYS_OK;
 }
 
-//非阻塞主循环入口，暂不执行任何模式切换
+//查询当前冷启动模式，不修改注册和启动状态
+UsbMode_t USB_Mode_GetMode(void)
+{
+    if (s_usb_mode.initialized)
+        return s_usb_mode.mode;
+
+    return USB_MODE_BOOT_UVC ? USB_MODE_UVC : USB_MODE_TEST;
+}
+
+//非阻塞处理枚举和当前模式重连
 void USB_Mode_Process(void)
 {
     uint32_t now_ms;
@@ -257,6 +269,11 @@ static SysResult_t UsbMode_RegisterClass(UsbMode_t mode)
         case USB_MODE_TEST:
             return Usb_TestRegister();
         case USB_MODE_UVC:
+#if USB_MODE_BOOT_UVC
+            return USB_UVC_Register();
+#else
+            return SYS_ERR_NOT_SUPPORTED;
+#endif
         case USB_MODE_MSC:
         default:
             return SYS_ERR_NOT_SUPPORTED;

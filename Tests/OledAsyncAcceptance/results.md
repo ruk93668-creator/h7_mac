@@ -66,6 +66,6 @@
 
 ```text
 D:\32\ARM\ARMCC\Bin\armcc.exe --vsn
-D:\32\ARM\ARMCC\Bin\armcc.exe --cpu Cortex-M4 --c99 -O0 -I D:\32\STM32H7\h7_mac\CM4\Device\Inc -I D:\32\STM32H7\h7_mac\CM4\BSP -I D:\32\STM32H7\h7_mac\Common\Inc -I D:\32\STM32H7\h7_mac\Board\Inc -c D:\32\STM32H7\h7_mac\Tests\OledAsyncAcceptance\oled_async_test.c -o D:\32\STM32H7\h7_mac\Tests\OledAsyncAcceptance\oled_async_test.o
-D:\32\ARM\ARMCC\Bin\armlink.exe D:\32\STM32H7\h7_mac\Tests\OledAsyncAcceptance\oled_async_test.o --entry Oled_TestRun --scatter D:\32\STM32H7\h7_mac\Tests\OledAsyncAcceptance\test.sct --keep=*(.device_export) --no_scanlib -o D:\32\STM32H7\h7_mac\Tests\OledAsyncAcceptance\oled_async_test.axf
+D:\32\ARM\ARMCC\Bin\armcc.exe --cpu Cortex-M4 --c99 -O0 -I C:\Users\29062\.codex\worktrees\uvc-10-main\h7_mac\CM4\Device\Inc -I C:\Users\29062\.codex\worktrees\uvc-10-main\h7_mac\CM4\BSP -I C:\Users\29062\.codex\worktrees\uvc-10-main\h7_mac\Common\Inc -I C:\Users\29062\.codex\worktrees\uvc-10-main\h7_mac\Board\Inc -c C:\Users\29062\.codex\worktrees\uvc-10-main\h7_mac\Tests\OledAsyncAcceptance\oled_async_test.c -o C:\Users\29062\.codex\worktrees\uvc-10-main\h7_mac\Tests\OledAsyncAcceptance\oled_async_test.o
+D:\32\ARM\ARMCC\Bin\armlink.exe C:\Users\29062\.codex\worktrees\uvc-10-main\h7_mac\Tests\OledAsyncAcceptance\oled_async_test.o --entry Oled_TestRun --scatter C:\Users\29062\.codex\worktrees\uvc-10-main\h7_mac\Tests\OledAsyncAcceptance\test.sct --keep=*(.device_export) --no_scanlib -o C:\Users\29062\.codex\worktrees\uvc-10-main\h7_mac\Tests\OledAsyncAcceptance\oled_async_test.axf
 ```

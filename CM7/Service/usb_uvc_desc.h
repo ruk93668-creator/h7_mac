@@ -3,6 +3,8 @@
 
 #include "usbd_def.h"
 
+//只返回模块持有的静态数据，调用者不得改写或释放
+//由Core/控制请求上下文调用，不触发Class注册或端点操作
 //配置描述符有效长度，不含PIO尾部补齐空间
 #define USB_UVC_FS_CONFIG_DESC_SIZE 180U
 
