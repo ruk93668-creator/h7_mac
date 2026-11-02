@@ -54,3 +54,5 @@ powershell -NoProfile -ExecutionPolicy Bypass -File Tests/UvcBridge/build.ps1
 本轮未自动调用Process。后续在CM7 App_Run中由用户接入，并持续运行既有CameraCapture_Process和USB_UVC_Process；无需在桥接中重复调用它们。仅配置UVC且完成Commit/Alt1后才会获取图像；TEST模式不会取图。保持唯一帧提交者和唯一Media消费者，不允许其他模块在桥接持有期间释放相同帧或将其再次提交。
 
 未操作实板，不证明真实OV5640 YUV422字节顺序、DMA/USB并发、Windows视频显示或长期稳定性通过。测试桩验证的是接口契约与桥接逻辑，不能代替硬件验收。
+
+CM7 TEST、CM7 UVC、CM4均Keil -r完整重编0 Error、0 Warning，编译日志在本目录。用户Keil本地配置、App_Main和USB/Media源码SHA核对未变。详情见audit.json。

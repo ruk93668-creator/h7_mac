@@ -1,0 +1,37 @@
+{
+  "implementation_commit": "d0d131d19f7963cbda9d9099c0d70422ab144a13",
+  "production_files": [
+    "CM7/Application/app_uvc_bridge.c",
+    "CM7/Application/app_uvc_bridge.h"
+  ],
+  "source_sha256": {
+    "CM7/Application/app_uvc_bridge.c": "098d5f317ac8bce4cd542f8d0b50ea44cd2a78f4fb17fe77ea04fe4e4ec46a8a",
+    "CM7/Application/app_uvc_bridge.h": "e7ca28f8ff116b8882feb5faf272d1b8e73effc012591f1da9e03292218b7398"
+  },
+  "preservation_pass": true,
+  "bridge_tests": 35,
+  "usb_regression": 635,
+  "media_regression": 72,
+  "builds": {
+    "CM7_TEST": {
+      "errors": 0,
+      "warnings": 0,
+      "program_size": "Code=64106 RO-data=2526 RW-data=660 ZI-data=17004  ",
+      "log": "cm7_keil.log"
+    },
+    "CM7_UVC": {
+      "errors": 0,
+      "warnings": 0,
+      "program_size": "Code=64130 RO-data=2526 RW-data=660 ZI-data=17004  ",
+      "log": "cm7_uvc_keil.log"
+    },
+    "CM4": {
+      "errors": 0,
+      "warnings": 0,
+      "program_size": "Code=20350 RO-data=914 RW-data=636 ZI-data=2580  ",
+      "log": "cm4_keil.log"
+    }
+  },
+  "app_run_hooked": false,
+  "hardware_test": "NOT RUN"
+}
