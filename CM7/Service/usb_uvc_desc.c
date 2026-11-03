@@ -32,19 +32,19 @@ static uint8_t s_uvc_langid_desc[4] __attribute__((aligned(4))) =
 //功能名称有效22字节，末尾保留2字节PIO读取空间
 static uint8_t s_uvc_function_desc[24] __attribute__((aligned(4))) =
 {
-    0x16U, 0x03U,//有效长度22，STRING类型
-    0x55U, 0x00U,//U
-    0x56U, 0x00U,//V
-    0x43U, 0x00U,//C
-    0x20U, 0x00U,//空格
-    0x43U, 0x00U,//C
-    0x61U, 0x00U,//a
-    0x6DU, 0x00U,//m
-    0x65U, 0x00U,//e
-    0x72U, 0x00U,//r
-    0x61U, 0x00U//a，协议数据不包含结束符
+    0x18U, 0x03U,               // 有效长度24，STRING类型
+    0x52U, 0x00U,               // R
+    0x6FU, 0x00U,               // o
+    0x78U, 0x00U,               // x
+    0x79U, 0x00U,               // y
+    0x20U, 0x00U,               // 空格
+    0x43U, 0x00U,               // C
+    0x61U, 0x00U,               // a
+    0x6DU, 0x00U,               // m
+    0x65U, 0x00U,               // e
+    0x72U, 0x00U,               // r
+    0x61U, 0x00U                // a
 };
-
 //180字节有效数据，保留显式padding，结构按4字节对齐
 static struct __attribute__((aligned(4)))
 {

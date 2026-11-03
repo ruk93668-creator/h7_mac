@@ -10,7 +10,7 @@ static const VideoConfig_t s_default_config =
         .format = CAMERA_PIXEL_FORMAT_YUV422
     },
     .output = VIDEO_OUTPUT_USB_UVC,
-    .output_fps = 10U
+    .output_fps = 25U
 };
 
 const VideoConfig_t *VideoConfig_GetDefault(void)
