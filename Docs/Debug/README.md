@@ -7,10 +7,7 @@
 | 案例 | 当时先怀疑什么 | 关键转折 | 当前结论边界 |
 |---|---|---|---|
 | [RTOS USB与WFI](FreeRTOS_USB_WFI枚举异常排查记录.md) | 启动、连接时序、EP0、未收SETUP | 延后插入仍失败；0x3018与0x008C0080推翻部分判断；断点敏感后回看Idle睡眠差异 | 禁用WFI后阶段看到控制协商恢复，严格恢复对照/机制尚待验证 |
-| [Alt1带宽不足](USB_UVC_NO_BANDWIDTH排查记录.md) | 设备占用、模式或流启动问题 | 第一笔失败为Alt1 URB的0x80000700 | 主机带宽拒绝明确，换拓扑/包长成功结果未记录 |
-| [初始GET_CUR兼容性](UVC-09D_Windows_ProbeCommit.md) | 画面源或发送问题 | Commit/Alt1未成立；抓到初始GET_CUR STALL | 静态彩条33帧重组、CRC和显示有证据，长期稳定不外推 |
 | [DMA FIFO](DCMI_DMA_FIFO错误排查记录.md) | Media只交付前两帧、USB不接收 | 首次FE；不发USB也能由读取复制触发；INC4被SINGLE覆盖 | 缩小并发触发条件，未证明唯一硬件根因或长期修复 |
-| [Windows名称](USB设备名称缓存排查记录.md) | 代码回退或烧错固件 | BusReported=Roxy，FriendlyName=UVC | 当前属性解释成立，未做设备卸载刷新验证 |
 | [FreeRTOS迁移动机](FreeRTOS_移植动机与决策记录.md) | 属于设计选择，不是已修好Bug | 先单任务保留所有权，再渐进拆分 | 计划和实测分开，RTOS不等于性能自动改善 |
 
 ## 讲述一个案例的顺序
