@@ -7,8 +7,8 @@
   },
   "source_changed": [],
   "source_sha256": {
-    "CM7/Service/usb_mode.c": "a6aca7d2ffb4f70838f43aaa7056fdb3cf7ac6c9e64ad23c1edd306c68176168",
-    "CM7/Service/usb_mode.h": "7ddcfd0a551c3eeac739936eb83b0b1917d1e2e9addeb5feede8b33ca203ef17",
+    "CM7/Service/usb_mode.c": "e81ebe2c9142a559fe3ab2c5f2f29869bc4ad11615dee2d439e71637daddcce0",
+    "CM7/Service/usb_mode.h": "588f21ef4e41e45d08529c133aa0fd7cdf08b32a3c1d6b1813428c6521a3db25",
     "CM7/Platform/usb_device.c": "336f630eaac024c580425d10cd49cb3ea6104f40381697197d0f8f261bcf8149",
     "CM7/BSP/bsp_usb.c": "b3896fe05236105b65bc3c48b36e5d3d1bc6d94f0eed0763b2095b578557c08e",
     "CM7/Platform/usb_device.h": "69badef3d00680df03e0062d794e37390ffd767a885af1ec37219ebe184f59ab",

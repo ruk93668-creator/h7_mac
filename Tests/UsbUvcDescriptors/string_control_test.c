@@ -14,14 +14,16 @@ int UvcString_TestRun(uint32_t id)
     uint8_t *source;
     uint32_t i;
     uint32_t opens;
-    static const uint8_t expected[22] =
+    static const uint8_t expected[24] =
     {
-        22U, 3U, 'U', 0U, 'V', 0U, 'C', 0U, ' ', 0U,
+        24U, 3U, 'R', 0U, 'o', 0U, 'x', 0U, 'y', 0U, ' ', 0U,
         'C', 0U, 'a', 0U, 'm', 0U, 'e', 0U, 'r', 0U, 'a', 0U
     };
     __HAL_RCC_USB_CONFIG(RCC_USBCLKSOURCE_HSI48);
     RCC->CR |= RCC_CR_HSI48RDY;
     EQ(USB_Device_Init(), SYS_OK);
+    { VideoStreamConfig_t config = {{160U, 120U, CAMERA_PIXEL_FORMAT_YUV422}, 25U};
+      EQ(USB_UVC_Configure(&config), SYS_OK); }
     EQ(USB_UVC_Register(), SYS_OK);
     EQ(s_device.pDesc->GetLangIDStrDescriptor, USB_UVC_GetLangIDStrDescriptor);
     EQ(s_device.pDesc->GetInterfaceStrDescriptor, USB_UVC_GetInterfaceStrDescriptor);
@@ -44,14 +46,14 @@ int UvcString_TestRun(uint32_t id)
     else if (id == 2U || id == 3U || id == 4U || id == 6U)
     {
         source = USB_UVC_GetInterfaceStrDescriptor(USBD_SPEED_FULL, &length);
-        EQ(length, 22U);
+        EQ(length, 24U);
         g_string_source = (uint32_t)source;
         g_string_storage_size = 24U;
         g_string_watch = 1U;
         Request(0x80U, USB_REQ_GET_DESCRIPTOR, 0x0305U, 0x0409U,
-                id == 3U ? 255U : id == 4U ? 8U : 22U);
+                id == 3U ? 255U : id == 4U ? 8U : 24U);
         g_string_watch = 0U;
-        EQ(tx_size, id == 4U ? 8U : 22U);
+        EQ(tx_size, id == 4U ? 8U : 24U);
         for (i = 0U; i < tx_size; i++) EQ(tx_data[i], expected[i]);
         EQ(stall_count, 0U); EQ(s_device.ep0_state, USBD_EP0_DATA_IN);
         EQ(s_tx_transfer[0].source, source);
@@ -59,8 +61,8 @@ int UvcString_TestRun(uint32_t id)
         {
             EQ((uint32_t)source & 3U, 0U);
             EQ((uint32_t)s_pcd.IN_ep[0].xfer_buff & 3U, 0U);
-            EQ(s_tx_pio_pool[0][22], 0U); EQ(s_tx_pio_pool[0][23], 0U);
-            EQ(source[22], 0U); EQ(source[23], 0U);
+            EQ(s_tx_pio_pool[0][22], 'a'); EQ(s_tx_pio_pool[0][23], 0U);
+            EQ(source[22], 'a'); EQ(source[23], 0U);
         }
     }
     else if (id == 5U)
@@ -77,8 +79,8 @@ int UvcString_TestRun(uint32_t id)
         uint8_t *first = USB_UVC_GetInterfaceStrDescriptor(USBD_SPEED_FULL, &length);
         for (i = 0U; i < 3U; i++)
         {
-            Request(0x80U, USB_REQ_GET_DESCRIPTOR, 0x0305U, 0x0409U, 22U);
-            EQ(tx_size, 22U); EQ(memcmp(tx_data, expected, 22U), 0);
+            Request(0x80U, USB_REQ_GET_DESCRIPTOR, 0x0305U, 0x0409U, 24U);
+            EQ(tx_size, 24U); EQ(memcmp(tx_data, expected, 24U), 0);
             EQ(s_tx_transfer[0].source, first);
             HAL_PCD_DataInStageCallback(&s_pcd, 0U);
             HAL_PCD_DataOutStageCallback(&s_pcd, 0U);

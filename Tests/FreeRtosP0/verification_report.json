@@ -1,0 +1,96 @@
+{
+  "software_cases": 482,
+  "passed": 482,
+  "failed": 0,
+  "regressions": [
+    {
+      "suite": "VideoConfig",
+      "executed": 28,
+      "passed": 28,
+      "failed": 0,
+      "log": "VideoConfig_console.log"
+    },
+    {
+      "suite": "CameraAppInit",
+      "executed": 13,
+      "passed": 13,
+      "failed": 0,
+      "log": "CameraAppInit_console.log"
+    },
+    {
+      "suite": "UvcBridge",
+      "executed": 35,
+      "passed": 35,
+      "failed": 0,
+      "log": "UvcBridge_console.log"
+    },
+    {
+      "suite": "CameraContextRefactor",
+      "executed": 72,
+      "passed": 72,
+      "failed": 0,
+      "log": "CameraContextRefactor_console.log"
+    },
+    {
+      "suite": "CameraStreamState",
+      "executed": 75,
+      "passed": 75,
+      "failed": 0,
+      "log": "CameraStreamState_console.log"
+    },
+    {
+      "suite": "UsbCoreDecoupling",
+      "executed": 204,
+      "passed": 204,
+      "failed": 0,
+      "log": "UsbCoreDecoupling_console.log"
+    },
+    {
+      "suite": "Ep0IrqRace",
+      "executed": 4,
+      "passed": 4,
+      "failed": 0,
+      "log": "Ep0IrqRace_console.log"
+    }
+  ],
+  "descriptor_string_tests": {
+    "total": 40,
+    "passed": 40,
+    "failures": 0,
+    "errors": 0
+  },
+  "kernel_tests": {
+    "total": 11,
+    "passed": 11,
+    "failed": 0
+  },
+  "firmware_audits": {
+    "total": 44,
+    "passed": 44,
+    "failed": 0
+  },
+  "builds": {
+    "baremetal_cm7_keil.log": {
+      "errors": 0,
+      "warnings": 0,
+      "program_size": "Program Size: Code=67070 RO-data=2570 RW-data=708 ZI-data=17564"
+    },
+    "cm7_uvc_keil.log": {
+      "errors": 0,
+      "warnings": 0,
+      "program_size": "Program Size: Code=71334 RO-data=2650 RW-data=788 ZI-data=30212"
+    },
+    "cm7_test_keil.log": {
+      "errors": 0,
+      "warnings": 0,
+      "program_size": "Program Size: Code=71334 RO-data=2650 RW-data=788 ZI-data=30212"
+    },
+    "h7_mac_CM4_keil.log": {
+      "errors": 0,
+      "warnings": 0,
+      "program_size": "Program Size: Code=20350 RO-data=914 RW-data=636 ZI-data=2580"
+    }
+  },
+  "hardware_verified": false,
+  "hardware_gate": "Pending: real task exception switching, HAL/RTOS tick, stack watermarks, Windows enumeration and 30min UVC, measured FPS baseline comparison"
+}

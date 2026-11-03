@@ -21,6 +21,7 @@
 
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
+#include "platform_rtos.h"
 #include "framework_init.h"
 #include "framework_runtime.h"
 #include "usb_mode.h"
@@ -182,6 +183,10 @@ Error_Handler();
   /* Initialize all configured peripherals */
   /* USER CODE BEGIN 2 */
 
+  //原初始化完成后启动唯一业务任务，成功不再返回
+  init_error = Platform_RtosStart(Main_Run);
+  Error_Handler();
+
   /* USER CODE END 2 */
 
   /* Infinite loop */
@@ -191,7 +196,7 @@ Error_Handler();
     /* USER CODE END WHILE */
 
     /* USER CODE BEGIN 3 */
-    Main_Run();
+    //调度器启动失败才到这里，不重复运行原主循环
   }
   /* USER CODE END 3 */
 }

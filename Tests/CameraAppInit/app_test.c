@@ -111,7 +111,7 @@ int App_TestRun(unsigned id)
     case 12:
         CHECK(VideoConfig_RequestUpdate(NULL)==SYS_ERR_INVALID_ARG);
         CHECK(VideoConfig_RequestUpdate(VideoConfig_GetDefault())==SYS_ERR_NOT_SUPPORTED);
-        CHECK(VideoConfig_GetDefault()->output_fps==10);
+        CHECK(VideoConfig_GetDefault()->output_fps==25);
         break;
     default: return -1;
     }

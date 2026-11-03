@@ -53,7 +53,7 @@ with (HERE / "string_control.axf").open("rb") as f:
     sections = [(s["sh_addr"], s.data()) for s in elf.iter_sections()
                 if s["sh_flags"] & 2 and s["sh_type"] == "SHT_PROGBITS" and s["sh_size"]]
 
-NAMES = ["正式UVC注册及回调绑定", "Core语言描述符", "Core功能名称22字节", "主机请求255仍只返回22", "短请求只返回8字节", "不支持索引按Core规则STALL", "PIO对齐尾部及读取边界", "交错重复请求与静态地址"]
+NAMES = ["正式UVC注册及回调绑定", "Core语言描述符", "Core功能名称24字节", "主机请求255仍只返回24", "短请求只返回8字节", "不支持索引按Core规则STALL", "PIO对齐尾部及读取边界", "交错重复请求与静态地址"]
 observations = []
 from unicorn import UC_HOOK_MEM_READ
 for case_id, name in enumerate(NAMES):

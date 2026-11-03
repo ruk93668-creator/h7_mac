@@ -1,0 +1,14 @@
+{
+  "commit": "bffacd28897b47c7e54b90562960ff365f6b7695",
+  "camera": {
+    "width": 160,
+    "height": 120,
+    "format": "YUY2",
+    "bytes": 38400
+  },
+  "output_fps_configured": 25,
+  "output_fps_measured": null,
+  "string_name": "Roxy Camera",
+  "string_fix_applied": true,
+  "hardware_baseline": "No new measurements available; user previously reported successful video. Stability, actual FPS, DMA errors and reset cause must be recorded on board before P0 hardware comparison."
+}

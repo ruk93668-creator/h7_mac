@@ -25,7 +25,7 @@ SysResult_t USB_UVC_ConfigureFSDescriptor(const VideoStreamConfig_t *config);
 #define USB_UVC_LANGID_DESC_SIZE 4U
 
 //功能名称描述符有效长度，不包含PIO补齐空间
-#define USB_UVC_FUNCTION_STR_DESC_SIZE 22U
+#define USB_UVC_FUNCTION_STR_DESC_SIZE 24U
 
 //返回FS配置静态指针和180字节长度，length为空时返回NULL
 uint8_t *USB_UVC_GetFSConfigDescriptor(uint16_t *length);

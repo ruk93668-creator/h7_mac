@@ -1,0 +1,12 @@
+null callback PASS (0, 2, 0, 0) None
+masked context rejected PASS (0, 2, 0, 0) None
+static startup and duplicate rejection PASS (0, 5, 0, 0) None
+static idle storage PASS (0, 4, 0, 0) None
+priority delay wake and idle PASS (0, 11, 0, 0) None
+suspended tick catchup PASS (0, 8, 0, 0) None
+stack watermark alignment and resume PASS (0, 12, 0, 0) None
+real Port SysTick and independent HAL PASS (0, 13, 0, 0) None
+APB1 TIMPRE clock derivation PASS (0, 7, 0, 0) None
+TIM6 reinit suspend resume priority PASS (0, 12, 0, 0) None
+stack overflow hook PASS (0, 6, 0, 0) None
+{'total': 11, 'passed': 11, 'failed': 0} source_changed []

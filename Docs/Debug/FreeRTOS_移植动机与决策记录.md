@@ -4,7 +4,7 @@
 > 项目：STM32H747 + OV5640 多接口 AI 智能视觉相机  
 > 编写日期：2026-11-02  
 > 代码基线：`main@2873d2cf1de0be457329622a2625fcc6608f675a`  
-> 状态：**决定将 CM7 FreeRTOS 移植列为 P0，尚未实施、尚未验收**  
+> 状态：**2026-11-03已启动CM7 P0最小内核移植；软件验证记录见 [移植说明](../FreeRTOS_P0移植说明.md)，实板闸门尚未验收**
 > 适用范围：先 CM7，CM4 暂保留现有裸机 OLED/IPC 架构  
 > 与开发计划的关系：P0 → P1 JPEG/MJPEG → P2 OLED/IPC → P8 Ethernet → P3 AI → P4–P7 → P9 Wi-Fi
 

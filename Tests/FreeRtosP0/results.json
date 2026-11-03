@@ -1,0 +1,120 @@
+{
+  "summary": {
+    "total": 11,
+    "passed": 11,
+    "failed": 0
+  },
+  "source_changed": [],
+  "cases": [
+    {
+      "id": 0,
+      "name": "null callback",
+      "pass": true,
+      "assertions": 2,
+      "failed_line": 0,
+      "actual": 0,
+      "expected": 0,
+      "error": null
+    },
+    {
+      "id": 1,
+      "name": "masked context rejected",
+      "pass": true,
+      "assertions": 2,
+      "failed_line": 0,
+      "actual": 0,
+      "expected": 0,
+      "error": null
+    },
+    {
+      "id": 2,
+      "name": "static startup and duplicate rejection",
+      "pass": true,
+      "assertions": 5,
+      "failed_line": 0,
+      "actual": 0,
+      "expected": 0,
+      "error": null
+    },
+    {
+      "id": 3,
+      "name": "static idle storage",
+      "pass": true,
+      "assertions": 4,
+      "failed_line": 0,
+      "actual": 0,
+      "expected": 0,
+      "error": null
+    },
+    {
+      "id": 4,
+      "name": "priority delay wake and idle",
+      "pass": true,
+      "assertions": 11,
+      "failed_line": 0,
+      "actual": 0,
+      "expected": 0,
+      "error": null
+    },
+    {
+      "id": 5,
+      "name": "suspended tick catchup",
+      "pass": true,
+      "assertions": 8,
+      "failed_line": 0,
+      "actual": 0,
+      "expected": 0,
+      "error": null
+    },
+    {
+      "id": 6,
+      "name": "stack watermark alignment and resume",
+      "pass": true,
+      "assertions": 12,
+      "failed_line": 0,
+      "actual": 0,
+      "expected": 0,
+      "error": null
+    },
+    {
+      "id": 7,
+      "name": "real Port SysTick and independent HAL",
+      "pass": true,
+      "assertions": 13,
+      "failed_line": 0,
+      "actual": 0,
+      "expected": 0,
+      "error": null
+    },
+    {
+      "id": 8,
+      "name": "APB1 TIMPRE clock derivation",
+      "pass": true,
+      "assertions": 7,
+      "failed_line": 0,
+      "actual": 0,
+      "expected": 0,
+      "error": null
+    },
+    {
+      "id": 9,
+      "name": "TIM6 reinit suspend resume priority",
+      "pass": true,
+      "assertions": 12,
+      "failed_line": 0,
+      "actual": 0,
+      "expected": 0,
+      "error": null
+    },
+    {
+      "id": 10,
+      "name": "stack overflow hook",
+      "pass": true,
+      "assertions": 6,
+      "failed_line": 0,
+      "actual": 0,
+      "expected": 0,
+      "error": null
+    }
+  ]
+}

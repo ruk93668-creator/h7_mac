@@ -29,10 +29,10 @@ static uint8_t s_uvc_langid_desc[4] __attribute__((aligned(4))) =
     0x04U, 0x03U, 0x09U, 0x04U
 };
 
-//功能名称有效22字节，末尾保留2字节PIO读取空间
-static uint8_t s_uvc_function_desc[24] __attribute__((aligned(4))) =
+//功能名称有效24字节，已满足32位PIO读取边界
+static uint8_t s_uvc_function_desc[] __attribute__((aligned(4))) =
 {
-    0x18U, 0x03U,               // 有效长度24，STRING类型
+    USB_UVC_FUNCTION_STR_DESC_SIZE, 0x03U,               // 有效长度24，STRING类型
     0x52U, 0x00U,               // R
     0x6FU, 0x00U,               // o
     0x78U, 0x00U,               // x
@@ -45,6 +45,9 @@ static uint8_t s_uvc_function_desc[24] __attribute__((aligned(4))) =
     0x72U, 0x00U,               // r
     0x61U, 0x00U                // a
 };
+typedef char UvcFunctionLengthCheck[
+    sizeof(s_uvc_function_desc) == USB_UVC_FUNCTION_STR_DESC_SIZE ? 1 : -1];
+
 //180字节有效数据，保留显式padding，结构按4字节对齐
 static struct __attribute__((aligned(4)))
 {

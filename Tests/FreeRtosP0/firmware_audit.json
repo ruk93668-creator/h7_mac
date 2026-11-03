@@ -1,0 +1,257 @@
+{
+  "summary": {
+    "total": 44,
+    "passed": 44,
+    "failed": 0
+  },
+  "firmware_sha256": "0478ce960d7b2c855ef3f071c7eadd6279992bf0a095d505f53933c3e1375f3f",
+  "checks": [
+    {
+      "name": "SVC_Handler vector",
+      "pass": true,
+      "actual": "0x8000395"
+    },
+    {
+      "name": "PendSV_Handler vector",
+      "pass": true,
+      "actual": "0x80003f1"
+    },
+    {
+      "name": "SysTick_Handler vector",
+      "pass": true,
+      "actual": "0x800b2e9"
+    },
+    {
+      "name": "TIM6_DAC_IRQHandler vector",
+      "pass": true,
+      "actual": "0x800b749"
+    },
+    {
+      "name": "TIM6 is HAL Tick, no HAL SysTick call",
+      "pass": true,
+      "actual": null
+    },
+    {
+      "name": "MSP stack is 4KiB",
+      "pass": true,
+      "actual": [
+        536897784,
+        4096
+      ]
+    },
+    {
+      "name": "Legacy stack is 8KiB",
+      "pass": true,
+      "actual": [
+        536887660,
+        8192
+      ]
+    },
+    {
+      "name": "Idle stack is 1KiB",
+      "pass": true,
+      "actual": [
+        536895928,
+        1024
+      ]
+    },
+    {
+      "name": "s_legacy_stack DTCM range",
+      "pass": true,
+      "actual": [
+        "0x2000416c",
+        8192
+      ]
+    },
+    {
+      "name": "s_idle_stack DTCM range",
+      "pass": true,
+      "actual": [
+        "0x200061b8",
+        1024
+      ]
+    },
+    {
+      "name": "s_legacy_tcb DTCM range",
+      "pass": true,
+      "actual": [
+        "0x20004120",
+        76
+      ]
+    },
+    {
+      "name": "s_idle_tcb DTCM range",
+      "pass": true,
+      "actual": [
+        "0x2000616c",
+        76
+      ]
+    },
+    {
+      "name": "initial MSP is aligned and inside DTCM",
+      "pass": true,
+      "actual": "0x200078f8"
+    },
+    {
+      "name": "Main_Run original call order",
+      "pass": true,
+      "actual": [
+        "Framework_Run",
+        "USB_Mode_Process",
+        "USB_UVC_Process",
+        "App_Run"
+      ]
+    },
+    {
+      "name": "no kernel heap symbols",
+      "pass": true,
+      "actual": null
+    },
+    {
+      "name": "official tasks.c",
+      "pass": true,
+      "actual": null
+    },
+    {
+      "name": "official queue.c",
+      "pass": true,
+      "actual": null
+    },
+    {
+      "name": "official list.c",
+      "pass": true,
+      "actual": null
+    },
+    {
+      "name": "official LICENSE.md",
+      "pass": true,
+      "actual": null
+    },
+    {
+      "name": "official include/FreeRTOS.h",
+      "pass": true,
+      "actual": null
+    },
+    {
+      "name": "official include/StackMacros.h",
+      "pass": true,
+      "actual": null
+    },
+    {
+      "name": "official include/atomic.h",
+      "pass": true,
+      "actual": null
+    },
+    {
+      "name": "official include/croutine.h",
+      "pass": true,
+      "actual": null
+    },
+    {
+      "name": "official include/deprecated_definitions.h",
+      "pass": true,
+      "actual": null
+    },
+    {
+      "name": "official include/event_groups.h",
+      "pass": true,
+      "actual": null
+    },
+    {
+      "name": "official include/list.h",
+      "pass": true,
+      "actual": null
+    },
+    {
+      "name": "official include/message_buffer.h",
+      "pass": true,
+      "actual": null
+    },
+    {
+      "name": "official include/mpu_prototypes.h",
+      "pass": true,
+      "actual": null
+    },
+    {
+      "name": "official include/mpu_syscall_numbers.h",
+      "pass": true,
+      "actual": null
+    },
+    {
+      "name": "official include/mpu_wrappers.h",
+      "pass": true,
+      "actual": null
+    },
+    {
+      "name": "official include/newlib-freertos.h",
+      "pass": true,
+      "actual": null
+    },
+    {
+      "name": "official include/picolibc-freertos.h",
+      "pass": true,
+      "actual": null
+    },
+    {
+      "name": "official include/portable.h",
+      "pass": true,
+      "actual": null
+    },
+    {
+      "name": "official include/projdefs.h",
+      "pass": true,
+      "actual": null
+    },
+    {
+      "name": "official include/queue.h",
+      "pass": true,
+      "actual": null
+    },
+    {
+      "name": "official include/semphr.h",
+      "pass": true,
+      "actual": null
+    },
+    {
+      "name": "official include/stack_macros.h",
+      "pass": true,
+      "actual": null
+    },
+    {
+      "name": "official include/stream_buffer.h",
+      "pass": true,
+      "actual": null
+    },
+    {
+      "name": "official include/task.h",
+      "pass": true,
+      "actual": null
+    },
+    {
+      "name": "official include/timers.h",
+      "pass": true,
+      "actual": null
+    },
+    {
+      "name": "official portable/RVDS/ARM_CM7/r0p1/port.c",
+      "pass": true,
+      "actual": null
+    },
+    {
+      "name": "official portable/RVDS/ARM_CM7/r0p1/portmacro.h",
+      "pass": true,
+      "actual": null
+    },
+    {
+      "name": "CM4 excludes CM7 kernel group",
+      "pass": true,
+      "actual": null
+    },
+    {
+      "name": "UVC 25 FPS cold config restored",
+      "pass": true,
+      "actual": null
+    }
+  ],
+  "hardware_verified": false
+}

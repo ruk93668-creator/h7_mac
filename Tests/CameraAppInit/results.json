@@ -1,6 +1,6 @@
 {
-  "total": 12,
-  "pass": 12,
+  "total": 13,
+  "pass": 13,
   "fail": 0,
   "cases": [
     {
@@ -72,6 +72,12 @@
     {
       "id": 12,
       "name": "Process forwarding",
+      "pass": true,
+      "failure_line": 0
+    },
+    {
+      "id": 13,
+      "name": "runtime update rejected",
       "pass": true,
       "failure_line": 0
     }

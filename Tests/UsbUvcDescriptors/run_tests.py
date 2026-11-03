@@ -40,15 +40,19 @@ def compile_module():
         scatter.write_text('LR_TEST 0x08000000 0x100000 {\n ER_TEST 0x08000000 { .ANY (+RO) }\n RW_TEST 0x20000000 0x40000 { .ANY (+RW +ZI) }\n}\n')
         args = [TOOL / 'armcc.exe', '--cpu', 'Cortex-M7', '--c99', '-O0',
                 '-DSTM32H747xx', '-DCORE_CM7']
-        for include in ['CM7/Service', 'CM7/Platform', 'Drivers/CMSIS/Include',
+        for include in ['CM7/Service', 'CM7/Platform', 'CM7/Application', 'Common/Inc', 'Drivers/CMSIS/Include',
                         'Drivers/CMSIS/Device/ST/STM32H7xx/Include',
                         'Middlewares/ST/STM32_USB_Device_Library/Core/Inc']:
             args += ['-I', ROOT / include]
         obj, image = temp / 'descriptor.o', temp / 'descriptor.axf'
+        helper = temp / 'config.c'
+        helper.write_text('#include "video_config.h"\n#include "usb_uvc_desc.h"\nint P0Test_Configure(void){const VideoConfig_t *v=VideoConfig_GetDefault();VideoStreamConfig_t c;c.camera=v->camera;c.fps=v->output_fps;return USB_UVC_ConfigureFSDescriptor(&c);}\n')
+        run(args + ['-c', helper, '-o', temp / 'config.o'])
+        run(args + ['-c', ROOT / 'CM7/Application/video_config.c', '-o', temp / 'default.o'])
         run(args + ['-c', ROOT / 'CM7/Service/usb_uvc_desc.c', '-o', obj])
-        run([TOOL / 'armlink.exe', obj, '--entry', 'USB_UVC_GetFSConfigDescriptor',
+        run([TOOL / 'armlink.exe', obj, temp / 'config.o', temp / 'default.o', '--keep=P0Test_Configure', '--entry', 'USB_UVC_GetFSConfigDescriptor',
              '--keep=USB_UVC_GetDeviceDescriptor', '--keep=USB_UVC_GetLangIDStrDescriptor',
-             '--keep=USB_UVC_GetInterfaceStrDescriptor', '--scatter', scatter, '--no_scanlib', '-o', image])
+             '--keep=USB_UVC_GetInterfaceStrDescriptor', '--scatter', scatter, '-o', image])
         with image.open('rb') as f:
             elf = ELFFile(f)
             symbols = {s.name: s['st_value'] for s in elf.get_section_by_name('.symtab').iter_symbols()}
@@ -68,6 +72,7 @@ class DescriptorTests(unittest.TestCase):
         for address, data in sections:
             cls.cpu.mem_write(address, data)
         cls.length_address = 0x2003F000
+        assert cls.invoke('P0Test_Configure') == 0
         cls.config_address, cls.config_length = cls.config_get()
         cls.config = bytes(cls.cpu.mem_read(cls.config_address, cls.config_length))
         cls.device_address, cls.device_length = cls.device_get(1)  # USBD_SPEED_FULL
@@ -167,16 +172,16 @@ class DescriptorTests(unittest.TestCase):
 
     def test_12_frame_rate_size_bitrate(self):
         frame = self.cs(1, 5)
-        self.assertEqual(struct.unpack_from('<IIII', frame, 9), (160 * 120 * 16 * 10, 3072000, 38400, 1000000))
+        self.assertEqual(struct.unpack_from('<IIII', frame, 9), (7680000, 7680000, 38400, 400000))
         self.assertEqual(frame[25], 1)
-        self.assertEqual(struct.unpack_from('<I', frame, 26)[0], 10000000 // 10)
+        self.assertEqual(struct.unpack_from('<I', frame, 26)[0], 10000000 // 25)
 
     def test_13_color_matching(self):
         self.assertEqual(self.cs(1, 13), bytes.fromhex('06 24 0D 00 00 00'))
 
     def test_14_endpoint(self):
         endpoints = [(i, a, d) for _, i, a, d in self.entries if d[1] == 5]
-        self.assertEqual(endpoints, [(1, 1, bytes.fromhex('07 05 81 05 00 02 01'))])
+        self.assertEqual(endpoints, [(1, 1, bytes.fromhex('07 05 81 05 FF 03 01'))])
         self.assertEqual(endpoints[0][2][2], self.cs(1, 1)[6])
 
     def test_15_iad_device_identity(self):
@@ -209,7 +214,14 @@ class DescriptorTests(unittest.TestCase):
         body = re.sub(r'//[^\r\n]*', '', body)
         literal = bytes(int(x, 16) for x in re.findall(r'0x([0-9A-Fa-f]+)U', body))
         self.assertEqual(len(literal), 180)
-        self.assertEqual(literal, self.config)
+        template = bytearray(literal)
+        offset = 0
+        while offset < len(template):
+            if template[offset:offset+3] == bytes([30, 0x24, 5]):
+                struct.pack_into('<HHIIII', template, offset+5, 160, 120, 7680000, 7680000, 38400, 400000)
+                struct.pack_into('<I', template, offset+26, 400000)
+            offset += template[offset]
+        self.assertEqual(bytes(template), self.config)
 
     def test_21_deprecated_clock_bytes_preserved(self):
         header = self.cs(0, 1)
@@ -241,6 +253,11 @@ class DescriptorTests(unittest.TestCase):
     def test_24_only_intended_wire_changes(self):
         # Reconstruct the compiled UVC 1.0 baseline; all other wire bytes must match.
         wire = bytearray(self.config)
+        frame_offset = next(o for o, i, a, d in self.entries if i == 1 and d[1:3] == bytes([0x24, 5]))
+        struct.pack_into('<IIII', wire, frame_offset+9, 3072000, 3072000, 38400, 1000000)
+        struct.pack_into('<I', wire, frame_offset+26, 1000000)
+        endpoint_offset = next(o for o, i, a, d in self.entries if d[1] == 5)
+        wire[endpoint_offset+4:endpoint_offset+6] = bytes([0, 2])
         self.assertEqual((wire[16], wire[25]), (5, 5))
         wire[16] = wire[25] = 0
         pu_offset = next(offset for offset, i, _, d in self.entries if i == 0 and d[1:3] == b'\x24\x05')
@@ -269,9 +286,9 @@ class DescriptorTests(unittest.TestCase):
 
     def test_26_function_name_utf16le(self):
         _, length, data = self.string_get('USB_UVC_GetInterfaceStrDescriptor')
-        self.assertEqual(length, 22)
-        self.assertEqual(data, bytes([22, 3]) + 'UVC Camera'.encode('utf-16le'))
-        self.assertEqual(data[2:].decode('utf-16le'), 'UVC Camera')
+        self.assertEqual(length, 24)
+        self.assertEqual(data, bytes([24, 3]) + 'Roxy Camera'.encode('utf-16le'))
+        self.assertEqual(data[2:].decode('utf-16le'), 'Roxy Camera')
         self.assertNotIn('\x00', data[2:].decode('utf-16le'))
 
     def test_27_function_and_interface_indices(self):
@@ -313,6 +330,11 @@ class DescriptorTests(unittest.TestCase):
 
     def test_32_only_two_configuration_string_indices_changed(self):
         wire = bytearray(self.config)
+        frame_offset = next(o for o, i, a, d in self.entries if i == 1 and d[1:3] == bytes([0x24, 5]))
+        struct.pack_into('<IIII', wire, frame_offset+9, 3072000, 3072000, 38400, 1000000)
+        struct.pack_into('<I', wire, frame_offset+26, 1000000)
+        endpoint_offset = next(o for o, i, a, d in self.entries if d[1] == 5)
+        wire[endpoint_offset+4:endpoint_offset+6] = bytes([0, 2])
         self.assertEqual((wire[16], wire[25]), (5, 5))
         wire[16] = wire[25] = 0
         self.assertEqual(hashlib.sha256(wire).hexdigest(),
