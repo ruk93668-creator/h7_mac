@@ -595,6 +595,12 @@ void HAL_PCD_MspInit(PCD_HandleTypeDef *pcd)
     gpio.Alternate = GPIO_AF10_OTG2_FS;
     HAL_GPIO_Init(GPIOA, &gpio);
     __HAL_RCC_USB2_OTG_FS_CLK_ENABLE();
+
+    //Sleep期间保持USB2控制器时钟
+    __HAL_RCC_USB2_OTG_FS_CLK_SLEEP_ENABLE();
+
+    //片内FS PHY不使用ULPI接口的Sleep时钟
+    __HAL_RCC_USB2_OTG_FS_ULPI_CLK_SLEEP_DISABLE();
     HAL_NVIC_SetPriority(OTG_FS_IRQn, USB_IRQ_PRIORITY, 0U);
 }
 
