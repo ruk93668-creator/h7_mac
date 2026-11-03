@@ -2,7 +2,7 @@
 
 记录日期：2026-11-03。开发基线：`codex/cm7-freertos-p0 @ 0dafe9b`。
 
-**状态：已发现WFI相关的重点线索，禁用WFI后的阶段已看到EP0协商恢复；尚未完成严格的恢复WFI再次复现及睡眠时钟机制验证。**
+**状态：根据后续实板对照反馈，已验证保留WFI、保持USB2控制器Sleep时钟开启并关闭ULPI Sleep时钟使能后，USB恢复正常枚举。内部硬件机制及长期稳定性仍未确认。**
 
 ## 先回忆当时的困惑
 
@@ -63,15 +63,43 @@ void vApplicationIdleHook(void)
 
 FreeRTOS并不要求应用必须在Idle Hook执行WFI。configUSE_TICKLESS_IDLE=0也不等于CPU绝不会睡眠：自定义Idle Hook仍可主动执行WFI。
 
-**本次证据边界：**本地未提交差异能够确认WFI被注释；后续抓包确认EP0 Probe/Commit控制传输成功。但没有完整记录同一供电/USB拓扑下“开WFI失败—关WFI成功—恢复WFI再失败”的三组无断点实验，因此应说“收敛到WFI相关睡眠兼容性”，不能说已经证明唯一根因或所有硬件机制。
+## 后续验证：从WFI影响追到Sleep时钟配置
 
-## 机制线索与没有做过的验证
+当时我先通过对照实验，发现执行WFI后USB枚举异常，取消WFI后恢复正常，因此确认问题与进入睡眠有关。
 
-ST社区的H743 FS案例报告：执行WFI后无法完成枚举，关闭USB2 ULPI sleep clock位后恢复。它为本次排查提供方向，不是本板H747的直接测量结果。
+接着我怀疑是睡眠期间USB时钟被关闭，于是添加 `__HAL_RCC_USB2_OTG_FS_CLK_SLEEP_ENABLE()`，保持USB2控制器的Sleep时钟开启，但问题仍然存在。这说明仅保持控制器Sleep时钟开启不足以解决问题，并不能据此断言HSI48振荡器已经停止。
 
-本次没有读取并保存RCC_AHB1LPENR/SCB_SCR现场，没有实测USB睡眠时钟，没有实施并验证ULPI睡眠时钟位修复，也没有完成长期USB睡眠兼容性验证。面试时不要把这些讲成已完成动作。
+随后查阅资料，发现STM32H7使用内部FS PHY时，有关闭ULPI Sleep时钟使能的处理案例。我保留WFI和前面的配置，再添加 `__HAL_RCC_USB2_OTG_FS_ULPI_CLK_SLEEP_DISABLE()`，USB才恢复正常枚举。
 
-[ST社区：H7 FS与WFI/SETUP接收案例](https://community.st.com/stm32cubemx-mcus-29/why-stm32h743-usb-fs-doesn-t-work-if-freertos-tickless-idle-enabled-70590)
+```c
+//Sleep期间保持USB2控制器时钟
+__HAL_RCC_USB2_OTG_FS_CLK_SLEEP_ENABLE();
+
+//内部FS PHY场景下关闭ULPI Sleep时钟使能
+__HAL_RCC_USB2_OTG_FS_ULPI_CLK_SLEEP_DISABLE();
+```
+
+| 对照条件 | 用户反馈的实板结果 |
+|---|---|
+| 原Sleep时钟配置，执行WFI | USB枚举异常 |
+| 取消WFI | USB恢复正常 |
+| 保留WFI，仅添加USB2控制器Sleep时钟使能 | 仍然异常 |
+| 保留WFI及控制器Sleep时钟使能，再关闭ULPI Sleep时钟使能 | USB恢复正常枚举 |
+
+这次排查是逐步缩小范围的：**先发现WFI相关，再验证USB控制器的睡眠时钟，最后定位到ULPI Sleep时钟配置。**上述实板结果来自用户后续反馈，不是软件模拟结果。
+
+### 对资料解释仍保留的疑问
+
+查阅过程中也看到“USB核心与ULPI睡眠时钟同时开启会引发硬件冲突”的解释，但我对这个内部机制仍保持疑问，没有将它作为确定结论。我的对照实验确认的是：**当前硬件与配置下，关闭ULPI Sleep时钟使能解决了执行WFI后的USB枚举异常。**
+
+“CPU执行WFI后永远无法唤醒”也没有得到本次证据支持；本次观察到的是USB枚举异常，不能扩大为CPU无法唤醒。
+
+TinyUSB的STM32H7驱动在内部FS PHY初始化路径中也清除了ULPI Sleep时钟位，注释说明否则WFI/WFE会影响USB。这支持该配置处理，但没有解释芯片内部电路为何产生这种影响。
+
+- [ST社区：H7 FS与WFI/SETUP接收案例](https://community.st.com/stm32cubemx-mcus-29/why-stm32h743-usb-fs-doesn-t-work-if-freertos-tickless-idle-enabled-70590)
+- [TinyUSB：内部FS PHY的Sleep时钟处理](https://github.com/hathach/tinyusb/blob/master/src/portable/synopsys/dwc2/dwc2_stm32.h#L165-L176)
+
+目前没有保存完整的RCC_AHB1LPENR/SCB_SCR现场快照，也没有直接测量睡眠期间USB内部时钟或完成长期稳定性验证。这里记录配置对照结果，不把“硬件冲突”或“时钟源被切断”写成已证实的内部机制。
 
 ## 调试中踩过的坑
 
@@ -84,7 +112,7 @@ ST社区的H743 FS案例报告：执行WFI后无法完成枚举，关闭USB2 ULP
 
 ## 面试60～90秒复述
 
-> 我做CM7 FreeRTOS最小移植时，保留了原业务顺序，但实板出现相机采集正常、USB描述符请求失败。起初我怀疑调度器启动和USB连接时序，做了调度器稳定后再插USB的对照，问题仍在。我随后沿USB IRQ、HAL Reset、EP0、SETUP逐层查，确认Reset和EP0重建正常。中间有一次因为回调断点没命中，我以为没收到SETUP，但解码FIFO状态0x008C0080后发现它就是EP0的8字节SETUP，推翻了这个判断。后来观察到外层断点暂停会改变接收行为，我才回看移植差异，发现Idle Hook额外加入了WFI。关闭这一睡眠变量后的阶段，后续抓包已经能看到正常Probe/Commit，所以排查方向收敛到了WFI相关的睡眠兼容性。不过恢复WFI再次复现及睡眠时钟机制还需要继续验证。这次让我认识到，要用实验不断修正假设，也要区分RTOS调度与额外引入的低功耗行为。
+> 我做CM7 FreeRTOS最小移植时，保留了原业务顺序，但实板出现相机采集正常、USB描述符请求失败。起初我怀疑调度器启动和USB连接时序，做了调度器稳定后再插USB的对照，问题仍在。我随后沿USB IRQ、HAL Reset、EP0、SETUP逐层查，确认Reset和EP0重建正常。中间有一次因为回调断点没命中，我以为没收到SETUP，但解码FIFO状态0x008C0080后发现它就是EP0的8字节SETUP，推翻了这个判断。后来观察到外层断点暂停会改变接收行为，我才回看移植差异，发现Idle Hook额外加入了WFI。通过开关WFI的对照，我确认问题与进入睡眠有关。接着怀疑USB睡眠时钟被关闭，添加控制器Sleep时钟使能，但仍然失败。随后查资料发现内部FS PHY场景下的ULPI Sleep时钟注意事项，于是保留WFI，再关闭ULPI Sleep时钟使能，USB才恢复正常枚举。实验定位到了该配置条件，但对于资料中“两个时钟产生硬件冲突”的解释，我没有足够证据，因此保留疑问。这次让我认识到，要用实验不断修正假设，也要区分RTOS调度与额外引入的低功耗行为。
 
 ## 面试追问准备
 
@@ -93,4 +121,4 @@ ST社区的H743 FS案例报告：执行WFI后无法完成枚举，关闭USB2 ULP
 | 为什么不一开始改描述符？ | 当时原因未知；先确认请求接收和失败阶段，避免在无证据时改协议 |
 | IRQ进了为何还要查？ | 可能是SOF；入口条件、屏蔽位、事件类型和回调交付各自都需验证 |
 | WFI为何是后面才想到？ | 前面的时序/EP0假设没有解释现象，断点敏感才促使回看“裸机与RTOS的额外差异” |
-| 是否已经证明睡眠时钟位就是根因？ | 没有；这是同类案例给出的机制线索，本板仍需恢复对照和寄存器/硬件验证 |
+| 最后验证到哪一层？ | 实板对照显示：保留WFI，仅保持控制器Sleep时钟仍失败，再关闭ULPI Sleep时钟使能后恢复；内部电路机制及长期稳定性未确认 |
