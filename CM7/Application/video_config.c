@@ -1,6 +1,6 @@
 #include "video_config.h"
 
-//唯一的用户视频配置入口，不设置传感器采集帧率
+//阶段01使用TEST验收控制面，不启动相机与UVC视频
 static const VideoConfig_t s_default_config =
 {
     .camera =
@@ -9,7 +9,7 @@ static const VideoConfig_t s_default_config =
         .height = 120U,
         .format = CAMERA_PIXEL_FORMAT_YUV422
     },
-    .output = VIDEO_OUTPUT_USB_UVC,
+    .output = VIDEO_OUTPUT_USB_TEST,
     .output_fps = 25U
 };
 

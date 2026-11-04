@@ -23,10 +23,8 @@
 /* USER CODE BEGIN Includes */
 #include "platform_rtos.h"
 #include "framework_init.h"
-#include "framework_runtime.h"
+#include "app_tasks.h"
 #include "usb_mode.h"
-#include "usb_uvc.h"
-#include "app_main.h"
 #include "bsp_camera.h"
 #include "bsp_dcmi.h"
 #include "bsp_sdram.h"
@@ -92,18 +90,6 @@ static void MPU_ConfigSdram(void)
 	HAL_MPU_Enable(MPU_PRIVILEGED_DEFAULT);
 }
 
-static void Main_Run(void)
-{
-    Framework_Run();
-
-    //处理USB模式管理，切换逻辑待实现
-    USB_Mode_Process();
-
-    //主循环处理UVC异步事件，TEST模式下直接返回
-    USB_UVC_Process();
-
-    App_Run();
-}
 SysResult_t init_error;
 /* USER CODE END 0 */
 
@@ -172,7 +158,14 @@ Error_Handler();
 
   /* USER CODE BEGIN SysInit */
 	MPU_ConfigSdram();
+	//先创建静态任务与事件接收端，调度器尚未运行
+	init_error = App_TasksCreate();
+	if (init_error != SYS_OK)
+		Error_Handler();
+
+	//Initcall只准备，不启动Camera或USB连接
 	init_error = Framework_InitRuntime();
+	init_error = App_TasksRecordInitialization(init_error);
 	if (init_error != SYS_OK )
 	{
 		while(1);
@@ -183,8 +176,8 @@ Error_Handler();
   /* Initialize all configured peripherals */
   /* USER CODE BEGIN 2 */
 
-  //原初始化完成后启动唯一业务任务，成功不再返回
-  init_error = Platform_RtosStart(Main_Run);
+  //main准备完成后启动Native任务，成功不再返回
+  init_error = Platform_RtosStart();
   Error_Handler();
 
   /* USER CODE END 2 */

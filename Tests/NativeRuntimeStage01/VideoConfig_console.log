@@ -1,0 +1,29 @@
+descriptor and control 5FPS PASS (0, 44, 0, 0) None
+descriptor and control 10FPS PASS (0, 44, 0, 0) None
+descriptor and control 15FPS PASS (0, 44, 0, 0) None
+descriptor and control 20FPS PASS (0, 44, 0, 0) None
+descriptor and control 25FPS PASS (0, 44, 0, 0) None
+null config PASS (0, 1, 0, 0) None
+zero FPS PASS (0, 1, 0, 0) None
+FS bandwidth rejection PASS (0, 1, 0, 0) None
+unsupported Y8 UVC PASS (0, 1, 0, 0) None
+odd YUV width PASS (0, 1, 0, 0) None
+zero height PASS (0, 1, 0, 0) None
+Register requires configuration PASS (0, 1, 0, 0) None
+descriptor unavailable before configure PASS (0, 2, 0, 0) None
+APP default forwarding PASS (0, 7, 0, 0) None
+NONE output PASS (0, 4, 0, 0) None
+TEST output PASS (0, 4, 0, 0) None
+ETH unsupported PASS (0, 1, 0, 0) None
+WiFi unsupported PASS (0, 1, 0, 0) None
+real startup and cold configuration freeze PASS (0, 8, 0, 0) None
+NONE never starts USB PASS (0, 4, 0, 0) None
+UVC source-independent dimensions PASS (0, 2, 0, 0) None
+image size overflow PASS (0, 1, 0, 0) None
+boot callback validation PASS (0, 2, 0, 0) None
+invalid configuration does not poison retry PASS (0, 2, 0, 0) None
+configured Probe acceptance PASS (0, 2, 0, 0) None
+two frames at 5FPS PASS (0, 472, 0, 0) None
+two frames at 10FPS PASS (0, 472, 0, 0) None
+two frames at 20FPS PASS (0, 472, 0, 0) None
+{'total': 28, 'passed': 28, 'failed': 0} source_changed []

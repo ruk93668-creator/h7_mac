@@ -1964,6 +1964,24 @@
             </File>
           </Files>
         </Group>
+        <Group>
+          <GroupName>CM7 Native Runtime</GroupName>
+          <GroupOption><CommonProperty><IncludeInBuild>0</IncludeInBuild></CommonProperty></GroupOption>
+          <Files>
+            <File><FileName>runtime_event.c</FileName><FileType>1</FileType><FilePath>../Common/Src/runtime_event.c</FilePath></File>
+            <File><FileName>runtime_event.h</FileName><FileType>5</FileType><FilePath>../Common/Inc/runtime_event.h</FilePath></File>
+            <File><FileName>app_tasks.c</FileName><FileType>1</FileType><FilePath>../CM7/Application/app_tasks.c</FilePath></File>
+            <File><FileName>app_tasks.h</FileName><FileType>5</FileType><FilePath>../CM7/Application/app_tasks.h</FilePath></File>
+            <File><FileName>app_events.c</FileName><FileType>1</FileType><FilePath>../CM7/Application/app_events.c</FilePath></File>
+            <File><FileName>app_events.h</FileName><FileType>5</FileType><FilePath>../CM7/Application/app_events.h</FilePath></File>
+            <File><FileName>camera_task.c</FileName><FileType>1</FileType><FilePath>../CM7/Application/Tasks/camera_task.c</FilePath></File>
+            <File><FileName>camera_task.h</FileName><FileType>5</FileType><FilePath>../CM7/Application/Tasks/camera_task.h</FilePath></File>
+            <File><FileName>usb_task.c</FileName><FileType>1</FileType><FilePath>../CM7/Application/Tasks/usb_task.c</FilePath></File>
+            <File><FileName>usb_task.h</FileName><FileType>5</FileType><FilePath>../CM7/Application/Tasks/usb_task.h</FilePath></File>
+            <File><FileName>control_task.c</FileName><FileType>1</FileType><FilePath>../CM7/Application/Tasks/control_task.c</FilePath></File>
+            <File><FileName>control_task.h</FileName><FileType>5</FileType><FilePath>../CM7/Application/Tasks/control_task.h</FilePath></File>
+          </Files>
+        </Group>
       </Groups>
     </Target>
     <Target>
@@ -1997,7 +2015,7 @@
           <bCustSvd>0</bCustSvd>
           <UseEnv>0</UseEnv>
           <BinPath></BinPath>
-          <IncludePath></IncludePath>
+          <IncludePath>;..\CM7\Application\Tasks</IncludePath>
           <LibPath></LibPath>
           <RegisterFilePath></RegisterFilePath>
           <DBRegisterFilePath></DBRegisterFilePath>
@@ -3562,6 +3580,23 @@
               <FileType>1</FileType>
               <FilePath>../Middlewares/Third_Party/FreeRTOS/Source/portable/RVDS/ARM_CM7/r0p1/port.c</FilePath>
             </File>
+          </Files>
+        </Group>
+        <Group>
+          <GroupName>CM7 Native Runtime</GroupName>
+          <Files>
+            <File><FileName>runtime_event.c</FileName><FileType>1</FileType><FilePath>../Common/Src/runtime_event.c</FilePath></File>
+            <File><FileName>runtime_event.h</FileName><FileType>5</FileType><FilePath>../Common/Inc/runtime_event.h</FilePath></File>
+            <File><FileName>app_tasks.c</FileName><FileType>1</FileType><FilePath>../CM7/Application/app_tasks.c</FilePath></File>
+            <File><FileName>app_tasks.h</FileName><FileType>5</FileType><FilePath>../CM7/Application/app_tasks.h</FilePath></File>
+            <File><FileName>app_events.c</FileName><FileType>1</FileType><FilePath>../CM7/Application/app_events.c</FilePath></File>
+            <File><FileName>app_events.h</FileName><FileType>5</FileType><FilePath>../CM7/Application/app_events.h</FilePath></File>
+            <File><FileName>camera_task.c</FileName><FileType>1</FileType><FilePath>../CM7/Application/Tasks/camera_task.c</FilePath></File>
+            <File><FileName>camera_task.h</FileName><FileType>5</FileType><FilePath>../CM7/Application/Tasks/camera_task.h</FilePath></File>
+            <File><FileName>usb_task.c</FileName><FileType>1</FileType><FilePath>../CM7/Application/Tasks/usb_task.c</FilePath></File>
+            <File><FileName>usb_task.h</FileName><FileType>5</FileType><FilePath>../CM7/Application/Tasks/usb_task.h</FilePath></File>
+            <File><FileName>control_task.c</FileName><FileType>1</FileType><FilePath>../CM7/Application/Tasks/control_task.c</FilePath></File>
+            <File><FileName>control_task.h</FileName><FileType>5</FileType><FilePath>../CM7/Application/Tasks/control_task.h</FilePath></File>
           </Files>
         </Group>
       </Groups>

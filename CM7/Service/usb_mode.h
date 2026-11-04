@@ -55,4 +55,7 @@ void USB_Mode_Process(void);
 //查询冷启动模式，初始化前返回编译期选择
 UsbMode_t USB_Mode_GetMode(void);
 
+//由UsbTask查询模式处理结果，不能作为帧归还依据
+SysResult_t USB_Mode_GetLastResult(void);
+
 #endif

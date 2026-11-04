@@ -1,0 +1,580 @@
+{
+  "summary": {
+    "total": 56,
+    "passed": 56,
+    "failed": 0
+  },
+  "cases": [
+    {
+      "id": 0,
+      "name": "unbound and NULL port",
+      "result": "PASS",
+      "checks": 2,
+      "waits": [],
+      "failed_line": 0,
+      "asserts": [],
+      "error": null
+    },
+    {
+      "id": 1,
+      "name": "Camera create failure",
+      "result": "PASS",
+      "checks": 6,
+      "waits": [],
+      "failed_line": 0,
+      "asserts": [],
+      "error": null
+    },
+    {
+      "id": 2,
+      "name": "Usb create failure",
+      "result": "PASS",
+      "checks": 6,
+      "waits": [],
+      "failed_line": 0,
+      "asserts": [],
+      "error": null
+    },
+    {
+      "id": 3,
+      "name": "Control create failure",
+      "result": "PASS",
+      "checks": 6,
+      "waits": [],
+      "failed_line": 0,
+      "asserts": [],
+      "error": null
+    },
+    {
+      "id": 4,
+      "name": "three static tasks",
+      "result": "PASS",
+      "checks": 5,
+      "waits": [],
+      "failed_line": 0,
+      "asserts": [],
+      "error": null
+    },
+    {
+      "id": 5,
+      "name": "duplicate creation rejected",
+      "result": "PASS",
+      "checks": 6,
+      "waits": [],
+      "failed_line": 0,
+      "asserts": [],
+      "error": null
+    },
+    {
+      "id": 6,
+      "name": "preboot hints coalesced",
+      "result": "PASS",
+      "checks": 8,
+      "waits": [],
+      "failed_line": 0,
+      "asserts": [],
+      "error": null
+    },
+    {
+      "id": 7,
+      "name": "init failure latches boot closed",
+      "result": "PASS",
+      "checks": 9,
+      "waits": [],
+      "failed_line": 0,
+      "asserts": [],
+      "error": null
+    },
+    {
+      "id": 8,
+      "name": "missing task rejects prepare",
+      "result": "PASS",
+      "checks": 3,
+      "waits": [],
+      "failed_line": 0,
+      "asserts": [],
+      "error": null
+    },
+    {
+      "id": 9,
+      "name": "scheduler without tasks rejected",
+      "result": "PASS",
+      "checks": 2,
+      "waits": [],
+      "failed_line": 0,
+      "asserts": [],
+      "error": null
+    },
+    {
+      "id": 10,
+      "name": "ISR cannot create tasks",
+      "result": "PASS",
+      "checks": 2,
+      "waits": [],
+      "failed_line": 0,
+      "asserts": [],
+      "error": null
+    },
+    {
+      "id": 11,
+      "name": "masked creation rejected",
+      "result": "PASS",
+      "checks": 2,
+      "waits": [],
+      "failed_line": 0,
+      "asserts": [],
+      "error": null
+    },
+    {
+      "id": 12,
+      "name": "event parameters and BOOT forgery",
+      "result": "PASS",
+      "checks": 8,
+      "waits": [],
+      "failed_line": 0,
+      "asserts": [],
+      "error": null
+    },
+    {
+      "id": 13,
+      "name": "task/ISR API distinction",
+      "result": "PASS",
+      "checks": 6,
+      "waits": [],
+      "failed_line": 0,
+      "asserts": [],
+      "error": null
+    },
+    {
+      "id": 14,
+      "name": "USB callback binding failure",
+      "result": "PASS",
+      "checks": 2,
+      "waits": [],
+      "failed_line": 0,
+      "asserts": [],
+      "error": null
+    },
+    {
+      "id": 15,
+      "name": "backend and target cannot rebind",
+      "result": "PASS",
+      "checks": 6,
+      "waits": [],
+      "failed_line": 0,
+      "asserts": [],
+      "error": null
+    },
+    {
+      "id": 16,
+      "name": "static Idle storage",
+      "result": "PASS",
+      "checks": 2,
+      "waits": [],
+      "failed_line": 0,
+      "asserts": [],
+      "error": null
+    },
+    {
+      "id": 17,
+      "name": "native scheduler starts four tasks",
+      "result": "PASS",
+      "checks": 13,
+      "waits": [],
+      "failed_line": 0,
+      "asserts": [],
+      "error": null
+    },
+    {
+      "id": 18,
+      "name": "no init result no BOOT",
+      "result": "PASS",
+      "checks": 16,
+      "waits": [],
+      "failed_line": 0,
+      "asserts": [],
+      "error": null
+    },
+    {
+      "id": 19,
+      "name": "wrong owner cannot release BOOT",
+      "result": "PASS",
+      "checks": 13,
+      "waits": [],
+      "failed_line": 0,
+      "asserts": [],
+      "error": null
+    },
+    {
+      "id": 20,
+      "name": "BOOT gates USB Start",
+      "result": "PASS",
+      "checks": 24,
+      "waits": [],
+      "failed_line": 0,
+      "asserts": [],
+      "error": null
+    },
+    {
+      "id": 21,
+      "name": "preboot hint survives BOOT",
+      "result": "PASS",
+      "checks": 15,
+      "waits": [],
+      "failed_line": 0,
+      "asserts": [],
+      "error": null
+    },
+    {
+      "id": 22,
+      "name": "wait owner and output validation",
+      "result": "PASS",
+      "checks": 21,
+      "waits": [],
+      "failed_line": 0,
+      "asserts": [],
+      "error": null
+    },
+    {
+      "id": 23,
+      "name": "real kernel wait and notification wake",
+      "result": "PASS",
+      "checks": 25,
+      "waits": [],
+      "failed_line": 0,
+      "asserts": [],
+      "error": null
+    },
+    {
+      "id": 24,
+      "name": "real kernel timeout wake",
+      "result": "PASS",
+      "checks": 24,
+      "waits": [],
+      "failed_line": 0,
+      "asserts": [],
+      "error": null
+    },
+    {
+      "id": 25,
+      "name": "notification before wait not lost",
+      "result": "PASS",
+      "checks": 23,
+      "waits": [],
+      "failed_line": 0,
+      "asserts": [],
+      "error": null
+    },
+    {
+      "id": 26,
+      "name": "FromISR rejects thread caller",
+      "result": "PASS",
+      "checks": 20,
+      "waits": [],
+      "failed_line": 0,
+      "asserts": [],
+      "error": null
+    },
+    {
+      "id": 27,
+      "name": "priority 4 IRQ rejected",
+      "result": "PASS",
+      "checks": 7,
+      "waits": [],
+      "failed_line": 0,
+      "asserts": [],
+      "error": null
+    },
+    {
+      "id": 28,
+      "name": "preboot priority 6 IRQ deferred",
+      "result": "PASS",
+      "checks": 7,
+      "waits": [],
+      "failed_line": 0,
+      "asserts": [],
+      "error": null
+    },
+    {
+      "id": 29,
+      "name": "runtime ISR notification",
+      "result": "PASS",
+      "checks": 22,
+      "waits": [],
+      "failed_line": 0,
+      "asserts": [],
+      "error": null
+    },
+    {
+      "id": 30,
+      "name": "no BOOT no USB Start",
+      "result": "PASS",
+      "checks": 1,
+      "waits": [],
+      "failed_line": 0,
+      "asserts": [],
+      "error": null
+    },
+    {
+      "id": 31,
+      "name": "BOOT starts USB once",
+      "result": "PASS",
+      "checks": 20,
+      "waits": [],
+      "failed_line": 0,
+      "asserts": [],
+      "error": null
+    },
+    {
+      "id": 32,
+      "name": "USB Start failure posts fault",
+      "result": "PASS",
+      "checks": 22,
+      "waits": [],
+      "failed_line": 0,
+      "asserts": [],
+      "error": null
+    },
+    {
+      "id": 33,
+      "name": "UVC not enabled in stage01",
+      "result": "PASS",
+      "checks": 20,
+      "waits": [],
+      "failed_line": 0,
+      "asserts": [],
+      "error": null
+    },
+    {
+      "id": 34,
+      "name": "timed wake advances USB mode",
+      "result": "PASS",
+      "checks": 20,
+      "waits": [],
+      "failed_line": 0,
+      "asserts": [],
+      "error": null
+    },
+    {
+      "id": 35,
+      "name": "Initcall prepares only",
+      "result": "PASS",
+      "checks": 12,
+      "waits": [],
+      "failed_line": 0,
+      "asserts": [],
+      "error": null
+    },
+    {
+      "id": 36,
+      "name": "unsupported boot mode rejected",
+      "result": "PASS",
+      "checks": 2,
+      "waits": [],
+      "failed_line": 0,
+      "asserts": [],
+      "error": null
+    },
+    {
+      "id": 37,
+      "name": "masked task cannot block",
+      "result": "PASS",
+      "checks": 20,
+      "waits": [],
+      "failed_line": 0,
+      "asserts": [],
+      "error": null
+    },
+    {
+      "id": 38,
+      "name": "all targets receive BOOT once",
+      "result": "PASS",
+      "checks": 23,
+      "waits": [],
+      "failed_line": 0,
+      "asserts": [],
+      "error": null
+    },
+    {
+      "id": 39,
+      "name": "task-owned stack sizes",
+      "result": "PASS",
+      "checks": 6,
+      "waits": [],
+      "failed_line": 0,
+      "asserts": [],
+      "error": null
+    },
+    {
+      "id": 40,
+      "name": "HAL TIM6 separate from kernel",
+      "result": "PASS",
+      "checks": 4,
+      "waits": [],
+      "failed_line": 0,
+      "asserts": [],
+      "error": null
+    },
+    {
+      "id": 41,
+      "name": "real Port SysTick",
+      "result": "PASS",
+      "checks": 12,
+      "waits": [],
+      "failed_line": 0,
+      "asserts": [],
+      "error": null
+    },
+    {
+      "id": 42,
+      "name": "no late task creation",
+      "result": "PASS",
+      "checks": 15,
+      "waits": [],
+      "failed_line": 0,
+      "asserts": [],
+      "error": null
+    },
+    {
+      "id": 43,
+      "name": "USB thread event route",
+      "result": "PASS",
+      "checks": 21,
+      "waits": [],
+      "failed_line": 0,
+      "asserts": [],
+      "error": null
+    },
+    {
+      "id": 44,
+      "name": "USB ISR event route",
+      "result": "PASS",
+      "checks": 21,
+      "waits": [],
+      "failed_line": 0,
+      "asserts": [],
+      "error": null
+    },
+    {
+      "id": 45,
+      "name": "init result only recorded once",
+      "result": "PASS",
+      "checks": 6,
+      "waits": [],
+      "failed_line": 0,
+      "asserts": [],
+      "error": null
+    },
+    {
+      "id": 46,
+      "name": "Initcall level 0 failure stops later levels",
+      "result": "PASS",
+      "checks": 13,
+      "waits": [],
+      "failed_line": 0,
+      "asserts": [],
+      "error": null
+    },
+    {
+      "id": 47,
+      "name": "Initcall level 1 failure stops later levels",
+      "result": "PASS",
+      "checks": 13,
+      "waits": [],
+      "failed_line": 0,
+      "asserts": [],
+      "error": null
+    },
+    {
+      "id": 48,
+      "name": "Initcall level 2 failure stops later levels",
+      "result": "PASS",
+      "checks": 13,
+      "waits": [],
+      "failed_line": 0,
+      "asserts": [],
+      "error": null
+    },
+    {
+      "id": 49,
+      "name": "Initcall level 3 failure stops later levels",
+      "result": "PASS",
+      "checks": 13,
+      "waits": [],
+      "failed_line": 0,
+      "asserts": [],
+      "error": null
+    },
+    {
+      "id": 50,
+      "name": "Initcall level 4 failure stops later levels",
+      "result": "PASS",
+      "checks": 13,
+      "waits": [],
+      "failed_line": 0,
+      "asserts": [],
+      "error": null
+    },
+    {
+      "id": 51,
+      "name": "Initcall level 5 failure stops later levels",
+      "result": "PASS",
+      "checks": 13,
+      "waits": [],
+      "failed_line": 0,
+      "asserts": [],
+      "error": null
+    },
+    {
+      "id": 52,
+      "name": "USB mode timeout reported once",
+      "result": "PASS",
+      "checks": 21,
+      "waits": [],
+      "failed_line": 0,
+      "asserts": [],
+      "error": null
+    },
+    {
+      "id": 53,
+      "name": "Camera actual entry blocks forever",
+      "result": "PASS",
+      "checks": 20,
+      "waits": [
+        4294967295,
+        4294967295
+      ],
+      "failed_line": 0,
+      "asserts": [],
+      "error": null
+    },
+    {
+      "id": 54,
+      "name": "Usb actual entry blocks 20ms",
+      "result": "PASS",
+      "checks": 19,
+      "waits": [
+        4294967295,
+        20
+      ],
+      "failed_line": 0,
+      "asserts": [],
+      "error": null
+    },
+    {
+      "id": 55,
+      "name": "Control actual entry releases BOOT and blocks 1000ms",
+      "result": "PASS",
+      "checks": 16,
+      "waits": [
+        1000,
+        1000
+      ],
+      "failed_line": 0,
+      "asserts": [],
+      "error": null
+    }
+  ],
+  "hardware_verified": false,
+  "limits": "First SVC/exception scheduling is bypassed; manually switch real kernel contexts. Blocked-wait fixture restores TCB WAITING notification state after premature API return without PendSV; real kernel blocking lists and notify code execute. Application ISR detection is controlled by test context value; no claim of real NVIC preemption."
+}

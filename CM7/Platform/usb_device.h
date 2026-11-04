@@ -16,6 +16,15 @@ typedef struct
     SysResult_t last_result;
 } UsbDeviceEndpointState_t;
 
+//普通C通知，只提示状态变化，不承诺传输或帧已释放
+#define USB_DEVICE_EVENT_STATE 1U
+#define USB_DEVICE_EVENT_IO    2U
+
+typedef void (*UsbDeviceEventCallback_t)(uint32_t events, void *context);
+
+//启动前绑定静态通知接收端，回调可能在USB IRQ中执行
+SysResult_t USB_Device_SetEventCallback(UsbDeviceEventCallback_t callback, void *context);
+
 //生命周期接口只允许主循环调用，操作未结束时重入返回BUSY
 
 //初始化Core和BSP，不绑定具体描述符或Class

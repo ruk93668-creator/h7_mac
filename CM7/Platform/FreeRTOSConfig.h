@@ -35,6 +35,7 @@ void Platform_RtosAssert(const char *file, uint32_t line);
 #define configUSE_MALLOC_FAILED_HOOK         0
 #define configUSE_TRACE_FACILITY             0
 #define configGENERATE_RUN_TIME_STATS        0
+#define INCLUDE_xTaskGetCurrentTaskHandle    1
 #define INCLUDE_xTaskGetIdleTaskHandle       1
 #define INCLUDE_vTaskDelay                   1
 #define INCLUDE_vTaskSuspend                 1

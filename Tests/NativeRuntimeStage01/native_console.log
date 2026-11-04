@@ -1,0 +1,57 @@
+0 PASS unbound and NULL port 0 [] None
+1 PASS Camera create failure 0 [] None
+2 PASS Usb create failure 0 [] None
+3 PASS Control create failure 0 [] None
+4 PASS three static tasks 0 [] None
+5 PASS duplicate creation rejected 0 [] None
+6 PASS preboot hints coalesced 0 [] None
+7 PASS init failure latches boot closed 0 [] None
+8 PASS missing task rejects prepare 0 [] None
+9 PASS scheduler without tasks rejected 0 [] None
+10 PASS ISR cannot create tasks 0 [] None
+11 PASS masked creation rejected 0 [] None
+12 PASS event parameters and BOOT forgery 0 [] None
+13 PASS task/ISR API distinction 0 [] None
+14 PASS USB callback binding failure 0 [] None
+15 PASS backend and target cannot rebind 0 [] None
+16 PASS static Idle storage 0 [] None
+17 PASS native scheduler starts four tasks 0 [] None
+18 PASS no init result no BOOT 0 [] None
+19 PASS wrong owner cannot release BOOT 0 [] None
+20 PASS BOOT gates USB Start 0 [] None
+21 PASS preboot hint survives BOOT 0 [] None
+22 PASS wait owner and output validation 0 [] None
+23 PASS real kernel wait and notification wake 0 [] None
+24 PASS real kernel timeout wake 0 [] None
+25 PASS notification before wait not lost 0 [] None
+26 PASS FromISR rejects thread caller 0 [] None
+27 PASS priority 4 IRQ rejected 0 [] None
+28 PASS preboot priority 6 IRQ deferred 0 [] None
+29 PASS runtime ISR notification 0 [] None
+30 PASS no BOOT no USB Start 0 [] None
+31 PASS BOOT starts USB once 0 [] None
+32 PASS USB Start failure posts fault 0 [] None
+33 PASS UVC not enabled in stage01 0 [] None
+34 PASS timed wake advances USB mode 0 [] None
+35 PASS Initcall prepares only 0 [] None
+36 PASS unsupported boot mode rejected 0 [] None
+37 PASS masked task cannot block 0 [] None
+38 PASS all targets receive BOOT once 0 [] None
+39 PASS task-owned stack sizes 0 [] None
+40 PASS HAL TIM6 separate from kernel 0 [] None
+41 PASS real Port SysTick 0 [] None
+42 PASS no late task creation 0 [] None
+43 PASS USB thread event route 0 [] None
+44 PASS USB ISR event route 0 [] None
+45 PASS init result only recorded once 0 [] None
+46 PASS Initcall level 0 failure stops later levels 0 [] None
+47 PASS Initcall level 1 failure stops later levels 0 [] None
+48 PASS Initcall level 2 failure stops later levels 0 [] None
+49 PASS Initcall level 3 failure stops later levels 0 [] None
+50 PASS Initcall level 4 failure stops later levels 0 [] None
+51 PASS Initcall level 5 failure stops later levels 0 [] None
+52 PASS USB mode timeout reported once 0 [] None
+53 PASS Camera actual entry blocks forever 0 [] None
+54 PASS Usb actual entry blocks 20ms 0 [] None
+55 PASS Control actual entry releases BOOT and blocks 1000ms 0 [] None
+{'total': 56, 'passed': 56, 'failed': 0}

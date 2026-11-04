@@ -11,6 +11,12 @@
 //对应官方Core的16个端点编号，不预设Class用途
 #define USB_DEVICE_EP_COUNT 16U
 
+static UsbDeviceEventCallback_t s_event_callback;
+static void *s_event_context;
+
+//状态提交后通知Application，不在Platform引入任务类型
+static void Usb_Notify(uint32_t events);
+
 static USBD_HandleTypeDef s_device;
 static volatile bool s_initialized;
 static volatile bool s_started;
@@ -184,6 +190,20 @@ static const BspUsbCallbacks_t s_callbacks =
     Usb_DataInError,
     Usb_Sof
 };
+
+SysResult_t USB_Device_SetEventCallback(UsbDeviceEventCallback_t callback, void *context)
+{
+    if (callback == NULL)
+        return SYS_ERR_INVALID_ARG;
+    if (__get_IPSR() != 0U || s_started)
+        return SYS_ERR_INVALID_STATE;
+    if (s_event_callback != NULL)
+        return SYS_ERR_ALREADY_EXISTS;
+
+    s_event_context = context;
+    s_event_callback = callback;
+    return SYS_OK;
+}
 
 SysResult_t USB_Device_Init(void)
 {
@@ -932,6 +952,7 @@ static void Usb_Setup(uint8_t *data)
     status = USBD_LL_SetupStage(&s_device, data);
     if (status != USBD_OK)
         USBD_CtlError(&s_device, &s_device.request);
+    Usb_Notify(USB_DEVICE_EVENT_STATE);
 }
 
 static void Usb_DataOut(uint8_t ep, uint8_t *data)
@@ -945,6 +966,7 @@ static void Usb_DataOut(uint8_t ep, uint8_t *data)
         s_endpoints[0][ep].last_result = SYS_ERR_IO;
         s_last_result = SYS_ERR_IO;
     }
+    Usb_Notify(USB_DEVICE_EVENT_IO);
 }
 
 static void Usb_DataIn(uint8_t ep, uint8_t *data)
@@ -963,6 +985,7 @@ static void Usb_DataIn(uint8_t ep, uint8_t *data)
         s_endpoints[1][ep].last_result = SYS_ERR_IO;
         s_last_result = SYS_ERR_IO;
     }
+    Usb_Notify(USB_DEVICE_EVENT_IO);
 }
 
 //分包续传失败只影响对应端点，不污染设备级故障
@@ -998,21 +1021,25 @@ static void Usb_Reset(void)
             s_last_result = release_result != SYS_OK ? release_result : SYS_ERR_IO;
         s_stop_required = true;
     }
+    Usb_Notify(USB_DEVICE_EVENT_STATE);
 }
 
 static void Usb_Suspend(void)
 {
     (void)USBD_LL_Suspend(&s_device);
+    Usb_Notify(USB_DEVICE_EVENT_STATE);
 }
 
 static void Usb_Resume(void)
 {
     (void)USBD_LL_Resume(&s_device);
+    Usb_Notify(USB_DEVICE_EVENT_STATE);
 }
 
 static void Usb_Connect(void)
 {
     (void)USBD_LL_DevConnected(&s_device);
+    Usb_Notify(USB_DEVICE_EVENT_STATE);
 }
 
 static void Usb_Disconnect(void)
@@ -1026,6 +1053,7 @@ static void Usb_Disconnect(void)
     }
     if (Usb_ReleaseEndpoints() != SYS_OK)
         s_stop_required = true;
+    Usb_Notify(USB_DEVICE_EVENT_STATE);
 }
 
 static void Usb_IsoInIncomplete(uint8_t ep)
@@ -1352,4 +1380,11 @@ static void Usb_Sof(uint16_t frame)
     s_sof_frame = frame;
     s_sof_sequence++;
     (void)USBD_LL_SOF(&s_device);
+}
+
+//内部功能函数实现
+static void Usb_Notify(uint32_t events)
+{
+    if (s_event_callback != NULL)
+        s_event_callback(events, s_event_context);
 }

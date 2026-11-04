@@ -1,25 +1,11 @@
 #include "app_main.h"
 #include "framework_init.h"
+#include "usb_mode.h"
 
-#include "app_camera.h"
-#include "app_uvc_bridge.h"
-
-//初始化CM7正式应用模块
+//阶段01只验收TEST控制面，不在Initcall启动采集或USB
 SysResult_t App_Init(void)
 {
-	return App_CameraInitStream();
+    return USB_Mode_GetMode() == USB_MODE_TEST ? SYS_OK : SYS_ERR_NOT_SUPPORTED;
 }
 
-//统一轮询CM7正式应用模块
-void App_Run(void)
-{
-	App_CameraRun();
-	
-	App_UvcBridgeProcess();
-}
-
-//保留Application初始化入口
-FRAMEWORK_INIT_REGISTER(
-	App_Init,
-	INIT_LEVEL_APPLICATION
-);
+FRAMEWORK_INIT_REGISTER(App_Init, INIT_LEVEL_APPLICATION);

@@ -1,0 +1,10 @@
+{
+  "baseline": "8d3741a",
+  "exit": 0,
+  "summary": {
+    "total": 204,
+    "passed": 204,
+    "failed": 0,
+    "assertions": 2989
+  }
+}

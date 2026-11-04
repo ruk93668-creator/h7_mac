@@ -1,0 +1,16 @@
+0 PASS Initcall keeps TEST disconnected 0 (0, 7, 0, 0, 0, 0) [] None
+1 PASS BOOT starts TEST once 0 (0, 15, 0, 0, 0, 0) [] None
+2 PASS GET_DESCRIPTOR Device 0 (0, 20, 0, 0, 0, 0) [] None
+3 PASS SET_ADDRESS status 0 (0, 20, 0, 0, 0, 0) [] None
+4 PASS SET_CONFIGURATION RUNNING 0 (0, 19, 0, 0, 0, 0) [] None
+5 PASS duplicate BOOT no duplicate Start 0 (0, 16, 0, 0, 0, 0) [] None
+6 PASS enumeration timeout 0 (0, 17, 0, 0, 0, 0) [] None
+7 PASS Reset posts wake and reopens EP0 0 (0, 19, 0, 0, 0, 0) [] None
+8 PASS Disconnect posts wake 0 (0, 22, 0, 0, 0, 0) [] None
+9 PASS Start HAL_BUSY propagated 0 (0, 15, 0, 0, 0, 0) [] None
+10 PASS Initcall PCD failure keeps BOOT closed 0 (0, 4, 0, 0, 0, 0) [] None
+11 PASS STALL then legal SETUP 0 (0, 23, 0, 0, 0, 0) [] None
+12 PASS repeated Reset 0 (0, 20, 0, 0, 0, 0) [] None
+13 PASS cannot replace live notification callback 0 (0, 18, 0, 0, 0, 0) [] None
+14 PASS unsupported TEST interface STALL then legal SETUP 0 (0, 23, 0, 0, 0, 0) [] None
+{'total': 15, 'passed': 15, 'failed': 0}

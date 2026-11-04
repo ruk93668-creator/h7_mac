@@ -35,7 +35,7 @@ static UsbMode_t s_boot_mode;
 static bool s_boot_mode_selected;
 static SysResult_t (*s_boot_register)(void);
 
-//保持原有APPLICATION阶段唯一USB启动入口
+//保留原有Initcall表项，阶段01仅准备，UsbTask负责连接
 static SysResult_t UsbMode_AppStart(void);
 
 //按冷启动配置注册唯一Class
@@ -290,7 +290,7 @@ void USB_Mode_Process(void)
 //Core在DEVICE阶段就绪，管理器在SERVICE阶段初始化
 FRAMEWORK_INIT_REGISTER(USB_Mode_Init, INIT_LEVEL_SERVICE);
 
-//配置由上层APP传入，本模块保留唯一USB启动入口
+//此历史命名表项仅准备，禁止在调度器前连接USB
 FRAMEWORK_INIT_REGISTER(UsbMode_AppStart, INIT_LEVEL_APPLICATION);
 
 //内部功能函数实现
@@ -313,5 +313,11 @@ static SysResult_t UsbMode_RegisterClass(UsbMode_t mode)
 
 static SysResult_t UsbMode_AppStart(void)
 {
-    return USB_Mode_Start();
+    return USB_Mode_Init();
+}
+
+//模式结果由同一UsbTask读取，不改变运行状态
+SysResult_t USB_Mode_GetLastResult(void)
+{
+    return s_usb_mode.initialized ? s_usb_mode.last_result : SYS_ERR_INVALID_STATE;
 }

@@ -3,40 +3,26 @@
 #include "task.h"
 #include "stm32h7xx.h"
 #include <stddef.h>
+#include <stdbool.h>
 
-//栈深度单位为32位Word，业务任务8KB，空闲任务1KB
-#define RTOS_LEGACY_STACK_WORDS 2048U
-#define RTOS_LEGACY_PRIORITY    3U
-
-static StaticTask_t s_legacy_tcb;
-static StackType_t s_legacy_stack[RTOS_LEGACY_STACK_WORDS];
+//Platform仅提供调度器环境和内核Hook，不创建业务任务
 static StaticTask_t s_idle_tcb;
-static StackType_t s_idle_stack[configMINIMAL_STACK_SIZE];
-static TaskHandle_t s_legacy_task;
-static void (*s_run_once)(void);
+static StackType_t s_idle_stack[configMINIMAL_STACK_SIZE] __attribute__((aligned(8)));
+static bool s_start_attempted;
 volatile PlatformRtosDebug_t g_rtos_debug;
 
-//在唯一业务任务中保持原Main_Run调用顺序
-static void Rtos_LegacyTask(void *argument);
-
-SysResult_t Platform_RtosStart(void (*run_once)(void))
+SysResult_t Platform_RtosStart(void)
 {
-    if (run_once == NULL)
-        return SYS_ERR_INVALID_ARG;
-    if (__get_IPSR() != 0U || __get_PRIMASK() != 0U || s_legacy_task != NULL)
+    if (__get_IPSR() != 0U || __get_PRIMASK() != 0U ||
+        s_start_attempted || xTaskGetSchedulerState() != taskSCHEDULER_NOT_STARTED ||
+        uxTaskGetNumberOfTasks() == 0U)
         return SYS_ERR_INVALID_STATE;
 
-    //仅使用抢占优先级，不引入子优先级
+    //创建任务后内核可能保持BASEPRI屏蔽，由首个任务启动流程恢复
     configASSERT(__NVIC_PRIO_BITS == configPRIO_BITS);
     configASSERT(NVIC_GetPriorityGrouping() == 3U);
-    s_run_once = run_once;
-    s_legacy_task = xTaskCreateStatic(Rtos_LegacyTask, "LegacyVideo",
-        RTOS_LEGACY_STACK_WORDS, NULL, RTOS_LEGACY_PRIORITY,
-        s_legacy_stack, &s_legacy_tcb);
-    if (s_legacy_task == NULL)
-        return SYS_ERR_NO_RESOURCE;
-
-    //内核接管PSP和异常调度，返回表示启动失败
+    s_start_attempted = true;
+    g_rtos_debug.started = 1U;
     vTaskStartScheduler();
     return SYS_ERR_INVALID_STATE;
 }
@@ -81,28 +67,4 @@ void vApplicationStackOverflowHook(TaskHandle_t task, char *name)
 {
     (void)task;
     Platform_RtosAssert(name, __LINE__);
-}
-
-//内部功能函数实现
-static void Rtos_LegacyTask(void *argument)
-{
-    uint32_t sample = 0U;
-    (void)argument;
-    g_rtos_debug.started = 1U;
-    for (;;)
-    {
-        s_run_once();
-        g_rtos_debug.legacy_iterations++;
-
-        //每1000轮采样栈余量，避免每轮扫描整个栈
-        if (++sample >= 1000U)
-        {
-            sample = 0U;
-            g_rtos_debug.legacy_stack_free_words = uxTaskGetStackHighWaterMark(NULL);
-            g_rtos_debug.idle_stack_free_words = uxTaskGetStackHighWaterMark(xTaskGetIdleTaskHandle());
-        }
-
-        //每轮等待下一个Tick，不让高优先级任务无限忙等
-        vTaskDelay(1U);
-    }
 }

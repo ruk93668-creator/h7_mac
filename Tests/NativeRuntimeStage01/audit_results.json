@@ -1,0 +1,89 @@
+{
+  "baseline": "8d3741a74692ec7f16a78884d86ecfcf222260d3",
+  "firmware_sha256": "25037a5b57f4a88e0e94f0e00cc3331811abfd2c356ea9a9d886febcdc58940d",
+  "checks": [
+    {
+      "name": "Protected hardware, CM4, UVC and official code unchanged",
+      "passed": true,
+      "detail": []
+    },
+    {
+      "name": "Historical tests and assertions unchanged",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "Lower layers contain no RTOS headers or task types",
+      "passed": true,
+      "detail": []
+    },
+    {
+      "name": "Create -> Initcall -> record result -> scheduler",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "No CM7 global runtime polling",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "Platform owns no business task",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "Stage01 tasks do not capture or borrow frames",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "Validated Sleep clock configuration retained",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "Three task entries linked",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "Static task stack sizes",
+      "passed": true,
+      "detail": {
+        "s_camera_stack": 4096,
+        "s_usb_stack": 8192,
+        "s_control_stack": 3072,
+        "s_idle_stack": 1024
+      }
+    },
+    {
+      "name": "No Legacy/global runtime entry linked",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "SVC_Handler vector",
+      "passed": true,
+      "detail": "0x8000395"
+    },
+    {
+      "name": "PendSV_Handler vector",
+      "passed": true,
+      "detail": "0x80003f1"
+    },
+    {
+      "name": "SysTick_Handler vector",
+      "passed": true,
+      "detail": "0x8009669"
+    },
+    {
+      "name": "CM7 and CM4 full rebuild clean",
+      "passed": true,
+      "detail": null
+    }
+  ],
+  "passed": 15,
+  "failed": 0,
+  "hardware_verified": false
+}
