@@ -15,15 +15,16 @@ typedef struct
     uint32_t hfsr;
 } PlatformRtosDebug_t;
 
+//提供RTOS环境的调试状态
 extern volatile PlatformRtosDebug_t g_rtos_debug;
 
-//启动已创建任务的调度器，成功后不返回，不创建业务任务
+//启动FreeRTOS调度器，不创建业务任务
 SysResult_t Platform_RtosStart(void);
 
-//记录内核断言或栈溢出并停机，供Keil观察
+//记录断言位置并停机
 void Platform_RtosAssert(const char *file, uint32_t line);
 
-//HardFault入口保存SCB故障寄存器，不执行恢复
+//保存处理器故障寄存器
 void Platform_RtosRecordFault(void);
 
 #endif

@@ -3,8 +3,7 @@
 
 #include "sys_result.h"
 
-//准备当前应用，业务启动交给BOOT_READY后的任务
+//检查阶段01应用模式
 SysResult_t App_Init(void);
-
 
 #endif /* CM7_APP_MAIN_H */

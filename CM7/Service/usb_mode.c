@@ -4,12 +4,12 @@
 #include <stdbool.h>
 #include "platform_time.h"
 
-//由Mode Manager选择并注册当前Class
+//登记基础TEST Class
 SysResult_t Usb_TestRegister(void);
 
 #define USB_MODE_CONFIGURED_TIMEOUT_MS    (5000U)
 
-//USB模式运行上下文，仅由主循环和初始化流程管理
+//USB模式运行上下文，由初始化流程准备、UsbTask串行推进
 typedef struct
 {
 
@@ -31,35 +31,46 @@ typedef struct
 
 //静态模式管理对象，复位后状态为UNINITIALIZED
 static UsbModeContext_t s_usb_mode;
+
+//保存上层选择的冷启动模式
 static UsbMode_t s_boot_mode;
+
+//记录是否已经显式选择冷启动模式
 static bool s_boot_mode_selected;
+
+//保存上层传入的Class注册入口，不直接依赖具体UVC实现
 static SysResult_t (*s_boot_register)(void);
 
-//保留原有Initcall表项，阶段01仅准备，UsbTask负责连接
+//准备APPLICATION等级的USB模式状态
 static SysResult_t UsbMode_AppStart(void);
 
-//按冷启动配置注册唯一Class
+//按冷启动模式登记Class
 static SysResult_t UsbMode_RegisterClass(UsbMode_t mode);
 
-
-//仅保存冷启动选择，不初始化硬件，不反向读取业务配置
+//保存冷启动USB模式选择
 SysResult_t USB_Mode_SelectBootMode(UsbMode_t mode, SysResult_t (*register_class)(void))
 {
     uint16_t length = 0U;
+
+    //模式只能在准备和Class注册之前选择一次
     if (s_usb_mode.initialized || s_boot_mode_selected ||
         USB_Device_GetConfigDescriptor(&length) != NULL)
         return SYS_ERR_INVALID_STATE;
+
+    //未实现的输出模式明确拒绝，不把预留枚举当成功能支持
     if (mode != USB_MODE_TEST && mode != USB_MODE_UVC && mode != USB_MODE_NONE)
         return SYS_ERR_NOT_SUPPORTED;
     if (mode == USB_MODE_UVC && register_class == NULL)
         return SYS_ERR_INVALID_ARG;
+
+    //只保存模式及注册入口，不在这里连接USB
     s_boot_register = register_class;
     s_boot_mode = mode;
     s_boot_mode_selected = true;
     return SYS_OK;
 }
 
-//SERVICE等级准备管理状态，不重复初始化Core
+//准备模式管理状态和Class注册
 SysResult_t USB_Mode_Init(void)
 {
 
@@ -96,7 +107,7 @@ SysResult_t USB_Mode_Init(void)
     return SYS_OK;
 }
 
-//启动已注册的冷启动模式，保留原有端点生命周期
+//启动当前冷启动USB模式
 SysResult_t USB_Mode_Start(void)
 {
     SysResult_t result;
@@ -143,12 +154,14 @@ SysResult_t USB_Mode_Start(void)
     return SYS_OK;
 }
 
-//请求断开并以目标模式重新枚举，只记录请求不执行硬件操作
+//登记当前模式重连请求
 SysResult_t USB_Mode_RequestReconnect(UsbMode_t target_mode)
 {
+
     //未初始化时不能请求重连
     if (!s_usb_mode.initialized)
         return SYS_ERR_INVALID_STATE;
+
     //只允许当前模式重连，不实现跨模式热切换
     if (target_mode != s_usb_mode.mode)
         return SYS_ERR_NOT_SUPPORTED;
@@ -177,16 +190,18 @@ SysResult_t USB_Mode_RequestReconnect(UsbMode_t target_mode)
     return SYS_OK;
 }
 
-//查询当前冷启动模式，不修改注册和启动状态
+//查询当前冷启动模式
 UsbMode_t USB_Mode_GetMode(void)
 {
+
+    //初始化后返回运行上下文，之前返回显式选择或默认TEST
     if (s_usb_mode.initialized)
         return s_usb_mode.mode;
 
     return s_boot_mode_selected ? s_boot_mode : (USB_MODE_BOOT_UVC ? USB_MODE_UVC : USB_MODE_TEST);
 }
 
-//非阻塞处理枚举和当前模式重连
+//非阻塞推进枚举和同模式重连
 void USB_Mode_Process(void)
 {
     uint32_t now_ms;
@@ -200,6 +215,7 @@ void USB_Mode_Process(void)
     {
         case USB_MODE_STATE_WAIT_CONFIGURED:
         {
+
             // 主机已经完成配置，正式进入运行状态
             if (USB_Device_IsConfigured())
             {
@@ -232,6 +248,7 @@ void USB_Mode_Process(void)
         }
         case USB_MODE_STATE_RUNNING:
         {
+
             //运行期间只响应设备级致命错误，端点BUSY和ISO丢包不会触发恢复
             usb_result = USB_Device_GetLastResult();
             if (usb_result != SYS_OK)
@@ -243,6 +260,7 @@ void USB_Mode_Process(void)
         }
         case USB_MODE_STATE_STOPPING:
 		{
+
 			//停止USB驱动
 			usb_result = USB_Device_Stop();
 			
@@ -261,6 +279,7 @@ void USB_Mode_Process(void)
 		}
 		case USB_MODE_STATE_WAIT_RECONNECT:
 		{
+
 			//断开等待500MS
 			if ( Platform_TimeGetMs() - 
 				 s_usb_mode.state_enter_ms >= 500)
@@ -269,6 +288,7 @@ void USB_Mode_Process(void)
 		}
 		case USB_MODE_STATE_STARTING:
 		{
+
 			//开始配置USB
 			usb_result = USB_Device_Start();
 			
@@ -295,9 +315,11 @@ FRAMEWORK_INIT_REGISTER(UsbMode_AppStart, INIT_LEVEL_APPLICATION);
 
 //内部功能函数实现
 
-//集中选择Class；尚未接入的模式明确拒绝注册
+//按冷启动模式登记Class
 static SysResult_t UsbMode_RegisterClass(UsbMode_t mode)
 {
+
+    //TEST使用既有注册入口，UVC只调用上层传入的注册函数
     switch (mode)
     {
         case USB_MODE_TEST:
@@ -310,14 +332,18 @@ static SysResult_t UsbMode_RegisterClass(UsbMode_t mode)
     }
 }
 
-
+//准备APPLICATION等级的USB模式状态
 static SysResult_t UsbMode_AppStart(void)
 {
+
+    //保留历史Initcall表项，但这里只做幂等准备，连接由UsbTask启动
     return USB_Mode_Init();
 }
 
-//模式结果由同一UsbTask读取，不改变运行状态
+//查询模式管理最近结果
 SysResult_t USB_Mode_GetLastResult(void)
 {
+
+    //未初始化时返回状态错误；结果不构成任何图像缓冲区释放授权
     return s_usb_mode.initialized ? s_usb_mode.last_result : SYS_ERR_INVALID_STATE;
 }

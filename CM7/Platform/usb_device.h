@@ -22,74 +22,78 @@ typedef struct
 
 typedef void (*UsbDeviceEventCallback_t)(uint32_t events, void *context);
 
-//启动前绑定静态通知接收端，回调可能在USB IRQ中执行
+//绑定USB状态通知接收端
 SysResult_t USB_Device_SetEventCallback(UsbDeviceEventCallback_t callback, void *context);
 
 //生命周期接口只允许主循环调用，操作未结束时重入返回BUSY
 
-//初始化Core和BSP，不绑定具体描述符或Class
+//初始化通用USB Device环境
 SysResult_t USB_Device_Init(void);
 
-//停止状态下登记外部Class和静态描述符，注册后才能Start
+//登记外部Class和描述符
 SysResult_t USB_Device_RegisterClass(USBD_ClassTypeDef *driver, USBD_DescriptorsTypeDef *descriptors);
 
-//返回注册时校验通过的配置，调用者不得修改或释放
+//返回当前已登记的配置描述符
 uint8_t *USB_Device_GetConfigDescriptor(uint16_t *length);
 
-//启动已经注册的设备，不允许重复启动
+//启动已登记的USB设备
 SysResult_t USB_Device_Start(void);
 
-//停止硬件并释放端点，失败后必须重试Stop
+//停止USB并清理Class资源
 SysResult_t USB_Device_Stop(void);
 
-//查询当前连接是否已配置
+//查询USB设备是否已完成配置
 bool USB_Device_IsConfigured(void);
 
-//查询设备级致命错误；普通BUSY、参数错误和ISO丢包不会污染此状态
+//查询设备级运行结果
 SysResult_t USB_Device_GetLastResult(void);
 
-//查询最近一次USB API操作结果，不作为设备健康状态
+//查询最近一次接口操作结果
 SysResult_t USB_Device_GetLastOperationResult(void);
 
-//申请非EP0端点，能力限制由BSP决定
+//打开Class数据端点
 SysResult_t USB_Device_OpenEp(uint8_t ep, uint8_t type, uint16_t size);
 
-//中止非EP0端点当前传输但保留端点配置
+//取消Class数据端点的当前传输
 SysResult_t USB_Device_AbortEp(uint8_t ep);
 
-//关闭非EP0端点并取消资源占用，可重复关闭
+//关闭Class数据端点
 SysResult_t USB_Device_CloseEp(uint8_t ep);
 
-//清空空闲端点FIFO，传输期间先Close再重新Open
+//清空空闲Class数据端点的FIFO
 SysResult_t USB_Device_FlushEp(uint8_t ep);
 
-//提交IN传输，完成前禁止重复提交或修改缓冲区
+//向Class IN端点提交发送
 SysResult_t USB_Device_Transmit(uint8_t ep, uint8_t *data, uint32_t size);
 
-//提交OUT接收，完成前禁止重复提交或修改缓冲区
+//向Class OUT端点提交接收
 SysResult_t USB_Device_Receive(uint8_t ep, uint8_t *data, uint32_t size);
 
-//设置非EP0端点STALL，是否支持由BSP决定
+//设置Class数据端点STALL
 SysResult_t USB_Device_StallEp(uint8_t ep);
 
-//清除非EP0端点STALL
+//清除Class数据端点STALL
 SysResult_t USB_Device_ClearStallEp(uint8_t ep);
 
-//取得端点状态快照，包括Core管理的EP0；等时未完成只记录端点结果
+//取得端点状态快照
 SysResult_t USB_Device_GetEpState(uint8_t ep, UsbDeviceEndpointState_t *state);
 
-//读取最近一次OUT接收长度
+//查询Class OUT端点接收长度
 uint32_t USB_Device_GetRxSize(uint8_t ep);
 
-//单调SOF序号，同一硬件帧号不重复计数
+//查询去重后的SOF序号
 uint32_t USB_Device_GetSofSequence(void);
 
-//IN传输提交及真实完成序号，跨连接保持单调
+//查询指定IN端点的提交序号
 uint32_t USB_Device_GetInSequence(uint8_t ep);
+
+//查询指定IN端点的完成序号
 uint32_t USB_Device_GetInCompleteSequence(uint8_t ep);
 
-//只屏蔽USB IRQ的嵌套临界区，保留其他外设中断
+//保存并屏蔽USB中断
 uint32_t USB_Device_Lock(void);
+
+//恢复USB中断使能状态
 void USB_Device_Unlock(uint32_t saved);
 
 #endif

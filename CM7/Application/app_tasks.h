@@ -12,15 +12,16 @@ typedef struct
     SysResult_t result;
 } AppTasksDebug_t;
 
+//提供任务组织层的调试状态
 extern volatile AppTasksDebug_t g_app_tasks_debug;
 
-//main在Initcall前统一创建三个静态任务，失败后不启动调度器
+//统一创建三个业务任务和事件适配
 SysResult_t App_TasksCreate(void);
 
-//main记录Initcall结果，只有成功才允许进入BOOT_READY
+//记录Framework初始化结果并准备启动屏障
 SysResult_t App_TasksRecordInitialization(SysResult_t result);
 
-//ControlTask发布启动屏障，不执行Initcall
+//发布业务任务启动屏障
 SysResult_t App_TasksReleaseBoot(void);
 
 #endif

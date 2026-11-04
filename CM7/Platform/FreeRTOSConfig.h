@@ -2,6 +2,8 @@
 #define CM7_FREERTOS_CONFIG_H
 
 #include <stdint.h>
+
+//由系统时钟配置维护，供内核计算Tick时钟
 extern uint32_t SystemCoreClock;
 
 //断言只记录并停机，不在异常中调用业务模块

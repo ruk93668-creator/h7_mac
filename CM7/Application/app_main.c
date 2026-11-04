@@ -2,9 +2,11 @@
 #include "framework_init.h"
 #include "usb_mode.h"
 
-//阶段01只验收TEST控制面，不在Initcall启动采集或USB
+//检查阶段01应用模式
 SysResult_t App_Init(void)
 {
+
+    //Initcall只接受TEST准备状态，不启动Camera采集或USB连接
     return USB_Mode_GetMode() == USB_MODE_TEST ? SYS_OK : SYS_ERR_NOT_SUPPORTED;
 }
 

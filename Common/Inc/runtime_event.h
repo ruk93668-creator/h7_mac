@@ -31,13 +31,13 @@ typedef struct
     void *context;
 } RuntimeEventPort_t;
 
-//初始化期间绑定唯一静态事件后端
+//绑定唯一的静态事件后端
 SysResult_t RuntimeEvent_Bind(const RuntimeEventPort_t *port);
 
-//任务或初始化流程发送提示，BOOT_READY由Application统一发布
+//发送普通上下文事件提示
 SysResult_t RuntimeEvent_Post(RuntimeEventTarget_t target, uint32_t events);
 
-//外设中断发送提示，不等待任务执行或资源释放
+//发送中断上下文事件提示
 SysResult_t RuntimeEvent_PostFromIsr(RuntimeEventTarget_t target, uint32_t events);
 
 #endif

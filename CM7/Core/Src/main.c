@@ -65,15 +65,19 @@ static void MPU_Config(void);
 
 /* Private user code ---------------------------------------------------------*/
 /* USER CODE BEGIN 0 */
+
 //Region2保持128KiB，覆盖首1KiB保留区和3块40KiB缓冲区
 //范围必须与BSP业务窗口一致，不改变原有内存属性
 typedef char SdramMpuWindowCheck_t[
 	(BSP_SDRAM_WINDOW == (1UL << (MPU_REGION_SIZE_128KB + 1U))) ? 1 : -1
 ];
+
+//配置SDRAM业务窗口的MPU属性
 static void MPU_ConfigSdram(void)
 {
 	MPU_Region_InitTypeDef region = {0};
 
+	//暂时关闭MPU后配置Region2，保持原有SDRAM范围和访问属性
 	HAL_MPU_Disable();
 	region.Enable = MPU_REGION_ENABLE;
 	region.Number = MPU_REGION_NUMBER2;
@@ -86,10 +90,13 @@ static void MPU_ConfigSdram(void)
 	region.IsShareable = MPU_ACCESS_SHAREABLE;
 	region.IsCacheable = MPU_ACCESS_NOT_CACHEABLE;
 	region.IsBufferable = MPU_ACCESS_NOT_BUFFERABLE;
+
+	//提交区域配置后恢复MPU，不在这里初始化或测试SDRAM
 	HAL_MPU_ConfigRegion(&region);
 	HAL_MPU_Enable(MPU_PRIVILEGED_DEFAULT);
 }
 
+//保存main准备和调度器启动结果，供Keil观察
 SysResult_t init_error;
 /* USER CODE END 0 */
 
@@ -101,7 +108,6 @@ int main(void)
 {
 
   /* USER CODE BEGIN 1 */
-
 
   /* USER CODE END 1 */
 /* USER CODE BEGIN Boot_Mode_Sequence_0 */
@@ -158,6 +164,7 @@ Error_Handler();
 
   /* USER CODE BEGIN SysInit */
 	MPU_ConfigSdram();
+
 	//先创建静态任务与事件接收端，调度器尚未运行
 	init_error = App_TasksCreate();
 	if (init_error != SYS_OK)
@@ -165,6 +172,8 @@ Error_Handler();
 
 	//Initcall只准备，不启动Camera或USB连接
 	init_error = Framework_InitRuntime();
+
+	//记录Initcall结果，失败时保持启动屏障关闭
 	init_error = App_TasksRecordInitialization(init_error);
 	if (init_error != SYS_OK )
 	{
@@ -178,6 +187,8 @@ Error_Handler();
 
   //main准备完成后启动Native任务，成功不再返回
   init_error = Platform_RtosStart();
+
+  //调度器正常启动后不返回，返回时按启动失败处理
   Error_Handler();
 
   /* USER CODE END 2 */
@@ -189,6 +200,7 @@ Error_Handler();
     /* USER CODE END WHILE */
 
     /* USER CODE BEGIN 3 */
+
     //调度器启动失败才到这里，不重复运行原主循环
   }
   /* USER CODE END 3 */
