@@ -1,0 +1,66 @@
+{
+  "summary": {
+    "total": 7,
+    "passed": 7,
+    "failed": 0
+  },
+  "cases": [
+    {
+      "id": 0,
+      "pass": true,
+      "failure_line": 0,
+      "error": null,
+      "name": "NULL BSP回调拒绝"
+    },
+    {
+      "id": 1,
+      "pass": true,
+      "failure_line": 0,
+      "error": null,
+      "name": "ISR绑定拒绝"
+    },
+    {
+      "id": 2,
+      "pass": true,
+      "failure_line": 0,
+      "error": null,
+      "name": "初始化后绑定拒绝"
+    },
+    {
+      "id": 3,
+      "pass": true,
+      "failure_line": 0,
+      "error": null,
+      "name": "采集中绑定拒绝"
+    },
+    {
+      "id": 4,
+      "pass": true,
+      "failure_line": 0,
+      "error": null,
+      "name": "BSP重复绑定拒绝"
+    },
+    {
+      "id": 5,
+      "pass": true,
+      "failure_line": 0,
+      "error": null,
+      "name": "BSP错误锁存后通知"
+    },
+    {
+      "id": 6,
+      "pass": true,
+      "failure_line": 0,
+      "error": null,
+      "name": "重复错误保留首个故障"
+    }
+  ],
+  "hardware_verified": false,
+  "command": [
+    "C:\\Users\\29062\\AppData\\Local\\Programs\\Python\\Python311\\python.exe",
+    "D:\\32\\STM32H7\\h7_mac\\Tests\\NativeRuntimeStage02\\run_bsp.py",
+    "phase02a_bsp",
+    "--count",
+    "7"
+  ]
+}

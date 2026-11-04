@@ -44,6 +44,9 @@ SysResult_t USB_Mode_Init(void);
 //启动当前冷启动USB模式
 SysResult_t USB_Mode_Start(void);
 
+//停止当前模式并保留冷启动Class选择
+SysResult_t USB_Mode_Stop(void);
+
 //登记当前模式重连请求
 SysResult_t USB_Mode_RequestReconnect(UsbMode_t target_mode);
 

@@ -1,0 +1,98 @@
+{
+  "suites": [
+    {
+      "suite": "phase02a",
+      "summary": {
+        "total": 10,
+        "passed": 10,
+        "failed": 0
+      },
+      "command": [
+        "C:\\Users\\29062\\AppData\\Local\\Programs\\Python\\Python311\\python.exe",
+        "D:\\32\\STM32H7\\h7_mac\\Tests\\NativeRuntimeStage02\\run_arm.py",
+        "phase02a",
+        "--count",
+        "10"
+      ]
+    },
+    {
+      "suite": "phase02a_bsp",
+      "summary": {
+        "total": 7,
+        "passed": 7,
+        "failed": 0
+      },
+      "command": [
+        "C:\\Users\\29062\\AppData\\Local\\Programs\\Python\\Python311\\python.exe",
+        "D:\\32\\STM32H7\\h7_mac\\Tests\\NativeRuntimeStage02\\run_bsp.py",
+        "phase02a_bsp",
+        "--count",
+        "7"
+      ]
+    },
+    {
+      "suite": "phase02b",
+      "summary": {
+        "total": 11,
+        "passed": 11,
+        "failed": 0
+      },
+      "command": [
+        "C:\\Users\\29062\\AppData\\Local\\Programs\\Python\\Python311\\python.exe",
+        "D:\\32\\STM32H7\\h7_mac\\Tests\\NativeRuntimeStage02\\run_usb.py",
+        "phase02b",
+        "--count",
+        "11"
+      ]
+    },
+    {
+      "suite": "phase02c",
+      "summary": {
+        "total": 28,
+        "passed": 28,
+        "failed": 0
+      },
+      "command": [
+        "C:\\Users\\29062\\AppData\\Local\\Programs\\Python\\Python311\\python.exe",
+        "D:\\32\\STM32H7\\h7_mac\\Tests\\NativeRuntimeStage02\\run_arm.py",
+        "phase02c",
+        "--count",
+        "28"
+      ]
+    },
+    {
+      "suite": "phase02d",
+      "summary": {
+        "total": 33,
+        "passed": 33,
+        "failed": 0
+      },
+      "command": [
+        "C:\\Users\\29062\\AppData\\Local\\Programs\\Python\\Python311\\python.exe",
+        "D:\\32\\STM32H7\\h7_mac\\Tests\\NativeRuntimeStage02\\run_native.py",
+        "phase02d",
+        "--count",
+        "33"
+      ]
+    },
+    {
+      "suite": "phase02test",
+      "summary": {
+        "total": 8,
+        "passed": 8,
+        "failed": 0
+      },
+      "command": [
+        "C:\\Users\\29062\\AppData\\Local\\Programs\\Python\\Python311\\python.exe",
+        "D:\\32\\STM32H7\\h7_mac\\Tests\\NativeRuntimeStage02\\run_native.py",
+        "phase02test",
+        "--count",
+        "8"
+      ]
+    }
+  ],
+  "total": 97,
+  "passed": 97,
+  "failed": 0,
+  "hardware_verified": false
+}

@@ -1,0 +1,400 @@
+{
+  "summary": {
+    "total": 39,
+    "passed": 0,
+    "failed": 39
+  },
+  "source_changed": [],
+  "cases": [
+    {
+      "id": 0,
+      "name": "Probe GET_CUR被设备描述符打断不得授权Commit",
+      "pass": false,
+      "assertions": 2,
+      "failed_line": 28,
+      "actual": 4294967292,
+      "expected": 0,
+      "error": null
+    },
+    {
+      "id": 1,
+      "name": "旧Probe SET_CUR回调不能处理设备GET_DESCRIPTOR",
+      "pass": false,
+      "assertions": 2,
+      "failed_line": 28,
+      "actual": 4294967292,
+      "expected": 0,
+      "error": null
+    },
+    {
+      "id": 2,
+      "name": "旧Commit SET_CUR不能由其他完成授权",
+      "pass": false,
+      "assertions": 2,
+      "failed_line": 28,
+      "actual": 4294967292,
+      "expected": 0,
+      "error": null
+    },
+    {
+      "id": 3,
+      "name": "旧SET_CUR被设备OUT SETUP取消",
+      "pass": false,
+      "assertions": 2,
+      "failed_line": 28,
+      "actual": 4294967292,
+      "expected": 0,
+      "error": null
+    },
+    {
+      "id": 4,
+      "name": "旧OUT中断不污染描述符IN",
+      "pass": false,
+      "assertions": 2,
+      "failed_line": 28,
+      "actual": 4294967292,
+      "expected": 0,
+      "error": null
+    },
+    {
+      "id": 5,
+      "name": "正常Probe GET_CUR到Commit",
+      "pass": false,
+      "assertions": 2,
+      "failed_line": 28,
+      "actual": 4294967292,
+      "expected": 0,
+      "error": null
+    },
+    {
+      "id": 6,
+      "name": "VC GET_STATUS两字节",
+      "pass": false,
+      "assertions": 2,
+      "failed_line": 28,
+      "actual": 4294967292,
+      "expected": 0,
+      "error": null
+    },
+    {
+      "id": 7,
+      "name": "VS GET_STATUS两字节",
+      "pass": false,
+      "assertions": 2,
+      "failed_line": 28,
+      "actual": 4294967292,
+      "expected": 0,
+      "error": null
+    },
+    {
+      "id": 8,
+      "name": "持久GET_STATUS响应与重复请求",
+      "pass": false,
+      "assertions": 2,
+      "failed_line": 28,
+      "actual": 4294967292,
+      "expected": 0,
+      "error": null
+    },
+    {
+      "id": 9,
+      "name": "GET_STATUS非法字段0",
+      "pass": false,
+      "assertions": 2,
+      "failed_line": 28,
+      "actual": 4294967292,
+      "expected": 0,
+      "error": null
+    },
+    {
+      "id": 10,
+      "name": "GET_STATUS非法字段1",
+      "pass": false,
+      "assertions": 2,
+      "failed_line": 28,
+      "actual": 4294967292,
+      "expected": 0,
+      "error": null
+    },
+    {
+      "id": 11,
+      "name": "GET_STATUS非法字段2",
+      "pass": false,
+      "assertions": 2,
+      "failed_line": 28,
+      "actual": 4294967292,
+      "expected": 0,
+      "error": null
+    },
+    {
+      "id": 12,
+      "name": "GET_STATUS非法字段3",
+      "pass": false,
+      "assertions": 2,
+      "failed_line": 28,
+      "actual": 4294967292,
+      "expected": 0,
+      "error": null
+    },
+    {
+      "id": 13,
+      "name": "GET_STATUS非法字段4",
+      "pass": false,
+      "assertions": 2,
+      "failed_line": 28,
+      "actual": 4294967292,
+      "expected": 0,
+      "error": null
+    },
+    {
+      "id": 14,
+      "name": "GET_STATUS非法字段5",
+      "pass": false,
+      "assertions": 2,
+      "failed_line": 28,
+      "actual": 4294967292,
+      "expected": 0,
+      "error": null
+    },
+    {
+      "id": 15,
+      "name": "GET_STATUS非法字段6",
+      "pass": false,
+      "assertions": 2,
+      "failed_line": 28,
+      "actual": 4294967292,
+      "expected": 0,
+      "error": null
+    },
+    {
+      "id": 16,
+      "name": "GET_STATUS非法字段7",
+      "pass": false,
+      "assertions": 2,
+      "failed_line": 28,
+      "actual": 4294967292,
+      "expected": 0,
+      "error": null
+    },
+    {
+      "id": 17,
+      "name": "GET_STATUS非法字段8",
+      "pass": false,
+      "assertions": 2,
+      "failed_line": 28,
+      "actual": 4294967292,
+      "expected": 0,
+      "error": null
+    },
+    {
+      "id": 18,
+      "name": "GET_STATUS非法字段9",
+      "pass": false,
+      "assertions": 2,
+      "failed_line": 28,
+      "actual": 4294967292,
+      "expected": 0,
+      "error": null
+    },
+    {
+      "id": 19,
+      "name": "GET_STATUS非法字段10",
+      "pass": false,
+      "assertions": 2,
+      "failed_line": 28,
+      "actual": 4294967292,
+      "expected": 0,
+      "error": null
+    },
+    {
+      "id": 20,
+      "name": "GET_STATUS非法字段11",
+      "pass": false,
+      "assertions": 2,
+      "failed_line": 28,
+      "actual": 4294967292,
+      "expected": 0,
+      "error": null
+    },
+    {
+      "id": 21,
+      "name": "STALL后接口GET_STATUS恢复",
+      "pass": false,
+      "assertions": 2,
+      "failed_line": 28,
+      "actual": 4294967292,
+      "expected": 0,
+      "error": null
+    },
+    {
+      "id": 22,
+      "name": "STALL后设备GET_DESCRIPTOR恢复",
+      "pass": false,
+      "assertions": 2,
+      "failed_line": 28,
+      "actual": 4294967292,
+      "expected": 0,
+      "error": null
+    },
+    {
+      "id": 23,
+      "name": "TxSent当前事务字段校验0",
+      "pass": false,
+      "assertions": 2,
+      "failed_line": 28,
+      "actual": 4294967292,
+      "expected": 0,
+      "error": null
+    },
+    {
+      "id": 24,
+      "name": "TxSent当前事务字段校验1",
+      "pass": false,
+      "assertions": 2,
+      "failed_line": 28,
+      "actual": 4294967292,
+      "expected": 0,
+      "error": null
+    },
+    {
+      "id": 25,
+      "name": "TxSent当前事务字段校验2",
+      "pass": false,
+      "assertions": 2,
+      "failed_line": 28,
+      "actual": 4294967292,
+      "expected": 0,
+      "error": null
+    },
+    {
+      "id": 26,
+      "name": "TxSent当前事务字段校验3",
+      "pass": false,
+      "assertions": 2,
+      "failed_line": 28,
+      "actual": 4294967292,
+      "expected": 0,
+      "error": null
+    },
+    {
+      "id": 27,
+      "name": "TxSent当前事务字段校验4",
+      "pass": false,
+      "assertions": 2,
+      "failed_line": 28,
+      "actual": 4294967292,
+      "expected": 0,
+      "error": null
+    },
+    {
+      "id": 28,
+      "name": "TxSent当前事务字段校验5",
+      "pass": false,
+      "assertions": 2,
+      "failed_line": 28,
+      "actual": 4294967292,
+      "expected": 0,
+      "error": null
+    },
+    {
+      "id": 29,
+      "name": "TxSent当前事务字段校验6",
+      "pass": false,
+      "assertions": 2,
+      "failed_line": 28,
+      "actual": 4294967292,
+      "expected": 0,
+      "error": null
+    },
+    {
+      "id": 30,
+      "name": "TxSent当前事务字段校验7",
+      "pass": false,
+      "assertions": 2,
+      "failed_line": 28,
+      "actual": 4294967292,
+      "expected": 0,
+      "error": null
+    },
+    {
+      "id": 31,
+      "name": "RxReady当前事务字段校验0",
+      "pass": false,
+      "assertions": 2,
+      "failed_line": 28,
+      "actual": 4294967292,
+      "expected": 0,
+      "error": null
+    },
+    {
+      "id": 32,
+      "name": "RxReady当前事务字段校验1",
+      "pass": false,
+      "assertions": 2,
+      "failed_line": 28,
+      "actual": 4294967292,
+      "expected": 0,
+      "error": null
+    },
+    {
+      "id": 33,
+      "name": "RxReady当前事务字段校验2",
+      "pass": false,
+      "assertions": 2,
+      "failed_line": 28,
+      "actual": 4294967292,
+      "expected": 0,
+      "error": null
+    },
+    {
+      "id": 34,
+      "name": "RxReady当前事务字段校验3",
+      "pass": false,
+      "assertions": 2,
+      "failed_line": 28,
+      "actual": 4294967292,
+      "expected": 0,
+      "error": null
+    },
+    {
+      "id": 35,
+      "name": "RxReady当前事务字段校验4",
+      "pass": false,
+      "assertions": 2,
+      "failed_line": 28,
+      "actual": 4294967292,
+      "expected": 0,
+      "error": null
+    },
+    {
+      "id": 36,
+      "name": "RxReady当前事务字段校验5",
+      "pass": false,
+      "assertions": 2,
+      "failed_line": 28,
+      "actual": 4294967292,
+      "expected": 0,
+      "error": null
+    },
+    {
+      "id": 37,
+      "name": "RxReady当前事务字段校验6",
+      "pass": false,
+      "assertions": 2,
+      "failed_line": 28,
+      "actual": 4294967292,
+      "expected": 0,
+      "error": null
+    },
+    {
+      "id": 38,
+      "name": "RxReady当前事务字段校验7",
+      "pass": false,
+      "assertions": 2,
+      "failed_line": 28,
+      "actual": 4294967292,
+      "expected": 0,
+      "error": null
+    }
+  ]
+}

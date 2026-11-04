@@ -5,6 +5,23 @@
 #include "sys_result.h"
 #include <stdbool.h>
 
+//采集提示，不携带帧所有权，回调沿用调用者上下文
+#define CAMERA_CAPTURE_EVENT_PROGRESS (1UL << 0)
+#define CAMERA_CAPTURE_EVENT_ERROR    (1UL << 1)
+typedef void (*CameraCaptureEventCallback_t)(uint32_t events, void *context);
+
+typedef struct
+{
+    uint32_t completed_frames;
+    uint32_t dropped_frames;
+} CameraCaptureStats_t;
+
+//绑定静态采集通知接收端
+SysResult_t CameraCapture_SetEventCallback(CameraCaptureEventCallback_t callback, void *context);
+
+//取得完整帧和丢帧计数快照
+SysResult_t CameraCapture_GetStats(CameraCaptureStats_t *stats);
+
 //启动前校验三缓冲容量和DMA长度，不修改采集状态
 SysResult_t CameraCapture_ValidateStreamConfig(const CameraConfig_t *config);
 

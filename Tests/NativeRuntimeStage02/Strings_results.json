@@ -1,0 +1,429 @@
+{
+  "summary": {
+    "total": 8,
+    "passed": 8,
+    "failed": 0
+  },
+  "cases": [
+    {
+      "id": 0,
+      "name": "正式UVC注册及回调绑定",
+      "passed": true,
+      "checks": 14,
+      "failed_line": 0,
+      "actual": 0,
+      "expected": 0,
+      "error": null,
+      "source_reads": [],
+      "storage_read_safe": true
+    },
+    {
+      "id": 1,
+      "name": "Core语言描述符",
+      "passed": true,
+      "checks": 17,
+      "failed_line": 0,
+      "actual": 0,
+      "expected": 0,
+      "error": null,
+      "source_reads": [],
+      "storage_read_safe": true
+    },
+    {
+      "id": 2,
+      "name": "Core功能名称24字节",
+      "passed": true,
+      "checks": 40,
+      "failed_line": 0,
+      "actual": 0,
+      "expected": 0,
+      "error": null,
+      "source_reads": [
+        [
+          0,
+          1
+        ],
+        [
+          1,
+          1
+        ],
+        [
+          2,
+          1
+        ],
+        [
+          3,
+          1
+        ],
+        [
+          4,
+          1
+        ],
+        [
+          5,
+          1
+        ],
+        [
+          6,
+          1
+        ],
+        [
+          7,
+          1
+        ],
+        [
+          8,
+          1
+        ],
+        [
+          9,
+          1
+        ],
+        [
+          10,
+          1
+        ],
+        [
+          11,
+          1
+        ],
+        [
+          12,
+          1
+        ],
+        [
+          13,
+          1
+        ],
+        [
+          14,
+          1
+        ],
+        [
+          15,
+          1
+        ],
+        [
+          16,
+          1
+        ],
+        [
+          17,
+          1
+        ],
+        [
+          18,
+          1
+        ],
+        [
+          19,
+          1
+        ],
+        [
+          20,
+          1
+        ],
+        [
+          21,
+          1
+        ],
+        [
+          22,
+          1
+        ],
+        [
+          23,
+          1
+        ]
+      ],
+      "storage_read_safe": true
+    },
+    {
+      "id": 3,
+      "name": "主机请求255仍只返回24",
+      "passed": true,
+      "checks": 40,
+      "failed_line": 0,
+      "actual": 0,
+      "expected": 0,
+      "error": null,
+      "source_reads": [
+        [
+          0,
+          1
+        ],
+        [
+          1,
+          1
+        ],
+        [
+          2,
+          1
+        ],
+        [
+          3,
+          1
+        ],
+        [
+          4,
+          1
+        ],
+        [
+          5,
+          1
+        ],
+        [
+          6,
+          1
+        ],
+        [
+          7,
+          1
+        ],
+        [
+          8,
+          1
+        ],
+        [
+          9,
+          1
+        ],
+        [
+          10,
+          1
+        ],
+        [
+          11,
+          1
+        ],
+        [
+          12,
+          1
+        ],
+        [
+          13,
+          1
+        ],
+        [
+          14,
+          1
+        ],
+        [
+          15,
+          1
+        ],
+        [
+          16,
+          1
+        ],
+        [
+          17,
+          1
+        ],
+        [
+          18,
+          1
+        ],
+        [
+          19,
+          1
+        ],
+        [
+          20,
+          1
+        ],
+        [
+          21,
+          1
+        ],
+        [
+          22,
+          1
+        ],
+        [
+          23,
+          1
+        ]
+      ],
+      "storage_read_safe": true
+    },
+    {
+      "id": 4,
+      "name": "短请求只返回8字节",
+      "passed": true,
+      "checks": 24,
+      "failed_line": 0,
+      "actual": 0,
+      "expected": 0,
+      "error": null,
+      "source_reads": [
+        [
+          0,
+          1
+        ],
+        [
+          1,
+          1
+        ],
+        [
+          2,
+          1
+        ],
+        [
+          3,
+          1
+        ],
+        [
+          4,
+          1
+        ],
+        [
+          5,
+          1
+        ],
+        [
+          6,
+          1
+        ],
+        [
+          7,
+          1
+        ]
+      ],
+      "storage_read_safe": true
+    },
+    {
+      "id": 5,
+      "name": "不支持索引按Core规则STALL",
+      "passed": true,
+      "checks": 23,
+      "failed_line": 0,
+      "actual": 0,
+      "expected": 0,
+      "error": null,
+      "source_reads": [],
+      "storage_read_safe": true
+    },
+    {
+      "id": 6,
+      "name": "PIO对齐尾部及读取边界",
+      "passed": true,
+      "checks": 46,
+      "failed_line": 0,
+      "actual": 0,
+      "expected": 0,
+      "error": null,
+      "source_reads": [
+        [
+          0,
+          1
+        ],
+        [
+          1,
+          1
+        ],
+        [
+          2,
+          1
+        ],
+        [
+          3,
+          1
+        ],
+        [
+          4,
+          1
+        ],
+        [
+          5,
+          1
+        ],
+        [
+          6,
+          1
+        ],
+        [
+          7,
+          1
+        ],
+        [
+          8,
+          1
+        ],
+        [
+          9,
+          1
+        ],
+        [
+          10,
+          1
+        ],
+        [
+          11,
+          1
+        ],
+        [
+          12,
+          1
+        ],
+        [
+          13,
+          1
+        ],
+        [
+          14,
+          1
+        ],
+        [
+          15,
+          1
+        ],
+        [
+          16,
+          1
+        ],
+        [
+          17,
+          1
+        ],
+        [
+          18,
+          1
+        ],
+        [
+          19,
+          1
+        ],
+        [
+          20,
+          1
+        ],
+        [
+          21,
+          1
+        ],
+        [
+          22,
+          1
+        ],
+        [
+          23,
+          1
+        ]
+      ],
+      "storage_read_safe": true
+    },
+    {
+      "id": 7,
+      "name": "交错重复请求与静态地址",
+      "passed": true,
+      "checks": 23,
+      "failed_line": 0,
+      "actual": 0,
+      "expected": 0,
+      "error": null,
+      "source_reads": [],
+      "storage_read_safe": true
+    }
+  ]
+}

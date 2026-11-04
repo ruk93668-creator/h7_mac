@@ -95,11 +95,13 @@ typedef struct
 
 typedef struct
 {
+
     //保存各缓冲区的地址、容量、帧序号和状态
     CameraFrameBuffer_t buffers[CAMERA_STREAM_BUFFER_COUNT];
 
     //DMA的M0目标对应的缓冲区索引
     uint8_t dma_m0_index;
+
     //DMA的M1目标对应的缓冲区索引
     uint8_t dma_m1_index;
 
@@ -108,6 +110,7 @@ typedef struct
 
     //帧序号计数器，每次完成后递增，丢帧也计数
     uint32_t next_sequence;
+
     //累计丢弃的图像帧数
     uint32_t dropped_frames;
 	
@@ -131,6 +134,45 @@ typedef struct
 
 //CM7唯一的图像采集实例
 static CameraCapture_t s_capture;
+
+//保存Application提供的普通C通知入口
+static CameraCaptureEventCallback_t s_capture_callback;
+
+//保存通知接收端的静态上下文
+static void *s_capture_callback_context;
+
+//绑定静态采集通知接收端
+SysResult_t CameraCapture_SetEventCallback(CameraCaptureEventCallback_t callback, void *context)
+{
+
+    //只能在Media初始化前绑定一次，不在采集中替换接收端
+    if (callback == NULL)
+        return SYS_ERR_INVALID_ARG;
+    if (s_capture.initialized || s_capture_callback != NULL)
+        return SYS_ERR_INVALID_STATE;
+    s_capture_callback_context = context;
+    s_capture_callback = callback;
+    return SYS_OK;
+}
+
+//取得完整帧和丢帧计数快照
+SysResult_t CameraCapture_GetStats(CameraCaptureStats_t *stats)
+{
+    uint32_t primask;
+
+    if (stats == NULL)
+        return SYS_ERR_INVALID_ARG;
+    if (!s_capture.initialized)
+        return SYS_ERR_INVALID_STATE;
+
+    //只短暂保护两个计数，不改变缓冲区状态
+    primask = __get_PRIMASK();
+    __disable_irq();
+    stats->completed_frames = s_capture.stream.next_sequence;
+    stats->dropped_frames = s_capture.stream.dropped_frames;
+    __set_PRIMASK(primask);
+    return SYS_OK;
+}
 
 //内部功能函数声明
 //计算当前格式的完整帧字节数
@@ -295,6 +337,7 @@ SysResult_t CameraCapture_Start(void)
 
     if (result != SYS_OK)
     {
+
         //启动失败可能留下部分使能的硬件
         s_capture.last_result = result;
         s_capture.state = CAMERA_CAPTURE_ERROR;
@@ -397,6 +440,7 @@ void CameraCapture_Process(void)
     //获取BSP中断记录的事件
     if (BSP_DCMI_TakeEvents(&events))
     {
+
         //错误优先，禁止交付不完整图像
         if ((events.flags & BSP_DCMI_EVENT_ERROR) != 0U ||
             events.result != SYS_OK)
@@ -407,6 +451,7 @@ void CameraCapture_Process(void)
 
             s_capture.state = CAMERA_CAPTURE_ERROR;
         }
+
         //本次采集正常完成
         else if (s_capture.mode == CAMERA_CAPTURE_MODE_SNAPSHOT &&
                  (events.flags & BSP_DCMI_EVENT_FRAME) != 0U)
@@ -443,6 +488,7 @@ void CameraCapture_Process(void)
 //获取已经采集完成的图像
 bool CameraCapture_GetFrame(CameraFrame_t *frame)
 {
+
     //检查输出参数及初始化状态
     if (frame == NULL || !s_capture.initialized)
         return false;
@@ -474,6 +520,7 @@ bool CameraCapture_GetFrame(CameraFrame_t *frame)
 //归还FrameBuffer，允许下一次采集
 SysResult_t CameraCapture_ReleaseFrame(void)
 {
+
     //检查初始化状态
     if (!s_capture.initialized)
         return SYS_ERR_INVALID_STATE;
@@ -589,6 +636,7 @@ SysResult_t CameraCapture_Stop(void)
     if (s_capture.mode == CAMERA_CAPTURE_MODE_STREAM &&
         has_in_use)
     {
+
         //硬件已停止，但Buffer仍归Application所有
         s_capture.state = CAMERA_CAPTURE_DRAINING;
 
@@ -749,6 +797,7 @@ static uint8_t CameraStream_FindReplaceable(
 
     for (i = 0U; i < CAMERA_STREAM_BUFFER_COUNT; i++)
     {
+
         //不能选择已经分配给DMA的缓冲区
         if (i == me->dma_m0_index ||
             i == me->dma_m1_index)
@@ -778,6 +827,7 @@ static SysResult_t CameraStream_Rotate(
     BspDcmiTarget_t completed_target,
     CameraStream_ReplaceFn replace_target)
 {
+
 	//本次DMA传输完成的缓冲区索引
 	uint8_t completed_index;
 
@@ -816,6 +866,7 @@ static SysResult_t CameraStream_Rotate(
     //存在待交付或正在使用的图像时，检查索引和状态
     if (me->consumer_index != CAMERA_BUFFER_INDEX_INVALID)
     {
+
         //索引必须落在缓冲区数组范围内
         if (me->consumer_index >= CAMERA_STREAM_BUFFER_COUNT)
             return SYS_ERR_INVALID_STATE;
@@ -847,6 +898,7 @@ static SysResult_t CameraStream_Rotate(
     //没有替换目标时，继续沿用现有DMA双缓冲
     if (replacement_index == CAMERA_BUFFER_INDEX_INVALID)
     {
+
         //正常情况下是第三块缓冲区仍被Application使用
         if (me->consumer_index == CAMERA_BUFFER_INDEX_INVALID)
             return SYS_ERR_INVALID_STATE;
@@ -866,18 +918,21 @@ static SysResult_t CameraStream_Rotate(
 	//检查替换缓冲区状态与消费者索引是否一致
 	if (replacement_state == CAMERA_BUFFER_READY)
 	{
+
 		//回收尚未消费的完整帧，索引必须指向该缓冲区
 		if (me->consumer_index != replacement_index)
 			return SYS_ERR_INVALID_STATE;
 	}
 	else if (replacement_state == CAMERA_BUFFER_FREE)
 	{
+
 		//第三块缓冲区空闲时，不应存在待消费或正在使用的图像
 		if (me->consumer_index != CAMERA_BUFFER_INDEX_INVALID)
 			return SYS_ERR_INVALID_STATE;
 	}
 	else
 	{
+
 		//DMA和IN_USE缓冲区不能作为替换目标
 		return SYS_ERR_INVALID_STATE;
 	}
@@ -899,6 +954,7 @@ static SysResult_t CameraStream_Rotate(
 
     if (result != SYS_OK)
     {
+
         //不提交软件所有权，调用者负责停止并恢复采集
         return result;
     }
@@ -961,6 +1017,7 @@ static bool CameraStream_GetFrame(
             me->frame_bytes != 0U &&
             me->frame_bytes <= buffer->capacity)
         {
+
             //Application取得缓冲区所有权
             buffer->state = CAMERA_BUFFER_IN_USE;
 
@@ -1075,10 +1132,12 @@ static SysResult_t CameraStream_OnFrameComplete(
     if (stream != &s_capture.stream)
         return SYS_ERR_INVALID_ARG;
 
-    //由Media负责轮换，BSP负责修改DMA地址
-    return CameraStream_Rotate(
-        stream,
-        completed_target,
-        BSP_DCMI_ReplaceTarget
-    );
+    //保持原轮换算法及地址切换时序，提交后仅发唤醒提示
+    {
+        SysResult_t result = CameraStream_Rotate(stream, completed_target, BSP_DCMI_ReplaceTarget);
+        if (s_capture_callback != NULL)
+            s_capture_callback(result == SYS_OK ? CAMERA_CAPTURE_EVENT_PROGRESS :
+                CAMERA_CAPTURE_EVENT_ERROR, s_capture_callback_context);
+        return result;
+    }
 }

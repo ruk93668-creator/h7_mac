@@ -21,6 +21,9 @@ static uint32_t s_video_frame_bytes;
 static uint32_t s_video_interval;
 static bool s_video_configured;
 
+//累计设备侧真实EOF完成帧数，跨Class重建保留
+static uint32_t s_total_completed_frames;
+
 //按字段保存参数，不直接映射USB数据
 typedef struct
 {
@@ -74,6 +77,7 @@ typedef struct
     SysResult_t stream_result;
     volatile uint32_t event_token;
     uint32_t in_sequence;
+
     //只保存最新SOF，帧间隔从有效Commit读取
     volatile uint32_t available_sof;
     uint32_t used_sof;
@@ -81,7 +85,6 @@ typedef struct
     uint32_t next_frame_sof;
     uint32_t completed_frames;
     bool paced;
-
 
 } UsbUvcContext_t;
 
@@ -100,7 +103,7 @@ static uint8_t UVC_DataIn(USBD_HandleTypeDef *pdev, uint8_t ep);
 //记录最新SOF，不累计发送额度
 static uint8_t UVC_Sof(USBD_HandleTypeDef *pdev);
 
-//记录ISO失败，交给主循环确认Abort
+//记录ISO失败，交给所属USB任务确认Abort
 static uint8_t UVC_Incomplete(USBD_HandleTypeDef *pdev, uint8_t ep);
 
 //关闭成功后释放Payload借用，不能在Close失败时调用
@@ -275,7 +278,7 @@ SysResult_t USB_UVC_SubmitFrame(const uint8_t *frame, uint32_t length)
     return result;
 }
 
-//登记取消，主循环确认Abort后才释放借用
+//登记取消，所属USB任务确认Abort后才释放借用
 SysResult_t USB_UVC_CancelFrame(void)
 {
     uint32_t mask;
@@ -326,7 +329,7 @@ SysResult_t USB_UVC_GetStreamStatus(UsbUvcStreamStatus_t *status)
     return SYS_OK;
 }
 
-//主循环处理包构造、完成确认和取消恢复
+//所属USB任务处理包构造、完成确认和取消恢复
 void USB_UVC_Process(void)
 {
     UsbUvcContext_t *ctx;
@@ -386,6 +389,7 @@ void USB_UVC_Process(void)
         else if (s_uvc_payload.state == USB_UVC_PAYLOAD_IDLE)
         {
             ctx->completed_frames++;
+            s_total_completed_frames++;
             ctx->streaming = false;
             ctx->stream_state = USB_UVC_WAIT_FRAME;
         }
@@ -1078,4 +1082,12 @@ static void UVC_ReleaseFrame(UsbUvcContext_t *ctx)
     memset(&ctx->packet, 0, sizeof(ctx->packet));
     ctx->stream_state = USB_UVC_WAIT_FRAME;
     ctx->streaming = false;
+}
+
+//查询设备侧累计EOF完成数
+uint32_t USB_UVC_GetCompletedFrameCount(void)
+{
+
+    //由UsbTask读取，计数只在真实末包确认后递增
+    return s_total_completed_frames;
 }

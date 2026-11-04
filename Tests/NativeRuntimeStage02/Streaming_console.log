@@ -1,0 +1,37 @@
+默认TEST及SOF不受影响 PASS (0, 10, 0, 0) None
+完整76包与偏移确认 FAIL (61, 2, 4294967292, 0) None
+两帧FID与10FPS FAIL (61, 2, 4294967292, 0) None
+无SOF不能提交 FAIL (61, 2, 4294967292, 0) None
+同一SOF不重复提交 FAIL (61, 2, 4294967292, 0) None
+SOF不累计无限额度 FAIL (61, 2, 4294967292, 0) None
+HAL BUSY等待新SOF FAIL (61, 2, 4294967292, 0) None
+HAL ERROR恢复取消 FAIL (61, 2, 4294967292, 0) None
+重复完成只消费一次 FAIL (61, 2, 4294967292, 0) None
+错误完成Token拒绝 FAIL (61, 2, 4294967292, 0) None
+Incomplete等待Abort FAIL (61, 2, 4294967292, 0) None
+Abort失败保留所有权 FAIL (61, 2, 4294967292, 0) None
+在途Alt0安全关闭 FAIL (61, 2, 4294967292, 0) None
+Alt0 Abort失败保留上下文 FAIL (61, 2, 4294967292, 0) None
+Reset新流拒绝旧Token FAIL (61, 2, 4294967292, 0) None
+Disconnect释放帧 FAIL (61, 2, 4294967292, 0) None
+DeInit失败保留固定池 FAIL (61, 2, 4294967292, 0) None
+主动取消确认后释放 FAIL (61, 2, 4294967292, 0) None
+取消和DataIn交错 FAIL (61, 2, 4294967292, 0) None
+外来PCD SOF忽略 FAIL (61, 2, 4294967292, 0) None
+未Commit或Alt0拒绝注入 FAIL (61, 2, 4294967292, 0) None
+帧率间隔不提前发送 FAIL (61, 2, 4294967292, 0) None
+末包真实完成前不翻FID FAIL (61, 2, 4294967292, 0) None
+Abort后迟到DataIn忽略 FAIL (61, 2, 4294967292, 0) None
+Incomplete后DataIn不变成功 FAIL (61, 2, 4294967292, 0) None
+完成后Incomplete错误优先 FAIL (61, 2, 4294967292, 0) None
+外部busy不错误确认 FAIL (61, 2, 4294967292, 0) None
+Class固定池限制 FAIL (61, 2, 4294967292, 0) None
+迟到Class回调不能确认新的在途序号 FAIL (61, 2, 4294967292, 0) None
+外部帧异常参数 FAIL (61, 2, 4294967292, 0) None
+传输序号耗尽不复用 FAIL (61, 2, 4294967292, 0) None
+真实HAL IRQ处理SOF通路 FAIL (61, 2, 4294967292, 0) None
+Abort成功才应答本端点旧XFRC FAIL (61, 2, 4294967292, 0) None
+Alt1无外部帧时100SOF不生成假视频 FAIL (61, 2, 4294967292, 0) None
+在途Close失败保持图像直到重试确认 FAIL (61, 2, 4294967292, 0) None
+Reset Close失败保留上下文和图像 FAIL (61, 2, 4294967292, 0) None
+{'total': 36, 'passed': 1, 'failed': 35} source_changed []

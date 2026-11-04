@@ -8,6 +8,14 @@
 #define BSP_DCMI_EVENT_FRAME (1UL << 0)
 #define BSP_DCMI_EVENT_ERROR (1UL << 1)
 
+//事件回调只作唤醒，不能在其中执行停止或释放缓冲区
+//回调可能来自IRQ或调用中的短临界区
+#define BSP_DCMI_NOTIFY_ERROR (1UL << 0)
+typedef void (*BspDcmiEventCallback_t)(uint32_t events, void *context);
+
+//绑定静态采集异常通知接收端
+SysResult_t BSP_DCMI_SetEventCallback(BspDcmiEventCallback_t callback, void *context);
+
 //DMA双缓冲硬件目标
 typedef enum
 {

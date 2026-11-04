@@ -1,0 +1,4274 @@
+{
+  "baseline": "4d463ba5506263358331182bd07f3e6c09902fb9",
+  "totals": {
+    "baseline": {
+      "executed": 1178,
+      "passed": 792,
+      "failed": 386,
+      "not_executed": 11
+    },
+    "current": {
+      "executed": 1044,
+      "passed": 658,
+      "failed": 386,
+      "not_executed": 145
+    }
+  },
+  "suites": [
+    {
+      "suite": "Streaming",
+      "baseline": {
+        "executed": 36,
+        "passed": 1,
+        "failed": 35,
+        "not_executed": 0
+      },
+      "current": {
+        "executed": 36,
+        "passed": 1,
+        "failed": 35,
+        "not_executed": 0
+      },
+      "failure_set_identical": true,
+      "current_failures": [
+        {
+          "id": 1,
+          "name": "完整76包与偏移确认",
+          "line": 61
+        },
+        {
+          "id": 2,
+          "name": "两帧FID与10FPS",
+          "line": 61
+        },
+        {
+          "id": 3,
+          "name": "无SOF不能提交",
+          "line": 61
+        },
+        {
+          "id": 4,
+          "name": "同一SOF不重复提交",
+          "line": 61
+        },
+        {
+          "id": 5,
+          "name": "SOF不累计无限额度",
+          "line": 61
+        },
+        {
+          "id": 6,
+          "name": "HAL BUSY等待新SOF",
+          "line": 61
+        },
+        {
+          "id": 7,
+          "name": "HAL ERROR恢复取消",
+          "line": 61
+        },
+        {
+          "id": 8,
+          "name": "重复完成只消费一次",
+          "line": 61
+        },
+        {
+          "id": 9,
+          "name": "错误完成Token拒绝",
+          "line": 61
+        },
+        {
+          "id": 10,
+          "name": "Incomplete等待Abort",
+          "line": 61
+        },
+        {
+          "id": 11,
+          "name": "Abort失败保留所有权",
+          "line": 61
+        },
+        {
+          "id": 12,
+          "name": "在途Alt0安全关闭",
+          "line": 61
+        },
+        {
+          "id": 13,
+          "name": "Alt0 Abort失败保留上下文",
+          "line": 61
+        },
+        {
+          "id": 14,
+          "name": "Reset新流拒绝旧Token",
+          "line": 61
+        },
+        {
+          "id": 15,
+          "name": "Disconnect释放帧",
+          "line": 61
+        },
+        {
+          "id": 16,
+          "name": "DeInit失败保留固定池",
+          "line": 61
+        },
+        {
+          "id": 17,
+          "name": "主动取消确认后释放",
+          "line": 61
+        },
+        {
+          "id": 18,
+          "name": "取消和DataIn交错",
+          "line": 61
+        },
+        {
+          "id": 19,
+          "name": "外来PCD SOF忽略",
+          "line": 61
+        },
+        {
+          "id": 20,
+          "name": "未Commit或Alt0拒绝注入",
+          "line": 61
+        },
+        {
+          "id": 21,
+          "name": "帧率间隔不提前发送",
+          "line": 61
+        },
+        {
+          "id": 22,
+          "name": "末包真实完成前不翻FID",
+          "line": 61
+        },
+        {
+          "id": 23,
+          "name": "Abort后迟到DataIn忽略",
+          "line": 61
+        },
+        {
+          "id": 24,
+          "name": "Incomplete后DataIn不变成功",
+          "line": 61
+        },
+        {
+          "id": 25,
+          "name": "完成后Incomplete错误优先",
+          "line": 61
+        },
+        {
+          "id": 26,
+          "name": "外部busy不错误确认",
+          "line": 61
+        },
+        {
+          "id": 27,
+          "name": "Class固定池限制",
+          "line": 61
+        },
+        {
+          "id": 28,
+          "name": "迟到Class回调不能确认新的在途序号",
+          "line": 61
+        },
+        {
+          "id": 29,
+          "name": "外部帧异常参数",
+          "line": 61
+        },
+        {
+          "id": 30,
+          "name": "传输序号耗尽不复用",
+          "line": 61
+        },
+        {
+          "id": 31,
+          "name": "真实HAL IRQ处理SOF通路",
+          "line": 61
+        },
+        {
+          "id": 32,
+          "name": "Abort成功才应答本端点旧XFRC",
+          "line": 61
+        },
+        {
+          "id": 33,
+          "name": "Alt1无外部帧时100SOF不生成假视频",
+          "line": 61
+        },
+        {
+          "id": 34,
+          "name": "在途Close失败保持图像直到重试确认",
+          "line": 61
+        },
+        {
+          "id": 35,
+          "name": "Reset Close失败保留上下文和图像",
+          "line": 61
+        }
+      ],
+      "baseline_failures": [
+        {
+          "id": 1,
+          "name": "完整76包与偏移确认",
+          "line": 61
+        },
+        {
+          "id": 2,
+          "name": "两帧FID与10FPS",
+          "line": 61
+        },
+        {
+          "id": 3,
+          "name": "无SOF不能提交",
+          "line": 61
+        },
+        {
+          "id": 4,
+          "name": "同一SOF不重复提交",
+          "line": 61
+        },
+        {
+          "id": 5,
+          "name": "SOF不累计无限额度",
+          "line": 61
+        },
+        {
+          "id": 6,
+          "name": "HAL BUSY等待新SOF",
+          "line": 61
+        },
+        {
+          "id": 7,
+          "name": "HAL ERROR恢复取消",
+          "line": 61
+        },
+        {
+          "id": 8,
+          "name": "重复完成只消费一次",
+          "line": 61
+        },
+        {
+          "id": 9,
+          "name": "错误完成Token拒绝",
+          "line": 61
+        },
+        {
+          "id": 10,
+          "name": "Incomplete等待Abort",
+          "line": 61
+        },
+        {
+          "id": 11,
+          "name": "Abort失败保留所有权",
+          "line": 61
+        },
+        {
+          "id": 12,
+          "name": "在途Alt0安全关闭",
+          "line": 61
+        },
+        {
+          "id": 13,
+          "name": "Alt0 Abort失败保留上下文",
+          "line": 61
+        },
+        {
+          "id": 14,
+          "name": "Reset新流拒绝旧Token",
+          "line": 61
+        },
+        {
+          "id": 15,
+          "name": "Disconnect释放帧",
+          "line": 61
+        },
+        {
+          "id": 16,
+          "name": "DeInit失败保留固定池",
+          "line": 61
+        },
+        {
+          "id": 17,
+          "name": "主动取消确认后释放",
+          "line": 61
+        },
+        {
+          "id": 18,
+          "name": "取消和DataIn交错",
+          "line": 61
+        },
+        {
+          "id": 19,
+          "name": "外来PCD SOF忽略",
+          "line": 61
+        },
+        {
+          "id": 20,
+          "name": "未Commit或Alt0拒绝注入",
+          "line": 61
+        },
+        {
+          "id": 21,
+          "name": "帧率间隔不提前发送",
+          "line": 61
+        },
+        {
+          "id": 22,
+          "name": "末包真实完成前不翻FID",
+          "line": 61
+        },
+        {
+          "id": 23,
+          "name": "Abort后迟到DataIn忽略",
+          "line": 61
+        },
+        {
+          "id": 24,
+          "name": "Incomplete后DataIn不变成功",
+          "line": 61
+        },
+        {
+          "id": 25,
+          "name": "完成后Incomplete错误优先",
+          "line": 61
+        },
+        {
+          "id": 26,
+          "name": "外部busy不错误确认",
+          "line": 61
+        },
+        {
+          "id": 27,
+          "name": "Class固定池限制",
+          "line": 61
+        },
+        {
+          "id": 28,
+          "name": "迟到Class回调不能确认新的在途序号",
+          "line": 61
+        },
+        {
+          "id": 29,
+          "name": "外部帧异常参数",
+          "line": 61
+        },
+        {
+          "id": 30,
+          "name": "传输序号耗尽不复用",
+          "line": 61
+        },
+        {
+          "id": 31,
+          "name": "真实HAL IRQ处理SOF通路",
+          "line": 61
+        },
+        {
+          "id": 32,
+          "name": "Abort成功才应答本端点旧XFRC",
+          "line": 61
+        },
+        {
+          "id": 33,
+          "name": "Alt1无外部帧时100SOF不生成假视频",
+          "line": 61
+        },
+        {
+          "id": 34,
+          "name": "在途Close失败保持图像直到重试确认",
+          "line": 61
+        },
+        {
+          "id": 35,
+          "name": "Reset Close失败保留上下文和图像",
+          "line": 61
+        }
+      ]
+    },
+    {
+      "suite": "Payload",
+      "baseline": {
+        "executed": 124,
+        "passed": 122,
+        "failed": 2,
+        "not_executed": 0
+      },
+      "current": {
+        "executed": 124,
+        "passed": 122,
+        "failed": 2,
+        "not_executed": 0
+      },
+      "failure_set_identical": true,
+      "current_failures": [
+        {
+          "id": 37,
+          "name": "包长513",
+          "line": 217
+        },
+        {
+          "id": 37,
+          "name": "包长513",
+          "line": 217
+        }
+      ],
+      "baseline_failures": [
+        {
+          "id": 37,
+          "name": "包长513",
+          "line": 217
+        },
+        {
+          "id": 37,
+          "name": "包长513",
+          "line": 217
+        }
+      ]
+    },
+    {
+      "suite": "EP1",
+      "baseline": {
+        "executed": 45,
+        "passed": 0,
+        "failed": 45,
+        "not_executed": 0
+      },
+      "current": {
+        "executed": 45,
+        "passed": 0,
+        "failed": 45,
+        "not_executed": 0
+      },
+      "failure_set_identical": true,
+      "current_failures": [
+        {
+          "id": 0,
+          "name": "未Commit拒绝Alt1",
+          "line": 53
+        },
+        {
+          "id": 1,
+          "name": "Alt0到Alt1到Alt0",
+          "line": 53
+        },
+        {
+          "id": 2,
+          "name": "打开参数严格匹配编译后描述符",
+          "line": 53
+        },
+        {
+          "id": 3,
+          "name": "重复Alt1不重复Open",
+          "line": 53
+        },
+        {
+          "id": 4,
+          "name": "重复Alt0不重复Close",
+          "line": 53
+        },
+        {
+          "id": 5,
+          "name": "VC Alt0不影响VS Alt1",
+          "line": 53
+        },
+        {
+          "id": 6,
+          "name": "VC拒绝Alt1",
+          "line": 53
+        },
+        {
+          "id": 7,
+          "name": "VS拒绝Alt2",
+          "line": 53
+        },
+        {
+          "id": 8,
+          "name": "拒绝Alt高字节",
+          "line": 53
+        },
+        {
+          "id": 9,
+          "name": "拒绝接口2",
+          "line": 53
+        },
+        {
+          "id": 10,
+          "name": "拒绝接口高字节",
+          "line": 53
+        },
+        {
+          "id": 11,
+          "name": "拒绝SET方向错误",
+          "line": 53
+        },
+        {
+          "id": 12,
+          "name": "拒绝SET非零长度",
+          "line": 53
+        },
+        {
+          "id": 13,
+          "name": "Open HAL_ERROR后重试",
+          "line": 53
+        },
+        {
+          "id": 14,
+          "name": "Open HAL_BUSY后重试",
+          "line": 53
+        },
+        {
+          "id": 15,
+          "name": "空闲Close失败保留状态并重试",
+          "line": 53
+        },
+        {
+          "id": 16,
+          "name": "busy Abort失败保留PIO及重试",
+          "line": 53
+        },
+        {
+          "id": 17,
+          "name": "busy Flush失败保留PIO及重试",
+          "line": 53
+        },
+        {
+          "id": 18,
+          "name": "busy Close失败只归还已取消传输",
+          "line": 53
+        },
+        {
+          "id": 19,
+          "name": "DeInit关闭Alt1并归还上下文",
+          "line": 53
+        },
+        {
+          "id": 20,
+          "name": "DeInit Abort失败保留上下文",
+          "line": 53
+        },
+        {
+          "id": 21,
+          "name": "DeInit Close失败保留上下文",
+          "line": 53
+        },
+        {
+          "id": 22,
+          "name": "Reset回收并要求重新Commit",
+          "line": 53
+        },
+        {
+          "id": 23,
+          "name": "Reset Abort失败和Stop恢复",
+          "line": 53
+        },
+        {
+          "id": 24,
+          "name": "Reset Close失败和Stop恢复",
+          "line": 53
+        },
+        {
+          "id": 25,
+          "name": "重复Alt1保留busy缓冲区",
+          "line": 53
+        },
+        {
+          "id": 26,
+          "name": "新Probe独立于当前Commit",
+          "line": 53
+        },
+        {
+          "id": 27,
+          "name": "Alt0后保留Commit可重新Alt1",
+          "line": 53
+        },
+        {
+          "id": 28,
+          "name": "GET_INTERFACE反映实际Alt",
+          "line": 53
+        },
+        {
+          "id": 29,
+          "name": "Open失败STALL后GET_DESCRIPTOR恢复",
+          "line": 53
+        },
+        {
+          "id": 30,
+          "name": "Close失败STALL后GET_STATUS恢复",
+          "line": 53
+        },
+        {
+          "id": 31,
+          "name": "失败后强制Status仍被Platform拒绝",
+          "line": 53
+        },
+        {
+          "id": 32,
+          "name": "重复DeInit不重复释放",
+          "line": 53
+        },
+        {
+          "id": 33,
+          "name": "SET_CONFIGURATION0正常释放",
+          "line": 53
+        },
+        {
+          "id": 34,
+          "name": "SET_CONFIGURATION0 Abort失败不得成功Status",
+          "line": 53
+        },
+        {
+          "id": 35,
+          "name": "SET_CONFIGURATION0 Close失败不得成功Status",
+          "line": 53
+        },
+        {
+          "id": 36,
+          "name": "Device Stop后可重新配置",
+          "line": 53
+        },
+        {
+          "id": 37,
+          "name": "Device Stop失败不释放busy资源",
+          "line": 53
+        },
+        {
+          "id": 38,
+          "name": "DataIn完成不自动发送下一包",
+          "line": 53
+        },
+        {
+          "id": 39,
+          "name": "Disconnect正常回收",
+          "line": 53
+        },
+        {
+          "id": 40,
+          "name": "Alt0 DeInit不操作EP1",
+          "line": 53
+        },
+        {
+          "id": 41,
+          "name": "关闭失败后Alt1必须拒绝直到Alt0恢复",
+          "line": 53
+        },
+        {
+          "id": 42,
+          "name": "Alt1时非法SET保持端点状态",
+          "line": 53
+        },
+        {
+          "id": 43,
+          "name": "失败新Probe不清除活动Commit",
+          "line": 53
+        },
+        {
+          "id": 44,
+          "name": "失败新Commit保留原活动Commit",
+          "line": 53
+        }
+      ],
+      "baseline_failures": [
+        {
+          "id": 0,
+          "name": "未Commit拒绝Alt1",
+          "line": 53
+        },
+        {
+          "id": 1,
+          "name": "Alt0到Alt1到Alt0",
+          "line": 53
+        },
+        {
+          "id": 2,
+          "name": "打开参数严格匹配编译后描述符",
+          "line": 53
+        },
+        {
+          "id": 3,
+          "name": "重复Alt1不重复Open",
+          "line": 53
+        },
+        {
+          "id": 4,
+          "name": "重复Alt0不重复Close",
+          "line": 53
+        },
+        {
+          "id": 5,
+          "name": "VC Alt0不影响VS Alt1",
+          "line": 53
+        },
+        {
+          "id": 6,
+          "name": "VC拒绝Alt1",
+          "line": 53
+        },
+        {
+          "id": 7,
+          "name": "VS拒绝Alt2",
+          "line": 53
+        },
+        {
+          "id": 8,
+          "name": "拒绝Alt高字节",
+          "line": 53
+        },
+        {
+          "id": 9,
+          "name": "拒绝接口2",
+          "line": 53
+        },
+        {
+          "id": 10,
+          "name": "拒绝接口高字节",
+          "line": 53
+        },
+        {
+          "id": 11,
+          "name": "拒绝SET方向错误",
+          "line": 53
+        },
+        {
+          "id": 12,
+          "name": "拒绝SET非零长度",
+          "line": 53
+        },
+        {
+          "id": 13,
+          "name": "Open HAL_ERROR后重试",
+          "line": 53
+        },
+        {
+          "id": 14,
+          "name": "Open HAL_BUSY后重试",
+          "line": 53
+        },
+        {
+          "id": 15,
+          "name": "空闲Close失败保留状态并重试",
+          "line": 53
+        },
+        {
+          "id": 16,
+          "name": "busy Abort失败保留PIO及重试",
+          "line": 53
+        },
+        {
+          "id": 17,
+          "name": "busy Flush失败保留PIO及重试",
+          "line": 53
+        },
+        {
+          "id": 18,
+          "name": "busy Close失败只归还已取消传输",
+          "line": 53
+        },
+        {
+          "id": 19,
+          "name": "DeInit关闭Alt1并归还上下文",
+          "line": 53
+        },
+        {
+          "id": 20,
+          "name": "DeInit Abort失败保留上下文",
+          "line": 53
+        },
+        {
+          "id": 21,
+          "name": "DeInit Close失败保留上下文",
+          "line": 53
+        },
+        {
+          "id": 22,
+          "name": "Reset回收并要求重新Commit",
+          "line": 53
+        },
+        {
+          "id": 23,
+          "name": "Reset Abort失败和Stop恢复",
+          "line": 53
+        },
+        {
+          "id": 24,
+          "name": "Reset Close失败和Stop恢复",
+          "line": 53
+        },
+        {
+          "id": 25,
+          "name": "重复Alt1保留busy缓冲区",
+          "line": 53
+        },
+        {
+          "id": 26,
+          "name": "新Probe独立于当前Commit",
+          "line": 53
+        },
+        {
+          "id": 27,
+          "name": "Alt0后保留Commit可重新Alt1",
+          "line": 53
+        },
+        {
+          "id": 28,
+          "name": "GET_INTERFACE反映实际Alt",
+          "line": 53
+        },
+        {
+          "id": 29,
+          "name": "Open失败STALL后GET_DESCRIPTOR恢复",
+          "line": 53
+        },
+        {
+          "id": 30,
+          "name": "Close失败STALL后GET_STATUS恢复",
+          "line": 53
+        },
+        {
+          "id": 31,
+          "name": "失败后强制Status仍被Platform拒绝",
+          "line": 53
+        },
+        {
+          "id": 32,
+          "name": "重复DeInit不重复释放",
+          "line": 53
+        },
+        {
+          "id": 33,
+          "name": "SET_CONFIGURATION0正常释放",
+          "line": 53
+        },
+        {
+          "id": 34,
+          "name": "SET_CONFIGURATION0 Abort失败不得成功Status",
+          "line": 53
+        },
+        {
+          "id": 35,
+          "name": "SET_CONFIGURATION0 Close失败不得成功Status",
+          "line": 53
+        },
+        {
+          "id": 36,
+          "name": "Device Stop后可重新配置",
+          "line": 53
+        },
+        {
+          "id": 37,
+          "name": "Device Stop失败不释放busy资源",
+          "line": 53
+        },
+        {
+          "id": 38,
+          "name": "DataIn完成不自动发送下一包",
+          "line": 53
+        },
+        {
+          "id": 39,
+          "name": "Disconnect正常回收",
+          "line": 53
+        },
+        {
+          "id": 40,
+          "name": "Alt0 DeInit不操作EP1",
+          "line": 53
+        },
+        {
+          "id": 41,
+          "name": "关闭失败后Alt1必须拒绝直到Alt0恢复",
+          "line": 53
+        },
+        {
+          "id": 42,
+          "name": "Alt1时非法SET保持端点状态",
+          "line": 53
+        },
+        {
+          "id": 43,
+          "name": "失败新Probe不清除活动Commit",
+          "line": 53
+        },
+        {
+          "id": 44,
+          "name": "失败新Commit保留原活动Commit",
+          "line": 53
+        }
+      ]
+    },
+    {
+      "suite": "Probe",
+      "baseline": {
+        "executed": 89,
+        "passed": 0,
+        "failed": 89,
+        "not_executed": 0
+      },
+      "current": {
+        "executed": 89,
+        "passed": 0,
+        "failed": 89,
+        "not_executed": 0
+      },
+      "failure_set_identical": true,
+      "current_failures": [
+        {
+          "id": 0,
+          "name": "编解码每字节往返",
+          "line": 33
+        },
+        {
+          "id": 1,
+          "name": "编解码空指针",
+          "line": 33
+        },
+        {
+          "id": 2,
+          "name": "唯一能力字段与时钟",
+          "line": 33
+        },
+        {
+          "id": 3,
+          "name": "Commit前必须协商",
+          "line": 33
+        },
+        {
+          "id": 4,
+          "name": "Probe请求81",
+          "line": 33
+        },
+        {
+          "id": 5,
+          "name": "Probe请求82",
+          "line": 33
+        },
+        {
+          "id": 6,
+          "name": "Probe请求83",
+          "line": 33
+        },
+        {
+          "id": 7,
+          "name": "Probe请求84",
+          "line": 33
+        },
+        {
+          "id": 8,
+          "name": "Probe请求87",
+          "line": 33
+        },
+        {
+          "id": 9,
+          "name": "Probe请求85",
+          "line": 33
+        },
+        {
+          "id": 10,
+          "name": "Probe请求86",
+          "line": 33
+        },
+        {
+          "id": 11,
+          "name": "Probe请求01",
+          "line": 33
+        },
+        {
+          "id": 12,
+          "name": "Commit请求81",
+          "line": 33
+        },
+        {
+          "id": 13,
+          "name": "Commit请求85",
+          "line": 33
+        },
+        {
+          "id": 14,
+          "name": "Commit请求86",
+          "line": 33
+        },
+        {
+          "id": 15,
+          "name": "Commit请求01",
+          "line": 33
+        },
+        {
+          "id": 16,
+          "name": "Commit拒绝请求82",
+          "line": 33
+        },
+        {
+          "id": 17,
+          "name": "Commit拒绝请求83",
+          "line": 33
+        },
+        {
+          "id": 18,
+          "name": "Commit拒绝请求84",
+          "line": 33
+        },
+        {
+          "id": 19,
+          "name": "Commit拒绝请求87",
+          "line": 33
+        },
+        {
+          "id": 20,
+          "name": "非法请求字段0",
+          "line": 33
+        },
+        {
+          "id": 21,
+          "name": "非法请求字段1",
+          "line": 33
+        },
+        {
+          "id": 22,
+          "name": "非法请求字段2",
+          "line": 33
+        },
+        {
+          "id": 23,
+          "name": "非法请求字段3",
+          "line": 33
+        },
+        {
+          "id": 24,
+          "name": "非法请求字段4",
+          "line": 33
+        },
+        {
+          "id": 25,
+          "name": "非法请求字段5",
+          "line": 33
+        },
+        {
+          "id": 26,
+          "name": "非法请求字段6",
+          "line": 33
+        },
+        {
+          "id": 27,
+          "name": "非法请求字段7",
+          "line": 33
+        },
+        {
+          "id": 28,
+          "name": "非法请求字段8",
+          "line": 33
+        },
+        {
+          "id": 29,
+          "name": "非法请求字段9",
+          "line": 33
+        },
+        {
+          "id": 30,
+          "name": "非法请求字段10",
+          "line": 33
+        },
+        {
+          "id": 31,
+          "name": "非法请求字段11",
+          "line": 33
+        },
+        {
+          "id": 32,
+          "name": "Commit字节0变更拒绝",
+          "line": 33
+        },
+        {
+          "id": 33,
+          "name": "Commit字节1变更拒绝",
+          "line": 33
+        },
+        {
+          "id": 34,
+          "name": "Commit字节2变更拒绝",
+          "line": 33
+        },
+        {
+          "id": 35,
+          "name": "Commit字节3变更拒绝",
+          "line": 33
+        },
+        {
+          "id": 36,
+          "name": "Commit字节4变更拒绝",
+          "line": 33
+        },
+        {
+          "id": 37,
+          "name": "Commit字节5变更拒绝",
+          "line": 33
+        },
+        {
+          "id": 38,
+          "name": "Commit字节6变更拒绝",
+          "line": 33
+        },
+        {
+          "id": 39,
+          "name": "Commit字节7变更拒绝",
+          "line": 33
+        },
+        {
+          "id": 40,
+          "name": "Commit字节8变更拒绝",
+          "line": 33
+        },
+        {
+          "id": 41,
+          "name": "Commit字节9变更拒绝",
+          "line": 33
+        },
+        {
+          "id": 42,
+          "name": "Commit字节10变更拒绝",
+          "line": 33
+        },
+        {
+          "id": 43,
+          "name": "Commit字节11变更拒绝",
+          "line": 33
+        },
+        {
+          "id": 44,
+          "name": "Commit字节12变更拒绝",
+          "line": 33
+        },
+        {
+          "id": 45,
+          "name": "Commit字节13变更拒绝",
+          "line": 33
+        },
+        {
+          "id": 46,
+          "name": "Commit字节14变更拒绝",
+          "line": 33
+        },
+        {
+          "id": 47,
+          "name": "Commit字节15变更拒绝",
+          "line": 33
+        },
+        {
+          "id": 48,
+          "name": "Commit字节16变更拒绝",
+          "line": 33
+        },
+        {
+          "id": 49,
+          "name": "Commit字节17变更拒绝",
+          "line": 33
+        },
+        {
+          "id": 50,
+          "name": "Commit字节18变更拒绝",
+          "line": 33
+        },
+        {
+          "id": 51,
+          "name": "Commit字节19变更拒绝",
+          "line": 33
+        },
+        {
+          "id": 52,
+          "name": "Commit字节20变更拒绝",
+          "line": 33
+        },
+        {
+          "id": 53,
+          "name": "Commit字节21变更拒绝",
+          "line": 33
+        },
+        {
+          "id": 54,
+          "name": "Commit字节22变更拒绝",
+          "line": 33
+        },
+        {
+          "id": 55,
+          "name": "Commit字节23变更拒绝",
+          "line": 33
+        },
+        {
+          "id": 56,
+          "name": "Commit字节24变更拒绝",
+          "line": 33
+        },
+        {
+          "id": 57,
+          "name": "Commit字节25变更拒绝",
+          "line": 33
+        },
+        {
+          "id": 58,
+          "name": "Commit字节26变更拒绝",
+          "line": 33
+        },
+        {
+          "id": 59,
+          "name": "Commit字节27变更拒绝",
+          "line": 33
+        },
+        {
+          "id": 60,
+          "name": "Commit字节28变更拒绝",
+          "line": 33
+        },
+        {
+          "id": 61,
+          "name": "Commit字节29变更拒绝",
+          "line": 33
+        },
+        {
+          "id": 62,
+          "name": "Commit字节30变更拒绝",
+          "line": 33
+        },
+        {
+          "id": 63,
+          "name": "Commit字节31变更拒绝",
+          "line": 33
+        },
+        {
+          "id": 64,
+          "name": "Commit字节32变更拒绝",
+          "line": 33
+        },
+        {
+          "id": 65,
+          "name": "Commit字节33变更拒绝",
+          "line": 33
+        },
+        {
+          "id": 66,
+          "name": "协商归一",
+          "line": 33
+        },
+        {
+          "id": 67,
+          "name": "禁止增加带宽",
+          "line": 33
+        },
+        {
+          "id": 68,
+          "name": "拒绝过小Payload",
+          "line": 33
+        },
+        {
+          "id": 69,
+          "name": "版本非法",
+          "line": 33
+        },
+        {
+          "id": 70,
+          "name": "未读Probe拒绝Commit",
+          "line": 33
+        },
+        {
+          "id": 71,
+          "name": "短读Probe拒绝Commit",
+          "line": 33
+        },
+        {
+          "id": 72,
+          "name": "新SETUP取消SET",
+          "line": 33
+        },
+        {
+          "id": 73,
+          "name": "新Probe撤销授权",
+          "line": 33
+        },
+        {
+          "id": 74,
+          "name": "完整Core协商提交",
+          "line": 33
+        },
+        {
+          "id": 75,
+          "name": "Core拒绝非法Commit边界",
+          "line": 33
+        },
+        {
+          "id": 76,
+          "name": "Core接收短包边界",
+          "line": 33
+        },
+        {
+          "id": 77,
+          "name": "缓冲区对齐与尾部",
+          "line": 33
+        },
+        {
+          "id": 78,
+          "name": "两个Selector初始CUR返回默认且不授权",
+          "line": 33
+        },
+        {
+          "id": 79,
+          "name": "GET短读截断",
+          "line": 33
+        },
+        {
+          "id": 80,
+          "name": "GET_LEN和INFO截断",
+          "line": 33
+        },
+        {
+          "id": 81,
+          "name": "DeInit释放状态",
+          "line": 33
+        },
+        {
+          "id": 82,
+          "name": "STALL后新SETUP恢复",
+          "line": 33
+        },
+        {
+          "id": 83,
+          "name": "协商失败返回默认且不继承旧授权",
+          "line": 33
+        },
+        {
+          "id": 84,
+          "name": "Probe只读字段归一",
+          "line": 33
+        },
+        {
+          "id": 85,
+          "name": "Core拒绝26字节SET",
+          "line": 33
+        },
+        {
+          "id": 86,
+          "name": "Core拒绝超长实际数据",
+          "line": 33
+        },
+        {
+          "id": 87,
+          "name": "Core拒绝Commit GET_DEF",
+          "line": 33
+        },
+        {
+          "id": 88,
+          "name": "短Probe撤销旧协商与Commit授权",
+          "line": 33
+        }
+      ],
+      "baseline_failures": [
+        {
+          "id": 0,
+          "name": "编解码每字节往返",
+          "line": 33
+        },
+        {
+          "id": 1,
+          "name": "编解码空指针",
+          "line": 33
+        },
+        {
+          "id": 2,
+          "name": "唯一能力字段与时钟",
+          "line": 33
+        },
+        {
+          "id": 3,
+          "name": "Commit前必须协商",
+          "line": 33
+        },
+        {
+          "id": 4,
+          "name": "Probe请求81",
+          "line": 33
+        },
+        {
+          "id": 5,
+          "name": "Probe请求82",
+          "line": 33
+        },
+        {
+          "id": 6,
+          "name": "Probe请求83",
+          "line": 33
+        },
+        {
+          "id": 7,
+          "name": "Probe请求84",
+          "line": 33
+        },
+        {
+          "id": 8,
+          "name": "Probe请求87",
+          "line": 33
+        },
+        {
+          "id": 9,
+          "name": "Probe请求85",
+          "line": 33
+        },
+        {
+          "id": 10,
+          "name": "Probe请求86",
+          "line": 33
+        },
+        {
+          "id": 11,
+          "name": "Probe请求01",
+          "line": 33
+        },
+        {
+          "id": 12,
+          "name": "Commit请求81",
+          "line": 33
+        },
+        {
+          "id": 13,
+          "name": "Commit请求85",
+          "line": 33
+        },
+        {
+          "id": 14,
+          "name": "Commit请求86",
+          "line": 33
+        },
+        {
+          "id": 15,
+          "name": "Commit请求01",
+          "line": 33
+        },
+        {
+          "id": 16,
+          "name": "Commit拒绝请求82",
+          "line": 33
+        },
+        {
+          "id": 17,
+          "name": "Commit拒绝请求83",
+          "line": 33
+        },
+        {
+          "id": 18,
+          "name": "Commit拒绝请求84",
+          "line": 33
+        },
+        {
+          "id": 19,
+          "name": "Commit拒绝请求87",
+          "line": 33
+        },
+        {
+          "id": 20,
+          "name": "非法请求字段0",
+          "line": 33
+        },
+        {
+          "id": 21,
+          "name": "非法请求字段1",
+          "line": 33
+        },
+        {
+          "id": 22,
+          "name": "非法请求字段2",
+          "line": 33
+        },
+        {
+          "id": 23,
+          "name": "非法请求字段3",
+          "line": 33
+        },
+        {
+          "id": 24,
+          "name": "非法请求字段4",
+          "line": 33
+        },
+        {
+          "id": 25,
+          "name": "非法请求字段5",
+          "line": 33
+        },
+        {
+          "id": 26,
+          "name": "非法请求字段6",
+          "line": 33
+        },
+        {
+          "id": 27,
+          "name": "非法请求字段7",
+          "line": 33
+        },
+        {
+          "id": 28,
+          "name": "非法请求字段8",
+          "line": 33
+        },
+        {
+          "id": 29,
+          "name": "非法请求字段9",
+          "line": 33
+        },
+        {
+          "id": 30,
+          "name": "非法请求字段10",
+          "line": 33
+        },
+        {
+          "id": 31,
+          "name": "非法请求字段11",
+          "line": 33
+        },
+        {
+          "id": 32,
+          "name": "Commit字节0变更拒绝",
+          "line": 33
+        },
+        {
+          "id": 33,
+          "name": "Commit字节1变更拒绝",
+          "line": 33
+        },
+        {
+          "id": 34,
+          "name": "Commit字节2变更拒绝",
+          "line": 33
+        },
+        {
+          "id": 35,
+          "name": "Commit字节3变更拒绝",
+          "line": 33
+        },
+        {
+          "id": 36,
+          "name": "Commit字节4变更拒绝",
+          "line": 33
+        },
+        {
+          "id": 37,
+          "name": "Commit字节5变更拒绝",
+          "line": 33
+        },
+        {
+          "id": 38,
+          "name": "Commit字节6变更拒绝",
+          "line": 33
+        },
+        {
+          "id": 39,
+          "name": "Commit字节7变更拒绝",
+          "line": 33
+        },
+        {
+          "id": 40,
+          "name": "Commit字节8变更拒绝",
+          "line": 33
+        },
+        {
+          "id": 41,
+          "name": "Commit字节9变更拒绝",
+          "line": 33
+        },
+        {
+          "id": 42,
+          "name": "Commit字节10变更拒绝",
+          "line": 33
+        },
+        {
+          "id": 43,
+          "name": "Commit字节11变更拒绝",
+          "line": 33
+        },
+        {
+          "id": 44,
+          "name": "Commit字节12变更拒绝",
+          "line": 33
+        },
+        {
+          "id": 45,
+          "name": "Commit字节13变更拒绝",
+          "line": 33
+        },
+        {
+          "id": 46,
+          "name": "Commit字节14变更拒绝",
+          "line": 33
+        },
+        {
+          "id": 47,
+          "name": "Commit字节15变更拒绝",
+          "line": 33
+        },
+        {
+          "id": 48,
+          "name": "Commit字节16变更拒绝",
+          "line": 33
+        },
+        {
+          "id": 49,
+          "name": "Commit字节17变更拒绝",
+          "line": 33
+        },
+        {
+          "id": 50,
+          "name": "Commit字节18变更拒绝",
+          "line": 33
+        },
+        {
+          "id": 51,
+          "name": "Commit字节19变更拒绝",
+          "line": 33
+        },
+        {
+          "id": 52,
+          "name": "Commit字节20变更拒绝",
+          "line": 33
+        },
+        {
+          "id": 53,
+          "name": "Commit字节21变更拒绝",
+          "line": 33
+        },
+        {
+          "id": 54,
+          "name": "Commit字节22变更拒绝",
+          "line": 33
+        },
+        {
+          "id": 55,
+          "name": "Commit字节23变更拒绝",
+          "line": 33
+        },
+        {
+          "id": 56,
+          "name": "Commit字节24变更拒绝",
+          "line": 33
+        },
+        {
+          "id": 57,
+          "name": "Commit字节25变更拒绝",
+          "line": 33
+        },
+        {
+          "id": 58,
+          "name": "Commit字节26变更拒绝",
+          "line": 33
+        },
+        {
+          "id": 59,
+          "name": "Commit字节27变更拒绝",
+          "line": 33
+        },
+        {
+          "id": 60,
+          "name": "Commit字节28变更拒绝",
+          "line": 33
+        },
+        {
+          "id": 61,
+          "name": "Commit字节29变更拒绝",
+          "line": 33
+        },
+        {
+          "id": 62,
+          "name": "Commit字节30变更拒绝",
+          "line": 33
+        },
+        {
+          "id": 63,
+          "name": "Commit字节31变更拒绝",
+          "line": 33
+        },
+        {
+          "id": 64,
+          "name": "Commit字节32变更拒绝",
+          "line": 33
+        },
+        {
+          "id": 65,
+          "name": "Commit字节33变更拒绝",
+          "line": 33
+        },
+        {
+          "id": 66,
+          "name": "协商归一",
+          "line": 33
+        },
+        {
+          "id": 67,
+          "name": "禁止增加带宽",
+          "line": 33
+        },
+        {
+          "id": 68,
+          "name": "拒绝过小Payload",
+          "line": 33
+        },
+        {
+          "id": 69,
+          "name": "版本非法",
+          "line": 33
+        },
+        {
+          "id": 70,
+          "name": "未读Probe拒绝Commit",
+          "line": 33
+        },
+        {
+          "id": 71,
+          "name": "短读Probe拒绝Commit",
+          "line": 33
+        },
+        {
+          "id": 72,
+          "name": "新SETUP取消SET",
+          "line": 33
+        },
+        {
+          "id": 73,
+          "name": "新Probe撤销授权",
+          "line": 33
+        },
+        {
+          "id": 74,
+          "name": "完整Core协商提交",
+          "line": 33
+        },
+        {
+          "id": 75,
+          "name": "Core拒绝非法Commit边界",
+          "line": 33
+        },
+        {
+          "id": 76,
+          "name": "Core接收短包边界",
+          "line": 33
+        },
+        {
+          "id": 77,
+          "name": "缓冲区对齐与尾部",
+          "line": 33
+        },
+        {
+          "id": 78,
+          "name": "两个Selector初始CUR返回默认且不授权",
+          "line": 33
+        },
+        {
+          "id": 79,
+          "name": "GET短读截断",
+          "line": 33
+        },
+        {
+          "id": 80,
+          "name": "GET_LEN和INFO截断",
+          "line": 33
+        },
+        {
+          "id": 81,
+          "name": "DeInit释放状态",
+          "line": 33
+        },
+        {
+          "id": 82,
+          "name": "STALL后新SETUP恢复",
+          "line": 33
+        },
+        {
+          "id": 83,
+          "name": "协商失败返回默认且不继承旧授权",
+          "line": 33
+        },
+        {
+          "id": 84,
+          "name": "Probe只读字段归一",
+          "line": 33
+        },
+        {
+          "id": 85,
+          "name": "Core拒绝26字节SET",
+          "line": 33
+        },
+        {
+          "id": 86,
+          "name": "Core拒绝超长实际数据",
+          "line": 33
+        },
+        {
+          "id": 87,
+          "name": "Core拒绝Commit GET_DEF",
+          "line": 33
+        },
+        {
+          "id": 88,
+          "name": "短Probe撤销旧协商与Commit授权",
+          "line": 33
+        }
+      ]
+    },
+    {
+      "suite": "Cancel",
+      "baseline": {
+        "executed": 39,
+        "passed": 0,
+        "failed": 39,
+        "not_executed": 0
+      },
+      "current": {
+        "executed": 39,
+        "passed": 0,
+        "failed": 39,
+        "not_executed": 0
+      },
+      "failure_set_identical": true,
+      "current_failures": [
+        {
+          "id": 0,
+          "name": "Probe GET_CUR被设备描述符打断不得授权Commit",
+          "line": 28
+        },
+        {
+          "id": 1,
+          "name": "旧Probe SET_CUR回调不能处理设备GET_DESCRIPTOR",
+          "line": 28
+        },
+        {
+          "id": 2,
+          "name": "旧Commit SET_CUR不能由其他完成授权",
+          "line": 28
+        },
+        {
+          "id": 3,
+          "name": "旧SET_CUR被设备OUT SETUP取消",
+          "line": 28
+        },
+        {
+          "id": 4,
+          "name": "旧OUT中断不污染描述符IN",
+          "line": 28
+        },
+        {
+          "id": 5,
+          "name": "正常Probe GET_CUR到Commit",
+          "line": 28
+        },
+        {
+          "id": 6,
+          "name": "VC GET_STATUS两字节",
+          "line": 28
+        },
+        {
+          "id": 7,
+          "name": "VS GET_STATUS两字节",
+          "line": 28
+        },
+        {
+          "id": 8,
+          "name": "持久GET_STATUS响应与重复请求",
+          "line": 28
+        },
+        {
+          "id": 9,
+          "name": "GET_STATUS非法字段0",
+          "line": 28
+        },
+        {
+          "id": 10,
+          "name": "GET_STATUS非法字段1",
+          "line": 28
+        },
+        {
+          "id": 11,
+          "name": "GET_STATUS非法字段2",
+          "line": 28
+        },
+        {
+          "id": 12,
+          "name": "GET_STATUS非法字段3",
+          "line": 28
+        },
+        {
+          "id": 13,
+          "name": "GET_STATUS非法字段4",
+          "line": 28
+        },
+        {
+          "id": 14,
+          "name": "GET_STATUS非法字段5",
+          "line": 28
+        },
+        {
+          "id": 15,
+          "name": "GET_STATUS非法字段6",
+          "line": 28
+        },
+        {
+          "id": 16,
+          "name": "GET_STATUS非法字段7",
+          "line": 28
+        },
+        {
+          "id": 17,
+          "name": "GET_STATUS非法字段8",
+          "line": 28
+        },
+        {
+          "id": 18,
+          "name": "GET_STATUS非法字段9",
+          "line": 28
+        },
+        {
+          "id": 19,
+          "name": "GET_STATUS非法字段10",
+          "line": 28
+        },
+        {
+          "id": 20,
+          "name": "GET_STATUS非法字段11",
+          "line": 28
+        },
+        {
+          "id": 21,
+          "name": "STALL后接口GET_STATUS恢复",
+          "line": 28
+        },
+        {
+          "id": 22,
+          "name": "STALL后设备GET_DESCRIPTOR恢复",
+          "line": 28
+        },
+        {
+          "id": 23,
+          "name": "TxSent当前事务字段校验0",
+          "line": 28
+        },
+        {
+          "id": 24,
+          "name": "TxSent当前事务字段校验1",
+          "line": 28
+        },
+        {
+          "id": 25,
+          "name": "TxSent当前事务字段校验2",
+          "line": 28
+        },
+        {
+          "id": 26,
+          "name": "TxSent当前事务字段校验3",
+          "line": 28
+        },
+        {
+          "id": 27,
+          "name": "TxSent当前事务字段校验4",
+          "line": 28
+        },
+        {
+          "id": 28,
+          "name": "TxSent当前事务字段校验5",
+          "line": 28
+        },
+        {
+          "id": 29,
+          "name": "TxSent当前事务字段校验6",
+          "line": 28
+        },
+        {
+          "id": 30,
+          "name": "TxSent当前事务字段校验7",
+          "line": 28
+        },
+        {
+          "id": 31,
+          "name": "RxReady当前事务字段校验0",
+          "line": 28
+        },
+        {
+          "id": 32,
+          "name": "RxReady当前事务字段校验1",
+          "line": 28
+        },
+        {
+          "id": 33,
+          "name": "RxReady当前事务字段校验2",
+          "line": 28
+        },
+        {
+          "id": 34,
+          "name": "RxReady当前事务字段校验3",
+          "line": 28
+        },
+        {
+          "id": 35,
+          "name": "RxReady当前事务字段校验4",
+          "line": 28
+        },
+        {
+          "id": 36,
+          "name": "RxReady当前事务字段校验5",
+          "line": 28
+        },
+        {
+          "id": 37,
+          "name": "RxReady当前事务字段校验6",
+          "line": 28
+        },
+        {
+          "id": 38,
+          "name": "RxReady当前事务字段校验7",
+          "line": 28
+        }
+      ],
+      "baseline_failures": [
+        {
+          "id": 0,
+          "name": "Probe GET_CUR被设备描述符打断不得授权Commit",
+          "line": 28
+        },
+        {
+          "id": 1,
+          "name": "旧Probe SET_CUR回调不能处理设备GET_DESCRIPTOR",
+          "line": 28
+        },
+        {
+          "id": 2,
+          "name": "旧Commit SET_CUR不能由其他完成授权",
+          "line": 28
+        },
+        {
+          "id": 3,
+          "name": "旧SET_CUR被设备OUT SETUP取消",
+          "line": 28
+        },
+        {
+          "id": 4,
+          "name": "旧OUT中断不污染描述符IN",
+          "line": 28
+        },
+        {
+          "id": 5,
+          "name": "正常Probe GET_CUR到Commit",
+          "line": 28
+        },
+        {
+          "id": 6,
+          "name": "VC GET_STATUS两字节",
+          "line": 28
+        },
+        {
+          "id": 7,
+          "name": "VS GET_STATUS两字节",
+          "line": 28
+        },
+        {
+          "id": 8,
+          "name": "持久GET_STATUS响应与重复请求",
+          "line": 28
+        },
+        {
+          "id": 9,
+          "name": "GET_STATUS非法字段0",
+          "line": 28
+        },
+        {
+          "id": 10,
+          "name": "GET_STATUS非法字段1",
+          "line": 28
+        },
+        {
+          "id": 11,
+          "name": "GET_STATUS非法字段2",
+          "line": 28
+        },
+        {
+          "id": 12,
+          "name": "GET_STATUS非法字段3",
+          "line": 28
+        },
+        {
+          "id": 13,
+          "name": "GET_STATUS非法字段4",
+          "line": 28
+        },
+        {
+          "id": 14,
+          "name": "GET_STATUS非法字段5",
+          "line": 28
+        },
+        {
+          "id": 15,
+          "name": "GET_STATUS非法字段6",
+          "line": 28
+        },
+        {
+          "id": 16,
+          "name": "GET_STATUS非法字段7",
+          "line": 28
+        },
+        {
+          "id": 17,
+          "name": "GET_STATUS非法字段8",
+          "line": 28
+        },
+        {
+          "id": 18,
+          "name": "GET_STATUS非法字段9",
+          "line": 28
+        },
+        {
+          "id": 19,
+          "name": "GET_STATUS非法字段10",
+          "line": 28
+        },
+        {
+          "id": 20,
+          "name": "GET_STATUS非法字段11",
+          "line": 28
+        },
+        {
+          "id": 21,
+          "name": "STALL后接口GET_STATUS恢复",
+          "line": 28
+        },
+        {
+          "id": 22,
+          "name": "STALL后设备GET_DESCRIPTOR恢复",
+          "line": 28
+        },
+        {
+          "id": 23,
+          "name": "TxSent当前事务字段校验0",
+          "line": 28
+        },
+        {
+          "id": 24,
+          "name": "TxSent当前事务字段校验1",
+          "line": 28
+        },
+        {
+          "id": 25,
+          "name": "TxSent当前事务字段校验2",
+          "line": 28
+        },
+        {
+          "id": 26,
+          "name": "TxSent当前事务字段校验3",
+          "line": 28
+        },
+        {
+          "id": 27,
+          "name": "TxSent当前事务字段校验4",
+          "line": 28
+        },
+        {
+          "id": 28,
+          "name": "TxSent当前事务字段校验5",
+          "line": 28
+        },
+        {
+          "id": 29,
+          "name": "TxSent当前事务字段校验6",
+          "line": 28
+        },
+        {
+          "id": 30,
+          "name": "TxSent当前事务字段校验7",
+          "line": 28
+        },
+        {
+          "id": 31,
+          "name": "RxReady当前事务字段校验0",
+          "line": 28
+        },
+        {
+          "id": 32,
+          "name": "RxReady当前事务字段校验1",
+          "line": 28
+        },
+        {
+          "id": 33,
+          "name": "RxReady当前事务字段校验2",
+          "line": 28
+        },
+        {
+          "id": 34,
+          "name": "RxReady当前事务字段校验3",
+          "line": 28
+        },
+        {
+          "id": 35,
+          "name": "RxReady当前事务字段校验4",
+          "line": 28
+        },
+        {
+          "id": 36,
+          "name": "RxReady当前事务字段校验5",
+          "line": 28
+        },
+        {
+          "id": 37,
+          "name": "RxReady当前事务字段校验6",
+          "line": 28
+        },
+        {
+          "id": 38,
+          "name": "RxReady当前事务字段校验7",
+          "line": 28
+        }
+      ]
+    },
+    {
+      "suite": "Core",
+      "baseline": {
+        "executed": 204,
+        "passed": 201,
+        "failed": 3,
+        "not_executed": 0
+      },
+      "current": {
+        "executed": 204,
+        "passed": 201,
+        "failed": 3,
+        "not_executed": 0
+      },
+      "failure_set_identical": true,
+      "current_failures": [
+        {
+          "id": 109,
+          "name": "Initcall等级顺序",
+          "line": 125
+        },
+        {
+          "id": 110,
+          "name": "产品名称与配置请求",
+          "line": 125
+        },
+        {
+          "id": 201,
+          "name": "Initcall保留TEST启动",
+          "line": 313
+        }
+      ],
+      "baseline_failures": [
+        {
+          "id": 109,
+          "name": "Initcall等级顺序",
+          "line": 125
+        },
+        {
+          "id": 110,
+          "name": "产品名称与配置请求",
+          "line": 125
+        },
+        {
+          "id": 201,
+          "name": "Initcall保留TEST启动",
+          "line": 313
+        }
+      ]
+    },
+    {
+      "suite": "EP0_IRQ",
+      "baseline": {
+        "executed": 4,
+        "passed": 4,
+        "failed": 0,
+        "not_executed": 0
+      },
+      "current": {
+        "executed": 4,
+        "passed": 4,
+        "failed": 0,
+        "not_executed": 0
+      },
+      "failure_set_identical": true,
+      "current_failures": [],
+      "baseline_failures": []
+    },
+    {
+      "suite": "Lifecycle",
+      "baseline": {
+        "executed": 40,
+        "passed": 34,
+        "failed": 6,
+        "not_executed": 0
+      },
+      "current": {
+        "executed": 40,
+        "passed": 34,
+        "failed": 6,
+        "not_executed": 0
+      },
+      "failure_set_identical": true,
+      "current_failures": [
+        {
+          "id": 11,
+          "name": "Class操作表14项映射",
+          "line": 82
+        },
+        {
+          "id": 35,
+          "name": "Core GET接口0",
+          "line": 112
+        },
+        {
+          "id": 36,
+          "name": "Core GET接口1",
+          "line": 112
+        },
+        {
+          "id": 37,
+          "name": "Core SET接口0单次状态",
+          "line": 112
+        },
+        {
+          "id": 38,
+          "name": "Core SET接口1单次状态",
+          "line": 112
+        },
+        {
+          "id": 39,
+          "name": "Core拒绝Alt1且不开EP1",
+          "line": 112
+        }
+      ],
+      "baseline_failures": [
+        {
+          "id": 11,
+          "name": "Class操作表14项映射",
+          "line": 82
+        },
+        {
+          "id": 35,
+          "name": "Core GET接口0",
+          "line": 112
+        },
+        {
+          "id": 36,
+          "name": "Core GET接口1",
+          "line": 112
+        },
+        {
+          "id": 37,
+          "name": "Core SET接口0单次状态",
+          "line": 112
+        },
+        {
+          "id": 38,
+          "name": "Core SET接口1单次状态",
+          "line": 112
+        },
+        {
+          "id": 39,
+          "name": "Core拒绝Alt1且不开EP1",
+          "line": 112
+        }
+      ]
+    },
+    {
+      "suite": "Descriptors",
+      "baseline": {
+        "executed": 40,
+        "passed": 40,
+        "failed": 0,
+        "not_executed": 0
+      },
+      "current": {
+        "executed": 40,
+        "passed": 40,
+        "failed": 0,
+        "not_executed": 0
+      },
+      "failure_set_identical": true,
+      "current_failures": [],
+      "baseline_failures": []
+    },
+    {
+      "suite": "Strings",
+      "baseline": {
+        "executed": 8,
+        "passed": 8,
+        "failed": 0,
+        "not_executed": 0
+      },
+      "current": {
+        "executed": 8,
+        "passed": 8,
+        "failed": 0,
+        "not_executed": 0
+      },
+      "failure_set_identical": true,
+      "current_failures": [],
+      "baseline_failures": []
+    },
+    {
+      "suite": "Contract",
+      "baseline": {
+        "executed": 14,
+        "passed": 0,
+        "failed": 14,
+        "not_executed": 0
+      },
+      "current": {
+        "executed": 14,
+        "passed": 0,
+        "failed": 14,
+        "not_executed": 0
+      },
+      "failure_set_identical": true,
+      "current_failures": [
+        {
+          "id": 0,
+          "name": "初始Probe完整查询不授权",
+          "line": 25
+        },
+        {
+          "id": 1,
+          "name": "初始Commit短读1B",
+          "line": 25
+        },
+        {
+          "id": 2,
+          "name": "初始Commit完整查询",
+          "line": 25
+        },
+        {
+          "id": 3,
+          "name": "初始Probe短读",
+          "line": 25
+        },
+        {
+          "id": 4,
+          "name": "初始Probe超长上限截断",
+          "line": 25
+        },
+        {
+          "id": 5,
+          "name": "Windows先查询默认再协商开流",
+          "line": 25
+        },
+        {
+          "id": 6,
+          "name": "初始默认查询被其他SETUP打断",
+          "line": 25
+        },
+        {
+          "id": 7,
+          "name": "失败Probe返回默认但不授权Commit",
+          "line": 25
+        },
+        {
+          "id": 8,
+          "name": "取消Abort失败保留帧",
+          "line": 25
+        },
+        {
+          "id": 9,
+          "name": "Incomplete错误不能伪装完成",
+          "line": 25
+        },
+        {
+          "id": 10,
+          "name": "IRQ调用契约",
+          "line": 19
+        },
+        {
+          "id": 11,
+          "name": "Class释放后查询输出不更新",
+          "line": 25
+        },
+        {
+          "id": 12,
+          "name": "Reset失败保留可查询所有权直到Stop成功",
+          "line": 25
+        },
+        {
+          "id": 13,
+          "name": "DeInit失败保留可查询所有权直到Stop成功",
+          "line": 25
+        }
+      ],
+      "baseline_failures": [
+        {
+          "id": 0,
+          "name": "初始Probe完整查询不授权",
+          "line": 25
+        },
+        {
+          "id": 1,
+          "name": "初始Commit短读1B",
+          "line": 25
+        },
+        {
+          "id": 2,
+          "name": "初始Commit完整查询",
+          "line": 25
+        },
+        {
+          "id": 3,
+          "name": "初始Probe短读",
+          "line": 25
+        },
+        {
+          "id": 4,
+          "name": "初始Probe超长上限截断",
+          "line": 25
+        },
+        {
+          "id": 5,
+          "name": "Windows先查询默认再协商开流",
+          "line": 25
+        },
+        {
+          "id": 6,
+          "name": "初始默认查询被其他SETUP打断",
+          "line": 25
+        },
+        {
+          "id": 7,
+          "name": "失败Probe返回默认但不授权Commit",
+          "line": 25
+        },
+        {
+          "id": 8,
+          "name": "取消Abort失败保留帧",
+          "line": 25
+        },
+        {
+          "id": 9,
+          "name": "Incomplete错误不能伪装完成",
+          "line": 25
+        },
+        {
+          "id": 10,
+          "name": "IRQ调用契约",
+          "line": 19
+        },
+        {
+          "id": 11,
+          "name": "Class释放后查询输出不更新",
+          "line": 25
+        },
+        {
+          "id": 12,
+          "name": "Reset失败保留可查询所有权直到Stop成功",
+          "line": 25
+        },
+        {
+          "id": 13,
+          "name": "DeInit失败保留可查询所有权直到Stop成功",
+          "line": 25
+        }
+      ]
+    },
+    {
+      "suite": "CameraAppInit",
+      "baseline": {
+        "executed": 13,
+        "passed": 13,
+        "failed": 0,
+        "not_executed": 0
+      },
+      "current": {
+        "executed": 13,
+        "passed": 13,
+        "failed": 0,
+        "not_executed": 0
+      },
+      "failure_set_identical": true,
+      "current_failures": [],
+      "baseline_failures": []
+    },
+    {
+      "suite": "CameraContext",
+      "baseline": {
+        "executed": 72,
+        "passed": 72,
+        "failed": 0,
+        "not_executed": 0
+      },
+      "current": {
+        "executed": 72,
+        "passed": 72,
+        "failed": 0,
+        "not_executed": 0
+      },
+      "failure_set_identical": true,
+      "current_failures": [],
+      "baseline_failures": []
+    },
+    {
+      "suite": "CameraStream",
+      "baseline": {
+        "executed": 75,
+        "passed": 75,
+        "failed": 0,
+        "not_executed": 0
+      },
+      "current": {
+        "executed": 75,
+        "passed": 75,
+        "failed": 0,
+        "not_executed": 0
+      },
+      "failure_set_identical": true,
+      "current_failures": [],
+      "baseline_failures": []
+    },
+    {
+      "suite": "BspMedia",
+      "baseline": {
+        "executed": 108,
+        "passed": 0,
+        "failed": 108,
+        "not_executed": 0
+      },
+      "current": {
+        "executed": 108,
+        "passed": 0,
+        "failed": 108,
+        "not_executed": 0
+      },
+      "failure_set_identical": true,
+      "current_failures": [
+        {
+          "id": 0,
+          "name": "注册及原子启动 / Y8",
+          "line": 163
+        },
+        {
+          "id": 1,
+          "name": "注册及原子启动 / RGB565",
+          "line": 163
+        },
+        {
+          "id": 2,
+          "name": "注册及原子启动 / YUV422",
+          "line": 163
+        },
+        {
+          "id": 3,
+          "name": "M0 TC→FRAME / Y8",
+          "line": 163
+        },
+        {
+          "id": 4,
+          "name": "M0 TC→FRAME / RGB565",
+          "line": 163
+        },
+        {
+          "id": 5,
+          "name": "M0 TC→FRAME / YUV422",
+          "line": 163
+        },
+        {
+          "id": 6,
+          "name": "M0 FRAME→TC / Y8",
+          "line": 163
+        },
+        {
+          "id": 7,
+          "name": "M0 FRAME→TC / RGB565",
+          "line": 163
+        },
+        {
+          "id": 8,
+          "name": "M0 FRAME→TC / YUV422",
+          "line": 163
+        },
+        {
+          "id": 9,
+          "name": "M1 TC→FRAME / Y8",
+          "line": 163
+        },
+        {
+          "id": 10,
+          "name": "M1 TC→FRAME / RGB565",
+          "line": 163
+        },
+        {
+          "id": 11,
+          "name": "M1 TC→FRAME / YUV422",
+          "line": 163
+        },
+        {
+          "id": 12,
+          "name": "M1 FRAME→TC / Y8",
+          "line": 163
+        },
+        {
+          "id": 13,
+          "name": "M1 FRAME→TC / RGB565",
+          "line": 163
+        },
+        {
+          "id": 14,
+          "name": "M1 FRAME→TC / YUV422",
+          "line": 163
+        },
+        {
+          "id": 15,
+          "name": "多帧Get/Release / Y8",
+          "line": 163
+        },
+        {
+          "id": 16,
+          "name": "多帧Get/Release / RGB565",
+          "line": 163
+        },
+        {
+          "id": 17,
+          "name": "多帧Get/Release / YUV422",
+          "line": 163
+        },
+        {
+          "id": 18,
+          "name": "READY回收30帧 / Y8",
+          "line": 163
+        },
+        {
+          "id": 19,
+          "name": "READY回收30帧 / RGB565",
+          "line": 163
+        },
+        {
+          "id": 20,
+          "name": "READY回收30帧 / YUV422",
+          "line": 163
+        },
+        {
+          "id": 21,
+          "name": "IN_USE持有100帧 / Y8",
+          "line": 163
+        },
+        {
+          "id": 22,
+          "name": "IN_USE持有100帧 / RGB565",
+          "line": 163
+        },
+        {
+          "id": 23,
+          "name": "IN_USE持有100帧 / YUV422",
+          "line": 163
+        },
+        {
+          "id": 24,
+          "name": "正常Stop等待IN_USE / Y8",
+          "line": 163
+        },
+        {
+          "id": 25,
+          "name": "正常Stop等待IN_USE / RGB565",
+          "line": 163
+        },
+        {
+          "id": 26,
+          "name": "正常Stop等待IN_USE / YUV422",
+          "line": 163
+        },
+        {
+          "id": 27,
+          "name": "替换HAL失败 / Y8",
+          "line": 163
+        },
+        {
+          "id": 28,
+          "name": "替换HAL失败 / RGB565",
+          "line": 163
+        },
+        {
+          "id": 29,
+          "name": "替换HAL失败 / YUV422",
+          "line": 163
+        },
+        {
+          "id": 30,
+          "name": "替换期间CT变化 / Y8",
+          "line": 163
+        },
+        {
+          "id": 31,
+          "name": "替换期间CT变化 / RGB565",
+          "line": 163
+        },
+        {
+          "id": 32,
+          "name": "替换期间CT变化 / YUV422",
+          "line": 163
+        },
+        {
+          "id": 33,
+          "name": "故障Stop及DRAINING / Y8",
+          "line": 163
+        },
+        {
+          "id": 34,
+          "name": "故障Stop及DRAINING / RGB565",
+          "line": 163
+        },
+        {
+          "id": 35,
+          "name": "故障Stop及DRAINING / YUV422",
+          "line": 163
+        },
+        {
+          "id": 36,
+          "name": "Stop失败重试与DRAINING / Y8",
+          "line": 163
+        },
+        {
+          "id": 37,
+          "name": "Stop失败重试与DRAINING / RGB565",
+          "line": 163
+        },
+        {
+          "id": 38,
+          "name": "Stop失败重试与DRAINING / YUV422",
+          "line": 163
+        },
+        {
+          "id": 39,
+          "name": "Stop保留ERROR且重启不误消费 / Y8",
+          "line": 163
+        },
+        {
+          "id": 40,
+          "name": "Stop保留ERROR且重启不误消费 / RGB565",
+          "line": 163
+        },
+        {
+          "id": 41,
+          "name": "Stop保留ERROR且重启不误消费 / YUV422",
+          "line": 163
+        },
+        {
+          "id": 42,
+          "name": "非法Start保留旧事件 / Y8",
+          "line": 163
+        },
+        {
+          "id": 43,
+          "name": "非法Start保留旧事件 / RGB565",
+          "line": 163
+        },
+        {
+          "id": 44,
+          "name": "非法Start保留旧事件 / YUV422",
+          "line": 163
+        },
+        {
+          "id": 45,
+          "name": "BUSY Start保留旧事件 / Y8",
+          "line": 163
+        },
+        {
+          "id": 46,
+          "name": "BUSY Start保留旧事件 / RGB565",
+          "line": 163
+        },
+        {
+          "id": 47,
+          "name": "BUSY Start保留旧事件 / YUV422",
+          "line": 163
+        },
+        {
+          "id": 48,
+          "name": "新Start清事件HAL错误与挂起 / Y8",
+          "line": 163
+        },
+        {
+          "id": 49,
+          "name": "新Start清事件HAL错误与挂起 / RGB565",
+          "line": 163
+        },
+        {
+          "id": 50,
+          "name": "新Start清事件HAL错误与挂起 / YUV422",
+          "line": 163
+        },
+        {
+          "id": 51,
+          "name": "启动首帧IRQ延后到RUNNING / Y8",
+          "line": 163
+        },
+        {
+          "id": 52,
+          "name": "启动首帧IRQ延后到RUNNING / RGB565",
+          "line": 163
+        },
+        {
+          "id": 53,
+          "name": "启动首帧IRQ延后到RUNNING / YUV422",
+          "line": 163
+        },
+        {
+          "id": 54,
+          "name": "DBM启动失败交付新错误 / Y8",
+          "line": 163
+        },
+        {
+          "id": 55,
+          "name": "DBM启动失败交付新错误 / RGB565",
+          "line": 163
+        },
+        {
+          "id": 56,
+          "name": "DBM启动失败交付新错误 / YUV422",
+          "line": 163
+        },
+        {
+          "id": 57,
+          "name": "Snapshot释放后Stream启动 / Y8",
+          "line": 163
+        },
+        {
+          "id": 58,
+          "name": "Snapshot释放后Stream启动 / RGB565",
+          "line": 163
+        },
+        {
+          "id": 59,
+          "name": "Snapshot释放后Stream启动 / YUV422",
+          "line": 163
+        },
+        {
+          "id": 60,
+          "name": "Snapshot超时恢复 / Y8",
+          "line": 163
+        },
+        {
+          "id": 61,
+          "name": "Snapshot超时恢复 / RGB565",
+          "line": 163
+        },
+        {
+          "id": 62,
+          "name": "Snapshot超时恢复 / YUV422",
+          "line": 163
+        },
+        {
+          "id": 63,
+          "name": "空闲Stop保留旧错误 / Y8",
+          "line": 163
+        },
+        {
+          "id": 64,
+          "name": "空闲Stop保留旧错误 / RGB565",
+          "line": 163
+        },
+        {
+          "id": 65,
+          "name": "空闲Stop保留旧错误 / YUV422",
+          "line": 163
+        },
+        {
+          "id": 66,
+          "name": "多轮停止重启 / Y8",
+          "line": 163
+        },
+        {
+          "id": 67,
+          "name": "多轮停止重启 / RGB565",
+          "line": 163
+        },
+        {
+          "id": 68,
+          "name": "多轮停止重启 / YUV422",
+          "line": 163
+        },
+        {
+          "id": 69,
+          "name": "PRIMASK延后真实IRQ / Y8",
+          "line": 163
+        },
+        {
+          "id": 70,
+          "name": "PRIMASK延后真实IRQ / RGB565",
+          "line": 163
+        },
+        {
+          "id": 71,
+          "name": "PRIMASK延后真实IRQ / YUV422",
+          "line": 163
+        },
+        {
+          "id": 72,
+          "name": "NDTR门限错过 / Y8",
+          "line": 163
+        },
+        {
+          "id": 73,
+          "name": "NDTR门限错过 / RGB565",
+          "line": 163
+        },
+        {
+          "id": 74,
+          "name": "NDTR门限错过 / YUV422",
+          "line": 163
+        },
+        {
+          "id": 75,
+          "name": "重复TC / Y8",
+          "line": 163
+        },
+        {
+          "id": 76,
+          "name": "重复TC / RGB565",
+          "line": 163
+        },
+        {
+          "id": 77,
+          "name": "重复TC / YUV422",
+          "line": 163
+        },
+        {
+          "id": 78,
+          "name": "重复FRAME / Y8",
+          "line": 163
+        },
+        {
+          "id": 79,
+          "name": "重复FRAME / RGB565",
+          "line": 163
+        },
+        {
+          "id": 80,
+          "name": "重复FRAME / YUV422",
+          "line": 163
+        },
+        {
+          "id": 81,
+          "name": "可见跨目标延迟拒绝 / Y8",
+          "line": 163
+        },
+        {
+          "id": 82,
+          "name": "可见跨目标延迟拒绝 / RGB565",
+          "line": 163
+        },
+        {
+          "id": 83,
+          "name": "可见跨目标延迟拒绝 / YUV422",
+          "line": 163
+        },
+        {
+          "id": 84,
+          "name": "风险反例FRAME先服务跨帧合并 / Y8",
+          "line": 163
+        },
+        {
+          "id": 85,
+          "name": "风险反例FRAME先服务跨帧合并 / RGB565",
+          "line": 163
+        },
+        {
+          "id": 86,
+          "name": "风险反例FRAME先服务跨帧合并 / YUV422",
+          "line": 163
+        },
+        {
+          "id": 87,
+          "name": "风险反例TC先服务跨帧合并 / Y8",
+          "line": 163
+        },
+        {
+          "id": 88,
+          "name": "风险反例TC先服务跨帧合并 / RGB565",
+          "line": 163
+        },
+        {
+          "id": 89,
+          "name": "风险反例TC先服务跨帧合并 / YUV422",
+          "line": 163
+        },
+        {
+          "id": 90,
+          "name": "DRAINING接口门控 / Y8",
+          "line": 163
+        },
+        {
+          "id": 91,
+          "name": "DRAINING接口门控 / RGB565",
+          "line": 163
+        },
+        {
+          "id": 92,
+          "name": "DRAINING接口门控 / YUV422",
+          "line": 163
+        },
+        {
+          "id": 93,
+          "name": "Media候选旧目标重叠拒绝 / Y8",
+          "line": 163
+        },
+        {
+          "id": 94,
+          "name": "Media候选旧目标重叠拒绝 / RGB565",
+          "line": 163
+        },
+        {
+          "id": 95,
+          "name": "Media候选旧目标重叠拒绝 / YUV422",
+          "line": 163
+        },
+        {
+          "id": 96,
+          "name": "风险反例FREE下跨帧FRAME先服务 / Y8",
+          "line": 163
+        },
+        {
+          "id": 97,
+          "name": "风险反例FREE下跨帧FRAME先服务 / RGB565",
+          "line": 163
+        },
+        {
+          "id": 98,
+          "name": "风险反例FREE下跨帧FRAME先服务 / YUV422",
+          "line": 163
+        },
+        {
+          "id": 99,
+          "name": "风险反例FREE下跨帧TC先服务 / Y8",
+          "line": 163
+        },
+        {
+          "id": 100,
+          "name": "风险反例FREE下跨帧TC先服务 / RGB565",
+          "line": 163
+        },
+        {
+          "id": 101,
+          "name": "风险反例FREE下跨帧TC先服务 / YUV422",
+          "line": 163
+        },
+        {
+          "id": 102,
+          "name": "IN_USE下TC挂起且CT绕回仍拒绝 / Y8",
+          "line": 163
+        },
+        {
+          "id": 103,
+          "name": "IN_USE下TC挂起且CT绕回仍拒绝 / RGB565",
+          "line": 163
+        },
+        {
+          "id": 104,
+          "name": "IN_USE下TC挂起且CT绕回仍拒绝 / YUV422",
+          "line": 163
+        },
+        {
+          "id": 105,
+          "name": "FREE下TC挂起且CT绕回仍拒绝 / Y8",
+          "line": 163
+        },
+        {
+          "id": 106,
+          "name": "FREE下TC挂起且CT绕回仍拒绝 / RGB565",
+          "line": 163
+        },
+        {
+          "id": 107,
+          "name": "FREE下TC挂起且CT绕回仍拒绝 / YUV422",
+          "line": 163
+        }
+      ],
+      "baseline_failures": [
+        {
+          "id": 0,
+          "name": "注册及原子启动 / Y8",
+          "line": 163
+        },
+        {
+          "id": 1,
+          "name": "注册及原子启动 / RGB565",
+          "line": 163
+        },
+        {
+          "id": 2,
+          "name": "注册及原子启动 / YUV422",
+          "line": 163
+        },
+        {
+          "id": 3,
+          "name": "M0 TC→FRAME / Y8",
+          "line": 163
+        },
+        {
+          "id": 4,
+          "name": "M0 TC→FRAME / RGB565",
+          "line": 163
+        },
+        {
+          "id": 5,
+          "name": "M0 TC→FRAME / YUV422",
+          "line": 163
+        },
+        {
+          "id": 6,
+          "name": "M0 FRAME→TC / Y8",
+          "line": 163
+        },
+        {
+          "id": 7,
+          "name": "M0 FRAME→TC / RGB565",
+          "line": 163
+        },
+        {
+          "id": 8,
+          "name": "M0 FRAME→TC / YUV422",
+          "line": 163
+        },
+        {
+          "id": 9,
+          "name": "M1 TC→FRAME / Y8",
+          "line": 163
+        },
+        {
+          "id": 10,
+          "name": "M1 TC→FRAME / RGB565",
+          "line": 163
+        },
+        {
+          "id": 11,
+          "name": "M1 TC→FRAME / YUV422",
+          "line": 163
+        },
+        {
+          "id": 12,
+          "name": "M1 FRAME→TC / Y8",
+          "line": 163
+        },
+        {
+          "id": 13,
+          "name": "M1 FRAME→TC / RGB565",
+          "line": 163
+        },
+        {
+          "id": 14,
+          "name": "M1 FRAME→TC / YUV422",
+          "line": 163
+        },
+        {
+          "id": 15,
+          "name": "多帧Get/Release / Y8",
+          "line": 163
+        },
+        {
+          "id": 16,
+          "name": "多帧Get/Release / RGB565",
+          "line": 163
+        },
+        {
+          "id": 17,
+          "name": "多帧Get/Release / YUV422",
+          "line": 163
+        },
+        {
+          "id": 18,
+          "name": "READY回收30帧 / Y8",
+          "line": 163
+        },
+        {
+          "id": 19,
+          "name": "READY回收30帧 / RGB565",
+          "line": 163
+        },
+        {
+          "id": 20,
+          "name": "READY回收30帧 / YUV422",
+          "line": 163
+        },
+        {
+          "id": 21,
+          "name": "IN_USE持有100帧 / Y8",
+          "line": 163
+        },
+        {
+          "id": 22,
+          "name": "IN_USE持有100帧 / RGB565",
+          "line": 163
+        },
+        {
+          "id": 23,
+          "name": "IN_USE持有100帧 / YUV422",
+          "line": 163
+        },
+        {
+          "id": 24,
+          "name": "正常Stop等待IN_USE / Y8",
+          "line": 163
+        },
+        {
+          "id": 25,
+          "name": "正常Stop等待IN_USE / RGB565",
+          "line": 163
+        },
+        {
+          "id": 26,
+          "name": "正常Stop等待IN_USE / YUV422",
+          "line": 163
+        },
+        {
+          "id": 27,
+          "name": "替换HAL失败 / Y8",
+          "line": 163
+        },
+        {
+          "id": 28,
+          "name": "替换HAL失败 / RGB565",
+          "line": 163
+        },
+        {
+          "id": 29,
+          "name": "替换HAL失败 / YUV422",
+          "line": 163
+        },
+        {
+          "id": 30,
+          "name": "替换期间CT变化 / Y8",
+          "line": 163
+        },
+        {
+          "id": 31,
+          "name": "替换期间CT变化 / RGB565",
+          "line": 163
+        },
+        {
+          "id": 32,
+          "name": "替换期间CT变化 / YUV422",
+          "line": 163
+        },
+        {
+          "id": 33,
+          "name": "故障Stop及DRAINING / Y8",
+          "line": 163
+        },
+        {
+          "id": 34,
+          "name": "故障Stop及DRAINING / RGB565",
+          "line": 163
+        },
+        {
+          "id": 35,
+          "name": "故障Stop及DRAINING / YUV422",
+          "line": 163
+        },
+        {
+          "id": 36,
+          "name": "Stop失败重试与DRAINING / Y8",
+          "line": 163
+        },
+        {
+          "id": 37,
+          "name": "Stop失败重试与DRAINING / RGB565",
+          "line": 163
+        },
+        {
+          "id": 38,
+          "name": "Stop失败重试与DRAINING / YUV422",
+          "line": 163
+        },
+        {
+          "id": 39,
+          "name": "Stop保留ERROR且重启不误消费 / Y8",
+          "line": 163
+        },
+        {
+          "id": 40,
+          "name": "Stop保留ERROR且重启不误消费 / RGB565",
+          "line": 163
+        },
+        {
+          "id": 41,
+          "name": "Stop保留ERROR且重启不误消费 / YUV422",
+          "line": 163
+        },
+        {
+          "id": 42,
+          "name": "非法Start保留旧事件 / Y8",
+          "line": 163
+        },
+        {
+          "id": 43,
+          "name": "非法Start保留旧事件 / RGB565",
+          "line": 163
+        },
+        {
+          "id": 44,
+          "name": "非法Start保留旧事件 / YUV422",
+          "line": 163
+        },
+        {
+          "id": 45,
+          "name": "BUSY Start保留旧事件 / Y8",
+          "line": 163
+        },
+        {
+          "id": 46,
+          "name": "BUSY Start保留旧事件 / RGB565",
+          "line": 163
+        },
+        {
+          "id": 47,
+          "name": "BUSY Start保留旧事件 / YUV422",
+          "line": 163
+        },
+        {
+          "id": 48,
+          "name": "新Start清事件HAL错误与挂起 / Y8",
+          "line": 163
+        },
+        {
+          "id": 49,
+          "name": "新Start清事件HAL错误与挂起 / RGB565",
+          "line": 163
+        },
+        {
+          "id": 50,
+          "name": "新Start清事件HAL错误与挂起 / YUV422",
+          "line": 163
+        },
+        {
+          "id": 51,
+          "name": "启动首帧IRQ延后到RUNNING / Y8",
+          "line": 163
+        },
+        {
+          "id": 52,
+          "name": "启动首帧IRQ延后到RUNNING / RGB565",
+          "line": 163
+        },
+        {
+          "id": 53,
+          "name": "启动首帧IRQ延后到RUNNING / YUV422",
+          "line": 163
+        },
+        {
+          "id": 54,
+          "name": "DBM启动失败交付新错误 / Y8",
+          "line": 163
+        },
+        {
+          "id": 55,
+          "name": "DBM启动失败交付新错误 / RGB565",
+          "line": 163
+        },
+        {
+          "id": 56,
+          "name": "DBM启动失败交付新错误 / YUV422",
+          "line": 163
+        },
+        {
+          "id": 57,
+          "name": "Snapshot释放后Stream启动 / Y8",
+          "line": 163
+        },
+        {
+          "id": 58,
+          "name": "Snapshot释放后Stream启动 / RGB565",
+          "line": 163
+        },
+        {
+          "id": 59,
+          "name": "Snapshot释放后Stream启动 / YUV422",
+          "line": 163
+        },
+        {
+          "id": 60,
+          "name": "Snapshot超时恢复 / Y8",
+          "line": 163
+        },
+        {
+          "id": 61,
+          "name": "Snapshot超时恢复 / RGB565",
+          "line": 163
+        },
+        {
+          "id": 62,
+          "name": "Snapshot超时恢复 / YUV422",
+          "line": 163
+        },
+        {
+          "id": 63,
+          "name": "空闲Stop保留旧错误 / Y8",
+          "line": 163
+        },
+        {
+          "id": 64,
+          "name": "空闲Stop保留旧错误 / RGB565",
+          "line": 163
+        },
+        {
+          "id": 65,
+          "name": "空闲Stop保留旧错误 / YUV422",
+          "line": 163
+        },
+        {
+          "id": 66,
+          "name": "多轮停止重启 / Y8",
+          "line": 163
+        },
+        {
+          "id": 67,
+          "name": "多轮停止重启 / RGB565",
+          "line": 163
+        },
+        {
+          "id": 68,
+          "name": "多轮停止重启 / YUV422",
+          "line": 163
+        },
+        {
+          "id": 69,
+          "name": "PRIMASK延后真实IRQ / Y8",
+          "line": 163
+        },
+        {
+          "id": 70,
+          "name": "PRIMASK延后真实IRQ / RGB565",
+          "line": 163
+        },
+        {
+          "id": 71,
+          "name": "PRIMASK延后真实IRQ / YUV422",
+          "line": 163
+        },
+        {
+          "id": 72,
+          "name": "NDTR门限错过 / Y8",
+          "line": 163
+        },
+        {
+          "id": 73,
+          "name": "NDTR门限错过 / RGB565",
+          "line": 163
+        },
+        {
+          "id": 74,
+          "name": "NDTR门限错过 / YUV422",
+          "line": 163
+        },
+        {
+          "id": 75,
+          "name": "重复TC / Y8",
+          "line": 163
+        },
+        {
+          "id": 76,
+          "name": "重复TC / RGB565",
+          "line": 163
+        },
+        {
+          "id": 77,
+          "name": "重复TC / YUV422",
+          "line": 163
+        },
+        {
+          "id": 78,
+          "name": "重复FRAME / Y8",
+          "line": 163
+        },
+        {
+          "id": 79,
+          "name": "重复FRAME / RGB565",
+          "line": 163
+        },
+        {
+          "id": 80,
+          "name": "重复FRAME / YUV422",
+          "line": 163
+        },
+        {
+          "id": 81,
+          "name": "可见跨目标延迟拒绝 / Y8",
+          "line": 163
+        },
+        {
+          "id": 82,
+          "name": "可见跨目标延迟拒绝 / RGB565",
+          "line": 163
+        },
+        {
+          "id": 83,
+          "name": "可见跨目标延迟拒绝 / YUV422",
+          "line": 163
+        },
+        {
+          "id": 84,
+          "name": "风险反例FRAME先服务跨帧合并 / Y8",
+          "line": 163
+        },
+        {
+          "id": 85,
+          "name": "风险反例FRAME先服务跨帧合并 / RGB565",
+          "line": 163
+        },
+        {
+          "id": 86,
+          "name": "风险反例FRAME先服务跨帧合并 / YUV422",
+          "line": 163
+        },
+        {
+          "id": 87,
+          "name": "风险反例TC先服务跨帧合并 / Y8",
+          "line": 163
+        },
+        {
+          "id": 88,
+          "name": "风险反例TC先服务跨帧合并 / RGB565",
+          "line": 163
+        },
+        {
+          "id": 89,
+          "name": "风险反例TC先服务跨帧合并 / YUV422",
+          "line": 163
+        },
+        {
+          "id": 90,
+          "name": "DRAINING接口门控 / Y8",
+          "line": 163
+        },
+        {
+          "id": 91,
+          "name": "DRAINING接口门控 / RGB565",
+          "line": 163
+        },
+        {
+          "id": 92,
+          "name": "DRAINING接口门控 / YUV422",
+          "line": 163
+        },
+        {
+          "id": 93,
+          "name": "Media候选旧目标重叠拒绝 / Y8",
+          "line": 163
+        },
+        {
+          "id": 94,
+          "name": "Media候选旧目标重叠拒绝 / RGB565",
+          "line": 163
+        },
+        {
+          "id": 95,
+          "name": "Media候选旧目标重叠拒绝 / YUV422",
+          "line": 163
+        },
+        {
+          "id": 96,
+          "name": "风险反例FREE下跨帧FRAME先服务 / Y8",
+          "line": 163
+        },
+        {
+          "id": 97,
+          "name": "风险反例FREE下跨帧FRAME先服务 / RGB565",
+          "line": 163
+        },
+        {
+          "id": 98,
+          "name": "风险反例FREE下跨帧FRAME先服务 / YUV422",
+          "line": 163
+        },
+        {
+          "id": 99,
+          "name": "风险反例FREE下跨帧TC先服务 / Y8",
+          "line": 163
+        },
+        {
+          "id": 100,
+          "name": "风险反例FREE下跨帧TC先服务 / RGB565",
+          "line": 163
+        },
+        {
+          "id": 101,
+          "name": "风险反例FREE下跨帧TC先服务 / YUV422",
+          "line": 163
+        },
+        {
+          "id": 102,
+          "name": "IN_USE下TC挂起且CT绕回仍拒绝 / Y8",
+          "line": 163
+        },
+        {
+          "id": 103,
+          "name": "IN_USE下TC挂起且CT绕回仍拒绝 / RGB565",
+          "line": 163
+        },
+        {
+          "id": 104,
+          "name": "IN_USE下TC挂起且CT绕回仍拒绝 / YUV422",
+          "line": 163
+        },
+        {
+          "id": 105,
+          "name": "FREE下TC挂起且CT绕回仍拒绝 / Y8",
+          "line": 163
+        },
+        {
+          "id": 106,
+          "name": "FREE下TC挂起且CT绕回仍拒绝 / RGB565",
+          "line": 163
+        },
+        {
+          "id": 107,
+          "name": "FREE下TC挂起且CT绕回仍拒绝 / YUV422",
+          "line": 163
+        }
+      ]
+    },
+    {
+      "suite": "DcmiReplace",
+      "baseline": {
+        "executed": 133,
+        "passed": 88,
+        "failed": 45,
+        "not_executed": 0
+      },
+      "current": {
+        "executed": 133,
+        "passed": 88,
+        "failed": 45,
+        "not_executed": 0
+      },
+      "failure_set_identical": true,
+      "current_failures": [
+        {
+          "id": 1,
+          "name": "初始化不自动采集",
+          "line": 147
+        },
+        {
+          "id": 2,
+          "name": "参数边界和对齐",
+          "line": 147
+        },
+        {
+          "id": 3,
+          "name": "ISR拒绝启动/停止",
+          "line": 147
+        },
+        {
+          "id": 4,
+          "name": "关中断拒绝启动/停止",
+          "line": 147
+        },
+        {
+          "id": 5,
+          "name": "空闲Stop",
+          "line": 147
+        },
+        {
+          "id": 6,
+          "name": "清理旧事件和硬件挂起",
+          "line": 147
+        },
+        {
+          "id": 7,
+          "name": "Active重复Start拒绝",
+          "line": 147
+        },
+        {
+          "id": 8,
+          "name": "DMA完成尚无Frame",
+          "line": 147
+        },
+        {
+          "id": 9,
+          "name": "正常Snapshot完成",
+          "line": 147
+        },
+        {
+          "id": 10,
+          "name": "连续两帧和ERR/OVR重启",
+          "line": 147
+        },
+        {
+          "id": 11,
+          "name": "同步错先通知再Stop",
+          "line": 147
+        },
+        {
+          "id": 12,
+          "name": "溢出先通知再Stop",
+          "line": 147
+        },
+        {
+          "id": 13,
+          "name": "错误和Frame同时到达",
+          "line": 147
+        },
+        {
+          "id": 14,
+          "name": "真实DMA TE错误",
+          "line": 147
+        },
+        {
+          "id": 15,
+          "name": "纯FIFO错误回调",
+          "line": 147
+        },
+        {
+          "id": 16,
+          "name": "过滤其他句柄回调",
+          "line": 147
+        },
+        {
+          "id": 17,
+          "name": "早到Frame拒绝",
+          "line": 147
+        },
+        {
+          "id": 18,
+          "name": "Start HAL_ERROR",
+          "line": 147
+        },
+        {
+          "id": 19,
+          "name": "Start HAL_BUSY",
+          "line": 147
+        },
+        {
+          "id": 20,
+          "name": "Start HAL_TIMEOUT",
+          "line": 147
+        },
+        {
+          "id": 21,
+          "name": "Abort无回调仍能Stop恢复",
+          "line": 147
+        },
+        {
+          "id": 22,
+          "name": "HAL Stop虚假成功仍核对DMA",
+          "line": 147
+        },
+        {
+          "id": 23,
+          "name": "HAL Stop超时但恢复硬件",
+          "line": 147
+        },
+        {
+          "id": 24,
+          "name": "HAL Stop错误但恢复硬件",
+          "line": 147
+        },
+        {
+          "id": 25,
+          "name": "DMA无法停下时超时并阻止Start",
+          "line": 147
+        },
+        {
+          "id": 26,
+          "name": "恢复DMA DeInit失败",
+          "line": 147
+        },
+        {
+          "id": 27,
+          "name": "恢复DMA Init失败",
+          "line": 147
+        },
+        {
+          "id": 28,
+          "name": "恢复DCMI DeInit失败",
+          "line": 147
+        },
+        {
+          "id": 29,
+          "name": "恢复DCMI Init失败",
+          "line": 147
+        },
+        {
+          "id": 30,
+          "name": "ABORT+Lock遗留恢复",
+          "line": 147
+        },
+        {
+          "id": 31,
+          "name": "Stop后迟到回调丢弃",
+          "line": 147
+        },
+        {
+          "id": 32,
+          "name": "NULL Take不消费",
+          "line": 147
+        },
+        {
+          "id": 33,
+          "name": "读清期间完成IRQ延后交付",
+          "line": 147
+        },
+        {
+          "id": 34,
+          "name": "读清期间新错误不丢失",
+          "line": 147
+        },
+        {
+          "id": 35,
+          "name": "PRIMASK=1保持及中断延后",
+          "line": 147
+        },
+        {
+          "id": 36,
+          "name": "未处理硬件错误覆盖FRAME",
+          "line": 147
+        },
+        {
+          "id": 37,
+          "name": "Stop保留已完成事件",
+          "line": 147
+        },
+        {
+          "id": 38,
+          "name": "控制接口重入BUSY",
+          "line": 147
+        },
+        {
+          "id": 39,
+          "name": "真实异步Abort完成IRQ",
+          "line": 147
+        },
+        {
+          "id": 40,
+          "name": "遗留DCMI Lock停止恢复",
+          "line": 147
+        },
+        {
+          "id": 41,
+          "name": "Stop等待Tick回绕",
+          "line": 147
+        },
+        {
+          "id": 42,
+          "name": "新Start清除旧完成",
+          "line": 147
+        },
+        {
+          "id": 43,
+          "name": "读出错误后Frame仍不变成功",
+          "line": 147
+        },
+        {
+          "id": 44,
+          "name": "非法Start不清事件",
+          "line": 147
+        },
+        {
+          "id": 45,
+          "name": "重复Stop不产生完成事件",
+          "line": 147
+        }
+      ],
+      "baseline_failures": [
+        {
+          "id": 1,
+          "name": "初始化不自动采集",
+          "line": 147
+        },
+        {
+          "id": 2,
+          "name": "参数边界和对齐",
+          "line": 147
+        },
+        {
+          "id": 3,
+          "name": "ISR拒绝启动/停止",
+          "line": 147
+        },
+        {
+          "id": 4,
+          "name": "关中断拒绝启动/停止",
+          "line": 147
+        },
+        {
+          "id": 5,
+          "name": "空闲Stop",
+          "line": 147
+        },
+        {
+          "id": 6,
+          "name": "清理旧事件和硬件挂起",
+          "line": 147
+        },
+        {
+          "id": 7,
+          "name": "Active重复Start拒绝",
+          "line": 147
+        },
+        {
+          "id": 8,
+          "name": "DMA完成尚无Frame",
+          "line": 147
+        },
+        {
+          "id": 9,
+          "name": "正常Snapshot完成",
+          "line": 147
+        },
+        {
+          "id": 10,
+          "name": "连续两帧和ERR/OVR重启",
+          "line": 147
+        },
+        {
+          "id": 11,
+          "name": "同步错先通知再Stop",
+          "line": 147
+        },
+        {
+          "id": 12,
+          "name": "溢出先通知再Stop",
+          "line": 147
+        },
+        {
+          "id": 13,
+          "name": "错误和Frame同时到达",
+          "line": 147
+        },
+        {
+          "id": 14,
+          "name": "真实DMA TE错误",
+          "line": 147
+        },
+        {
+          "id": 15,
+          "name": "纯FIFO错误回调",
+          "line": 147
+        },
+        {
+          "id": 16,
+          "name": "过滤其他句柄回调",
+          "line": 147
+        },
+        {
+          "id": 17,
+          "name": "早到Frame拒绝",
+          "line": 147
+        },
+        {
+          "id": 18,
+          "name": "Start HAL_ERROR",
+          "line": 147
+        },
+        {
+          "id": 19,
+          "name": "Start HAL_BUSY",
+          "line": 147
+        },
+        {
+          "id": 20,
+          "name": "Start HAL_TIMEOUT",
+          "line": 147
+        },
+        {
+          "id": 21,
+          "name": "Abort无回调仍能Stop恢复",
+          "line": 147
+        },
+        {
+          "id": 22,
+          "name": "HAL Stop虚假成功仍核对DMA",
+          "line": 147
+        },
+        {
+          "id": 23,
+          "name": "HAL Stop超时但恢复硬件",
+          "line": 147
+        },
+        {
+          "id": 24,
+          "name": "HAL Stop错误但恢复硬件",
+          "line": 147
+        },
+        {
+          "id": 25,
+          "name": "DMA无法停下时超时并阻止Start",
+          "line": 147
+        },
+        {
+          "id": 26,
+          "name": "恢复DMA DeInit失败",
+          "line": 147
+        },
+        {
+          "id": 27,
+          "name": "恢复DMA Init失败",
+          "line": 147
+        },
+        {
+          "id": 28,
+          "name": "恢复DCMI DeInit失败",
+          "line": 147
+        },
+        {
+          "id": 29,
+          "name": "恢复DCMI Init失败",
+          "line": 147
+        },
+        {
+          "id": 30,
+          "name": "ABORT+Lock遗留恢复",
+          "line": 147
+        },
+        {
+          "id": 31,
+          "name": "Stop后迟到回调丢弃",
+          "line": 147
+        },
+        {
+          "id": 32,
+          "name": "NULL Take不消费",
+          "line": 147
+        },
+        {
+          "id": 33,
+          "name": "读清期间完成IRQ延后交付",
+          "line": 147
+        },
+        {
+          "id": 34,
+          "name": "读清期间新错误不丢失",
+          "line": 147
+        },
+        {
+          "id": 35,
+          "name": "PRIMASK=1保持及中断延后",
+          "line": 147
+        },
+        {
+          "id": 36,
+          "name": "未处理硬件错误覆盖FRAME",
+          "line": 147
+        },
+        {
+          "id": 37,
+          "name": "Stop保留已完成事件",
+          "line": 147
+        },
+        {
+          "id": 38,
+          "name": "控制接口重入BUSY",
+          "line": 147
+        },
+        {
+          "id": 39,
+          "name": "真实异步Abort完成IRQ",
+          "line": 147
+        },
+        {
+          "id": 40,
+          "name": "遗留DCMI Lock停止恢复",
+          "line": 147
+        },
+        {
+          "id": 41,
+          "name": "Stop等待Tick回绕",
+          "line": 147
+        },
+        {
+          "id": 42,
+          "name": "新Start清除旧完成",
+          "line": 147
+        },
+        {
+          "id": 43,
+          "name": "读出错误后Frame仍不变成功",
+          "line": 147
+        },
+        {
+          "id": 44,
+          "name": "非法Start不清事件",
+          "line": 147
+        },
+        {
+          "id": 45,
+          "name": "重复Stop不产生完成事件",
+          "line": 147
+        }
+      ]
+    },
+    {
+      "suite": "VideoConfig",
+      "baseline": {
+        "executed": 28,
+        "passed": 28,
+        "failed": 0,
+        "not_executed": 0
+      },
+      "current": {
+        "executed": 0,
+        "passed": 0,
+        "failed": 0,
+        "not_executed": 28
+      },
+      "note": "Historical API/fixture does not compile; no case counted as executed."
+    },
+    {
+      "suite": "OldBridge",
+      "baseline": {
+        "executed": 35,
+        "passed": 35,
+        "failed": 0,
+        "not_executed": 0
+      },
+      "current": {
+        "executed": 0,
+        "passed": 0,
+        "failed": 0,
+        "not_executed": 35
+      },
+      "note": "Historical API/fixture does not compile; no case counted as executed."
+    },
+    {
+      "suite": "Native01",
+      "baseline": {
+        "executed": 56,
+        "passed": 56,
+        "failed": 0,
+        "not_executed": 0
+      },
+      "current": {
+        "executed": 0,
+        "passed": 0,
+        "failed": 0,
+        "not_executed": 56
+      },
+      "note": "Historical API/fixture does not compile; no case counted as executed."
+    },
+    {
+      "suite": "Native01Usb",
+      "baseline": {
+        "executed": 15,
+        "passed": 15,
+        "failed": 0,
+        "not_executed": 0
+      },
+      "current": {
+        "executed": 0,
+        "passed": 0,
+        "failed": 0,
+        "not_executed": 15
+      },
+      "note": "Historical API/fixture does not compile; no case counted as executed."
+    },
+    {
+      "suite": "LegacyP0",
+      "baseline": {
+        "executed": 0,
+        "passed": 0,
+        "failed": 0,
+        "not_executed": 11
+      },
+      "current": {
+        "executed": 0,
+        "passed": 0,
+        "failed": 0,
+        "not_executed": 11
+      },
+      "note": "Historical API/fixture does not compile; no case counted as executed."
+    }
+  ],
+  "all_executed_failure_sets_identical": true,
+  "new_fixture_incompatibilities": [
+    "VideoConfig",
+    "OldBridge",
+    "Native01",
+    "Native01Usb"
+  ]
+}

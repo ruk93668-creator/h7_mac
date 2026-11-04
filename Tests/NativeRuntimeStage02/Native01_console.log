@@ -1,0 +1,12 @@
+Traceback (most recent call last):
+  File "D:\32\STM32H7\h7_mac\Tests\NativeRuntimeStage01\run_tests.py", line 30, in <module>
+    obj=HERE/(src.stem+'.o');run(a+['-c',src,'-o',obj]);objs.append(obj)
+                             ^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "D:\32\STM32H7\h7_mac\Tests\NativeRuntimeStage01\run_tests.py", line 24, in run
+    if r.returncode:raise RuntimeError(out)
+                    ^^^^^^^^^^^^^^^^^^^^^^^
+RuntimeError: "D:\32\STM32H7\h7_mac\Tests\NativeRuntimeStage01\../../CM7/Application/app_events.c", line 3: Error:  #5: cannot open source input file "camera_capture.h": No such file or directory
+  #include "camera_capture.h"
+                             ^
+D:\32\STM32H7\h7_mac\Tests\NativeRuntimeStage01\native_test.c: 0 warnings, 1 error
+

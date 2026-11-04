@@ -1,0 +1,87 @@
+{
+  "summary": {
+    "total": 10,
+    "passed": 10,
+    "failed": 0
+  },
+  "cases": [
+    {
+      "id": 0,
+      "pass": true,
+      "failure_line": 0,
+      "error": null,
+      "name": "NULL通知回调拒绝"
+    },
+    {
+      "id": 1,
+      "pass": true,
+      "failure_line": 0,
+      "error": null,
+      "name": "统计指针与未初始化保护"
+    },
+    {
+      "id": 2,
+      "pass": true,
+      "failure_line": 0,
+      "error": null,
+      "name": "重复绑定拒绝"
+    },
+    {
+      "id": 3,
+      "pass": true,
+      "failure_line": 0,
+      "error": null,
+      "name": "启动不伪造帧进度"
+    },
+    {
+      "id": 4,
+      "pass": true,
+      "failure_line": 0,
+      "error": null,
+      "name": "拒绝其他Media上下文"
+    },
+    {
+      "id": 5,
+      "pass": true,
+      "failure_line": 0,
+      "error": null,
+      "name": "轮换失败通知ERROR且不推进序号"
+    },
+    {
+      "id": 6,
+      "pass": true,
+      "failure_line": 0,
+      "error": null,
+      "name": "轮换成功通知及统计"
+    },
+    {
+      "id": 7,
+      "pass": true,
+      "failure_line": 0,
+      "error": null,
+      "name": "持有帧正常Stop为BUSY"
+    },
+    {
+      "id": 8,
+      "pass": true,
+      "failure_line": 0,
+      "error": null,
+      "name": "IN_USE期间丢帧计数"
+    },
+    {
+      "id": 9,
+      "pass": true,
+      "failure_line": 0,
+      "error": null,
+      "name": "统计临界区恢复PRIMASK"
+    }
+  ],
+  "hardware_verified": false,
+  "command": [
+    "C:\\Users\\29062\\AppData\\Local\\Programs\\Python\\Python311\\python.exe",
+    "D:\\32\\STM32H7\\h7_mac\\Tests\\NativeRuntimeStage02\\run_arm.py",
+    "phase02a",
+    "--count",
+    "10"
+  ]
+}

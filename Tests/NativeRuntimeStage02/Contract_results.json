@@ -1,0 +1,319 @@
+{
+  "summary": {
+    "total": 14,
+    "passed": 0,
+    "failed": 14
+  },
+  "source_changed": [],
+  "class_context_size": 208,
+  "cases": [
+    {
+      "id": 0,
+      "name": "初始Probe完整查询不授权",
+      "pass": false,
+      "assertions": 2,
+      "failed_line": 25,
+      "actual": 4294967292,
+      "expected": 0,
+      "error": null,
+      "ep1_transmit_trace": {
+        "fixture_ep1_tx": 0,
+        "class_ep1_tx": 0,
+        "irq_submission": 0,
+        "duplicate_sof": 0,
+        "class_sof_calls": 0
+      },
+      "packet_trace": {
+        "lengths": [],
+        "headers": [],
+        "sofs": []
+      }
+    },
+    {
+      "id": 1,
+      "name": "初始Commit短读1B",
+      "pass": false,
+      "assertions": 2,
+      "failed_line": 25,
+      "actual": 4294967292,
+      "expected": 0,
+      "error": null,
+      "ep1_transmit_trace": {
+        "fixture_ep1_tx": 0,
+        "class_ep1_tx": 0,
+        "irq_submission": 0,
+        "duplicate_sof": 0,
+        "class_sof_calls": 0
+      },
+      "packet_trace": {
+        "lengths": [],
+        "headers": [],
+        "sofs": []
+      }
+    },
+    {
+      "id": 2,
+      "name": "初始Commit完整查询",
+      "pass": false,
+      "assertions": 2,
+      "failed_line": 25,
+      "actual": 4294967292,
+      "expected": 0,
+      "error": null,
+      "ep1_transmit_trace": {
+        "fixture_ep1_tx": 0,
+        "class_ep1_tx": 0,
+        "irq_submission": 0,
+        "duplicate_sof": 0,
+        "class_sof_calls": 0
+      },
+      "packet_trace": {
+        "lengths": [],
+        "headers": [],
+        "sofs": []
+      }
+    },
+    {
+      "id": 3,
+      "name": "初始Probe短读",
+      "pass": false,
+      "assertions": 2,
+      "failed_line": 25,
+      "actual": 4294967292,
+      "expected": 0,
+      "error": null,
+      "ep1_transmit_trace": {
+        "fixture_ep1_tx": 0,
+        "class_ep1_tx": 0,
+        "irq_submission": 0,
+        "duplicate_sof": 0,
+        "class_sof_calls": 0
+      },
+      "packet_trace": {
+        "lengths": [],
+        "headers": [],
+        "sofs": []
+      }
+    },
+    {
+      "id": 4,
+      "name": "初始Probe超长上限截断",
+      "pass": false,
+      "assertions": 2,
+      "failed_line": 25,
+      "actual": 4294967292,
+      "expected": 0,
+      "error": null,
+      "ep1_transmit_trace": {
+        "fixture_ep1_tx": 0,
+        "class_ep1_tx": 0,
+        "irq_submission": 0,
+        "duplicate_sof": 0,
+        "class_sof_calls": 0
+      },
+      "packet_trace": {
+        "lengths": [],
+        "headers": [],
+        "sofs": []
+      }
+    },
+    {
+      "id": 5,
+      "name": "Windows先查询默认再协商开流",
+      "pass": false,
+      "assertions": 2,
+      "failed_line": 25,
+      "actual": 4294967292,
+      "expected": 0,
+      "error": null,
+      "ep1_transmit_trace": {
+        "fixture_ep1_tx": 0,
+        "class_ep1_tx": 0,
+        "irq_submission": 0,
+        "duplicate_sof": 0,
+        "class_sof_calls": 0
+      },
+      "packet_trace": {
+        "lengths": [],
+        "headers": [],
+        "sofs": []
+      }
+    },
+    {
+      "id": 6,
+      "name": "初始默认查询被其他SETUP打断",
+      "pass": false,
+      "assertions": 2,
+      "failed_line": 25,
+      "actual": 4294967292,
+      "expected": 0,
+      "error": null,
+      "ep1_transmit_trace": {
+        "fixture_ep1_tx": 0,
+        "class_ep1_tx": 0,
+        "irq_submission": 0,
+        "duplicate_sof": 0,
+        "class_sof_calls": 0
+      },
+      "packet_trace": {
+        "lengths": [],
+        "headers": [],
+        "sofs": []
+      }
+    },
+    {
+      "id": 7,
+      "name": "失败Probe返回默认但不授权Commit",
+      "pass": false,
+      "assertions": 2,
+      "failed_line": 25,
+      "actual": 4294967292,
+      "expected": 0,
+      "error": null,
+      "ep1_transmit_trace": {
+        "fixture_ep1_tx": 0,
+        "class_ep1_tx": 0,
+        "irq_submission": 0,
+        "duplicate_sof": 0,
+        "class_sof_calls": 0
+      },
+      "packet_trace": {
+        "lengths": [],
+        "headers": [],
+        "sofs": []
+      }
+    },
+    {
+      "id": 8,
+      "name": "取消Abort失败保留帧",
+      "pass": false,
+      "assertions": 2,
+      "failed_line": 25,
+      "actual": 4294967292,
+      "expected": 0,
+      "error": null,
+      "ep1_transmit_trace": {
+        "fixture_ep1_tx": 0,
+        "class_ep1_tx": 0,
+        "irq_submission": 0,
+        "duplicate_sof": 0,
+        "class_sof_calls": 0
+      },
+      "packet_trace": {
+        "lengths": [],
+        "headers": [],
+        "sofs": []
+      }
+    },
+    {
+      "id": 9,
+      "name": "Incomplete错误不能伪装完成",
+      "pass": false,
+      "assertions": 2,
+      "failed_line": 25,
+      "actual": 4294967292,
+      "expected": 0,
+      "error": null,
+      "ep1_transmit_trace": {
+        "fixture_ep1_tx": 0,
+        "class_ep1_tx": 0,
+        "irq_submission": 0,
+        "duplicate_sof": 0,
+        "class_sof_calls": 0
+      },
+      "packet_trace": {
+        "lengths": [],
+        "headers": [],
+        "sofs": []
+      }
+    },
+    {
+      "id": 10,
+      "name": "IRQ调用契约",
+      "pass": false,
+      "assertions": 3,
+      "failed_line": 19,
+      "actual": 4294967295,
+      "expected": 4294967292,
+      "error": null,
+      "ep1_transmit_trace": {
+        "fixture_ep1_tx": 0,
+        "class_ep1_tx": 0,
+        "irq_submission": 0,
+        "duplicate_sof": 0,
+        "class_sof_calls": 0
+      },
+      "packet_trace": {
+        "lengths": [],
+        "headers": [],
+        "sofs": []
+      }
+    },
+    {
+      "id": 11,
+      "name": "Class释放后查询输出不更新",
+      "pass": false,
+      "assertions": 2,
+      "failed_line": 25,
+      "actual": 4294967292,
+      "expected": 0,
+      "error": null,
+      "ep1_transmit_trace": {
+        "fixture_ep1_tx": 0,
+        "class_ep1_tx": 0,
+        "irq_submission": 0,
+        "duplicate_sof": 0,
+        "class_sof_calls": 0
+      },
+      "packet_trace": {
+        "lengths": [],
+        "headers": [],
+        "sofs": []
+      }
+    },
+    {
+      "id": 12,
+      "name": "Reset失败保留可查询所有权直到Stop成功",
+      "pass": false,
+      "assertions": 2,
+      "failed_line": 25,
+      "actual": 4294967292,
+      "expected": 0,
+      "error": null,
+      "ep1_transmit_trace": {
+        "fixture_ep1_tx": 0,
+        "class_ep1_tx": 0,
+        "irq_submission": 0,
+        "duplicate_sof": 0,
+        "class_sof_calls": 0
+      },
+      "packet_trace": {
+        "lengths": [],
+        "headers": [],
+        "sofs": []
+      }
+    },
+    {
+      "id": 13,
+      "name": "DeInit失败保留可查询所有权直到Stop成功",
+      "pass": false,
+      "assertions": 2,
+      "failed_line": 25,
+      "actual": 4294967292,
+      "expected": 0,
+      "error": null,
+      "ep1_transmit_trace": {
+        "fixture_ep1_tx": 0,
+        "class_ep1_tx": 0,
+        "irq_submission": 0,
+        "duplicate_sof": 0,
+        "class_sof_calls": 0
+      },
+      "packet_trace": {
+        "lengths": [],
+        "headers": [],
+        "sofs": []
+      }
+    }
+  ]
+}

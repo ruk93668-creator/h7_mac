@@ -23,4 +23,7 @@ SysResult_t App_EventsReleaseBoot(void);
 //阻塞等待当前任务的事件提示
 SysResult_t App_EventsWait(RuntimeEventTarget_t target, uint32_t timeout_ms, uint32_t *events);
 
+//检查当前执行者是否为目标任务
+bool App_EventsIsOwner(RuntimeEventTarget_t target);
+
 #endif

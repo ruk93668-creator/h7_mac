@@ -1,0 +1,303 @@
+[
+  {
+    "suite": "Streaming",
+    "command": [
+      "C:\\Users\\29062\\AppData\\Local\\Programs\\Python\\Python311\\python.exe",
+      "Tests/UvcStreaming/run_tests.py"
+    ],
+    "exit": 1,
+    "expected_historical": 36,
+    "summary": {
+      "total": 36,
+      "passed": 1,
+      "failed": 35
+    }
+  },
+  {
+    "suite": "Payload",
+    "command": [
+      "C:\\Users\\29062\\AppData\\Local\\Programs\\Python\\Python311\\python.exe",
+      "Tests/UvcPayload/run_tests.py"
+    ],
+    "exit": 1,
+    "expected_historical": 124,
+    "summary": {
+      "unique_cases": 62,
+      "executions": 124,
+      "passed": 122,
+      "failed": 2
+    }
+  },
+  {
+    "suite": "EP1",
+    "command": [
+      "C:\\Users\\29062\\AppData\\Local\\Programs\\Python\\Python311\\python.exe",
+      "Tests/UvcEp1Lifecycle/run_tests.py"
+    ],
+    "exit": 1,
+    "expected_historical": 45,
+    "summary": {
+      "total": 45,
+      "passed": 0,
+      "failed": 45
+    }
+  },
+  {
+    "suite": "Probe",
+    "command": [
+      "C:\\Users\\29062\\AppData\\Local\\Programs\\Python\\Python311\\python.exe",
+      "Tests/UvcProbeCommit/run_tests.py"
+    ],
+    "exit": 1,
+    "expected_historical": 89,
+    "summary": {
+      "total": 89,
+      "passed": 0,
+      "failed": 89
+    }
+  },
+  {
+    "suite": "Cancel",
+    "command": [
+      "C:\\Users\\29062\\AppData\\Local\\Programs\\Python\\Python311\\python.exe",
+      "Tests/UvcProbeCommit/run_cancellation_tests.py"
+    ],
+    "exit": 1,
+    "expected_historical": 39,
+    "summary": {
+      "total": 39,
+      "passed": 0,
+      "failed": 39
+    }
+  },
+  {
+    "suite": "Core",
+    "command": [
+      "C:\\Users\\29062\\AppData\\Local\\Programs\\Python\\Python311\\python.exe",
+      "Tests/UsbCoreDecoupling/run_tests.py"
+    ],
+    "exit": 1,
+    "expected_historical": 204,
+    "summary": {
+      "total": 204,
+      "passed": 201,
+      "failed": 3,
+      "assertions": 2947
+    }
+  },
+  {
+    "suite": "EP0_IRQ",
+    "command": [
+      "C:\\Users\\29062\\AppData\\Local\\Programs\\Python\\Python311\\python.exe",
+      "Tests/Ep0IrqRace/run_race.py"
+    ],
+    "exit": 0,
+    "expected_historical": 4,
+    "summary": {
+      "total": 4,
+      "passed": 4,
+      "failed": 0
+    }
+  },
+  {
+    "suite": "Lifecycle",
+    "command": [
+      "C:\\Users\\29062\\AppData\\Local\\Programs\\Python\\Python311\\python.exe",
+      "Tests/UvcLifecycle/run_tests.py"
+    ],
+    "exit": 1,
+    "expected_historical": 40,
+    "summary": {
+      "total": 40,
+      "passed": 34,
+      "failed": 6
+    }
+  },
+  {
+    "suite": "Descriptors",
+    "command": [
+      "C:\\Users\\29062\\AppData\\Local\\Programs\\Python\\Python311\\python.exe",
+      "Tests/UsbUvcDescriptors/run_tests.py"
+    ],
+    "exit": 0,
+    "expected_historical": 40,
+    "summary": {
+      "total": 40,
+      "passed": 40,
+      "failures": 0,
+      "errors": 0
+    }
+  },
+  {
+    "suite": "Strings",
+    "command": [
+      "C:\\Users\\29062\\AppData\\Local\\Programs\\Python\\Python311\\python.exe",
+      "Tests/UsbUvcDescriptors/run_string_tests.py"
+    ],
+    "exit": 0,
+    "expected_historical": 8,
+    "summary": {
+      "total": 8,
+      "passed": 8,
+      "failed": 0
+    }
+  },
+  {
+    "suite": "Contract",
+    "command": [
+      "C:\\Users\\29062\\AppData\\Local\\Programs\\Python\\Python311\\python.exe",
+      "Tests/UvcUsbCleanup/run_tests.py"
+    ],
+    "exit": 1,
+    "expected_historical": 14,
+    "summary": {
+      "total": 14,
+      "passed": 0,
+      "failed": 14
+    }
+  },
+  {
+    "suite": "CameraAppInit",
+    "command": [
+      "C:\\Users\\29062\\AppData\\Local\\Programs\\Python\\Python311\\python.exe",
+      "Tests/CameraAppInit/run_tests.py"
+    ],
+    "exit": 0,
+    "expected_historical": 13,
+    "summary": {
+      "total": 13,
+      "pass": 13,
+      "fail": 0
+    }
+  },
+  {
+    "suite": "CameraContext",
+    "command": [
+      "C:\\Users\\29062\\AppData\\Local\\Programs\\Python\\Python311\\python.exe",
+      "Tests/CameraContextRefactor/run_tests.py"
+    ],
+    "exit": 0,
+    "expected_historical": 72,
+    "summary": {
+      "total": 72,
+      "passed": 72,
+      "failed": 0,
+      "assertions": 1095
+    }
+  },
+  {
+    "suite": "CameraStream",
+    "command": [
+      "C:\\Users\\29062\\AppData\\Local\\Programs\\Python\\Python311\\python.exe",
+      "Tests/CameraStreamState/run_tests.py"
+    ],
+    "exit": 0,
+    "expected_historical": 75,
+    "summary": {
+      "total": 75,
+      "passed": 75,
+      "failed": 0,
+      "assertions": 934605
+    }
+  },
+  {
+    "suite": "BspMedia",
+    "command": [
+      "C:\\Users\\29062\\AppData\\Local\\Programs\\Python\\Python311\\python.exe",
+      "Tests/BspMediaContinuous/run_tests.py"
+    ],
+    "exit": 1,
+    "expected_historical": 108,
+    "summary": {
+      "total": 108,
+      "passed": 0,
+      "failed": 108,
+      "assertions": 10692,
+      "functional_total": 96,
+      "functional_passed": 0,
+      "risk_reproduced": 0
+    }
+  },
+  {
+    "suite": "DcmiReplace",
+    "command": [
+      "C:\\Users\\29062\\AppData\\Local\\Programs\\Python\\Python311\\python.exe",
+      "Tests/DcmiReplaceTarget/run_tests.py"
+    ],
+    "exit": 1,
+    "expected_historical": 133,
+    "summary": {
+      "total": 133,
+      "passed": 88,
+      "failed": 45,
+      "assertions": 5475
+    }
+  },
+  {
+    "suite": "VideoConfig",
+    "command": [
+      "C:\\Users\\29062\\AppData\\Local\\Programs\\Python\\Python311\\python.exe",
+      "Tests/VideoConfig/run_tests.py"
+    ],
+    "exit": 0,
+    "expected_historical": 28,
+    "summary": {
+      "total": 28,
+      "passed": 28,
+      "failed": 0
+    }
+  },
+  {
+    "suite": "OldBridge",
+    "command": [
+      "C:\\Users\\29062\\AppData\\Local\\Programs\\Python\\Python311\\python.exe",
+      "Tests/UvcBridge/run_tests.py"
+    ],
+    "exit": 0,
+    "expected_historical": 35,
+    "summary": {
+      "total": 35,
+      "pass": 35,
+      "fail": 0
+    }
+  },
+  {
+    "suite": "Native01",
+    "command": [
+      "C:\\Users\\29062\\AppData\\Local\\Programs\\Python\\Python311\\python.exe",
+      "Tests/NativeRuntimeStage01/run_tests.py"
+    ],
+    "exit": 0,
+    "expected_historical": 56,
+    "summary": {
+      "total": 56,
+      "passed": 56,
+      "failed": 0
+    }
+  },
+  {
+    "suite": "Native01Usb",
+    "command": [
+      "C:\\Users\\29062\\AppData\\Local\\Programs\\Python\\Python311\\python.exe",
+      "Tests/NativeRuntimeStage01/run_usb_control.py"
+    ],
+    "exit": 0,
+    "expected_historical": 15,
+    "summary": {
+      "total": 15,
+      "passed": 15,
+      "failed": 0
+    }
+  },
+  {
+    "suite": "LegacyP0",
+    "command": [
+      "C:\\Users\\29062\\AppData\\Local\\Programs\\Python\\Python311\\python.exe",
+      "Tests/FreeRtosP0/run_kernel_tests.py"
+    ],
+    "exit": 1,
+    "expected_historical": 11,
+    "not_executed": 11,
+    "reason": "o many arguments in function call\r\r\n      if(id==2){EQ(Platform_RtosStart(DummyRun),SYS_ERR_INVALID_STATE);EQ(uxTaskGetNumberOfTasks(),2);EQ(xTaskGetSchedulerState(),taskSCHEDULER_RUNNING);EQ(Platform_RtosStart(DummyRun),SYS_ERR_INVALID_STATE);EQ(uxTaskGetNumberOfTasks(),2);return 0;}\r\r\n                ^\r\r\n\"D:\\32\\STM32H7\\h7_mac\\tmp\\native_runtime_stage02\\baseline_4d463ba\\Tests\\FreeRtosP0\\kernel_test.c\", line 40: Error:  #140: too many arguments in function call\r\r\n      if(id==2){EQ(Platform_RtosStart(DummyRun),SYS_ERR_INVALID_STATE);EQ(uxTaskGetNumberOfTasks(),2);EQ(xTaskGetSchedulerState(),taskSCHEDULER_RUNNING);EQ(Platform_RtosStart(DummyRun),SYS_ERR_INVALID_STATE);EQ(uxTaskGetNumberOfTasks(),2);return 0;}\r\r\n                ^\r\r\n\"D:\\32\\STM32H7\\h7_mac\\tmp\\native_runtime_stage02\\baseline_4d463ba\\Tests\\FreeRtosP0\\kernel_test.c\", line 40: Error:  #140: too many arguments in function call\r\r\n      if(id==2){EQ(Platform_RtosStart(DummyRun),SYS_ERR_INVALID_STATE);EQ(uxTaskGetNumberOfTasks(),2);EQ(xTaskGetSchedulerState(),taskSCHEDULER_RUNNING);EQ(Platform_RtosStart(DummyRun),SYS_ERR_INVALID_STATE);EQ(uxTaskGetNumberOfTasks(),2);return 0;}\r\r\n                                                                                                                                                         ^\r\r\n\"D:\\32\\STM32H7\\h7_mac\\tmp\\native_runtime_stage02\\baseline_4d463ba\\Tests\\FreeRtosP0\\kernel_test.c\", line 40: Error:  #140: too many arguments in function call\r\r\n      if(id==2){EQ(Platform_RtosStart(DummyRun),SYS_ERR_INVALID_STATE);EQ(uxTaskGetNumberOfTasks(),2);EQ(xTaskGetSchedulerState(),taskSCHEDULER_RUNNING);EQ(Platform_RtosStart(DummyRun),SYS_ERR_INVALID_STATE);EQ(uxTaskGetNumberOfTasks(),2);return 0;}\r\r\n                                                                                                                                                         ^\r\r\nD:\\32\\STM32H7\\h7_mac\\tmp\\native_runtime_stage02\\baseline_4d463ba\\Tests\\FreeRtosP0\\kernel_test.c: 0 warnings, 8 errors\r\r\n\r\n"
+  }
+]

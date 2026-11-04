@@ -1,6 +1,14 @@
 #include "video_config.h"
 
-//保存唯一默认视频配置，本阶段使用USB TEST控制面
+#ifndef APP_VIDEO_TEST_MODE
+#define APP_VIDEO_TEST_MODE 0
+#endif
+
+#if APP_VIDEO_TEST_MODE != 0 && APP_VIDEO_TEST_MODE != 1
+#error APP_VIDEO_TEST_MODE_must_be_zero_or_one
+#endif
+
+//保存唯一默认视频配置，TEST构建只关闭视频链路
 static const VideoConfig_t s_default_config =
 {
     .camera =
@@ -9,7 +17,7 @@ static const VideoConfig_t s_default_config =
         .height = 120U,
         .format = CAMERA_PIXEL_FORMAT_YUV422
     },
-    .output = VIDEO_OUTPUT_USB_TEST,
+    .output = APP_VIDEO_TEST_MODE ? VIDEO_OUTPUT_USB_TEST : VIDEO_OUTPUT_USB_UVC,
     .output_fps = 25U
 };
 

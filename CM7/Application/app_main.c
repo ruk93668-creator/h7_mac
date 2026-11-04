@@ -2,12 +2,13 @@
 #include "framework_init.h"
 #include "usb_mode.h"
 
-//检查阶段01应用模式
+//检查原生运行时应用模式
 SysResult_t App_Init(void)
 {
 
-    //Initcall只接受TEST准备状态，不启动Camera采集或USB连接
-    return USB_Mode_GetMode() == USB_MODE_TEST ? SYS_OK : SYS_ERR_NOT_SUPPORTED;
+    //Initcall只校验准备结果，业务启停由Control命令协调
+    UsbMode_t mode = USB_Mode_GetMode();
+    return mode == USB_MODE_TEST || mode == USB_MODE_UVC ? SYS_OK : SYS_ERR_NOT_SUPPORTED;
 }
 
 FRAMEWORK_INIT_REGISTER(App_Init, INIT_LEVEL_APPLICATION);

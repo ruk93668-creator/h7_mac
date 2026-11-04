@@ -25,7 +25,7 @@ typedef void (*UsbDeviceEventCallback_t)(uint32_t events, void *context);
 //绑定USB状态通知接收端
 SysResult_t USB_Device_SetEventCallback(UsbDeviceEventCallback_t callback, void *context);
 
-//生命周期接口只允许主循环调用，操作未结束时重入返回BUSY
+//生命周期由初始化流程或UsbTask串行调用，操作未结束时重入返回BUSY
 
 //初始化通用USB Device环境
 SysResult_t USB_Device_Init(void);

@@ -347,3 +347,18 @@ SysResult_t USB_Mode_GetLastResult(void)
     //未初始化时返回状态错误；结果不构成任何图像缓冲区释放授权
     return s_usb_mode.initialized ? s_usb_mode.last_result : SYS_ERR_INVALID_STATE;
 }
+
+//停止当前模式并保留冷启动Class选择
+SysResult_t USB_Mode_Stop(void)
+{
+    SysResult_t result;
+
+    if (!s_usb_mode.initialized)
+        return SYS_ERR_INVALID_STATE;
+
+    //Core确认硬件和Class均已释放后，才允许回到可启动状态
+    result = USB_Device_Stop();
+    s_usb_mode.last_result = result;
+    s_usb_mode.state = result == SYS_OK ? USB_MODE_STATE_IDLE : USB_MODE_STATE_ERROR;
+    return result;
+}

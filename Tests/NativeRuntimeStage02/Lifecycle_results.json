@@ -1,0 +1,410 @@
+{
+  "summary": {
+    "total": 40,
+    "passed": 34,
+    "failed": 6
+  },
+  "source_changed": [],
+  "cases": [
+    {
+      "id": 0,
+      "name": "Init空句柄",
+      "pass": true,
+      "assertions": 2,
+      "failed_line": 0,
+      "actual": 0,
+      "expected": 0,
+      "error": null
+    },
+    {
+      "id": 1,
+      "name": "Init配置0",
+      "pass": true,
+      "assertions": 3,
+      "failed_line": 0,
+      "actual": 0,
+      "expected": 0,
+      "error": null
+    },
+    {
+      "id": 2,
+      "name": "Init配置2",
+      "pass": true,
+      "assertions": 3,
+      "failed_line": 0,
+      "actual": 0,
+      "expected": 0,
+      "error": null
+    },
+    {
+      "id": 3,
+      "name": "重复Init保持原上下文",
+      "pass": true,
+      "assertions": 4,
+      "failed_line": 0,
+      "actual": 0,
+      "expected": 0,
+      "error": null
+    },
+    {
+      "id": 4,
+      "name": "固定池耗尽",
+      "pass": true,
+      "assertions": 5,
+      "failed_line": 0,
+      "actual": 0,
+      "expected": 0,
+      "error": null
+    },
+    {
+      "id": 5,
+      "name": "完整清零与Alt0",
+      "pass": true,
+      "assertions": 214,
+      "failed_line": 0,
+      "actual": 0,
+      "expected": 0,
+      "error": null
+    },
+    {
+      "id": 6,
+      "name": "DeInit空句柄",
+      "pass": true,
+      "assertions": 2,
+      "failed_line": 0,
+      "actual": 0,
+      "expected": 0,
+      "error": null
+    },
+    {
+      "id": 7,
+      "name": "空上下文DeInit",
+      "pass": true,
+      "assertions": 2,
+      "failed_line": 0,
+      "actual": 0,
+      "expected": 0,
+      "error": null
+    },
+    {
+      "id": 8,
+      "name": "正常及重复DeInit",
+      "pass": true,
+      "assertions": 5,
+      "failed_line": 0,
+      "actual": 0,
+      "expected": 0,
+      "error": null
+    },
+    {
+      "id": 9,
+      "name": "Core延迟归还",
+      "pass": true,
+      "assertions": 5,
+      "failed_line": 0,
+      "actual": 0,
+      "expected": 0,
+      "error": null
+    },
+    {
+      "id": 10,
+      "name": "释放后可重新Init",
+      "pass": true,
+      "assertions": 4,
+      "failed_line": 0,
+      "actual": 0,
+      "expected": 0,
+      "error": null
+    },
+    {
+      "id": 11,
+      "name": "Class操作表14项映射",
+      "pass": false,
+      "assertions": 15,
+      "failed_line": 82,
+      "actual": 0,
+      "expected": 1,
+      "error": null
+    },
+    {
+      "id": 12,
+      "name": "Setup空句柄",
+      "pass": true,
+      "assertions": 2,
+      "failed_line": 0,
+      "actual": 0,
+      "expected": 0,
+      "error": null
+    },
+    {
+      "id": 13,
+      "name": "Setup空请求",
+      "pass": true,
+      "assertions": 2,
+      "failed_line": 0,
+      "actual": 0,
+      "expected": 0,
+      "error": null
+    },
+    {
+      "id": 14,
+      "name": "Setup空上下文",
+      "pass": true,
+      "assertions": 1,
+      "failed_line": 0,
+      "actual": 0,
+      "expected": 0,
+      "error": null
+    },
+    {
+      "id": 15,
+      "name": "Setup未配置上下文",
+      "pass": true,
+      "assertions": 5,
+      "failed_line": 0,
+      "actual": 0,
+      "expected": 0,
+      "error": null
+    },
+    {
+      "id": 16,
+      "name": "Setup设备未配置",
+      "pass": true,
+      "assertions": 5,
+      "failed_line": 0,
+      "actual": 0,
+      "expected": 0,
+      "error": null
+    },
+    {
+      "id": 17,
+      "name": "拒绝Class请求",
+      "pass": true,
+      "assertions": 5,
+      "failed_line": 0,
+      "actual": 0,
+      "expected": 0,
+      "error": null
+    },
+    {
+      "id": 18,
+      "name": "拒绝Vendor请求",
+      "pass": true,
+      "assertions": 5,
+      "failed_line": 0,
+      "actual": 0,
+      "expected": 0,
+      "error": null
+    },
+    {
+      "id": 19,
+      "name": "拒绝Device对象",
+      "pass": true,
+      "assertions": 5,
+      "failed_line": 0,
+      "actual": 0,
+      "expected": 0,
+      "error": null
+    },
+    {
+      "id": 20,
+      "name": "拒绝Endpoint对象",
+      "pass": true,
+      "assertions": 5,
+      "failed_line": 0,
+      "actual": 0,
+      "expected": 0,
+      "error": null
+    },
+    {
+      "id": 21,
+      "name": "拒绝保留对象位",
+      "pass": true,
+      "assertions": 5,
+      "failed_line": 0,
+      "actual": 0,
+      "expected": 0,
+      "error": null
+    },
+    {
+      "id": 22,
+      "name": "拒绝接口2",
+      "pass": true,
+      "assertions": 5,
+      "failed_line": 0,
+      "actual": 0,
+      "expected": 0,
+      "error": null
+    },
+    {
+      "id": 23,
+      "name": "拒绝接口高字节",
+      "pass": true,
+      "assertions": 5,
+      "failed_line": 0,
+      "actual": 0,
+      "expected": 0,
+      "error": null
+    },
+    {
+      "id": 24,
+      "name": "GET方向错误",
+      "pass": true,
+      "assertions": 5,
+      "failed_line": 0,
+      "actual": 0,
+      "expected": 0,
+      "error": null
+    },
+    {
+      "id": 25,
+      "name": "GET非零Value",
+      "pass": true,
+      "assertions": 5,
+      "failed_line": 0,
+      "actual": 0,
+      "expected": 0,
+      "error": null
+    },
+    {
+      "id": 26,
+      "name": "GET零长度",
+      "pass": true,
+      "assertions": 5,
+      "failed_line": 0,
+      "actual": 0,
+      "expected": 0,
+      "error": null
+    },
+    {
+      "id": 27,
+      "name": "GET长度2",
+      "pass": true,
+      "assertions": 5,
+      "failed_line": 0,
+      "actual": 0,
+      "expected": 0,
+      "error": null
+    },
+    {
+      "id": 28,
+      "name": "SET Alt1",
+      "pass": true,
+      "assertions": 5,
+      "failed_line": 0,
+      "actual": 0,
+      "expected": 0,
+      "error": null
+    },
+    {
+      "id": 29,
+      "name": "SET Alt高字节",
+      "pass": true,
+      "assertions": 5,
+      "failed_line": 0,
+      "actual": 0,
+      "expected": 0,
+      "error": null
+    },
+    {
+      "id": 30,
+      "name": "SET方向错误",
+      "pass": true,
+      "assertions": 5,
+      "failed_line": 0,
+      "actual": 0,
+      "expected": 0,
+      "error": null
+    },
+    {
+      "id": 31,
+      "name": "SET非零长度",
+      "pass": true,
+      "assertions": 5,
+      "failed_line": 0,
+      "actual": 0,
+      "expected": 0,
+      "error": null
+    },
+    {
+      "id": 32,
+      "name": "拒绝其他标准请求",
+      "pass": true,
+      "assertions": 5,
+      "failed_line": 0,
+      "actual": 0,
+      "expected": 0,
+      "error": null
+    },
+    {
+      "id": 33,
+      "name": "SET接口0由Core负责状态",
+      "pass": true,
+      "assertions": 9,
+      "failed_line": 0,
+      "actual": 0,
+      "expected": 0,
+      "error": null
+    },
+    {
+      "id": 34,
+      "name": "SET接口1由Core负责状态",
+      "pass": true,
+      "assertions": 9,
+      "failed_line": 0,
+      "actual": 0,
+      "expected": 0,
+      "error": null
+    },
+    {
+      "id": 35,
+      "name": "Core GET接口0",
+      "pass": false,
+      "assertions": 2,
+      "failed_line": 112,
+      "actual": 4294967295,
+      "expected": 0,
+      "error": null
+    },
+    {
+      "id": 36,
+      "name": "Core GET接口1",
+      "pass": false,
+      "assertions": 2,
+      "failed_line": 112,
+      "actual": 4294967295,
+      "expected": 0,
+      "error": null
+    },
+    {
+      "id": 37,
+      "name": "Core SET接口0单次状态",
+      "pass": false,
+      "assertions": 2,
+      "failed_line": 112,
+      "actual": 4294967295,
+      "expected": 0,
+      "error": null
+    },
+    {
+      "id": 38,
+      "name": "Core SET接口1单次状态",
+      "pass": false,
+      "assertions": 2,
+      "failed_line": 112,
+      "actual": 4294967295,
+      "expected": 0,
+      "error": null
+    },
+    {
+      "id": 39,
+      "name": "Core拒绝Alt1且不开EP1",
+      "pass": false,
+      "assertions": 2,
+      "failed_line": 112,
+      "actual": 4294967295,
+      "expected": 0,
+      "error": null
+    }
+  ]
+}

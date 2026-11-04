@@ -1,0 +1,41 @@
+{
+  "production_files": [
+    "CM7/Application/Tasks/camera_task.c",
+    "CM7/Application/Tasks/camera_task.h",
+    "CM7/Application/Tasks/control_task.c",
+    "CM7/Application/Tasks/control_task.h",
+    "CM7/Application/Tasks/usb_task.c",
+    "CM7/Application/Tasks/usb_task.h",
+    "CM7/Application/app_events.c",
+    "CM7/Application/app_events.h",
+    "CM7/Application/app_main.c",
+    "CM7/Application/app_main.h",
+    "CM7/Application/app_tasks.c",
+    "CM7/Application/app_uvc_bridge.c",
+    "CM7/Application/app_uvc_bridge.h",
+    "CM7/Application/video_config.c",
+    "CM7/BSP/bsp_dcmi.c",
+    "CM7/BSP/bsp_dcmi.h",
+    "CM7/Media/Inc/camera_capture.h",
+    "CM7/Media/Src/camera_capture.c",
+    "CM7/Platform/usb_device.c",
+    "CM7/Platform/usb_device.h",
+    "CM7/Service/usb_mode.c",
+    "CM7/Service/usb_mode.h",
+    "CM7/Service/usb_uvc.h",
+    "CM7/Service/usb_uvc_class.c",
+    "CM7/Application/app_messages.c",
+    "CM7/Application/app_messages.h",
+    "MDK-ARM/h7_mac.uvprojx"
+  ],
+  "production_file_count": 27,
+  "excluded_user_changes": [
+    "CM7/Service/usb_uvc_desc.h",
+    "MDK-ARM/h7_mac.uvoptx",
+    "MDK-ARM/h7_mac.uvprojx: pre-existing optimization/group settings"
+  ],
+  "tests_and_docs": [
+    "Tests/NativeRuntimeStage02/",
+    "Docs/Architecture/CM7_FreeRTOS_Native_Runtime_阶段02实施与验收.md"
+  ]
+}

@@ -1,0 +1,40 @@
+Probe GET_CUR被设备描述符打断不得授权Commit FAIL (28, 2, 4294967292, 0) None
+旧Probe SET_CUR回调不能处理设备GET_DESCRIPTOR FAIL (28, 2, 4294967292, 0) None
+旧Commit SET_CUR不能由其他完成授权 FAIL (28, 2, 4294967292, 0) None
+旧SET_CUR被设备OUT SETUP取消 FAIL (28, 2, 4294967292, 0) None
+旧OUT中断不污染描述符IN FAIL (28, 2, 4294967292, 0) None
+正常Probe GET_CUR到Commit FAIL (28, 2, 4294967292, 0) None
+VC GET_STATUS两字节 FAIL (28, 2, 4294967292, 0) None
+VS GET_STATUS两字节 FAIL (28, 2, 4294967292, 0) None
+持久GET_STATUS响应与重复请求 FAIL (28, 2, 4294967292, 0) None
+GET_STATUS非法字段0 FAIL (28, 2, 4294967292, 0) None
+GET_STATUS非法字段1 FAIL (28, 2, 4294967292, 0) None
+GET_STATUS非法字段2 FAIL (28, 2, 4294967292, 0) None
+GET_STATUS非法字段3 FAIL (28, 2, 4294967292, 0) None
+GET_STATUS非法字段4 FAIL (28, 2, 4294967292, 0) None
+GET_STATUS非法字段5 FAIL (28, 2, 4294967292, 0) None
+GET_STATUS非法字段6 FAIL (28, 2, 4294967292, 0) None
+GET_STATUS非法字段7 FAIL (28, 2, 4294967292, 0) None
+GET_STATUS非法字段8 FAIL (28, 2, 4294967292, 0) None
+GET_STATUS非法字段9 FAIL (28, 2, 4294967292, 0) None
+GET_STATUS非法字段10 FAIL (28, 2, 4294967292, 0) None
+GET_STATUS非法字段11 FAIL (28, 2, 4294967292, 0) None
+STALL后接口GET_STATUS恢复 FAIL (28, 2, 4294967292, 0) None
+STALL后设备GET_DESCRIPTOR恢复 FAIL (28, 2, 4294967292, 0) None
+TxSent当前事务字段校验0 FAIL (28, 2, 4294967292, 0) None
+TxSent当前事务字段校验1 FAIL (28, 2, 4294967292, 0) None
+TxSent当前事务字段校验2 FAIL (28, 2, 4294967292, 0) None
+TxSent当前事务字段校验3 FAIL (28, 2, 4294967292, 0) None
+TxSent当前事务字段校验4 FAIL (28, 2, 4294967292, 0) None
+TxSent当前事务字段校验5 FAIL (28, 2, 4294967292, 0) None
+TxSent当前事务字段校验6 FAIL (28, 2, 4294967292, 0) None
+TxSent当前事务字段校验7 FAIL (28, 2, 4294967292, 0) None
+RxReady当前事务字段校验0 FAIL (28, 2, 4294967292, 0) None
+RxReady当前事务字段校验1 FAIL (28, 2, 4294967292, 0) None
+RxReady当前事务字段校验2 FAIL (28, 2, 4294967292, 0) None
+RxReady当前事务字段校验3 FAIL (28, 2, 4294967292, 0) None
+RxReady当前事务字段校验4 FAIL (28, 2, 4294967292, 0) None
+RxReady当前事务字段校验5 FAIL (28, 2, 4294967292, 0) None
+RxReady当前事务字段校验6 FAIL (28, 2, 4294967292, 0) None
+RxReady当前事务字段校验7 FAIL (28, 2, 4294967292, 0) None
+{'total': 39, 'passed': 0, 'failed': 39} source_changed []

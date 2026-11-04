@@ -21,6 +21,19 @@ typedef struct
 
     //最近一次任务操作结果
     SysResult_t result;
+
+    //任务自身的运行阶段
+    uint32_t state;
+
+    //最近一次接收的控制命令编号
+    uint32_t command_id;
+
+    //当前采集代次内的完整帧和丢帧计数
+    uint32_t captured_frames;
+    uint32_t dropped_frames;
+
+    //设备侧完整采集帧率，单位千分之一FPS，非配置目标值
+    uint32_t measured_fps_milli;
 } CameraTaskDebug_t;
 
 //提供Camera任务的调试状态

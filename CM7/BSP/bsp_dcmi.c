@@ -4,10 +4,17 @@
 #include "stm32h7xx_hal.h"
 #include <stdbool.h>
 
+//保存Application提供的异常唤醒函数，不依赖RTOS
+static BspDcmiEventCallback_t s_dcmi_event_callback;
+
+//保存异常通知的静态接收上下文
+static void *s_dcmi_event_context;
+
 //沿用V0测试工程优先级，CM7 SysTick优先级为15
 #define DCMI_IRQ_PRIORITY 5U
 #define DCMI_DMA_IRQ_PRIORITY 5U
 #define DCMI_STOP_TIMEOUT_MS 10U
+
 //地址切换前后至少保留32个Word，实际时序仍需实板验收
 #define DCMI_REPLACE_GUARD_WORDS 32U
 #define DCMI_ALL_INTERRUPTS (DCMI_IT_FRAME | DCMI_IT_OVR | DCMI_IT_ERR | DCMI_IT_VSYNC | DCMI_IT_LINE)
@@ -22,6 +29,7 @@ typedef enum
 
 typedef enum
 {
+
 	//连续采集运行状态
     BSP_DCMI_STREAM_STOPPED = 0,
     BSP_DCMI_STREAM_STARTING,
@@ -31,8 +39,10 @@ typedef enum
 
 typedef struct
 {
+
     //当前采集模式：未采集、单帧或连续
     BspDcmiMode_t mode;
+
     //连续采集的运行状态
     BspDcmiStreamState_t state;
 
@@ -41,6 +51,7 @@ typedef struct
 
     //完整帧确认后调用的上层回调
     BspDcmiFrameCallback_t callback;
+
     //传给回调的上层私有对象指针，BSP不解析其内容
     void *context;
 
@@ -62,6 +73,7 @@ static BspDcmiStream_t s_stream =
 
 typedef struct
 {
+
     //是否存在尚未配对的DMA完成事件
     bool tc_pending;
 
@@ -78,6 +90,7 @@ typedef struct
 	bool replace_allowed;
 
 } DcmiFrameSync_t;
+
 //DMA TC + DCMI FRAME 配对状态机
 static DcmiFrameSync_t s_frame_sync;
 
@@ -96,18 +109,25 @@ static bool s_dcmi_ready;
 //ISR只锁存事件，主循环负责停止和恢复
 //待主循环读取的完成或错误事件
 static volatile uint32_t s_event_flags;
+
 //待交付事件的结果，保留首次错误
 static volatile SysResult_t s_event_result;
+
 //累积DCMI具体错误位
 static volatile uint32_t s_event_dcmi_error;
+
 //累积DMA具体错误位
 static volatile uint32_t s_event_dma_error;
+
 //当前是否正在等待整帧采集完成
 static volatile bool s_capture_active;
+
 //是否接收采集回调，Stop后忽略迟到回调
 static volatile bool s_accept_events;
+
 //出错后要求先Stop恢复，再允许启动
 static volatile bool s_stop_required;
+
 //Start或Stop正在执行，防止控制流程重入
 static bool s_control_busy;
 
@@ -162,13 +182,17 @@ void BSP_DCMI_EarlyInit(void)
 
 	//V0 D0、D1
 	Dcmi_ConfigPin(GPIOC, GPIO_PIN_6 | GPIO_PIN_7);
+
 	//V0 D2、D3
 	Dcmi_ConfigPin(GPIOG, GPIO_PIN_10);
 	Dcmi_ConfigPin(GPIOH, GPIO_PIN_12);
+
 	//V0 D4、D6、D7
 	Dcmi_ConfigPin(GPIOE, GPIO_PIN_4 | GPIO_PIN_5 | GPIO_PIN_6);
+
 	//V0 D5、VSYNC，提前配置以避开CM4的PB10/PB11初始化
 	Dcmi_ConfigPin(GPIOB, GPIO_PIN_6 | GPIO_PIN_7);
+
 	//V0 HSYNC、PCLK
 	Dcmi_ConfigPin(GPIOA, GPIO_PIN_4 | GPIO_PIN_6);
 
@@ -185,7 +209,22 @@ void HAL_DCMI_MspInit(DCMI_HandleTypeDef *hdcmi)
 	__HAL_RCC_DCMI_CLK_ENABLE();
 }
 
+//绑定静态采集异常通知接收端
+SysResult_t BSP_DCMI_SetEventCallback(BspDcmiEventCallback_t callback, void *context)
+{
+    if (callback == NULL)
+        return SYS_ERR_INVALID_ARG;
+    if (__get_IPSR() != 0U || s_dcmi_ready || s_capture_active ||
+        s_control_busy || s_dcmi_event_callback != NULL)
+        return SYS_ERR_INVALID_STATE;
 
+    //在采集前绑定一次，不改变已有帧回调和IRQ顺序
+    s_dcmi_event_context = context;
+    s_dcmi_event_callback = callback;
+    return SYS_OK;
+}
+
+//初始化DCMI与DMA硬件环境
 SysResult_t BSP_DCMI_Init(void)
 {
 	HAL_StatusTypeDef status;
@@ -208,28 +247,40 @@ SysResult_t BSP_DCMI_Init(void)
 	//外设到内存，32位传输，普通模式，不启动Stream
 	//选择DMA1的Stream0
 	s_dcmi_dma.Instance = DMA1_Stream0;
+
 	//选择DCMI请求源，由DMAMUX路由到该Stream
 	s_dcmi_dma.Init.Request = DMA_REQUEST_DCMI;
+
 	//数据从DCMI外设搬运到内存
 	s_dcmi_dma.Init.Direction = DMA_PERIPH_TO_MEMORY;
+
 	//外设地址固定，始终读取DCMI数据寄存器
 	s_dcmi_dma.Init.PeriphInc = DMA_PINC_DISABLE;
+
 	//内存地址递增，连续保存接收数据
 	s_dcmi_dma.Init.MemInc = DMA_MINC_ENABLE;
+
 	//每次从外设读取32位数据
 	s_dcmi_dma.Init.PeriphDataAlignment = DMA_PDATAALIGN_WORD;
+
 	//每次向内存写入32位数据
 	s_dcmi_dma.Init.MemDataAlignment = DMA_MDATAALIGN_WORD;
+
 	//普通模式，完成指定长度后停止，不循环传输
 	s_dcmi_dma.Init.Mode = DMA_NORMAL;
+
 	//设置DMA硬件仲裁优先级为高，与NVIC优先级独立
 	s_dcmi_dma.Init.Priority = DMA_PRIORITY_HIGH;
+
 	//启用DMA内部FIFO，缓冲DCMI到SDRAM的数据传输
 	s_dcmi_dma.Init.FIFOMode = DMA_FIFOMODE_ENABLE;
+
 	//FIFO阈值设为满，先保持原有单次Burst配置
 	s_dcmi_dma.Init.FIFOThreshold = DMA_FIFO_THRESHOLD_FULL;
+
 	//内存端每次突发写入4个Word，提高FIFO排空效率
 	s_dcmi_dma.Init.MemBurst = DMA_MBURST_INC4;	
+
 	//外设侧使用单次传输，不使用突发传输
 	s_dcmi_dma.Init.PeriphBurst = DMA_PBURST_SINGLE;
 	status = HAL_DMA_Init(&s_dcmi_dma);
@@ -255,6 +306,7 @@ SysResult_t BSP_DCMI_Init(void)
 	status = HAL_DCMI_Init(&s_dcmi);
 	if ( status != HAL_OK)
 	{
+
 		//失败不开放NVIC，释放本次DMA初始化
 		if ( HAL_DMA_DeInit(&s_dcmi_dma) != HAL_OK)
 			return SYS_ERR_IO;
@@ -275,7 +327,6 @@ SysResult_t BSP_DCMI_Init(void)
 	return SYS_OK;
 }
 
-
 SysResult_t BSP_DCMI_StartSnapshot(
 	uint32_t *buffer,
 	uint32_t word_count
@@ -288,13 +339,16 @@ SysResult_t BSP_DCMI_StartSnapshot(
 	//连续模式互斥
 	if ( s_stream.mode != BSP_DCMI_MODE_NONE)
 		return SYS_ERR_BUSY;
+
 	//检查缓冲区、4字节对齐和DMA传输字数
 	if ( buffer == NULL || ((uint32_t)buffer & 3U) != 0U ||
 		word_count == 0U || word_count > 0xFFFFU)
 		return SYS_ERR_INVALID_ARG;
+
 	//防止缓冲区末地址超出32位地址范围
 	if ( (uint32_t)buffer > 0xFFFFFFFFUL - (word_count * 4U - 1U))
 		return SYS_ERR_INVALID_ARG;
+
 	//必须已初始化，在主循环且全局中断开启时调用
 	if ( !s_dcmi_ready || __get_IPSR() != 0U || __get_PRIMASK() != 0U)
 		return SYS_ERR_INVALID_STATE;
@@ -313,6 +367,7 @@ SysResult_t BSP_DCMI_StartSnapshot(
 		__set_PRIMASK(primask);
 		return SYS_ERR_INVALID_STATE;
 	}
+
 	//控制流程、采集硬件和HAL句柄都空闲才允许启动
 	if ( s_control_busy || s_capture_active ||
 		(DMA1_Stream0->CR & DMA_SxCR_EN) != 0U ||
@@ -328,6 +383,7 @@ SysResult_t BSP_DCMI_StartSnapshot(
 	//占用控制流程，暂不接收采集回调
 	s_control_busy = true;
 	s_accept_events = false;
+
 	//关闭DCMI及其中断，清除DCMI、DMA和NVIC挂起标志
 	__HAL_DCMI_DISABLE_IT(&s_dcmi, DCMI_ALL_INTERRUPTS);
 	__HAL_DCMI_DISABLE(&s_dcmi);
@@ -350,6 +406,7 @@ SysResult_t BSP_DCMI_StartSnapshot(
 	result = Dcmi_HalResult(status);
 	if ( result != SYS_OK)
 	{
+
 		//启动失败也可能已使能DCMI，停止数据源并要求显式Stop
 		DCMI->CR &= ~DCMI_CR_CAPTURE;
 		__HAL_DCMI_DISABLE(&s_dcmi);
@@ -601,6 +658,7 @@ SysResult_t BSP_DCMI_Stop(void)
 	{
 		__HAL_DCMI_DISABLE_IT(&s_dcmi, DCMI_ALL_INTERRUPTS);
 		Dcmi_ClearPending();
+
 		//硬件和HAL状态已恢复，保留已锁存事件供上层读取
 		s_stop_required = false;
 		
@@ -619,6 +677,7 @@ SysResult_t BSP_DCMI_Stop(void)
 	}
 	else
 	{
+
 		//保留连续采集故障状态，允许再次尝试Stop
 		if ( s_stream.mode == BSP_DCMI_MODE_CONTINUOUS)
 		{
@@ -643,6 +702,7 @@ bool BSP_DCMI_TakeEvents(BspDcmiEvents_t *events)
 
 	primask = __get_PRIMASK();
 	__disable_irq();
+
 	//完成交付前再检查尚未处理的硬件错误，错误优先
 	if ( s_accept_events && (s_event_flags & BSP_DCMI_EVENT_FRAME) != 0U)
 		Dcmi_CheckErrors();
@@ -722,6 +782,7 @@ SysResult_t BSP_DCMI_ReplaceTarget(
 	//按完成目标选择CT位、地址寄存器及HAL更新参数
 	if ( completed_target == BSP_DCMI_TARGET_M0)
 	{
+
 		//替换M0，使用M1地址检查缓冲区重叠
 		target_bit = 0U;
 		target_address = &DMA1_Stream0->M0AR;
@@ -730,6 +791,7 @@ SysResult_t BSP_DCMI_ReplaceTarget(
 	}
 	else
 	{
+
 		//替换M1，使用M0地址检查缓冲区重叠
 		target_bit = DMA_SxCR_CT;
 		target_address = &DMA1_Stream0->M1AR;
@@ -821,6 +883,7 @@ SysResult_t BSP_DCMI_ReplaceTarget(
 	return SYS_OK;
 
 replace_failed:
+
 	//写入结果不确定时不回滚地址，由主循环Stop恢复
 	s_frame_sync.replace_allowed = false;
 	Dcmi_RecordError(result);
@@ -849,6 +912,7 @@ void HAL_DCMI_FrameEventCallback(DCMI_HandleTypeDef *hdcmi)
 		
 		if (s_frame_sync.frame_pending)
 		{
+
 			//上一帧的FRAME事件尚未完成配对，又收到FRAME
 			Dcmi_RecordError(SYS_ERR_PROTOCOL);
 			return;
@@ -864,6 +928,7 @@ void HAL_DCMI_FrameEventCallback(DCMI_HandleTypeDef *hdcmi)
         __HAL_DCMI_ENABLE_IT(hdcmi, DCMI_IT_FRAME);
         return;
     }else{
+
 		//Snapshot完整帧判断
 		if ( hdcmi != &s_dcmi || !s_accept_events || !s_capture_active || s_stop_required)
 			return;
@@ -902,12 +967,14 @@ static void Dcmi_StreamM0Complete(DMA_HandleTypeDef *hdma)
 		Dcmi_RecordError(SYS_ERR_PROTOCOL);
 		return;
 	}
+
 	//检查是否已有未配对 TC
 	if (s_frame_sync.tc_pending)
 	{
 		Dcmi_RecordError(SYS_ERR_PROTOCOL);
 		return;
 	}
+
 	//记录 M0 完成事件
 	s_frame_sync.completed_target = BSP_DCMI_TARGET_M0;
 	s_frame_sync.tc_pending = true;
@@ -934,12 +1001,14 @@ static void Dcmi_StreamM1Complete(DMA_HandleTypeDef *hdma)
 		Dcmi_RecordError(SYS_ERR_PROTOCOL);
 		return;
 	}
+
 	//检查是否已有未配对 TC
 	if (s_frame_sync.tc_pending)
 	{
 		Dcmi_RecordError(SYS_ERR_PROTOCOL);
 		return;
 	}
+
 	//记录 M1 完成事件
 	s_frame_sync.completed_target = BSP_DCMI_TARGET_M1;
 	s_frame_sync.tc_pending = true;
@@ -975,6 +1044,7 @@ static void Dcmi_StreamDmaError(DMA_HandleTypeDef *hdma)
 
 void DCMI_IRQHandler(void)
 {
+
 	//HAL异步Abort不保证立即回调，先记录当前错误再进入HAL
 	if ( s_accept_events)
 		Dcmi_CheckErrors();
@@ -1077,6 +1147,7 @@ static SysResult_t Dcmi_HalResult(HAL_StatusTypeDef status)
 //仅在临界区、IRQ或已屏蔽两个IRQ时调用
 static void Dcmi_RecordError(SysResult_t result)
 {
+
 	//连续采集发生错误时同步锁存Stream故障
 	if (s_stream.mode == BSP_DCMI_MODE_CONTINUOUS)
 	{
@@ -1091,6 +1162,10 @@ static void Dcmi_RecordError(SysResult_t result)
 	if ( s_event_result == SYS_OK)
 		s_event_result = result;
 	s_stop_required = true;
+
+    //错误状态已经锁存，通知CameraTask稍后处理，ISR不执行Stop
+    if (s_dcmi_event_callback != NULL)
+        s_dcmi_event_callback(BSP_DCMI_NOTIFY_ERROR, s_dcmi_event_context);
 }
 
 //捕获尚未进入HAL回调的错误，防止误交付完成事件
@@ -1124,6 +1199,7 @@ static bool Dcmi_CheckErrors(void)
 
 static void Dcmi_ClearPending(void)
 {
+
 	//清除DCMI帧、溢出、同步错误、场同步和行标志
 	__HAL_DCMI_CLEAR_FLAG(&s_dcmi, DCMI_FLAG_FRAMERI | DCMI_FLAG_OVRRI |
 		DCMI_FLAG_ERRRI | DCMI_FLAG_VSYNCRI | DCMI_FLAG_LINERI);
@@ -1161,16 +1237,20 @@ static SysResult_t Dcmi_RecoverHal(void)
 	status = HAL_DMA_DeInit(&s_dcmi_dma);
 	if ( status != HAL_OK)
 		return Dcmi_HalResult(status);
+
 	//重新配置DMA，恢复就绪状态
 	status = HAL_DMA_Init(&s_dcmi_dma);
 	if ( status != HAL_OK)
 		return Dcmi_HalResult(status);
+
 	//重新关联DCMI与DMA句柄
 	__HAL_LINKDMA(&s_dcmi, DMA_Handle, s_dcmi_dma);
+
 	//复位DCMI配置，清除遗留状态
 	status = HAL_DCMI_DeInit(&s_dcmi);
 	if ( status != HAL_OK)
 		return Dcmi_HalResult(status);
+
 	//重新配置DCMI，恢复就绪状态
 	status = HAL_DCMI_Init(&s_dcmi);
 	if ( status != HAL_OK)

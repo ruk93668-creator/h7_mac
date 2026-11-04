@@ -1,0 +1,803 @@
+{
+  "summary": {
+    "total": 36,
+    "passed": 1,
+    "failed": 35
+  },
+  "source_changed": [],
+  "class_context_size": 208,
+  "cases": [
+    {
+      "id": 0,
+      "name": "默认TEST及SOF不受影响",
+      "pass": true,
+      "assertions": 10,
+      "failed_line": 0,
+      "actual": 0,
+      "expected": 0,
+      "error": null,
+      "ep1_transmit_trace": {
+        "fixture_ep1_tx": 0,
+        "class_ep1_tx": 0,
+        "irq_submission": 0,
+        "duplicate_sof": 0,
+        "class_sof_calls": 0
+      },
+      "packet_trace": {
+        "lengths": [],
+        "headers": [],
+        "sofs": []
+      }
+    },
+    {
+      "id": 1,
+      "name": "完整76包与偏移确认",
+      "pass": false,
+      "assertions": 2,
+      "failed_line": 61,
+      "actual": 4294967292,
+      "expected": 0,
+      "error": null,
+      "ep1_transmit_trace": {
+        "fixture_ep1_tx": 0,
+        "class_ep1_tx": 0,
+        "irq_submission": 0,
+        "duplicate_sof": 0,
+        "class_sof_calls": 0
+      },
+      "packet_trace": {
+        "lengths": [],
+        "headers": [],
+        "sofs": []
+      }
+    },
+    {
+      "id": 2,
+      "name": "两帧FID与10FPS",
+      "pass": false,
+      "assertions": 2,
+      "failed_line": 61,
+      "actual": 4294967292,
+      "expected": 0,
+      "error": null,
+      "ep1_transmit_trace": {
+        "fixture_ep1_tx": 0,
+        "class_ep1_tx": 0,
+        "irq_submission": 0,
+        "duplicate_sof": 0,
+        "class_sof_calls": 0
+      },
+      "packet_trace": {
+        "lengths": [],
+        "headers": [],
+        "sofs": []
+      }
+    },
+    {
+      "id": 3,
+      "name": "无SOF不能提交",
+      "pass": false,
+      "assertions": 2,
+      "failed_line": 61,
+      "actual": 4294967292,
+      "expected": 0,
+      "error": null,
+      "ep1_transmit_trace": {
+        "fixture_ep1_tx": 0,
+        "class_ep1_tx": 0,
+        "irq_submission": 0,
+        "duplicate_sof": 0,
+        "class_sof_calls": 0
+      },
+      "packet_trace": {
+        "lengths": [],
+        "headers": [],
+        "sofs": []
+      }
+    },
+    {
+      "id": 4,
+      "name": "同一SOF不重复提交",
+      "pass": false,
+      "assertions": 2,
+      "failed_line": 61,
+      "actual": 4294967292,
+      "expected": 0,
+      "error": null,
+      "ep1_transmit_trace": {
+        "fixture_ep1_tx": 0,
+        "class_ep1_tx": 0,
+        "irq_submission": 0,
+        "duplicate_sof": 0,
+        "class_sof_calls": 0
+      },
+      "packet_trace": {
+        "lengths": [],
+        "headers": [],
+        "sofs": []
+      }
+    },
+    {
+      "id": 5,
+      "name": "SOF不累计无限额度",
+      "pass": false,
+      "assertions": 2,
+      "failed_line": 61,
+      "actual": 4294967292,
+      "expected": 0,
+      "error": null,
+      "ep1_transmit_trace": {
+        "fixture_ep1_tx": 0,
+        "class_ep1_tx": 0,
+        "irq_submission": 0,
+        "duplicate_sof": 0,
+        "class_sof_calls": 0
+      },
+      "packet_trace": {
+        "lengths": [],
+        "headers": [],
+        "sofs": []
+      }
+    },
+    {
+      "id": 6,
+      "name": "HAL BUSY等待新SOF",
+      "pass": false,
+      "assertions": 2,
+      "failed_line": 61,
+      "actual": 4294967292,
+      "expected": 0,
+      "error": null,
+      "ep1_transmit_trace": {
+        "fixture_ep1_tx": 0,
+        "class_ep1_tx": 0,
+        "irq_submission": 0,
+        "duplicate_sof": 0,
+        "class_sof_calls": 0
+      },
+      "packet_trace": {
+        "lengths": [],
+        "headers": [],
+        "sofs": []
+      }
+    },
+    {
+      "id": 7,
+      "name": "HAL ERROR恢复取消",
+      "pass": false,
+      "assertions": 2,
+      "failed_line": 61,
+      "actual": 4294967292,
+      "expected": 0,
+      "error": null,
+      "ep1_transmit_trace": {
+        "fixture_ep1_tx": 0,
+        "class_ep1_tx": 0,
+        "irq_submission": 0,
+        "duplicate_sof": 0,
+        "class_sof_calls": 0
+      },
+      "packet_trace": {
+        "lengths": [],
+        "headers": [],
+        "sofs": []
+      }
+    },
+    {
+      "id": 8,
+      "name": "重复完成只消费一次",
+      "pass": false,
+      "assertions": 2,
+      "failed_line": 61,
+      "actual": 4294967292,
+      "expected": 0,
+      "error": null,
+      "ep1_transmit_trace": {
+        "fixture_ep1_tx": 0,
+        "class_ep1_tx": 0,
+        "irq_submission": 0,
+        "duplicate_sof": 0,
+        "class_sof_calls": 0
+      },
+      "packet_trace": {
+        "lengths": [],
+        "headers": [],
+        "sofs": []
+      }
+    },
+    {
+      "id": 9,
+      "name": "错误完成Token拒绝",
+      "pass": false,
+      "assertions": 2,
+      "failed_line": 61,
+      "actual": 4294967292,
+      "expected": 0,
+      "error": null,
+      "ep1_transmit_trace": {
+        "fixture_ep1_tx": 0,
+        "class_ep1_tx": 0,
+        "irq_submission": 0,
+        "duplicate_sof": 0,
+        "class_sof_calls": 0
+      },
+      "packet_trace": {
+        "lengths": [],
+        "headers": [],
+        "sofs": []
+      }
+    },
+    {
+      "id": 10,
+      "name": "Incomplete等待Abort",
+      "pass": false,
+      "assertions": 2,
+      "failed_line": 61,
+      "actual": 4294967292,
+      "expected": 0,
+      "error": null,
+      "ep1_transmit_trace": {
+        "fixture_ep1_tx": 0,
+        "class_ep1_tx": 0,
+        "irq_submission": 0,
+        "duplicate_sof": 0,
+        "class_sof_calls": 0
+      },
+      "packet_trace": {
+        "lengths": [],
+        "headers": [],
+        "sofs": []
+      }
+    },
+    {
+      "id": 11,
+      "name": "Abort失败保留所有权",
+      "pass": false,
+      "assertions": 2,
+      "failed_line": 61,
+      "actual": 4294967292,
+      "expected": 0,
+      "error": null,
+      "ep1_transmit_trace": {
+        "fixture_ep1_tx": 0,
+        "class_ep1_tx": 0,
+        "irq_submission": 0,
+        "duplicate_sof": 0,
+        "class_sof_calls": 0
+      },
+      "packet_trace": {
+        "lengths": [],
+        "headers": [],
+        "sofs": []
+      }
+    },
+    {
+      "id": 12,
+      "name": "在途Alt0安全关闭",
+      "pass": false,
+      "assertions": 2,
+      "failed_line": 61,
+      "actual": 4294967292,
+      "expected": 0,
+      "error": null,
+      "ep1_transmit_trace": {
+        "fixture_ep1_tx": 0,
+        "class_ep1_tx": 0,
+        "irq_submission": 0,
+        "duplicate_sof": 0,
+        "class_sof_calls": 0
+      },
+      "packet_trace": {
+        "lengths": [],
+        "headers": [],
+        "sofs": []
+      }
+    },
+    {
+      "id": 13,
+      "name": "Alt0 Abort失败保留上下文",
+      "pass": false,
+      "assertions": 2,
+      "failed_line": 61,
+      "actual": 4294967292,
+      "expected": 0,
+      "error": null,
+      "ep1_transmit_trace": {
+        "fixture_ep1_tx": 0,
+        "class_ep1_tx": 0,
+        "irq_submission": 0,
+        "duplicate_sof": 0,
+        "class_sof_calls": 0
+      },
+      "packet_trace": {
+        "lengths": [],
+        "headers": [],
+        "sofs": []
+      }
+    },
+    {
+      "id": 14,
+      "name": "Reset新流拒绝旧Token",
+      "pass": false,
+      "assertions": 2,
+      "failed_line": 61,
+      "actual": 4294967292,
+      "expected": 0,
+      "error": null,
+      "ep1_transmit_trace": {
+        "fixture_ep1_tx": 0,
+        "class_ep1_tx": 0,
+        "irq_submission": 0,
+        "duplicate_sof": 0,
+        "class_sof_calls": 0
+      },
+      "packet_trace": {
+        "lengths": [],
+        "headers": [],
+        "sofs": []
+      }
+    },
+    {
+      "id": 15,
+      "name": "Disconnect释放帧",
+      "pass": false,
+      "assertions": 2,
+      "failed_line": 61,
+      "actual": 4294967292,
+      "expected": 0,
+      "error": null,
+      "ep1_transmit_trace": {
+        "fixture_ep1_tx": 0,
+        "class_ep1_tx": 0,
+        "irq_submission": 0,
+        "duplicate_sof": 0,
+        "class_sof_calls": 0
+      },
+      "packet_trace": {
+        "lengths": [],
+        "headers": [],
+        "sofs": []
+      }
+    },
+    {
+      "id": 16,
+      "name": "DeInit失败保留固定池",
+      "pass": false,
+      "assertions": 2,
+      "failed_line": 61,
+      "actual": 4294967292,
+      "expected": 0,
+      "error": null,
+      "ep1_transmit_trace": {
+        "fixture_ep1_tx": 0,
+        "class_ep1_tx": 0,
+        "irq_submission": 0,
+        "duplicate_sof": 0,
+        "class_sof_calls": 0
+      },
+      "packet_trace": {
+        "lengths": [],
+        "headers": [],
+        "sofs": []
+      }
+    },
+    {
+      "id": 17,
+      "name": "主动取消确认后释放",
+      "pass": false,
+      "assertions": 2,
+      "failed_line": 61,
+      "actual": 4294967292,
+      "expected": 0,
+      "error": null,
+      "ep1_transmit_trace": {
+        "fixture_ep1_tx": 0,
+        "class_ep1_tx": 0,
+        "irq_submission": 0,
+        "duplicate_sof": 0,
+        "class_sof_calls": 0
+      },
+      "packet_trace": {
+        "lengths": [],
+        "headers": [],
+        "sofs": []
+      }
+    },
+    {
+      "id": 18,
+      "name": "取消和DataIn交错",
+      "pass": false,
+      "assertions": 2,
+      "failed_line": 61,
+      "actual": 4294967292,
+      "expected": 0,
+      "error": null,
+      "ep1_transmit_trace": {
+        "fixture_ep1_tx": 0,
+        "class_ep1_tx": 0,
+        "irq_submission": 0,
+        "duplicate_sof": 0,
+        "class_sof_calls": 0
+      },
+      "packet_trace": {
+        "lengths": [],
+        "headers": [],
+        "sofs": []
+      }
+    },
+    {
+      "id": 19,
+      "name": "外来PCD SOF忽略",
+      "pass": false,
+      "assertions": 2,
+      "failed_line": 61,
+      "actual": 4294967292,
+      "expected": 0,
+      "error": null,
+      "ep1_transmit_trace": {
+        "fixture_ep1_tx": 0,
+        "class_ep1_tx": 0,
+        "irq_submission": 0,
+        "duplicate_sof": 0,
+        "class_sof_calls": 0
+      },
+      "packet_trace": {
+        "lengths": [],
+        "headers": [],
+        "sofs": []
+      }
+    },
+    {
+      "id": 20,
+      "name": "未Commit或Alt0拒绝注入",
+      "pass": false,
+      "assertions": 2,
+      "failed_line": 61,
+      "actual": 4294967292,
+      "expected": 0,
+      "error": null,
+      "ep1_transmit_trace": {
+        "fixture_ep1_tx": 0,
+        "class_ep1_tx": 0,
+        "irq_submission": 0,
+        "duplicate_sof": 0,
+        "class_sof_calls": 0
+      },
+      "packet_trace": {
+        "lengths": [],
+        "headers": [],
+        "sofs": []
+      }
+    },
+    {
+      "id": 21,
+      "name": "帧率间隔不提前发送",
+      "pass": false,
+      "assertions": 2,
+      "failed_line": 61,
+      "actual": 4294967292,
+      "expected": 0,
+      "error": null,
+      "ep1_transmit_trace": {
+        "fixture_ep1_tx": 0,
+        "class_ep1_tx": 0,
+        "irq_submission": 0,
+        "duplicate_sof": 0,
+        "class_sof_calls": 0
+      },
+      "packet_trace": {
+        "lengths": [],
+        "headers": [],
+        "sofs": []
+      }
+    },
+    {
+      "id": 22,
+      "name": "末包真实完成前不翻FID",
+      "pass": false,
+      "assertions": 2,
+      "failed_line": 61,
+      "actual": 4294967292,
+      "expected": 0,
+      "error": null,
+      "ep1_transmit_trace": {
+        "fixture_ep1_tx": 0,
+        "class_ep1_tx": 0,
+        "irq_submission": 0,
+        "duplicate_sof": 0,
+        "class_sof_calls": 0
+      },
+      "packet_trace": {
+        "lengths": [],
+        "headers": [],
+        "sofs": []
+      }
+    },
+    {
+      "id": 23,
+      "name": "Abort后迟到DataIn忽略",
+      "pass": false,
+      "assertions": 2,
+      "failed_line": 61,
+      "actual": 4294967292,
+      "expected": 0,
+      "error": null,
+      "ep1_transmit_trace": {
+        "fixture_ep1_tx": 0,
+        "class_ep1_tx": 0,
+        "irq_submission": 0,
+        "duplicate_sof": 0,
+        "class_sof_calls": 0
+      },
+      "packet_trace": {
+        "lengths": [],
+        "headers": [],
+        "sofs": []
+      }
+    },
+    {
+      "id": 24,
+      "name": "Incomplete后DataIn不变成功",
+      "pass": false,
+      "assertions": 2,
+      "failed_line": 61,
+      "actual": 4294967292,
+      "expected": 0,
+      "error": null,
+      "ep1_transmit_trace": {
+        "fixture_ep1_tx": 0,
+        "class_ep1_tx": 0,
+        "irq_submission": 0,
+        "duplicate_sof": 0,
+        "class_sof_calls": 0
+      },
+      "packet_trace": {
+        "lengths": [],
+        "headers": [],
+        "sofs": []
+      }
+    },
+    {
+      "id": 25,
+      "name": "完成后Incomplete错误优先",
+      "pass": false,
+      "assertions": 2,
+      "failed_line": 61,
+      "actual": 4294967292,
+      "expected": 0,
+      "error": null,
+      "ep1_transmit_trace": {
+        "fixture_ep1_tx": 0,
+        "class_ep1_tx": 0,
+        "irq_submission": 0,
+        "duplicate_sof": 0,
+        "class_sof_calls": 0
+      },
+      "packet_trace": {
+        "lengths": [],
+        "headers": [],
+        "sofs": []
+      }
+    },
+    {
+      "id": 26,
+      "name": "外部busy不错误确认",
+      "pass": false,
+      "assertions": 2,
+      "failed_line": 61,
+      "actual": 4294967292,
+      "expected": 0,
+      "error": null,
+      "ep1_transmit_trace": {
+        "fixture_ep1_tx": 0,
+        "class_ep1_tx": 0,
+        "irq_submission": 0,
+        "duplicate_sof": 0,
+        "class_sof_calls": 0
+      },
+      "packet_trace": {
+        "lengths": [],
+        "headers": [],
+        "sofs": []
+      }
+    },
+    {
+      "id": 27,
+      "name": "Class固定池限制",
+      "pass": false,
+      "assertions": 2,
+      "failed_line": 61,
+      "actual": 4294967292,
+      "expected": 0,
+      "error": null,
+      "ep1_transmit_trace": {
+        "fixture_ep1_tx": 0,
+        "class_ep1_tx": 0,
+        "irq_submission": 0,
+        "duplicate_sof": 0,
+        "class_sof_calls": 0
+      },
+      "packet_trace": {
+        "lengths": [],
+        "headers": [],
+        "sofs": []
+      }
+    },
+    {
+      "id": 28,
+      "name": "迟到Class回调不能确认新的在途序号",
+      "pass": false,
+      "assertions": 2,
+      "failed_line": 61,
+      "actual": 4294967292,
+      "expected": 0,
+      "error": null,
+      "ep1_transmit_trace": {
+        "fixture_ep1_tx": 0,
+        "class_ep1_tx": 0,
+        "irq_submission": 0,
+        "duplicate_sof": 0,
+        "class_sof_calls": 0
+      },
+      "packet_trace": {
+        "lengths": [],
+        "headers": [],
+        "sofs": []
+      }
+    },
+    {
+      "id": 29,
+      "name": "外部帧异常参数",
+      "pass": false,
+      "assertions": 2,
+      "failed_line": 61,
+      "actual": 4294967292,
+      "expected": 0,
+      "error": null,
+      "ep1_transmit_trace": {
+        "fixture_ep1_tx": 0,
+        "class_ep1_tx": 0,
+        "irq_submission": 0,
+        "duplicate_sof": 0,
+        "class_sof_calls": 0
+      },
+      "packet_trace": {
+        "lengths": [],
+        "headers": [],
+        "sofs": []
+      }
+    },
+    {
+      "id": 30,
+      "name": "传输序号耗尽不复用",
+      "pass": false,
+      "assertions": 2,
+      "failed_line": 61,
+      "actual": 4294967292,
+      "expected": 0,
+      "error": null,
+      "ep1_transmit_trace": {
+        "fixture_ep1_tx": 0,
+        "class_ep1_tx": 0,
+        "irq_submission": 0,
+        "duplicate_sof": 0,
+        "class_sof_calls": 0
+      },
+      "packet_trace": {
+        "lengths": [],
+        "headers": [],
+        "sofs": []
+      }
+    },
+    {
+      "id": 31,
+      "name": "真实HAL IRQ处理SOF通路",
+      "pass": false,
+      "assertions": 2,
+      "failed_line": 61,
+      "actual": 4294967292,
+      "expected": 0,
+      "error": null,
+      "ep1_transmit_trace": {
+        "fixture_ep1_tx": 0,
+        "class_ep1_tx": 0,
+        "irq_submission": 0,
+        "duplicate_sof": 0,
+        "class_sof_calls": 0
+      },
+      "packet_trace": {
+        "lengths": [],
+        "headers": [],
+        "sofs": []
+      }
+    },
+    {
+      "id": 32,
+      "name": "Abort成功才应答本端点旧XFRC",
+      "pass": false,
+      "assertions": 2,
+      "failed_line": 61,
+      "actual": 4294967292,
+      "expected": 0,
+      "error": null,
+      "ep1_transmit_trace": {
+        "fixture_ep1_tx": 0,
+        "class_ep1_tx": 0,
+        "irq_submission": 0,
+        "duplicate_sof": 0,
+        "class_sof_calls": 0
+      },
+      "packet_trace": {
+        "lengths": [],
+        "headers": [],
+        "sofs": []
+      }
+    },
+    {
+      "id": 33,
+      "name": "Alt1无外部帧时100SOF不生成假视频",
+      "pass": false,
+      "assertions": 2,
+      "failed_line": 61,
+      "actual": 4294967292,
+      "expected": 0,
+      "error": null,
+      "ep1_transmit_trace": {
+        "fixture_ep1_tx": 0,
+        "class_ep1_tx": 0,
+        "irq_submission": 0,
+        "duplicate_sof": 0,
+        "class_sof_calls": 0
+      },
+      "packet_trace": {
+        "lengths": [],
+        "headers": [],
+        "sofs": []
+      }
+    },
+    {
+      "id": 34,
+      "name": "在途Close失败保持图像直到重试确认",
+      "pass": false,
+      "assertions": 2,
+      "failed_line": 61,
+      "actual": 4294967292,
+      "expected": 0,
+      "error": null,
+      "ep1_transmit_trace": {
+        "fixture_ep1_tx": 0,
+        "class_ep1_tx": 0,
+        "irq_submission": 0,
+        "duplicate_sof": 0,
+        "class_sof_calls": 0
+      },
+      "packet_trace": {
+        "lengths": [],
+        "headers": [],
+        "sofs": []
+      }
+    },
+    {
+      "id": 35,
+      "name": "Reset Close失败保留上下文和图像",
+      "pass": false,
+      "assertions": 2,
+      "failed_line": 61,
+      "actual": 4294967292,
+      "expected": 0,
+      "error": null,
+      "ep1_transmit_trace": {
+        "fixture_ep1_tx": 0,
+        "class_ep1_tx": 0,
+        "irq_submission": 0,
+        "duplicate_sof": 0,
+        "class_sof_calls": 0
+      },
+      "packet_trace": {
+        "lengths": [],
+        "headers": [],
+        "sofs": []
+      }
+    }
+  ]
+}

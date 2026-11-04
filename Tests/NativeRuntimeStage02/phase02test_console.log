@@ -1,0 +1,9 @@
+phase02test 0 PASS 0 None 0 []
+phase02test 1 PASS 0 None 0 []
+phase02test 2 PASS 0 None 0 []
+phase02test 3 PASS 0 None 0 []
+phase02test 4 PASS 0 None 0 []
+phase02test 5 PASS 0 None 0 []
+phase02test 6 PASS 0 None 0 []
+phase02test 7 PASS 0 None 0 []
+{'total': 8, 'passed': 8, 'failed': 0}

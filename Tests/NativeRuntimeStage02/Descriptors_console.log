@@ -1,0 +1,48 @@
+test_01_configuration_length (__main__.DescriptorTests.test_01_configuration_length) ... ok
+test_02_all_descriptor_boundaries (__main__.DescriptorTests.test_02_all_descriptor_boundaries) ... ok
+test_03_iad (__main__.DescriptorTests.test_03_iad) ... ok
+test_04_interfaces_and_alternates (__main__.DescriptorTests.test_04_interfaces_and_alternates) ... ok
+test_05_vc_length_and_version (__main__.DescriptorTests.test_05_vc_length_and_version) ... ok
+test_06_terminal_topology (__main__.DescriptorTests.test_06_terminal_topology) ... ok
+test_07_camera_controls (__main__.DescriptorTests.test_07_camera_controls) ... ok
+test_08_processing_controls (__main__.DescriptorTests.test_08_processing_controls) ... ok
+test_09_vs_length_and_link (__main__.DescriptorTests.test_09_vs_length_and_link) ... ok
+test_10_yuy2_format (__main__.DescriptorTests.test_10_yuy2_format) ... ok
+test_11_frame_dimensions (__main__.DescriptorTests.test_11_frame_dimensions) ... ok
+test_12_frame_rate_size_bitrate (__main__.DescriptorTests.test_12_frame_rate_size_bitrate) ... ok
+test_13_color_matching (__main__.DescriptorTests.test_13_color_matching) ... ok
+test_14_endpoint (__main__.DescriptorTests.test_14_endpoint) ... ok
+test_15_iad_device_identity (__main__.DescriptorTests.test_15_iad_device_identity) ... ok
+test_16_null_length (__main__.DescriptorTests.test_16_null_length) ... ok
+test_17_unsupported_speeds (__main__.DescriptorTests.test_17_unsupported_speeds) ... ok
+test_18_static_pointers (__main__.DescriptorTests.test_18_static_pointers) ... ok
+test_19_alignment_and_pio_padding (__main__.DescriptorTests.test_19_alignment_and_pio_padding) ... ok
+test_20_initializer_count (__main__.DescriptorTests.test_20_initializer_count) ... ok
+test_21_deprecated_clock_bytes_preserved (__main__.DescriptorTests.test_21_deprecated_clock_bytes_preserved) ... ok
+test_22_processing_unit_field_offsets (__main__.DescriptorTests.test_22_processing_unit_field_offsets) ... ok
+test_23_compiled_storage_and_last_pio_word (__main__.DescriptorTests.test_23_compiled_storage_and_last_pio_word) ... ok
+test_24_only_intended_wire_changes (__main__.DescriptorTests.test_24_only_intended_wire_changes) ... ok
+test_25_langid_descriptor (__main__.DescriptorTests.test_25_langid_descriptor) ... ok
+test_26_function_name_utf16le (__main__.DescriptorTests.test_26_function_name_utf16le) ... ok
+test_27_function_and_interface_indices (__main__.DescriptorTests.test_27_function_and_interface_indices) ... ok
+test_28_static_string_pointers (__main__.DescriptorTests.test_28_static_string_pointers) ... ok
+test_29_string_storage_alignment_and_pio_tail (__main__.DescriptorTests.test_29_string_storage_alignment_and_pio_tail) ... ok
+test_30_string_null_length_and_unsupported_speed (__main__.DescriptorTests.test_30_string_null_length_and_unsupported_speed) ... ok
+test_31_optional_identity_and_entity_strings_remain_zero (__main__.DescriptorTests.test_31_optional_identity_and_entity_strings_remain_zero) ... ok
+test_32_only_two_configuration_string_indices_changed (__main__.DescriptorTests.test_32_only_two_configuration_string_indices_changed) ... ok
+
+----------------------------------------------------------------------
+Ran 32 tests in 1.168s
+
+OK
+
+正式UVC注册及回调绑定 True line 0 (0, 0) None
+Core语言描述符 True line 0 (0, 0) None
+Core功能名称24字节 True line 0 (0, 0) None
+主机请求255仍只返回24 True line 0 (0, 0) None
+短请求只返回8字节 True line 0 (0, 0) None
+不支持索引按Core规则STALL True line 0 (0, 0) None
+PIO对齐尾部及读取边界 True line 0 (0, 0) None
+交错重复请求与静态地址 True line 0 (0, 0) None
+{'total': 8, 'passed': 8, 'failed': 0}
+

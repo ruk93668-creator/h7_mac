@@ -1,0 +1,15 @@
+初始Probe完整查询不授权 FAIL (25, 2, 4294967292, 0) None
+初始Commit短读1B FAIL (25, 2, 4294967292, 0) None
+初始Commit完整查询 FAIL (25, 2, 4294967292, 0) None
+初始Probe短读 FAIL (25, 2, 4294967292, 0) None
+初始Probe超长上限截断 FAIL (25, 2, 4294967292, 0) None
+Windows先查询默认再协商开流 FAIL (25, 2, 4294967292, 0) None
+初始默认查询被其他SETUP打断 FAIL (25, 2, 4294967292, 0) None
+失败Probe返回默认但不授权Commit FAIL (25, 2, 4294967292, 0) None
+取消Abort失败保留帧 FAIL (25, 2, 4294967292, 0) None
+Incomplete错误不能伪装完成 FAIL (25, 2, 4294967292, 0) None
+IRQ调用契约 FAIL (19, 3, 4294967295, 4294967292) None
+Class释放后查询输出不更新 FAIL (25, 2, 4294967292, 0) None
+Reset失败保留可查询所有权直到Stop成功 FAIL (25, 2, 4294967292, 0) None
+DeInit失败保留可查询所有权直到Stop成功 FAIL (25, 2, 4294967292, 0) None
+{'total': 14, 'passed': 0, 'failed': 14} source_changed []

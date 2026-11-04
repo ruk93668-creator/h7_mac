@@ -1,0 +1,41 @@
+Init空句柄 PASS (0, 2, 0, 0) None
+Init配置0 PASS (0, 3, 0, 0) None
+Init配置2 PASS (0, 3, 0, 0) None
+重复Init保持原上下文 PASS (0, 4, 0, 0) None
+固定池耗尽 PASS (0, 5, 0, 0) None
+完整清零与Alt0 PASS (0, 214, 0, 0) None
+DeInit空句柄 PASS (0, 2, 0, 0) None
+空上下文DeInit PASS (0, 2, 0, 0) None
+正常及重复DeInit PASS (0, 5, 0, 0) None
+Core延迟归还 PASS (0, 5, 0, 0) None
+释放后可重新Init PASS (0, 4, 0, 0) None
+Class操作表14项映射 FAIL (82, 15, 0, 1) None
+Setup空句柄 PASS (0, 2, 0, 0) None
+Setup空请求 PASS (0, 2, 0, 0) None
+Setup空上下文 PASS (0, 1, 0, 0) None
+Setup未配置上下文 PASS (0, 5, 0, 0) None
+Setup设备未配置 PASS (0, 5, 0, 0) None
+拒绝Class请求 PASS (0, 5, 0, 0) None
+拒绝Vendor请求 PASS (0, 5, 0, 0) None
+拒绝Device对象 PASS (0, 5, 0, 0) None
+拒绝Endpoint对象 PASS (0, 5, 0, 0) None
+拒绝保留对象位 PASS (0, 5, 0, 0) None
+拒绝接口2 PASS (0, 5, 0, 0) None
+拒绝接口高字节 PASS (0, 5, 0, 0) None
+GET方向错误 PASS (0, 5, 0, 0) None
+GET非零Value PASS (0, 5, 0, 0) None
+GET零长度 PASS (0, 5, 0, 0) None
+GET长度2 PASS (0, 5, 0, 0) None
+SET Alt1 PASS (0, 5, 0, 0) None
+SET Alt高字节 PASS (0, 5, 0, 0) None
+SET方向错误 PASS (0, 5, 0, 0) None
+SET非零长度 PASS (0, 5, 0, 0) None
+拒绝其他标准请求 PASS (0, 5, 0, 0) None
+SET接口0由Core负责状态 PASS (0, 9, 0, 0) None
+SET接口1由Core负责状态 PASS (0, 9, 0, 0) None
+Core GET接口0 FAIL (112, 2, 4294967295, 0) None
+Core GET接口1 FAIL (112, 2, 4294967295, 0) None
+Core SET接口0单次状态 FAIL (112, 2, 4294967295, 0) None
+Core SET接口1单次状态 FAIL (112, 2, 4294967295, 0) None
+Core拒绝Alt1且不开EP1 FAIL (112, 2, 4294967295, 0) None
+{'total': 40, 'passed': 34, 'failed': 6} source_changed []

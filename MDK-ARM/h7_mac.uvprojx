@@ -1970,6 +1970,8 @@
           <Files>
             <File><FileName>runtime_event.c</FileName><FileType>1</FileType><FilePath>../Common/Src/runtime_event.c</FilePath></File>
             <File><FileName>runtime_event.h</FileName><FileType>5</FileType><FilePath>../Common/Inc/runtime_event.h</FilePath></File>
+            <File><FileName>app_messages.c</FileName><FileType>1</FileType><FilePath>../CM7/Application/app_messages.c</FilePath></File>
+            <File><FileName>app_messages.h</FileName><FileType>5</FileType><FilePath>../CM7/Application/app_messages.h</FilePath></File>
             <File><FileName>app_tasks.c</FileName><FileType>1</FileType><FilePath>../CM7/Application/app_tasks.c</FilePath></File>
             <File><FileName>app_tasks.h</FileName><FileType>5</FileType><FilePath>../CM7/Application/app_tasks.h</FilePath></File>
             <File><FileName>app_events.c</FileName><FileType>1</FileType><FilePath>../CM7/Application/app_events.c</FilePath></File>
@@ -3587,6 +3589,8 @@
           <Files>
             <File><FileName>runtime_event.c</FileName><FileType>1</FileType><FilePath>../Common/Src/runtime_event.c</FilePath></File>
             <File><FileName>runtime_event.h</FileName><FileType>5</FileType><FilePath>../Common/Inc/runtime_event.h</FilePath></File>
+            <File><FileName>app_messages.c</FileName><FileType>1</FileType><FilePath>../CM7/Application/app_messages.c</FilePath></File>
+            <File><FileName>app_messages.h</FileName><FileType>5</FileType><FilePath>../CM7/Application/app_messages.h</FilePath></File>
             <File><FileName>app_tasks.c</FileName><FileType>1</FileType><FilePath>../CM7/Application/app_tasks.c</FilePath></File>
             <File><FileName>app_tasks.h</FileName><FileType>5</FileType><FilePath>../CM7/Application/app_tasks.h</FilePath></File>
             <File><FileName>app_events.c</FileName><FileType>1</FileType><FilePath>../CM7/Application/app_events.c</FilePath></File>

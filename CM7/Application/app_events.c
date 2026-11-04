@@ -1,5 +1,7 @@
 #include "app_events.h"
 #include "usb_device.h"
+#include "camera_capture.h"
+#include "bsp_dcmi.h"
 #include "stm32h7xx.h"
 #include <stddef.h>
 
@@ -33,6 +35,9 @@ static void AppEvents_UsbNotify(uint32_t events, void *context);
 //检查事件状态并锁存启动前提示
 static SysResult_t AppEvents_PreparePost(RuntimeEventTarget_t target, uint32_t events, bool *deferred);
 
+//将Media或BSP进度转成Camera任务通知
+static void AppEvents_CameraNotify(uint32_t events, void *context);
+
 //向Common绑定普通C回调表，隐藏FreeRTOS任务类型
 static const RuntimeEventPort_t s_event_port =
 {
@@ -58,6 +63,14 @@ SysResult_t App_EventsInit(void)
         return result;
 
     //绑定静态回调表，后续提示由Application适配到任务通知
+    //绑定采集进度和异常提示，两个回调都不执行Media任务侧操作
+    result = CameraCapture_SetEventCallback(AppEvents_CameraNotify, NULL);
+    if (result != SYS_OK)
+        return result;
+    result = BSP_DCMI_SetEventCallback(AppEvents_CameraNotify, NULL);
+    if (result != SYS_OK)
+        return result;
+
     result = RuntimeEvent_Bind(&s_event_port);
     if (result != SYS_OK)
         return result;
@@ -266,4 +279,26 @@ static void AppEvents_UsbNotify(uint32_t events, void *context)
         (void)RuntimeEvent_PostFromIsr(RUNTIME_TARGET_USB, RUNTIME_EVENT_USB_PROGRESS);
     else
         (void)RuntimeEvent_Post(RUNTIME_TARGET_USB, RUNTIME_EVENT_USB_PROGRESS);
+}
+
+//检查当前执行者是否为目标任务
+bool App_EventsIsOwner(RuntimeEventTarget_t target)
+{
+    return (uint32_t)target < RUNTIME_TARGET_COUNT && __get_IPSR() == 0U &&
+        __get_PRIMASK() == 0U && __get_BASEPRI() == 0U &&
+        xTaskGetSchedulerState() == taskSCHEDULER_RUNNING &&
+        xTaskGetCurrentTaskHandle() == s_tasks[target];
+}
+
+//将采集提示转成Camera任务唤醒
+static void AppEvents_CameraNotify(uint32_t events, void *context)
+{
+    (void)events;
+    (void)context;
+
+    //BSP或Media沿用当前上下文，ISR只发通知，不停止硬件
+    if (__get_IPSR() != 0U)
+        (void)RuntimeEvent_PostFromIsr(RUNTIME_TARGET_CAMERA, RUNTIME_EVENT_CAMERA_PROGRESS);
+    else
+        (void)RuntimeEvent_Post(RUNTIME_TARGET_CAMERA, RUNTIME_EVENT_CAMERA_PROGRESS);
 }

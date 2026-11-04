@@ -1,0 +1,31 @@
+Traceback (most recent call last):
+  File "D:\32\STM32H7\h7_mac\Tests\FreeRtosP0\run_kernel_tests.py", line 38, in <module>
+    run(args + ["-c", source, "-o", obj])
+  File "D:\32\STM32H7\h7_mac\Tests\FreeRtosP0\run_kernel_tests.py", line 28, in run
+    raise RuntimeError(output)
+RuntimeError: "D:\32\STM32H7\h7_mac\Tests\FreeRtosP0\kernel_test.c", line 38: Error:  #140: too many arguments in function call
+      if(id==0){EQ(Platform_RtosStart(NULL),SYS_ERR_INVALID_ARG);EQ(uxTaskGetNumberOfTasks(),0);return 0;}
+                ^
+"D:\32\STM32H7\h7_mac\Tests\FreeRtosP0\kernel_test.c", line 38: Error:  #140: too many arguments in function call
+      if(id==0){EQ(Platform_RtosStart(NULL),SYS_ERR_INVALID_ARG);EQ(uxTaskGetNumberOfTasks(),0);return 0;}
+                ^
+"D:\32\STM32H7\h7_mac\Tests\FreeRtosP0\kernel_test.c", line 39: Error:  #140: too many arguments in function call
+      if(id==1){__disable_irq();EQ(Platform_RtosStart(DummyRun),SYS_ERR_INVALID_STATE);__enable_irq();EQ(uxTaskGetNumberOfTasks(),0);return 0;}
+                                ^
+"D:\32\STM32H7\h7_mac\Tests\FreeRtosP0\kernel_test.c", line 39: Error:  #140: too many arguments in function call
+      if(id==1){__disable_irq();EQ(Platform_RtosStart(DummyRun),SYS_ERR_INVALID_STATE);__enable_irq();EQ(uxTaskGetNumberOfTasks(),0);return 0;}
+                                ^
+"D:\32\STM32H7\h7_mac\Tests\FreeRtosP0\kernel_test.c", line 40: Error:  #140: too many arguments in function call
+      if(id==2){EQ(Platform_RtosStart(DummyRun),SYS_ERR_INVALID_STATE);EQ(uxTaskGetNumberOfTasks(),2);EQ(xTaskGetSchedulerState(),taskSCHEDULER_RUNNING);EQ(Platform_RtosStart(DummyRun),SYS_ERR_INVALID_STATE);EQ(uxTaskGetNumberOfTasks(),2);return 0;}
+                ^
+"D:\32\STM32H7\h7_mac\Tests\FreeRtosP0\kernel_test.c", line 40: Error:  #140: too many arguments in function call
+      if(id==2){EQ(Platform_RtosStart(DummyRun),SYS_ERR_INVALID_STATE);EQ(uxTaskGetNumberOfTasks(),2);EQ(xTaskGetSchedulerState(),taskSCHEDULER_RUNNING);EQ(Platform_RtosStart(DummyRun),SYS_ERR_INVALID_STATE);EQ(uxTaskGetNumberOfTasks(),2);return 0;}
+                ^
+"D:\32\STM32H7\h7_mac\Tests\FreeRtosP0\kernel_test.c", line 40: Error:  #140: too many arguments in function call
+      if(id==2){EQ(Platform_RtosStart(DummyRun),SYS_ERR_INVALID_STATE);EQ(uxTaskGetNumberOfTasks(),2);EQ(xTaskGetSchedulerState(),taskSCHEDULER_RUNNING);EQ(Platform_RtosStart(DummyRun),SYS_ERR_INVALID_STATE);EQ(uxTaskGetNumberOfTasks(),2);return 0;}
+                                                                                                                                                         ^
+"D:\32\STM32H7\h7_mac\Tests\FreeRtosP0\kernel_test.c", line 40: Error:  #140: too many arguments in function call
+      if(id==2){EQ(Platform_RtosStart(DummyRun),SYS_ERR_INVALID_STATE);EQ(uxTaskGetNumberOfTasks(),2);EQ(xTaskGetSchedulerState(),taskSCHEDULER_RUNNING);EQ(Platform_RtosStart(DummyRun),SYS_ERR_INVALID_STATE);EQ(uxTaskGetNumberOfTasks(),2);return 0;}
+                                                                                                                                                         ^
+D:\32\STM32H7\h7_mac\Tests\FreeRtosP0\kernel_test.c: 0 warnings, 8 errors
+

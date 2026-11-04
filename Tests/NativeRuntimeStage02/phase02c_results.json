@@ -1,0 +1,213 @@
+{
+  "summary": {
+    "total": 28,
+    "passed": 28,
+    "failed": 0
+  },
+  "cases": [
+    {
+      "id": 0,
+      "pass": true,
+      "failure_line": 0,
+      "error": null,
+      "name": "USB未就绪不请求"
+    },
+    {
+      "id": 1,
+      "pass": true,
+      "failure_line": 0,
+      "error": null,
+      "name": "任务所有权拒绝"
+    },
+    {
+      "id": 2,
+      "pass": true,
+      "failure_line": 0,
+      "error": null,
+      "name": "Request Offer并借用"
+    },
+    {
+      "id": 3,
+      "pass": true,
+      "failure_line": 0,
+      "error": null,
+      "name": "长期借用只持有一帧"
+    },
+    {
+      "id": 4,
+      "pass": true,
+      "failure_line": 0,
+      "error": null,
+      "name": "Return ACK正常闭环"
+    },
+    {
+      "id": 5,
+      "pass": true,
+      "failure_line": 0,
+      "error": null,
+      "name": "Media释放失败不ACK且重试"
+    },
+    {
+      "id": 6,
+      "pass": true,
+      "failure_line": 0,
+      "error": null,
+      "name": "Request队列满保留请求"
+    },
+    {
+      "id": 7,
+      "pass": true,
+      "failure_line": 0,
+      "error": null,
+      "name": "Offer队列满不重复取帧"
+    },
+    {
+      "id": 8,
+      "pass": true,
+      "failure_line": 0,
+      "error": null,
+      "name": "Return队列满保留凭据"
+    },
+    {
+      "id": 9,
+      "pass": true,
+      "failure_line": 0,
+      "error": null,
+      "name": "ACK队列满不重复Release"
+    },
+    {
+      "id": 10,
+      "pass": true,
+      "failure_line": 0,
+      "error": null,
+      "name": "重复Return只重发ACK"
+    },
+    {
+      "id": 11,
+      "pass": true,
+      "failure_line": 0,
+      "error": null,
+      "name": "错误lease不释放"
+    },
+    {
+      "id": 12,
+      "pass": true,
+      "failure_line": 0,
+      "error": null,
+      "name": "错误epoch不释放"
+    },
+    {
+      "id": 13,
+      "pass": true,
+      "failure_line": 0,
+      "error": null,
+      "name": "旧ACK不清当前借用"
+    },
+    {
+      "id": 14,
+      "pass": true,
+      "failure_line": 0,
+      "error": null,
+      "name": "非法帧描述仍安全归还"
+    },
+    {
+      "id": 15,
+      "pass": true,
+      "failure_line": 0,
+      "error": null,
+      "name": "Submit BUSY未借用新帧"
+    },
+    {
+      "id": 16,
+      "pass": true,
+      "failure_line": 0,
+      "error": null,
+      "name": "Class安全销毁后归还"
+    },
+    {
+      "id": 17,
+      "pass": true,
+      "failure_line": 0,
+      "error": null,
+      "name": "查询IO不能证明归还"
+    },
+    {
+      "id": 18,
+      "pass": true,
+      "failure_line": 0,
+      "error": null,
+      "name": "取消未确认时继续持有"
+    },
+    {
+      "id": 19,
+      "pass": true,
+      "failure_line": 0,
+      "error": null,
+      "name": "取消后确认归还"
+    },
+    {
+      "id": 20,
+      "pass": true,
+      "failure_line": 0,
+      "error": null,
+      "name": "Stop期间完成待决请求"
+    },
+    {
+      "id": 21,
+      "pass": true,
+      "failure_line": 0,
+      "error": null,
+      "name": "重新Start后旧epoch无效"
+    },
+    {
+      "id": 22,
+      "pass": true,
+      "failure_line": 0,
+      "error": null,
+      "name": "lease编号耗尽"
+    },
+    {
+      "id": 23,
+      "pass": true,
+      "failure_line": 0,
+      "error": null,
+      "name": "epoch耗尽"
+    },
+    {
+      "id": 24,
+      "pass": true,
+      "failure_line": 0,
+      "error": null,
+      "name": "request编号耗尽"
+    },
+    {
+      "id": 25,
+      "pass": true,
+      "failure_line": 0,
+      "error": null,
+      "name": "非法Offer凭据拒绝"
+    },
+    {
+      "id": 26,
+      "pass": true,
+      "failure_line": 0,
+      "error": null,
+      "name": "重复Offer不再次Submit"
+    },
+    {
+      "id": 27,
+      "pass": true,
+      "failure_line": 0,
+      "error": null,
+      "name": "1000次租借闭环"
+    }
+  ],
+  "hardware_verified": false,
+  "command": [
+    "C:\\Users\\29062\\AppData\\Local\\Programs\\Python\\Python311\\python.exe",
+    "D:\\32\\STM32H7\\h7_mac\\Tests\\NativeRuntimeStage02\\run_arm.py",
+    "phase02c",
+    "--count",
+    "28"
+  ]
+}

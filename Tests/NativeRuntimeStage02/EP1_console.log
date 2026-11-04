@@ -1,0 +1,46 @@
+未Commit拒绝Alt1 FAIL (53, 2, 4294967292, 0) None
+Alt0到Alt1到Alt0 FAIL (53, 2, 4294967292, 0) None
+打开参数严格匹配编译后描述符 FAIL (53, 2, 4294967292, 0) None
+重复Alt1不重复Open FAIL (53, 2, 4294967292, 0) None
+重复Alt0不重复Close FAIL (53, 2, 4294967292, 0) None
+VC Alt0不影响VS Alt1 FAIL (53, 2, 4294967292, 0) None
+VC拒绝Alt1 FAIL (53, 2, 4294967292, 0) None
+VS拒绝Alt2 FAIL (53, 2, 4294967292, 0) None
+拒绝Alt高字节 FAIL (53, 2, 4294967292, 0) None
+拒绝接口2 FAIL (53, 2, 4294967292, 0) None
+拒绝接口高字节 FAIL (53, 2, 4294967292, 0) None
+拒绝SET方向错误 FAIL (53, 2, 4294967292, 0) None
+拒绝SET非零长度 FAIL (53, 2, 4294967292, 0) None
+Open HAL_ERROR后重试 FAIL (53, 2, 4294967292, 0) None
+Open HAL_BUSY后重试 FAIL (53, 2, 4294967292, 0) None
+空闲Close失败保留状态并重试 FAIL (53, 2, 4294967292, 0) None
+busy Abort失败保留PIO及重试 FAIL (53, 2, 4294967292, 0) None
+busy Flush失败保留PIO及重试 FAIL (53, 2, 4294967292, 0) None
+busy Close失败只归还已取消传输 FAIL (53, 2, 4294967292, 0) None
+DeInit关闭Alt1并归还上下文 FAIL (53, 2, 4294967292, 0) None
+DeInit Abort失败保留上下文 FAIL (53, 2, 4294967292, 0) None
+DeInit Close失败保留上下文 FAIL (53, 2, 4294967292, 0) None
+Reset回收并要求重新Commit FAIL (53, 2, 4294967292, 0) None
+Reset Abort失败和Stop恢复 FAIL (53, 2, 4294967292, 0) None
+Reset Close失败和Stop恢复 FAIL (53, 2, 4294967292, 0) None
+重复Alt1保留busy缓冲区 FAIL (53, 2, 4294967292, 0) None
+新Probe独立于当前Commit FAIL (53, 2, 4294967292, 0) None
+Alt0后保留Commit可重新Alt1 FAIL (53, 2, 4294967292, 0) None
+GET_INTERFACE反映实际Alt FAIL (53, 2, 4294967292, 0) None
+Open失败STALL后GET_DESCRIPTOR恢复 FAIL (53, 2, 4294967292, 0) None
+Close失败STALL后GET_STATUS恢复 FAIL (53, 2, 4294967292, 0) None
+失败后强制Status仍被Platform拒绝 FAIL (53, 2, 4294967292, 0) None
+重复DeInit不重复释放 FAIL (53, 2, 4294967292, 0) None
+SET_CONFIGURATION0正常释放 FAIL (53, 2, 4294967292, 0) None
+SET_CONFIGURATION0 Abort失败不得成功Status FAIL (53, 2, 4294967292, 0) None
+SET_CONFIGURATION0 Close失败不得成功Status FAIL (53, 2, 4294967292, 0) None
+Device Stop后可重新配置 FAIL (53, 2, 4294967292, 0) None
+Device Stop失败不释放busy资源 FAIL (53, 2, 4294967292, 0) None
+DataIn完成不自动发送下一包 FAIL (53, 2, 4294967292, 0) None
+Disconnect正常回收 FAIL (53, 2, 4294967292, 0) None
+Alt0 DeInit不操作EP1 FAIL (53, 2, 4294967292, 0) None
+关闭失败后Alt1必须拒绝直到Alt0恢复 FAIL (53, 2, 4294967292, 0) None
+Alt1时非法SET保持端点状态 FAIL (53, 2, 4294967292, 0) None
+失败新Probe不清除活动Commit FAIL (53, 2, 4294967292, 0) None
+失败新Commit保留原活动Commit FAIL (53, 2, 4294967292, 0) None
+{'total': 45, 'passed': 0, 'failed': 45} source_changed []

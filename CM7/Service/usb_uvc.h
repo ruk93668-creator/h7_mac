@@ -42,24 +42,27 @@ SysResult_t USB_UVC_Configure(const VideoStreamConfig_t *config);
 //返回Core注册结果；不初始化摄像头、不启动USB或视频发送
 SysResult_t USB_UVC_Register(void);
 
-//CM7主循环调用：借用与已接受配置一致的YUY2整帧，length必须匹配帧长
+//所属UsbTask调用：借用与已接受配置一致的YUY2整帧，length必须匹配帧长
 //SYS_OK只代表接受借用，不代表USB完成；保持图像有效且不可改写
 //BUSY表示已有帧；INVALID_STATE表示未就绪；INVALID_ARG表示参数非法
 //失败不接受新帧；成功后的归还以有效状态查询frame_owned=false为准
 SysResult_t USB_UVC_SubmitFrame(const uint8_t *frame, uint32_t length);
 
-//CM7主循环调用：登记取消，SYS_OK不代表Abort或归还已经完成
+//所属UsbTask调用：登记取消，SYS_OK不代表Abort或归还已经完成
 //继续Process并查询所有权；Abort失败保留图像，禁止强制回收
 SysResult_t USB_UVC_CancelFrame(void);
 
-//CM7主循环调用：status非空，SYS_OK才允许使用本次快照
+//所属UsbTask调用：status非空，SYS_OK才允许使用本次快照
 //INVALID_STATE可能是Class不存在或IRQ调用，失败时输出不更新
-//合法主循环且输出指针有效时，INVALID_STATE表示没有活动Class
+//合法所属USB任务且输出指针有效时，INVALID_STATE表示没有活动Class
 //当前Class仅在确认停止并归还帧后销毁；IRQ调用的同名错误不能作归还依据
 SysResult_t USB_UVC_GetStreamStatus(UsbUvcStreamStatus_t *status);
 
-//CM7主循环持续调用：推进构包、完成确认、取消和恢复
+//所属UsbTask持续调用：推进构包、完成确认、取消和恢复
 //仅真实完成推进偏移；IRQ中调用直接返回；不负责产生图像
 void USB_UVC_Process(void);
+
+//查询设备侧累计EOF完成数，不代表Windows显示帧数
+uint32_t USB_UVC_GetCompletedFrameCount(void);
 
 #endif

@@ -1289,6 +1289,9 @@ static void Usb_DataInError(uint8_t ep, SysResult_t result)
     //BSP已交付失败结束，清除本次占用并保留原失败码，不上报成功完成
     s_endpoints[1][ep].busy = false;
     s_endpoints[1][ep].last_result = result;
+
+    //先完成Core状态更新，再唤醒所属USB任务处理恢复
+    Usb_Notify(USB_DEVICE_EVENT_IO);
 }
 
 //处理总线复位并恢复EP0
@@ -1383,6 +1386,9 @@ static void Usb_IsoInIncomplete(uint8_t ep)
         s_endpoints[1][ep].last_result = SYS_ERR_IO;
         s_last_result = SYS_ERR_IO;
     }
+
+    //先完成Core状态更新，再唤醒所属USB任务处理恢复
+    Usb_Notify(USB_DEVICE_EVENT_IO);
 }
 
 //转交OUT等时传输未完成事件
@@ -1400,6 +1406,9 @@ static void Usb_IsoOutIncomplete(uint8_t ep)
         s_endpoints[0][ep].last_result = SYS_ERR_IO;
         s_last_result = SYS_ERR_IO;
     }
+
+    //先完成Core状态更新，再唤醒所属USB任务处理恢复
+    Usb_Notify(USB_DEVICE_EVENT_IO);
 }
 
 //准备通用Core和BSP
@@ -1728,6 +1737,9 @@ static void Usb_Sof(uint16_t frame)
 
     //由官方Core转交当前Class，不在Platform调度具体视频源
     (void)USBD_LL_SOF(&s_device);
+
+    //每个真实SOF唤醒UsbTask，不在ISR构包，也不依赖20ms轮询
+    Usb_Notify(USB_DEVICE_EVENT_IO);
 }
 
 //通知上层USB状态已经变化

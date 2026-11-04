@@ -1,0 +1,464 @@
+{
+  "baseline": "4d463ba5506263358331182bd07f3e6c09902fb9",
+  "checks": [
+    {
+      "name": "Official drivers/core/port, BSP USB, CM4 and protected startup unchanged",
+      "pass": true,
+      "detail": []
+    },
+    {
+      "name": "Historical test source/assertions and reports unchanged",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "name": "Lower layers contain no RTOS task or queue types",
+      "pass": true,
+      "detail": []
+    },
+    {
+      "name": "Hardware timing, triple-buffer, EP0 and UVC algorithms unchanged",
+      "pass": true,
+      "detail": [
+        {
+          "file": "CM7/BSP/bsp_dcmi.c",
+          "function": "BSP_DCMI_StartSnapshot",
+          "tokens_identical": true
+        },
+        {
+          "file": "CM7/BSP/bsp_dcmi.c",
+          "function": "BSP_DCMI_StartContinuous",
+          "tokens_identical": true
+        },
+        {
+          "file": "CM7/BSP/bsp_dcmi.c",
+          "function": "BSP_DCMI_Stop",
+          "tokens_identical": true
+        },
+        {
+          "file": "CM7/BSP/bsp_dcmi.c",
+          "function": "BSP_DCMI_ReplaceTarget",
+          "tokens_identical": true
+        },
+        {
+          "file": "CM7/BSP/bsp_dcmi.c",
+          "function": "Dcmi_StreamTryPair",
+          "tokens_identical": true
+        },
+        {
+          "file": "CM7/BSP/bsp_dcmi.c",
+          "function": "Dcmi_StreamM0Complete",
+          "tokens_identical": true
+        },
+        {
+          "file": "CM7/BSP/bsp_dcmi.c",
+          "function": "Dcmi_StreamM1Complete",
+          "tokens_identical": true
+        },
+        {
+          "file": "CM7/BSP/bsp_dcmi.c",
+          "function": "DMA1_Stream0_IRQHandler",
+          "tokens_identical": true
+        },
+        {
+          "file": "CM7/BSP/bsp_dcmi.c",
+          "function": "DCMI_IRQHandler",
+          "tokens_identical": true
+        },
+        {
+          "file": "CM7/Media/Src/camera_capture.c",
+          "function": "CameraStream_Rotate",
+          "tokens_identical": true
+        },
+        {
+          "file": "CM7/Media/Src/camera_capture.c",
+          "function": "CameraStream_GetFrame",
+          "tokens_identical": true
+        },
+        {
+          "file": "CM7/Media/Src/camera_capture.c",
+          "function": "CameraStream_ReleaseFrame",
+          "tokens_identical": true
+        },
+        {
+          "file": "CM7/Media/Src/camera_capture.c",
+          "function": "CameraCapture_Start",
+          "tokens_identical": true
+        },
+        {
+          "file": "CM7/Media/Src/camera_capture.c",
+          "function": "CameraCapture_Init",
+          "tokens_identical": true
+        },
+        {
+          "file": "CM7/Media/Src/camera_capture.c",
+          "function": "CameraCapture_StartStream",
+          "tokens_identical": true
+        },
+        {
+          "file": "CM7/Media/Src/camera_capture.c",
+          "function": "CameraCapture_Stop",
+          "tokens_identical": true
+        },
+        {
+          "file": "CM7/Media/Src/camera_capture.c",
+          "function": "CameraCapture_Process",
+          "tokens_identical": true
+        },
+        {
+          "file": "CM7/Media/Src/camera_capture.c",
+          "function": "CameraCapture_StreamGetFrame",
+          "tokens_identical": true
+        },
+        {
+          "file": "CM7/Media/Src/camera_capture.c",
+          "function": "CameraCapture_StreamReleaseFrame",
+          "tokens_identical": true
+        },
+        {
+          "file": "CM7/Service/usb_uvc_class.c",
+          "function": "UVC_DecodeControl",
+          "tokens_identical": true
+        },
+        {
+          "file": "CM7/Service/usb_uvc_class.c",
+          "function": "UVC_EncodeControl",
+          "tokens_identical": true
+        },
+        {
+          "file": "CM7/Service/usb_uvc_class.c",
+          "function": "UVC_ValidateControl",
+          "tokens_identical": true
+        },
+        {
+          "file": "CM7/Service/usb_uvc_class.c",
+          "function": "UVC_ProbeSet",
+          "tokens_identical": true
+        },
+        {
+          "file": "CM7/Service/usb_uvc_class.c",
+          "function": "UVC_CommitSet",
+          "tokens_identical": true
+        },
+        {
+          "file": "CM7/Service/usb_uvc_class.c",
+          "function": "UVC_Setup",
+          "tokens_identical": true
+        },
+        {
+          "file": "CM7/Service/usb_uvc_class.c",
+          "function": "UVC_EP0_RxReady",
+          "tokens_identical": true
+        },
+        {
+          "file": "CM7/Service/usb_uvc_class.c",
+          "function": "UVC_EP0_TxSent",
+          "tokens_identical": true
+        },
+        {
+          "file": "CM7/Service/usb_uvc_class.c",
+          "function": "UVC_SetStreamAlt",
+          "tokens_identical": true
+        },
+        {
+          "file": "CM7/Service/usb_uvc_class.c",
+          "function": "UVC_DataIn",
+          "tokens_identical": true
+        },
+        {
+          "file": "CM7/Service/usb_uvc_class.c",
+          "function": "UVC_Sof",
+          "tokens_identical": true
+        },
+        {
+          "file": "CM7/Service/usb_uvc_class.c",
+          "function": "UVC_Incomplete",
+          "tokens_identical": true
+        },
+        {
+          "file": "CM7/Service/usb_uvc_class.c",
+          "function": "UVC_ReleaseFrame",
+          "tokens_identical": true
+        },
+        {
+          "file": "CM7/Platform/usb_device.c",
+          "function": "Usb_Setup",
+          "tokens_identical": true
+        },
+        {
+          "file": "CM7/Platform/usb_device.c",
+          "function": "USBD_LL_Transmit",
+          "tokens_identical": true
+        },
+        {
+          "file": "CM7/Platform/usb_device.c",
+          "function": "USBD_LL_PrepareReceive",
+          "tokens_identical": true
+        },
+        {
+          "file": "CM7/Platform/usb_device.c",
+          "function": "USBD_LL_OpenEP",
+          "tokens_identical": true
+        },
+        {
+          "file": "CM7/Platform/usb_device.c",
+          "function": "USBD_LL_CloseEP",
+          "tokens_identical": true
+        },
+        {
+          "file": "CM7/Platform/usb_device.c",
+          "function": "USBD_LL_FlushEP",
+          "tokens_identical": true
+        },
+        {
+          "file": "CM7/Platform/usb_device.c",
+          "function": "USBD_LL_DeInit",
+          "tokens_identical": true
+        }
+      ]
+    },
+    {
+      "name": "UVC scheduler differs only by EOF measurement counter",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "name": "Control never calls Media, Device or USB data-plane APIs",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "name": "Camera task does not operate USB",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "name": "USB task does not operate Media/Device",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "name": "All application queues use static storage",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "name": "Native runtime never uses legacy polling",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "name": "Initcall remains before Scheduler",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "name": "cm7_test actual compiled video configuration",
+      "pass": true,
+      "detail": "a0007800020004001900"
+    },
+    {
+      "name": "cm7_test s_camera_stack",
+      "pass": true,
+      "detail": {
+        "address": "0x20004948",
+        "size": 6144
+      }
+    },
+    {
+      "name": "cm7_test s_usb_stack",
+      "pass": true,
+      "detail": {
+        "address": "0x200061e8",
+        "size": 8192
+      }
+    },
+    {
+      "name": "cm7_test s_control_stack",
+      "pass": true,
+      "detail": {
+        "address": "0x20008290",
+        "size": 3072
+      }
+    },
+    {
+      "name": "cm7_test s_idle_stack",
+      "pass": true,
+      "detail": {
+        "address": "0x20003fb0",
+        "size": 1024
+      }
+    },
+    {
+      "name": "cm7_test s_message_storage",
+      "pass": true,
+      "detail": {
+        "address": "0x200045e8",
+        "size": 720
+      }
+    },
+    {
+      "name": "cm7_test s_message_queues",
+      "pass": true,
+      "detail": {
+        "address": "0x20004480",
+        "size": 360
+      }
+    },
+    {
+      "name": "cm7_test static resources do not overlap",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "name": "cm7_test no legacy runtime or allocator linked",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "name": "cm7_test SVC_Handler vector",
+      "pass": true,
+      "detail": "0x8000395"
+    },
+    {
+      "name": "cm7_test PendSV_Handler vector",
+      "pass": true,
+      "detail": "0x80003f1"
+    },
+    {
+      "name": "cm7_test SysTick_Handler vector",
+      "pass": true,
+      "detail": "0x800d389"
+    },
+    {
+      "name": "cm7_uvc actual compiled video configuration",
+      "pass": true,
+      "detail": "a0007800020001001900"
+    },
+    {
+      "name": "cm7_uvc s_camera_stack",
+      "pass": true,
+      "detail": {
+        "address": "0x20004948",
+        "size": 6144
+      }
+    },
+    {
+      "name": "cm7_uvc s_usb_stack",
+      "pass": true,
+      "detail": {
+        "address": "0x200061e8",
+        "size": 8192
+      }
+    },
+    {
+      "name": "cm7_uvc s_control_stack",
+      "pass": true,
+      "detail": {
+        "address": "0x20008290",
+        "size": 3072
+      }
+    },
+    {
+      "name": "cm7_uvc s_idle_stack",
+      "pass": true,
+      "detail": {
+        "address": "0x20003fb0",
+        "size": 1024
+      }
+    },
+    {
+      "name": "cm7_uvc s_message_storage",
+      "pass": true,
+      "detail": {
+        "address": "0x200045e8",
+        "size": 720
+      }
+    },
+    {
+      "name": "cm7_uvc s_message_queues",
+      "pass": true,
+      "detail": {
+        "address": "0x20004480",
+        "size": 360
+      }
+    },
+    {
+      "name": "cm7_uvc static resources do not overlap",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "name": "cm7_uvc no legacy runtime or allocator linked",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "name": "cm7_uvc SVC_Handler vector",
+      "pass": true,
+      "detail": "0x8000395"
+    },
+    {
+      "name": "cm7_uvc PendSV_Handler vector",
+      "pass": true,
+      "detail": "0x80003f1"
+    },
+    {
+      "name": "cm7_uvc SysTick_Handler vector",
+      "pass": true,
+      "detail": "0x800d389"
+    },
+    {
+      "name": "SDRAM buffers fit MPU window",
+      "pass": true,
+      "detail": {
+        "buffers": [
+          "0xD0000400",
+          "0xD000A400",
+          "0xD0014400"
+        ],
+        "end_exclusive": "0xD001E400",
+        "mpu_end_exclusive": "0xD0020000"
+      }
+    },
+    {
+      "name": "TEST/UVC/CM4 full rebuilds clean",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "name": "CM4 configuration otherwise unchanged",
+      "pass": true,
+      "detail": null
+    }
+  ],
+  "passed": 38,
+  "failed": 0,
+  "firmware": [
+    {
+      "variant": "cm7_test",
+      "sha256": "430930342f4a332e9d031cb45daab35a4b9333714564e027967b96a70ef1042c",
+      "watch_symbols": {
+        "g_camera_task_debug": "0x2000616c",
+        "g_usb_task_debug": "0x2000820c",
+        "g_control_task_debug": "0x20008eb4",
+        "g_bridge_debug": "0x2000040c",
+        "s_camera_bridge": "0x2000035c",
+        "s_usb_bridge": "0x200003dc"
+      }
+    },
+    {
+      "variant": "cm7_uvc",
+      "sha256": "05398ac5174fe835c24721465aee6b1ad408173169a416a38376913c107d3011",
+      "watch_symbols": {
+        "g_camera_task_debug": "0x2000616c",
+        "g_usb_task_debug": "0x2000820c",
+        "g_control_task_debug": "0x20008eb4",
+        "g_bridge_debug": "0x2000040c",
+        "s_camera_bridge": "0x2000035c",
+        "s_usb_bridge": "0x200003dc"
+      }
+    }
+  ],
+  "hardware_verified": false
+}

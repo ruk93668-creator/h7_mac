@@ -1,0 +1,8 @@
+phase02a_bsp 0 PASS 0 None
+phase02a_bsp 1 PASS 0 None
+phase02a_bsp 2 PASS 0 None
+phase02a_bsp 3 PASS 0 None
+phase02a_bsp 4 PASS 0 None
+phase02a_bsp 5 PASS 0 None
+phase02a_bsp 6 PASS 0 None
+{'total': 7, 'passed': 7, 'failed': 0}

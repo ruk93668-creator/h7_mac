@@ -1,0 +1,94 @@
+{
+  "summary": {
+    "total": 11,
+    "passed": 11,
+    "failed": 0
+  },
+  "cases": [
+    {
+      "id": 0,
+      "pass": true,
+      "failure_line": 0,
+      "error": null,
+      "name": "TEST SOF通知无视频"
+    },
+    {
+      "id": 1,
+      "pass": true,
+      "failure_line": 0,
+      "error": null,
+      "name": "SOF只通知不在ISR发送"
+    },
+    {
+      "id": 2,
+      "pass": true,
+      "failure_line": 0,
+      "error": null,
+      "name": "真实完成通知不提前推进偏移"
+    },
+    {
+      "id": 3,
+      "pass": true,
+      "failure_line": 0,
+      "error": null,
+      "name": "Incomplete取消成功"
+    },
+    {
+      "id": 4,
+      "pass": true,
+      "failure_line": 0,
+      "error": null,
+      "name": "Incomplete Abort失败保留图像并重试"
+    },
+    {
+      "id": 5,
+      "pass": true,
+      "failure_line": 0,
+      "error": null,
+      "name": "Alt0通知与释放"
+    },
+    {
+      "id": 6,
+      "pass": true,
+      "failure_line": 0,
+      "error": null,
+      "name": "Reset通知与释放"
+    },
+    {
+      "id": 7,
+      "pass": true,
+      "failure_line": 0,
+      "error": null,
+      "name": "Disconnect通知与释放"
+    },
+    {
+      "id": 8,
+      "pass": true,
+      "failure_line": 0,
+      "error": null,
+      "name": "重复旧DataIn不推进新Token"
+    },
+    {
+      "id": 9,
+      "pass": true,
+      "failure_line": 0,
+      "error": null,
+      "name": "实际1023B包长整帧完成"
+    },
+    {
+      "id": 10,
+      "pass": true,
+      "failure_line": 0,
+      "error": null,
+      "name": "25FPS配置对应40个SOF节奏"
+    }
+  ],
+  "hardware_verified": false,
+  "command": [
+    "C:\\Users\\29062\\AppData\\Local\\Programs\\Python\\Python311\\python.exe",
+    "D:\\32\\STM32H7\\h7_mac\\Tests\\NativeRuntimeStage02\\run_usb.py",
+    "phase02b",
+    "--count",
+    "11"
+  ]
+}

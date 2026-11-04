@@ -1,5 +1,6 @@
 #include "app_tasks.h"
 #include "app_events.h"
+#include "app_messages.h"
 #include "Tasks/camera_task.h"
 #include "Tasks/usb_task.h"
 #include "Tasks/control_task.h"
@@ -26,6 +27,8 @@ SysResult_t App_TasksCreate(void)
 
     //先准备普通C事件后端，再创建接收通知的任务
     result = App_EventsInit();
+    if (result == SYS_OK)
+        result = App_MessagesInit();
     if (result == SYS_OK)
     {
 

@@ -1,0 +1,5 @@
+*.o
+*.axf
+__pycache__/
+baseline/
+cm7_uvc_initial.log

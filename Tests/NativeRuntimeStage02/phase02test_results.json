@@ -1,0 +1,89 @@
+{
+  "summary": {
+    "total": 8,
+    "passed": 8,
+    "failed": 0
+  },
+  "cases": [
+    {
+      "id": 0,
+      "pass": true,
+      "failure_line": 0,
+      "error": null,
+      "assertions": [],
+      "check_line": 0,
+      "name": "TEST冷启动不启动Camera"
+    },
+    {
+      "id": 1,
+      "pass": true,
+      "failure_line": 0,
+      "error": null,
+      "assertions": [],
+      "check_line": 0,
+      "name": "TEST配置完成"
+    },
+    {
+      "id": 2,
+      "pass": true,
+      "failure_line": 0,
+      "error": null,
+      "assertions": [],
+      "check_line": 0,
+      "name": "100次SOF无视频发送"
+    },
+    {
+      "id": 3,
+      "pass": true,
+      "failure_line": 0,
+      "error": null,
+      "assertions": [],
+      "check_line": 0,
+      "name": "TEST协调停止"
+    },
+    {
+      "id": 4,
+      "pass": true,
+      "failure_line": 0,
+      "error": null,
+      "assertions": [],
+      "check_line": 0,
+      "name": "TEST设备描述符"
+    },
+    {
+      "id": 5,
+      "pass": true,
+      "failure_line": 0,
+      "error": null,
+      "assertions": [],
+      "check_line": 0,
+      "name": "TEST设置地址"
+    },
+    {
+      "id": 6,
+      "pass": true,
+      "failure_line": 0,
+      "error": null,
+      "assertions": [],
+      "check_line": 0,
+      "name": "TEST断线无相机资源"
+    },
+    {
+      "id": 7,
+      "pass": true,
+      "failure_line": 0,
+      "error": null,
+      "assertions": [],
+      "check_line": 0,
+      "name": "TEST Reset恢复EP0双方向"
+    }
+  ],
+  "hardware_verified": false,
+  "command": [
+    "C:\\Users\\29062\\AppData\\Local\\Programs\\Python\\Python311\\python.exe",
+    "D:\\32\\STM32H7\\h7_mac\\Tests\\NativeRuntimeStage02\\run_native.py",
+    "phase02test",
+    "--count",
+    "8"
+  ]
+}
