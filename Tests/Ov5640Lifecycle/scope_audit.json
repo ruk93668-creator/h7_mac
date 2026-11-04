@@ -1,0 +1,37 @@
+[
+  {
+    "file": "CM7/Device/Src/device.c",
+    "unchanged": true,
+    "sha256": "009edf2934d91e88d527e36de899829c81b8704e7a83aa58a73da55fb11fd15f"
+  },
+  {
+    "file": "CM7/Device/Inc/device.h",
+    "unchanged": true,
+    "sha256": "3b7127cd144ea14bf1501784f880fe3fc2c2a4513cd77bf84396f6e00da97700"
+  },
+  {
+    "file": "CM7/BSP/bsp_camera.c",
+    "unchanged": true,
+    "sha256": "5db686df2cd0e2b7b557a85dc343c37ef121ad5224ea2f1370737b6044ce5a62"
+  },
+  {
+    "file": "CM7/BSP/bsp_dcmi.c",
+    "unchanged": true,
+    "sha256": "e61f9d4a000fd2af57f1548794588418ba191e121e7bfb839c59851e7c3a591b"
+  },
+  {
+    "file": "CM7/Device/Components/OV5640/ov5640.c",
+    "unchanged": true,
+    "sha256": "f13efaeb4e51343e443d4c19965bb47826cec6b32ada980dff9c84f1f918a121"
+  },
+  {
+    "file": "CM7/Device/Components/OV5640/ov5640_reg.c",
+    "unchanged": true,
+    "sha256": "537703a82c28cf1e6797ad31f9e046323a7db65b6c35dca45100c3a22b81326e"
+  },
+  {
+    "file": "CM7/Application/app_uvc_bridge.c",
+    "unchanged": true,
+    "sha256": "080912b3b8baec9d195dbfe516ce7b991973d9005aaad0ff7091abf309aefa87"
+  }
+]

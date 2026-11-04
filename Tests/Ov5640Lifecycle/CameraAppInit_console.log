@@ -1,0 +1,13 @@
+Snapshot/config identity PASS 0
+Stream repeat PASS 0
+Snapshot repeat and cross start PASS 0
+Stream cross start PASS 0
+missing device retry PASS 0
+missing ops PASS 0
+sensor failure retry PASS 0
+Media failure retry without reconfigure PASS 0
+start error propagation PASS 0
+Snapshot release then Stream PASS 0
+Stream stop then Snapshot PASS 0
+Process forwarding PASS 0
+runtime update rejected PASS 0

@@ -1,0 +1,22 @@
+[
+  {
+    "suite": "CameraContextRefactor",
+    "exit": 0
+  },
+  {
+    "suite": "CameraStreamState",
+    "exit": 0
+  },
+  {
+    "suite": "DcmiReplaceTarget",
+    "exit": 1
+  },
+  {
+    "suite": "UvcBridge",
+    "exit": 0
+  },
+  {
+    "suite": "VideoConfig",
+    "exit": 0
+  }
+]

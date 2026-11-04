@@ -1,0 +1,298 @@
+{
+  "summary": {
+    "total": 32,
+    "passed": 32,
+    "failed": 0
+  },
+  "cases": [
+    {
+      "id": 0,
+      "name": "Y8配置保持待机",
+      "result": "PASS",
+      "failure_line": 0,
+      "emulator_error": null,
+      "unsafe_sensor_stops": 0,
+      "dma_before_sensor": 0
+    },
+    {
+      "id": 1,
+      "name": "RGB565配置保持待机",
+      "result": "PASS",
+      "failure_line": 0,
+      "emulator_error": null,
+      "unsafe_sensor_stops": 0,
+      "dma_before_sensor": 0
+    },
+    {
+      "id": 2,
+      "name": "YUV422配置保持待机",
+      "result": "PASS",
+      "failure_line": 0,
+      "emulator_error": null,
+      "unsafe_sensor_stops": 0,
+      "dma_before_sensor": 0
+    },
+    {
+      "id": 3,
+      "name": "Device正常启停",
+      "result": "PASS",
+      "failure_line": 0,
+      "emulator_error": null,
+      "unsafe_sensor_stops": 0,
+      "dma_before_sensor": 0
+    },
+    {
+      "id": 4,
+      "name": "未配置拒绝启动",
+      "result": "PASS",
+      "failure_line": 0,
+      "emulator_error": null,
+      "unsafe_sensor_stops": 0,
+      "dma_before_sensor": 0
+    },
+    {
+      "id": 5,
+      "name": "RUNNING拒绝重配置",
+      "result": "PASS",
+      "failure_line": 0,
+      "emulator_error": null,
+      "unsafe_sensor_stops": 0,
+      "dma_before_sensor": 0
+    },
+    {
+      "id": 6,
+      "name": "非法配置及BUSY拒绝",
+      "result": "PASS",
+      "failure_line": 0,
+      "emulator_error": null,
+      "unsafe_sensor_stops": 0,
+      "dma_before_sensor": 0
+    },
+    {
+      "id": 7,
+      "name": "错误ID拒绝配置",
+      "result": "PASS",
+      "failure_line": 0,
+      "emulator_error": null,
+      "unsafe_sensor_stops": 0,
+      "dma_before_sensor": 0
+    },
+    {
+      "id": 8,
+      "name": "配置IO失败后重试",
+      "result": "PASS",
+      "failure_line": 0,
+      "emulator_error": null,
+      "unsafe_sensor_stops": 0,
+      "dma_before_sensor": 0
+    },
+    {
+      "id": 9,
+      "name": "启动IO错误由框架进入ERROR",
+      "result": "PASS",
+      "failure_line": 0,
+      "emulator_error": null,
+      "unsafe_sensor_stops": 0,
+      "dma_before_sensor": 0
+    },
+    {
+      "id": 10,
+      "name": "停止IO错误不虚假READY",
+      "result": "PASS",
+      "failure_line": 0,
+      "emulator_error": null,
+      "unsafe_sensor_stops": 0,
+      "dma_before_sensor": 0
+    },
+    {
+      "id": 11,
+      "name": "Stream启停顺序",
+      "result": "PASS",
+      "failure_line": 0,
+      "emulator_error": null,
+      "unsafe_sensor_stops": 0,
+      "dma_before_sensor": 0
+    },
+    {
+      "id": 12,
+      "name": "Snapshot启停顺序",
+      "result": "PASS",
+      "failure_line": 0,
+      "emulator_error": null,
+      "unsafe_sensor_stops": 0,
+      "dma_before_sensor": 0
+    },
+    {
+      "id": 13,
+      "name": "重复Stream不重复启动传感器",
+      "result": "PASS",
+      "failure_line": 0,
+      "emulator_error": null,
+      "unsafe_sensor_stops": 0,
+      "dma_before_sensor": 0
+    },
+    {
+      "id": 14,
+      "name": "交叉启动不停止现有采集",
+      "result": "PASS",
+      "failure_line": 0,
+      "emulator_error": null,
+      "unsafe_sensor_stops": 0,
+      "dma_before_sensor": 0
+    },
+    {
+      "id": 15,
+      "name": "Snapshot持有帧阻止停止",
+      "result": "PASS",
+      "failure_line": 0,
+      "emulator_error": null,
+      "unsafe_sensor_stops": 0,
+      "dma_before_sensor": 0
+    },
+    {
+      "id": 16,
+      "name": "Stream IN_USE阻止停止",
+      "result": "PASS",
+      "failure_line": 0,
+      "emulator_error": null,
+      "unsafe_sensor_stops": 0,
+      "dma_before_sensor": 0
+    },
+    {
+      "id": 17,
+      "name": "故障DRAINING等待归还",
+      "result": "PASS",
+      "failure_line": 0,
+      "emulator_error": null,
+      "unsafe_sensor_stops": 0,
+      "dma_before_sensor": 0
+    },
+    {
+      "id": 18,
+      "name": "DCMI停止失败后重试",
+      "result": "PASS",
+      "failure_line": 0,
+      "emulator_error": null,
+      "unsafe_sensor_stops": 0,
+      "dma_before_sensor": 0
+    },
+    {
+      "id": 19,
+      "name": "Media启动失败安全回滚",
+      "result": "PASS",
+      "failure_line": 0,
+      "emulator_error": null,
+      "unsafe_sensor_stops": 0,
+      "dma_before_sensor": 0
+    },
+    {
+      "id": 20,
+      "name": "回滚停止失败优先报告",
+      "result": "PASS",
+      "failure_line": 0,
+      "emulator_error": null,
+      "unsafe_sensor_stops": 0,
+      "dma_before_sensor": 0
+    },
+    {
+      "id": 21,
+      "name": "Media故障自动安全停止传感器",
+      "result": "PASS",
+      "failure_line": 0,
+      "emulator_error": null,
+      "unsafe_sensor_stops": 0,
+      "dma_before_sensor": 0
+    },
+    {
+      "id": 22,
+      "name": "DRAINING释放后自动停止传感器",
+      "result": "PASS",
+      "failure_line": 0,
+      "emulator_error": null,
+      "unsafe_sensor_stops": 0,
+      "dma_before_sensor": 0
+    },
+    {
+      "id": 23,
+      "name": "配置总线初始化失败不启动",
+      "result": "PASS",
+      "failure_line": 0,
+      "emulator_error": null,
+      "unsafe_sensor_stops": 0,
+      "dma_before_sensor": 0
+    },
+    {
+      "id": 24,
+      "name": "传感器启动失败不启动DMA",
+      "result": "PASS",
+      "failure_line": 0,
+      "emulator_error": null,
+      "unsafe_sensor_stops": 0,
+      "dma_before_sensor": 0
+    },
+    {
+      "id": 25,
+      "name": "传感器停止失败保留ERROR",
+      "result": "PASS",
+      "failure_line": 0,
+      "emulator_error": null,
+      "unsafe_sensor_stops": 0,
+      "dma_before_sensor": 0
+    },
+    {
+      "id": 26,
+      "name": "未初始化Stop拒绝",
+      "result": "PASS",
+      "failure_line": 0,
+      "emulator_error": null,
+      "unsafe_sensor_stops": 0,
+      "dma_before_sensor": 0
+    },
+    {
+      "id": 27,
+      "name": "ID读取IO错误",
+      "result": "PASS",
+      "failure_line": 0,
+      "emulator_error": null,
+      "unsafe_sensor_stops": 0,
+      "dma_before_sensor": 0
+    },
+    {
+      "id": 28,
+      "name": "待机写入失败不能标记配置成功",
+      "result": "PASS",
+      "failure_line": 0,
+      "emulator_error": null,
+      "unsafe_sensor_stops": 0,
+      "dma_before_sensor": 0
+    },
+    {
+      "id": 29,
+      "name": "停止后重启不重复配置",
+      "result": "PASS",
+      "failure_line": 0,
+      "emulator_error": null,
+      "unsafe_sensor_stops": 0,
+      "dma_before_sensor": 0
+    },
+    {
+      "id": 30,
+      "name": "Snapshot释放后自动停止传感器",
+      "result": "PASS",
+      "failure_line": 0,
+      "emulator_error": null,
+      "unsafe_sensor_stops": 0,
+      "dma_before_sensor": 0
+    },
+    {
+      "id": 31,
+      "name": "Start及Stop回调重入返回BUSY",
+      "result": "PASS",
+      "failure_line": 0,
+      "emulator_error": null,
+      "unsafe_sensor_stops": 0,
+      "dma_before_sensor": 0
+    }
+  ],
+  "hardware_verified": false
+}

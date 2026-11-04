@@ -1,0 +1,35 @@
+USB not ready PASS 0
+query error in IDLE PASS 0
+no Media frame PASS 0
+valid acquisition to HELD PASS 0
+successful loan PASS 0
+Submit BUSY PASS 0
+Submit invalid state PASS 0
+Submit IO PASS 0
+Submit invalid arg PASS 0
+Release failure no resubmit PASS 0
+invalid width PASS 0
+invalid height PASS 0
+invalid format PASS 0
+invalid byte length PASS 0
+null data PASS 0
+invalid frame Release retry PASS 0
+owned WAIT_FRAME PASS 0
+owned WAIT_SLOT PASS 0
+owned IN_FLIGHT PASS 0
+owned WAIT_CONFIRM PASS 0
+owned CANCELLING PASS 0
+owned RECOVERY PASS 0
+ownership returned PASS 0
+safe Class destruction PASS 0
+loan query IO PASS 0
+loan query BUSY PASS 0
+loan query TIMEOUT PASS 0
+Media release retry after USB return PASS 0
+IRQ cannot interpret class absence PASS 0
+PRIMASK cannot interpret class absence PASS 0
+IRQ no side effects PASS 0
+PRIMASK no side effects PASS 0
+two frame cycles PASS 0
+Alt0 between acquisition and submit PASS 0
+class absent in IDLE PASS 0

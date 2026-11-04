@@ -33,6 +33,9 @@ SysResult_t CameraCapture_StartStream(void);
 //停止当前采集，必要时恢复底层硬件
 SysResult_t CameraCapture_Stop(void);
 
+//确认硬件已停止且所有帧引用已释放，DRAINING时返回false
+bool CameraCapture_IsStopped(void);
+
 //查询最近一次采集结果
 SysResult_t CameraCapture_GetLastResult(void);
 

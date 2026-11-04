@@ -9,6 +9,10 @@
 static OV5640_Object_t s_sensor;
 static SysResult_t s_bus_result;
 
+//配置期间保持待机，完整写表后才允许Device启动
+static bool s_configuring;
+static bool s_sensor_configured;
+
 //按旧工程保留PCLK配置和行帧周期，不声明实测频率
 static const struct
 {
@@ -30,6 +34,12 @@ static SysResult_t Ov5640_MapPixelFormat(
 
 //初始化摄像头板级接口
 static SysResult_t Ov5640_Init(Device_t *device);
+
+//由Device生命周期开启传感器输出
+static SysResult_t Ov5640_Start(Device_t *device);
+
+//由Device生命周期停止传感器输出
+static SysResult_t Ov5640_Stop(Device_t *device);
 
 //读取并检查摄像头芯片ID
 static SysResult_t Ov5640_ReadId(
@@ -74,12 +84,12 @@ static SysResult_t Ov5640_Configure(
 	const CameraConfig_t *config
 );
 
-//绑定设备生命周期回调，当前只提供初始化
+//绑定设备生命周期，状态统一由Device框架提交
 static const DeviceLifecycleOps_t s_camera_lifecycle =
 {
 	.init  = Ov5640_Init,
-	.start = NULL,
-	.stop  = NULL
+	.start = Ov5640_Start,
+	.stop  = Ov5640_Stop
 };
 
 //绑定摄像头专有操作
@@ -140,7 +150,41 @@ static SysResult_t Ov5640_Init(Device_t *device)
 {
 	if ( device == NULL)
 		return SYS_ERR_INVALID_ARG;
+
+	s_sensor_configured = false;
 	return BSP_Camera_Init();
+}
+
+static SysResult_t Ov5640_Start(Device_t *device)
+{
+	if ( device == NULL)
+		return SYS_ERR_INVALID_ARG;
+	if ( s_configuring)
+		return SYS_ERR_BUSY;
+	if ( !s_sensor_configured)
+		return SYS_ERR_INVALID_STATE;
+
+	//每次生命周期操作独立记录总线错误
+	s_bus_result = SYS_OK;
+	if ( OV5640_Start(&s_sensor) != OV5640_OK)
+		return s_bus_result != SYS_OK ? s_bus_result : SYS_ERR_IO;
+
+	return SYS_OK;
+}
+
+static SysResult_t Ov5640_Stop(Device_t *device)
+{
+	if ( device == NULL)
+		return SYS_ERR_INVALID_ARG;
+	if ( s_configuring)
+		return SYS_ERR_BUSY;
+
+	//Application先停止Media并归还帧，再调用Device_Stop
+	s_bus_result = SYS_OK;
+	if ( OV5640_Stop(&s_sensor) != OV5640_OK)
+		return s_bus_result != SYS_OK ? s_bus_result : SYS_ERR_IO;
+
+	return SYS_OK;
 }
 
 //读取0x300A和0x300B，通信成功后检查芯片型号
@@ -192,6 +236,7 @@ static int32_t Ov5640_BusTransfer(
 )
 {
 	uint16_t i;
+	uint8_t value;
 
 	if ( s_bus_result != SYS_OK)
 		return s_bus_result;
@@ -207,7 +252,15 @@ static int32_t Ov5640_BusTransfer(
 		 i++)
 	{
 		if ( write)
-			s_bus_result = BSP_Camera_WriteReg((uint16_t)(reg + i), data[i]);
+		{
+			value = data[i];
+
+			//组件初始化表也会唤醒传感器，配置阶段改为软件待机
+			if ( s_configuring && reg + i == OV5640_SYSTEM_CTROL0 && value == 0x02U)
+				value = 0x42U;
+
+			s_bus_result = BSP_Camera_WriteReg((uint16_t)(reg + i), value);
+		}
 		else
 			s_bus_result = BSP_Camera_ReadReg((uint16_t)(reg + i), &data[i]);
 		if ( s_bus_result != SYS_OK)
@@ -281,7 +334,7 @@ static SysResult_t Ov5640_Configure(
 	if ( result != SYS_OK)
 		return result;
 
-	if ( camera->base.state == DEVICE_STATE_BUSY)
+	if ( s_configuring || camera->base.state == DEVICE_STATE_BUSY)
 		return SYS_ERR_BUSY;
 	if ( camera->base.state != DEVICE_STATE_READY)
 		return SYS_ERR_INVALID_STATE;
@@ -290,7 +343,10 @@ static SysResult_t Ov5640_Configure(
 	result = Ov5640_ReadId(camera, &id);
 	if ( result != SYS_OK)
 		return result;
-	camera->base.state = DEVICE_STATE_BUSY;
+
+	//专有配置不改Device状态，失败后禁止启动半配置传感器
+	s_configuring = true;
+	s_sensor_configured = false;
 
 	//清除组件初始化标记，允许失败后重新写表
 	s_sensor.IsInitialized = 0U;
@@ -331,9 +387,9 @@ static SysResult_t Ov5640_Configure(
 			goto done;
 	}
 
-	//这里只开启传感器输出，不启动DCMI、DMA或SDRAM
+	//关闭彩条并保持待机，由Device_Start统一开启输出
 	if ( OV5640_ColorbarModeConfig(&s_sensor, COLORBAR_MODE_DISABLE) != OV5640_OK ||
-		OV5640_Start(&s_sensor) != OV5640_OK)
+		OV5640_Stop(&s_sensor) != OV5640_OK)
 		goto component_error;
 
 	result = SYS_OK;
@@ -342,6 +398,7 @@ component_error:
 	//组件的-1不能直接当作通用参数错误
 	result = s_bus_result != SYS_OK ? s_bus_result : SYS_ERR_IO;
 done:
-	camera->base.state = DEVICE_STATE_READY;
+	s_sensor_configured = (result == SYS_OK);
+	s_configuring = false;
 	return result;
 }

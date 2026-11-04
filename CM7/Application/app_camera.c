@@ -13,8 +13,14 @@ static bool s_camera_config_set;
 static bool s_camera_configured;
 static bool s_camera_initialized;
 
+//仅通过Device生命周期控制传感器输出
+static Device_t *s_camera_device;
+
 //公共初始化，只配置OV5640和Media，不启动采集
 static SysResult_t App_CameraPrepare(void);
+
+//先启动传感器，再沿用Media的采集入口
+static SysResult_t App_CameraStart(bool stream);
 
 SysResult_t App_CameraConfigure(const CameraConfig_t *config)
 {
@@ -43,32 +49,46 @@ const CameraConfig_t *App_CameraGetConfig(void)
 
 SysResult_t App_CameraInit(void)
 {
-	SysResult_t result;
-
-	result = App_CameraPrepare();
-	if ( result != SYS_OK)
-		return result;
-
-	//由Media拒绝重复启动、交叉启动和未恢复故障
-	return CameraCapture_Start();
+	return App_CameraStart(false);
 }
 
 SysResult_t App_CameraInitStream(void)
 {
+	return App_CameraStart(true);
+}
+
+SysResult_t App_CameraStop(void)
+{
 	SysResult_t result;
 
-	result = App_CameraPrepare();
+	if ( !s_camera_initialized || s_camera_device == NULL)
+		return SYS_ERR_INVALID_STATE;
+
+	//先确认DCMI和DMA安全停止，失败时保留传感器状态
+	result = CameraCapture_Stop();
 	if ( result != SYS_OK)
 		return result;
 
-	//沿用同一份公共配置，由Media管理连续采集状态
-	return CameraCapture_StartStream();
+	//故障停止可能进入DRAINING，必须等待消费者归还帧
+	if ( !CameraCapture_IsStopped())
+		return SYS_ERR_BUSY;
+
+	//已停止的传感器不重复提交生命周期操作
+	if ( s_camera_device->state == DEVICE_STATE_READY)
+		return SYS_OK;
+
+	return Device_Stop(s_camera_device);
 }
 
 void App_CameraRun(void)
 {
 	//推进采集流程，完整图像交给业务获取和释放
 	CameraCapture_Process();
+
+	//Media完成故障恢复或业务释放后，再停止传感器输出
+	if ( s_camera_initialized && CameraCapture_IsStopped() &&
+		s_camera_device != NULL && s_camera_device->state == DEVICE_STATE_RUNNING)
+		(void)App_CameraStop();
 }
 
 static SysResult_t App_CameraPrepare(void)
@@ -95,6 +115,7 @@ static SysResult_t App_CameraPrepare(void)
 		device = Device_Find("ov5640");
 		if ( device == NULL)
 			return SYS_ERR_NOT_FOUND;
+		s_camera_device = device;
 		camera = FRAMEWORK_CONTAINER_OF(device, Ov5640Device_t, base);
 		if ( camera->ops == NULL || camera->ops->configure == NULL)
 			return SYS_ERR_NOT_SUPPORTED;
@@ -113,4 +134,36 @@ static SysResult_t App_CameraPrepare(void)
 
 	s_camera_initialized = true;
 	return SYS_OK;
+}
+
+static SysResult_t App_CameraStart(bool stream)
+{
+	SysResult_t result;
+	SysResult_t stop_result;
+	bool sensor_started = false;
+
+	result = App_CameraPrepare();
+	if ( result != SYS_OK)
+		return result;
+
+	//重复采集由Media拒绝，不重复启动已经运行的传感器
+	if ( s_camera_device->state == DEVICE_STATE_READY)
+	{
+		result = Device_Start(s_camera_device);
+		if ( result != SYS_OK)
+			return result;
+		sensor_started = true;
+	}
+	else if ( s_camera_device->state == DEVICE_STATE_BUSY)
+		return SYS_ERR_BUSY;
+	else if ( s_camera_device->state != DEVICE_STATE_RUNNING)
+		return SYS_ERR_INVALID_STATE;
+
+	result = stream ? CameraCapture_StartStream() : CameraCapture_Start();
+	if ( result == SYS_OK || !sensor_started)
+		return result;
+
+	//本轮采集启动失败，先恢复Media，再停止本轮开启的传感器
+	stop_result = App_CameraStop();
+	return stop_result != SYS_OK ? stop_result : result;
 }

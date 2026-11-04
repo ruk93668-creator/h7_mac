@@ -16,6 +16,9 @@ SysResult_t App_CameraInit(void);
 //主循环初始化并启动连续采集，停止并释放占用后才允许切换模式
 SysResult_t App_CameraInitStream(void);
 
+//先停止Media并等待帧归还，再通过Device_Stop停止传感器
+SysResult_t App_CameraStop(void);
+
 //推进Media采集流程，由App_Run持续调用
 void App_CameraRun(void);
 

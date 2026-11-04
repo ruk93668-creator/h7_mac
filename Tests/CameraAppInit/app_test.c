@@ -37,11 +37,25 @@ SysResult_t CameraCapture_StartStream(void)
     if (start_result != SYS_OK) return start_result;
     mode=2; return SYS_OK;
 }
+//生命周期桩只模拟Device状态，真实框架与组件由Ov5640Lifecycle集成测试覆盖
+SysResult_t Device_Start(Device_t *dev)
+{
+    if (dev->state != DEVICE_STATE_READY) return SYS_ERR_INVALID_STATE;
+    dev->state=DEVICE_STATE_RUNNING;return SYS_OK;
+}
+SysResult_t Device_Stop(Device_t *dev)
+{
+    if (dev->state != DEVICE_STATE_RUNNING) return SYS_ERR_INVALID_STATE;
+    dev->state=DEVICE_STATE_READY;return SYS_OK;
+}
+SysResult_t CameraCapture_Stop(void) {mode=0;return SYS_OK;}
+bool CameraCapture_IsStopped(void) {return mode==0;}
 void CameraCapture_Process(void) { process_calls++; }
 #define CHECK(x) do { if (!(x)) return __LINE__; } while (0)
 int App_TestRun(unsigned id)
 {
     device.ops=&ops;
+    device.base.state=DEVICE_STATE_READY;
     switch(id)
     {
     case 0:

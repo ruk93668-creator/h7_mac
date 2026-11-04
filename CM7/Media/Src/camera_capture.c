@@ -602,6 +602,14 @@ SysResult_t CameraCapture_Stop(void)
     return SYS_OK;
 }
 
+//只查询完整停止条件，不改变采集和缓冲区状态
+bool CameraCapture_IsStopped(void)
+{
+    return s_capture.initialized &&
+        s_capture.mode == CAMERA_CAPTURE_MODE_NONE &&
+        s_capture.state == CAMERA_CAPTURE_IDLE;
+}
+
 //返回最近一次采集结果
 SysResult_t CameraCapture_GetLastResult(void)
 {

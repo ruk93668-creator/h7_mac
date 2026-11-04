@@ -19,7 +19,7 @@ typedef struct
 		uint16_t *id
 	);
 
-	//开机配置160x120输出，支持Y8、RGB565和YUV422
+	//配置160x120并保持待机，成功后通过Device_Start开启输出
 	SysResult_t (*configure)(
 		Ov5640Device_t *camera,
 		const CameraConfig_t *config
