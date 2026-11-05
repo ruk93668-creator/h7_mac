@@ -25,7 +25,7 @@ with axf.open('rb') as f:
 rows=[]
 for case in range(args.count):
     u=Uc(UC_ARCH_ARM,UC_MODE_THUMB|UC_MODE_MCLASS)
-    for a,n in [(0x08000000,0x100000),(0x20000000,0x40000),(0xD0000000,0x20000),(0x01000000,0x1000)]:u.mem_map(a,n)
+    for a,n in [(0x08000000,0x100000),(0x20000000,0x40000),(0xD0000000,0x400000),(0x01000000,0x1000)]:u.mem_map(a,n)
     for a,d in sections:u.mem_write(a,d)
     u.reg_write(UC_ARM_REG_SP,0x2003fff0);u.reg_write(UC_ARM_REG_LR,0x01000001);u.reg_write(UC_ARM_REG_R0,case)
     error=None

@@ -109,18 +109,18 @@ static int Stage02_Case(uint32_t id)
             if(i%33U==0U)EQ(CameraFrame((i/33U)&1U),0);
             Sof();if(s_tx_transfer[1].active)CompleteUsb();Cam();Control();
         }
-        EQ(g_usb_task_debug.completed_frames>0,true);EQ(g_usb_task_debug.completed_frames<25,true);
+        EQ(g_usb_task_debug.completed_frames,25U);
         EQ(g_usb_task_debug.measured_fps_milli,g_usb_task_debug.completed_frames*1000U);
         EQ(g_camera_task_debug.dropped_frames>0,true);return 0;
     }
     if(id==30){for(i=0;i<75;i++)Tick();Usb();EQ(g_usb_task_debug.max_sof_gap>=75,true);EQ(g_usb_task_debug.coalesced_sof_slots>=74,true);return 0;}
     if(id==31){Select(RUNTIME_TARGET_CAMERA);EQ(App_EventsWait(RUNTIME_TARGET_CAMERA,0,&n),SYS_OK);EQ((n&RUNTIME_EVENT_CAMERA_PROGRESS)!=0,true);return 0;}
-    if(id==3){held=s_capture.stream.consumer_index;for(i=0;i<30;i++)EQ(CameraFrame(i&1),0);EQ(s_capture.stream.consumer_index,held);EQ(s_capture.stream.buffers[held].state,CAMERA_BUFFER_IN_USE);EQ(CameraCapture_GetStats(&stats),SYS_OK);EQ(stats.dropped_frames>=30,true);EQ(g_bridge_debug.acquired_frames,1);return 0;}
+    if(id==3){held=s_capture.stream.in_use_index;for(i=0;i<30;i++)EQ(CameraFrame(i&1),0);EQ(s_capture.stream.in_use_index,held);EQ(s_capture.stream.buffers[held].state,CAMERA_BUFFER_IN_USE);EQ(CameraCapture_GetStats(&stats),SYS_OK);EQ(stats.dropped_frames==29,true);EQ(g_bridge_debug.acquired_frames,1);return 0;}
     if(id==4){EQ(Stop(),0);EQ(sensor_stops,1);return 0;}
     if(id==5){fault=20;Select(RUNTIME_TARGET_CONTROL);EQ(ControlTask_RequestStop(),SYS_OK);Control();for(i=0;i<5;i++)Pump();EQ(s_camera_bridge.held,true);EQ(sensor_stops,0);EQ(s_uvc_payload.frame!=NULL,true);fault=0;for(i=0;i<4;i++)Pump();EQ(Stop(),0);return 0;}
     if(id==6||id==7||id==8){Select(RUNTIME_TARGET_USB);if(id==6)HAL_PCD_ResetCallback(&s_pcd);else if(id==7)HAL_PCD_DisconnectCallback(&s_pcd);else Request(1,USB_REQ_SET_INTERFACE,0,1,0);for(i=0;i<5;i++)Pump();EQ(g_bridge_debug.released_frames,1);EQ(s_camera_bridge.held,false);return 0;}
     if(id==9){fake_dcmi_events.flags=BSP_DCMI_EVENT_ERROR;fake_dcmi_events.result=SYS_ERR_IO;test_ipsr=16U+DMA1_Stream0_IRQn;camera_error_callback(BSP_DCMI_NOTIFY_ERROR,camera_error_context);test_ipsr=0;Cam();EQ(fake_dma_active,false);EQ(s_capture.state,CAMERA_CAPTURE_DRAINING);EQ(s_camera_bridge.held,true);Control();for(i=0;i<10;i++)Pump();EQ(g_bridge_debug.released_frames,1);EQ(sensor_stops,1);EQ(g_control_task_debug.last_fault,SYS_ERR_IO);return 0;}
-    if(id==10){USB_UVC_CancelFrame();Usb();Usb();held=s_capture.stream.consumer_index;s_capture.stream.consumer_index=UINT8_MAX;Cam();EQ(s_camera_bridge.held,true);EQ(g_bridge_debug.released_frames,0);s_capture.stream.consumer_index=held;Cam();Usb();EQ(g_bridge_debug.released_frames,1);return 0;}
+    if(id==10){USB_UVC_CancelFrame();Usb();Usb();held=s_capture.stream.in_use_index;s_capture.stream.in_use_index=UINT8_MAX;Cam();EQ(s_camera_bridge.held,true);EQ(g_bridge_debug.released_frames,0);s_capture.stream.in_use_index=held;Cam();Usb();EQ(g_bridge_debug.released_frames,1);return 0;}
     if(id==11){USB_UVC_CancelFrame();Usb();Usb();old.type=APP_MESSAGE_FRAME_RETURN;old.lease_id++;Select(RUNTIME_TARGET_USB);EQ(App_MessagesSend(APP_CHANNEL_TO_CAMERA,&old),SYS_OK);Cam();EQ(g_bridge_debug.released_frames,1);return 0;}
     if(id==12){EQ(Stop(),0);Select(RUNTIME_TARGET_CONTROL);EQ(ControlTask_RequestStart(),SYS_OK);for(i=0;i<8;i++){Control();Cam();Usb();}EQ(s_camera_bridge.epoch,2);EQ(Host(),0);EQ(CameraFrame(0),0);old.type=APP_MESSAGE_FRAME_RETURN;Select(RUNTIME_TARGET_USB);EQ(App_MessagesSend(APP_CHANNEL_TO_CAMERA,&old),SYS_OK);Cam();EQ(s_camera_bridge.held,true);EQ(g_bridge_debug.released_frames,1);return 0;}
     if(id==16){Select(RUNTIME_TARGET_CAMERA);EQ(App_MessagesSend(APP_CHANNEL_USB_COMMAND,&old),SYS_ERR_INVALID_STATE);return 0;}

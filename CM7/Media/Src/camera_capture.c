@@ -7,10 +7,10 @@
 #include <stdint.h>
 
 //图像缓冲区数量
-#define CAMERA_STREAM_BUFFER_COUNT     3U
+#define CAMERA_STREAM_BUFFER_COUNT     5U
 
 //单个缓冲区预留40KiB，实际帧长度仍由图像配置计算
-#define CAMERA_STREAM_BUFFER_CAPACITY  (40U * 1024U)
+#define CAMERA_STREAM_BUFFER_CAPACITY  (640U * 480U * 2U)
 
 //缓冲区可用SDRAM范围的结束地址，不包含该地址
 #define CAMERA_STREAM_SDRAM_END         BSP_SDRAM_END
@@ -105,8 +105,11 @@ typedef struct
     //DMA的M1目标对应的缓冲区索引
     uint8_t dma_m1_index;
 
-    //待消费或正在使用的缓冲区索引，无图像时为无效值
-    uint8_t consumer_index;
+    //最新完整帧索引，没有待取图像时为无效值
+    uint8_t ready_index;
+
+    //Application正在使用的帧索引，归还前禁止DMA覆盖
+    uint8_t in_use_index;
 
     //帧序号计数器，每次完成后递增，丢帧也计数
     uint32_t next_sequence;
@@ -180,10 +183,13 @@ static SysResult_t CameraCapture_CalcSize(
     const CameraConfig_t *config,
     uint32_t *required_bytes);
 
-//初始化三缓冲区地址和状态
+//初始化五缓冲区地址和状态
 static SysResult_t CameraStream_Init(
     CameraStream_t *me,
     const CameraConfig_t *config);
+
+//检查DMA、READY和IN_USE索引与缓冲状态一致
+static bool CameraStream_OwnershipValid(const CameraStream_t *me);
 
 //查找可替换的FREE或READY缓冲区
 static uint8_t CameraStream_FindReplaceable(
@@ -370,7 +376,7 @@ SysResult_t CameraCapture_StartStream(void)
         return SYS_ERR_BUSY;
     }
 
-    //3. 初始化三缓冲状态
+    //3. 初始化五缓冲状态
     result = CameraStream_Init(
         stream,
         &s_capture.config
@@ -731,7 +737,7 @@ static SysResult_t CameraStream_Init(
         return SYS_ERR_INVALID_ARG;
     }
 
-    //检查三缓冲是否超出SDRAM的MPU映射范围
+    //检查五缓冲是否超出SDRAM的MPU映射范围
     buffer_end = buffer_start +
                  (CAMERA_STREAM_BUFFER_COUNT *
                   CAMERA_STREAM_BUFFER_CAPACITY);
@@ -765,7 +771,8 @@ static SysResult_t CameraStream_Init(
         CAMERA_BUFFER_DMA;
 
     //尚未向Application交付图像
-    me->consumer_index = CAMERA_BUFFER_INDEX_INVALID;
+    me->ready_index = CAMERA_BUFFER_INDEX_INVALID;
+    me->in_use_index = CAMERA_BUFFER_INDEX_INVALID;
 
     //保存当前格式的有效帧长度
     me->frame_bytes = frame_bytes;
@@ -775,6 +782,52 @@ static SysResult_t CameraStream_Init(
     me->dropped_frames = 0U;
 
     return SYS_OK;
+}
+
+//检查DMA、READY和IN_USE索引与缓冲状态一致
+static bool CameraStream_OwnershipValid(const CameraStream_t *me)
+{
+    uint32_t i;
+    CameraBufferState_t expected;
+
+    if (me == NULL || me->dma_m0_index >= CAMERA_STREAM_BUFFER_COUNT ||
+        me->dma_m1_index >= CAMERA_STREAM_BUFFER_COUNT ||
+        me->dma_m0_index == me->dma_m1_index)
+        return false;
+
+    //无图像时允许无效索引，其余索引必须落在缓冲数组内
+    if ((me->ready_index != CAMERA_BUFFER_INDEX_INVALID &&
+         me->ready_index >= CAMERA_STREAM_BUFFER_COUNT) ||
+        (me->in_use_index != CAMERA_BUFFER_INDEX_INVALID &&
+         me->in_use_index >= CAMERA_STREAM_BUFFER_COUNT))
+        return false;
+
+    for (i = 0U; i < CAMERA_STREAM_BUFFER_COUNT; i++)
+    {
+        if (i == me->dma_m0_index || i == me->dma_m1_index)
+            expected = CAMERA_BUFFER_DMA;
+        else if (i == me->ready_index)
+            expected = CAMERA_BUFFER_READY;
+        else if (i == me->in_use_index)
+            expected = CAMERA_BUFFER_IN_USE;
+        else
+            expected = CAMERA_BUFFER_FREE;
+
+        //状态与索引必须双向对应，不能出现隐藏的第二张借用帧
+        if (me->buffers[i].state != expected)
+            return false;
+    }
+
+    if (me->ready_index != CAMERA_BUFFER_INDEX_INVALID &&
+        (me->ready_index == me->dma_m0_index ||
+         me->ready_index == me->dma_m1_index ||
+         me->ready_index == me->in_use_index))
+        return false;
+    if (me->in_use_index != CAMERA_BUFFER_INDEX_INVALID &&
+        (me->in_use_index == me->dma_m0_index ||
+         me->in_use_index == me->dma_m1_index))
+        return false;
+    return true;
 }
 
 //查找可替换DMA目标的缓冲区，优先FREE，其次READY
@@ -827,162 +880,57 @@ static SysResult_t CameraStream_Rotate(
     BspDcmiTarget_t completed_target,
     CameraStream_ReplaceFn replace_target)
 {
-
-	//本次DMA传输完成的缓冲区索引
-	uint8_t completed_index;
-
-	//用于替换DMA目标的缓冲区索引
-	uint8_t replacement_index;
-
-	//替换缓冲区原有状态，用于判断是否丢弃未消费的帧
-	CameraBufferState_t replacement_state;
+    uint8_t completed_index;
+    uint8_t replacement_index;
+    uint8_t old_ready;
     SysResult_t result;
 
-    if ((me == NULL) || (replace_target == NULL))
+    if (me == NULL || replace_target == NULL)
+        return SYS_ERR_INVALID_ARG;
+    if (completed_target != BSP_DCMI_TARGET_M0 &&
+        completed_target != BSP_DCMI_TARGET_M1)
         return SYS_ERR_INVALID_ARG;
 
-    //检查DMA槽位
-    if ((completed_target != BSP_DCMI_TARGET_M0) &&
-        (completed_target != BSP_DCMI_TARGET_M1))
-    {
-        return SYS_ERR_INVALID_ARG;
-    }
-
-    //检查硬件目标与物理缓冲区的映射
-    if ((me->dma_m0_index >= CAMERA_STREAM_BUFFER_COUNT) ||
-        (me->dma_m1_index >= CAMERA_STREAM_BUFFER_COUNT) ||
-        (me->dma_m0_index == me->dma_m1_index))
-    {
+    //先核对全部所有权，拒绝重复READY、IN_USE及失配索引
+    if (!CameraStream_OwnershipValid(me))
         return SYS_ERR_INVALID_STATE;
-    }
 
-    //两个DMA目标必须都处于DMA所有权状态
-    if ((me->buffers[me->dma_m0_index].state != CAMERA_BUFFER_DMA) ||
-        (me->buffers[me->dma_m1_index].state != CAMERA_BUFFER_DMA))
-    {
-        return SYS_ERR_INVALID_STATE;
-    }
-
-    //存在待交付或正在使用的图像时，检查索引和状态
-    if (me->consumer_index != CAMERA_BUFFER_INDEX_INVALID)
-    {
-
-        //索引必须落在缓冲区数组范围内
-        if (me->consumer_index >= CAMERA_STREAM_BUFFER_COUNT)
-            return SYS_ERR_INVALID_STATE;
-
-        //消费者关联的缓冲区不能同时作为DMA写入目标
-        if ((me->consumer_index == me->dma_m0_index) ||
-            (me->consumer_index == me->dma_m1_index))
-        {
-            return SYS_ERR_INVALID_STATE;
-        }
-
-        //只允许等待消费的READY或消费者持有的IN_USE状态
-        if ((me->buffers[me->consumer_index].state != CAMERA_BUFFER_READY) &&
-            (me->buffers[me->consumer_index].state != CAMERA_BUFFER_IN_USE))
-        {
-            return SYS_ERR_INVALID_STATE;
-        }
-    }
-
-    //取得刚刚完成传输的物理缓冲区
-    completed_index =
-        (completed_target == BSP_DCMI_TARGET_M0) ?
-        me->dma_m0_index :
-        me->dma_m1_index;
-
-    //寻找新的DMA目标，优先FREE，其次READY
+    completed_index = completed_target == BSP_DCMI_TARGET_M0 ?
+        me->dma_m0_index : me->dma_m1_index;
     replacement_index = CameraStream_FindReplaceable(me);
-
-    //没有替换目标时，继续沿用现有DMA双缓冲
     if (replacement_index == CAMERA_BUFFER_INDEX_INVALID)
-    {
-
-        //正常情况下是第三块缓冲区仍被Application使用
-        if (me->consumer_index == CAMERA_BUFFER_INDEX_INVALID)
-            return SYS_ERR_INVALID_STATE;
-
-        if (me->buffers[me->consumer_index].state != CAMERA_BUFFER_IN_USE)
-            return SYS_ERR_INVALID_STATE;
-
-        //当前完成帧被丢弃，DMA仍拥有该缓冲区
-        me->next_sequence++;
-        me->dropped_frames++;
-
-        return SYS_OK;
-    }
-
-    replacement_state = me->buffers[replacement_index].state;
-
-	//检查替换缓冲区状态与消费者索引是否一致
-	if (replacement_state == CAMERA_BUFFER_READY)
-	{
-
-		//回收尚未消费的完整帧，索引必须指向该缓冲区
-		if (me->consumer_index != replacement_index)
-			return SYS_ERR_INVALID_STATE;
-	}
-	else if (replacement_state == CAMERA_BUFFER_FREE)
-	{
-
-		//第三块缓冲区空闲时，不应存在待消费或正在使用的图像
-		if (me->consumer_index != CAMERA_BUFFER_INDEX_INVALID)
-			return SYS_ERR_INVALID_STATE;
-	}
-	else
-	{
-
-		//DMA和IN_USE缓冲区不能作为替换目标
-		return SYS_ERR_INVALID_STATE;
-	}
-
-    //检查目标地址及帧长度
-    if ((me->buffers[replacement_index].data == NULL) ||
-        (me->frame_bytes == 0U) ||
-        (me->frame_bytes > me->buffers[replacement_index].capacity) ||
-        ((me->frame_bytes % sizeof(uint32_t)) != 0U))
-    {
         return SYS_ERR_INVALID_STATE;
-    }
 
-    //请求BSP安全更换已经完成的DMA目标地址
-    result = replace_target(
-		   completed_target,
-		   (uint32_t *)me->buffers[replacement_index].data
-    );
+    //容量与实际帧长分开检查，不把预留容量作为DMA传输长度
+    if (me->buffers[replacement_index].data == NULL ||
+        me->frame_bytes == 0U ||
+        me->frame_bytes > me->buffers[replacement_index].capacity ||
+        me->frame_bytes % sizeof(uint32_t) != 0U)
+        return SYS_ERR_INVALID_STATE;
 
+    //BSP确认硬件不再使用完成目标后，才能提交软件所有权
+    result = replace_target(completed_target,
+        (uint32_t *)me->buffers[replacement_index].data);
     if (result != SYS_OK)
-    {
-
-        //不提交软件所有权，调用者负责停止并恢复采集
         return result;
+
+    //只保留最新READY；回收旧READY时不得触碰IN_USE
+    old_ready = me->ready_index;
+    if (old_ready != CAMERA_BUFFER_INDEX_INVALID)
+    {
+        if (old_ready != replacement_index)
+            me->buffers[old_ready].state = CAMERA_BUFFER_FREE;
+        me->dropped_frames++;
     }
 
-    //若回收的是READY，则丢弃上一张未获取的图像
-    if (replacement_state == CAMERA_BUFFER_READY)
-        me->dropped_frames++;
-
-    //新目标已经交给DMA
     me->buffers[replacement_index].state = CAMERA_BUFFER_DMA;
-
-    //原DMA目标已经解除硬件占用，成为完整待交付帧
     me->buffers[completed_index].state = CAMERA_BUFFER_READY;
     me->buffers[completed_index].sequence = ++me->next_sequence;
-
-    //更新DMA目标槽位到物理Buffer的映射
     if (completed_target == BSP_DCMI_TARGET_M0)
-    {
         me->dma_m0_index = replacement_index;
-    }
     else
-    {
         me->dma_m1_index = replacement_index;
-    }
-
-    //最新完整帧等待Application获取
-    me->consumer_index = completed_index;
-
+    me->ready_index = completed_index;
     return SYS_OK;
 }
 
@@ -1004,9 +952,11 @@ static bool CameraStream_GetFrame(
     primask = __get_PRIMASK();
     __disable_irq();
 
-    index = me->consumer_index;
+    index = me->ready_index;
 
-    if (index < CAMERA_STREAM_BUFFER_COUNT &&
+    if (CameraStream_OwnershipValid(me) &&
+        me->in_use_index == CAMERA_BUFFER_INDEX_INVALID &&
+        index < CAMERA_STREAM_BUFFER_COUNT &&
         index != me->dma_m0_index &&
         index != me->dma_m1_index)
     {
@@ -1020,6 +970,8 @@ static bool CameraStream_GetFrame(
 
             //Application取得缓冲区所有权
             buffer->state = CAMERA_BUFFER_IN_USE;
+            me->in_use_index = index;
+            me->ready_index = CAMERA_BUFFER_INDEX_INVALID;
 
             //返回图像描述信息，不复制像素数据
             frame->width = config->width;
@@ -1067,10 +1019,11 @@ static SysResult_t CameraStream_ReleaseFrame(
     primask = __get_PRIMASK();
     __disable_irq();
 
-    index = me->consumer_index;
+    index = me->in_use_index;
 
     //当前没有有效的消费者缓冲区
-    if (index >= CAMERA_STREAM_BUFFER_COUNT ||
+    if (!CameraStream_OwnershipValid(me) ||
+        index >= CAMERA_STREAM_BUFFER_COUNT ||
         index == me->dma_m0_index ||
         index == me->dma_m1_index ||
         me->buffers[index].state != CAMERA_BUFFER_IN_USE)
@@ -1083,7 +1036,7 @@ static SysResult_t CameraStream_ReleaseFrame(
     me->buffers[index].state = CAMERA_BUFFER_FREE;
 
     //清除消费者索引
-    me->consumer_index = CAMERA_BUFFER_INDEX_INVALID;
+    me->in_use_index = CAMERA_BUFFER_INDEX_INVALID;
 
     __set_PRIMASK(primask);
 
@@ -1128,11 +1081,11 @@ static SysResult_t CameraStream_OnFrameComplete(
 {
     CameraStream_t *stream = (CameraStream_t *)context;
 
-    //只接受当前Media三缓冲实例
+    //只接受当前Media五缓冲实例
     if (stream != &s_capture.stream)
         return SYS_ERR_INVALID_ARG;
 
-    //保持原轮换算法及地址切换时序，提交后仅发唤醒提示
+    //硬件地址替换成功后提交所有权，再通知任务处理进展
     {
         SysResult_t result = CameraStream_Rotate(stream, completed_target, BSP_DCMI_ReplaceTarget);
         if (s_capture_callback != NULL)

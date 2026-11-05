@@ -8,9 +8,9 @@
 #define BSP_SDRAM_BASE       0xD0000000UL
 #define BSP_SDRAM_CAPACITY   0x04000000UL
 
-//业务窗口128KiB，容纳首1KiB保留区和3块40KiB图像缓冲区
-//必须与CM7 MPU Region2一致，窗口尾部保留7KiB
-#define BSP_SDRAM_WINDOW     0x00020000UL
+//业务窗口4MiB，覆盖首1KiB保留区及5块600KiB图像缓冲区
+//必须与CM7 MPU Region2一致，新增高地址仍需实板验证
+#define BSP_SDRAM_WINDOW     0x00400000UL
 #define BSP_SDRAM_END        (BSP_SDRAM_BASE + BSP_SDRAM_WINDOW)
 
 #if BSP_SDRAM_WINDOW == 0UL || \

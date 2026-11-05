@@ -23,20 +23,20 @@ with (here/'stream_test.axf').open('rb') as f:
  e=ELFFile(f);entry=e.header['e_entry'];syms={s.name:s['st_value'] for s in e.get_section_by_name('.symtab').iter_symbols()}
  sections=[(s['sh_addr'],s.data()) for s in e.iter_sections() if s['sh_flags']&2 and s['sh_type']=='SHT_PROGBITS' and s['sh_size']]
 groups=[
-('三缓冲初始化地址容量及对齐','160x120配置','DMA索引0/1，第三块FREE，无消费者，物理范围不超过128KB'),
+('五缓冲初始化地址容量及对齐','160x120配置','DMA索引0/1，三块FREE，无READY/IN_USE，物理范围不超过4MiB'),
 ('空队列查找及获取释放拒绝','刚初始化','Find返回2，Get为false，Release返回INVALID_STATE'),
 ('M0首次完成及获取释放','完成M0','替换M0为Buffer2，Buffer0交付，重复Get/Release被拒绝'),
 ('M1首次完成及获取释放','完成M1','替换M1为Buffer2，Buffer1交付，重复Get/Release被拒绝'),
 ('旧READY持续覆盖','交替完成30帧，不获取','保留最新帧30，丢帧29，映射与硬件地址一致'),
-('Application长时间持有','获取第一帧后1000次DMA完成','持有帧字节不变，不切换IN_USE，丢帧1000，释放后可重新交付'),
+('Application长时间持有','获取第一帧后1000次DMA完成','持有帧字节不变，不切换IN_USE，最新READY持续更新，丢帧999，释放后可立即获取'),
 ('FREE目标切换失败','切换回调依次返回IO/BUSY/TIMEOUT','原错误返回，整个软件对象及硬件目标不变，成功重试可提交'),
-('READY目标切换失败','有旧READY时切换失败','旧帧仍保留，计数和软件对象不变，成功重试才回收'),
+('存在READY时切换失败','有旧READY及FREE候选时切换失败','旧帧仍保留，计数和软件对象不变，成功重试才回收'),
 ('初始化非法参数','NULL、奇数宽、未知格式','返回INVALID_ARG，已有对象不变'),
 ('完成回调非法参数','NULL对象/回调、非法槽位','返回INVALID_ARG，无副作用'),
-('DMA索引越界','M0索引3','返回INVALID_STATE，无地址切换'),
+('DMA索引越界','M0索引5','返回INVALID_STATE，无地址切换'),
 ('DMA目标重叠','M0/M1同一缓冲区','返回INVALID_STATE，无地址切换'),
 ('DMA所有权错误','目标为READY','返回INVALID_STATE，无地址切换'),
-('消费者索引越界','consumer索引3','返回INVALID_STATE，无地址切换'),
+('消费者索引越界','READY索引5','返回INVALID_STATE，无地址切换'),
 ('消费者与DMA目标冲突','consumer等于M0','返回INVALID_STATE，无地址切换'),
 ('消费者指向FREE','第三块FREE且consumer关联','返回INVALID_STATE，无地址切换'),
 ('READY缺少消费者关联','第三块READY、consumer无效','返回INVALID_STATE，无地址切换'),
@@ -44,15 +44,20 @@ groups=[
 ('获取释放NULL参数','NULL对象/配置/输出','Get为false、Release为INVALID_ARG，输出不变'),
 ('PRIMASK原值0恢复','Get/Release成功与失败','出口恢复0'),
 ('PRIMASK原值1恢复','Get/Release成功与失败','出口恢复1'),
-('Get临界区完成中断交错','屏蔽后排队M1完成','退出临界区后才执行，已获取帧不被覆盖'),
+('Get临界区完成中断交错','屏蔽后排队M1完成','退出临界区后才执行，已获取帧不被覆盖，同时保留READY'),
 ('Release临界区完成中断交错','屏蔽后排队M1完成','先释放再处理完成，重新产生READY'),
 ('原先屏蔽时中断持续排队','初始PRIMASK=1，Get期间完成','Get后仍不执行，显式恢复0才处理完成'),
-('独立模型随机状态机','固定种子3000步：完成/获取/释放/切换失败','每步与独立模型一致，DMA始终拥有两块且不覆盖IN_USE')]
+('独立模型随机状态机','固定种子3000步：完成/获取/释放/切换失败','每步与独立模型一致，DMA始终拥有两块且不覆盖IN_USE'),
+('READY与IN_USE并存','持有旧帧后新帧完成','禁止二次借用；释放后无需新DMA完成即可获取READY'),
+('IN_USE索引越界','IN_USE索引5','Rotate/Get/Release均拒绝且不改变对象'),
+('隐藏借用帧拒绝','状态存在IN_USE但无对应索引','所有权验证拒绝，不调用BSP替换'),
+('容量预留与DMA长度边界','五块首尾写入及640x480双字节配置','首尾独立不越界，当前38400B有效，153600Word配置仍拒绝'),
+('双所有权期间地址替换失败','READY和IN_USE并存时注入IO','两帧所有权与像素均保留，软件对象不变')]
 rows=[]
 for kind,(name,input_,expected) in enumerate(groups):
  for fmt,label in enumerate(['Y8','RGB565','YUV422']):
   id=kind*3+fmt;u=Uc(UC_ARCH_ARM,UC_MODE_THUMB|UC_MODE_MCLASS)
-  for a,n in [(0x08000000,0x100000),(0x20000000,0x40000),(0xD0000000,0x20000),(0x01000000,0x1000)]:u.mem_map(a,n)
+  for a,n in [(0x08000000,0x100000),(0x20000000,0x40000),(0xD0000000,0x400000),(0x01000000,0x1000)]:u.mem_map(a,n)
   for a,d in sections:u.mem_write(a,d)
   u.reg_write(UC_ARM_REG_SP,0x2003FFF0);u.reg_write(UC_ARM_REG_LR,0x01000001);u.reg_write(UC_ARM_REG_R0,id)
   error=None

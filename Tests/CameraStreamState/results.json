@@ -1,21 +1,21 @@
 {
   "summary": {
-    "total": 75,
-    "passed": 75,
+    "total": 90,
+    "passed": 90,
     "failed": 0,
-    "assertions": 934605
+    "assertions": 1236135
   },
   "formal_source_changed": [],
   "cases": [
     {
       "id": 0,
-      "name": "三缓冲初始化地址容量及对齐 / Y8",
+      "name": "五缓冲初始化地址容量及对齐 / Y8",
       "input": "160x120配置",
-      "expected": "DMA索引0/1，第三块FREE，无消费者，物理范围不超过128KB",
+      "expected": "DMA索引0/1，三块FREE，无READY/IN_USE，物理范围不超过4MiB",
       "result": "PASS",
       "actual": {
         "fail_line": 0,
-        "checks": 28,
+        "checks": 35,
         "operations": 0,
         "replaces": 0,
         "deferred": 0,
@@ -25,13 +25,13 @@
     },
     {
       "id": 1,
-      "name": "三缓冲初始化地址容量及对齐 / RGB565",
+      "name": "五缓冲初始化地址容量及对齐 / RGB565",
       "input": "160x120配置",
-      "expected": "DMA索引0/1，第三块FREE，无消费者，物理范围不超过128KB",
+      "expected": "DMA索引0/1，三块FREE，无READY/IN_USE，物理范围不超过4MiB",
       "result": "PASS",
       "actual": {
         "fail_line": 0,
-        "checks": 28,
+        "checks": 35,
         "operations": 0,
         "replaces": 0,
         "deferred": 0,
@@ -41,13 +41,13 @@
     },
     {
       "id": 2,
-      "name": "三缓冲初始化地址容量及对齐 / YUV422",
+      "name": "五缓冲初始化地址容量及对齐 / YUV422",
       "input": "160x120配置",
-      "expected": "DMA索引0/1，第三块FREE，无消费者，物理范围不超过128KB",
+      "expected": "DMA索引0/1，三块FREE，无READY/IN_USE，物理范围不超过4MiB",
       "result": "PASS",
       "actual": {
         "fail_line": 0,
-        "checks": 28,
+        "checks": 35,
         "operations": 0,
         "replaces": 0,
         "deferred": 0,
@@ -63,7 +63,7 @@
       "result": "PASS",
       "actual": {
         "fail_line": 0,
-        "checks": 23,
+        "checks": 28,
         "operations": 0,
         "replaces": 0,
         "deferred": 0,
@@ -79,7 +79,7 @@
       "result": "PASS",
       "actual": {
         "fail_line": 0,
-        "checks": 23,
+        "checks": 28,
         "operations": 0,
         "replaces": 0,
         "deferred": 0,
@@ -95,7 +95,7 @@
       "result": "PASS",
       "actual": {
         "fail_line": 0,
-        "checks": 23,
+        "checks": 28,
         "operations": 0,
         "replaces": 0,
         "deferred": 0,
@@ -111,7 +111,7 @@
       "result": "PASS",
       "actual": {
         "fail_line": 0,
-        "checks": 49,
+        "checks": 59,
         "operations": 1,
         "replaces": 1,
         "deferred": 0,
@@ -127,7 +127,7 @@
       "result": "PASS",
       "actual": {
         "fail_line": 0,
-        "checks": 49,
+        "checks": 59,
         "operations": 1,
         "replaces": 1,
         "deferred": 0,
@@ -143,7 +143,7 @@
       "result": "PASS",
       "actual": {
         "fail_line": 0,
-        "checks": 49,
+        "checks": 59,
         "operations": 1,
         "replaces": 1,
         "deferred": 0,
@@ -159,7 +159,7 @@
       "result": "PASS",
       "actual": {
         "fail_line": 0,
-        "checks": 49,
+        "checks": 59,
         "operations": 1,
         "replaces": 1,
         "deferred": 0,
@@ -175,7 +175,7 @@
       "result": "PASS",
       "actual": {
         "fail_line": 0,
-        "checks": 49,
+        "checks": 59,
         "operations": 1,
         "replaces": 1,
         "deferred": 0,
@@ -191,7 +191,7 @@
       "result": "PASS",
       "actual": {
         "fail_line": 0,
-        "checks": 49,
+        "checks": 59,
         "operations": 1,
         "replaces": 1,
         "deferred": 0,
@@ -207,7 +207,7 @@
       "result": "PASS",
       "actual": {
         "fail_line": 0,
-        "checks": 19824,
+        "checks": 19979,
         "operations": 30,
         "replaces": 30,
         "deferred": 0,
@@ -223,7 +223,7 @@
       "result": "PASS",
       "actual": {
         "fail_line": 0,
-        "checks": 39024,
+        "checks": 39179,
         "operations": 30,
         "replaces": 30,
         "deferred": 0,
@@ -239,7 +239,7 @@
       "result": "PASS",
       "actual": {
         "fail_line": 0,
-        "checks": 39024,
+        "checks": 39179,
         "operations": 30,
         "replaces": 30,
         "deferred": 0,
@@ -251,13 +251,13 @@
       "id": 15,
       "name": "Application长时间持有 / Y8",
       "input": "获取第一帧后1000次DMA完成",
-      "expected": "持有帧字节不变，不切换IN_USE，丢帧1000，释放后可重新交付",
+      "expected": "持有帧字节不变，不切换IN_USE，最新READY持续更新，丢帧999，释放后可立即获取",
       "result": "PASS",
       "actual": {
         "fail_line": 0,
-        "checks": 40230,
+        "checks": 45235,
         "operations": 1002,
-        "replaces": 2,
+        "replaces": 1002,
         "deferred": 0,
         "case_id": 15
       },
@@ -267,13 +267,13 @@
       "id": 16,
       "name": "Application长时间持有 / RGB565",
       "input": "获取第一帧后1000次DMA完成",
-      "expected": "持有帧字节不变，不切换IN_USE，丢帧1000，释放后可重新交付",
+      "expected": "持有帧字节不变，不切换IN_USE，最新READY持续更新，丢帧999，释放后可立即获取",
       "result": "PASS",
       "actual": {
         "fail_line": 0,
-        "checks": 59430,
+        "checks": 64435,
         "operations": 1002,
-        "replaces": 2,
+        "replaces": 1002,
         "deferred": 0,
         "case_id": 16
       },
@@ -283,13 +283,13 @@
       "id": 17,
       "name": "Application长时间持有 / YUV422",
       "input": "获取第一帧后1000次DMA完成",
-      "expected": "持有帧字节不变，不切换IN_USE，丢帧1000，释放后可重新交付",
+      "expected": "持有帧字节不变，不切换IN_USE，最新READY持续更新，丢帧999，释放后可立即获取",
       "result": "PASS",
       "actual": {
         "fail_line": 0,
-        "checks": 59430,
+        "checks": 64435,
         "operations": 1002,
-        "replaces": 2,
+        "replaces": 1002,
         "deferred": 0,
         "case_id": 17
       },
@@ -303,7 +303,7 @@
       "result": "PASS",
       "actual": {
         "fail_line": 0,
-        "checks": 131,
+        "checks": 161,
         "operations": 6,
         "replaces": 6,
         "deferred": 0,
@@ -319,7 +319,7 @@
       "result": "PASS",
       "actual": {
         "fail_line": 0,
-        "checks": 131,
+        "checks": 161,
         "operations": 6,
         "replaces": 6,
         "deferred": 0,
@@ -335,7 +335,7 @@
       "result": "PASS",
       "actual": {
         "fail_line": 0,
-        "checks": 131,
+        "checks": 161,
         "operations": 6,
         "replaces": 6,
         "deferred": 0,
@@ -351,7 +351,7 @@
       "result": "PASS",
       "actual": {
         "fail_line": 0,
-        "checks": 57734,
+        "checks": 57764,
         "operations": 9,
         "replaces": 9,
         "deferred": 0,
@@ -367,7 +367,7 @@
       "result": "PASS",
       "actual": {
         "fail_line": 0,
-        "checks": 115334,
+        "checks": 115364,
         "operations": 9,
         "replaces": 9,
         "deferred": 0,
@@ -383,7 +383,7 @@
       "result": "PASS",
       "actual": {
         "fail_line": 0,
-        "checks": 115334,
+        "checks": 115364,
         "operations": 9,
         "replaces": 9,
         "deferred": 0,
@@ -490,7 +490,7 @@
     {
       "id": 30,
       "name": "DMA索引越界 / Y8",
-      "input": "M0索引3",
+      "input": "M0索引5",
       "expected": "返回INVALID_STATE，无地址切换",
       "result": "PASS",
       "actual": {
@@ -506,7 +506,7 @@
     {
       "id": 31,
       "name": "DMA索引越界 / RGB565",
-      "input": "M0索引3",
+      "input": "M0索引5",
       "expected": "返回INVALID_STATE，无地址切换",
       "result": "PASS",
       "actual": {
@@ -522,7 +522,7 @@
     {
       "id": 32,
       "name": "DMA索引越界 / YUV422",
-      "input": "M0索引3",
+      "input": "M0索引5",
       "expected": "返回INVALID_STATE，无地址切换",
       "result": "PASS",
       "actual": {
@@ -634,7 +634,7 @@
     {
       "id": 39,
       "name": "消费者索引越界 / Y8",
-      "input": "consumer索引3",
+      "input": "READY索引5",
       "expected": "返回INVALID_STATE，无地址切换",
       "result": "PASS",
       "actual": {
@@ -650,7 +650,7 @@
     {
       "id": 40,
       "name": "消费者索引越界 / RGB565",
-      "input": "consumer索引3",
+      "input": "READY索引5",
       "expected": "返回INVALID_STATE，无地址切换",
       "result": "PASS",
       "actual": {
@@ -666,7 +666,7 @@
     {
       "id": 41,
       "name": "消费者索引越界 / YUV422",
-      "input": "consumer索引3",
+      "input": "READY索引5",
       "expected": "返回INVALID_STATE，无地址切换",
       "result": "PASS",
       "actual": {
@@ -1019,13 +1019,13 @@
       "id": 63,
       "name": "Get临界区完成中断交错 / Y8",
       "input": "屏蔽后排队M1完成",
-      "expected": "退出临界区后才执行，已获取帧不被覆盖",
+      "expected": "退出临界区后才执行，已获取帧不被覆盖，同时保留READY",
       "result": "PASS",
       "actual": {
         "fail_line": 0,
-        "checks": 19225,
+        "checks": 19231,
         "operations": 2,
-        "replaces": 1,
+        "replaces": 2,
         "deferred": 1,
         "case_id": 63
       },
@@ -1035,13 +1035,13 @@
       "id": 64,
       "name": "Get临界区完成中断交错 / RGB565",
       "input": "屏蔽后排队M1完成",
-      "expected": "退出临界区后才执行，已获取帧不被覆盖",
+      "expected": "退出临界区后才执行，已获取帧不被覆盖，同时保留READY",
       "result": "PASS",
       "actual": {
         "fail_line": 0,
-        "checks": 38425,
+        "checks": 38431,
         "operations": 2,
-        "replaces": 1,
+        "replaces": 2,
         "deferred": 1,
         "case_id": 64
       },
@@ -1051,13 +1051,13 @@
       "id": 65,
       "name": "Get临界区完成中断交错 / YUV422",
       "input": "屏蔽后排队M1完成",
-      "expected": "退出临界区后才执行，已获取帧不被覆盖",
+      "expected": "退出临界区后才执行，已获取帧不被覆盖，同时保留READY",
       "result": "PASS",
       "actual": {
         "fail_line": 0,
-        "checks": 38425,
+        "checks": 38431,
         "operations": 2,
-        "replaces": 1,
+        "replaces": 2,
         "deferred": 1,
         "case_id": 65
       },
@@ -1071,7 +1071,7 @@
       "result": "PASS",
       "actual": {
         "fail_line": 0,
-        "checks": 25,
+        "checks": 30,
         "operations": 2,
         "replaces": 2,
         "deferred": 1,
@@ -1087,7 +1087,7 @@
       "result": "PASS",
       "actual": {
         "fail_line": 0,
-        "checks": 25,
+        "checks": 30,
         "operations": 2,
         "replaces": 2,
         "deferred": 1,
@@ -1103,7 +1103,7 @@
       "result": "PASS",
       "actual": {
         "fail_line": 0,
-        "checks": 25,
+        "checks": 30,
         "operations": 2,
         "replaces": 2,
         "deferred": 1,
@@ -1119,9 +1119,9 @@
       "result": "PASS",
       "actual": {
         "fail_line": 0,
-        "checks": 27,
+        "checks": 33,
         "operations": 2,
-        "replaces": 1,
+        "replaces": 2,
         "deferred": 1,
         "case_id": 69
       },
@@ -1135,9 +1135,9 @@
       "result": "PASS",
       "actual": {
         "fail_line": 0,
-        "checks": 27,
+        "checks": 33,
         "operations": 2,
-        "replaces": 1,
+        "replaces": 2,
         "deferred": 1,
         "case_id": 70
       },
@@ -1151,9 +1151,9 @@
       "result": "PASS",
       "actual": {
         "fail_line": 0,
-        "checks": 27,
+        "checks": 33,
         "operations": 2,
-        "replaces": 1,
+        "replaces": 2,
         "deferred": 1,
         "case_id": 71
       },
@@ -1167,9 +1167,9 @@
       "result": "PASS",
       "actual": {
         "fail_line": 0,
-        "checks": 97288,
+        "checks": 128389,
         "operations": 1845,
-        "replaces": 1039,
+        "replaces": 1845,
         "deferred": 0,
         "case_id": 72
       },
@@ -1183,9 +1183,9 @@
       "result": "PASS",
       "actual": {
         "fail_line": 0,
-        "checks": 97288,
+        "checks": 128389,
         "operations": 1845,
-        "replaces": 1039,
+        "replaces": 1845,
         "deferred": 0,
         "case_id": 73
       },
@@ -1199,11 +1199,251 @@
       "result": "PASS",
       "actual": {
         "fail_line": 0,
-        "checks": 97288,
+        "checks": 128389,
         "operations": 1845,
-        "replaces": 1039,
+        "replaces": 1845,
         "deferred": 0,
         "case_id": 74
+      },
+      "error": null
+    },
+    {
+      "id": 75,
+      "name": "READY与IN_USE并存 / Y8",
+      "input": "持有旧帧后新帧完成",
+      "expected": "禁止二次借用；释放后无需新DMA完成即可获取READY",
+      "result": "PASS",
+      "actual": {
+        "fail_line": 0,
+        "checks": 19258,
+        "operations": 2,
+        "replaces": 2,
+        "deferred": 0,
+        "case_id": 75
+      },
+      "error": null
+    },
+    {
+      "id": 76,
+      "name": "READY与IN_USE并存 / RGB565",
+      "input": "持有旧帧后新帧完成",
+      "expected": "禁止二次借用；释放后无需新DMA完成即可获取READY",
+      "result": "PASS",
+      "actual": {
+        "fail_line": 0,
+        "checks": 38458,
+        "operations": 2,
+        "replaces": 2,
+        "deferred": 0,
+        "case_id": 76
+      },
+      "error": null
+    },
+    {
+      "id": 77,
+      "name": "READY与IN_USE并存 / YUV422",
+      "input": "持有旧帧后新帧完成",
+      "expected": "禁止二次借用；释放后无需新DMA完成即可获取READY",
+      "result": "PASS",
+      "actual": {
+        "fail_line": 0,
+        "checks": 38458,
+        "operations": 2,
+        "replaces": 2,
+        "deferred": 0,
+        "case_id": 77
+      },
+      "error": null
+    },
+    {
+      "id": 78,
+      "name": "IN_USE索引越界 / Y8",
+      "input": "IN_USE索引5",
+      "expected": "Rotate/Get/Release均拒绝且不改变对象",
+      "result": "PASS",
+      "actual": {
+        "fail_line": 0,
+        "checks": 7,
+        "operations": 0,
+        "replaces": 0,
+        "deferred": 0,
+        "case_id": 78
+      },
+      "error": null
+    },
+    {
+      "id": 79,
+      "name": "IN_USE索引越界 / RGB565",
+      "input": "IN_USE索引5",
+      "expected": "Rotate/Get/Release均拒绝且不改变对象",
+      "result": "PASS",
+      "actual": {
+        "fail_line": 0,
+        "checks": 7,
+        "operations": 0,
+        "replaces": 0,
+        "deferred": 0,
+        "case_id": 79
+      },
+      "error": null
+    },
+    {
+      "id": 80,
+      "name": "IN_USE索引越界 / YUV422",
+      "input": "IN_USE索引5",
+      "expected": "Rotate/Get/Release均拒绝且不改变对象",
+      "result": "PASS",
+      "actual": {
+        "fail_line": 0,
+        "checks": 7,
+        "operations": 0,
+        "replaces": 0,
+        "deferred": 0,
+        "case_id": 80
+      },
+      "error": null
+    },
+    {
+      "id": 81,
+      "name": "隐藏借用帧拒绝 / Y8",
+      "input": "状态存在IN_USE但无对应索引",
+      "expected": "所有权验证拒绝，不调用BSP替换",
+      "result": "PASS",
+      "actual": {
+        "fail_line": 0,
+        "checks": 6,
+        "operations": 0,
+        "replaces": 0,
+        "deferred": 0,
+        "case_id": 81
+      },
+      "error": null
+    },
+    {
+      "id": 82,
+      "name": "隐藏借用帧拒绝 / RGB565",
+      "input": "状态存在IN_USE但无对应索引",
+      "expected": "所有权验证拒绝，不调用BSP替换",
+      "result": "PASS",
+      "actual": {
+        "fail_line": 0,
+        "checks": 6,
+        "operations": 0,
+        "replaces": 0,
+        "deferred": 0,
+        "case_id": 82
+      },
+      "error": null
+    },
+    {
+      "id": 83,
+      "name": "隐藏借用帧拒绝 / YUV422",
+      "input": "状态存在IN_USE但无对应索引",
+      "expected": "所有权验证拒绝，不调用BSP替换",
+      "result": "PASS",
+      "actual": {
+        "fail_line": 0,
+        "checks": 6,
+        "operations": 0,
+        "replaces": 0,
+        "deferred": 0,
+        "case_id": 83
+      },
+      "error": null
+    },
+    {
+      "id": 84,
+      "name": "容量预留与DMA长度边界 / Y8",
+      "input": "五块首尾写入及640x480双字节配置",
+      "expected": "首尾独立不越界，当前38400B有效，153600Word配置仍拒绝",
+      "result": "PASS",
+      "actual": {
+        "fail_line": 0,
+        "checks": 37,
+        "operations": 0,
+        "replaces": 0,
+        "deferred": 0,
+        "case_id": 84
+      },
+      "error": null
+    },
+    {
+      "id": 85,
+      "name": "容量预留与DMA长度边界 / RGB565",
+      "input": "五块首尾写入及640x480双字节配置",
+      "expected": "首尾独立不越界，当前38400B有效，153600Word配置仍拒绝",
+      "result": "PASS",
+      "actual": {
+        "fail_line": 0,
+        "checks": 37,
+        "operations": 0,
+        "replaces": 0,
+        "deferred": 0,
+        "case_id": 85
+      },
+      "error": null
+    },
+    {
+      "id": 86,
+      "name": "容量预留与DMA长度边界 / YUV422",
+      "input": "五块首尾写入及640x480双字节配置",
+      "expected": "首尾独立不越界，当前38400B有效，153600Word配置仍拒绝",
+      "result": "PASS",
+      "actual": {
+        "fail_line": 0,
+        "checks": 37,
+        "operations": 0,
+        "replaces": 0,
+        "deferred": 0,
+        "case_id": 86
+      },
+      "error": null
+    },
+    {
+      "id": 87,
+      "name": "双所有权期间地址替换失败 / Y8",
+      "input": "READY和IN_USE并存时注入IO",
+      "expected": "两帧所有权与像素均保留，软件对象不变",
+      "result": "PASS",
+      "actual": {
+        "fail_line": 0,
+        "checks": 19232,
+        "operations": 3,
+        "replaces": 3,
+        "deferred": 0,
+        "case_id": 87
+      },
+      "error": null
+    },
+    {
+      "id": 88,
+      "name": "双所有权期间地址替换失败 / RGB565",
+      "input": "READY和IN_USE并存时注入IO",
+      "expected": "两帧所有权与像素均保留，软件对象不变",
+      "result": "PASS",
+      "actual": {
+        "fail_line": 0,
+        "checks": 38432,
+        "operations": 3,
+        "replaces": 3,
+        "deferred": 0,
+        "case_id": 88
+      },
+      "error": null
+    },
+    {
+      "id": 89,
+      "name": "双所有权期间地址替换失败 / YUV422",
+      "input": "READY和IN_USE并存时注入IO",
+      "expected": "两帧所有权与像素均保留，软件对象不变",
+      "result": "PASS",
+      "actual": {
+        "fail_line": 0,
+        "checks": 38432,
+        "operations": 3,
+        "replaces": 3,
+        "deferred": 0,
+        "case_id": 89
       },
       "error": null
     }

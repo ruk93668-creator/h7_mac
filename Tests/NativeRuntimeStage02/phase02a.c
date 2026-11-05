@@ -39,7 +39,7 @@ int Stage02_TestRun(uint32_t id)
     CHECK(CameraCapture_StreamGetFrame(&frame));CHECK(frame.size_bytes==38400);
     if(id==7){CHECK(CameraCapture_Stop()==SYS_ERR_BUSY);CHECK(CameraCapture_StreamReleaseFrame()==SYS_OK);CHECK(CameraCapture_Stop()==SYS_OK);return 0;}
     CHECK(CameraStream_OnFrameComplete(BSP_DCMI_TARGET_M1,&s_capture.stream)==SYS_OK);
-    CHECK(CameraCapture_GetStats(&stats)==SYS_OK);CHECK(stats.completed_frames==2 && stats.dropped_frames==1);CHECK(notifications==2);
+    CHECK(CameraCapture_GetStats(&stats)==SYS_OK);CHECK(stats.completed_frames==2 && stats.dropped_frames==0);CHECK(notifications==2);
     if(id==8)return 0;
     irq_mask=1;CHECK(CameraCapture_GetStats(&stats)==SYS_OK);CHECK(irq_mask==1);return 0;
 }

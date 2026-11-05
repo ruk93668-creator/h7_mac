@@ -66,10 +66,10 @@ static void MPU_Config(void);
 /* Private user code ---------------------------------------------------------*/
 /* USER CODE BEGIN 0 */
 
-//Region2保持128KiB，覆盖首1KiB保留区和3块40KiB缓冲区
+//Region2保持4MiB，覆盖首1KiB保留区和5块600KiB缓冲区
 //范围必须与BSP业务窗口一致，不改变原有内存属性
 typedef char SdramMpuWindowCheck_t[
-	(BSP_SDRAM_WINDOW == (1UL << (MPU_REGION_SIZE_128KB + 1U))) ? 1 : -1
+	(BSP_SDRAM_WINDOW == (1UL << (MPU_REGION_SIZE_4MB + 1U))) ? 1 : -1
 ];
 
 //配置SDRAM业务窗口的MPU属性
@@ -82,7 +82,7 @@ static void MPU_ConfigSdram(void)
 	region.Enable = MPU_REGION_ENABLE;
 	region.Number = MPU_REGION_NUMBER2;
 	region.BaseAddress = BSP_SDRAM_BASE;
-	region.Size = MPU_REGION_SIZE_128KB;
+	region.Size = MPU_REGION_SIZE_4MB;
 	region.SubRegionDisable = 0U;
 	region.TypeExtField = MPU_TEX_LEVEL1;
 	region.AccessPermission = MPU_REGION_FULL_ACCESS;

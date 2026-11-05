@@ -36,7 +36,7 @@ static SysResult_t Replace(BspDcmiTarget_t slot,uint32_t *buffer)
  uint32_t idx=slot==BSP_DCMI_TARGET_M0?stream.dma_m0_index:stream.dma_m1_index;
  g_result.replaces++;
  //切换回调发生时，正式状态机尚未提交软件映射与所有权
- if(idx>=3 || targets[slot]!=(uint32_t *)stream.buffers[idx].data || stream.buffers[idx].state!=CAMERA_BUFFER_DMA){callback_error=1;return SYS_ERR_IO;}
+ if(idx>=CAMERA_STREAM_BUFFER_COUNT || targets[slot]!=(uint32_t *)stream.buffers[idx].data || stream.buffers[idx].state!=CAMERA_BUFFER_DMA){callback_error=1;return SYS_ERR_IO;}
  if(replace_result!=SYS_OK)return replace_result;
  targets[slot]=buffer;return SYS_OK;
 }
@@ -50,18 +50,21 @@ static int Begin(uint32_t format)
 }
 static int Valid(void)
 {
- uint32_t i,dma=0,other=0;
- EQ(stream.dma_m0_index<3,1);EQ(stream.dma_m1_index<3,1);EQ(stream.dma_m0_index!=stream.dma_m1_index,1);
- EQ(targets[0],stream.buffers[stream.dma_m0_index].data);EQ(targets[1],stream.buffers[stream.dma_m1_index].data);
- for(i=0;i<3;i++){
-  EQ((uint32_t)stream.buffers[i].data,0xD0000400U+i*40960U);EQ(stream.buffers[i].capacity,40960);
-  if(i==stream.dma_m0_index || i==stream.dma_m1_index){EQ(stream.buffers[i].state,CAMERA_BUFFER_DMA);dma++;}
-  else {other++;EQ(stream.buffers[i].state==CAMERA_BUFFER_FREE || stream.buffers[i].state==CAMERA_BUFFER_READY || stream.buffers[i].state==CAMERA_BUFFER_IN_USE,1);
-   if(stream.buffers[i].state==CAMERA_BUFFER_FREE)EQ(stream.consumer_index,UINT8_MAX);
-   else EQ(stream.consumer_index,i);
-  }
+ uint32_t i,dma=0,ready=0,used=0,free_count=0;
+ EQ(CameraStream_OwnershipValid(&stream),true);
+ EQ(targets[0],stream.buffers[stream.dma_m0_index].data);
+ EQ(targets[1],stream.buffers[stream.dma_m1_index].data);
+ for(i=0;i<CAMERA_STREAM_BUFFER_COUNT;i++){
+  EQ((uint32_t)stream.buffers[i].data,0xD0000400U+i*614400U);
+  EQ(stream.buffers[i].capacity,614400);
+  if(stream.buffers[i].state==CAMERA_BUFFER_DMA)dma++;
+  else if(stream.buffers[i].state==CAMERA_BUFFER_READY){ready++;EQ(stream.ready_index,i);}
+  else if(stream.buffers[i].state==CAMERA_BUFFER_IN_USE){used++;EQ(stream.in_use_index,i);}
+  else {EQ(stream.buffers[i].state,CAMERA_BUFFER_FREE);free_count++;}
  }
- EQ(dma,2);EQ(other,1);EQ(callback_error,0);return 0;
+ EQ(dma,2);EQ(ready<=1,1);EQ(used<=1,1);EQ(dma+ready+used+free_count,5);
+ EQ(ready==0,stream.ready_index==UINT8_MAX);EQ(used==0,stream.in_use_index==UINT8_MAX);
+ EQ(callback_error,0);return 0;
 }
 static int Complete(uint32_t slot)
 {
@@ -79,40 +82,43 @@ static void Dispatch(void)
 }
 
 //独立参考模型：只描述缓冲区所有权，不调用正式实现
-static uint32_t model_state[3],model_sequence[3],m0,m1,consumer,sequence,drops,rng;
+static uint32_t model_state[5],model_sequence[5],m0,m1,model_ready,model_used,sequence,drops,rng;
 static uint32_t Random(void){rng^=rng<<13;rng^=rng>>17;rng^=rng<<5;return rng;}
 static int ModelRun(void)
 {
- uint32_t i,op,slot,old,replacement,j,calls;SysResult_t expected;
+ uint32_t i,op,slot,old,replacement,j;SysResult_t expected;
  CameraFrame_t frame;
- m0=0;m1=1;consumer=255;sequence=drops=0;rng=0x13579BDF;
- model_state[0]=model_state[1]=CAMERA_BUFFER_DMA;model_state[2]=CAMERA_BUFFER_FREE;
+ m0=0;m1=1;model_ready=model_used=255;sequence=drops=0;rng=0x13579BDF;
+ memset(model_state,0,sizeof(model_state));model_state[0]=model_state[1]=CAMERA_BUFFER_DMA;
  memset(model_sequence,0,sizeof(model_sequence));
  for(i=0;i<3000;i++){
-  op=Random()%5;calls=g_result.replaces;
+  op=Random()%5;
   if(op<2 || op==4){
-   slot=op==4?(Random()&1):op;old=slot==0?m0:m1;replacement=3-m0-m1;
+   slot=op==4?(Random()&1):op;old=slot==0?m0:m1;replacement=255;
+   for(j=0;j<5;j++)if(model_state[j]==CAMERA_BUFFER_FREE){replacement=j;break;}
+   if(replacement==255)replacement=model_ready;
+   EQ(replacement<5,1);
    replace_result=op==4?SYS_ERR_IO:SYS_OK;
-   if(model_state[replacement]==CAMERA_BUFFER_IN_USE){sequence++;drops++;expected=SYS_OK;EQ(g_result.replaces,calls);}
-   else if(replace_result!=SYS_OK)expected=SYS_ERR_IO;
-   else {
-    expected=SYS_OK;if(model_state[replacement]==CAMERA_BUFFER_READY)drops++;
+   expected=replace_result;
+   if(expected==SYS_OK){
+    if(model_ready<5){model_state[model_ready]=CAMERA_BUFFER_FREE;drops++;}
     model_state[replacement]=CAMERA_BUFFER_DMA;model_state[old]=CAMERA_BUFFER_READY;
-    model_sequence[old]=++sequence;consumer=old;if(slot==0)m0=replacement;else m1=replacement;
+    model_sequence[old]=++sequence;model_ready=old;if(slot==0)m0=replacement;else m1=replacement;
    }
    EQ(Complete(slot),expected);replace_result=SYS_OK;
   }else if(op==2){
-   expected=(consumer<3 && model_state[consumer]==CAMERA_BUFFER_READY);
+   expected=(model_used==255 && model_ready<5);
    EQ(CameraStream_GetFrame(&stream,&config,&frame),expected);
-   if(expected){model_state[consumer]=CAMERA_BUFFER_IN_USE;EQ(frame.data,stream.buffers[consumer].data);EQ(frame.size_bytes,stream.frame_bytes);}
+   if(expected){model_used=model_ready;model_ready=255;model_state[model_used]=CAMERA_BUFFER_IN_USE;EQ(frame.data,stream.buffers[model_used].data);EQ(frame.size_bytes,stream.frame_bytes);}
   }else{
-   expected=(consumer<3 && model_state[consumer]==CAMERA_BUFFER_IN_USE)?SYS_OK:SYS_ERR_INVALID_STATE;
+   expected=model_used<5?SYS_OK:SYS_ERR_INVALID_STATE;
    EQ(CameraStream_ReleaseFrame(&stream),expected);
-   if(expected==SYS_OK){model_state[consumer]=CAMERA_BUFFER_FREE;consumer=255;}
+   if(expected==SYS_OK){model_state[model_used]=CAMERA_BUFFER_FREE;model_used=255;}
   }
-  EQ(stream.dma_m0_index,m0);EQ(stream.dma_m1_index,m1);EQ(stream.consumer_index,consumer);
+  EQ(stream.dma_m0_index,m0);EQ(stream.dma_m1_index,m1);
+  EQ(stream.ready_index,model_ready);EQ(stream.in_use_index,model_used);
   EQ(stream.next_sequence,sequence);EQ(stream.dropped_frames,drops);
-  for(j=0;j<3;j++){EQ(stream.buffers[j].state,model_state[j]);EQ(stream.buffers[j].sequence,model_sequence[j]);}
+  for(j=0;j<5;j++){EQ(stream.buffers[j].state,model_state[j]);EQ(stream.buffers[j].sequence,model_sequence[j]);}
   EQ(Valid(),0);EQ(mask,0);
  }
  return 0;
@@ -125,13 +131,13 @@ int Stream_TestRun(uint32_t id)
  g_result.case_id=id;EQ(Begin(format),0);
  if(kind==0){
   EQ(stream.frame_bytes,format==0?19200:38400);EQ(stream.next_sequence,0);EQ(stream.dropped_frames,0);
-  EQ(((uint32_t)stream.buffers[2].data+40960)<=0xD0020000,1);
-  for(i=0;i<3;i++)EQ(((uint32_t)stream.buffers[i].data%32),0);
+  EQ(((uint32_t)stream.buffers[4].data+614400)<=0xD0400000,1);
+  for(i=0;i<5;i++)EQ(((uint32_t)stream.buffers[i].data%32),0);
   EQ(Valid(),0);return 0;
  }
  if(kind==1){EQ(CameraStream_FindReplaceable(&stream),2);EQ(CameraStream_GetFrame(&stream,&config,&frame),false);EQ(CameraStream_ReleaseFrame(&stream),SYS_ERR_INVALID_STATE);return Valid();}
  if(kind==2 || kind==3){
-  EQ(Complete(kind==2?0:1),SYS_OK);EQ(Valid(),0);EQ(stream.consumer_index,kind==2?0:1);
+  EQ(Complete(kind==2?0:1),SYS_OK);EQ(Valid(),0);EQ(stream.ready_index,kind==2?0:1);
   EQ(CameraStream_GetFrame(&stream,&config,&frame),true);EQ(frame.width,160);EQ(frame.height,120);EQ(frame.format,format);EQ(frame.size_bytes,stream.frame_bytes);
   EQ(CameraStream_GetFrame(&stream,&config,&frame),false);EQ(CameraStream_ReleaseFrame(&stream),SYS_OK);
   EQ(CameraStream_ReleaseFrame(&stream),SYS_ERR_INVALID_STATE);return Valid();
@@ -144,18 +150,18 @@ int Stream_TestRun(uint32_t id)
   EQ(CameraStream_ReleaseFrame(&stream),SYS_OK);return Valid();
  }
  if(kind==5){
-  EQ(Complete(0),SYS_OK);EQ(CameraStream_GetFrame(&stream,&config,&frame),true);held=stream.consumer_index;n=g_result.replaces;
-  for(i=0;i<1000;i++){EQ(Complete(i%2),SYS_OK);EQ(stream.consumer_index,held);EQ(Valid(),0);}
-  EQ(g_result.replaces,n);EQ(stream.dropped_frames,1000);EQ(stream.next_sequence,1001);
+  EQ(Complete(0),SYS_OK);EQ(CameraStream_GetFrame(&stream,&config,&frame),true);held=stream.in_use_index;n=g_result.replaces;
+  for(i=0;i<1000;i++){EQ(Complete(i%2),SYS_OK);EQ(stream.in_use_index,held);EQ(Valid(),0);}
+  EQ(g_result.replaces,n+1000);EQ(stream.dropped_frames,999);EQ(stream.next_sequence,1001);
   for(i=0;i<stream.frame_bytes;i++)EQ(frame.data[i],1);
   EQ(CameraStream_ReleaseFrame(&stream),SYS_OK);EQ(Complete(0),SYS_OK);EQ(Valid(),0);
-  EQ(CameraStream_GetFrame(&stream,&config,&frame),true);EQ(stream.buffers[stream.consumer_index].sequence,1002);return 0;
+  EQ(CameraStream_GetFrame(&stream,&config,&frame),true);EQ(stream.buffers[stream.in_use_index].sequence,1002);return 0;
  }
  if(kind==6 || kind==7){
   for(i=0;i<3;i++){
    EQ(Begin(format),0);if(kind==7)EQ(Complete(0),SYS_OK);before=stream;
    replace_result=codes[i];EQ(Complete(1),codes[i]);SAME(stream,before);EQ(Valid(),0);
-   if(kind==7)for(j=0;j<stream.frame_bytes;j++)EQ(stream.buffers[stream.consumer_index].data[j],1);
+   if(kind==7)for(j=0;j<stream.frame_bytes;j++)EQ(stream.buffers[stream.ready_index].data[j],1);
    replace_result=SYS_OK;EQ(Complete(1),SYS_OK);EQ(Valid(),0);
   }return 0;
  }
@@ -170,16 +176,16 @@ int Stream_TestRun(uint32_t id)
   EQ(CameraStream_Rotate(&stream,(BspDcmiTarget_t)2,Replace),SYS_ERR_INVALID_ARG);SAME(stream,before);EQ(g_result.replaces,0);return 0;
  }
  if(kind==10 || kind==11 || kind==12){
-  if(kind==10)stream.dma_m0_index=3;
+  if(kind==10)stream.dma_m0_index=5;
   if(kind==11)stream.dma_m1_index=stream.dma_m0_index;
   if(kind==12)stream.buffers[stream.dma_m0_index].state=CAMERA_BUFFER_READY;
   before=stream;EQ(CameraStream_Rotate(&stream,BSP_DCMI_TARGET_M0,Replace),SYS_ERR_INVALID_STATE);SAME(stream,before);EQ(g_result.replaces,0);return 0;
  }
  if(kind==13 || kind==14 || kind==15 || kind==16){
-  if(kind==13)stream.consumer_index=3;
-  if(kind==14)stream.consumer_index=stream.dma_m0_index;
-  if(kind==15){stream.consumer_index=2;stream.buffers[2].state=CAMERA_BUFFER_FREE;}
-  if(kind==16){stream.consumer_index=255;stream.buffers[2].state=CAMERA_BUFFER_READY;}
+  if(kind==13)stream.ready_index=5;
+  if(kind==14)stream.ready_index=stream.dma_m0_index;
+  if(kind==15){stream.ready_index=2;stream.buffers[2].state=CAMERA_BUFFER_FREE;}
+  if(kind==16){stream.ready_index=255;stream.buffers[2].state=CAMERA_BUFFER_READY;}
   before=stream;EQ(CameraStream_Rotate(&stream,BSP_DCMI_TARGET_M0,Replace),SYS_ERR_INVALID_STATE);SAME(stream,before);EQ(g_result.replaces,0);return 0;
  }
  if(kind==17){
@@ -201,19 +207,59 @@ int Stream_TestRun(uint32_t id)
  }
  if(kind==21){
   EQ(Complete(0),SYS_OK);inject_on_disable=2;
-  EQ(CameraStream_GetFrame(&stream,&config,&frame),true);EQ(g_result.deferred,1);EQ(stream.buffers[stream.consumer_index].state,CAMERA_BUFFER_IN_USE);
-  EQ(stream.dropped_frames,1);for(i=0;i<stream.frame_bytes;i++)EQ(frame.data[i],1);return Valid();
+  EQ(CameraStream_GetFrame(&stream,&config,&frame),true);EQ(g_result.deferred,1);EQ(stream.buffers[stream.in_use_index].state,CAMERA_BUFFER_IN_USE);
+  EQ(stream.dropped_frames,0);EQ(stream.ready_index!=UINT8_MAX,1);for(i=0;i<stream.frame_bytes;i++)EQ(frame.data[i],1);return Valid();
  }
  if(kind==22){
   EQ(Complete(0),SYS_OK);EQ(CameraStream_GetFrame(&stream,&config,&frame),true);inject_on_disable=2;
-  EQ(CameraStream_ReleaseFrame(&stream),SYS_OK);EQ(g_result.deferred,1);EQ(stream.buffers[stream.consumer_index].state,CAMERA_BUFFER_READY);return Valid();
+  EQ(CameraStream_ReleaseFrame(&stream),SYS_OK);EQ(g_result.deferred,1);EQ(stream.buffers[stream.ready_index].state,CAMERA_BUFFER_READY);return Valid();
  }
  if(kind==23){
   EQ(Complete(0),SYS_OK);mask=1;inject_on_disable=2;
   EQ(CameraStream_GetFrame(&stream,&config,&frame),true);EQ(mask,1);EQ(pending,2);EQ(g_result.deferred,0);
-  __set_PRIMASK(0);EQ(g_result.deferred,1);EQ(stream.dropped_frames,1);return Valid();
+  __set_PRIMASK(0);EQ(g_result.deferred,1);EQ(stream.dropped_frames,0);EQ(stream.ready_index!=UINT8_MAX,1);return Valid();
  }
  if(kind==24)return ModelRun();
+ if(kind==25){
+  EQ(Complete(0),SYS_OK);EQ(CameraStream_GetFrame(&stream,&config,&frame),true);
+  EQ(Complete(1),SYS_OK);EQ(Valid(),0);held=stream.in_use_index;n=stream.ready_index;
+  EQ(held!=n,1);EQ(CameraStream_GetFrame(&stream,&config,&old_frame),false);
+  EQ(CameraStream_ReleaseFrame(&stream),SYS_OK);EQ(stream.ready_index,n);
+  EQ(CameraStream_GetFrame(&stream,&config,&old_frame),true);EQ(old_frame.data,stream.buffers[n].data);
+  for(i=0;i<old_frame.size_bytes;i++)EQ(old_frame.data[i],2);
+  return Valid();
+ }
+ if(kind==26){
+  stream.in_use_index=CAMERA_STREAM_BUFFER_COUNT;before=stream;
+  EQ(CameraStream_Rotate(&stream,BSP_DCMI_TARGET_M0,Replace),SYS_ERR_INVALID_STATE);
+  EQ(CameraStream_GetFrame(&stream,&config,&frame),false);
+  EQ(CameraStream_ReleaseFrame(&stream),SYS_ERR_INVALID_STATE);SAME(stream,before);EQ(g_result.replaces,0);return 0;
+ }
+ if(kind==27){
+  stream.buffers[3].state=CAMERA_BUFFER_IN_USE;before=stream;
+  EQ(CameraStream_Rotate(&stream,BSP_DCMI_TARGET_M0,Replace),SYS_ERR_INVALID_STATE);
+  EQ(CameraStream_GetFrame(&stream,&config,&frame),false);SAME(stream,before);EQ(g_result.replaces,0);return 0;
+ }
+ if(kind==28){
+  EQ(CameraCapture_ValidateStreamConfig(&config),SYS_OK);
+  bad=config;bad.width=640;bad.height=480;bad.format=CAMERA_PIXEL_FORMAT_YUV422;
+  EQ(CameraCapture_ValidateStreamConfig(&bad),SYS_ERR_NOT_SUPPORTED);
+  for(i=0;i<5;i++){
+   stream.buffers[i].data[0]=(uint8_t)(i+1);
+   stream.buffers[i].data[614399]=(uint8_t)(i+11);
+  }
+  for(i=0;i<5;i++){EQ(stream.buffers[i].data[0],i+1);EQ(stream.buffers[i].data[614399],i+11);}
+  return Valid();
+ }
+ if(kind==29){
+  EQ(Complete(0),SYS_OK);EQ(CameraStream_GetFrame(&stream,&config,&frame),true);
+  EQ(Complete(1),SYS_OK);before=stream;held=stream.in_use_index;n=stream.ready_index;
+  replace_result=SYS_ERR_IO;EQ(Complete(0),SYS_ERR_IO);SAME(stream,before);
+  EQ(stream.in_use_index,held);EQ(stream.ready_index,n);
+  for(i=0;i<frame.size_bytes;i++)EQ(frame.data[i],1);
+  return Valid();
+ }
+
  return 1;
 }
 

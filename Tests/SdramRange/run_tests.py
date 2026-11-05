@@ -19,20 +19,20 @@ def check(name,condition):
  rows.append({'name':name,'pass':bool(condition)});print(name,'PASS' if condition else 'FAIL')
 check('FMC Bank2 base',base==0xD0000000)
 check('Physical geometry capacity',capacity==(1<<13)*(1<<10)*4*2)
-check('Business window exactly 128KiB',window==0x20000 and end==base+window)
+check('Business window exactly 4MiB',window==0x400000 and end==base+window)
 check('Media end derives from same window',stream_end==end)
 check('Reserved first 1KiB',start==base+1024)
 check('MPU base alignment',base%window==0)
-check('Three 40KiB stream buffers',count==3 and size==40960)
+check('Five 600KiB stream buffers',count==5 and size==614400)
 buffers=[(start+i*size,start+(i+1)*size) for i in range(count)]
 for i,(a,b) in enumerate(buffers):
  check('Buffer %d aligned and in window'%i,a%align==0 and a%4==0 and base<=a<b<=end)
 check('No stream buffer overlap',all(buffers[i][1]<=buffers[i+1][0] for i in range(count-1)))
-check('Exact stream end',buffers[-1][1]==0xD001E400)
+check('Exact stream end',buffers[-1][1]==0xD02EE400)
 check('Buffer0 exact address',buffers[0][0]==0xD0000400)
-check('Buffer1 exact address',buffers[1][0]==0xD000A400)
-check('Buffer2 exact address',buffers[2][0]==0xD0014400)
-check('Window tail 7KiB',end-buffers[-1][1]==7*1024)
+check('Buffer1 exact address',buffers[1][0]==0xD0096400)
+check('Buffer2 exact address',buffers[2][0]==0xD012C400)
+check('Window tail bounded',end-buffers[-1][1]==1121280)
 check('Snapshot preserved and bounded',snapshot==63*1024 and start+snapshot<=end)
 check('Window smaller than physical chip',window<=capacity)
 # Compile the actual Media source with isolated invalid BSP headers.
@@ -43,7 +43,7 @@ for label,value in [('64KiB window cannot fit stream',b'0x00010000UL'),
                     ('window beyond chip rejected',b'0x08000000UL')]:
  with tempfile.TemporaryDirectory() as scratch:
   temp=Path(scratch)
-  (temp/'bsp_sdram.h').write_bytes(header.replace(b'0x00020000UL',value))
+  (temp/'bsp_sdram.h').write_bytes(header.replace(b'0x00400000UL',value))
   negative=args[:5]+['-I',str(temp)]+args[5:]
   negative[-1]=str(temp/'rejected.o')
   probe=subprocess.run(negative,cwd=root,capture_output=True)

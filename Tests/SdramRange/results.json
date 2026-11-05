@@ -1,31 +1,39 @@
 {
-  "total": 22,
-  "pass": 22,
+  "total": 24,
+  "pass": 24,
   "fail": 0,
   "compiled_values": [
     3489660928,
     67108864,
-    131072,
-    3489792000,
+    4194304,
+    3493855232,
     3489661952,
-    3489792000,
-    3,
-    40960,
+    3493855232,
+    5,
+    614400,
     32,
     64512
   ],
   "buffers": [
     [
       3489661952,
-      3489702912
+      3490276352
     ],
     [
-      3489702912,
-      3489743872
+      3490276352,
+      3490890752
     ],
     [
-      3489743872,
-      3489784832
+      3490890752,
+      3491505152
+    ],
+    [
+      3491505152,
+      3492119552
+    ],
+    [
+      3492119552,
+      3492733952
     ]
   ],
   "command": "D:/32/ARM/ARMCC/Bin/armcc.exe --cpu Cortex-M7 --c99 -O0 -I D:\\32\\STM32H7\\h7_mac\\Tests\\CameraStreamState\\stubs -I D:\\32\\STM32H7\\h7_mac\\Common\\Inc -I D:\\32\\STM32H7\\h7_mac\\CM7\\Media\\Inc -I D:\\32\\STM32H7\\h7_mac\\CM7\\BSP -I D:\\32\\STM32H7\\h7_mac\\CM7\\Platform -c D:\\32\\STM32H7\\h7_mac\\Tests\\SdramRange\\layout_probe.c -o D:\\32\\STM32H7\\h7_mac\\Tests\\SdramRange\\layout_probe.o",
@@ -39,7 +47,7 @@
       "pass": true
     },
     {
-      "name": "Business window exactly 128KiB",
+      "name": "Business window exactly 4MiB",
       "pass": true
     },
     {
@@ -55,7 +63,7 @@
       "pass": true
     },
     {
-      "name": "Three 40KiB stream buffers",
+      "name": "Five 600KiB stream buffers",
       "pass": true
     },
     {
@@ -68,6 +76,14 @@
     },
     {
       "name": "Buffer 2 aligned and in window",
+      "pass": true
+    },
+    {
+      "name": "Buffer 3 aligned and in window",
+      "pass": true
+    },
+    {
+      "name": "Buffer 4 aligned and in window",
       "pass": true
     },
     {
@@ -91,7 +107,7 @@
       "pass": true
     },
     {
-      "name": "Window tail 7KiB",
+      "name": "Window tail bounded",
       "pass": true
     },
     {
