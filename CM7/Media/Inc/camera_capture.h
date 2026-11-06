@@ -22,7 +22,7 @@ SysResult_t CameraCapture_SetEventCallback(CameraCaptureEventCallback_t callback
 //取得完整帧和丢帧计数快照
 SysResult_t CameraCapture_GetStats(CameraCaptureStats_t *stats);
 
-//启动前校验五缓冲容量和DMA长度，不修改采集状态
+//启动前校验格式及对应接收范围，不修改采集状态
 SysResult_t CameraCapture_ValidateStreamConfig(const CameraConfig_t *config);
 
 //初始化图像采集模块
@@ -37,14 +37,15 @@ bool CameraCapture_GetFrame(CameraFrame_t *frame);
 //释放当前完整帧，允许下一次采集
 SysResult_t CameraCapture_ReleaseFrame(void);
 
-//三缓存区轮询采集
-//获取完整图像，成功时填写frame
+//取得连续采集的完整图像，成功时借用数据并填写frame
+//JPEG跨FIFO尾部时data2非空，size_bytes为总长度，size_bytes2为第二段长度
+//唯一消费者归还前，两段内存都不能被DMA复用
 bool CameraCapture_StreamGetFrame(CameraFrame_t *frame);
 
 //释放当前完整帧，允许下一次采集
 SysResult_t CameraCapture_StreamReleaseFrame(void);
 
-//启动连续采集，使用Media五缓冲
+//启动连续采集，固定格式使用五缓冲，JPEG使用独立字节FIFO
 SysResult_t CameraCapture_StartStream(void);
 
 //停止当前采集，必要时恢复底层硬件

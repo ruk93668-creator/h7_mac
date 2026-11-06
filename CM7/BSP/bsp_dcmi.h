@@ -69,7 +69,7 @@ typedef SysResult_t (*BspDcmiFrameCallback_t)(
     void *context
 );
 
-//连续采集入口，当前仅检查参数和空闲状态，通过后返回NOT_SUPPORTED
+//启动固定长度连续采集，DMA双目标与完整帧回调共同轮换缓冲区
 //两个缓冲区须4字节对齐、互不重叠，容量和DMA可访问性由调用方保证
 //callback不能为空，context允许为NULL
 SysResult_t BSP_DCMI_StartContinuous(
@@ -79,6 +79,28 @@ SysResult_t BSP_DCMI_StartContinuous(
     BspDcmiFrameCallback_t callback,
     void *context
 );
+
+//完成一块DMA字节区后，申请下一块地址；回调只操作有界元数据
+//目标地址替换由BSP完成，失败后所有候选区都保留到Stop成功
+typedef SysResult_t (*BspDcmiByteBlockCallback_t)(
+    BspDcmiTarget_t target, uint32_t completed_address,
+    uint32_t *next_address, void *context);
+
+//记录输入帧边界，不代表DMA已把该帧全部写入SDRAM
+typedef void (*BspDcmiByteFrameCallback_t)(void *context);
+
+//静态回调表必须存活到Stop成功，BSP不读取Media对象
+typedef struct
+{
+    BspDcmiByteBlockCallback_t block_complete;
+    BspDcmiByteFrameCallback_t frame;
+} BspDcmiByteStreamOps_t;
+
+//Camera任务启动JPEG连续字节流，两块区均16字节对齐且互不重叠
+//每块word_count为4的倍数，36至65532；正常帧间不关闭CAPTURE
+SysResult_t BSP_DCMI_StartJpegContinuous(
+    uint32_t *buffer_m0, uint32_t *buffer_m1, uint32_t word_count,
+    const BspDcmiByteStreamOps_t *ops, void *context);
 
 //仅在完整帧回调内替换本次完成的非活动DMA目标，一帧成功一次
 //新缓冲区需满足整帧容量、DMA访问和Cache属性要求；失败交给Stop恢复

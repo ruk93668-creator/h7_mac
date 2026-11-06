@@ -254,26 +254,39 @@ SysResult_t USB_UVC_Register(void)
 //借用外部帧，成功后等待状态查询确认归还
 SysResult_t USB_UVC_SubmitFrame(const uint8_t *frame, uint32_t length)
 {
+    VideoFrameView_t view = {0};
+
+    //连续帧仍走原接口，内部统一校验和借用协议
+    view.spans[0].data = frame;
+    view.spans[0].length = length;
+    view.size_bytes = length;
+    view.span_count = 1U;
+    return USB_UVC_SubmitFrameView(&view);
+}
+
+//借用一到两段帧数据，成功不代表发送完成
+SysResult_t USB_UVC_SubmitFrameView(const VideoFrameView_t *view)
+{
     uint32_t mask;
+    uint32_t length;
     SysResult_t result;
     UsbUvcContext_t *ctx;
 
-    //固定图像长度必须一致，JPEG只接收上限内的完整文件
-    if (frame == NULL || length == 0U ||
-        (s_video_format == CAMERA_PIXEL_FORMAT_JPEG ?
-         length > s_video_frame_bytes : length != s_video_frame_bytes))
+    if (!VideoFrameView_Valid(view))
+        return SYS_ERR_INVALID_ARG;
+    length = view->size_bytes;
+    if (s_video_format == CAMERA_PIXEL_FORMAT_JPEG ?
+        length > s_video_frame_bytes : length != s_video_frame_bytes)
         return SYS_ERR_INVALID_ARG;
     if (__get_IPSR() != 0U)
         return SYS_ERR_INVALID_STATE;
 
-    //先检查地址加法，禁止尾部标记检查绕过Payload的溢出保护
-    if ((uintptr_t)frame > UINTPTR_MAX - (length - 1U))
-        return SYS_ERR_INVALID_ARG;
-
-    //边界检查在任务中完成，UVC不扫描或解码摄像头图像
+    //JPEG标记允许跨段读取，不扫描整张图像或接触Media所有权
     if (s_video_format == CAMERA_PIXEL_FORMAT_JPEG &&
-        (length < 4U || frame[0] != 0xFFU || frame[1] != 0xD8U ||
-         frame[length - 2U] != 0xFFU || frame[length - 1U] != 0xD9U))
+        (length < 4U || VideoFrameView_Byte(view, 0U) != 0xFFU ||
+         VideoFrameView_Byte(view, 1U) != 0xD8U ||
+         VideoFrameView_Byte(view, length - 2U) != 0xFFU ||
+         VideoFrameView_Byte(view, length - 1U) != 0xD9U))
         return SYS_ERR_INVALID_ARG;
     mask = USB_Device_Lock();
     ctx = s_uvc_active;
@@ -285,7 +298,7 @@ SysResult_t USB_UVC_SubmitFrame(const uint8_t *frame, uint32_t length)
     {
         if (s_uvc_payload.state == USB_UVC_PAYLOAD_UNINITIALIZED)
             (void)USB_UVC_PayloadInit(&s_uvc_payload);
-        result = USB_UVC_PayloadStartFrame(&s_uvc_payload, frame, length, UVC_VIDEO_PACKET_BYTES);
+        result = USB_UVC_PayloadStartView(&s_uvc_payload, view, UVC_VIDEO_PACKET_BYTES);
         if (result == SYS_OK)
         {
             ctx->stream_state = USB_UVC_WAIT_SLOT;

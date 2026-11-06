@@ -52,18 +52,27 @@ SysResult_t USB_UVC_PayloadReset(UsbUvcPayload_t *payload)
     return SYS_OK;
 }
 
-SysResult_t USB_UVC_PayloadStartFrame(
-    UsbUvcPayload_t *payload,
-    const uint8_t *frame,
-    uint32_t frame_length,
-    uint16_t max_packet_length
-)
+//借用连续内存帧，保留原有调用接口
+SysResult_t USB_UVC_PayloadStartFrame(UsbUvcPayload_t *payload,
+    const uint8_t *frame, uint32_t frame_length, uint16_t max_packet_length)
 {
-    uintptr_t address;
-    uintptr_t frame_end;
-    uintptr_t object_address;
+    VideoFrameView_t view = {0};
 
-    if (payload == NULL || frame == NULL || frame_length == 0U ||
+    view.spans[0].data = frame;
+    view.spans[0].length = frame_length;
+    view.size_bytes = frame_length;
+    view.span_count = 1U;
+    return USB_UVC_PayloadStartView(payload, &view, max_packet_length);
+}
+
+//借用分段图像，不复制整帧，也不提前推进偏移或FID
+SysResult_t USB_UVC_PayloadStartView(UsbUvcPayload_t *payload,
+    const VideoFrameView_t *view, uint16_t max_packet_length)
+{
+    uintptr_t object_address;
+    uint32_t i;
+
+    if (payload == NULL || !VideoFrameView_Valid(view) ||
         max_packet_length <= USB_UVC_PAYLOAD_HEADER_SIZE ||
         max_packet_length > USB_UVC_PAYLOAD_MAX_PACKET_SIZE)
         return SYS_ERR_INVALID_ARG;
@@ -74,18 +83,19 @@ SysResult_t USB_UVC_PayloadStartFrame(
     if (payload->fid > 1U)
         return SYS_ERR_INVALID_STATE;
 
-    //先检查整帧地址溢出，再判断是否覆盖模块自身
-    address = (uintptr_t)frame;
-    if (address > UINTPTR_MAX - (frame_length - 1U))
-        return SYS_ERR_INVALID_ARG;
-    frame_end = address + frame_length - 1U;
+    //各段均不能覆盖Payload对象及其内部包缓冲
     object_address = (uintptr_t)payload;
-    if (Payload_Overlap(address, frame_end, object_address,
-        object_address + sizeof(*payload) - 1U))
-        return SYS_ERR_INVALID_ARG;
-
-    payload->frame = frame;
-    payload->frame_length = frame_length;
+    for (i = 0U; i < view->span_count; i++)
+    {
+        uintptr_t address = (uintptr_t)view->spans[i].data;
+        if (Payload_Overlap(address, address + view->spans[i].length - 1U,
+            object_address, object_address + sizeof(*payload) - 1U))
+            return SYS_ERR_INVALID_ARG;
+    }
+    payload->frame = view->spans[0].data;
+    payload->frame_length = view->size_bytes;
+    payload->frame2 = view->span_count == 2U ? view->spans[1].data : NULL;
+    payload->frame2_length = view->span_count == 2U ? view->spans[1].length : 0U;
     payload->frame_offset = 0U;
     payload->max_packet_length = max_packet_length;
     payload->frame_started = false;
@@ -93,6 +103,7 @@ SysResult_t USB_UVC_PayloadStartFrame(
     return SYS_OK;
 }
 
+//构造一个带UVC头的数据包，等待真实完成确认后才推进帧偏移
 SysResult_t USB_UVC_PayloadBuildPacket(
     UsbUvcPayload_t *payload,
     UsbUvcPayloadPacket_t *packet
@@ -117,10 +128,20 @@ SysResult_t USB_UVC_PayloadBuildPacket(
         Payload_Overlap(output, output + sizeof(*packet) - 1U,
             object, object + sizeof(*payload) - 1U))
         return SYS_ERR_INVALID_ARG;
-    if (payload->frame != NULL &&
-        Payload_Overlap(output, output + sizeof(*packet) - 1U,
-            (uintptr_t)payload->frame, (uintptr_t)payload->frame + payload->frame_length - 1U))
-        return SYS_ERR_INVALID_ARG;
+    if (payload->frame != NULL)
+    {
+        //先检查分段长度，避免损坏的状态引起地址计算下溢
+        if (!Payload_FrameValid(payload))
+            return SYS_ERR_INVALID_STATE;
+        if (Payload_Overlap(output, output + sizeof(*packet) - 1U,
+            (uintptr_t)payload->frame,
+            (uintptr_t)payload->frame + payload->frame_length - payload->frame2_length - 1U))
+            return SYS_ERR_INVALID_ARG;
+        if (payload->frame2 != NULL && payload->frame2_length != 0U &&
+            Payload_Overlap(output, output + sizeof(*packet) - 1U,
+                (uintptr_t)payload->frame2, (uintptr_t)payload->frame2 + payload->frame2_length - 1U))
+            return SYS_ERR_INVALID_ARG;
+    }
 
     if (payload->state == USB_UVC_PAYLOAD_CANCELLING)
         return SYS_ERR_BUSY;
@@ -151,8 +172,14 @@ SysResult_t USB_UVC_PayloadBuildPacket(
 
         //只复制本包有效图像字节，不读取图像尾部以外的数据
         for (index = 0U; index < data_length; index++)
-            payload->packet[index + USB_UVC_PAYLOAD_HEADER_SIZE] =
-                payload->frame[payload->frame_offset + index];
+        {
+            uint32_t offset = payload->frame_offset + index;
+            uint32_t first_length = payload->frame_length - payload->frame2_length;
+
+            //仅复制本次USB小包，跨段时继续读取第二段
+            payload->packet[index + USB_UVC_PAYLOAD_HEADER_SIZE] = offset < first_length ?
+                payload->frame[offset] : payload->frame2[offset - first_length];
+        }
 
         payload->pending_data_length = data_length;
         payload->pending_packet_length = (uint16_t)(data_length + USB_UVC_PAYLOAD_HEADER_SIZE);
@@ -254,10 +281,21 @@ static bool Payload_Initialized(const UsbUvcPayload_t *payload)
         payload->state <= USB_UVC_PAYLOAD_CANCELLING;
 }
 
+//检查分段视图与当前偏移，不允许损坏状态绕过地址溢出检查
 static bool Payload_FrameValid(const UsbUvcPayload_t *payload)
 {
-    return payload->frame != NULL && payload->frame_length != 0U &&
-        payload->frame_offset < payload->frame_length && payload->fid <= 1U &&
+    uint32_t first_length;
+
+    if (payload->frame == NULL || payload->frame_length == 0U ||
+        payload->frame2_length >= payload->frame_length)
+        return false;
+    first_length = payload->frame_length - payload->frame2_length;
+    if ((uintptr_t)payload->frame > UINTPTR_MAX - (first_length - 1U))
+        return false;
+    if (payload->frame2_length != 0U && (payload->frame2 == NULL ||
+        (uintptr_t)payload->frame2 > UINTPTR_MAX - (payload->frame2_length - 1U)))
+        return false;
+    return payload->frame_offset < payload->frame_length && payload->fid <= 1U &&
         payload->max_packet_length > USB_UVC_PAYLOAD_HEADER_SIZE &&
         payload->max_packet_length <= USB_UVC_PAYLOAD_MAX_PACKET_SIZE;
 }
@@ -284,6 +322,8 @@ static void Payload_FinishFrame(UsbUvcPayload_t *payload, bool toggle_fid)
         payload->fid ^= UVC_PAYLOAD_FID;
     payload->frame = NULL;
     payload->frame_length = 0U;
+    payload->frame2 = NULL;
+    payload->frame2_length = 0U;
     payload->frame_offset = 0U;
     payload->max_packet_length = 0U;
     payload->pending_token = 0U;

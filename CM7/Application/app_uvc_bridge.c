@@ -279,6 +279,7 @@ void App_UvcBridgeUsbProcess(bool enabled)
             g_bridge_debug.usb_rejected_messages++;
     }
 
+
     if (s_usb_bridge.state == BRIDGE_USB_LOANED)
     {
         if (!enabled)
@@ -305,7 +306,25 @@ void App_UvcBridgeUsbProcess(bool enabled)
              frame->size_bytes != s_bridge_frame_bytes))
             result = SYS_ERR_INVALID_ARG;
         else
-            result = USB_UVC_SubmitFrame(frame->data, frame->size_bytes);
+        {
+            VideoFrameView_t view = {0};
+
+            //只复制帧描述，JPEG字节始终留在DMA写入的SDRAM范围
+            if (frame->size_bytes2 >= frame->size_bytes ||
+                (frame->size_bytes2 != 0U && frame->data2 == NULL))
+                result = SYS_ERR_INVALID_ARG;
+            else
+            {
+                view.spans[0].data = frame->data;
+                view.spans[0].length = frame->size_bytes - frame->size_bytes2;
+                view.size_bytes = frame->size_bytes;
+                view.span_count = frame->size_bytes2 == 0U ? 1U : 2U;
+                view.spans[1].data = frame->data2;
+                view.spans[1].length = frame->size_bytes2;
+                result = frame->size_bytes2 == 0U ?
+                    USB_UVC_SubmitFrame(frame->data, frame->size_bytes) : USB_UVC_SubmitFrameView(&view);
+            }
+        }
         g_bridge_debug.usb_result = result;
         if (result == SYS_OK)
         {

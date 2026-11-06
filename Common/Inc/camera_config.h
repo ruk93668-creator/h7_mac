@@ -34,6 +34,10 @@ typedef struct
     const uint8_t *data;
     uint32_t size_bytes;
 
+    //跨FIFO末尾时使用第二段，第一段长度为size_bytes减size_bytes2
+    const uint8_t *data2;
+    uint32_t size_bytes2;
+
 } CameraFrame_t;
 
 //判断是否为可变长度格式，不表示当前采集模式已支持

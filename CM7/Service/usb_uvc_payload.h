@@ -2,6 +2,7 @@
 #define CM7_USB_UVC_PAYLOAD_H
 
 #include "sys_result.h"
+#include "video_frame_view.h"
 #include <stdbool.h>
 #include <stdint.h>
 
@@ -42,6 +43,10 @@ typedef struct
     uint32_t frame_length;
     uint32_t frame_offset;
 
+    //第二段用于跨FIFO边界，不在模块内复制整帧
+    const uint8_t *frame2;
+    uint32_t frame2_length;
+
     uint32_t token_counter;
     uint32_t pending_token;
     uint16_t max_packet_length;
@@ -61,7 +66,7 @@ SysResult_t USB_UVC_PayloadInit(UsbUvcPayload_t *payload);
 //仅空闲时复位新流的FID，保留Token计数以拒绝旧完成通知
 SysResult_t USB_UVC_PayloadReset(UsbUvcPayload_t *payload);
 
-//借用外部图像，长度必须非零，最大包长范围3到512字节
+//借用外部图像，长度必须非零，最大包长范围3到1023字节
 SysResult_t USB_UVC_PayloadStartFrame(
     UsbUvcPayload_t *payload,
     const uint8_t *frame,
@@ -69,8 +74,11 @@ SysResult_t USB_UVC_PayloadStartFrame(
     uint16_t max_packet_length
 );
 
-//构造一包但不推进偏移，重复调用返回同一包和Token
-//调用方只能发送length字节，缓冲区保留到完成或取消确认
+//借用一段或两段外部图像，完成或取消确认前各段必须保持不变
+SysResult_t USB_UVC_PayloadStartView(UsbUvcPayload_t *payload,
+    const VideoFrameView_t *view, uint16_t max_packet_length);
+
+//构造带UVC头的小包，真实完成确认前不推进偏移
 SysResult_t USB_UVC_PayloadBuildPacket(
     UsbUvcPayload_t *payload,
     UsbUvcPayloadPacket_t *packet
