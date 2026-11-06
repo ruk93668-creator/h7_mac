@@ -58,6 +58,32 @@ int Stage02_TestRun(uint32_t id)
   return 0;
  }
  EQ(CameraCapture_Init(&cfg),SYS_OK);
+ if(id>=33 && id<=38){
+  EQ(CameraCapture_Start(),SYS_OK);
+  if(id==33){EQ(CameraCapture_Stop(),SYS_OK);EQ(CameraCapture_IsStopped(),true);}
+  if(id==34 || id==35){
+   jpeg_poll=SYS_OK;jpeg_received=padded;CameraCapture_Process();
+   EQ(CameraCapture_GetFrame(&f),true);
+   if(id==35){
+    stop_result=SYS_ERR_TIMEOUT;
+    EQ(CameraCapture_ReleaseFrame(),SYS_ERR_TIMEOUT);
+    EQ(CameraCapture_IsStopped(),false);
+    EQ(CameraCapture_Start(),SYS_ERR_INVALID_STATE);
+    stop_result=SYS_OK;EQ(CameraCapture_Stop(),SYS_OK);
+   }
+   else {EQ(CameraCapture_Stop(),SYS_ERR_BUSY);EQ(CameraCapture_ReleaseFrame(),SYS_OK);}
+  }
+  if(id>=36){
+   jpeg_poll=id==36?SYS_ERR_TIMEOUT:SYS_ERR_IO;
+   if(id==38)stop_result=SYS_ERR_TIMEOUT;
+   CameraCapture_Process();EQ(CameraCapture_GetLastResult(),jpeg_poll);EQ(CameraCapture_GetFrame(&f),false);
+   if(id==38){EQ(CameraCapture_IsStopped(),false);stop_result=SYS_OK;EQ(CameraCapture_Stop(),SYS_OK);EQ(CameraCapture_GetLastResult(),SYS_ERR_IO);}
+  }
+  EQ(CameraCapture_IsStopped(),true);jpeg_poll=SYS_OK;jpeg_received=padded;
+  EQ(CameraCapture_Start(),SYS_OK);EQ(CameraCapture_GetLastResult(),SYS_OK);
+  CameraCapture_Process();EQ(CameraCapture_GetFrame(&f),true);EQ(f.size_bytes,size);
+  EQ(CameraCapture_ReleaseFrame(),SYS_OK);EQ(CameraCapture_Stop(),SYS_OK);return 0;
+ }
  EQ(s_capture.snapshot.frame_bytes,0);EQ(s_capture.snapshot.frame_capacity,262140);
  if(id==16){EQ(CameraCapture_StartStream(),SYS_ERR_NOT_SUPPORTED);EQ(s_capture.mode,CAMERA_CAPTURE_MODE_NONE);return 0;}
  if(id==17)start_result=SYS_ERR_IO;

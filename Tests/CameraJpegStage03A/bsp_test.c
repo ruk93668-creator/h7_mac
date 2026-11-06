@@ -15,6 +15,29 @@ int Stage02_TestRun(uint32_t id)
  if(id==7)fault_start=1;
  EQ(BSP_DCMI_StartJpegSnapshot((uint32_t *)0xD0000400,128),id>=5 && id<=7?SYS_ERR_IO:SYS_OK);
  if(id>=5 && id<=7){EQ(s_stop_required,true);EQ(bytes,0x12345678U);return 0;}
+ if(id>=32 && id<=40){
+  if(id==33)fault_stop=2;
+  if(id==34)fault_stop=3;
+  if(id==35)fault_dma_deinit=1;
+  if(id==36)fault_dma_init=1;
+  if(id==37)fault_dcmi_deinit=1;
+  if(id==38)fault_dcmi_init=1;
+  if(id==39)g_stuck_stream=1;
+  if(id==40){SetRaw(DCMI_FLAG_OVRRI);Dcmi_CheckErrors();}
+  if(id>=33 && id<=39){
+   EQ(BSP_DCMI_Stop(),id==33 || id==39?SYS_ERR_TIMEOUT:SYS_ERR_IO);
+   EQ(s_stop_required,true);EQ(s_jpeg.active,true);
+   EQ(BSP_DCMI_StartJpegSnapshot((uint32_t *)0xD0000400,128),SYS_ERR_INVALID_STATE);
+   fault_stop=fault_dma_deinit=fault_dma_init=fault_dcmi_deinit=fault_dcmi_init=g_stuck_stream=0;
+  }
+  EQ(BSP_DCMI_Stop(),SYS_OK);EQ(Stopped(),0);EQ(s_jpeg.active,false);
+  HAL_DCMI_FrameEventCallback(&s_dcmi);Dcmi_JpegDmaComplete(&s_dcmi_dma);
+  EQ(s_capture_active,false);EQ(s_jpeg.frame_seen,false);
+  DMA1->LISR=0;SetRaw(0);
+  EQ(BSP_DCMI_StartJpegSnapshot((uint32_t *)0xD0000400,128),SYS_OK);
+  EQ(s_jpeg.active,true);EQ(s_jpeg.frame_seen,false);
+  EQ(BSP_DCMI_Stop(),SYS_OK);EQ(BSP_DCMI_Stop(),SYS_OK);return 0;
+ }
  EQ(s_jpeg.active,true);EQ(s_dcmi.Init.JPEGMode,DCMI_JPEG_ENABLE);EQ(DMA1_Stream0->FCR&DMA_SxFCR_DMDIS,0);EQ(DCMI->IER&DCMI_IT_FRAME,DCMI_IT_FRAME);
  if(id==8){EQ(BSP_DCMI_StartSnapshot((uint32_t *)0xD0000400,10),SYS_ERR_BUSY);return 0;}
  if(id==9){DCMI->CR&=~DCMI_CR_CAPTURE;EQ(BSP_DCMI_ProcessJpeg(&bytes),SYS_ERR_BUSY);EQ(bytes,0x12345678U);return 0;}

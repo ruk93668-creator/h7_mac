@@ -39,3 +39,11 @@ PC解码真实图像已成功，修正后的固件尚待烧录确认result=0、s
 ## 最新实板单帧验收
 
 用户截图确认result=0、state=2、size_bytes=0x459（1113B）、160×120。按0xD0000400至0xD0000858导出的jpeg_complete.hex通过Intel HEX校验和、连续地址、精确长度、SOI/EOI及Pillow verify与完整load检查。真实JPEG单帧采集、固件交付及PC解码这一条路径已通过；文件及哈希保存在Hardware/VerifiedCapture。停止/错误恢复和多次重复采集尚未由该结果证明，stop_attempted仍为0。此前“新固件实板待复验”的说明为历史状态。
+
+## 停止与恢复补充验收
+
+用户确认在同一真实JPEG READY帧上设置release_request=1、恢复运行后：state=4、stop_attempted=1、stop_result=0、DMA EN=0、DCMI CAPTURE=0。正常释放及停止已实板通过。
+
+增加BSP32～40：主动停止、HAL Stop TIMEOUT/IO、DMA/DCMI DeInit/Init失败、EN无法清零、OVR故障，确认失败阻止启动、清除故障后Stop重试成功、随后JPEG可重新启动、迟到回调不污染新一轮。增加Media33～38：采集中Stop、READY释放、Release失败后恢复、超时/IO停止、Stop失败保留最初错误，再次Start并交付有效帧。
+
+新增测试首次发现两个夹具/预期问题：卡住EN用例未模拟硬件读回，现参照既有DCMI夹具在g_stuck_stream=1时保持EN；ERROR状态重启应返回INVALID_STATE而非BUSY，更新新增断言为现有契约。没有改动生产算法或放宽已有测试。故障注入恢复为软件验证，未声称已在实板制造DMA故障。

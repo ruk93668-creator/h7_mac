@@ -1,7 +1,7 @@
 {
   "summary": {
-    "total": 33,
-    "passed": 33,
+    "total": 39,
+    "passed": 39,
     "failed": 0
   },
   "cases": [
@@ -199,6 +199,42 @@
     },
     {
       "id": 32,
+      "pass": true,
+      "failure_line": 0,
+      "error": null
+    },
+    {
+      "id": 33,
+      "pass": true,
+      "failure_line": 0,
+      "error": null
+    },
+    {
+      "id": 34,
+      "pass": true,
+      "failure_line": 0,
+      "error": null
+    },
+    {
+      "id": 35,
+      "pass": true,
+      "failure_line": 0,
+      "error": null
+    },
+    {
+      "id": 36,
+      "pass": true,
+      "failure_line": 0,
+      "error": null
+    },
+    {
+      "id": 37,
+      "pass": true,
+      "failure_line": 0,
+      "error": null
+    },
+    {
+      "id": 38,
       "pass": true,
       "failure_line": 0,
       "error": null
