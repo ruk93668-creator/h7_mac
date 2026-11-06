@@ -2,6 +2,10 @@
 
 本轮基线：03B分支4b3a7a0。保留160×120、320×240 JPEG和原YUY2功能；不合并main，不代用户编译或操作实板。
 
+## 最新实板反馈
+
+用户确认：640×480 MJPEG实板功能通过，但帧率未达到10FPS目标，具体实测FPS未提供。结果见`Tests/CameraMjpegStage03B/hardware_status_summary.md`。以下保留开发时配置及测试步骤。
+
 ## 当前测试配置
 
 | 项目 | MJPEG模式 | 原YUY2模式 |
@@ -62,4 +66,4 @@ ffplay -f dshow -video_size 640x480 -framerate 10 -vcodec mjpeg -i video="Roxy C
 5. 若画面不出或提交失败，观察首次错误与JPEG真实长度，特别检查是否超过70000B。不能为通过配置校验而直接放宽带宽限制。
 6. 测试关闭重开、Reset、Disconnect、Stop/Restart，并回归原YUY2和JPEG单帧。
 
-尚未完成：ARMCC编译、VGA实板图像、实际FPS、复杂场景最大帧长、DMA FIFO稳定性及USB恢复验收。不得将源码检查PASS视为实板视频通过。
+当前待补：完整编译日志、VGA具体实测FPS、复杂场景最大帧长、长期稳定性及各项USB恢复结果。用户已确认实板功能通过，但未达帧率目标；源码检查与用户硬件反馈分别记录。

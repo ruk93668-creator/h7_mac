@@ -1,5 +1,7 @@
 # 320×240 JPEG → USB MJPEG 接入
 
+用户最新确认：QVGA MJPEG实板通过；目标25FPS的具体实测数值未提供。汇总见`Tests/CameraMjpegStage03B/hardware_status_summary.md`。
+
 以下为QVGA阶段历史记录。当前默认测试改为VGA，见`Tests/MjpegVga/README.md`；320×240能力保留。
 
 本轮只接入QVGA JPEG，不开放640×480，不改变FIFO/DMA或USB传输状态机。独立03B分支开发，不合并main。
@@ -55,4 +57,4 @@ ffplay -f dshow -video_size 320x240 -framerate 25 -vcodec mjpeg -i video="Roxy C
 5. 测试Alt0重开、USB Reset/Disconnect、Stop/Restart。若大帧提交返回INVALID_ARG，先记录实际JPEG长度，不能直接放宽USB带宽检查。
 6. 原YUY2和JPEG单帧分别重编复验。硬件未验证前不宣称QVGA已完成验收。
 
-USB识别出设备不等于视频取流成功；实际FPS和复杂画面下最大JPEG长度仍待测量。
+用户已确认实板通过；实际FPS和复杂画面下最大JPEG长度的具体测量记录仍待补充。

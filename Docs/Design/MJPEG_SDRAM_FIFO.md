@@ -1,9 +1,11 @@
 # MJPEG Continuous：独立SDRAM字节FIFO
 
+最新实板反馈：Continuous FIFO、QVGA已通过；VGA功能通过但未达10FPS目标。见`Tests/CameraMjpegStage03B/hardware_status_summary.md`，不移用旧Snapshot版本的约16FPS。
+
 当前VGA测试配置：MJPEG 640×480、目标10FPS、最大帧70000B，见`Tests/MjpegVga/README.md`。320×240仍支持；QVGA阶段历史记录见`Tests/MjpegQvga/README.md`。下文为FIFO最初接入记录。
 
 本轮基线：`codex/camera-mjpeg-stage03b` 的 `60c94d0`，即撤销旧接收环后的分支。
-这是新实现的源码交付，不是实板验收通过记录。未合并main。按用户要求，本轮不运行C编译器、Keil或可执行测试；编译和实板测试由用户完成。
+以下记录为最初源码交付时状态；后续用户实板结果见本文顶部链接。未合并main。按用户要求，本轮不运行C编译器、Keil或可执行测试；编译和实板测试由用户完成。
 
 ## 保留的功能
 
