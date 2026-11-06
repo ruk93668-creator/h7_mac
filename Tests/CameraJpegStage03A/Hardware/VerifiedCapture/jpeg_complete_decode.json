@@ -1,0 +1,10 @@
+{
+  "source": "hardware",
+  "input": "D:\\32\\STM32H7\\h7_mac\\MDK-ARM\\jpeg_complete.hex",
+  "size_bytes": 1113,
+  "width": 160,
+  "height": 120,
+  "sha256": "397778fc5f1a64db9bb74606b4eb597f88bddf49042700f2fc919d532b0884ef",
+  "decoded": true,
+  "hardware_origin_is_user_assertion": true
+}

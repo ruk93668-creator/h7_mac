@@ -1,0 +1,16 @@
+{
+  "firmware_commit": "1f622454be63bdce6284f009e56041b26c326f8c",
+  "watch_from_user_screenshot": {
+    "result": 0,
+    "state": 2,
+    "stop_attempted": 0,
+    "frame_address": "0xD0000400",
+    "size_bytes": 1113,
+    "width": 160,
+    "height": 120
+  },
+  "pc_decoder": "Pillow verify + full load",
+  "decoded": true,
+  "stop_recovery_hardware_verified": false,
+  "continuous_jpeg_implemented": false
+}

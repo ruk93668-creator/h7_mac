@@ -35,3 +35,7 @@ PC解码真实图像已成功，修正后的固件尚待烧录确认result=0、s
 新增JPEG格式、独立BSP Snapshot收尾、Media可变长度、显式开启的测试应用及独立测试。默认UVC路径不替换。HAL/LL、官方Component、CM4、USB描述符、SDRAM/MPU未修改。用户usb_uvc_desc.h和Keil设置、output/tmp保留，不纳入本任务提交。Keil项目只暂存新增JPEG模块项。
 
 完整实现说明、导出步骤、原始问题复现见README.md和HAL接收审计.md。当前属于软件完成、实板待复验备份，不合并main。
+
+## 最新实板单帧验收
+
+用户截图确认result=0、state=2、size_bytes=0x459（1113B）、160×120。按0xD0000400至0xD0000858导出的jpeg_complete.hex通过Intel HEX校验和、连续地址、精确长度、SOI/EOI及Pillow verify与完整load检查。真实JPEG单帧采集、固件交付及PC解码这一条路径已通过；文件及哈希保存在Hardware/VerifiedCapture。停止/错误恢复和多次重复采集尚未由该结果证明，stop_attempted仍为0。此前“新固件实板待复验”的说明为历史状态。
