@@ -1,14 +1,26 @@
+#define JPEG_CONTINUOUS_EXTERNAL_MOCK
 #define Stage02_TestRun Historical_JpegRun
 #include "../CameraJpegStage03A/media_test.c"
 #undef Stage02_TestRun
 void __aeabi_memset(void *p,size_t n,int c){volatile uint8_t *d=p;while(n--)*d++=(uint8_t)c;}
+static uint8_t jpeg_source[128];
+static uint32_t jpeg_source_count,jpeg_source_offset,jpeg_frames;
+SysResult_t BSP_DCMI_StartJpegStream(uint32_t *p,uint32_t n){(void)p;(void)n;return start_result;}
+SysResult_t BSP_DCMI_ReadJpegStream(uint8_t *p,uint32_t capacity,uint32_t *count,uint32_t *frames)
+{
+ uint32_t n=jpeg_source_count-jpeg_source_offset;
+ *count=0;*frames=jpeg_frames;
+ if(jpeg_poll!=SYS_OK && jpeg_poll!=SYS_ERR_BUSY)return jpeg_poll;
+ if(n>capacity)n=capacity;
+ memcpy(p,jpeg_source+jpeg_source_offset,n);jpeg_source_offset+=n;*count=n;return SYS_OK;
+}
 static int Receive(uint32_t extra)
 {
- uint8_t *p=s_capture.snapshot.framebuffer;uint32_t n=sizeof(good)-2;
+ uint8_t *p=jpeg_source;uint32_t n=sizeof(good)-2;
  memcpy(p,good,n);memset(p+n,0x11,extra);p[n+extra]=0xFF;p[n+extra+1]=0xD9;
  jpeg_poll=SYS_OK;jpeg_received=(sizeof(good)+extra+3)&~3U;
  memset(p+sizeof(good)+extra,0,jpeg_received-sizeof(good)-extra);
- CameraCapture_Process();return 0;
+ jpeg_source_count=jpeg_received;jpeg_source_offset=0;jpeg_frames++;CameraCapture_Process();return 0;
 }
 int Stage02_TestRun(uint32_t id)
 {
@@ -25,7 +37,7 @@ int Stage02_TestRun(uint32_t id)
  if(id==3){jpeg_poll=SYS_ERR_BUSY;CameraCapture_Process();EQ(s_capture.stream.next_sequence,0);return 0;}
  if(id==4){jpeg_poll=SYS_ERR_BUSY;tick=1000;CameraCapture_Process();EQ(CameraCapture_GetLastResult(),SYS_ERR_TIMEOUT);EQ(CameraCapture_IsStopped(),true);return 0;}
  if(id==5){jpeg_poll=SYS_ERR_NO_RESOURCE;CameraCapture_Process();EQ(CameraCapture_GetLastResult(),SYS_ERR_NO_RESOURCE);EQ(CameraCapture_StreamGetFrame(&f),false);return 0;}
- if(id==6){jpeg_poll=SYS_OK;jpeg_received=4;memset(s_capture.snapshot.framebuffer,0,4);CameraCapture_Process();EQ(CameraCapture_GetLastResult(),SYS_ERR_PROTOCOL);return 0;}
+ if(id==6){jpeg_poll=SYS_OK;jpeg_source[0]=0x12;jpeg_source_count=1;CameraCapture_Process();EQ(CameraCapture_GetLastResult(),SYS_ERR_PROTOCOL);return 0;}
  EQ(Receive(0),0);EQ(CameraCapture_StreamGetFrame(&f),true);EQ(f.size_bytes,sizeof(good));EQ(f.format,CAMERA_PIXEL_FORMAT_JPEG);
  EQ(CameraCapture_GetFrame(&g),false);EQ(CameraCapture_StreamGetFrame(&g),false);
  held=s_capture.stream.in_use_index;marker=f.data[0];
@@ -41,7 +53,7 @@ int Stage02_TestRun(uint32_t id)
   if(id==10){EQ(CameraCapture_StartStream(),SYS_OK);EQ(Receive(3),0);EQ(CameraCapture_StreamGetFrame(&g),true);EQ(g.size_bytes,sizeof(good)+3);}
   return 0;
  }
- if(id==12){start_result=SYS_ERR_IO;EQ(Receive(1),0);EQ(CameraCapture_GetLastResult(),SYS_ERR_IO);EQ(s_capture.state,CAMERA_CAPTURE_DRAINING);EQ(f.data[0],marker);return 0;}
+ if(id==12){jpeg_poll=SYS_ERR_IO;CameraCapture_Process();EQ(CameraCapture_GetLastResult(),SYS_ERR_IO);EQ(s_capture.state,CAMERA_CAPTURE_DRAINING);EQ(f.data[0],marker);return 0;}
  if(id==13){s_capture.stream.next_sequence=UINT32_MAX;EQ(Receive(0),0);EQ(CameraCapture_GetLastResult(),SYS_ERR_NO_RESOURCE);return 0;}
  for(i=0;i<30;i++){EQ(Receive(i%7),0);EQ(f.data[0],marker);EQ(s_capture.stream.in_use_index,held);EQ(s_capture.stream.buffers[held].valid_bytes,sizeof(good));}
  EQ(s_capture.stream.dropped_frames,29);EQ(CameraCapture_StreamReleaseFrame(),SYS_OK);EQ(CameraCapture_StreamGetFrame(&g),true);EQ(g.size_bytes,sizeof(good)+29%7);

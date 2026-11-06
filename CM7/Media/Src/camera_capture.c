@@ -6,6 +6,21 @@
 #include <stddef.h>
 #include <stdint.h>
 
+//JPEG流解析状态，等待EOI和FRAME共同确认才交付
+typedef enum
+{
+    JPEG_PARSE_GAP = 0U, //跳过帧间Word零填充
+    JPEG_PARSE_SOI,      //确认FFD8
+    JPEG_PARSE_PREFIX,   //段标记必须以FF开始
+    JPEG_PARSE_MARKER,   //识别段类型
+    JPEG_PARSE_LENGTH_H, //读取段长度高字节
+    JPEG_PARSE_LENGTH_L, //读取段长度低字节
+    JPEG_PARSE_SEGMENT,  //按段长跳过元数据
+    JPEG_PARSE_ENTROPY,  //扫描压缩数据
+    JPEG_PARSE_EOI,      //完整文件等待FRAME计数
+    JPEG_PARSE_ESCAPE   //处理FF00和重启标记
+} CameraJpegParseState_t;
+
 //图像缓冲区数量
 #define CAMERA_STREAM_BUFFER_COUNT     5U
 
@@ -45,6 +60,16 @@
 //JPEG只接收一次DMA窗口，预留容量不等于可传输整块600KiB
 #define CAMERA_JPEG_CAPACITY_BYTES (0xFFFFU * 4U)
 #define CAMERA_JPEG_TIMEOUT_MS 1000U
+
+//JPEG连续字节流使用独立接收环，不占用五个图像槽
+#define CAMERA_JPEG_RING_BASE (BSP_SDRAM_BASE + 0x00300000UL)
+#define CAMERA_JPEG_RING_WORDS 32768U
+#define CAMERA_JPEG_RING_BYTES (CAMERA_JPEG_RING_WORDS * 4U)
+
+#if CAMERA_JPEG_RING_BASE < (CAMERA_BUFFER_BASE + CAMERA_STREAM_BUFFER_COUNT * CAMERA_STREAM_BUFFER_CAPACITY) || \
+    (CAMERA_JPEG_RING_BASE + CAMERA_JPEG_RING_BYTES) > BSP_SDRAM_END
+#error JPEG ring overlaps frame buffers or exceeds SDRAM
+#endif
 
 #if CAMERA_JPEG_CAPACITY_BYTES > CAMERA_STREAM_BUFFER_CAPACITY || \
     (CAMERA_BUFFER_OFFSET + CAMERA_JPEG_CAPACITY_BYTES) > BSP_SDRAM_WINDOW
@@ -138,6 +163,21 @@ typedef struct
     //JPEG当前Snapshot目标，不参与YUY2的M0/M1轮换
     uint8_t jpeg_index;
 
+    //任务侧JPEG组帧进度，不把FRAME或DMA TC直接当作文件边界
+    uint32_t jpeg_length;
+    uint32_t jpeg_frames;
+    uint32_t jpeg_consumed_frames;
+    uint32_t jpeg_segment_left;
+    uint32_t jpeg_last_tick;
+    uint16_t jpeg_segment_length;
+    uint8_t jpeg_marker;
+    CameraJpegParseState_t jpeg_parse_state;
+
+    //一次最多复制256B，控制任务处理时长和接收环占用
+    uint8_t jpeg_chunk[256];
+    uint16_t jpeg_chunk_count;
+    uint16_t jpeg_chunk_offset;
+
 } CameraStream_t;
 
 //统一管理单帧与连续采集上下文
@@ -203,13 +243,19 @@ static SysResult_t CameraJpeg_Validate(const uint8_t *data, uint32_t received,
 //任务中推进JPEG收尾、长度验证和超时，不在ISR扫描数据
 static void CameraCapture_ProcessJpeg(void);
 
-//初始化JPEG流缓冲区并启动首个Snapshot
+//推进环形字节流解析，完整JPEG与FRAME同时确认后发布
+static void CameraJpegStream_Process(void);
+
+//逐字节跟踪段长度与熵数据，避免把元数据中的FFD9当作EOI
+static SysResult_t CameraJpegStream_ParseByte(uint8_t value);
+
+//初始化JPEG流缓冲区并启动硬件Continuous
 static SysResult_t CameraJpegStream_Start(void);
 
-//选择FREE缓冲区启动下一帧，不覆盖READY或IN_USE
+//选择FREE组帧槽，不重启DMA或覆盖READY和IN_USE
 static SysResult_t CameraJpegStream_Arm(void);
 
-//交付一个可变长度JPEG，并继续接收下一帧
+//交付一个可变长度JPEG，并准备下一个组帧槽
 static SysResult_t CameraJpegStream_Publish(uint32_t valid_bytes);
 
 //取得JPEG流的唯一消费者缓冲区
@@ -512,7 +558,10 @@ void CameraCapture_Process(void)
     //JPEG独立收尾，避免固定长度FRAME事件直接发布成功
     if (CameraConfig_IsVariableLength(s_capture.config.format))
     {
-        CameraCapture_ProcessJpeg();
+        if (s_capture.mode == CAMERA_CAPTURE_MODE_STREAM)
+            CameraJpegStream_Process();
+        else
+            CameraCapture_ProcessJpeg();
         return;
     }
 
@@ -755,21 +804,42 @@ static SysResult_t CameraCapture_CalcSize(
     return CameraConfig_GetFrameSize(config, required_bytes);
 }
 
+//校验连续采集的图像配置和缓冲区容量
 SysResult_t CameraCapture_ValidateStreamConfig(const CameraConfig_t *config)
 {
     uint32_t bytes;
     SysResult_t result;
 
-    if (config != NULL && config->format == CAMERA_PIXEL_FORMAT_JPEG)
-        return config->width == 160U && config->height == 120U ?
-            SYS_OK : SYS_ERR_NOT_SUPPORTED;
-    result = CameraCapture_CalcSize(config, &bytes);
+    //配置指针为空时，不能读取格式和分辨率
+    if (config == NULL)
+        return SYS_ERR_INVALID_ARG;
 
+    //JPEG每帧长度不同，不能按像素数计算DMA传输长度
+    if (config->format == CAMERA_PIXEL_FORMAT_JPEG)
+    {
+
+        //当前仅验证过160×120 JPEG，其他分辨率暂不支持
+        if (config->width != 160U || config->height != 120U)
+            return SYS_ERR_NOT_SUPPORTED;
+
+        return SYS_OK;
+    }
+
+    //固定长度格式按分辨率和像素格式计算完整帧大小
+    result = CameraCapture_CalcSize(config, &bytes);
     if (result != SYS_OK)
         return result;
 
-    if (bytes > CAMERA_STREAM_BUFFER_CAPACITY || (bytes % 4U) != 0U ||
-        bytes / 4U > CAMERA_DMA_MAX_WORDS)
+    //一帧必须放得下单个缓冲区
+    if (bytes > CAMERA_STREAM_BUFFER_CAPACITY)
+        return SYS_ERR_NOT_SUPPORTED;
+
+    //DMA按32位Word传输，帧大小必须是4字节的整数倍
+    if ((bytes % sizeof(uint32_t)) != 0U)
+        return SYS_ERR_NOT_SUPPORTED;
+
+    //固定长度采集的一帧不能超过DMA单次传输计数上限
+    if (bytes / sizeof(uint32_t) > CAMERA_DMA_MAX_WORDS)
         return SYS_ERR_NOT_SUPPORTED;
 
     return SYS_OK;
@@ -1314,7 +1384,7 @@ static SysResult_t CameraJpeg_Validate(const uint8_t *data, uint32_t received,
     return SYS_ERR_PROTOCOL;
 }
 
-//初始化JPEG流缓冲区并启动首个Snapshot
+//初始化JPEG流缓冲区并启动硬件Continuous
 static SysResult_t CameraJpegStream_Start(void)
 {
     CameraStream_t *stream = &s_capture.stream;
@@ -1337,15 +1407,25 @@ static SysResult_t CameraJpegStream_Start(void)
     stream->next_sequence = 0U;
     stream->dropped_frames = 0U;
     stream->frame_bytes = 0U;
+    stream->jpeg_length = 0U;
+    stream->jpeg_frames = 0U;
+    stream->jpeg_consumed_frames = 0U;
+    stream->jpeg_parse_state = JPEG_PARSE_GAP;
+    stream->jpeg_chunk_count = 0U;
+    stream->jpeg_chunk_offset = 0U;
+    stream->jpeg_last_tick = Platform_TimeGetMs();
     s_capture.mode = CAMERA_CAPTURE_MODE_STREAM;
     s_capture.state = CAMERA_CAPTURE_CAPTURING;
     s_capture.last_result = CameraJpegStream_Arm();
+    if (s_capture.last_result == SYS_OK)
+        s_capture.last_result = BSP_DCMI_StartJpegStream(
+            (uint32_t *)CAMERA_JPEG_RING_BASE, CAMERA_JPEG_RING_WORDS);
     if (s_capture.last_result != SYS_OK)
         s_capture.state = CAMERA_CAPTURE_ERROR;
     return s_capture.last_result;
 }
 
-//选择FREE缓冲区启动下一帧，不覆盖READY或IN_USE
+//选择FREE组帧槽，不重启DMA或覆盖READY和IN_USE
 static SysResult_t CameraJpegStream_Arm(void)
 {
     CameraStream_t *stream = &s_capture.stream;
@@ -1356,22 +1436,18 @@ static SysResult_t CameraJpegStream_Arm(void)
         if (stream->buffers[i].state != CAMERA_BUFFER_FREE)
             continue;
 
-        //先登记目标，再启动BSP，IRQ只发布进度，不修改JPEG流所有权
+        //组帧槽由CameraTask写入，硬件始终写独立接收环
         stream->jpeg_index = (uint8_t)i;
         stream->buffers[i].state = CAMERA_BUFFER_DMA;
         stream->buffers[i].valid_bytes = 0U;
-        s_capture.snapshot.framebuffer = stream->buffers[i].data;
-        s_capture.snapshot.frame_capacity = stream->buffers[i].capacity;
-        s_capture.snapshot.valid_bytes = 0U;
-        s_capture.snapshot.received_bytes = 0U;
-        s_capture.snapshot.start_tick = Platform_TimeGetMs();
-        return BSP_DCMI_StartJpegSnapshot((uint32_t *)stream->buffers[i].data,
-            stream->buffers[i].capacity / sizeof(uint32_t));
+        stream->jpeg_length = 0U;
+        stream->jpeg_parse_state = JPEG_PARSE_GAP;
+        return SYS_OK;
     }
     return SYS_ERR_NO_RESOURCE;
 }
 
-//交付一个可变长度JPEG，并继续接收下一帧
+//交付一个可变长度JPEG，并准备下一个组帧槽
 static SysResult_t CameraJpegStream_Publish(uint32_t valid_bytes)
 {
     CameraStream_t *stream = &s_capture.stream;
@@ -1441,4 +1517,157 @@ static SysResult_t CameraJpegStream_ReleaseFrame(void)
     stream->buffers[index].valid_bytes = 0U;
     stream->in_use_index = CAMERA_BUFFER_INDEX_INVALID;
     return SYS_OK;
+}
+
+//逐字节跟踪JPEG段长度和熵数据，状态8表示已收EOI等待FRAME确认
+static SysResult_t CameraJpegStream_ParseByte(uint8_t value)
+{
+    CameraStream_t *stream = &s_capture.stream;
+    CameraFrameBuffer_t *buffer = &stream->buffers[stream->jpeg_index];
+    CameraJpegParseState_t state = stream->jpeg_parse_state;
+
+    //帧间只允许JPEG尾Word的零填充或下一个SOI
+    if (state == JPEG_PARSE_GAP)
+    {
+        if (value == 0U)
+            return SYS_OK;
+        if (value != 0xFFU)
+            return SYS_ERR_PROTOCOL;
+    }
+    if (stream->jpeg_length >= buffer->capacity)
+        return SYS_ERR_NO_RESOURCE;
+    buffer->data[stream->jpeg_length++] = value;
+    switch (state)
+    {
+        case JPEG_PARSE_GAP: stream->jpeg_parse_state = JPEG_PARSE_SOI; break;
+        case JPEG_PARSE_SOI:
+            if (value != 0xD8U)
+                return SYS_ERR_PROTOCOL;
+            stream->jpeg_parse_state = JPEG_PARSE_PREFIX;
+            break;
+        case JPEG_PARSE_PREFIX:
+            if (value != 0xFFU)
+                return SYS_ERR_PROTOCOL;
+            stream->jpeg_parse_state = JPEG_PARSE_MARKER;
+            break;
+        case JPEG_PARSE_MARKER:
+            if (value == 0xFFU)
+                break;
+            if (value == 0U || value == 0xD8U || value == 0xD9U ||
+                value == 0x01U || (value >= 0xD0U && value <= 0xD7U))
+                return SYS_ERR_PROTOCOL;
+            stream->jpeg_marker = value;
+            stream->jpeg_parse_state = JPEG_PARSE_LENGTH_H;
+            break;
+        case JPEG_PARSE_LENGTH_H:
+            stream->jpeg_segment_length = (uint16_t)value << 8;
+            stream->jpeg_parse_state = JPEG_PARSE_LENGTH_L;
+            break;
+        case JPEG_PARSE_LENGTH_L:
+            stream->jpeg_segment_length |= value;
+            if (stream->jpeg_segment_length < 2U)
+                return SYS_ERR_PROTOCOL;
+            stream->jpeg_segment_left = stream->jpeg_segment_length - 2U;
+            stream->jpeg_parse_state = stream->jpeg_segment_left != 0U ? JPEG_PARSE_SEGMENT :
+                (stream->jpeg_marker == 0xDAU ? JPEG_PARSE_ENTROPY : JPEG_PARSE_PREFIX);
+            break;
+        case JPEG_PARSE_SEGMENT:
+            if (--stream->jpeg_segment_left == 0U)
+                stream->jpeg_parse_state = stream->jpeg_marker == 0xDAU ? JPEG_PARSE_ENTROPY : JPEG_PARSE_PREFIX;
+            break;
+        case JPEG_PARSE_ENTROPY:
+            if (value == 0xFFU)
+                stream->jpeg_parse_state = JPEG_PARSE_ESCAPE;
+            break;
+        case JPEG_PARSE_ESCAPE:
+            if (value == 0xFFU)
+                break;
+            if (value == 0U || (value >= 0xD0U && value <= 0xD7U))
+                stream->jpeg_parse_state = JPEG_PARSE_ENTROPY;
+            else if (value == 0xD9U)
+                stream->jpeg_parse_state = JPEG_PARSE_EOI;
+            else
+                return SYS_ERR_PROTOCOL;
+            break;
+        default: return SYS_ERR_INVALID_STATE;
+    }
+    return SYS_OK;
+}
+
+//任务侧处理Continuous字节流，限制每轮最多4096B，IRQ中不扫描JPEG
+static void CameraJpegStream_Process(void)
+{
+    CameraStream_t *stream = &s_capture.stream;
+    SysResult_t result = SYS_OK;
+    uint32_t count = 0U, frames = 0U, valid = 0U, budget = 4096U;
+
+    while (budget-- != 0U)
+    {
+        //EOI和真实FRAME都已收到后，才校验并交付该文件
+        if (stream->jpeg_parse_state == JPEG_PARSE_EOI)
+        {
+            if (stream->jpeg_frames == stream->jpeg_consumed_frames)
+            {
+                result = BSP_DCMI_ReadJpegStream(stream->jpeg_chunk, 0U, &count, &frames);
+                if (result != SYS_OK && result != SYS_ERR_BUSY)
+                    break;
+                //等待FRAME时禁止额外消费字节，已有chunk仍需保留
+                if (count != 0U)
+                {
+                    //通常FRAME先于任务到达；无法保留读出的字节时拒绝猜测
+                    result = SYS_ERR_PROTOCOL;
+                    break;
+                }
+                stream->jpeg_frames = frames;
+                if (result == SYS_ERR_BUSY || frames == stream->jpeg_consumed_frames)
+                    break;
+            }
+            result = CameraJpeg_Validate(stream->buffers[stream->jpeg_index].data,
+                stream->jpeg_length, &s_capture.config, &valid);
+            if (result != SYS_OK || valid != stream->jpeg_length)
+            {
+                result = SYS_ERR_PROTOCOL;
+                break;
+            }
+            stream->jpeg_consumed_frames++;
+            result = CameraJpegStream_Publish(valid);
+            if (result != SYS_OK)
+                break;
+            stream->jpeg_last_tick = Platform_TimeGetMs();
+        }
+        if (stream->jpeg_chunk_offset == stream->jpeg_chunk_count)
+        {
+            result = BSP_DCMI_ReadJpegStream(stream->jpeg_chunk,
+                sizeof(stream->jpeg_chunk), &count, &frames);
+            stream->jpeg_frames = frames;
+            if (result != SYS_OK || count == 0U)
+                break;
+            stream->jpeg_chunk_count = (uint16_t)count;
+            stream->jpeg_chunk_offset = 0U;
+        }
+        if (stream->jpeg_index >= CAMERA_STREAM_BUFFER_COUNT ||
+            stream->buffers[stream->jpeg_index].state != CAMERA_BUFFER_DMA)
+        {
+            result = SYS_ERR_INVALID_STATE;
+            break;
+        }
+        result = CameraJpegStream_ParseByte(stream->jpeg_chunk[stream->jpeg_chunk_offset++]);
+        if (result != SYS_OK)
+            break;
+    }
+    if (result == SYS_OK || result == SYS_ERR_BUSY)
+    {
+        if ((uint32_t)(Platform_TimeGetMs() - stream->jpeg_last_tick) < CAMERA_JPEG_TIMEOUT_MS)
+        {
+            //预算用完或chunk仍有数据时继续调度，不依赖固定轮询等待
+            if ((stream->jpeg_chunk_offset < stream->jpeg_chunk_count || budget == UINT32_MAX) &&
+                s_capture_callback != NULL)
+                s_capture_callback(CAMERA_CAPTURE_EVENT_PROGRESS, s_capture_callback_context);
+            return;
+        }
+        result = SYS_ERR_TIMEOUT;
+    }
+    s_capture.last_result = result;
+    s_capture.state = CAMERA_CAPTURE_ERROR;
+    (void)CameraCapture_Stop();
 }

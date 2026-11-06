@@ -55,6 +55,16 @@ SysResult_t BSP_DCMI_StartJpegSnapshot(uint32_t *buffer, uint32_t capacity_words
 //成功表示硬件已停止并填写已写入字节数，包含JPEG尾部Word填充
 SysResult_t BSP_DCMI_ProcessJpeg(uint32_t *received_bytes);
 
+//启动JPEG硬件连续采集，环形DMA容量必须为32768Word
+SysResult_t BSP_DCMI_StartJpegStream(uint32_t *ring, uint32_t words);
+
+//任务侧复制已写入的流字节，返回本轮字节数和累计FRAME数
+//capacity为0时只查询FRAME；BUSY表示DMA边界待IRQ确认
+//错误时不提交读游标，单次最多复制256B
+SysResult_t BSP_DCMI_ReadJpegStream(uint8_t *data, uint32_t capacity,
+    uint32_t *count, uint32_t *frames);
+
+
 //任务中全局中断开启时调用，停止并恢复HAL状态，不清除已记录事件
 SysResult_t BSP_DCMI_Stop(void);
 

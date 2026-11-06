@@ -170,3 +170,8 @@ SysResult_t BSP_DCMI_StartJpegSnapshot(uint32_t *p,uint32_t n){(void)p;(void)n;r
 SysResult_t BSP_DCMI_ProcessJpeg(uint32_t *n){(void)n;return SYS_ERR_NOT_SUPPORTED;}
 
 #endif
+
+#if !defined(JPEG_CONTINUOUS_EXTERNAL_MOCK)
+SysResult_t BSP_DCMI_StartJpegStream(uint32_t *p,uint32_t n){(void)p;(void)n;return SYS_ERR_NOT_SUPPORTED;}
+SysResult_t BSP_DCMI_ReadJpegStream(uint8_t *p,uint32_t n,uint32_t *c,uint32_t *f){(void)p;(void)n;(void)c;(void)f;return SYS_ERR_NOT_SUPPORTED;}
+#endif
