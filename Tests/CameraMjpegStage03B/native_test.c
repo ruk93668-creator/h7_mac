@@ -1,4 +1,3 @@
-#define JPEG_CONTINUOUS_EXTERNAL_MOCK
 #define APP_VIDEO_MJPEG_MODE 1
 #define STAGE03B_MJPEG_FIXTURE
 #define Stage02_TestRun Historical_NativeRun
@@ -6,7 +5,6 @@
 #undef Stage02_TestRun
 #include "jpeg_fixture.inc"
 static bool jpeg_pending;
-static uint32_t jpeg_cursor, jpeg_frame_count;
 static SysResult_t jpeg_result=SYS_OK;
 SysResult_t BSP_DCMI_StartJpegSnapshot(uint32_t *p,uint32_t n)
 {
@@ -20,27 +18,10 @@ SysResult_t BSP_DCMI_ProcessJpeg(uint32_t *n)
  if(jpeg_result!=SYS_OK)return jpeg_result;
  *n=(sizeof(mjpeg_fixture)+3)&~3U;fake_dma_active=false;return SYS_OK;
 }
-SysResult_t BSP_DCMI_StartJpegStream(uint32_t *p,uint32_t n)
-{
- if(n!=32768 || fake_dma_active)return SYS_ERR_BUSY;
- dma_targets[0]=p;fake_dma_active=true;dcmi_starts++;
- jpeg_pending=false;jpeg_cursor=0;jpeg_frame_count=0;return SYS_OK;
-}
-SysResult_t BSP_DCMI_ReadJpegStream(uint8_t *p,uint32_t capacity,uint32_t *n,uint32_t *frames)
-{
- uint32_t total=(sizeof(mjpeg_fixture)+3)&~3U,i;
- *n=0;*frames=jpeg_frame_count;
- if(jpeg_result!=SYS_OK)return jpeg_result;
- if(!jpeg_pending)return SYS_OK;
- *n=total-jpeg_cursor;if(*n>capacity)*n=capacity;
- for(i=0;i<*n;i++)p[i]=jpeg_cursor+i<sizeof(mjpeg_fixture)?mjpeg_fixture[jpeg_cursor+i]:0;
- jpeg_cursor+=*n;if(jpeg_cursor==total){jpeg_pending=false;jpeg_cursor=0;}
- return SYS_OK;
-}
 static int JpegFrame(void)
 {
  memcpy(dma_targets[0],mjpeg_fixture,sizeof(mjpeg_fixture));
- jpeg_pending=true;jpeg_frame_count++;
+ jpeg_pending=true;
  test_ipsr=16U+DCMI_IRQn;
  camera_error_callback(BSP_DCMI_NOTIFY_PROGRESS,camera_error_context);
  test_ipsr=0;Cam();Usb();return 0;
@@ -88,7 +69,7 @@ int Stage02_TestRun(uint32_t id)
    for(i=0;i<12;i++)Pump();EQ(s_control_state,CONTROL_IDLE);return 0;
   }
   if(id==13){
-   memcpy(dma_targets[0],mjpeg_fixture,sizeof(mjpeg_fixture));jpeg_pending=true;jpeg_frame_count++;Cam();
+   memcpy(dma_targets[0],mjpeg_fixture,sizeof(mjpeg_fixture));jpeg_pending=true;Cam();
    EQ(s_camera_bridge.held,true);EQ(s_usb_bridge.state,BRIDGE_USB_REQUEST);
   }
   if(id==14){

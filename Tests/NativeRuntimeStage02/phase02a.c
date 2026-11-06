@@ -47,8 +47,3 @@ int Stage02_TestRun(uint32_t id)
 //旧格式专项不产生JPEG事件，新增接口显式返回不支持
 SysResult_t BSP_DCMI_StartJpegSnapshot(uint32_t *p,uint32_t n){(void)p;(void)n;return SYS_ERR_NOT_SUPPORTED;}
 SysResult_t BSP_DCMI_ProcessJpeg(uint32_t *n){(void)n;return SYS_ERR_NOT_SUPPORTED;}
-
-#ifndef JPEG_CONTINUOUS_EXTERNAL_MOCK
-SysResult_t BSP_DCMI_StartJpegStream(uint32_t *p,uint32_t n){(void)p;(void)n;return SYS_ERR_NOT_SUPPORTED;}
-SysResult_t BSP_DCMI_ReadJpegStream(uint8_t *p,uint32_t n,uint32_t *c,uint32_t *f){(void)p;(void)n;(void)c;(void)f;return SYS_ERR_NOT_SUPPORTED;}
-#endif

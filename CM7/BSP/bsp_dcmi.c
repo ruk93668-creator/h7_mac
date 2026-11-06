@@ -137,13 +137,6 @@ static struct
     //本轮是否占用JPEG接收配置，失败时仍保留到Stop恢复
     volatile bool active;
 
-    //连续JPEG只在显式Stop关闭，FRAME不停止DMA
-    bool circular;
-    volatile uint32_t blocks;
-    volatile uint32_t frames;
-    uint32_t read_bytes;
-    uint8_t *ring;
-
     //ISR只记录输入帧结束，不代表数据已全部写入内存
     volatile bool frame_seen;
 
@@ -158,21 +151,11 @@ static struct
 } s_jpeg;
 
 //内部功能函数声明
-//共用启动检查，Snapshot单帧与JPEG Continuous明确分开
-static SysResult_t Dcmi_StartCapture(uint32_t *buffer, uint32_t word_count, bool jpeg, bool continuous);
+//共用Snapshot启动检查，JPEG单独配置接收和完成条件
+static SysResult_t Dcmi_StartSnapshot(uint32_t *buffer, uint32_t word_count, bool jpeg);
 
 //JPEG容量耗尽不代表成功，记录溢出并唤醒Camera任务
 static void Dcmi_JpegDmaComplete(DMA_HandleTypeDef *hdma);
-
-//循环DMA半环和整环仅通知字节进度，不表示JPEG完整
-static void Dcmi_JpegRingM0(DMA_HandleTypeDef *hdma);
-static void Dcmi_JpegRingM1(DMA_HandleTypeDef *hdma);
-
-//确认完成块并提前替换非活动目标，失败时只锁存错误
-static void Dcmi_JpegRingComplete(DMA_HandleTypeDef *hdma, uint32_t target);
-
-//在临界区取得已落内存的字节游标，边界不稳时不猜测
-static SysResult_t Dcmi_JpegPosition(uint32_t *position);
 
 //配置DCMI引脚为AF13复用
 static void Dcmi_ConfigPin(
@@ -371,13 +354,13 @@ SysResult_t BSP_DCMI_Init(void)
 
 SysResult_t BSP_DCMI_StartSnapshot(uint32_t *buffer, uint32_t word_count)
 {
-    return Dcmi_StartCapture(buffer, word_count, false, false);
+    return Dcmi_StartSnapshot(buffer, word_count, false);
 }
 	
 //启动独立JPEG Snapshot，不改变固定长度路径
 SysResult_t BSP_DCMI_StartJpegSnapshot(uint32_t *buffer, uint32_t capacity_words)
 {
-    return Dcmi_StartCapture(buffer, capacity_words, true, false);
+    return Dcmi_StartSnapshot(buffer, capacity_words, true);
 }
 
 //当前只检查参数和空闲状态，不启动连续采集
@@ -624,7 +607,6 @@ SysResult_t BSP_DCMI_Stop(void)
 		//硬件和HAL状态已恢复，保留已锁存事件供上层读取
 		s_stop_required = false;
         s_jpeg.active = false;
-        s_jpeg.circular = false;
         s_jpeg.frame_seen = false;
         s_jpeg.disabling = false;
 		
@@ -674,7 +656,7 @@ SysResult_t BSP_DCMI_ProcessJpeg(uint32_t *received_bytes)
 
     mask = __get_PRIMASK();
     __disable_irq();
-    if (!s_jpeg.active || s_jpeg.circular || s_control_busy)
+    if (!s_jpeg.active || s_control_busy)
     {
         __set_PRIMASK(mask);
         return SYS_ERR_INVALID_STATE;
@@ -960,11 +942,6 @@ void HAL_DCMI_FrameEventCallback(DCMI_HandleTypeDef *hdcmi)
     //JPEG的FRAME只表示输入结束，任务还要确认FIFO与DMA内存收尾
     if (s_jpeg.active)
     {
-        if (s_jpeg.circular)
-        {
-            s_jpeg.frames++;
-            __HAL_DCMI_ENABLE_IT(hdcmi, DCMI_IT_FRAME);
-        }
         s_jpeg.frame_seen = true;
         if (s_dcmi_event_callback != NULL)
             s_dcmi_event_callback(BSP_DCMI_NOTIFY_PROGRESS, s_dcmi_event_context);
@@ -1098,8 +1075,8 @@ void HAL_DCMI_ErrorCallback(DCMI_HandleTypeDef *hdcmi)
 void DMA1_Stream0_IRQHandler(void)
 {
 	if ( s_accept_events)
-        Dcmi_CheckErrors();
-    HAL_DMA_IRQHandler(&s_dcmi_dma);
+		Dcmi_CheckErrors();
+	HAL_DMA_IRQHandler(&s_dcmi_dma);
 }
 
 //连续采集DMA异常，等待主循环执行Stop
@@ -1351,11 +1328,6 @@ static void Dcmi_JpegDmaComplete(DMA_HandleTypeDef *hdma)
         return;
 
     //任务主动停DMA产生的TC不是接收窗口用尽
-    if (s_jpeg.circular)
-    {
-        Dcmi_RecordError(SYS_ERR_IO);
-        return;
-    }
     if (s_jpeg.disabling)
         return;
 
@@ -1365,8 +1337,8 @@ static void Dcmi_JpegDmaComplete(DMA_HandleTypeDef *hdma)
 }
 
 
-//共用启动检查，Snapshot单帧与JPEG Continuous明确分开
-static SysResult_t Dcmi_StartCapture(uint32_t *buffer, uint32_t word_count, bool jpeg, bool continuous)
+//共用Snapshot启动检查，JPEG单独配置接收和完成条件
+static SysResult_t Dcmi_StartSnapshot(uint32_t *buffer, uint32_t word_count, bool jpeg)
 {
 	uint32_t primask;
 	HAL_StatusTypeDef status;
@@ -1425,7 +1397,7 @@ static SysResult_t Dcmi_StartCapture(uint32_t *buffer, uint32_t word_count, bool
 	__HAL_DCMI_DISABLE(&s_dcmi);
 	Dcmi_ClearPending();
 
-    //JPEG单帧保留直传，连续流按完成块接收；Stop恢复原配置
+    //JPEG只用直传，避免DMA FIFO尾部不足阈值时残留；Stop恢复原配置
     if (jpeg)
     {
         s_event_flags = 0U;
@@ -1433,25 +1405,11 @@ static SysResult_t Dcmi_StartCapture(uint32_t *buffer, uint32_t word_count, bool
         s_event_dcmi_error = 0U;
         s_event_dma_error = 0U;
         s_jpeg.saved_dma = s_dcmi_dma.Init;
-        s_jpeg.circular = continuous;
-        s_jpeg.blocks = 0U;
-        s_jpeg.frames = 0U;
-        s_jpeg.read_bytes = 0U;
-        s_jpeg.ring = (uint8_t *)buffer;
         s_jpeg.active = true;
         s_jpeg.frame_seen = false;
         s_jpeg.disabling = false;
         s_jpeg.capacity_words = word_count;
-        s_dcmi_dma.Init.Mode = continuous ? DMA_CIRCULAR : DMA_NORMAL;
-
-        //连续流按4KiB完成块接收，开启FIFO；Snapshot保留直接模式
-        s_dcmi_dma.Init.FIFOMode = continuous ? DMA_FIFOMODE_ENABLE : DMA_FIFOMODE_DISABLE;
-
-        //连续流使用FULL阈值，完成块长度是FIFO容量的整数倍
-        if (continuous)
-            s_dcmi_dma.Init.FIFOThreshold = DMA_FIFO_THRESHOLD_FULL;
-
-        //先保持单次突发，不同时改变FIFO和Burst两个变量
+        s_dcmi_dma.Init.FIFOMode = DMA_FIFOMODE_DISABLE;
         s_dcmi_dma.Init.MemBurst = DMA_MBURST_SINGLE;
         s_dcmi_dma.Init.PeriphBurst = DMA_PBURST_SINGLE;
         s_dcmi.Init.JPEGMode = DCMI_JPEG_ENABLE;
@@ -1480,38 +1438,13 @@ static SysResult_t Dcmi_StartCapture(uint32_t *buffer, uint32_t word_count, bool
 
 	//Snapshot结束会关闭这些中断，每轮都恢复错误检测
 	__HAL_DCMI_ENABLE_IT(&s_dcmi, DCMI_IT_ERR | DCMI_IT_OVR);
-    if (jpeg && continuous)
+	status = HAL_DCMI_Start_DMA(&s_dcmi, DCMI_MODE_SNAPSHOT,
+		(uint32_t)buffer, word_count);
+    //JPEG短帧不会产生容量TC，必须从启动时就接收FRAME
+    if (jpeg && status == HAL_OK)
     {
-        //DMA按4KiB字节块循环，块完成不等于JPEG帧结束
-        s_dcmi_dma.XferCpltCallback = Dcmi_JpegRingM0;
-        s_dcmi_dma.XferM1CpltCallback = Dcmi_JpegRingM1;
-        s_dcmi_dma.XferHalfCpltCallback = NULL;
-        s_dcmi_dma.XferM1HalfCpltCallback = NULL;
-        s_dcmi_dma.XferErrorCallback = Dcmi_JpegDmaComplete;
-        status = HAL_DMAEx_MultiBufferStart_IT(&s_dcmi_dma, (uint32_t)&DCMI->DR,
-            (uint32_t)buffer, (uint32_t)buffer + 4096U, 1024U);
-        if (status == HAL_OK)
-        {
-            //上下文已经提交，最后开放CAPTURE，首个IRQ也有明确状态
-            s_dcmi.State = HAL_DCMI_STATE_BUSY;
-            MODIFY_REG(DCMI->CR, DCMI_CR_CM, DCMI_MODE_CONTINUOUS);
-            __HAL_DCMI_ENABLE(&s_dcmi);
-            __HAL_DCMI_ENABLE_IT(&s_dcmi, DCMI_IT_FRAME | DCMI_IT_ERR | DCMI_IT_OVR);
-            SET_BIT(DCMI->CR, DCMI_CR_CAPTURE);
-        }
-    }
-    else
-    {
-        //Snapshot只用于单帧，短JPEG从启动时就接收FRAME
-        if (jpeg)
-            s_dcmi_dma.XferHalfCpltCallback = NULL;
-        status = HAL_DCMI_Start_DMA(&s_dcmi, DCMI_MODE_SNAPSHOT,
-            (uint32_t)buffer, word_count);
-        if (jpeg && status == HAL_OK)
-        {
-            s_dcmi_dma.XferCpltCallback = Dcmi_JpegDmaComplete;
-            __HAL_DCMI_ENABLE_IT(&s_dcmi, DCMI_IT_FRAME);
-        }
+        s_dcmi_dma.XferCpltCallback = Dcmi_JpegDmaComplete;
+        __HAL_DCMI_ENABLE_IT(&s_dcmi, DCMI_IT_FRAME);
     }
 	result = Dcmi_HalResult(status);
 	if ( result != SYS_OK)
@@ -1526,137 +1459,4 @@ static SysResult_t Dcmi_StartCapture(uint32_t *buffer, uint32_t word_count, bool
 	s_control_busy = false;
 	__set_PRIMASK(primask);
 	return result;
-}
-
-//启动JPEG硬件连续采集，不在帧间停机或重新初始化HAL
-SysResult_t BSP_DCMI_StartJpegStream(uint32_t *ring, uint32_t words)
-{
-    if (words != 32768U)
-        return SYS_ERR_INVALID_ARG;
-    return Dcmi_StartCapture(ring, words, true, true);
-}
-
-//取得环形DMA当前写入位置，仅从任务或已关中断的控制路径使用
-static SysResult_t Dcmi_JpegPosition(uint32_t *position)
-{
-    uint32_t control = DMA1_Stream0->CR;
-
-    if (!s_jpeg.active || !s_jpeg.circular || !s_accept_events || s_stop_required)
-        return s_stop_required && s_event_result != SYS_OK ? s_event_result : SYS_ERR_INVALID_STATE;
-    if (Dcmi_CheckErrors())
-        return s_event_result;
-    if ((control & (DMA_SxCR_EN | DMA_SxCR_DBM)) != (DMA_SxCR_EN | DMA_SxCR_DBM) ||
-        (DCMI->CR & DCMI_CR_CAPTURE) == 0U ||
-        (DCMI->CR & DCMI_CR_CM) != DCMI_MODE_CONTINUOUS ||
-        (DMA1_Stream0->FCR & (DMA_SxFCR_DMDIS | DMA_SxFCR_FTH)) !=
-        (DMA_SxFCR_DMDIS | DMA_FIFO_THRESHOLD_FULL))
-        return SYS_ERR_PROTOCOL;
-
-    //只读取真实TC已确认的完成块，不用活动块NDTR推断内存提交
-    *position = s_jpeg.blocks * 4096U;
-    return SYS_OK;
-}
-
-//复制稳定的接收范围，复制后再次检查DMA是否已追上读游标
-SysResult_t BSP_DCMI_ReadJpegStream(uint8_t *data, uint32_t capacity,
-    uint32_t *count, uint32_t *frames)
-{
-    uint32_t mask, position, after, available, n, i, ring_bytes;
-    SysResult_t result;
-
-    if (data == NULL || count == NULL || frames == NULL || capacity > 256U)
-        return SYS_ERR_INVALID_ARG;
-    if (__get_IPSR() != 0U || __get_PRIMASK() != 0U)
-        return SYS_ERR_INVALID_STATE;
-    *count = 0U;
-    mask = __get_PRIMASK(); __disable_irq();
-    result = Dcmi_JpegPosition(&position);
-    *frames = s_jpeg.frames;
-    __set_PRIMASK(mask);
-    if (result != SYS_OK)
-        return result;
-    ring_bytes = s_jpeg.capacity_words * 4U;
-    available = position - s_jpeg.read_bytes;
-
-    //保守保留半环余量，任务积压后不交付可能被DMA覆盖的图像
-    if (available > ring_bytes / 2U)
-    {
-        mask = __get_PRIMASK(); __disable_irq();
-        Dcmi_RecordError(SYS_ERR_NO_RESOURCE);
-        __set_PRIMASK(mask);
-        return SYS_ERR_NO_RESOURCE;
-    }
-    n = available < capacity ? available : capacity;
-    for (i = 0U; i < n; i++)
-        data[i] = s_jpeg.ring[(s_jpeg.read_bytes + i) % ring_bytes];
-    __DMB();
-    mask = __get_PRIMASK(); __disable_irq();
-    result = Dcmi_JpegPosition(&after);
-    if (result == SYS_OK && after - s_jpeg.read_bytes > ring_bytes / 2U)
-        result = SYS_ERR_NO_RESOURCE;
-    if (result == SYS_OK)
-    {
-        s_jpeg.read_bytes += n;
-        *count = n;
-        *frames = s_jpeg.frames;
-    }
-    else if (result != SYS_ERR_BUSY)
-        Dcmi_RecordError(result);
-    __set_PRIMASK(mask);
-    return result;
-}
-
-//确认一个DMA字节块完成，并替换当前非活动目标
-static void Dcmi_JpegRingComplete(DMA_HandleTypeDef *hdma, uint32_t target)
-{
-    uint32_t control, remaining, after, address, bit;
-    volatile uint32_t *target_address;
-    HAL_StatusTypeDef status;
-
-    if (hdma != &s_dcmi_dma || !s_jpeg.circular || !s_accept_events || s_stop_required)
-        return;
-    control = DMA1_Stream0->CR;
-    remaining = DMA1_Stream0->NDTR;
-    bit = target == 0U ? 0U : DMA_SxCR_CT;
-    target_address = target == 0U ? &DMA1_Stream0->M0AR : &DMA1_Stream0->M1AR;
-
-    //回调顺序和CT必须对应，替换时保留余量，不能修改活动目标
-    if ((s_jpeg.blocks & 1U) != target ||
-        (control & (DMA_SxCR_EN | DMA_SxCR_DBM)) != (DMA_SxCR_EN | DMA_SxCR_DBM) ||
-        (control & DMA_SxCR_CT) == bit || remaining <= DCMI_REPLACE_GUARD_WORDS ||
-        remaining > 1024U || Dcmi_CheckErrors())
-    {
-        Dcmi_RecordError(SYS_ERR_PROTOCOL);
-        return;
-    }
-    address = (uint32_t)s_jpeg.ring + ((s_jpeg.blocks + 2U) % 32U) * 4096U;
-    status = HAL_DMAEx_ChangeMemory(&s_dcmi_dma, address, target == 0U ? MEMORY0 : MEMORY1);
-    __DSB();
-    control = DMA1_Stream0->CR;
-    after = DMA1_Stream0->NDTR;
-
-    //写入后仍须处于原窗口，失败块不交付，不假定关IRQ会暂停DMA
-    if (status != HAL_OK || *target_address != address ||
-        (control & (DMA_SxCR_EN | DMA_SxCR_DBM)) != (DMA_SxCR_EN | DMA_SxCR_DBM) ||
-        (control & DMA_SxCR_CT) == bit || after <= DCMI_REPLACE_GUARD_WORDS ||
-        after > remaining || (DMA1->LISR & DMA_FLAG_TCIF0_4) != 0U || Dcmi_CheckErrors())
-    {
-        Dcmi_RecordError(status != HAL_OK ? Dcmi_HalResult(status) : SYS_ERR_PROTOCOL);
-        return;
-    }
-    s_jpeg.blocks++;
-    if (s_dcmi_event_callback != NULL)
-        s_dcmi_event_callback(BSP_DCMI_NOTIFY_PROGRESS, s_dcmi_event_context);
-}
-
-//M0块完成只推进接收环，不交付JPEG帧
-static void Dcmi_JpegRingM0(DMA_HandleTypeDef *hdma)
-{
-    Dcmi_JpegRingComplete(hdma, 0U);
-}
-
-//M1块完成只推进接收环，不交付JPEG帧
-static void Dcmi_JpegRingM1(DMA_HandleTypeDef *hdma)
-{
-    Dcmi_JpegRingComplete(hdma, 1U);
 }
