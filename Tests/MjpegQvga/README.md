@@ -1,5 +1,7 @@
 # 320×240 JPEG → USB MJPEG 接入
 
+以下为QVGA阶段历史记录。当前默认测试改为VGA，见`Tests/MjpegVga/README.md`；320×240能力保留。
+
 本轮只接入QVGA JPEG，不开放640×480，不改变FIFO/DMA或USB传输状态机。独立03B分支开发，不合并main。
 
 ## 当前默认配置

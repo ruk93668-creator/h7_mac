@@ -51,7 +51,8 @@ static inline bool CameraConfig_IsJpegSizeSupported(const CameraConfig_t *config
 {
     return config != NULL &&
         ((config->width == 160U && config->height == 120U) ||
-         (config->width == 320U && config->height == 240U));
+         (config->width == 320U && config->height == 240U) ||
+         (config->width == 640U && config->height == 480U));
 }
 
 //仅计算固定长度图像内存，JPEG返回不支持且不修改输出长度

@@ -253,6 +253,16 @@ static void Run(unsigned id)
             //160×120样本不能冒充320×240，SOF尺寸必须匹配配置
             assert(!CameraMjpegFifo_GetFrame(&frame));
             break;
+        case 15:
+            CameraMjpegFifo_OnStopped();
+            config.width = 640U;
+            config.height = 480U;
+            assert(CameraMjpegFifo_Start(&config) == SYS_OK);
+            FeedBlock(true,true);
+
+            //VGA同样必须核对真实SOF尺寸，不能交付原160×120样本
+            assert(!CameraMjpegFifo_GetFrame(&frame));
+            break;
         default: assert(0);
     }
     CheckOwnership();
@@ -314,8 +324,8 @@ int main(void)
         fputs("Cannot map isolated low-address test memory; tests NOT RUN\n",stderr);
         return 2;
     }
-    for (i=1U;i<=14U;i++) { Run(i);printf("FIFO-%02u PASS\n",i); }
+    for (i=1U;i<=15U;i++) { Run(i);printf("FIFO-%02u PASS\n",i); }
     PayloadCase();
-    puts("PAYLOAD-15 PASS");
+    puts("PAYLOAD-16 PASS");
     return 0;
 }

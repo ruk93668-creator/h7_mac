@@ -21,13 +21,17 @@ static const VideoConfig_t s_default_config =
 {
     .camera =
     {
-        .width = APP_VIDEO_MJPEG_MODE ? 320U : 160U,
-        .height = APP_VIDEO_MJPEG_MODE ? 240U : 120U,
+        .width = APP_VIDEO_MJPEG_MODE ? 640U : 160U,
+        .height = APP_VIDEO_MJPEG_MODE ? 480U : 120U,
         .format = APP_VIDEO_MJPEG_MODE ? CAMERA_PIXEL_FORMAT_JPEG : CAMERA_PIXEL_FORMAT_YUV422
     },
     .output = APP_VIDEO_TEST_MODE ? VIDEO_OUTPUT_USB_TEST : VIDEO_OUTPUT_USB_UVC,
-    .output_fps = 25U,
-    .output_max_frame_bytes = APP_VIDEO_MJPEG_MODE ? 38400U : 0U
+
+    //VGA JPEG先以10FPS验证，YUY2保留原25FPS
+    .output_fps = APP_VIDEO_MJPEG_MODE ? 10U : 25U,
+
+    //JPEG预留70000B，每帧最多69包，不把原始像素大小当成JPEG长度
+    .output_max_frame_bytes = APP_VIDEO_MJPEG_MODE ? 70000U : 0U
 };
 
 //取得静态默认视频配置

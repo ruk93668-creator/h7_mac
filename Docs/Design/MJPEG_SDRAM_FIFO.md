@@ -1,6 +1,6 @@
 # MJPEG Continuous：独立SDRAM字节FIFO
 
-后续QVGA接入：当前MJPEG默认320×240、目标25FPS，具体变更与用户验收步骤见`Tests/MjpegQvga/README.md`；下文为FIFO最初接入记录。
+当前VGA测试配置：MJPEG 640×480、目标10FPS、最大帧70000B，见`Tests/MjpegVga/README.md`。320×240仍支持；QVGA阶段历史记录见`Tests/MjpegQvga/README.md`。下文为FIFO最初接入记录。
 
 本轮基线：`codex/camera-mjpeg-stage03b` 的 `60c94d0`，即撤销旧接收环后的分支。
 这是新实现的源码交付，不是实板验收通过记录。未合并main。按用户要求，本轮不运行C编译器、Keil或可执行测试；编译和实板测试由用户完成。

@@ -310,7 +310,7 @@ SysResult_t Ov5640_ValidateConfig(const CameraConfig_t *config)
     if (config == NULL || config->width == 0U || config->height == 0U)
         return SYS_ERR_INVALID_ARG;
 
-    //JPEG允许已接入的QQVGA和QVGA，其他格式保持原能力范围
+    //JPEG允许已接入的QQVGA、QVGA和VGA，其他格式保持原能力范围
     if (config->format == CAMERA_PIXEL_FORMAT_JPEG)
     {
         if (!CameraConfig_IsJpegSizeSupported(config))
@@ -350,7 +350,7 @@ static SysResult_t Ov5640_Configure(
     if (result != SYS_OK)
         return result;
 
-    //取得组件真正使用的QQVGA或QVGA枚举
+    //取得组件真正使用的分辨率枚举
     result = Ov5640_MapResolution(config, &resolution);
     if (result != SYS_OK)
         return result;
@@ -439,10 +439,15 @@ static SysResult_t Ov5640_MapResolution(const CameraConfig_t *config, uint32_t *
     if (config->width == 160U && config->height == 120U)
         *resolution = OV5640_R160x120;
 
-    //本轮只扩展JPEG QVGA，不同时开放高分辨率YUY2
+    //JPEG使用QVGA表，不同时开放高分辨率YUY2
     else if (config->format == CAMERA_PIXEL_FORMAT_JPEG &&
         config->width == 320U && config->height == 240U)
         *resolution = OV5640_R320x240;
+
+    //JPEG VGA直接复用组件640×480表，时钟和启停顺序不变
+    else if (config->format == CAMERA_PIXEL_FORMAT_JPEG &&
+        config->width == 640U && config->height == 480U)
+        *resolution = OV5640_R640x480;
     else
         return SYS_ERR_NOT_SUPPORTED;
     return SYS_OK;

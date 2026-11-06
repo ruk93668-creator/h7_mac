@@ -12,7 +12,7 @@ python Tests/MjpegSdramFifo/static_audit.py --baseline 60c94d0
 
 需要Python的pycparser。基线通过参数显式指定；该脚本不依赖本地绝对路径、当前HEAD是否未提交或旧迁移工作树，不作为完整运行时CI。
 
-## 已准备的C测试（15项，未执行）
+## 已准备的C测试（16项，未执行）
 
 `fifo_test.c`直接包含正式FIFO和Payload源码，BSP只替换为块回调测试桩。PC在低地址申请独立虚拟内存，不访问真实SDRAM。申请失败返回2并显示NOT RUN，不能统计为PASS。
 
@@ -32,7 +32,8 @@ python Tests/MjpegSdramFifo/static_audit.py --baseline 60c94d0
 | 12 | 已借出后确认底层Stop | 借出保留，归还后才允许再次Start，重复归还拒绝 |
 | 13 | BSP Start返回IO | 保留占用，确认Stop前不能重启 |
 | 14 | 320×240启动并注入原160×120样本 | 启动成功，但尺寸不匹配的JPEG不能交付 |
-| 15 | 两段Payload、逐包完成、取消 | 内容连续，EOF只在末包；确认前不推进，取消确认后释放两段 |
+| 15 | 640×480启动并注入原160×120样本 | 启动成功，但尺寸不匹配的JPEG不能交付 |
+| 16 | 两段Payload、逐包完成、取消 | 内容连续，EOF只在末包；确认前不推进，取消确认后释放两段 |
 
 每轮检查块引用=READY+IN_USE+当前解析描述引用，并检查FREE/DMA块无人持有。
 
@@ -58,3 +59,5 @@ Linux需额外`-D_GNU_SOURCE`以使用`MAP_FIXED_NOREPLACE`。不要用关闭ass
 本轮未运行该构建脚本、编译器或Keil。重新打开当前工程后，完整Rebuild应出现`compiling camera_mjpeg_fifo.c...`；是否编译通过由用户反馈。
 
 QVGA扩展后的源码检查见`Tests/MjpegQvga/source_audit.py`。本目录先前的static_results.json是扩展前的历史检查，不代表320×240已实板通过。
+
+VGA扩展后的当前源码检查使用`Tests/MjpegVga/source_audit.py`；本轮未运行C编译器或隔离可执行测试。
