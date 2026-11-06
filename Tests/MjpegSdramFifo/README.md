@@ -47,3 +47,11 @@ Linux需额外`-D_GNU_SOURCE`以使用`MAP_FIXED_NOREPLACE`。不要用关闭ass
 这些测试不覆盖真实DMA总线、FE、CT换址窗口、FMC时序和USB主机行为；BSP硬件安全检查仍须用户编译和实板故障注入验证。旧03B重复Snapshot的内部状态断言不能当作新FIFO实现测试；本轮未删除或放宽这些历史断言。
 
 设计和实板步骤见`Docs/Design/MJPEG_SDRAM_FIFO.md`。
+
+## 旧CM7_MJPEG工程链接错误
+
+用户反馈的7个CameraMjpegFifo未定义符号来自旧`h7_mac_stage03b.uvprojx`：有camera_capture.c，却没有camera_mjpeg_fifo.c。
+本轮补齐现有临时工程各CM7 Target的源文件条目，CM4的CM7 Media Group继续排除构建；不重新生成或覆盖本地调试设置。
+
+`run_build.py`以后从当前正式工程读取文件列表，并校验FIFO条目。各变体会去掉继承的MJPEG/TEST/单帧开关，再应用自己的开关，避免正式工程选择MJPEG时误污染YUY2构建。
+本轮未运行该构建脚本、编译器或Keil。重新打开当前工程后，完整Rebuild应出现`compiling camera_mjpeg_fifo.c...`；是否编译通过由用户反馈。
