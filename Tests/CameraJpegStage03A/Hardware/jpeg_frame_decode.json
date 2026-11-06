@@ -1,0 +1,10 @@
+{
+  "source": "hardware",
+  "input": "D:\\32\\STM32H7\\h7_mac\\Tests\\CameraJpegStage03A\\Hardware\\jpeg_frame.jpg",
+  "size_bytes": 1085,
+  "width": 160,
+  "height": 120,
+  "sha256": "00dbaf685cce488a7ee607c42cf77b254742ef387c8d73e419453313fcd0fcb4",
+  "decoded": true,
+  "hardware_origin_is_user_assertion": true
+}

@@ -1,0 +1,88 @@
+{
+  "summary": {
+    "total": 13,
+    "passed": 13,
+    "failed": 0
+  },
+  "cases": [
+    {
+      "id": 0,
+      "pass": true,
+      "failure_line": 0,
+      "error": null
+    },
+    {
+      "id": 1,
+      "pass": true,
+      "failure_line": 0,
+      "error": null
+    },
+    {
+      "id": 2,
+      "pass": true,
+      "failure_line": 0,
+      "error": null
+    },
+    {
+      "id": 3,
+      "pass": true,
+      "failure_line": 0,
+      "error": null
+    },
+    {
+      "id": 4,
+      "pass": true,
+      "failure_line": 0,
+      "error": null
+    },
+    {
+      "id": 5,
+      "pass": true,
+      "failure_line": 0,
+      "error": null
+    },
+    {
+      "id": 6,
+      "pass": true,
+      "failure_line": 0,
+      "error": null
+    },
+    {
+      "id": 7,
+      "pass": true,
+      "failure_line": 0,
+      "error": null
+    },
+    {
+      "id": 8,
+      "pass": true,
+      "failure_line": 0,
+      "error": null
+    },
+    {
+      "id": 9,
+      "pass": true,
+      "failure_line": 0,
+      "error": null
+    },
+    {
+      "id": 10,
+      "pass": true,
+      "failure_line": 0,
+      "error": null
+    },
+    {
+      "id": 11,
+      "pass": true,
+      "failure_line": 0,
+      "error": null
+    },
+    {
+      "id": 12,
+      "pass": true,
+      "failure_line": 0,
+      "error": null
+    }
+  ],
+  "hardware_verified": false
+}

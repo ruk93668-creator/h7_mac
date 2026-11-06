@@ -2,6 +2,7 @@
 #define CM7_USB_UVC_H
 
 #include "sys_result.h"
+#include "video_frame_view.h"
 #include "video_config_types.h"
 #include <stdbool.h>
 #include <stdint.h>
@@ -47,6 +48,9 @@ SysResult_t USB_UVC_Register(void);
 //BUSY表示已有帧；INVALID_STATE表示未就绪；INVALID_ARG表示参数非法
 //失败不接受新帧；成功后的归还以有效状态查询frame_owned=false为准
 SysResult_t USB_UVC_SubmitFrame(const uint8_t *frame, uint32_t length);
+
+//由UsbTask借用分段帧，所有段都须等frame_owned=false才能归还
+SysResult_t USB_UVC_SubmitFrameView(const VideoFrameView_t *view);
 
 //所属UsbTask调用：登记取消，SYS_OK不代表Abort或归还已经完成
 //继续Process并查询所有权；Abort失败保留图像，禁止强制回收

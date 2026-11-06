@@ -39,7 +39,13 @@ static SysResult_t SensorStop(Device_t *d){(void)d;if(fake_dma_active||s_camera_
 static const DeviceLifecycleOps_t sensor_lifecycle={SensorInit,SensorStart,SensorStop};
 static Ov5640Device_t camera_device={.base={.name="ov5640",.state=DEVICE_STATE_UNINIT,.lifecycle=&sensor_lifecycle,.auto_init=true},.ops=&camera_ops};
 DEVICE_EXPORT(camera_device);
-SysResult_t Ov5640_ValidateConfig(const CameraConfig_t *c){return c && c->width==160 && c->height==120 && c->format==CAMERA_PIXEL_FORMAT_YUV422?SYS_OK:SYS_ERR_NOT_SUPPORTED;}
+SysResult_t Ov5640_ValidateConfig(const CameraConfig_t *c){return c && c->width==160 && c->height==120 &&
+#ifdef STAGE03B_MJPEG_FIXTURE
+ c->format==CAMERA_PIXEL_FORMAT_JPEG
+#else
+ c->format==CAMERA_PIXEL_FORMAT_YUV422
+#endif
+ ?SYS_OK:SYS_ERR_NOT_SUPPORTED;}
 SysResult_t BSP_DCMI_SetEventCallback(BspDcmiEventCallback_t cb,void *p){camera_error_callback=cb;camera_error_context=p;return SYS_OK;}
 SysResult_t BSP_DCMI_StartSnapshot(uint32_t *p,uint32_t n){(void)p;(void)n;return SYS_ERR_NOT_SUPPORTED;}
 SysResult_t BSP_DCMI_StartContinuous(uint32_t *m0,uint32_t *m1,uint32_t n,BspDcmiFrameCallback_t cb,void *p){(void)n;dma_targets[0]=m0;dma_targets[1]=m1;camera_frame_callback=cb;camera_context=p;fake_dma_active=true;dcmi_starts++;return SYS_OK;}
@@ -157,3 +163,10 @@ int Stage02_TestRun(uint32_t id)
     g_native_observation[12]=s_camera_bridge.held;
     return result;
 }
+
+//旧格式专项不产生JPEG事件，新增接口显式返回不支持
+#ifndef STAGE03B_MJPEG_FIXTURE
+SysResult_t BSP_DCMI_StartJpegSnapshot(uint32_t *p,uint32_t n){(void)p;(void)n;return SYS_ERR_NOT_SUPPORTED;}
+SysResult_t BSP_DCMI_ProcessJpeg(uint32_t *n){(void)n;return SYS_ERR_NOT_SUPPORTED;}
+
+#endif

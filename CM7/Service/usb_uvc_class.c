@@ -18,6 +18,9 @@
 
 //与描述符共用冷启动配置，不保存业务配置指针
 static uint32_t s_video_frame_bytes;
+
+//记录冷启动格式，JPEG按上限校验，YUY2按固定长度校验
+static CameraPixelFormat_t s_video_format;
 static uint32_t s_video_interval;
 static bool s_video_configured;
 
@@ -227,8 +230,12 @@ SysResult_t USB_UVC_Configure(const VideoStreamConfig_t *config)
     result = USB_UVC_ConfigureFSDescriptor(config);
     if (result != SYS_OK)
         return result;
-    (void)CameraConfig_GetFrameSize(&config->camera, &bytes);
+    if (config->camera.format == CAMERA_PIXEL_FORMAT_JPEG)
+        bytes = config->max_frame_bytes;
+    else
+        (void)CameraConfig_GetFrameSize(&config->camera, &bytes);
     s_video_frame_bytes = bytes;
+    s_video_format = config->camera.format;
     s_video_interval = 10000000UL / config->fps;
     s_video_configured = true;
     return SYS_OK;
@@ -247,15 +254,40 @@ SysResult_t USB_UVC_Register(void)
 //借用外部帧，成功后等待状态查询确认归还
 SysResult_t USB_UVC_SubmitFrame(const uint8_t *frame, uint32_t length)
 {
+    VideoFrameView_t view = {0};
+
+    //连续帧仍走原接口，内部统一校验和借用协议
+    view.spans[0].data = frame;
+    view.spans[0].length = length;
+    view.size_bytes = length;
+    view.span_count = 1U;
+    return USB_UVC_SubmitFrameView(&view);
+}
+
+//借用一到两段帧数据，成功不代表发送完成
+SysResult_t USB_UVC_SubmitFrameView(const VideoFrameView_t *view)
+{
     uint32_t mask;
+    uint32_t length;
     SysResult_t result;
     UsbUvcContext_t *ctx;
 
-    //仅接收当前描述符声明的完整YUY2帧
-    if (frame == NULL || length != s_video_frame_bytes)
+    if (!VideoFrameView_Valid(view))
+        return SYS_ERR_INVALID_ARG;
+    length = view->size_bytes;
+    if (s_video_format == CAMERA_PIXEL_FORMAT_JPEG ?
+        length > s_video_frame_bytes : length != s_video_frame_bytes)
         return SYS_ERR_INVALID_ARG;
     if (__get_IPSR() != 0U)
         return SYS_ERR_INVALID_STATE;
+
+    //JPEG标记允许跨段读取，不扫描整张图像或接触Media所有权
+    if (s_video_format == CAMERA_PIXEL_FORMAT_JPEG &&
+        (length < 4U || VideoFrameView_Byte(view, 0U) != 0xFFU ||
+         VideoFrameView_Byte(view, 1U) != 0xD8U ||
+         VideoFrameView_Byte(view, length - 2U) != 0xFFU ||
+         VideoFrameView_Byte(view, length - 1U) != 0xD9U))
+        return SYS_ERR_INVALID_ARG;
     mask = USB_Device_Lock();
     ctx = s_uvc_active;
     if (ctx == NULL || !USB_Device_IsConfigured() || !ctx->commit_valid ||
@@ -266,7 +298,7 @@ SysResult_t USB_UVC_SubmitFrame(const uint8_t *frame, uint32_t length)
     {
         if (s_uvc_payload.state == USB_UVC_PAYLOAD_UNINITIALIZED)
             (void)USB_UVC_PayloadInit(&s_uvc_payload);
-        result = USB_UVC_PayloadStartFrame(&s_uvc_payload, frame, length, UVC_VIDEO_PACKET_BYTES);
+        result = USB_UVC_PayloadStartView(&s_uvc_payload, view, UVC_VIDEO_PACKET_BYTES);
         if (result == SYS_OK)
         {
             ctx->stream_state = USB_UVC_WAIT_SLOT;

@@ -265,3 +265,7 @@ int Stream_TestRun(uint32_t id)
 
 SysResult_t BSP_DCMI_StartContinuous(uint32_t *m0,uint32_t *m1,uint32_t n,BspDcmiFrameCallback_t cb,void *context){(void)m0;(void)m1;(void)n;(void)cb;(void)context;return SYS_ERR_NOT_SUPPORTED;}
 SysResult_t BSP_DCMI_ReplaceTarget(BspDcmiTarget_t target,uint32_t *buffer){(void)target;(void)buffer;return SYS_ERR_NOT_SUPPORTED;}
+
+//旧固定长度专项的新增JPEG接口不产生图像
+SysResult_t BSP_DCMI_StartJpegSnapshot(uint32_t *p,uint32_t n){(void)p;(void)n;return SYS_ERR_NOT_SUPPORTED;}
+SysResult_t BSP_DCMI_ProcessJpeg(uint32_t *n){(void)n;return SYS_ERR_NOT_SUPPORTED;}

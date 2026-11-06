@@ -1,0 +1,146 @@
+{
+  "scope": "static_syntax_expression_and_source_checks_only",
+  "compiler_run": false,
+  "executable_tests_run": false,
+  "hardware_verified": false,
+  "results": [
+    {
+      "name": "C99 grammar: CM7/Device/Src/ov5640_device.c",
+      "status": "PASS"
+    },
+    {
+      "name": "C99 grammar: CM7/Service/usb_uvc_desc.c",
+      "status": "PASS"
+    },
+    {
+      "name": "C99 grammar: CM7/Media/Src/camera_capture.c",
+      "status": "PASS"
+    },
+    {
+      "name": "C99 grammar: CM7/Media/Src/camera_mjpeg_fifo.c",
+      "status": "PASS"
+    },
+    {
+      "name": "C99 grammar: CM7/Application/video_config.c",
+      "status": "PASS"
+    },
+    {
+      "name": "C99 grammar: Tests/MjpegSdramFifo/fifo_test.c",
+      "status": "PASS"
+    },
+    {
+      "name": "Actual size expression None",
+      "status": "PASS"
+    },
+    {
+      "name": "Actual size expression {'width': 160, 'height': 120}",
+      "status": "PASS"
+    },
+    {
+      "name": "Actual size expression {'width': 320, 'height': 240}",
+      "status": "PASS"
+    },
+    {
+      "name": "Actual size expression {'width': 320, 'height': 120}",
+      "status": "PASS"
+    },
+    {
+      "name": "Actual size expression {'width': 640, 'height': 480}",
+      "status": "PASS"
+    },
+    {
+      "name": "Actual size expression {'width': 640, 'height': 240}",
+      "status": "PASS"
+    },
+    {
+      "name": "Actual size expression {'width': 800, 'height': 480}",
+      "status": "PASS"
+    },
+    {
+      "name": "Actual size expression {'width': 0, 'height': 0}",
+      "status": "PASS"
+    },
+    {
+      "name": "ST QVGA table outputs 320x240",
+      "status": "PASS"
+    },
+    {
+      "name": "ST VGA table outputs 640x480",
+      "status": "PASS"
+    },
+    {
+      "name": "Device maps VGA explicitly",
+      "status": "PASS"
+    },
+    {
+      "name": "Device passes mapped resolution",
+      "status": "PASS"
+    },
+    {
+      "name": "Shared JPEG size policy: CM7/Media/Src/camera_capture.c",
+      "status": "PASS"
+    },
+    {
+      "name": "Shared JPEG size policy: CM7/Media/Src/camera_mjpeg_fifo.c",
+      "status": "PASS"
+    },
+    {
+      "name": "Shared JPEG size policy: CM7/Service/usb_uvc_desc.c",
+      "status": "PASS"
+    },
+    {
+      "name": "Descriptor width/height from input",
+      "status": "PASS"
+    },
+    {
+      "name": "38400B at 25FPS fits slot validation",
+      "status": "PASS"
+    },
+    {
+      "name": "70000B at 10FPS uses 690 slots",
+      "status": "PASS"
+    },
+    {
+      "name": "70000B at 25FPS exceeds slot budget",
+      "status": "PASS"
+    },
+    {
+      "name": "MJPEG VGA and original YUY2 defaults",
+      "status": "PASS"
+    },
+    {
+      "name": "Default FPS and JPEG length budget",
+      "status": "PASS"
+    },
+    {
+      "name": "Preserved algorithm: Mjpeg_BlockComplete",
+      "status": "PASS"
+    },
+    {
+      "name": "Preserved algorithm: Mjpeg_Publish",
+      "status": "PASS"
+    },
+    {
+      "name": "Preserved algorithm: Mjpeg_ParseByte",
+      "status": "PASS"
+    },
+    {
+      "name": "Preserved algorithm: CameraMjpegFifo_ReleaseFrame",
+      "status": "PASS"
+    },
+    {
+      "name": "Preserved algorithm: CameraJpeg_Validate",
+      "status": "PASS"
+    },
+    {
+      "name": "Preserved algorithm: CameraStream_Rotate",
+      "status": "PASS"
+    },
+    {
+      "name": "BSP/Core/CM4/component/USB transport unchanged",
+      "status": "PASS"
+    }
+  ],
+  "pass_count": 34,
+  "fail_count": 0
+}

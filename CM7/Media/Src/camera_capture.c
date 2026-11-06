@@ -1,4 +1,5 @@
 #include "camera_capture.h"
+#include "camera_mjpeg_fifo.h"
 #include "bsp_dcmi.h"
 #include "bsp_sdram.h"
 #include "platform_time.h"
@@ -9,7 +10,7 @@
 //图像缓冲区数量
 #define CAMERA_STREAM_BUFFER_COUNT     5U
 
-//单个缓冲区预留40KiB，实际帧长度仍由图像配置计算
+//单个缓冲区预留600KiB，实际帧长度仍由图像配置计算
 #define CAMERA_STREAM_BUFFER_CAPACITY  (640U * 480U * 2U)
 
 //缓冲区可用SDRAM范围的结束地址，不包含该地址
@@ -33,7 +34,11 @@
     (CAMERA_BUFFER_OFFSET + CAMERA_STREAM_BUFFER_COUNT * \
      CAMERA_STREAM_BUFFER_CAPACITY) > BSP_SDRAM_WINDOW || \
     (CAMERA_BUFFER_OFFSET + CAMERA_BUFFER_POOL_SIZE) > BSP_SDRAM_WINDOW
-#error Camera buffers must fit the aligned SDRAM business window
+#error Camera buffers must fit the aligned SDRAM business window ciallo
+#endif
+
+#if (CAMERA_BUFFER_BASE + CAMERA_STREAM_BUFFER_COUNT * CAMERA_STREAM_BUFFER_CAPACITY) > CAMERA_MJPEG_FIFO_BASE
+#error YUY2 buffers must not overlap the independent JPEG FIFO
 #endif
 
 //DMA单次传输最大Word数量
@@ -41,6 +46,15 @@
 
 //单帧采集超时时间，单位ms
 #define CAMERA_CAPTURE_TIMEOUT_MS   100U
+
+//JPEG只接收一次DMA窗口，预留容量不等于可传输整块600KiB
+#define CAMERA_JPEG_CAPACITY_BYTES (0xFFFFU * 4U)
+#define CAMERA_JPEG_TIMEOUT_MS 1000U
+
+#if CAMERA_JPEG_CAPACITY_BYTES > CAMERA_STREAM_BUFFER_CAPACITY || \
+    (CAMERA_BUFFER_OFFSET + CAMERA_JPEG_CAPACITY_BYTES) > BSP_SDRAM_WINDOW
+#error JPEG receive window must fit SDRAM
+#endif
 
 typedef enum
 {
@@ -67,6 +81,9 @@ typedef struct
     uint32_t frame_capacity;
     uint32_t frame_bytes;
     uint32_t valid_bytes;
+
+    //JPEG由硬件确认已写入内存的范围，文件有效长度另行解析
+    uint32_t received_bytes;
     uint32_t start_tick;
     uint32_t timeout_ms;
 } CameraSnapshot_t;
@@ -89,6 +106,9 @@ typedef struct
 {
     uint8_t *data;
     uint32_t capacity;
+
+    //JPEG每帧长度不同，YUY2仍使用stream.frame_bytes
+    uint32_t valid_bytes;
     uint32_t sequence;
     CameraBufferState_t state;
 } CameraFrameBuffer_t;
@@ -168,6 +188,14 @@ SysResult_t CameraCapture_GetStats(CameraCaptureStats_t *stats)
     if (!s_capture.initialized)
         return SYS_ERR_INVALID_STATE;
 
+    //JPEG流的计数来自独立FIFO，单帧与YUY2不读取该对象
+    if (s_capture.config.format == CAMERA_PIXEL_FORMAT_JPEG &&
+        s_capture.mode == CAMERA_CAPTURE_MODE_STREAM)
+    {
+        CameraMjpegFifo_GetStats(&stats->completed_frames, &stats->dropped_frames);
+        return SYS_OK;
+    }
+
     //只短暂保护两个计数，不改变缓冲区状态
     primask = __get_PRIMASK();
     __disable_irq();
@@ -178,6 +206,16 @@ SysResult_t CameraCapture_GetStats(CameraCaptureStats_t *stats)
 }
 
 //内部功能函数声明
+//任务中校验JPEG段边界、分辨率和结束标记，成功才填写有效长度
+static SysResult_t CameraJpeg_Validate(const uint8_t *data, uint32_t received,
+    const CameraConfig_t *config, uint32_t *valid_bytes);
+
+//任务中推进JPEG收尾、长度验证和超时，不在ISR扫描数据
+static void CameraCapture_ProcessJpeg(void);
+
+//启动独立FIFO并登记Stream生命周期
+static SysResult_t CameraJpegStream_Start(void);
+
 //计算当前格式的完整帧字节数
 static SysResult_t CameraCapture_CalcSize(
     const CameraConfig_t *config,
@@ -232,13 +270,23 @@ SysResult_t CameraCapture_Init(const CameraConfig_t *config)
         return SYS_ERR_INVALID_STATE;
 
     //计算当前图像所需容量
-    result = CameraCapture_CalcSize(config, &required_bytes);
-    if (result != SYS_OK)
-        return result;
+    if (CameraConfig_IsVariableLength(config->format))
+    {
+        if (config->width == 0U || config->height == 0U)
+            return SYS_ERR_INVALID_ARG;
+        required_bytes = CAMERA_JPEG_CAPACITY_BYTES;
+    }
+    else
+    {
+        result = CameraCapture_CalcSize(config, &required_bytes);
+        if (result != SYS_OK)
+            return result;
+    }
 
     //检查当前SDRAM内存池容量
     if (required_bytes == 0U ||
-        required_bytes > CAMERA_BUFFER_POOL_SIZE)
+        required_bytes > (CameraConfig_IsVariableLength(config->format) ?
+            CAMERA_JPEG_CAPACITY_BYTES : CAMERA_BUFFER_POOL_SIZE))
     {
         return SYS_ERR_INVALID_ARG;
     }
@@ -265,15 +313,19 @@ SysResult_t CameraCapture_Init(const CameraConfig_t *config)
 
     //绑定Media管理的SDRAM区域
     s_capture.snapshot.framebuffer = (uint8_t *)(uintptr_t)CAMERA_BUFFER_BASE;
-    s_capture.snapshot.frame_capacity = CAMERA_BUFFER_POOL_SIZE;
+    s_capture.snapshot.frame_capacity = CameraConfig_IsVariableLength(config->format) ?
+        CAMERA_JPEG_CAPACITY_BYTES : CAMERA_BUFFER_POOL_SIZE;
 
     //保存当前帧长度，尚未产生有效图像
-    s_capture.snapshot.frame_bytes = required_bytes;
+    s_capture.snapshot.frame_bytes = CameraConfig_IsVariableLength(config->format) ?
+        0U : required_bytes;
+    s_capture.snapshot.received_bytes = 0U;
     s_capture.snapshot.valid_bytes = 0U;
 
     //初始化超时管理
     s_capture.snapshot.start_tick = 0U;
-    s_capture.snapshot.timeout_ms = CAMERA_CAPTURE_TIMEOUT_MS;
+    s_capture.snapshot.timeout_ms = CameraConfig_IsVariableLength(config->format) ?
+        CAMERA_JPEG_TIMEOUT_MS : CAMERA_CAPTURE_TIMEOUT_MS;
 
     //初始化采集状态
     s_capture.mode = CAMERA_CAPTURE_MODE_NONE;
@@ -307,17 +359,22 @@ SysResult_t CameraCapture_Start(void)
 
     //检查Framebuffer是否有效
     if (s_capture.snapshot.framebuffer == NULL ||
-        s_capture.snapshot.frame_bytes == 0U ||
-        s_capture.snapshot.frame_bytes > s_capture.snapshot.frame_capacity)
+        s_capture.snapshot.frame_capacity == 0U ||
+        (!CameraConfig_IsVariableLength(s_capture.config.format) &&
+         (s_capture.snapshot.frame_bytes == 0U ||
+          s_capture.snapshot.frame_bytes > s_capture.snapshot.frame_capacity)))
     {
         return SYS_ERR_INVALID_STATE;
     }
 
     //检查DMA传输长度是否满足32位Word要求
-    if ((s_capture.snapshot.frame_bytes % sizeof(uint32_t)) != 0U)
+    if ((s_capture.snapshot.frame_bytes % sizeof(uint32_t)) != 0U ||
+        (CameraConfig_IsVariableLength(s_capture.config.format) &&
+         s_capture.snapshot.frame_capacity % sizeof(uint32_t) != 0U))
         return SYS_ERR_INVALID_STATE;
 
-    dma_words = s_capture.snapshot.frame_bytes / sizeof(uint32_t);
+    dma_words = (CameraConfig_IsVariableLength(s_capture.config.format) ?
+        s_capture.snapshot.frame_capacity : s_capture.snapshot.frame_bytes) / sizeof(uint32_t);
 
     if (dma_words == 0U ||
         dma_words > CAMERA_DMA_MAX_WORDS)
@@ -327,6 +384,7 @@ SysResult_t CameraCapture_Start(void)
 
     //新一轮采集开始，上一帧数据失效
     s_capture.snapshot.valid_bytes = 0U;
+    s_capture.snapshot.received_bytes = 0U;
     s_capture.last_result = SYS_OK;
 
     //记录采集开始时间
@@ -336,7 +394,9 @@ SysResult_t CameraCapture_Start(void)
     s_capture.state = CAMERA_CAPTURE_CAPTURING;
 
 	s_capture.mode = CAMERA_CAPTURE_MODE_SNAPSHOT;
-    result = BSP_DCMI_StartSnapshot(
+    result = CameraConfig_IsVariableLength(s_capture.config.format) ?
+        BSP_DCMI_StartJpegSnapshot((uint32_t *)s_capture.snapshot.framebuffer, dma_words) :
+        BSP_DCMI_StartSnapshot(
         (uint32_t *)s_capture.snapshot.framebuffer,
         dma_words
     );
@@ -375,6 +435,10 @@ SysResult_t CameraCapture_StartStream(void)
     {
         return SYS_ERR_BUSY;
     }
+
+    //JPEG连续流使用独立字节FIFO，不借用Snapshot或YUY2五缓冲
+    if (CameraConfig_IsVariableLength(s_capture.config.format))
+        return CameraJpegStream_Start();
 
     //3. 初始化五缓冲状态
     result = CameraStream_Init(
@@ -442,6 +506,36 @@ void CameraCapture_Process(void)
     //只有采集中才需要检查完成事件和超时
     if (s_capture.state != CAMERA_CAPTURE_CAPTURING)
         return;
+
+    //JPEG Snapshot保持已验证的单帧收尾，Stream不再调用单帧接口
+    if (CameraConfig_IsVariableLength(s_capture.config.format))
+    {
+        if (s_capture.mode == CAMERA_CAPTURE_MODE_SNAPSHOT)
+            CameraCapture_ProcessJpeg();
+        else
+        {
+            SysResult_t result = SYS_OK;
+
+            //硬件错误优先，地址替换失败的完成块不能发布
+            if (BSP_DCMI_TakeEvents(&events) &&
+                ((events.flags & BSP_DCMI_EVENT_ERROR) != 0U || events.result != SYS_OK))
+                result = events.result != SYS_OK ? events.result : SYS_ERR_IO;
+            if (result == SYS_OK)
+                result = CameraMjpegFifo_Process();
+
+            //解析期间也可能发生IRQ错误，交付前再次确认
+            if (BSP_DCMI_TakeEvents(&events) &&
+                ((events.flags & BSP_DCMI_EVENT_ERROR) != 0U || events.result != SYS_OK))
+                result = events.result != SYS_OK ? events.result : SYS_ERR_IO;
+            if (result != SYS_OK)
+            {
+                s_capture.last_result = result;
+                s_capture.state = CAMERA_CAPTURE_ERROR;
+                (void)CameraCapture_Stop();
+            }
+        }
+        return;
+    }
 
     //获取BSP中断记录的事件
     if (BSP_DCMI_TakeEvents(&events))
@@ -519,6 +613,8 @@ bool CameraCapture_GetFrame(CameraFrame_t *frame)
 
     frame->data = s_capture.snapshot.framebuffer;
     frame->size_bytes = s_capture.snapshot.valid_bytes;
+    frame->data2 = NULL;
+    frame->size_bytes2 = 0U;
 
     return true;
 }
@@ -597,13 +693,17 @@ SysResult_t CameraCapture_Stop(void)
     //3. 检查Stream是否有Application持有的缓冲区
     if (s_capture.mode == CAMERA_CAPTURE_MODE_STREAM)
     {
-        for (i = 0U; i < CAMERA_STREAM_BUFFER_COUNT; i++)
+        if (s_capture.config.format == CAMERA_PIXEL_FORMAT_JPEG)
+            has_in_use = CameraMjpegFifo_HasLoan();
+        else
         {
-            if (s_capture.stream.buffers[i].state ==
-                CAMERA_BUFFER_IN_USE)
+            for (i = 0U; i < CAMERA_STREAM_BUFFER_COUNT; i++)
             {
-                has_in_use = true;
-                break;
+                if (s_capture.stream.buffers[i].state == CAMERA_BUFFER_IN_USE)
+                {
+                    has_in_use = true;
+                    break;
+                }
             }
         }
 
@@ -630,6 +730,11 @@ SysResult_t CameraCapture_Stop(void)
 
         return result;
     }
+
+    //只在硬件停止确认成功后释放FIFO接收区，外部借用继续保留
+    if (s_capture.mode == CAMERA_CAPTURE_MODE_STREAM &&
+        s_capture.config.format == CAMERA_PIXEL_FORMAT_JPEG)
+        CameraMjpegFifo_OnStopped();
 
     //5. Snapshot清理
     if (s_capture.mode == CAMERA_CAPTURE_MODE_SNAPSHOT)
@@ -685,7 +790,24 @@ static SysResult_t CameraCapture_CalcSize(
 SysResult_t CameraCapture_ValidateStreamConfig(const CameraConfig_t *config)
 {
     uint32_t bytes;
-    SysResult_t result = CameraCapture_CalcSize(config, &bytes);
+    SysResult_t result;
+
+    //先拒绝空配置，不能访问无效指针
+    if (config == NULL)
+        return SYS_ERR_INVALID_ARG;
+
+    //JPEG流采用变长FIFO，只开放当前已配置的分辨率
+    if (config->format == CAMERA_PIXEL_FORMAT_JPEG)
+    {
+        if (config->width == 0U || config->height == 0U)
+            return SYS_ERR_INVALID_ARG;
+        if (!CameraConfig_IsJpegSizeSupported(config))
+            return SYS_ERR_NOT_SUPPORTED;
+        return SYS_OK;
+    }
+
+    //固定长度格式仍按原五缓冲和单次DMA计数校验
+    result = CameraCapture_CalcSize(config, &bytes);
 
     if (result != SYS_OK)
         return result;
@@ -979,6 +1101,8 @@ static bool CameraStream_GetFrame(
             frame->format = config->format;
             frame->data = buffer->data;
             frame->size_bytes = me->frame_bytes;
+            frame->data2 = NULL;
+            frame->size_bytes2 = 0U;
 
             success = true;
         }
@@ -998,6 +1122,9 @@ bool CameraCapture_StreamGetFrame(CameraFrame_t *frame)
     {
         return false;
     }
+
+    if (s_capture.config.format == CAMERA_PIXEL_FORMAT_JPEG)
+        return CameraMjpegFifo_GetFrame(frame);
 
     return CameraStream_GetFrame(
         &s_capture.stream,
@@ -1059,7 +1186,8 @@ SysResult_t CameraCapture_StreamReleaseFrame(void)
 
     draining = (s_capture.state == CAMERA_CAPTURE_DRAINING);
 
-    result = CameraStream_ReleaseFrame(&s_capture.stream);
+    result = s_capture.config.format == CAMERA_PIXEL_FORMAT_JPEG ?
+        CameraMjpegFifo_ReleaseFrame() : CameraStream_ReleaseFrame(&s_capture.stream);
 
     if (result != SYS_OK)
         return result;
@@ -1084,6 +1212,8 @@ static SysResult_t CameraStream_OnFrameComplete(
     //只接受当前Media五缓冲实例
     if (stream != &s_capture.stream)
         return SYS_ERR_INVALID_ARG;
+    if (s_capture.config.format == CAMERA_PIXEL_FORMAT_JPEG)
+        return SYS_ERR_INVALID_STATE;
 
     //硬件地址替换成功后提交所有权，再通知任务处理进展
     {
@@ -1093,4 +1223,145 @@ static SysResult_t CameraStream_OnFrameComplete(
                 CAMERA_CAPTURE_EVENT_ERROR, s_capture_callback_context);
         return result;
     }
+}
+
+//任务中推进JPEG收尾、长度验证和超时，不在ISR扫描数据
+static void CameraCapture_ProcessJpeg(void)
+{
+    uint32_t received = 0U;
+    uint32_t valid = 0U;
+    SysResult_t result;
+
+    result = BSP_DCMI_ProcessJpeg(&received);
+    if (result == SYS_OK)
+    {
+        s_capture.snapshot.received_bytes = received;
+        if (received > s_capture.snapshot.frame_capacity || received == 0U)
+            result = SYS_ERR_PROTOCOL;
+        else
+            result = CameraJpeg_Validate(s_capture.snapshot.framebuffer, received,
+                &s_capture.config, &valid);
+        if (result == SYS_OK)
+        {
+            s_capture.snapshot.valid_bytes = valid;
+            s_capture.last_result = SYS_OK;
+            s_capture.state = CAMERA_CAPTURE_READY;
+            return;
+        }
+    }
+
+    //未收尾时继续等；到期、截断或硬件错误都不能交付图像
+    if (result == SYS_ERR_BUSY)
+    {
+        if ((uint32_t)(Platform_TimeGetMs() - s_capture.snapshot.start_tick) <
+            s_capture.snapshot.timeout_ms)
+            return;
+        result = SYS_ERR_TIMEOUT;
+    }
+    s_capture.snapshot.valid_bytes = 0U;
+    s_capture.last_result = result;
+    s_capture.state = CAMERA_CAPTURE_ERROR;
+    (void)CameraCapture_Stop();
+}
+
+//任务中校验JPEG段边界、分辨率和结束标记，成功才填写有效长度
+static SysResult_t CameraJpeg_Validate(const uint8_t *data, uint32_t received,
+    const CameraConfig_t *config, uint32_t *valid_bytes)
+{
+    uint32_t pos = 2U;
+    uint32_t length;
+    uint32_t marker;
+    uint32_t components = 0U;
+    bool sof = false;
+    bool entropy = false;
+
+    if (data == NULL || config == NULL || valid_bytes == NULL)
+        return SYS_ERR_INVALID_ARG;
+    if (received < 4U || data[0] != 0xFFU || data[1] != 0xD8U)
+        return SYS_ERR_PROTOCOL;
+
+    while (pos < received)
+    {
+        if (data[pos++] != 0xFFU)
+            return SYS_ERR_PROTOCOL;
+        while (pos < received && data[pos] == 0xFFU)
+            pos++;
+        if (pos >= received)
+            return SYS_ERR_PROTOCOL;
+        marker = data[pos++];
+        if (marker == 0xD8U || marker == 0xD9U || marker == 0U ||
+            (marker >= 0xD0U && marker <= 0xD7U) || received - pos < 2U)
+            return SYS_ERR_PROTOCOL;
+        length = ((uint32_t)data[pos] << 8) | data[pos + 1U];
+        if (length < 2U || length > received - pos)
+            return SYS_ERR_PROTOCOL;
+
+        //组件输出Baseline JPEG；尺寸不符、重复SOF或渐进格式均不交付
+        if (marker == 0xC0U)
+        {
+            if (sof || length < 8U || data[pos + 2U] != 8U)
+                return SYS_ERR_PROTOCOL;
+            components = data[pos + 7U];
+            if ((components != 1U && components != 3U) || length != 8U + 3U * components ||
+                (((uint32_t)data[pos + 3U] << 8) | data[pos + 4U]) != config->height ||
+                (((uint32_t)data[pos + 5U] << 8) | data[pos + 6U]) != config->width)
+                return SYS_ERR_PROTOCOL;
+            sof = true;
+        }
+        else if (marker >= 0xC1U && marker <= 0xCFU &&
+            marker != 0xC4U && marker != 0xC8U && marker != 0xCCU)
+            return SYS_ERR_NOT_SUPPORTED;
+
+        if (marker != 0xDAU)
+        {
+            pos += length;
+            continue;
+        }
+        if (!sof || length < 6U || data[pos + 2U] != components ||
+            length != 6U + 2U * components ||
+            data[pos + length - 3U] != 0U ||
+            data[pos + length - 2U] != 63U || data[pos + length - 1U] != 0U)
+            return SYS_ERR_PROTOCOL;
+        pos += length;
+
+        //熵数据中的FF00和重启标记不是EOI，APP段内的伪EOI已由段长跳过
+        while (pos < received)
+        {
+            if (data[pos++] != 0xFFU)
+            {
+                entropy = true;
+                continue;
+            }
+            while (pos < received && data[pos] == 0xFFU)
+                pos++;
+            if (pos >= received)
+                return SYS_ERR_PROTOCOL;
+            marker = data[pos++];
+            if (marker == 0U || (marker >= 0xD0U && marker <= 0xD7U))
+                continue;
+            if (marker != 0xD9U || !entropy)
+                return SYS_ERR_PROTOCOL;
+
+            //按JPEG结构确认首个EOI，只交付完整图像，不把接收尾部当作文件内容
+            *valid_bytes = pos;
+            return SYS_OK;
+        }
+        return SYS_ERR_PROTOCOL;
+    }
+    return SYS_ERR_PROTOCOL;
+}
+
+//启动独立FIFO并登记Stream生命周期
+static SysResult_t CameraJpegStream_Start(void)
+{
+    SysResult_t result;
+
+    //先占用Stream模式，启动失败仍交给统一Stop清理硬件
+    s_capture.mode = CAMERA_CAPTURE_MODE_STREAM;
+    s_capture.state = CAMERA_CAPTURE_CAPTURING;
+    result = CameraMjpegFifo_Start(&s_capture.config);
+    s_capture.last_result = result;
+    if (result != SYS_OK)
+        s_capture.state = CAMERA_CAPTURE_ERROR;
+    return result;
 }

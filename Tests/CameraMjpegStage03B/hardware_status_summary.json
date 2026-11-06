@@ -1,0 +1,68 @@
+{
+  "evidence_source": "User hardware feedback in this conversation",
+  "recorded_on": "2026-11-06",
+  "source_branch": "codex/camera-mjpeg-stage03b",
+  "source_head_when_recorded": "a722ba19e4166911d18ba3a776b62071ba6090ef",
+  "tested_firmware_commit_provided": false,
+  "agent_ran_hardware_tests": false,
+  "versions": [
+    {
+      "version": "Legacy MJPEG Snapshot loop",
+      "resolution": [
+        160,
+        120
+      ],
+      "user_reported_status": "hardware_passed",
+      "reported_fps_approx": 16
+    },
+    {
+      "version": "MJPEG Continuous SDRAM FIFO",
+      "fifo_bytes": 524288,
+      "whole_frame_copy": false,
+      "user_reported_status": "hardware_passed",
+      "measured_fps": null
+    },
+    {
+      "version": "QVGA MJPEG",
+      "resolution": [
+        320,
+        240
+      ],
+      "target_output_fps": 25,
+      "user_reported_status": "hardware_passed",
+      "measured_fps": null,
+      "fps_target_verified": null
+    },
+    {
+      "version": "VGA MJPEG",
+      "resolution": [
+        640,
+        480
+      ],
+      "target_output_fps": 10,
+      "maximum_frame_bytes": 70000,
+      "user_reported_status": "hardware_function_passed_fps_below_target",
+      "measured_fps": null,
+      "fps_target_verified": false
+    }
+  ],
+  "not_inferred_from_feedback": [
+    "Exact VGA FPS",
+    "Camera/USB/host separate FPS",
+    "Exact tested firmware SHA",
+    "Full ARMCC Error/Warning counts",
+    "Long-duration stability coverage",
+    "Reset/Disconnect/Alt0/Stop-Restart/Abort failure test coverage"
+  ],
+  "scope": "Acceptance record update only; no production code, frame-rate changes or merge",
+  "integration": {
+    "target_branch": "main",
+    "main_before": "bca2de1c16a37eff0e3fb0a44b67ec2829846356",
+    "approved_source_commit": "e633ac158411abe44a026b92c30a768b90b26232",
+    "approval": "User explicitly approved merge after providing hardware status table",
+    "method": "non-fast-forward merge preserving main-only handoff",
+    "production_changed_during_merge": false,
+    "recompiled_during_merge": false,
+    "vga_fps_target_met": false
+  }
+}

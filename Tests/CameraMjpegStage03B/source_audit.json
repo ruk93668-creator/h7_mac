@@ -1,0 +1,36 @@
+{
+  "requested_baseline": "b183ec0",
+  "closing_commit": "e80fdda",
+  "branch": "codex/camera-mjpeg-stage03b",
+  "protected_paths_unchanged": [
+    "Drivers",
+    "Middlewares",
+    "CM4",
+    "CM7/Device",
+    "CM7/BSP/bsp_sdram.c",
+    "CM7/BSP/bsp_sdram.h",
+    "CM7/Core/Src/main.c",
+    "CM7/Platform/usb_device.c",
+    "CM7/BSP/bsp_usb.c",
+    "CM7/Service/usb_uvc_payload.c",
+    "CM7/Service/usb_mode.c"
+  ],
+  "unrelated_user_edits_excluded": [
+    "CM7/Service/usb_uvc_desc.h",
+    "MDK-ARM/h7_mac.uvoptx",
+    "MDK-ARM/h7_mac.uvprojx"
+  ],
+  "hardware_mjpeg_verified": false,
+  "unchanged_fixed_size_functions": [
+    "BSP_DCMI_StartContinuous",
+    "BSP_DCMI_ReplaceTarget",
+    "Dcmi_StreamTryPair",
+    "Dcmi_StreamM0Complete",
+    "Dcmi_StreamM1Complete",
+    "CameraStream_Init",
+    "CameraStream_Rotate",
+    "CameraStream_GetFrame",
+    "CameraStream_ReleaseFrame",
+    "CameraStream_OwnershipValid"
+  ]
+}

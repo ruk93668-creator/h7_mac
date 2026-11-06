@@ -32,6 +32,9 @@ static SysResult_t Ov5640_MapPixelFormat(
 	CameraPixelFormat_t format,
 	uint32_t *sensor_format);
 
+//将公共尺寸映射为组件分辨率，不直接转换枚举
+static SysResult_t Ov5640_MapResolution(const CameraConfig_t *config, uint32_t *resolution);
+
 //初始化摄像头板级接口
 static SysResult_t Ov5640_Init(Device_t *device);
 
@@ -136,6 +139,10 @@ static SysResult_t Ov5640_MapPixelFormat(
 
 		case CAMERA_PIXEL_FORMAT_YUV422:
 			*sensor_format = OV5640_YUV422;
+			break;
+
+		case CAMERA_PIXEL_FORMAT_JPEG:
+			*sensor_format = OV5640_JPEG;
 			break;
 
 		default:
@@ -298,7 +305,19 @@ SysResult_t Ov5640_ValidateConfig(const CameraConfig_t *config)
 {
     uint32_t format;
     uint32_t bytes;
-    SysResult_t result = CameraConfig_GetFrameSize(config, &bytes);
+    SysResult_t result;
+
+    if (config == NULL || config->width == 0U || config->height == 0U)
+        return SYS_ERR_INVALID_ARG;
+
+    //JPEG允许已接入的QQVGA、QVGA和VGA，其他格式保持原能力范围
+    if (config->format == CAMERA_PIXEL_FORMAT_JPEG)
+    {
+        if (!CameraConfig_IsJpegSizeSupported(config))
+            return SYS_ERR_NOT_SUPPORTED;
+        return SYS_OK;
+    }
+    result = CameraConfig_GetFrameSize(config, &bytes);
 
     if (result != SYS_OK)
         return result;
@@ -319,15 +338,22 @@ static SysResult_t Ov5640_Configure(
 	SysResult_t result;
 	uint32_t i;
 	uint32_t pixel_format;
+	uint32_t resolution;
 
 	//检查配置指针和有效尺寸
 	if ( camera == NULL || config == NULL ||
 		config->width == 0U || config->height == 0U)
 		return SYS_ERR_INVALID_ARG;
 
-	//当前只开放160x120输出
-	if ( config->width != 160U || config->height != 120U)
-		return SYS_ERR_NOT_SUPPORTED;
+    //先校验格式与尺寸，不能只放开USB描述符而仍输出旧尺寸
+    result = Ov5640_ValidateConfig(config);
+    if (result != SYS_OK)
+        return result;
+
+    //取得组件真正使用的分辨率枚举
+    result = Ov5640_MapResolution(config, &resolution);
+    if (result != SYS_OK)
+        return result;
 
 	//明确映射组件格式，两套枚举数值不同
 	result = Ov5640_MapPixelFormat(config->format, &pixel_format);
@@ -374,7 +400,7 @@ static SysResult_t Ov5640_Configure(
 
 	//将总线接口绑定到OV5640组件
 	if ( OV5640_RegisterBusIO(&s_sensor, &io) != OV5640_OK ||
-		OV5640_Init(&s_sensor, OV5640_R160x120, pixel_format) != OV5640_OK ||
+		OV5640_Init(&s_sensor, resolution, pixel_format) != OV5640_OK ||
 		OV5640_SetPCLK(&s_sensor, OV5640_PCLK_48M) != OV5640_OK)
 		goto component_error;
 
@@ -401,4 +427,28 @@ done:
 	s_sensor_configured = (result == SYS_OK);
 	s_configuring = false;
 	return result;
+}
+
+//将公共尺寸映射为组件分辨率
+static SysResult_t Ov5640_MapResolution(const CameraConfig_t *config, uint32_t *resolution)
+{
+    if (config == NULL || resolution == NULL)
+        return SYS_ERR_INVALID_ARG;
+
+    //原160×120路径继续复用QQVGA表，保持既有写入顺序
+    if (config->width == 160U && config->height == 120U)
+        *resolution = OV5640_R160x120;
+
+    //JPEG使用QVGA表，不同时开放高分辨率YUY2
+    else if (config->format == CAMERA_PIXEL_FORMAT_JPEG &&
+        config->width == 320U && config->height == 240U)
+        *resolution = OV5640_R320x240;
+
+    //JPEG VGA直接复用组件640×480表，时钟和启停顺序不变
+    else if (config->format == CAMERA_PIXEL_FORMAT_JPEG &&
+        config->width == 640U && config->height == 480U)
+        *resolution = OV5640_R640x480;
+    else
+        return SYS_ERR_NOT_SUPPORTED;
+    return SYS_OK;
 }

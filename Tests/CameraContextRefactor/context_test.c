@@ -67,3 +67,9 @@ int Stream_TestRun(uint32_t id)
  if(kind==23){mask=1;EQ(CameraStream_GetFrame(&s_capture.stream,&config,&frame),false);EQ(mask,1);EQ(CameraStream_ReleaseFrame(&s_capture.stream),SYS_ERR_INVALID_STATE);EQ(mask,1);return 0;}
  EQ(0,1);return 1;
 }
+
+//旧格式专项不产生JPEG事件，新增接口显式返回不支持
+#ifndef STAGE03_JPEG_MOCK_EXTERNAL
+SysResult_t BSP_DCMI_StartJpegSnapshot(uint32_t *p,uint32_t n){(void)p;(void)n;return SYS_ERR_NOT_SUPPORTED;}
+SysResult_t BSP_DCMI_ProcessJpeg(uint32_t *n){(void)n;return SYS_ERR_NOT_SUPPORTED;}
+#endif

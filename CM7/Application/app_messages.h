@@ -24,7 +24,10 @@ typedef enum
     APP_MESSAGE_FRAME_REQUEST,
     APP_MESSAGE_FRAME_OFFER,
     APP_MESSAGE_FRAME_RETURN,
-    APP_MESSAGE_RETURN_ACK
+    APP_MESSAGE_RETURN_ACK,
+
+    //取消尚未取得帧的请求，不取消已有租借
+    APP_MESSAGE_FRAME_CANCEL_REQUEST
 } AppMessageType_t;
 
 //消息只复制描述与凭据，不复制SDRAM图像

@@ -1,0 +1,142 @@
+{
+  "kind": "static_source_checks_only",
+  "base": "60c94d0",
+  "results": [
+    {
+      "name": "C99 grammar: CM7/Media/Src/camera_mjpeg_fifo.c",
+      "status": "PASS",
+      "detail": "AST grammar only; no real headers, type checking, linking or execution"
+    },
+    {
+      "name": "C99 grammar: CM7/Media/Src/camera_capture.c",
+      "status": "PASS",
+      "detail": "AST grammar only; no real headers, type checking, linking or execution"
+    },
+    {
+      "name": "C99 grammar: CM7/BSP/bsp_dcmi.c",
+      "status": "PASS",
+      "detail": "AST grammar only; no real headers, type checking, linking or execution"
+    },
+    {
+      "name": "C99 grammar: CM7/Service/usb_uvc_payload.c",
+      "status": "PASS",
+      "detail": "AST grammar only; no real headers, type checking, linking or execution"
+    },
+    {
+      "name": "C99 grammar: Common/Inc/video_frame_view.h",
+      "status": "PASS",
+      "detail": "AST grammar only; no real headers, type checking, linking or execution"
+    },
+    {
+      "name": "C99 grammar: Tests/MjpegSdramFifo/fifo_test.c",
+      "status": "PASS",
+      "detail": "AST grammar only; no real headers, type checking, linking or execution"
+    },
+    {
+      "name": "Integration entry grammar: USB_UVC_SubmitFrame",
+      "status": "PASS",
+      "detail": "Grammar only, not type checking"
+    },
+    {
+      "name": "Integration entry grammar: USB_UVC_SubmitFrameView",
+      "status": "PASS",
+      "detail": "Grammar only, not type checking"
+    },
+    {
+      "name": "Integration entry grammar: App_UvcBridgeUsbProcess",
+      "status": "PASS",
+      "detail": "Grammar only, not type checking"
+    },
+    {
+      "name": "YUY2/FIFO/scratch disjoint",
+      "status": "PASS",
+      "detail": "YUY2 end=0xd02ee400, FIFO=[0xd0300000,0xd0380000), scratch end=0xd0384000"
+    },
+    {
+      "name": "Layout macros match plan",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "name": "No image memcpy in FIFO",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "name": "No Snapshot or CAPTURE stop in FIFO",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "name": "No RTOS/USB dependency in FIFO",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "name": "Both ISR callbacks metadata only",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "name": "Preserved body: CameraJpeg_Validate",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "name": "Preserved body: CameraStream_Rotate",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "name": "Preserved body: CameraStream_OwnershipValid",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "name": "Preserved body: CameraStream_FindReplaceable",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "name": "Preserved body: Dcmi_StartSnapshot",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "name": "Preserved body: BSP_DCMI_StartContinuous",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "name": "Preserved body: BSP_DCMI_ReplaceTarget",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "name": "Keil module entry: h7_mac_CM4",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "name": "CM4 excludes CM7 Media group",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "name": "Keil module entry: h7_mac_CM7",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "name": "Protected drivers/descriptors/MPU/CM4 unchanged",
+      "status": "PASS",
+      "detail": ""
+    }
+  ],
+  "compiler_executed": false,
+  "executable_tests_executed": false,
+  "hardware_verified": false,
+  "prepared_executable_cases": 14,
+  "pass_count": 26,
+  "fail_count": 0
+}

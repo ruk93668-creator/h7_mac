@@ -1,0 +1,43 @@
+{
+  "removed_files": [
+    "Tests\\CameraJpegStage03A\\bsp_test_bsp_test.o",
+    "Tests\\CameraJpegStage03A\\bsp_test_stm32h7xx_hal_dcmi.o",
+    "Tests\\CameraJpegStage03A\\bsp_test_stm32h7xx_hal_dma.o",
+    "Tests\\CameraJpegStage03A\\bsp_test_stm32h7xx_hal_dma_ex.o",
+    "Tests\\CameraJpegStage03A\\bsp_test_stm32h7xx_hal_gpio.o",
+    "Tests\\CameraJpegStage03A\\component.o",
+    "Tests\\CameraJpegStage03A\\media_test.o",
+    "Tests\\CameraJpegStage03A\\registers.o",
+    "Tests\\CameraJpegStage03A\\test.o",
+    "Tests\\CameraJpegStage03A\\bsp_test.axf",
+    "Tests\\CameraJpegStage03A\\media_test.axf",
+    "Tests\\CameraJpegStage03A\\test.axf",
+    "MDK-ARM\\h7_mac_jpeg_stage03a_acceptance.uvoptx",
+    "MDK-ARM\\h7_mac_jpeg_stage03a_acceptance.uvprojx",
+    "MDK-ARM\\h7_mac_jpeg_stage03a_cm4_verify.uvprojx",
+    "MDK-ARM\\h7_mac_jpeg_stage03a_cm7_jpeg_verify.uvoptx",
+    "MDK-ARM\\h7_mac_jpeg_stage03a_cm7_test_verify.uvprojx",
+    "MDK-ARM\\h7_mac_jpeg_stage03a_cm7_uvc_verify.uvprojx",
+    "MDK-ARM\\h7_mac_jpeg_stage03a_retest.uvoptx",
+    "MDK-ARM\\h7_mac_jpeg_stage03a_retest.uvprojx",
+    "MDK-ARM\\h7_mac_jpeg_stage03a_test.uvprojx",
+    "MDK-ARM\\h7_mac_jpeg_stage03a_uvc.uvprojx",
+    "MDK-ARM\\jpeg_ZUIXIN.hex",
+    "MDK-ARM\\jpeg_complete.hex",
+    "MDK-ARM\\jpeg_complete.jpg",
+    "MDK-ARM\\jpeg_complete_decode.json",
+    "MDK-ARM\\jpeg_complete_preview.png",
+    "MDK-ARM\\jpeg_received.hex",
+    "MDK-ARM\\jpeg_received_bytes.txt",
+    "MDK-ARM\\jpeg_received_full.hex"
+  ],
+  "kept_locked_files": [],
+  "preserved": [
+    "user uvprojx/uvoptx edits",
+    "output/",
+    "tmp/",
+    "real Hardware samples",
+    "one fixed JPEG acceptance project and its image",
+    "test sources and regression reports"
+  ]
+}

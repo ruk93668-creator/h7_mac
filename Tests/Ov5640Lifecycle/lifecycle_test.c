@@ -121,3 +121,7 @@ int Lifecycle_TestRun(uint32_t id){
  if(id==29){before=writes;CHECK(App_CameraInit()==SYS_OK);CHECK(sensor_starts==2 && writes==before+1);CHECK(s_ov5640.base.state==DEVICE_STATE_RUNNING);}
  return 0;
 }
+
+//新增JPEG接口桩，仅为旧格式专项补齐链接，不改变原断言
+SysResult_t BSP_DCMI_StartJpegSnapshot(uint32_t *p,uint32_t n){return BSP_DCMI_StartSnapshot(p,n);}
+SysResult_t BSP_DCMI_ProcessJpeg(uint32_t *n){(void)n;return SYS_ERR_BUSY;}

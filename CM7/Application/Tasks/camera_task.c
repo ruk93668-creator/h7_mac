@@ -1,4 +1,5 @@
 #include "camera_task.h"
+#include "app_camera_jpeg.h"
 #include "app_events.h"
 #include "app_messages.h"
 #include "app_camera.h"
@@ -21,6 +22,7 @@ static StackType_t s_camera_stack[CAMERA_TASK_STACK_WORDS] __attribute__((aligne
 //保存唯一Camera任务句柄
 static TaskHandle_t s_camera_task;
 
+#if !APP_CAMERA_JPEG_TEST_ENABLED
 //记录采集是否已成功启动
 static bool s_camera_running;
 
@@ -51,6 +53,8 @@ static uint32_t s_camera_fps_tick;
 //保存统计窗口起点的完整帧数
 static uint32_t s_camera_fps_frames;
 
+#endif
+
 //记录任务状态和真实采集计数
 volatile CameraTaskDebug_t g_camera_task_debug;
 
@@ -60,8 +64,11 @@ static void CameraTask_Run(void *argument);
 //处理相机命令、Media进展和帧归还
 static void CameraTask_Process(uint32_t events);
 
+#if !APP_CAMERA_JPEG_TEST_ENABLED
 //重试提交控制回复和故障提示
 static void CameraTask_Reply(void);
+
+#endif
 
 SysResult_t CameraTask_Create(void)
 {
@@ -115,6 +122,16 @@ static void CameraTask_Run(void *argument)
 //处理相机命令、Media进展和帧归还
 static void CameraTask_Process(uint32_t events)
 {
+#if APP_CAMERA_JPEG_TEST_ENABLED
+    //独立验收仍等待BOOT屏障，并由唯一CameraTask持有资源
+    if (!App_MessagesIsOwner(RUNTIME_TARGET_CAMERA))
+        return;
+    if ((events & RUNTIME_EVENT_BOOT_READY) != 0U)
+        g_camera_task_debug.boot_seen = 1U;
+    if (g_camera_task_debug.boot_seen != 0U)
+        App_CameraJpegProcess();
+#else
+
     AppMessage_t command;
     CameraCaptureStats_t stats;
     SysResult_t result;
@@ -232,8 +249,10 @@ static void CameraTask_Process(uint32_t events)
         }
     }
     CameraTask_Reply();
+#endif
 }
 
+#if !APP_CAMERA_JPEG_TEST_ENABLED
 //重试提交控制回复和故障提示
 static void CameraTask_Reply(void)
 {
@@ -250,3 +269,4 @@ static void CameraTask_Reply(void)
             s_camera_fault_sent = true;
     }
 }
+#endif
