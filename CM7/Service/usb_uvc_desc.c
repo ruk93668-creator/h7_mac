@@ -273,7 +273,7 @@ SysResult_t USB_UVC_ValidateFSConfig(const VideoStreamConfig_t *config)
     if (config->camera.format == CAMERA_PIXEL_FORMAT_JPEG)
     {
         //单帧上限由APP传入，不能把可变长度JPEG按像素数计算
-        if (config->camera.width != 160U || config->camera.height != 120U)
+        if (!CameraConfig_IsJpegSizeSupported(&config->camera))
             return SYS_ERR_NOT_SUPPORTED;
         bytes = config->max_frame_bytes;
         if (bytes < 4U || bytes > 262140U)

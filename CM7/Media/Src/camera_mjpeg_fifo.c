@@ -173,11 +173,11 @@ SysResult_t CameraMjpegFifo_Start(const CameraConfig_t *config)
 {
     SysResult_t result;
 
-    //当前设备只验证160×120 JPEG，不能把预留容量当成格式支持
+    //只开放已接入的JPEG尺寸，接收容量不能代替格式校验
     if (config == NULL || config->width == 0U || config->height == 0U)
         return SYS_ERR_INVALID_ARG;
     if (config->format != CAMERA_PIXEL_FORMAT_JPEG ||
-        config->width != 160U || config->height != 120U)
+        !CameraConfig_IsJpegSizeSupported(config))
         return SYS_ERR_NOT_SUPPORTED;
     if (s_fifo.running || s_fifo.loaned)
         return SYS_ERR_BUSY;

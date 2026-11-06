@@ -46,6 +46,14 @@ static inline bool CameraConfig_IsVariableLength(CameraPixelFormat_t format)
     return format == CAMERA_PIXEL_FORMAT_JPEG;
 }
 
+//判断当前固件接入的JPEG尺寸，不表示已经完成对应实板验收
+static inline bool CameraConfig_IsJpegSizeSupported(const CameraConfig_t *config)
+{
+    return config != NULL &&
+        ((config->width == 160U && config->height == 120U) ||
+         (config->width == 320U && config->height == 240U));
+}
+
 //仅计算固定长度图像内存，JPEG返回不支持且不修改输出长度
 static inline SysResult_t CameraConfig_GetFrameSize(
     const CameraConfig_t *config,

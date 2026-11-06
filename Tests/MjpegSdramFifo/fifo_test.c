@@ -243,6 +243,16 @@ static void Run(unsigned id)
             mock_start_result = SYS_OK;
             assert(CameraMjpegFifo_Start(&config) == SYS_OK);
             break;
+        case 14:
+            CameraMjpegFifo_OnStopped();
+            config.width = 320U;
+            config.height = 240U;
+            assert(CameraMjpegFifo_Start(&config) == SYS_OK);
+            FeedBlock(true,true);
+
+            //160×120样本不能冒充320×240，SOF尺寸必须匹配配置
+            assert(!CameraMjpegFifo_GetFrame(&frame));
+            break;
         default: assert(0);
     }
     CheckOwnership();
@@ -304,8 +314,8 @@ int main(void)
         fputs("Cannot map isolated low-address test memory; tests NOT RUN\n",stderr);
         return 2;
     }
-    for (i=1U;i<=13U;i++) { Run(i);printf("FIFO-%02u PASS\n",i); }
+    for (i=1U;i<=14U;i++) { Run(i);printf("FIFO-%02u PASS\n",i); }
     PayloadCase();
-    puts("PAYLOAD-14 PASS");
+    puts("PAYLOAD-15 PASS");
     return 0;
 }

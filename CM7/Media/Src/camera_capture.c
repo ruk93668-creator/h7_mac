@@ -801,7 +801,7 @@ SysResult_t CameraCapture_ValidateStreamConfig(const CameraConfig_t *config)
     {
         if (config->width == 0U || config->height == 0U)
             return SYS_ERR_INVALID_ARG;
-        if (config->width != 160U || config->height != 120U)
+        if (!CameraConfig_IsJpegSizeSupported(config))
             return SYS_ERR_NOT_SUPPORTED;
         return SYS_OK;
     }

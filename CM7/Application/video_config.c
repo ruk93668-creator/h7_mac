@@ -21,8 +21,8 @@ static const VideoConfig_t s_default_config =
 {
     .camera =
     {
-        .width = 160U,
-        .height = 120U,
+        .width = APP_VIDEO_MJPEG_MODE ? 320U : 160U,
+        .height = APP_VIDEO_MJPEG_MODE ? 240U : 120U,
         .format = APP_VIDEO_MJPEG_MODE ? CAMERA_PIXEL_FORMAT_JPEG : CAMERA_PIXEL_FORMAT_YUV422
     },
     .output = APP_VIDEO_TEST_MODE ? VIDEO_OUTPUT_USB_TEST : VIDEO_OUTPUT_USB_UVC,
