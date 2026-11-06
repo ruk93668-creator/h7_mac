@@ -138,6 +138,10 @@ static SysResult_t Ov5640_MapPixelFormat(
 			*sensor_format = OV5640_YUV422;
 			break;
 
+		case CAMERA_PIXEL_FORMAT_JPEG:
+			*sensor_format = OV5640_JPEG;
+			break;
+
 		default:
 			return SYS_ERR_NOT_SUPPORTED;
 	}
@@ -298,7 +302,14 @@ SysResult_t Ov5640_ValidateConfig(const CameraConfig_t *config)
 {
     uint32_t format;
     uint32_t bytes;
-    SysResult_t result = CameraConfig_GetFrameSize(config, &bytes);
+    SysResult_t result;
+
+    if (config == NULL || config->width == 0U || config->height == 0U)
+        return SYS_ERR_INVALID_ARG;
+    if (config->format == CAMERA_PIXEL_FORMAT_JPEG)
+        return config->width == 160U && config->height == 120U ?
+            SYS_OK : SYS_ERR_NOT_SUPPORTED;
+    result = CameraConfig_GetFrameSize(config, &bytes);
 
     if (result != SYS_OK)
         return result;

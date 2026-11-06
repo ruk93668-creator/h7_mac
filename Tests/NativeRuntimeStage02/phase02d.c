@@ -157,3 +157,7 @@ int Stage02_TestRun(uint32_t id)
     g_native_observation[12]=s_camera_bridge.held;
     return result;
 }
+
+//旧格式专项不产生JPEG事件，新增接口显式返回不支持
+SysResult_t BSP_DCMI_StartJpegSnapshot(uint32_t *p,uint32_t n){(void)p;(void)n;return SYS_ERR_NOT_SUPPORTED;}
+SysResult_t BSP_DCMI_ProcessJpeg(uint32_t *n){(void)n;return SYS_ERR_NOT_SUPPORTED;}

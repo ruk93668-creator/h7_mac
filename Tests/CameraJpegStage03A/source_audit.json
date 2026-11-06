@@ -1,0 +1,83 @@
+{
+  "baseline": "c4bd0ad",
+  "protected_changes": [],
+  "functions": [
+    {
+      "file": "CM7/BSP/bsp_dcmi.c",
+      "function": "BSP_DCMI_StartContinuous",
+      "unchanged": true
+    },
+    {
+      "file": "CM7/BSP/bsp_dcmi.c",
+      "function": "BSP_DCMI_ReplaceTarget",
+      "unchanged": true
+    },
+    {
+      "file": "CM7/BSP/bsp_dcmi.c",
+      "function": "Dcmi_StreamTryPair",
+      "unchanged": true
+    },
+    {
+      "file": "CM7/BSP/bsp_dcmi.c",
+      "function": "Dcmi_StreamM0Complete",
+      "unchanged": true
+    },
+    {
+      "file": "CM7/BSP/bsp_dcmi.c",
+      "function": "Dcmi_StreamM1Complete",
+      "unchanged": true
+    },
+    {
+      "file": "CM7/BSP/bsp_dcmi.c",
+      "function": "Dcmi_CheckErrors",
+      "unchanged": true
+    },
+    {
+      "file": "CM7/Media/Src/camera_capture.c",
+      "function": "CameraStream_Rotate",
+      "unchanged": true
+    },
+    {
+      "file": "CM7/Media/Src/camera_capture.c",
+      "function": "CameraStream_GetFrame",
+      "unchanged": true
+    },
+    {
+      "file": "CM7/Media/Src/camera_capture.c",
+      "function": "CameraStream_ReleaseFrame",
+      "unchanged": true
+    },
+    {
+      "file": "CM7/Media/Src/camera_capture.c",
+      "function": "CameraStream_FindReplaceable",
+      "unchanged": true
+    },
+    {
+      "file": "CM7/Media/Src/camera_capture.c",
+      "function": "CameraStream_OwnershipValid",
+      "unchanged": true
+    },
+    {
+      "file": "CM7/Media/Src/camera_capture.c",
+      "function": "CameraCapture_Stop",
+      "unchanged": true
+    },
+    {
+      "file": "CM7/Device/Src/ov5640_device.c",
+      "function": "Ov5640_Configure",
+      "unchanged": true
+    },
+    {
+      "file": "CM7/Device/Src/ov5640_device.c",
+      "function": "Ov5640_Start",
+      "unchanged": true
+    },
+    {
+      "file": "CM7/Device/Src/ov5640_device.c",
+      "function": "Ov5640_Stop",
+      "unchanged": true
+    }
+  ],
+  "hardware_verified": false,
+  "scope_rechecked_after_eoi_fix": true
+}

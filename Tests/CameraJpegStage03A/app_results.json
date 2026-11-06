@@ -1,0 +1,82 @@
+{
+  "summary": {
+    "total": 8,
+    "passed": 8,
+    "failed": 0
+  },
+  "cases": [
+    {
+      "id": 0,
+      "name": "非Camera所有者拒绝",
+      "result": "PASS",
+      "failure_line": 0,
+      "emulator_error": null,
+      "unsafe_sensor_stops": 0,
+      "dma_before_sensor": 0
+    },
+    {
+      "id": 1,
+      "name": "配置失败不启动DMA",
+      "result": "PASS",
+      "failure_line": 0,
+      "emulator_error": null,
+      "unsafe_sensor_stops": 0,
+      "dma_before_sensor": 0
+    },
+    {
+      "id": 2,
+      "name": "只启动一次",
+      "result": "PASS",
+      "failure_line": 0,
+      "emulator_error": null,
+      "unsafe_sensor_stops": 0,
+      "dma_before_sensor": 0
+    },
+    {
+      "id": 3,
+      "name": "READY保持直到导出",
+      "result": "PASS",
+      "failure_line": 0,
+      "emulator_error": null,
+      "unsafe_sensor_stops": 0,
+      "dma_before_sensor": 0
+    },
+    {
+      "id": 4,
+      "name": "导出后释放停止",
+      "result": "PASS",
+      "failure_line": 0,
+      "emulator_error": null,
+      "unsafe_sensor_stops": 0,
+      "dma_before_sensor": 0
+    },
+    {
+      "id": 5,
+      "name": "传感器停止失败不伪造成功",
+      "result": "PASS",
+      "failure_line": 0,
+      "emulator_error": null,
+      "unsafe_sensor_stops": 0,
+      "dma_before_sensor": 0
+    },
+    {
+      "id": 6,
+      "name": "重复轮询不覆盖导出帧",
+      "result": "PASS",
+      "failure_line": 0,
+      "emulator_error": null,
+      "unsafe_sensor_stops": 0,
+      "dma_before_sensor": 0
+    },
+    {
+      "id": 7,
+      "name": "超时保留原错误",
+      "result": "PASS",
+      "failure_line": 0,
+      "emulator_error": null,
+      "unsafe_sensor_stops": 0,
+      "dma_before_sensor": 0
+    }
+  ],
+  "hardware_verified": false
+}

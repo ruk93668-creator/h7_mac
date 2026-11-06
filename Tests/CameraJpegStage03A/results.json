@@ -1,0 +1,73 @@
+{
+  "summary": {
+    "total": 7,
+    "passed": 7,
+    "failed": 0
+  },
+  "cases": [
+    {
+      "id": 0,
+      "name": "JPEG配置校验",
+      "result": "PASS",
+      "failure_line": 0,
+      "emulator_error": null,
+      "unsafe_sensor_stops": 0,
+      "dma_before_sensor": 0
+    },
+    {
+      "id": 1,
+      "name": "非法分辨率拒绝",
+      "result": "PASS",
+      "failure_line": 0,
+      "emulator_error": null,
+      "unsafe_sensor_stops": 0,
+      "dma_before_sensor": 0
+    },
+    {
+      "id": 2,
+      "name": "JPEG寄存器IO失败",
+      "result": "PASS",
+      "failure_line": 0,
+      "emulator_error": null,
+      "unsafe_sensor_stops": 0,
+      "dma_before_sensor": 0
+    },
+    {
+      "id": 3,
+      "name": "错误芯片ID",
+      "result": "PASS",
+      "failure_line": 0,
+      "emulator_error": null,
+      "unsafe_sensor_stops": 0,
+      "dma_before_sensor": 0
+    },
+    {
+      "id": 4,
+      "name": "JPEG表及Device启停",
+      "result": "PASS",
+      "failure_line": 0,
+      "emulator_error": null,
+      "unsafe_sensor_stops": 0,
+      "dma_before_sensor": 0
+    },
+    {
+      "id": 5,
+      "name": "JPEG单帧应用和启动顺序",
+      "result": "PASS",
+      "failure_line": 0,
+      "emulator_error": null,
+      "unsafe_sensor_stops": 0,
+      "dma_before_sensor": 0
+    },
+    {
+      "id": 6,
+      "name": "运行中禁止配置",
+      "result": "PASS",
+      "failure_line": 0,
+      "emulator_error": null,
+      "unsafe_sensor_stops": 0,
+      "dma_before_sensor": 0
+    }
+  ],
+  "hardware_verified": false
+}

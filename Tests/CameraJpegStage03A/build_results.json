@@ -1,0 +1,70 @@
+[
+  {
+    "variant": "cm7_test",
+    "command": [
+      "D:/32/UV4/UV4.exe",
+      "-j0",
+      "-r",
+      "D:\\32\\STM32H7\\h7_mac\\MDK-ARM\\h7_mac_jpeg_stage03a_cm7_test_verify.uvprojx",
+      "-t",
+      "h7_mac_CM7",
+      "-o",
+      "D:\\32\\STM32H7\\h7_mac\\Tests\\CameraJpegStage03A\\cm7_test_rebuild.log"
+    ],
+    "exit": 0,
+    "errors": 0,
+    "warnings": 0,
+    "pass": true
+  },
+  {
+    "variant": "cm7_jpeg",
+    "command": [
+      "D:/32/UV4/UV4.exe",
+      "-j0",
+      "-r",
+      "D:\\32\\STM32H7\\h7_mac\\MDK-ARM\\h7_mac_jpeg_stage03a_cm7_jpeg_verify.uvprojx",
+      "-t",
+      "h7_mac_CM7",
+      "-o",
+      "D:\\32\\STM32H7\\h7_mac\\Tests\\CameraJpegStage03A\\cm7_jpeg_rebuild.log"
+    ],
+    "exit": 0,
+    "errors": 0,
+    "warnings": 0,
+    "pass": true
+  },
+  {
+    "variant": "cm4",
+    "command": [
+      "D:/32/UV4/UV4.exe",
+      "-j0",
+      "-r",
+      "D:\\32\\STM32H7\\h7_mac\\MDK-ARM\\h7_mac_jpeg_stage03a_cm4_verify.uvprojx",
+      "-t",
+      "h7_mac_CM4",
+      "-o",
+      "D:\\32\\STM32H7\\h7_mac\\Tests\\CameraJpegStage03A\\cm4_rebuild.log"
+    ],
+    "exit": 0,
+    "errors": 0,
+    "warnings": 0,
+    "pass": true
+  },
+  {
+    "variant": "cm7_uvc",
+    "command": [
+      "D:/32/UV4/UV4.exe",
+      "-j0",
+      "-r",
+      "D:\\32\\STM32H7\\h7_mac\\MDK-ARM\\h7_mac_jpeg_stage03a_cm7_uvc_verify.uvprojx",
+      "-t",
+      "h7_mac_CM7",
+      "-o",
+      "D:\\32\\STM32H7\\h7_mac\\Tests\\CameraJpegStage03A\\cm7_uvc_rebuild.log"
+    ],
+    "exit": 0,
+    "errors": 0,
+    "warnings": 0,
+    "pass": true
+  }
+]

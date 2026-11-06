@@ -33,7 +33,9 @@ SysResult_t App_CameraConfigure(const CameraConfig_t *config)
     if (result != SYS_OK)
         return result;
 
-    result = CameraCapture_ValidateStreamConfig(config);
+    //JPEG只交给Snapshot接收，不能用固定长度Stream校验推算容量
+    result = CameraConfig_IsVariableLength(config->format) ?
+        SYS_OK : CameraCapture_ValidateStreamConfig(config);
     if (result != SYS_OK)
         return result;
 

@@ -11,9 +11,10 @@
 //事件回调只作唤醒，不能在其中执行停止或释放缓冲区
 //回调可能来自IRQ或调用中的短临界区
 #define BSP_DCMI_NOTIFY_ERROR (1UL << 0)
+#define BSP_DCMI_NOTIFY_PROGRESS (1UL << 1)
 typedef void (*BspDcmiEventCallback_t)(uint32_t events, void *context);
 
-//绑定静态采集异常通知接收端
+//绑定静态采集进展与异常通知接收端
 SysResult_t BSP_DCMI_SetEventCallback(BspDcmiEventCallback_t callback, void *context);
 
 //DMA双缓冲硬件目标
@@ -47,6 +48,14 @@ SysResult_t BSP_DCMI_StartSnapshot(
 );
 
 //主循环且全局中断开启时调用，停止并恢复HAL状态，保留已有事件
+//Camera任务启动JPEG单帧，容量为1到65535个Word，调用方保证DMA可访问
+SysResult_t BSP_DCMI_StartJpegSnapshot(uint32_t *buffer, uint32_t capacity_words);
+
+//Camera任务推进FIFO排空与DMA停止，BUSY表示未完成，其他错误须Stop
+//成功表示硬件已停止并填写已写入字节数，包含JPEG尾部Word填充
+SysResult_t BSP_DCMI_ProcessJpeg(uint32_t *received_bytes);
+
+//任务中全局中断开启时调用，停止并恢复HAL状态，不清除已记录事件
 SysResult_t BSP_DCMI_Stop(void);
 
 //原子获取并清除事件，false表示无事件或空指针

@@ -1,0 +1,17 @@
+{
+  "source": "user-exported STM32H747 SDRAM through Keil _RBYTE",
+  "received_bytes": 1104,
+  "jpeg_size_bytes": 1085,
+  "trailing_bytes": 19,
+  "EOI_offsets": [
+    1083,
+    1095
+  ],
+  "width": 160,
+  "height": 120,
+  "decoded": true,
+  "raw_sha256": "e3c0534672b1469b33d6c2a53d31db255005a82c12f3dffee57510e6f60e90a3",
+  "jpeg_sha256": "00dbaf685cce488a7ee607c42cf77b254742ef387c8d73e419453313fcd0fcb4",
+  "capture_length_and_dump_same_run_not_yet_confirmed": true,
+  "firmware_validation_still_failed": true
+}

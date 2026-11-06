@@ -2,15 +2,17 @@
 #define CAMERA_CONFIG_H
 
 #include <stdint.h>
+#include <stdbool.h>
 #include <stddef.h>
 #include "sys_result.h"
 
-//固定长度图像格式，开机时选择
+//图像格式，开机时选择
 typedef enum
 {
 	CAMERA_PIXEL_FORMAT_Y8 = 0U, //每像素1字节灰度
 	CAMERA_PIXEL_FORMAT_RGB565, //每像素2字节，低字节在前
-	CAMERA_PIXEL_FORMAT_YUV422  //Y0 U0 Y1 V0，两个像素4字节
+	CAMERA_PIXEL_FORMAT_YUV422, //Y0 U0 Y1 V0，两个像素4字节
+    CAMERA_PIXEL_FORMAT_JPEG   //可变长度压缩数据，不按像素数计算帧长
 } CameraPixelFormat_t;
 
 //摄像头输出配置，由Application统一选择
@@ -34,7 +36,13 @@ typedef struct
 
 } CameraFrame_t;
 
-//仅计算图像内存长度，不代表传感器或输出支持该配置
+//判断是否为可变长度格式，不表示当前采集模式已支持
+static inline bool CameraConfig_IsVariableLength(CameraPixelFormat_t format)
+{
+    return format == CAMERA_PIXEL_FORMAT_JPEG;
+}
+
+//仅计算固定长度图像内存，JPEG返回不支持且不修改输出长度
 static inline SysResult_t CameraConfig_GetFrameSize(
     const CameraConfig_t *config,
     uint32_t *bytes)
@@ -54,6 +62,7 @@ static inline SysResult_t CameraConfig_GetFrameSize(
                 return SYS_ERR_INVALID_ARG;
             bpp = 2U;
             break;
+        case CAMERA_PIXEL_FORMAT_JPEG: return SYS_ERR_NOT_SUPPORTED;
         default: return SYS_ERR_INVALID_ARG;
     }
 

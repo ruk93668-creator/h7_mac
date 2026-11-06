@@ -1,0 +1,41 @@
+[
+  {
+    "suite": "Descriptors",
+    "command": [
+      "python",
+      "Tests/UsbUvcDescriptors/run_tests.py"
+    ],
+    "exit": 0,
+    "summary": {
+      "total": 40,
+      "passed": 40,
+      "failures": 0,
+      "errors": 0
+    }
+  },
+  {
+    "suite": "Strings",
+    "command": [
+      "python",
+      "Tests/UsbUvcDescriptors/run_string_tests.py"
+    ],
+    "exit": 0,
+    "summary": {
+      "total": 8,
+      "passed": 8,
+      "failed": 0
+    }
+  },
+  {
+    "suite": "Ep0Irq",
+    "command": [
+      "python",
+      "Tests/Ep0IrqRace/run_race.py"
+    ],
+    "exit": 0,
+    "summary": {
+      "total": 4,
+      "passed": 4
+    }
+  }
+]

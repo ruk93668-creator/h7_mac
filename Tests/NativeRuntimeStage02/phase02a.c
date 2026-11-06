@@ -43,3 +43,7 @@ int Stage02_TestRun(uint32_t id)
     if(id==8)return 0;
     irq_mask=1;CHECK(CameraCapture_GetStats(&stats)==SYS_OK);CHECK(irq_mask==1);return 0;
 }
+
+//旧格式专项不产生JPEG事件，新增接口显式返回不支持
+SysResult_t BSP_DCMI_StartJpegSnapshot(uint32_t *p,uint32_t n){(void)p;(void)n;return SYS_ERR_NOT_SUPPORTED;}
+SysResult_t BSP_DCMI_ProcessJpeg(uint32_t *n){(void)n;return SYS_ERR_NOT_SUPPORTED;}
