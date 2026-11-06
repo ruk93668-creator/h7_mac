@@ -1,0 +1,27 @@
+Traceback (most recent call last):
+
+  File "D:\32\STM32H7\h7_mac\Tests\VideoConfig\run_tests.py", line 46, in <module>
+
+    run(["D:/32/ARM/ARMCC/Bin/armlink.exe", *objects, "--entry", "Video_TestRun", "--scatter",
+
+  File "D:\32\STM32H7\h7_mac\Tests\VideoConfig\run_tests.py", line 30, in run
+
+    raise RuntimeError(output)
+
+RuntimeError: Error: L6218E: Undefined symbol App_MessagesIsOwner (referred from video_test.o).
+
+
+Error: L6218E: Undefined symbol App_MessagesReceive (referred from video_test.o).
+
+
+Error: L6218E: Undefined symbol App_MessagesSend (referred from video_test.o).
+
+
+Error: L6218E: Undefined symbol App_UvcBridgeProcess (referred from video_test.o).
+
+
+Finished: 0 information, 0 warning and 4 error messages.
+
+
+
+

@@ -1,7 +1,7 @@
 {
   "summary": {
-    "total": 41,
-    "passed": 41,
+    "total": 42,
+    "passed": 42,
     "failed": 0
   },
   "cases": [
@@ -247,6 +247,12 @@
     },
     {
       "id": 40,
+      "pass": true,
+      "failure_line": 0,
+      "error": null
+    },
+    {
+      "id": 41,
       "pass": true,
       "failure_line": 0,
       "error": null

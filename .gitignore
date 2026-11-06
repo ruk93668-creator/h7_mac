@@ -48,3 +48,7 @@ Thumbs.db
 /MDK-ARM/h7_mac_CM7_JPEG/
 /MDK-ARM/h7_mac_CM7_JPEG_RETEST/
 /MDK-ARM/h7_mac_STAGE03A_VERIFY_*/
+
+/MDK-ARM/h7_mac_stage03b.uvprojx
+/MDK-ARM/h7_mac_stage03b.uvoptx
+/MDK-ARM/h7_mac_stage03b.uvguix.*

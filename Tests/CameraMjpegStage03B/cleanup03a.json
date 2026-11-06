@@ -1,0 +1,16 @@
+{
+  "deleted_ignored_untracked_entries": [
+    "MDK-ARM/h7_mac_jpeg_stage03a_acceptance.uvguix.29062",
+    "MDK-ARM/h7_mac_jpeg_stage03a_cm7_jpeg_verify.uvguix.29062",
+    "MDK-ARM/h7_mac_jpeg_stage03a_cm7_jpeg_verify.uvprojx",
+    "MDK-ARM/h7_mac_jpeg_stage03a_retest.uvguix.29062",
+    "MDK-ARM/h7_mac_STAGE03A_VERIFY_cm7_jpeg"
+  ],
+  "preserved": [
+    "MDK-ARM/h7_mac.uvprojx",
+    "MDK-ARM/h7_mac.uvoptx",
+    "MDK-ARM/h7_mac_stage03b.uvprojx",
+    "Tests/CameraJpegStage03A/Hardware",
+    "output/build_stage03b"
+  ]
+}

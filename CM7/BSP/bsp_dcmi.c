@@ -696,6 +696,10 @@ SysResult_t BSP_DCMI_ProcessJpeg(uint32_t *received_bytes)
         __HAL_DMA_DISABLE_IT(&s_dcmi_dma, DMA_IT_TC | DMA_IT_HT);
         __HAL_DMA_DISABLE(&s_dcmi_dma);
         __set_PRIMASK(mask);
+
+        //通知任务继续确认EN清零，正常收尾不固定等待20ms轮询
+        if (s_dcmi_event_callback != NULL)
+            s_dcmi_event_callback(BSP_DCMI_NOTIFY_PROGRESS, s_dcmi_event_context);
         return SYS_ERR_BUSY;
     }
     if ((DMA1_Stream0->CR & DMA_SxCR_EN) != 0U)

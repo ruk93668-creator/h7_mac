@@ -1,10 +1,12 @@
 //真实BSP与HAL，硬件寄存器使用Unicorn内存模型
 #include "../DcmiReplaceTarget/dcmi_test.c"
 static SysResult_t AcceptFrame(BspDcmiTarget_t t,void *p){(void)t;(void)p;return SYS_OK;}
+static uint32_t progress_count;
+static void JpegProgress(uint32_t events,void *context){(void)context;if(events&BSP_DCMI_NOTIFY_PROGRESS)progress_count++;}
 int Stage02_TestRun(uint32_t id)
 {
  uint32_t bytes=0x12345678U;
- Seed();EQ(BSP_DCMI_Init(),SYS_OK);
+ Seed();if(id==41)EQ(BSP_DCMI_SetEventCallback(JpegProgress,NULL),SYS_OK);EQ(BSP_DCMI_Init(),SYS_OK);
  if(id==0){EQ(BSP_DCMI_StartJpegSnapshot(NULL,128),SYS_ERR_INVALID_ARG);EQ(BSP_DCMI_StartJpegSnapshot((uint32_t *)0xD0000401,128),SYS_ERR_INVALID_ARG);return 0;}
  if(id==1){EQ(BSP_DCMI_StartJpegSnapshot((uint32_t *)0xD0000400,0),SYS_ERR_INVALID_ARG);EQ(BSP_DCMI_StartJpegSnapshot((uint32_t *)0xD0000400,65536),SYS_ERR_INVALID_ARG);return 0;}
  if(id==2){mock_ipsr=16;EQ(BSP_DCMI_StartJpegSnapshot((uint32_t *)0xD0000400,128),SYS_ERR_INVALID_STATE);return 0;}
@@ -52,6 +54,7 @@ int Stage02_TestRun(uint32_t id)
  DCMI->CR&=~DCMI_CR_CAPTURE;
  if(id==13){*((volatile uint32_t *)&DCMI->SR)=DCMI_SR_FNE;EQ(BSP_DCMI_ProcessJpeg(&bytes),SYS_ERR_BUSY);EQ(s_jpeg.disabling,false);return 0;}
  EQ(BSP_DCMI_ProcessJpeg(&bytes),SYS_ERR_BUSY);EQ(bytes,0x12345678U);
+ if(id==41)EQ(progress_count,2);
  if(id==29){
   //软件关闭Stream产生TCIF，走真实HAL IRQ，不得成为NO_RESOURCE
   DMA1->LISR=DMA_FLAG_TCIF0_4;DMA1_Stream0_IRQHandler();

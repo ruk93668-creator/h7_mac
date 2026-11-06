@@ -40,6 +40,9 @@ typedef struct
     uint32_t next_request;
     bool request_sent;
     bool return_sent;
+
+    //请求已入队后，停止时也必须取得Camera的取消确认
+    bool cancel_sent;
     AppMessage_t lease;
 } BridgeUsb_t;
 
@@ -87,13 +90,16 @@ SysResult_t App_UvcBridgeConfigure(const CameraConfig_t *config)
 
     if (s_bridge_configured)
         return SYS_ERR_INVALID_STATE;
-    result = CameraConfig_GetFrameSize(config, &bytes);
+    if (config == NULL || config->width == 0U || config->height == 0U)
+        return SYS_ERR_INVALID_ARG;
+    result = config->format == CAMERA_PIXEL_FORMAT_JPEG ?
+        SYS_OK : CameraConfig_GetFrameSize(config, &bytes);
     if (result != SYS_OK)
         return result;
-    if (config->format != CAMERA_PIXEL_FORMAT_YUV422)
+    if (config->format != CAMERA_PIXEL_FORMAT_YUV422 && config->format != CAMERA_PIXEL_FORMAT_JPEG)
         return SYS_ERR_NOT_SUPPORTED;
     s_bridge_config = *config;
-    s_bridge_frame_bytes = bytes;
+    s_bridge_frame_bytes = config->format == CAMERA_PIXEL_FORMAT_JPEG ? 0U : bytes;
     s_bridge_configured = true;
     return SYS_OK;
 }
@@ -153,6 +159,24 @@ void App_UvcBridgeCameraProcess(bool enabled)
             }
             s_camera_bridge.request_id = message.command_id;
             s_camera_bridge.request_pending = true;
+        }
+        else if (message.type == APP_MESSAGE_FRAME_CANCEL_REQUEST)
+        {
+            //只取消匹配的待决请求，已有Offer/租借仍按Return/ACK归还
+            if (s_camera_bridge.request_pending && !s_camera_bridge.held &&
+                message.command_id == s_camera_bridge.request_id)
+            {
+                memset(&s_camera_bridge.offer, 0, sizeof(s_camera_bridge.offer));
+                s_camera_bridge.offer.type = APP_MESSAGE_FRAME_OFFER;
+                s_camera_bridge.offer.source = RUNTIME_TARGET_CAMERA;
+                s_camera_bridge.offer.command_id = message.command_id;
+                s_camera_bridge.offer.stream_epoch = s_camera_bridge.epoch;
+                s_camera_bridge.offer.result = SYS_ERR_INVALID_STATE;
+                s_camera_bridge.request_pending = false;
+                s_camera_bridge.offer_pending = true;
+                if (!Bridge_CameraFlush())
+                    return;
+            }
         }
         else if (message.type == APP_MESSAGE_FRAME_RETURN)
         {
@@ -276,7 +300,9 @@ void App_UvcBridgeUsbProcess(bool enabled)
         CameraFrame_t *frame = &s_usb_bridge.lease.frame;
         if (!enabled || frame->data == NULL || frame->width != s_bridge_config.width ||
             frame->height != s_bridge_config.height || frame->format != s_bridge_config.format ||
-            frame->size_bytes != s_bridge_frame_bytes)
+            frame->size_bytes == 0U ||
+            (s_bridge_config.format != CAMERA_PIXEL_FORMAT_JPEG &&
+             frame->size_bytes != s_bridge_frame_bytes))
             result = SYS_ERR_INVALID_ARG;
         else
             result = USB_UVC_SubmitFrame(frame->data, frame->size_bytes);
@@ -312,7 +338,19 @@ void App_UvcBridgeUsbProcess(bool enabled)
         s_usb_bridge.lease.source = RUNTIME_TARGET_USB;
         s_usb_bridge.lease.command_id = ++s_usb_bridge.next_request;
         s_usb_bridge.request_sent = false;
+        s_usb_bridge.cancel_sent = false;
         s_usb_bridge.state = BRIDGE_USB_REQUEST;
+    }
+    if (s_usb_bridge.state == BRIDGE_USB_REQUEST && s_usb_bridge.request_sent &&
+        !enabled && !s_usb_bridge.cancel_sent)
+    {
+        //队列满时保留REQUEST并重试，不能假定Camera尚未接受请求
+        message = s_usb_bridge.lease;
+        message.type = APP_MESSAGE_FRAME_CANCEL_REQUEST;
+        if (App_MessagesSend(APP_CHANNEL_TO_CAMERA, &message) == SYS_OK)
+            s_usb_bridge.cancel_sent = true;
+        else
+            g_bridge_debug.usb_queue_retries++;
     }
     if (s_usb_bridge.state == BRIDGE_USB_REQUEST && !s_usb_bridge.request_sent)
     {
@@ -420,6 +458,7 @@ static SysResult_t App_UvcBridgePrepareOutput(void)
     {
         stream.camera = config->camera;
         stream.fps = config->output_fps;
+        stream.max_frame_bytes = config->output_max_frame_bytes;
         result = USB_UVC_ValidateConfig(&stream);
         if (result != SYS_OK)
             return result;

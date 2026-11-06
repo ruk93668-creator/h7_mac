@@ -1,0 +1,52 @@
+[
+  {
+    "command": "D:/32/ARM/ARMCC/Bin/armcc.exe --vsn",
+    "exit": 0,
+    "output": "Product: MDK Plus 5.32\r\nComponent: ARM Compiler 5.06 update 7 (build 960)\r\nTool: armcc [4d365d]\r\nFor support see http://www.arm.com/support\r\nSoftware supplied by: ARM Limited\r\n"
+  },
+  {
+    "command": "D:/32/ARM/ARMCC/Bin/armcc.exe --cpu Cortex-M7 --c99 -O0 -DSTM32H747xx -DCORE_CM7 -DUSE_HAL_DRIVER --preinclude D:\\32\\STM32H7\\h7_mac\\CM7\\BSP\\bsp_usb_hal_config.h -I D:\\32\\STM32H7\\h7_mac\\CM7\\Core\\Inc -I D:\\32\\STM32H7\\h7_mac\\Drivers\\STM32H7xx_HAL_Driver\\Inc -I D:\\32\\STM32H7\\h7_mac\\Drivers\\CMSIS\\Include -I D:\\32\\STM32H7\\h7_mac\\Drivers\\CMSIS\\Device\\ST\\STM32H7xx\\Include -I D:\\32\\STM32H7\\h7_mac\\CM7\\Application -I D:\\32\\STM32H7\\h7_mac\\CM7\\Application\\Tasks -I D:\\32\\STM32H7\\h7_mac\\Common\\Inc -I D:\\32\\STM32H7\\h7_mac\\CM7\\Media\\Inc -I D:\\32\\STM32H7\\h7_mac\\CM7\\BSP -I D:\\32\\STM32H7\\h7_mac\\CM7\\Platform -I D:\\32\\STM32H7\\h7_mac\\CM7\\Service -I D:\\32\\STM32H7\\h7_mac\\CM7\\Framework -I D:\\32\\STM32H7\\h7_mac\\Middlewares\\ST\\STM32_USB_Device_Library\\Core\\Inc -c D:\\32\\STM32H7\\h7_mac\\Tests\\CameraMjpegStage03B\\usb_test.c -o D:\\32\\STM32H7\\h7_mac\\Tests\\CameraMjpegStage03B\\usb_test_usb_test.o",
+    "exit": 0,
+    "output": ""
+  },
+  {
+    "command": "D:/32/ARM/ARMCC/Bin/armcc.exe --cpu Cortex-M7 --c99 -O0 -DSTM32H747xx -DCORE_CM7 -DUSE_HAL_DRIVER --preinclude D:\\32\\STM32H7\\h7_mac\\CM7\\BSP\\bsp_usb_hal_config.h -I D:\\32\\STM32H7\\h7_mac\\CM7\\Core\\Inc -I D:\\32\\STM32H7\\h7_mac\\Drivers\\STM32H7xx_HAL_Driver\\Inc -I D:\\32\\STM32H7\\h7_mac\\Drivers\\CMSIS\\Include -I D:\\32\\STM32H7\\h7_mac\\Drivers\\CMSIS\\Device\\ST\\STM32H7xx\\Include -I D:\\32\\STM32H7\\h7_mac\\CM7\\Application -I D:\\32\\STM32H7\\h7_mac\\CM7\\Application\\Tasks -I D:\\32\\STM32H7\\h7_mac\\Common\\Inc -I D:\\32\\STM32H7\\h7_mac\\CM7\\Media\\Inc -I D:\\32\\STM32H7\\h7_mac\\CM7\\BSP -I D:\\32\\STM32H7\\h7_mac\\CM7\\Platform -I D:\\32\\STM32H7\\h7_mac\\CM7\\Service -I D:\\32\\STM32H7\\h7_mac\\CM7\\Framework -I D:\\32\\STM32H7\\h7_mac\\Middlewares\\ST\\STM32_USB_Device_Library\\Core\\Inc -c D:\\32\\STM32H7\\h7_mac\\CM7\\Service\\usb_uvc_desc.c -o D:\\32\\STM32H7\\h7_mac\\Tests\\CameraMjpegStage03B\\usb_test_usb_uvc_desc.o",
+    "exit": 0,
+    "output": ""
+  },
+  {
+    "command": "D:/32/ARM/ARMCC/Bin/armcc.exe --cpu Cortex-M7 --c99 -O0 -DSTM32H747xx -DCORE_CM7 -DUSE_HAL_DRIVER --preinclude D:\\32\\STM32H7\\h7_mac\\CM7\\BSP\\bsp_usb_hal_config.h -I D:\\32\\STM32H7\\h7_mac\\CM7\\Core\\Inc -I D:\\32\\STM32H7\\h7_mac\\Drivers\\STM32H7xx_HAL_Driver\\Inc -I D:\\32\\STM32H7\\h7_mac\\Drivers\\CMSIS\\Include -I D:\\32\\STM32H7\\h7_mac\\Drivers\\CMSIS\\Device\\ST\\STM32H7xx\\Include -I D:\\32\\STM32H7\\h7_mac\\CM7\\Application -I D:\\32\\STM32H7\\h7_mac\\CM7\\Application\\Tasks -I D:\\32\\STM32H7\\h7_mac\\Common\\Inc -I D:\\32\\STM32H7\\h7_mac\\CM7\\Media\\Inc -I D:\\32\\STM32H7\\h7_mac\\CM7\\BSP -I D:\\32\\STM32H7\\h7_mac\\CM7\\Platform -I D:\\32\\STM32H7\\h7_mac\\CM7\\Service -I D:\\32\\STM32H7\\h7_mac\\CM7\\Framework -I D:\\32\\STM32H7\\h7_mac\\Middlewares\\ST\\STM32_USB_Device_Library\\Core\\Inc -c D:\\32\\STM32H7\\h7_mac\\CM7\\Service\\usb_uvc_payload.c -o D:\\32\\STM32H7\\h7_mac\\Tests\\CameraMjpegStage03B\\usb_test_usb_uvc_payload.o",
+    "exit": 0,
+    "output": ""
+  },
+  {
+    "command": "D:/32/ARM/ARMCC/Bin/armcc.exe --cpu Cortex-M7 --c99 -O0 -DSTM32H747xx -DCORE_CM7 -DUSE_HAL_DRIVER --preinclude D:\\32\\STM32H7\\h7_mac\\CM7\\BSP\\bsp_usb_hal_config.h -I D:\\32\\STM32H7\\h7_mac\\CM7\\Core\\Inc -I D:\\32\\STM32H7\\h7_mac\\Drivers\\STM32H7xx_HAL_Driver\\Inc -I D:\\32\\STM32H7\\h7_mac\\Drivers\\CMSIS\\Include -I D:\\32\\STM32H7\\h7_mac\\Drivers\\CMSIS\\Device\\ST\\STM32H7xx\\Include -I D:\\32\\STM32H7\\h7_mac\\CM7\\Application -I D:\\32\\STM32H7\\h7_mac\\CM7\\Application\\Tasks -I D:\\32\\STM32H7\\h7_mac\\Common\\Inc -I D:\\32\\STM32H7\\h7_mac\\CM7\\Media\\Inc -I D:\\32\\STM32H7\\h7_mac\\CM7\\BSP -I D:\\32\\STM32H7\\h7_mac\\CM7\\Platform -I D:\\32\\STM32H7\\h7_mac\\CM7\\Service -I D:\\32\\STM32H7\\h7_mac\\CM7\\Framework -I D:\\32\\STM32H7\\h7_mac\\Middlewares\\ST\\STM32_USB_Device_Library\\Core\\Inc -c D:\\32\\STM32H7\\h7_mac\\Middlewares\\ST\\STM32_USB_Device_Library\\Core\\Src\\usbd_core.c -o D:\\32\\STM32H7\\h7_mac\\Tests\\CameraMjpegStage03B\\usb_test_usbd_core.o",
+    "exit": 0,
+    "output": ""
+  },
+  {
+    "command": "D:/32/ARM/ARMCC/Bin/armcc.exe --cpu Cortex-M7 --c99 -O0 -DSTM32H747xx -DCORE_CM7 -DUSE_HAL_DRIVER --preinclude D:\\32\\STM32H7\\h7_mac\\CM7\\BSP\\bsp_usb_hal_config.h -I D:\\32\\STM32H7\\h7_mac\\CM7\\Core\\Inc -I D:\\32\\STM32H7\\h7_mac\\Drivers\\STM32H7xx_HAL_Driver\\Inc -I D:\\32\\STM32H7\\h7_mac\\Drivers\\CMSIS\\Include -I D:\\32\\STM32H7\\h7_mac\\Drivers\\CMSIS\\Device\\ST\\STM32H7xx\\Include -I D:\\32\\STM32H7\\h7_mac\\CM7\\Application -I D:\\32\\STM32H7\\h7_mac\\CM7\\Application\\Tasks -I D:\\32\\STM32H7\\h7_mac\\Common\\Inc -I D:\\32\\STM32H7\\h7_mac\\CM7\\Media\\Inc -I D:\\32\\STM32H7\\h7_mac\\CM7\\BSP -I D:\\32\\STM32H7\\h7_mac\\CM7\\Platform -I D:\\32\\STM32H7\\h7_mac\\CM7\\Service -I D:\\32\\STM32H7\\h7_mac\\CM7\\Framework -I D:\\32\\STM32H7\\h7_mac\\Middlewares\\ST\\STM32_USB_Device_Library\\Core\\Inc -c D:\\32\\STM32H7\\h7_mac\\Middlewares\\ST\\STM32_USB_Device_Library\\Core\\Src\\usbd_ctlreq.c -o D:\\32\\STM32H7\\h7_mac\\Tests\\CameraMjpegStage03B\\usb_test_usbd_ctlreq.o",
+    "exit": 0,
+    "output": ""
+  },
+  {
+    "command": "D:/32/ARM/ARMCC/Bin/armcc.exe --cpu Cortex-M7 --c99 -O0 -DSTM32H747xx -DCORE_CM7 -DUSE_HAL_DRIVER --preinclude D:\\32\\STM32H7\\h7_mac\\CM7\\BSP\\bsp_usb_hal_config.h -I D:\\32\\STM32H7\\h7_mac\\CM7\\Core\\Inc -I D:\\32\\STM32H7\\h7_mac\\Drivers\\STM32H7xx_HAL_Driver\\Inc -I D:\\32\\STM32H7\\h7_mac\\Drivers\\CMSIS\\Include -I D:\\32\\STM32H7\\h7_mac\\Drivers\\CMSIS\\Device\\ST\\STM32H7xx\\Include -I D:\\32\\STM32H7\\h7_mac\\CM7\\Application -I D:\\32\\STM32H7\\h7_mac\\CM7\\Application\\Tasks -I D:\\32\\STM32H7\\h7_mac\\Common\\Inc -I D:\\32\\STM32H7\\h7_mac\\CM7\\Media\\Inc -I D:\\32\\STM32H7\\h7_mac\\CM7\\BSP -I D:\\32\\STM32H7\\h7_mac\\CM7\\Platform -I D:\\32\\STM32H7\\h7_mac\\CM7\\Service -I D:\\32\\STM32H7\\h7_mac\\CM7\\Framework -I D:\\32\\STM32H7\\h7_mac\\Middlewares\\ST\\STM32_USB_Device_Library\\Core\\Inc -c D:\\32\\STM32H7\\h7_mac\\Middlewares\\ST\\STM32_USB_Device_Library\\Core\\Src\\usbd_ioreq.c -o D:\\32\\STM32H7\\h7_mac\\Tests\\CameraMjpegStage03B\\usb_test_usbd_ioreq.o",
+    "exit": 0,
+    "output": ""
+  },
+  {
+    "command": "D:/32/ARM/ARMCC/Bin/armcc.exe --cpu Cortex-M7 --c99 -O0 -DSTM32H747xx -DCORE_CM7 -DUSE_HAL_DRIVER --preinclude D:\\32\\STM32H7\\h7_mac\\CM7\\BSP\\bsp_usb_hal_config.h -I D:\\32\\STM32H7\\h7_mac\\CM7\\Core\\Inc -I D:\\32\\STM32H7\\h7_mac\\Drivers\\STM32H7xx_HAL_Driver\\Inc -I D:\\32\\STM32H7\\h7_mac\\Drivers\\CMSIS\\Include -I D:\\32\\STM32H7\\h7_mac\\Drivers\\CMSIS\\Device\\ST\\STM32H7xx\\Include -I D:\\32\\STM32H7\\h7_mac\\CM7\\Application -I D:\\32\\STM32H7\\h7_mac\\CM7\\Application\\Tasks -I D:\\32\\STM32H7\\h7_mac\\Common\\Inc -I D:\\32\\STM32H7\\h7_mac\\CM7\\Media\\Inc -I D:\\32\\STM32H7\\h7_mac\\CM7\\BSP -I D:\\32\\STM32H7\\h7_mac\\CM7\\Platform -I D:\\32\\STM32H7\\h7_mac\\CM7\\Service -I D:\\32\\STM32H7\\h7_mac\\CM7\\Framework -I D:\\32\\STM32H7\\h7_mac\\Middlewares\\ST\\STM32_USB_Device_Library\\Core\\Inc -DHAL_PCD_ActivateRemoteWakeup=Stream_HAL_PCD_ActivateRemoteWakeup -DHAL_PCD_DeActivateRemoteWakeup=Stream_HAL_PCD_DeActivateRemoteWakeup -DHAL_PCD_DeInit=Stream_HAL_PCD_DeInit -DHAL_PCD_DevConnect=Stream_HAL_PCD_DevConnect -DHAL_PCD_DevDisconnect=Stream_HAL_PCD_DevDisconnect -DHAL_PCD_EP_Abort=Stream_HAL_PCD_EP_Abort -DHAL_PCD_EP_Close=Stream_HAL_PCD_EP_Close -DHAL_PCD_EP_ClrStall=Stream_HAL_PCD_EP_ClrStall -DHAL_PCD_EP_Flush=Stream_HAL_PCD_EP_Flush -DHAL_PCD_EP_GetRxCount=Stream_HAL_PCD_EP_GetRxCount -DHAL_PCD_EP_Open=Stream_HAL_PCD_EP_Open -DHAL_PCD_EP_Receive=Stream_HAL_PCD_EP_Receive -DHAL_PCD_EP_SetStall=Stream_HAL_PCD_EP_SetStall -DHAL_PCD_EP_Transmit=Stream_HAL_PCD_EP_Transmit -DHAL_PCD_GetState=Stream_HAL_PCD_GetState -DHAL_PCD_IRQHandler=Stream_HAL_PCD_IRQHandler -DHAL_PCD_Init=Stream_HAL_PCD_Init -DHAL_PCD_SetAddress=Stream_HAL_PCD_SetAddress -DHAL_PCD_SetTestMode=Stream_HAL_PCD_SetTestMode -DHAL_PCD_Start=Stream_HAL_PCD_Start -DHAL_PCD_Stop=Stream_HAL_PCD_Stop -c D:\\32\\STM32H7\\h7_mac\\Drivers\\STM32H7xx_HAL_Driver\\Src\\stm32h7xx_hal_pcd.c -o D:\\32\\STM32H7\\h7_mac\\Tests\\CameraMjpegStage03B\\usb_test_stm32h7xx_hal_pcd.o",
+    "exit": 0,
+    "output": ""
+  },
+  {
+    "command": "D:/32/ARM/ARMCC/Bin/armcc.exe --cpu Cortex-M7 --c99 -O0 -DSTM32H747xx -DCORE_CM7 -DUSE_HAL_DRIVER --preinclude D:\\32\\STM32H7\\h7_mac\\CM7\\BSP\\bsp_usb_hal_config.h -I D:\\32\\STM32H7\\h7_mac\\CM7\\Core\\Inc -I D:\\32\\STM32H7\\h7_mac\\Drivers\\STM32H7xx_HAL_Driver\\Inc -I D:\\32\\STM32H7\\h7_mac\\Drivers\\CMSIS\\Include -I D:\\32\\STM32H7\\h7_mac\\Drivers\\CMSIS\\Device\\ST\\STM32H7xx\\Include -I D:\\32\\STM32H7\\h7_mac\\CM7\\Application -I D:\\32\\STM32H7\\h7_mac\\CM7\\Application\\Tasks -I D:\\32\\STM32H7\\h7_mac\\Common\\Inc -I D:\\32\\STM32H7\\h7_mac\\CM7\\Media\\Inc -I D:\\32\\STM32H7\\h7_mac\\CM7\\BSP -I D:\\32\\STM32H7\\h7_mac\\CM7\\Platform -I D:\\32\\STM32H7\\h7_mac\\CM7\\Service -I D:\\32\\STM32H7\\h7_mac\\CM7\\Framework -I D:\\32\\STM32H7\\h7_mac\\Middlewares\\ST\\STM32_USB_Device_Library\\Core\\Inc -c D:\\32\\STM32H7\\h7_mac\\Drivers\\STM32H7xx_HAL_Driver\\Src\\stm32h7xx_ll_usb.c -o D:\\32\\STM32H7\\h7_mac\\Tests\\CameraMjpegStage03B\\usb_test_stm32h7xx_ll_usb.o",
+    "exit": 0,
+    "output": ""
+  },
+  {
+    "command": "D:/32/ARM/ARMCC/Bin/armlink.exe D:\\32\\STM32H7\\h7_mac\\Tests\\CameraMjpegStage03B\\usb_test_usb_test.o D:\\32\\STM32H7\\h7_mac\\Tests\\CameraMjpegStage03B\\usb_test_usb_uvc_desc.o D:\\32\\STM32H7\\h7_mac\\Tests\\CameraMjpegStage03B\\usb_test_usb_uvc_payload.o D:\\32\\STM32H7\\h7_mac\\Tests\\CameraMjpegStage03B\\usb_test_usbd_core.o D:\\32\\STM32H7\\h7_mac\\Tests\\CameraMjpegStage03B\\usb_test_usbd_ctlreq.o D:\\32\\STM32H7\\h7_mac\\Tests\\CameraMjpegStage03B\\usb_test_usbd_ioreq.o D:\\32\\STM32H7\\h7_mac\\Tests\\CameraMjpegStage03B\\usb_test_stm32h7xx_hal_pcd.o D:\\32\\STM32H7\\h7_mac\\Tests\\CameraMjpegStage03B\\usb_test_stm32h7xx_ll_usb.o --entry Stage02_TestRun --scatter D:\\32\\STM32H7\\h7_mac\\Tests\\UsbDeviceStage1\\test.sct --no_scanlib -o D:\\32\\STM32H7\\h7_mac\\Tests\\CameraMjpegStage03B\\usb_test.axf",
+    "exit": 0,
+    "output": ""
+  }
+]

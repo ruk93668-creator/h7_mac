@@ -1,0 +1,18 @@
+正式UVC注册及回调绑定 True line 0 (0, 0) None
+
+Core语言描述符 True line 0 (0, 0) None
+
+Core功能名称24字节 True line 0 (0, 0) None
+
+主机请求255仍只返回24 True line 0 (0, 0) None
+
+短请求只返回8字节 True line 0 (0, 0) None
+
+不支持索引按Core规则STALL True line 0 (0, 0) None
+
+PIO对齐尾部及读取边界 True line 0 (0, 0) None
+
+交错重复请求与静态地址 True line 0 (0, 0) None
+
+{'total': 8, 'passed': 8, 'failed': 0}
+

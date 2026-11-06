@@ -1,0 +1,130 @@
+{
+  "summary": {
+    "total": 15,
+    "passed": 15,
+    "failed": 0
+  },
+  "cases": [
+    {
+      "id": 0,
+      "pass": true,
+      "failure_line": 0,
+      "error": null,
+      "assertions": [],
+      "check_line": 0
+    },
+    {
+      "id": 1,
+      "pass": true,
+      "failure_line": 0,
+      "error": null,
+      "assertions": [],
+      "check_line": 0
+    },
+    {
+      "id": 2,
+      "pass": true,
+      "failure_line": 0,
+      "error": null,
+      "assertions": [],
+      "check_line": 0
+    },
+    {
+      "id": 3,
+      "pass": true,
+      "failure_line": 0,
+      "error": null,
+      "assertions": [],
+      "check_line": 0
+    },
+    {
+      "id": 4,
+      "pass": true,
+      "failure_line": 0,
+      "error": null,
+      "assertions": [],
+      "check_line": 0
+    },
+    {
+      "id": 5,
+      "pass": true,
+      "failure_line": 0,
+      "error": null,
+      "assertions": [],
+      "check_line": 0
+    },
+    {
+      "id": 6,
+      "pass": true,
+      "failure_line": 0,
+      "error": null,
+      "assertions": [],
+      "check_line": 0
+    },
+    {
+      "id": 7,
+      "pass": true,
+      "failure_line": 0,
+      "error": null,
+      "assertions": [],
+      "check_line": 0
+    },
+    {
+      "id": 8,
+      "pass": true,
+      "failure_line": 0,
+      "error": null,
+      "assertions": [],
+      "check_line": 0
+    },
+    {
+      "id": 9,
+      "pass": true,
+      "failure_line": 0,
+      "error": null,
+      "assertions": [],
+      "check_line": 0
+    },
+    {
+      "id": 10,
+      "pass": true,
+      "failure_line": 0,
+      "error": null,
+      "assertions": [],
+      "check_line": 0
+    },
+    {
+      "id": 11,
+      "pass": true,
+      "failure_line": 0,
+      "error": null,
+      "assertions": [],
+      "check_line": 0
+    },
+    {
+      "id": 12,
+      "pass": true,
+      "failure_line": 0,
+      "error": null,
+      "assertions": [],
+      "check_line": 0
+    },
+    {
+      "id": 13,
+      "pass": true,
+      "failure_line": 0,
+      "error": null,
+      "assertions": [],
+      "check_line": 0
+    },
+    {
+      "id": 14,
+      "pass": true,
+      "failure_line": 0,
+      "error": null,
+      "assertions": [],
+      "check_line": 0
+    }
+  ],
+  "hardware_verified": false
+}

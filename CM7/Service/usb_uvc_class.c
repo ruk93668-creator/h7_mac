@@ -18,6 +18,9 @@
 
 //与描述符共用冷启动配置，不保存业务配置指针
 static uint32_t s_video_frame_bytes;
+
+//记录冷启动格式，JPEG按上限校验，YUY2按固定长度校验
+static CameraPixelFormat_t s_video_format;
 static uint32_t s_video_interval;
 static bool s_video_configured;
 
@@ -227,8 +230,12 @@ SysResult_t USB_UVC_Configure(const VideoStreamConfig_t *config)
     result = USB_UVC_ConfigureFSDescriptor(config);
     if (result != SYS_OK)
         return result;
-    (void)CameraConfig_GetFrameSize(&config->camera, &bytes);
+    if (config->camera.format == CAMERA_PIXEL_FORMAT_JPEG)
+        bytes = config->max_frame_bytes;
+    else
+        (void)CameraConfig_GetFrameSize(&config->camera, &bytes);
     s_video_frame_bytes = bytes;
+    s_video_format = config->camera.format;
     s_video_interval = 10000000UL / config->fps;
     s_video_configured = true;
     return SYS_OK;
@@ -251,11 +258,23 @@ SysResult_t USB_UVC_SubmitFrame(const uint8_t *frame, uint32_t length)
     SysResult_t result;
     UsbUvcContext_t *ctx;
 
-    //仅接收当前描述符声明的完整YUY2帧
-    if (frame == NULL || length != s_video_frame_bytes)
+    //固定图像长度必须一致，JPEG只接收上限内的完整文件
+    if (frame == NULL || length == 0U ||
+        (s_video_format == CAMERA_PIXEL_FORMAT_JPEG ?
+         length > s_video_frame_bytes : length != s_video_frame_bytes))
         return SYS_ERR_INVALID_ARG;
     if (__get_IPSR() != 0U)
         return SYS_ERR_INVALID_STATE;
+
+    //先检查地址加法，禁止尾部标记检查绕过Payload的溢出保护
+    if ((uintptr_t)frame > UINTPTR_MAX - (length - 1U))
+        return SYS_ERR_INVALID_ARG;
+
+    //边界检查在任务中完成，UVC不扫描或解码摄像头图像
+    if (s_video_format == CAMERA_PIXEL_FORMAT_JPEG &&
+        (length < 4U || frame[0] != 0xFFU || frame[1] != 0xD8U ||
+         frame[length - 2U] != 0xFFU || frame[length - 1U] != 0xD9U))
+        return SYS_ERR_INVALID_ARG;
     mask = USB_Device_Lock();
     ctx = s_uvc_active;
     if (ctx == NULL || !USB_Device_IsConfigured() || !ctx->commit_valid ||

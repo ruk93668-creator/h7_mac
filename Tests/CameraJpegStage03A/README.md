@@ -143,3 +143,7 @@ INCLUDE "D:/32/STM32H7/h7_mac/Tests/CameraJpegStage03A/dump_ready.ini"
 该脚本读取本轮size_bytes并导出jpeg_ready_bytes.txt。若SAVE输出只有扩展地址记录和EOF而无数据记录，不能作为JPEG数据使用。不要复用上次固定1104B长度判断新帧。
 
 本次已证明导出数据中的一幅真实JPEG可被PC解码；修正后固件状态、重新采集和停止恢复仍需实板确认。
+
+## 工程整理更新
+
+旧03A临时uvprojx/uvguix及输出目录已删除。单帧验收使用固定MDK-ARM/h7_mac_stage03b.uvprojx的CM7_JPEG_SINGLE Target；run_build.py兼容旧命令，但统一委托03B构建脚本，不再生成旧临时工程。原始硬件文件及历史验收报告保留。

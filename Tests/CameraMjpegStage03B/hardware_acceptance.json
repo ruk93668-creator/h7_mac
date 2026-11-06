@@ -1,0 +1,23 @@
+{
+  "date": "2026-11-06",
+  "evidence": "User reports all expected results after MJPEG enumeration and continuous display instructions",
+  "windows_mjpeg_enumeration": true,
+  "continuous_real_video_display": true,
+  "resolution": {
+    "width": 160,
+    "height": 120
+  },
+  "configured_output_fps": 25,
+  "measured_camera_fps": null,
+  "measured_usb_fps": null,
+  "measured_host_fps": null,
+  "reset_disconnect_alt0_stop_restart_hardware_verified": false,
+  "forced_error_recovery_hardware_verified": false,
+  "normal_jpeg_stop_verified_in_stage03a": true,
+  "remaining": [
+    "Measure camera/USB/host FPS separately",
+    "Hardware Reset/Disconnect/Alt0/Stop/Restart matrix",
+    "Hardware error recovery",
+    "JPEG image darkness"
+  ]
+}

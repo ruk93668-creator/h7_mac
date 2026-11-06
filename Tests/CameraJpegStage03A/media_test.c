@@ -85,7 +85,7 @@ int Stage02_TestRun(uint32_t id)
   EQ(CameraCapture_ReleaseFrame(),SYS_OK);EQ(CameraCapture_Stop(),SYS_OK);return 0;
  }
  EQ(s_capture.snapshot.frame_bytes,0);EQ(s_capture.snapshot.frame_capacity,262140);
- if(id==16){EQ(CameraCapture_StartStream(),SYS_ERR_NOT_SUPPORTED);EQ(s_capture.mode,CAMERA_CAPTURE_MODE_NONE);return 0;}
+ if(id==16){EQ(CameraCapture_StartStream(),SYS_OK);EQ(s_capture.mode,CAMERA_CAPTURE_MODE_STREAM);EQ(CameraCapture_Start(),SYS_ERR_BUSY);EQ(CameraCapture_Stop(),SYS_OK);return 0;}
  if(id==17)start_result=SYS_ERR_IO;
  EQ(CameraCapture_Start(),id==17?SYS_ERR_IO:SYS_OK);
  EQ(jpeg_words,65535);

@@ -245,7 +245,16 @@ typedef char UvcConfigLengthCheck[
 typedef char UvcConfigPaddingCheck[
     sizeof(s_uvc_config_storage) == 184U ? 1 : -1];
 
+//MJPEG不声明Color Matching，有效158B，尾部补齐到160B供PIO读取
+static uint8_t s_uvc_mjpeg_config[160] __attribute__((aligned(4)));
+
+//默认仍返回原YUY2描述符，配置完成后禁止改写
+static uint8_t *s_video_descriptor = s_uvc_config_storage.descriptor;
+static uint16_t s_video_descriptor_length = USB_UVC_FS_CONFIG_DESC_SIZE;
 static bool s_video_descriptor_configured;
+
+//根据原VC拓扑构造独立MJPEG VS描述符
+static void UvcDesc_SelectMjpeg(void);
 
 //按小端写入双字节字段
 static void UvcDesc_Write16(uint8_t *p, uint16_t value);
@@ -261,10 +270,22 @@ SysResult_t USB_UVC_ValidateFSConfig(const VideoStreamConfig_t *config)
 
     if (config == NULL || config->fps == 0U)
         return SYS_ERR_INVALID_ARG;
-    result = CameraConfig_GetFrameSize(&config->camera, &bytes);
+    if (config->camera.format == CAMERA_PIXEL_FORMAT_JPEG)
+    {
+        //单帧上限由APP传入，不能把可变长度JPEG按像素数计算
+        if (config->camera.width != 160U || config->camera.height != 120U)
+            return SYS_ERR_NOT_SUPPORTED;
+        bytes = config->max_frame_bytes;
+        if (bytes < 4U || bytes > 262140U)
+            return SYS_ERR_INVALID_ARG;
+        result = SYS_OK;
+    }
+    else
+        result = CameraConfig_GetFrameSize(&config->camera, &bytes);
     if (result != SYS_OK)
         return result;
-    if (config->camera.format != CAMERA_PIXEL_FORMAT_YUV422 || config->fps > 1000U)
+    if ((config->camera.format != CAMERA_PIXEL_FORMAT_YUV422 &&
+         config->camera.format != CAMERA_PIXEL_FORMAT_JPEG) || config->fps > 1000U)
         return SYS_ERR_NOT_SUPPORTED;
     if (bytes > UINT32_MAX / 8U / config->fps)
         return SYS_ERR_INVALID_ARG;
@@ -290,24 +311,34 @@ SysResult_t USB_UVC_ConfigureFSDescriptor(const VideoStreamConfig_t *config)
         return result;
     if (s_video_descriptor_configured)
         return SYS_ERR_INVALID_STATE;
-    (void)CameraConfig_GetFrameSize(&config->camera, &bytes);
+    if (config->camera.format == CAMERA_PIXEL_FORMAT_JPEG)
+    {
+        UvcDesc_SelectMjpeg();
+        bytes = config->max_frame_bytes;
+    }
+    else
+        (void)CameraConfig_GetFrameSize(&config->camera, &bytes);
+    data = s_video_descriptor;
     interval = 10000000UL / config->fps;
     rate = bytes * 8U * config->fps;
 
     //按边界查找VS Frame，不依赖整个数组的固定偏移
-    for (offset = 0U; offset + 2U <= USB_UVC_FS_CONFIG_DESC_SIZE; offset += data[offset])
+    for (offset = 0U; offset + 2U <= s_video_descriptor_length; offset += data[offset])
     {
         uint8_t length = data[offset];
         uint8_t *entry = data + offset;
-        if (length < 2U || offset + length > USB_UVC_FS_CONFIG_DESC_SIZE)
+        if (length < 2U || offset + length > s_video_descriptor_length)
             return SYS_ERR_PROTOCOL;
         if (entry[1] == 0x04U && length >= 9U)
             interface_number = entry[2];
-        if (interface_number == 1U && entry[1] == 0x24U && length == 30U && entry[2] == 0x05U)
+        if (interface_number == 1U && entry[1] == 0x24U && length == 30U &&
+            entry[2] == (config->camera.format == CAMERA_PIXEL_FORMAT_JPEG ? 0x07U : 0x05U))
         {
             UvcDesc_Write16(entry + 5U, config->camera.width);
             UvcDesc_Write16(entry + 7U, config->camera.height);
-            UvcDesc_Write32(entry + 9U, rate);
+            //JPEG用SOI/EOI的4B作为保守下界，上限仍由最大帧长计算
+            UvcDesc_Write32(entry + 9U, config->camera.format == CAMERA_PIXEL_FORMAT_JPEG ?
+                4U * 8U * config->fps : rate);
             UvcDesc_Write32(entry + 13U, rate);
             UvcDesc_Write32(entry + 17U, bytes);
             UvcDesc_Write32(entry + 21U, interval);
@@ -328,8 +359,8 @@ uint8_t *USB_UVC_GetFSConfigDescriptor(uint16_t *length)
     if (!s_video_descriptor_configured)
         return NULL;
 
-    *length = sizeof(s_uvc_config_storage.descriptor);
-    return s_uvc_config_storage.descriptor;
+    *length = s_video_descriptor_length;
+    return s_video_descriptor;
 }
 
 //提供UVC设备描述符，TEST描述符单独维护
@@ -387,4 +418,43 @@ static void UvcDesc_Write32(uint8_t *p, uint32_t value)
     p[1] = (uint8_t)(value >> 8);
     p[2] = (uint8_t)(value >> 16);
     p[3] = (uint8_t)(value >> 24);
+}
+
+//根据原VC拓扑构造独立MJPEG VS描述符
+static void UvcDesc_SelectMjpeg(void)
+{
+    uint16_t i;
+    const uint8_t *source = s_uvc_config_storage.descriptor;
+    const uint8_t format[11] =
+    {
+        0x0BU,//bLength：MJPEG格式描述符11B
+        0x24U,//CS_INTERFACE
+        0x06U,//VS_FORMAT_MJPEG
+        0x01U,//格式编号1
+        0x01U,//一个Frame描述符
+        0x00U,//可变长度JPEG，不声明固定大小样本
+        0x01U,//默认Frame编号1
+        0x00U, 0x00U,//不声明宽高比
+        0x00U,//逐行扫描
+        0x00U//不限制复制
+    };
+
+    //复用已验证的设备功能、VC拓扑和VS Input Header
+    for (i = 0U; i < 101U; i++)
+        s_uvc_mjpeg_config[i] = source[i];
+    for (i = 0U; i < 11U; i++)
+        s_uvc_mjpeg_config[101U + i] = format[i];
+
+    //MJPEG Frame字段布局与当前30B Frame一致，只调整Subtype
+    for (i = 0U; i < 30U; i++)
+        s_uvc_mjpeg_config[112U + i] = source[128U + i];
+    s_uvc_mjpeg_config[114U] = 0x07U;
+
+    //保留Alt1和EP1 IN，省去仅用于未压缩图像的颜色描述符
+    for (i = 0U; i < 16U; i++)
+        s_uvc_mjpeg_config[142U + i] = source[164U + i];
+    UvcDesc_Write16(s_uvc_mjpeg_config + 2U, 158U);
+    UvcDesc_Write16(s_uvc_mjpeg_config + 91U, 55U);
+    s_video_descriptor = s_uvc_mjpeg_config;
+    s_video_descriptor_length = 158U;
 }
