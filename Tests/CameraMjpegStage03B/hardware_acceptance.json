@@ -8,16 +8,22 @@
     "height": 120
   },
   "configured_output_fps": 25,
-  "measured_camera_fps": null,
-  "measured_usb_fps": null,
+  "measured_camera_fps": 15.763,
+  "measured_usb_fps": 16.0,
   "measured_host_fps": null,
   "reset_disconnect_alt0_stop_restart_hardware_verified": false,
   "forced_error_recovery_hardware_verified": false,
   "normal_jpeg_stop_verified_in_stage03a": true,
   "remaining": [
-    "Measure camera/USB/host FPS separately",
-    "Hardware Reset/Disconnect/Alt0/Stop/Restart matrix",
-    "Hardware error recovery",
-    "JPEG image darkness"
-  ]
+    "Reach/characterize 25 FPS target",
+    "Measure host receive FPS",
+    "Explicit ControlTask Stop/Start and forced error recovery hardware tests"
+  ],
+  "target_25fps_reached": false,
+  "host_close_reopen_verified": true,
+  "usb_disconnect_reconnect_independent_power_verified": true,
+  "mcu_reset_reopen_verified": true,
+  "task_control_stop_restart_hardware_verified": false,
+  "image_darkness_reported_resolved_during_continuous_capture": true,
+  "image_darkness_root_cause_confirmed": false
 }

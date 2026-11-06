@@ -407,4 +407,3 @@
 371 PASS Class控制请求仍经EP0处理: checks=19, fail_line=0, error=None
 
 TOTAL {'total': 204, 'passed': 201, 'failed': 3, 'assertions': 2947} source changed: []
-

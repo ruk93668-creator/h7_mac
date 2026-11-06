@@ -58,3 +58,7 @@ TEST/YUY2与MJPEG沿用既有设备身份。若Windows仍只列YUY2，先确认�
 当前最终MJPEG镜像已完成源文件SHA稳定性检查及0 Error/0 Warning完整重编。其他配置首轮均0/0；收尾过程中的最终重编被交互中断，未全部获得带最终SHA的结果，仍需补齐。不能将本记录解释为全部软件及硬件验收已经完成。
 
 旧03A临时工程及界面状态已经删除。单帧验收统一使用固定03B工程的CM7_JPEG_SINGLE Target；真实数据和历史报告保留。
+
+## 最新收尾结论
+
+以verification_report.md、final_results.json及hardware_acceptance.json为准：五配置最新源码完整重编0/0；Windows真实MJPEG和三项恢复实板通过。Camera15.763FPS、USB16FPS，25FPS尚未达到；主机FPS、命令级Stop/Start及强制错误恢复待测。此前“仍需补齐最终构建”的内容属于历史进度。
