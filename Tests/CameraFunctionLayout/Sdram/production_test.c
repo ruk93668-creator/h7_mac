@@ -171,7 +171,7 @@ int Sdram_TestRun(uint32_t id)
 void App_Run(void){}
 void Framework_Run(void){}
 void BSP_Camera_EarlyInit(void){}
-void IPC_Service_EarlyInit(void){}
+SysResult_t IPC_Service_EarlyInit(void){return SYS_OK;}
 HAL_StatusTypeDef HAL_HSEM_FastTake(uint32_t id){(void)id;return HAL_OK;}
 void HAL_HSEM_Release(uint32_t id,uint32_t pid){(void)id;(void)pid;}
 HAL_StatusTypeDef HAL_Init(void){return HAL_OK;}

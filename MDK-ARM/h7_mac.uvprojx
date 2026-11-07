@@ -826,6 +826,21 @@
           <GroupName>Common</GroupName>
           <Files>
             <File>
+              <FileName>ipc_core.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>../Common/Src/ipc_core.c</FilePath>
+            </File>
+            <File>
+              <FileName>ipc_core.h</FileName>
+              <FileType>5</FileType>
+              <FilePath>../Common/Inc/ipc_core.h</FilePath>
+            </File>
+            <File>
+              <FileName>ipc_status.h</FileName>
+              <FileType>5</FileType>
+              <FilePath>../Common/Inc/ipc_status.h</FilePath>
+            </File>
+            <File>
               <FileName>ipc_shared.c</FileName>
               <FileType>1</FileType>
               <FilePath>../Common/Src/ipc_shared.c</FilePath>
@@ -2672,6 +2687,21 @@
         <Group>
           <GroupName>Common</GroupName>
           <Files>
+            <File>
+              <FileName>ipc_core.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>../Common/Src/ipc_core.c</FilePath>
+            </File>
+            <File>
+              <FileName>ipc_core.h</FileName>
+              <FileType>5</FileType>
+              <FilePath>../Common/Inc/ipc_core.h</FilePath>
+            </File>
+            <File>
+              <FileName>ipc_status.h</FileName>
+              <FileType>5</FileType>
+              <FilePath>../Common/Inc/ipc_status.h</FilePath>
+            </File>
             <File>
               <FileName>ipc_shared.c</FileName>
               <FileType>1</FileType>

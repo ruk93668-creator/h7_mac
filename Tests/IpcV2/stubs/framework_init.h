@@ -1,0 +1,5 @@
+#ifndef IPC_TEST_FRAMEWORK_INIT_H
+#define IPC_TEST_FRAMEWORK_INIT_H
+#define FRAMEWORK_INIT_REGISTER(function, level)
+#define INIT_LEVEL_SERVICE 4U
+#endif

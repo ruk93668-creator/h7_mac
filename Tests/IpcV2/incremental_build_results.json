@@ -1,0 +1,26 @@
+[
+  {
+    "target": "h7_mac_CM7",
+    "command": "D:/32/UV4/UV4.exe -j0 -b D:\\32\\STM32H7\\h7_mac\\MDK-ARM\\h7_mac.uvprojx -t h7_mac_CM7 -o D:\\32\\STM32H7\\h7_mac\\Tests\\IpcV2\\h7_mac_CM7_incremental.log",
+    "exit_code": 0,
+    "errors": 0,
+    "warnings": 0,
+    "source_fingerprint_before": "3f0686fd2a7fa99e56913d50e9b458f6af22cbe2bc6431a39b8fd6733f50ff75",
+    "source_fingerprint_after": "3f0686fd2a7fa99e56913d50e9b458f6af22cbe2bc6431a39b8fd6733f50ff75",
+    "project_sha_before": "d8469fd5a81f43c6c0748059c9bee4305d0edc3e704e22279ef770e56f6ebde0",
+    "project_sha_after": "d8469fd5a81f43c6c0748059c9bee4305d0edc3e704e22279ef770e56f6ebde0",
+    "passed": true
+  },
+  {
+    "target": "h7_mac_CM4",
+    "command": "D:/32/UV4/UV4.exe -j0 -b D:\\32\\STM32H7\\h7_mac\\MDK-ARM\\h7_mac.uvprojx -t h7_mac_CM4 -o D:\\32\\STM32H7\\h7_mac\\Tests\\IpcV2\\h7_mac_CM4_incremental.log",
+    "exit_code": 0,
+    "errors": 0,
+    "warnings": 0,
+    "source_fingerprint_before": "3f0686fd2a7fa99e56913d50e9b458f6af22cbe2bc6431a39b8fd6733f50ff75",
+    "source_fingerprint_after": "3f0686fd2a7fa99e56913d50e9b458f6af22cbe2bc6431a39b8fd6733f50ff75",
+    "project_sha_before": "d8469fd5a81f43c6c0748059c9bee4305d0edc3e704e22279ef770e56f6ebde0",
+    "project_sha_after": "d8469fd5a81f43c6c0748059c9bee4305d0edc3e704e22279ef770e56f6ebde0",
+    "passed": true
+  }
+]
