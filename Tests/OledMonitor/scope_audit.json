@@ -1,0 +1,52 @@
+{
+  "base_commit": "de8a0963122f7b778a8695a62bcc7e9f3621340f",
+  "branch": "codex/stage05-oled-monitor",
+  "user_changes": [
+    {
+      "path": "CM7/Application/video_config.c",
+      "preserved": true
+    },
+    {
+      "path": "MDK-ARM/h7_mac.uvoptx",
+      "preserved": true
+    },
+    {
+      "path": "MDK-ARM/h7_mac.uvprojx",
+      "preserved": true
+    },
+    {
+      "path": "Tests/CameraMjpegStage03B/CM7_MJPEG_rebuild.log",
+      "preserved": true
+    },
+    {
+      "path": "Tests/CameraMjpegStage03B/CM7_TEST_rebuild.log",
+      "preserved": true
+    },
+    {
+      "path": "Tests/CameraMjpegStage03B/CM7_YUY2_rebuild.log",
+      "preserved": true
+    },
+    {
+      "path": "Tests/CameraMjpegStage03B/build_results.json",
+      "preserved": true
+    },
+    {
+      "path": "Tests/CameraMjpegStage03B/native_test_commands.json",
+      "preserved": true
+    }
+  ],
+  "source_fingerprint": "7e5939a7b1e49ddf1ca5b61badc1f52434485f0f0434c190215f57c7db386815",
+  "implementation_files": [
+    "CM4/Application/app_oled.c",
+    "CM4/Application/app_oled.h",
+    "CM4/Application/oled_ui.c",
+    "CM4/Application/oled_ui.h",
+    "CM4/Device/Src/oled_device.c",
+    "MDK-ARM/h7_mac.uvprojx"
+  ],
+  "main_unchanged": true,
+  "main_sha": "442cd4be953340ce5ce0a033fb053a13e367f047",
+  "shared_protocol_modified": false,
+  "hardware_verified": false,
+  "comment_spacing_checked": true
+}

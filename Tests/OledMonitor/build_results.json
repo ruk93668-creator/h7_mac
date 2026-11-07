@@ -1,0 +1,26 @@
+[
+  {
+    "target": "h7_mac_CM7",
+    "command": "D:/32/UV4/UV4.exe -j0 -r D:\\32\\STM32H7\\h7_mac\\MDK-ARM\\h7_mac.uvprojx -t h7_mac_CM7 -o D:\\32\\STM32H7\\h7_mac\\Tests\\OledMonitor\\h7_mac_CM7_rebuild.log",
+    "exit_code": 0,
+    "errors": 0,
+    "warnings": 0,
+    "source_fingerprint_before": "7e5939a7b1e49ddf1ca5b61badc1f52434485f0f0434c190215f57c7db386815",
+    "source_fingerprint_after": "7e5939a7b1e49ddf1ca5b61badc1f52434485f0f0434c190215f57c7db386815",
+    "project_sha_before": "75edf05f3522b1cb9ed24c5168af34778c3598b3baf549db1a3240fc856eee70",
+    "project_sha_after": "75edf05f3522b1cb9ed24c5168af34778c3598b3baf549db1a3240fc856eee70",
+    "passed": true
+  },
+  {
+    "target": "h7_mac_CM4",
+    "command": "D:/32/UV4/UV4.exe -j0 -r D:\\32\\STM32H7\\h7_mac\\MDK-ARM\\h7_mac.uvprojx -t h7_mac_CM4 -o D:\\32\\STM32H7\\h7_mac\\Tests\\OledMonitor\\h7_mac_CM4_rebuild.log",
+    "exit_code": 0,
+    "errors": 0,
+    "warnings": 0,
+    "source_fingerprint_before": "7e5939a7b1e49ddf1ca5b61badc1f52434485f0f0434c190215f57c7db386815",
+    "source_fingerprint_after": "7e5939a7b1e49ddf1ca5b61badc1f52434485f0f0434c190215f57c7db386815",
+    "project_sha_before": "75edf05f3522b1cb9ed24c5168af34778c3598b3baf549db1a3240fc856eee70",
+    "project_sha_after": "75edf05f3522b1cb9ed24c5168af34778c3598b3baf549db1a3240fc856eee70",
+    "passed": true
+  }
+]
