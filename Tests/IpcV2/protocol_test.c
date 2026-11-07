@@ -369,3 +369,29 @@ int Ipc_TestRun(uint32_t id)
     CHECK(g_hook_failure==0U && s_mask==0U);
     return 0;
 }
+
+#if defined(CORE_CM4)
+//新增CM4 Timer依赖的测试桩，原05B测试断言保持不变
+FrameworkTimerConfig_t g_test_timer_config;
+static uint32_t g_test_tick;
+static uint32_t g_test_timer_creates;
+static uint32_t g_test_timer_starts;
+static uint32_t g_test_timer_deletes;
+static SysResult_t g_test_create_result;
+static SysResult_t g_test_start_result;
+uint32_t Platform_TimeGetMs(void){return g_test_tick;}
+SysResult_t Framework_TimerCreate(const FrameworkTimerConfig_t *config, FrameworkTimerHandle_t *handle)
+{
+    g_test_timer_creates++;
+    if(g_test_create_result!=SYS_OK)return g_test_create_result;
+    g_test_timer_config=*config;*handle=1U;return SYS_OK;
+}
+SysResult_t Framework_TimerStart(FrameworkTimerHandle_t handle)
+{
+    (void)handle;g_test_timer_starts++;return g_test_start_result;
+}
+SysResult_t Framework_TimerDelete(FrameworkTimerHandle_t handle)
+{
+    (void)handle;g_test_timer_deletes++;return SYS_OK;
+}
+#endif

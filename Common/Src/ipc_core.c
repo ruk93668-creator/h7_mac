@@ -34,6 +34,10 @@ static struct
 
     //只保护本核重入，不把关中断当成跨核锁
     bool writer_busy;
+
+    //只保存在本核，授权回调在初始化窗口关闭后不可替换
+    bool (*runtime_owner)(void *context);
+    void *runtime_context;
     IpcDiagnostics_t diagnostics;
 } s_core;
 
@@ -53,7 +57,10 @@ static volatile IpcStatusBlock_t *Ipc_LocalBlock(void);
 static volatile IpcStatusBlock_t *Ipc_PeerBlock(void);
 
 //申请本核初始化发布权
-static SysResult_t Ipc_BeginWrite(void);
+static SysResult_t Ipc_BeginWrite(bool runtime);
+
+//复用同一份字段校验和序号提交，只区分初始化与运行期授权
+static SysResult_t Ipc_Publish(const IpcState_t *state, bool runtime);
 
 //释放本核发布权
 static void Ipc_EndWrite(void);
@@ -107,7 +114,7 @@ SysResult_t IPC_Core_ColdStart(void)
 {
     uint32_t i;
     const IpcState_t initial = {IPC_CORE_NOT_READY, 0U, 0U, SYS_OK};
-    SysResult_t result = Ipc_BeginWrite();
+    SysResult_t result = Ipc_BeginWrite(false);
 
     if (result != SYS_OK)
         return result;
@@ -146,7 +153,7 @@ SysResult_t IPC_Core_InitializeLocal(const IpcState_t *state)
 
     if (!Ipc_LocalMemoryValid(state, sizeof(*state)))
         return Ipc_Result(SYS_ERR_INVALID_ARG, 0U);
-    result = Ipc_BeginWrite();
+    result = Ipc_BeginWrite(false);
     if (result != SYS_OK)
         return result;
     if (s_core.local_initialized)
@@ -169,7 +176,7 @@ SysResult_t IPC_Core_InitializeLocal(const IpcState_t *state)
 }
 
 //在初始化窗口内提交本核状态
-SysResult_t IPC_Core_PublishLocal(const IpcState_t *state)
+static SysResult_t Ipc_Publish(const IpcState_t *state, bool runtime)
 {
     volatile IpcStatusBlock_t *block;
     uint32_t sequence;
@@ -177,7 +184,7 @@ SysResult_t IPC_Core_PublishLocal(const IpcState_t *state)
 
     if (!Ipc_LocalMemoryValid(state, sizeof(*state)))
         return Ipc_Result(SYS_ERR_INVALID_ARG, 0U);
-    result = Ipc_BeginWrite();
+    result = Ipc_BeginWrite(runtime);
     if (result != SYS_OK)
         return result;
     result = Ipc_CheckHeader();
@@ -354,14 +361,20 @@ static volatile IpcStatusBlock_t *Ipc_PeerBlock(void)
 }
 
 //保护本核发布重入，初始化窗口关闭后禁止继续写入
-static SysResult_t Ipc_BeginWrite(void)
+static SysResult_t Ipc_BeginWrite(bool runtime)
 {
     uint32_t mask;
 
     if (!s_core.bound || !s_core.port->is_thread())
         return Ipc_Result(SYS_ERR_INVALID_STATE, 0U);
+
+    //身份检查必须在屏蔽调度前执行，避免合法任务被PRIMASK条件误拒绝
+    if (runtime && (s_core.initialization_open || s_core.runtime_owner == NULL ||
+        !s_core.runtime_owner(s_core.runtime_context)))
+        return Ipc_Result(SYS_ERR_INVALID_STATE, 0U);
     mask = s_core.port->enter();
-    if (!s_core.initialization_open)
+    if ((!runtime && !s_core.initialization_open) ||
+        (runtime && s_core.initialization_open))
     {
         s_core.port->leave(mask);
         return Ipc_Result(SYS_ERR_INVALID_STATE, 0U);
@@ -489,4 +502,50 @@ static SysResult_t Ipc_ReadBlock(volatile IpcStatusBlock_t *block,
         return Ipc_Result(SYS_OK, 0U);
     }
     return Ipc_Result(SYS_ERR_BUSY, 0U);
+}
+
+//发布初始化状态，不因增加运行期能力而重新打开初始化窗口
+SysResult_t IPC_Core_PublishLocal(const IpcState_t *state)
+{
+    return Ipc_Publish(state, false);
+}
+
+//发布运行期状态，每次调用都验证唯一执行者
+SysResult_t IPC_Core_PublishRuntime(const IpcState_t *state)
+{
+    return Ipc_Publish(state, true);
+}
+
+//在初始化阶段冻结运行期发布者
+SysResult_t IPC_Core_ConfigureRuntime(bool (*is_owner)(void *context), void *context)
+{
+    uint32_t mask;
+
+    //授权只接受本核静态回调，未知布局或关闭窗口都不能重新授权
+    if (is_owner == NULL)
+        return Ipc_Result(SYS_ERR_INVALID_ARG, 0U);
+    if (!s_core.bound || !s_core.local_initialized || !s_core.port->is_thread())
+        return Ipc_Result(SYS_ERR_INVALID_STATE, 0U);
+
+    //授权上下文也必须留在本核普通内存，不接受共享区中的可变身份数据
+    if (context != NULL && (uintptr_t)context >= (uintptr_t)s_core.shared &&
+        (uintptr_t)context < (uintptr_t)s_core.shared + IPC_SHARED_WINDOW_BYTES)
+        return Ipc_Result(SYS_ERR_INVALID_ARG, 0U);
+    if (Ipc_CheckHeader() != SYS_OK)
+        return s_core.diagnostics.last_result;
+    mask = s_core.port->enter();
+    if (!s_core.initialization_open || s_core.writer_busy)
+    {
+        s_core.port->leave(mask);
+        return Ipc_Result(SYS_ERR_INVALID_STATE, 0U);
+    }
+    if (s_core.runtime_owner != NULL)
+    {
+        s_core.port->leave(mask);
+        return Ipc_Result(SYS_ERR_ALREADY_EXISTS, 0U);
+    }
+    s_core.runtime_owner = is_owner;
+    s_core.runtime_context = context;
+    s_core.port->leave(mask);
+    return Ipc_Result(SYS_OK, 0U);
 }

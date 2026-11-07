@@ -2,6 +2,7 @@
 #define CM4_IPC_SERVICE_H
 
 #include "ipc_status.h"
+#include "ipc_runtime.h"
 
 //取得本核一致快照，不代表业务初始化全部成功
 SysResult_t IPC_Service_ReadLocal(IpcStatusSnapshot_t *snapshot);
@@ -11,5 +12,11 @@ SysResult_t IPC_Service_ReadPeer(IpcStatusSnapshot_t *snapshot);
 
 //取得本地协议诊断，未知布局错误只保存在这里
 SysResult_t IPC_Service_GetDiagnostics(IpcDiagnostics_t *diagnostics);
+
+//读取本核运行期诊断快照，不写共享区
+SysResult_t IPC_Service_GetRuntimeStatus(IpcRuntimeStatus_t *status);
+
+//Watch观察本地诊断，多个字段不保证调试器同时刷新
+extern volatile IpcRuntimeStatus_t g_ipc_runtime_debug;
 
 #endif

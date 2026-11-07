@@ -31,6 +31,12 @@ SysResult_t IPC_Core_PublishLocal(const IpcState_t *state);
 //关闭本阶段的写入窗口，运行期不开放发布上下文
 SysResult_t IPC_Core_EndInitialization(void);
 
+//在初始化窗口绑定唯一运行期写者，关闭窗口后不可替换
+SysResult_t IPC_Core_ConfigureRuntime(bool (*is_owner)(void *context), void *context);
+
+//只允许预先授权的执行者发布，保留初始化发布接口的关闭边界
+SysResult_t IPC_Core_PublishRuntime(const IpcState_t *state);
+
 //读取本核完整快照，失败不修改输出
 SysResult_t IPC_Core_ReadLocal(IpcStatusSnapshot_t *snapshot);
 

@@ -826,6 +826,16 @@
           <GroupName>Common</GroupName>
           <Files>
             <File>
+              <FileName>ipc_runtime.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>../Common/Src/ipc_runtime.c</FilePath>
+            </File>
+            <File>
+              <FileName>ipc_runtime.h</FileName>
+              <FileType>5</FileType>
+              <FilePath>../Common/Inc/ipc_runtime.h</FilePath>
+            </File>
+            <File>
               <FileName>ipc_core.c</FileName>
               <FileType>1</FileType>
               <FilePath>../Common/Src/ipc_core.c</FilePath>
@@ -2688,6 +2698,16 @@
           <GroupName>Common</GroupName>
           <Files>
             <File>
+              <FileName>ipc_runtime.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>../Common/Src/ipc_runtime.c</FilePath>
+            </File>
+            <File>
+              <FileName>ipc_runtime.h</FileName>
+              <FileType>5</FileType>
+              <FilePath>../Common/Inc/ipc_runtime.h</FilePath>
+            </File>
+            <File>
               <FileName>ipc_core.c</FileName>
               <FileType>1</FileType>
               <FilePath>../Common/Src/ipc_core.c</FilePath>
@@ -3659,6 +3679,16 @@
             <File><FileName>camera_task.h</FileName><FileType>5</FileType><FilePath>../CM7/Application/Tasks/camera_task.h</FilePath></File>
             <File><FileName>usb_task.c</FileName><FileType>1</FileType><FilePath>../CM7/Application/Tasks/usb_task.c</FilePath></File>
             <File><FileName>usb_task.h</FileName><FileType>5</FileType><FilePath>../CM7/Application/Tasks/usb_task.h</FilePath></File>
+            <File>
+              <FileName>ipc_task.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>../CM7/Application/Tasks/ipc_task.c</FilePath>
+            </File>
+            <File>
+              <FileName>ipc_task.h</FileName>
+              <FileType>5</FileType>
+              <FilePath>../CM7/Application/Tasks/ipc_task.h</FilePath>
+            </File>
             <File><FileName>control_task.c</FileName><FileType>1</FileType><FilePath>../CM7/Application/Tasks/control_task.c</FilePath></File>
             <File><FileName>control_task.h</FileName><FileType>5</FileType><FilePath>../CM7/Application/Tasks/control_task.h</FilePath></File>
           </Files>
