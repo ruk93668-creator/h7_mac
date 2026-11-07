@@ -1,4 +1,5 @@
 #include "control_task.h"
+#include "app_status.h"
 #include "app_tasks.h"
 #include "app_events.h"
 #include "app_messages.h"
@@ -52,11 +53,20 @@ static bool s_control_boot_started;
 //提供启动、停止与命令结果调试信息
 volatile ControlTaskDebug_t g_control_task_debug;
 
+//只记录最近实际故障事件，不参与原启停决策
+static SysResult_t s_control_status_fault;
+
 //发布屏障并等待命令与ACK
 static void ControlTask_Run(void *argument);
 
 //推进启动停止协调流程
 static void ControlTask_Process(uint32_t events);
+
+//提交本任务已完成处理的状态，不读写其他任务或SRAM4
+static void ControlTask_PublishStatus(void);
+
+//记录故障消息、失败ACK及Control自身失败
+static void ControlTask_RecordFault(SysResult_t result);
 
 //建立下一条协调命令
 static void ControlTask_Command(ControlState_t state);
@@ -99,6 +109,7 @@ static void ControlTask_Run(void *argument)
     g_control_task_debug.result = result;
     configASSERT(result == SYS_OK);
     ControlTask_Process(RUNTIME_EVENT_BOOT_READY);
+    ControlTask_PublishStatus();
     for (;;)
     {
 
@@ -113,6 +124,7 @@ static void ControlTask_Run(void *argument)
             continue;
         }
         ControlTask_Process(events);
+        ControlTask_PublishStatus();
         g_control_task_debug.stack_free_words = uxTaskGetStackHighWaterMark(NULL);
     }
 }
@@ -145,6 +157,7 @@ static void ControlTask_Process(uint32_t events)
 
             //故障停止也先要求USB归还，Camera ISR错误路径仍可先停危险DMA
             g_control_task_debug.result = message.result;
+            ControlTask_RecordFault(message.result);
             g_control_task_debug.last_fault = message.result;
             if (s_control_state != CONTROL_STOP_USB && s_control_state != CONTROL_STOP_CAMERA)
                 ControlTask_Command(CONTROL_STOP_USB);
@@ -170,6 +183,7 @@ static void ControlTask_Process(uint32_t events)
         {
             s_control_command_sent = false;
             g_control_task_debug.result = message.result;
+            ControlTask_RecordFault(message.result);
             if (message.result != SYS_OK)
                 s_control_state = CONTROL_ERROR;
             else if (s_control_state == CONTROL_START_CAMERA)
@@ -207,6 +221,7 @@ static void ControlTask_Process(uint32_t events)
             s_control_state = CONTROL_ERROR;
             s_control_command_sent = false;
             g_control_task_debug.result = SYS_ERR_TIMEOUT;
+            ControlTask_RecordFault(SYS_ERR_TIMEOUT);
         }
     }
     g_control_task_debug.state = s_control_state;
@@ -220,6 +235,7 @@ static void ControlTask_Command(ControlState_t state)
         s_control_state = CONTROL_ERROR;
         s_control_command_sent = false;
         g_control_task_debug.result = SYS_ERR_NO_RESOURCE;
+        ControlTask_RecordFault(SYS_ERR_NO_RESOURCE);
         return;
     }
     s_control_state = state;
@@ -259,4 +275,22 @@ SysResult_t ControlTask_RequestStop(void)
 SysResult_t ControlTask_RequestStart(void)
 {
     return ControlTask_Request(APP_MESSAGE_START);
+}
+
+//提交Control协调状态与最近故障，不代替原命令和ACK处理
+static void ControlTask_PublishStatus(void)
+{
+    AppControlStatus_t status;
+
+    status.state = g_control_task_debug.state;
+    status.result = g_control_task_debug.result;
+    status.last_fault = s_control_status_fault;
+    (void)App_StatusPublishControl(&status);
+}
+
+//只更新故障观测值，恢复成功不清除最近故障历史
+static void ControlTask_RecordFault(SysResult_t result)
+{
+    if (result < SYS_OK)
+        s_control_status_fault = result;
 }

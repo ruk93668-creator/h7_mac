@@ -1,0 +1,147 @@
+[
+  {
+    "command": "D:\\32\\ARM\\ARMCC\\Bin\\armcc.exe --vsn",
+    "exit_code": 0,
+    "output": "Product: MDK Plus 5.32\r\nComponent: ARM Compiler 5.06 update 7 (build 960)\r\nTool: armcc [4d365d]\r\nFor support see http://www.arm.com/support\r\nSoftware supplied by: ARM Limited\r\n"
+  },
+  {
+    "command": "D:\\32\\ARM\\ARMCC\\Bin\\armcc.exe --cpu Cortex-M7 --c99 -O0 -DCORE_CM7 -DIPC_CORE_TEST --preinclude D:\\32\\STM32H7\\h7_mac\\Tests\\IpcStatus\\stubs\\app_events.h -I D:\\32\\STM32H7\\h7_mac\\Tests\\IpcV2\\stubs -I D:\\32\\STM32H7\\h7_mac\\Common\\Inc -I D:\\32\\STM32H7\\h7_mac\\CM7\\Application -I D:\\32\\STM32H7\\h7_mac\\CM7\\Platform -I D:\\32\\STM32H7\\h7_mac\\CM7\\Service -c D:\\32\\STM32H7\\h7_mac\\Tests\\IpcStatus\\status_test.c -o D:\\32\\STM32H7\\h7_mac\\output\\IpcStatus\\CM7_O0\\status_test.o",
+    "exit_code": 0,
+    "output": ""
+  },
+  {
+    "command": "D:\\32\\ARM\\ARMCC\\Bin\\armcc.exe --cpu Cortex-M7 --c99 -O0 -DCORE_CM7 -DIPC_CORE_TEST --preinclude D:\\32\\STM32H7\\h7_mac\\Tests\\IpcStatus\\stubs\\app_events.h -I D:\\32\\STM32H7\\h7_mac\\Tests\\IpcV2\\stubs -I D:\\32\\STM32H7\\h7_mac\\Common\\Inc -I D:\\32\\STM32H7\\h7_mac\\CM7\\Application -I D:\\32\\STM32H7\\h7_mac\\CM7\\Platform -I D:\\32\\STM32H7\\h7_mac\\CM7\\Service -c D:\\32\\STM32H7\\h7_mac\\Common\\Src\\ipc_core.c -o D:\\32\\STM32H7\\h7_mac\\output\\IpcStatus\\CM7_O0\\ipc_core.o",
+    "exit_code": 0,
+    "output": ""
+  },
+  {
+    "command": "D:\\32\\ARM\\ARMCC\\Bin\\armcc.exe --cpu Cortex-M7 --c99 -O0 -DCORE_CM7 -DIPC_CORE_TEST --preinclude D:\\32\\STM32H7\\h7_mac\\Tests\\IpcStatus\\stubs\\app_events.h -I D:\\32\\STM32H7\\h7_mac\\Tests\\IpcV2\\stubs -I D:\\32\\STM32H7\\h7_mac\\Common\\Inc -I D:\\32\\STM32H7\\h7_mac\\CM7\\Application -I D:\\32\\STM32H7\\h7_mac\\CM7\\Platform -I D:\\32\\STM32H7\\h7_mac\\CM7\\Service -c D:\\32\\STM32H7\\h7_mac\\Common\\Src\\ipc_shared.c -o D:\\32\\STM32H7\\h7_mac\\output\\IpcStatus\\CM7_O0\\ipc_shared.o",
+    "exit_code": 0,
+    "output": ""
+  },
+  {
+    "command": "D:\\32\\ARM\\ARMCC\\Bin\\armcc.exe --cpu Cortex-M7 --c99 -O0 -DCORE_CM7 -DIPC_CORE_TEST --preinclude D:\\32\\STM32H7\\h7_mac\\Tests\\IpcStatus\\stubs\\app_events.h -I D:\\32\\STM32H7\\h7_mac\\Tests\\IpcV2\\stubs -I D:\\32\\STM32H7\\h7_mac\\Common\\Inc -I D:\\32\\STM32H7\\h7_mac\\CM7\\Application -I D:\\32\\STM32H7\\h7_mac\\CM7\\Platform -I D:\\32\\STM32H7\\h7_mac\\CM7\\Service -c D:\\32\\STM32H7\\h7_mac\\Common\\Src\\ipc_runtime.c -o D:\\32\\STM32H7\\h7_mac\\output\\IpcStatus\\CM7_O0\\ipc_runtime.o",
+    "exit_code": 0,
+    "output": ""
+  },
+  {
+    "command": "D:\\32\\ARM\\ARMCC\\Bin\\armcc.exe --cpu Cortex-M7 --c99 -O0 -DCORE_CM7 -DIPC_CORE_TEST --preinclude D:\\32\\STM32H7\\h7_mac\\Tests\\IpcStatus\\stubs\\app_events.h -I D:\\32\\STM32H7\\h7_mac\\Tests\\IpcV2\\stubs -I D:\\32\\STM32H7\\h7_mac\\Common\\Inc -I D:\\32\\STM32H7\\h7_mac\\CM7\\Application -I D:\\32\\STM32H7\\h7_mac\\CM7\\Platform -I D:\\32\\STM32H7\\h7_mac\\CM7\\Service -c D:\\32\\STM32H7\\h7_mac\\Common\\Src\\ipc_application.c -o D:\\32\\STM32H7\\h7_mac\\output\\IpcStatus\\CM7_O0\\ipc_application.o",
+    "exit_code": 0,
+    "output": ""
+  },
+  {
+    "command": "D:\\32\\ARM\\ARMCC\\Bin\\armcc.exe --cpu Cortex-M7 --c99 -O0 -DCORE_CM7 -DIPC_CORE_TEST --preinclude D:\\32\\STM32H7\\h7_mac\\Tests\\IpcStatus\\stubs\\app_events.h -I D:\\32\\STM32H7\\h7_mac\\Tests\\IpcV2\\stubs -I D:\\32\\STM32H7\\h7_mac\\Common\\Inc -I D:\\32\\STM32H7\\h7_mac\\CM7\\Application -I D:\\32\\STM32H7\\h7_mac\\CM7\\Platform -I D:\\32\\STM32H7\\h7_mac\\CM7\\Service -c D:\\32\\STM32H7\\h7_mac\\CM7\\Application\\app_status.c -o D:\\32\\STM32H7\\h7_mac\\output\\IpcStatus\\CM7_O0\\app_status.o",
+    "exit_code": 0,
+    "output": ""
+  },
+  {
+    "command": "D:\\32\\ARM\\ARMCC\\Bin\\armlink.exe D:\\32\\STM32H7\\h7_mac\\output\\IpcStatus\\CM7_O0\\status_test.o D:\\32\\STM32H7\\h7_mac\\output\\IpcStatus\\CM7_O0\\ipc_core.o D:\\32\\STM32H7\\h7_mac\\output\\IpcStatus\\CM7_O0\\ipc_shared.o D:\\32\\STM32H7\\h7_mac\\output\\IpcStatus\\CM7_O0\\ipc_runtime.o D:\\32\\STM32H7\\h7_mac\\output\\IpcStatus\\CM7_O0\\ipc_application.o D:\\32\\STM32H7\\h7_mac\\output\\IpcStatus\\CM7_O0\\app_status.o --entry IpcStatus_TestRun --scatter D:\\32\\STM32H7\\h7_mac\\Tests\\IpcStatus\\test.sct --no_scanlib --map --list D:\\32\\STM32H7\\h7_mac\\output\\IpcStatus\\CM7_O0\\ipc_test.map -o D:\\32\\STM32H7\\h7_mac\\output\\IpcStatus\\CM7_O0\\ipc_test.axf",
+    "exit_code": 0,
+    "output": ""
+  },
+  {
+    "command": "D:\\32\\ARM\\ARMCC\\Bin\\armcc.exe --cpu Cortex-M7 --c99 -O2 -DCORE_CM7 -DIPC_CORE_TEST --preinclude D:\\32\\STM32H7\\h7_mac\\Tests\\IpcStatus\\stubs\\app_events.h -I D:\\32\\STM32H7\\h7_mac\\Tests\\IpcV2\\stubs -I D:\\32\\STM32H7\\h7_mac\\Common\\Inc -I D:\\32\\STM32H7\\h7_mac\\CM7\\Application -I D:\\32\\STM32H7\\h7_mac\\CM7\\Platform -I D:\\32\\STM32H7\\h7_mac\\CM7\\Service -c D:\\32\\STM32H7\\h7_mac\\Tests\\IpcStatus\\status_test.c -o D:\\32\\STM32H7\\h7_mac\\output\\IpcStatus\\CM7_O2\\status_test.o",
+    "exit_code": 0,
+    "output": ""
+  },
+  {
+    "command": "D:\\32\\ARM\\ARMCC\\Bin\\armcc.exe --cpu Cortex-M7 --c99 -O2 -DCORE_CM7 -DIPC_CORE_TEST --preinclude D:\\32\\STM32H7\\h7_mac\\Tests\\IpcStatus\\stubs\\app_events.h -I D:\\32\\STM32H7\\h7_mac\\Tests\\IpcV2\\stubs -I D:\\32\\STM32H7\\h7_mac\\Common\\Inc -I D:\\32\\STM32H7\\h7_mac\\CM7\\Application -I D:\\32\\STM32H7\\h7_mac\\CM7\\Platform -I D:\\32\\STM32H7\\h7_mac\\CM7\\Service -c D:\\32\\STM32H7\\h7_mac\\Common\\Src\\ipc_core.c -o D:\\32\\STM32H7\\h7_mac\\output\\IpcStatus\\CM7_O2\\ipc_core.o",
+    "exit_code": 0,
+    "output": ""
+  },
+  {
+    "command": "D:\\32\\ARM\\ARMCC\\Bin\\armcc.exe --cpu Cortex-M7 --c99 -O2 -DCORE_CM7 -DIPC_CORE_TEST --preinclude D:\\32\\STM32H7\\h7_mac\\Tests\\IpcStatus\\stubs\\app_events.h -I D:\\32\\STM32H7\\h7_mac\\Tests\\IpcV2\\stubs -I D:\\32\\STM32H7\\h7_mac\\Common\\Inc -I D:\\32\\STM32H7\\h7_mac\\CM7\\Application -I D:\\32\\STM32H7\\h7_mac\\CM7\\Platform -I D:\\32\\STM32H7\\h7_mac\\CM7\\Service -c D:\\32\\STM32H7\\h7_mac\\Common\\Src\\ipc_shared.c -o D:\\32\\STM32H7\\h7_mac\\output\\IpcStatus\\CM7_O2\\ipc_shared.o",
+    "exit_code": 0,
+    "output": ""
+  },
+  {
+    "command": "D:\\32\\ARM\\ARMCC\\Bin\\armcc.exe --cpu Cortex-M7 --c99 -O2 -DCORE_CM7 -DIPC_CORE_TEST --preinclude D:\\32\\STM32H7\\h7_mac\\Tests\\IpcStatus\\stubs\\app_events.h -I D:\\32\\STM32H7\\h7_mac\\Tests\\IpcV2\\stubs -I D:\\32\\STM32H7\\h7_mac\\Common\\Inc -I D:\\32\\STM32H7\\h7_mac\\CM7\\Application -I D:\\32\\STM32H7\\h7_mac\\CM7\\Platform -I D:\\32\\STM32H7\\h7_mac\\CM7\\Service -c D:\\32\\STM32H7\\h7_mac\\Common\\Src\\ipc_runtime.c -o D:\\32\\STM32H7\\h7_mac\\output\\IpcStatus\\CM7_O2\\ipc_runtime.o",
+    "exit_code": 0,
+    "output": ""
+  },
+  {
+    "command": "D:\\32\\ARM\\ARMCC\\Bin\\armcc.exe --cpu Cortex-M7 --c99 -O2 -DCORE_CM7 -DIPC_CORE_TEST --preinclude D:\\32\\STM32H7\\h7_mac\\Tests\\IpcStatus\\stubs\\app_events.h -I D:\\32\\STM32H7\\h7_mac\\Tests\\IpcV2\\stubs -I D:\\32\\STM32H7\\h7_mac\\Common\\Inc -I D:\\32\\STM32H7\\h7_mac\\CM7\\Application -I D:\\32\\STM32H7\\h7_mac\\CM7\\Platform -I D:\\32\\STM32H7\\h7_mac\\CM7\\Service -c D:\\32\\STM32H7\\h7_mac\\Common\\Src\\ipc_application.c -o D:\\32\\STM32H7\\h7_mac\\output\\IpcStatus\\CM7_O2\\ipc_application.o",
+    "exit_code": 0,
+    "output": ""
+  },
+  {
+    "command": "D:\\32\\ARM\\ARMCC\\Bin\\armcc.exe --cpu Cortex-M7 --c99 -O2 -DCORE_CM7 -DIPC_CORE_TEST --preinclude D:\\32\\STM32H7\\h7_mac\\Tests\\IpcStatus\\stubs\\app_events.h -I D:\\32\\STM32H7\\h7_mac\\Tests\\IpcV2\\stubs -I D:\\32\\STM32H7\\h7_mac\\Common\\Inc -I D:\\32\\STM32H7\\h7_mac\\CM7\\Application -I D:\\32\\STM32H7\\h7_mac\\CM7\\Platform -I D:\\32\\STM32H7\\h7_mac\\CM7\\Service -c D:\\32\\STM32H7\\h7_mac\\CM7\\Application\\app_status.c -o D:\\32\\STM32H7\\h7_mac\\output\\IpcStatus\\CM7_O2\\app_status.o",
+    "exit_code": 0,
+    "output": ""
+  },
+  {
+    "command": "D:\\32\\ARM\\ARMCC\\Bin\\armlink.exe D:\\32\\STM32H7\\h7_mac\\output\\IpcStatus\\CM7_O2\\status_test.o D:\\32\\STM32H7\\h7_mac\\output\\IpcStatus\\CM7_O2\\ipc_core.o D:\\32\\STM32H7\\h7_mac\\output\\IpcStatus\\CM7_O2\\ipc_shared.o D:\\32\\STM32H7\\h7_mac\\output\\IpcStatus\\CM7_O2\\ipc_runtime.o D:\\32\\STM32H7\\h7_mac\\output\\IpcStatus\\CM7_O2\\ipc_application.o D:\\32\\STM32H7\\h7_mac\\output\\IpcStatus\\CM7_O2\\app_status.o --entry IpcStatus_TestRun --scatter D:\\32\\STM32H7\\h7_mac\\Tests\\IpcStatus\\test.sct --no_scanlib --map --list D:\\32\\STM32H7\\h7_mac\\output\\IpcStatus\\CM7_O2\\ipc_test.map -o D:\\32\\STM32H7\\h7_mac\\output\\IpcStatus\\CM7_O2\\ipc_test.axf",
+    "exit_code": 0,
+    "output": ""
+  },
+  {
+    "command": "D:\\32\\ARM\\ARMCC\\Bin\\armcc.exe --cpu Cortex-M4 --c99 -O0 -DCORE_CM4 -DIPC_CORE_TEST --preinclude D:\\32\\STM32H7\\h7_mac\\Tests\\IpcStatus\\stubs\\app_events.h -I D:\\32\\STM32H7\\h7_mac\\Tests\\IpcV2\\stubs -I D:\\32\\STM32H7\\h7_mac\\Common\\Inc -I D:\\32\\STM32H7\\h7_mac\\CM7\\Application -I D:\\32\\STM32H7\\h7_mac\\CM4\\Platform -I D:\\32\\STM32H7\\h7_mac\\CM4\\Service -c D:\\32\\STM32H7\\h7_mac\\Tests\\IpcStatus\\status_test.c -o D:\\32\\STM32H7\\h7_mac\\output\\IpcStatus\\CM4_O0\\status_test.o",
+    "exit_code": 0,
+    "output": ""
+  },
+  {
+    "command": "D:\\32\\ARM\\ARMCC\\Bin\\armcc.exe --cpu Cortex-M4 --c99 -O0 -DCORE_CM4 -DIPC_CORE_TEST --preinclude D:\\32\\STM32H7\\h7_mac\\Tests\\IpcStatus\\stubs\\app_events.h -I D:\\32\\STM32H7\\h7_mac\\Tests\\IpcV2\\stubs -I D:\\32\\STM32H7\\h7_mac\\Common\\Inc -I D:\\32\\STM32H7\\h7_mac\\CM7\\Application -I D:\\32\\STM32H7\\h7_mac\\CM4\\Platform -I D:\\32\\STM32H7\\h7_mac\\CM4\\Service -c D:\\32\\STM32H7\\h7_mac\\Common\\Src\\ipc_core.c -o D:\\32\\STM32H7\\h7_mac\\output\\IpcStatus\\CM4_O0\\ipc_core.o",
+    "exit_code": 0,
+    "output": ""
+  },
+  {
+    "command": "D:\\32\\ARM\\ARMCC\\Bin\\armcc.exe --cpu Cortex-M4 --c99 -O0 -DCORE_CM4 -DIPC_CORE_TEST --preinclude D:\\32\\STM32H7\\h7_mac\\Tests\\IpcStatus\\stubs\\app_events.h -I D:\\32\\STM32H7\\h7_mac\\Tests\\IpcV2\\stubs -I D:\\32\\STM32H7\\h7_mac\\Common\\Inc -I D:\\32\\STM32H7\\h7_mac\\CM7\\Application -I D:\\32\\STM32H7\\h7_mac\\CM4\\Platform -I D:\\32\\STM32H7\\h7_mac\\CM4\\Service -c D:\\32\\STM32H7\\h7_mac\\Common\\Src\\ipc_shared.c -o D:\\32\\STM32H7\\h7_mac\\output\\IpcStatus\\CM4_O0\\ipc_shared.o",
+    "exit_code": 0,
+    "output": ""
+  },
+  {
+    "command": "D:\\32\\ARM\\ARMCC\\Bin\\armcc.exe --cpu Cortex-M4 --c99 -O0 -DCORE_CM4 -DIPC_CORE_TEST --preinclude D:\\32\\STM32H7\\h7_mac\\Tests\\IpcStatus\\stubs\\app_events.h -I D:\\32\\STM32H7\\h7_mac\\Tests\\IpcV2\\stubs -I D:\\32\\STM32H7\\h7_mac\\Common\\Inc -I D:\\32\\STM32H7\\h7_mac\\CM7\\Application -I D:\\32\\STM32H7\\h7_mac\\CM4\\Platform -I D:\\32\\STM32H7\\h7_mac\\CM4\\Service -c D:\\32\\STM32H7\\h7_mac\\Common\\Src\\ipc_runtime.c -o D:\\32\\STM32H7\\h7_mac\\output\\IpcStatus\\CM4_O0\\ipc_runtime.o",
+    "exit_code": 0,
+    "output": ""
+  },
+  {
+    "command": "D:\\32\\ARM\\ARMCC\\Bin\\armcc.exe --cpu Cortex-M4 --c99 -O0 -DCORE_CM4 -DIPC_CORE_TEST --preinclude D:\\32\\STM32H7\\h7_mac\\Tests\\IpcStatus\\stubs\\app_events.h -I D:\\32\\STM32H7\\h7_mac\\Tests\\IpcV2\\stubs -I D:\\32\\STM32H7\\h7_mac\\Common\\Inc -I D:\\32\\STM32H7\\h7_mac\\CM7\\Application -I D:\\32\\STM32H7\\h7_mac\\CM4\\Platform -I D:\\32\\STM32H7\\h7_mac\\CM4\\Service -c D:\\32\\STM32H7\\h7_mac\\Common\\Src\\ipc_application.c -o D:\\32\\STM32H7\\h7_mac\\output\\IpcStatus\\CM4_O0\\ipc_application.o",
+    "exit_code": 0,
+    "output": ""
+  },
+  {
+    "command": "D:\\32\\ARM\\ARMCC\\Bin\\armcc.exe --cpu Cortex-M4 --c99 -O0 -DCORE_CM4 -DIPC_CORE_TEST --preinclude D:\\32\\STM32H7\\h7_mac\\Tests\\IpcStatus\\stubs\\app_events.h -I D:\\32\\STM32H7\\h7_mac\\Tests\\IpcV2\\stubs -I D:\\32\\STM32H7\\h7_mac\\Common\\Inc -I D:\\32\\STM32H7\\h7_mac\\CM7\\Application -I D:\\32\\STM32H7\\h7_mac\\CM4\\Platform -I D:\\32\\STM32H7\\h7_mac\\CM4\\Service -c D:\\32\\STM32H7\\h7_mac\\CM7\\Application\\app_status.c -o D:\\32\\STM32H7\\h7_mac\\output\\IpcStatus\\CM4_O0\\app_status.o",
+    "exit_code": 0,
+    "output": ""
+  },
+  {
+    "command": "D:\\32\\ARM\\ARMCC\\Bin\\armlink.exe D:\\32\\STM32H7\\h7_mac\\output\\IpcStatus\\CM4_O0\\status_test.o D:\\32\\STM32H7\\h7_mac\\output\\IpcStatus\\CM4_O0\\ipc_core.o D:\\32\\STM32H7\\h7_mac\\output\\IpcStatus\\CM4_O0\\ipc_shared.o D:\\32\\STM32H7\\h7_mac\\output\\IpcStatus\\CM4_O0\\ipc_runtime.o D:\\32\\STM32H7\\h7_mac\\output\\IpcStatus\\CM4_O0\\ipc_application.o D:\\32\\STM32H7\\h7_mac\\output\\IpcStatus\\CM4_O0\\app_status.o --entry IpcStatus_TestRun --scatter D:\\32\\STM32H7\\h7_mac\\Tests\\IpcStatus\\test.sct --no_scanlib --map --list D:\\32\\STM32H7\\h7_mac\\output\\IpcStatus\\CM4_O0\\ipc_test.map -o D:\\32\\STM32H7\\h7_mac\\output\\IpcStatus\\CM4_O0\\ipc_test.axf",
+    "exit_code": 0,
+    "output": ""
+  },
+  {
+    "command": "D:\\32\\ARM\\ARMCC\\Bin\\armcc.exe --cpu Cortex-M4 --c99 -O2 -DCORE_CM4 -DIPC_CORE_TEST --preinclude D:\\32\\STM32H7\\h7_mac\\Tests\\IpcStatus\\stubs\\app_events.h -I D:\\32\\STM32H7\\h7_mac\\Tests\\IpcV2\\stubs -I D:\\32\\STM32H7\\h7_mac\\Common\\Inc -I D:\\32\\STM32H7\\h7_mac\\CM7\\Application -I D:\\32\\STM32H7\\h7_mac\\CM4\\Platform -I D:\\32\\STM32H7\\h7_mac\\CM4\\Service -c D:\\32\\STM32H7\\h7_mac\\Tests\\IpcStatus\\status_test.c -o D:\\32\\STM32H7\\h7_mac\\output\\IpcStatus\\CM4_O2\\status_test.o",
+    "exit_code": 0,
+    "output": ""
+  },
+  {
+    "command": "D:\\32\\ARM\\ARMCC\\Bin\\armcc.exe --cpu Cortex-M4 --c99 -O2 -DCORE_CM4 -DIPC_CORE_TEST --preinclude D:\\32\\STM32H7\\h7_mac\\Tests\\IpcStatus\\stubs\\app_events.h -I D:\\32\\STM32H7\\h7_mac\\Tests\\IpcV2\\stubs -I D:\\32\\STM32H7\\h7_mac\\Common\\Inc -I D:\\32\\STM32H7\\h7_mac\\CM7\\Application -I D:\\32\\STM32H7\\h7_mac\\CM4\\Platform -I D:\\32\\STM32H7\\h7_mac\\CM4\\Service -c D:\\32\\STM32H7\\h7_mac\\Common\\Src\\ipc_core.c -o D:\\32\\STM32H7\\h7_mac\\output\\IpcStatus\\CM4_O2\\ipc_core.o",
+    "exit_code": 0,
+    "output": ""
+  },
+  {
+    "command": "D:\\32\\ARM\\ARMCC\\Bin\\armcc.exe --cpu Cortex-M4 --c99 -O2 -DCORE_CM4 -DIPC_CORE_TEST --preinclude D:\\32\\STM32H7\\h7_mac\\Tests\\IpcStatus\\stubs\\app_events.h -I D:\\32\\STM32H7\\h7_mac\\Tests\\IpcV2\\stubs -I D:\\32\\STM32H7\\h7_mac\\Common\\Inc -I D:\\32\\STM32H7\\h7_mac\\CM7\\Application -I D:\\32\\STM32H7\\h7_mac\\CM4\\Platform -I D:\\32\\STM32H7\\h7_mac\\CM4\\Service -c D:\\32\\STM32H7\\h7_mac\\Common\\Src\\ipc_shared.c -o D:\\32\\STM32H7\\h7_mac\\output\\IpcStatus\\CM4_O2\\ipc_shared.o",
+    "exit_code": 0,
+    "output": ""
+  },
+  {
+    "command": "D:\\32\\ARM\\ARMCC\\Bin\\armcc.exe --cpu Cortex-M4 --c99 -O2 -DCORE_CM4 -DIPC_CORE_TEST --preinclude D:\\32\\STM32H7\\h7_mac\\Tests\\IpcStatus\\stubs\\app_events.h -I D:\\32\\STM32H7\\h7_mac\\Tests\\IpcV2\\stubs -I D:\\32\\STM32H7\\h7_mac\\Common\\Inc -I D:\\32\\STM32H7\\h7_mac\\CM7\\Application -I D:\\32\\STM32H7\\h7_mac\\CM4\\Platform -I D:\\32\\STM32H7\\h7_mac\\CM4\\Service -c D:\\32\\STM32H7\\h7_mac\\Common\\Src\\ipc_runtime.c -o D:\\32\\STM32H7\\h7_mac\\output\\IpcStatus\\CM4_O2\\ipc_runtime.o",
+    "exit_code": 0,
+    "output": ""
+  },
+  {
+    "command": "D:\\32\\ARM\\ARMCC\\Bin\\armcc.exe --cpu Cortex-M4 --c99 -O2 -DCORE_CM4 -DIPC_CORE_TEST --preinclude D:\\32\\STM32H7\\h7_mac\\Tests\\IpcStatus\\stubs\\app_events.h -I D:\\32\\STM32H7\\h7_mac\\Tests\\IpcV2\\stubs -I D:\\32\\STM32H7\\h7_mac\\Common\\Inc -I D:\\32\\STM32H7\\h7_mac\\CM7\\Application -I D:\\32\\STM32H7\\h7_mac\\CM4\\Platform -I D:\\32\\STM32H7\\h7_mac\\CM4\\Service -c D:\\32\\STM32H7\\h7_mac\\Common\\Src\\ipc_application.c -o D:\\32\\STM32H7\\h7_mac\\output\\IpcStatus\\CM4_O2\\ipc_application.o",
+    "exit_code": 0,
+    "output": ""
+  },
+  {
+    "command": "D:\\32\\ARM\\ARMCC\\Bin\\armcc.exe --cpu Cortex-M4 --c99 -O2 -DCORE_CM4 -DIPC_CORE_TEST --preinclude D:\\32\\STM32H7\\h7_mac\\Tests\\IpcStatus\\stubs\\app_events.h -I D:\\32\\STM32H7\\h7_mac\\Tests\\IpcV2\\stubs -I D:\\32\\STM32H7\\h7_mac\\Common\\Inc -I D:\\32\\STM32H7\\h7_mac\\CM7\\Application -I D:\\32\\STM32H7\\h7_mac\\CM4\\Platform -I D:\\32\\STM32H7\\h7_mac\\CM4\\Service -c D:\\32\\STM32H7\\h7_mac\\CM7\\Application\\app_status.c -o D:\\32\\STM32H7\\h7_mac\\output\\IpcStatus\\CM4_O2\\app_status.o",
+    "exit_code": 0,
+    "output": ""
+  },
+  {
+    "command": "D:\\32\\ARM\\ARMCC\\Bin\\armlink.exe D:\\32\\STM32H7\\h7_mac\\output\\IpcStatus\\CM4_O2\\status_test.o D:\\32\\STM32H7\\h7_mac\\output\\IpcStatus\\CM4_O2\\ipc_core.o D:\\32\\STM32H7\\h7_mac\\output\\IpcStatus\\CM4_O2\\ipc_shared.o D:\\32\\STM32H7\\h7_mac\\output\\IpcStatus\\CM4_O2\\ipc_runtime.o D:\\32\\STM32H7\\h7_mac\\output\\IpcStatus\\CM4_O2\\ipc_application.o D:\\32\\STM32H7\\h7_mac\\output\\IpcStatus\\CM4_O2\\app_status.o --entry IpcStatus_TestRun --scatter D:\\32\\STM32H7\\h7_mac\\Tests\\IpcStatus\\test.sct --no_scanlib --map --list D:\\32\\STM32H7\\h7_mac\\output\\IpcStatus\\CM4_O2\\ipc_test.map -o D:\\32\\STM32H7\\h7_mac\\output\\IpcStatus\\CM4_O2\\ipc_test.axf",
+    "exit_code": 0,
+    "output": ""
+  }
+]

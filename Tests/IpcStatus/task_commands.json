@@ -1,0 +1,42 @@
+[
+  {
+    "command": "D:/32/ARM/ARMCC/Bin/armcc.exe --vsn",
+    "exit": 0,
+    "output": "Product: MDK Plus 5.32\r\nComponent: ARM Compiler 5.06 update 7 (build 960)\r\nTool: armcc [4d365d]\r\nFor support see http://www.arm.com/support\r\nSoftware supplied by: ARM Limited\r\n"
+  },
+  {
+    "command": "D:/32/ARM/ARMCC/Bin/armcc.exe --cpu Cortex-M7.fp.sp --c99 -O0 -DSTM32H747xx -DCORE_CM7 -DUSE_HAL_DRIVER -I D:\\32\\STM32H7\\h7_mac\\CM7\\Core\\Inc -I D:\\32\\STM32H7\\h7_mac\\CM7\\Application -I D:\\32\\STM32H7\\h7_mac\\CM7\\Application\\Tasks -I D:\\32\\STM32H7\\h7_mac\\CM7\\Platform -I D:\\32\\STM32H7\\h7_mac\\CM7\\Service -I D:\\32\\STM32H7\\h7_mac\\CM7\\Framework -I D:\\32\\STM32H7\\h7_mac\\CM7\\Media\\Inc -I D:\\32\\STM32H7\\h7_mac\\CM7\\BSP -I D:\\32\\STM32H7\\h7_mac\\Common\\Inc -I D:\\32\\STM32H7\\h7_mac\\Drivers\\STM32H7xx_HAL_Driver\\Inc -I D:\\32\\STM32H7\\h7_mac\\Drivers\\CMSIS\\Include -I D:\\32\\STM32H7\\h7_mac\\Drivers\\CMSIS\\Device\\ST\\STM32H7xx\\Include -I D:\\32\\STM32H7\\h7_mac\\Middlewares\\ST\\STM32_USB_Device_Library\\Core\\Inc -I D:\\32\\STM32H7\\h7_mac\\Middlewares\\Third_Party\\FreeRTOS\\Source\\include -I D:\\32\\STM32H7\\h7_mac\\Middlewares\\Third_Party\\FreeRTOS\\Source\\portable\\RVDS\\ARM_CM7\\r0p1 -c D:\\32\\STM32H7\\h7_mac\\Tests\\IpcStatus\\kernel_test.c -o D:\\32\\STM32H7\\h7_mac\\output\\IpcStatus\\task_kernel_test.o",
+    "exit": 0,
+    "output": ""
+  },
+  {
+    "command": "D:/32/ARM/ARMCC/Bin/armcc.exe --cpu Cortex-M7.fp.sp --c99 -O0 -DSTM32H747xx -DCORE_CM7 -DUSE_HAL_DRIVER -I D:\\32\\STM32H7\\h7_mac\\CM7\\Core\\Inc -I D:\\32\\STM32H7\\h7_mac\\CM7\\Application -I D:\\32\\STM32H7\\h7_mac\\CM7\\Application\\Tasks -I D:\\32\\STM32H7\\h7_mac\\CM7\\Platform -I D:\\32\\STM32H7\\h7_mac\\CM7\\Service -I D:\\32\\STM32H7\\h7_mac\\CM7\\Framework -I D:\\32\\STM32H7\\h7_mac\\CM7\\Media\\Inc -I D:\\32\\STM32H7\\h7_mac\\CM7\\BSP -I D:\\32\\STM32H7\\h7_mac\\Common\\Inc -I D:\\32\\STM32H7\\h7_mac\\Drivers\\STM32H7xx_HAL_Driver\\Inc -I D:\\32\\STM32H7\\h7_mac\\Drivers\\CMSIS\\Include -I D:\\32\\STM32H7\\h7_mac\\Drivers\\CMSIS\\Device\\ST\\STM32H7xx\\Include -I D:\\32\\STM32H7\\h7_mac\\Middlewares\\ST\\STM32_USB_Device_Library\\Core\\Inc -I D:\\32\\STM32H7\\h7_mac\\Middlewares\\Third_Party\\FreeRTOS\\Source\\include -I D:\\32\\STM32H7\\h7_mac\\Middlewares\\Third_Party\\FreeRTOS\\Source\\portable\\RVDS\\ARM_CM7\\r0p1 -c D:\\32\\STM32H7\\h7_mac\\Common\\Src\\ipc_application.c -o D:\\32\\STM32H7\\h7_mac\\output\\IpcStatus\\task_ipc_application.o",
+    "exit": 0,
+    "output": ""
+  },
+  {
+    "command": "D:/32/ARM/ARMCC/Bin/armcc.exe --cpu Cortex-M7.fp.sp --c99 -O0 -DSTM32H747xx -DCORE_CM7 -DUSE_HAL_DRIVER -I D:\\32\\STM32H7\\h7_mac\\CM7\\Core\\Inc -I D:\\32\\STM32H7\\h7_mac\\CM7\\Application -I D:\\32\\STM32H7\\h7_mac\\CM7\\Application\\Tasks -I D:\\32\\STM32H7\\h7_mac\\CM7\\Platform -I D:\\32\\STM32H7\\h7_mac\\CM7\\Service -I D:\\32\\STM32H7\\h7_mac\\CM7\\Framework -I D:\\32\\STM32H7\\h7_mac\\CM7\\Media\\Inc -I D:\\32\\STM32H7\\h7_mac\\CM7\\BSP -I D:\\32\\STM32H7\\h7_mac\\Common\\Inc -I D:\\32\\STM32H7\\h7_mac\\Drivers\\STM32H7xx_HAL_Driver\\Inc -I D:\\32\\STM32H7\\h7_mac\\Drivers\\CMSIS\\Include -I D:\\32\\STM32H7\\h7_mac\\Drivers\\CMSIS\\Device\\ST\\STM32H7xx\\Include -I D:\\32\\STM32H7\\h7_mac\\Middlewares\\ST\\STM32_USB_Device_Library\\Core\\Inc -I D:\\32\\STM32H7\\h7_mac\\Middlewares\\Third_Party\\FreeRTOS\\Source\\include -I D:\\32\\STM32H7\\h7_mac\\Middlewares\\Third_Party\\FreeRTOS\\Source\\portable\\RVDS\\ARM_CM7\\r0p1 -c D:\\32\\STM32H7\\h7_mac\\Drivers\\STM32H7xx_HAL_Driver\\Src\\stm32h7xx_hal_cortex.c -o D:\\32\\STM32H7\\h7_mac\\output\\IpcStatus\\task_stm32h7xx_hal_cortex.o",
+    "exit": 0,
+    "output": ""
+  },
+  {
+    "command": "D:/32/ARM/ARMCC/Bin/armcc.exe --cpu Cortex-M7.fp.sp --c99 -O0 -DSTM32H747xx -DCORE_CM7 -DUSE_HAL_DRIVER -I D:\\32\\STM32H7\\h7_mac\\CM7\\Core\\Inc -I D:\\32\\STM32H7\\h7_mac\\CM7\\Application -I D:\\32\\STM32H7\\h7_mac\\CM7\\Application\\Tasks -I D:\\32\\STM32H7\\h7_mac\\CM7\\Platform -I D:\\32\\STM32H7\\h7_mac\\CM7\\Service -I D:\\32\\STM32H7\\h7_mac\\CM7\\Framework -I D:\\32\\STM32H7\\h7_mac\\CM7\\Media\\Inc -I D:\\32\\STM32H7\\h7_mac\\CM7\\BSP -I D:\\32\\STM32H7\\h7_mac\\Common\\Inc -I D:\\32\\STM32H7\\h7_mac\\Drivers\\STM32H7xx_HAL_Driver\\Inc -I D:\\32\\STM32H7\\h7_mac\\Drivers\\CMSIS\\Include -I D:\\32\\STM32H7\\h7_mac\\Drivers\\CMSIS\\Device\\ST\\STM32H7xx\\Include -I D:\\32\\STM32H7\\h7_mac\\Middlewares\\ST\\STM32_USB_Device_Library\\Core\\Inc -I D:\\32\\STM32H7\\h7_mac\\Middlewares\\Third_Party\\FreeRTOS\\Source\\include -I D:\\32\\STM32H7\\h7_mac\\Middlewares\\Third_Party\\FreeRTOS\\Source\\portable\\RVDS\\ARM_CM7\\r0p1 -c D:\\32\\STM32H7\\h7_mac\\Middlewares\\Third_Party\\FreeRTOS\\Source\\list.c -o D:\\32\\STM32H7\\h7_mac\\output\\IpcStatus\\task_list.o",
+    "exit": 0,
+    "output": ""
+  },
+  {
+    "command": "D:/32/ARM/ARMCC/Bin/armcc.exe --cpu Cortex-M7.fp.sp --c99 -O0 -DSTM32H747xx -DCORE_CM7 -DUSE_HAL_DRIVER -I D:\\32\\STM32H7\\h7_mac\\CM7\\Core\\Inc -I D:\\32\\STM32H7\\h7_mac\\CM7\\Application -I D:\\32\\STM32H7\\h7_mac\\CM7\\Application\\Tasks -I D:\\32\\STM32H7\\h7_mac\\CM7\\Platform -I D:\\32\\STM32H7\\h7_mac\\CM7\\Service -I D:\\32\\STM32H7\\h7_mac\\CM7\\Framework -I D:\\32\\STM32H7\\h7_mac\\CM7\\Media\\Inc -I D:\\32\\STM32H7\\h7_mac\\CM7\\BSP -I D:\\32\\STM32H7\\h7_mac\\Common\\Inc -I D:\\32\\STM32H7\\h7_mac\\Drivers\\STM32H7xx_HAL_Driver\\Inc -I D:\\32\\STM32H7\\h7_mac\\Drivers\\CMSIS\\Include -I D:\\32\\STM32H7\\h7_mac\\Drivers\\CMSIS\\Device\\ST\\STM32H7xx\\Include -I D:\\32\\STM32H7\\h7_mac\\Middlewares\\ST\\STM32_USB_Device_Library\\Core\\Inc -I D:\\32\\STM32H7\\h7_mac\\Middlewares\\Third_Party\\FreeRTOS\\Source\\include -I D:\\32\\STM32H7\\h7_mac\\Middlewares\\Third_Party\\FreeRTOS\\Source\\portable\\RVDS\\ARM_CM7\\r0p1 -c D:\\32\\STM32H7\\h7_mac\\Middlewares\\Third_Party\\FreeRTOS\\Source\\queue.c -o D:\\32\\STM32H7\\h7_mac\\output\\IpcStatus\\task_queue.o",
+    "exit": 0,
+    "output": ""
+  },
+  {
+    "command": "D:/32/ARM/ARMCC/Bin/armcc.exe --cpu Cortex-M7.fp.sp --c99 -O0 -DSTM32H747xx -DCORE_CM7 -DUSE_HAL_DRIVER -I D:\\32\\STM32H7\\h7_mac\\CM7\\Core\\Inc -I D:\\32\\STM32H7\\h7_mac\\CM7\\Application -I D:\\32\\STM32H7\\h7_mac\\CM7\\Application\\Tasks -I D:\\32\\STM32H7\\h7_mac\\CM7\\Platform -I D:\\32\\STM32H7\\h7_mac\\CM7\\Service -I D:\\32\\STM32H7\\h7_mac\\CM7\\Framework -I D:\\32\\STM32H7\\h7_mac\\CM7\\Media\\Inc -I D:\\32\\STM32H7\\h7_mac\\CM7\\BSP -I D:\\32\\STM32H7\\h7_mac\\Common\\Inc -I D:\\32\\STM32H7\\h7_mac\\Drivers\\STM32H7xx_HAL_Driver\\Inc -I D:\\32\\STM32H7\\h7_mac\\Drivers\\CMSIS\\Include -I D:\\32\\STM32H7\\h7_mac\\Drivers\\CMSIS\\Device\\ST\\STM32H7xx\\Include -I D:\\32\\STM32H7\\h7_mac\\Middlewares\\ST\\STM32_USB_Device_Library\\Core\\Inc -I D:\\32\\STM32H7\\h7_mac\\Middlewares\\Third_Party\\FreeRTOS\\Source\\include -I D:\\32\\STM32H7\\h7_mac\\Middlewares\\Third_Party\\FreeRTOS\\Source\\portable\\RVDS\\ARM_CM7\\r0p1 -c D:\\32\\STM32H7\\h7_mac\\Middlewares\\Third_Party\\FreeRTOS\\Source\\portable\\RVDS\\ARM_CM7\\r0p1\\port.c -o D:\\32\\STM32H7\\h7_mac\\output\\IpcStatus\\task_port.o",
+    "exit": 0,
+    "output": ""
+  },
+  {
+    "command": "D:/32/ARM/ARMCC/Bin/armlink.exe D:\\32\\STM32H7\\h7_mac\\output\\IpcStatus\\task_kernel_test.o D:\\32\\STM32H7\\h7_mac\\output\\IpcStatus\\task_ipc_application.o D:\\32\\STM32H7\\h7_mac\\output\\IpcStatus\\task_stm32h7xx_hal_cortex.o D:\\32\\STM32H7\\h7_mac\\output\\IpcStatus\\task_list.o D:\\32\\STM32H7\\h7_mac\\output\\IpcStatus\\task_queue.o D:\\32\\STM32H7\\h7_mac\\output\\IpcStatus\\task_port.o --entry IpcTaskStatus_TestRun --scatter D:\\32\\STM32H7\\h7_mac\\Tests\\IpcStatus\\task_test.sct --no_scanlib -o D:\\32\\STM32H7\\h7_mac\\output\\IpcStatus\\task_test.axf",
+    "exit": 0,
+    "output": ""
+  }
+]

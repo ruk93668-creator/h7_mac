@@ -1,4 +1,5 @@
 #include "camera_task.h"
+#include "app_status.h"
 #include "app_camera_jpeg.h"
 #include "app_events.h"
 #include "app_messages.h"
@@ -23,6 +24,7 @@ static StackType_t s_camera_stack[CAMERA_TASK_STACK_WORDS] __attribute__((aligne
 static TaskHandle_t s_camera_task;
 
 #if !APP_CAMERA_JPEG_TEST_ENABLED
+
 //记录采集是否已成功启动
 static bool s_camera_running;
 
@@ -64,7 +66,11 @@ static void CameraTask_Run(void *argument);
 //处理相机命令、Media进展和帧归还
 static void CameraTask_Process(uint32_t events);
 
+//提交本任务已完成处理的状态，不读写其他任务或SRAM4
+static void CameraTask_PublishStatus(void);
+
 #if !APP_CAMERA_JPEG_TEST_ENABLED
+
 //重试提交控制回复和故障提示
 static void CameraTask_Reply(void);
 
@@ -115,6 +121,7 @@ static void CameraTask_Run(void *argument)
             continue;
         }
         CameraTask_Process(events);
+        CameraTask_PublishStatus();
         g_camera_task_debug.stack_free_words = uxTaskGetStackHighWaterMark(NULL);
     }
 }
@@ -123,6 +130,7 @@ static void CameraTask_Run(void *argument)
 static void CameraTask_Process(uint32_t events)
 {
 #if APP_CAMERA_JPEG_TEST_ENABLED
+
     //独立验收仍等待BOOT屏障，并由唯一CameraTask持有资源
     if (!App_MessagesIsOwner(RUNTIME_TARGET_CAMERA))
         return;
@@ -253,6 +261,7 @@ static void CameraTask_Process(uint32_t events)
 }
 
 #if !APP_CAMERA_JPEG_TEST_ENABLED
+
 //重试提交控制回复和故障提示
 static void CameraTask_Reply(void)
 {
@@ -270,3 +279,35 @@ static void CameraTask_Reply(void)
     }
 }
 #endif
+
+//提交Camera任务自己的统计和已成功启动过的配置
+static void CameraTask_PublishStatus(void)
+{
+#if !APP_CAMERA_JPEG_TEST_ENABLED
+    static CameraConfig_t applied;
+    static bool applied_valid;
+    AppCameraStatus_t status = {0};
+    const CameraConfig_t *config;
+
+    //只有原启动路径成功后才把配置声明为实际应用
+    if (s_camera_running)
+    {
+        config = App_CameraGetConfig();
+        if (config != NULL)
+        {
+            applied = *config;
+            applied_valid = true;
+        }
+    }
+    status.state = g_camera_task_debug.state;
+    status.fps_milli = g_camera_task_debug.measured_fps_milli;
+    status.captured_frames = g_camera_task_debug.captured_frames;
+    status.dropped_frames = g_camera_task_debug.dropped_frames;
+    status.result = g_camera_task_debug.result;
+    status.config_valid = applied_valid;
+    status.width = applied.width;
+    status.height = applied.height;
+    status.format = applied.format;
+    (void)App_StatusPublishCamera(&status);
+#endif
+}

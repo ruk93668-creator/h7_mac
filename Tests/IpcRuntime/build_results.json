@@ -1,0 +1,26 @@
+[
+  {
+    "target": "h7_mac_CM7",
+    "command": "D:/32/UV4/UV4.exe -j0 -r D:\\32\\STM32H7\\h7_mac\\MDK-ARM\\h7_mac.uvprojx -t h7_mac_CM7 -o D:\\32\\STM32H7\\h7_mac\\Tests\\IpcRuntime\\h7_mac_CM7_rebuild.log",
+    "exit_code": 0,
+    "errors": 0,
+    "warnings": 0,
+    "source_fingerprint_before": "f4ce27d49fe14d41f265bbbc25e35acbb0d257f450b4de15af27243dd6e69b0e",
+    "source_fingerprint_after": "f4ce27d49fe14d41f265bbbc25e35acbb0d257f450b4de15af27243dd6e69b0e",
+    "project_sha_before": "fface4b8d20e39bd1aafef29e1558f2afce142bb861cd508dacb7115a9ed2e4c",
+    "project_sha_after": "fface4b8d20e39bd1aafef29e1558f2afce142bb861cd508dacb7115a9ed2e4c",
+    "passed": true
+  },
+  {
+    "target": "h7_mac_CM4",
+    "command": "D:/32/UV4/UV4.exe -j0 -r D:\\32\\STM32H7\\h7_mac\\MDK-ARM\\h7_mac.uvprojx -t h7_mac_CM4 -o D:\\32\\STM32H7\\h7_mac\\Tests\\IpcRuntime\\h7_mac_CM4_rebuild.log",
+    "exit_code": 0,
+    "errors": 0,
+    "warnings": 0,
+    "source_fingerprint_before": "f4ce27d49fe14d41f265bbbc25e35acbb0d257f450b4de15af27243dd6e69b0e",
+    "source_fingerprint_after": "f4ce27d49fe14d41f265bbbc25e35acbb0d257f450b4de15af27243dd6e69b0e",
+    "project_sha_before": "fface4b8d20e39bd1aafef29e1558f2afce142bb861cd508dacb7115a9ed2e4c",
+    "project_sha_after": "fface4b8d20e39bd1aafef29e1558f2afce142bb861cd508dacb7115a9ed2e4c",
+    "passed": true
+  }
+]

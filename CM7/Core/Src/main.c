@@ -67,6 +67,7 @@ static void MPU_Config(void);
 /* USER CODE BEGIN 0 */
 
 //Region2保持4MiB，覆盖首1KiB保留区和5块600KiB缓冲区
+
 //范围必须与BSP业务窗口一致，不改变原有内存属性
 typedef char SdramMpuWindowCheck_t[
 	(BSP_SDRAM_WINDOW == (1UL << (MPU_REGION_SIZE_4MB + 1U))) ? 1 : -1
@@ -147,7 +148,11 @@ __HAL_RCC_HSEM_CLK_ENABLE();
 /* USER CODE BEGIN Boot_IPC */
 BSP_DCMI_EarlyInit();
 BSP_Camera_EarlyInit();
-IPC_Service_EarlyInit();
+
+//共享协议建立失败时不继续唤醒CM4，保留真实初始化结果
+init_error = IPC_Service_EarlyInit();
+if (init_error != SYS_OK)
+    Error_Handler();
 /* USER CODE END Boot_IPC */
 /*Take HSEM */
 HAL_HSEM_FastTake(HSEM_ID_0);

@@ -1,0 +1,128 @@
+{
+  "main_before": "442cd4be953340ce5ce0a033fb053a13e367f047",
+  "source_branch": "codex/stage05-oled-monitor",
+  "source_commit": "b06717783e70a277220a3f3da37f424ab56fcf4e",
+  "merge_conflicts": false,
+  "total": 1453,
+  "passed": 1453,
+  "failed": 0,
+  "regression_suites": [
+    {
+      "suite": "IpcV2_run_tests",
+      "command": "C:\\Users\\29062\\AppData\\Local\\Programs\\Python\\Python311\\python.exe D:\\32\\STM32H7\\h7_mac\\Tests\\IpcV2\\run_tests.py",
+      "exit_code": 0,
+      "summary": {
+        "total": 512,
+        "passed": 512,
+        "failed": 0
+      },
+      "source_unchanged": true
+    },
+    {
+      "suite": "IpcRuntime_run_tests",
+      "command": "C:\\Users\\29062\\AppData\\Local\\Programs\\Python\\Python311\\python.exe D:\\32\\STM32H7\\h7_mac\\Tests\\IpcRuntime\\run_tests.py",
+      "exit_code": 0,
+      "summary": {
+        "total": 260,
+        "passed": 260,
+        "failed": 0
+      },
+      "source_unchanged": true
+    },
+    {
+      "suite": "IpcRuntime_run_task_tests",
+      "command": "C:\\Users\\29062\\AppData\\Local\\Programs\\Python\\Python311\\python.exe D:\\32\\STM32H7\\h7_mac\\Tests\\IpcRuntime\\run_task_tests.py",
+      "exit_code": 0,
+      "summary": {
+        "total": 20,
+        "passed": 20,
+        "failed": 0
+      },
+      "source_unchanged": true
+    },
+    {
+      "suite": "IpcStatus_run_tests",
+      "command": "C:\\Users\\29062\\AppData\\Local\\Programs\\Python\\Python311\\python.exe D:\\32\\STM32H7\\h7_mac\\Tests\\IpcStatus\\run_tests.py",
+      "exit_code": 0,
+      "summary": {
+        "total": 448,
+        "passed": 448,
+        "failed": 0
+      },
+      "source_unchanged": true
+    },
+    {
+      "suite": "IpcStatus_run_kernel_tests",
+      "command": "C:\\Users\\29062\\AppData\\Local\\Programs\\Python\\Python311\\python.exe D:\\32\\STM32H7\\h7_mac\\Tests\\IpcStatus\\run_kernel_tests.py",
+      "exit_code": 0,
+      "summary": {
+        "total": 41,
+        "passed": 41,
+        "failed": 0
+      },
+      "source_unchanged": true
+    },
+    {
+      "suite": "OledAsyncAcceptance_run_tests",
+      "command": "C:\\Users\\29062\\AppData\\Local\\Programs\\Python\\Python311\\python.exe D:\\32\\STM32H7\\h7_mac\\Tests\\OledAsyncAcceptance\\run_tests.py",
+      "exit_code": 0,
+      "summary": {
+        "total": 50,
+        "pass": 50,
+        "fail": 0,
+        "not_run": 0,
+        "assertions": 11156,
+        "compiler": "Product: MDK Plus 5.32\r\nComponent: ARM Compiler 5.06 update 7 (build 960)\r\nTool: armcc [4d365d]\r\nFor support see http://www.arm.com/support\r\nSoftware supplied by: ARM Limited\r\n",
+        "unicorn": "2.1.4"
+      },
+      "source_unchanged": true
+    }
+  ],
+  "builds": [
+    {
+      "target": "h7_mac_CM7",
+      "command": "D:/32/UV4/UV4.exe -j0 -r D:\\32\\STM32H7\\h7_mac\\MDK-ARM\\h7_mac.uvprojx -t h7_mac_CM7 -o D:\\32\\STM32H7\\h7_mac\\Tests\\OledMonitor\\h7_mac_CM7_rebuild.log",
+      "exit_code": 0,
+      "errors": 0,
+      "warnings": 0,
+      "source_fingerprint_before": "859fe7447337008b7540b81436073c07e965a5f1b99eb8d87aa5bd2736564818",
+      "source_fingerprint_after": "859fe7447337008b7540b81436073c07e965a5f1b99eb8d87aa5bd2736564818",
+      "project_sha_before": "14c3473e6fe093cccefdc5b3347190719e40fbe1b97af5344b27811541f71181",
+      "project_sha_after": "14c3473e6fe093cccefdc5b3347190719e40fbe1b97af5344b27811541f71181",
+      "passed": true
+    },
+    {
+      "target": "h7_mac_CM4",
+      "command": "D:/32/UV4/UV4.exe -j0 -r D:\\32\\STM32H7\\h7_mac\\MDK-ARM\\h7_mac.uvprojx -t h7_mac_CM4 -o D:\\32\\STM32H7\\h7_mac\\Tests\\OledMonitor\\h7_mac_CM4_rebuild.log",
+      "exit_code": 0,
+      "errors": 0,
+      "warnings": 0,
+      "source_fingerprint_before": "859fe7447337008b7540b81436073c07e965a5f1b99eb8d87aa5bd2736564818",
+      "source_fingerprint_after": "859fe7447337008b7540b81436073c07e965a5f1b99eb8d87aa5bd2736564818",
+      "project_sha_before": "14c3473e6fe093cccefdc5b3347190719e40fbe1b97af5344b27811541f71181",
+      "project_sha_after": "14c3473e6fe093cccefdc5b3347190719e40fbe1b97af5344b27811541f71181",
+      "passed": true
+    }
+  ],
+  "source_fingerprint": "859fe7447337008b7540b81436073c07e965a5f1b99eb8d87aa5bd2736564818",
+  "clean_main_candidate_verified": true,
+  "user_modifications_restored": false,
+  "user_requested_cancel_personal_backups": true,
+  "cancelled_personal_files": [
+    "CM7/Application/video_config.c",
+    "Common/Inc/ipc_config.h",
+    "MDK-ARM/h7_mac.uvoptx",
+    "MDK-ARM/h7_mac.uvprojx",
+    "Tests/CameraMjpegStage03B/CM7_MJPEG_rebuild.log",
+    "Tests/CameraMjpegStage03B/CM7_TEST_rebuild.log",
+    "Tests/CameraMjpegStage03B/CM7_YUY2_rebuild.log",
+    "Tests/CameraMjpegStage03B/build_results.json",
+    "Tests/CameraMjpegStage03B/native_test_commands.json"
+  ],
+  "task_stash_removed": true,
+  "task_temporary_backup_removed": true,
+  "untracked_user_files_retained": true,
+  "hardware_oled_basic_display": "user confirmed",
+  "five_minute_hardware_acceptance": "pending",
+  "video_latency_issue": "unresolved; investigation deferred by user"
+}

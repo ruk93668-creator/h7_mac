@@ -28,7 +28,6 @@
 #define SSD1306_CMD_DEACTIVATE_SCROLL   0x2EU  /* 停止硬件滚动 */
 #define SSD1306_CMD_DISPLAY_RAM         0xA4U  /* 按显存内容显示，退出全屏点亮模式 */
 #define SSD1306_CMD_NORMAL_DISPLAY      0xA6U  /* 正常显示：显存位 1 点亮，位 0 熄灭 */
-#define SSD1306_CMD_ENTIRE_DISPLAY_ON  0xA5U//测试命令
 #define OLED_DEFAULT_I2C_ADDR  0x3CU
 
 //内部功能函数声明
@@ -200,11 +199,6 @@ static SysResult_t Oled_Init(Device_t *dev)
 	result = Oled_WriteCommand(oled, SSD1306_CMD_DISPLAY_ON);
 	if (result != SYS_OK) return result;
 
-
-	//18. 临时测试：强制点亮全部像素
-	result = Oled_WriteCommand(oled, SSD1306_CMD_ENTIRE_DISPLAY_ON);
-	if (result != SYS_OK)
-		return result;
 
 	return SYS_OK;
 }

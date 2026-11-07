@@ -1,0 +1,21 @@
+{'id': 0, 'name': 'four BOOT targets', 'result': 'PASS', 'failed_line': 0, 'error': None, 'assertions': [], 'args': []}
+{'id': 1, 'name': 'ISR create rejected', 'result': 'PASS', 'failed_line': 0, 'error': None, 'assertions': [], 'args': []}
+{'id': 2, 'name': 'duplicate IPC create', 'result': 'PASS', 'failed_line': 0, 'error': None, 'assertions': [], 'args': []}
+{'id': 3, 'name': 'IPC static create failure', 'result': 'PASS', 'failed_line': 0, 'error': None, 'assertions': [], 'args': []}
+{'id': 4, 'name': 'owner registration failure', 'result': 'PASS', 'failed_line': 0, 'error': None, 'assertions': [], 'args': []}
+{'id': 5, 'name': 'IPC attach failure', 'result': 'PASS', 'failed_line': 0, 'error': None, 'assertions': [], 'args': []}
+{'id': 6, 'name': 'init failure closes BOOT', 'result': 'PASS', 'failed_line': 0, 'error': None, 'assertions': [], 'args': []}
+{'id': 7, 'name': 'missing IPC attachment', 'result': 'PASS', 'failed_line': 0, 'error': None, 'assertions': [], 'args': []}
+{'id': 8, 'name': 'pending IPC event survives BOOT', 'result': 'PASS', 'failed_line': 0, 'error': None, 'assertions': [], 'args': []}
+{'id': 9, 'name': 'IPC cannot release BOOT', 'result': 'PASS', 'failed_line': 0, 'error': None, 'assertions': [], 'args': []}
+{'id': 10, 'name': 'IPC entry waits before BOOT', 'result': 'PASS', 'failed_line': 0, 'error': None, 'assertions': [], 'args': [4294967295]}
+{'id': 11, 'name': 'duplicate BOOT rejected', 'result': 'PASS', 'failed_line': 0, 'error': None, 'assertions': [], 'args': []}
+{'id': 12, 'name': 'late IPC create rejected', 'result': 'PASS', 'failed_line': 0, 'error': None, 'assertions': [], 'args': []}
+{'id': 13, 'name': 'all four receive BOOT', 'result': 'PASS', 'failed_line': 0, 'error': None, 'assertions': [], 'args': []}
+{'id': 14, 'name': 'only IPC task is writer', 'result': 'PASS', 'failed_line': 0, 'error': None, 'assertions': [], 'args': []}
+{'id': 15, 'name': 'static stack size/alignment', 'result': 'PASS', 'failed_line': 0, 'error': None, 'assertions': [], 'args': []}
+{'id': 16, 'name': 'BOOT starts service and blocks 100ms', 'result': 'PASS', 'failed_line': 0, 'error': None, 'assertions': [], 'args': [100]}
+{'id': 17, 'name': 'ISR not owner', 'result': 'PASS', 'failed_line': 0, 'error': None, 'assertions': [], 'args': []}
+{'id': 18, 'name': 'wait for other task rejected', 'result': 'PASS', 'failed_line': 0, 'error': None, 'assertions': [], 'args': []}
+{'id': 19, 'name': 'duplicate app create rejected', 'result': 'PASS', 'failed_line': 0, 'error': None, 'assertions': [], 'args': []}
+{'total': 20, 'passed': 20, 'failed': 0}

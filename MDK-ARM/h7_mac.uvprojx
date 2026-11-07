@@ -826,6 +826,41 @@
           <GroupName>Common</GroupName>
           <Files>
             <File>
+              <FileName>ipc_application.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>../Common/Src/ipc_application.c</FilePath>
+            </File>
+            <File>
+              <FileName>ipc_application.h</FileName>
+              <FileType>5</FileType>
+              <FilePath>../Common/Inc/ipc_application.h</FilePath>
+            </File>
+            <File>
+              <FileName>ipc_runtime.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>../Common/Src/ipc_runtime.c</FilePath>
+            </File>
+            <File>
+              <FileName>ipc_runtime.h</FileName>
+              <FileType>5</FileType>
+              <FilePath>../Common/Inc/ipc_runtime.h</FilePath>
+            </File>
+            <File>
+              <FileName>ipc_core.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>../Common/Src/ipc_core.c</FilePath>
+            </File>
+            <File>
+              <FileName>ipc_core.h</FileName>
+              <FileType>5</FileType>
+              <FilePath>../Common/Inc/ipc_core.h</FilePath>
+            </File>
+            <File>
+              <FileName>ipc_status.h</FileName>
+              <FileType>5</FileType>
+              <FilePath>../Common/Inc/ipc_status.h</FilePath>
+            </File>
+            <File>
               <FileName>ipc_shared.c</FileName>
               <FileType>1</FileType>
               <FilePath>../Common/Src/ipc_shared.c</FilePath>
@@ -887,6 +922,11 @@
               <FileName>app_oled.c</FileName>
               <FileType>1</FileType>
               <FilePath>../CM4/Application/app_oled.c</FilePath>
+            </File>
+            <File>
+              <FileName>oled_ui.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>../CM4/Application/oled_ui.c</FilePath>
             </File>
             <File>
               <FileName>app_oled.h</FileName>
@@ -2673,6 +2713,41 @@
           <GroupName>Common</GroupName>
           <Files>
             <File>
+              <FileName>ipc_application.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>../Common/Src/ipc_application.c</FilePath>
+            </File>
+            <File>
+              <FileName>ipc_application.h</FileName>
+              <FileType>5</FileType>
+              <FilePath>../Common/Inc/ipc_application.h</FilePath>
+            </File>
+            <File>
+              <FileName>ipc_runtime.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>../Common/Src/ipc_runtime.c</FilePath>
+            </File>
+            <File>
+              <FileName>ipc_runtime.h</FileName>
+              <FileType>5</FileType>
+              <FilePath>../Common/Inc/ipc_runtime.h</FilePath>
+            </File>
+            <File>
+              <FileName>ipc_core.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>../Common/Src/ipc_core.c</FilePath>
+            </File>
+            <File>
+              <FileName>ipc_core.h</FileName>
+              <FileType>5</FileType>
+              <FilePath>../Common/Inc/ipc_core.h</FilePath>
+            </File>
+            <File>
+              <FileName>ipc_status.h</FileName>
+              <FileType>5</FileType>
+              <FilePath>../Common/Inc/ipc_status.h</FilePath>
+            </File>
+            <File>
               <FileName>ipc_shared.c</FileName>
               <FileType>1</FileType>
               <FilePath>../Common/Src/ipc_shared.c</FilePath>
@@ -3621,6 +3696,16 @@
             <File><FileName>runtime_event.h</FileName><FileType>5</FileType><FilePath>../Common/Inc/runtime_event.h</FilePath></File>
             <File><FileName>app_messages.c</FileName><FileType>1</FileType><FilePath>../CM7/Application/app_messages.c</FilePath></File>
             <File><FileName>app_messages.h</FileName><FileType>5</FileType><FilePath>../CM7/Application/app_messages.h</FilePath></File>
+            <File>
+              <FileName>app_status.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>../CM7/Application/app_status.c</FilePath>
+            </File>
+            <File>
+              <FileName>app_status.h</FileName>
+              <FileType>5</FileType>
+              <FilePath>../CM7/Application/app_status.h</FilePath>
+            </File>
             <File><FileName>app_tasks.c</FileName><FileType>1</FileType><FilePath>../CM7/Application/app_tasks.c</FilePath></File>
             <File><FileName>app_tasks.h</FileName><FileType>5</FileType><FilePath>../CM7/Application/app_tasks.h</FilePath></File>
             <File><FileName>app_events.c</FileName><FileType>1</FileType><FilePath>../CM7/Application/app_events.c</FilePath></File>
@@ -3629,6 +3714,16 @@
             <File><FileName>camera_task.h</FileName><FileType>5</FileType><FilePath>../CM7/Application/Tasks/camera_task.h</FilePath></File>
             <File><FileName>usb_task.c</FileName><FileType>1</FileType><FilePath>../CM7/Application/Tasks/usb_task.c</FilePath></File>
             <File><FileName>usb_task.h</FileName><FileType>5</FileType><FilePath>../CM7/Application/Tasks/usb_task.h</FilePath></File>
+            <File>
+              <FileName>ipc_task.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>../CM7/Application/Tasks/ipc_task.c</FilePath>
+            </File>
+            <File>
+              <FileName>ipc_task.h</FileName>
+              <FileType>5</FileType>
+              <FilePath>../CM7/Application/Tasks/ipc_task.h</FilePath>
+            </File>
             <File><FileName>control_task.c</FileName><FileType>1</FileType><FilePath>../CM7/Application/Tasks/control_task.c</FilePath></File>
             <File><FileName>control_task.h</FileName><FileType>5</FileType><FilePath>../CM7/Application/Tasks/control_task.h</FilePath></File>
           </Files>

@@ -4,6 +4,7 @@
 #include "Tasks/camera_task.h"
 #include "Tasks/usb_task.h"
 #include "Tasks/control_task.h"
+#include "Tasks/ipc_task.h"
 #include "stm32h7xx.h"
 
 //记录任务创建数量、准备状态和启动屏障结果
@@ -55,6 +56,15 @@ SysResult_t App_TasksCreate(void)
     }
 
     //保留首个失败结果；main据此决定是否允许启动调度器
+    if (result == SYS_OK)
+    {
+
+        //创建独立IPC任务，BOOT广播使用同一份任务目标集合
+        result = IpcTask_Create();
+        if (result == SYS_OK)
+            g_app_tasks_debug.created_tasks++;
+    }
+
     g_app_tasks_debug.result = result;
     return result;
 }
@@ -64,7 +74,7 @@ SysResult_t App_TasksRecordInitialization(SysResult_t result)
 {
 
     //三个任务必须全部就绪，初始化结果不能重复提交
-    if (g_app_tasks_debug.created_tasks != 3U || g_app_tasks_debug.prepared != 0U)
+    if (g_app_tasks_debug.created_tasks != RUNTIME_TARGET_COUNT || g_app_tasks_debug.prepared != 0U)
         return SYS_ERR_INVALID_STATE;
 
     //把main中的初始化结果交给屏障层，失败时保持关闭
