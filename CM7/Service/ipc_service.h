@@ -4,7 +4,7 @@
 #include "ipc_status.h"
 #include "ipc_runtime.h"
 
-//在原HSEM0唤醒前建立V2头与CM7本核初始状态
+//在原HSEM0唤醒前建立当前协议头与CM7本核初始状态
 SysResult_t IPC_Service_EarlyInit(void);
 
 //取得本核一致快照，不代表业务初始化全部成功

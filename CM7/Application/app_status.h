@@ -7,32 +7,32 @@
 //Camera任务提交自己的本地运行记录，不传递图像或指针
 typedef struct
 {
-    uint32_t state;
-    uint32_t fps_milli;
-    uint32_t captured_frames;
-    uint32_t dropped_frames;
-    uint32_t width;
-    uint32_t height;
-    CameraPixelFormat_t format;
-    bool config_valid;
-    SysResult_t result;
+    uint32_t state;//所属任务的运行或协调状态
+    uint32_t fps_milli;//最近统计窗口的实测FPS乘1000
+    uint32_t captured_frames;//实际完成采集的累计帧数
+    uint32_t dropped_frames;//采集丢帧累计计数
+    uint32_t width;//成功应用的图像宽度
+    uint32_t height;//成功应用的图像高度
+    CameraPixelFormat_t format;//本核Camera格式，由适配层映射到IPC编号
+    bool config_valid;//是否已有成功应用的实际图像配置
+    SysResult_t result;//所属任务最近操作结果
 } AppCameraStatus_t;
 
 //USB任务提交实际完成计数，不能用提交次数替代
 typedef struct
 {
-    uint32_t state;
-    uint32_t fps_milli;
-    uint32_t completed_frames;
-    SysResult_t result;
+    uint32_t state;//所属任务的运行或协调状态
+    uint32_t fps_milli;//最近统计窗口的实测FPS乘1000
+    uint32_t completed_frames;//USB真正完成的帧数，不是提交次数
+    SysResult_t result;//所属任务最近操作结果
 } AppUsbStatus_t;
 
 //Control任务提交协调状态和最近故障
 typedef struct
 {
-    uint32_t state;
-    SysResult_t result;
-    SysResult_t last_fault;
+    uint32_t state;//所属任务的运行或协调状态
+    SysResult_t result;//所属任务最近操作结果
+    SysResult_t last_fault;//Control最近处理的实际故障
 } AppControlStatus_t;
 
 //只允许Camera任务提交自己的完整记录

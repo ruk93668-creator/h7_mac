@@ -4,6 +4,7 @@
 #include "sys_result.h"
 #include <stdint.h>
 
+//IPC任务的本地运行诊断，不写入跨核共享协议
 typedef struct
 {
     uint32_t boot_seen;//是否收到BOOT屏障

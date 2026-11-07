@@ -33,28 +33,39 @@ SysResult_t App_StatusPublishCamera(const AppCameraStatus_t *status)
 {
     IpcApplicationStatus_t value = {0};
 
+    //先检查本核输入内存，避免非法访问或共享区别名
     if (!AppStatus_MemoryValid(status, sizeof(*status)))
         return SYS_ERR_INVALID_ARG;
+
+    //只允许所属任务提交自己的状态，防止多任务抢写同一来源
     if (!App_EventsIsOwner(RUNTIME_TARGET_CAMERA))
         return SYS_ERR_INVALID_STATE;
+
+    //先构造本地Camera记录，校验成功前不修改共享的本核汇总
     value.valid_mask = IPC_APP_CAMERA;
     value.camera_state = status->state;
     value.camera_fps_milli = status->fps_milli;
     value.captured_frames = status->captured_frames;
     value.dropped_frames = status->dropped_frames;
     value.camera_result = status->result;
+
+    //只有实际配置有效时才报告分辨率和格式，不能用默认值冒充
     if (status->config_valid)
     {
         value.width = status->width;
         value.height = status->height;
         value.format = AppStatus_Format(status->format);
+
+        //拒绝无法映射的Camera格式，避免两套枚举值被误解
         if (value.format == IPC_IMAGE_UNKNOWN)
             return SYS_ERR_INVALID_ARG;
     }
+
+    //按跨核协议验证完整Camera记录后再提交
     if (!IPC_Application_Validate(&value))
         return SYS_ERR_INVALID_ARG;
 
-    //同一临界区更新字段、有效位和时间戳，ISR不参与写入
+    //将本来源的字段、有效位和采样时间一起提交，避免混读
     taskENTER_CRITICAL();
     s_status.camera_state = value.camera_state;
     s_status.camera_fps_milli = value.camera_fps_milli;
@@ -64,6 +75,8 @@ SysResult_t App_StatusPublishCamera(const AppCameraStatus_t *status)
     s_status.height = value.height;
     s_status.format = value.format;
     s_status.camera_result = value.camera_result;
+
+    //记录该来源已经发布，并重新建立它自己的新鲜度基线
     s_status.valid_mask |= IPC_APP_CAMERA;
     s_source_ticks[0] = Platform_TimeGetMs();
     s_source_expired[0] = false;
@@ -74,17 +87,27 @@ SysResult_t App_StatusPublishCamera(const AppCameraStatus_t *status)
 //提交USB完整记录
 SysResult_t App_StatusPublishUsb(const AppUsbStatus_t *status)
 {
+
+    //先检查本核输入内存，避免非法访问或共享区别名
     if (!AppStatus_MemoryValid(status, sizeof(*status)))
         return SYS_ERR_INVALID_ARG;
+
+    //只允许所属任务提交自己的状态，防止多任务抢写同一来源
     if (!App_EventsIsOwner(RUNTIME_TARGET_USB))
         return SYS_ERR_INVALID_STATE;
+
+    //拒绝未知状态和正数错误码，保持跨核字段语义一致
     if (status->state > 2U || status->result > SYS_OK)
         return SYS_ERR_INVALID_ARG;
+
+    //将本来源的字段、有效位和采样时间一起提交，避免混读
     taskENTER_CRITICAL();
     s_status.usb_state = status->state;
     s_status.usb_fps_milli = status->fps_milli;
     s_status.usb_completed_frames = status->completed_frames;
     s_status.usb_result = status->result;
+
+    //记录该来源已经发布，并重新建立它自己的新鲜度基线
     s_status.valid_mask |= IPC_APP_USB;
     s_source_ticks[1] = Platform_TimeGetMs();
     s_source_expired[1] = false;
@@ -95,16 +118,26 @@ SysResult_t App_StatusPublishUsb(const AppUsbStatus_t *status)
 //提交Control完整记录
 SysResult_t App_StatusPublishControl(const AppControlStatus_t *status)
 {
+
+    //先检查本核输入内存，避免非法访问或共享区别名
     if (!AppStatus_MemoryValid(status, sizeof(*status)))
         return SYS_ERR_INVALID_ARG;
+
+    //只允许所属任务提交自己的状态，防止多任务抢写同一来源
     if (!App_EventsIsOwner(RUNTIME_TARGET_CONTROL))
         return SYS_ERR_INVALID_STATE;
+
+    //拒绝未知状态和正数错误码，保持跨核字段语义一致
     if (status->state > 6U || status->result > SYS_OK || status->last_fault > SYS_OK)
         return SYS_ERR_INVALID_ARG;
+
+    //将本来源的字段、有效位和采样时间一起提交，避免混读
     taskENTER_CRITICAL();
     s_status.control_state = status->state;
     s_status.control_result = status->result;
     s_status.last_fault = status->last_fault;
+
+    //记录该来源已经发布，并重新建立它自己的新鲜度基线
     s_status.valid_mask |= IPC_APP_CONTROL;
     s_source_ticks[2] = Platform_TimeGetMs();
     s_source_expired[2] = false;
@@ -118,26 +151,43 @@ SysResult_t App_StatusGetSnapshotAt(IpcApplicationStatus_t *snapshot, uint32_t *
     IpcApplicationStatus_t value;
     uint32_t now;
 
+    //两个输出参数都必须可写，避免只返回数据而丢失配套采样时刻
     if (!AppStatus_MemoryValid(snapshot, sizeof(*snapshot)) ||
         !AppStatus_MemoryValid(sampled_tick, sizeof(*sampled_tick)))
         return SYS_ERR_INVALID_ARG;
+
+    //两个输出区不能重叠，防止写入时间戳破坏业务快照
     if ((uintptr_t)snapshot <= (uintptr_t)sampled_tick + sizeof(*sampled_tick) - 1U &&
         (uintptr_t)sampled_tick <= (uintptr_t)snapshot + sizeof(*snapshot) - 1U)
         return SYS_ERR_INVALID_ARG;
+
+    //汇总只由唯一IPC任务读取并编号，避免采样序号被多任务推进
     if (!App_EventsIsOwner(RUNTIME_TARGET_IPC))
         return SYS_ERR_INVALID_STATE;
     taskENTER_CRITICAL();
+
+    //在同一临界区复制三份记录并采时，保证字段和年龄相互对应
     value = s_status;
     now = Platform_TimeGetMs();
     value.snapshot_id = ++s_snapshot_id;
+
+    //只对已发布的Camera来源计算年龄，未发布字段保持零
     if ((value.valid_mask & IPC_APP_CAMERA) != 0U)
         value.camera_age_ms = AppStatus_Age(0U, now);
+
+    //USB使用自己的最后发布时间，不能借其他任务更新续期
     if ((value.valid_mask & IPC_APP_USB) != 0U)
         value.usb_age_ms = AppStatus_Age(1U, now);
+
+    //Control独立计算年龄，停止更新时可被CM4识别为陈旧
     if ((value.valid_mask & IPC_APP_CONTROL) != 0U)
         value.control_age_ms = AppStatus_Age(2U, now);
+
+    //保留本次真实采样内容，便于与CM4收到的数据核对
     g_app_status_debug = value;
     taskEXIT_CRITICAL();
+
+    //离开临界区后交付完整副本及同一采样时刻
     *snapshot = value;
     *sampled_tick = now;
     return SYS_OK;
@@ -147,9 +197,13 @@ SysResult_t App_StatusGetSnapshotAt(IpcApplicationStatus_t *snapshot, uint32_t *
 static bool AppStatus_MemoryValid(const void *memory, uint32_t bytes)
 {
     uintptr_t address = (uintptr_t)memory;
+
+    //先排除空指针、未对齐和地址加法溢出
     if (memory == NULL || (address & 3U) != 0U ||
         address > UINTPTR_MAX - (bytes - 1U))
         return false;
+
+    //拒绝与整个共享窗口重叠，防止本地接口绕过跨核所有权
     return !(address <= IPC_SHARED_BASE + IPC_SHARED_WINDOW_BYTES - 1U &&
         IPC_SHARED_BASE <= address + bytes - 1U);
 }
@@ -172,8 +226,11 @@ static uint32_t AppStatus_Age(uint32_t source, uint32_t now)
 {
     uint32_t age = (uint32_t)(now - s_source_ticks[source]);
 
+    //达到有效期后锁存陈旧，不能因Tick完整回绕重新变新鲜
     if (age >= IPC_APPLICATION_FRESH_MS)
         s_source_expired[source] = true;
+
+    //只有来源任务再次发布，才能清除陈旧标记
     return s_source_expired[source] ? UINT32_MAX : age;
 }
 

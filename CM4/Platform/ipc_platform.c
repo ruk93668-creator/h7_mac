@@ -40,6 +40,7 @@ static uint32_t IpcPlatform_Enter(void)
 {
     uint32_t state = __get_PRIMASK();
 
+    //屏蔽本核中断，防止本地状态复制或授权检查被打断
     __disable_irq();
     __COMPILER_BARRIER();
     return state;
@@ -48,6 +49,8 @@ static uint32_t IpcPlatform_Enter(void)
 //恢复本核中断屏蔽状态
 static void IpcPlatform_Leave(uint32_t state)
 {
+
+    //先约束编译器重排，再恢复原屏蔽状态，不能无条件开中断
     __COMPILER_BARRIER();
     __set_PRIMASK(state);
 }
@@ -55,5 +58,7 @@ static void IpcPlatform_Leave(uint32_t state)
 //检查普通执行上下文
 static bool IpcPlatform_IsThread(void)
 {
+
+    //IPSR为零表示线程模式，异常或ISR中拒绝任务侧操作
     return __get_IPSR() == 0U;
 }

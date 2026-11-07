@@ -6,17 +6,23 @@
 #include <stdbool.h>
 #include <stddef.h>
 
+//来源有效位：分别标识Camera、USB和Control记录
 #define IPC_APP_CAMERA (1UL << 0)
 #define IPC_APP_USB (1UL << 1)
 #define IPC_APP_CONTROL (1UL << 2)
 #define IPC_APP_ALL (IPC_APP_CAMERA | IPC_APP_USB | IPC_APP_CONTROL)
 
+//跨核固定格式编号，不依赖Camera枚举的实际数值
 #define IPC_IMAGE_UNKNOWN 0U
 #define IPC_IMAGE_Y8 1U
 #define IPC_IMAGE_RGB565 2U
 #define IPC_IMAGE_YUY2 3U
 #define IPC_IMAGE_JPEG 4U
+
+//业务载荷固定长度，两核必须使用同一布局
 #define IPC_APPLICATION_BYTES 80U
+
+//来源年龄和接收等待时间均需满足的新鲜度期限
 #define IPC_APPLICATION_FRESH_MS 500U
 
 //V3正式业务载荷，全部字段为固定32位整数
@@ -47,7 +53,7 @@ typedef struct
 //CM4返回的完整本地副本，元数据不进入共享协议
 typedef struct
 {
-    IpcApplicationStatus_t application;
+    IpcApplicationStatus_t application;//完整业务副本，调用者不能修改共享区
     uint32_t valid_mask;//有结构合法的来源记录，不代表新鲜
     uint32_t fresh_mask;//来源年龄与通信状态均满足要求
     uint32_t receive_age_ms;//当前距离最后新业务编号的本地时间
@@ -59,8 +65,8 @@ typedef struct
 typedef struct
 {
     IpcApplicationStatus_t application;
-    uint32_t received_tick;
-    bool has_sample;
+    uint32_t received_tick;//最后收到新采样编号的本核时刻
+    bool has_sample;//是否已经接收过有效业务样本
     bool expired;//同一业务编号超时后保持陈旧，直到新编号到来
 } IpcApplicationCache_t;
 
@@ -79,6 +85,7 @@ SysResult_t IPC_Application_GetView(const IpcApplicationCache_t *cache,
     uint32_t now, uint32_t peer_state, SysResult_t read_result,
     IpcApplicationView_t *view);
 
+//编译期锁定80B载荷和字段偏移，布局变化时立即报错
 #define IPC_APP_ASSERT(name, value) typedef char name[(value) ? 1 : -1]
 IPC_APP_ASSERT(Ipc_AppSize, sizeof(IpcApplicationStatus_t) == IPC_APPLICATION_BYTES);
 IPC_APP_ASSERT(Ipc_App_valid_mask, offsetof(IpcApplicationStatus_t, valid_mask) == 0U);

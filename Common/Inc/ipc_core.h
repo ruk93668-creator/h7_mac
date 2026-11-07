@@ -7,9 +7,17 @@
 //端口表仅存于本核普通内存，不写入共享协议
 typedef struct
 {
+
+    //保证共享访问的编译器与CPU顺序
     void (*barrier)(void);
+
+    //保存本核中断状态并进入短临界区
     uint32_t (*enter)(void);
+
+    //恢复进入临界区前的本核中断状态
     void (*leave)(uint32_t state);
+
+    //检查是否允许从当前执行上下文调用
     bool (*is_thread)(void);
 } IpcCorePort_t;
 
@@ -28,7 +36,7 @@ SysResult_t IPC_Core_InitializeLocal(const IpcState_t *state);
 //在初始化窗口内发布本核状态，不允许指定对端目标
 SysResult_t IPC_Core_PublishLocal(const IpcState_t *state);
 
-//关闭本阶段的写入窗口，运行期不开放发布上下文
+//永久关闭初始化发布窗口，运行期只能走预先授权的发布入口
 SysResult_t IPC_Core_EndInitialization(void);
 
 //在初始化窗口绑定唯一运行期写者，关闭窗口后不可替换

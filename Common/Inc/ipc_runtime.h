@@ -7,13 +7,14 @@
 //本地诊断状态，不写入共享协议，也不证明对端属于新会话
 typedef enum
 {
-    IPC_PEER_STARTING = 0,
-    IPC_PEER_ONLINE,
-    IPC_PEER_STARTUP_TIMEOUT,
-    IPC_PEER_TIMEOUT,
-    IPC_PEER_PROTOCOL_ERROR
+    IPC_PEER_STARTING = 0,//尚未观察到后续心跳进展
+    IPC_PEER_ONLINE,//已观察到进展且尚未超时
+    IPC_PEER_STARTUP_TIMEOUT,//首次握手完成前已超时
+    IPC_PEER_TIMEOUT,//已握手但后续心跳进展超时
+    IPC_PEER_PROTOCOL_ERROR//最近读取发现协议错误
 } IpcPeerState_t;
 
+//本核诊断副本，通信状态与每次操作结果分别记录
 typedef struct
 {
     uint32_t peer_state;//当前对端观察状态，取IpcPeerState_t
@@ -36,15 +37,15 @@ typedef struct
 //只由唯一运行期执行者访问的本地上下文
 typedef struct
 {
-    IpcRuntimeStatus_t status;
+    IpcRuntimeStatus_t status;//保存心跳、超时和发布读取诊断
 
     //CM7待发布的业务载荷，CM4只缓存对端业务副本
     IpcApplicationStatus_t application;
-    IpcApplicationCache_t peer_application;
+    IpcApplicationCache_t peer_application;//CM4保存CM7最近一次有效业务快照
 
     //仅本核使用的采样时刻，不放入共享协议
     uint32_t application_tick;
-    bool application_timed;
+    bool application_timed;//是否具有与待发布载荷配套的采样时刻
     uint32_t start_tick;//本核运行期启动时间
     uint32_t progress_tick;//本核观察到最近新心跳的时间
     uint32_t step_tick;//上次实际处理时间

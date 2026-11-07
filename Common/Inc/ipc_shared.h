@@ -19,25 +19,25 @@
 //CM7独占协议头，冷启动完成后保持不变
 typedef struct __attribute__((aligned(32)))
 {
-    uint32_t magic;
-    uint32_t version;
-    uint32_t layout_bytes;
-    uint32_t header_bytes;
-    uint32_t status_block_bytes;
-    uint32_t feature_flags;
+    uint32_t magic;//协议有效标识，冷启动最后提交
+    uint32_t version;//共享协议版本，V3需双核配套固件
+    uint32_t layout_bytes;//共享对象总长度
+    uint32_t header_bytes;//协议头长度
+    uint32_t status_block_bytes;//每核状态块长度
+    uint32_t feature_flags;//本版本正式支持的功能位
     uint32_t reserved[10];
 } IpcHeader_t;
 
 //每个块仅由所属核心写入，所有线字段明确为32位
 typedef struct __attribute__((aligned(32)))
 {
-    uint32_t sequence;
-    uint32_t owner_id;
-    uint32_t block_bytes;
-    uint32_t ready;
-    uint32_t heartbeat;
-    uint32_t fault_flags;
-    int32_t last_result;
+    uint32_t sequence;//奇数更新中，偶数提交完成，零表示未提交
+    uint32_t owner_id;//所属核心编号，禁止跨核写入
+    uint32_t block_bytes;//本状态块固定长度
+    uint32_t ready;//仅表示IPC准备完成，不代表业务或在线状态
+    uint32_t heartbeat;//所属核心成功发布的心跳计数
+    uint32_t fault_flags;//所属核心累计故障位
+    int32_t last_result;//所属核心最近状态结果，成功为零、失败为负
 
     //V3正式业务载荷：CM7发布，CM4在本核块中保持全零
     IpcApplicationStatus_t application;
@@ -47,7 +47,7 @@ typedef struct __attribute__((aligned(32)))
     uint32_t reserved[5];
 } IpcStatusBlock_t;
 
-//320B协议对象放在原4KiB UNINIT窗口，未启用启动代号或业务快照
+//320B V3协议对象放在原4KiB UNINIT窗口，不提供热复位会话证明
 typedef struct __attribute__((aligned(32)))
 {
     IpcHeader_t header;
@@ -66,6 +66,7 @@ typedef struct
 typedef struct { uint8_t prefix; IpcHeader_t value; } IpcHeaderAlignmentProbe_t;
 typedef struct { uint8_t prefix; IpcStatusBlock_t value; } IpcBlockAlignmentProbe_t;
 
+//编译期锁定大小、对齐和偏移，防止两核用不同布局解释同一地址
 #define IPC_LAYOUT_ASSERT(name, expression) typedef char name[(expression) ? 1 : -1]
 IPC_LAYOUT_ASSERT(Ipc_U32Size, sizeof(uint32_t) == 4U);
 IPC_LAYOUT_ASSERT(Ipc_I32Size, sizeof(int32_t) == 4U);
