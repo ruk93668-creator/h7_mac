@@ -1,5 +1,7 @@
 # IPC V2 软件验收
 
+> 本分支05C-2已升级V3；本套件保留原512项算法/安全场景，仅迁移功能位和剩余保留字段的预期。V2/V3兼容性及新业务验收见../IpcStatus。
+
 本目录编译真实 `Common/Src/ipc_core.c`、`ipc_shared.c`，并包含实际 CM7/CM4 Service 实现。仅 Platform 屏障、短临界区及线程检查使用桩；不复制协议算法。
 
 ## 执行

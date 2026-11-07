@@ -1,5 +1,7 @@
 # IPC V2 协议与接口
 
+> 本文记录05B的历史V2设计。05C-2当前采用正式V3扩展，请见IPC_V3_ApplicationStatus.md；不能混烧V2和V3。
+
 本阶段的完整实现、字段偏移、调用链、所有权、测试证据及实板步骤见 [阶段05B验收报告](../../Tests/IpcV2/verification_report.md)。
 
 - Common：ipc_shared.h定义320B协议；ipc_status.h定义普通本地输入/输出；ipc_core.c实现一致性。

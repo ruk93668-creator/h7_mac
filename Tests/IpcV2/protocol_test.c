@@ -79,7 +79,7 @@ static void SeedHeader(void)
     Fill((void *)&g_ipc.header,0U,sizeof(g_ipc.header));
     g_ipc.header.magic=IPC_MAGIC;g_ipc.header.version=IPC_VERSION;
     g_ipc.header.layout_bytes=IPC_LAYOUT_BYTES;g_ipc.header.header_bytes=IPC_HEADER_BYTES;
-    g_ipc.header.status_block_bytes=IPC_STATUS_BYTES;g_ipc.header.feature_flags=IPC_FEATURE_SEQLOCK;
+    g_ipc.header.status_block_bytes=IPC_STATUS_BYTES;g_ipc.header.feature_flags=IPC_FEATURE_FLAGS;
 }
 
 //模拟对端提交，不复制一份生产序号算法
@@ -318,7 +318,7 @@ int Ipc_TestRun(uint32_t id)
       case 24:Local()->sequence=0U;CHECK(IPC_Core_ReadLocal(&snapshot)==SYS_ERR_BUSY);CHECK(g_read_sequences==3U);CHECK(IPC_Core_PublishLocal(&state)==SYS_ERR_INVALID_STATE);break;
       case 25:Local()->owner_id=99U;CHECK(IPC_Core_ReadLocal(&snapshot)==SYS_ERR_PROTOCOL);break;
       case 26:Local()->block_bytes=124U;CHECK(IPC_Core_ReadLocal(&snapshot)==SYS_ERR_PROTOCOL);break;
-      case 27:Local()->reserved[24]=1U;CHECK(IPC_Core_ReadLocal(&snapshot)==SYS_ERR_PROTOCOL);break;
+      case 27:Local()->reserved[4]=1U;CHECK(IPC_Core_ReadLocal(&snapshot)==SYS_ERR_PROTOCOL);break;
       case 28:Local()->ready=2U;CHECK(IPC_Core_ReadLocal(&snapshot)==SYS_ERR_PROTOCOL);Local()->ready=1U;Local()->last_result=1;CHECK(IPC_Core_ReadLocal(&snapshot)==SYS_ERR_PROTOCOL);break;
       case 29:Local()->sequence=0xFFFFFFFCUL;CHECK(IPC_Core_PublishLocal(&state)==SYS_OK);CHECK(Local()->sequence==0xFFFFFFFEUL);before=Digest(Local(),sizeof(*Local()));CHECK(IPC_Core_PublishLocal(&s_new)==SYS_ERR_NO_RESOURCE);CHECK(before==Digest(Local(),sizeof(*Local())));break;
       case 30:Local()->sequence=0xFFFFFFFCUL;s_hook_mode=2U;s_hook_word=0U;CHECK(IPC_Core_ReadLocal(&snapshot)==SYS_OK);CHECK(snapshot.sequence==0xFFFFFFFEUL && NewValue(&snapshot));break;

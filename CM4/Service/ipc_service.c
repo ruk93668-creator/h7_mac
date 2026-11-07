@@ -18,6 +18,9 @@ static IpcRuntime_t s_runtime;
 //提供Keil观察的运行期诊断副本
 volatile IpcRuntimeStatus_t g_ipc_runtime_debug;
 
+//只由私有IPC Timer更新的业务视图副本
+volatile IpcApplicationView_t g_ipc_application_debug;
+
 //检查调用方是否为本核预先绑定的运行期执行者
 static bool IpcService_IsOwner(void *context);
 
@@ -155,6 +158,39 @@ static void IpcService_UpdateDebug(void)
     const IpcCorePort_t *port = IPC_Platform_GetPort();
     uint32_t mask = port->enter();
 
+    IpcApplicationView_t view;
+
     g_ipc_runtime_debug = s_runtime.status;
+    (void)IPC_Application_GetView(&s_runtime.peer_application, Platform_TimeGetMs(),
+        s_runtime.status.peer_state, s_runtime.status.read_result, &view);
+    g_ipc_application_debug = view;
     port->leave(mask);
+}
+
+//由主循环获取完整业务副本，不把通信成功等同于业务数据新鲜
+SysResult_t IPC_Service_GetApplicationStatus(IpcApplicationView_t *view)
+{
+    const IpcCorePort_t *port = IPC_Platform_GetPort();
+    IpcApplicationCache_t cache;
+    uint32_t state, now, mask;
+    SysResult_t result;
+    uintptr_t address = (uintptr_t)view;
+
+    if (view == NULL || (address & 3U) != 0U ||
+        address > UINTPTR_MAX - (sizeof(*view) - 1U))
+        return SYS_ERR_INVALID_ARG;
+    if (address <= IPC_SHARED_BASE + IPC_SHARED_WINDOW_BYTES - 1U &&
+        IPC_SHARED_BASE <= address + sizeof(*view) - 1U)
+        return SYS_ERR_INVALID_ARG;
+    if (!s_service_initialized || port == NULL || !port->is_thread())
+        return SYS_ERR_INVALID_STATE;
+
+    //本地缓存、通信状态和时间在同一边界取样，不直接返回共享指针
+    mask = port->enter();
+    cache = s_runtime.peer_application;
+    state = s_runtime.status.peer_state;
+    result = s_runtime.status.read_result;
+    now = Platform_TimeGetMs();
+    port->leave(mask);
+    return IPC_Application_GetView(&cache, now, state, result, view);
 }

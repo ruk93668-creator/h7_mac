@@ -826,6 +826,16 @@
           <GroupName>Common</GroupName>
           <Files>
             <File>
+              <FileName>ipc_application.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>../Common/Src/ipc_application.c</FilePath>
+            </File>
+            <File>
+              <FileName>ipc_application.h</FileName>
+              <FileType>5</FileType>
+              <FilePath>../Common/Inc/ipc_application.h</FilePath>
+            </File>
+            <File>
               <FileName>ipc_runtime.c</FileName>
               <FileType>1</FileType>
               <FilePath>../Common/Src/ipc_runtime.c</FilePath>
@@ -2698,6 +2708,16 @@
           <GroupName>Common</GroupName>
           <Files>
             <File>
+              <FileName>ipc_application.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>../Common/Src/ipc_application.c</FilePath>
+            </File>
+            <File>
+              <FileName>ipc_application.h</FileName>
+              <FileType>5</FileType>
+              <FilePath>../Common/Inc/ipc_application.h</FilePath>
+            </File>
+            <File>
               <FileName>ipc_runtime.c</FileName>
               <FileType>1</FileType>
               <FilePath>../Common/Src/ipc_runtime.c</FilePath>
@@ -3671,6 +3691,16 @@
             <File><FileName>runtime_event.h</FileName><FileType>5</FileType><FilePath>../Common/Inc/runtime_event.h</FilePath></File>
             <File><FileName>app_messages.c</FileName><FileType>1</FileType><FilePath>../CM7/Application/app_messages.c</FilePath></File>
             <File><FileName>app_messages.h</FileName><FileType>5</FileType><FilePath>../CM7/Application/app_messages.h</FilePath></File>
+            <File>
+              <FileName>app_status.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>../CM7/Application/app_status.c</FilePath>
+            </File>
+            <File>
+              <FileName>app_status.h</FileName>
+              <FileType>5</FileType>
+              <FilePath>../CM7/Application/app_status.h</FilePath>
+            </File>
             <File><FileName>app_tasks.c</FileName><FileType>1</FileType><FilePath>../CM7/Application/app_tasks.c</FilePath></File>
             <File><FileName>app_tasks.h</FileName><FileType>5</FileType><FilePath>../CM7/Application/app_tasks.h</FilePath></File>
             <File><FileName>app_events.c</FileName><FileType>1</FileType><FilePath>../CM7/Application/app_events.c</FilePath></File>

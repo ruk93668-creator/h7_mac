@@ -240,7 +240,7 @@ int IpcRuntime_TestRun(uint32_t id)
       case 40:CHECK(IPC_Service_GetRuntimeStatus((IpcRuntimeStatus_t *)0xFFFFFFF0UL)==SYS_ERR_INVALID_ARG);break;
       case 41:before=Digest(Peer(),sizeof(*Peer()));CHECK(IPC_Runtime_Process(&s_test_runtime,100U)==SYS_OK);CHECK(before==Digest(Peer(),sizeof(*Peer())));break;
       case 42:CHECK(IPC_Runtime_Process(&s_test_runtime,100U)==SYS_OK);CHECK(Local()->owner_id==LOCAL_OWNER);break;
-      case 43:CHECK(sizeof(g_ipc)==320U && offsetof(IpcShared_t,m4)==192U);CHECK(Local()->reserved[24]==0U);break;
+      case 43:CHECK(sizeof(g_ipc)==320U && offsetof(IpcShared_t,m4)==192U);CHECK(Local()->reserved[4]==0U);break;
       case 44:s_thread=false;{IpcRuntimeStatus_t status;CHECK(IPC_Service_GetRuntimeStatus(&status)==SYS_ERR_INVALID_STATE);}break;
       case 45:Peer()->sequence=0U;CHECK(IPC_Runtime_Process(&s_test_runtime,500U)==SYS_OK);CHECK(s_test_runtime.status.peer_state==IPC_PEER_STARTUP_TIMEOUT && s_test_runtime.status.busy_reads==1U);break;
       case 46:CHECK(IPC_Runtime_Process(&s_test_runtime,500U)==SYS_OK);CHECK(s_test_runtime.status.peer_state==IPC_PEER_STARTUP_TIMEOUT);break;

@@ -19,4 +19,10 @@ SysResult_t IPC_Service_GetRuntimeStatus(IpcRuntimeStatus_t *status);
 //Watch观察本地诊断，多个字段不保证调试器同时刷新
 extern volatile IpcRuntimeStatus_t g_ipc_runtime_debug;
 
+//取得CM7业务完整本地副本，并返回有效性、新鲜度和通信状态
+SysResult_t IPC_Service_GetApplicationStatus(IpcApplicationView_t *view);
+
+//Watch观察最近一次Timer产生的业务视图
+extern volatile IpcApplicationView_t g_ipc_application_debug;
+
 #endif

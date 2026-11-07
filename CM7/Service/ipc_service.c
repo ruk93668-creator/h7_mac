@@ -168,3 +168,24 @@ static void IpcService_UpdateDebug(void)
     g_ipc_runtime_debug = s_runtime.status;
     port->leave(mask);
 }
+
+//只在唯一IPC Task中更新待发布的业务载荷
+SysResult_t IPC_Service_SetApplication(const IpcApplicationStatus_t *application, uint32_t sampled_tick)
+{
+    uintptr_t address = (uintptr_t)application;
+
+    if (application == NULL || (address & 3U) != 0U ||
+        address > UINTPTR_MAX - (sizeof(*application) - 1U))
+        return SYS_ERR_INVALID_ARG;
+    if (address <= IPC_SHARED_BASE + IPC_SHARED_WINDOW_BYTES - 1U &&
+        IPC_SHARED_BASE <= address + sizeof(*application) - 1U)
+        return SYS_ERR_INVALID_ARG;
+    if (!s_service_initialized || !s_runtime.initialized || !IpcService_IsOwner(NULL))
+        return SYS_ERR_INVALID_STATE;
+    if (!IPC_Application_Validate(application))
+        return SYS_ERR_INVALID_ARG;
+    s_runtime.application = *application;
+    s_runtime.application_tick = sampled_tick;
+    s_runtime.application_timed = true;
+    return SYS_OK;
+}

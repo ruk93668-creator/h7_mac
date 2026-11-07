@@ -27,7 +27,7 @@ for role in ['CM7','CM4']:
   for inc in ['Tests/IpcV2/stubs','Common/Inc',role+'/Platform',role+'/Service']:
    flags+=['-I',ROOT/inc]
   objects=[]
-  for src in ['Tests/IpcV2/protocol_test.c','Common/Src/ipc_core.c','Common/Src/ipc_shared.c','Common/Src/ipc_runtime.c']:
+  for src in ['Tests/IpcV2/protocol_test.c','Common/Src/ipc_core.c','Common/Src/ipc_shared.c','Common/Src/ipc_runtime.c','Common/Src/ipc_application.c']:
    obj=folder/(Path(src).stem+'.o');run(flags+['-c',ROOT/src,'-o',obj]);objects.append(obj)
   axf=folder/'ipc_test.axf'
   run([link,*objects,'--entry','Ipc_TestRun','--scatter',HERE/'test.sct','--no_scanlib','--map','--list',folder/'ipc_test.map','-o',axf])

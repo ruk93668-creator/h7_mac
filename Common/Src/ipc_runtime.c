@@ -30,6 +30,10 @@ SysResult_t IPC_Runtime_Process(IpcRuntime_t *runtime, uint32_t now)
 {
     IpcStatusSnapshot_t peer;
     IpcState_t local;
+#if defined(CORE_CM7)
+    IpcApplicationStatus_t application;
+    uint32_t delay;
+#endif
     SysResult_t result;
     uint32_t gap;
     uint32_t age;
@@ -52,7 +56,12 @@ SysResult_t IPC_Runtime_Process(IpcRuntime_t *runtime, uint32_t now)
     result = IPC_Core_ReadPeer(&peer);
     runtime->status.read_result = result;
     if (result == SYS_OK)
+    {
         IpcRuntime_Observe(runtime, &peer, now);
+#if defined(CORE_CM4)
+        IPC_Application_Observe(&runtime->peer_application, &peer.application, now);
+#endif
+    }
     else if (result == SYS_ERR_BUSY)
         runtime->status.busy_reads++;
     else if (result == SYS_ERR_PROTOCOL)
@@ -95,7 +104,24 @@ SysResult_t IPC_Runtime_Process(IpcRuntime_t *runtime, uint32_t now)
     local.fault_flags = runtime->status.fault_flags;
     local.last_result = result == SYS_ERR_PROTOCOL ? SYS_ERR_PROTOCOL :
         (runtime->timed_out ? SYS_ERR_TIMEOUT : SYS_OK);
+#if defined(CORE_CM7)
+    application = runtime->application;
+    delay = runtime->application_timed ? (uint32_t)(now - runtime->application_tick) : 0U;
+
+    //把采样到处理入口的同核等待时间补入年龄，不发送绝对Tick
+    if ((application.valid_mask & IPC_APP_CAMERA) != 0U)
+        application.camera_age_ms = application.camera_age_ms > UINT32_MAX - delay ?
+            UINT32_MAX : application.camera_age_ms + delay;
+    if ((application.valid_mask & IPC_APP_USB) != 0U)
+        application.usb_age_ms = application.usb_age_ms > UINT32_MAX - delay ?
+            UINT32_MAX : application.usb_age_ms + delay;
+    if ((application.valid_mask & IPC_APP_CONTROL) != 0U)
+        application.control_age_ms = application.control_age_ms > UINT32_MAX - delay ?
+            UINT32_MAX : application.control_age_ms + delay;
+    result = IPC_Core_PublishRuntimeApplication(&local, &application);
+#else
     result = IPC_Core_PublishRuntime(&local);
+#endif
     runtime->status.publish_result = result;
     if (result == SYS_OK)
         runtime->status.local_heartbeat = local.heartbeat;

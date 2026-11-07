@@ -7,11 +7,13 @@
 #include <stdint.h>
 
 #define IPC_MAGIC              0x49504331UL
-#define IPC_VERSION            2UL
+#define IPC_VERSION            3UL
 #define IPC_HEADER_BYTES       64UL
 #define IPC_STATUS_BYTES       128UL
 #define IPC_LAYOUT_BYTES       320UL
 #define IPC_FEATURE_SEQLOCK    1UL
+#define IPC_FEATURE_APPLICATION 2UL
+#define IPC_FEATURE_FLAGS (IPC_FEATURE_SEQLOCK | IPC_FEATURE_APPLICATION)
 #define IPC_READ_ATTEMPTS      3U
 
 //CM7独占协议头，冷启动完成后保持不变
@@ -36,7 +38,13 @@ typedef struct __attribute__((aligned(32)))
     uint32_t heartbeat;
     uint32_t fault_flags;
     int32_t last_result;
-    uint32_t reserved[25];
+
+    //V3正式业务载荷：CM7发布，CM4在本核块中保持全零
+    IpcApplicationStatus_t application;
+
+    //剩余保留字段仍必须清零
+
+    uint32_t reserved[5];
 } IpcStatusBlock_t;
 
 //320B协议对象放在原4KiB UNINIT窗口，未启用启动代号或业务快照
@@ -80,7 +88,7 @@ IPC_LAYOUT_ASSERT(Ipc_ReadyOffset, offsetof(IpcStatusBlock_t, ready) == 12U);
 IPC_LAYOUT_ASSERT(Ipc_HeartbeatOffset, offsetof(IpcStatusBlock_t, heartbeat) == 16U);
 IPC_LAYOUT_ASSERT(Ipc_FaultOffset, offsetof(IpcStatusBlock_t, fault_flags) == 20U);
 IPC_LAYOUT_ASSERT(Ipc_ResultOffset, offsetof(IpcStatusBlock_t, last_result) == 24U);
-IPC_LAYOUT_ASSERT(Ipc_ReservedOffset, offsetof(IpcStatusBlock_t, reserved) == 28U);
+IPC_LAYOUT_ASSERT(Ipc_ReservedOffset, offsetof(IpcStatusBlock_t, reserved) == 108U);
 IPC_LAYOUT_ASSERT(Ipc_HeaderVersionOffset, offsetof(IpcHeader_t, version) == 4U);
 IPC_LAYOUT_ASSERT(Ipc_HeaderLayoutOffset, offsetof(IpcHeader_t, layout_bytes) == 8U);
 IPC_LAYOUT_ASSERT(Ipc_HeaderBytesOffset, offsetof(IpcHeader_t, header_bytes) == 12U);
@@ -94,7 +102,9 @@ IPC_LAYOUT_ASSERT(Ipc_Snapshot_ready, offsetof(IpcStatusSnapshot_t, ready) == 12
 IPC_LAYOUT_ASSERT(Ipc_Snapshot_heartbeat, offsetof(IpcStatusSnapshot_t, heartbeat) == 16U);
 IPC_LAYOUT_ASSERT(Ipc_Snapshot_fault_flags, offsetof(IpcStatusSnapshot_t, fault_flags) == 20U);
 IPC_LAYOUT_ASSERT(Ipc_Snapshot_last_result, offsetof(IpcStatusSnapshot_t, last_result) == 24U);
-IPC_LAYOUT_ASSERT(Ipc_Snapshot_reserved, offsetof(IpcStatusSnapshot_t, reserved) == 28U);
+IPC_LAYOUT_ASSERT(Ipc_Snapshot_reserved, offsetof(IpcStatusSnapshot_t, reserved) == 108U);
+IPC_LAYOUT_ASSERT(Ipc_ApplicationOffset, offsetof(IpcStatusBlock_t, application) == 28U);
+IPC_LAYOUT_ASSERT(Ipc_SnapshotApplicationOffset, offsetof(IpcStatusSnapshot_t, application) == 28U);
 #undef IPC_LAYOUT_ASSERT
 
 //两核ELF各保留一个同地址符号，不由启动库清零

@@ -22,6 +22,9 @@ SysResult_t IPC_Service_SetRuntimeOwner(bool (*is_owner)(void *context), void *c
 //由IPC Task在BOOT放行后启动运行期计时
 SysResult_t IPC_Service_RuntimeStart(uint32_t now);
 
+//只允许IPC Task设置待发布的正式业务载荷
+SysResult_t IPC_Service_SetApplication(const IpcApplicationStatus_t *application, uint32_t sampled_tick);
+
 //只允许IPC Task按本地时间推进心跳
 SysResult_t IPC_Service_RuntimeProcess(uint32_t now);
 

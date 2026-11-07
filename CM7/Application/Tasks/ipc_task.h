@@ -10,6 +10,7 @@ typedef struct
     uint32_t wake_count;//实际推进运行期处理的次数
     uint32_t stack_free_words;//历史最小剩余栈，单位Word
     SysResult_t result;//最近一次本核运行期调用结果，不代表对端ONLINE
+    SysResult_t snapshot_result;//最近一次业务汇总或设置结果
 } IpcTaskDebug_t;
 
 //保存IPC Task的BOOT、运行次数和栈余量

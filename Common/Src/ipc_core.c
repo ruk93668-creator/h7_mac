@@ -60,7 +60,8 @@ static volatile IpcStatusBlock_t *Ipc_PeerBlock(void);
 static SysResult_t Ipc_BeginWrite(bool runtime);
 
 //复用同一份字段校验和序号提交，只区分初始化与运行期授权
-static SysResult_t Ipc_Publish(const IpcState_t *state, bool runtime);
+static SysResult_t Ipc_Publish(const IpcState_t *state, bool runtime,
+    const IpcApplicationStatus_t *application);
 
 //释放本核发布权
 static void Ipc_EndWrite(void);
@@ -70,7 +71,8 @@ static bool Ipc_StateValid(const IpcState_t *state);
 
 //以对齐字段访问写入整块，sequence最后提交
 static void Ipc_WriteBlock(volatile IpcStatusBlock_t *block,
-    const IpcState_t *state, uint32_t committed_sequence);
+    const IpcState_t *state, uint32_t committed_sequence,
+    const IpcApplicationStatus_t *application);
 
 //有限重试读取指定块，成功后才填写输出
 static SysResult_t Ipc_ReadBlock(volatile IpcStatusBlock_t *block,
@@ -131,12 +133,12 @@ SysResult_t IPC_Core_ColdStart(void)
     s_core.shared->header.layout_bytes = IPC_LAYOUT_BYTES;
     s_core.shared->header.header_bytes = IPC_HEADER_BYTES;
     s_core.shared->header.status_block_bytes = IPC_STATUS_BYTES;
-    s_core.shared->header.feature_flags = IPC_FEATURE_SEQLOCK;
+    s_core.shared->header.feature_flags = IPC_FEATURE_FLAGS;
     for (i = 0U; i < 10U; i++)
         s_core.shared->header.reserved[i] = 0U;
 
     //只初始化M7块，M4在验证协议后自己初始化M4块
-    Ipc_WriteBlock(Ipc_LocalBlock(), &initial, 2U);
+    Ipc_WriteBlock(Ipc_LocalBlock(), &initial, 2U, NULL);
     s_core.local_initialized = true;
     s_core.port->barrier();
     s_core.shared->header.magic = IPC_MAGIC;
@@ -167,7 +169,7 @@ SysResult_t IPC_Core_InitializeLocal(const IpcState_t *state)
         {
 
             //UNINIT中的旧sequence不可直接使用，冷启动由所属核首次构造
-            Ipc_WriteBlock(Ipc_LocalBlock(), state, 2U);
+            Ipc_WriteBlock(Ipc_LocalBlock(), state, 2U, NULL);
             s_core.local_initialized = true;
         }
     }
@@ -176,13 +178,17 @@ SysResult_t IPC_Core_InitializeLocal(const IpcState_t *state)
 }
 
 //在初始化窗口内提交本核状态
-static SysResult_t Ipc_Publish(const IpcState_t *state, bool runtime)
+static SysResult_t Ipc_Publish(const IpcState_t *state, bool runtime,
+    const IpcApplicationStatus_t *application)
 {
     volatile IpcStatusBlock_t *block;
     uint32_t sequence;
     SysResult_t result;
 
     if (!Ipc_LocalMemoryValid(state, sizeof(*state)))
+        return Ipc_Result(SYS_ERR_INVALID_ARG, 0U);
+    if (application != NULL && (!Ipc_LocalMemoryValid(application, sizeof(*application)) ||
+        !IPC_Application_Validate(application)))
         return Ipc_Result(SYS_ERR_INVALID_ARG, 0U);
     result = Ipc_BeginWrite(runtime);
     if (result != SYS_OK)
@@ -208,7 +214,7 @@ static SysResult_t Ipc_Publish(const IpcState_t *state, bool runtime)
         {
 
             //拒绝回绕，不复用可能仍被读者持有的旧提交序号
-            Ipc_WriteBlock(block, state, sequence + 2U);
+            Ipc_WriteBlock(block, state, sequence + 2U, application);
         }
     }
     Ipc_EndWrite();
@@ -323,7 +329,7 @@ static SysResult_t Ipc_CheckHeader(void)
     if (header->version != IPC_VERSION)
         return Ipc_Result(SYS_ERR_PROTOCOL, IPC_FAULT_VERSION_MISMATCH);
     if (header->layout_bytes != IPC_LAYOUT_BYTES || header->header_bytes != IPC_HEADER_BYTES ||
-        header->status_block_bytes != IPC_STATUS_BYTES || header->feature_flags != IPC_FEATURE_SEQLOCK)
+        header->status_block_bytes != IPC_STATUS_BYTES || header->feature_flags != IPC_FEATURE_FLAGS)
         return Ipc_Result(SYS_ERR_PROTOCOL, IPC_FAULT_SHARED_INVALID);
     for (i = 0U; i < 10U; i++)
     {
@@ -335,7 +341,7 @@ static SysResult_t Ipc_CheckHeader(void)
     s_core.port->barrier();
     if (header->magic != IPC_MAGIC || header->version != IPC_VERSION ||
         header->layout_bytes != IPC_LAYOUT_BYTES || header->header_bytes != IPC_HEADER_BYTES ||
-        header->status_block_bytes != IPC_STATUS_BYTES || header->feature_flags != IPC_FEATURE_SEQLOCK)
+        header->status_block_bytes != IPC_STATUS_BYTES || header->feature_flags != IPC_FEATURE_FLAGS)
         return Ipc_Result(SYS_ERR_PROTOCOL, IPC_FAULT_SHARED_INVALID);
     return SYS_OK;
 }
@@ -406,10 +412,13 @@ static bool Ipc_StateValid(const IpcState_t *state)
 
 //逐字段提交本核块，避免普通memcpy绕过volatile访问
 static void Ipc_WriteBlock(volatile IpcStatusBlock_t *block,
-    const IpcState_t *state, uint32_t committed_sequence)
+    const IpcState_t *state, uint32_t committed_sequence,
+    const IpcApplicationStatus_t *application)
 {
     uint32_t i;
     IpcState_t value = *state;
+    const IpcApplicationStatus_t empty = {0};
+    IpcApplicationStatus_t data = application != NULL ? *application : empty;
 
     //奇数先发布，读者在完整提交前只能重试
     block->sequence = committed_sequence - 1U;
@@ -427,10 +436,50 @@ static void Ipc_WriteBlock(volatile IpcStatusBlock_t *block,
     IPC_ACCESS(1U, 5U);
     block->last_result = value.last_result;
     IPC_ACCESS(1U, 6U);
-    for (i = 0U; i < 25U; i++)
+    block->application.valid_mask = data.valid_mask;
+    IPC_ACCESS(1U, 7U);
+    block->application.camera_state = data.camera_state;
+    IPC_ACCESS(1U, 8U);
+    block->application.usb_state = data.usb_state;
+    IPC_ACCESS(1U, 9U);
+    block->application.control_state = data.control_state;
+    IPC_ACCESS(1U, 10U);
+    block->application.camera_fps_milli = data.camera_fps_milli;
+    IPC_ACCESS(1U, 11U);
+    block->application.usb_fps_milli = data.usb_fps_milli;
+    IPC_ACCESS(1U, 12U);
+    block->application.captured_frames = data.captured_frames;
+    IPC_ACCESS(1U, 13U);
+    block->application.dropped_frames = data.dropped_frames;
+    IPC_ACCESS(1U, 14U);
+    block->application.usb_completed_frames = data.usb_completed_frames;
+    IPC_ACCESS(1U, 15U);
+    block->application.width = data.width;
+    IPC_ACCESS(1U, 16U);
+    block->application.height = data.height;
+    IPC_ACCESS(1U, 17U);
+    block->application.format = data.format;
+    IPC_ACCESS(1U, 18U);
+    block->application.last_fault = data.last_fault;
+    IPC_ACCESS(1U, 19U);
+    block->application.camera_result = data.camera_result;
+    IPC_ACCESS(1U, 20U);
+    block->application.usb_result = data.usb_result;
+    IPC_ACCESS(1U, 21U);
+    block->application.control_result = data.control_result;
+    IPC_ACCESS(1U, 22U);
+    block->application.camera_age_ms = data.camera_age_ms;
+    IPC_ACCESS(1U, 23U);
+    block->application.usb_age_ms = data.usb_age_ms;
+    IPC_ACCESS(1U, 24U);
+    block->application.control_age_ms = data.control_age_ms;
+    IPC_ACCESS(1U, 25U);
+    block->application.snapshot_id = data.snapshot_id;
+    IPC_ACCESS(1U, 26U);
+    for (i = 0U; i < 5U; i++)
     {
         block->reserved[i] = 0U;
-        IPC_ACCESS(1U, 7U + i);
+        IPC_ACCESS(1U, 27U + i);
     }
 
     //完整数据排在偶数提交之前，末尾屏障也用于后续启动通知
@@ -475,10 +524,50 @@ static SysResult_t Ipc_ReadBlock(volatile IpcStatusBlock_t *block,
         IPC_ACCESS(3U, 5U);
         value.last_result = block->last_result;
         IPC_ACCESS(3U, 6U);
-        for (i = 0U; i < 25U; i++)
+        value.application.valid_mask = block->application.valid_mask;
+        IPC_ACCESS(3U, 7U);
+        value.application.camera_state = block->application.camera_state;
+        IPC_ACCESS(3U, 8U);
+        value.application.usb_state = block->application.usb_state;
+        IPC_ACCESS(3U, 9U);
+        value.application.control_state = block->application.control_state;
+        IPC_ACCESS(3U, 10U);
+        value.application.camera_fps_milli = block->application.camera_fps_milli;
+        IPC_ACCESS(3U, 11U);
+        value.application.usb_fps_milli = block->application.usb_fps_milli;
+        IPC_ACCESS(3U, 12U);
+        value.application.captured_frames = block->application.captured_frames;
+        IPC_ACCESS(3U, 13U);
+        value.application.dropped_frames = block->application.dropped_frames;
+        IPC_ACCESS(3U, 14U);
+        value.application.usb_completed_frames = block->application.usb_completed_frames;
+        IPC_ACCESS(3U, 15U);
+        value.application.width = block->application.width;
+        IPC_ACCESS(3U, 16U);
+        value.application.height = block->application.height;
+        IPC_ACCESS(3U, 17U);
+        value.application.format = block->application.format;
+        IPC_ACCESS(3U, 18U);
+        value.application.last_fault = block->application.last_fault;
+        IPC_ACCESS(3U, 19U);
+        value.application.camera_result = block->application.camera_result;
+        IPC_ACCESS(3U, 20U);
+        value.application.usb_result = block->application.usb_result;
+        IPC_ACCESS(3U, 21U);
+        value.application.control_result = block->application.control_result;
+        IPC_ACCESS(3U, 22U);
+        value.application.camera_age_ms = block->application.camera_age_ms;
+        IPC_ACCESS(3U, 23U);
+        value.application.usb_age_ms = block->application.usb_age_ms;
+        IPC_ACCESS(3U, 24U);
+        value.application.control_age_ms = block->application.control_age_ms;
+        IPC_ACCESS(3U, 25U);
+        value.application.snapshot_id = block->application.snapshot_id;
+        IPC_ACCESS(3U, 26U);
+        for (i = 0U; i < 5U; i++)
         {
             value.reserved[i] = block->reserved[i];
-            IPC_ACCESS(3U, 7U + i);
+            IPC_ACCESS(3U, 27U + i);
         }
         s_core.port->barrier();
         second = block->sequence;
@@ -491,13 +580,16 @@ static SysResult_t Ipc_ReadBlock(volatile IpcStatusBlock_t *block,
         if (value.owner_id != owner || value.block_bytes != IPC_STATUS_BYTES ||
             value.ready > IPC_CORE_READY || value.last_result > SYS_OK)
             return Ipc_Result(SYS_ERR_PROTOCOL, IPC_FAULT_SHARED_INVALID);
-        for (i = 0U; i < 25U; i++)
+        for (i = 0U; i < 5U; i++)
         {
             if (value.reserved[i] != 0U)
                 return Ipc_Result(SYS_ERR_PROTOCOL, IPC_FAULT_SHARED_INVALID);
         }
 
         //只有本地副本经过全部校验后，才更新调用者提供的普通内存
+        if (!IPC_Application_Validate(&value.application) ||
+            (owner == IPC_OWNER_CM4 && !IPC_Application_IsEmpty(&value.application)))
+            return Ipc_Result(SYS_ERR_PROTOCOL, IPC_FAULT_SHARED_INVALID);
         *snapshot = value;
         return Ipc_Result(SYS_OK, 0U);
     }
@@ -507,13 +599,13 @@ static SysResult_t Ipc_ReadBlock(volatile IpcStatusBlock_t *block,
 //发布初始化状态，不因增加运行期能力而重新打开初始化窗口
 SysResult_t IPC_Core_PublishLocal(const IpcState_t *state)
 {
-    return Ipc_Publish(state, false);
+    return Ipc_Publish(state, false, NULL);
 }
 
 //发布运行期状态，每次调用都验证唯一执行者
 SysResult_t IPC_Core_PublishRuntime(const IpcState_t *state)
 {
-    return Ipc_Publish(state, true);
+    return Ipc_Publish(state, true, NULL);
 }
 
 //在初始化阶段冻结运行期发布者
@@ -549,3 +641,15 @@ SysResult_t IPC_Core_ConfigureRuntime(bool (*is_owner)(void *context), void *con
     s_core.port->leave(mask);
     return Ipc_Result(SYS_OK, 0U);
 }
+
+#if defined(CORE_CM7)
+
+//由唯一IPC Task将心跳与业务数据作为同一份快照提交
+SysResult_t IPC_Core_PublishRuntimeApplication(const IpcState_t *state,
+    const IpcApplicationStatus_t *application)
+{
+    if (application == NULL)
+        return Ipc_Result(SYS_ERR_INVALID_ARG, 0U);
+    return Ipc_Publish(state, true, application);
+}
+#endif

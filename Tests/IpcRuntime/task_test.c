@@ -137,3 +137,19 @@ int IpcTask_TestRun(uint32_t id)
     if(id==19U){CHECK(App_TasksCreate()==SYS_ERR_INVALID_STATE);return 0;}
     return 1;
 }
+
+//05C-2新增依赖桩；原Task/BOOT断言保持不变
+#if !defined(IPC_STATUS_REAL_APP)
+SysResult_t App_StatusGetSnapshot(IpcApplicationStatus_t *snapshot)
+{
+    memset(snapshot,0,sizeof(*snapshot));return SYS_OK;
+}
+SysResult_t App_StatusGetSnapshotAt(IpcApplicationStatus_t *snapshot, uint32_t *tick)
+{
+    *tick=0U;return App_StatusGetSnapshot(snapshot);
+}
+#endif
+SysResult_t IPC_Service_SetApplication(const IpcApplicationStatus_t *application,uint32_t sampled_tick)
+{
+    (void)application;(void)sampled_tick;return s_owner_check(s_owner_context)?SYS_OK:SYS_ERR_INVALID_STATE;
+}

@@ -37,6 +37,14 @@ typedef struct
 typedef struct
 {
     IpcRuntimeStatus_t status;
+
+    //CM7待发布的业务载荷，CM4只缓存对端业务副本
+    IpcApplicationStatus_t application;
+    IpcApplicationCache_t peer_application;
+
+    //仅本核使用的采样时刻，不放入共享协议
+    uint32_t application_tick;
+    bool application_timed;
     uint32_t start_tick;//本核运行期启动时间
     uint32_t progress_tick;//本核观察到最近新心跳的时间
     uint32_t step_tick;//上次实际处理时间

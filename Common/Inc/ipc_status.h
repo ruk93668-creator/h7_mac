@@ -3,6 +3,7 @@
 
 #include "sys_result.h"
 #include "ipc_fault.h"
+#include "ipc_application.h"
 #include <stdint.h>
 
 #define IPC_CORE_NOT_READY 0U
@@ -31,7 +32,8 @@ typedef struct
     uint32_t heartbeat;
     uint32_t fault_flags;
     int32_t last_result;
-    uint32_t reserved[25];
+    IpcApplicationStatus_t application;
+    uint32_t reserved[5];
 } IpcStatusSnapshot_t;
 
 //本核诊断，不写入未知共享布局

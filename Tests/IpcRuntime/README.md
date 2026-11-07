@@ -1,5 +1,7 @@
 # 阶段05C-1：IPC运行期验收
 
+> 本分支05C-2的当前生产代码为V3。本套件继续执行原05C-1的260项运行期及20项Task回归，未把历史V2报告改写为V3实板结果。
+
 基线为dfa9bfc。正式实现使用真实ipc_core.c、ipc_runtime.c及两核ipc_service.c；独立ARMCC5编译并由Unicorn执行ARM指令。Task专项另使用真实FreeRTOS内核、app_tasks、app_events及ipc_task。
 
 在仓库根目录执行：

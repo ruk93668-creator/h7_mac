@@ -1,4 +1,5 @@
 #include "ipc_task.h"
+#include "app_status.h"
 #include "app_events.h"
 #include "ipc_service.h"
 #include "ipc_config.h"
@@ -52,6 +53,8 @@ SysResult_t IpcTask_Create(void)
 static void IpcTask_Run(void *argument)
 {
     uint32_t events;
+    uint32_t application_tick = 0U;
+    IpcApplicationStatus_t application = {0};
     SysResult_t result;
     (void)argument;
 
@@ -69,6 +72,11 @@ static void IpcTask_Run(void *argument)
     configASSERT(result == SYS_OK);
     for (;;)
     {
+
+        //先取得一致本地汇总，再由原授权路径连同心跳一起发布
+        g_ipc_task_debug.snapshot_result = App_StatusGetSnapshotAt(&application, &application_tick);
+        if (g_ipc_task_debug.snapshot_result == SYS_OK)
+            g_ipc_task_debug.snapshot_result = IPC_Service_SetApplication(&application, application_tick);
         g_ipc_task_debug.result = IPC_Service_RuntimeProcess(Platform_TimeGetMs());
         g_ipc_task_debug.wake_count++;
         g_ipc_task_debug.stack_free_words = uxTaskGetStackHighWaterMark(NULL);

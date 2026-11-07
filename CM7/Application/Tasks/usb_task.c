@@ -1,4 +1,5 @@
 #include "usb_task.h"
+#include "app_status.h"
 #include "app_events.h"
 #include "app_messages.h"
 #include "app_uvc_bridge.h"
@@ -58,6 +59,9 @@ static void UsbTask_Run(void *argument);
 //处理USB命令、传输完成及帧归还
 static void UsbTask_Process(uint32_t events);
 
+//提交本任务已完成处理的状态，不读写其他任务或SRAM4
+static void UsbTask_PublishStatus(void);
+
 //重试交付ACK和故障通知
 static void UsbTask_Reply(void);
 
@@ -106,6 +110,7 @@ static void UsbTask_Run(void *argument)
             continue;
         }
         UsbTask_Process(events);
+        UsbTask_PublishStatus();
         g_usb_task_debug.stack_free_words = uxTaskGetStackHighWaterMark(NULL);
     }
 }
@@ -251,4 +256,16 @@ static void UsbTask_Reply(void)
         if (App_MessagesSend(APP_CHANNEL_CONTROL, &message) == SYS_OK)
             s_usb_fault_reported = true;
     }
+}
+
+//提交USB实际完成统计，端点和UVC生命周期保持原样
+static void UsbTask_PublishStatus(void)
+{
+    AppUsbStatus_t status;
+
+    status.state = g_usb_task_debug.state;
+    status.fps_milli = g_usb_task_debug.measured_fps_milli;
+    status.completed_frames = g_usb_task_debug.completed_frames;
+    status.result = g_usb_task_debug.result;
+    (void)App_StatusPublishUsb(&status);
 }
