@@ -1,5 +1,11 @@
 # 08B 五分钟只读压力测试
 
+## 当前直接烧录方式
+
+按用户要求，当前08B分支的h7_mac_CM7 Target已直接启用只读压力宏：APP_SD_BLOCK_TEST_ENABLED=1、APP_SD_BLOCK_STRESS_TEST_ENABLED=1、APP_SD_BLOCK_WRITE_TEST_ENABLED=0；初始识卡测试关闭。头文件默认值仍为0。打开MDK-ARM/h7_mac.uvprojx，选择h7_mac_CM7，编译后点击Download即可；使用正式输出MDK-ARM/h7_mac_CM7/h7_mac_CM7.axf，不再用Command手动LOAD其他镜像。烧录后仍需手动request=5，不会自动启动压力。
+
+额外生成的output/SdmmcStage08B/firmware下normal、read_only、write_compile_only、read_stress、write_ready五个目录已清理。下文多profile路径、内存结果与项目恢复哈希是上一轮构建的历史证据，原镜像路径当前已不存在；只有主动重跑run_profiles.py才会重建。用户其他工程设置保留。验收完需关闭两个APP_SD_BLOCK测试宏并重新编译。
+
 ## 修改范围
 
 只修改 Tests/SdmmcStage08B 的独立测试入口、测试桩、构建脚本和记录。复用原 SdTest 静态任务、BOOT 放行和优先级，不新增任务，不改 BSP、Platform 或 Camera/USB/IPC/OLED 业务代码。不合并 main。
@@ -84,3 +90,5 @@ APP_SD_BLOCK_STRESS_TEST_ENABLED=1
 - README、各JSON及重编日志：运行说明与此次自动化证据；不改写历史硬件验收为自动化结果。
 
 恢复用户本地配置后的CM7与CM4也已完整重编，均0 Error、0 Warning，见 build_results.json。源码指纹构建前后一致；Keil项目SHA256恢复为 e3790ac3b7932722120fa82cda24ebd433306d4b933d969fb629041aa8750767。用户原写测试开关和授权值保持不变；要运行压力验收，请显式切换为本报告的只读压力宏配置。
+
+直接烧录配置已完成编译检查：CM7重新编译、CM4增量检查均0 Error、0 Warning（incremental_build_results.json）。正式CM7 AXF包含s_stress_buffer且不含写测试s_backup，确认当前输出为只读压力固件。
