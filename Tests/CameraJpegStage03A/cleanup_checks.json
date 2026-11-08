@@ -1,0 +1,17 @@
+{
+  "total": 10,
+  "passed": 10,
+  "checks": {
+    "normal_task_path_identical": true,
+    "moved_byte_identical_app_camera_jpeg.c": true,
+    "removed_from_application_app_camera_jpeg.c": true,
+    "moved_byte_identical_app_camera_jpeg.h": true,
+    "removed_from_application_app_camera_jpeg.h": true,
+    "no_production_test_references": true,
+    "no_project_test_reference": true,
+    "snapshot_and_mjpeg_sources_unchanged": true,
+    "no_linked_acceptance_context": true,
+    "obsolete_variant_explicitly_rejected": true
+  },
+  "hardware_verified": false
+}

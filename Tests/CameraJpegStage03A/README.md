@@ -1,3 +1,5 @@
+> 正式源码清理更新：JPEG验收应用已迁到acceptance/，CameraTask和正式Keil工程已移除历史测试分支。以下旧烧录/Watch说明仅对应历史提交；当前单帧能力及独立测试保留，见[清理报告](cleanup_report.md)。
+
 # Stage03A：OV5640 JPEG单帧采集
 
 状态：软件实现与专项检查已完成；实板复测、真实文件导出和PC解码待完成。分支codex/camera-jpeg-stage03a，不合并main。

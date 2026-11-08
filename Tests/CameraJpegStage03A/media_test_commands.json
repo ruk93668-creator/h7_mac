@@ -10,7 +10,7 @@
     "output": ""
   },
   {
-    "command": "D:/32/ARM/ARMCC/Bin/armlink.exe D:\\32\\STM32H7\\h7_mac\\Tests\\CameraJpegStage03A\\media_test.o --entry Stage02_TestRun --scatter D:\\32\\STM32H7\\h7_mac\\Tests\\CameraJpegStage03A\\test.sct --no_scanlib -o D:\\32\\STM32H7\\h7_mac\\Tests\\CameraJpegStage03A\\media_test.axf",
+    "command": "D:/32/ARM/ARMCC/Bin/armlink.exe D:\\32\\STM32H7\\h7_mac\\Tests\\CameraJpegStage03A\\media_test.o --entry Stage02_TestRun --scatter D:\\32\\STM32H7\\h7_mac\\Tests\\CameraJpegStage03A\\test.sct -o D:\\32\\STM32H7\\h7_mac\\Tests\\CameraJpegStage03A\\media_test.axf",
     "exit": 0,
     "output": ""
   }

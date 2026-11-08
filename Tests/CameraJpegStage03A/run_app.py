@@ -1,4 +1,4 @@
-"""Execute production Device/OV5640/App/Media with mock board registers and DMA."""
+"""Execute Tests-only acceptance app with production Device/OV5640/Media and mock hardware."""
 import json, subprocess, sys, struct
 from pathlib import Path
 sys.stdout.reconfigure(encoding='utf-8')
@@ -15,11 +15,11 @@ def run(args):
  if r.returncode:raise RuntimeError(out)
 run(['D:/32/ARM/ARMCC/Bin/armcc.exe','--vsn'])
 a=['D:/32/ARM/ARMCC/Bin/armcc.exe','--cpu','Cortex-M7','--c99','-O0']
-for d in ['Tests/Ov5640Lifecycle/stubs','Tests/CameraStreamState/stubs','Common/Inc','Board/Inc','CM7/Device/Inc','CM7/Device/Components/OV5640','CM7/Media/Inc','CM7/BSP','CM7/Platform','CM7/Framework']:a+=['-I',root/d]
+for d in ['Tests/Ov5640Lifecycle/stubs','Tests/CameraStreamState/stubs','Common/Inc','Board/Inc','CM7/Application','CM7/Device/Inc','CM7/Device/Components/OV5640','CM7/Media/Inc','CM7/BSP','CM7/Platform','CM7/Framework']:a+=['-I',root/d]
 objs=[]
 for src,name in [(here/'app_test.c','test'),(root/'CM7/Device/Components/OV5640/ov5640.c','component'),(root/'CM7/Device/Components/OV5640/ov5640_reg.c','registers')]:
  obj=here/(name+'.o');run(a+['-c',src,'-o',obj]);objs.append(obj)
-run(['D:/32/ARM/ARMCC/Bin/armlink.exe',*objs,'--entry','Lifecycle_TestRun','--scatter',root/'Tests/Ov5640Lifecycle/test.sct','--no_scanlib','-o',here/'test.axf'])
+run(['D:/32/ARM/ARMCC/Bin/armlink.exe',*objs,'--entry','Lifecycle_TestRun','--scatter',root/'Tests/Ov5640Lifecycle/test.sct','-o',here/'test.axf'])
 with (here/'test.axf').open('rb') as f:
  e=ELFFile(f);entry=e.header['e_entry'];symbols={s.name:s['st_value'] for s in e.get_section_by_name('.symtab').iter_symbols()};sections=[(s['sh_addr'],s.data()) for s in e.iter_sections() if s['sh_flags']&2 and s['sh_type']=='SHT_PROGBITS' and s['sh_size']]
 names=['非Camera所有者拒绝','配置失败不启动DMA','只启动一次','READY保持直到导出','导出后释放停止','传感器停止失败不伪造成功','重复轮询不覆盖导出帧','超时保留原错误']
@@ -32,8 +32,8 @@ for i,name in enumerate(names):
  err=None
  try:u.emu_start(entry|1,0x01000000,count=50000000)
  except Exception as ex:err=str(ex)
- result=u.reg_read(UC_ARM_REG_R0);unsafe_stops=struct.unpack('<I',u.mem_read(symbols['g_unsafe_sensor_stops'],4))[0];early_dma=struct.unpack('<I',u.mem_read(symbols['g_dma_before_sensor'],4))[0];passed=not err and result==0 and u.reg_read(UC_ARM_REG_PC)==0x01000000 and unsafe_stops==0 and early_dma==0
- rows.append({'id':i,'name':name,'result':'PASS' if passed else 'FAIL','failure_line':result,'emulator_error':err,'unsafe_sensor_stops':unsafe_stops,'dma_before_sensor':early_dma})
+ result=u.reg_read(UC_ARM_REG_R0);unsafe_stops=struct.unpack('<I',u.mem_read(symbols['g_unsafe_sensor_stops'],4))[0];early_dma=struct.unpack('<I',u.mem_read(symbols['g_dma_before_sensor'],4))[0];continuous_starts=struct.unpack('<I',u.mem_read(symbols['g_jpeg_test_continuous_starts'],4))[0];passed=continuous_starts==0 and not err and result==0 and u.reg_read(UC_ARM_REG_PC)==0x01000000 and unsafe_stops==0 and early_dma==0
+ rows.append({'id':i,'name':name,'result':'PASS' if passed else 'FAIL','failure_line':result,'emulator_error':err,'unexpected_continuous_starts':continuous_starts,'unsafe_sensor_stops':unsafe_stops,'dma_before_sensor':early_dma})
  print(i,name,rows[-1]['result'],result,err,flush=True)
 summary={'total':len(rows),'passed':sum(r['result']=='PASS' for r in rows),'failed':sum(r['result']=='FAIL' for r in rows)}
 (here/'app_results.json').write_text(json.dumps({'summary':summary,'cases':rows,'hardware_verified':False},ensure_ascii=False,indent=2),encoding='utf-8')

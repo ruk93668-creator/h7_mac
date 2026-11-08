@@ -3,6 +3,7 @@
 #define Stream_TestRun Stage03_HistoricalRun
 #include "../CameraContextRefactor/context_test.c"
 #undef Stream_TestRun
+#include "fifo_dependency.inc"
 
 #include "synthetic_jpeg.inc"
 #include "hardware_jpeg.inc"

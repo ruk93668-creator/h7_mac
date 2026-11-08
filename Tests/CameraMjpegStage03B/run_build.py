@@ -3,15 +3,17 @@ from pathlib import Path
 import subprocess,copy,xml.etree.ElementTree as ET,json,re,sys,hashlib
 ROOT=Path(__file__).resolve().parents[2];HERE=Path(__file__).resolve().parent
 # Use current project entries, including uncommitted source-file additions.
+if '--targets' in sys.argv and 'CM7_JPEG_SINGLE' in sys.argv[sys.argv.index('--targets')+1].split(','):
+ raise SystemExit('JPEG acceptance app is Tests-only; use Tests/CameraJpegStage03A/run_app.py. Normal Snapshot APIs remain available.')
 xml=(ROOT/'MDK-ARM/h7_mac.uvprojx').read_bytes()
 tree=ET.fromstring(xml);targets=tree.find('Targets');cm7=next(x for x in targets if x.findtext('TargetName')=='h7_mac_CM7');cm4=next(x for x in targets if x.findtext('TargetName')=='h7_mac_CM4')
 for x in list(targets):targets.remove(x)
-variants=[('CM7_MJPEG',cm7,'APP_VIDEO_MJPEG_MODE=1'),('CM7_YUY2',cm7,''),('CM7_TEST',cm7,'APP_VIDEO_TEST_MODE=1'),('CM7_JPEG_SINGLE',cm7,'APP_VIDEO_TEST_MODE=1,APP_CAMERA_JPEG_TEST_ENABLED=1'),('CM4',cm4,'')]
+variants=[('CM7_MJPEG',cm7,'APP_VIDEO_MJPEG_MODE=1'),('CM7_YUY2',cm7,''),('CM7_TEST',cm7,'APP_VIDEO_TEST_MODE=1'),('CM4',cm4,'')]
 for name,base,defines in variants:
  t=copy.deepcopy(base);t.find('TargetName').text=name
  t.find('.//TargetCommonOption/OutputDirectory').text='..\\output\\build_stage03b\\'+name+'\\'
  if name.startswith('CM7_'):
-  # Cold-boot variants must not inherit a user-selected MJPEG/TEST/single-frame mode.
+  # Cold-boot variants strip obsolete acceptance flags; no single-frame test app is built.
   d=t.find('.//Cads/VariousControls/Define')
   switches={'APP_VIDEO_MJPEG_MODE','APP_VIDEO_TEST_MODE','APP_CAMERA_JPEG_TEST_ENABLED'}
   values=[v.strip() for v in (d.text or '').split(',') if v.strip() and v.strip().split('=',1)[0] not in switches]

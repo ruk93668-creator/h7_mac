@@ -3,7 +3,8 @@
 #define Lifecycle_TestRun Historical_LifecycleRun
 #include "../Ov5640Lifecycle/lifecycle_test.c"
 #undef Lifecycle_TestRun
-#include "../../CM7/Application/app_camera_jpeg.c"
+#include "acceptance/app_camera_jpeg.c"
+#include "fifo_dependency.inc"
 static bool camera_owner=true;
 bool App_MessagesIsOwner(RuntimeEventTarget_t owner){return camera_owner && owner==RUNTIME_TARGET_CAMERA;}
 int Lifecycle_TestRun(uint32_t id)

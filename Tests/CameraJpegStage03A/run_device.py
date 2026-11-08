@@ -19,7 +19,7 @@ for d in ['Tests/Ov5640Lifecycle/stubs','Tests/CameraStreamState/stubs','Common/
 objs=[]
 for src,name in [(here/'device_test.c','test'),(root/'CM7/Device/Components/OV5640/ov5640.c','component'),(root/'CM7/Device/Components/OV5640/ov5640_reg.c','registers')]:
  obj=here/(name+'.o');run(a+['-c',src,'-o',obj]);objs.append(obj)
-run(['D:/32/ARM/ARMCC/Bin/armlink.exe',*objs,'--entry','Lifecycle_TestRun','--scatter',root/'Tests/Ov5640Lifecycle/test.sct','--no_scanlib','-o',here/'test.axf'])
+run(['D:/32/ARM/ARMCC/Bin/armlink.exe',*objs,'--entry','Lifecycle_TestRun','--scatter',root/'Tests/Ov5640Lifecycle/test.sct','-o',here/'test.axf'])
 with (here/'test.axf').open('rb') as f:
  e=ELFFile(f);entry=e.header['e_entry'];symbols={s.name:s['st_value'] for s in e.get_section_by_name('.symtab').iter_symbols()};sections=[(s['sh_addr'],s.data()) for s in e.iter_sections() if s['sh_flags']&2 and s['sh_type']=='SHT_PROGBITS' and s['sh_size']]
 names=['JPEG配置校验','非法分辨率拒绝','JPEG寄存器IO失败','错误芯片ID','JPEG表及Device启停','JPEG单帧应用和启动顺序','运行中禁止配置']
@@ -32,8 +32,8 @@ for i,name in enumerate(names):
  err=None
  try:u.emu_start(entry|1,0x01000000,count=50000000)
  except Exception as ex:err=str(ex)
- result=u.reg_read(UC_ARM_REG_R0);unsafe_stops=struct.unpack('<I',u.mem_read(symbols['g_unsafe_sensor_stops'],4))[0];early_dma=struct.unpack('<I',u.mem_read(symbols['g_dma_before_sensor'],4))[0];passed=not err and result==0 and u.reg_read(UC_ARM_REG_PC)==0x01000000 and unsafe_stops==0 and early_dma==0
- rows.append({'id':i,'name':name,'result':'PASS' if passed else 'FAIL','failure_line':result,'emulator_error':err,'unsafe_sensor_stops':unsafe_stops,'dma_before_sensor':early_dma})
+ result=u.reg_read(UC_ARM_REG_R0);unsafe_stops=struct.unpack('<I',u.mem_read(symbols['g_unsafe_sensor_stops'],4))[0];early_dma=struct.unpack('<I',u.mem_read(symbols['g_dma_before_sensor'],4))[0];continuous_starts=struct.unpack('<I',u.mem_read(symbols['g_jpeg_test_continuous_starts'],4))[0];passed=continuous_starts==0 and not err and result==0 and u.reg_read(UC_ARM_REG_PC)==0x01000000 and unsafe_stops==0 and early_dma==0
+ rows.append({'id':i,'name':name,'result':'PASS' if passed else 'FAIL','failure_line':result,'emulator_error':err,'unexpected_continuous_starts':continuous_starts,'unsafe_sensor_stops':unsafe_stops,'dma_before_sensor':early_dma})
  print(i,name,rows[-1]['result'],result,err,flush=True)
 summary={'total':len(rows),'passed':sum(r['result']=='PASS' for r in rows),'failed':sum(r['result']=='FAIL' for r in rows)}
 (here/'device_results.json').write_text(json.dumps({'summary':summary,'cases':rows,'hardware_verified':False},ensure_ascii=False,indent=2),encoding='utf-8')

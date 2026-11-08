@@ -1,3 +1,5 @@
+> JPEG验收入口清理：正式工程不再支持APP_CAMERA_JPEG_TEST_ENABLED或CM7_JPEG_SINGLE镜像，旧选择会明确拒绝；正常Snapshot API与MJPEG路径保留。见[清理报告](../CameraJpegStage03A/cleanup_report.md)。
+
 > 维护说明（2026-11-08）：本目录中已确认不兼容的旧测试入口已按用户要求删除；其余公共桩、共享C夹具及历史报告保留。下文为历史说明，当前可运行集合以 Tests/SdmmcStage08B/run_regressions.py 为准。删除不代表旧失败被修复。
 
 # Stage03B：OV5640 连续JPEG与USB UVC MJPEG

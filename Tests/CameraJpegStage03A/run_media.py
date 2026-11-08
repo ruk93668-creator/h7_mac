@@ -19,7 +19,7 @@ for inc in ['Tests/CameraStreamState/stubs','CM7/Application','CM7/Application/T
     cc+=['-I',ROOT/inc]
 obj=HERE/(args.name+'.o');axf=HERE/(args.name+'.axf')
 run(cc+['-c',HERE/(args.name+'.c'),'-o',obj])
-run(['D:/32/ARM/ARMCC/Bin/armlink.exe',obj,'--entry','Stage02_TestRun','--scatter',HERE/'test.sct','--no_scanlib','-o',axf])
+run(['D:/32/ARM/ARMCC/Bin/armlink.exe',obj,'--entry','Stage02_TestRun','--scatter',HERE/'test.sct','-o',axf])
 with axf.open('rb') as f:
     elf=ELFFile(f);entry=elf.header['e_entry'];symbols={x.name:x['st_value'] for x in elf.get_section_by_name('.symtab').iter_symbols()};sections=[(s['sh_addr'],s.data()) for s in elf.iter_sections() if s['sh_flags']&2 and s['sh_type']=='SHT_PROGBITS' and s['sh_size']]
 rows=[]
@@ -31,8 +31,8 @@ for case in range(args.count):
     error=None
     try:u.emu_start(entry|1,0x01000000,count=100000000)
     except Exception as e:error=str(e)+' PC='+hex(u.reg_read(UC_ARM_REG_PC))+' SP='+hex(u.reg_read(UC_ARM_REG_SP))
-    line=u.reg_read(UC_ARM_REG_R0);detail=struct.unpack('<I',u.mem_read(symbols['g_result'],4))[0];passed=not error and line==0 and u.reg_read(UC_ARM_REG_PC)==0x01000000
-    rows.append({'id':case,'pass':passed,'failure_line':detail,'error':error});print(args.name,case,'PASS' if passed else 'FAIL',detail,error,flush=True)
+    line=u.reg_read(UC_ARM_REG_R0);detail=struct.unpack('<I',u.mem_read(symbols['g_result'],4))[0];continuous_starts=struct.unpack('<I',u.mem_read(symbols['g_jpeg_test_continuous_starts'],4))[0];passed=continuous_starts==(1 if case==16 else 0) and not error and line==0 and u.reg_read(UC_ARM_REG_PC)==0x01000000
+    rows.append({'id':case,'pass':passed,'failure_line':detail,'error':error,'continuous_starts':continuous_starts});print(args.name,case,'PASS' if passed else 'FAIL',detail,error,flush=True)
 summary={'total':len(rows),'passed':sum(x['pass'] for x in rows),'failed':sum(not x['pass'] for x in rows)}
 (HERE/(args.name+'_results.json')).write_text(json.dumps({'summary':summary,'cases':rows,'hardware_verified':False},indent=2),encoding='utf-8')
 print(summary);raise SystemExit(bool(summary['failed']))

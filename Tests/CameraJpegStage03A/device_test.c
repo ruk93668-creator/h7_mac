@@ -1,6 +1,7 @@
 #define Lifecycle_TestRun Historical_LifecycleRun
 #include "../Ov5640Lifecycle/lifecycle_test.c"
 #undef Lifecycle_TestRun
+#include "fifo_dependency.inc"
 int Lifecycle_TestRun(uint32_t id)
 {
  CameraConfig_t cfg={160,120,CAMERA_PIXEL_FORMAT_JPEG};

@@ -1,0 +1,65 @@
+{
+  "scope": "Remove production JPEG acceptance branch; preserve Snapshot and MJPEG sources",
+  "tests": {
+    "application": {
+      "total": 8,
+      "passed": 8,
+      "failed": 0
+    },
+    "device": {
+      "total": 7,
+      "passed": 7,
+      "failed": 0
+    },
+    "media": {
+      "total": 39,
+      "passed": 39,
+      "failed": 0
+    },
+    "bsp": {
+      "total": 42,
+      "passed": 42,
+      "failed": 0
+    },
+    "mjpeg_usb": {
+      "total": 13,
+      "passed": 13,
+      "failed": 0
+    },
+    "native_usb": {
+      "total": 11,
+      "passed": 11,
+      "failed": 0
+    }
+  },
+  "total": 120,
+  "passed": 120,
+  "builds": [
+    {
+      "target": "h7_mac_CM7",
+      "command": "D:/32/UV4/UV4.exe -j0 -b D:\\32\\STM32H7\\h7_mac\\MDK-ARM\\h7_mac.uvprojx -t h7_mac_CM7 -o D:\\32\\STM32H7\\h7_mac\\Tests\\SdmmcStage08B\\h7_mac_CM7_incremental.log",
+      "exit_code": 0,
+      "errors": 0,
+      "warnings": 0,
+      "source_fingerprint_before": "8485aae3fc9e7b95e5ac49d808bd750917472672dfadce2f34f16c9fd31f92d7",
+      "source_fingerprint_after": "8485aae3fc9e7b95e5ac49d808bd750917472672dfadce2f34f16c9fd31f92d7",
+      "project_sha_before": "16e67858127d32062f9d34e5976b8edfc5f16ab52132974a95849f9c9eea64c6",
+      "project_sha_after": "16e67858127d32062f9d34e5976b8edfc5f16ab52132974a95849f9c9eea64c6",
+      "passed": true
+    },
+    {
+      "target": "h7_mac_CM4",
+      "command": "D:/32/UV4/UV4.exe -j0 -b D:\\32\\STM32H7\\h7_mac\\MDK-ARM\\h7_mac.uvprojx -t h7_mac_CM4 -o D:\\32\\STM32H7\\h7_mac\\Tests\\SdmmcStage08B\\h7_mac_CM4_incremental.log",
+      "exit_code": 0,
+      "errors": 0,
+      "warnings": 0,
+      "source_fingerprint_before": "8485aae3fc9e7b95e5ac49d808bd750917472672dfadce2f34f16c9fd31f92d7",
+      "source_fingerprint_after": "8485aae3fc9e7b95e5ac49d808bd750917472672dfadce2f34f16c9fd31f92d7",
+      "project_sha_before": "16e67858127d32062f9d34e5976b8edfc5f16ab52132974a95849f9c9eea64c6",
+      "project_sha_after": "16e67858127d32062f9d34e5976b8edfc5f16ab52132974a95849f9c9eea64c6",
+      "passed": true
+    }
+  ],
+  "hardware_verified": false,
+  "full_repository_regression_rerun": false
+}

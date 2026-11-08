@@ -11,6 +11,7 @@
       "result": "PASS",
       "failure_line": 0,
       "emulator_error": null,
+      "unexpected_continuous_starts": 0,
       "unsafe_sensor_stops": 0,
       "dma_before_sensor": 0
     },
@@ -20,6 +21,7 @@
       "result": "PASS",
       "failure_line": 0,
       "emulator_error": null,
+      "unexpected_continuous_starts": 0,
       "unsafe_sensor_stops": 0,
       "dma_before_sensor": 0
     },
@@ -29,6 +31,7 @@
       "result": "PASS",
       "failure_line": 0,
       "emulator_error": null,
+      "unexpected_continuous_starts": 0,
       "unsafe_sensor_stops": 0,
       "dma_before_sensor": 0
     },
@@ -38,6 +41,7 @@
       "result": "PASS",
       "failure_line": 0,
       "emulator_error": null,
+      "unexpected_continuous_starts": 0,
       "unsafe_sensor_stops": 0,
       "dma_before_sensor": 0
     },
@@ -47,6 +51,7 @@
       "result": "PASS",
       "failure_line": 0,
       "emulator_error": null,
+      "unexpected_continuous_starts": 0,
       "unsafe_sensor_stops": 0,
       "dma_before_sensor": 0
     },
@@ -56,6 +61,7 @@
       "result": "PASS",
       "failure_line": 0,
       "emulator_error": null,
+      "unexpected_continuous_starts": 0,
       "unsafe_sensor_stops": 0,
       "dma_before_sensor": 0
     },
@@ -65,6 +71,7 @@
       "result": "PASS",
       "failure_line": 0,
       "emulator_error": null,
+      "unexpected_continuous_starts": 0,
       "unsafe_sensor_stops": 0,
       "dma_before_sensor": 0
     },
@@ -74,6 +81,7 @@
       "result": "PASS",
       "failure_line": 0,
       "emulator_error": null,
+      "unexpected_continuous_starts": 0,
       "unsafe_sensor_stops": 0,
       "dma_before_sensor": 0
     }
