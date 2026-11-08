@@ -28,7 +28,7 @@ APP_SDMMC_TEST_ENABLED=1,APP_SDMMC_DETECT_ONLY=1
 全量重编后烧录CM7，CM4沿用配套IPC V3固件。观察g_sdmmc_test：enabled=1、detect_only=1、attempted=1、finished=1，result=0只表示检测输入读取成功，**不是识卡成功**。
 
 无卡和插卡各冷启动一次，记录g_sdmmc_test.detect_raw。也可在运行时观察`GPIOH->IDR`的bit14；g_sdmmc_test是冷启动快照，不会随着插拔实时重采。
-原理图R49为10k上拉，默认BSP_SDMMC_DETECT_ACTIVE_LOW=1是图纸推断。若实测有卡为1、无卡为0，在CM7 Define增加`BSP_SDMMC_DETECT_ACTIVE_LOW=0`后重编；若两种状态电平不变，先排查卡座开关和线路，不强行跳过检测。
+卡座LAIL-TF04-T1.7-B的SW在插卡时接通P4 VDD，使用高电平有效检测。拆除R49外部上拉，PH14配置GPIO_PULLDOWN，默认BSP_SDMMC_DETECT_ACTIVE_LOW=0。预期无卡为0、插卡为1；若仍有外部上拉，内部下拉不能保证无卡电平。CMD/DAT外部上拉保持不变。
 
 ## 第二步：完整低速识卡
 

@@ -403,7 +403,7 @@
       "name": "PH14原始输入",
       "result": "PASS",
       "failure_line": 0,
-      "checks": 5,
+      "checks": 7,
       "error": null
     },
     {
@@ -903,7 +903,7 @@
       "name": "PH14原始输入",
       "result": "PASS",
       "failure_line": 0,
-      "checks": 5,
+      "checks": 7,
       "error": null
     },
     {
@@ -1403,7 +1403,7 @@
       "name": "PH14原始输入",
       "result": "PASS",
       "failure_line": 0,
-      "checks": 5,
+      "checks": 7,
       "error": null
     },
     {
@@ -1903,7 +1903,7 @@
       "name": "PH14原始输入",
       "result": "PASS",
       "failure_line": 0,
-      "checks": 5,
+      "checks": 7,
       "error": null
     },
     {
@@ -2403,7 +2403,7 @@
       "name": "PH14原始输入",
       "result": "PASS",
       "failure_line": 0,
-      "checks": 5,
+      "checks": 7,
       "error": null
     },
     {
@@ -2903,7 +2903,7 @@
       "name": "PH14原始输入",
       "result": "PASS",
       "failure_line": 0,
-      "checks": 5,
+      "checks": 7,
       "error": null
     },
     {
@@ -3007,7 +3007,7 @@
       "error": null
     },
     {
-      "mode": "probe_high",
+      "mode": "probe_low",
       "optimization": "O0",
       "case": 0,
       "name": "成功识卡及32GiB容量",
@@ -3017,7 +3017,7 @@
       "error": null
     },
     {
-      "mode": "probe_high",
+      "mode": "probe_low",
       "optimization": "O0",
       "case": 1,
       "name": "无卡不调用HAL",
@@ -3027,7 +3027,7 @@
       "error": null
     },
     {
-      "mode": "probe_high",
+      "mode": "probe_low",
       "optimization": "O0",
       "case": 2,
       "name": "PLL1Q不符",
@@ -3037,7 +3037,7 @@
       "error": null
     },
     {
-      "mode": "probe_high",
+      "mode": "probe_low",
       "optimization": "O0",
       "case": 3,
       "name": "RCC失败",
@@ -3047,7 +3047,7 @@
       "error": null
     },
     {
-      "mode": "probe_high",
+      "mode": "probe_low",
       "optimization": "O0",
       "case": 4,
       "name": "RCC超时",
@@ -3057,7 +3057,7 @@
       "error": null
     },
     {
-      "mode": "probe_high",
+      "mode": "probe_low",
       "optimization": "O0",
       "case": 5,
       "name": "内核频率无效",
@@ -3067,7 +3067,7 @@
       "error": null
     },
     {
-      "mode": "probe_high",
+      "mode": "probe_low",
       "optimization": "O0",
       "case": 6,
       "name": "MUX回读失败",
@@ -3077,7 +3077,7 @@
       "error": null
     },
     {
-      "mode": "probe_high",
+      "mode": "probe_low",
       "optimization": "O0",
       "case": 7,
       "name": "HAL初始化CRC错误",
@@ -3087,7 +3087,7 @@
       "error": null
     },
     {
-      "mode": "probe_high",
+      "mode": "probe_low",
       "optimization": "O0",
       "case": 8,
       "name": "HAL_ERROR包装命令超时",
@@ -3097,7 +3097,7 @@
       "error": null
     },
     {
-      "mode": "probe_high",
+      "mode": "probe_low",
       "optimization": "O0",
       "case": 9,
       "name": "HAL_TIMEOUT",
@@ -3107,7 +3107,7 @@
       "error": null
     },
     {
-      "mode": "probe_high",
+      "mode": "probe_low",
       "optimization": "O0",
       "case": 10,
       "name": "HAL_BUSY",
@@ -3117,7 +3117,7 @@
       "error": null
     },
     {
-      "mode": "probe_high",
+      "mode": "probe_low",
       "optimization": "O0",
       "case": 11,
       "name": "卡信息读取失败",
@@ -3127,7 +3127,7 @@
       "error": null
     },
     {
-      "mode": "probe_high",
+      "mode": "probe_low",
       "optimization": "O0",
       "case": 12,
       "name": "卡信息超时",
@@ -3137,7 +3137,7 @@
       "error": null
     },
     {
-      "mode": "probe_high",
+      "mode": "probe_low",
       "optimization": "O0",
       "case": 13,
       "name": "零块数",
@@ -3147,7 +3147,7 @@
       "error": null
     },
     {
-      "mode": "probe_high",
+      "mode": "probe_low",
       "optimization": "O0",
       "case": 14,
       "name": "非法逻辑块大小",
@@ -3157,7 +3157,7 @@
       "error": null
     },
     {
-      "mode": "probe_high",
+      "mode": "probe_low",
       "optimization": "O0",
       "case": 15,
       "name": "未知卡类型",
@@ -3167,7 +3167,7 @@
       "error": null
     },
     {
-      "mode": "probe_high",
+      "mode": "probe_low",
       "optimization": "O0",
       "case": 16,
       "name": "非TRANSFER状态",
@@ -3177,7 +3177,7 @@
       "error": null
     },
     {
-      "mode": "probe_high",
+      "mode": "probe_low",
       "optimization": "O0",
       "case": 17,
       "name": "状态超时",
@@ -3187,7 +3187,7 @@
       "error": null
     },
     {
-      "mode": "probe_high",
+      "mode": "probe_low",
       "optimization": "O0",
       "case": 18,
       "name": "状态CRC错误",
@@ -3197,7 +3197,7 @@
       "error": null
     },
     {
-      "mode": "probe_high",
+      "mode": "probe_low",
       "optimization": "O0",
       "case": 19,
       "name": "实际分频为零",
@@ -3207,7 +3207,7 @@
       "error": null
     },
     {
-      "mode": "probe_high",
+      "mode": "probe_low",
       "optimization": "O0",
       "case": 20,
       "name": "实际4bit",
@@ -3217,7 +3217,7 @@
       "error": null
     },
     {
-      "mode": "probe_high",
+      "mode": "probe_low",
       "optimization": "O0",
       "case": 21,
       "name": "意外IDMA使能",
@@ -3227,7 +3227,7 @@
       "error": null
     },
     {
-      "mode": "probe_high",
+      "mode": "probe_low",
       "optimization": "O0",
       "case": 22,
       "name": "意外中断使能",
@@ -3237,7 +3237,7 @@
       "error": null
     },
     {
-      "mode": "probe_high",
+      "mode": "probe_low",
       "optimization": "O0",
       "case": 23,
       "name": "清理失败与重试",
@@ -3247,7 +3247,7 @@
       "error": null
     },
     {
-      "mode": "probe_high",
+      "mode": "probe_low",
       "optimization": "O0",
       "case": 24,
       "name": "初始化内部重入",
@@ -3257,7 +3257,7 @@
       "error": null
     },
     {
-      "mode": "probe_high",
+      "mode": "probe_low",
       "optimization": "O0",
       "case": 25,
       "name": "重复初始化",
@@ -3267,7 +3267,7 @@
       "error": null
     },
     {
-      "mode": "probe_high",
+      "mode": "probe_low",
       "optimization": "O0",
       "case": 26,
       "name": "失败后重新识卡",
@@ -3277,7 +3277,7 @@
       "error": null
     },
     {
-      "mode": "probe_high",
+      "mode": "probe_low",
       "optimization": "O0",
       "case": 27,
       "name": "DeInit使信息失效",
@@ -3287,7 +3287,7 @@
       "error": null
     },
     {
-      "mode": "probe_high",
+      "mode": "probe_low",
       "optimization": "O0",
       "case": 28,
       "name": "空参数",
@@ -3297,7 +3297,7 @@
       "error": null
     },
     {
-      "mode": "probe_high",
+      "mode": "probe_low",
       "optimization": "O0",
       "case": 29,
       "name": "初始化前读取",
@@ -3307,7 +3307,7 @@
       "error": null
     },
     {
-      "mode": "probe_high",
+      "mode": "probe_low",
       "optimization": "O0",
       "case": 30,
       "name": "ISR拒绝",
@@ -3317,7 +3317,7 @@
       "error": null
     },
     {
-      "mode": "probe_high",
+      "mode": "probe_low",
       "optimization": "O0",
       "case": 31,
       "name": "PRIMASK拒绝",
@@ -3327,7 +3327,7 @@
       "error": null
     },
     {
-      "mode": "probe_high",
+      "mode": "probe_low",
       "optimization": "O0",
       "case": 32,
       "name": "BASEPRI屏蔽Tick拒绝",
@@ -3337,7 +3337,7 @@
       "error": null
     },
     {
-      "mode": "probe_high",
+      "mode": "probe_low",
       "optimization": "O0",
       "case": 33,
       "name": "BASEPRI允许TIM6",
@@ -3347,7 +3347,7 @@
       "error": null
     },
     {
-      "mode": "probe_high",
+      "mode": "probe_low",
       "optimization": "O0",
       "case": 34,
       "name": "TIM6停止",
@@ -3357,7 +3357,7 @@
       "error": null
     },
     {
-      "mode": "probe_high",
+      "mode": "probe_low",
       "optimization": "O0",
       "case": 35,
       "name": "TIM6中断停用",
@@ -3367,7 +3367,7 @@
       "error": null
     },
     {
-      "mode": "probe_high",
+      "mode": "probe_low",
       "optimization": "O0",
       "case": 36,
       "name": "NVIC未使能",
@@ -3377,7 +3377,7 @@
       "error": null
     },
     {
-      "mode": "probe_high",
+      "mode": "probe_low",
       "optimization": "O0",
       "case": 37,
       "name": "外部HAL句柄忽略",
@@ -3387,7 +3387,7 @@
       "error": null
     },
     {
-      "mode": "probe_high",
+      "mode": "probe_low",
       "optimization": "O0",
       "case": 38,
       "name": "拔卡拒绝旧信息",
@@ -3397,17 +3397,17 @@
       "error": null
     },
     {
-      "mode": "probe_high",
+      "mode": "probe_low",
       "optimization": "O0",
       "case": 39,
       "name": "PH14原始输入",
       "result": "PASS",
       "failure_line": 0,
-      "checks": 5,
+      "checks": 7,
       "error": null
     },
     {
-      "mode": "probe_high",
+      "mode": "probe_low",
       "optimization": "O0",
       "case": 40,
       "name": "关闭探针无副作用",
@@ -3417,7 +3417,7 @@
       "error": null
     },
     {
-      "mode": "probe_high",
+      "mode": "probe_low",
       "optimization": "O0",
       "case": 41,
       "name": "检测模式",
@@ -3427,7 +3427,7 @@
       "error": null
     },
     {
-      "mode": "probe_high",
+      "mode": "probe_low",
       "optimization": "O0",
       "case": 42,
       "name": "完整探针成功",
@@ -3437,7 +3437,7 @@
       "error": null
     },
     {
-      "mode": "probe_high",
+      "mode": "probe_low",
       "optimization": "O0",
       "case": 43,
       "name": "探针HAL失败不阻断",
@@ -3447,7 +3447,7 @@
       "error": null
     },
     {
-      "mode": "probe_high",
+      "mode": "probe_low",
       "optimization": "O0",
       "case": 44,
       "name": "探针无卡不阻断",
@@ -3457,7 +3457,7 @@
       "error": null
     },
     {
-      "mode": "probe_high",
+      "mode": "probe_low",
       "optimization": "O0",
       "case": 45,
       "name": "探针只执行一次",
@@ -3467,7 +3467,7 @@
       "error": null
     },
     {
-      "mode": "probe_high",
+      "mode": "probe_low",
       "optimization": "O0",
       "case": 46,
       "name": "SDMMC2异源保护",
@@ -3477,7 +3477,7 @@
       "error": null
     },
     {
-      "mode": "probe_high",
+      "mode": "probe_low",
       "optimization": "O0",
       "case": 47,
       "name": "SDMMC2同源允许",
@@ -3487,7 +3487,7 @@
       "error": null
     },
     {
-      "mode": "probe_high",
+      "mode": "probe_low",
       "optimization": "O0",
       "case": 48,
       "name": "Tick回绕",
@@ -3497,7 +3497,7 @@
       "error": null
     },
     {
-      "mode": "probe_high",
+      "mode": "probe_low",
       "optimization": "O0",
       "case": 49,
       "name": "PLL1未运行拒绝",
@@ -3507,7 +3507,7 @@
       "error": null
     },
     {
-      "mode": "probe_high",
+      "mode": "probe_low",
       "optimization": "O2",
       "case": 0,
       "name": "成功识卡及32GiB容量",
@@ -3517,7 +3517,7 @@
       "error": null
     },
     {
-      "mode": "probe_high",
+      "mode": "probe_low",
       "optimization": "O2",
       "case": 1,
       "name": "无卡不调用HAL",
@@ -3527,7 +3527,7 @@
       "error": null
     },
     {
-      "mode": "probe_high",
+      "mode": "probe_low",
       "optimization": "O2",
       "case": 2,
       "name": "PLL1Q不符",
@@ -3537,7 +3537,7 @@
       "error": null
     },
     {
-      "mode": "probe_high",
+      "mode": "probe_low",
       "optimization": "O2",
       "case": 3,
       "name": "RCC失败",
@@ -3547,7 +3547,7 @@
       "error": null
     },
     {
-      "mode": "probe_high",
+      "mode": "probe_low",
       "optimization": "O2",
       "case": 4,
       "name": "RCC超时",
@@ -3557,7 +3557,7 @@
       "error": null
     },
     {
-      "mode": "probe_high",
+      "mode": "probe_low",
       "optimization": "O2",
       "case": 5,
       "name": "内核频率无效",
@@ -3567,7 +3567,7 @@
       "error": null
     },
     {
-      "mode": "probe_high",
+      "mode": "probe_low",
       "optimization": "O2",
       "case": 6,
       "name": "MUX回读失败",
@@ -3577,7 +3577,7 @@
       "error": null
     },
     {
-      "mode": "probe_high",
+      "mode": "probe_low",
       "optimization": "O2",
       "case": 7,
       "name": "HAL初始化CRC错误",
@@ -3587,7 +3587,7 @@
       "error": null
     },
     {
-      "mode": "probe_high",
+      "mode": "probe_low",
       "optimization": "O2",
       "case": 8,
       "name": "HAL_ERROR包装命令超时",
@@ -3597,7 +3597,7 @@
       "error": null
     },
     {
-      "mode": "probe_high",
+      "mode": "probe_low",
       "optimization": "O2",
       "case": 9,
       "name": "HAL_TIMEOUT",
@@ -3607,7 +3607,7 @@
       "error": null
     },
     {
-      "mode": "probe_high",
+      "mode": "probe_low",
       "optimization": "O2",
       "case": 10,
       "name": "HAL_BUSY",
@@ -3617,7 +3617,7 @@
       "error": null
     },
     {
-      "mode": "probe_high",
+      "mode": "probe_low",
       "optimization": "O2",
       "case": 11,
       "name": "卡信息读取失败",
@@ -3627,7 +3627,7 @@
       "error": null
     },
     {
-      "mode": "probe_high",
+      "mode": "probe_low",
       "optimization": "O2",
       "case": 12,
       "name": "卡信息超时",
@@ -3637,7 +3637,7 @@
       "error": null
     },
     {
-      "mode": "probe_high",
+      "mode": "probe_low",
       "optimization": "O2",
       "case": 13,
       "name": "零块数",
@@ -3647,7 +3647,7 @@
       "error": null
     },
     {
-      "mode": "probe_high",
+      "mode": "probe_low",
       "optimization": "O2",
       "case": 14,
       "name": "非法逻辑块大小",
@@ -3657,7 +3657,7 @@
       "error": null
     },
     {
-      "mode": "probe_high",
+      "mode": "probe_low",
       "optimization": "O2",
       "case": 15,
       "name": "未知卡类型",
@@ -3667,7 +3667,7 @@
       "error": null
     },
     {
-      "mode": "probe_high",
+      "mode": "probe_low",
       "optimization": "O2",
       "case": 16,
       "name": "非TRANSFER状态",
@@ -3677,7 +3677,7 @@
       "error": null
     },
     {
-      "mode": "probe_high",
+      "mode": "probe_low",
       "optimization": "O2",
       "case": 17,
       "name": "状态超时",
@@ -3687,7 +3687,7 @@
       "error": null
     },
     {
-      "mode": "probe_high",
+      "mode": "probe_low",
       "optimization": "O2",
       "case": 18,
       "name": "状态CRC错误",
@@ -3697,7 +3697,7 @@
       "error": null
     },
     {
-      "mode": "probe_high",
+      "mode": "probe_low",
       "optimization": "O2",
       "case": 19,
       "name": "实际分频为零",
@@ -3707,7 +3707,7 @@
       "error": null
     },
     {
-      "mode": "probe_high",
+      "mode": "probe_low",
       "optimization": "O2",
       "case": 20,
       "name": "实际4bit",
@@ -3717,7 +3717,7 @@
       "error": null
     },
     {
-      "mode": "probe_high",
+      "mode": "probe_low",
       "optimization": "O2",
       "case": 21,
       "name": "意外IDMA使能",
@@ -3727,7 +3727,7 @@
       "error": null
     },
     {
-      "mode": "probe_high",
+      "mode": "probe_low",
       "optimization": "O2",
       "case": 22,
       "name": "意外中断使能",
@@ -3737,7 +3737,7 @@
       "error": null
     },
     {
-      "mode": "probe_high",
+      "mode": "probe_low",
       "optimization": "O2",
       "case": 23,
       "name": "清理失败与重试",
@@ -3747,7 +3747,7 @@
       "error": null
     },
     {
-      "mode": "probe_high",
+      "mode": "probe_low",
       "optimization": "O2",
       "case": 24,
       "name": "初始化内部重入",
@@ -3757,7 +3757,7 @@
       "error": null
     },
     {
-      "mode": "probe_high",
+      "mode": "probe_low",
       "optimization": "O2",
       "case": 25,
       "name": "重复初始化",
@@ -3767,7 +3767,7 @@
       "error": null
     },
     {
-      "mode": "probe_high",
+      "mode": "probe_low",
       "optimization": "O2",
       "case": 26,
       "name": "失败后重新识卡",
@@ -3777,7 +3777,7 @@
       "error": null
     },
     {
-      "mode": "probe_high",
+      "mode": "probe_low",
       "optimization": "O2",
       "case": 27,
       "name": "DeInit使信息失效",
@@ -3787,7 +3787,7 @@
       "error": null
     },
     {
-      "mode": "probe_high",
+      "mode": "probe_low",
       "optimization": "O2",
       "case": 28,
       "name": "空参数",
@@ -3797,7 +3797,7 @@
       "error": null
     },
     {
-      "mode": "probe_high",
+      "mode": "probe_low",
       "optimization": "O2",
       "case": 29,
       "name": "初始化前读取",
@@ -3807,7 +3807,7 @@
       "error": null
     },
     {
-      "mode": "probe_high",
+      "mode": "probe_low",
       "optimization": "O2",
       "case": 30,
       "name": "ISR拒绝",
@@ -3817,7 +3817,7 @@
       "error": null
     },
     {
-      "mode": "probe_high",
+      "mode": "probe_low",
       "optimization": "O2",
       "case": 31,
       "name": "PRIMASK拒绝",
@@ -3827,7 +3827,7 @@
       "error": null
     },
     {
-      "mode": "probe_high",
+      "mode": "probe_low",
       "optimization": "O2",
       "case": 32,
       "name": "BASEPRI屏蔽Tick拒绝",
@@ -3837,7 +3837,7 @@
       "error": null
     },
     {
-      "mode": "probe_high",
+      "mode": "probe_low",
       "optimization": "O2",
       "case": 33,
       "name": "BASEPRI允许TIM6",
@@ -3847,7 +3847,7 @@
       "error": null
     },
     {
-      "mode": "probe_high",
+      "mode": "probe_low",
       "optimization": "O2",
       "case": 34,
       "name": "TIM6停止",
@@ -3857,7 +3857,7 @@
       "error": null
     },
     {
-      "mode": "probe_high",
+      "mode": "probe_low",
       "optimization": "O2",
       "case": 35,
       "name": "TIM6中断停用",
@@ -3867,7 +3867,7 @@
       "error": null
     },
     {
-      "mode": "probe_high",
+      "mode": "probe_low",
       "optimization": "O2",
       "case": 36,
       "name": "NVIC未使能",
@@ -3877,7 +3877,7 @@
       "error": null
     },
     {
-      "mode": "probe_high",
+      "mode": "probe_low",
       "optimization": "O2",
       "case": 37,
       "name": "外部HAL句柄忽略",
@@ -3887,7 +3887,7 @@
       "error": null
     },
     {
-      "mode": "probe_high",
+      "mode": "probe_low",
       "optimization": "O2",
       "case": 38,
       "name": "拔卡拒绝旧信息",
@@ -3897,17 +3897,17 @@
       "error": null
     },
     {
-      "mode": "probe_high",
+      "mode": "probe_low",
       "optimization": "O2",
       "case": 39,
       "name": "PH14原始输入",
       "result": "PASS",
       "failure_line": 0,
-      "checks": 5,
+      "checks": 7,
       "error": null
     },
     {
-      "mode": "probe_high",
+      "mode": "probe_low",
       "optimization": "O2",
       "case": 40,
       "name": "关闭探针无副作用",
@@ -3917,7 +3917,7 @@
       "error": null
     },
     {
-      "mode": "probe_high",
+      "mode": "probe_low",
       "optimization": "O2",
       "case": 41,
       "name": "检测模式",
@@ -3927,7 +3927,7 @@
       "error": null
     },
     {
-      "mode": "probe_high",
+      "mode": "probe_low",
       "optimization": "O2",
       "case": 42,
       "name": "完整探针成功",
@@ -3937,7 +3937,7 @@
       "error": null
     },
     {
-      "mode": "probe_high",
+      "mode": "probe_low",
       "optimization": "O2",
       "case": 43,
       "name": "探针HAL失败不阻断",
@@ -3947,7 +3947,7 @@
       "error": null
     },
     {
-      "mode": "probe_high",
+      "mode": "probe_low",
       "optimization": "O2",
       "case": 44,
       "name": "探针无卡不阻断",
@@ -3957,7 +3957,7 @@
       "error": null
     },
     {
-      "mode": "probe_high",
+      "mode": "probe_low",
       "optimization": "O2",
       "case": 45,
       "name": "探针只执行一次",
@@ -3967,7 +3967,7 @@
       "error": null
     },
     {
-      "mode": "probe_high",
+      "mode": "probe_low",
       "optimization": "O2",
       "case": 46,
       "name": "SDMMC2异源保护",
@@ -3977,7 +3977,7 @@
       "error": null
     },
     {
-      "mode": "probe_high",
+      "mode": "probe_low",
       "optimization": "O2",
       "case": 47,
       "name": "SDMMC2同源允许",
@@ -3987,7 +3987,7 @@
       "error": null
     },
     {
-      "mode": "probe_high",
+      "mode": "probe_low",
       "optimization": "O2",
       "case": 48,
       "name": "Tick回绕",
@@ -3997,7 +3997,7 @@
       "error": null
     },
     {
-      "mode": "probe_high",
+      "mode": "probe_low",
       "optimization": "O2",
       "case": 49,
       "name": "PLL1未运行拒绝",

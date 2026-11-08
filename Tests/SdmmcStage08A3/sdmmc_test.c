@@ -42,6 +42,7 @@ void HAL_GPIO_Init(GPIO_TypeDef *port,const GPIO_InitTypeDef *g)
     s_gpio_calls++;
     if(port==GPIOC){if(g->Mode!=GPIO_MODE_AF_PP || g->Alternate!=GPIO_AF12_SDMMC1 || g->Pull!=GPIO_NOPULL)s_bad_clock_request=1;s_gpio_c|=g->Pin;}
     if(port==GPIOD)s_gpio_d|=g->Pin;
+    if(port==GPIOH && (g->Pin!=GPIO_PIN_14 || g->Mode!=GPIO_MODE_INPUT || g->Pull!=GPIO_PULLDOWN))s_bad_clock_request=1;
 }
 void HAL_GPIO_DeInit(GPIO_TypeDef *port,uint32_t pins){if(port==GPIOC)s_gpio_c&=~pins;if(port==GPIOD)s_gpio_d&=~pins;}
 GPIO_PinState HAL_GPIO_ReadPin(const GPIO_TypeDef *port,uint16_t pins){(void)port;(void)pins;return s_detect?GPIO_PIN_SET:GPIO_PIN_RESET;}
@@ -135,7 +136,7 @@ static uint32_t Case(uint32_t id)
     if(id==32U){__set_BASEPRI(64U);CHECK(BSP_SDMMC_Init()==SYS_ERR_INVALID_STATE);return 0;}
     if(id==33U)__set_BASEPRI(80U);
     if(id==37U){SD_HandleTypeDef other={0};other.Instance=SDMMC1;HAL_SD_MspInit(&other);HAL_SD_MspDeInit(&other);CHECK(s_gpio_calls==0 && s_gpio_c==0 && s_gpio_d==0);return 0;}
-    if(id==39U){CHECK(BSP_SDMMC_ReadDetect(&raw,&present)==SYS_OK);CHECK(raw==(BSP_SDMMC_DETECT_ACTIVE_LOW?0U:1U) && present);CHECK(s_calls==0 && s_clock_calls==0);s_detect=BSP_SDMMC_DETECT_ACTIVE_LOW?1U:0U;CHECK(BSP_SDMMC_ReadDetect(&raw,&present)==SYS_OK);CHECK(raw==(BSP_SDMMC_DETECT_ACTIVE_LOW?1U:0U) && !present);return 0;}
+    if(id==39U){CHECK(BSP_SDMMC_ReadDetect(&raw,&present)==SYS_OK);CHECK(s_bad_clock_request==0U);CHECK(raw==(BSP_SDMMC_DETECT_ACTIVE_LOW?0U:1U) && present);CHECK(s_calls==0 && s_clock_calls==0);s_detect=BSP_SDMMC_DETECT_ACTIVE_LOW?1U:0U;CHECK(BSP_SDMMC_ReadDetect(&raw,&present)==SYS_OK);CHECK(s_bad_clock_request==0U);CHECK(raw==(BSP_SDMMC_DETECT_ACTIVE_LOW?1U:0U) && !present);return 0;}
     if(id>=40U && id<=45U){
         if(id==43U){s_init_status=HAL_ERROR;s_init_error=HAL_SD_ERROR_CMD_CRC_FAIL;}
         if(id==44U)s_detect=BSP_SDMMC_DETECT_ACTIVE_LOW?1U:0U;

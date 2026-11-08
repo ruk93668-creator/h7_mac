@@ -5,9 +5,9 @@
 #include <stdint.h>
 #include <stdbool.h>
 
-//原理图R49上拉，插卡低有效为待实测确认的板级假设
+//卡座插卡时SW接通VDD，拆除外部上拉后使用内部下拉检测
 #ifndef BSP_SDMMC_DETECT_ACTIVE_LOW
-#define BSP_SDMMC_DETECT_ACTIVE_LOW 1
+#define BSP_SDMMC_DETECT_ACTIVE_LOW 0
 #endif
 
 #if BSP_SDMMC_DETECT_ACTIVE_LOW != 0 && BSP_SDMMC_DETECT_ACTIVE_LOW != 1

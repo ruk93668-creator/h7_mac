@@ -24,8 +24,8 @@ Keil多Target会共享文件列表，CM4新增的File条目均明确IncludeInBui
 ## 硬件与时钟依据
 
 - 原始V0图纸：SVG_Schematic1_2026-10-25.zip内第2页主控、第6页数据存储。SD_DETECT连接PH14，卡座开关有R49 10k上拉。
-- 低有效仅为图纸推断，必须实测无卡/插卡PH14电平，未将其记为硬件确认。支持宏BSP_SDMMC_DETECT_ACTIVE_LOW=0或1。
-- 1-bit只配PC8 DAT0、PC12 CLK、PD2 CMD的AF12推挽；PC9～PC11不驱动。CMD/DAT使用外部上拉；PH14外部R49上拉，GPIO_NOPULL。
+- 后续卡座图纸确认SW插卡接通VDD：默认改为高有效，PH14内部下拉，需用户拆除R49上拉后验证无卡0、插卡1。支持宏BSP_SDMMC_DETECT_ACTIVE_LOW=0或1。
+- 1-bit只配PC8 DAT0、PC12 CLK、PD2 CMD的AF12推挽；PC9～PC11不驱动。CMD/DAT使用外部上拉；PH14拆除R49上拉后使用GPIO_PULLDOWN。
 - PLL1Q沿用240MHz，RCC_SDMMCCLKSOURCE_PLL只选现有PLL1Q。核对PLL1 ready、实际频率与MUX回读，不写PLL1/PLL2参数。
 - SDMMC1/2共用时钟选择器：SDMMC2已启用且使用另一时钟时返回BUSY，不擅自切换。
 - ClockDiv=300，SDCLK=240000000/(2×300)=400000Hz。HAL初始化后继续回读验证400kHz、1-bit、MASK=0、IDMACTRL=0。
@@ -180,3 +180,13 @@ python Tests/SdmmcStage08A3/run_build.py
 最终项目增量检查两核同为0 Error/0 Warning。默认CM7 Code=97810、RO=2802、RW=1224、ZI=44992B；完整识卡镜像CM7 Code=107514、RO=2802、RW=1228、ZI=45236B。
 CM4仍为Code=26302、RO=1438、RW=936、ZI=3576B，与基线相同。CM7启动栈仍为0x1000（4096B），不新增任务栈；真实最坏嵌套余量仍属实板验证。
 测试开启镜像的g_sdmmc_test地址为0x200004A0、大小152B，仅适用于对应AXF。默认测试关闭镜像也保留enabled=0的Watch标记。
+
+## 检测脚配置修订（2026-11-08）
+
+- 用户确认将拆除R49外部上拉；PH14改为内部下拉，高电平表示插卡。只修改检测输入，不修改CMD/DAT上拉或SDMMC时序。
+- 400/400专项模拟执行通过：默认高有效、反向极性覆盖及GPIO_PULLDOWN配置断言。
+- 本轮重编使用用户当前Keil工程设置，保留其检测探针宏及调试修改，不宣称构建的是默认关闭探针固件。构建结果见build_results.json。
+- 实板待验收：拆除上拉后，无卡detect_raw=0/card_present=0，插卡detect_raw=1/card_present=1。g_sdmmc_test是启动时快照，实时观察使用(GPIOH->IDR >> 14) & 1，重新运行探针需复位。
+- 本轮不重复执行历史IPC/OLED回归；历史记录不作为本轮实板识卡证据。
+
+本轮当前工程全量重编：CM7 0 Error / 0 Warning，CM4 0 Error / 0 Warning；用户Keil项目文件未纳入本次提交。

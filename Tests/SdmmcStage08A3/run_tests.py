@@ -15,11 +15,11 @@ def run(args):
  if r.returncode or 'warning:' in text.lower():raise RuntimeError(text)
  return text
 cc=Path('D:/32/ARM/ARMCC/Bin/armcc.exe');version=run([cc,'--vsn']);rows=[]
-for mode in ['off','detect','probe','probe_high']:
+for mode in ['off','detect','probe','probe_low']:
  for opt in ['O0','O2']:
   obj=OUT/(mode+'_'+opt+'.o');axf=obj.with_suffix('.axf')
   flags=[cc,'--cpu','Cortex-M7','--c99','-'+opt,'-DCORE_CM7','-DSTM32H747xx','--preinclude',ROOT/'CM7/BSP/bsp_sdmmc_hal_config.h','-DAPP_SDMMC_TEST_ENABLED='+('0' if mode=='off' else '1'),'-DAPP_SDMMC_DETECT_ONLY='+('0' if mode.startswith('probe') else '1')]
-  flags+=['-DBSP_SDMMC_DETECT_ACTIVE_LOW='+('0' if mode=='probe_high' else '1')]
+  if mode=='probe_low':flags+=['-DBSP_SDMMC_DETECT_ACTIVE_LOW=1']
   for inc in ['CM7/BSP','CM7/Core/Inc','CM7/Framework','Common/Inc','Drivers/STM32H7xx_HAL_Driver/Inc','Drivers/CMSIS/Include','Drivers/CMSIS/Device/ST/STM32H7xx/Include']:flags+=['-I',ROOT/inc]
   run(flags+['-c',HERE/'sdmmc_test.c','-o',obj])
   run([cc.with_name('armlink.exe'),obj,'--entry','Sdmmc_TestRun','--scatter',HERE/'test.sct','--keep=*(.framework_init)','--no_scanlib','-o',axf])

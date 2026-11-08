@@ -63,11 +63,11 @@ SysResult_t BSP_SDMMC_ReadDetect(uint32_t *raw_level, bool *present)
     if (__get_IPSR() != 0U)
         return SYS_ERR_INVALID_STATE;
 
-    //R49提供外部上拉，不用内部下拉改变卡座开关电平
+    //拆除R49上拉后由内部下拉保持无卡为低，插卡接通VDD变高
     __HAL_RCC_GPIOH_CLK_ENABLE();
     gpio.Pin = GPIO_PIN_14;
     gpio.Mode = GPIO_MODE_INPUT;
-    gpio.Pull = GPIO_NOPULL;
+    gpio.Pull = GPIO_PULLDOWN;
     HAL_GPIO_Init(GPIOH, &gpio);
     raw = HAL_GPIO_ReadPin(GPIOH, GPIO_PIN_14) == GPIO_PIN_SET ? 1U : 0U;
 
