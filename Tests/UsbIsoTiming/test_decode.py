@@ -20,6 +20,21 @@ class DecodeTests(unittest.TestCase):
     def test_no_false_notification_pair(self):
         report,_=decode(self.raw(),self.meta())
         self.assertEqual(report['notification_metrics']['notify_end_to_wait_return']['samples'],0)
+    def test_task_tail_phases(self):
+        events=[(10,10),(12,12),(20,15),(21,1),(30,16),(35,17),(40,18),(42,19),(45,13),(80,20),(85,14)]
+        raw=b''.join(struct.pack('<12I',t,1,k,0,0,0,0,256,0,0,t,1) for t,k in events)
+        report,_=decode(raw,self.meta(count=len(events)))
+        self.assertEqual(report['task_phase_metrics']['uvc_call']['mean_us'],8)
+        self.assertEqual(report['task_phase_metrics']['bridge_call']['mean_us'],10)
+        self.assertEqual(report['task_phase_metrics']['status_publish']['mean_us'],5)
+        self.assertEqual(report['task_phase_metrics']['stack_scan']['mean_us'],38)
+        self.assertEqual(report['task_phase_samples']['stack_scan'][0]['sof_inside'],1)
+        self.assertEqual(report['task_phase_samples']['bridge_call'][0]['datain_inside'],1)
+    def test_task_tail_never_crosses_iteration(self):
+        events=[(10,19),(12,14),(15,10),(20,20)]
+        raw=b''.join(struct.pack('<12I',t,1,k,0,0,0,0,256,0,0,t,1) for t,k in events)
+        report,_=decode(raw,self.meta(count=len(events)))
+        self.assertEqual(report['task_phase_metrics']['stack_scan']['samples'],0)
     def test_not_ready(self):
         with self.assertRaises(ValueError):decode(self.raw(),self.meta(state=1))
     def test_truncated(self):

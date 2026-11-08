@@ -126,8 +126,29 @@ static void UsbTask_Run(void *argument)
             continue;
         }
         UsbTask_Process(events);
+#if defined(APP_USB_ISO_TIMING_TEST_ENABLED) && APP_USB_ISO_TIMING_TEST_ENABLED
+
+        //记录状态发布前时刻，不改变快照发布频率
+        UsbIsoTiming_Record(USB_ISO_TIME_PUBLISH_BEGIN, 0U, 0U);
+#endif
         UsbTask_PublishStatus();
+#if defined(APP_USB_ISO_TIMING_TEST_ENABLED) && APP_USB_ISO_TIMING_TEST_ENABLED
+
+        //记录状态发布返回时刻，区分发布与栈扫描耗时
+        UsbIsoTiming_Record(USB_ISO_TIME_PUBLISH_END, 0U, 0U);
+#endif
+#if defined(APP_USB_ISO_TIMING_TEST_ENABLED) && APP_USB_ISO_TIMING_TEST_ENABLED
+
+        //记录栈余量扫描开始时刻，不提前读取或跳过扫描
+        UsbIsoTiming_Record(USB_ISO_TIME_STACK_BEGIN, 0U, 0U);
+#endif
         g_usb_task_debug.stack_free_words = uxTaskGetStackHighWaterMark(NULL);
+#if defined(APP_USB_ISO_TIMING_TEST_ENABLED) && APP_USB_ISO_TIMING_TEST_ENABLED
+
+        //记录栈扫描结束，detail保存本轮原有扫描结果
+        UsbIsoTiming_Record(USB_ISO_TIME_STACK_END, 0U, g_usb_task_debug.stack_free_words);
+#endif
+
     }
 }
 
@@ -229,7 +250,18 @@ static void UsbTask_Process(uint32_t events)
         UsbIsoTiming_Record(USB_ISO_TIME_UVC_ENTER, 0U, 0U);
 #endif
         USB_UVC_Process();
+#if defined(APP_USB_ISO_TIMING_TEST_ENABLED) && APP_USB_ISO_TIMING_TEST_ENABLED
+
+        //记录正常路径首次UVC返回，不额外调用协议处理
+        UsbIsoTiming_Record(USB_ISO_TIME_UVC_RETURN, 0U, 0U);
+#endif
         App_UvcBridgeUsbProcess(s_usb_started && !s_usb_stopping);
+#if defined(APP_USB_ISO_TIMING_TEST_ENABLED) && APP_USB_ISO_TIMING_TEST_ENABLED
+
+        //记录桥接返回，保留原帧租借和归还顺序
+        UsbIsoTiming_Record(USB_ISO_TIME_BRIDGE_RETURN, 0U, 0U);
+#endif
+
         if (s_usb_stopping)
             USB_UVC_Process();
     }

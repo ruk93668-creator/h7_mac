@@ -2,7 +2,7 @@
 from pathlib import Path
 import argparse,struct,json,csv,statistics
 BASE=0x24020000
-EVENTS={1:'DATAIN',2:'CONFIRM',3:'SUBMIT',4:'HAL_ENTER',5:'HAL_EXIT',6:'RESULT',7:'FRAME',8:'NOTIFY_BEGIN',9:'NOTIFY_END',10:'WAIT_RETURN',11:'PROCESS_ENTER',12:'UVC_ENTER',13:'SOF',14:'WAIT_BEGIN'}
+EVENTS={1:'DATAIN',2:'CONFIRM',3:'SUBMIT',4:'HAL_ENTER',5:'HAL_EXIT',6:'RESULT',7:'FRAME',8:'NOTIFY_BEGIN',9:'NOTIFY_END',10:'WAIT_RETURN',11:'PROCESS_ENTER',12:'UVC_ENTER',13:'SOF',14:'WAIT_BEGIN',15:'UVC_RETURN',16:'BRIDGE_RETURN',17:'PUBLISH_BEGIN',18:'PUBLISH_END',19:'STACK_BEGIN',20:'STACK_END'}
 def load(path):
     data=Path(path).read_bytes()
     if not data.lstrip().startswith(b':'):
@@ -97,7 +97,24 @@ def decode(raw,meta):
             item[name]=elapsed(left,right) if left and right and right['offset_cycles']>=left['offset_cycles'] else None
         details.append(item)
     detailed_metrics={k:stats([x[k] for x in details]) for k in ['datain_to_notify','notify_call','notify_end_to_wait_return','wait_return_to_process','process_to_uvc','uvc_to_confirm']}
-    report=dict(metadata=header,notification_metrics=detailed_metrics,notification_packets=details,invalid_wall_records=sum(not (x['time_flags']&1) for x in rows),event_counts={EVENTS[k]:sum(x['event']==k for x in rows) for k in EVENTS},metrics={k:stats(v) for k,v in metrics.items()},frame_crossings_during_hal=crossings,submission_errors=errors,notes=['Wall-clock intervals use existing TIM6/HAL Tick; DWT may stop in WFI. HAL interval includes recorder overhead; no claim about exact internal FIFO-write instant.','Header and register reads are sequential, not one atomic hardware snapshot.','Only matched complete pairs are measured; capture edge pairs may be absent.','This is a short timing sample, not long-run FPS or hardware acceptance.'])
+    # Match phase boundaries inside one task iteration only. ISR records may
+    # occur inside these spans; wall duration includes that preemption.
+    phases={'uvc_call':(12,15),'bridge_call':(15,16),'post_bridge_to_publish':(16,17),'status_publish':(17,18),'stack_scan':(19,20),'stack_end_to_wait':(20,14)}
+    phase_samples={name:[] for name in phases};anchors={}
+    for row in rows:
+        kind=row['event']
+        if kind==10:anchors={}
+        for name,(begin,end) in phases.items():
+            if kind==end and begin in anchors:
+                left=anchors[begin];duration=elapsed(left,row)
+                if duration is not None:
+                    inside=[x for x in rows if left['offset_cycles']<x['offset_cycles']<row['offset_cycles']]
+                    phase_samples[name].append(dict(start_index=left['index'],end_index=row['index'],wall_us=duration,dwt_active_us=((row['cycles']-left['cycles'])&0xffffffff)*1e6/header['cpu_hz'],datain_inside=sum(x['event']==1 for x in inside),sof_inside=sum(x['event']==13 for x in inside)))
+                del anchors[begin]
+        if kind==14:anchors={}
+        else:anchors[kind]=row
+    phase_metrics={name:stats([x['wall_us'] for x in samples]) for name,samples in phase_samples.items()}
+    report=dict(metadata=header,task_phase_metrics=phase_metrics,task_phase_samples=phase_samples,notification_metrics=detailed_metrics,notification_packets=details,invalid_wall_records=sum(not (x['time_flags']&1) for x in rows),event_counts={EVENTS[k]:sum(x['event']==k for x in rows) for k in EVENTS},metrics={k:stats(v) for k,v in metrics.items()},frame_crossings_during_hal=crossings,submission_errors=errors,notes=['Wall-clock intervals use existing TIM6/HAL Tick; DWT may stop in WFI. HAL interval includes recorder overhead; no claim about exact internal FIFO-write instant.','Header and register reads are sequential, not one atomic hardware snapshot.','Only matched complete pairs are measured; capture edge pairs may be absent.','This is a short timing sample, not long-run FPS or hardware acceptance.'])
     return report,rows
 
 def main():

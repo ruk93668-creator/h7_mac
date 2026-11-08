@@ -114,3 +114,32 @@ python Tests/UsbIsoTiming/decode_trace.py MDK-ARM/usb_iso_trace_detail.hex --met
 ```
 
 第二轮软件结果见refined_results.json：采样器42/42、解析器10/10、布局12/12、USB Core201/201、EP0竞态4/4、Native USB11/11。CM7和CM4现有Target构建0 Error、0 Warning（增量构建，非全量重编）。新实板记录尚未取得，不宣称根因已确认。
+
+
+## 第三轮：任务循环尾部分段
+
+仅在原采样宏开启时增加六个观察点，不调整任务优先级、原调用顺序、状态发布频率、栈扫描频率或USB发送策略。
+
+|事件|位置|
+|---|---|
+|15 UVC_RETURN|正常路径首次USB_UVC_Process返回|
+|16 BRIDGE_RETURN|App_UvcBridgeUsbProcess返回|
+|17 PUBLISH_BEGIN|UsbTask_PublishStatus之前|
+|18 PUBLISH_END|UsbTask_PublishStatus之后|
+|19 STACK_BEGIN|uxTaskGetStackHighWaterMark之前|
+|20 STACK_END|栈扫描返回并保存原结果后，detail保存剩余Word数|
+
+解析器增加task_phase_metrics和task_phase_samples，分别计算UVC调用、Bridge调用、Bridge返回到状态发布、状态发布、栈扫描、栈扫描结束到等待。配对不能跨越WAIT_BEGIN/WAIT_RETURN循环边界；截断阶段不补造结果。每个区间附带DataIn/SOF插入次数，墙钟耗时包含ISR抢占及采样开销，不能直接声称是函数独占CPU时间。仍为512条、每条48B，窗口进一步缩短，适合比较包级延迟而非长期FPS。
+
+本轮地址经实际AXF验证保持不变。保留前两轮文件，新一轮在视频运行、帧数持续增加时设置g_usb_iso_timing.request=1；SD request仍为0。等state=3、count=512、writers=0，再暂停并执行：
+
+```text
+SAVE usb_iso_trace_tail.hex 0x24020000,0x24025FFF
+SAVE usb_iso_meta_tail.hex 0x200026E8,0x20002727
+```
+
+```text
+python Tests/UsbIsoTiming/decode_trace.py MDK-ARM/usb_iso_trace_tail.hex --meta MDK-ARM/usb_iso_meta_tail.hex --output output/UsbIsoTiming/tail16
+```
+
+本轮结果：真实采样器42/42、解析器12/12、Native USB11/11、实际链接布局12/12。CM7/CM4增量构建均0 Error、0 Warning。详见tail_results.json和tail_CM7_build.log、tail_CM4_build.log；新尾部区间尚待实板测量，不把栈扫描嫌疑写成已确认根因。
