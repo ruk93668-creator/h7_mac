@@ -58,7 +58,18 @@ uint32_t TraceTest_Run(uint32_t id)
     CHECK(g_usb_iso_timing.capacity == 512U && g_usb_iso_timing.record_bytes == 48U);
     CHECK(g_usb_iso_timing.buffer_address == USB_ISO_TIMING_BASE);
     if (id == 0U)
+    {
+        uint32_t event;
+        g_usb_iso_timing.request = 1U;
+        UsbIsoTiming_Process();
+        for (event = USB_ISO_TIME_NOTIFY_BEGIN; event <= USB_ISO_TIME_WAIT_BEGIN; event++)
+            UsbIsoTiming_Record(event, event, 0U);
+        CHECK(g_usb_iso_timing.count == 7U);
+        CHECK(s_usb_iso_records[6].event == USB_ISO_TIME_WAIT_BEGIN);
+        UsbIsoTiming_Record(USB_ISO_TIME_WAIT_BEGIN + 1U, 0U, 0U);
+        CHECK(g_usb_iso_timing.count == 7U);
         return 0U;
+    }
     if (id == 1U)
     {
         UsbIsoTiming_Record(USB_ISO_TIME_SUBMIT, 1U, 1023U);

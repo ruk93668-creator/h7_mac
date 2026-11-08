@@ -2,7 +2,7 @@
 from pathlib import Path
 import argparse,struct,json,csv,statistics
 BASE=0x24020000
-EVENTS={1:'DATAIN',2:'CONFIRM',3:'SUBMIT',4:'HAL_ENTER',5:'HAL_EXIT',6:'RESULT',7:'FRAME'}
+EVENTS={1:'DATAIN',2:'CONFIRM',3:'SUBMIT',4:'HAL_ENTER',5:'HAL_EXIT',6:'RESULT',7:'FRAME',8:'NOTIFY_BEGIN',9:'NOTIFY_END',10:'WAIT_RETURN',11:'PROCESS_ENTER',12:'UVC_ENTER',13:'SOF',14:'WAIT_BEGIN'}
 def load(path):
     data=Path(path).read_bytes()
     if not data.lstrip().startswith(b':'):
@@ -83,7 +83,21 @@ def decode(raw,meta):
             hal_enter=None
         elif kind==6:errors.append(row)
         elif kind==7:frames.add(seq)
-    report=dict(metadata=header,invalid_wall_records=sum(not (x['time_flags']&1) for x in rows),event_counts={EVENTS[k]:sum(x['event']==k for x in rows) for k in EVENTS},metrics={k:stats(v) for k,v in metrics.items()},frame_crossings_during_hal=crossings,submission_errors=errors,notes=['Wall-clock intervals use existing TIM6/HAL Tick; DWT may stop in WFI. HAL interval includes recorder overhead; no claim about exact internal FIFO-write instant.','Header and register reads are sequential, not one atomic hardware snapshot.','Only matched complete pairs are measured; capture edge pairs may be absent.','This is a short timing sample, not long-run FPS or hardware acceptance.'])
+    # Match only events between this completion and its own confirmation.
+    # Never treat notification return as the exact IRQ-exit/context-switch instant.
+    details=[]
+    for seq,done in completions.items():
+        confirm=confirms.get(seq)
+        if confirm is None:continue
+        window=[x for x in rows if done['offset_cycles']<=x['offset_cycles']<=confirm['offset_cycles']]
+        def first(kind):return next((x for x in window if x['event']==kind),None)
+        notify=first(8);notified=first(9);wake=first(10);process=first(11);uvc=first(12)
+        item=dict(sequence=seq,completion_frame=done['frame'],confirm_frame=confirm['frame'],sof_between=sum(x['event']==13 for x in window),wait_returns=sum(x['event']==10 for x in window))
+        for name,left,right in [('datain_to_notify',done,notify),('notify_call',notify,notified),('notify_end_to_wait_return',notified,wake),('wait_return_to_process',wake,process),('process_to_uvc',process,uvc),('uvc_to_confirm',uvc,confirm)]:
+            item[name]=elapsed(left,right) if left and right and right['offset_cycles']>=left['offset_cycles'] else None
+        details.append(item)
+    detailed_metrics={k:stats([x[k] for x in details]) for k in ['datain_to_notify','notify_call','notify_end_to_wait_return','wait_return_to_process','process_to_uvc','uvc_to_confirm']}
+    report=dict(metadata=header,notification_metrics=detailed_metrics,notification_packets=details,invalid_wall_records=sum(not (x['time_flags']&1) for x in rows),event_counts={EVENTS[k]:sum(x['event']==k for x in rows) for k in EVENTS},metrics={k:stats(v) for k,v in metrics.items()},frame_crossings_during_hal=crossings,submission_errors=errors,notes=['Wall-clock intervals use existing TIM6/HAL Tick; DWT may stop in WFI. HAL interval includes recorder overhead; no claim about exact internal FIFO-write instant.','Header and register reads are sequential, not one atomic hardware snapshot.','Only matched complete pairs are measured; capture edge pairs may be absent.','This is a short timing sample, not long-run FPS or hardware acceptance.'])
     return report,rows
 
 def main():

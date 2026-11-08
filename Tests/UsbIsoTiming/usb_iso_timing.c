@@ -117,7 +117,7 @@ void UsbIsoTiming_Record(uint32_t event, uint32_t sequence, uint32_t detail)
     USB_OTG_INEndpointTypeDef *ep;
 
     //未手动触发时立即返回，异常事件编号不进入记录
-    if (g_usb_iso_timing.state != USB_ISO_TRACE_ACTIVE || event == 0U || event > USB_ISO_TIME_FRAME)
+    if (g_usb_iso_timing.state != USB_ISO_TRACE_ACTIVE || event == 0U || event > USB_ISO_TIME_WAIT_BEGIN)
         return;
     cycles = DWT->CYCCNT;
     mask = __get_PRIMASK();

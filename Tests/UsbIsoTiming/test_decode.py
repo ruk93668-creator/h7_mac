@@ -8,6 +8,18 @@ class DecodeTests(unittest.TestCase):
         return b''.join(struct.pack('<12I',t,1,k,seq,0,0,0,256,0,0,t,1) for t,k,seq in events)
     def test_metrics(self):
         r,_=decode(self.raw(),self.meta());self.assertEqual(r['metrics']['submit_to_hal_enter']['mean_us'],10);self.assertEqual(r['metrics']['hal_enter_to_exit']['mean_us'],10);self.assertEqual(r['metrics']['datain_to_confirm']['mean_us'],10);self.assertEqual(r['metrics']['submit_to_datain']['mean_us'],40)
+    def test_notification_breakdown(self):
+        events=[(10,1,9),(12,8,9),(14,9,9),(30,10,0),(32,11,0),(40,12,0),(42,2,9)]
+        raw=b''.join(struct.pack('<12I',t,1,k,seq,0,0,0,256,0,0,t,1) for t,k,seq in events)
+        report,_=decode(raw,self.meta(count=len(events)))
+        m=report['notification_metrics']
+        self.assertEqual(m['notify_call']['mean_us'],2)
+        self.assertEqual(m['notify_end_to_wait_return']['mean_us'],16)
+        self.assertEqual(m['process_to_uvc']['mean_us'],8)
+        self.assertEqual(m['uvc_to_confirm']['mean_us'],2)
+    def test_no_false_notification_pair(self):
+        report,_=decode(self.raw(),self.meta())
+        self.assertEqual(report['notification_metrics']['notify_end_to_wait_return']['samples'],0)
     def test_not_ready(self):
         with self.assertRaises(ValueError):decode(self.raw(),self.meta(state=1))
     def test_truncated(self):

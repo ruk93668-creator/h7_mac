@@ -103,8 +103,20 @@ static void UsbTask_Run(void *argument)
     {
 
         //SOF和传输回调直接唤醒；20ms超时仅作枚举和恢复兜底
+#if defined(APP_USB_ISO_TIMING_TEST_ENABLED) && APP_USB_ISO_TIMING_TEST_ENABLED
+
+    //记录等待前时刻，区分通知已挂起与任务真正阻塞
+        UsbIsoTiming_Record(USB_ISO_TIME_WAIT_BEGIN, 0U, 0U);
+#endif
         result = App_EventsWait(RUNTIME_TARGET_USB, g_usb_task_debug.boot_seen ?
             USB_TASK_WAIT_MS : APP_EVENTS_WAIT_FOREVER, &events);
+#if defined(APP_USB_ISO_TIMING_TEST_ENABLED) && APP_USB_ISO_TIMING_TEST_ENABLED
+
+    //等待返回立即采样，detail保存事件位或失败码
+        UsbIsoTiming_Record(USB_ISO_TIME_WAIT_RETURN, 0U,
+            result == SYS_OK ? events : (uint32_t)result);
+#endif
+
         if (result == SYS_ERR_TIMEOUT)
             g_usb_task_debug.timeout_count++;
         else if (result != SYS_OK)
@@ -127,6 +139,12 @@ static void UsbTask_Process(uint32_t events)
     SysResult_t result;
     bool uvc;
     uint32_t now, elapsed, frames, total, sof, gap;
+
+#if defined(APP_USB_ISO_TIMING_TEST_ENABLED) && APP_USB_ISO_TIMING_TEST_ENABLED
+
+    //记录任务处理入口，与等待返回分开观察
+    UsbIsoTiming_Record(USB_ISO_TIME_PROCESS_ENTER, 0U, events);
+#endif
 
     if (!App_MessagesIsOwner(RUNTIME_TARGET_USB))
         return;
@@ -205,6 +223,11 @@ static void UsbTask_Process(uint32_t events)
             (void)USB_UVC_CancelFrame();
 
         //所有任务侧UVC操作都在UsbTask；ISR仍同步处理EP0和保存Token
+#if defined(APP_USB_ISO_TIMING_TEST_ENABLED) && APP_USB_ISO_TIMING_TEST_ENABLED
+
+    //记录首次进入UVC前时刻，隔离命令和Mode处理耗时
+        UsbIsoTiming_Record(USB_ISO_TIME_UVC_ENTER, 0U, 0U);
+#endif
         USB_UVC_Process();
         App_UvcBridgeUsbProcess(s_usb_started && !s_usb_stopping);
         if (s_usb_stopping)

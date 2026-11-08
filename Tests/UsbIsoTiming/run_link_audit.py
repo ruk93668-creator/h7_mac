@@ -9,11 +9,12 @@ with axf.open('rb') as f:
 checks=dict(trace_buffer=sy.get('s_usb_iso_records')==(0x24020000,24576),metadata_size=sy.get('g_usb_iso_timing',(0,0))[1]==64,metadata_dtcm=0x20000000<=sy.get('g_usb_iso_timing',(0,0))[0]<0x20020000,sd_buffer_unchanged=sy.get('s_stress_buffer')==(0x24010000,33288),idma_unchanged=sy.get('g_sdmmc_dma_buffer')==(0x24000000,32768))
 for name in ['sd_block_probe.c','sd_block_probe.h']:
     rel='Tests/SdmmcStage08B/'+name;checks['old_c_'+name]=(ROOT/rel).read_bytes()==subprocess.check_output(['git','show','d030531:'+rel])
-for rel in ['CM7/BSP/bsp_usb.c','CM7/Service/usb_uvc_class.c','CM7/Application/Tasks/usb_task.c']:
+for rel in ['CM7/BSP/bsp_usb.c','CM7/Service/usb_uvc_class.c','CM7/Application/Tasks/usb_task.c','CM7/Platform/usb_device.c']:
     def text(data):
         try:return data.decode('utf-8-sig')
         except UnicodeDecodeError:return data.decode('gbk')
     old=text(subprocess.check_output(['git','show','HEAD:'+rel]));new=text((ROOT/rel).read_bytes())
+    old=re.sub(r'#if defined\(APP_USB_ISO_TIMING_TEST_ENABLED\) && APP_USB_ISO_TIMING_TEST_ENABLED\s*\n.*?#endif','',old,flags=re.S)
     stripped=re.sub(r'#if defined\(APP_USB_ISO_TIMING_TEST_ENABLED\) && APP_USB_ISO_TIMING_TEST_ENABLED\s*\n.*?#endif','',new,flags=re.S)
     checks['only_trace_blocks_'+Path(rel).name]=''.join(old.split())==''.join(stripped.split())
 checks['hal_ll_core_unchanged']=not subprocess.check_output(['git','diff','--name-only','HEAD','--','Drivers','Middlewares/ST/STM32_USB_Device_Library','CM4','CM7/Media','CM7/Device','CM7/Application/app_camera.c','CM7/Application/app_uvc_bridge.c']).strip()

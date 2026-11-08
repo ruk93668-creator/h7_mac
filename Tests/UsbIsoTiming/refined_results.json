@@ -1,0 +1,62 @@
+{
+  "scope": "Only compile-gated timing hooks; unchanged runtime decisions and SD polling",
+  "sampler": {
+    "total": 42,
+    "passed": 42
+  },
+  "decoder": {
+    "total": 10,
+    "passed": 10
+  },
+  "link_audit": {
+    "total": 12,
+    "passed": 12
+  },
+  "usb_core": {
+    "total": 201,
+    "passed": 201
+  },
+  "ep0_irq": {
+    "total": 4,
+    "passed": 4
+  },
+  "native_usb": {
+    "total": 11,
+    "passed": 11
+  },
+  "builds": [
+    {
+      "target": "h7_mac_CM7",
+      "command": "D:/32/UV4/UV4.exe -j0 -b D:\\32\\STM32H7\\h7_mac\\MDK-ARM\\h7_mac.uvprojx -t h7_mac_CM7 -o D:\\32\\STM32H7\\h7_mac\\Tests\\SdmmcStage08B\\h7_mac_CM7_incremental.log",
+      "exit_code": 0,
+      "errors": 0,
+      "warnings": 0,
+      "source_fingerprint_before": "eb9e8d2bd0e23cb775ceba4da19cd87bc176024f2f72340021ab772416f4cdf1",
+      "source_fingerprint_after": "eb9e8d2bd0e23cb775ceba4da19cd87bc176024f2f72340021ab772416f4cdf1",
+      "project_sha_before": "7e0da60a94209c1fa6abe2c9a9b38ec8284393b7f3cefc4b5c22fab2a4f425a1",
+      "project_sha_after": "7e0da60a94209c1fa6abe2c9a9b38ec8284393b7f3cefc4b5c22fab2a4f425a1",
+      "passed": true
+    },
+    {
+      "target": "h7_mac_CM4",
+      "command": "D:/32/UV4/UV4.exe -j0 -b D:\\32\\STM32H7\\h7_mac\\MDK-ARM\\h7_mac.uvprojx -t h7_mac_CM4 -o D:\\32\\STM32H7\\h7_mac\\Tests\\SdmmcStage08B\\h7_mac_CM4_incremental.log",
+      "exit_code": 0,
+      "errors": 0,
+      "warnings": 0,
+      "source_fingerprint_before": "eb9e8d2bd0e23cb775ceba4da19cd87bc176024f2f72340021ab772416f4cdf1",
+      "source_fingerprint_after": "eb9e8d2bd0e23cb775ceba4da19cd87bc176024f2f72340021ab772416f4cdf1",
+      "project_sha_before": "7e0da60a94209c1fa6abe2c9a9b38ec8284393b7f3cefc4b5c22fab2a4f425a1",
+      "project_sha_after": "7e0da60a94209c1fa6abe2c9a9b38ec8284393b7f3cefc4b5c22fab2a4f425a1",
+      "passed": true
+    }
+  ],
+  "previous_capture": {
+    "user_reported_fps": 16,
+    "records": 512,
+    "invalid_wall_records": 0,
+    "frame_interval_us": 62960,
+    "notification_root_cause_confirmed": false
+  },
+  "new_hardware_capture_verified": false,
+  "note": "Previous 556 SD and 1899 retained-suite results belong to the preceding revision; not rerun in this small hook extension."
+}

@@ -10,11 +10,12 @@
     "only_trace_blocks_bsp_usb.c": true,
     "only_trace_blocks_usb_uvc_class.c": true,
     "only_trace_blocks_usb_task.c": true,
+    "only_trace_blocks_usb_device.c": true,
     "hal_ll_core_unchanged": true
   },
   "summary": {
-    "total": 11,
-    "passed": 11
+    "total": 12,
+    "passed": 12
   },
   "symbols": {
     "s_usb_iso_records": {
@@ -34,6 +35,6 @@
       "size": 32768
     }
   },
-  "axf_sha256": "ef4915858e51404d37a50f195fe42244e2ddf2919a54d35870468a867e48ccfd",
+  "axf_sha256": "48a392524f5d74f696125e89ac158f4a1392464bfa7e7a0a16af1488364dd415",
   "hardware_timing_verified": false
 }

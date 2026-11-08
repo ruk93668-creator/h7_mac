@@ -80,3 +80,37 @@ DWT由SCCB等模块共用，本采样仅使能、不清零。DWT在WFI期间可�
 - 实板采样及故障复现未验证。编译和模拟通过不能证明USB故障已定位或修复。
 
 验证入口：run_tests.py、test_decode.py、run_link_audit.py。构建记录build_results.json、CM7_build.log、CM4_build.log，链接信息link_audit.json。dump_trace.ini仅适用于其中记录的AXF。
+
+
+## 第二轮：通知与任务路径细分
+
+本轮不改变通知、任务优先级、SOF规则和SD轮询。新增记录点：
+
+|事件|位置|用途|
+|---|---|---|
+|8 NOTIFY_BEGIN|EP1 DataIn完成Core回调后，调用通知前|完成处理到通知的耗时|
+|9 NOTIFY_END|通知函数返回后，仍在IRQ内|通知调用耗时；不是IRQ退出点|
+|10 WAIT_RETURN|UsbTask的App_EventsWait刚返回|任务已获得执行机会|
+|11 PROCESS_ENTER|UsbTask_Process入口|等待返回到处理入口|
+|12 UVC_ENTER|正常路径首次USB_UVC_Process调用前|命令及Mode处理耗时|
+|13 SOF|官方Core SOF回调后、任务通知前|对照真实SOF相位|
+|14 WAIT_BEGIN|UsbTask调用App_EventsWait之前|区分待处理通知与重新等待|
+
+48B记录格式、512条上限和静态空间不变，仍使用版本2。新增事件后窗口更短，不要求包含两张完整帧。解析器将每个DATAIN到同序号CONFIRM之间的事件配对，缺失阶段不补造，notification_packets保留逐包结果，notification_metrics汇总各段。SOF与DataIn仍共用原通知，不把一次等待返回伪称为独立消费一个通知。
+
+notify_end_to_wait_return包含剩余ISR、其他异常、调度及等待函数返回前的开销，不能直接当作纯调度耗时。process_to_uvc包含原有任务处理及采样自身开销。当前只采样，不修复发送策略。
+
+烧录当前CM7镜像，先确认未触发时仍约16FPS；如果变成25FPS，先反馈，不能把它当成异常路径证据。SD request保持0，将g_usb_iso_timing.request设为1，等state=3、count=512、writers=0，再暂停导出。为保留第一轮文件，本轮使用新名字：
+
+```text
+SAVE usb_iso_trace_detail.hex 0x24020000,0x24025FFF
+SAVE usb_iso_meta_detail.hex 0x200026E8,0x20002727
+```
+
+以上地址已经由本轮实际AXF复核；后续重新链接须再核对。解析命令：
+
+```text
+python Tests/UsbIsoTiming/decode_trace.py MDK-ARM/usb_iso_trace_detail.hex --meta MDK-ARM/usb_iso_meta_detail.hex --output output/UsbIsoTiming/detail16
+```
+
+第二轮软件结果见refined_results.json：采样器42/42、解析器10/10、布局12/12、USB Core201/201、EP0竞态4/4、Native USB11/11。CM7和CM4现有Target构建0 Error、0 Warning（增量构建，非全量重编）。新实板记录尚未取得，不宣称根因已确认。
