@@ -1,0 +1,24 @@
+[
+  {
+    "profile": "detect",
+    "command": "D:/32/UV4/UV4.exe -j0 -r D:\\32\\STM32H7\\h7_mac\\MDK-ARM\\h7_mac.uvprojx -t h7_mac_CM7 -o D:\\32\\STM32H7\\h7_mac\\Tests\\SdmmcStage08A3\\CM7_detect_rebuild.log",
+    "exit_code": 0,
+    "errors": 0,
+    "warnings": 0,
+    "passed": true,
+    "watch_address": "0x200004a0",
+    "watch_bytes": 152,
+    "axf_sha256": "183e5723c914198ab6a7d171e2d2e40f3b73b9d74845a6357efc436ace7248d4"
+  },
+  {
+    "profile": "probe",
+    "command": "D:/32/UV4/UV4.exe -j0 -r D:\\32\\STM32H7\\h7_mac\\MDK-ARM\\h7_mac.uvprojx -t h7_mac_CM7 -o D:\\32\\STM32H7\\h7_mac\\Tests\\SdmmcStage08A3\\CM7_probe_rebuild.log",
+    "exit_code": 0,
+    "errors": 0,
+    "warnings": 0,
+    "passed": true,
+    "watch_address": "0x200004a0",
+    "watch_bytes": 152,
+    "axf_sha256": "c3886d598df2993945f75e21339952783d3a1be024663997e487567d62800bcf"
+  }
+]

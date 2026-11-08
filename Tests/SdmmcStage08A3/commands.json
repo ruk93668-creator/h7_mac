@@ -1,0 +1,87 @@
+[
+  {
+    "command": "D:\\32\\ARM\\ARMCC\\Bin\\armcc.exe --vsn",
+    "exit_code": 0,
+    "output": "Product: MDK Plus 5.32\r\nComponent: ARM Compiler 5.06 update 7 (build 960)\r\nTool: armcc [4d365d]\r\nFor support see http://www.arm.com/support\r\nSoftware supplied by: ARM Limited\r\n"
+  },
+  {
+    "command": "D:\\32\\ARM\\ARMCC\\Bin\\armcc.exe --cpu Cortex-M7 --c99 -O0 -DCORE_CM7 -DSTM32H747xx --preinclude D:\\32\\STM32H7\\h7_mac\\CM7\\BSP\\bsp_sdmmc_hal_config.h -DAPP_SDMMC_TEST_ENABLED=0 -DAPP_SDMMC_DETECT_ONLY=1 -DBSP_SDMMC_DETECT_ACTIVE_LOW=1 -I D:\\32\\STM32H7\\h7_mac\\CM7\\BSP -I D:\\32\\STM32H7\\h7_mac\\CM7\\Core\\Inc -I D:\\32\\STM32H7\\h7_mac\\CM7\\Framework -I D:\\32\\STM32H7\\h7_mac\\Common\\Inc -I D:\\32\\STM32H7\\h7_mac\\Drivers\\STM32H7xx_HAL_Driver\\Inc -I D:\\32\\STM32H7\\h7_mac\\Drivers\\CMSIS\\Include -I D:\\32\\STM32H7\\h7_mac\\Drivers\\CMSIS\\Device\\ST\\STM32H7xx\\Include -c D:\\32\\STM32H7\\h7_mac\\Tests\\SdmmcStage08A3\\sdmmc_test.c -o D:\\32\\STM32H7\\h7_mac\\output\\SdmmcStage08A3\\off_O0.o",
+    "exit_code": 0,
+    "output": ""
+  },
+  {
+    "command": "D:\\32\\ARM\\ARMCC\\Bin\\armlink.exe D:\\32\\STM32H7\\h7_mac\\output\\SdmmcStage08A3\\off_O0.o --entry Sdmmc_TestRun --scatter D:\\32\\STM32H7\\h7_mac\\Tests\\SdmmcStage08A3\\test.sct --keep=*(.framework_init) --no_scanlib -o D:\\32\\STM32H7\\h7_mac\\output\\SdmmcStage08A3\\off_O0.axf",
+    "exit_code": 0,
+    "output": ""
+  },
+  {
+    "command": "D:\\32\\ARM\\ARMCC\\Bin\\armcc.exe --cpu Cortex-M7 --c99 -O2 -DCORE_CM7 -DSTM32H747xx --preinclude D:\\32\\STM32H7\\h7_mac\\CM7\\BSP\\bsp_sdmmc_hal_config.h -DAPP_SDMMC_TEST_ENABLED=0 -DAPP_SDMMC_DETECT_ONLY=1 -DBSP_SDMMC_DETECT_ACTIVE_LOW=1 -I D:\\32\\STM32H7\\h7_mac\\CM7\\BSP -I D:\\32\\STM32H7\\h7_mac\\CM7\\Core\\Inc -I D:\\32\\STM32H7\\h7_mac\\CM7\\Framework -I D:\\32\\STM32H7\\h7_mac\\Common\\Inc -I D:\\32\\STM32H7\\h7_mac\\Drivers\\STM32H7xx_HAL_Driver\\Inc -I D:\\32\\STM32H7\\h7_mac\\Drivers\\CMSIS\\Include -I D:\\32\\STM32H7\\h7_mac\\Drivers\\CMSIS\\Device\\ST\\STM32H7xx\\Include -c D:\\32\\STM32H7\\h7_mac\\Tests\\SdmmcStage08A3\\sdmmc_test.c -o D:\\32\\STM32H7\\h7_mac\\output\\SdmmcStage08A3\\off_O2.o",
+    "exit_code": 0,
+    "output": ""
+  },
+  {
+    "command": "D:\\32\\ARM\\ARMCC\\Bin\\armlink.exe D:\\32\\STM32H7\\h7_mac\\output\\SdmmcStage08A3\\off_O2.o --entry Sdmmc_TestRun --scatter D:\\32\\STM32H7\\h7_mac\\Tests\\SdmmcStage08A3\\test.sct --keep=*(.framework_init) --no_scanlib -o D:\\32\\STM32H7\\h7_mac\\output\\SdmmcStage08A3\\off_O2.axf",
+    "exit_code": 0,
+    "output": ""
+  },
+  {
+    "command": "D:\\32\\ARM\\ARMCC\\Bin\\armcc.exe --cpu Cortex-M7 --c99 -O0 -DCORE_CM7 -DSTM32H747xx --preinclude D:\\32\\STM32H7\\h7_mac\\CM7\\BSP\\bsp_sdmmc_hal_config.h -DAPP_SDMMC_TEST_ENABLED=1 -DAPP_SDMMC_DETECT_ONLY=1 -DBSP_SDMMC_DETECT_ACTIVE_LOW=1 -I D:\\32\\STM32H7\\h7_mac\\CM7\\BSP -I D:\\32\\STM32H7\\h7_mac\\CM7\\Core\\Inc -I D:\\32\\STM32H7\\h7_mac\\CM7\\Framework -I D:\\32\\STM32H7\\h7_mac\\Common\\Inc -I D:\\32\\STM32H7\\h7_mac\\Drivers\\STM32H7xx_HAL_Driver\\Inc -I D:\\32\\STM32H7\\h7_mac\\Drivers\\CMSIS\\Include -I D:\\32\\STM32H7\\h7_mac\\Drivers\\CMSIS\\Device\\ST\\STM32H7xx\\Include -c D:\\32\\STM32H7\\h7_mac\\Tests\\SdmmcStage08A3\\sdmmc_test.c -o D:\\32\\STM32H7\\h7_mac\\output\\SdmmcStage08A3\\detect_O0.o",
+    "exit_code": 0,
+    "output": ""
+  },
+  {
+    "command": "D:\\32\\ARM\\ARMCC\\Bin\\armlink.exe D:\\32\\STM32H7\\h7_mac\\output\\SdmmcStage08A3\\detect_O0.o --entry Sdmmc_TestRun --scatter D:\\32\\STM32H7\\h7_mac\\Tests\\SdmmcStage08A3\\test.sct --keep=*(.framework_init) --no_scanlib -o D:\\32\\STM32H7\\h7_mac\\output\\SdmmcStage08A3\\detect_O0.axf",
+    "exit_code": 0,
+    "output": ""
+  },
+  {
+    "command": "D:\\32\\ARM\\ARMCC\\Bin\\armcc.exe --cpu Cortex-M7 --c99 -O2 -DCORE_CM7 -DSTM32H747xx --preinclude D:\\32\\STM32H7\\h7_mac\\CM7\\BSP\\bsp_sdmmc_hal_config.h -DAPP_SDMMC_TEST_ENABLED=1 -DAPP_SDMMC_DETECT_ONLY=1 -DBSP_SDMMC_DETECT_ACTIVE_LOW=1 -I D:\\32\\STM32H7\\h7_mac\\CM7\\BSP -I D:\\32\\STM32H7\\h7_mac\\CM7\\Core\\Inc -I D:\\32\\STM32H7\\h7_mac\\CM7\\Framework -I D:\\32\\STM32H7\\h7_mac\\Common\\Inc -I D:\\32\\STM32H7\\h7_mac\\Drivers\\STM32H7xx_HAL_Driver\\Inc -I D:\\32\\STM32H7\\h7_mac\\Drivers\\CMSIS\\Include -I D:\\32\\STM32H7\\h7_mac\\Drivers\\CMSIS\\Device\\ST\\STM32H7xx\\Include -c D:\\32\\STM32H7\\h7_mac\\Tests\\SdmmcStage08A3\\sdmmc_test.c -o D:\\32\\STM32H7\\h7_mac\\output\\SdmmcStage08A3\\detect_O2.o",
+    "exit_code": 0,
+    "output": ""
+  },
+  {
+    "command": "D:\\32\\ARM\\ARMCC\\Bin\\armlink.exe D:\\32\\STM32H7\\h7_mac\\output\\SdmmcStage08A3\\detect_O2.o --entry Sdmmc_TestRun --scatter D:\\32\\STM32H7\\h7_mac\\Tests\\SdmmcStage08A3\\test.sct --keep=*(.framework_init) --no_scanlib -o D:\\32\\STM32H7\\h7_mac\\output\\SdmmcStage08A3\\detect_O2.axf",
+    "exit_code": 0,
+    "output": ""
+  },
+  {
+    "command": "D:\\32\\ARM\\ARMCC\\Bin\\armcc.exe --cpu Cortex-M7 --c99 -O0 -DCORE_CM7 -DSTM32H747xx --preinclude D:\\32\\STM32H7\\h7_mac\\CM7\\BSP\\bsp_sdmmc_hal_config.h -DAPP_SDMMC_TEST_ENABLED=1 -DAPP_SDMMC_DETECT_ONLY=0 -DBSP_SDMMC_DETECT_ACTIVE_LOW=1 -I D:\\32\\STM32H7\\h7_mac\\CM7\\BSP -I D:\\32\\STM32H7\\h7_mac\\CM7\\Core\\Inc -I D:\\32\\STM32H7\\h7_mac\\CM7\\Framework -I D:\\32\\STM32H7\\h7_mac\\Common\\Inc -I D:\\32\\STM32H7\\h7_mac\\Drivers\\STM32H7xx_HAL_Driver\\Inc -I D:\\32\\STM32H7\\h7_mac\\Drivers\\CMSIS\\Include -I D:\\32\\STM32H7\\h7_mac\\Drivers\\CMSIS\\Device\\ST\\STM32H7xx\\Include -c D:\\32\\STM32H7\\h7_mac\\Tests\\SdmmcStage08A3\\sdmmc_test.c -o D:\\32\\STM32H7\\h7_mac\\output\\SdmmcStage08A3\\probe_O0.o",
+    "exit_code": 0,
+    "output": ""
+  },
+  {
+    "command": "D:\\32\\ARM\\ARMCC\\Bin\\armlink.exe D:\\32\\STM32H7\\h7_mac\\output\\SdmmcStage08A3\\probe_O0.o --entry Sdmmc_TestRun --scatter D:\\32\\STM32H7\\h7_mac\\Tests\\SdmmcStage08A3\\test.sct --keep=*(.framework_init) --no_scanlib -o D:\\32\\STM32H7\\h7_mac\\output\\SdmmcStage08A3\\probe_O0.axf",
+    "exit_code": 0,
+    "output": ""
+  },
+  {
+    "command": "D:\\32\\ARM\\ARMCC\\Bin\\armcc.exe --cpu Cortex-M7 --c99 -O2 -DCORE_CM7 -DSTM32H747xx --preinclude D:\\32\\STM32H7\\h7_mac\\CM7\\BSP\\bsp_sdmmc_hal_config.h -DAPP_SDMMC_TEST_ENABLED=1 -DAPP_SDMMC_DETECT_ONLY=0 -DBSP_SDMMC_DETECT_ACTIVE_LOW=1 -I D:\\32\\STM32H7\\h7_mac\\CM7\\BSP -I D:\\32\\STM32H7\\h7_mac\\CM7\\Core\\Inc -I D:\\32\\STM32H7\\h7_mac\\CM7\\Framework -I D:\\32\\STM32H7\\h7_mac\\Common\\Inc -I D:\\32\\STM32H7\\h7_mac\\Drivers\\STM32H7xx_HAL_Driver\\Inc -I D:\\32\\STM32H7\\h7_mac\\Drivers\\CMSIS\\Include -I D:\\32\\STM32H7\\h7_mac\\Drivers\\CMSIS\\Device\\ST\\STM32H7xx\\Include -c D:\\32\\STM32H7\\h7_mac\\Tests\\SdmmcStage08A3\\sdmmc_test.c -o D:\\32\\STM32H7\\h7_mac\\output\\SdmmcStage08A3\\probe_O2.o",
+    "exit_code": 0,
+    "output": ""
+  },
+  {
+    "command": "D:\\32\\ARM\\ARMCC\\Bin\\armlink.exe D:\\32\\STM32H7\\h7_mac\\output\\SdmmcStage08A3\\probe_O2.o --entry Sdmmc_TestRun --scatter D:\\32\\STM32H7\\h7_mac\\Tests\\SdmmcStage08A3\\test.sct --keep=*(.framework_init) --no_scanlib -o D:\\32\\STM32H7\\h7_mac\\output\\SdmmcStage08A3\\probe_O2.axf",
+    "exit_code": 0,
+    "output": ""
+  },
+  {
+    "command": "D:\\32\\ARM\\ARMCC\\Bin\\armcc.exe --cpu Cortex-M7 --c99 -O0 -DCORE_CM7 -DSTM32H747xx --preinclude D:\\32\\STM32H7\\h7_mac\\CM7\\BSP\\bsp_sdmmc_hal_config.h -DAPP_SDMMC_TEST_ENABLED=1 -DAPP_SDMMC_DETECT_ONLY=0 -DBSP_SDMMC_DETECT_ACTIVE_LOW=0 -I D:\\32\\STM32H7\\h7_mac\\CM7\\BSP -I D:\\32\\STM32H7\\h7_mac\\CM7\\Core\\Inc -I D:\\32\\STM32H7\\h7_mac\\CM7\\Framework -I D:\\32\\STM32H7\\h7_mac\\Common\\Inc -I D:\\32\\STM32H7\\h7_mac\\Drivers\\STM32H7xx_HAL_Driver\\Inc -I D:\\32\\STM32H7\\h7_mac\\Drivers\\CMSIS\\Include -I D:\\32\\STM32H7\\h7_mac\\Drivers\\CMSIS\\Device\\ST\\STM32H7xx\\Include -c D:\\32\\STM32H7\\h7_mac\\Tests\\SdmmcStage08A3\\sdmmc_test.c -o D:\\32\\STM32H7\\h7_mac\\output\\SdmmcStage08A3\\probe_high_O0.o",
+    "exit_code": 0,
+    "output": ""
+  },
+  {
+    "command": "D:\\32\\ARM\\ARMCC\\Bin\\armlink.exe D:\\32\\STM32H7\\h7_mac\\output\\SdmmcStage08A3\\probe_high_O0.o --entry Sdmmc_TestRun --scatter D:\\32\\STM32H7\\h7_mac\\Tests\\SdmmcStage08A3\\test.sct --keep=*(.framework_init) --no_scanlib -o D:\\32\\STM32H7\\h7_mac\\output\\SdmmcStage08A3\\probe_high_O0.axf",
+    "exit_code": 0,
+    "output": ""
+  },
+  {
+    "command": "D:\\32\\ARM\\ARMCC\\Bin\\armcc.exe --cpu Cortex-M7 --c99 -O2 -DCORE_CM7 -DSTM32H747xx --preinclude D:\\32\\STM32H7\\h7_mac\\CM7\\BSP\\bsp_sdmmc_hal_config.h -DAPP_SDMMC_TEST_ENABLED=1 -DAPP_SDMMC_DETECT_ONLY=0 -DBSP_SDMMC_DETECT_ACTIVE_LOW=0 -I D:\\32\\STM32H7\\h7_mac\\CM7\\BSP -I D:\\32\\STM32H7\\h7_mac\\CM7\\Core\\Inc -I D:\\32\\STM32H7\\h7_mac\\CM7\\Framework -I D:\\32\\STM32H7\\h7_mac\\Common\\Inc -I D:\\32\\STM32H7\\h7_mac\\Drivers\\STM32H7xx_HAL_Driver\\Inc -I D:\\32\\STM32H7\\h7_mac\\Drivers\\CMSIS\\Include -I D:\\32\\STM32H7\\h7_mac\\Drivers\\CMSIS\\Device\\ST\\STM32H7xx\\Include -c D:\\32\\STM32H7\\h7_mac\\Tests\\SdmmcStage08A3\\sdmmc_test.c -o D:\\32\\STM32H7\\h7_mac\\output\\SdmmcStage08A3\\probe_high_O2.o",
+    "exit_code": 0,
+    "output": ""
+  },
+  {
+    "command": "D:\\32\\ARM\\ARMCC\\Bin\\armlink.exe D:\\32\\STM32H7\\h7_mac\\output\\SdmmcStage08A3\\probe_high_O2.o --entry Sdmmc_TestRun --scatter D:\\32\\STM32H7\\h7_mac\\Tests\\SdmmcStage08A3\\test.sct --keep=*(.framework_init) --no_scanlib -o D:\\32\\STM32H7\\h7_mac\\output\\SdmmcStage08A3\\probe_high_O2.axf",
+    "exit_code": 0,
+    "output": ""
+  }
+]

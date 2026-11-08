@@ -1,0 +1,13 @@
+{
+  "baseline": "cbc4c415b58619dce9f2c95dd5dc3f3a258fd405",
+  "software_total": 1853,
+  "passed": 1853,
+  "failed": 0,
+  "default_and_probe_builds_zero_errors_warnings": true,
+  "final_production_fingerprint": "d936d452d3b8cbc7ba324efa904ae031aec7495281733556bef557abf5ff4d76",
+  "final_probe_source_sha256": "4d651d6ee7947e109f790327b85ae4e6ea858d9e347c385567f618d75216dd01",
+  "current_project_sha256": "9eb1fdfc0607b874dc499bc28af3dfd986c4fb9cd9f1558ae55f31cd439008e7",
+  "default_test_enabled": false,
+  "unchanged_original_sources": true,
+  "hardware_test_pending": true
+}

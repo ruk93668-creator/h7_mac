@@ -1,0 +1,32 @@
+{
+  "baseline": "cbc4c415b58619dce9f2c95dd5dc3f3a258fd405",
+  "branch": "codex/stage08a3-sdmmc1",
+  "existing_tracked_production_changes": [
+    "MDK-ARM/h7_mac.uvprojx"
+  ],
+  "existing_source_files_modified": false,
+  "vendor_files_modified": false,
+  "cm4_sources_modified": false,
+  "cm4_sd_sources_explicitly_excluded": true,
+  "default_probe_enabled": false,
+  "plls_reconfigured": false,
+  "dma_or_sector_io_added": false,
+  "hardware_verified": false,
+  "protected_original_file_count": 1580,
+  "selected_vendor_sha256": {
+    "Drivers/STM32H7xx_HAL_Driver/Inc/stm32h7xx_hal_sd.h": "281216df932d67a3598b067479d3a4dedf478ccfc54914e1d0af9cfd38405784",
+    "Drivers/STM32H7xx_HAL_Driver/Inc/stm32h7xx_ll_sdmmc.h": "3998613e1fa2b12c5eaae2089f0ea4538b6b47838d59c3f9b331116ab311f04a",
+    "Drivers/STM32H7xx_HAL_Driver/Src/stm32h7xx_hal_rcc_ex.c": "ba3ffa42989a60a93e8de7f148cde4fa22c6853223d00d5d9954ad370c6012fe",
+    "Drivers/STM32H7xx_HAL_Driver/Src/stm32h7xx_hal_sd.c": "d6f236f701039bb9f5081247cd3c7b2b4d3842e4a8865f295bd6373c21c6537c",
+    "Drivers/STM32H7xx_HAL_Driver/Src/stm32h7xx_ll_sdmmc.c": "f2ec1f1593e1a381c39b0e9a72961c1d721e346271ed1c6bcdbea032d6eab91b"
+  },
+  "implementation_files": [
+    "CM7/BSP/bsp_sdmmc.c",
+    "CM7/BSP/bsp_sdmmc.h",
+    "CM7/BSP/bsp_sdmmc_hal_config.h",
+    "Tests/SdmmcStage08A3/sdmmc_probe.c",
+    "Tests/SdmmcStage08A3/sdmmc_probe.h",
+    "MDK-ARM/h7_mac.uvprojx"
+  ],
+  "historical_reports_modified": false
+}

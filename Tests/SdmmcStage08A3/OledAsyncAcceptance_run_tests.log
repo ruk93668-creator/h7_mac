@@ -1,0 +1,59 @@
+D:\32\ARM\ARMCC\Bin\armcc.exe --vsn
+Product: MDK Plus 5.32
+Component: ARM Compiler 5.06 update 7 (build 960)
+Tool: armcc [4d365d]
+For support see http://www.arm.com/support
+Software supplied by: ARM Limited
+D:\32\ARM\ARMCC\Bin\armcc.exe --cpu Cortex-M4 --c99 -O0 -I D:\32\STM32H7\h7_mac\CM4\Device\Inc -I D:\32\STM32H7\h7_mac\CM4\BSP -I D:\32\STM32H7\h7_mac\Common\Inc -I D:\32\STM32H7\h7_mac\Board\Inc -c D:\32\STM32H7\h7_mac\Tests\OledAsyncAcceptance\oled_async_test.c -o D:\32\STM32H7\h7_mac\Tests\OledAsyncAcceptance\oled_async_test.o
+D:\32\ARM\ARMCC\Bin\armlink.exe D:\32\STM32H7\h7_mac\Tests\OledAsyncAcceptance\oled_async_test.o --entry Oled_TestRun --scatter D:\32\STM32H7\h7_mac\Tests\OledAsyncAcceptance\test.sct --keep=*(.device_export) --no_scanlib -o D:\32\STM32H7\h7_mac\Tests\OledAsyncAcceptance\oled_async_test.axf
+01 PASS: 正常整帧: 最终记录返回0；错误返回[]；状态IDLE；页3；事务8笔；断言605；越界监控0次
+02 PASS: 命令未完成: 最终记录返回0；错误返回[]；状态WAIT_CMD；页0；事务1笔；断言54；越界监控0次
+03 PASS: 数据未完成: 最终记录返回0；错误返回[]；状态WAIT_DATA；页0；事务2笔；断言63；越界监控0次
+04 PASS: 命令期间重复Refresh: 最终记录返回-5；错误返回[-5]；状态WAIT_CMD；页0；事务1笔；断言9；越界监控0次
+05 PASS: 数据期间重复Refresh: 最终记录返回-5；错误返回[-5]；状态WAIT_DATA；页0；事务2笔；断言18；越界监控0次
+06 PASS: 最后一页边界: 最终记录返回0；错误返回[]；状态IDLE；页3；事务8笔；断言592；越界监控0次
+07 PASS: 连续两帧: 最终记录返回0；错误返回[]；状态IDLE；页3；事务16笔；断言1210；越界监控0次
+08 PASS: CMD0完成返回IO: 最终记录返回0；错误返回[-9]；状态IDLE；页0；事务1笔；断言10；越界监控0次
+09 PASS: DATA0完成返回IO: 最终记录返回0；错误返回[-9]；状态IDLE；页0；事务2笔；断言19；越界监控0次
+10 PASS: CMD1完成返回IO: 最终记录返回0；错误返回[-9]；状态IDLE；页1；事务3笔；断言153；越界监控0次
+11 PASS: DATA1完成返回IO: 最终记录返回0；错误返回[-9]；状态IDLE；页1；事务4笔；断言162；越界监控0次
+12 PASS: CMD2完成返回IO: 最终记录返回0；错误返回[-9]；状态IDLE；页2；事务5笔；断言296；越界监控0次
+13 PASS: DATA2完成返回IO: 最终记录返回0；错误返回[-9]；状态IDLE；页2；事务6笔；断言305；越界监控0次
+14 PASS: CMD3完成返回IO: 最终记录返回0；错误返回[-9]；状态IDLE；页3；事务7笔；断言439；越界监控0次
+15 PASS: DATA3完成返回IO: 最终记录返回0；错误返回[-9]；状态IDLE；页3；事务8笔；断言448；越界监控0次
+16 PASS: CMD0完成返回TIMEOUT: 最终记录返回0；错误返回[-8]；状态IDLE；页0；事务1笔；断言10；越界监控0次
+17 PASS: DATA0完成返回TIMEOUT: 最终记录返回0；错误返回[-8]；状态IDLE；页0；事务2笔；断言19；越界监控0次
+18 PASS: CMD1完成返回TIMEOUT: 最终记录返回0；错误返回[-8]；状态IDLE；页1；事务3笔；断言153；越界监控0次
+19 PASS: DATA1完成返回TIMEOUT: 最终记录返回0；错误返回[-8]；状态IDLE；页1；事务4笔；断言162；越界监控0次
+20 PASS: CMD2完成返回TIMEOUT: 最终记录返回0；错误返回[-8]；状态IDLE；页2；事务5笔；断言296；越界监控0次
+21 PASS: DATA2完成返回TIMEOUT: 最终记录返回0；错误返回[-8]；状态IDLE；页2；事务6笔；断言305；越界监控0次
+22 PASS: CMD3完成返回TIMEOUT: 最终记录返回0；错误返回[-8]；状态IDLE；页3；事务7笔；断言439；越界监控0次
+23 PASS: DATA3完成返回TIMEOUT: 最终记录返回0；错误返回[-8]；状态IDLE；页3；事务8笔；断言448；越界监控0次
+24 PASS: CMD0提交返回BUSY: 最终记录返回0；错误返回[-5]；状态IDLE；页0；事务0笔；断言6；越界监控0次
+25 PASS: DATA0提交返回BUSY: 最终记录返回0；错误返回[-5]；状态IDLE；页0；事务1笔；断言10；越界监控0次
+26 PASS: CMD1提交返回BUSY: 最终记录返回0；错误返回[-5]；状态IDLE；页1；事务2笔；断言19；越界监控0次
+27 PASS: DATA1提交返回BUSY: 最终记录返回0；错误返回[-5]；状态IDLE；页1；事务3笔；断言153；越界监控0次
+28 PASS: CMD2提交返回BUSY: 最终记录返回0；错误返回[-5]；状态IDLE；页2；事务4笔；断言162；越界监控0次
+29 PASS: DATA2提交返回BUSY: 最终记录返回0；错误返回[-5]；状态IDLE；页2；事务5笔；断言296；越界监控0次
+30 PASS: CMD3提交返回BUSY: 最终记录返回0；错误返回[-5]；状态IDLE；页3；事务6笔；断言305；越界监控0次
+31 PASS: DATA3提交返回BUSY: 最终记录返回0；错误返回[-5]；状态IDLE；页3；事务7笔；断言439；越界监控0次
+32 PASS: CMD0提交返回IO: 最终记录返回0；错误返回[-9]；状态IDLE；页0；事务0笔；断言6；越界监控0次
+33 PASS: DATA0提交返回IO: 最终记录返回0；错误返回[-9]；状态IDLE；页0；事务1笔；断言10；越界监控0次
+34 PASS: CMD1提交返回IO: 最终记录返回0；错误返回[-9]；状态IDLE；页1；事务2笔；断言19；越界监控0次
+35 PASS: DATA1提交返回IO: 最终记录返回0；错误返回[-9]；状态IDLE；页1；事务3笔；断言153；越界监控0次
+36 PASS: CMD2提交返回IO: 最终记录返回0；错误返回[-9]；状态IDLE；页2；事务4笔；断言162；越界监控0次
+37 PASS: DATA2提交返回IO: 最终记录返回0；错误返回[-9]；状态IDLE；页2；事务5笔；断言296；越界监控0次
+38 PASS: CMD3提交返回IO: 最终记录返回0；错误返回[-9]；状态IDLE；页3；事务6笔；断言305；越界监控0次
+39 PASS: DATA3提交返回IO: 最终记录返回0；错误返回[-9]；状态IDLE；页3；事务7笔；断言439；越界监控0次
+40 PASS: CMD0提交返回TIMEOUT: 最终记录返回0；错误返回[-8]；状态IDLE；页0；事务0笔；断言6；越界监控0次
+41 PASS: DATA0提交返回TIMEOUT: 最终记录返回0；错误返回[-8]；状态IDLE；页0；事务1笔；断言10；越界监控0次
+42 PASS: CMD1提交返回TIMEOUT: 最终记录返回0；错误返回[-8]；状态IDLE；页1；事务2笔；断言19；越界监控0次
+43 PASS: DATA1提交返回TIMEOUT: 最终记录返回0；错误返回[-8]；状态IDLE；页1；事务3笔；断言153；越界监控0次
+44 PASS: CMD2提交返回TIMEOUT: 最终记录返回0；错误返回[-8]；状态IDLE；页2；事务4笔；断言162；越界监控0次
+45 PASS: DATA2提交返回TIMEOUT: 最终记录返回0；错误返回[-8]；状态IDLE；页2；事务5笔；断言296；越界监控0次
+46 PASS: CMD3提交返回TIMEOUT: 最终记录返回0；错误返回[-8]；状态IDLE；页3；事务6笔；断言305；越界监控0次
+47 PASS: DATA3提交返回TIMEOUT: 最终记录返回0；错误返回[-8]；状态IDLE；页3；事务7笔；断言439；越界监控0次
+48 PASS: 空指针: Refresh(NULL)、Process(NULL)均断言返回-1；最终记录返回0；错误返回[]；状态IDLE；页0；事务0笔；断言5；越界监控0次
+49 PASS: 无效状态: 最终记录返回-4；错误返回[-4]；状态99；页0；事务0笔；断言4；越界监控0次
+50 PASS: 通信错误后重新刷新: 最终记录返回0；错误返回[-9]；状态IDLE；页3；事务12笔；断言762；越界监控0次
+TOTAL 50 PASS 50 FAIL 0 NOT_RUN 0; assertions=11156; source_changes=0
