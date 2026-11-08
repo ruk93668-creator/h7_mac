@@ -14,10 +14,10 @@
         "cpu_buffer_boundary": true
       },
       "passed": true,
-      "dtcm_end": "0x2000d698",
+      "dtcm_end": "0x2000d678",
       "symbols": {
         "s_test_stack": {
-          "address": "0x20000700",
+          "address": "0x200006e8",
           "size": 4096
         },
         "s_stress_buffer": {
@@ -25,8 +25,8 @@
           "size": 33288
         },
         "g_sd_block_test": {
-          "address": "0x20000558",
-          "size": 344
+          "address": "0x20000550",
+          "size": 328
         },
         "g_sdmmc_dma_buffer": {
           "address": "0x24000000",

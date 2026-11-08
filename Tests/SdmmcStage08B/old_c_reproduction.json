@@ -1,0 +1,17 @@
+{
+  "baseline": "d030531",
+  "checks": {
+    "no_d_gate": true,
+    "no_poll_only": true,
+    "no_poll_delay": true,
+    "stress_axi": true,
+    "probe_original": true,
+    "stack_original": true,
+    "original_program_size": true
+  },
+  "passed": true,
+  "program_size": "Program Size: Code=115706 RO-data=2894 RW-data=1252 ZI-data=120028  ",
+  "axf_sha256": "a54f3a7811006f2790a61c901ac481f651b344d0c38c2f13b09c1c6bccee2570",
+  "old_c_hardware_fps_retested": false,
+  "m_v_deferred": true
+}

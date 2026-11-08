@@ -1,5 +1,7 @@
 # 08B 五分钟只读压力测试
 
+当前状态：按用户要求恢复旧C组d030531，仅复测16FPS与帧内空槽，不处理M-V。当前操作以文末“旧C组复现”记录为准，前面的D组及可调周期是历史实验。
+
 ## 历史直接压力烧录方式（已关闭）
 
 按用户要求，当前08B分支的h7_mac_CM7 Target已直接启用只读压力宏：APP_SD_BLOCK_TEST_ENABLED=1、APP_SD_BLOCK_STRESS_TEST_ENABLED=1、APP_SD_BLOCK_WRITE_TEST_ENABLED=0；初始识卡测试关闭。头文件默认值仍为0。打开MDK-ARM/h7_mac.uvprojx，选择h7_mac_CM7，编译后点击Download即可；使用正式输出MDK-ARM/h7_mac_CM7/h7_mac_CM7.axf，不再用Command手动LOAD其他镜像。烧录后仍需手动request=5，不会自动启动压力。
@@ -174,3 +176,17 @@ D恢复：支持测试任务参与或其交互影响，但不能立即归因于�
 自动化：原568次保留，新增9种周期/边界/回绕/拒绝SD请求场景×O0/O2共18次，合计586/586 PASS；编译保护23/23 PASS。CM7重新编译、CM4增量检查均0 Error、0 Warning，源指纹保持不变。内存边界5/5 PASS，`run_d_group_audit.py --poll-only`链接保留及开关检查9/9 PASS，结果poll_only_link_audit.json。旧D组检查和历史结果保留，必须使用与当前配置匹配的审计参数。
 
 本轮实板20→1000→20结果待用户反馈。当前工程只用于不读写SD的轮询对照；要恢复正常压力需先关闭POLL_ONLY。未合并main，用户其他Keil本地改动保留。重新链接后旧绝对地址Watch不再可靠。
+
+## 旧C组复现（2026-11-08）
+
+用户要求恢复旧C再次测试，并明确M-V累积问题暂缓处理。仅恢复sd_block_probe.c/.h、adapter_test.c及run_tests/run_policy_checks/run_profiles/run_memory_audit七个对应文件，逐字节等同d030531；不reset、不改写历史，不切换main，不改用户其他工程设置或Camera/USB业务。
+
+正式CM7宏恢复BLOCK=1、STRESS=1、WRITE=0、SDMMC_TEST=0、DETECT_ONLY=0，移除D_GROUP与POLL_ONLY。旧C创建优先级1、4KiB栈的SdTest，固定vTaskDelay(20ms)；压力缓冲仍在AXI 0x24010000。没有可调poll_period_ms，也没有g_sd_block_d_group/g_sd_block_poll_only。请不要使用上一版可调周期或旧绝对地址Watch。
+
+本次仅使用旧C对应556次测试和15项编译保护，均PASS。新增D/Poll专项不属于旧C代码的有效执行集合，其源码和历史结果保留但不以本次通过记录代替；对应提交仍为36ea40b/6bc08f8。实板16FPS是否可重新复现，待用户烧录反馈，不预先判定。
+
+之前25FPS固件已在旧C链接前核对SHA256并保留到output/SdmmcStage08B/compare_25fps_6bc08f8，仅AXF和Map，不创建额外工程，不提交构建产物。其AXF SHA256=b294ff3f9db3da6f815ac66343bd78dc826609996300864e4c85bfc5138ef37b。后续如需二进制对照，可与当前正式旧C输出比较。
+
+烧录步骤：打开原h7_mac.uvprojx，选择h7_mac_CM7，确认上述C宏，无D/POLL_ONLY宏，Rebuild/Download并完整断电重启。保持同一视频配置和播放器参数，request保持0，观察Camera与USB实际FPS。不要启动压力，也不排查M-V。
+
+旧C重建检查通过：CM7重新编译、CM4增量检查均0 Error、0 Warning；Code=115706、RO=2894、RW=1252、ZI=120028，与历史C组记录一致。g_sd_block_test=0x20000550/328B、s_test_stack=0x200006E8/4096B、压力缓冲=0x24010000/33288B均与旧记录一致；D/POLL_ONLY及可调等待符号均不存在，7项检查通过。见old_c_reproduction.json。尺寸与地址一致不等于已有旧原始AXF逐字节一致证明，实板FPS仍待确认。

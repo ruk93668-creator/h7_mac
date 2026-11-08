@@ -8,8 +8,8 @@ profiles=[('normal',0,0,0),('read_only',1,0,0),('write_compile_only',1,1,0),('re
 try:
  for label,enabled,write,stress in profiles:
   text=original.decode('utf-8-sig');m=re.search(r'<Target>\s*<TargetName>h7_mac_CM7</TargetName>.*?</Target>',text,re.S);target=m.group(0);c=re.search(r'<Cads>.*?</Cads>',target,re.S);cads=c.group(0);d=re.search(r'<Define>(.*?)</Define>',cads,re.S)
-  defines=[x for x in d[1].split(',') if not x.strip().startswith(('APP_SDMMC_TEST_ENABLED','APP_SDMMC_DETECT_ONLY','APP_SD_BLOCK_TEST_ENABLED','APP_SD_BLOCK_WRITE_TEST_ENABLED','APP_SD_BLOCK_STRESS_TEST_ENABLED','APP_SD_BLOCK_D_GROUP_ENABLED','APP_SD_BLOCK_POLL_ONLY_ENABLED','SD_BLOCK_STRESS_DURATION_MS','SD_BLOCK_STRESS_MAX_ROUNDS','SD_TEST_'))]
-  defines+=['APP_SDMMC_TEST_ENABLED=0','APP_SD_BLOCK_TEST_ENABLED='+str(enabled),'APP_SD_BLOCK_WRITE_TEST_ENABLED='+str(write),'APP_SD_BLOCK_STRESS_TEST_ENABLED='+str(stress),'APP_SD_BLOCK_D_GROUP_ENABLED=0','APP_SD_BLOCK_POLL_ONLY_ENABLED=0']
+  defines=[x for x in d[1].split(',') if not x.strip().startswith(('APP_SDMMC_TEST_ENABLED','APP_SDMMC_DETECT_ONLY','APP_SD_BLOCK_TEST_ENABLED','APP_SD_BLOCK_WRITE_TEST_ENABLED','APP_SD_BLOCK_STRESS_TEST_ENABLED','SD_BLOCK_STRESS_DURATION_MS','SD_BLOCK_STRESS_MAX_ROUNDS','SD_TEST_'))]
+  defines+=['APP_SDMMC_TEST_ENABLED=0','APP_SD_BLOCK_TEST_ENABLED='+str(enabled),'APP_SD_BLOCK_WRITE_TEST_ENABLED='+str(write),'APP_SD_BLOCK_STRESS_TEST_ENABLED='+str(stress)]
   if write:defines+=['SD_TEST_CID0=1U','SD_TEST_CID1=2U','SD_TEST_CID2=3U','SD_TEST_CID3=4U','SD_TEST_CAPACITY_BYTES=34359738368ULL','SD_TEST_WRITE_FIRST_LBA=100U','SD_TEST_WRITE_BLOCKS=8U']
   cads=cads[:d.start(1)]+','.join(defines)+cads[d.end(1):];target=target[:c.start()]+cads+target[c.end():];PROJECT.write_bytes((text[:m.start()]+target+text[m.end():]).encode('utf-8'))
   log=HERE/(label+'_rebuild.log');cmd=['D:/32/UV4/UV4.exe','-j0','-r',str(PROJECT),'-t','h7_mac_CM7','-o',str(log)]

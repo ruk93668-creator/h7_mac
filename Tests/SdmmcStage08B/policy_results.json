@@ -1,7 +1,7 @@
 {
   "summary": {
-    "total": 23,
-    "passed": 23,
+    "total": 15,
+    "passed": 15,
     "failed": 0
   },
   "cases": [
@@ -18,7 +18,7 @@
       "command": "D:/32/ARM/ARMCC/Bin/armcc.exe --cpu Cortex-M7 --c99 -I D:\\32\\STM32H7\\h7_mac\\Tests\\SdmmcStage08B -I D:\\32\\STM32H7\\h7_mac\\CM7\\BSP -I D:\\32\\STM32H7\\h7_mac\\Common\\Inc -DAPP_SD_BLOCK_WRITE_TEST_ENABLED=1 -c D:\\32\\STM32H7\\h7_mac\\output\\SdmmcStage08B\\policy_header.c -o D:\\32\\STM32H7\\h7_mac\\output\\SdmmcStage08B\\policy_header.o",
       "expected_compile_success": false,
       "exit_code": 1,
-      "output": "\"D:\\32\\STM32H7\\h7_mac\\Tests\\SdmmcStage08B\\sd_block_probe.h\", line 124: Error:  #35: #error directive: write_test_requires_probe_enabled\r\n  #error write_test_requires_probe_enabled\r\n   ^\r\nD:\\32\\STM32H7\\h7_mac\\output\\SdmmcStage08B\\policy_header.c: 0 warnings, 1 error\r\n",
+      "output": "\"D:\\32\\STM32H7\\h7_mac\\Tests\\SdmmcStage08B\\sd_block_probe.h\", line 93: Error:  #35: #error directive: write_test_requires_probe_enabled\r\n  #error write_test_requires_probe_enabled\r\n   ^\r\nD:\\32\\STM32H7\\h7_mac\\output\\SdmmcStage08B\\policy_header.c: 0 warnings, 1 error\r\n",
       "result": "PASS"
     },
     {
@@ -26,7 +26,7 @@
       "command": "D:/32/ARM/ARMCC/Bin/armcc.exe --cpu Cortex-M7 --c99 -I D:\\32\\STM32H7\\h7_mac\\Tests\\SdmmcStage08B -I D:\\32\\STM32H7\\h7_mac\\CM7\\BSP -I D:\\32\\STM32H7\\h7_mac\\Common\\Inc -DAPP_SD_BLOCK_TEST_ENABLED=1 -DAPP_SD_BLOCK_WRITE_TEST_ENABLED=1 -c D:\\32\\STM32H7\\h7_mac\\output\\SdmmcStage08B\\policy_header.c -o D:\\32\\STM32H7\\h7_mac\\output\\SdmmcStage08B\\policy_header.o",
       "expected_compile_success": false,
       "exit_code": 1,
-      "output": "\"D:\\32\\STM32H7\\h7_mac\\Tests\\SdmmcStage08B\\sd_block_probe.h\", line 128: Error:  #35: #error directive: write_test_requires_explicit_card_identity_capacity_and_raw_region\r\n  #error write_test_requires_explicit_card_identity_capacity_and_raw_region\r\n   ^\r\nD:\\32\\STM32H7\\h7_mac\\output\\SdmmcStage08B\\policy_header.c: 0 warnings, 1 error\r\n",
+      "output": "\"D:\\32\\STM32H7\\h7_mac\\Tests\\SdmmcStage08B\\sd_block_probe.h\", line 97: Error:  #35: #error directive: write_test_requires_explicit_card_identity_capacity_and_raw_region\r\n  #error write_test_requires_explicit_card_identity_capacity_and_raw_region\r\n   ^\r\nD:\\32\\STM32H7\\h7_mac\\output\\SdmmcStage08B\\policy_header.c: 0 warnings, 1 error\r\n",
       "result": "PASS"
     },
     {
@@ -34,7 +34,7 @@
       "command": "D:/32/ARM/ARMCC/Bin/armcc.exe --cpu Cortex-M7 --c99 -I D:\\32\\STM32H7\\h7_mac\\Tests\\SdmmcStage08B -I D:\\32\\STM32H7\\h7_mac\\CM7\\BSP -I D:\\32\\STM32H7\\h7_mac\\Common\\Inc -DAPP_SD_BLOCK_TEST_ENABLED=1 -DAPP_SD_BLOCK_WRITE_TEST_ENABLED=1 -DSD_TEST_CID0=1U -DSD_TEST_CID1=2U -DSD_TEST_CID2=3U -DSD_TEST_CID3=4U -DSD_TEST_CAPACITY_BYTES=34359738368ULL -DSD_TEST_WRITE_FIRST_LBA=0U -DSD_TEST_WRITE_BLOCKS=8U -c D:\\32\\STM32H7\\h7_mac\\output\\SdmmcStage08B\\policy_header.c -o D:\\32\\STM32H7\\h7_mac\\output\\SdmmcStage08B\\policy_header.o",
       "expected_compile_success": false,
       "exit_code": 1,
-      "output": "\"D:\\32\\STM32H7\\h7_mac\\Tests\\SdmmcStage08B\\sd_block_probe.h\", line 131: Error:  #35: #error directive: write_test_must_not_include_LBA0_and_requires_eight_reserved_blocks\r\n  #error write_test_must_not_include_LBA0_and_requires_eight_reserved_blocks\r\n   ^\r\nD:\\32\\STM32H7\\h7_mac\\output\\SdmmcStage08B\\policy_header.c: 0 warnings, 1 error\r\n",
+      "output": "\"D:\\32\\STM32H7\\h7_mac\\Tests\\SdmmcStage08B\\sd_block_probe.h\", line 100: Error:  #35: #error directive: write_test_must_not_include_LBA0_and_requires_eight_reserved_blocks\r\n  #error write_test_must_not_include_LBA0_and_requires_eight_reserved_blocks\r\n   ^\r\nD:\\32\\STM32H7\\h7_mac\\output\\SdmmcStage08B\\policy_header.c: 0 warnings, 1 error\r\n",
       "result": "PASS"
     },
     {
@@ -42,7 +42,7 @@
       "command": "D:/32/ARM/ARMCC/Bin/armcc.exe --cpu Cortex-M7 --c99 -I D:\\32\\STM32H7\\h7_mac\\Tests\\SdmmcStage08B -I D:\\32\\STM32H7\\h7_mac\\CM7\\BSP -I D:\\32\\STM32H7\\h7_mac\\Common\\Inc -DAPP_SD_BLOCK_TEST_ENABLED=1 -DAPP_SD_BLOCK_WRITE_TEST_ENABLED=1 -DSD_TEST_CID0=1U -DSD_TEST_CID1=2U -DSD_TEST_CID2=3U -DSD_TEST_CID3=4U -DSD_TEST_CAPACITY_BYTES=34359738368ULL -DSD_TEST_WRITE_FIRST_LBA=100U -DSD_TEST_WRITE_BLOCKS=1U -c D:\\32\\STM32H7\\h7_mac\\output\\SdmmcStage08B\\policy_header.c -o D:\\32\\STM32H7\\h7_mac\\output\\SdmmcStage08B\\policy_header.o",
       "expected_compile_success": false,
       "exit_code": 1,
-      "output": "\"D:\\32\\STM32H7\\h7_mac\\Tests\\SdmmcStage08B\\sd_block_probe.h\", line 131: Error:  #35: #error directive: write_test_must_not_include_LBA0_and_requires_eight_reserved_blocks\r\n  #error write_test_must_not_include_LBA0_and_requires_eight_reserved_blocks\r\n   ^\r\nD:\\32\\STM32H7\\h7_mac\\output\\SdmmcStage08B\\policy_header.c: 0 warnings, 1 error\r\n",
+      "output": "\"D:\\32\\STM32H7\\h7_mac\\Tests\\SdmmcStage08B\\sd_block_probe.h\", line 100: Error:  #35: #error directive: write_test_must_not_include_LBA0_and_requires_eight_reserved_blocks\r\n  #error write_test_must_not_include_LBA0_and_requires_eight_reserved_blocks\r\n   ^\r\nD:\\32\\STM32H7\\h7_mac\\output\\SdmmcStage08B\\policy_header.c: 0 warnings, 1 error\r\n",
       "result": "PASS"
     },
     {
@@ -58,7 +58,7 @@
       "command": "D:/32/ARM/ARMCC/Bin/armcc.exe --cpu Cortex-M7 --c99 -I D:\\32\\STM32H7\\h7_mac\\Tests\\SdmmcStage08B -I D:\\32\\STM32H7\\h7_mac\\CM7\\BSP -I D:\\32\\STM32H7\\h7_mac\\Common\\Inc -DAPP_SD_BLOCK_TEST_ENABLED=2 -c D:\\32\\STM32H7\\h7_mac\\output\\SdmmcStage08B\\policy_header.c -o D:\\32\\STM32H7\\h7_mac\\output\\SdmmcStage08B\\policy_header.o",
       "expected_compile_success": false,
       "exit_code": 1,
-      "output": "\"D:\\32\\STM32H7\\h7_mac\\Tests\\SdmmcStage08B\\sd_block_probe.h\", line 119: Error:  #35: #error directive: SD_block_test_switches_must_be_zero_or_one\r\n  #error SD_block_test_switches_must_be_zero_or_one\r\n   ^\r\nD:\\32\\STM32H7\\h7_mac\\output\\SdmmcStage08B\\policy_header.c: 0 warnings, 1 error\r\n",
+      "output": "\"D:\\32\\STM32H7\\h7_mac\\Tests\\SdmmcStage08B\\sd_block_probe.h\", line 88: Error:  #35: #error directive: SD_block_test_switches_must_be_zero_or_one\r\n  #error SD_block_test_switches_must_be_zero_or_one\r\n   ^\r\nD:\\32\\STM32H7\\h7_mac\\output\\SdmmcStage08B\\policy_header.c: 0 warnings, 1 error\r\n",
       "result": "PASS"
     },
     {
@@ -74,7 +74,7 @@
       "command": "D:/32/ARM/ARMCC/Bin/armcc.exe --cpu Cortex-M7 --c99 -I D:\\32\\STM32H7\\h7_mac\\Tests\\SdmmcStage08B -I D:\\32\\STM32H7\\h7_mac\\CM7\\BSP -I D:\\32\\STM32H7\\h7_mac\\Common\\Inc -DAPP_SD_BLOCK_STRESS_TEST_ENABLED=1 -c D:\\32\\STM32H7\\h7_mac\\output\\SdmmcStage08B\\policy_header.c -o D:\\32\\STM32H7\\h7_mac\\output\\SdmmcStage08B\\policy_header.o",
       "expected_compile_success": false,
       "exit_code": 1,
-      "output": "\"D:\\32\\STM32H7\\h7_mac\\Tests\\SdmmcStage08B\\sd_block_probe.h\", line 72: Error:  #35: #error directive: stress_test_requires_probe_and_disables_write_test\r\n  #error stress_test_requires_probe_and_disables_write_test\r\n   ^\r\nD:\\32\\STM32H7\\h7_mac\\output\\SdmmcStage08B\\policy_header.c: 0 warnings, 1 error\r\n",
+      "output": "\"D:\\32\\STM32H7\\h7_mac\\Tests\\SdmmcStage08B\\sd_block_probe.h\", line 41: Error:  #35: #error directive: stress_test_requires_probe_and_disables_write_test\r\n  #error stress_test_requires_probe_and_disables_write_test\r\n   ^\r\nD:\\32\\STM32H7\\h7_mac\\output\\SdmmcStage08B\\policy_header.c: 0 warnings, 1 error\r\n",
       "result": "PASS"
     },
     {
@@ -82,7 +82,7 @@
       "command": "D:/32/ARM/ARMCC/Bin/armcc.exe --cpu Cortex-M7 --c99 -I D:\\32\\STM32H7\\h7_mac\\Tests\\SdmmcStage08B -I D:\\32\\STM32H7\\h7_mac\\CM7\\BSP -I D:\\32\\STM32H7\\h7_mac\\Common\\Inc -DAPP_SD_BLOCK_TEST_ENABLED=1 -DAPP_SD_BLOCK_WRITE_TEST_ENABLED=1 -DSD_TEST_CID0=1U -DSD_TEST_CID1=2U -DSD_TEST_CID2=3U -DSD_TEST_CID3=4U -DSD_TEST_CAPACITY_BYTES=34359738368ULL -DSD_TEST_WRITE_FIRST_LBA=100U -DSD_TEST_WRITE_BLOCKS=8U -DAPP_SD_BLOCK_STRESS_TEST_ENABLED=1 -c D:\\32\\STM32H7\\h7_mac\\output\\SdmmcStage08B\\policy_header.c -o D:\\32\\STM32H7\\h7_mac\\output\\SdmmcStage08B\\policy_header.o",
       "expected_compile_success": false,
       "exit_code": 1,
-      "output": "\"D:\\32\\STM32H7\\h7_mac\\Tests\\SdmmcStage08B\\sd_block_probe.h\", line 72: Error:  #35: #error directive: stress_test_requires_probe_and_disables_write_test\r\n  #error stress_test_requires_probe_and_disables_write_test\r\n   ^\r\nD:\\32\\STM32H7\\h7_mac\\output\\SdmmcStage08B\\policy_header.c: 0 warnings, 1 error\r\n",
+      "output": "\"D:\\32\\STM32H7\\h7_mac\\Tests\\SdmmcStage08B\\sd_block_probe.h\", line 41: Error:  #35: #error directive: stress_test_requires_probe_and_disables_write_test\r\n  #error stress_test_requires_probe_and_disables_write_test\r\n   ^\r\nD:\\32\\STM32H7\\h7_mac\\output\\SdmmcStage08B\\policy_header.c: 0 warnings, 1 error\r\n",
       "result": "PASS"
     },
     {
@@ -90,7 +90,7 @@
       "command": "D:/32/ARM/ARMCC/Bin/armcc.exe --cpu Cortex-M7 --c99 -I D:\\32\\STM32H7\\h7_mac\\Tests\\SdmmcStage08B -I D:\\32\\STM32H7\\h7_mac\\CM7\\BSP -I D:\\32\\STM32H7\\h7_mac\\Common\\Inc -DAPP_SD_BLOCK_STRESS_TEST_ENABLED=2 -c D:\\32\\STM32H7\\h7_mac\\output\\SdmmcStage08B\\policy_header.c -o D:\\32\\STM32H7\\h7_mac\\output\\SdmmcStage08B\\policy_header.o",
       "expected_compile_success": false,
       "exit_code": 1,
-      "output": "\"D:\\32\\STM32H7\\h7_mac\\Tests\\SdmmcStage08B\\sd_block_probe.h\", line 68: Error:  #35: #error directive: SD_block_stress_switch_must_be_zero_or_one\r\n  #error SD_block_stress_switch_must_be_zero_or_one\r\n   ^\r\nD:\\32\\STM32H7\\h7_mac\\output\\SdmmcStage08B\\policy_header.c: 0 warnings, 1 error\r\n",
+      "output": "\"D:\\32\\STM32H7\\h7_mac\\Tests\\SdmmcStage08B\\sd_block_probe.h\", line 37: Error:  #35: #error directive: SD_block_stress_switch_must_be_zero_or_one\r\n  #error SD_block_stress_switch_must_be_zero_or_one\r\n   ^\r\nD:\\32\\STM32H7\\h7_mac\\output\\SdmmcStage08B\\policy_header.c: 0 warnings, 1 error\r\n",
       "result": "PASS"
     },
     {
@@ -98,7 +98,7 @@
       "command": "D:/32/ARM/ARMCC/Bin/armcc.exe --cpu Cortex-M7 --c99 -I D:\\32\\STM32H7\\h7_mac\\Tests\\SdmmcStage08B -I D:\\32\\STM32H7\\h7_mac\\CM7\\BSP -I D:\\32\\STM32H7\\h7_mac\\Common\\Inc -DAPP_SD_BLOCK_TEST_ENABLED=1 -DAPP_SD_BLOCK_STRESS_TEST_ENABLED=1 -DSD_BLOCK_STRESS_DURATION_MS=0 -c D:\\32\\STM32H7\\h7_mac\\output\\SdmmcStage08B\\policy_header.c -o D:\\32\\STM32H7\\h7_mac\\output\\SdmmcStage08B\\policy_header.o",
       "expected_compile_success": false,
       "exit_code": 1,
-      "output": "\"D:\\32\\STM32H7\\h7_mac\\Tests\\SdmmcStage08B\\sd_block_probe.h\", line 77: Error:  #35: #error directive: SD_block_stress_limits_out_of_range\r\n  #error SD_block_stress_limits_out_of_range\r\n   ^\r\nD:\\32\\STM32H7\\h7_mac\\output\\SdmmcStage08B\\policy_header.c: 0 warnings, 1 error\r\n",
+      "output": "\"D:\\32\\STM32H7\\h7_mac\\Tests\\SdmmcStage08B\\sd_block_probe.h\", line 46: Error:  #35: #error directive: SD_block_stress_limits_out_of_range\r\n  #error SD_block_stress_limits_out_of_range\r\n   ^\r\nD:\\32\\STM32H7\\h7_mac\\output\\SdmmcStage08B\\policy_header.c: 0 warnings, 1 error\r\n",
       "result": "PASS"
     },
     {
@@ -106,7 +106,7 @@
       "command": "D:/32/ARM/ARMCC/Bin/armcc.exe --cpu Cortex-M7 --c99 -I D:\\32\\STM32H7\\h7_mac\\Tests\\SdmmcStage08B -I D:\\32\\STM32H7\\h7_mac\\CM7\\BSP -I D:\\32\\STM32H7\\h7_mac\\Common\\Inc -DAPP_SD_BLOCK_TEST_ENABLED=1 -DAPP_SD_BLOCK_STRESS_TEST_ENABLED=1 -DSD_BLOCK_STRESS_DURATION_MS=300001 -c D:\\32\\STM32H7\\h7_mac\\output\\SdmmcStage08B\\policy_header.c -o D:\\32\\STM32H7\\h7_mac\\output\\SdmmcStage08B\\policy_header.o",
       "expected_compile_success": false,
       "exit_code": 1,
-      "output": "\"D:\\32\\STM32H7\\h7_mac\\Tests\\SdmmcStage08B\\sd_block_probe.h\", line 77: Error:  #35: #error directive: SD_block_stress_limits_out_of_range\r\n  #error SD_block_stress_limits_out_of_range\r\n   ^\r\nD:\\32\\STM32H7\\h7_mac\\output\\SdmmcStage08B\\policy_header.c: 0 warnings, 1 error\r\n",
+      "output": "\"D:\\32\\STM32H7\\h7_mac\\Tests\\SdmmcStage08B\\sd_block_probe.h\", line 46: Error:  #35: #error directive: SD_block_stress_limits_out_of_range\r\n  #error SD_block_stress_limits_out_of_range\r\n   ^\r\nD:\\32\\STM32H7\\h7_mac\\output\\SdmmcStage08B\\policy_header.c: 0 warnings, 1 error\r\n",
       "result": "PASS"
     },
     {
@@ -114,7 +114,7 @@
       "command": "D:/32/ARM/ARMCC/Bin/armcc.exe --cpu Cortex-M7 --c99 -I D:\\32\\STM32H7\\h7_mac\\Tests\\SdmmcStage08B -I D:\\32\\STM32H7\\h7_mac\\CM7\\BSP -I D:\\32\\STM32H7\\h7_mac\\Common\\Inc -DAPP_SD_BLOCK_TEST_ENABLED=1 -DAPP_SD_BLOCK_STRESS_TEST_ENABLED=1 -DSD_BLOCK_STRESS_MAX_ROUNDS=0 -c D:\\32\\STM32H7\\h7_mac\\output\\SdmmcStage08B\\policy_header.c -o D:\\32\\STM32H7\\h7_mac\\output\\SdmmcStage08B\\policy_header.o",
       "expected_compile_success": false,
       "exit_code": 1,
-      "output": "\"D:\\32\\STM32H7\\h7_mac\\Tests\\SdmmcStage08B\\sd_block_probe.h\", line 77: Error:  #35: #error directive: SD_block_stress_limits_out_of_range\r\n  #error SD_block_stress_limits_out_of_range\r\n   ^\r\nD:\\32\\STM32H7\\h7_mac\\output\\SdmmcStage08B\\policy_header.c: 0 warnings, 1 error\r\n",
+      "output": "\"D:\\32\\STM32H7\\h7_mac\\Tests\\SdmmcStage08B\\sd_block_probe.h\", line 46: Error:  #35: #error directive: SD_block_stress_limits_out_of_range\r\n  #error SD_block_stress_limits_out_of_range\r\n   ^\r\nD:\\32\\STM32H7\\h7_mac\\output\\SdmmcStage08B\\policy_header.c: 0 warnings, 1 error\r\n",
       "result": "PASS"
     },
     {
@@ -122,71 +122,7 @@
       "command": "D:/32/ARM/ARMCC/Bin/armcc.exe --cpu Cortex-M7 --c99 -I D:\\32\\STM32H7\\h7_mac\\Tests\\SdmmcStage08B -I D:\\32\\STM32H7\\h7_mac\\CM7\\BSP -I D:\\32\\STM32H7\\h7_mac\\Common\\Inc -DAPP_SD_BLOCK_TEST_ENABLED=1 -DAPP_SD_BLOCK_STRESS_TEST_ENABLED=1 -DSD_BLOCK_STRESS_MAX_ROUNDS=15001 -c D:\\32\\STM32H7\\h7_mac\\output\\SdmmcStage08B\\policy_header.c -o D:\\32\\STM32H7\\h7_mac\\output\\SdmmcStage08B\\policy_header.o",
       "expected_compile_success": false,
       "exit_code": 1,
-      "output": "\"D:\\32\\STM32H7\\h7_mac\\Tests\\SdmmcStage08B\\sd_block_probe.h\", line 77: Error:  #35: #error directive: SD_block_stress_limits_out_of_range\r\n  #error SD_block_stress_limits_out_of_range\r\n   ^\r\nD:\\32\\STM32H7\\h7_mac\\output\\SdmmcStage08B\\policy_header.c: 0 warnings, 1 error\r\n",
-      "result": "PASS"
-    },
-    {
-      "name": "d_group_valid",
-      "command": "D:/32/ARM/ARMCC/Bin/armcc.exe --cpu Cortex-M7 --c99 -I D:\\32\\STM32H7\\h7_mac\\Tests\\SdmmcStage08B -I D:\\32\\STM32H7\\h7_mac\\CM7\\BSP -I D:\\32\\STM32H7\\h7_mac\\Common\\Inc -DAPP_SD_BLOCK_TEST_ENABLED=1 -DAPP_SD_BLOCK_STRESS_TEST_ENABLED=1 -DAPP_SD_BLOCK_D_GROUP_ENABLED=1 -c D:\\32\\STM32H7\\h7_mac\\output\\SdmmcStage08B\\policy_header.c -o D:\\32\\STM32H7\\h7_mac\\output\\SdmmcStage08B\\policy_header.o",
-      "expected_compile_success": true,
-      "exit_code": 0,
-      "output": "",
-      "result": "PASS"
-    },
-    {
-      "name": "d_group_requires_stress",
-      "command": "D:/32/ARM/ARMCC/Bin/armcc.exe --cpu Cortex-M7 --c99 -I D:\\32\\STM32H7\\h7_mac\\Tests\\SdmmcStage08B -I D:\\32\\STM32H7\\h7_mac\\CM7\\BSP -I D:\\32\\STM32H7\\h7_mac\\Common\\Inc -DAPP_SD_BLOCK_TEST_ENABLED=1 -DAPP_SD_BLOCK_D_GROUP_ENABLED=1 -c D:\\32\\STM32H7\\h7_mac\\output\\SdmmcStage08B\\policy_header.c -o D:\\32\\STM32H7\\h7_mac\\output\\SdmmcStage08B\\policy_header.o",
-      "expected_compile_success": false,
-      "exit_code": 1,
-      "output": "\"D:\\32\\STM32H7\\h7_mac\\Tests\\SdmmcStage08B\\sd_block_probe.h\", line 31: Error:  #35: #error directive: SD_block_d_group_requires_read_stress_configuration\r\n  #error SD_block_d_group_requires_read_stress_configuration\r\n   ^\r\nD:\\32\\STM32H7\\h7_mac\\output\\SdmmcStage08B\\policy_header.c: 0 warnings, 1 error\r\n",
-      "result": "PASS"
-    },
-    {
-      "name": "d_group_requires_block",
-      "command": "D:/32/ARM/ARMCC/Bin/armcc.exe --cpu Cortex-M7 --c99 -I D:\\32\\STM32H7\\h7_mac\\Tests\\SdmmcStage08B -I D:\\32\\STM32H7\\h7_mac\\CM7\\BSP -I D:\\32\\STM32H7\\h7_mac\\Common\\Inc -DAPP_SD_BLOCK_D_GROUP_ENABLED=1 -c D:\\32\\STM32H7\\h7_mac\\output\\SdmmcStage08B\\policy_header.c -o D:\\32\\STM32H7\\h7_mac\\output\\SdmmcStage08B\\policy_header.o",
-      "expected_compile_success": false,
-      "exit_code": 1,
-      "output": "\"D:\\32\\STM32H7\\h7_mac\\Tests\\SdmmcStage08B\\sd_block_probe.h\", line 31: Error:  #35: #error directive: SD_block_d_group_requires_read_stress_configuration\r\n  #error SD_block_d_group_requires_read_stress_configuration\r\n   ^\r\nD:\\32\\STM32H7\\h7_mac\\output\\SdmmcStage08B\\policy_header.c: 0 warnings, 1 error\r\n",
-      "result": "PASS"
-    },
-    {
-      "name": "d_group_switch_invalid",
-      "command": "D:/32/ARM/ARMCC/Bin/armcc.exe --cpu Cortex-M7 --c99 -I D:\\32\\STM32H7\\h7_mac\\Tests\\SdmmcStage08B -I D:\\32\\STM32H7\\h7_mac\\CM7\\BSP -I D:\\32\\STM32H7\\h7_mac\\Common\\Inc -DAPP_SD_BLOCK_D_GROUP_ENABLED=2 -c D:\\32\\STM32H7\\h7_mac\\output\\SdmmcStage08B\\policy_header.c -o D:\\32\\STM32H7\\h7_mac\\output\\SdmmcStage08B\\policy_header.o",
-      "expected_compile_success": false,
-      "exit_code": 1,
-      "output": "\"D:\\32\\STM32H7\\h7_mac\\Tests\\SdmmcStage08B\\sd_block_probe.h\", line 27: Error:  #35: #error directive: SD_block_d_group_switch_must_be_zero_or_one\r\n  #error SD_block_d_group_switch_must_be_zero_or_one\r\n   ^\r\nD:\\32\\STM32H7\\h7_mac\\output\\SdmmcStage08B\\policy_header.c: 0 warnings, 1 error\r\n",
-      "result": "PASS"
-    },
-    {
-      "name": "poll_only_valid",
-      "command": "D:/32/ARM/ARMCC/Bin/armcc.exe --cpu Cortex-M7 --c99 -I D:\\32\\STM32H7\\h7_mac\\Tests\\SdmmcStage08B -I D:\\32\\STM32H7\\h7_mac\\CM7\\BSP -I D:\\32\\STM32H7\\h7_mac\\Common\\Inc -DAPP_SD_BLOCK_TEST_ENABLED=1 -DAPP_SD_BLOCK_STRESS_TEST_ENABLED=1 -DAPP_SD_BLOCK_POLL_ONLY_ENABLED=1 -c D:\\32\\STM32H7\\h7_mac\\output\\SdmmcStage08B\\policy_header.c -o D:\\32\\STM32H7\\h7_mac\\output\\SdmmcStage08B\\policy_header.o",
-      "expected_compile_success": true,
-      "exit_code": 0,
-      "output": "",
-      "result": "PASS"
-    },
-    {
-      "name": "poll_only_requires_task",
-      "command": "D:/32/ARM/ARMCC/Bin/armcc.exe --cpu Cortex-M7 --c99 -I D:\\32\\STM32H7\\h7_mac\\Tests\\SdmmcStage08B -I D:\\32\\STM32H7\\h7_mac\\CM7\\BSP -I D:\\32\\STM32H7\\h7_mac\\Common\\Inc -DAPP_SD_BLOCK_POLL_ONLY_ENABLED=1 -c D:\\32\\STM32H7\\h7_mac\\output\\SdmmcStage08B\\policy_header.c -o D:\\32\\STM32H7\\h7_mac\\output\\SdmmcStage08B\\policy_header.o",
-      "expected_compile_success": false,
-      "exit_code": 1,
-      "output": "\"D:\\32\\STM32H7\\h7_mac\\Tests\\SdmmcStage08B\\sd_block_probe.h\", line 44: Error:  #35: #error directive: SD_block_poll_only_requires_running_read_stress_task\r\n  #error SD_block_poll_only_requires_running_read_stress_task\r\n   ^\r\nD:\\32\\STM32H7\\h7_mac\\output\\SdmmcStage08B\\policy_header.c: 0 warnings, 1 error\r\n",
-      "result": "PASS"
-    },
-    {
-      "name": "poll_only_rejects_d_group",
-      "command": "D:/32/ARM/ARMCC/Bin/armcc.exe --cpu Cortex-M7 --c99 -I D:\\32\\STM32H7\\h7_mac\\Tests\\SdmmcStage08B -I D:\\32\\STM32H7\\h7_mac\\CM7\\BSP -I D:\\32\\STM32H7\\h7_mac\\Common\\Inc -DAPP_SD_BLOCK_TEST_ENABLED=1 -DAPP_SD_BLOCK_STRESS_TEST_ENABLED=1 -DAPP_SD_BLOCK_D_GROUP_ENABLED=1 -DAPP_SD_BLOCK_POLL_ONLY_ENABLED=1 -c D:\\32\\STM32H7\\h7_mac\\output\\SdmmcStage08B\\policy_header.c -o D:\\32\\STM32H7\\h7_mac\\output\\SdmmcStage08B\\policy_header.o",
-      "expected_compile_success": false,
-      "exit_code": 1,
-      "output": "\"D:\\32\\STM32H7\\h7_mac\\Tests\\SdmmcStage08B\\sd_block_probe.h\", line 44: Error:  #35: #error directive: SD_block_poll_only_requires_running_read_stress_task\r\n  #error SD_block_poll_only_requires_running_read_stress_task\r\n   ^\r\nD:\\32\\STM32H7\\h7_mac\\output\\SdmmcStage08B\\policy_header.c: 0 warnings, 1 error\r\n",
-      "result": "PASS"
-    },
-    {
-      "name": "poll_only_invalid_switch",
-      "command": "D:/32/ARM/ARMCC/Bin/armcc.exe --cpu Cortex-M7 --c99 -I D:\\32\\STM32H7\\h7_mac\\Tests\\SdmmcStage08B -I D:\\32\\STM32H7\\h7_mac\\CM7\\BSP -I D:\\32\\STM32H7\\h7_mac\\Common\\Inc -DAPP_SD_BLOCK_POLL_ONLY_ENABLED=2 -c D:\\32\\STM32H7\\h7_mac\\output\\SdmmcStage08B\\policy_header.c -o D:\\32\\STM32H7\\h7_mac\\output\\SdmmcStage08B\\policy_header.o",
-      "expected_compile_success": false,
-      "exit_code": 1,
-      "output": "\"D:\\32\\STM32H7\\h7_mac\\Tests\\SdmmcStage08B\\sd_block_probe.h\", line 40: Error:  #35: #error directive: SD_block_poll_only_switch_must_be_zero_or_one\r\n  #error SD_block_poll_only_switch_must_be_zero_or_one\r\n   ^\r\nD:\\32\\STM32H7\\h7_mac\\output\\SdmmcStage08B\\policy_header.c: 0 warnings, 1 error\r\n",
+      "output": "\"D:\\32\\STM32H7\\h7_mac\\Tests\\SdmmcStage08B\\sd_block_probe.h\", line 46: Error:  #35: #error directive: SD_block_stress_limits_out_of_range\r\n  #error SD_block_stress_limits_out_of_range\r\n   ^\r\nD:\\32\\STM32H7\\h7_mac\\output\\SdmmcStage08B\\policy_header.c: 0 warnings, 1 error\r\n",
       "result": "PASS"
     }
   ]

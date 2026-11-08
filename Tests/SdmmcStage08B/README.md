@@ -1,5 +1,7 @@
 # SDMMC Stage08B
 
+当前临时恢复旧C组d030531复测16FPS：BLOCK=1、STRESS=1、WRITE=0，固定20ms，不含D/POLL_ONLY开关或可调周期。只运行旧C对应run_tests.py（556次）与run_policy_checks.py（15项）；D/Poll源码及审计记录保留作历史，需在36ea40b/6bc08f8对应版本执行。先不处理M-V累积。
+
 - [设计、接口及实板验收](../../Docs/Design/SDMMC1_Stage08B.md)
 - [验收报告](verification_report.md)
 - 实际BSP/HAL与原08A断言：`python Tests/SdmmcStage08B/run_tests.py`

@@ -7,8 +7,8 @@
     "warnings": 0,
     "source_fingerprint_before": "82f44864d947aedfb62b946c8258e3b51293a6a1464f36fb93f2d15faccbe4be",
     "source_fingerprint_after": "82f44864d947aedfb62b946c8258e3b51293a6a1464f36fb93f2d15faccbe4be",
-    "project_sha_before": "0cb76deba986f405f8d2c197fcfe95e3e7fa1ac8d697f097f1547a960e4866e3",
-    "project_sha_after": "0cb76deba986f405f8d2c197fcfe95e3e7fa1ac8d697f097f1547a960e4866e3",
+    "project_sha_before": "a1faea663b090e1234791ef5b2517f22152bd7b14b77df05facb520969d2d5f2",
+    "project_sha_after": "a1faea663b090e1234791ef5b2517f22152bd7b14b77df05facb520969d2d5f2",
     "passed": true
   },
   {
@@ -19,8 +19,8 @@
     "warnings": 0,
     "source_fingerprint_before": "82f44864d947aedfb62b946c8258e3b51293a6a1464f36fb93f2d15faccbe4be",
     "source_fingerprint_after": "82f44864d947aedfb62b946c8258e3b51293a6a1464f36fb93f2d15faccbe4be",
-    "project_sha_before": "0cb76deba986f405f8d2c197fcfe95e3e7fa1ac8d697f097f1547a960e4866e3",
-    "project_sha_after": "0cb76deba986f405f8d2c197fcfe95e3e7fa1ac8d697f097f1547a960e4866e3",
+    "project_sha_before": "a1faea663b090e1234791ef5b2517f22152bd7b14b77df05facb520969d2d5f2",
+    "project_sha_after": "a1faea663b090e1234791ef5b2517f22152bd7b14b77df05facb520969d2d5f2",
     "passed": true
   }
 ]
