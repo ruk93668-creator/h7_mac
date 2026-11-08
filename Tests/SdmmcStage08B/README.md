@@ -27,3 +27,5 @@
 最新：压力验收后已按用户要求关闭CM7全部SD测试宏，用于同视频配置下的USB FPS对照复测。无需设置request，旧启用说明只作历史记录。
 
 当前为D组：BLOCK=1、STRESS=1、WRITE=0、APP_SD_BLOCK_D_GROUP_ENABLED=1；仅保留链接，不创建SdTest，不能执行request压力。D组链接审计：python Tests/SdmmcStage08B/run_d_group_audit.py。烧录后先观察USB FPS，不读写SD卡。
+
+最新轮询对照：D_GROUP=0、POLL_ONLY=1，SdTest恢复创建；Watch修改g_sd_block_test.poll_period_ms，默认20，可改1000再改20。所有SD请求被拒绝，不需要设置request。链接审计使用run_d_group_audit.py --poll-only。

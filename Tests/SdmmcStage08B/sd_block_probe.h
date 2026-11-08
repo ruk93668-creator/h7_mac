@@ -31,6 +31,24 @@
 #error SD_block_d_group_requires_read_stress_configuration
 #endif
 
+//轮询对照模式只观察调度，拒绝所有SD测试请求
+#ifndef APP_SD_BLOCK_POLL_ONLY_ENABLED
+#define APP_SD_BLOCK_POLL_ONLY_ENABLED 0
+#endif
+
+#if APP_SD_BLOCK_POLL_ONLY_ENABLED != 0 && APP_SD_BLOCK_POLL_ONLY_ENABLED != 1
+#error SD_block_poll_only_switch_must_be_zero_or_one
+#endif
+
+#if APP_SD_BLOCK_POLL_ONLY_ENABLED && (!APP_SD_BLOCK_TEST_ENABLED || !APP_SD_BLOCK_STRESS_TEST_ENABLED || APP_SD_BLOCK_WRITE_TEST_ENABLED || APP_SD_BLOCK_D_GROUP_ENABLED)
+#error SD_block_poll_only_requires_running_read_stress_task
+#endif
+
+//空闲轮询保持原20ms默认值，Watch最多放慢到1000ms
+#define SD_BLOCK_POLL_DEFAULT_MS 20U
+#define SD_BLOCK_POLL_MIN_MS     20U
+#define SD_BLOCK_POLL_MAX_MS     1000U
+
 //最长五分钟、最多一万五千轮，测试可缩短但不能扩大边界
 #ifndef SD_BLOCK_STRESS_DURATION_MS
 #define SD_BLOCK_STRESS_DURATION_MS 300000UL
@@ -134,6 +152,9 @@ typedef struct
     BspSdmmcIoDiagnostics_t io;
     uint32_t stack_free_words;
     SdBlockStress_t stress;//追加压力统计，原有Watch字段顺序不变
+    uint32_t poll_period_ms;//Watch设置下一轮等待周期，不重启任务
+    uint32_t poll_effective_ms;//实际采用的周期，限制在20到1000ms
+    uint32_t poll_count;//已进入轮间等待的次数，用增量观察唤醒频率
 } SdBlockProbe_t;
 
 //供Keil Watch观察，默认不开启扇区测试
@@ -143,6 +164,9 @@ extern volatile SdBlockProbe_t g_sd_block_test;
 
 //只读启动开关，D组为1；不是运行中创建或停止任务的控制接口
 extern const volatile uint32_t g_sd_block_d_group;
+
+//当前为1时所有测试请求均拒绝，确保调度对照不读写SD
+extern const volatile uint32_t g_sd_block_poll_only;
 #endif
 
 #endif

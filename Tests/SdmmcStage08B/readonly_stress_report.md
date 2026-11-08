@@ -150,3 +150,27 @@ D组仍保留4KiB任务栈和TCB的静态内存，但没有运行期测试任务
 实板：重新打开原h7_mac.uvprojx并确认D宏为1，Rebuild、Download、完整断电重启。确认g_sd_block_d_group=1，g_sd_block_test.enabled=0，g_sd_block_test.stress.enabled=1、active=0、attempted_rounds=0。不要设置request。用相同播放器参数运行一分钟，记录Camera/USB实际FPS，必要时再抓USB包对比帧内空槽。
 
 D恢复：支持测试任务参与或其交互影响，但不能立即归因于优先级；D仍16FPS：说明没有运行SdTest也能复现，继续查新增链接代码及EP1提交时序。D门控新增少量初始化代码与4B开关，不能声称新D固件与旧C固件字节完全相同。当前实际USB帧率尚待用户实板反馈，未合并main。内部符号地址随链接改变，旧Watch绝对地址不再适用。
+
+## 同一固件20/1000ms轮询切换对照（2026-11-08）
+
+用户报告D组Camera约30FPS、USB恢复25FPS。此结果支持测试任务创建/运行及启动时序有关，但新D门控也有少量链接变化，不能直接认定为优先级问题。因此本轮恢复创建SdTest，并允许在同一次上电中改变轮询周期。
+
+当前配置为BLOCK=1、STRESS=1、WRITE=0、APP_SD_BLOCK_D_GROUP_ENABLED=0、APP_SD_BLOCK_POLL_ONLY_ENABLED=1。新POLL_ONLY开关默认0，仅本对照启用。它通过const volatile启动值在实际请求分发入口拒绝1～5全部测试请求，返回NOT_SUPPORTED；压力分支引用仍保留，没有编译删除。即使误写request，也不执行SD读写、恢复或压力流程。原BSP、USB、Camera、MPU、优先级、压力内部轮间等待及视频配置不改。
+
+在g_sd_block_test末尾追加3个字段，不改变旧字段顺序：
+
+| Watch | 含义 |
+| --- | --- |
+| poll_period_ms | 用户设置，默认20，直接输入1000或20 |
+| poll_effective_ms | 下次等待采用的值，钳位20～1000ms |
+| poll_count | 每轮进入等待前加1，观察增量，不是精确调度周期保证 |
+
+任务只在每轮结束读取配置一次，pdMS_TO_TICKS后至少等待1Tick，不忙等。当前已经进入的vTaskDelay不会被Watch立即取消；从1000改回20最多等当前约1秒延时结束。BOOT屏障仍固定20ms；不会重新创建任务。
+
+实板步骤：原h7_mac.uvprojx选择h7_mac_CM7，确认D_GROUP=0、POLL_ONLY=1后Rebuild/Download并完整断电启动。Watch应为g_sd_block_d_group=0、g_sd_block_poll_only=1、g_sd_block_test.enabled=1、stress.enabled=1、stress.active=0、request=0。保持同一播放器和视频配置，不复位、不重新烧录、不设置request。
+
+依次使用默认20ms、1000ms、20ms，每档保持20秒。记录Camera/USB实际FPS及poll_count增量；20ms约50次/秒、1000ms约1次/秒，实际由任务调度决定。如果16→25→16可重复，则优先查周期唤醒、上下文切换、Idle/WFI及EP1提交时序交互；若1000ms仍16，则周期轮询本身尚未得到支持，继续查任务创建或启动相位；若三档都25，说明现象需要重复冷启动确认。任何结果都不是自动判定根因。
+
+自动化：原568次保留，新增9种周期/边界/回绕/拒绝SD请求场景×O0/O2共18次，合计586/586 PASS；编译保护23/23 PASS。CM7重新编译、CM4增量检查均0 Error、0 Warning，源指纹保持不变。内存边界5/5 PASS，`run_d_group_audit.py --poll-only`链接保留及开关检查9/9 PASS，结果poll_only_link_audit.json。旧D组检查和历史结果保留，必须使用与当前配置匹配的审计参数。
+
+本轮实板20→1000→20结果待用户反馈。当前工程只用于不读写SD的轮询对照；要恢复正常压力需先关闭POLL_ONLY。未合并main，用户其他Keil本地改动保留。重新链接后旧绝对地址Watch不再可靠。

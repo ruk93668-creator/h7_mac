@@ -13,6 +13,10 @@ static uint32_t s_queue_count, s_queue_create_fail, s_queue_waits, s_queue_gives
 //仅在Mock中统计测试任务创建，不影响正式任务
 static uint32_t s_sd_test_task_creates, s_sd_test_task_fail;
 
+//记录Mock阻塞次数和周期，用于同次运行的轮询切换校验
+static uint32_t s_test_delay_calls;
+static volatile TickType_t s_test_last_delay;
+
 //比较测试数据，不链接宿主运行库
 int memcmp(const void *a,const void *b,size_t n)
 {
@@ -69,6 +73,8 @@ TaskHandle_t xTaskCreateStatic(TaskFunction_t task,const char *const name,const 
 }
 void vTaskDelay(TickType_t ticks)
 {
+    s_test_delay_calls++;
+    s_test_last_delay = ticks;
     s_tick+=ticks;
 #if defined(SD_STRESS_TEST_HOOKS)
     SdStress_TestDelayHook(ticks);

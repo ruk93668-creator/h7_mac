@@ -17,7 +17,7 @@
       "dtcm_end": "0x2000d698",
       "symbols": {
         "s_test_stack": {
-          "address": "0x200006f0",
+          "address": "0x20000700",
           "size": 4096
         },
         "s_stress_buffer": {
@@ -26,7 +26,7 @@
         },
         "g_sd_block_test": {
           "address": "0x20000558",
-          "size": 328
+          "size": 344
         },
         "g_sdmmc_dma_buffer": {
           "address": "0x24000000",

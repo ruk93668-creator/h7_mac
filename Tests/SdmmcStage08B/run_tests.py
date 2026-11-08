@@ -39,12 +39,14 @@ profiles += [('stress','SdBlockStress_TestRun',stress_names,['-DAPP_SD_BLOCK_TES
 for group in [0,1]:
  profiles.append(('dgroup'+str(group),'SdBlockDGroup_TestRun',['任务创建对照','预置请求不执行','任务创建失败对照'],['-DAPP_SD_BLOCK_TEST_ENABLED=1','-DAPP_SD_BLOCK_STRESS_TEST_ENABLED=1','-DAPP_SD_BLOCK_D_GROUP_ENABLED='+str(group)]))
 
+profiles.append(('poll','SdBlockPoll_TestRun',['默认20ms','1000ms等待','同次20到1000再20','零值下限','低于下限','高于上限','最大无符号输入','轮询计数回绕','误请求不读写SD'],['-DAPP_SD_BLOCK_TEST_ENABLED=1','-DAPP_SD_BLOCK_STRESS_TEST_ENABLED=1','-DAPP_SD_BLOCK_POLL_ONLY_ENABLED=1']))
+
 for mode,enabled,detect,low in [('off',0,1,0),('detect',1,1,0),('probe',1,0,0),('probe_low',1,0,1)]:
  profiles.append((mode,'Sdmmc_TestRun',legacy_names,['-DAPP_SDMMC_TEST_ENABLED='+str(enabled),'-DAPP_SDMMC_DETECT_ONLY='+str(detect),'-DBSP_SDMMC_DETECT_ACTIVE_LOW='+str(low)]))
 for profile,entry_name,case_names,defines in profiles:
  for opt in ['O0','O2']:
   obj=OUT/(profile+'_'+opt+'.o');hal=OUT/('hal_'+opt+'.o');axf=OUT/(profile+'_'+opt+'.axf')
-  run(base+defines+['-'+opt,'-c',HERE/('d_group_test.c' if profile.startswith('dgroup') else 'stress_test.c' if profile.startswith('stress') else 'adapter_test.c' if profile=='adapter' else 'idma_test.c'),'-o',obj])
+  run(base+defines+['-'+opt,'-c',HERE/('poll_test.c' if profile=='poll' else 'd_group_test.c' if profile.startswith('dgroup') else 'stress_test.c' if profile.startswith('stress') else 'adapter_test.c' if profile=='adapter' else 'idma_test.c'),'-o',obj])
   renames=['HAL_SD_Init','HAL_SD_DeInit','HAL_SD_GetCardInfo','HAL_SD_GetCardState','HAL_SD_GetState','HAL_SD_GetError','HAL_SD_ConfigWideBusOperation','HAL_SD_ConfigSpeedBusOperation']
   run(base+['-'+opt]+['-D'+s+'=Vendor_'+s for s in renames]+['-c',ROOT/'Drivers/STM32H7xx_HAL_Driver/Src/stm32h7xx_hal_sd.c','-o',hal])
   run([cc.with_name('armlink.exe'),obj,hal,'--entry',entry_name,'--scatter',HERE/'test.sct','-o',axf])

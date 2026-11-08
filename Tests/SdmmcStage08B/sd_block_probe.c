@@ -19,6 +19,9 @@ static SysResult_t SdBlockTest_Prepare(void);
 //启动时读取内存中的开关，防止编译器删除任务分支及其压力资源引用
 const volatile uint32_t g_sd_block_d_group = APP_SD_BLOCK_D_GROUP_ENABLED;
 
+//只在测试任务入口拒绝硬件请求，不删除压力代码与缓冲的链接引用
+const volatile uint32_t g_sd_block_poll_only = APP_SD_BLOCK_POLL_ONLY_ENABLED;
+
 //保存验收任务控制块
 static StaticTask_t s_test_tcb;
 
@@ -56,6 +59,9 @@ static SysResult_t SdBlockTest_RunRequest(uint32_t request);
 //等待BOOT放行后处理Watch命令
 static void SdBlockTest_Task(void *argument);
 
+//读取Watch周期并有界阻塞，不占用CPU忙等
+static void SdBlockTest_PollDelay(void);
+
 //计算完整读取数据的CRC32
 static uint32_t SdBlockTest_Crc(const uint8_t *data, uint32_t size);
 
@@ -86,6 +92,10 @@ static SysResult_t SdBlockTest_Prepare(void)
 {
 #if APP_SD_BLOCK_TEST_ENABLED
     TaskHandle_t task;
+
+    //创建前设置默认周期，任务启动后由Watch在同一固件中切换
+    g_sd_block_test.poll_period_ms = SD_BLOCK_POLL_DEFAULT_MS;
+    g_sd_block_test.poll_effective_ms = SD_BLOCK_POLL_DEFAULT_MS;
 
     //D组仍编译压力能力，但不创建任务，也不执行任何读卡或压力流程
     g_sd_block_test.stress.enabled = APP_SD_BLOCK_STRESS_TEST_ENABLED;
@@ -133,14 +143,43 @@ static void SdBlockTest_Task(void *argument)
             g_sd_block_test.stack_free_words = uxTaskGetStackHighWaterMark(NULL);
             g_sd_block_test.state = g_sd_block_test.result == SYS_OK ? 2U : 3U;
         }
-        vTaskDelay(pdMS_TO_TICKS(20U));
+
+        //只调整本测试任务的空闲等待，不改变BOOT等待或压力轮间等待
+        SdBlockTest_PollDelay();
     }
+}
+
+//按当前Watch设置进入有界等待
+static void SdBlockTest_PollDelay(void)
+{
+    uint32_t period = g_sd_block_test.poll_period_ms;
+    TickType_t ticks;
+
+    //不允许缩短到原20ms以下，也不因误输入进入过长阻塞
+    if (period < SD_BLOCK_POLL_MIN_MS)
+        period = SD_BLOCK_POLL_MIN_MS;
+    if (period > SD_BLOCK_POLL_MAX_MS)
+        period = SD_BLOCK_POLL_MAX_MS;
+
+    //周期换算至少一个Tick，避免低Tick配置出现零延时忙循环
+    ticks = pdMS_TO_TICKS(period);
+    if (ticks == 0U)
+        ticks = 1U;
+
+    //只更新测试诊断，不读取其他任务或设备状态
+    g_sd_block_test.poll_effective_ms = period;
+    g_sd_block_test.poll_count++;
+    vTaskDelay(ticks);
 }
 
 //分发测试命令
 static SysResult_t SdBlockTest_RunRequest(uint32_t request)
 {
     SysResult_t result;
+
+    //轮询对照不允许误触发读写、恢复或压力，原有流程仍保留在链接中
+    if (g_sd_block_poll_only != 0U)
+        return SYS_ERR_NOT_SUPPORTED;
 
     //原数据仍待恢复时，禁止开始任何新的读取或压力测试
     if (g_sd_block_test.restore_required != 0U && request != 3U && request != 4U)
