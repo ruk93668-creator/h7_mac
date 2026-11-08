@@ -1,0 +1,19 @@
+Traceback (most recent call last):
+  File "D:\32\STM32H7\h7_mac\output\SdmmcStage08B\baseline_d0305de\Tests\NativeRuntimeStage02\run_native.py", line 32, in <module>
+    run(['D:/32/ARM/ARMCC/Bin/armlink.exe',*objects,'--entry','Stage02_TestRun','--scatter',HERE/'native.sct','--keep=*(.device_export)','--no_scanlib','-o',axf])
+  File "D:\32\STM32H7\h7_mac\output\SdmmcStage08B\baseline_d0305de\Tests\NativeRuntimeStage02\run_native.py", line 15, in run
+    if p.returncode:raise RuntimeError(commands[-1]['output'])
+                    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+RuntimeError: Error: L6218E: Undefined symbol App_StatusPublishCamera (referred from phase02d_phase02d.o).
+Error: L6218E: Undefined symbol App_StatusPublishControl (referred from phase02d_phase02d.o).
+Error: L6218E: Undefined symbol App_StatusPublishUsb (referred from phase02d_phase02d.o).
+Error: L6218E: Undefined symbol CameraMjpegFifo_GetFrame (referred from phase02d_phase02d.o).
+Error: L6218E: Undefined symbol CameraMjpegFifo_GetStats (referred from phase02d_phase02d.o).
+Error: L6218E: Undefined symbol CameraMjpegFifo_HasLoan (referred from phase02d_phase02d.o).
+Error: L6218E: Undefined symbol CameraMjpegFifo_OnStopped (referred from phase02d_phase02d.o).
+Error: L6218E: Undefined symbol CameraMjpegFifo_Process (referred from phase02d_phase02d.o).
+Error: L6218E: Undefined symbol CameraMjpegFifo_ReleaseFrame (referred from phase02d_phase02d.o).
+Error: L6218E: Undefined symbol CameraMjpegFifo_Start (referred from phase02d_phase02d.o).
+Error: L6218E: Undefined symbol IpcTask_Create (referred from phase02d_phase02d.o).
+Finished: 0 information, 0 warning and 11 error messages.
+

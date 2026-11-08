@@ -1,0 +1,314 @@
+[
+  {
+    "suite": "IpcV2_run_tests",
+    "command": "C:\\Users\\29062\\AppData\\Local\\Programs\\Python\\Python311\\python.exe D:\\32\\STM32H7\\h7_mac\\Tests\\IpcV2\\run_tests.py",
+    "exit_code": 0,
+    "summary": {
+      "total": 512,
+      "passed": 512,
+      "failed": 0
+    },
+    "source_unchanged": true
+  },
+  {
+    "suite": "IpcRuntime_run_tests",
+    "command": "C:\\Users\\29062\\AppData\\Local\\Programs\\Python\\Python311\\python.exe D:\\32\\STM32H7\\h7_mac\\Tests\\IpcRuntime\\run_tests.py",
+    "exit_code": 0,
+    "summary": {
+      "total": 260,
+      "passed": 260,
+      "failed": 0
+    },
+    "source_unchanged": true
+  },
+  {
+    "suite": "IpcRuntime_run_task_tests",
+    "command": "C:\\Users\\29062\\AppData\\Local\\Programs\\Python\\Python311\\python.exe D:\\32\\STM32H7\\h7_mac\\Tests\\IpcRuntime\\run_task_tests.py",
+    "exit_code": 0,
+    "summary": {
+      "total": 20,
+      "passed": 20,
+      "failed": 0
+    },
+    "source_unchanged": true
+  },
+  {
+    "suite": "IpcStatus_run_tests",
+    "command": "C:\\Users\\29062\\AppData\\Local\\Programs\\Python\\Python311\\python.exe D:\\32\\STM32H7\\h7_mac\\Tests\\IpcStatus\\run_tests.py",
+    "exit_code": 0,
+    "summary": {
+      "total": 448,
+      "passed": 448,
+      "failed": 0
+    },
+    "source_unchanged": true
+  },
+  {
+    "suite": "IpcStatus_run_kernel_tests",
+    "command": "C:\\Users\\29062\\AppData\\Local\\Programs\\Python\\Python311\\python.exe D:\\32\\STM32H7\\h7_mac\\Tests\\IpcStatus\\run_kernel_tests.py",
+    "exit_code": 0,
+    "summary": {
+      "total": 41,
+      "passed": 41,
+      "failed": 0
+    },
+    "source_unchanged": true
+  },
+  {
+    "suite": "OledAsyncAcceptance_run_tests",
+    "command": "C:\\Users\\29062\\AppData\\Local\\Programs\\Python\\Python311\\python.exe D:\\32\\STM32H7\\h7_mac\\Tests\\OledAsyncAcceptance\\run_tests.py",
+    "exit_code": 0,
+    "summary": {
+      "total": 50,
+      "pass": 50,
+      "fail": 0,
+      "not_run": 0,
+      "assertions": 11156,
+      "compiler": "Product: MDK Plus 5.32\r\nComponent: ARM Compiler 5.06 update 7 (build 960)\r\nTool: armcc [4d365d]\r\nFor support see http://www.arm.com/support\r\nSoftware supplied by: ARM Limited\r\n",
+      "unicorn": "2.1.4"
+    },
+    "source_unchanged": true
+  },
+  {
+    "suite": "OledMonitor_run_tests",
+    "command": "C:\\Users\\29062\\AppData\\Local\\Programs\\Python\\Python311\\python.exe D:\\32\\STM32H7\\h7_mac\\Tests\\OledMonitor\\run_tests.py",
+    "exit_code": 0,
+    "summary": {
+      "total": 122,
+      "passed": 122,
+      "failed": 0,
+      "assertions": 9076
+    },
+    "source_unchanged": true
+  },
+  {
+    "suite": "UsbCoreDecoupling_run_tests",
+    "command": "C:\\Users\\29062\\AppData\\Local\\Programs\\Python\\Python311\\python.exe D:\\32\\STM32H7\\h7_mac\\Tests\\UsbCoreDecoupling\\run_tests.py",
+    "exit_code": 1,
+    "summary": {
+      "total": 204,
+      "passed": 201,
+      "failed": 3,
+      "assertions": 2947
+    },
+    "source_unchanged": true
+  },
+  {
+    "suite": "Ep0IrqRace_run_race",
+    "command": "C:\\Users\\29062\\AppData\\Local\\Programs\\Python\\Python311\\python.exe D:\\32\\STM32H7\\h7_mac\\Tests\\Ep0IrqRace\\run_race.py",
+    "exit_code": 0,
+    "summary": {
+      "total": 4,
+      "passed": 4,
+      "failed": 0
+    },
+    "source_unchanged": true
+  },
+  {
+    "suite": "UvcPayload_run_tests",
+    "command": "C:\\Users\\29062\\AppData\\Local\\Programs\\Python\\Python311\\python.exe D:\\32\\STM32H7\\h7_mac\\Tests\\UvcPayload\\run_tests.py",
+    "exit_code": 1,
+    "summary": {
+      "unique_cases": 62,
+      "executions": 124,
+      "passed": 122,
+      "failed": 2
+    },
+    "source_unchanged": true
+  },
+  {
+    "suite": "UvcProbeCommit_run_tests",
+    "command": "C:\\Users\\29062\\AppData\\Local\\Programs\\Python\\Python311\\python.exe D:\\32\\STM32H7\\h7_mac\\Tests\\UvcProbeCommit\\run_tests.py",
+    "exit_code": 1,
+    "summary": {
+      "total": 89,
+      "passed": 0,
+      "failed": 89
+    },
+    "source_unchanged": true
+  },
+  {
+    "suite": "UvcProbeCommit_run_cancellation_tests",
+    "command": "C:\\Users\\29062\\AppData\\Local\\Programs\\Python\\Python311\\python.exe D:\\32\\STM32H7\\h7_mac\\Tests\\UvcProbeCommit\\run_cancellation_tests.py",
+    "exit_code": 1,
+    "summary": {
+      "total": 39,
+      "passed": 0,
+      "failed": 39
+    },
+    "source_unchanged": true
+  },
+  {
+    "suite": "UvcEp1Lifecycle_run_tests",
+    "command": "C:\\Users\\29062\\AppData\\Local\\Programs\\Python\\Python311\\python.exe D:\\32\\STM32H7\\h7_mac\\Tests\\UvcEp1Lifecycle\\run_tests.py",
+    "exit_code": 1,
+    "summary": {
+      "total": 45,
+      "passed": 0,
+      "failed": 45
+    },
+    "source_unchanged": true
+  },
+  {
+    "suite": "UvcStreaming_run_tests",
+    "command": "C:\\Users\\29062\\AppData\\Local\\Programs\\Python\\Python311\\python.exe D:\\32\\STM32H7\\h7_mac\\Tests\\UvcStreaming\\run_tests.py",
+    "exit_code": 1,
+    "summary": {
+      "total": 36,
+      "passed": 1,
+      "failed": 35
+    },
+    "source_unchanged": true
+  },
+  {
+    "suite": "CameraMjpegStage03B_run_media",
+    "folder": "CameraMjpegStage03B",
+    "script": "run_media.py",
+    "report": "media_test_results.json",
+    "args": [
+      "media_test",
+      "--count",
+      "16"
+    ],
+    "command": "C:\\Users\\29062\\AppData\\Local\\Programs\\Python\\Python311\\python.exe D:\\32\\STM32H7\\h7_mac\\Tests\\CameraMjpegStage03B\\run_media.py media_test --count 16",
+    "exit_code": 1,
+    "summary": null,
+    "source_unchanged": true
+  },
+  {
+    "suite": "CameraMjpegStage03B_run_native",
+    "folder": "CameraMjpegStage03B",
+    "script": "run_native.py",
+    "report": "native_test_results.json",
+    "args": [
+      "native_test",
+      "--count",
+      "15"
+    ],
+    "command": "C:\\Users\\29062\\AppData\\Local\\Programs\\Python\\Python311\\python.exe D:\\32\\STM32H7\\h7_mac\\Tests\\CameraMjpegStage03B\\run_native.py native_test --count 15",
+    "exit_code": 1,
+    "summary": null,
+    "source_unchanged": true
+  },
+  {
+    "suite": "CameraMjpegStage03B_run_usb",
+    "folder": "CameraMjpegStage03B",
+    "script": "run_usb.py",
+    "report": "usb_test_results.json",
+    "args": [
+      "usb_test",
+      "--count",
+      "13"
+    ],
+    "command": "C:\\Users\\29062\\AppData\\Local\\Programs\\Python\\Python311\\python.exe D:\\32\\STM32H7\\h7_mac\\Tests\\CameraMjpegStage03B\\run_usb.py usb_test --count 13",
+    "exit_code": 0,
+    "summary": {
+      "total": 13,
+      "passed": 13,
+      "failed": 0
+    },
+    "source_unchanged": true
+  },
+  {
+    "suite": "CameraStreamState_run_tests",
+    "folder": "CameraStreamState",
+    "script": "run_tests.py",
+    "report": "results.json",
+    "args": [],
+    "command": "C:\\Users\\29062\\AppData\\Local\\Programs\\Python\\Python311\\python.exe D:\\32\\STM32H7\\h7_mac\\Tests\\CameraStreamState\\run_tests.py",
+    "exit_code": 1,
+    "summary": null,
+    "source_unchanged": true
+  },
+  {
+    "suite": "CameraSingleFrame_Camera_run_tests",
+    "folder": "CameraSingleFrame/Camera",
+    "script": "run_tests.py",
+    "report": "results.json",
+    "args": [],
+    "command": "C:\\Users\\29062\\AppData\\Local\\Programs\\Python\\Python311\\python.exe D:\\32\\STM32H7\\h7_mac\\Tests\\CameraSingleFrame\\Camera\\run_tests.py",
+    "exit_code": 1,
+    "summary": null,
+    "source_unchanged": true
+  },
+  {
+    "suite": "CameraFormats_Camera_run_tests",
+    "folder": "CameraFormats/Camera",
+    "script": "run_tests.py",
+    "report": "results.json",
+    "args": [],
+    "command": "C:\\Users\\29062\\AppData\\Local\\Programs\\Python\\Python311\\python.exe D:\\32\\STM32H7\\h7_mac\\Tests\\CameraFormats\\Camera\\run_tests.py",
+    "exit_code": 1,
+    "summary": null,
+    "source_unchanged": true
+  },
+  {
+    "suite": "NativeRuntimeStage02_run_native",
+    "folder": "NativeRuntimeStage02",
+    "script": "run_native.py",
+    "report": "phase02d_results.json",
+    "args": [
+      "phase02d",
+      "--count",
+      "33"
+    ],
+    "command": "C:\\Users\\29062\\AppData\\Local\\Programs\\Python\\Python311\\python.exe D:\\32\\STM32H7\\h7_mac\\Tests\\NativeRuntimeStage02\\run_native.py phase02d --count 33",
+    "exit_code": 1,
+    "summary": null,
+    "source_unchanged": true
+  },
+  {
+    "suite": "NativeRuntimeStage02_run_usb",
+    "folder": "NativeRuntimeStage02",
+    "script": "run_usb.py",
+    "report": "phase02b_results.json",
+    "args": [
+      "phase02b",
+      "--count",
+      "11"
+    ],
+    "command": "C:\\Users\\29062\\AppData\\Local\\Programs\\Python\\Python311\\python.exe D:\\32\\STM32H7\\h7_mac\\Tests\\NativeRuntimeStage02\\run_usb.py phase02b --count 11",
+    "exit_code": 0,
+    "summary": {
+      "total": 11,
+      "passed": 11,
+      "failed": 0
+    },
+    "source_unchanged": true
+  },
+  {
+    "suite": "NativeRuntimeStage02_run_bsp",
+    "folder": "NativeRuntimeStage02",
+    "script": "run_bsp.py",
+    "report": "phase02a_bsp_results.json",
+    "args": [
+      "phase02a_bsp",
+      "--count",
+      "7"
+    ],
+    "command": "C:\\Users\\29062\\AppData\\Local\\Programs\\Python\\Python311\\python.exe D:\\32\\STM32H7\\h7_mac\\Tests\\NativeRuntimeStage02\\run_bsp.py phase02a_bsp --count 7",
+    "exit_code": 0,
+    "summary": {
+      "total": 7,
+      "passed": 7,
+      "failed": 0
+    },
+    "source_unchanged": true
+  },
+  {
+    "suite": "DcmiReplaceTarget_run_tests",
+    "folder": "DcmiReplaceTarget",
+    "script": "run_tests.py",
+    "report": "results.json",
+    "args": [],
+    "command": "C:\\Users\\29062\\AppData\\Local\\Programs\\Python\\Python311\\python.exe D:\\32\\STM32H7\\h7_mac\\Tests\\DcmiReplaceTarget\\run_tests.py",
+    "exit_code": 1,
+    "summary": {
+      "total": 133,
+      "passed": 88,
+      "failed": 45,
+      "assertions": 5475
+    },
+    "source_unchanged": true
+  }
+]

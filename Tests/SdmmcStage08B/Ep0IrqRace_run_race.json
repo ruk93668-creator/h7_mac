@@ -1,0 +1,530 @@
+[
+  {
+    "ordering_pass": true,
+    "scenario": "A_old_XFRC_pending",
+    "pass": true,
+    "error": null,
+    "failed_line": 0,
+    "actual": 0,
+    "expected": 0,
+    "assertions": 28,
+    "observation": [
+      1,
+      32,
+      32,
+      1,
+      2,
+      0,
+      1,
+      1,
+      327683,
+      0,
+      0,
+      1,
+      0,
+      0,
+      0,
+      0
+    ],
+    "model": {
+      "late_fifo_flush": 0,
+      "new_in": 1,
+      "rx_fifo_flush": 0
+    },
+    "events": [
+      [
+        "HAL_PCD_EP_Open",
+        0,
+        0,
+        0
+      ],
+      [
+        "HAL_PCD_EP_Open",
+        128,
+        0,
+        0
+      ],
+      [
+        "HAL_PCD_EP_Transmit",
+        128,
+        0,
+        0
+      ],
+      [
+        "HAL_PCD_EP_Transmit",
+        128,
+        0,
+        0
+      ],
+      [
+        "HAL_PCD_EP_Open",
+        129,
+        0,
+        0
+      ],
+      [
+        "HAL_PCD_EP_Transmit",
+        129,
+        0,
+        0
+      ],
+      [
+        "HAL_PCD_EP_Open",
+        2,
+        0,
+        0
+      ],
+      [
+        "HAL_PCD_EP_Receive",
+        2,
+        0,
+        0
+      ],
+      [
+        "HAL_PCD_EP_Transmit",
+        128,
+        0,
+        0
+      ],
+      [
+        "W1C",
+        "0x40080b08",
+        8
+      ],
+      [
+        "HAL_PCD_EP_Abort",
+        128,
+        0,
+        1
+      ],
+      [
+        "W1C",
+        "0x40080908",
+        11
+      ],
+      [
+        "HAL_PCD_EP_Close",
+        128,
+        0,
+        1
+      ],
+      [
+        "HAL_PCD_EP_Open",
+        128,
+        0,
+        1
+      ],
+      [
+        "HAL_PCD_EP_Transmit",
+        128,
+        0,
+        1
+      ],
+      [
+        "W1C",
+        "0x40080928",
+        1
+      ],
+      [
+        "W1C",
+        "0x40080908",
+        1
+      ],
+      [
+        "HAL_PCD_EP_Receive",
+        0,
+        0,
+        1
+      ]
+    ]
+  },
+  {
+    "ordering_pass": true,
+    "scenario": "B_no_old_XFRC",
+    "pass": true,
+    "error": null,
+    "failed_line": 0,
+    "actual": 0,
+    "expected": 0,
+    "assertions": 28,
+    "observation": [
+      1,
+      32,
+      32,
+      1,
+      2,
+      0,
+      1,
+      1,
+      327683,
+      0,
+      0,
+      1,
+      0,
+      0,
+      0,
+      0
+    ],
+    "model": {
+      "late_fifo_flush": 0,
+      "new_in": 1,
+      "rx_fifo_flush": 0
+    },
+    "events": [
+      [
+        "HAL_PCD_EP_Open",
+        0,
+        0,
+        0
+      ],
+      [
+        "HAL_PCD_EP_Open",
+        128,
+        0,
+        0
+      ],
+      [
+        "HAL_PCD_EP_Transmit",
+        128,
+        0,
+        0
+      ],
+      [
+        "HAL_PCD_EP_Transmit",
+        128,
+        0,
+        0
+      ],
+      [
+        "HAL_PCD_EP_Open",
+        129,
+        0,
+        0
+      ],
+      [
+        "HAL_PCD_EP_Transmit",
+        129,
+        0,
+        0
+      ],
+      [
+        "HAL_PCD_EP_Open",
+        2,
+        0,
+        0
+      ],
+      [
+        "HAL_PCD_EP_Receive",
+        2,
+        0,
+        0
+      ],
+      [
+        "HAL_PCD_EP_Transmit",
+        128,
+        0,
+        0
+      ],
+      [
+        "W1C",
+        "0x40080b08",
+        8
+      ],
+      [
+        "HAL_PCD_EP_Abort",
+        128,
+        0,
+        1
+      ],
+      [
+        "W1C",
+        "0x40080908",
+        11
+      ],
+      [
+        "HAL_PCD_EP_Close",
+        128,
+        0,
+        1
+      ],
+      [
+        "HAL_PCD_EP_Open",
+        128,
+        0,
+        1
+      ],
+      [
+        "HAL_PCD_EP_Transmit",
+        128,
+        0,
+        1
+      ],
+      [
+        "W1C",
+        "0x40080928",
+        1
+      ],
+      [
+        "W1C",
+        "0x40080908",
+        1
+      ],
+      [
+        "HAL_PCD_EP_Receive",
+        0,
+        0,
+        1
+      ]
+    ]
+  },
+  {
+    "ordering_pass": true,
+    "scenario": "C_abort_failure",
+    "pass": true,
+    "error": null,
+    "failed_line": 0,
+    "actual": 0,
+    "expected": 0,
+    "assertions": 25,
+    "observation": [
+      1,
+      18,
+      18,
+      1,
+      2,
+      1,
+      1,
+      1,
+      327682,
+      1,
+      0,
+      1,
+      0,
+      0,
+      0,
+      0
+    ],
+    "model": {
+      "late_fifo_flush": 0,
+      "new_in": 0,
+      "rx_fifo_flush": 0
+    },
+    "events": [
+      [
+        "HAL_PCD_EP_Open",
+        0,
+        0,
+        0
+      ],
+      [
+        "HAL_PCD_EP_Open",
+        128,
+        0,
+        0
+      ],
+      [
+        "HAL_PCD_EP_Transmit",
+        128,
+        0,
+        0
+      ],
+      [
+        "HAL_PCD_EP_Transmit",
+        128,
+        0,
+        0
+      ],
+      [
+        "HAL_PCD_EP_Open",
+        129,
+        0,
+        0
+      ],
+      [
+        "HAL_PCD_EP_Transmit",
+        129,
+        0,
+        0
+      ],
+      [
+        "HAL_PCD_EP_Open",
+        2,
+        0,
+        0
+      ],
+      [
+        "HAL_PCD_EP_Receive",
+        2,
+        0,
+        0
+      ],
+      [
+        "HAL_PCD_EP_Transmit",
+        128,
+        0,
+        0
+      ],
+      [
+        "W1C",
+        "0x40080b08",
+        8
+      ],
+      [
+        "HAL_PCD_EP_Abort",
+        128,
+        1,
+        1
+      ],
+      [
+        "W1C",
+        "0x40080928",
+        1
+      ]
+    ]
+  },
+  {
+    "ordering_pass": true,
+    "scenario": "D_cancel_STATUS_OUT",
+    "pass": true,
+    "error": null,
+    "failed_line": 0,
+    "actual": 0,
+    "expected": 0,
+    "assertions": 29,
+    "observation": [
+      1,
+      32,
+      32,
+      1,
+      2,
+      0,
+      1,
+      1,
+      327683,
+      0,
+      0,
+      1,
+      0,
+      0,
+      0,
+      0
+    ],
+    "model": {
+      "late_fifo_flush": 0,
+      "new_in": 1,
+      "rx_fifo_flush": 0
+    },
+    "events": [
+      [
+        "HAL_PCD_EP_Open",
+        0,
+        0,
+        0
+      ],
+      [
+        "HAL_PCD_EP_Open",
+        128,
+        0,
+        0
+      ],
+      [
+        "HAL_PCD_EP_Transmit",
+        128,
+        0,
+        0
+      ],
+      [
+        "HAL_PCD_EP_Transmit",
+        128,
+        0,
+        0
+      ],
+      [
+        "HAL_PCD_EP_Open",
+        129,
+        0,
+        0
+      ],
+      [
+        "HAL_PCD_EP_Transmit",
+        129,
+        0,
+        0
+      ],
+      [
+        "HAL_PCD_EP_Open",
+        2,
+        0,
+        0
+      ],
+      [
+        "HAL_PCD_EP_Receive",
+        2,
+        0,
+        0
+      ],
+      [
+        "HAL_PCD_EP_Transmit",
+        128,
+        0,
+        0
+      ],
+      [
+        "HAL_PCD_EP_Receive",
+        0,
+        0,
+        0
+      ],
+      [
+        "W1C",
+        "0x40080b08",
+        8
+      ],
+      [
+        "HAL_PCD_EP_Abort",
+        0,
+        0,
+        1
+      ],
+      [
+        "W1C",
+        "0x40080b08",
+        3
+      ],
+      [
+        "HAL_PCD_EP_Close",
+        0,
+        0,
+        1
+      ],
+      [
+        "HAL_PCD_EP_Open",
+        0,
+        0,
+        1
+      ],
+      [
+        "HAL_PCD_EP_Transmit",
+        128,
+        0,
+        1
+      ],
+      [
+        "W1C",
+        "0x40080928",
+        1
+      ],
+      [
+        "W1C",
+        "0x40080908",
+        1
+      ],
+      [
+        "HAL_PCD_EP_Receive",
+        0,
+        0,
+        1
+      ]
+    ]
+  }
+]

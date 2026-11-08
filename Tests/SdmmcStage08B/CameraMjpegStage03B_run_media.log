@@ -1,0 +1,15 @@
+Traceback (most recent call last):
+  File "D:\32\STM32H7\h7_mac\Tests\CameraMjpegStage03B\run_media.py", line 22, in <module>
+    run(['D:/32/ARM/ARMCC/Bin/armlink.exe',obj,'--entry','Stage02_TestRun','--scatter',HERE/'test.sct','--no_scanlib','-o',axf])
+  File "D:\32\STM32H7\h7_mac\Tests\CameraMjpegStage03B\run_media.py", line 15, in run
+    if p.returncode:raise RuntimeError(commands[-1]['output'])
+                    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+RuntimeError: Error: L6218E: Undefined symbol CameraMjpegFifo_GetFrame (referred from media_test.o).
+Error: L6218E: Undefined symbol CameraMjpegFifo_GetStats (referred from media_test.o).
+Error: L6218E: Undefined symbol CameraMjpegFifo_HasLoan (referred from media_test.o).
+Error: L6218E: Undefined symbol CameraMjpegFifo_OnStopped (referred from media_test.o).
+Error: L6218E: Undefined symbol CameraMjpegFifo_Process (referred from media_test.o).
+Error: L6218E: Undefined symbol CameraMjpegFifo_ReleaseFrame (referred from media_test.o).
+Error: L6218E: Undefined symbol CameraMjpegFifo_Start (referred from media_test.o).
+Finished: 0 information, 0 warning and 7 error messages.
+

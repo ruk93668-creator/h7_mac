@@ -1,0 +1,12 @@
+Traceback (most recent call last):
+  File "D:\32\STM32H7\h7_mac\output\SdmmcStage08B\baseline_d0305de\Tests\CameraMjpegStage03B\run_native.py", line 23, in <module>
+    part=HERE/(args.name+'_'+source.stem+'.o');run(cc+['-c',source,'-o',part]);objects.append(part)
+                                               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "D:\32\STM32H7\h7_mac\output\SdmmcStage08B\baseline_d0305de\Tests\CameraMjpegStage03B\run_native.py", line 15, in run
+    if p.returncode:raise RuntimeError(commands[-1]['output'])
+                    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+RuntimeError: "D:\32\STM32H7\h7_mac\output\SdmmcStage08B\baseline_d0305de\Tests\CameraMjpegStage03B\native_test.c", line 6: Error:  #5: cannot open source input file "jpeg_fixture.inc": No such file or directory
+  #include "jpeg_fixture.inc"
+                             ^
+D:\32\STM32H7\h7_mac\output\SdmmcStage08B\baseline_d0305de\Tests\CameraMjpegStage03B\native_test.c: 0 warnings, 1 error
+

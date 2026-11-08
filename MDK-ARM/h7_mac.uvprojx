@@ -1328,6 +1328,12 @@
                 </FileArmAds>
               </FileOption>
             </File>
+            <File>
+              <FileName>sd_block_probe.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>../Tests/SdmmcStage08B/sd_block_probe.c</FilePath>
+              <FileOption><CommonProperty><IncludeInBuild>0</IncludeInBuild></CommonProperty></FileOption>
+            </File>
           </Files>
         </Group>
         <Group>
@@ -1858,6 +1864,18 @@
               <FileType>5</FileType>
               <FilePath>../CM7/Platform/usbd_conf.h</FilePath>
             </File>
+            <File>
+              <FileName>sd_block.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>../CM7/Platform/sd_block.c</FilePath>
+              <FileOption><CommonProperty><IncludeInBuild>0</IncludeInBuild></CommonProperty></FileOption>
+            </File>
+            <File>
+              <FileName>sd_block.h</FileName>
+              <FileType>5</FileType>
+              <FilePath>../CM7/Platform/sd_block.h</FilePath>
+              <FileOption><CommonProperty><IncludeInBuild>0</IncludeInBuild></CommonProperty></FileOption>
+            </File>
           </Files>
         </Group>
         <Group>
@@ -2157,6 +2175,12 @@
                   </Cads>
                 </FileArmAds>
               </FileOption>
+            </File>
+            <File>
+              <FileName>bsp_sdmmc_memory.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>../CM7/BSP/bsp_sdmmc_memory.c</FilePath>
+              <FileOption><CommonProperty><IncludeInBuild>0</IncludeInBuild></CommonProperty></FileOption>
             </File>
           </Files>
         </Group>
@@ -3731,6 +3755,11 @@
               <FileType>5</FileType>
               <FilePath>../CM7/Application/video_config.h</FilePath>
             </File>
+            <File>
+              <FileName>sd_block_probe.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>../Tests/SdmmcStage08B/sd_block_probe.c</FilePath>
+            </File>
           </Files>
         </Group>
         <Group>
@@ -3916,6 +3945,16 @@
               <FileType>5</FileType>
               <FilePath>../CM7/Platform/usbd_conf.h</FilePath>
             </File>
+            <File>
+              <FileName>sd_block.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>../CM7/Platform/sd_block.c</FilePath>
+            </File>
+            <File>
+              <FileName>sd_block.h</FileName>
+              <FileType>5</FileType>
+              <FilePath>../CM7/Platform/sd_block.h</FilePath>
+            </File>
           </Files>
         </Group>
         <Group>
@@ -3990,6 +4029,11 @@
               <FileName>bsp_usb_hal_config.h</FileName>
               <FileType>5</FileType>
               <FilePath>../CM7/BSP/bsp_usb_hal_config.h</FilePath>
+            </File>
+            <File>
+              <FileName>bsp_sdmmc_memory.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>../CM7/BSP/bsp_sdmmc_memory.c</FilePath>
             </File>
           </Files>
         </Group>

@@ -1,0 +1,32 @@
+[
+  {
+    "profile": "normal",
+    "command": "D:/32/UV4/UV4.exe -j0 -r D:\\32\\STM32H7\\h7_mac\\MDK-ARM\\h7_mac.uvprojx -t h7_mac_CM7 -o D:\\32\\STM32H7\\h7_mac\\Tests\\SdmmcStage08B\\normal_rebuild.log",
+    "exit_code": 0,
+    "errors": 0,
+    "warnings": 0,
+    "passed": true,
+    "axf_sha256": "01f2b2b72afb2bf4fc4b01ba9b95d6bf3d2f507100d0300ff673f3686e28c7c3",
+    "program_size": "Program Size: Code=99246 RO-data=2894 RW-data=1252 ZI-data=78164  "
+  },
+  {
+    "profile": "read_only",
+    "command": "D:/32/UV4/UV4.exe -j0 -r D:\\32\\STM32H7\\h7_mac\\MDK-ARM\\h7_mac.uvprojx -t h7_mac_CM7 -o D:\\32\\STM32H7\\h7_mac\\Tests\\SdmmcStage08B\\read_only_rebuild.log",
+    "exit_code": 0,
+    "errors": 0,
+    "warnings": 0,
+    "passed": true,
+    "axf_sha256": "1f5a7fdcd88842d657dbc9b620db932dfaf473b43bdd67b1b573e0163693416f",
+    "program_size": "Program Size: Code=114686 RO-data=2894 RW-data=1252 ZI-data=86676  "
+  },
+  {
+    "profile": "write_compile_only",
+    "command": "D:/32/UV4/UV4.exe -j0 -r D:\\32\\STM32H7\\h7_mac\\MDK-ARM\\h7_mac.uvprojx -t h7_mac_CM7 -o D:\\32\\STM32H7\\h7_mac\\Tests\\SdmmcStage08B\\write_compile_only_rebuild.log",
+    "exit_code": 0,
+    "errors": 0,
+    "warnings": 0,
+    "passed": true,
+    "axf_sha256": "80b9efccdd5590054ce9d1cc3d1144ce2ad14df97cbb9190be7e0407d7d8744f",
+    "program_size": "Program Size: Code=115142 RO-data=2910 RW-data=1252 ZI-data=90772  "
+  }
+]

@@ -79,4 +79,70 @@ SysResult_t BSP_SDMMC_GetDiagnostics(BspSdmmcDiagnostics_t *diagnostics);
 //释放本外设资源，失败时保留占用以便再次清理
 SysResult_t BSP_SDMMC_DeInit(void);
 
+//SDMMC专用AXI区域，32KiB一次最多64个逻辑扇区
+#define BSP_SDMMC_DMA_BASE   0x24000000UL
+#define BSP_SDMMC_DMA_BYTES  (32UL * 1024UL)
+#define BSP_SDMMC_BLOCK_SIZE 512UL
+#define BSP_SDMMC_DMA_BLOCKS (BSP_SDMMC_DMA_BYTES / BSP_SDMMC_BLOCK_SIZE)
+
+//等待适配只使用普通C类型，不把RTOS句柄传入BSP
+//wait允许虚假唤醒，BSP每次醒来重新检查硬件和统一截止时间
+//notify只由SDMMC IRQ调用，context必须在驱动使用期间始终有效
+typedef struct
+{
+    bool (*can_wait)(void *context);
+    SysResult_t (*wait)(void *context, uint32_t timeout_ms);
+    void (*notify)(void *context);
+    void *context;
+} BspSdmmcWaitOps_t;
+
+//记录最近一次块请求和清理结果，不把HAL READY当作完成证明
+typedef struct
+{
+    uint32_t active;//请求占用内部缓冲区，FAULT时可能继续保留
+    uint32_t fault;//必须显式恢复后才能再请求
+    uint32_t transfer_ready;//已经完成4-bit及速度模式配置
+    uint32_t high_speed;//成功执行High Speed切换，不等同卡宣传速度
+    uint32_t lba;//本次请求起始扇区
+    uint32_t requested_blocks;//本次请求总扇区数
+    uint32_t completed_blocks;//已经确认成功的批次扇区数
+    uint32_t write;//本次是否写入
+    uint32_t irq_count;//SDMMC中断次数
+    uint32_t lost_irq_polls;//任务检测到事件但未收到IRQ通知的次数
+    uint32_t status;//清理前STA原始值
+    uint32_t hal_error;//原始HAL错误，不被Abort覆盖
+    uint32_t elapsed_ms;//整次请求时间，含恢复
+    uint32_t dma_address;//实际内部缓冲区地址
+    uint32_t dma_bytes;//内部区域容量
+    SysResult_t result;//原始操作结果
+    SysResult_t recovery_result;//停止和恢复结果
+} BspSdmmcIoDiagnostics_t;
+
+//启动期配置专用MPU区域，不改变全局Cache开关
+SysResult_t BSP_SDMMC_MemoryInit(void);
+
+//验证链接地址和MPU属性，拒绝缓存属性或地址不匹配的缓冲区
+bool BSP_SDMMC_MemoryValid(void);
+
+//登记静态等待适配，只允许首次登记或相同适配重复登记
+SysResult_t BSP_SDMMC_SetWaitOps(const BspSdmmcWaitOps_t *ops);
+
+//低速识卡后切换4-bit，支持High Speed时使用40MHz，否则24MHz
+SysResult_t BSP_SDMMC_EnableTransferMode(void);
+
+//任务侧读取扇区，IDMA仅访问内部AXI区，成功后复制到调用者
+SysResult_t BSP_SDMMC_ReadBlocks(uint32_t lba, uint32_t count, void *buffer, uint32_t timeout_ms);
+
+//任务侧写入扇区，调用者数据先复制到内部AXI区，写超时不自动重试
+SysResult_t BSP_SDMMC_WriteBlocks(uint32_t lba, uint32_t count, const void *buffer, uint32_t timeout_ms);
+
+//获取最近一次块请求诊断，事务运行中返回BUSY避免读取半更新状态
+SysResult_t BSP_SDMMC_GetIoDiagnostics(BspSdmmcIoDiagnostics_t *diagnostics);
+
+//获取当前识卡会话的原始CID，仅用于卡身份校验
+SysResult_t BSP_SDMMC_GetIdentity(uint32_t cid[4]);
+
+//显式停止并重置SDMMC1，成功后仍需要重新识卡和配置速度
+SysResult_t BSP_SDMMC_Recover(void);
+
 #endif

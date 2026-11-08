@@ -1,0 +1,19 @@
+Traceback (most recent call last):
+  File "D:\32\STM32H7\h7_mac\Tests\CameraMjpegStage03B\run_native.py", line 32, in <module>
+    run(['D:/32/ARM/ARMCC/Bin/armlink.exe',*objects,'--entry','Stage02_TestRun','--scatter',HERE/'native.sct','--keep=*(.device_export)','--no_scanlib','-o',axf])
+  File "D:\32\STM32H7\h7_mac\Tests\CameraMjpegStage03B\run_native.py", line 15, in run
+    if p.returncode:raise RuntimeError(commands[-1]['output'])
+                    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+RuntimeError: Error: L6218E: Undefined symbol App_StatusPublishCamera (referred from native_test_native_test.o).
+Error: L6218E: Undefined symbol App_StatusPublishControl (referred from native_test_native_test.o).
+Error: L6218E: Undefined symbol App_StatusPublishUsb (referred from native_test_native_test.o).
+Error: L6218E: Undefined symbol CameraMjpegFifo_GetFrame (referred from native_test_native_test.o).
+Error: L6218E: Undefined symbol CameraMjpegFifo_GetStats (referred from native_test_native_test.o).
+Error: L6218E: Undefined symbol CameraMjpegFifo_HasLoan (referred from native_test_native_test.o).
+Error: L6218E: Undefined symbol CameraMjpegFifo_OnStopped (referred from native_test_native_test.o).
+Error: L6218E: Undefined symbol CameraMjpegFifo_Process (referred from native_test_native_test.o).
+Error: L6218E: Undefined symbol CameraMjpegFifo_ReleaseFrame (referred from native_test_native_test.o).
+Error: L6218E: Undefined symbol CameraMjpegFifo_Start (referred from native_test_native_test.o).
+Error: L6218E: Undefined symbol IpcTask_Create (referred from native_test_native_test.o).
+Finished: 0 information, 0 warning and 11 error messages.
+

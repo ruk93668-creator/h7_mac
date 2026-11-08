@@ -1,0 +1,40 @@
+{
+  "protected_source_count": 1208,
+  "unexpected_changed_sources": [],
+  "vendor_and_business_sha256": {
+    "Drivers/STM32H7xx_HAL_Driver/Src/stm32h7xx_hal_sd.c": "d6f236f701039bb9f5081247cd3c7b2b4d3842e4a8865f295bd6373c21c6537c",
+    "Drivers/STM32H7xx_HAL_Driver/Src/stm32h7xx_ll_sdmmc.c": "f2ec1f1593e1a381c39b0e9a72961c1d721e346271ed1c6bcdbea032d6eab91b",
+    "CM7/BSP/bsp_dcmi.c": "374342ce884c2a6f57a66b5ed2a38c1e805d0b08fbdbea90f46c0f6e91bb89d4",
+    "CM7/Media/Src/camera_mjpeg_fifo.c": "ed778908eaa3ec6765e00430f40aea6d00e456b92136cac9cb67daeb160595ba",
+    "CM7/Service/usb_uvc_class.c": "eb4952edbfeeb6c56be02b2d8505c8a9cff949f1d650ca908597affad5f9356e",
+    "CM7/Platform/FreeRTOSConfig.h": "1a7c241f132259cc408f1c98bbd0e27375e595df2b1f7b1906dbbcb04d340c9c"
+  },
+  "memory_maps": [
+    {
+      "profile": "normal",
+      "dma_address": "0x24000000",
+      "dma_bytes": 32768,
+      "dma_region": "Execution Region RW_SDMMC_DMA (Exec base: 0x24000000, Load base: 0x08018f00, Size: 0x00008000, Max: 0x00008000, ABSOLUTE, UNINIT)",
+      "dtcm_region": "Execution Region RW_IRAM1 (Exec base: 0x20000000, Load base: 0x08018f00, Size: 0x0000b4f8, Max: 0x00020000, ABSOLUTE, COMPRESSED[0x00000164])",
+      "passed": true
+    },
+    {
+      "profile": "read_only",
+      "dma_address": "0x24000000",
+      "dma_bytes": 32768,
+      "dma_region": "Execution Region RW_SDMMC_DMA (Exec base: 0x24000000, Load base: 0x0801cb50, Size: 0x00008000, Max: 0x00008000, ABSOLUTE, UNINIT)",
+      "dtcm_region": "Execution Region RW_IRAM1 (Exec base: 0x20000000, Load base: 0x0801cb50, Size: 0x0000d638, Max: 0x00020000, ABSOLUTE, COMPRESSED[0x00000168])",
+      "passed": true
+    },
+    {
+      "profile": "write_compile_only",
+      "dma_address": "0x24000000",
+      "dma_bytes": 32768,
+      "dma_region": "Execution Region RW_SDMMC_DMA (Exec base: 0x24000000, Load base: 0x0801cd28, Size: 0x00008000, Max: 0x00008000, ABSOLUTE, UNINIT)",
+      "dtcm_region": "Execution Region RW_IRAM1 (Exec base: 0x20000000, Load base: 0x0801cd28, Size: 0x0000e638, Max: 0x00020000, ABSOLUTE, COMPRESSED[0x00000164])",
+      "passed": true
+    }
+  ],
+  "main_sha": "cbc4c415b58619dce9f2c95dd5dc3f3a258fd405",
+  "stage08a_test_unchanged": true
+}

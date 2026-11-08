@@ -1,0 +1,11 @@
+Traceback (most recent call last):
+  File "D:\32\STM32H7\h7_mac\output\SdmmcStage08B\baseline_d0305de\Tests\CameraMjpegStage03B\run_media.py", line 21, in <module>
+    run(cc+['-c',HERE/(args.name+'.c'),'-o',obj])
+  File "D:\32\STM32H7\h7_mac\output\SdmmcStage08B\baseline_d0305de\Tests\CameraMjpegStage03B\run_media.py", line 15, in run
+    if p.returncode:raise RuntimeError(commands[-1]['output'])
+                    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+RuntimeError: "D:\32\STM32H7\h7_mac\output\SdmmcStage08B\baseline_d0305de\Tests\CameraMjpegStage03B\../CameraJpegStage03A/media_test.c", line 7: Error:  #5: cannot open source input file "synthetic_jpeg.inc": No such file or directory
+  #include "synthetic_jpeg.inc"
+                               ^
+D:\32\STM32H7\h7_mac\output\SdmmcStage08B\baseline_d0305de\Tests\CameraMjpegStage03B\media_test.c: 0 warnings, 1 error
+

@@ -1,0 +1,16 @@
+Error: L6218E: Undefined symbol CameraMjpegFifo_GetFrame (referred from stream_test.o).
+Error: L6218E: Undefined symbol CameraMjpegFifo_GetStats (referred from stream_test.o).
+Error: L6218E: Undefined symbol CameraMjpegFifo_HasLoan (referred from stream_test.o).
+Error: L6218E: Undefined symbol CameraMjpegFifo_OnStopped (referred from stream_test.o).
+Error: L6218E: Undefined symbol CameraMjpegFifo_Process (referred from stream_test.o).
+Error: L6218E: Undefined symbol CameraMjpegFifo_ReleaseFrame (referred from stream_test.o).
+Error: L6218E: Undefined symbol CameraMjpegFifo_Start (referred from stream_test.o).
+Finished: 0 information, 0 warning and 7 error messages.
+
+Traceback (most recent call last):
+  File "D:\32\STM32H7\h7_mac\Tests\CameraStreamState\run_tests.py", line 21, in <module>
+    run(['D:/32/ARM/ARMCC/Bin/armlink.exe',here/'stream_test.o','--entry','Stream_TestRun','--scatter',here/'test.sct','--no_scanlib','-o',here/'stream_test.axf'])
+  File "D:\32\STM32H7\h7_mac\Tests\CameraStreamState\run_tests.py", line 16, in run
+    if p.returncode:print(output);raise RuntimeError('compile/link failed')
+                                  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+RuntimeError: compile/link failed
