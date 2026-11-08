@@ -124,3 +124,29 @@ C组宏保留：APP_SD_BLOCK_TEST_ENABLED=1、APP_SD_BLOCK_STRESS_TEST_ENABLED=1
 当前正式CM7重新编译/链接通过、CM4增量检查通过，均0 Error、0 Warning；SD实际BSP/HAL测试556/556 PASS（原断言保留）。`python Tests/SdmmcStage08B/run_memory_audit.py --current` 检查当前正式AXF，不需重新生成已删除的多profile镜像。
 
 实板步骤：原h7_mac.uvprojx选择h7_mac_CM7，编译Download并完整断电重启；先不设置request，按原播放器参数观察一分钟Camera/USB FPS。只比较新的AXI C组与之前的DTCM C组结果。USB若恢复，则继续排查DTCM布局/潜在地址依赖；若未恢复，继续隔离新增代码布局。此实验同时改变链接布局和缓冲内存属性，单次恢复仍不能直接证明具体硬件机制。实际USB FPS待用户反馈，尚未确认根因，不合并main。
+
+## D组：保留C组链接，仅禁止创建SdTest（2026-11-08）
+
+当前CM7直接烧录配置：
+
+```text
+APP_SD_BLOCK_TEST_ENABLED=1
+APP_SD_BLOCK_STRESS_TEST_ENABLED=1
+APP_SD_BLOCK_WRITE_TEST_ENABLED=0
+APP_SDMMC_TEST_ENABLED=0
+APP_SD_BLOCK_D_GROUP_ENABLED=1
+```
+
+新增D组宏默认0，并要求配合只读压力配置。通过const volatile启动开关g_sd_block_d_group读取实际内存，D组在SdBlockTest_Prepare中只设置压力能力并返回，不调用xTaskCreateStatic。创建分支保留，编译器不能按常量折叠它，所以该分支引用的SdBlockTest_Task、请求分发、压力函数及其数据仍参与链接。不需要禁用链接器垃圾回收或添加全局keep，不引入额外任务/队列，不改生产BSP、USB、Camera或视频配置。
+
+D组仍保留4KiB任务栈和TCB的静态内存，但没有运行期测试任务。此组不能执行五分钟压力；设置request也无人处理，不应当作压力功能故障。
+
+软件验证：原556次SD测试保留；新增C/D各3场景×O0/O2共12次，合计568/568 PASS。验证D组零xTaskCreateStatic调用、零SD初始化/IDMA启动，预置request=5不执行；C组仍创建任务并保留原创建失败处理。编译保护19/19 PASS。正式CM7重新编译、CM4增量检查均0 Error、0 Warning。内存边界5/5 PASS，D组链接审计8/8 PASS。
+
+实际D组AXF包含SdBlockTest_Task、SdBlockTest_RunRequest、SdBlockTest_Stress、SdBlockTest_StressFinish、SdBlockTest_Read、SdBlockTest_Crc；s_stress_buffer=0x24010000、33288B，s_test_stack=4096B，s_test_tcb=76B、s_test_data=4096B均保留。O0/O2隔离C/D映像中，压力函数大小及静态资源地址/大小一致。审计命令为 `python Tests/SdmmcStage08B/run_d_group_audit.py`。
+
+正式AXF的RW数据使用压缩，不能直接将其文件字节当作RAM初值。审计从实际参与链接的sd_block_probe.o确认g_sd_block_d_group初值为1，并在正式AXF核对同名符号及保留资源；实际任务未创建由真实Prepare路径的Mock对照和下列实板Watch共同验证。
+
+实板：重新打开原h7_mac.uvprojx并确认D宏为1，Rebuild、Download、完整断电重启。确认g_sd_block_d_group=1，g_sd_block_test.enabled=0，g_sd_block_test.stress.enabled=1、active=0、attempted_rounds=0。不要设置request。用相同播放器参数运行一分钟，记录Camera/USB实际FPS，必要时再抓USB包对比帧内空槽。
+
+D恢复：支持测试任务参与或其交互影响，但不能立即归因于优先级；D仍16FPS：说明没有运行SdTest也能复现，继续查新增链接代码及EP1提交时序。D门控新增少量初始化代码与4B开关，不能声称新D固件与旧C固件字节完全相同。当前实际USB帧率尚待用户实板反馈，未合并main。内部符号地址随链接改变，旧Watch绝对地址不再适用。

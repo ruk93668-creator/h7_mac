@@ -10,6 +10,9 @@ volatile AppTasksDebug_t g_app_tasks_debug;
 static BaseType_t s_scheduler = taskSCHEDULER_RUNNING;
 static uint32_t s_queue_count, s_queue_create_fail, s_queue_waits, s_queue_gives;
 
+//仅在Mock中统计测试任务创建，不影响正式任务
+static uint32_t s_sd_test_task_creates, s_sd_test_task_fail;
+
 //比较测试数据，不链接宿主运行库
 int memcmp(const void *a,const void *b,size_t n)
 {
@@ -60,7 +63,9 @@ BaseType_t xTaskGetSchedulerState(void){return s_scheduler;}
 TaskHandle_t xTaskCreateStatic(TaskFunction_t task,const char *const name,const uint32_t depth,
     void *const arg,UBaseType_t priority,StackType_t *const stack,StaticTask_t *const tcb)
 {
-    (void)task;(void)name;(void)depth;(void)arg;(void)priority;(void)stack;return (TaskHandle_t)tcb;
+    (void)task;(void)name;(void)depth;(void)arg;(void)priority;(void)stack;
+    s_sd_test_task_creates++;
+    return s_sd_test_task_fail ? NULL : (TaskHandle_t)tcb;
 }
 void vTaskDelay(TickType_t ticks)
 {

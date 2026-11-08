@@ -1,0 +1,283 @@
+{
+  "summary": {
+    "total": 8,
+    "passed": 8
+  },
+  "checks": {
+    "d_group_flag_in_compiled_object": true,
+    "all_pressure_symbols": true,
+    "axi_buffer": true,
+    "test_stack_retained": true,
+    "O0_retained_functions": true,
+    "O0_retained_resources": true,
+    "O2_retained_functions": true,
+    "O2_retained_resources": true
+  },
+  "current": {
+    "symbols": {
+      "SdBlockTest_Crc": {
+        "address": 134297529,
+        "size": 54
+      },
+      "SdBlockTest_Prepare": {
+        "address": 134297589,
+        "size": 70
+      },
+      "SdBlockTest_Read": {
+        "address": 134297689,
+        "size": 222
+      },
+      "SdBlockTest_RunRequest": {
+        "address": 134297921,
+        "size": 72
+      },
+      "SdBlockTest_Stress": {
+        "address": 134297997,
+        "size": 616
+      },
+      "SdBlockTest_StressFinish": {
+        "address": 134298633,
+        "size": 128
+      },
+      "SdBlockTest_Task": {
+        "address": 134298765,
+        "size": 122
+      },
+      "s_test_tcb": {
+        "address": 536872608,
+        "size": 76
+      },
+      "s_test_stack": {
+        "address": 536872688,
+        "size": 4096
+      },
+      "s_test_data": {
+        "address": 536876784,
+        "size": 4096
+      },
+      "s_stress_buffer": {
+        "address": 604045312,
+        "size": 33288
+      },
+      "g_sd_block_d_group": {
+        "address": 536870968,
+        "size": 4
+      }
+    },
+    "flag_from_linked_object": 1,
+    "flag_source": "MDK-ARM/h7_mac_CM7/sd_block_probe.o: .data"
+  },
+  "comparisons": [
+    {
+      "optimization": "O0",
+      "c": {
+        "flag": 0,
+        "symbols": {
+          "SdBlockTest_Crc": {
+            "address": 134224237,
+            "size": 54
+          },
+          "SdBlockTest_Prepare": {
+            "address": 134224297,
+            "size": 70
+          },
+          "SdBlockTest_Read": {
+            "address": 134224397,
+            "size": 222
+          },
+          "SdBlockTest_RunRequest": {
+            "address": 134224629,
+            "size": 72
+          },
+          "SdBlockTest_Stress": {
+            "address": 134224705,
+            "size": 616
+          },
+          "SdBlockTest_StressFinish": {
+            "address": 134225341,
+            "size": 128
+          },
+          "SdBlockTest_Task": {
+            "address": 134225473,
+            "size": 122
+          },
+          "s_test_tcb": {
+            "address": 536942208,
+            "size": 76
+          },
+          "s_test_stack": {
+            "address": 536942288,
+            "size": 4096
+          },
+          "s_test_data": {
+            "address": 536946384,
+            "size": 4096
+          },
+          "s_stress_buffer": {
+            "address": 604045312,
+            "size": 33288
+          },
+          "g_sd_block_d_group": {
+            "address": 536871068,
+            "size": 4
+          }
+        }
+      },
+      "d": {
+        "flag": 1,
+        "symbols": {
+          "SdBlockTest_Crc": {
+            "address": 134224209,
+            "size": 54
+          },
+          "SdBlockTest_Prepare": {
+            "address": 134224269,
+            "size": 70
+          },
+          "SdBlockTest_Read": {
+            "address": 134224369,
+            "size": 222
+          },
+          "SdBlockTest_RunRequest": {
+            "address": 134224601,
+            "size": 72
+          },
+          "SdBlockTest_Stress": {
+            "address": 134224677,
+            "size": 616
+          },
+          "SdBlockTest_StressFinish": {
+            "address": 134225313,
+            "size": 128
+          },
+          "SdBlockTest_Task": {
+            "address": 134225445,
+            "size": 122
+          },
+          "s_test_tcb": {
+            "address": 536942208,
+            "size": 76
+          },
+          "s_test_stack": {
+            "address": 536942288,
+            "size": 4096
+          },
+          "s_test_data": {
+            "address": 536946384,
+            "size": 4096
+          },
+          "s_stress_buffer": {
+            "address": 604045312,
+            "size": 33288
+          },
+          "g_sd_block_d_group": {
+            "address": 536871068,
+            "size": 4
+          }
+        }
+      }
+    },
+    {
+      "optimization": "O2",
+      "c": {
+        "flag": 0,
+        "symbols": {
+          "SdBlockTest_Crc": {
+            "address": 134222801,
+            "size": 44
+          },
+          "SdBlockTest_Prepare": {
+            "address": 134222849,
+            "size": 66
+          },
+          "SdBlockTest_Read": {
+            "address": 134222937,
+            "size": 188
+          },
+          "SdBlockTest_Stress": {
+            "address": 134223133,
+            "size": 466
+          },
+          "SdBlockTest_StressFinish": {
+            "address": 134223621,
+            "size": 100
+          },
+          "SdBlockTest_Task": {
+            "address": 134223729,
+            "size": 168
+          },
+          "s_test_tcb": {
+            "address": 536942200,
+            "size": 76
+          },
+          "s_test_stack": {
+            "address": 536942280,
+            "size": 4096
+          },
+          "s_test_data": {
+            "address": 536946376,
+            "size": 4096
+          },
+          "s_stress_buffer": {
+            "address": 604045312,
+            "size": 33288
+          },
+          "g_sd_block_d_group": {
+            "address": 536870940,
+            "size": 4
+          }
+        }
+      },
+      "d": {
+        "flag": 1,
+        "symbols": {
+          "SdBlockTest_Crc": {
+            "address": 134222773,
+            "size": 44
+          },
+          "SdBlockTest_Prepare": {
+            "address": 134222821,
+            "size": 66
+          },
+          "SdBlockTest_Read": {
+            "address": 134222909,
+            "size": 188
+          },
+          "SdBlockTest_Stress": {
+            "address": 134223105,
+            "size": 466
+          },
+          "SdBlockTest_StressFinish": {
+            "address": 134223593,
+            "size": 100
+          },
+          "SdBlockTest_Task": {
+            "address": 134223701,
+            "size": 168
+          },
+          "s_test_tcb": {
+            "address": 536942200,
+            "size": 76
+          },
+          "s_test_stack": {
+            "address": 536942280,
+            "size": 4096
+          },
+          "s_test_data": {
+            "address": 536946376,
+            "size": 4096
+          },
+          "s_stress_buffer": {
+            "address": 604045312,
+            "size": 33288
+          },
+          "g_sd_block_d_group": {
+            "address": 536870940,
+            "size": 4
+          }
+        }
+      }
+    }
+  ],
+  "hardware_usb_fps_verified": false
+}

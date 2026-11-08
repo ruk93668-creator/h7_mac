@@ -18,6 +18,19 @@
 #define APP_SD_BLOCK_STRESS_TEST_ENABLED 0
 #endif
 
+//D组只禁止创建测试任务，压力代码和静态缓冲仍保留
+#ifndef APP_SD_BLOCK_D_GROUP_ENABLED
+#define APP_SD_BLOCK_D_GROUP_ENABLED 0
+#endif
+
+#if APP_SD_BLOCK_D_GROUP_ENABLED != 0 && APP_SD_BLOCK_D_GROUP_ENABLED != 1
+#error SD_block_d_group_switch_must_be_zero_or_one
+#endif
+
+#if APP_SD_BLOCK_D_GROUP_ENABLED && (!APP_SD_BLOCK_TEST_ENABLED || !APP_SD_BLOCK_STRESS_TEST_ENABLED || APP_SD_BLOCK_WRITE_TEST_ENABLED)
+#error SD_block_d_group_requires_read_stress_configuration
+#endif
+
 //最长五分钟、最多一万五千轮，测试可缩短但不能扩大边界
 #ifndef SD_BLOCK_STRESS_DURATION_MS
 #define SD_BLOCK_STRESS_DURATION_MS 300000UL
@@ -125,5 +138,11 @@ typedef struct
 
 //供Keil Watch观察，默认不开启扇区测试
 extern volatile SdBlockProbe_t g_sd_block_test;
+
+#if APP_SD_BLOCK_TEST_ENABLED
+
+//只读启动开关，D组为1；不是运行中创建或停止任务的控制接口
+extern const volatile uint32_t g_sd_block_d_group;
+#endif
 
 #endif

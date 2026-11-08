@@ -36,12 +36,15 @@ profiles=[('idma','Sdmmc08B_TestRun',names,[]),('adapter','SdBlockAdapter_TestRu
 stress_names=['65扇区64加1分批及轮数上限','到时停止且不补发','在途手动停止等待读完','第二轮CRC不一致立即退出','轮间手动停止','首次驱动错误不恢复重试','待恢复原数据拒绝压力','识卡失败退出','Tick回绕','本地计时停滞仍有轮数上限','缓冲区哨兵损坏','读取超时退出','Watch不能扩大边界','重复在途启动拒绝','卡容量不足拒绝','忙时命令不在退出后自动执行','重复运行重新建基准']
 profiles += [('stress','SdBlockStress_TestRun',stress_names,['-DAPP_SD_BLOCK_TEST_ENABLED=1','-DAPP_SD_BLOCK_STRESS_TEST_ENABLED=1','-DSD_BLOCK_STRESS_DURATION_MS=1000U','-DSD_BLOCK_STRESS_MAX_ROUNDS=3U']),('stress_off','SdBlockStress_TestRun',['关闭压力拒绝请求'],['-DAPP_SD_BLOCK_TEST_ENABLED=1'])]
 
+for group in [0,1]:
+ profiles.append(('dgroup'+str(group),'SdBlockDGroup_TestRun',['任务创建对照','预置请求不执行','任务创建失败对照'],['-DAPP_SD_BLOCK_TEST_ENABLED=1','-DAPP_SD_BLOCK_STRESS_TEST_ENABLED=1','-DAPP_SD_BLOCK_D_GROUP_ENABLED='+str(group)]))
+
 for mode,enabled,detect,low in [('off',0,1,0),('detect',1,1,0),('probe',1,0,0),('probe_low',1,0,1)]:
  profiles.append((mode,'Sdmmc_TestRun',legacy_names,['-DAPP_SDMMC_TEST_ENABLED='+str(enabled),'-DAPP_SDMMC_DETECT_ONLY='+str(detect),'-DBSP_SDMMC_DETECT_ACTIVE_LOW='+str(low)]))
 for profile,entry_name,case_names,defines in profiles:
  for opt in ['O0','O2']:
   obj=OUT/(profile+'_'+opt+'.o');hal=OUT/('hal_'+opt+'.o');axf=OUT/(profile+'_'+opt+'.axf')
-  run(base+defines+['-'+opt,'-c',HERE/('stress_test.c' if profile.startswith('stress') else 'adapter_test.c' if profile=='adapter' else 'idma_test.c'),'-o',obj])
+  run(base+defines+['-'+opt,'-c',HERE/('d_group_test.c' if profile.startswith('dgroup') else 'stress_test.c' if profile.startswith('stress') else 'adapter_test.c' if profile=='adapter' else 'idma_test.c'),'-o',obj])
   renames=['HAL_SD_Init','HAL_SD_DeInit','HAL_SD_GetCardInfo','HAL_SD_GetCardState','HAL_SD_GetState','HAL_SD_GetError','HAL_SD_ConfigWideBusOperation','HAL_SD_ConfigSpeedBusOperation']
   run(base+['-'+opt]+['-D'+s+'=Vendor_'+s for s in renames]+['-c',ROOT/'Drivers/STM32H7xx_HAL_Driver/Src/stm32h7xx_hal_sd.c','-o',hal])
   run([cc.with_name('armlink.exe'),obj,hal,'--entry',entry_name,'--scatter',HERE/'test.sct','-o',axf])

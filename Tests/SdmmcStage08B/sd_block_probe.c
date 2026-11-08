@@ -16,6 +16,9 @@ static SysResult_t SdBlockTest_Prepare(void);
 
 #if APP_SD_BLOCK_TEST_ENABLED
 
+//启动时读取内存中的开关，防止编译器删除任务分支及其压力资源引用
+const volatile uint32_t g_sd_block_d_group = APP_SD_BLOCK_D_GROUP_ENABLED;
+
 //保存验收任务控制块
 static StaticTask_t s_test_tcb;
 
@@ -84,10 +87,14 @@ static SysResult_t SdBlockTest_Prepare(void)
 #if APP_SD_BLOCK_TEST_ENABLED
     TaskHandle_t task;
 
+    //D组仍编译压力能力，但不创建任务，也不执行任何读卡或压力流程
+    g_sd_block_test.stress.enabled = APP_SD_BLOCK_STRESS_TEST_ENABLED;
+    if (g_sd_block_d_group != 0U)
+        return SYS_OK;
+
     //测试资源与业务任务计数隔离，不改变Camera、USB、IPC的创建顺序
     task = xTaskCreateStatic(SdBlockTest_Task, "SdTest", 1024U, NULL, 1U, s_test_stack, &s_test_tcb);
     g_sd_block_test.enabled = task != NULL ? 1U : 0U;
-    g_sd_block_test.stress.enabled = APP_SD_BLOCK_STRESS_TEST_ENABLED;
     if (task == NULL)
         g_sd_block_test.result = SYS_ERR_NO_RESOURCE;
 #endif

@@ -25,3 +25,5 @@
 当前08B分支按用户要求直接在h7_mac_CM7启用只读压力配置。打开原h7_mac.uvprojx，编译、Download即可；额外profile镜像已删除，旧报告中的专用镜像路径不再适用。完成验收后关闭测试宏。
 
 最新：压力验收后已按用户要求关闭CM7全部SD测试宏，用于同视频配置下的USB FPS对照复测。无需设置request，旧启用说明只作历史记录。
+
+当前为D组：BLOCK=1、STRESS=1、WRITE=0、APP_SD_BLOCK_D_GROUP_ENABLED=1；仅保留链接，不创建SdTest，不能执行request压力。D组链接审计：python Tests/SdmmcStage08B/run_d_group_audit.py。烧录后先观察USB FPS，不读写SD卡。
