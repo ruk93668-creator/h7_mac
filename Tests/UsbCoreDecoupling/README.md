@@ -1,3 +1,5 @@
+> 当前兼容集合已按用户要求移除过时注册项，数量及原因见 Tests/TestMaintenance/README.md。下文旧数量为历史记录。
+
 > 状态更新（2026-10-31）：Stage 4已通过204项回归及4项IRQ补充测试，两核完整重编0 Error/0 Warning，并以dbf3e9b合并推送main。下文为早期阶段设计记录，当前验收状态见[Stage 4报告](../UsbStage4Migration/verification_report.md)。迁移audit.py已归档，不属于日常测试入口。
 
 # USB 通用端点与生命周期验收

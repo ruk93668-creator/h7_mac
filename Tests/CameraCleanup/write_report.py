@@ -129,7 +129,7 @@ python Tests/DcmiCapture/run_tests.py
 python Tests/DcmiCapture/Init/run_tests.py
 python Tests/DcmiInit/Sdram/run_production.py
 python Tests/Ov5640Migration/run_cm4_regression.py
-python Tests/CameraSingleFrame/Camera/run_tests.py
+# 旧单帧专项入口已删除，使用当前兼容测试集合
 python Tests/CameraVisualization/test_view_frame.py
 ```
 

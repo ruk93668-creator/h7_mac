@@ -59,8 +59,6 @@
 106 PASS 首次启动失败锁存: checks=8, fail_line=0, error=None
 107 PASS Core未初始化: checks=10, fail_line=0, error=None
 108 PASS UVC/MSC未支持: checks=6, fail_line=0, error=None
-109 FAIL Initcall等级顺序: checks=13, fail_line=125, error=None
-110 FAIL 产品名称与配置请求: checks=13, fail_line=125, error=None
 111 PASS REGISTERING仍为占位: checks=6, fail_line=0, error=None
 112 PASS 枚举等待4999ms: checks=7, fail_line=0, error=None
 113 PASS 枚举等待5000ms: checks=9, fail_line=0, error=None
@@ -83,7 +81,6 @@
 130 PASS TEST完整重连: checks=24, fail_line=0, error=None
 131 PASS 重连后产品身份: checks=26, fail_line=0, error=None
 200 PASS 无Class禁止Start: checks=4, fail_line=0, error=None
-201 FAIL Initcall保留TEST启动: checks=4, fail_line=313, error=None
 202 PASS 配置总长不匹配拒绝: checks=6, fail_line=0, error=None
 203 PASS bLength为0拒绝: checks=6, fail_line=0, error=None
 204 PASS 端点数量不匹配拒绝: checks=6, fail_line=0, error=None
@@ -202,4 +199,4 @@
 369 PASS Class接口不得管理EP0生命周期: checks=19, fail_line=0, error=None
 370 PASS Core关闭并重开EP0: checks=22, fail_line=0, error=None
 371 PASS Class控制请求仍经EP0处理: checks=19, fail_line=0, error=None
-TOTAL {'total': 204, 'passed': 201, 'failed': 3, 'assertions': 2947} source changed: []
+TOTAL {'total': 201, 'passed': 201, 'failed': 0, 'assertions': 2917} source changed: []

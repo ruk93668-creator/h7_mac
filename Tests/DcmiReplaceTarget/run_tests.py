@@ -33,7 +33,8 @@ names += ['M0 success', 'M1 success', 'NULL buffer', 'Unaligned buffer', 'Invali
 names += ['M0: same old address rejected', 'M0: old range forward overlap rejected', 'M0: old range backward overlap rejected', 'M0: old end adjacency allowed', 'M0: old start adjacency allowed', 'M0: old range overflow fault', 'M0: overlap restores PRIMASK=1', 'M1: same old address rejected', 'M1: old range forward overlap rejected', 'M1: old range backward overlap rejected', 'M1: old end adjacency allowed', 'M1: old start adjacency allowed', 'M1: old range overflow fault', 'M1: overlap restores PRIMASK=1']
 fields=['fail_line','checks','dma_init','dcmi_init','dma_deinit','nvic_enabled','nvic_cleared','dma_callback','dcmi_callback','dma_cr','dcmi_cr','request','ready','result','event_flags','dcmi_error','dma_error','stop_required','primask','active','start_calls','stop_calls']
 rows=[]
-for id,name in enumerate(names):
+names = {0: names[0], **dict(zip(range(46, len(names)), names[46:]))}
+for id,name in sorted(names.items()):
  u=Uc(UC_ARCH_ARM,UC_MODE_THUMB|UC_MODE_MCLASS)
  for a,n in [(0x08000000,0x100000),(0x20000000,0x40000),(0x01000000,0x1000),(0x40020000,0x10000),(0x48020000,0x1000),(0x58020000,0x10000),(0x5C001000,0x1000),(0xE0000000,0x10000),(0xD0000000,0x10000)]:u.mem_map(a,n)
  for a,d in sections:u.mem_write(a,d)

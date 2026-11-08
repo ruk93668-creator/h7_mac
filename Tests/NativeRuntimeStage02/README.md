@@ -1,3 +1,5 @@
+> 维护说明（2026-11-08）：本目录中已确认不兼容的旧测试入口已按用户要求删除；其余公共桩、共享C夹具及历史报告保留。下文为历史说明，当前可运行集合以 Tests/SdmmcStage08B/run_regressions.py 为准。删除不代表旧失败被修复。
+
 # Native Runtime 阶段02验收
 
 基线：`4d463ba`；分支：`codex/cm7-native-runtime-stage02`。正式源码已完成Camera→Media→跨任务租借→USB UVC接入。**本轮只有软件验证，未验证实板视频或实际25 FPS。**

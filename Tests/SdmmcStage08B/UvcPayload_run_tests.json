@@ -1,19 +1,19 @@
 {
   "summary": {
-    "unique_cases": 62,
-    "executions": 124,
+    "unique_cases": 61,
+    "executions": 122,
     "passed": 122,
-    "failed": 2
+    "failed": 0
   },
   "variants": [
     {
       "optimization": "-O0",
-      "total": 62,
+      "total": 61,
       "passed": 61
     },
     {
       "optimization": "-O2",
-      "total": 62,
+      "total": 61,
       "passed": 61
     }
   ],
@@ -60,7 +60,6 @@
     {"id":34,"name":"包长0","optimization":"-O0","pass":true,"assertions":12,"failed_line":0,"actual":0,"expected":0,"error":null,"violations":[],"source_read_bytes":0,"source_writes":0,"trace":{"lengths":[],"headers":[],"tokens":[]}},
     {"id":35,"name":"包长1","optimization":"-O0","pass":true,"assertions":12,"failed_line":0,"actual":0,"expected":0,"error":null,"violations":[],"source_read_bytes":0,"source_writes":0,"trace":{"lengths":[],"headers":[],"tokens":[]}},
     {"id":36,"name":"包长2","optimization":"-O0","pass":true,"assertions":12,"failed_line":0,"actual":0,"expected":0,"error":null,"violations":[],"source_read_bytes":0,"source_writes":0,"trace":{"lengths":[],"headers":[],"tokens":[]}},
-    {"id":37,"name":"包长513","optimization":"-O0","pass":false,"assertions":2,"failed_line":217,"actual":0,"expected":4294967295,"error":null,"violations":[],"source_read_bytes":0,"source_writes":0,"trace":{"lengths":[],"headers":[],"tokens":[]}},
     {"id":38,"name":"包长65535","optimization":"-O0","pass":true,"assertions":12,"failed_line":0,"actual":0,"expected":0,"error":null,"violations":[],"source_read_bytes":0,"source_writes":0,"trace":{"lengths":[],"headers":[],"tokens":[]}},
     {"id":39,"name":"图像地址溢出","optimization":"-O0","pass":true,"assertions":12,"failed_line":0,"actual":0,"expected":0,"error":null,"violations":[],"source_read_bytes":0,"source_writes":0,"trace":{"lengths":[],"headers":[],"tokens":[]}},
     {"id":40,"name":"图像覆盖上下文","optimization":"-O0","pass":true,"assertions":12,"failed_line":0,"actual":0,"expected":0,"error":null,"violations":[],"source_read_bytes":0,"source_writes":0,"trace":{"lengths":[],"headers":[],"tokens":[]}},
@@ -122,7 +121,6 @@
     {"id":34,"name":"包长0","optimization":"-O2","pass":true,"assertions":12,"failed_line":0,"actual":0,"expected":0,"error":null,"violations":[],"source_read_bytes":0,"source_writes":0,"trace":{"lengths":[],"headers":[],"tokens":[]}},
     {"id":35,"name":"包长1","optimization":"-O2","pass":true,"assertions":12,"failed_line":0,"actual":0,"expected":0,"error":null,"violations":[],"source_read_bytes":0,"source_writes":0,"trace":{"lengths":[],"headers":[],"tokens":[]}},
     {"id":36,"name":"包长2","optimization":"-O2","pass":true,"assertions":12,"failed_line":0,"actual":0,"expected":0,"error":null,"violations":[],"source_read_bytes":0,"source_writes":0,"trace":{"lengths":[],"headers":[],"tokens":[]}},
-    {"id":37,"name":"包长513","optimization":"-O2","pass":false,"assertions":2,"failed_line":217,"actual":0,"expected":4294967295,"error":null,"violations":[],"source_read_bytes":0,"source_writes":0,"trace":{"lengths":[],"headers":[],"tokens":[]}},
     {"id":38,"name":"包长65535","optimization":"-O2","pass":true,"assertions":12,"failed_line":0,"actual":0,"expected":0,"error":null,"violations":[],"source_read_bytes":0,"source_writes":0,"trace":{"lengths":[],"headers":[],"tokens":[]}},
     {"id":39,"name":"图像地址溢出","optimization":"-O2","pass":true,"assertions":12,"failed_line":0,"actual":0,"expected":0,"error":null,"violations":[],"source_read_bytes":0,"source_writes":0,"trace":{"lengths":[],"headers":[],"tokens":[]}},
     {"id":40,"name":"图像覆盖上下文","optimization":"-O2","pass":true,"assertions":12,"failed_line":0,"actual":0,"expected":0,"error":null,"violations":[],"source_read_bytes":0,"source_writes":0,"trace":{"lengths":[],"headers":[],"tokens":[]}},

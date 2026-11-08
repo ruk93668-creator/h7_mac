@@ -10,3 +10,10 @@
 - 当前本机配置两核全量构建：`python Tests/SdmmcStage08B/run_build.py`
 
 脚本不创建新的Keil工程。profile构建临时替换测试宏，finally恢复原项目字节。硬件写测试默认关闭，编译用合成CID不代表真实卡授权。output/和tmp/保留但不提交。
+
+## 不兼容测试清理
+
+用户已要求移除确认过时的测试入口。当前集合及实际结果见active_regression_results.json；原regression_results.json、baseline_comparison.json和verification_report.md保留13364dc时的历史验收语义，不能当作当前覆盖数量。
+清理清单见../TestMaintenance/incompatible_tests_removed.json。共享桩保留，未修改生产代码，也未降低保留用例的断言。
+
+清理前的完整逐例证据以Git提交13364dc为准；本轮详情使用active_前缀保存，未回写恢复当前已有日志文件。

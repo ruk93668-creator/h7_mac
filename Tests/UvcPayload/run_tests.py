@@ -16,22 +16,70 @@ from unicorn.arm_const import UC_ARM_REG_SP, UC_ARM_REG_LR, UC_ARM_REG_R0, UC_AR
 from elftools.elf.elffile import ELFFile
 
 ARM = Path("D:/32/ARM/ARMCC/Bin")
-NAMES = [
-    "38400B准确76包", "连续两帧FID交替", "1B帧", "509B帧", "510B整包帧", "511B跨包帧",
-    "1020B恰好两整包", "1021B末包3字节", "最小3B包长", "511B最大包长", "4B包长", "非对齐输入",
-    "重复Build不重建不推进", "重复完成无待确认包", "重复旧完成不能推进下一包", "错误与零Token",
-    "末包构造不能提前翻FID", "构包前取消", "待确认取消保留引用", "Abort确认后释放取消帧",
-    "Cancel与成功完成交错", "包间取消切换帧边界", "重复空闲取消", "重复待确认取消", "未请求取消禁止Abort",
-    "错误Abort Token不能释放", "取消后旧完成不能命中新帧", "活动帧Reset拒绝", "待确认包Reset拒绝",
-    "取消等待时Reset拒绝", "空闲Reset保留Token", "Reset后旧完成不能命中新包", "零帧长", "空图像指针",
-    "包长0", "包长1", "包长2", "包长513", "包长65535", "图像地址溢出", "图像覆盖上下文",
-    "图像覆盖内部包", "空输出视图", "输出视图覆盖上下文", "输出视图覆盖只读帧", "未开始帧禁止构包",
-    "无待确认包禁止完成", "Init空指针", "其他API空对象", "未初始化对象", "重复Init空闲对象",
-    "重复Init不能丢待确认所有权", "最后有效Token后拒绝回绕", "Token耗尽无状态推进", "独立实例互不影响",
-    "输入只读且末端边界", "取消等待禁止Build且不写输出", "PIO尾部补齐不越界", "取消末包不重复翻FID",
-    "Start不能覆盖活动状态", "损坏偏移保护", "损坏待确认长度保护",
-]
-assert len(NAMES) == 62
+NAMES = {
+    0: '38400B准确76包',
+    1: '连续两帧FID交替',
+    2: '1B帧',
+    3: '509B帧',
+    4: '510B整包帧',
+    5: '511B跨包帧',
+    6: '1020B恰好两整包',
+    7: '1021B末包3字节',
+    8: '最小3B包长',
+    9: '511B最大包长',
+    10: '4B包长',
+    11: '非对齐输入',
+    12: '重复Build不重建不推进',
+    13: '重复完成无待确认包',
+    14: '重复旧完成不能推进下一包',
+    15: '错误与零Token',
+    16: '末包构造不能提前翻FID',
+    17: '构包前取消',
+    18: '待确认取消保留引用',
+    19: 'Abort确认后释放取消帧',
+    20: 'Cancel与成功完成交错',
+    21: '包间取消切换帧边界',
+    22: '重复空闲取消',
+    23: '重复待确认取消',
+    24: '未请求取消禁止Abort',
+    25: '错误Abort Token不能释放',
+    26: '取消后旧完成不能命中新帧',
+    27: '活动帧Reset拒绝',
+    28: '待确认包Reset拒绝',
+    29: '取消等待时Reset拒绝',
+    30: '空闲Reset保留Token',
+    31: 'Reset后旧完成不能命中新包',
+    32: '零帧长',
+    33: '空图像指针',
+    34: '包长0',
+    35: '包长1',
+    36: '包长2',
+    38: '包长65535',
+    39: '图像地址溢出',
+    40: '图像覆盖上下文',
+    41: '图像覆盖内部包',
+    42: '空输出视图',
+    43: '输出视图覆盖上下文',
+    44: '输出视图覆盖只读帧',
+    45: '未开始帧禁止构包',
+    46: '无待确认包禁止完成',
+    47: 'Init空指针',
+    48: '其他API空对象',
+    49: '未初始化对象',
+    50: '重复Init空闲对象',
+    51: '重复Init不能丢待确认所有权',
+    52: '最后有效Token后拒绝回绕',
+    53: 'Token耗尽无状态推进',
+    54: '独立实例互不影响',
+    55: '输入只读且末端边界',
+    56: '取消等待禁止Build且不写输出',
+    57: 'PIO尾部补齐不越界',
+    58: '取消末包不重复翻FID',
+    59: 'Start不能覆盖活动状态',
+    60: '损坏偏移保护',
+    61: '损坏待确认长度保护',
+}
+assert len(NAMES) == 61
 SOURCES = [ROOT / "CM7/Service/usb_uvc_payload.c", ROOT / "CM7/Service/usb_uvc_payload.h"]
 before = {str(p.relative_to(ROOT)): hashlib.sha256(p.read_bytes()).hexdigest() for p in SOURCES}
 commands = []
@@ -64,7 +112,7 @@ for optimization in ["-O0", "-O2"]:
         sections = [(s["sh_addr"], s.data()) for s in elf.iter_sections()
                     if s["sh_flags"] & 2 and s["sh_type"] == "SHT_PROGBITS" and s["sh_size"]]
     rows = []
-    for case_id, name in enumerate(NAMES):
+    for case_id, name in sorted(NAMES.items()):
         uc = Uc(UC_ARCH_ARM, UC_MODE_THUMB | UC_MODE_MCLASS)
         for address, size in [(0x08000000, 0x100000), (0x20000000, 0x40000),
                               (0x30000000, 0x20000), (0x01000000, 0x1000)]:

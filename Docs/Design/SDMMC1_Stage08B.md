@@ -1,3 +1,5 @@
+> 后续维护：用户已批准删除不兼容测试，见 Tests/TestMaintenance/incompatible_tests_removed.json。本文原回归数量是提交13364dc时的历史结果；当前集合另见active_regression_results.json，删除项不计为PASS。
+
 # 阶段08B：SDMMC1 IDMA块设备设计与验收
 
 日期：2026-11-08。基线：codex/stage08a3-sdmmc1@d0305de（包含1f98b9c及已实板验证的内部下拉、高有效插卡修复）。开发分支：codex/stage08b-sdmmc-idma。未合并main。

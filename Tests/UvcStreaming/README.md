@@ -1,3 +1,5 @@
+> 维护说明（2026-11-08）：本目录中已确认不兼容的旧测试入口已按用户要求删除；其余公共桩、共享C夹具及历史报告保留。下文为历史说明，当前可运行集合以 Tests/SdmmcStage08B/run_regressions.py 为准。删除不代表旧失败被修复。
+
 # UVC-09B：EP1 ISO IN异步调度验收
 
 基线：`18f30d243f532ddca913297f92a90a1ecdc852c4`（UVC-09A）。分支：`codex/uvc-09b-stream`。main与PR #1保持不变。新PR以09A分支为base形成堆叠审核，不自动合并任何分支。

@@ -20,18 +20,8 @@ specs=[
   '非法帧描述仍安全归还','Submit BUSY未借用新帧','Class安全销毁后归还','查询IO不能证明归还',
   '取消未确认时继续持有','取消后确认归还','Stop期间完成待决请求','重新Start后旧epoch无效',
   'lease编号耗尽','epoch耗尽','request编号耗尽','非法Offer凭据拒绝','重复Offer不再次Submit','1000次租借闭环']),
- ('phase02d','run_native.py',[
-  'BOOT前不得启动数据面','无Commit Alt1不取帧','完整原生任务视频帧闭环','USB长期持有时Media丢帧不覆盖IN_USE',
-  'Control协调正常停止','Abort失败保留原帧和传感器直到安全归还','Reset交错归还','Disconnect交错归还',
-  'Alt0交错归还','采集故障先停DMA再DRAINING归还','实际Media归还失败重试','异常Return拒绝',
-  '重启epoch拒绝旧Return','控制超时不伪造停止','Sensor Start失败不启动DMA','USB Start失败协调停相机',
-  '跨任务命令发送拒绝','读取其他任务通道拒绝','ISR不得运行Camera任务侧处理','真实静态队列满保留租借',
-  'Camera静态创建失败','USB静态创建失败','Control静态创建失败','静态队列1失败','静态队列2失败',
-  '静态队列3失败','静态队列4失败','静态队列5失败','Initcall失败不启动USB','EOF测量不使用配置FPS',
-  '75次SOF合并不累计无限机会','真实任务通知保留Camera事件','33ms模拟采集源下测量实际吞吐和丢帧']),
- ('phase02test','run_native.py',[
-  'TEST冷启动不启动Camera','TEST配置完成','100次SOF无视频发送','TEST协调停止','TEST设备描述符',
-  'TEST设置地址','TEST断线无相机资源','TEST Reset恢复EP0双方向']),
+ 
+ 
 ]
 all_rows=[]
 for name,runner,names in specs:

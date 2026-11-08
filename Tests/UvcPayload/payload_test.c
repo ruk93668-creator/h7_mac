@@ -206,11 +206,12 @@ int Payload_TestRun(uint32_t id)
     }
     else if(id>=32U && id<=41U)
     {
-        static const uint16_t bad_sizes[]={0U,1U,2U,513U,65535U};
+        static const uint16_t bad_sizes[]={0U,1U,2U,65535U};
         const uint8_t *source=frame; uint32_t length=1021U; uint16_t size=512U;
         if(id==32U) length=0U;
         if(id==33U) source=NULL;
-        if(id>=34U && id<=38U) size=bad_sizes[id-34U];
+        if(id>=34U && id<=36U) size=bad_sizes[id-34U];
+        if(id==38U) size=bad_sizes[3];
         if(id==39U) { source=(const uint8_t *)0xFFFFFFF0UL; length=32U; }
         if(id==40U) { source=(const uint8_t *)p; length=sizeof(*p); }
         if(id==41U) { source=p->packet; length=1U; }

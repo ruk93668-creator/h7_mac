@@ -1,3 +1,5 @@
+> 当前兼容集合已按用户要求移除过时注册项，数量及原因见 Tests/TestMaintenance/README.md。下文旧数量为历史记录。
+
 # UVC-09A：独立UVC Payload分包器
 
 基线：`11f2ac93ee9dc08afa28b48b6b3cbfb395fc3997`。开发分支：`codex/uvc-09a-payload`。独立工作树：`C:\Users\29062\.codex\worktrees\uvc-09a\h7_mac`。完成检查后Commit/Push并提交审核，禁止直接修改或合并main。

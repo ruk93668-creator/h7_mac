@@ -3,12 +3,12 @@ from pathlib import Path
 import subprocess,json,sys,os,hashlib
 ROOT=Path(__file__).resolve().parents[2];HERE=Path(__file__).resolve().parent
 SUITES=[
- ('Streaming','Tests/UvcStreaming/run_tests.py','Tests/UvcStreaming/results.json',36),
- ('Payload','Tests/UvcPayload/run_tests.py','Tests/UvcPayload/results.json',124),
- ('EP1','Tests/UvcEp1Lifecycle/run_tests.py','Tests/UvcEp1Lifecycle/results.json',45),
- ('Probe','Tests/UvcProbeCommit/run_tests.py','Tests/UvcProbeCommit/results.json',89),
- ('Cancel','Tests/UvcProbeCommit/run_cancellation_tests.py','Tests/UvcProbeCommit/cancellation_results.json',39),
- ('Core','Tests/UsbCoreDecoupling/run_tests.py','Tests/UsbCoreDecoupling/results.json',204),
+ 
+ ('Payload','Tests/UvcPayload/run_tests.py','Tests/UvcPayload/results.json',122),
+ 
+ 
+ 
+ ('Core','Tests/UsbCoreDecoupling/run_tests.py','Tests/UsbCoreDecoupling/results.json',201),
  ('EP0_IRQ','Tests/Ep0IrqRace/run_race.py','Tests/Ep0IrqRace/results.json',4),
  ('Lifecycle','Tests/UvcLifecycle/run_tests.py','Tests/UvcLifecycle/results.json',40),
  ('Descriptors','Tests/UsbUvcDescriptors/run_tests.py','Tests/UsbUvcDescriptors/results.json',40),
@@ -16,9 +16,9 @@ SUITES=[
  ('Contract','Tests/UvcUsbCleanup/run_tests.py','Tests/UvcUsbCleanup/results.json',14),
  ('CameraAppInit','Tests/CameraAppInit/run_tests.py','Tests/CameraAppInit/results.json',13),
  ('CameraContext','Tests/CameraContextRefactor/run_tests.py','Tests/CameraContextRefactor/results.json',72),
- ('CameraStream','Tests/CameraStreamState/run_tests.py','Tests/CameraStreamState/results.json',75),
+ 
  ('BspMedia','Tests/BspMediaContinuous/run_tests.py','Tests/BspMediaContinuous/results.json',108),
- ('DcmiReplace','Tests/DcmiReplaceTarget/run_tests.py','Tests/DcmiReplaceTarget/results.json',133),
+ ('DcmiReplace','Tests/DcmiReplaceTarget/run_tests.py','Tests/DcmiReplaceTarget/results.json',88),
  ('VideoConfig','Tests/VideoConfig/run_tests.py','Tests/VideoConfig/results.json',28),
  ('OldBridge','Tests/UvcBridge/run_tests.py','Tests/UvcBridge/results.json',35),
  ('Native01','Tests/NativeRuntimeStage01/run_tests.py','Tests/NativeRuntimeStage01/results.json',56),

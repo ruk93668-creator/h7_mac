@@ -1,3 +1,5 @@
+> 当前兼容集合已按用户要求移除过时注册项，数量及原因见 Tests/TestMaintenance/README.md。下文旧数量为历史记录。
+
 # BSP_DCMI_ReplaceTarget验收
 
 最新补充：旧目标缓冲区禁止同址或部分重叠，当前133/133通过，两核增量构建均0 Error、0 Warning。详见[补充验收](old_overlap_report.md)。以下保留初次实现验收记录。

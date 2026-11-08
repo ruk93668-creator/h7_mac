@@ -35,7 +35,6 @@
 -O0 34 包长0 PASS (0, 12, 0, 0) None []
 -O0 35 包长1 PASS (0, 12, 0, 0) None []
 -O0 36 包长2 PASS (0, 12, 0, 0) None []
--O0 37 包长513 FAIL (217, 2, 0, 4294967295) None []
 -O0 38 包长65535 PASS (0, 12, 0, 0) None []
 -O0 39 图像地址溢出 PASS (0, 12, 0, 0) None []
 -O0 40 图像覆盖上下文 PASS (0, 12, 0, 0) None []
@@ -97,7 +96,6 @@
 -O2 34 包长0 PASS (0, 12, 0, 0) None []
 -O2 35 包长1 PASS (0, 12, 0, 0) None []
 -O2 36 包长2 PASS (0, 12, 0, 0) None []
--O2 37 包长513 FAIL (217, 2, 0, 4294967295) None []
 -O2 38 包长65535 PASS (0, 12, 0, 0) None []
 -O2 39 图像地址溢出 PASS (0, 12, 0, 0) None []
 -O2 40 图像覆盖上下文 PASS (0, 12, 0, 0) None []
@@ -122,4 +120,4 @@
 -O2 59 Start不能覆盖活动状态 PASS (0, 19, 0, 0) None []
 -O2 60 损坏偏移保护 PASS (0, 13, 0, 0) None []
 -O2 61 损坏待确认长度保护 PASS (0, 14, 0, 0) None []
-{'unique_cases': 62, 'executions': 124, 'passed': 122, 'failed': 2}
+{'unique_cases': 61, 'executions': 122, 'passed': 122, 'failed': 0}

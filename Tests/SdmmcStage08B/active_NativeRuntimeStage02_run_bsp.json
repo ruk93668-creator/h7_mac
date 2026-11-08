@@ -1,0 +1,17 @@
+{
+  "summary": {
+    "total": 7,
+    "passed": 7,
+    "failed": 0
+  },
+  "hardware_verified": false,
+  "cases": [
+    {"id":0,"pass":true,"failure_line":0,"error":null},
+    {"id":1,"pass":true,"failure_line":0,"error":null},
+    {"id":2,"pass":true,"failure_line":0,"error":null},
+    {"id":3,"pass":true,"failure_line":0,"error":null},
+    {"id":4,"pass":true,"failure_line":0,"error":null},
+    {"id":5,"pass":true,"failure_line":0,"error":null},
+    {"id":6,"pass":true,"failure_line":0,"error":null}
+  ]
+}

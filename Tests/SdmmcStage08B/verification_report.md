@@ -1,3 +1,5 @@
+> 后续维护：用户已批准删除不兼容测试，见 Tests/TestMaintenance/incompatible_tests_removed.json。本文原回归数量是提交13364dc时的历史结果；当前集合另见active_regression_results.json，删除项不计为PASS。
+
 # 阶段08B 验收报告
 
 结论：08B专项软件检查通过；历史专项没有新增退化，但全仓历史回归并非全绿。40MHz实板只读、真实写入及并行性能尚未验证。

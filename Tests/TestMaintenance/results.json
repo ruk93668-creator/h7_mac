@@ -1,0 +1,12 @@
+{
+  "retained_suites": 14,
+  "retained_executions": 1899,
+  "passed": 1899,
+  "failed": 0,
+  "sdmmc_executions": 520,
+  "write_policy_checks": 7,
+  "production_modified": false,
+  "full_keil_build_rerun": false,
+  "reason_no_rebuild": "Only test registry/entry/fixture and documentation cleanup; firmware source and project unchanged.",
+  "coverage_reduced_by_user_request": true
+}

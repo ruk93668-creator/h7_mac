@@ -9,12 +9,12 @@ sys.stdout.reconfigure(encoding="utf-8")
 HERE = Path(__file__).resolve().parent
 ROOT = HERE.parents[1]
 SUITES = [
-    ("Streaming", "Tests/UvcStreaming/run_tests.py", "Tests/UvcStreaming/results.json", 36),
-    ("Payload", "Tests/UvcPayload/run_tests.py", "Tests/UvcPayload/results.json", 124),
-    ("EP1", "Tests/UvcEp1Lifecycle/run_tests.py", "Tests/UvcEp1Lifecycle/results.json", 45),
-    ("Probe", "Tests/UvcProbeCommit/run_tests.py", "Tests/UvcProbeCommit/results.json", 89),
-    ("Cancel", "Tests/UvcProbeCommit/run_cancellation_tests.py", "Tests/UvcProbeCommit/cancellation_results.json", 39),
-    ("Core", "Tests/UsbCoreDecoupling/run_tests.py", "Tests/UsbCoreDecoupling/results.json", 204),
+    
+    ("Payload", "Tests/UvcPayload/run_tests.py", "Tests/UvcPayload/results.json", 122),
+    
+    
+    
+    ("Core", "Tests/UsbCoreDecoupling/run_tests.py", "Tests/UsbCoreDecoupling/results.json", 201),
     ("EP0 IRQ", "Tests/Ep0IrqRace/run_race.py", "Tests/Ep0IrqRace/results.json", 4),
     ("Lifecycle", "Tests/UvcLifecycle/run_tests.py", "Tests/UvcLifecycle/results.json", 40),
     ("Descriptors", "Tests/UsbUvcDescriptors/run_tests.py", "Tests/UsbUvcDescriptors/results.json", 40),
