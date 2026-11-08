@@ -1,0 +1,39 @@
+{
+  "checks": {
+    "trace_buffer": true,
+    "metadata_size": true,
+    "metadata_dtcm": true,
+    "sd_buffer_unchanged": true,
+    "idma_unchanged": true,
+    "old_c_sd_block_probe.c": true,
+    "old_c_sd_block_probe.h": true,
+    "only_trace_blocks_bsp_usb.c": true,
+    "only_trace_blocks_usb_uvc_class.c": true,
+    "only_trace_blocks_usb_task.c": true,
+    "hal_ll_core_unchanged": true
+  },
+  "summary": {
+    "total": 11,
+    "passed": 11
+  },
+  "symbols": {
+    "s_usb_iso_records": {
+      "address": "0x24020000",
+      "size": 24576
+    },
+    "g_usb_iso_timing": {
+      "address": "0x200026e8",
+      "size": 64
+    },
+    "s_stress_buffer": {
+      "address": "0x24010000",
+      "size": 33288
+    },
+    "g_sdmmc_dma_buffer": {
+      "address": "0x24000000",
+      "size": 32768
+    }
+  },
+  "axf_sha256": "ef4915858e51404d37a50f195fe42244e2ddf2919a54d35870468a867e48ccfd",
+  "hardware_timing_verified": false
+}

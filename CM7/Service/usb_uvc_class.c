@@ -1,5 +1,9 @@
 //UVC协议与单帧异步调度，不采集图像、不管理SDRAM
 #include "usb_uvc.h"
+
+#if defined(APP_USB_ISO_TIMING_TEST_ENABLED) && APP_USB_ISO_TIMING_TEST_ENABLED
+#include "usb_iso_timing.h"
+#endif
 #include "usb_uvc_desc.h"
 #include "usb_device.h"
 #include "usb_uvc_payload.h"
@@ -404,6 +408,11 @@ void USB_UVC_Process(void)
     //真实完成只在这里提交偏移，末包完成才归还整帧
     if (ctx->stream_state == USB_UVC_WAIT_CONFIRM)
     {
+#if defined(APP_USB_ISO_TIMING_TEST_ENABLED) && APP_USB_ISO_TIMING_TEST_ENABLED
+
+        //记录任务开始确认上一包的时刻，与IRQ完成回调配对
+        UsbIsoTiming_Record(USB_ISO_TIME_CONFIRM, ctx->in_sequence, ctx->event_token);
+#endif
         if (ctx->event_token != ctx->packet.token || ctx->event_token == 0U)
         {
             ctx->stream_result = SYS_ERR_PROTOCOL;
@@ -420,6 +429,11 @@ void USB_UVC_Process(void)
         }
         else if (s_uvc_payload.state == USB_UVC_PAYLOAD_IDLE)
         {
+#if defined(APP_USB_ISO_TIMING_TEST_ENABLED) && APP_USB_ISO_TIMING_TEST_ENABLED
+
+            //记录整帧确认，不新增或伪造FRAME完成事件
+            UsbIsoTiming_Record(USB_ISO_TIME_FRAME, ctx->in_sequence, ctx->completed_frames + 1U);
+#endif
             ctx->completed_frames++;
             s_total_completed_frames++;
             ctx->streaming = false;
@@ -450,7 +464,18 @@ void USB_UVC_Process(void)
     ctx->event_token = 0U;
     ctx->in_sequence = USB_Device_GetInSequence(UVC_VIDEO_EP_ADDRESS) + 1U;
     ctx->stream_state = USB_UVC_IN_FLIGHT;
+#if defined(APP_USB_ISO_TIMING_TEST_ENABLED) && APP_USB_ISO_TIMING_TEST_ENABLED
+
+    //记录下一包提交时刻，不提前推进Payload或传输序号
+    UsbIsoTiming_Record(USB_ISO_TIME_SUBMIT, ctx->in_sequence, ctx->packet.length);
+#endif
     result = USB_Device_Transmit(UVC_VIDEO_EP_ADDRESS, (uint8_t *)ctx->packet.data, ctx->packet.length);
+#if defined(APP_USB_ISO_TIMING_TEST_ENABLED) && APP_USB_ISO_TIMING_TEST_ENABLED
+
+    //保留BUSY或失败信息，不能把提交成功当作真实发送完成
+    if (result != SYS_OK)
+        UsbIsoTiming_Record(USB_ISO_TIME_RESULT, ctx->in_sequence, (uint32_t)result);
+#endif
     if (result == SYS_OK)
     {
         ctx->streaming = true;
@@ -1068,6 +1093,11 @@ static uint8_t UVC_DataIn(USBD_HandleTypeDef *pdev, uint8_t ep)
         ctx->stream_state == USB_UVC_IN_FLIGHT && ctx->ep1_opened &&
         ctx->in_sequence == USB_Device_GetInCompleteSequence(UVC_VIDEO_EP_ADDRESS))
     {
+#if defined(APP_USB_ISO_TIMING_TEST_ENABLED) && APP_USB_ISO_TIMING_TEST_ENABLED
+
+        //只记录已匹配当前事务的完成回调，不改变原Token检查
+        UsbIsoTiming_Record(USB_ISO_TIME_DATAIN, ctx->in_sequence, ctx->packet.length);
+#endif
         ctx->event_token = ctx->packet.token;
         ctx->stream_state = USB_UVC_WAIT_CONFIRM;
     }

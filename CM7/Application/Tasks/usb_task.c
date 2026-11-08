@@ -1,4 +1,8 @@
 #include "usb_task.h"
+
+#if defined(APP_USB_ISO_TIMING_TEST_ENABLED) && APP_USB_ISO_TIMING_TEST_ENABLED
+#include "usb_iso_timing.h"
+#endif
 #include "app_status.h"
 #include "app_events.h"
 #include "app_messages.h"
@@ -130,6 +134,11 @@ static void UsbTask_Process(uint32_t events)
         g_usb_task_debug.boot_seen = 1U;
     if (!g_usb_task_debug.boot_seen)
         return;
+#if defined(APP_USB_ISO_TIMING_TEST_ENABLED) && APP_USB_ISO_TIMING_TEST_ENABLED
+
+    //只在UsbTask处理手动采样和冻结收尾，不改变原事件分发
+    UsbIsoTiming_Process();
+#endif
     g_usb_task_debug.wake_count++;
 
     //记录任务实际观察到的SOF间隔，不把配置FPS当作测量结果

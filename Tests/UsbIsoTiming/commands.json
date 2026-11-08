@@ -1,0 +1,42 @@
+[
+  {
+    "command": "D:\\32\\ARM\\ARMCC\\Bin\\armcc.exe --cpu Cortex-M7 --c99 --split_sections -DCORE_CM7 -DSTM32H747xx -I D:\\32\\STM32H7\\h7_mac\\Tests\\UsbIsoTiming -I D:\\32\\STM32H7\\h7_mac\\Drivers\\CMSIS\\Include -I D:\\32\\STM32H7\\h7_mac\\Drivers\\CMSIS\\Device\\ST\\STM32H7xx\\Include -DAPP_USB_ISO_TIMING_TEST_ENABLED=1 -O0 -c D:\\32\\STM32H7\\h7_mac\\Tests\\UsbIsoTiming\\trace_test.c -o D:\\32\\STM32H7\\h7_mac\\output\\UsbIsoTiming\\trace_1_O0.o",
+    "exit_code": 0,
+    "output": ""
+  },
+  {
+    "command": "D:\\32\\ARM\\ARMCC\\Bin\\armlink.exe D:\\32\\STM32H7\\h7_mac\\output\\UsbIsoTiming\\trace_1_O0.o --entry TraceTest_Run --scatter D:\\32\\STM32H7\\h7_mac\\Tests\\UsbIsoTiming\\test.sct -o D:\\32\\STM32H7\\h7_mac\\output\\UsbIsoTiming\\trace_1_O0.axf",
+    "exit_code": 0,
+    "output": ""
+  },
+  {
+    "command": "D:\\32\\ARM\\ARMCC\\Bin\\armcc.exe --cpu Cortex-M7 --c99 --split_sections -DCORE_CM7 -DSTM32H747xx -I D:\\32\\STM32H7\\h7_mac\\Tests\\UsbIsoTiming -I D:\\32\\STM32H7\\h7_mac\\Drivers\\CMSIS\\Include -I D:\\32\\STM32H7\\h7_mac\\Drivers\\CMSIS\\Device\\ST\\STM32H7xx\\Include -DAPP_USB_ISO_TIMING_TEST_ENABLED=1 -O2 -c D:\\32\\STM32H7\\h7_mac\\Tests\\UsbIsoTiming\\trace_test.c -o D:\\32\\STM32H7\\h7_mac\\output\\UsbIsoTiming\\trace_1_O2.o",
+    "exit_code": 0,
+    "output": ""
+  },
+  {
+    "command": "D:\\32\\ARM\\ARMCC\\Bin\\armlink.exe D:\\32\\STM32H7\\h7_mac\\output\\UsbIsoTiming\\trace_1_O2.o --entry TraceTest_Run --scatter D:\\32\\STM32H7\\h7_mac\\Tests\\UsbIsoTiming\\test.sct -o D:\\32\\STM32H7\\h7_mac\\output\\UsbIsoTiming\\trace_1_O2.axf",
+    "exit_code": 0,
+    "output": ""
+  },
+  {
+    "command": "D:\\32\\ARM\\ARMCC\\Bin\\armcc.exe --cpu Cortex-M7 --c99 --split_sections -DCORE_CM7 -DSTM32H747xx -I D:\\32\\STM32H7\\h7_mac\\Tests\\UsbIsoTiming -I D:\\32\\STM32H7\\h7_mac\\Drivers\\CMSIS\\Include -I D:\\32\\STM32H7\\h7_mac\\Drivers\\CMSIS\\Device\\ST\\STM32H7xx\\Include -DAPP_USB_ISO_TIMING_TEST_ENABLED=0 -O0 -c D:\\32\\STM32H7\\h7_mac\\Tests\\UsbIsoTiming\\trace_test.c -o D:\\32\\STM32H7\\h7_mac\\output\\UsbIsoTiming\\trace_0_O0.o",
+    "exit_code": 0,
+    "output": ""
+  },
+  {
+    "command": "D:\\32\\ARM\\ARMCC\\Bin\\armlink.exe D:\\32\\STM32H7\\h7_mac\\output\\UsbIsoTiming\\trace_0_O0.o --entry TraceTest_Run --scatter D:\\32\\STM32H7\\h7_mac\\Tests\\UsbIsoTiming\\test.sct -o D:\\32\\STM32H7\\h7_mac\\output\\UsbIsoTiming\\trace_0_O0.axf",
+    "exit_code": 0,
+    "output": ""
+  },
+  {
+    "command": "D:\\32\\ARM\\ARMCC\\Bin\\armcc.exe --cpu Cortex-M7 --c99 --split_sections -DCORE_CM7 -DSTM32H747xx -I D:\\32\\STM32H7\\h7_mac\\Tests\\UsbIsoTiming -I D:\\32\\STM32H7\\h7_mac\\Drivers\\CMSIS\\Include -I D:\\32\\STM32H7\\h7_mac\\Drivers\\CMSIS\\Device\\ST\\STM32H7xx\\Include -DAPP_USB_ISO_TIMING_TEST_ENABLED=0 -O2 -c D:\\32\\STM32H7\\h7_mac\\Tests\\UsbIsoTiming\\trace_test.c -o D:\\32\\STM32H7\\h7_mac\\output\\UsbIsoTiming\\trace_0_O2.o",
+    "exit_code": 0,
+    "output": ""
+  },
+  {
+    "command": "D:\\32\\ARM\\ARMCC\\Bin\\armlink.exe D:\\32\\STM32H7\\h7_mac\\output\\UsbIsoTiming\\trace_0_O2.o --entry TraceTest_Run --scatter D:\\32\\STM32H7\\h7_mac\\Tests\\UsbIsoTiming\\test.sct -o D:\\32\\STM32H7\\h7_mac\\output\\UsbIsoTiming\\trace_0_O2.axf",
+    "exit_code": 0,
+    "output": ""
+  }
+]
