@@ -33,15 +33,18 @@ legacy_names=next(ast.literal_eval(n.value) for n in legacy.body if isinstance(n
 adapter_names=['未准备时拒绝','静态资源创建失败','Scheduler未启动拒绝','PRIMASK拒绝阻塞','BASEPRI拒绝阻塞','二值唤醒与零超时','重复准备不重复识卡','适配不能被替换','只读单块多块CRC一致','IRQ唤醒任务','错误CID禁止写','错误容量禁止写','没有备份禁止恢复','写入回读并恢复原数据','恢复身份错误保留备份','授权区域越界禁止写']
 write_defines=['-DAPP_SD_BLOCK_TEST_ENABLED=1','-DAPP_SD_BLOCK_WRITE_TEST_ENABLED=1','-DSD_TEST_CID0=1U','-DSD_TEST_CID1=2U','-DSD_TEST_CID2=3U','-DSD_TEST_CID3=4U','-DSD_TEST_CAPACITY_BYTES=34359738368ULL','-DSD_TEST_WRITE_FIRST_LBA=100U','-DSD_TEST_WRITE_BLOCKS=8U']
 profiles=[('idma','Sdmmc08B_TestRun',names,[]),('adapter','SdBlockAdapter_TestRun',adapter_names,write_defines)]
+stress_names=['65扇区64加1分批及轮数上限','到时停止且不补发','在途手动停止等待读完','第二轮CRC不一致立即退出','轮间手动停止','首次驱动错误不恢复重试','待恢复原数据拒绝压力','识卡失败退出','Tick回绕','本地计时停滞仍有轮数上限','缓冲区哨兵损坏','读取超时退出','Watch不能扩大边界','重复在途启动拒绝','卡容量不足拒绝','忙时命令不在退出后自动执行','重复运行重新建基准']
+profiles += [('stress','SdBlockStress_TestRun',stress_names,['-DAPP_SD_BLOCK_TEST_ENABLED=1','-DAPP_SD_BLOCK_STRESS_TEST_ENABLED=1','-DSD_BLOCK_STRESS_DURATION_MS=1000U','-DSD_BLOCK_STRESS_MAX_ROUNDS=3U']),('stress_off','SdBlockStress_TestRun',['关闭压力拒绝请求'],['-DAPP_SD_BLOCK_TEST_ENABLED=1'])]
+
 for mode,enabled,detect,low in [('off',0,1,0),('detect',1,1,0),('probe',1,0,0),('probe_low',1,0,1)]:
  profiles.append((mode,'Sdmmc_TestRun',legacy_names,['-DAPP_SDMMC_TEST_ENABLED='+str(enabled),'-DAPP_SDMMC_DETECT_ONLY='+str(detect),'-DBSP_SDMMC_DETECT_ACTIVE_LOW='+str(low)]))
 for profile,entry_name,case_names,defines in profiles:
  for opt in ['O0','O2']:
   obj=OUT/(profile+'_'+opt+'.o');hal=OUT/('hal_'+opt+'.o');axf=OUT/(profile+'_'+opt+'.axf')
-  run(base+defines+['-'+opt,'-c',HERE/('adapter_test.c' if profile=='adapter' else 'idma_test.c'),'-o',obj])
+  run(base+defines+['-'+opt,'-c',HERE/('stress_test.c' if profile.startswith('stress') else 'adapter_test.c' if profile=='adapter' else 'idma_test.c'),'-o',obj])
   renames=['HAL_SD_Init','HAL_SD_DeInit','HAL_SD_GetCardInfo','HAL_SD_GetCardState','HAL_SD_GetState','HAL_SD_GetError','HAL_SD_ConfigWideBusOperation','HAL_SD_ConfigSpeedBusOperation']
   run(base+['-'+opt]+['-D'+s+'=Vendor_'+s for s in renames]+['-c',ROOT/'Drivers/STM32H7xx_HAL_Driver/Src/stm32h7xx_hal_sd.c','-o',hal])
-  run([cc.with_name('armlink.exe'),obj,hal,'--entry',entry_name,'--scatter',HERE/'test.sct','--no_scanlib','-o',axf])
+  run([cc.with_name('armlink.exe'),obj,hal,'--entry',entry_name,'--scatter',HERE/'test.sct','-o',axf])
   with axf.open('rb') as f:
    e=ELFFile(f);entry=e.header['e_entry'];sections=[(s['sh_addr'],s.data()) for s in e.iter_sections() if s['sh_flags']&2 and s['sh_type']=='SHT_PROGBITS' and s['sh_size']];symbols={s.name:s['st_value'] for s in e.get_section_by_name('.symtab').iter_symbols()}
   for case,name in enumerate(case_names):
@@ -56,7 +59,7 @@ for profile,entry_name,case_names,defines in profiles:
      if not stuck:uc.mem_write(0x52007000,bytes(0x90))
    u.hook_add(UC_HOOK_MEM_WRITE,w1c)
    u.reg_write(UC_ARM_REG_SP,0x2003fff0);u.reg_write(UC_ARM_REG_LR,0x01000001);u.reg_write(UC_ARM_REG_R0,case)
-   if profile not in ("idma","adapter") and case==30:u.reg_write(UC_ARM_REG_IPSR,16)
+   if profile not in ("idma","adapter","stress","stress_off") and case==30:u.reg_write(UC_ARM_REG_IPSR,16)
    err=None
    try:u.emu_start(entry|1,0x01000000,count=30000000)
    except Exception as exc:err=str(exc)

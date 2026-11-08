@@ -6,7 +6,7 @@
     "errors": 0,
     "warnings": 0,
     "passed": true,
-    "axf_sha256": "01f2b2b72afb2bf4fc4b01ba9b95d6bf3d2f507100d0300ff673f3686e28c7c3",
+    "axf_sha256": "5f1272677c29132786207dc72d28e46ec52d8a3260ea7619198d20cc49c6bbf0",
     "program_size": "Program Size: Code=99246 RO-data=2894 RW-data=1252 ZI-data=78164  "
   },
   {
@@ -16,8 +16,8 @@
     "errors": 0,
     "warnings": 0,
     "passed": true,
-    "axf_sha256": "1f5a7fdcd88842d657dbc9b620db932dfaf473b43bdd67b1b573e0163693416f",
-    "program_size": "Program Size: Code=114686 RO-data=2894 RW-data=1252 ZI-data=86676  "
+    "axf_sha256": "6701d4ba8dfeab635713c2827c911facb64a7a36dca6b520dc809e61f7d00f6c",
+    "program_size": "Program Size: Code=114694 RO-data=2894 RW-data=1252 ZI-data=86740  "
   },
   {
     "profile": "write_compile_only",
@@ -26,7 +26,17 @@
     "errors": 0,
     "warnings": 0,
     "passed": true,
-    "axf_sha256": "80b9efccdd5590054ce9d1cc3d1144ce2ad14df97cbb9190be7e0407d7d8744f",
-    "program_size": "Program Size: Code=115142 RO-data=2910 RW-data=1252 ZI-data=90772  "
+    "axf_sha256": "13085b3c85338742500f0df3b04e0df92d0d1033c34aff42e2abe4fd1abe887b",
+    "program_size": "Program Size: Code=115142 RO-data=2910 RW-data=1252 ZI-data=90836  "
+  },
+  {
+    "profile": "read_stress",
+    "command": "D:/32/UV4/UV4.exe -j0 -r D:\\32\\STM32H7\\h7_mac\\MDK-ARM\\h7_mac.uvprojx -t h7_mac_CM7 -o D:\\32\\STM32H7\\h7_mac\\Tests\\SdmmcStage08B\\read_stress_rebuild.log",
+    "exit_code": 0,
+    "errors": 0,
+    "warnings": 0,
+    "passed": true,
+    "axf_sha256": "ce5c35f25b0a766703a91a0d5d39849f0dfa69cf28d4bab0957d743c179f0e4c",
+    "program_size": "Program Size: Code=115706 RO-data=2894 RW-data=1252 ZI-data=120052  "
   }
 ]

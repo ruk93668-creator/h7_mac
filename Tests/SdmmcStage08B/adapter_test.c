@@ -26,12 +26,24 @@ QueueHandle_t xQueueGenericCreateStatic(UBaseType_t length,UBaseType_t item,uint
     return (QueueHandle_t)buffer;
 }
 
+#if defined(SD_STRESS_TEST_HOOKS)
+
+//只在压力模拟测试中注入停止或数据扰动，不参与正式固件
+void SdStress_TestWaitHook(void);
+
+//只在压力模拟测试中推进受控时间和轮间操作
+void SdStress_TestDelayHook(TickType_t ticks);
+#endif
+
 //模拟阻塞时发生的硬件事件，不把take成功等同数据成功
 BaseType_t xQueueSemaphoreTake(QueueHandle_t queue,TickType_t ticks)
 {
     (void)queue;s_queue_waits++;
     if(s_queue_count){s_queue_count=0U;return pdTRUE;}
     (void)Test_Wait(NULL,(uint32_t)ticks);
+#if defined(SD_STRESS_TEST_HOOKS)
+    SdStress_TestWaitHook();
+#endif
     if(s_queue_count){s_queue_count=0U;return pdTRUE;}return pdFALSE;
 }
 
@@ -50,7 +62,13 @@ TaskHandle_t xTaskCreateStatic(TaskFunction_t task,const char *const name,const 
 {
     (void)task;(void)name;(void)depth;(void)arg;(void)priority;(void)stack;return (TaskHandle_t)tcb;
 }
-void vTaskDelay(TickType_t ticks){s_tick+=ticks;}
+void vTaskDelay(TickType_t ticks)
+{
+    s_tick+=ticks;
+#if defined(SD_STRESS_TEST_HOOKS)
+    SdStress_TestDelayHook(ticks);
+#endif
+}
 UBaseType_t uxTaskGetStackHighWaterMark(TaskHandle_t task){(void)task;return 256U;}
 
 //执行等待适配和写测试授权场景

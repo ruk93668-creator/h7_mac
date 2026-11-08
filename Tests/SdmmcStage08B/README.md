@@ -17,3 +17,7 @@
 清理清单见../TestMaintenance/incompatible_tests_removed.json。共享桩保留，未修改生产代码，也未降低保留用例的断言。
 
 清理前的完整逐例证据以Git提交13364dc为准；本轮详情使用active_前缀保存，未回写恢复当前已有日志文件。
+
+## 五分钟只读压力
+
+[入口、Watch与实板验收](readonly_stress_report.md)。request=5，默认关闭，复用SdTest任务，与写测试互斥。原测试全部保留，新增O0/O2压力测试与编译保护。
