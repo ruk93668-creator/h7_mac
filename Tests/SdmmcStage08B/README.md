@@ -23,3 +23,5 @@
 [入口、Watch与实板验收](readonly_stress_report.md)。request=5，默认关闭，复用SdTest任务，与写测试互斥。原测试全部保留，新增O0/O2压力测试与编译保护。
 
 当前08B分支按用户要求直接在h7_mac_CM7启用只读压力配置。打开原h7_mac.uvprojx，编译、Download即可；额外profile镜像已删除，旧报告中的专用镜像路径不再适用。完成验收后关闭测试宏。
+
+最新：压力验收后已按用户要求关闭CM7全部SD测试宏，用于同视频配置下的USB FPS对照复测。无需设置request，旧启用说明只作历史记录。

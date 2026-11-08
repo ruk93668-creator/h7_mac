@@ -1,6 +1,6 @@
 # 08B 五分钟只读压力测试
 
-## 当前直接烧录方式
+## 历史直接压力烧录方式（已关闭）
 
 按用户要求，当前08B分支的h7_mac_CM7 Target已直接启用只读压力宏：APP_SD_BLOCK_TEST_ENABLED=1、APP_SD_BLOCK_STRESS_TEST_ENABLED=1、APP_SD_BLOCK_WRITE_TEST_ENABLED=0；初始识卡测试关闭。头文件默认值仍为0。打开MDK-ARM/h7_mac.uvprojx，选择h7_mac_CM7，编译后点击Download即可；使用正式输出MDK-ARM/h7_mac_CM7/h7_mac_CM7.axf，不再用Command手动LOAD其他镜像。烧录后仍需手动request=5，不会自动启动压力。
 
@@ -92,3 +92,11 @@ APP_SD_BLOCK_STRESS_TEST_ENABLED=1
 恢复用户本地配置后的CM7与CM4也已完整重编，均0 Error、0 Warning，见 build_results.json。源码指纹构建前后一致；Keil项目SHA256恢复为 e3790ac3b7932722120fa82cda24ebd433306d4b933d969fb629041aa8750767。用户原写测试开关和授权值保持不变；要运行压力验收，请显式切换为本报告的只读压力宏配置。
 
 直接烧录配置已完成编译检查：CM7重新编译、CM4增量检查均0 Error、0 Warning（incremental_build_results.json）。正式CM7 AXF包含s_stress_buffer且不含写测试s_backup，确认当前输出为只读压力固件。
+
+## 压力通过后的无SD测试对照（2026-11-08）
+
+用户报告五分钟实板：elapsed_ms=300064、846轮、28154880B，I/O/CRC/边界错误均0，CRC一致、result=0，视频与OLED正常。Camera约30FPS、USB约16FPS；重新上电不启动压力仍约16FPS，尚不能据此确定USB限速根因。
+
+按用户要求，当前h7_mac_CM7的APP_SDMMC_TEST_ENABLED、APP_SDMMC_DETECT_ONLY、APP_SD_BLOCK_TEST_ENABLED、APP_SD_BLOCK_WRITE_TEST_ENABLED、APP_SD_BLOCK_STRESS_TEST_ENABLED全部为0。测试代码保留但不创建SdTest任务，也不分配压力缓冲。视频配置保持不变，未调整Camera、USB、帧率或缓冲算法。打开原工程编译并Download，完整断电后使用相同播放器参数测量Camera/USB实际FPS，不再设置request=5。无SD测试固件的实板FPS尚待用户反馈。
+
+无SD测试配置已编译通过：CM7重新编译与CM4增量检查均0 Error、0 Warning；正式AXF不含s_stress_buffer、s_test_stack、s_backup，确认未保留压力任务和测试缓冲。实际FPS仍待实板复测。
