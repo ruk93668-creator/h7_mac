@@ -56,6 +56,9 @@ BaseType_t xQueueGiveFromISR(QueueHandle_t queue,BaseType_t *wake)
 //模拟内核状态，不启动真实Scheduler
 BaseType_t xTaskGetSchedulerState(void){return s_scheduler;}
 
+//块设备租约使用当前测试任务，不运行额外调度器
+TaskHandle_t xTaskGetCurrentTaskHandle(void){return (TaskHandle_t)&s_test_tcb;}
+
 //测试任务创建桩只登记静态内存，不运行无限循环
 TaskHandle_t xTaskCreateStatic(TaskFunction_t task,const char *const name,const uint32_t depth,
     void *const arg,UBaseType_t priority,StackType_t *const stack,StaticTask_t *const tcb)
@@ -101,6 +104,7 @@ uint32_t SdBlockAdapter_TestRun(uint32_t id)
     if(id==2U){s_scheduler=taskSCHEDULER_NOT_STARTED;CHECK(SD_Block_Init()==SYS_ERR_INVALID_STATE);return 0U;}
     if(id==3U){__disable_irq();CHECK(!SdBlock_CanWait(NULL));return 0U;}
     if(id==4U){__set_BASEPRI(80U);CHECK(!SdBlock_CanWait(NULL));return 0U;}
+    CHECK(SD_Block_Claim(SD_BLOCK_CLIENT_RAW)==SYS_OK);
     CHECK(SD_Block_Init()==SYS_OK);
     s_sd.SdCard.CardType=CARD_SDHC_SDXC;s_sd.SdCard.LogBlockNbr=s_card.logical_block_count;
     s_sd.CID[0]=1U;s_sd.CID[1]=2U;s_sd.CID[2]=3U;s_sd.CID[3]=4U;

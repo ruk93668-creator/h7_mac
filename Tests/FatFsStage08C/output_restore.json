@@ -1,0 +1,93 @@
+{
+  "backup": "D:\\32\\STM32H7\\h7_mac\\tmp\\FatFsStage08C\\closeout_backup_20261108_221626",
+  "outputs_backed_up": [
+    {
+      "path": "MDK-ARM\\h7_mac_CM7\\h7_mac_CM7.axf",
+      "size": 2770104,
+      "sha256": "93e21774f729aa7f186615653f8fc62bad53e43f19f03e034cbd35febc9e4827"
+    },
+    {
+      "path": "MDK-ARM\\h7_mac_CM7\\h7_mac_CM7.map",
+      "size": 778794,
+      "sha256": "6f152323bc2d0b133effbe3c3342c02c4efc56029a3a6fe616946139f6a8019e"
+    },
+    {
+      "path": "MDK-ARM\\h7_mac_CM4\\h7_mac_CM4.axf",
+      "size": 1582288,
+      "sha256": "f98a16dd2cb5fd3d6ffc884a665fc71c6aaf38fd053e10b628fd90699d002f74"
+    },
+    {
+      "path": "MDK-ARM\\h7_mac_CM4\\h7_mac_CM4.hex",
+      "size": 78200,
+      "sha256": "f518ac47ebd147f9439db011b0fe02510aaa72f3d8daf0c2c2348df4b3260082"
+    },
+    {
+      "path": "MDK-ARM\\h7_mac_CM4\\h7_mac_CM4.map",
+      "size": 262704,
+      "sha256": "435ae1008dd0fc0441242a0f250f846010a9064beff06142d9628f902cfd3665"
+    },
+    {
+      "path": "output\\FatFsStage08C\\hardware\\h7_mac_CM7.axf",
+      "size": 3003004,
+      "sha256": "ba2495e862337d84e3565aaec2b3c1fca3bf1e9f0bc16c79dcac1125285068d4"
+    },
+    {
+      "path": "output\\FatFsStage08C\\hardware\\h7_mac_CM7.map",
+      "size": 834920,
+      "sha256": "daedcc5cb696a104d1f5e3d1c0ee427c59de78b0c06767189a13e4ca2cdeb2d6"
+    }
+  ],
+  "targets": [
+    {
+      "target": "h7_mac_CM4",
+      "configuration": {
+        "TargetCommonOption/OutputDirectory": {
+          "current": "h7_mac_CM4\\",
+          "baseline": "h7_mac_CM4\\"
+        },
+        "TargetCommonOption/OutputName": {
+          "current": "h7_mac_CM4",
+          "baseline": "h7_mac_CM4"
+        },
+        "TargetCommonOption/ListingPath": {
+          "current": "",
+          "baseline": ""
+        },
+        "TargetCommonOption/CreateHexFile": {
+          "current": "1",
+          "baseline": "1"
+        },
+        "LDads/ScatterFile": {
+          "current": ".\\h7_mac_CM4_custom.sct",
+          "baseline": ".\\h7_mac_CM4_custom.sct"
+        }
+      }
+    },
+    {
+      "target": "h7_mac_CM7",
+      "configuration": {
+        "TargetCommonOption/OutputDirectory": {
+          "current": "h7_mac_CM7\\",
+          "baseline": "h7_mac_CM7\\"
+        },
+        "TargetCommonOption/OutputName": {
+          "current": "h7_mac_CM7",
+          "baseline": "h7_mac_CM7"
+        },
+        "TargetCommonOption/ListingPath": {
+          "current": "",
+          "baseline": ""
+        },
+        "TargetCommonOption/CreateHexFile": {
+          "current": "0",
+          "baseline": "0"
+        },
+        "LDads/ScatterFile": {
+          "current": ".\\h7_mac_CM7_custom.sct",
+          "baseline": ".\\h7_mac_CM7_custom.sct"
+        }
+      }
+    }
+  ],
+  "restoration": "on-disk configuration already equals pre-acceptance settings; no rewrite necessary"
+}

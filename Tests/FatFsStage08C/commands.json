@@ -1,0 +1,32 @@
+[
+  {
+    "command": "D:\\32\\ARM\\ARMCC\\Bin\\armcc.exe --cpu Cortex-M7 --c99 --split_sections -I D:\\32\\STM32H7\\h7_mac\\Tests\\FatFsStage08C\\stubs -I D:\\32\\STM32H7\\h7_mac\\CM7\\Platform -I D:\\32\\STM32H7\\h7_mac\\CM7\\BSP -I D:\\32\\STM32H7\\h7_mac\\Common\\Inc -I D:\\32\\STM32H7\\h7_mac\\Middlewares\\Third_Party\\FatFs -O0 -c D:\\32\\STM32H7\\h7_mac\\Tests\\FatFsStage08C\\fs_test.c -o D:\\32\\STM32H7\\h7_mac\\output\\FatFsStage08C\\test_O0.o",
+    "exit_code": 0,
+    "output": ""
+  },
+  {
+    "command": "D:\\32\\ARM\\ARMCC\\Bin\\armcc.exe --cpu Cortex-M7 --c99 --split_sections -I D:\\32\\STM32H7\\h7_mac\\Tests\\FatFsStage08C\\stubs -I D:\\32\\STM32H7\\h7_mac\\CM7\\Platform -I D:\\32\\STM32H7\\h7_mac\\CM7\\BSP -I D:\\32\\STM32H7\\h7_mac\\Common\\Inc -I D:\\32\\STM32H7\\h7_mac\\Middlewares\\Third_Party\\FatFs -O0 -c D:\\32\\STM32H7\\h7_mac\\Middlewares\\Third_Party\\FatFs\\ff.c -o D:\\32\\STM32H7\\h7_mac\\output\\FatFsStage08C\\ff_O0.o",
+    "exit_code": 0,
+    "output": ""
+  },
+  {
+    "command": "D:\\32\\ARM\\ARMCC\\Bin\\armlink.exe D:\\32\\STM32H7\\h7_mac\\output\\FatFsStage08C\\test_O0.o D:\\32\\STM32H7\\h7_mac\\output\\FatFsStage08C\\ff_O0.o --entry FatFs_TestRun --scatter D:\\32\\STM32H7\\h7_mac\\Tests\\FatFsStage08C\\test.sct -o D:\\32\\STM32H7\\h7_mac\\output\\FatFsStage08C\\test_O0.axf",
+    "exit_code": 0,
+    "output": ""
+  },
+  {
+    "command": "D:\\32\\ARM\\ARMCC\\Bin\\armcc.exe --cpu Cortex-M7 --c99 --split_sections -I D:\\32\\STM32H7\\h7_mac\\Tests\\FatFsStage08C\\stubs -I D:\\32\\STM32H7\\h7_mac\\CM7\\Platform -I D:\\32\\STM32H7\\h7_mac\\CM7\\BSP -I D:\\32\\STM32H7\\h7_mac\\Common\\Inc -I D:\\32\\STM32H7\\h7_mac\\Middlewares\\Third_Party\\FatFs -O2 -c D:\\32\\STM32H7\\h7_mac\\Tests\\FatFsStage08C\\fs_test.c -o D:\\32\\STM32H7\\h7_mac\\output\\FatFsStage08C\\test_O2.o",
+    "exit_code": 0,
+    "output": ""
+  },
+  {
+    "command": "D:\\32\\ARM\\ARMCC\\Bin\\armcc.exe --cpu Cortex-M7 --c99 --split_sections -I D:\\32\\STM32H7\\h7_mac\\Tests\\FatFsStage08C\\stubs -I D:\\32\\STM32H7\\h7_mac\\CM7\\Platform -I D:\\32\\STM32H7\\h7_mac\\CM7\\BSP -I D:\\32\\STM32H7\\h7_mac\\Common\\Inc -I D:\\32\\STM32H7\\h7_mac\\Middlewares\\Third_Party\\FatFs -O2 -c D:\\32\\STM32H7\\h7_mac\\Middlewares\\Third_Party\\FatFs\\ff.c -o D:\\32\\STM32H7\\h7_mac\\output\\FatFsStage08C\\ff_O2.o",
+    "exit_code": 0,
+    "output": ""
+  },
+  {
+    "command": "D:\\32\\ARM\\ARMCC\\Bin\\armlink.exe D:\\32\\STM32H7\\h7_mac\\output\\FatFsStage08C\\test_O2.o D:\\32\\STM32H7\\h7_mac\\output\\FatFsStage08C\\ff_O2.o --entry FatFs_TestRun --scatter D:\\32\\STM32H7\\h7_mac\\Tests\\FatFsStage08C\\test.sct -o D:\\32\\STM32H7\\h7_mac\\output\\FatFsStage08C\\test_O2.axf",
+    "exit_code": 0,
+    "output": ""
+  }
+]

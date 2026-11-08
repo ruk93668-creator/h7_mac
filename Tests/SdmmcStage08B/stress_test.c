@@ -61,6 +61,7 @@ uint32_t SdBlockStress_TestRun(uint32_t id)
     s_case = 40U;
     CHECK(BSP_SDMMC_MemoryInit() == SYS_OK);
     CHECK(SdBlock_Prepare() == SYS_OK);
+    CHECK(SD_Block_Claim(SD_BLOCK_CLIENT_RAW) == SYS_OK);
     CHECK(SD_Block_Init() == SYS_OK);
     s_sd.SdCard.CardType = CARD_SDHC_SDXC;
     s_sd.SdCard.LogBlockNbr = s_card.logical_block_count;

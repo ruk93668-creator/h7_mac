@@ -1,0 +1,6 @@
+#ifndef FATFS_TEST_INIT_H
+#define FATFS_TEST_INIT_H
+#define INIT_LEVEL_PLATFORM 0
+#define INIT_LEVEL_SERVICE 4
+#define FRAMEWORK_INIT_REGISTER(fn,level)
+#endif

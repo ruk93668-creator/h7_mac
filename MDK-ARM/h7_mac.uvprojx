@@ -2338,6 +2338,14 @@
             <File><FileName>control_task.h</FileName><FileType>5</FileType><FilePath>../CM7/Application/Tasks/control_task.h</FilePath></File>
           </Files>
         </Group>
+        <Group>
+          <GroupName>FatFs</GroupName>
+          <GroupOption><CommonProperty><IncludeInBuild>0</IncludeInBuild></CommonProperty></GroupOption>
+          <Files><File><FileName>ff.c</FileName><FileType>1</FileType>
+            <FilePath>../Middlewares/Third_Party/FatFs/ff.c</FilePath>
+            <FileOption><CommonProperty><IncludeInBuild>0</IncludeInBuild></CommonProperty></FileOption>
+          </File></Files>
+        </Group>
       </Groups>
     </Target>
     <Target>
@@ -2673,7 +2681,7 @@
               <MiscControls>--preinclude ../CM7/BSP/bsp_sdram_hal_config.h --preinclude ../CM7/BSP/bsp_dcmi_hal_config.h --preinclude ../CM7/BSP/bsp_usb_hal_config.h --preinclude ../CM7/BSP/bsp_sdmmc_hal_config.h </MiscControls>
               <Define>CORE_CM7,USE_HAL_DRIVER,STM32H747xx,USE_PWR_LDO_SUPPLY</Define>
               <Undefine></Undefine>
-              <IncludePath>../CM7/Core/Inc;../Drivers/STM32H7xx_HAL_Driver/Inc;../Drivers/STM32H7xx_HAL_Driver/Inc/Legacy;../Drivers/CMSIS/Device/ST/STM32H7xx/Include;../Drivers/CMSIS/Include;..\Common\Inc;..\Board\Inc;..\CM7\Application;..\CM7\Service;..\CM7\Device\Inc;..\CM7\Media\Inc;..\CM7\Platform;..\CM7\BSP;..\CM7\Framework;..\CM7\Device\Components\OV5640;../Middlewares/ST/STM32_USB_Device_Library/Core/Inc;../Middlewares/Third_Party/FreeRTOS/Source/include;../Middlewares/Third_Party/FreeRTOS/Source/portable/RVDS/ARM_CM7/r0p1</IncludePath>
+              <IncludePath>../CM7/Core/Inc;../Drivers/STM32H7xx_HAL_Driver/Inc;../Drivers/STM32H7xx_HAL_Driver/Inc/Legacy;../Drivers/CMSIS/Device/ST/STM32H7xx/Include;../Drivers/CMSIS/Include;..\Common\Inc;..\Board\Inc;..\CM7\Application;..\CM7\Service;..\CM7\Device\Inc;..\CM7\Media\Inc;..\CM7\Platform;..\CM7\BSP;..\CM7\Framework;..\CM7\Device\Components\OV5640;../Middlewares/ST/STM32_USB_Device_Library/Core/Inc;../Middlewares/Third_Party/FreeRTOS/Source/include;../Middlewares/Third_Party/FreeRTOS/Source/portable/RVDS/ARM_CM7/r0p1;../Middlewares/Third_Party/FatFs</IncludePath>
             </VariousControls>
           </Cads>
           <Aads>
@@ -3873,6 +3881,31 @@
               <FileType>5</FileType>
               <FilePath>../CM7/Platform/sd_block.h</FilePath>
             </File>
+            <File>
+              <FileName>storage_fs.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>../CM7/Platform/storage_fs.c</FilePath>
+            </File>
+            <File>
+              <FileName>diskio.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>../CM7/Platform/diskio.c</FilePath>
+            </File>
+            <File>
+              <FileName>storage_fs.h</FileName>
+              <FileType>5</FileType>
+              <FilePath>../CM7/Platform/storage_fs.h</FilePath>
+            </File>
+            <File>
+              <FileName>fatfs_diskio.h</FileName>
+              <FileType>5</FileType>
+              <FilePath>../CM7/Platform/fatfs_diskio.h</FilePath>
+            </File>
+            <File>
+              <FileName>ffconf.h</FileName>
+              <FileType>5</FileType>
+              <FilePath>../CM7/Platform/ffconf.h</FilePath>
+            </File>
           </Files>
         </Group>
         <Group>
@@ -4060,6 +4093,16 @@
             </File>
             <File><FileName>control_task.c</FileName><FileType>1</FileType><FilePath>../CM7/Application/Tasks/control_task.c</FilePath></File>
             <File><FileName>control_task.h</FileName><FileType>5</FileType><FilePath>../CM7/Application/Tasks/control_task.h</FilePath></File>
+          </Files>
+        </Group>
+        <Group>
+          <GroupName>FatFs</GroupName>
+          <Files>
+            <File>
+              <FileName>ff.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>../Middlewares/Third_Party/FatFs/ff.c</FilePath>
+            </File>
           </Files>
         </Group>
       </Groups>

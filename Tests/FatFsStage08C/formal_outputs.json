@@ -1,0 +1,47 @@
+{
+  "artifacts": [
+    {
+      "path": "MDK-ARM\\h7_mac_CM7\\h7_mac_CM7.axf",
+      "exists": true,
+      "generated_this_build": true,
+      "sha256": "c0f5e12558f42f1c174558593ed287b75a223cd77f9960506a9b0f3dacb403df"
+    },
+    {
+      "path": "MDK-ARM\\h7_mac_CM7\\h7_mac_CM7.hex",
+      "exists": false,
+      "generated_this_build": false,
+      "sha256": null
+    },
+    {
+      "path": "MDK-ARM\\h7_mac_CM7\\h7_mac_CM7.map",
+      "exists": true,
+      "generated_this_build": true,
+      "sha256": "6f152323bc2d0b133effbe3c3342c02c4efc56029a3a6fe616946139f6a8019e"
+    },
+    {
+      "path": "MDK-ARM\\h7_mac_CM4\\h7_mac_CM4.axf",
+      "exists": true,
+      "generated_this_build": true,
+      "sha256": "820a4c264c9b7e774089d449b692d72d832ef5d3677f5fd35fdb462352fa59e0"
+    },
+    {
+      "path": "MDK-ARM\\h7_mac_CM4\\h7_mac_CM4.hex",
+      "exists": true,
+      "generated_this_build": true,
+      "sha256": "f518ac47ebd147f9439db011b0fe02510aaa72f3d8daf0c2c2348df4b3260082"
+    },
+    {
+      "path": "MDK-ARM\\h7_mac_CM4\\h7_mac_CM4.map",
+      "exists": true,
+      "generated_this_build": true,
+      "sha256": "435ae1008dd0fc0441242a0f250f846010a9064beff06142d9628f902cfd3665"
+    }
+  ],
+  "compiled": {
+    "storage_fs.c": true,
+    "diskio.c": true,
+    "sd_block.c": true,
+    "ff.c": true
+  },
+  "cm7_hex_disabled_by_original_setting": true
+}

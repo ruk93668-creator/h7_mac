@@ -1,0 +1,1406 @@
+{
+  "scope": "generated Stage08C acceptance binaries and objects only",
+  "targets": [
+    {
+      "path": "D:\\32\\STM32H7\\h7_mac\\output\\FatFsStage08C\\hardware",
+      "files": [
+        {
+          "path": "output\\FatFsStage08C\\hardware\\acceptance.sct",
+          "bytes": 599,
+          "sha256": "d7513e4663157684a831755c69a05318a7c3493c285cc1ee2e8b3a7aed428507"
+        },
+        {
+          "path": "output\\FatFsStage08C\\hardware\\app_camera.crf",
+          "bytes": 13283,
+          "sha256": "4f3a40b3cb772cacebef9f492b416410605b7483439c698bb160156ee010be30"
+        },
+        {
+          "path": "output\\FatFsStage08C\\hardware\\app_camera.d",
+          "bytes": 1462,
+          "sha256": "6d876bbe94e60eaab7995b6a5e08c553a9ec9a77cd83d8f152d38114bfba71e8"
+        },
+        {
+          "path": "output\\FatFsStage08C\\hardware\\app_camera.o",
+          "bytes": 43072,
+          "sha256": "36e6e9774451aec5a0144fc9eb52ac19ebb600a2eac163b7dc5a115e30f8cf14"
+        },
+        {
+          "path": "output\\FatFsStage08C\\hardware\\app_events.crf",
+          "bytes": 1705733,
+          "sha256": "810f9d10ece6eca4a8e470611a93f8175c5ac74c3e2064e815d94f665343d0c4"
+        },
+        {
+          "path": "output\\FatFsStage08C\\hardware\\app_events.d",
+          "bytes": 6571,
+          "sha256": "a2b3bd5c104246eca2289bd2db5d44d129f94bdd666b5e6bac6783ea62a230d2"
+        },
+        {
+          "path": "output\\FatFsStage08C\\hardware\\app_events.o",
+          "bytes": 1939160,
+          "sha256": "88d9bbc8309816f222286c62a9ad3ebbf9a2711614f568b266ece64786c83540"
+        },
+        {
+          "path": "output\\FatFsStage08C\\hardware\\app_main_1.crf",
+          "bytes": 6804,
+          "sha256": "614814bf375bacd182e4a81590ec7f961929c6b2db78c731860bae4840e0c68c"
+        },
+        {
+          "path": "output\\FatFsStage08C\\hardware\\app_main_1.d",
+          "bytes": 800,
+          "sha256": "3a585ab0ced276dd64fb84258b15e0b7c2e2b5295ebd1f618e8be0a6730cba9f"
+        },
+        {
+          "path": "output\\FatFsStage08C\\hardware\\app_main_1.o",
+          "bytes": 21688,
+          "sha256": "8397586aaf40c8dc15ffbd26c49c651184ab9cd6d56c65e2f60600dfe0f6a65f"
+        },
+        {
+          "path": "output\\FatFsStage08C\\hardware\\app_messages.crf",
+          "bytes": 1693717,
+          "sha256": "c271ff1a4b9a2810a4f05ed16931951106abb53281341f463fd71dd6f152ac93"
+        },
+        {
+          "path": "output\\FatFsStage08C\\hardware\\app_messages.d",
+          "bytes": 6384,
+          "sha256": "ab56048fefd347e4b0f22345555b1a45dda37937f0f6c6c55e66c78f62c61d49"
+        },
+        {
+          "path": "output\\FatFsStage08C\\hardware\\app_messages.o",
+          "bytes": 1915536,
+          "sha256": "ef31f80306edb606965213eaaaeb61da10509db845fa4002c299263b406706bf"
+        },
+        {
+          "path": "output\\FatFsStage08C\\hardware\\app_status.crf",
+          "bytes": 54311,
+          "sha256": "326b61f7b6cde4267c0ea5a60fd771760406cca79adddbfb17e32f737cb1a0e5"
+        },
+        {
+          "path": "output\\FatFsStage08C\\hardware\\app_status.d",
+          "bytes": 2287,
+          "sha256": "48de5c09bb745011f9adf827730f5c7ffd0df58fdff68d6abb26f2c58b1401bb"
+        },
+        {
+          "path": "output\\FatFsStage08C\\hardware\\app_status.o",
+          "bytes": 77392,
+          "sha256": "3ce0648d1d31159a06cde6fc07bc727a535f848a74799b76f4dffcd5155500fd"
+        },
+        {
+          "path": "output\\FatFsStage08C\\hardware\\app_tasks.crf",
+          "bytes": 1689609,
+          "sha256": "8aa81751a39d2ed6552988513e1084c82fca7d19249145a714d701c7a3733519"
+        },
+        {
+          "path": "output\\FatFsStage08C\\hardware\\app_tasks.d",
+          "bytes": 6503,
+          "sha256": "397aae62222b8d10afee815710db015588d1037f9e5174af0996bb129acb6d04"
+        },
+        {
+          "path": "output\\FatFsStage08C\\hardware\\app_tasks.o",
+          "bytes": 1917096,
+          "sha256": "76971a1a077a794ca2461ac458dc04dbcffa5017e24f0a04d1a7b19c0fbe25d2"
+        },
+        {
+          "path": "output\\FatFsStage08C\\hardware\\app_tasks_1.crf",
+          "bytes": 1704365,
+          "sha256": "e2a38a2df74fcba4e6bb9dcc58288f9a13825c44b1605c02fc0586ebe44ed007"
+        },
+        {
+          "path": "output\\FatFsStage08C\\hardware\\app_tasks_1.d",
+          "bytes": 7520,
+          "sha256": "dd52a8c14c917fc1dbf598b2f2323b54bc0e2150bcda26cdb05699e98a4e7e59"
+        },
+        {
+          "path": "output\\FatFsStage08C\\hardware\\app_tasks_1.o",
+          "bytes": 1940144,
+          "sha256": "b39f6531972f50f0e38cc1d09af820e02531a6d2c2f18b401b367282fe851a91"
+        },
+        {
+          "path": "output\\FatFsStage08C\\hardware\\app_uvc_bridge.crf",
+          "bytes": 23753,
+          "sha256": "9c19ca2638ea048a233bbe6637b0d77844f94975dd6ac9a55fbe4162c775e592"
+        },
+        {
+          "path": "output\\FatFsStage08C\\hardware\\app_uvc_bridge.d",
+          "bytes": 1800,
+          "sha256": "9c4a93ba75bb1110d072b7ac4117f66c6cc2427a2e299aaf049a77395ed39b2b"
+        },
+        {
+          "path": "output\\FatFsStage08C\\hardware\\app_uvc_bridge.o",
+          "bytes": 58244,
+          "sha256": "60f1c2a814180e74c509541e2cf3bf1e0748df0bf036ae91d7a3192aa905aa49"
+        },
+        {
+          "path": "output\\FatFsStage08C\\hardware\\bsp_camera.crf",
+          "bytes": 1647361,
+          "sha256": "c1bd1bcc62e27afef4904fceab57660850e30f76c916a5266b819c57fd7b574f"
+        },
+        {
+          "path": "output\\FatFsStage08C\\hardware\\bsp_camera.d",
+          "bytes": 4981,
+          "sha256": "51fc91d228f01ede75cfd9c48606ae4f94555dbce1217141118c7a682b1a1b85"
+        },
+        {
+          "path": "output\\FatFsStage08C\\hardware\\bsp_camera.o",
+          "bytes": 1885200,
+          "sha256": "531a666f812c0dd058d4469b85e3fb0f5484aade52c250ddd2b507e667aa0d27"
+        },
+        {
+          "path": "output\\FatFsStage08C\\hardware\\bsp_dcmi.crf",
+          "bytes": 1672391,
+          "sha256": "9a96378f663b7af9cf460b9c1eee9492dc2a77481a30b0ad89e70d70e1f27bb1"
+        },
+        {
+          "path": "output\\FatFsStage08C\\hardware\\bsp_dcmi.d",
+          "bytes": 4953,
+          "sha256": "3f93c9344b8d2f147699cb88b2516ba9bc9cb653637d88ea3afa9c533e7a0a12"
+        },
+        {
+          "path": "output\\FatFsStage08C\\hardware\\bsp_dcmi.o",
+          "bytes": 1938844,
+          "sha256": "24d86edd3d563edf1537994f8f3ac84e3015caf98063d2baf3dbc0556af0d159"
+        },
+        {
+          "path": "output\\FatFsStage08C\\hardware\\bsp_sdmmc.crf",
+          "bytes": 1663250,
+          "sha256": "3307a9cb3dabbde5c05c7f6ac8dc606842ce559cfd800227944099b8eda83f33"
+        },
+        {
+          "path": "output\\FatFsStage08C\\hardware\\bsp_sdmmc.d",
+          "bytes": 4934,
+          "sha256": "305eeb6fe5d4eef784eb0bd53fba2ef6b071ce4b08b0f41135410030ccec1ff6"
+        },
+        {
+          "path": "output\\FatFsStage08C\\hardware\\bsp_sdmmc.o",
+          "bytes": 1932568,
+          "sha256": "7de5c3ea17e62d9323c38056ea7dab8e2df868ab557c7d0aa58cff713fbc8268"
+        },
+        {
+          "path": "output\\FatFsStage08C\\hardware\\bsp_sdmmc_memory.crf",
+          "bytes": 1648531,
+          "sha256": "223a6ccc37a48abffc91f196725c8e203262cf1881f1917021d86b3ea3726080"
+        },
+        {
+          "path": "output\\FatFsStage08C\\hardware\\bsp_sdmmc_memory.d",
+          "bytes": 5292,
+          "sha256": "224155afb49742cae1e544559a3fffcaf43752927767bc8b226b57dd99adc616"
+        },
+        {
+          "path": "output\\FatFsStage08C\\hardware\\bsp_sdmmc_memory.o",
+          "bytes": 1875680,
+          "sha256": "12a00b747ec0c03efe0bf08e5d2d48e3248791f4a6de8edc6c98a975f02a0492"
+        },
+        {
+          "path": "output\\FatFsStage08C\\hardware\\bsp_sdram.crf",
+          "bytes": 1647371,
+          "sha256": "3225b18165bb205d6b503c4790aa8fb3964e7fcd57d076a68cf378a7d3753765"
+        },
+        {
+          "path": "output\\FatFsStage08C\\hardware\\bsp_sdram.d",
+          "bytes": 4928,
+          "sha256": "42f25508001f658a0efb74f3e1aa6f34560bdd2043b2a24865f1a5d6cffaa286"
+        },
+        {
+          "path": "output\\FatFsStage08C\\hardware\\bsp_sdram.o",
+          "bytes": 1878572,
+          "sha256": "4fa5d012659032c64848a7aabed1e7fa2c2181a0df043ef12420367942bb239e"
+        },
+        {
+          "path": "output\\FatFsStage08C\\hardware\\bsp_usb.crf",
+          "bytes": 1659528,
+          "sha256": "64304b7802d364be32c6ba995dd653fd8b4a029763ef74284766be040a502543"
+        },
+        {
+          "path": "output\\FatFsStage08C\\hardware\\bsp_usb.d",
+          "bytes": 4907,
+          "sha256": "c303ea8662a5a0d5951e55453cabf66a323a0020b59ef420c45dfb11f523c0a2"
+        },
+        {
+          "path": "output\\FatFsStage08C\\hardware\\bsp_usb.o",
+          "bytes": 1939828,
+          "sha256": "09fb495ef7d9cc3a72831cba1cc4249b165bb6505e1ff6a825c1594f3055341b"
+        },
+        {
+          "path": "output\\FatFsStage08C\\hardware\\camera_capture.crf",
+          "bytes": 1662539,
+          "sha256": "26167c957fbc0dad6be5fc6ff4b1a6f434bafe55e5c8653266a3b8f866bce3db"
+        },
+        {
+          "path": "output\\FatFsStage08C\\hardware\\camera_capture.d",
+          "bytes": 5528,
+          "sha256": "eac669d3814b54aab432fd5b647884e722a9a63b7680909545eacde1901d008e"
+        },
+        {
+          "path": "output\\FatFsStage08C\\hardware\\camera_capture.o",
+          "bytes": 1925400,
+          "sha256": "59bdbe10b935bc240a41505f210bda0c2d552cc650ca74c98c98b12ebecc6102"
+        },
+        {
+          "path": "output\\FatFsStage08C\\hardware\\camera_mjpeg_fifo.crf",
+          "bytes": 1658486,
+          "sha256": "3245c4071f81b0984663cd918cb136bb3fa17ab8ec2b9ee08092116d3d472633"
+        },
+        {
+          "path": "output\\FatFsStage08C\\hardware\\camera_mjpeg_fifo.d",
+          "bytes": 5615,
+          "sha256": "e38cf27d474b2a0a172259d3df2f292b538667273eb55d890cec047e75b1ef58"
+        },
+        {
+          "path": "output\\FatFsStage08C\\hardware\\camera_mjpeg_fifo.o",
+          "bytes": 1905780,
+          "sha256": "d0b36338b88a0f74339404c9cc1e639b7365ca32d0a6a69c424a343b15372d56"
+        },
+        {
+          "path": "output\\FatFsStage08C\\hardware\\camera_task.crf",
+          "bytes": 1697963,
+          "sha256": "d57c7890b9e48c83f1c689296a68e8112b85d6dd2662fad157172b8f8c7fd0bc"
+        },
+        {
+          "path": "output\\FatFsStage08C\\hardware\\camera_task.d",
+          "bytes": 6798,
+          "sha256": "85718b5e1ec5d0ddbb9e3b0bcc24f61bbd58166a7e11d9cb5e514dc236ee81be"
+        },
+        {
+          "path": "output\\FatFsStage08C\\hardware\\camera_task.o",
+          "bytes": 1927036,
+          "sha256": "e09400165d721c319080ae05bebd02236ff11169cf078011693664a5625b839e"
+        },
+        {
+          "path": "output\\FatFsStage08C\\hardware\\control_task.crf",
+          "bytes": 1697112,
+          "sha256": "9862c1ecd1fa0f2e6c3b48611c8ed03830b6ad091f3189f040606db6f53a284f"
+        },
+        {
+          "path": "output\\FatFsStage08C\\hardware\\control_task.d",
+          "bytes": 6867,
+          "sha256": "4274af712496e4c2d1261784c1e856c2cb96206a506494910c5c420b67341758"
+        },
+        {
+          "path": "output\\FatFsStage08C\\hardware\\control_task.o",
+          "bytes": 1931908,
+          "sha256": "8c208fdc344d99d4f5d3aabd06d95365da5671f43880035cd0033fe945a62d2c"
+        },
+        {
+          "path": "output\\FatFsStage08C\\hardware\\device_1.crf",
+          "bytes": 12270,
+          "sha256": "2fb2731566d36508a51876bf8a3065fa2b5e4fce95591b2fd1859819a5198f26"
+        },
+        {
+          "path": "output\\FatFsStage08C\\hardware\\device_1.d",
+          "bytes": 1112,
+          "sha256": "2715a421f693c4129ca93b5184ef7a7596ac8792d4a988ce39ef85d79a6c2411"
+        },
+        {
+          "path": "output\\FatFsStage08C\\hardware\\device_1.o",
+          "bytes": 38200,
+          "sha256": "7567bda6dff6ccea6e152d50fce2dc3e1f40c61a29f3e45b3fa128a087885dc3"
+        },
+        {
+          "path": "output\\FatFsStage08C\\hardware\\diskio.crf",
+          "bytes": 24772,
+          "sha256": "9c450c5f1cbc2a7f532b7290b7932ef94d4366b09a71602fdba1cd37fec8449c"
+        },
+        {
+          "path": "output\\FatFsStage08C\\hardware\\diskio.d",
+          "bytes": 1152,
+          "sha256": "fadeabf927f4b4b53fa9cef882ff350d5f8cb78212c345e7287bc937fe128dfb"
+        },
+        {
+          "path": "output\\FatFsStage08C\\hardware\\diskio.o",
+          "bytes": 50256,
+          "sha256": "c9a0c38cdab83edfbfad8c8a4f3d54ccdf106b4a789a6c47a601d25718973844"
+        },
+        {
+          "path": "output\\FatFsStage08C\\hardware\\ExtDll.iex",
+          "bytes": 19,
+          "sha256": "93ef77447acafaed3fb015af57b4c066b48dd9194a52d477177c90a5742a973e"
+        },
+        {
+          "path": "output\\FatFsStage08C\\hardware\\ff.crf",
+          "bytes": 51220,
+          "sha256": "d8dd9d9ceeb1eb1003b22872712e617079c504e61b99e7fc9ce8cebdd8ca1f18"
+        },
+        {
+          "path": "output\\FatFsStage08C\\hardware\\ff.d",
+          "bytes": 756,
+          "sha256": "8e57ff4e8b8b7aa293ce815485c00cd531a2810a6cbb2259da9fcf05c76c86f6"
+        },
+        {
+          "path": "output\\FatFsStage08C\\hardware\\ff.o",
+          "bytes": 133072,
+          "sha256": "b0c53290ab934ff7a53b1c653a90000b61a0dfaa1e9ac4df1d802c22ba9eda04"
+        },
+        {
+          "path": "output\\FatFsStage08C\\hardware\\framework_event_1.crf",
+          "bytes": 6665,
+          "sha256": "3a74c970b36ac1601045e24eccd34d18b3784070411525a3b436621db72ba2da"
+        },
+        {
+          "path": "output\\FatFsStage08C\\hardware\\framework_event_1.d",
+          "bytes": 802,
+          "sha256": "911d81410c1eccfc2bc682fa2c71f52b440e36ae438d344a0022c0002d87f81f"
+        },
+        {
+          "path": "output\\FatFsStage08C\\hardware\\framework_event_1.o",
+          "bytes": 24304,
+          "sha256": "e0eb07b9676ea4f9858293e12ddbe962a168979e86de430adbb44895b11a371d"
+        },
+        {
+          "path": "output\\FatFsStage08C\\hardware\\framework_init_1.crf",
+          "bytes": 6303,
+          "sha256": "bb8a394badd54b6cbf7dac0502ad945ad57c7e66a7c413c3cad1b646a42aa8c1"
+        },
+        {
+          "path": "output\\FatFsStage08C\\hardware\\framework_init_1.d",
+          "bytes": 794,
+          "sha256": "f7b627d399e00b0296389881e6205a0733edf07f9f5f981394171d1a72e82ea8"
+        },
+        {
+          "path": "output\\FatFsStage08C\\hardware\\framework_init_1.o",
+          "bytes": 22252,
+          "sha256": "8c3aa2a4bcbd5a8f26f7c301b20f4a81f897121c07e178fd8de350b561ac8ca7"
+        },
+        {
+          "path": "output\\FatFsStage08C\\hardware\\framework_runtime_1.crf",
+          "bytes": 6318,
+          "sha256": "48eb915f749f4690e356b17335deafc6e170441b6b90def5ee96745ce6db7bba"
+        },
+        {
+          "path": "output\\FatFsStage08C\\hardware\\framework_runtime_1.d",
+          "bytes": 905,
+          "sha256": "9e8fb82afc6f112d6d52578f636cae1c9a149af182700f9593218b1597f1671c"
+        },
+        {
+          "path": "output\\FatFsStage08C\\hardware\\framework_runtime_1.o",
+          "bytes": 20728,
+          "sha256": "a8d815c3cec4ea065937f14d8eb0694a775d8cd7193e35bb9796651d4effbae5"
+        },
+        {
+          "path": "output\\FatFsStage08C\\hardware\\framework_timer_1.crf",
+          "bytes": 11204,
+          "sha256": "ef846f7dac8c2458f29612cb2327f62e44a96467a5ed843db42342357b90a9eb"
+        },
+        {
+          "path": "output\\FatFsStage08C\\hardware\\framework_timer_1.d",
+          "bytes": 985,
+          "sha256": "80f54eab25d780368f56c68dd8f176393dac9f1aa85f0e554dd087ef09a33b2a"
+        },
+        {
+          "path": "output\\FatFsStage08C\\hardware\\framework_timer_1.o",
+          "bytes": 45016,
+          "sha256": "5fca8887e78f34a34e122fb096da0cb1e807e4cba9b8c8630d1563e12fdcce80"
+        },
+        {
+          "path": "output\\FatFsStage08C\\hardware\\h7_mac_CM7.axf",
+          "bytes": 3003004,
+          "sha256": "ba2495e862337d84e3565aaec2b3c1fca3bf1e9f0bc16c79dcac1125285068d4"
+        },
+        {
+          "path": "output\\FatFsStage08C\\hardware\\h7_mac_CM7.build_log.htm",
+          "bytes": 6958,
+          "sha256": "e2b8fb5b24a0c7c3e4fb69602acf453968f793ceb9f60034d523c5c9f15ce96f"
+        },
+        {
+          "path": "output\\FatFsStage08C\\hardware\\h7_mac_CM7.htm",
+          "bytes": 582413,
+          "sha256": "61fad45f01f6475c424d794fb4acb443c679d647ee40c472a9617e13bcfe7a22"
+        },
+        {
+          "path": "output\\FatFsStage08C\\hardware\\h7_mac_CM7.lnp",
+          "bytes": 4847,
+          "sha256": "719780932f55155ad31a11d902763726d19ad8143741106cbf9fc6bfc81730db"
+        },
+        {
+          "path": "output\\FatFsStage08C\\hardware\\h7_mac_CM7.map",
+          "bytes": 834920,
+          "sha256": "daedcc5cb696a104d1f5e3d1c0ee427c59de78b0c06767189a13e4ca2cdeb2d6"
+        },
+        {
+          "path": "output\\FatFsStage08C\\hardware\\h7_mac_h7_mac_CM7.dep",
+          "bytes": 323153,
+          "sha256": "39cbedce02f45f43c17957a09c7da9705b86e4a352bc8bd0d91ea238fe5a40ab"
+        },
+        {
+          "path": "output\\FatFsStage08C\\hardware\\ipc_application.crf",
+          "bytes": 13827,
+          "sha256": "1cdc1f7c041852b140159b0e3ae3d1bc2bc23fdc6a5a77d8d508660c21b895d3"
+        },
+        {
+          "path": "output\\FatFsStage08C\\hardware\\ipc_application.d",
+          "bytes": 1115,
+          "sha256": "287abf621ae52adf1d789d78f543e101c015f739cdbd1b67a769205924d46613"
+        },
+        {
+          "path": "output\\FatFsStage08C\\hardware\\ipc_application.o",
+          "bytes": 34628,
+          "sha256": "f1e77847273512a2042d334eae95879e71efa6ee8af985990baa9be82f4a367a"
+        },
+        {
+          "path": "output\\FatFsStage08C\\hardware\\ipc_core.crf",
+          "bytes": 24289,
+          "sha256": "ba6c2379cd35d0b6dedf0a0e525d384e62544b535cdd6cbad6c242251f121c9c"
+        },
+        {
+          "path": "output\\FatFsStage08C\\hardware\\ipc_core.d",
+          "bytes": 1160,
+          "sha256": "85b52a4edd954201f80519ace77098e8227fddaad3daa5deab336c235d848cf5"
+        },
+        {
+          "path": "output\\FatFsStage08C\\hardware\\ipc_core.o",
+          "bytes": 67052,
+          "sha256": "2f9b13d9ebd985b30631b6f76d6f0606fe1b76801d9bb8f35fd9be764860d237"
+        },
+        {
+          "path": "output\\FatFsStage08C\\hardware\\ipc_platform_1.crf",
+          "bytes": 22939,
+          "sha256": "818377c70f9a0211a675f3feb5f26b36089afec61e45b2e72bbe47399d04ed9f"
+        },
+        {
+          "path": "output\\FatFsStage08C\\hardware\\ipc_platform_1.d",
+          "bytes": 1524,
+          "sha256": "9273ddfce0437def01163ceedfabba9223fd370c48949d64ae528ea115ef8f75"
+        },
+        {
+          "path": "output\\FatFsStage08C\\hardware\\ipc_platform_1.o",
+          "bytes": 48844,
+          "sha256": "835ae0716496aa84181d85244cefd4261d58bf486288488f3152dc776643a8dc"
+        },
+        {
+          "path": "output\\FatFsStage08C\\hardware\\ipc_runtime.crf",
+          "bytes": 21190,
+          "sha256": "5b7a8c347892277a481fe8eeb23f819f6a695c89bd21a47fed8f740f0dc93c28"
+        },
+        {
+          "path": "output\\FatFsStage08C\\hardware\\ipc_runtime.d",
+          "bytes": 1374,
+          "sha256": "640a1ca17a2aad4e535952465bd036b2d105096fa8871f5e99cabfa22d1fc9d7"
+        },
+        {
+          "path": "output\\FatFsStage08C\\hardware\\ipc_runtime.o",
+          "bytes": 38304,
+          "sha256": "8c7392980369ec37f48c72beca3aee259cfcd6c6856e3d41cb8bcfd1f3216c44"
+        },
+        {
+          "path": "output\\FatFsStage08C\\hardware\\ipc_service_1.crf",
+          "bytes": 21442,
+          "sha256": "4a502b1c5f19ea631579b1112f1567656bbf1b93d4a07dab91bb0e27d5840110"
+        },
+        {
+          "path": "output\\FatFsStage08C\\hardware\\ipc_service_1.d",
+          "bytes": 1565,
+          "sha256": "0bca55de4e20caae57288a1343ebb9ded62a2eeb50ddaccabb22a0c45907763a"
+        },
+        {
+          "path": "output\\FatFsStage08C\\hardware\\ipc_service_1.o",
+          "bytes": 56040,
+          "sha256": "693b2e9ae74e3e0715aeb83b31d95362fb7187550384c9b61267fa9d949b6d6a"
+        },
+        {
+          "path": "output\\FatFsStage08C\\hardware\\ipc_shared.crf",
+          "bytes": 14747,
+          "sha256": "6570f74721d27a7c07590df27794ce5ad92df64bf6c2da63ddb131cb1fdf3061"
+        },
+        {
+          "path": "output\\FatFsStage08C\\hardware\\ipc_shared.d",
+          "bytes": 1119,
+          "sha256": "66a3d7084fcc40c909d8b6cb49777386bf279020daad4d572d9c0a84a95b7b35"
+        },
+        {
+          "path": "output\\FatFsStage08C\\hardware\\ipc_shared.o",
+          "bytes": 29008,
+          "sha256": "20d21ceeefc01cef453adb9d0d81679d1e0f0bab391d2a583dbcedbccf42fb9a"
+        },
+        {
+          "path": "output\\FatFsStage08C\\hardware\\ipc_task.crf",
+          "bytes": 1696072,
+          "sha256": "e1f5a612fdeaa946726f4716984802aea1f9cbf2a90a2f929de9d685ace0a268"
+        },
+        {
+          "path": "output\\FatFsStage08C\\hardware\\ipc_task.d",
+          "bytes": 6632,
+          "sha256": "5e53db493c629840749671ef05d7cb02ef1da2a92d788accc8f5649a652e554d"
+        },
+        {
+          "path": "output\\FatFsStage08C\\hardware\\ipc_task.o",
+          "bytes": 1922636,
+          "sha256": "90ba76ab73de80b1e2b188ab6af704a7ede81760dcbac477c61ab936a7d0fecb"
+        },
+        {
+          "path": "output\\FatFsStage08C\\hardware\\list.crf",
+          "bytes": 36304,
+          "sha256": "aa80c0dbf2182ec2dc98354944c0c74fa2ed2b21d7e29ab10b4ebacaba89e6d4"
+        },
+        {
+          "path": "output\\FatFsStage08C\\hardware\\list.d",
+          "bytes": 1476,
+          "sha256": "338e4f51369da577a32d7211c727a46523965f01074b9f3696a18f81f25070c3"
+        },
+        {
+          "path": "output\\FatFsStage08C\\hardware\\list.o",
+          "bytes": 52296,
+          "sha256": "088f8e69b7d3f03a1c4cdaf437752fd6fa175c824b913419e2ad3015fc1a77c4"
+        },
+        {
+          "path": "output\\FatFsStage08C\\hardware\\main_1.crf",
+          "bytes": 1661523,
+          "sha256": "d3e873f0aabcc51eea2665cc9596f031eb4e40e528dc91eb6df1921f8377dd86"
+        },
+        {
+          "path": "output\\FatFsStage08C\\hardware\\main_1.d",
+          "bytes": 5630,
+          "sha256": "1878a9ec6777eb86997740f73382d8b2b85828585493509f0308652ac66d2fad"
+        },
+        {
+          "path": "output\\FatFsStage08C\\hardware\\main_1.o",
+          "bytes": 1893080,
+          "sha256": "900ef2d8e6125dd409e659e7e044ffe99f6c315782a3004b64d6d13545dd5a68"
+        },
+        {
+          "path": "output\\FatFsStage08C\\hardware\\ov5640.crf",
+          "bytes": 60971,
+          "sha256": "b7ed524aab8009224b6e4f94874c8c685013e2787389d6528af6eca41f95cb08"
+        },
+        {
+          "path": "output\\FatFsStage08C\\hardware\\ov5640.d",
+          "bytes": 905,
+          "sha256": "ce6b7794cd1fd5910b8e099bf4e8772929925f843188d8bcce03061466354d50"
+        },
+        {
+          "path": "output\\FatFsStage08C\\hardware\\ov5640.o",
+          "bytes": 116756,
+          "sha256": "520ab9772d5c8e167fe001f8d18b03f79147184659c17a2ca69c30eb20e21a5f"
+        },
+        {
+          "path": "output\\FatFsStage08C\\hardware\\ov5640_device.crf",
+          "bytes": 54555,
+          "sha256": "c1d889293b371cfef8c62486a3b50904caa2f2713d3ca5c7a115f666f999cae6"
+        },
+        {
+          "path": "output\\FatFsStage08C\\hardware\\ov5640_device.d",
+          "bytes": 1708,
+          "sha256": "6b9146fc33816f0c2f212be51cad11462b11794d03ec9a670b3bec26c4e7bb73"
+        },
+        {
+          "path": "output\\FatFsStage08C\\hardware\\ov5640_device.o",
+          "bytes": 87084,
+          "sha256": "d8c3afcbf522e1110a3136ab3d72c2b24b4c35ad1c95377102a418f7cdaeb637"
+        },
+        {
+          "path": "output\\FatFsStage08C\\hardware\\ov5640_reg.crf",
+          "bytes": 36617,
+          "sha256": "8aace22e1bca995e6945f1dfe0de8c9d5e32bf15b88546af5d2e2712421ed22d"
+        },
+        {
+          "path": "output\\FatFsStage08C\\hardware\\ov5640_reg.d",
+          "bytes": 776,
+          "sha256": "0955202f9b526d96748dd0b4d12269e055703dcb7540557ec4ff49b4db78a1be"
+        },
+        {
+          "path": "output\\FatFsStage08C\\hardware\\ov5640_reg.o",
+          "bytes": 50776,
+          "sha256": "e83cba0dcff7776e77d4a56da0ca00b3d7b30ee47c66590716e3f88a20f77261"
+        },
+        {
+          "path": "output\\FatFsStage08C\\hardware\\platform_hal_timebase.crf",
+          "bytes": 1643116,
+          "sha256": "16bc8661c5c6942db8fbc7593d0fd7a346c0fc47fa339d00cc505c3d6a3234da"
+        },
+        {
+          "path": "output\\FatFsStage08C\\hardware\\platform_hal_timebase.d",
+          "bytes": 5196,
+          "sha256": "0b454c060100a93707afa9bae8fe250f88b7560803dda47e1e818dbb05556467"
+        },
+        {
+          "path": "output\\FatFsStage08C\\hardware\\platform_hal_timebase.o",
+          "bytes": 1869860,
+          "sha256": "2d394e3533c700703ad6aeca5990c3c22d67bac8e6b52fab56eca9b50e815987"
+        },
+        {
+          "path": "output\\FatFsStage08C\\hardware\\platform_rtos.crf",
+          "bytes": 1682925,
+          "sha256": "082bd9edf36748add8be84817344632590b9d96c60e92e053484d71feb8052b3"
+        },
+        {
+          "path": "output\\FatFsStage08C\\hardware\\platform_rtos.d",
+          "bytes": 6088,
+          "sha256": "3a034a92388467fd179c327c8deccf7f33fe982544c447ef2ee6766d3357e42a"
+        },
+        {
+          "path": "output\\FatFsStage08C\\hardware\\platform_rtos.o",
+          "bytes": 1911108,
+          "sha256": "aeaf5717e4361e9f46fc59ee7128311b355c4da1d6b959a603b72aede0a19558"
+        },
+        {
+          "path": "output\\FatFsStage08C\\hardware\\platform_time_1.crf",
+          "bytes": 1641950,
+          "sha256": "feb85b91a4754c922b717728f2ad6106ed0db3980fdda3b70c71d7ce1363b2b6"
+        },
+        {
+          "path": "output\\FatFsStage08C\\hardware\\platform_time_1.d",
+          "bytes": 4991,
+          "sha256": "c431b51aa463c577d306d7d927be6f25ab96ec379c716d5f742b3a6728ccc720"
+        },
+        {
+          "path": "output\\FatFsStage08C\\hardware\\platform_time_1.o",
+          "bytes": 1864296,
+          "sha256": "ea2a189c92fd8fb086a0391342080d9823b9891db7f79c702e5002dfa7c2594f"
+        },
+        {
+          "path": "output\\FatFsStage08C\\hardware\\port.crf",
+          "bytes": 46300,
+          "sha256": "5d4112a4dc16e671692212e6a5f08d9a5dbb78c5f39ce5ca404539baec940933"
+        },
+        {
+          "path": "output\\FatFsStage08C\\hardware\\port.d",
+          "bytes": 1521,
+          "sha256": "059d9c586c92f01036cbbb97e98f589f4bfeb7977ba3bfc9ea26030bf8669b8f"
+        },
+        {
+          "path": "output\\FatFsStage08C\\hardware\\port.o",
+          "bytes": 70972,
+          "sha256": "1aca5ef9e96a9fc2a220039113a376b96e84cf5faf6aa7596a1cc54029f24139"
+        },
+        {
+          "path": "output\\FatFsStage08C\\hardware\\project_before.uvprojx",
+          "bytes": 166065,
+          "sha256": "6cbac2838642e5a69ba453c5edc30aead2cb42e549dc6bc3886c7bc074dac7b8"
+        },
+        {
+          "path": "output\\FatFsStage08C\\hardware\\queue.crf",
+          "bytes": 69707,
+          "sha256": "9df69dc84283f185bf2c3589699e82a23bf78c9e63cacc7308786bce6300e224"
+        },
+        {
+          "path": "output\\FatFsStage08C\\hardware\\queue.d",
+          "bytes": 1779,
+          "sha256": "acfe40a47df6a6c1003a4ad497f57eb9e98120f0cf1507f30a64afe74e6df067"
+        },
+        {
+          "path": "output\\FatFsStage08C\\hardware\\queue.o",
+          "bytes": 108420,
+          "sha256": "a37c24f2a417a5bf140469e46a72b94df11f6971307cab70ca4fe7d9225a7fd6"
+        },
+        {
+          "path": "output\\FatFsStage08C\\hardware\\runtime_event.crf",
+          "bytes": 6864,
+          "sha256": "7be5d0c2821486363183c1a6bb1bc1c2d2ea17702d1aad2a7c76400259234bec"
+        },
+        {
+          "path": "output\\FatFsStage08C\\hardware\\runtime_event.d",
+          "bytes": 851,
+          "sha256": "bc0c0348608c48c22518fdf733ec5cfe2806a907cdf58728f3f0d920018ef8d1"
+        },
+        {
+          "path": "output\\FatFsStage08C\\hardware\\runtime_event.o",
+          "bytes": 25984,
+          "sha256": "f7b5ddb86524287678b92dcf36805380db7f12604ee644b8c203c71762828cac"
+        },
+        {
+          "path": "output\\FatFsStage08C\\hardware\\sd_block.crf",
+          "bytes": 1698176,
+          "sha256": "0dc53878842d50129a0034809020bb92ac5604c65817f324d359241e63922ff3"
+        },
+        {
+          "path": "output\\FatFsStage08C\\hardware\\sd_block.d",
+          "bytes": 6143,
+          "sha256": "cd53d3a146f0c67df01523ca237d6e0c475be5b9c198bf4fc6510c1a9d4f0375"
+        },
+        {
+          "path": "output\\FatFsStage08C\\hardware\\sd_block.o",
+          "bytes": 1937196,
+          "sha256": "5f81ebbbbd95488921af2f8df98a959d610b07f7e4c6e45045397c13308a3a2a"
+        },
+        {
+          "path": "output\\FatFsStage08C\\hardware\\startup_stm32h747xx_cm7.d",
+          "bytes": 87,
+          "sha256": "2fa234195b55c57bbad2a27d6f5a3d06aa75f861394a69e366e45690cb4fcad1"
+        },
+        {
+          "path": "output\\FatFsStage08C\\hardware\\startup_stm32h747xx_cm7.lst",
+          "bytes": 117624,
+          "sha256": "fcecc01da354823e6070900da5011c7d03d59fb666bc6ca3fee114da7a7f3947"
+        },
+        {
+          "path": "output\\FatFsStage08C\\hardware\\startup_stm32h747xx_cm7.o",
+          "bytes": 10988,
+          "sha256": "97e94a64a629bb33336e5687f1c6f35f360a114e00f92daf9273debe357a9f47"
+        },
+        {
+          "path": "output\\FatFsStage08C\\hardware\\stm32h7xx_hal.crf",
+          "bytes": 1649415,
+          "sha256": "93cb1fd861e65e206e72c40ac164597c4b7d08fbbc6a0a6afb4653e9867a38bc"
+        },
+        {
+          "path": "output\\FatFsStage08C\\hardware\\stm32h7xx_hal.d",
+          "bytes": 4832,
+          "sha256": "95d8cb3fc97415718483f74e649b9d603a53bf05fe3a02e89783ba61f058cdd6"
+        },
+        {
+          "path": "output\\FatFsStage08C\\hardware\\stm32h7xx_hal.o",
+          "bytes": 1951932,
+          "sha256": "d2c152b55c39b408a5e35d96d338fd12cce2233d9356be506bd2c4b749c79801"
+        },
+        {
+          "path": "output\\FatFsStage08C\\hardware\\stm32h7xx_hal_cortex.crf",
+          "bytes": 1644057,
+          "sha256": "13cfc4d88f5b32a270522038272a5763f6f12e8e236a31052b6c1067b6310165"
+        },
+        {
+          "path": "output\\FatFsStage08C\\hardware\\stm32h7xx_hal_cortex.d",
+          "bytes": 5168,
+          "sha256": "07ff8f9431f2b1cce4f1ec1ace2a96c91230c11080b3c4bc8bbfe4f66a3d81e3"
+        },
+        {
+          "path": "output\\FatFsStage08C\\hardware\\stm32h7xx_hal_cortex.o",
+          "bytes": 1898748,
+          "sha256": "94f7d7334c51af614e22ef6058179846ac63d79b25059364cc65eccf4eb8da80"
+        },
+        {
+          "path": "output\\FatFsStage08C\\hardware\\stm32h7xx_hal_dcmi.crf",
+          "bytes": 1647938,
+          "sha256": "6439cdfe9e769765eff5f9077d45ef2c00440f61100cf56d6f2a12128bde318e"
+        },
+        {
+          "path": "output\\FatFsStage08C\\hardware\\stm32h7xx_hal_dcmi.d",
+          "bytes": 5072,
+          "sha256": "9927723a48250f448635c10c6903833b67edce96f7e6386d9dd982f7398d1331"
+        },
+        {
+          "path": "output\\FatFsStage08C\\hardware\\stm32h7xx_hal_dcmi.o",
+          "bytes": 1896176,
+          "sha256": "fcb7dfe277be45ccc4eebe9cf3ac07c43fe21b6f3d74e4b8e6b450110d42d60e"
+        },
+        {
+          "path": "output\\FatFsStage08C\\hardware\\stm32h7xx_hal_dma.crf",
+          "bytes": 1694055,
+          "sha256": "b523cc976cda8ba2d1f22906d45f76c14e5ac2661a4d4b05835c23a9d2fec9f4"
+        },
+        {
+          "path": "output\\FatFsStage08C\\hardware\\stm32h7xx_hal_dma.d",
+          "bytes": 5024,
+          "sha256": "f48cc9416faa92ceb038e231bec25d7eba9d5e69550b51895cc02f157f000e07"
+        },
+        {
+          "path": "output\\FatFsStage08C\\hardware\\stm32h7xx_hal_dma.o",
+          "bytes": 1908656,
+          "sha256": "30c49bcd2a2446b681af335dbbe48a8b401e77f9c78e27d1575722285bf61a1a"
+        },
+        {
+          "path": "output\\FatFsStage08C\\hardware\\stm32h7xx_hal_dma_ex.crf",
+          "bytes": 1655276,
+          "sha256": "37b3c2a62e7c9427277ec0995e5ee3917682976df5d2ae942a05ccdbc9536235"
+        },
+        {
+          "path": "output\\FatFsStage08C\\hardware\\stm32h7xx_hal_dma_ex.d",
+          "bytes": 5168,
+          "sha256": "c8c9f745d520cbed3858a80cfef888f5bac8daed15a6c1629e917808da66abcb"
+        },
+        {
+          "path": "output\\FatFsStage08C\\hardware\\stm32h7xx_hal_dma_ex.o",
+          "bytes": 1882260,
+          "sha256": "73e2a37f199aa200c8055636c342410d78030fb19453e9b9575e150054031a0a"
+        },
+        {
+          "path": "output\\FatFsStage08C\\hardware\\stm32h7xx_hal_exti.crf",
+          "bytes": 1648604,
+          "sha256": "68513c1a7fdb3e792818c5deb19dc3c1c0f6a6e9cca13cfc5bf311c9dac517d7"
+        },
+        {
+          "path": "output\\FatFsStage08C\\hardware\\stm32h7xx_hal_exti.d",
+          "bytes": 5072,
+          "sha256": "82d0006d199ce90c7a9d5d4cdde6a98d200bc8d90475261c58151d82acf439b7"
+        },
+        {
+          "path": "output\\FatFsStage08C\\hardware\\stm32h7xx_hal_exti.o",
+          "bytes": 1879912,
+          "sha256": "0cf8e6b0668feb17f06d3ae0cb2cbf36eaddc84a5f555346c8ab54ff1ff0441d"
+        },
+        {
+          "path": "output\\FatFsStage08C\\hardware\\stm32h7xx_hal_flash.crf",
+          "bytes": 1650802,
+          "sha256": "4d07e0c535664f20879031bea8b291e72c753f3414ab5f915f94544e3c970ecb"
+        },
+        {
+          "path": "output\\FatFsStage08C\\hardware\\stm32h7xx_hal_flash.d",
+          "bytes": 5120,
+          "sha256": "8bc74bb003a51ad68f22232bed5f3b16cc494b4ef3918eac06e7f9cbbf7b3e21"
+        },
+        {
+          "path": "output\\FatFsStage08C\\hardware\\stm32h7xx_hal_flash.o",
+          "bytes": 1888532,
+          "sha256": "a2abd66f521a64e36b91325d164b6c6927cb990bc7ae36c4d2322c93afb3cdba"
+        },
+        {
+          "path": "output\\FatFsStage08C\\hardware\\stm32h7xx_hal_flash_ex.crf",
+          "bytes": 1656318,
+          "sha256": "dda369071193b17412eb050db5e59ae050493205940d7f88f6ffbd78deb74519"
+        },
+        {
+          "path": "output\\FatFsStage08C\\hardware\\stm32h7xx_hal_flash_ex.d",
+          "bytes": 5264,
+          "sha256": "8180ae1cadd9cc71b9de8669815c0443286352372f231cd01432a462ec09fd32"
+        },
+        {
+          "path": "output\\FatFsStage08C\\hardware\\stm32h7xx_hal_flash_ex.o",
+          "bytes": 1909452,
+          "sha256": "a03347e9562f732c35e0a9d392264b3e6fb016a2d067ed36f85e5221f9eeafaa"
+        },
+        {
+          "path": "output\\FatFsStage08C\\hardware\\stm32h7xx_hal_gpio.crf",
+          "bytes": 1645693,
+          "sha256": "d433efe1462d0b8703c5f1363b58e6b88a208fab3abfe013d61a6b013d94d5d8"
+        },
+        {
+          "path": "output\\FatFsStage08C\\hardware\\stm32h7xx_hal_gpio.d",
+          "bytes": 5072,
+          "sha256": "29cc08f25777add3b4cce7f4e367ffc630ed85132a25af9d8fe93cccdb235e43"
+        },
+        {
+          "path": "output\\FatFsStage08C\\hardware\\stm32h7xx_hal_gpio.o",
+          "bytes": 1876064,
+          "sha256": "72c0f44928cd578fa172af3eb8a34d04fd28c457c3d5d6bedaea057c9fa3e6c4"
+        },
+        {
+          "path": "output\\FatFsStage08C\\hardware\\stm32h7xx_hal_hsem.crf",
+          "bytes": 1643393,
+          "sha256": "e28a58bbfed5c9176e6460b8e0067acccda1e8b7720734a928a6cd400c6770b2"
+        },
+        {
+          "path": "output\\FatFsStage08C\\hardware\\stm32h7xx_hal_hsem.d",
+          "bytes": 5072,
+          "sha256": "7459222ef6ad2233627eb3c9dc0ca4a593113ff052304a36069bd77a0fc329fd"
+        },
+        {
+          "path": "output\\FatFsStage08C\\hardware\\stm32h7xx_hal_hsem.o",
+          "bytes": 1878508,
+          "sha256": "f7d69d14c23d373b903972e05d478fe1954510b6b98474dc4ebc83452e066770"
+        },
+        {
+          "path": "output\\FatFsStage08C\\hardware\\stm32h7xx_hal_i2c.crf",
+          "bytes": 1711543,
+          "sha256": "801aec456579b9b407d206e96521c9007a2cee567a228bf76489e07c1690783e"
+        },
+        {
+          "path": "output\\FatFsStage08C\\hardware\\stm32h7xx_hal_i2c.d",
+          "bytes": 5024,
+          "sha256": "3f87477ee5aa75e360cedd803eff25d3cdb205a6ef76a128c090272382da260c"
+        },
+        {
+          "path": "output\\FatFsStage08C\\hardware\\stm32h7xx_hal_i2c.o",
+          "bytes": 2024040,
+          "sha256": "a4ff5bf7bca6e668e958e359db39a3f81610e234f3a35505d1231892cb8030a9"
+        },
+        {
+          "path": "output\\FatFsStage08C\\hardware\\stm32h7xx_hal_i2c_ex.crf",
+          "bytes": 1643660,
+          "sha256": "536504af20b7a865a2370adc5cffcec84c00ded9f8fd7d57f42fe28aaa454d4a"
+        },
+        {
+          "path": "output\\FatFsStage08C\\hardware\\stm32h7xx_hal_i2c_ex.d",
+          "bytes": 5168,
+          "sha256": "1a129fd67c6c61395b2923c0170346dd9b6307b9a95896c0ffa93cfb988bb2f4"
+        },
+        {
+          "path": "output\\FatFsStage08C\\hardware\\stm32h7xx_hal_i2c_ex.o",
+          "bytes": 1872268,
+          "sha256": "a2a9603b4e63a15618c99bf4d8fcdbfda57416d1d5887372c2140240dd8eca41"
+        },
+        {
+          "path": "output\\FatFsStage08C\\hardware\\stm32h7xx_hal_mdma.crf",
+          "bytes": 1654391,
+          "sha256": "f5df1fdfbce0f964a2778701adc00197ed57876744fe64a52a9008efa6e547e4"
+        },
+        {
+          "path": "output\\FatFsStage08C\\hardware\\stm32h7xx_hal_mdma.d",
+          "bytes": 5072,
+          "sha256": "a017e8a9a4a1e4e62a411b195a81ae7b7d201959ffe45e90fa8a7ae4c796a9fd"
+        },
+        {
+          "path": "output\\FatFsStage08C\\hardware\\stm32h7xx_hal_mdma.o",
+          "bytes": 1901848,
+          "sha256": "e665bcf7909df9ba0ff5ec421223ff67c3022a444953d8d2ade8e2430522a80e"
+        },
+        {
+          "path": "output\\FatFsStage08C\\hardware\\stm32h7xx_hal_msp_1.crf",
+          "bytes": 1642227,
+          "sha256": "193b7086c8f786ca51f1b866049843b18d67c56066247a68749dee8c8e992dbf"
+        },
+        {
+          "path": "output\\FatFsStage08C\\hardware\\stm32h7xx_hal_msp_1.d",
+          "bytes": 5178,
+          "sha256": "863bae1f59c4c5c383a2db830da930960f9427171cab82bc72f9e7360df0aa93"
+        },
+        {
+          "path": "output\\FatFsStage08C\\hardware\\stm32h7xx_hal_msp_1.o",
+          "bytes": 1864260,
+          "sha256": "a8d900456aaf7b4344b4abcf9e4b4eaaa64f2cd2d30b49e76ca724a50973a2e1"
+        },
+        {
+          "path": "output\\FatFsStage08C\\hardware\\stm32h7xx_hal_pcd.crf",
+          "bytes": 1655371,
+          "sha256": "3436d100fd8e24f74df43a164bfabf4882e7f7865cd0f958675e37357731c944"
+        },
+        {
+          "path": "output\\FatFsStage08C\\hardware\\stm32h7xx_hal_pcd.d",
+          "bytes": 5024,
+          "sha256": "bcd12a81e3ea3d9f6420b2a0b21b70850822f55e0a9c3f6424ddb2d67029bce0"
+        },
+        {
+          "path": "output\\FatFsStage08C\\hardware\\stm32h7xx_hal_pcd.o",
+          "bytes": 1927500,
+          "sha256": "0012a0a8be9cb725ddda71b56114debce88c09729c493e57cb937af472a69ebb"
+        },
+        {
+          "path": "output\\FatFsStage08C\\hardware\\stm32h7xx_hal_pcd_ex.crf",
+          "bytes": 1643794,
+          "sha256": "d341a0ae5ceb60dccf2ca01a2c692577e0fef90594e35772fa4bb40c5f4c99f1"
+        },
+        {
+          "path": "output\\FatFsStage08C\\hardware\\stm32h7xx_hal_pcd_ex.d",
+          "bytes": 5168,
+          "sha256": "f74d12fdc32b43b41b585fb680777d0905a7f88b295695b9257940c779600ed0"
+        },
+        {
+          "path": "output\\FatFsStage08C\\hardware\\stm32h7xx_hal_pcd_ex.o",
+          "bytes": 1876648,
+          "sha256": "6cb6824da8dbb8e48cccb98a9d8a3383c414587da39d727303d944ac357158ab"
+        },
+        {
+          "path": "output\\FatFsStage08C\\hardware\\stm32h7xx_hal_pwr.crf",
+          "bytes": 1644633,
+          "sha256": "bfa6acd5d9e2b8bd7b60da77a721b19526ece5445405a4177d74167262251abb"
+        },
+        {
+          "path": "output\\FatFsStage08C\\hardware\\stm32h7xx_hal_pwr.d",
+          "bytes": 5024,
+          "sha256": "17f00b42f3a8630d78cd4e26d2da8f4a241810edac2366209bf6c1c1c3ea09e7"
+        },
+        {
+          "path": "output\\FatFsStage08C\\hardware\\stm32h7xx_hal_pwr.o",
+          "bytes": 1886916,
+          "sha256": "101a646254758d65e651f7417c1403fa36d53681dfbbb3f945de318dc90bfb22"
+        },
+        {
+          "path": "output\\FatFsStage08C\\hardware\\stm32h7xx_hal_pwr_ex.crf",
+          "bytes": 1669703,
+          "sha256": "33b2834a9f850c8ec9ec1078bcbea74fd8cab638e962637e1502068498553785"
+        },
+        {
+          "path": "output\\FatFsStage08C\\hardware\\stm32h7xx_hal_pwr_ex.d",
+          "bytes": 5168,
+          "sha256": "66d30417145024d85dbdd2197be4a768c976fc802ed39944474aa0a0c7d43b29"
+        },
+        {
+          "path": "output\\FatFsStage08C\\hardware\\stm32h7xx_hal_pwr_ex.o",
+          "bytes": 1928744,
+          "sha256": "b404cbe53ac9660457aa030ad0a25499018e4e26b11adfd6278eeec9ee4e1719"
+        },
+        {
+          "path": "output\\FatFsStage08C\\hardware\\stm32h7xx_hal_rcc.crf",
+          "bytes": 1663921,
+          "sha256": "136468e1e2f9544f314bb4e5d5334398641366c89ed733552edce67e07e27b31"
+        },
+        {
+          "path": "output\\FatFsStage08C\\hardware\\stm32h7xx_hal_rcc.d",
+          "bytes": 5024,
+          "sha256": "291d340ed3e5e3b58032341b46aa770e5fa003bc9eb3e9b12994c1f1079f62c7"
+        },
+        {
+          "path": "output\\FatFsStage08C\\hardware\\stm32h7xx_hal_rcc.o",
+          "bytes": 1892612,
+          "sha256": "7f165453135e4afa76adb1a886bdd16dcc06801834f7325f04cf5c75ad77751a"
+        },
+        {
+          "path": "output\\FatFsStage08C\\hardware\\stm32h7xx_hal_rcc_ex.crf",
+          "bytes": 1675133,
+          "sha256": "e16700937d5f903ce28abacf313ef7a935f3a7b596d4db7e841663eede94d3ec"
+        },
+        {
+          "path": "output\\FatFsStage08C\\hardware\\stm32h7xx_hal_rcc_ex.d",
+          "bytes": 5168,
+          "sha256": "38a7072adabade12bd7f011defe5ea1bd364880da7a5bb3a8b4f00ec2d09a47a"
+        },
+        {
+          "path": "output\\FatFsStage08C\\hardware\\stm32h7xx_hal_rcc_ex.o",
+          "bytes": 1922184,
+          "sha256": "72272a293315c7f3ac03fadfc98fe27ababf137218a86eca17df519e72842ccf"
+        },
+        {
+          "path": "output\\FatFsStage08C\\hardware\\stm32h7xx_hal_sd.crf",
+          "bytes": 1684662,
+          "sha256": "fea5f8618283a3b5e638f40086cabe24120ba48894f4108c797db3bf1162a51f"
+        },
+        {
+          "path": "output\\FatFsStage08C\\hardware\\stm32h7xx_hal_sd.d",
+          "bytes": 4976,
+          "sha256": "3dd6830dcf8c793321a99f569919658417f106e113282f57653ac1e67fe15c08"
+        },
+        {
+          "path": "output\\FatFsStage08C\\hardware\\stm32h7xx_hal_sd.o",
+          "bytes": 1945652,
+          "sha256": "0476b2953993ae05101c912ce96590de87062dced110afe38c646068f9b0de24"
+        },
+        {
+          "path": "output\\FatFsStage08C\\hardware\\stm32h7xx_hal_sdram.crf",
+          "bytes": 1648440,
+          "sha256": "c3e5794775dd76b72b81e48d311ff76304da940178b0d231023b0b6d829fdd13"
+        },
+        {
+          "path": "output\\FatFsStage08C\\hardware\\stm32h7xx_hal_sdram.d",
+          "bytes": 5120,
+          "sha256": "2adc15e8af25821a7307f1e48af8064047519de97aa7cfef15a909fa3b10bd4b"
+        },
+        {
+          "path": "output\\FatFsStage08C\\hardware\\stm32h7xx_hal_sdram.o",
+          "bytes": 1907112,
+          "sha256": "100375c22d16f113ce0aea74ab2b085f0998f2d04b46f72261c3edb999064a7c"
+        },
+        {
+          "path": "output\\FatFsStage08C\\hardware\\stm32h7xx_it_1.crf",
+          "bytes": 1643792,
+          "sha256": "9d76e27df263062f80adbf980cd5a44284ea0be0bc70a4e3cb97b1262f87c201"
+        },
+        {
+          "path": "output\\FatFsStage08C\\hardware\\stm32h7xx_it_1.d",
+          "bytes": 5179,
+          "sha256": "c00c4ed02088b3394ed34625ba902875f853955e2c487834698146c3500460da"
+        },
+        {
+          "path": "output\\FatFsStage08C\\hardware\\stm32h7xx_it_1.o",
+          "bytes": 1875312,
+          "sha256": "42d98e50feb44221edbfcfcc92e12996907f554f5627a0446bd547c8e2c22a36"
+        },
+        {
+          "path": "output\\FatFsStage08C\\hardware\\stm32h7xx_ll_fmc.crf",
+          "bytes": 1648916,
+          "sha256": "6c2aa5cef870dbc0d3a17dbd206554ebaf0aec1f6541c9262dfdc573b227c070"
+        },
+        {
+          "path": "output\\FatFsStage08C\\hardware\\stm32h7xx_ll_fmc.d",
+          "bytes": 4976,
+          "sha256": "2478202077079e371cce3735a2302ccd86566d64afe74dda6efb86fbd437d86b"
+        },
+        {
+          "path": "output\\FatFsStage08C\\hardware\\stm32h7xx_ll_fmc.o",
+          "bytes": 1899012,
+          "sha256": "8e24ff7046364f9f4e285622b995bb3b7b105db8f2a572e7ca5c78c5e5b7f23e"
+        },
+        {
+          "path": "output\\FatFsStage08C\\hardware\\stm32h7xx_ll_sdmmc.crf",
+          "bytes": 1660065,
+          "sha256": "7904426ef4b5914aa2181849eabbc58d3da2bb0e52f8cab863ff7ecf1da320c8"
+        },
+        {
+          "path": "output\\FatFsStage08C\\hardware\\stm32h7xx_ll_sdmmc.d",
+          "bytes": 5072,
+          "sha256": "3ace374316f5f02fea774e76ae94f3fbd68ee4e09c14cb64b50317ec4c247cd7"
+        },
+        {
+          "path": "output\\FatFsStage08C\\hardware\\stm32h7xx_ll_sdmmc.o",
+          "bytes": 1957244,
+          "sha256": "8b6cde5958d05260bf387b0d6e628dd4ea39abc0eb6a6d443126255032fd4c9c"
+        },
+        {
+          "path": "output\\FatFsStage08C\\hardware\\stm32h7xx_ll_usb.crf",
+          "bytes": 1665958,
+          "sha256": "fbefbf8fb320f54fa442f8e5017a68e0413a8ac9fdd4690ed43ffbaa40db0a23"
+        },
+        {
+          "path": "output\\FatFsStage08C\\hardware\\stm32h7xx_ll_usb.d",
+          "bytes": 4976,
+          "sha256": "bf762b0d85e9322cb63a50560c64689be1104d955bfeb3fcd0a63fef40a70337"
+        },
+        {
+          "path": "output\\FatFsStage08C\\hardware\\stm32h7xx_ll_usb.o",
+          "bytes": 1949888,
+          "sha256": "2e5aebce799108edc96403cccad151d59836f840712c55ef62d9fa8e23b1f7f8"
+        },
+        {
+          "path": "output\\FatFsStage08C\\hardware\\storage_fs.crf",
+          "bytes": 1673851,
+          "sha256": "4060e8fac5f2ec8e477c2e458cde75931b276a352ece7e50099a55b4a01ba350"
+        },
+        {
+          "path": "output\\FatFsStage08C\\hardware\\storage_fs.d",
+          "bytes": 5558,
+          "sha256": "43b1c5e6119607db7aa9048545f271c167ec67860927b90ee762531ab59f231b"
+        },
+        {
+          "path": "output\\FatFsStage08C\\hardware\\storage_fs.o",
+          "bytes": 1924496,
+          "sha256": "7edb0238344dd819763c945ec6ac7045fdd219f3503da4da577a8d59bde44fc9"
+        },
+        {
+          "path": "output\\FatFsStage08C\\hardware\\system_stm32h7xx_dualcore_boot_cm4_cm7.crf",
+          "bytes": 1644836,
+          "sha256": "da902c5d63909cd2f70b0c5d031418490f3a9168feebd28a134f885986e5adf5"
+        },
+        {
+          "path": "output\\FatFsStage08C\\hardware\\system_stm32h7xx_dualcore_boot_cm4_cm7.d",
+          "bytes": 6015,
+          "sha256": "7ab07d456f40e4e227d997aa7cdc41f71590ae3f12cbce0df6c45bdb4d329af2"
+        },
+        {
+          "path": "output\\FatFsStage08C\\hardware\\system_stm32h7xx_dualcore_boot_cm4_cm7.o",
+          "bytes": 1868940,
+          "sha256": "299fdd384ec8eacf8c3b1aab7c4b42bd817f9d40e2a0c1c0e1d221c83b7fa3e6"
+        },
+        {
+          "path": "output\\FatFsStage08C\\hardware\\tasks.crf",
+          "bytes": 76174,
+          "sha256": "29a85ad58ee78373a604f8e39a72f14103951efeae45a124b8a868e3a100527b"
+        },
+        {
+          "path": "output\\FatFsStage08C\\hardware\\tasks.d",
+          "bytes": 1889,
+          "sha256": "1c9e20095c554c55b1878fcc0a4dce79619cb324c20f4e1963daefc231b2d039"
+        },
+        {
+          "path": "output\\FatFsStage08C\\hardware\\tasks.o",
+          "bytes": 150432,
+          "sha256": "42f0030ea198cc6022c3a0838f4941dcddd732e2c305c095e0faf5df62483c62"
+        },
+        {
+          "path": "output\\FatFsStage08C\\hardware\\usbd_core.crf",
+          "bytes": 1664656,
+          "sha256": "1af981396e2189cd947b4bb9ce5ce9ffc3992f777a97e33c34418613a77a1ac7"
+        },
+        {
+          "path": "output\\FatFsStage08C\\hardware\\usbd_core.d",
+          "bytes": 5380,
+          "sha256": "2d5780c239c4a593b614961febcfccc766293e64c8ab2497a94003cb818be882"
+        },
+        {
+          "path": "output\\FatFsStage08C\\hardware\\usbd_core.o",
+          "bytes": 1914660,
+          "sha256": "64828d27cd8eae2edfb5066ac494f23c5d7471bf559d7aaa3d5a7f0c89dcae54"
+        },
+        {
+          "path": "output\\FatFsStage08C\\hardware\\usbd_ctlreq.crf",
+          "bytes": 1665667,
+          "sha256": "aa5352a58e26700dad45cc576346dafa160ad484f2d34c4b7fe9cc3908a375c7"
+        },
+        {
+          "path": "output\\FatFsStage08C\\hardware\\usbd_ctlreq.d",
+          "bytes": 5491,
+          "sha256": "e1bd3ed0632d65cfa86e851004b66135893574c9880d76f6959b400e80b6137a"
+        },
+        {
+          "path": "output\\FatFsStage08C\\hardware\\usbd_ctlreq.o",
+          "bytes": 1901704,
+          "sha256": "8be902426d5451aff085541397677b59c7b6d0005e99f27ede1b9ced3e7c5206"
+        },
+        {
+          "path": "output\\FatFsStage08C\\hardware\\usbd_ioreq.crf",
+          "bytes": 1660624,
+          "sha256": "d702e820c4db5f4cce837fa86e8e2a15a323ef47a68d8a8f1966463a9b93ed7f"
+        },
+        {
+          "path": "output\\FatFsStage08C\\hardware\\usbd_ioreq.d",
+          "bytes": 5436,
+          "sha256": "14d46188ba919509a0bcf28b3ae9c8d92f62d8318879c49f5decaa3d43f86b42"
+        },
+        {
+          "path": "output\\FatFsStage08C\\hardware\\usbd_ioreq.o",
+          "bytes": 1886020,
+          "sha256": "055f3d1ab31dac39aec5847126b0f5491a4b836949f9b0b062d646517215ee9e"
+        },
+        {
+          "path": "output\\FatFsStage08C\\hardware\\usb_device.crf",
+          "bytes": 1684294,
+          "sha256": "7b1c5be0d63351fa00fe0de27809ec7a844b274a89769604448d46bcb9770ae5"
+        },
+        {
+          "path": "output\\FatFsStage08C\\hardware\\usb_device.d",
+          "bytes": 5791,
+          "sha256": "1a594bb2bcb3d62d423f9914879f1bc30b7d2a1e11d012f45628ff135cf1c681"
+        },
+        {
+          "path": "output\\FatFsStage08C\\hardware\\usb_device.o",
+          "bytes": 2003800,
+          "sha256": "dde04a4b29d17488675f4585d4a4d3611cc5c742517342a58e104f42fd4941c0"
+        },
+        {
+          "path": "output\\FatFsStage08C\\hardware\\usb_mode.crf",
+          "bytes": 1661240,
+          "sha256": "7ddd86d8c9757181248f32a328d76d1265ea30c2010dd57f67dab7145bbdc1b3"
+        },
+        {
+          "path": "output\\FatFsStage08C\\hardware\\usb_mode.d",
+          "bytes": 5310,
+          "sha256": "351076a4774be8aa947b2201df6532f91f707092a125f3a46a63fd2556140fc9"
+        },
+        {
+          "path": "output\\FatFsStage08C\\hardware\\usb_mode.o",
+          "bytes": 1896348,
+          "sha256": "ed2b7a6d2e1d39f66df4ae304806111809f3c5718d6827935ae7a9f79443e3df"
+        },
+        {
+          "path": "output\\FatFsStage08C\\hardware\\usb_task.crf",
+          "bytes": 1714542,
+          "sha256": "3cedc532bd6076625c026135471aa7a61767b841d92627e3ddf0ae0b5a2024ae"
+        },
+        {
+          "path": "output\\FatFsStage08C\\hardware\\usb_task.d",
+          "bytes": 7074,
+          "sha256": "b593fe0dabf41ada14538da359af49eeb00f1ee0462ca046ac951dea1ee3285b"
+        },
+        {
+          "path": "output\\FatFsStage08C\\hardware\\usb_task.o",
+          "bytes": 1940580,
+          "sha256": "049f8925fec346c14e1ef4b5db9f33c16ea052dd707c280b997dfeee3eb52962"
+        },
+        {
+          "path": "output\\FatFsStage08C\\hardware\\usb_test_device.crf",
+          "bytes": 1666498,
+          "sha256": "2ab5d69e92f2fa09780261cc58120c96970668d43bd8ac3a42f310a282ae67fc"
+        },
+        {
+          "path": "output\\FatFsStage08C\\hardware\\usb_test_device.d",
+          "bytes": 6017,
+          "sha256": "7d0c4648aff63a4982a2a9529d785806476be90e61ccddd17c05f94a00e7c978"
+        },
+        {
+          "path": "output\\FatFsStage08C\\hardware\\usb_test_device.o",
+          "bytes": 1898540,
+          "sha256": "712ca191c33d8b1c5d3ee2733db1ad52ffa4c83342d5ba889428ac9bb77c3f60"
+        },
+        {
+          "path": "output\\FatFsStage08C\\hardware\\usb_uvc_class.crf",
+          "bytes": 1683778,
+          "sha256": "4e75ac6372ee0a2dadc2d579adba97231f7b969d9bad94987ff268db55cea25d"
+        },
+        {
+          "path": "output\\FatFsStage08C\\hardware\\usb_uvc_class.d",
+          "bytes": 6306,
+          "sha256": "8a7d352368f17f5fcdf0f10ea57bda822f2a09a113090e2801e8ce52de8b76ee"
+        },
+        {
+          "path": "output\\FatFsStage08C\\hardware\\usb_uvc_class.o",
+          "bytes": 1947380,
+          "sha256": "04d69cd8d581642acc25d7e4e25a5706394aadeb93ee2a6a526daeeaf7dc796c"
+        },
+        {
+          "path": "output\\FatFsStage08C\\hardware\\usb_uvc_desc.crf",
+          "bytes": 1660407,
+          "sha256": "9ab1fe180bb6cc1ab2ae9dcf2ac3d2067016b624e8b09ebea50ef8412d52895b"
+        },
+        {
+          "path": "output\\FatFsStage08C\\hardware\\usb_uvc_desc.d",
+          "bytes": 5462,
+          "sha256": "1e4d4cbdded28c4bcd7d723d6f39c61034f68d6f7174c09b07a7ebb9dbafc822"
+        },
+        {
+          "path": "output\\FatFsStage08C\\hardware\\usb_uvc_desc.o",
+          "bytes": 1896224,
+          "sha256": "9099c841b4673d086f4a2412d591fcfec7d315e4e622b25c3e38de3e93b11a5e"
+        },
+        {
+          "path": "output\\FatFsStage08C\\hardware\\usb_uvc_payload.crf",
+          "bytes": 14617,
+          "sha256": "721d7055b4a38bfb228f85677cd62b8ff4d605594a816bf8d15281db2cb6a9b1"
+        },
+        {
+          "path": "output\\FatFsStage08C\\hardware\\usb_uvc_payload.d",
+          "bytes": 1056,
+          "sha256": "c8621de0d2f66d5fef3b87ddb4b6685b497f57d37c699cf7100ad95bb9a88b3d"
+        },
+        {
+          "path": "output\\FatFsStage08C\\hardware\\usb_uvc_payload.o",
+          "bytes": 46268,
+          "sha256": "584f93e97a34236c09a3229af5872a91552f55df8510bf4bf56c35239478015e"
+        },
+        {
+          "path": "output\\FatFsStage08C\\hardware\\video_config.crf",
+          "bytes": 7728,
+          "sha256": "282db8cdd22e4ffd2b46c696723f17b1489571b6fa07847c3ae0ea121562e381"
+        },
+        {
+          "path": "output\\FatFsStage08C\\hardware\\video_config.d",
+          "bytes": 1014,
+          "sha256": "f805f7d1212b5ba290a983eb1ffa3a070e97ec3cf00a4e293dbbbdf8ceb62ce1"
+        },
+        {
+          "path": "output\\FatFsStage08C\\hardware\\video_config.o",
+          "bytes": 25160,
+          "sha256": "a82c397f655875a2caf6dbfaf022ad5461cac4de60f9c9233d867010de8ada30"
+        }
+      ]
+    },
+    {
+      "path": "D:\\32\\STM32H7\\h7_mac\\tmp\\FatFsStage08C\\closeout_backup_20261108_221626\\outputs\\output\\FatFsStage08C\\hardware",
+      "files": [
+        {
+          "path": "tmp\\FatFsStage08C\\closeout_backup_20261108_221626\\outputs\\output\\FatFsStage08C\\hardware\\h7_mac_CM7.axf",
+          "bytes": 3003004,
+          "sha256": "ba2495e862337d84e3565aaec2b3c1fca3bf1e9f0bc16c79dcac1125285068d4"
+        },
+        {
+          "path": "tmp\\FatFsStage08C\\closeout_backup_20261108_221626\\outputs\\output\\FatFsStage08C\\hardware\\h7_mac_CM7.map",
+          "bytes": 834920,
+          "sha256": "daedcc5cb696a104d1f5e3d1c0ee427c59de78b0c06767189a13e4ca2cdeb2d6"
+        }
+      ]
+    },
+    {
+      "path": "D:\\32\\STM32H7\\h7_mac\\output\\FatFsStage08C\\ff_O0.o",
+      "files": [
+        {
+          "path": "output\\FatFsStage08C\\ff_O0.o",
+          "bytes": 32008,
+          "sha256": "0fbb0c0d1723d3e84163ee6d546713e65e5255373859807ac7b4103bc85450a9"
+        }
+      ]
+    },
+    {
+      "path": "D:\\32\\STM32H7\\h7_mac\\output\\FatFsStage08C\\ff_O2.o",
+      "files": [
+        {
+          "path": "output\\FatFsStage08C\\ff_O2.o",
+          "bytes": 28664,
+          "sha256": "588d7bf3cef1caa912ad9a74cc68fdeca05e81dfae0dd53b7771a7efd10349f9"
+        }
+      ]
+    },
+    {
+      "path": "D:\\32\\STM32H7\\h7_mac\\output\\FatFsStage08C\\test_O0.axf",
+      "files": [
+        {
+          "path": "output\\FatFsStage08C\\test_O0.axf",
+          "bytes": 37224,
+          "sha256": "4d012abc2a9e4036c8e0274c98fd542f66760447312aa848055f2ed47bfbc532"
+        }
+      ]
+    },
+    {
+      "path": "D:\\32\\STM32H7\\h7_mac\\output\\FatFsStage08C\\test_O0.o",
+      "files": [
+        {
+          "path": "output\\FatFsStage08C\\test_O0.o",
+          "bytes": 46576,
+          "sha256": "8184a97cb1925c23264f7bc57319fd2abe03d3ef1442c934e682bb61b8963d93"
+        }
+      ]
+    },
+    {
+      "path": "D:\\32\\STM32H7\\h7_mac\\output\\FatFsStage08C\\test_O2.axf",
+      "files": [
+        {
+          "path": "output\\FatFsStage08C\\test_O2.axf",
+          "bytes": 31104,
+          "sha256": "717d1ad130ce26f557fdf136eb8e272d919e1af18ecd8b6b3fce22f0c6ef0885"
+        }
+      ]
+    },
+    {
+      "path": "D:\\32\\STM32H7\\h7_mac\\output\\FatFsStage08C\\test_O2.o",
+      "files": [
+        {
+          "path": "output\\FatFsStage08C\\test_O2.o",
+          "bytes": 42080,
+          "sha256": "aaddd061373dca223ad6b1bb3798e52c8dab577346ef948f4e58b966aaa7f121"
+        }
+      ]
+    }
+  ],
+  "deleted": true
+}

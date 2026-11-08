@@ -1,0 +1,47 @@
+{
+  "total": 20,
+  "passed": 20,
+  "checks": {
+    "upstream_diskio.h": true,
+    "upstream_ff.c": true,
+    "upstream_ff.h": true,
+    "upstream_ff16p1.diff": true,
+    "upstream_ff16p2.diff": true,
+    "upstream_LICENSE.txt": true,
+    "protected_sources_unchanged": true,
+    "preserved_h7_mac.uvoptx": true,
+    "preserved_commands.json": true,
+    "preserved_results.md": true,
+    "local_project_settings_preserved": true,
+    "no_normal_test_entries": true,
+    "normal_no_test_symbols": true,
+    "idma_buffer_unchanged": true,
+    "acceptance_task_linked": true,
+    "acceptance_stack_dtcm": true,
+    "cpu_buffer_s_write": true,
+    "cpu_buffer_s_read": true,
+    "acceptance_project_restored": true,
+    "no_format_functions": true
+  },
+  "normal_axf_sha256": "c0f5e12558f42f1c174558593ed287b75a223cd77f9960506a9b0f3dacb403df",
+  "acceptance_axf_sha256": "ba2495e862337d84e3565aaec2b3c1fca3bf1e9f0bc16c79dcac1125285068d4",
+  "acceptance_symbols": {
+    "g_fatfs_acceptance": {
+      "address": "0x20005e50",
+      "bytes": 176
+    },
+    "s_accept_stack": {
+      "address": "0x20005f50",
+      "bytes": 8192
+    },
+    "s_write": {
+      "address": "0x24010000",
+      "bytes": 131120
+    },
+    "s_read": {
+      "address": "0x24030040",
+      "bytes": 131120
+    }
+  },
+  "hardware_verified": false
+}
