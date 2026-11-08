@@ -1,0 +1,26 @@
+{
+  "cid": [
+    "0x9F544930",
+    "0x30303030",
+    "0x00000189",
+    "0xBD013CBA"
+  ],
+  "capacity_bytes": 7795113984,
+  "first_lba": 1048576,
+  "block_count": 8,
+  "last_lba": 1048583,
+  "byte_offset": 536870912,
+  "bytes": 4096,
+  "user_authorized_overwriting_card_contents": true,
+  "pc_backup_confirmed": false,
+  "hardware_write_verified": false,
+  "hardware_restore_verified": false,
+  "local_test_enabled": true,
+  "repository_default_test_enabled": false,
+  "cm7_errors": 0,
+  "cm7_warnings": 0,
+  "cm4_errors": 0,
+  "cm4_warnings": 0,
+  "axf_sha256": "66dfeedf120aa9626d70a0bb3eda1f3a44e2e89b738305f3a490c4b583a3f88b",
+  "local_firmware": "output/SdmmcStage08B/firmware/write_ready/h7_mac_CM7.axf"
+}

@@ -146,9 +146,9 @@ HAL/LL、Camera、USB、IPC、CM4业务代码、RTOS配置与任务行为均未�
 8. 确认正常任务仍运行，观察Camera/USB实际FPS、IPC心跳延迟、任务栈余量和OLED；连续运行至少5分钟。记录实际吞吐，不把40MHz或20MB/s理论值当作写速。
 9. 测试完成后关闭APP_SD_BLOCK_TEST_ENABLED。Keil停机查看请放在请求结束后，传输中单步/暂停会扰动时序。
 
-## 实板写入验收（当前禁止执行）
+## 实板写入验收（已配置授权参数，执行前完成PC备份）
 
-尚未提供可覆盖原始LBA区域和测试卡CID，因此当前仅完成Mock与编译验收，不授权任何真实写入。
+用户已提供CID，并明确授权该卡现有数据可覆盖。依据导出的MBR，两个分区分别为LBA1024～17407、17408～140287；选定授权测试窗口LBA1048576～1048583，共8扇区4096B，位于512MiB偏移，不覆盖已声明分区或LBA0。PC备份尚未确认，当前不触发真实写入。
 用户须先在PC备份测试卡数据，并明确保留、未被分区/文件系统使用的原始区域；不能把文件系统中的空闲簇当作安全原始区域，不使用LBA0或未知元数据。
 随后另行配置APP_SD_BLOCK_TEST_ENABLED=1、APP_SD_BLOCK_WRITE_TEST_ENABLED=1、SD_TEST_CID0～3、SD_TEST_CAPACITY_BYTES、SD_TEST_WRITE_FIRST_LBA、SD_TEST_WRITE_BLOCKS。缺少参数或LBA0会编译拒绝。
 每次写前核对CID、容量和范围；入口只使用授权区前8扇区。先读备份到独立RAM，request=2执行写模式、逐字节回读、恢复原扇区、再次逐字节核对。
@@ -162,3 +162,22 @@ HAL/LL、Camera、USB、IPC、CM4业务代码、RTOS配置与任务行为均未�
 - 当前单缓冲方案包含CPU复制，未实现双缓冲、存储队列或持续录像缓存。
 - 六组旧测试无法运行、258项历史失败在基线已存在；本次仅证明没有新增退化，未完成全仓历史测试修复。
 - 软件专项通过不等于实板只读通过，更不等于真实写入或原数据恢复通过。
+
+## 本卡写测试配置补记（2026-11-08）
+
+用户已确认4-bit、40MHz IDMA只读通过，读取4096B的CRC为0xA55822CC，导出的sd_layout.hex CRC一致。容量7795113984B，逻辑块512B。
+
+```text
+SD_TEST_CID0=0x9F544930U
+SD_TEST_CID1=0x30303030U
+SD_TEST_CID2=0x00000189U
+SD_TEST_CID3=0xBD013CBAU
+SD_TEST_CAPACITY_BYTES=7795113984ULL
+SD_TEST_WRITE_FIRST_LBA=1048576U
+SD_TEST_WRITE_BLOCKS=8U
+```
+
+本机保留用户已开启的APP_SD_BLOCK_TEST_ENABLED=1和APP_SD_BLOCK_WRITE_TEST_ENABLED=1，仅补全授权参数；未烧录、未执行request=2。
+Git正式项目仅备份上述七项授权参数，不默认开启测试；本机其他Keil设置仍不提交。
+真实写入前先完成PC备份，烧录本机新编译的CM7镜像后手工request=2。成功必须state=2、result=0、restore_result=0、restore_required=0；恢复未完成不要断电或复位。
+单次只读通过不代表持续并行压力、真实写入或原数据恢复通过。
