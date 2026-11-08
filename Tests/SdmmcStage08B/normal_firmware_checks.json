@@ -1,0 +1,22 @@
+{
+  "total": 15,
+  "passed": 15,
+  "checks": {
+    "h7_mac_CM4_no_probes": true,
+    "h7_mac_CM4_no_test_defines": true,
+    "h7_mac_CM7_no_probes": true,
+    "h7_mac_CM7_no_test_defines": true,
+    "compiled_bsp_sdmmc.c": true,
+    "compiled_bsp_sdmmc_memory.c": true,
+    "compiled_sd_block.c": true,
+    "compiled_stm32h7xx_hal_sd.c": true,
+    "compiled_stm32h7xx_ll_sdmmc.c": true,
+    "no_stress_scatter": true,
+    "idma_scatter_retained": true,
+    "no_sd_probe_symbols": true,
+    "idma_buffer_retained": true,
+    "sd_platform_prepare_retained": true,
+    "no_usb_sampler": true
+  },
+  "hardware_verified": false
+}

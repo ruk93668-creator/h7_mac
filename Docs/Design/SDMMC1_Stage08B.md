@@ -1,3 +1,5 @@
+> 2026-11-08收尾：用户已反馈SD实板验收通过；正常工程随后移除识卡/块读写探针、SdTest、测试宏及压力缓冲链接区，底层IDMA/块接口和32KiB AXI区保留。见[清理报告](../../Tests/SdmmcStage08B/probe_cleanup_report.md)。本文中测试开关与Watch流程属于验收阶段，不是当前正常固件的启动步骤。下一阶段未启动。
+
 > 后续维护：用户已批准删除不兼容测试，见 Tests/TestMaintenance/incompatible_tests_removed.json。本文原回归数量是提交13364dc时的历史结果；当前集合另见active_regression_results.json，删除项不计为PASS。
 
 # 阶段08B：SDMMC1 IDMA块设备设计与验收

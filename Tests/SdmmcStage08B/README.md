@@ -1,3 +1,5 @@
+> 当前正式固件已移除SD验收探针、测试宏、SdTest任务及压力专用链接区。独立测试源码和以下历史对照记录保留，不能再把旧request/Watch步骤当作正常固件接口。清理结果见[探针清理报告](probe_cleanup_report.md)；当前链接检查：`python Tests/SdmmcStage08B/check_normal_firmware.py`。后续开发由用户另行安排。
+
 # SDMMC Stage08B
 
 当前临时恢复旧C组d030531复测16FPS：BLOCK=1、STRESS=1、WRITE=0，固定20ms，不含D/POLL_ONLY开关或可调周期。只运行旧C对应run_tests.py（556次）与run_policy_checks.py（15项）；D/Poll源码及审计记录保留作历史，需在36ea40b/6bc08f8对应版本执行。先不处理M-V累积。
