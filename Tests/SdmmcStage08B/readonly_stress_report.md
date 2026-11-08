@@ -100,3 +100,27 @@ APP_SD_BLOCK_STRESS_TEST_ENABLED=1
 按用户要求，当前h7_mac_CM7的APP_SDMMC_TEST_ENABLED、APP_SDMMC_DETECT_ONLY、APP_SD_BLOCK_TEST_ENABLED、APP_SD_BLOCK_WRITE_TEST_ENABLED、APP_SD_BLOCK_STRESS_TEST_ENABLED全部为0。测试代码保留但不创建SdTest任务，也不分配压力缓冲。视频配置保持不变，未调整Camera、USB、帧率或缓冲算法。打开原工程编译并Download，完整断电后使用相同播放器参数测量Camera/USB实际FPS，不再设置request=5。无SD测试固件的实板FPS尚待用户反馈。
 
 无SD测试配置已编译通过：CM7重新编译与CM4增量检查均0 Error、0 Warning；正式AXF不含s_stress_buffer、s_test_stack、s_backup，确认未保留压力任务和测试缓冲。实际FPS仍待实板复测。
+
+## C组压力缓冲迁移对照（2026-11-08）
+
+用户反馈B组（仅任务）USB正常，C组（任务+压力代码/缓冲，未提交request）下降。此结果只将范围缩小到新增代码及布局，尚不能判定根因；未发起请求时没有SD IDMA读取、CPU复制或CRC工作。
+
+本轮仅改变压力缓冲存放段，并增加对应链接映射：
+
+| 对象 | 原位置 | 新位置 |
+| --- | --- | --- |
+| s_stress_buffer | DTCM 0x200026E8 | AXI 0x24010000，32B对齐 |
+| before | 原结构头4B | 0x24010000，4B |
+| data | 原结构头后4B | 0x24010004，33280B |
+| after | 原结构尾4B | 0x24018204，4B |
+| IDMA专用缓冲 | 0x24000000，32768B | 保持不变 |
+
+RW_SD_STRESS_CPU独占0x24010000～0x2401FFFF的64KiB链接窗口，实际结构33288B、末端不包含为0x24018208，不与IDMA的0x24000000～0x24007FFF重叠。原32KiB IDMA MPU Region3不变；未扩大Non-cacheable区域，新CPU缓冲遵循原AXI默认内存属性。IDMA仍只访问原专用缓冲，CPU复制至新的压力缓冲，不需要为该CPU目的缓冲增加DMA Cache维护。
+
+UNINIT不承诺初值；原压力入口已在每次运行前写入两个哨兵，并且只在完整读取成功后计算数据CRC，故无需新增初始化逻辑。未设置request时不读写该缓冲。空测试段使用有优先级的.ANY1命名匹配，关闭测试不会产生找不到段的链接警告，也不会将普通全局变量放入测试区。
+
+C组宏保留：APP_SD_BLOCK_TEST_ENABLED=1、APP_SD_BLOCK_STRESS_TEST_ENABLED=1、APP_SD_BLOCK_WRITE_TEST_ENABLED=0、APP_SDMMC_TEST_ENABLED=0。任务优先级、20ms等待、读卡、CPU复制、CRC、Camera/USB/IPC和视频配置均不修改；未改MPU/Cache/BSP实现。
+
+当前正式CM7重新编译/链接通过、CM4增量检查通过，均0 Error、0 Warning；SD实际BSP/HAL测试556/556 PASS（原断言保留）。`python Tests/SdmmcStage08B/run_memory_audit.py --current` 检查当前正式AXF，不需重新生成已删除的多profile镜像。
+
+实板步骤：原h7_mac.uvprojx选择h7_mac_CM7，编译Download并完整断电重启；先不设置request，按原播放器参数观察一分钟Camera/USB FPS。只比较新的AXI C组与之前的DTCM C组结果。USB若恢复，则继续排查DTCM布局/潜在地址依赖；若未恢复，继续隔离新增代码布局。此实验同时改变链接布局和缓冲内存属性，单次恢复仍不能直接证明具体硬件机制。实际USB FPS待用户反馈，尚未确认根因，不合并main。

@@ -1,0 +1,38 @@
+{
+  "summary": {
+    "total": 5,
+    "passed": 5
+  },
+  "profiles": [
+    {
+      "profile": "current",
+      "checks": {
+        "axi_window": true,
+        "dtcm_boundary": true,
+        "stress_presence": true,
+        "single_existing_task": true,
+        "cpu_buffer_boundary": true
+      },
+      "passed": true,
+      "dtcm_end": "0x2000d678",
+      "symbols": {
+        "s_test_stack": {
+          "address": "0x200006e8",
+          "size": 4096
+        },
+        "s_stress_buffer": {
+          "address": "0x24010000",
+          "size": 33288
+        },
+        "g_sd_block_test": {
+          "address": "0x20000550",
+          "size": 328
+        },
+        "g_sdmmc_dma_buffer": {
+          "address": "0x24000000",
+          "size": 32768
+        }
+      }
+    }
+  ]
+}

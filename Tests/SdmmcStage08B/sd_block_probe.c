@@ -36,7 +36,9 @@ typedef struct
 } SdBlockStressBuffer_t;
 
 //仅压力镜像分配33280B数据区，正常及写测试镜像不占用它
-static SdBlockStressBuffer_t s_stress_buffer;
+//仅改变CPU压力缓冲位置，不直接交给IDMA，也不改变读卡和CRC流程
+static SdBlockStressBuffer_t s_stress_buffer
+    __attribute__((section(".sd_stress_cpu"), zero_init, aligned(32)));
 
 //执行固定范围、有界轮数的只读压力
 static SysResult_t SdBlockTest_Stress(void);
