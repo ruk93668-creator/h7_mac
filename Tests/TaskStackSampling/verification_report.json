@@ -1,0 +1,52 @@
+{
+  "scope": "All task stack watermark scans rate limited to 1000ms; all firmware USB timing instrumentation removed",
+  "stack_guard_tests": {
+    "total": 10,
+    "passed": 10,
+    "detail": "Five actual source guards, ARMCC O0/O2, threshold/repeated-time/delay/tick-wrap checks"
+  },
+  "sd_regression": {
+    "total": 556,
+    "passed": 556
+  },
+  "native_usb": {
+    "total": 11,
+    "passed": 11
+  },
+  "ipc_task": {
+    "total": 41,
+    "passed": 41
+  },
+  "scope_and_link_audit": {
+    "total": 18,
+    "passed": 18
+  },
+  "builds": [
+    {
+      "target": "h7_mac_CM7",
+      "command": "D:/32/UV4/UV4.exe -j0 -b D:\\32\\STM32H7\\h7_mac\\MDK-ARM\\h7_mac.uvprojx -t h7_mac_CM7 -o D:\\32\\STM32H7\\h7_mac\\Tests\\SdmmcStage08B\\h7_mac_CM7_incremental.log",
+      "exit_code": 0,
+      "errors": 0,
+      "warnings": 0,
+      "source_fingerprint_before": "951a7e535e8fd794eb25364ecc92ad85e6603a75cb123026fff45155039fea00",
+      "source_fingerprint_after": "951a7e535e8fd794eb25364ecc92ad85e6603a75cb123026fff45155039fea00",
+      "project_sha_before": "a1faea663b090e1234791ef5b2517f22152bd7b14b77df05facb520969d2d5f2",
+      "project_sha_after": "a1faea663b090e1234791ef5b2517f22152bd7b14b77df05facb520969d2d5f2",
+      "passed": true
+    },
+    {
+      "target": "h7_mac_CM4",
+      "command": "D:/32/UV4/UV4.exe -j0 -b D:\\32\\STM32H7\\h7_mac\\MDK-ARM\\h7_mac.uvprojx -t h7_mac_CM4 -o D:\\32\\STM32H7\\h7_mac\\Tests\\SdmmcStage08B\\h7_mac_CM4_incremental.log",
+      "exit_code": 0,
+      "errors": 0,
+      "warnings": 0,
+      "source_fingerprint_before": "951a7e535e8fd794eb25364ecc92ad85e6603a75cb123026fff45155039fea00",
+      "source_fingerprint_after": "951a7e535e8fd794eb25364ecc92ad85e6603a75cb123026fff45155039fea00",
+      "project_sha_before": "a1faea663b090e1234791ef5b2517f22152bd7b14b77df05facb520969d2d5f2",
+      "project_sha_after": "a1faea663b090e1234791ef5b2517f22152bd7b14b77df05facb520969d2d5f2",
+      "passed": true
+    }
+  ],
+  "hardware_fps_verified": false,
+  "full_repository_regression_rerun": false
+}

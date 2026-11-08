@@ -32,7 +32,7 @@ legacy=ast.parse((ROOT/'Tests/SdmmcStage08A3/run_tests.py').read_text(encoding='
 legacy_names=next(ast.literal_eval(n.value) for n in legacy.body if isinstance(n,ast.Assign) and any(isinstance(t,ast.Name) and t.id=='names' for t in n.targets))
 adapter_names=['未准备时拒绝','静态资源创建失败','Scheduler未启动拒绝','PRIMASK拒绝阻塞','BASEPRI拒绝阻塞','二值唤醒与零超时','重复准备不重复识卡','适配不能被替换','只读单块多块CRC一致','IRQ唤醒任务','错误CID禁止写','错误容量禁止写','没有备份禁止恢复','写入回读并恢复原数据','恢复身份错误保留备份','授权区域越界禁止写']
 write_defines=['-DAPP_SD_BLOCK_TEST_ENABLED=1','-DAPP_SD_BLOCK_WRITE_TEST_ENABLED=1','-DSD_TEST_CID0=1U','-DSD_TEST_CID1=2U','-DSD_TEST_CID2=3U','-DSD_TEST_CID3=4U','-DSD_TEST_CAPACITY_BYTES=34359738368ULL','-DSD_TEST_WRITE_FIRST_LBA=100U','-DSD_TEST_WRITE_BLOCKS=8U']
-profiles=[('idma','Sdmmc08B_TestRun',names,[]),('adapter','SdBlockAdapter_TestRun',adapter_names,write_defines)]
+profiles=[('idma','Sdmmc08B_TestRun',names,[]),('adapter','SdBlockAdapter_TestRun',adapter_names,write_defines+['-DSD_ADAPTER_TIMER_STUB=1'])]
 stress_names=['65扇区64加1分批及轮数上限','到时停止且不补发','在途手动停止等待读完','第二轮CRC不一致立即退出','轮间手动停止','首次驱动错误不恢复重试','待恢复原数据拒绝压力','识卡失败退出','Tick回绕','本地计时停滞仍有轮数上限','缓冲区哨兵损坏','读取超时退出','Watch不能扩大边界','重复在途启动拒绝','卡容量不足拒绝','忙时命令不在退出后自动执行','重复运行重新建基准']
 profiles += [('stress','SdBlockStress_TestRun',stress_names,['-DAPP_SD_BLOCK_TEST_ENABLED=1','-DAPP_SD_BLOCK_STRESS_TEST_ENABLED=1','-DSD_BLOCK_STRESS_DURATION_MS=1000U','-DSD_BLOCK_STRESS_MAX_ROUNDS=3U']),('stress_off','SdBlockStress_TestRun',['关闭压力拒绝请求'],['-DAPP_SD_BLOCK_TEST_ENABLED=1'])]
 

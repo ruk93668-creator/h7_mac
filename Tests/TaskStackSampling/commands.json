@@ -1,0 +1,102 @@
+[
+  {
+    "command": "D:/32/ARM/ARMCC/Bin/armcc.exe --cpu Cortex-M7 --c99 -O0 -c D:\\32\\STM32H7\\h7_mac\\output\\TaskStackSampling\\usb_O0.c -o D:\\32\\STM32H7\\h7_mac\\output\\TaskStackSampling\\usb_O0.o",
+    "exit_code": 0,
+    "output": ""
+  },
+  {
+    "command": "D:/32/ARM/ARMCC/Bin/armlink.exe --entry run --ro_base 0x08000000 --rw_base 0x20000000 D:\\32\\STM32H7\\h7_mac\\output\\TaskStackSampling\\usb_O0.o -o D:\\32\\STM32H7\\h7_mac\\output\\TaskStackSampling\\usb_O0.axf",
+    "exit_code": 0,
+    "output": ""
+  },
+  {
+    "command": "D:/32/ARM/ARMCC/Bin/armcc.exe --cpu Cortex-M7 --c99 -O2 -c D:\\32\\STM32H7\\h7_mac\\output\\TaskStackSampling\\usb_O2.c -o D:\\32\\STM32H7\\h7_mac\\output\\TaskStackSampling\\usb_O2.o",
+    "exit_code": 0,
+    "output": ""
+  },
+  {
+    "command": "D:/32/ARM/ARMCC/Bin/armlink.exe --entry run --ro_base 0x08000000 --rw_base 0x20000000 D:\\32\\STM32H7\\h7_mac\\output\\TaskStackSampling\\usb_O2.o -o D:\\32\\STM32H7\\h7_mac\\output\\TaskStackSampling\\usb_O2.axf",
+    "exit_code": 0,
+    "output": ""
+  },
+  {
+    "command": "D:/32/ARM/ARMCC/Bin/armcc.exe --cpu Cortex-M7 --c99 -O0 -c D:\\32\\STM32H7\\h7_mac\\output\\TaskStackSampling\\camera_O0.c -o D:\\32\\STM32H7\\h7_mac\\output\\TaskStackSampling\\camera_O0.o",
+    "exit_code": 0,
+    "output": ""
+  },
+  {
+    "command": "D:/32/ARM/ARMCC/Bin/armlink.exe --entry run --ro_base 0x08000000 --rw_base 0x20000000 D:\\32\\STM32H7\\h7_mac\\output\\TaskStackSampling\\camera_O0.o -o D:\\32\\STM32H7\\h7_mac\\output\\TaskStackSampling\\camera_O0.axf",
+    "exit_code": 0,
+    "output": ""
+  },
+  {
+    "command": "D:/32/ARM/ARMCC/Bin/armcc.exe --cpu Cortex-M7 --c99 -O2 -c D:\\32\\STM32H7\\h7_mac\\output\\TaskStackSampling\\camera_O2.c -o D:\\32\\STM32H7\\h7_mac\\output\\TaskStackSampling\\camera_O2.o",
+    "exit_code": 0,
+    "output": ""
+  },
+  {
+    "command": "D:/32/ARM/ARMCC/Bin/armlink.exe --entry run --ro_base 0x08000000 --rw_base 0x20000000 D:\\32\\STM32H7\\h7_mac\\output\\TaskStackSampling\\camera_O2.o -o D:\\32\\STM32H7\\h7_mac\\output\\TaskStackSampling\\camera_O2.axf",
+    "exit_code": 0,
+    "output": ""
+  },
+  {
+    "command": "D:/32/ARM/ARMCC/Bin/armcc.exe --cpu Cortex-M7 --c99 -O0 -c D:\\32\\STM32H7\\h7_mac\\output\\TaskStackSampling\\control_O0.c -o D:\\32\\STM32H7\\h7_mac\\output\\TaskStackSampling\\control_O0.o",
+    "exit_code": 0,
+    "output": ""
+  },
+  {
+    "command": "D:/32/ARM/ARMCC/Bin/armlink.exe --entry run --ro_base 0x08000000 --rw_base 0x20000000 D:\\32\\STM32H7\\h7_mac\\output\\TaskStackSampling\\control_O0.o -o D:\\32\\STM32H7\\h7_mac\\output\\TaskStackSampling\\control_O0.axf",
+    "exit_code": 0,
+    "output": ""
+  },
+  {
+    "command": "D:/32/ARM/ARMCC/Bin/armcc.exe --cpu Cortex-M7 --c99 -O2 -c D:\\32\\STM32H7\\h7_mac\\output\\TaskStackSampling\\control_O2.c -o D:\\32\\STM32H7\\h7_mac\\output\\TaskStackSampling\\control_O2.o",
+    "exit_code": 0,
+    "output": ""
+  },
+  {
+    "command": "D:/32/ARM/ARMCC/Bin/armlink.exe --entry run --ro_base 0x08000000 --rw_base 0x20000000 D:\\32\\STM32H7\\h7_mac\\output\\TaskStackSampling\\control_O2.o -o D:\\32\\STM32H7\\h7_mac\\output\\TaskStackSampling\\control_O2.axf",
+    "exit_code": 0,
+    "output": ""
+  },
+  {
+    "command": "D:/32/ARM/ARMCC/Bin/armcc.exe --cpu Cortex-M7 --c99 -O0 -c D:\\32\\STM32H7\\h7_mac\\output\\TaskStackSampling\\ipc_O0.c -o D:\\32\\STM32H7\\h7_mac\\output\\TaskStackSampling\\ipc_O0.o",
+    "exit_code": 0,
+    "output": ""
+  },
+  {
+    "command": "D:/32/ARM/ARMCC/Bin/armlink.exe --entry run --ro_base 0x08000000 --rw_base 0x20000000 D:\\32\\STM32H7\\h7_mac\\output\\TaskStackSampling\\ipc_O0.o -o D:\\32\\STM32H7\\h7_mac\\output\\TaskStackSampling\\ipc_O0.axf",
+    "exit_code": 0,
+    "output": ""
+  },
+  {
+    "command": "D:/32/ARM/ARMCC/Bin/armcc.exe --cpu Cortex-M7 --c99 -O2 -c D:\\32\\STM32H7\\h7_mac\\output\\TaskStackSampling\\ipc_O2.c -o D:\\32\\STM32H7\\h7_mac\\output\\TaskStackSampling\\ipc_O2.o",
+    "exit_code": 0,
+    "output": ""
+  },
+  {
+    "command": "D:/32/ARM/ARMCC/Bin/armlink.exe --entry run --ro_base 0x08000000 --rw_base 0x20000000 D:\\32\\STM32H7\\h7_mac\\output\\TaskStackSampling\\ipc_O2.o -o D:\\32\\STM32H7\\h7_mac\\output\\TaskStackSampling\\ipc_O2.axf",
+    "exit_code": 0,
+    "output": ""
+  },
+  {
+    "command": "D:/32/ARM/ARMCC/Bin/armcc.exe --cpu Cortex-M7 --c99 -O0 -c D:\\32\\STM32H7\\h7_mac\\output\\TaskStackSampling\\sd_O0.c -o D:\\32\\STM32H7\\h7_mac\\output\\TaskStackSampling\\sd_O0.o",
+    "exit_code": 0,
+    "output": ""
+  },
+  {
+    "command": "D:/32/ARM/ARMCC/Bin/armlink.exe --entry run --ro_base 0x08000000 --rw_base 0x20000000 D:\\32\\STM32H7\\h7_mac\\output\\TaskStackSampling\\sd_O0.o -o D:\\32\\STM32H7\\h7_mac\\output\\TaskStackSampling\\sd_O0.axf",
+    "exit_code": 0,
+    "output": ""
+  },
+  {
+    "command": "D:/32/ARM/ARMCC/Bin/armcc.exe --cpu Cortex-M7 --c99 -O2 -c D:\\32\\STM32H7\\h7_mac\\output\\TaskStackSampling\\sd_O2.c -o D:\\32\\STM32H7\\h7_mac\\output\\TaskStackSampling\\sd_O2.o",
+    "exit_code": 0,
+    "output": ""
+  },
+  {
+    "command": "D:/32/ARM/ARMCC/Bin/armlink.exe --entry run --ro_base 0x08000000 --rw_base 0x20000000 D:\\32\\STM32H7\\h7_mac\\output\\TaskStackSampling\\sd_O2.o -o D:\\32\\STM32H7\\h7_mac\\output\\TaskStackSampling\\sd_O2.axf",
+    "exit_code": 0,
+    "output": ""
+  }
+]

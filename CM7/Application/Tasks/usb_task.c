@@ -1,8 +1,5 @@
 #include "usb_task.h"
 
-#if defined(APP_USB_ISO_TIMING_TEST_ENABLED) && APP_USB_ISO_TIMING_TEST_ENABLED
-#include "usb_iso_timing.h"
-#endif
 #include "app_status.h"
 #include "app_events.h"
 #include "app_messages.h"
@@ -17,6 +14,9 @@
 #define USB_TASK_STACK_WORDS 2048U
 #define USB_TASK_PRIORITY 4U
 #define USB_TASK_WAIT_MS 20U
+
+//栈余量统计周期，不作为任务唤醒周期
+#define USB_TASK_STACK_SAMPLE_MS 1000U
 
 //保存Usb任务的静态控制信息
 static StaticTask_t s_usb_tcb;
@@ -96,6 +96,10 @@ SysResult_t UsbTask_Create(void)
 static void UsbTask_Run(void *argument)
 {
     uint32_t events;
+
+    //独立记录栈扫描时刻，不改变任务等待和业务周期
+    uint32_t stack_tick = Platform_TimeGetMs();
+    uint32_t stack_now;
     SysResult_t result;
     (void)argument;
 
@@ -103,19 +107,8 @@ static void UsbTask_Run(void *argument)
     {
 
         //SOF和传输回调直接唤醒；20ms超时仅作枚举和恢复兜底
-#if defined(APP_USB_ISO_TIMING_TEST_ENABLED) && APP_USB_ISO_TIMING_TEST_ENABLED
-
-    //记录等待前时刻，区分通知已挂起与任务真正阻塞
-        UsbIsoTiming_Record(USB_ISO_TIME_WAIT_BEGIN, 0U, 0U);
-#endif
         result = App_EventsWait(RUNTIME_TARGET_USB, g_usb_task_debug.boot_seen ?
             USB_TASK_WAIT_MS : APP_EVENTS_WAIT_FOREVER, &events);
-#if defined(APP_USB_ISO_TIMING_TEST_ENABLED) && APP_USB_ISO_TIMING_TEST_ENABLED
-
-    //等待返回立即采样，detail保存事件位或失败码
-        UsbIsoTiming_Record(USB_ISO_TIME_WAIT_RETURN, 0U,
-            result == SYS_OK ? events : (uint32_t)result);
-#endif
 
         if (result == SYS_ERR_TIMEOUT)
             g_usb_task_debug.timeout_count++;
@@ -126,28 +119,15 @@ static void UsbTask_Run(void *argument)
             continue;
         }
         UsbTask_Process(events);
-#if defined(APP_USB_ISO_TIMING_TEST_ENABLED) && APP_USB_ISO_TIMING_TEST_ENABLED
-
-        //记录状态发布前时刻，不改变快照发布频率
-        UsbIsoTiming_Record(USB_ISO_TIME_PUBLISH_BEGIN, 0U, 0U);
-#endif
         UsbTask_PublishStatus();
-#if defined(APP_USB_ISO_TIMING_TEST_ENABLED) && APP_USB_ISO_TIMING_TEST_ENABLED
 
-        //记录状态发布返回时刻，区分发布与栈扫描耗时
-        UsbIsoTiming_Record(USB_ISO_TIME_PUBLISH_END, 0U, 0U);
-#endif
-#if defined(APP_USB_ISO_TIMING_TEST_ENABLED) && APP_USB_ISO_TIMING_TEST_ENABLED
-
-        //记录栈余量扫描开始时刻，不提前读取或跳过扫描
-        UsbIsoTiming_Record(USB_ISO_TIME_STACK_BEGIN, 0U, 0U);
-#endif
-        g_usb_task_debug.stack_free_words = uxTaskGetStackHighWaterMark(NULL);
-#if defined(APP_USB_ISO_TIMING_TEST_ENABLED) && APP_USB_ISO_TIMING_TEST_ENABLED
-
-        //记录栈扫描结束，detail保存本轮原有扫描结果
-        UsbIsoTiming_Record(USB_ISO_TIME_STACK_END, 0U, g_usb_task_debug.stack_free_words);
-#endif
+        //栈扫描每秒最多一次，避免占用每包处理时隙
+        stack_now = Platform_TimeGetMs();
+        if ((uint32_t)(stack_now - stack_tick) >= USB_TASK_STACK_SAMPLE_MS)
+        {
+            stack_tick = stack_now;
+            g_usb_task_debug.stack_free_words = uxTaskGetStackHighWaterMark(NULL);
+        }
 
     }
 }
@@ -161,23 +141,12 @@ static void UsbTask_Process(uint32_t events)
     bool uvc;
     uint32_t now, elapsed, frames, total, sof, gap;
 
-#if defined(APP_USB_ISO_TIMING_TEST_ENABLED) && APP_USB_ISO_TIMING_TEST_ENABLED
-
-    //记录任务处理入口，与等待返回分开观察
-    UsbIsoTiming_Record(USB_ISO_TIME_PROCESS_ENTER, 0U, events);
-#endif
-
     if (!App_MessagesIsOwner(RUNTIME_TARGET_USB))
         return;
     if ((events & RUNTIME_EVENT_BOOT_READY) != 0U)
         g_usb_task_debug.boot_seen = 1U;
     if (!g_usb_task_debug.boot_seen)
         return;
-#if defined(APP_USB_ISO_TIMING_TEST_ENABLED) && APP_USB_ISO_TIMING_TEST_ENABLED
-
-    //只在UsbTask处理手动采样和冻结收尾，不改变原事件分发
-    UsbIsoTiming_Process();
-#endif
     g_usb_task_debug.wake_count++;
 
     //记录任务实际观察到的SOF间隔，不把配置FPS当作测量结果
@@ -244,23 +213,8 @@ static void UsbTask_Process(uint32_t events)
             (void)USB_UVC_CancelFrame();
 
         //所有任务侧UVC操作都在UsbTask；ISR仍同步处理EP0和保存Token
-#if defined(APP_USB_ISO_TIMING_TEST_ENABLED) && APP_USB_ISO_TIMING_TEST_ENABLED
-
-    //记录首次进入UVC前时刻，隔离命令和Mode处理耗时
-        UsbIsoTiming_Record(USB_ISO_TIME_UVC_ENTER, 0U, 0U);
-#endif
         USB_UVC_Process();
-#if defined(APP_USB_ISO_TIMING_TEST_ENABLED) && APP_USB_ISO_TIMING_TEST_ENABLED
-
-        //记录正常路径首次UVC返回，不额外调用协议处理
-        UsbIsoTiming_Record(USB_ISO_TIME_UVC_RETURN, 0U, 0U);
-#endif
         App_UvcBridgeUsbProcess(s_usb_started && !s_usb_stopping);
-#if defined(APP_USB_ISO_TIMING_TEST_ENABLED) && APP_USB_ISO_TIMING_TEST_ENABLED
-
-        //记录桥接返回，保留原帧租借和归还顺序
-        UsbIsoTiming_Record(USB_ISO_TIME_BRIDGE_RETURN, 0U, 0U);
-#endif
 
         if (s_usb_stopping)
             USB_UVC_Process();

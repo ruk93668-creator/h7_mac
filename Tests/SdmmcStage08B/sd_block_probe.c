@@ -25,6 +25,9 @@ static StackType_t s_test_stack[1024] __attribute__((aligned(8)));
 //保存八扇区数据，用于单块和多块读取一致性检查
 static uint8_t s_test_data[8U * 512U];
 
+//仅由SdTest任务使用，两个调用点共用扫描节流时刻
+static uint32_t s_stack_sample_tick;
+
 #if APP_SD_BLOCK_STRESS_TEST_ENABLED
 
 //用前后哨兵保护65扇区CPU缓冲区，IDMA仍只访问BSP专用AXI区
@@ -49,6 +52,9 @@ static SysResult_t SdBlockTest_StressFinish(uint32_t started, uint32_t reason, S
 
 //分发手工测试命令，保留写恢复义务的优先级
 static SysResult_t SdBlockTest_RunRequest(uint32_t request);
+
+//按一秒间隔更新当前测试任务的栈余量
+static void SdBlockTest_SampleStack(void);
 
 //等待BOOT放行后处理Watch命令
 static void SdBlockTest_Task(void *argument);
@@ -104,6 +110,9 @@ static void SdBlockTest_Task(void *argument)
     uint32_t request;
     (void)argument;
 
+    //从任务启动计时，不改变BOOT等待和20ms轮询
+    s_stack_sample_tick = Platform_TimeGetMs();
+
     //调度器启动不等于应用准备成功，等待既有BOOT标志后再进行可选测试
     while (g_app_tasks_debug.boot_released == 0U)
         vTaskDelay(pdMS_TO_TICKS(20U));
@@ -123,7 +132,7 @@ static void SdBlockTest_Task(void *argument)
                 g_sd_block_test.io = io;
             if (BSP_SDMMC_GetDiagnostics(&init) == SYS_OK)
                 g_sd_block_test.init = init;
-            g_sd_block_test.stack_free_words = uxTaskGetStackHighWaterMark(NULL);
+            SdBlockTest_SampleStack();
             g_sd_block_test.state = g_sd_block_test.result == SYS_OK ? 2U : 3U;
         }
         vTaskDelay(pdMS_TO_TICKS(20U));
@@ -302,7 +311,7 @@ static SysResult_t SdBlockTest_Stress(void)
         g_sd_block_test.stress.completed_rounds++;
         g_sd_block_test.stress.bytes_read += sizeof(s_stress_buffer.data);
         g_sd_block_test.stress.elapsed_ms = Platform_TimeGetMs() - started;
-        g_sd_block_test.stack_free_words = uxTaskGetStackHighWaterMark(NULL);
+        SdBlockTest_SampleStack();
 
         //手工停止等待当前完整读取结束，不中途释放驱动缓冲区
         if (g_sd_block_test.stress.stop_request != 0U)
@@ -438,6 +447,20 @@ static SysResult_t SdBlockTest_Write(void)
     return result != SYS_OK ? result : restore;
 }
 #endif
+
+//按一秒间隔更新当前测试任务的栈余量
+static void SdBlockTest_SampleStack(void)
+{
+    uint32_t now = Platform_TimeGetMs();
+
+    //无符号差值支持Tick回绕，延迟后只扫描一次
+    if ((uint32_t)(now - s_stack_sample_tick) >= 1000U)
+    {
+        s_stack_sample_tick = now;
+        g_sd_block_test.stack_free_words = uxTaskGetStackHighWaterMark(NULL);
+    }
+}
+
 #endif
 
 FRAMEWORK_INIT_REGISTER(SdBlockTest_Prepare, INIT_LEVEL_APPLICATION);

@@ -8,13 +8,6 @@
 #include <stddef.h>
 #include <string.h>
 
-#if defined(APP_USB_ISO_TIMING_TEST_ENABLED) && APP_USB_ISO_TIMING_TEST_ENABLED
-
-    //仅采样构建接入时间记录，不改变通用USB通知接口
-#include "usb_iso_timing.h"
-#endif
-
-
 //对应官方Core的16个端点编号，不预设Class用途
 #define USB_DEVICE_EP_COUNT 16U
 
@@ -1285,19 +1278,7 @@ static void Usb_DataIn(uint8_t ep, uint8_t *data)
     }
 
     //完成协议回调后唤醒上层任务，通知本身不代表新一帧可释放
-#if defined(APP_USB_ISO_TIMING_TEST_ENABLED) && APP_USB_ISO_TIMING_TEST_ENABLED
-
-    //标记EP1完成通知开始，序号沿用Core已确认的事务
-    if (ep == 1U)
-        UsbIsoTiming_Record(USB_ISO_TIME_NOTIFY_BEGIN, s_in_completed[ep], 0U);
-#endif
     Usb_Notify(USB_DEVICE_EVENT_IO);
-#if defined(APP_USB_ISO_TIMING_TEST_ENABLED) && APP_USB_ISO_TIMING_TEST_ENABLED
-
-    //标记通知返回，此时仍在原IRQ内，不代表任务已经运行
-    if (ep == 1U)
-        UsbIsoTiming_Record(USB_ISO_TIME_NOTIFY_END, s_in_completed[ep], 0U);
-#endif
 }
 
 //记录IN传输失败结果
@@ -1756,12 +1737,6 @@ static void Usb_Sof(uint16_t frame)
 
     //由官方Core转交当前Class，不在Platform调度具体视频源
     (void)USBD_LL_SOF(&s_device);
-
-#if defined(APP_USB_ISO_TIMING_TEST_ENABLED) && APP_USB_ISO_TIMING_TEST_ENABLED
-
-    //记录真实SOF通知前时刻，用于核对完成与唤醒的相位
-    UsbIsoTiming_Record(USB_ISO_TIME_SOF, s_sof_sequence, frame);
-#endif
 
     //每个真实SOF唤醒UsbTask，不在ISR构包，也不依赖20ms轮询
     Usb_Notify(USB_DEVICE_EVENT_IO);

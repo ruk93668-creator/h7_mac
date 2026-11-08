@@ -71,6 +71,15 @@ void vTaskDelay(TickType_t ticks)
 }
 UBaseType_t uxTaskGetStackHighWaterMark(TaskHandle_t task){(void)task;return 256U;}
 
+#if defined(SD_ADAPTER_TIMER_STUB)
+
+//适配层单测使用本地Mock Tick，压力单测保留自己的计时注入
+uint32_t Platform_TimeGetMs(void)
+{
+    return s_tick;
+}
+#endif
+
 //执行等待适配和写测试授权场景
 uint32_t SdBlockAdapter_TestRun(uint32_t id)
 {

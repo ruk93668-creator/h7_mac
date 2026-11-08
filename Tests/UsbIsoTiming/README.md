@@ -1,3 +1,5 @@
+> 历史采样记录：当前固件已按用户要求删除全部USB耗时采样点、记录器和专用链接区域。以下说明仅对应此前采样版本，不能用于当前固件。保留PC解析器及原测试/构建结果供复查，已移除的采样器和ARM测试入口可从d1654c9历史提交查看。当前改动与验收见 ../TaskStackSampling/README.md。
+
 # USB EP1 ISO时序采样
 
 本轮以旧C组为采集基线，SD测试代码与d030531保持一致；SD request保持0。只增加编译开关保护的观察点，不修改HAL/LL、ST Core、USB状态机、Payload算法、端点参数、优先级、Camera、Media、IPC、OLED、WFI或时钟设置。不排查M-V。

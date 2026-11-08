@@ -3,9 +3,6 @@
 //主机请求：IRQ -> HAL PCD -> 回调表 -> USB Device Core
 #include "bsp_usb.h"
 
-#if defined(APP_USB_ISO_TIMING_TEST_ENABLED) && APP_USB_ISO_TIMING_TEST_ENABLED
-#include "usb_iso_timing.h"
-#endif
 #include "framework_init.h"
 #include "stm32h7xx_hal.h"
 #include <stddef.h>
@@ -90,11 +87,6 @@ SysResult_t BSP_USB_Init(void)
     if (s_ready)
         return SYS_OK;
 
-#if defined(APP_USB_ISO_TIMING_TEST_ENABLED) && APP_USB_ISO_TIMING_TEST_ENABLED
-
-    //只准备手动采样，不开启采样也不复位DWT
-    UsbIsoTiming_Init();
-#endif
     result = Usb_ClockInit();
     if (result != SYS_OK)
         return result;
@@ -415,7 +407,6 @@ SysResult_t BSP_USB_AbortAll(void)
     return SYS_OK;
 }
 
-
 //清空空闲端点FIFO；OUT方向共享RX，存在任一接收时禁止清空
 SysResult_t BSP_USB_FlushEp(uint8_t ep)
 {
@@ -540,19 +531,7 @@ SysResult_t BSP_USB_Transmit(uint8_t ep, uint8_t *data, uint32_t size)
     transfer->packet_length = packet;
     transfer->active = true;
     Usb_PrepareTxPacket(index, data, packet);
-#if defined(APP_USB_ISO_TIMING_TEST_ENABLED) && APP_USB_ISO_TIMING_TEST_ENABLED
-
-    //只观察EP1调用HAL之前的硬件帧与端点状态
-    if (ep == 0x81U)
-        UsbIsoTiming_Record(USB_ISO_TIME_HAL_ENTER, 0U, packet);
-#endif
     status = HAL_PCD_EP_Transmit(&s_pcd, ep, s_tx_pio_pool[index], packet);
-#if defined(APP_USB_ISO_TIMING_TEST_ENABLED) && APP_USB_ISO_TIMING_TEST_ENABLED
-
-    //HAL返回时才记录，界定目标帧设置与FIFO写入所在时间范围
-    if (ep == 0x81U)
-        UsbIsoTiming_Record(USB_ISO_TIME_HAL_EXIT, 0U, (uint32_t)status);
-#endif
     if (status != HAL_OK) memset(transfer, 0, sizeof(*transfer));
     return Usb_HalResult(status);
 }

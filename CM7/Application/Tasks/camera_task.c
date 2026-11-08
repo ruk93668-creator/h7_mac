@@ -14,6 +14,9 @@
 #define CAMERA_TASK_PRIORITY 3U
 #define CAMERA_TASK_WAIT_MS 20U
 
+//栈余量统计周期，不作为任务唤醒周期
+#define CAMERA_TASK_STACK_SAMPLE_MS 1000U
+
 //保存Camera任务的静态控制信息
 static StaticTask_t s_camera_tcb;
 
@@ -103,6 +106,10 @@ SysResult_t CameraTask_Create(void)
 static void CameraTask_Run(void *argument)
 {
     uint32_t events;
+
+    //独立记录栈扫描时刻，不改变任务等待和业务周期
+    uint32_t stack_tick = Platform_TimeGetMs();
+    uint32_t stack_now;
     SysResult_t result;
     (void)argument;
 
@@ -122,7 +129,14 @@ static void CameraTask_Run(void *argument)
         }
         CameraTask_Process(events);
         CameraTask_PublishStatus();
-        g_camera_task_debug.stack_free_words = uxTaskGetStackHighWaterMark(NULL);
+
+        //栈余量按实际经过时间更新，不补做错过的扫描
+        stack_now = Platform_TimeGetMs();
+        if ((uint32_t)(stack_now - stack_tick) >= CAMERA_TASK_STACK_SAMPLE_MS)
+        {
+            stack_tick = stack_now;
+            g_camera_task_debug.stack_free_words = uxTaskGetStackHighWaterMark(NULL);
+        }
     }
 }
 

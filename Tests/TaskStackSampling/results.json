@@ -1,0 +1,85 @@
+{
+  "total": 10,
+  "passed": 10,
+  "cases": [
+    {
+      "module": "usb",
+      "optimization": "O0",
+      "passed": true,
+      "failed_check": 0,
+      "source_sha256": "57950336cfbfd22a6367df5980b3a5bb4cb15c93ab9109e17c18a4acc979d8e7"
+    },
+    {
+      "module": "usb",
+      "optimization": "O2",
+      "passed": true,
+      "failed_check": 0,
+      "source_sha256": "57950336cfbfd22a6367df5980b3a5bb4cb15c93ab9109e17c18a4acc979d8e7"
+    },
+    {
+      "module": "camera",
+      "optimization": "O0",
+      "passed": true,
+      "failed_check": 0,
+      "source_sha256": "ef6469d354c8be6a34d28490af60f39d8882a082553e7c4fa64be6182cdda6a3"
+    },
+    {
+      "module": "camera",
+      "optimization": "O2",
+      "passed": true,
+      "failed_check": 0,
+      "source_sha256": "ef6469d354c8be6a34d28490af60f39d8882a082553e7c4fa64be6182cdda6a3"
+    },
+    {
+      "module": "control",
+      "optimization": "O0",
+      "passed": true,
+      "failed_check": 0,
+      "source_sha256": "76b8a1e3975e14a0fe35461de9898794edf486980a1907432b7f5261200f64f9"
+    },
+    {
+      "module": "control",
+      "optimization": "O2",
+      "passed": true,
+      "failed_check": 0,
+      "source_sha256": "76b8a1e3975e14a0fe35461de9898794edf486980a1907432b7f5261200f64f9"
+    },
+    {
+      "module": "ipc",
+      "optimization": "O0",
+      "passed": true,
+      "failed_check": 0,
+      "source_sha256": "07034559e428e107f81d959867d55af912724defc1d789f1df44ff2d1ea5710a"
+    },
+    {
+      "module": "ipc",
+      "optimization": "O2",
+      "passed": true,
+      "failed_check": 0,
+      "source_sha256": "07034559e428e107f81d959867d55af912724defc1d789f1df44ff2d1ea5710a"
+    },
+    {
+      "module": "sd",
+      "optimization": "O0",
+      "passed": true,
+      "failed_check": 0,
+      "source_sha256": "7ca29793ed5ef9c6133ca8b9d459089626bdf870d919f88aa8021bb1fabbeec8"
+    },
+    {
+      "module": "sd",
+      "optimization": "O2",
+      "passed": true,
+      "failed_check": 0,
+      "source_sha256": "7ca29793ed5ef9c6133ca8b9d459089626bdf870d919f88aa8021bb1fabbeec8"
+    }
+  ],
+  "coverage": [
+    "999/1000ms boundary",
+    "repeat timestamp",
+    "no catch-up after delay",
+    "unsigned tick wrap",
+    "result preserved",
+    "SD two call sites share one limiter"
+  ],
+  "hardware_fps_verified": false
+}
