@@ -149,7 +149,9 @@ static void ControlTask_Process(uint32_t events)
     AppMessage_t message;
     uint32_t i;
     bool active;
-    bool uvc = VideoConfig_GetDefault()->output == VIDEO_OUTPUT_USB_UVC;
+    //SD-only同样需要Camera，NONE只是不连接USB
+    bool uvc = VideoConfig_GetDefault()->output == VIDEO_OUTPUT_USB_UVC ||
+        VideoConfig_GetDefault()->output == VIDEO_OUTPUT_NONE;
 
     if (!App_MessagesIsOwner(RUNTIME_TARGET_CONTROL))
         return;

@@ -1,0 +1,122 @@
+[
+  {
+    "profile": "mjpeg_usb",
+    "compiled_config_defines": [
+      "APP_VIDEO_MJPEG_MODE=1"
+    ],
+    "configuration_only_change": "none",
+    "compile_command": [
+      "D:\\32\\ARM\\ARMCC\\Bin\\armcc.exe",
+      "--cpu",
+      "Cortex-M7.fp.dp",
+      "--c99",
+      "--gnu",
+      "-O0",
+      "--split_sections",
+      "-g",
+      "-I",
+      "D:\\32\\STM32H7\\h7_stage08d\\CM7\\Application",
+      "-I",
+      "D:\\32\\STM32H7\\h7_stage08d\\CM7\\Platform",
+      "-I",
+      "D:\\32\\STM32H7\\h7_stage08d\\Common\\Inc",
+      "-DAPP_VIDEO_MJPEG_MODE=1",
+      "-c",
+      "D:\\32\\STM32H7\\h7_stage08d\\output\\Stage08D\\profiles\\mjpeg_usb\\video_config.c",
+      "-o",
+      "D:\\32\\STM32H7\\h7_stage08d\\output\\Stage08D\\profiles\\mjpeg_usb\\video_config.o"
+    ],
+    "link_command": [
+      "D:\\32\\ARM\\ARMCC\\Bin\\armlink.exe",
+      "--via",
+      "D:\\32\\STM32H7\\h7_stage08d\\output\\Stage08D\\profiles\\mjpeg_usb\\link.lnp"
+    ],
+    "exit_code": 0,
+    "warnings": 0,
+    "errors": 0,
+    "reused_fully_built_objects": true,
+    "axf": "output\\Stage08D\\profiles\\mjpeg_usb\\h7_mac_CM7.axf",
+    "sha256": "e2c26dcabea5c2833f2eea1ebbec2c843c9bdc57999c1e112d35820f32d8998f",
+    "project_unchanged": true
+  },
+  {
+    "profile": "usb_test",
+    "compiled_config_defines": [
+      "APP_VIDEO_TEST_MODE=1"
+    ],
+    "configuration_only_change": "none",
+    "compile_command": [
+      "D:\\32\\ARM\\ARMCC\\Bin\\armcc.exe",
+      "--cpu",
+      "Cortex-M7.fp.dp",
+      "--c99",
+      "--gnu",
+      "-O0",
+      "--split_sections",
+      "-g",
+      "-I",
+      "D:\\32\\STM32H7\\h7_stage08d\\CM7\\Application",
+      "-I",
+      "D:\\32\\STM32H7\\h7_stage08d\\CM7\\Platform",
+      "-I",
+      "D:\\32\\STM32H7\\h7_stage08d\\Common\\Inc",
+      "-DAPP_VIDEO_TEST_MODE=1",
+      "-c",
+      "D:\\32\\STM32H7\\h7_stage08d\\output\\Stage08D\\profiles\\usb_test\\video_config.c",
+      "-o",
+      "D:\\32\\STM32H7\\h7_stage08d\\output\\Stage08D\\profiles\\usb_test\\video_config.o"
+    ],
+    "link_command": [
+      "D:\\32\\ARM\\ARMCC\\Bin\\armlink.exe",
+      "--via",
+      "D:\\32\\STM32H7\\h7_stage08d\\output\\Stage08D\\profiles\\usb_test\\link.lnp"
+    ],
+    "exit_code": 0,
+    "warnings": 0,
+    "errors": 0,
+    "reused_fully_built_objects": true,
+    "axf": "output\\Stage08D\\profiles\\usb_test\\h7_mac_CM7.axf",
+    "sha256": "435f495e3ac6d133a6b719584bf97d9cc37cf8a31ec123145a7eebe3d4f1f0ba",
+    "project_unchanged": true
+  },
+  {
+    "profile": "jpeg_sd_only",
+    "compiled_config_defines": [
+      "APP_VIDEO_MJPEG_MODE=1"
+    ],
+    "configuration_only_change": "output=NONE",
+    "compile_command": [
+      "D:\\32\\ARM\\ARMCC\\Bin\\armcc.exe",
+      "--cpu",
+      "Cortex-M7.fp.dp",
+      "--c99",
+      "--gnu",
+      "-O0",
+      "--split_sections",
+      "-g",
+      "-I",
+      "D:\\32\\STM32H7\\h7_stage08d\\CM7\\Application",
+      "-I",
+      "D:\\32\\STM32H7\\h7_stage08d\\CM7\\Platform",
+      "-I",
+      "D:\\32\\STM32H7\\h7_stage08d\\Common\\Inc",
+      "-DAPP_VIDEO_MJPEG_MODE=1",
+      "-c",
+      "D:\\32\\STM32H7\\h7_stage08d\\output\\Stage08D\\profiles\\jpeg_sd_only\\video_config.c",
+      "-o",
+      "D:\\32\\STM32H7\\h7_stage08d\\output\\Stage08D\\profiles\\jpeg_sd_only\\video_config.o"
+    ],
+    "link_command": [
+      "D:\\32\\ARM\\ARMCC\\Bin\\armlink.exe",
+      "--via",
+      "D:\\32\\STM32H7\\h7_stage08d\\output\\Stage08D\\profiles\\jpeg_sd_only\\link.lnp"
+    ],
+    "exit_code": 0,
+    "warnings": 0,
+    "errors": 0,
+    "reused_fully_built_objects": true,
+    "axf": "output\\Stage08D\\profiles\\jpeg_sd_only\\h7_mac_CM7.axf",
+    "sha256": "b6a6d32348b8000ce937dcb6a9dc922d2cf73acf8493e6a40992c9d02eead408",
+    "project_unchanged": true
+  }
+]

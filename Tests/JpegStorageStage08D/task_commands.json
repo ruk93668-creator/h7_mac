@@ -1,0 +1,37 @@
+[
+  {
+    "command": "D:/32/ARM/ARMCC/Bin/armcc.exe --vsn",
+    "exit": 0,
+    "output": "Product: MDK Plus 5.32\r\nComponent: ARM Compiler 5.06 update 7 (build 960)\r\nTool: armcc [4d365d]\r\nFor support see http://www.arm.com/support\r\nSoftware supplied by: ARM Limited\r\n"
+  },
+  {
+    "command": "D:/32/ARM/ARMCC/Bin/armcc.exe --cpu Cortex-M7.fp.sp --c99 -O0 -DSTM32H747xx -DCORE_CM7 -DUSE_HAL_DRIVER -I D:\\32\\STM32H7\\h7_stage08d\\CM7\\Core\\Inc -I D:\\32\\STM32H7\\h7_stage08d\\CM7\\Application -I D:\\32\\STM32H7\\h7_stage08d\\CM7\\Application\\Tasks -I D:\\32\\STM32H7\\h7_stage08d\\CM7\\Platform -I D:\\32\\STM32H7\\h7_stage08d\\CM7\\Service -I D:\\32\\STM32H7\\h7_stage08d\\CM7\\Framework -I D:\\32\\STM32H7\\h7_stage08d\\CM7\\Media\\Inc -I D:\\32\\STM32H7\\h7_stage08d\\CM7\\BSP -I D:\\32\\STM32H7\\h7_stage08d\\Common\\Inc -I D:\\32\\STM32H7\\h7_stage08d\\Drivers\\STM32H7xx_HAL_Driver\\Inc -I D:\\32\\STM32H7\\h7_stage08d\\Drivers\\CMSIS\\Include -I D:\\32\\STM32H7\\h7_stage08d\\Drivers\\CMSIS\\Device\\ST\\STM32H7xx\\Include -I D:\\32\\STM32H7\\h7_stage08d\\Middlewares\\ST\\STM32_USB_Device_Library\\Core\\Inc -I D:\\32\\STM32H7\\h7_stage08d\\Middlewares\\Third_Party\\FreeRTOS\\Source\\include -I D:\\32\\STM32H7\\h7_stage08d\\Middlewares\\Third_Party\\FreeRTOS\\Source\\portable\\RVDS\\ARM_CM7\\r0p1 -c D:\\32\\STM32H7\\h7_stage08d\\Tests\\JpegStorageStage08D\\task_test.c -o D:\\32\\STM32H7\\h7_stage08d\\output\\Stage08D\\task_task_test.o",
+    "exit": 0,
+    "output": ""
+  },
+  {
+    "command": "D:/32/ARM/ARMCC/Bin/armcc.exe --cpu Cortex-M7.fp.sp --c99 -O0 -DSTM32H747xx -DCORE_CM7 -DUSE_HAL_DRIVER -I D:\\32\\STM32H7\\h7_stage08d\\CM7\\Core\\Inc -I D:\\32\\STM32H7\\h7_stage08d\\CM7\\Application -I D:\\32\\STM32H7\\h7_stage08d\\CM7\\Application\\Tasks -I D:\\32\\STM32H7\\h7_stage08d\\CM7\\Platform -I D:\\32\\STM32H7\\h7_stage08d\\CM7\\Service -I D:\\32\\STM32H7\\h7_stage08d\\CM7\\Framework -I D:\\32\\STM32H7\\h7_stage08d\\CM7\\Media\\Inc -I D:\\32\\STM32H7\\h7_stage08d\\CM7\\BSP -I D:\\32\\STM32H7\\h7_stage08d\\Common\\Inc -I D:\\32\\STM32H7\\h7_stage08d\\Drivers\\STM32H7xx_HAL_Driver\\Inc -I D:\\32\\STM32H7\\h7_stage08d\\Drivers\\CMSIS\\Include -I D:\\32\\STM32H7\\h7_stage08d\\Drivers\\CMSIS\\Device\\ST\\STM32H7xx\\Include -I D:\\32\\STM32H7\\h7_stage08d\\Middlewares\\ST\\STM32_USB_Device_Library\\Core\\Inc -I D:\\32\\STM32H7\\h7_stage08d\\Middlewares\\Third_Party\\FreeRTOS\\Source\\include -I D:\\32\\STM32H7\\h7_stage08d\\Middlewares\\Third_Party\\FreeRTOS\\Source\\portable\\RVDS\\ARM_CM7\\r0p1 -c D:\\32\\STM32H7\\h7_stage08d\\Drivers\\STM32H7xx_HAL_Driver\\Src\\stm32h7xx_hal_cortex.c -o D:\\32\\STM32H7\\h7_stage08d\\output\\Stage08D\\task_stm32h7xx_hal_cortex.o",
+    "exit": 0,
+    "output": ""
+  },
+  {
+    "command": "D:/32/ARM/ARMCC/Bin/armcc.exe --cpu Cortex-M7.fp.sp --c99 -O0 -DSTM32H747xx -DCORE_CM7 -DUSE_HAL_DRIVER -I D:\\32\\STM32H7\\h7_stage08d\\CM7\\Core\\Inc -I D:\\32\\STM32H7\\h7_stage08d\\CM7\\Application -I D:\\32\\STM32H7\\h7_stage08d\\CM7\\Application\\Tasks -I D:\\32\\STM32H7\\h7_stage08d\\CM7\\Platform -I D:\\32\\STM32H7\\h7_stage08d\\CM7\\Service -I D:\\32\\STM32H7\\h7_stage08d\\CM7\\Framework -I D:\\32\\STM32H7\\h7_stage08d\\CM7\\Media\\Inc -I D:\\32\\STM32H7\\h7_stage08d\\CM7\\BSP -I D:\\32\\STM32H7\\h7_stage08d\\Common\\Inc -I D:\\32\\STM32H7\\h7_stage08d\\Drivers\\STM32H7xx_HAL_Driver\\Inc -I D:\\32\\STM32H7\\h7_stage08d\\Drivers\\CMSIS\\Include -I D:\\32\\STM32H7\\h7_stage08d\\Drivers\\CMSIS\\Device\\ST\\STM32H7xx\\Include -I D:\\32\\STM32H7\\h7_stage08d\\Middlewares\\ST\\STM32_USB_Device_Library\\Core\\Inc -I D:\\32\\STM32H7\\h7_stage08d\\Middlewares\\Third_Party\\FreeRTOS\\Source\\include -I D:\\32\\STM32H7\\h7_stage08d\\Middlewares\\Third_Party\\FreeRTOS\\Source\\portable\\RVDS\\ARM_CM7\\r0p1 -c D:\\32\\STM32H7\\h7_stage08d\\Middlewares\\Third_Party\\FreeRTOS\\Source\\list.c -o D:\\32\\STM32H7\\h7_stage08d\\output\\Stage08D\\task_list.o",
+    "exit": 0,
+    "output": ""
+  },
+  {
+    "command": "D:/32/ARM/ARMCC/Bin/armcc.exe --cpu Cortex-M7.fp.sp --c99 -O0 -DSTM32H747xx -DCORE_CM7 -DUSE_HAL_DRIVER -I D:\\32\\STM32H7\\h7_stage08d\\CM7\\Core\\Inc -I D:\\32\\STM32H7\\h7_stage08d\\CM7\\Application -I D:\\32\\STM32H7\\h7_stage08d\\CM7\\Application\\Tasks -I D:\\32\\STM32H7\\h7_stage08d\\CM7\\Platform -I D:\\32\\STM32H7\\h7_stage08d\\CM7\\Service -I D:\\32\\STM32H7\\h7_stage08d\\CM7\\Framework -I D:\\32\\STM32H7\\h7_stage08d\\CM7\\Media\\Inc -I D:\\32\\STM32H7\\h7_stage08d\\CM7\\BSP -I D:\\32\\STM32H7\\h7_stage08d\\Common\\Inc -I D:\\32\\STM32H7\\h7_stage08d\\Drivers\\STM32H7xx_HAL_Driver\\Inc -I D:\\32\\STM32H7\\h7_stage08d\\Drivers\\CMSIS\\Include -I D:\\32\\STM32H7\\h7_stage08d\\Drivers\\CMSIS\\Device\\ST\\STM32H7xx\\Include -I D:\\32\\STM32H7\\h7_stage08d\\Middlewares\\ST\\STM32_USB_Device_Library\\Core\\Inc -I D:\\32\\STM32H7\\h7_stage08d\\Middlewares\\Third_Party\\FreeRTOS\\Source\\include -I D:\\32\\STM32H7\\h7_stage08d\\Middlewares\\Third_Party\\FreeRTOS\\Source\\portable\\RVDS\\ARM_CM7\\r0p1 -c D:\\32\\STM32H7\\h7_stage08d\\Middlewares\\Third_Party\\FreeRTOS\\Source\\queue.c -o D:\\32\\STM32H7\\h7_stage08d\\output\\Stage08D\\task_queue.o",
+    "exit": 0,
+    "output": ""
+  },
+  {
+    "command": "D:/32/ARM/ARMCC/Bin/armcc.exe --cpu Cortex-M7.fp.sp --c99 -O0 -DSTM32H747xx -DCORE_CM7 -DUSE_HAL_DRIVER -I D:\\32\\STM32H7\\h7_stage08d\\CM7\\Core\\Inc -I D:\\32\\STM32H7\\h7_stage08d\\CM7\\Application -I D:\\32\\STM32H7\\h7_stage08d\\CM7\\Application\\Tasks -I D:\\32\\STM32H7\\h7_stage08d\\CM7\\Platform -I D:\\32\\STM32H7\\h7_stage08d\\CM7\\Service -I D:\\32\\STM32H7\\h7_stage08d\\CM7\\Framework -I D:\\32\\STM32H7\\h7_stage08d\\CM7\\Media\\Inc -I D:\\32\\STM32H7\\h7_stage08d\\CM7\\BSP -I D:\\32\\STM32H7\\h7_stage08d\\Common\\Inc -I D:\\32\\STM32H7\\h7_stage08d\\Drivers\\STM32H7xx_HAL_Driver\\Inc -I D:\\32\\STM32H7\\h7_stage08d\\Drivers\\CMSIS\\Include -I D:\\32\\STM32H7\\h7_stage08d\\Drivers\\CMSIS\\Device\\ST\\STM32H7xx\\Include -I D:\\32\\STM32H7\\h7_stage08d\\Middlewares\\ST\\STM32_USB_Device_Library\\Core\\Inc -I D:\\32\\STM32H7\\h7_stage08d\\Middlewares\\Third_Party\\FreeRTOS\\Source\\include -I D:\\32\\STM32H7\\h7_stage08d\\Middlewares\\Third_Party\\FreeRTOS\\Source\\portable\\RVDS\\ARM_CM7\\r0p1 -c D:\\32\\STM32H7\\h7_stage08d\\Middlewares\\Third_Party\\FreeRTOS\\Source\\portable\\RVDS\\ARM_CM7\\r0p1\\port.c -o D:\\32\\STM32H7\\h7_stage08d\\output\\Stage08D\\task_port.o",
+    "exit": 0,
+    "output": ""
+  },
+  {
+    "command": "D:/32/ARM/ARMCC/Bin/armlink.exe D:\\32\\STM32H7\\h7_stage08d\\output\\Stage08D\\task_task_test.o D:\\32\\STM32H7\\h7_stage08d\\output\\Stage08D\\task_stm32h7xx_hal_cortex.o D:\\32\\STM32H7\\h7_stage08d\\output\\Stage08D\\task_list.o D:\\32\\STM32H7\\h7_stage08d\\output\\Stage08D\\task_queue.o D:\\32\\STM32H7\\h7_stage08d\\output\\Stage08D\\task_port.o --entry StorageRuntime_TestRun --scatter D:\\32\\STM32H7\\h7_stage08d\\Tests\\IpcRuntime\\task_test.sct --no_scanlib -o D:\\32\\STM32H7\\h7_stage08d\\output\\Stage08D\\task_test.axf",
+    "exit": 0,
+    "output": ""
+  }
+]

@@ -1,0 +1,58 @@
+{
+  "total": 11,
+  "passed": 11,
+  "checks": {
+    "riff": true,
+    "hdrl": true,
+    "stream": true,
+    "rate": true,
+    "three_frames": true,
+    "index": true,
+    "index_0": true,
+    "index_1": true,
+    "index_2": true,
+    "ffprobe": true,
+    "decode": true
+  },
+  "probe": {
+    "programs": [],
+    "stream_groups": [],
+    "streams": [
+      {
+        "codec_name": "mjpeg",
+        "width": 320,
+        "height": 240,
+        "r_frame_rate": "10/1",
+        "avg_frame_rate": "10/1",
+        "nb_read_frames": "3"
+      }
+    ]
+  },
+  "commands": [
+    [
+      "C:\\Users\\29062\\AppData\\Local\\Microsoft\\WinGet\\Packages\\Gyan.FFmpeg_Microsoft.Winget.Source_8wekyb3d8bbwe\\ffmpeg-9.0.2-full_build\\bin\\ffprobe.EXE",
+      "-v",
+      "error",
+      "-count_frames",
+      "-show_entries",
+      "stream=codec_name,width,height,r_frame_rate,avg_frame_rate,nb_read_frames",
+      "-of",
+      "json",
+      "D:\\32\\STM32H7\\h7_stage08d\\output\\Stage08D\\sample_O2.avi"
+    ],
+    [
+      "C:\\Users\\29062\\AppData\\Local\\Microsoft\\WinGet\\Packages\\Gyan.FFmpeg_Microsoft.Winget.Source_8wekyb3d8bbwe\\ffmpeg-9.0.2-full_build\\bin\\ffmpeg.EXE",
+      "-v",
+      "error",
+      "-xerror",
+      "-i",
+      "D:\\32\\STM32H7\\h7_stage08d\\output\\Stage08D\\sample_O2.avi",
+      "-f",
+      "null",
+      "-"
+    ]
+  ],
+  "decoder_stderr": "",
+  "synthetic_fixture": true,
+  "hardware_verified": false
+}

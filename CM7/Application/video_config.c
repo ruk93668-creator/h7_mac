@@ -52,3 +52,25 @@ SysResult_t VideoConfig_RequestUpdate(const VideoConfig_t *config)
 
     return SYS_ERR_NOT_SUPPORTED;
 }
+
+//SD录像策略独立于USB目标FPS，不设置传感器时序
+static const AppStorageConfig_t s_storage_config =
+{
+    .record_fps = 10U,
+
+    .segment_bytes = 4UL * 1024UL * 1024UL,
+
+    .segment_ms = 60000U,
+
+    .total_bytes = 16UL * 1024UL * 1024UL,
+
+    .reserve_bytes = 512UL * 1024UL,
+
+    .max_segments = 16U
+};
+
+//提供静态只读策略，开始保存仍需显式业务请求
+const AppStorageConfig_t *VideoConfig_GetStorage(void)
+{
+    return &s_storage_config;
+}

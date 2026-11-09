@@ -1,0 +1,27 @@
+[
+  {
+    "command": "D:\\32\\ARM\\ARMCC\\Bin\\armcc.exe --vsn",
+    "exit_code": 0,
+    "output": "Product: MDK Plus 5.32\r\nComponent: ARM Compiler 5.06 update 7 (build 960)\r\nTool: armcc [4d365d]\r\nFor support see http://www.arm.com/support\r\nSoftware supplied by: ARM Limited\r\n"
+  },
+  {
+    "command": "D:\\32\\ARM\\ARMCC\\Bin\\armcc.exe --cpu Cortex-M7 --c99 -O0 --split_sections -I D:\\32\\STM32H7\\h7_stage08d\\Tests\\JpegStorageStage08D\\stubs -I D:\\32\\STM32H7\\h7_stage08d\\CM7\\Application -I D:\\32\\STM32H7\\h7_stage08d\\CM7\\Service -I D:\\32\\STM32H7\\h7_stage08d\\CM7\\Platform -I D:\\32\\STM32H7\\h7_stage08d\\CM7\\Media\\Inc -I D:\\32\\STM32H7\\h7_stage08d\\CM7\\BSP -I D:\\32\\STM32H7\\h7_stage08d\\Common\\Inc -I D:\\32\\STM32H7\\h7_stage08d\\CM7\\Framework -I D:\\32\\STM32H7\\h7_stage08d\\Middlewares\\ST\\STM32_USB_Device_Library\\Core\\Inc -c D:\\32\\STM32H7\\h7_stage08d\\Tests\\JpegStorageStage08D\\storage_test.c -o D:\\32\\STM32H7\\h7_stage08d\\output\\Stage08D\\test_O0.o",
+    "exit_code": 0,
+    "output": ""
+  },
+  {
+    "command": "D:\\32\\ARM\\ARMCC\\Bin\\armlink.exe D:\\32\\STM32H7\\h7_stage08d\\output\\Stage08D\\test_O0.o --entry Stage08D_TestRun --scatter D:\\32\\STM32H7\\h7_stage08d\\Tests\\JpegStorageStage08D\\test.sct -o D:\\32\\STM32H7\\h7_stage08d\\output\\Stage08D\\test_O0.axf",
+    "exit_code": 0,
+    "output": ""
+  },
+  {
+    "command": "D:\\32\\ARM\\ARMCC\\Bin\\armcc.exe --cpu Cortex-M7 --c99 -O2 --split_sections -I D:\\32\\STM32H7\\h7_stage08d\\Tests\\JpegStorageStage08D\\stubs -I D:\\32\\STM32H7\\h7_stage08d\\CM7\\Application -I D:\\32\\STM32H7\\h7_stage08d\\CM7\\Service -I D:\\32\\STM32H7\\h7_stage08d\\CM7\\Platform -I D:\\32\\STM32H7\\h7_stage08d\\CM7\\Media\\Inc -I D:\\32\\STM32H7\\h7_stage08d\\CM7\\BSP -I D:\\32\\STM32H7\\h7_stage08d\\Common\\Inc -I D:\\32\\STM32H7\\h7_stage08d\\CM7\\Framework -I D:\\32\\STM32H7\\h7_stage08d\\Middlewares\\ST\\STM32_USB_Device_Library\\Core\\Inc -c D:\\32\\STM32H7\\h7_stage08d\\Tests\\JpegStorageStage08D\\storage_test.c -o D:\\32\\STM32H7\\h7_stage08d\\output\\Stage08D\\test_O2.o",
+    "exit_code": 0,
+    "output": ""
+  },
+  {
+    "command": "D:\\32\\ARM\\ARMCC\\Bin\\armlink.exe D:\\32\\STM32H7\\h7_stage08d\\output\\Stage08D\\test_O2.o --entry Stage08D_TestRun --scatter D:\\32\\STM32H7\\h7_stage08d\\Tests\\JpegStorageStage08D\\test.sct -o D:\\32\\STM32H7\\h7_stage08d\\output\\Stage08D\\test_O2.axf",
+    "exit_code": 0,
+    "output": ""
+  }
+]

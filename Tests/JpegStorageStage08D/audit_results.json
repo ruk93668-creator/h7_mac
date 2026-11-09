@@ -1,0 +1,62 @@
+{
+  "baseline": "41a4ba4405d1a9eae5c84f9c9764432f3d052d76",
+  "total": 21,
+  "passed": 21,
+  "checks": {
+    "protected_sources_unchanged": true,
+    "unchanged_h7_mac.uvoptx": true,
+    "unchanged_h7_mac_CM7_custom.sct": true,
+    "unchanged_h7_mac_CM4_custom.sct": true,
+    "only_new_groups_in_keil": true,
+    "no_historical_sd_test_defines": true,
+    "unchanged_App_UvcBridgeUsbProcess": true,
+    "unchanged_Bridge_SameLease": true,
+    "unchanged_Bridge_UsbReturn": true,
+    "full_builds_clean": true,
+    "build_matches_final_sources": true,
+    "profiles_clean": true,
+    "storage_stack": true,
+    "original_idma": true,
+    "ipc_layout": true,
+    "five_boot_targets": true,
+    "no_legacy_test_symbols": true,
+    "storage_code_linked": true,
+    "compiled_pool_addresses": true,
+    "pool_and_index_within_mpu": true,
+    "single_state_writer": true
+  },
+  "pool_addresses": [
+    "0xd0384000",
+    "0xd0395180",
+    "0xd03a6300",
+    "0xd03b7480"
+  ],
+  "index_region": [
+    "0xd03d0000",
+    "0xd03e0000"
+  ],
+  "symbols": {
+    "s_stack": {
+      "address": "0x2000b3e8",
+      "bytes": 8192
+    },
+    "g_sdmmc_dma_buffer": {
+      "address": "0x24000000",
+      "bytes": 32768
+    },
+    "g_ipc": {
+      "address": "0x38000000",
+      "bytes": 320
+    },
+    "g_storage_debug": {
+      "address": "0x2000b2e0",
+      "bytes": 184
+    },
+    "s_tasks": {
+      "address": "0x20005f6c",
+      "bytes": 20
+    }
+  },
+  "formal_axf_sha256": "0c0ab933eff157fc5dccf8e5a550f01ed135c54fb1586718613ce6992c08ddca",
+  "hardware_verified": false
+}

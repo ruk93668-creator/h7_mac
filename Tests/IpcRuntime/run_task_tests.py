@@ -34,7 +34,7 @@ with (ROOT/'output/IpcRuntime/task_test.axf').open('rb') as f:
 
 from unicorn import UC_HOOK_CODE, UC_HOOK_MEM_INVALID
 from unicorn.arm_const import UC_ARM_REG_BASEPRI
-names=['four BOOT targets','ISR create rejected','duplicate IPC create','IPC static create failure','owner registration failure','IPC attach failure','init failure closes BOOT','missing IPC attachment','pending IPC event survives BOOT','IPC cannot release BOOT','IPC entry waits before BOOT','duplicate BOOT rejected','late IPC create rejected','all four receive BOOT','only IPC task is writer','static stack size/alignment','BOOT starts service and blocks 100ms','ISR not owner','wait for other task rejected','duplicate app create rejected']
+names=['five BOOT targets','ISR create rejected','duplicate IPC create','IPC static create failure','owner registration failure','IPC attach failure','init failure closes BOOT','missing IPC attachment','pending IPC event survives BOOT','IPC cannot release BOOT','IPC entry waits before BOOT','duplicate BOOT rejected','late IPC create rejected','all five receive BOOT','only IPC task is writer','static stack size/alignment','BOOT starts service and blocks 100ms','ISR not owner','wait for other task rejected','duplicate app create rejected']
 rows=[]
 for case_id,name in enumerate(names):
  u=Uc(UC_ARCH_ARM,UC_MODE_THUMB|UC_MODE_MCLASS)

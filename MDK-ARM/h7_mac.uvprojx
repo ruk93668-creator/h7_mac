@@ -2346,7 +2346,19 @@
             <FileOption><CommonProperty><IncludeInBuild>0</IncludeInBuild></CommonProperty></FileOption>
           </File></Files>
         </Group>
-      </Groups>
+      <Group><GroupName>Stage08D Storage</GroupName><GroupOption><CommonProperty><IncludeInBuild>0</IncludeInBuild></CommonProperty></GroupOption><Files>
+            <File><FileName>app_storage.c</FileName><FileType>1</FileType><FilePath>../CM7/Application/app_storage.c</FilePath><FileOption><CommonProperty><IncludeInBuild>0</IncludeInBuild></CommonProperty></FileOption></File>
+            <File><FileName>app_storage.h</FileName><FileType>5</FileType><FilePath>../CM7/Application/app_storage.h</FilePath><FileOption><CommonProperty><IncludeInBuild>0</IncludeInBuild></CommonProperty></FileOption></File>
+            <File><FileName>app_frame_dispatcher.c</FileName><FileType>1</FileType><FilePath>../CM7/Application/app_frame_dispatcher.c</FilePath><FileOption><CommonProperty><IncludeInBuild>0</IncludeInBuild></CommonProperty></FileOption></File>
+            <File><FileName>app_frame_dispatcher.h</FileName><FileType>5</FileType><FilePath>../CM7/Application/app_frame_dispatcher.h</FilePath><FileOption><CommonProperty><IncludeInBuild>0</IncludeInBuild></CommonProperty></FileOption></File>
+            <File><FileName>storage_task.c</FileName><FileType>1</FileType><FilePath>../CM7/Application/Tasks/storage_task.c</FilePath><FileOption><CommonProperty><IncludeInBuild>0</IncludeInBuild></CommonProperty></FileOption></File>
+            <File><FileName>storage_task.h</FileName><FileType>5</FileType><FilePath>../CM7/Application/Tasks/storage_task.h</FilePath><FileOption><CommonProperty><IncludeInBuild>0</IncludeInBuild></CommonProperty></FileOption></File>
+            <File><FileName>jpeg_frame.c</FileName><FileType>1</FileType><FilePath>../CM7/Service/jpeg_frame.c</FilePath><FileOption><CommonProperty><IncludeInBuild>0</IncludeInBuild></CommonProperty></FileOption></File>
+            <File><FileName>jpeg_frame.h</FileName><FileType>5</FileType><FilePath>../CM7/Service/jpeg_frame.h</FilePath><FileOption><CommonProperty><IncludeInBuild>0</IncludeInBuild></CommonProperty></FileOption></File>
+            <File><FileName>mjpeg_avi.c</FileName><FileType>1</FileType><FilePath>../CM7/Service/mjpeg_avi.c</FilePath><FileOption><CommonProperty><IncludeInBuild>0</IncludeInBuild></CommonProperty></FileOption></File>
+            <File><FileName>mjpeg_avi.h</FileName><FileType>5</FileType><FilePath>../CM7/Service/mjpeg_avi.h</FilePath><FileOption><CommonProperty><IncludeInBuild>0</IncludeInBuild></CommonProperty></FileOption></File>
+          </Files></Group>
+</Groups>
     </Target>
     <Target>
       <TargetName>h7_mac_CM7</TargetName>
@@ -4105,6 +4117,18 @@
             </File>
           </Files>
         </Group>
+      <Group><GroupName>Stage08D Storage</GroupName><Files>
+            <File><FileName>app_storage.c</FileName><FileType>1</FileType><FilePath>../CM7/Application/app_storage.c</FilePath></File>
+            <File><FileName>app_storage.h</FileName><FileType>5</FileType><FilePath>../CM7/Application/app_storage.h</FilePath></File>
+            <File><FileName>app_frame_dispatcher.c</FileName><FileType>1</FileType><FilePath>../CM7/Application/app_frame_dispatcher.c</FilePath></File>
+            <File><FileName>app_frame_dispatcher.h</FileName><FileType>5</FileType><FilePath>../CM7/Application/app_frame_dispatcher.h</FilePath></File>
+            <File><FileName>storage_task.c</FileName><FileType>1</FileType><FilePath>../CM7/Application/Tasks/storage_task.c</FilePath></File>
+            <File><FileName>storage_task.h</FileName><FileType>5</FileType><FilePath>../CM7/Application/Tasks/storage_task.h</FilePath></File>
+            <File><FileName>jpeg_frame.c</FileName><FileType>1</FileType><FilePath>../CM7/Service/jpeg_frame.c</FilePath></File>
+            <File><FileName>jpeg_frame.h</FileName><FileType>5</FileType><FilePath>../CM7/Service/jpeg_frame.h</FilePath></File>
+            <File><FileName>mjpeg_avi.c</FileName><FileType>1</FileType><FilePath>../CM7/Service/mjpeg_avi.c</FilePath></File>
+            <File><FileName>mjpeg_avi.h</FileName><FileType>5</FileType><FilePath>../CM7/Service/mjpeg_avi.h</FilePath></File>
+          </Files></Group>
       </Groups>
     </Target>
   </Targets>

@@ -1,0 +1,26 @@
+[
+  {
+    "target": "h7_mac_CM7",
+    "command": "D:/32/UV4/UV4.exe -j0 -r D:\\32\\STM32H7\\h7_stage08d\\MDK-ARM\\h7_mac.uvprojx -t h7_mac_CM7 -o D:\\32\\STM32H7\\h7_stage08d\\Tests\\JpegStorageStage08D\\h7_mac_CM7_rebuild.log",
+    "exit_code": 0,
+    "errors": 0,
+    "warnings": 0,
+    "source_fingerprint_before": "2bad8570eb02e50756b087c9504ffb5708d946f5ad095228b80e4f9a128e7b32",
+    "source_fingerprint_after": "2bad8570eb02e50756b087c9504ffb5708d946f5ad095228b80e4f9a128e7b32",
+    "project_sha_before": "ea075a76bfc28a69a4565b95a5747f0563f1f15a1289fa39ce49e02c951acd67",
+    "project_sha_after": "ea075a76bfc28a69a4565b95a5747f0563f1f15a1289fa39ce49e02c951acd67",
+    "passed": true
+  },
+  {
+    "target": "h7_mac_CM4",
+    "command": "D:/32/UV4/UV4.exe -j0 -r D:\\32\\STM32H7\\h7_stage08d\\MDK-ARM\\h7_mac.uvprojx -t h7_mac_CM4 -o D:\\32\\STM32H7\\h7_stage08d\\Tests\\JpegStorageStage08D\\h7_mac_CM4_rebuild.log",
+    "exit_code": 0,
+    "errors": 0,
+    "warnings": 0,
+    "source_fingerprint_before": "2bad8570eb02e50756b087c9504ffb5708d946f5ad095228b80e4f9a128e7b32",
+    "source_fingerprint_after": "2bad8570eb02e50756b087c9504ffb5708d946f5ad095228b80e4f9a128e7b32",
+    "project_sha_before": "ea075a76bfc28a69a4565b95a5747f0563f1f15a1289fa39ce49e02c951acd67",
+    "project_sha_after": "ea075a76bfc28a69a4565b95a5747f0563f1f15a1289fa39ce49e02c951acd67",
+    "passed": true
+  }
+]

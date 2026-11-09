@@ -15,8 +15,8 @@ volatile uint32_t g_case,g_fail_line,g_runtime_starts,g_runtime_steps,g_authoriz
 static uint32_t s_tick;
 static bool (*s_owner_check)(void *);
 static void *s_owner_context;
-static StaticTask_t s_other_tcbs[3];
-static StackType_t s_other_stacks[3][128];
+static StaticTask_t s_other_tcbs[4];
+static StackType_t s_other_stacks[4][128];
 static uint32_t s_other_count;
 #define CHECK(x) do{if(!(x)){g_fail_line=__LINE__;return 1;}}while(0)
 
@@ -44,6 +44,7 @@ static SysResult_t OtherCreate(RuntimeEventTarget_t target,UBaseType_t priority)
 SysResult_t CameraTask_Create(void){return OtherCreate(RUNTIME_TARGET_CAMERA,3U);}
 SysResult_t UsbTask_Create(void){return OtherCreate(RUNTIME_TARGET_USB,4U);}
 SysResult_t ControlTask_Create(void){return OtherCreate(RUNTIME_TARGET_CONTROL,2U);}
+SysResult_t StorageTask_Create(void){return OtherCreate(RUNTIME_TARGET_STORAGE,1U);}
 
 //只替换Service边界，验证实际IPC任务的调用顺序和当前任务身份
 SysResult_t IPC_Service_SetRuntimeOwner(bool (*check)(void *),void *context)
@@ -77,7 +78,7 @@ int IpcTask_TestRun(uint32_t id)
     uint32_t events,i;
     SysResult_t result;
     g_case=id;
-    if(id==0U){CHECK(RUNTIME_TARGET_COUNT==4U);CHECK(sizeof(s_tasks)/sizeof(s_tasks[0])==4U);return 0;}
+    if(id==0U){CHECK(RUNTIME_TARGET_COUNT==5U);CHECK(sizeof(s_tasks)/sizeof(s_tasks[0])==5U);return 0;}
     if(id==1U){test_ipsr=16U;CHECK(IpcTask_Create()==SYS_ERR_INVALID_STATE);return 0;}
     result=App_TasksCreate();
     if(id==3U || id==4U || id==5U)
@@ -88,7 +89,7 @@ int IpcTask_TestRun(uint32_t id)
         CHECK(g_runtime_starts==0U);return 0;
     }
     CHECK(result==SYS_OK);
-    CHECK(g_app_tasks_debug.created_tasks==4U && uxTaskGetNumberOfTasks()==4U);
+    CHECK(g_app_tasks_debug.created_tasks==5U && uxTaskGetNumberOfTasks()==5U);
     CHECK(s_tasks[RUNTIME_TARGET_IPC]==s_ipc_task && g_authorizations==1U);
     CHECK(g_runtime_starts==0U && g_runtime_steps==0U);
     if(id==2U){CHECK(IpcTask_Create()==SYS_ERR_ALREADY_EXISTS);return 0;}
