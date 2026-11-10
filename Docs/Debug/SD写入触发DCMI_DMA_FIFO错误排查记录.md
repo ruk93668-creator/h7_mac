@@ -154,6 +154,54 @@ memcpy读取SDRAM本身是合法操作，也允许被中断打断。正常情况
 
 > 定位到FE捕获时的一处未受控SDRAM读取，并补齐输入中转边界；该读取与FE之间的具体因果机制尚未确定，修改效果仍需严格对照和长期验证。
 
+## 待验证假设：SDRAM访问竞争延后采集DMA的内存服务
+
+这是根据历史现场形成的候选解释，不是新增实板测量或已经确认的硬件根因。
+
+~~~text
+FatFS内部memcpy连续读取SDRAM
+          ↓
+与相机DMA写SDRAM争用内存访问通路
+          ↓
+相机DMA获得内存服务的时间被延后
+          ↓
+DMA FIFO出现异常，置位FE
+~~~
+
+**中间“延后多少、是否足以造成FE”没有实测证据。** 更准确的措辞是：DMA可能因竞争而等待，进而影响FIFO服务裕量；不能直接将这一链路当作本次已确认事实。
+
+### 支持怀疑方向的现有证据
+
+| 证据 | 能说明什么 |
+| --- | --- |
+| 首次FE被捕获时，Storage正在库复制 | CPU复制与FE捕获存在时间关联，不单独证明复制导致FE |
+| 复制源地址位于SDRAM | CPU读取与采集DMA写入经过同一外部存储访问通路，即使数据地址不同也可能竞争 |
+| SDMMC1->IDMACTRL=0 | 至少这次不要求SDMMC IDMA正在传输，不能只解释为两路DMA同时搬运 |
+| 当轮DMA为FIFO FULL、Word、内存INCR4 | 未看到明显的FIFO阈值与内存突发大小不匹配；并不排除其他配置、时序或硬件因素 |
+| 受控复制改为字节访问后仍报错，随后找到FatFS另一处复制 | 原先的访问控制没有覆盖全部SDRAM读取，字节复制对照不能证明所有复制路径均已排除 |
+
+ST的[STM32H7 DMA官方培训资料](https://www.st.com/content/ccc/resource/training/technical/product_training/group0/86/28/2f/08/4d/ad/49/61/STM32H7-System-Direct_memory_access_controller_DMA/files/STM32H7-System-Direct_memory_access_controller_DMA.pdf/_jcr_content/translations/en.STM32H7-System-Direct_memory_access_controller_DMA.pdf)将FIFO上溢、下溢以及阈值与突发大小不兼容列为FE来源。**FE标志本身不能区分这些具体原因，更不能直接指出是哪个软件函数导致的。** 资料说明的是一般触发条件，不是本项目的因果证明。
+
+### DMA写内存和DMA中断，不是同一种“打断”
+
+CPU执行memcpy时，相机DMA可以并行搬运。两者同时访问SDRAM会经过仲裁，某次访问可能等待；DMA不会像IRQ那样主动让CPU保存现场、跳入中断函数。
+
+DMA产生完成或错误IRQ后，中断才会打断CPU当前的memcpy。即使IRQ能及时打断CPU，也不能证明此前DMA已经及时获得SDRAM访问服务。中断优先级与总线仲裁属于不同机制。
+
+### 还缺哪些对照
+
+后续可在相同采集配置、输入数据和持续时间下比较：
+
+1. 原路径：FatFS直接读取SDRAM。
+2. 中转路径：先受控复制到内部RAM，FatFS只读取内部RAM。
+3. 不写卡，仅施加可比的SDRAM读取负载。
+
+各组都记录首次FE、发生前的传输进度和运行时间。比较时同时核对复制长度、访问方式、帧租约、缓存属性及调度条件；增加中转也会改变时序，不能只凭一组恢复就认定FMC是唯一原因。
+
+本次仅记录实验设计，没有执行这些新的对照，也不宣称测得仲裁延迟或FIFO瞬时水位。
+
+**当前判断：总线服务延迟是有证据支持的候选原因；FatFS复制是FE现场中已定位的访问路径之一，尚未证明它就是FE的确定原因。**
+
 ## 结论边界
 
 已确认：
