@@ -1,7 +1,6 @@
 //SDMMC1只负责低速1-bit识卡与诊断，不接文件系统或视频链路
 #include "bsp_sdmmc.h"
 #include "bsp_sdram.h"
-#include "bsp_sd_copy_debug.h"
 #include "stm32h7xx_hal.h"
 #include <stddef.h>
 #include <string.h>
@@ -45,8 +44,6 @@ static BspSdmmcWaitOps_t s_wait_ops;
 //记录块事务、原始错误和恢复结果
 static BspSdmmcIoDiagnostics_t s_io;
 
-//临时保存复制阶段和首次DCMI故障，不参与任何资源状态决策
-volatile BspSdCopyDebug_t g_sd_copy_debug;
 
 //IRQ只锁存硬件状态，任务侧调用HAL处理终止事件
 static volatile uint32_t s_irq_status;
@@ -72,8 +69,8 @@ static bool Sdmmc_CpuBufferValid(const void *buffer, uint32_t bytes, bool write)
 static SysResult_t Sdmmc_CopyToAxi(const uint8_t *source, uint32_t bytes,
     uint32_t started, uint32_t timeout_ms);
 
-//只标记并执行一次复制，不改变中断开关或段间等待
-static void Sdmmc_CopyMarked(uint8_t *destination, const uint8_t *source, uint32_t bytes);
+//按内存地址执行原有复制，不改变中断开关或段间等待
+static void Sdmmc_CopyBytes(uint8_t *destination, const uint8_t *source, uint32_t bytes);
 
 //处理终止事件并等待卡返回TRANSFER
 static SysResult_t Sdmmc_WaitBatch(uint32_t started, uint32_t timeout_ms);
@@ -823,93 +820,32 @@ static bool Sdmmc_CpuBufferValid(const void *buffer, uint32_t bytes, bool write)
     return valid;
 }
 
-//锁存首次DCMI错误时的复制现场
-void BSP_SDMMC_CaptureCopyFault(int32_t result, uint32_t dma_error)
+//按地址类型执行受控复制
+static void Sdmmc_CopyBytes(uint8_t *destination, const uint8_t *source, uint32_t bytes)
 {
-    uint32_t mask = __get_PRIMASK();
-    uint32_t sequence;
-
-    //只在首次错误捕获短暂屏蔽中断，避免嵌套错误覆盖半份现场
-    __disable_irq();
-    if (g_sd_copy_debug.fault.state != 0U)
-    {
-        __set_PRIMASK(mask);
-        return;
-    }
-    g_sd_copy_debug.fault.state = 1U;
-    __DMB();
-
-    //复制标记尚未提交时明确记为不一致，不把半更新地址当成证据
-    sequence = g_sd_copy_debug.live.sequence;
-    g_sd_copy_debug.fault.copy_consistent = (sequence & 1U) == 0U ? 1U : 0U;
-    g_sd_copy_debug.fault.copy_active = g_sd_copy_debug.live.active;
-    g_sd_copy_debug.fault.sequence = sequence;
-    g_sd_copy_debug.fault.source = g_sd_copy_debug.live.source;
-    g_sd_copy_debug.fault.destination = g_sd_copy_debug.live.destination;
-    g_sd_copy_debug.fault.bytes = g_sd_copy_debug.live.bytes;
-    g_sd_copy_debug.fault.dma_lisr_before = g_sd_copy_debug.live.dma_lisr_before;
-
-    //只读取状态，不清中断、不停止DMA，也不改变原错误处理顺序
-    g_sd_copy_debug.fault.dma_lisr_fault = DMA1->LISR;
-    g_sd_copy_debug.fault.dma_error = dma_error;
-    g_sd_copy_debug.fault.dma_cr = DMA1_Stream0->CR;
-    g_sd_copy_debug.fault.dma_fcr = DMA1_Stream0->FCR;
-    g_sd_copy_debug.fault.dma_ndtr = DMA1_Stream0->NDTR;
-    g_sd_copy_debug.fault.dcmi_risr = DCMI->RISR;
-    g_sd_copy_debug.fault.sd_idmactrl = SDMMC1->IDMACTRL;
-    g_sd_copy_debug.fault.sd_idmabase0 = SDMMC1->IDMABASE0;
-    g_sd_copy_debug.fault.result = result;
-
-    //最后提交完成标记，主循环继续运行也不会覆盖本次首次现场
-    __DMB();
-    g_sd_copy_debug.fault.state = 2U;
-    __set_PRIMASK(mask);
-}
-
-//标记本段复制的源地址、目标地址及长度
-static void Sdmmc_CopyMarked(uint8_t *destination, const uint8_t *source, uint32_t bytes)
-{
-    //volatile限定实际字节访问，禁止编译器合并为宽访问或库函数复制
     const volatile uint8_t *read_byte = source;
     volatile uint8_t *write_byte = destination;
     uint32_t index;
 
-    //先宣布标记更新中，IRQ若在此打断会得到copy_consistent为0的现场
-    g_sd_copy_debug.live.sequence++;
-    __DMB();
-    g_sd_copy_debug.live.active = 0U;
-    g_sd_copy_debug.live.source = (uint32_t)source;
-    g_sd_copy_debug.live.destination = (uint32_t)destination;
-    g_sd_copy_debug.live.bytes = bytes;
-    g_sd_copy_debug.live.dma_lisr_before = DMA1->LISR;
-    g_sd_copy_debug.live.active = 1U;
-
-    //标记完整后才开始复制，不为复制过程屏蔽中断
-    __DMB();
-    g_sd_copy_debug.live.sequence++;
-    __DMB();
+    //SDRAM保持逐字节访问，避免编译器合并为库函数或宽访问
     if ((uint32_t)source >= BSP_SDRAM_BASE && (uint32_t)source < BSP_SDRAM_END &&
         bytes <= BSP_SDRAM_END - (uint32_t)source)
     {
-
-        //本轮只改变SDRAM到AXI的访问方式，8KiB分段和段间等待仍由外层控制
         for (index = 0U; index < bytes; index++)
             write_byte[index] = read_byte[index];
     }
     else
     {
 
-        //文件头等内部RAM来源继续使用原memcpy，避免改变其他复制路径
+        //内部RAM仍使用原复制方式，不改变文件头等输入路径
         memcpy(destination, source, bytes);
     }
 
-    //离开复制区间后保留上一段地址，但active不再表示正在复制
-    __DMB();
-    g_sd_copy_debug.live.active = 0U;
+    //复制完成后再交给原有硬件传输流程
     __DMB();
 }
 
-//准备交给文件系统的小块输入数据
+//准备文件系统使用的小块内部输入
 SysResult_t BSP_SDMMC_PrepareWriteInput(void *destination, const void *source, uint32_t bytes)
 {
 #if SDMMC_COPY_GAP_MS != 0U
@@ -953,7 +889,7 @@ SysResult_t BSP_SDMMC_PrepareWriteInput(void *destination, const void *source, u
 #endif
 
     //继续使用同一份首次故障标记，SDRAM读取实际执行逐字节访问
-    Sdmmc_CopyMarked(destination, source, bytes);
+    Sdmmc_CopyBytes(destination, source, bytes);
     return SYS_OK;
 }
 
@@ -975,7 +911,7 @@ static SysResult_t Sdmmc_CopyToAxi(const uint8_t *source, uint32_t bytes,
     if ((uint32_t)source < BSP_SDRAM_BASE || (uint32_t)source >= BSP_SDRAM_END ||
         bytes > BSP_SDRAM_END - (uint32_t)source)
     {
-        Sdmmc_CopyMarked(g_sdmmc_dma_buffer, source, bytes);
+        Sdmmc_CopyBytes(g_sdmmc_dma_buffer, source, bytes);
         return SYS_OK;
     }
 
@@ -988,7 +924,7 @@ static SysResult_t Sdmmc_CopyToAxi(const uint8_t *source, uint32_t bytes,
         amount = bytes - copied;
         if (amount > SDMMC_COPY_CHUNK_BYTES)
             amount = SDMMC_COPY_CHUNK_BYTES;
-        Sdmmc_CopyMarked(g_sdmmc_dma_buffer + copied, source + copied, amount);
+        Sdmmc_CopyBytes(g_sdmmc_dma_buffer + copied, source + copied, amount);
         copied += amount;
 
 #if SDMMC_COPY_GAP_MS != 0U

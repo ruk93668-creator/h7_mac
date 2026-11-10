@@ -30,7 +30,7 @@ SysResult_t StorageTask_Create(void)
 //文件系统由本任务唯一使用，空闲轮次不识卡或写入
 static void StorageTask_Run(void *argument)
 {
-    uint32_t events, stack_tick = 0U, now, request;
+    uint32_t events, stack_tick = 0U, now;
     bool boot = false;
     SysResult_t result;
     (void)argument;
@@ -39,30 +39,18 @@ static void StorageTask_Run(void *argument)
         result = App_EventsWait(RUNTIME_TARGET_STORAGE, boot ? 100U : APP_EVENTS_WAIT_FOREVER, &events);
         if (result != SYS_OK && result != SYS_ERR_TIMEOUT)
         {
-            g_storage_debug.result = result;
+            g_storage_status.result = result;
             continue;
         }
         if (!boot && (events & RUNTIME_EVENT_BOOT_READY) != 0U)
         {
             boot = true;
             result = App_StoragePrepare(VideoConfig_GetStorage());
-            g_storage_debug.result = result;
+            g_storage_status.result = result;
         }
-        if (!boot || g_storage_debug.ready == 0U)
+        if (!boot || g_storage_status.ready == 0U)
             continue;
 
-        //这是人工业务控制入口，默认0，不恢复历史压力或验收任务
-        request = g_storage_debug.request;
-        if (request != 0U)
-        {
-            g_storage_debug.request = 0U;
-            if (request == 1U) result = App_StorageStartRecording();
-            else if (request == 2U) result = App_StorageRequestSnapshot();
-            else if (request == 3U) result = App_StorageStop();
-            else if (request == 4U) result = App_StorageRecover();
-            else result = SYS_ERR_INVALID_ARG;
-            g_storage_debug.result = result;
-        }
         App_StorageProcess();
 
         //最多每1000ms扫描一次栈，避免历史高频扫描引入视频降帧
@@ -70,7 +58,7 @@ static void StorageTask_Run(void *argument)
         if ((uint32_t)(now - stack_tick) >= 1000U)
         {
             stack_tick = now;
-            g_storage_debug.stack_free_words = uxTaskGetStackHighWaterMark(NULL);
+            g_storage_status.stack_free_words = uxTaskGetStackHighWaterMark(NULL);
         }
     }
 }

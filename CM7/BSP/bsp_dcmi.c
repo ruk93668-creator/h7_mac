@@ -1,5 +1,4 @@
 #include "bsp_dcmi.h"
-#include "bsp_sd_copy_debug.h"
 #include "framework_init.h"
 #include "platform_time.h"
 #include "stm32h7xx_hal.h"
@@ -1364,7 +1363,6 @@ static void Dcmi_RecordError(SysResult_t result)
 {
 
     //使用强引用锁存首次现场，避免诊断函数被链接器当作未使用代码移除
-    BSP_SDMMC_CaptureCopyFault(result, s_event_dma_error | s_dcmi_dma.ErrorCode);
 
 	//连续采集发生错误时同步锁存Stream故障
 	if (s_stream.mode == BSP_DCMI_MODE_CONTINUOUS)
@@ -1739,11 +1737,4 @@ static void Dcmi_ByteError(DMA_HandleTypeDef *hdma)
 {
     if (hdma == &s_dcmi_dma && s_jpeg_bytes.active && s_accept_events)
         Dcmi_RecordError(SYS_ERR_IO);
-}
-
-//独立DCMI构建的空诊断入口，正式固件由SD模块的强实现覆盖
-__weak void BSP_SDMMC_CaptureCopyFault(int32_t result, uint32_t dma_error)
-{
-    (void)result;
-    (void)dma_error;
 }

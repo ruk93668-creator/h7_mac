@@ -30,13 +30,13 @@ typedef struct
     uint32_t total_bytes;
     uint32_t reserve_bytes;
     uint32_t max_segments;
+    uint32_t partition;//0自动选卷，1至4指定MBR分区
 } AppStorageConfig_t;
 
 //诊断只用于观察，不作为其他任务释放资源的凭据
 typedef struct
 {
     uint32_t ready;
-    uint32_t request;//1录像、2抓拍、3停止、4恢复；默认0，不自动写卡
     uint32_t state;//0空闲、1录像、2抓拍、3收尾、4故障
     uint32_t mode;
     uint32_t stop_reason;//1主动、2总量、3空间、4故障、5抓拍完成、6无帧超时
@@ -49,8 +49,6 @@ typedef struct
     uint32_t failures;
     uint32_t queue_depth;
     uint32_t queue_high_water;
-    uint32_t max_offer_ms;
-    uint32_t max_write_ms;
     uint32_t last_size;
     uint32_t last_crc;
     uint32_t read_crc;
@@ -70,37 +68,8 @@ typedef struct
     StorageFsDiagnostics_t filesystem;
 } AppStorageStatus_t;
 
-//提供人工操作与诊断入口，不是历史SD验收任务
-extern volatile AppStorageStatus_t g_storage_debug;
-
-//保存单个阶段的墙钟耗时，包含抢占和阻塞时间
-typedef struct
-{
-    uint32_t samples;//已完成采样次数
-    uint32_t last_ms;//最近耗时
-    uint32_t max_ms;//历史峰值
-    uint32_t average_ms;//累计平均，整数毫秒
-    uint64_t total_ms;//累计耗时，避免32位回绕
-} AppStorageTimingSample_t;
-
-//只供诊断观察，不参与任务或帧所有权决策
-typedef struct
-{
-    AppStorageTimingSample_t validate;//JPEG结构校验
-    AppStorageTimingSample_t crc;//整帧CRC计算
-    AppStorageTimingSample_t file_write;//文件准备、写入及本轮同步
-    AppStorageTimingSample_t frame_process;//整帧处理，范围与max_write_ms一致
-    AppStorageTimingSample_t queue_wait;//入队到Storage开始处理
-    AppStorageTimingSample_t return_wait;//归还请求到Camera确认
-    AppStorageTimingSample_t next_frame_wait;//确认归还到下一帧入队，含FPS限制
-    AppStorageTimingSample_t free_to_check;//归还确认到Camera首次检查SD需求
-    AppStorageTimingSample_t check_to_eligible;//首次检查到首次满足录像间隔
-    AppStorageTimingSample_t eligible_to_offer;//满足条件到成功入队，包含取帧与分发
-} AppStorageTimingDebug_t;
-
-//从复位开始累计，不随会话清零，避免跨任务清零竞争
-extern volatile AppStorageTimingDebug_t g_storage_timing_debug;
-
+//保存正式存储运行状态，控制请求只能通过公共接口提交
+extern volatile AppStorageStatus_t g_storage_status;
 
 //Storage任务在BOOT后准备静态队列，不识卡或写入
 SysResult_t App_StoragePrepare(const AppStorageConfig_t *config);

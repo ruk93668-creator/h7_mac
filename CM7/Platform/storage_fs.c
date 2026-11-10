@@ -2,7 +2,6 @@
 #include "storage_fs.h"
 #include "fatfs_diskio.h"
 #include "sd_block.h"
-#include "platform_time.h"
 #include "ff.h"
 #include "diskio.h"
 #include "framework_init.h"
@@ -164,14 +163,6 @@ SysResult_t StorageFS_Mount(bool writable, uint8_t partition)
         s_diag.filesystem = s_volume.fs_type;
         s_diag.writable = writable ? 1U : 0U;
         s_diag.state = STORAGE_FS_MOUNTED;
-
-        //读取真实挂载布局，不改变簇大小，也不发起额外读写
-        g_sd_write_debug.sector_bytes = BSP_SDMMC_BLOCK_SIZE;
-        g_sd_write_debug.sectors_per_cluster = s_volume.csize;
-        g_sd_write_debug.cluster_bytes = (uint32_t)s_volume.csize * BSP_SDMMC_BLOCK_SIZE;
-        g_sd_write_debug.filesystem_type = s_volume.fs_type;
-        g_sd_write_debug.volume_sectors = s_diag.sector_count;
-        g_sd_write_debug.layout_valid = 1U;
         s_busy = false;
         return SYS_OK;
     }
@@ -262,7 +253,7 @@ SysResult_t StorageFS_Recover(void)
 //打开现有文件或显式新建文件
 SysResult_t StorageFS_Open(const char *path, uint32_t mode, StorageFile_t *file)
 {
-    uint32_t i, started;
+    uint32_t i;
     BYTE flags = 0U;
     FRESULT fr;
     SysResult_t result;
@@ -301,9 +292,7 @@ SysResult_t StorageFS_Open(const char *path, uint32_t mode, StorageFile_t *file)
         flags |= FA_CREATE_NEW;
     if ((mode & STORAGE_FS_OPEN_APPEND) != 0U)
         flags |= FA_OPEN_APPEND;
-    started = Platform_TimeGetMs();
     fr = f_open(&s_files[i].object, path, flags);
-    FatFsDisk_RecordTiming(&g_storage_io_timing.file_open, Platform_TimeGetMs() - started);
     if (fr == FR_OK)
     {
         //只有FatFS成功后提交新代号，旧Handle不能借用新对象
@@ -347,8 +336,7 @@ SysResult_t StorageFS_Write(StorageFile_t file, const void *data, uint32_t size,
     SysResult_t result;
     FRESULT fr = FR_OK;
     UINT count = 0U;
-    uint32_t done = 0U, amount, started, elapsed;
-    uint64_t block_before, block_elapsed;
+    uint32_t done = 0U, amount;
 
     if (written_bytes == NULL || (data == NULL && size != 0U))
         return SYS_ERR_INVALID_ARG;
@@ -377,10 +365,8 @@ SysResult_t StorageFS_Write(StorageFile_t file, const void *data, uint32_t size,
         //必须在原帧租借有效时完成输入复制，FatFS不再拿到调用者的数据指针
         if (amount != 0U)
         {
-            started = Platform_TimeGetMs();
             result = BSP_SDMMC_PrepareWriteInput(s_write_input,
                 (const uint8_t *)data + done, amount);
-            FatFsDisk_RecordTiming(&g_storage_io_timing.input_prepare, Platform_TimeGetMs() - started);
             if (result != SYS_OK)
             {
 
@@ -392,19 +378,7 @@ SysResult_t StorageFS_Write(StorageFile_t file, const void *data, uint32_t size,
 
         //同步f_write返回前输入缓冲不复用，包含FatFS内部扇区缓存和底层IDMA路径
         count = 0U;
-        //f_write内部块操作已单独计时，用差值观察FatFS其余处理
-        block_before = g_storage_io_timing.block_read.total_ms +
-            g_storage_io_timing.block_write.total_ms + g_storage_io_timing.block_sync.total_ms;
-        started = Platform_TimeGetMs();
         fr = f_write(&slot->object, s_write_input, amount, &count);
-        elapsed = Platform_TimeGetMs() - started;
-        block_elapsed = g_storage_io_timing.block_read.total_ms +
-            g_storage_io_timing.block_write.total_ms + g_storage_io_timing.block_sync.total_ms - block_before;
-        FatFsDisk_RecordTiming(&g_storage_io_timing.fatfs_write, elapsed);
-
-        //毫秒边界和诊断本身有误差，差值小于零时不能无符号回绕
-        FatFsDisk_RecordTiming(&g_storage_io_timing.fatfs_other,
-            block_elapsed < elapsed ? elapsed - (uint32_t)block_elapsed : 0U);
         done += count;
         *written_bytes = done;
         s_diag.fatfs_called = 1U;
@@ -429,8 +403,6 @@ SysResult_t StorageFS_Write(StorageFile_t file, const void *data, uint32_t size,
 SysResult_t StorageFS_Sync(StorageFile_t file)
 {
     StorageSlot_t *slot;
-    FRESULT fr;
-    uint32_t started;
     SysResult_t result = Storage_Enter();
     if (result != SYS_OK)
         return result;
@@ -439,11 +411,7 @@ SysResult_t StorageFS_Sync(StorageFile_t file)
     {
         return Storage_Leave(SYS_ERR_INVALID_STATE);
     }
-    //显式同步单独统计，内部块写仍由diskio记录
-    started = Platform_TimeGetMs();
-    fr = f_sync(&slot->object);
-    FatFsDisk_RecordTiming(&g_storage_io_timing.file_sync, Platform_TimeGetMs() - started);
-    return Storage_Finish(fr);
+    return Storage_Finish(f_sync(&slot->object));
 }
 
 //关闭并释放当前文件槽位
@@ -451,7 +419,6 @@ SysResult_t StorageFS_Close(StorageFile_t file)
 {
     StorageSlot_t *slot;
     FRESULT fr;
-    uint32_t started;
     SysResult_t result = Storage_Enter();
     if (result != SYS_OK)
         return result;
@@ -460,9 +427,7 @@ SysResult_t StorageFS_Close(StorageFile_t file)
     {
         return Storage_Leave(SYS_ERR_INVALID_STATE);
     }
-    started = Platform_TimeGetMs();
     fr = f_close(&slot->object);
-    FatFsDisk_RecordTiming(&g_storage_io_timing.file_close, Platform_TimeGetMs() - started);
     if (fr == FR_OK)
     {
         slot->used = false;
@@ -476,7 +441,6 @@ SysResult_t StorageFS_Seek(StorageFile_t file, uint32_t offset)
 {
     StorageSlot_t *slot;
     FRESULT fr;
-    uint32_t started;
     SysResult_t result = Storage_Enter();
     if (result != SYS_OK)
         return result;
@@ -489,9 +453,7 @@ SysResult_t StorageFS_Seek(StorageFile_t file, uint32_t offset)
     {
         return Storage_Leave(SYS_ERR_INVALID_ARG);
     }
-    started = Platform_TimeGetMs();
     fr = f_lseek(&slot->object, offset);
-    FatFsDisk_RecordTiming(&g_storage_io_timing.file_seek, Platform_TimeGetMs() - started);
     s_diag.fatfs_called = 1U;
     s_diag.fatfs_result = fr;
     if (fr == FR_OK && f_tell(&slot->object) != offset)

@@ -58,6 +58,9 @@ static const AppStorageConfig_t s_storage_config =
 {
     .record_fps = 25U,
 
+    //当前SD卡使用第三个MBR分区，未格式化或改动卡布局
+    .partition = 3U,
+
     .segment_bytes = 4UL * 1024UL * 1024UL,
 
     .segment_ms = 60000U,
