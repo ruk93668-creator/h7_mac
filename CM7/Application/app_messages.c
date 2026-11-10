@@ -105,36 +105,36 @@ bool App_MessagesReceive(AppChannel_t channel, AppMessage_t *message)
     return true;
 }
 
-//C1¶ÀÁ¢Í¨µÀ½ö×¼±¸»ù´¡ÉèÊ©£¬Ô­ÓĞÎåÌõ¶ÓÁĞºÍÊÕ·¢º¯Êı±£³Ö²»±ä
+//C1ç‹¬ç«‹é€šé“ä»…å‡†å¤‡åŸºç¡€è®¾æ–½ï¼ŒåŸæœ‰äº”æ¡é˜Ÿåˆ—å’Œæ”¶å‘å‡½æ•°ä¿æŒä¸å˜
 #include "framework_init.h"
 #define APP_LIFECYCLE_QUEUE_LENGTH 4U
 
-//±£´æÈıÌõÉúÃüÖÜÆÚ¶ÓÁĞµÄ¾²Ì¬¿ØÖÆ¿é
+//ä¿å­˜ä¸‰æ¡ç”Ÿå‘½å‘¨æœŸé˜Ÿåˆ—çš„é™æ€æ§åˆ¶å—
 static StaticQueue_t s_lifecycle_queues[APP_LIFECYCLE_CHANNEL_COUNT];
 
-//Ã¿Ïî¹Ì¶¨56B£¬²»À©´ó¾ÉAppMessageµÄ¸´ÖÆ·¶Î§
+//æ¯é¡¹å›ºå®š56Bï¼Œä¸æ‰©å¤§æ—§AppMessageçš„å¤åˆ¶èŒƒå›´
 static uint8_t s_lifecycle_storage[APP_LIFECYCLE_CHANNEL_COUNT]
     [APP_LIFECYCLE_QUEUE_LENGTH * sizeof(AppLifecycleMessage_t)] __attribute__((aligned(8)));
 
-//±£´æ¸÷ÉúÃüÖÜÆÚÍ¨µÀµÄÄÚºË¾ä±ú
+//ä¿å­˜å„ç”Ÿå‘½å‘¨æœŸé€šé“çš„å†…æ ¸å¥æŸ„
 static QueueHandle_t s_lifecycle_handles[APP_LIFECYCLE_CHANNEL_COUNT];
 
-//²¿·Ö³õÊ¼»¯Ê§°ÜºóÒ²²»ÖØ¸´Ê¹ÓÃÍ¬Ò»·İ¾²Ì¬¿ØÖÆ¿é
+//éƒ¨åˆ†åˆå§‹åŒ–å¤±è´¥åä¹Ÿä¸é‡å¤ä½¿ç”¨åŒä¸€ä»½é™æ€æ§åˆ¶å—
 static bool s_lifecycle_attempted;
 
-//Ö»ÓĞÈ«²¿Í¨µÀ³É¹¦´´½¨ºó²Å¿ª·ÅÊÕ·¢
+//åªæœ‰å…¨éƒ¨é€šé“æˆåŠŸåˆ›å»ºåæ‰å¼€æ”¾æ”¶å‘
 static bool s_lifecycle_ready;
 
-//½«ÆÕÍ¨CĞ­Òé½ÇÉ«Ó³Éäµ½ÏÖÓĞÈÎÎñÉí·İ
+//å°†æ™®é€šCåè®®è§’è‰²æ˜ å°„åˆ°ç°æœ‰ä»»åŠ¡èº«ä»½
 static RuntimeEventTarget_t Lifecycle_Task(uint32_t role);
 
-//²éÑ¯Ö¸¶¨Í¨µÀÎ¨Ò»µÄ½ÓÊÕ½ÇÉ«
+//æŸ¥è¯¢æŒ‡å®šé€šé“å”¯ä¸€çš„æ¥æ”¶è§’è‰²
 static uint32_t Lifecycle_Receiver(AppLifecycleChannel_t channel);
 
-//¼ì²éÆÕÍ¨ÈÎÎñÊÇ·ñ¿ÉÒÔÊ¹ÓÃ·Ç×èÈûRTOS¶ÓÁĞ
+//æ£€æŸ¥æ™®é€šä»»åŠ¡æ˜¯å¦å¯ä»¥ä½¿ç”¨éé˜»å¡RTOSé˜Ÿåˆ—
 static bool Lifecycle_Context(void);
 
-//½«Ğ­Òé½ÇÉ«Ó³Éäµ½ÒÑµÇ¼ÇÈÎÎñ£¬Ğ­ÒéÖĞ²»±£´æTaskHandle
+//å°†åè®®è§’è‰²æ˜ å°„åˆ°å·²ç™»è®°ä»»åŠ¡ï¼Œåè®®ä¸­ä¸ä¿å­˜TaskHandle
 static RuntimeEventTarget_t Lifecycle_Task(uint32_t role)
 {
     switch (role)
@@ -146,7 +146,7 @@ static RuntimeEventTarget_t Lifecycle_Task(uint32_t role)
     }
 }
 
-//Ã¿ÌõÍ¨µÀÖ»·şÎñÒ»¸ö½ÓÊÕÈÎÎñ£¬²»ÄÜ°´ÏûÏ¢ÄÚÈİÈÎÒâ¸ÄÂ·ÓÉ
+//æ¯æ¡é€šé“åªæœåŠ¡ä¸€ä¸ªæ¥æ”¶ä»»åŠ¡ï¼Œä¸èƒ½æŒ‰æ¶ˆæ¯å†…å®¹ä»»æ„æ”¹è·¯ç”±
 static uint32_t Lifecycle_Receiver(AppLifecycleChannel_t channel)
 {
     switch (channel)
@@ -158,19 +158,19 @@ static uint32_t Lifecycle_Receiver(AppLifecycleChannel_t channel)
     }
 }
 
-//²»ÔÊĞíISR¡¢ÆÁ±ÎÖĞ¶Ï»òµ÷¶ÈÆ÷Î´ÔËĞĞÊ±½øÈëÈÎÎñ²àÊÕ·¢
+//ä¸å…è®¸ISRã€å±è”½ä¸­æ–­æˆ–è°ƒåº¦å™¨æœªè¿è¡Œæ—¶è¿›å…¥ä»»åŠ¡ä¾§æ”¶å‘
 static bool Lifecycle_Context(void)
 {
     return Platform_SyncGetException() == 0U && Platform_SyncGetPrimask() == 0U &&
         Platform_SyncGetBasepri() == 0U && xTaskGetSchedulerState() == taskSCHEDULER_RUNNING;
 }
 
-//Framework×¼±¸¶ÀÁ¢¾²Ì¬¶ÓÁĞ£¬²»ÇëÇó²É¼¯¡¢USB»òÎÄ¼şÏµÍ³
+//Frameworkå‡†å¤‡ç‹¬ç«‹é™æ€é˜Ÿåˆ—ï¼Œä¸è¯·æ±‚é‡‡é›†ã€USBæˆ–æ–‡ä»¶ç³»ç»Ÿ
 SysResult_t App_LifecycleMessagesInit(void)
 {
     uint32_t i;
 
-    //³õÊ¼»¯Ö»ÄÜ·¢ÉúÒ»´Î£¬Ê§°Üºó±£³ÖËùÓĞĞÂÍ¨µÀ¹Ø±Õ
+    //åˆå§‹åŒ–åªèƒ½å‘ç”Ÿä¸€æ¬¡ï¼Œå¤±è´¥åä¿æŒæ‰€æœ‰æ–°é€šé“å…³é—­
     if (s_lifecycle_attempted || Platform_SyncGetException() != 0U ||
         Platform_SyncGetPrimask() != 0U || Platform_SyncGetBasepri() != 0U ||
         xTaskGetSchedulerState() != taskSCHEDULER_NOT_STARTED)
@@ -187,7 +187,7 @@ SysResult_t App_LifecycleMessagesInit(void)
     return SYS_OK;
 }
 
-//Ö»ÓĞÏûÏ¢ÉùÃ÷Óëµ±Ç°ÈÎÎñÉí·İÍ¬Ê±ºÏ·¨²ÅÔÊĞíÈë¶Ó
+//åªæœ‰æ¶ˆæ¯å£°æ˜ä¸å½“å‰ä»»åŠ¡èº«ä»½åŒæ—¶åˆæ³•æ‰å…è®¸å…¥é˜Ÿ
 SysResult_t App_LifecycleMessagesSend(AppLifecycleChannel_t channel, const AppLifecycleMessage_t *message)
 {
     if ((uint32_t)channel >= APP_LIFECYCLE_CHANNEL_COUNT || !App_LifecycleValidate(message))
@@ -195,19 +195,19 @@ SysResult_t App_LifecycleMessagesSend(AppLifecycleChannel_t channel, const AppLi
     if (!s_lifecycle_ready || !Lifecycle_Context())
         return SYS_ERR_INVALID_STATE;
 
-    //²»ÄÜÃ°³äÁíÒ»Ïû·ÑÕß£¬Ò²²»ÄÜ°ÑºÏ·¨ÏûÏ¢Í¶Ïò´íÎóÈÎÎñ
+    //ä¸èƒ½å†’å……å¦ä¸€æ¶ˆè´¹è€…ï¼Œä¹Ÿä¸èƒ½æŠŠåˆæ³•æ¶ˆæ¯æŠ•å‘é”™è¯¯ä»»åŠ¡
     if (message->target != Lifecycle_Receiver(channel) ||
         !App_EventsIsOwner(Lifecycle_Task(message->source)))
         return SYS_ERR_INVALID_STATE;
     if (xQueueSend(s_lifecycle_handles[channel], message, 0U) != pdPASS)
         return SYS_ERR_NO_RESOURCE;
 
-    //Èë¶Óºó¼´ÒÑ½»¸¶¸ø¶ÓÁĞ£¬Í¨ÖªÊ§°ÜÒ²²»ÄÜÒªÇóÖØ¸´Èë¶Ó
+    //å…¥é˜Ÿåå³å·²äº¤ä»˜ç»™é˜Ÿåˆ—ï¼Œé€šçŸ¥å¤±è´¥ä¹Ÿä¸èƒ½è¦æ±‚é‡å¤å…¥é˜Ÿ
     (void)RuntimeEvent_Post(Lifecycle_Task(message->target), RUNTIME_EVENT_WAKE);
     return SYS_OK;
 }
 
-//È¡×ßÏûÏ¢ºó»½ĞÑ¿ÉÄÜµÈ´ı²ÛÎ»µÄËùÓĞºÏ·¨·¢ËÍÕß
+//å–èµ°æ¶ˆæ¯åå”¤é†’å¯èƒ½ç­‰å¾…æ§½ä½çš„æ‰€æœ‰åˆæ³•å‘é€è€…
 bool App_LifecycleMessagesReceive(AppLifecycleChannel_t channel, AppLifecycleMessage_t *message)
 {
     if ((uint32_t)channel >= APP_LIFECYCLE_CHANNEL_COUNT || message == NULL ||
@@ -217,7 +217,7 @@ bool App_LifecycleMessagesReceive(AppLifecycleChannel_t channel, AppLifecycleMes
     if (xQueueReceive(s_lifecycle_handles[channel], message, 0U) != pdPASS)
         return false;
 
-    //Á½¸öÏû·ÑÕß¹²ÏíCameraÊÕ¼şÏä£¬ÌÚ³ö²ÛÎ»ºó¶¼ĞèÒª»ñµÃÖØÊÔ»ú»á
+    //ä¸¤ä¸ªæ¶ˆè´¹è€…å…±äº«Cameraæ”¶ä»¶ç®±ï¼Œè…¾å‡ºæ§½ä½åéƒ½éœ€è¦è·å¾—é‡è¯•æœºä¼š
     if (channel == APP_LIFECYCLE_CHANNEL_CAMERA)
     {
         (void)RuntimeEvent_Post(RUNTIME_TARGET_USB, RUNTIME_EVENT_WAKE);

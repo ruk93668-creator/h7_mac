@@ -78,17 +78,20 @@ READY → Flush失败 → READY（完整原文不变）
 READY → 请求入队成功 → WAIT_REPLY → 匹配回复 → COMPLETE
 READY → 回复入队成功 → COMMITTED
 COMPLETE / COMMITTED → 显式Clear → EMPTY
+READY请求 → CancelReady → EMPTY（尚未提交，不释放业务资源）
 ```
 
 回调期间SENDING阻止同一记录重入。已经入队的请求不会由Flush再次入队；超时不是Clear授权，WAIT_REPLY没有强清接口。COMMITTED仅表示回复入队，不表示接收方已经处理，更不表示资源已释放。
 
 AppLifecycleReplay_t记录请求原文与终结回复：相同请求返回ALREADY_EXISTS；同键不同内容返回PROTOCOL；其他事务不能覆盖占用记录；终结失败不能被后来的成功覆盖。读取回复无副作用。
 
-**ReplayRetire只检查缓存已经终结，不证明对端已收到。** C2必须在建立旧会话/旧generation拒绝边界后选择安全退休时机，不能在同一有效事务仍可能重试时提前清缓存。C1没有实现完整会话表、全局历史缓存或业务幂等执行器。
+**C1.1已封闭ReplayRetire的成功路径。** 空指针返回INVALID_ARG；未占用或未完成返回BUSY；已占用且完成返回NOT_SUPPORTED。所有情况均不清除记录。completed、回复入队成功和超时都不是旧请求失效证明，缓存耗尽后拒绝新请求，不能自动淘汰或手工清零复用。后续必须先审核可验证的失效边界，再设计安全退休规则。本阶段没有实现tombstone、水位、完整会话表或业务幂等执行器。
+
+CancelReady只允许取消READY状态的REQUEST；EMPTY、SENDING、WAIT_REPLY、COMPLETE、COMMITTED及READY回复均返回INVALID_STATE且不改变原记录。取消仅清除尚未提交的协议待发记录，不分配新身份、不发送消息、不释放业务资源。重复取消同样拒绝；取消后如显式重新Stage同一请求，只产生一次真实提交。
 
 ## 接口与依赖
 
-app_camera_lifecycle.c/.h为普通C协议工具，不依赖FreeRTOS、Media、USB、文件系统或BSP。提供Validate、MatchesReply、MatchesCurrent、MakeReply、AllocateIds、Stage/Flush/AcceptReply/Clear、ReplayBegin/Complete/GetReply/Retire。
+app_camera_lifecycle.c/.h为普通C协议工具，不依赖FreeRTOS、Media、USB、文件系统或BSP。提供Validate、MatchesReply、MatchesCurrent、MakeReply、AllocateIds、Stage/Flush/AcceptReply/Clear/CancelReady、ReplayBegin/Complete/GetReply/Retire。
 
 app_messages.c/.h增加独立LifecycleMessagesInit/Send/Receive。Init通过原Framework Application等级登记，不创建Task、不发送业务命令。
 

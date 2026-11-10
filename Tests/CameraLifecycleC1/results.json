@@ -516,7 +516,7 @@
       "return": 0,
       "failure_line": 0,
       "error": null,
-      "name": "Retire only complete cache"
+      "name": "Retire refused without safe invalidation boundary"
     },
     {
       "id": 57,

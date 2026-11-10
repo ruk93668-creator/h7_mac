@@ -1,0 +1,28 @@
+{
+  "baseline": "b684b76914b46da20314b27235f44b7d5d214fd5",
+  "checks": {
+    "approved_scope_only": true,
+    "app_messages.c_utf8_text_unchanged": true,
+    "app_messages.h_utf8_text_unchanged": true,
+    "only_cancel_and_retire_implementation_changes": true,
+    "existing_protocol_layout_and_signatures_unchanged": true,
+    "project_unchanged_from_c1": true,
+    "no_other_production_changes": true,
+    "original_test_only_authorized_case56_strengthened": true,
+    "queue_capacities_and_memory_unchanged": true,
+    "ram_unchanged_from_c1": true
+  },
+  "all_pass": true,
+  "map_sizes": {
+    "s_message_queues": 360,
+    "s_message_storage": 1040,
+    "s_message_handles": 20,
+    "s_lifecycle_queues": 216,
+    "s_lifecycle_storage": 672,
+    "s_lifecycle_handles": 12
+  },
+  "current_rw_bytes": 101376,
+  "delta_from_c1_bytes": 0,
+  "delta_from_main_bytes": 904,
+  "hardware_verified": false
+}

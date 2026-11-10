@@ -227,6 +227,22 @@ SysResult_t App_LifecycleClear(AppLifecyclePending_t *pending)
     return SYS_OK;
 }
 
+//仅取消尚未提交的请求，不清理已入队或正在发送的事务
+SysResult_t App_LifecycleCancelReady(AppLifecyclePending_t *pending)
+{
+    if (pending == NULL)
+        return SYS_ERR_INVALID_ARG;
+
+    //回复仍由缓存重发，不能通过请求取消接口丢弃ACK
+    if (pending->phase != APP_LIFECYCLE_TX_READY ||
+        pending->message.kind != APP_LIFECYCLE_REQUEST)
+        return SYS_ERR_INVALID_STATE;
+
+    //记录仅包含协议数值，清空不触及业务或帧资源
+    memset(pending, 0, sizeof(*pending));
+    return SYS_OK;
+}
+
 //相同请求只报告重复，业务处理者不能据此重复执行
 SysResult_t App_LifecycleReplayBegin(AppLifecycleReplay_t *record, const AppLifecycleMessage_t *request)
 {
@@ -277,6 +293,6 @@ SysResult_t App_LifecycleReplayRetire(AppLifecycleReplay_t *record)
         return SYS_ERR_INVALID_ARG;
     if (record->occupied == 0U || record->completed == 0U)
         return SYS_ERR_BUSY;
-    memset(record, 0, sizeof(*record));
-    return SYS_OK;
+    //没有可验证的旧请求失效边界，完成或ACK入队都不能授权退休
+    return SYS_ERR_NOT_SUPPORTED;
 }

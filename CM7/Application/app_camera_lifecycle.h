@@ -127,6 +127,9 @@ SysResult_t App_LifecycleAcceptReply(AppLifecyclePending_t *pending, const AppLi
 //只清理协议已终结记录，不执行业务停止或帧释放
 SysResult_t App_LifecycleClear(AppLifecyclePending_t *pending);
 
+//仅取消READY请求，其他阶段及待发回复均保持原记录
+SysResult_t App_LifecycleCancelReady(AppLifecyclePending_t *pending);
+
 //登记请求，同身份不同内容视为协议错误，重复原文不重复受理
 SysResult_t App_LifecycleReplayBegin(AppLifecycleReplay_t *record, const AppLifecycleMessage_t *request);
 
@@ -136,7 +139,7 @@ SysResult_t App_LifecycleReplayComplete(AppLifecycleReplay_t *record, const AppL
 //复制缓存回复，读取不会消耗记录
 SysResult_t App_LifecycleReplayGetReply(const AppLifecycleReplay_t *record, AppLifecycleMessage_t *reply);
 
-//仅允许显式撤销已终结缓存，C2负责安全退休时机
+//没有安全失效边界时不允许退休，已完成记录返回NOT_SUPPORTED
 SysResult_t App_LifecycleReplayRetire(AppLifecycleReplay_t *record);
 
 #endif

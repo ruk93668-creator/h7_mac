@@ -1,9 +1,13 @@
 """Run unchanged historical tests on isolated baseline/current source snapshots."""
 from pathlib import Path
-import subprocess,sys,os,json,io,tarfile,concurrent.futures,hashlib,time
+import subprocess,sys,os,json,io,tarfile,concurrent.futures,hashlib,time,re,argparse
+from regression_compare import normalize_report, compare_all
 ROOT=Path(__file__).resolve().parents[2];HERE=Path(__file__).resolve().parent
-OUT=ROOT/'output/CameraLifecycleC1/regression';OUT.mkdir(parents=True,exist_ok=True)
-BASE='35b4fb7f5c39f7339b0bf0aa2a68594fd9748e7f'
+OUT=ROOT/'output/CameraLifecycleC1_1/regression'/str(time.time_ns());OUT.mkdir(parents=True,exist_ok=True)
+parser=argparse.ArgumentParser()
+parser.add_argument('--baseline',default='b684b76914b46da20314b27235f44b7d5d214fd5')
+args=parser.parse_args()
+BASE=args.baseline
 SUITES=[
  ('B3Behavior','Tests/StorageModuleB3/run_tests.py',[],'results.json'),
  ('B2Behavior','Tests/UsbModuleB2/run_tests.py',[],'results.json'),
@@ -39,8 +43,7 @@ actual={p:hashlib.sha256((ROOT/p).read_bytes()).hexdigest() for p in tracked if 
 archive=subprocess.check_output(['git','-c','safe.directory='+ROOT.as_posix(),'archive','--format=tar',BASE],cwd=ROOT)
 for variant in ['baseline','current']:
  dest=OUT/variant;dest.mkdir(exist_ok=True)
- if not (dest/'CM7/Application/app_camera.c').exists():
-  with tarfile.open(fileobj=io.BytesIO(archive)) as t:t.extractall(dest,filter='data')
+ with tarfile.open(fileobj=io.BytesIO(archive)) as t:t.extractall(dest,filter='data')
  # Historical tests stay unchanged; overlay only the C1 protocol, message additions and CM7 source registration.
  if variant=='current':
   for rel in ['CM7/Application/app_messages.c','CM7/Application/app_messages.h','CM7/Application/app_camera_lifecycle.c','CM7/Application/app_camera_lifecycle.h','MDK-ARM/h7_mac.uvprojx']:
@@ -62,16 +65,16 @@ def run_variant(variant):
   if result_path.exists():
    raw=json.loads(result_path.read_text(encoding='utf-8-sig'))
    (OUT/(variant+'_'+name+'.json')).write_text(json.dumps(raw,ensure_ascii=False,indent=2),encoding='utf-8')
-   cases=raw if isinstance(raw,list) else raw.get('cases',raw.get('tests',[]))
-   row['summary']=raw.get('summary',{}) if isinstance(raw,dict) else {}
-   row['cases']=[]
-   for i,c in enumerate(cases):
-    val=c.get('pass',c.get('passed',c.get('result',False)))
-    ok=val is True or val=='PASS'
-    row['cases'].append({'id':c.get('id',i),'pass':ok,'failure':c.get('failure_line',c.get('fail_line'))})
-   if not row['summary'] and row['cases']:
-    row['summary']={'total':len(cases),'passed':sum(x['pass'] for x in row['cases']),'failed':sum(not x['pass'] for x in row['cases'])}
-  if exit!=0:row['diagnostic_tail']=text[-2500:]
+   row.update(normalize_report(raw))
+   row['report_present']=True
+  if not result_path.exists():
+   row.update({'cases':[],'summary':{},'schema_errors':[],'report_present':False})
+  if exit!=0:
+   row['diagnostic_tail']=text[-2500:]
+   normalized=text
+   for path in [str(dest),dest.as_posix(),str(dest).replace('\\','\\\\')]:normalized=normalized.replace(path,'<SNAPSHOT>')
+   row['diagnostic_fingerprint']='\n'.join(line.strip() for line in normalized.splitlines() if re.search(r'Error:|fatal error|Undefined symbol|cannot open source',line))
+
   rows.append(row)
   (OUT/(variant+'_summary.json')).write_text(json.dumps(rows,ensure_ascii=False,indent=2),encoding='utf-8')
   print(variant,name,row.get('summary',{}),'exit',exit,flush=True)
@@ -79,10 +82,8 @@ def run_variant(variant):
 with concurrent.futures.ThreadPoolExecutor(max_workers=2) as pool:
  fs={n:pool.submit(run_variant,n) for n in ['baseline','current']}
  results={n:f.result() for n,f in fs.items()}
-comparison=[]
-for a,b in zip(results['baseline'],results['current']):
- comparison.append({'suite':a['suite'],'baseline_exit':a['exit'],'current_exit':b['exit'],'baseline_summary':a.get('summary',{}),'current_summary':b.get('summary',{}),'case_results_equal':a.get('cases')==b.get('cases'),'baseline_diagnostic':a.get('diagnostic_tail',''),'current_diagnostic':b.get('diagnostic_tail',''),'new_failure':(a['exit']==0 and b['exit']!=0) or any(x['pass'] and not y['pass'] for x,y in zip(a.get('cases',[]),b.get('cases',[])))})
+comparison_result=compare_all(results['baseline'],results['current'])
 changed=[p for p,h in actual.items() if not (ROOT/p).exists() or hashlib.sha256((ROOT/p).read_bytes()).hexdigest()!=h]
-result={'baseline':BASE,'comparison':comparison,'new_failures':sum(x['new_failure'] for x in comparison),'actual_workspace_changed_by_regression':changed,'historical_tests_modified':False,'note':'Historical suites including B1/B2 run unchanged; unavailable fixtures and their first diagnostic remain visible.'}
-(HERE/'regression_results.json').write_text(json.dumps(result,ensure_ascii=False,indent=2),encoding='utf-8')
+result={'baseline':BASE,**comparison_result,'artifact_root':str(OUT),'actual_workspace_changed_by_regression':changed,'historical_tests_modified':False,'note':'Historical suites including B1/B2 run unchanged; unavailable fixtures and their first diagnostic remain visible.'}
+(ROOT/'Tests/CameraLifecycleC1_1/regression_results.json').write_text(json.dumps(result,ensure_ascii=False,indent=2),encoding='utf-8')
 raise SystemExit(bool(result['new_failures'] or changed))

@@ -79,7 +79,7 @@ uint32_t C1_ProtocolRun(uint32_t id)
  case 53:CHECK(App_LifecycleReplayBegin(&replay,&m)==0);CHECK(App_LifecycleReplayBegin(&replay,&m)==SYS_ERR_ALREADY_EXISTS);CHECK(App_LifecycleReplayGetReply(&replay,&r)==SYS_ERR_NOT_FOUND);break;
  case 54:m.operation=APP_LIFECYCLE_RELEASE;CHECK(App_LifecycleReplayBegin(&replay,&m)==0);m.business_result=SYS_ERR_IO;CHECK(App_LifecycleReplayBegin(&replay,&m)==SYS_ERR_PROTOCOL);break;
  case 55:CHECK(App_LifecycleReplayBegin(&replay,&m)==0);r.result=SYS_ERR_IO;CHECK(App_LifecycleReplayComplete(&replay,&r)==0);CHECK(App_LifecycleReplayComplete(&replay,&r)==SYS_ERR_ALREADY_EXISTS);r.result=0;CHECK(App_LifecycleReplayComplete(&replay,&r)==SYS_ERR_PROTOCOL);CHECK(replay.reply.result==SYS_ERR_IO);break;
- case 56:CHECK(App_LifecycleReplayBegin(&replay,&m)==0);CHECK(App_LifecycleReplayRetire(&replay)==SYS_ERR_BUSY);CHECK(App_LifecycleReplayComplete(&replay,&r)==0);CHECK(App_LifecycleReplayRetire(&replay)==0);break;
+ case 56:CHECK(App_LifecycleReplayBegin(&replay,&m)==0);CHECK(App_LifecycleReplayRetire(&replay)==SYS_ERR_BUSY);CHECK(App_LifecycleReplayComplete(&replay,&r)==0);CHECK(App_LifecycleReplayRetire(&replay)==SYS_ERR_NOT_SUPPORTED);CHECK(App_LifecycleReplayGetReply(&replay,&before)==0);CHECK(memcmp(&before,&r,sizeof(r))==0);break;
  case 57:CHECK(App_LifecycleReplayBegin(&replay,&m)==0);CHECK(App_LifecycleReplayComplete(&replay,&r)==0);before=r;CHECK(App_LifecycleReplayGetReply(&replay,&r)==0);CHECK(memcmp(&r,&before,sizeof(r))==0);CHECK(replay.completed==1);break;
  case 58:m.operation=APP_LIFECYCLE_RELEASE;m.completion_flags=APP_LIFECYCLE_QUALIFICATION_RELEASED;CHECK(!App_LifecycleValidate(&m));break;
  case 59:m.completion_flags=APP_LIFECYCLE_HARDWARE_STOPPED;CHECK(!App_LifecycleValidate(&m));break;

@@ -1,0 +1,61 @@
+{
+  "targets": [
+    {
+      "target": "h7_mac_CM7",
+      "command": [
+        "D:/32/UV4/UV4.exe",
+        "-j0",
+        "-r",
+        "D:\\32\\STM32H7\\h7_mac\\MDK-ARM\\h7_mac.uvprojx",
+        "-t",
+        "h7_mac_CM7",
+        "-o",
+        "D:\\32\\STM32H7\\h7_mac\\output\\CameraLifecycleC1_1\\build\\h7_mac_CM7_rebuild.log"
+      ],
+      "exit": 0,
+      "errors": 0,
+      "warnings": 0,
+      "pass": true,
+      "artifacts": {
+        ".axf": "D:\\32\\STM32H7\\h7_mac\\MDK-ARM\\h7_mac_CM7\\h7_mac_CM7.axf",
+        ".hex": "D:\\32\\STM32H7\\h7_mac\\MDK-ARM\\h7_mac_CM7\\h7_mac_CM7.hex",
+        ".map": "D:\\32\\STM32H7\\h7_mac\\MDK-ARM\\h7_mac_CM7\\h7_mac_CM7.map"
+      },
+      "artifacts_exist": {
+        ".axf": true,
+        ".hex": false,
+        ".map": true
+      },
+      "log_sha256": "3eb07d5e58cd293a299f46ce870077dd1eb02f9c9ba8975d6e4f731e0b1b6887"
+    },
+    {
+      "target": "h7_mac_CM4",
+      "command": [
+        "D:/32/UV4/UV4.exe",
+        "-j0",
+        "-r",
+        "D:\\32\\STM32H7\\h7_mac\\MDK-ARM\\h7_mac.uvprojx",
+        "-t",
+        "h7_mac_CM4",
+        "-o",
+        "D:\\32\\STM32H7\\h7_mac\\output\\CameraLifecycleC1_1\\build\\h7_mac_CM4_rebuild.log"
+      ],
+      "exit": 0,
+      "errors": 0,
+      "warnings": 0,
+      "pass": true,
+      "artifacts": {
+        ".axf": "D:\\32\\STM32H7\\h7_mac\\MDK-ARM\\h7_mac_CM4\\h7_mac_CM4.axf",
+        ".hex": "D:\\32\\STM32H7\\h7_mac\\MDK-ARM\\h7_mac_CM4\\h7_mac_CM4.hex",
+        ".map": "D:\\32\\STM32H7\\h7_mac\\MDK-ARM\\h7_mac_CM4\\h7_mac_CM4.map"
+      },
+      "artifacts_exist": {
+        ".axf": true,
+        ".hex": true,
+        ".map": true
+      },
+      "log_sha256": "9a2aaae01c6495d7106b8e13ecb40715cf83dc0618bb6e8b3a9a26afef144562"
+    }
+  ],
+  "project_unchanged": true
+}
