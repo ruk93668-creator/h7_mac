@@ -57,4 +57,24 @@ bool App_MessagesReceive(AppChannel_t channel, AppMessage_t *message);
 //æ£€æŸ¥å½“å‰ä»»åŠ¡æ˜¯å¦ä¸ºæŒ‡å®šä¸šåŠ¡æ‰€æœ‰è€…
 bool App_MessagesIsOwner(RuntimeEventTarget_t target);
 
+//ÉúÃüÖÜÆÚÏûÏ¢Ê¹ÓÃ¶ÀÁ¢ÀàĞÍºÍ¶ÓÁĞ£¬¾ÉÖ¡ÏûÏ¢²¼¾ÖÓëÍ¨µÀ±àºÅ±£³Ö²»±ä
+#include "app_camera_lifecycle.h"
+
+typedef enum
+{
+    APP_LIFECYCLE_CHANNEL_CAMERA = 0,
+    APP_LIFECYCLE_CHANNEL_USB,
+    APP_LIFECYCLE_CHANNEL_STORAGE,
+    APP_LIFECYCLE_CHANNEL_COUNT
+} AppLifecycleChannel_t;
+
+//Ö»×¼±¸ÈıÌõËÄÏî¾²Ì¬¶ÓÁĞ£¬²»Ö´ĞĞÈÎºÎÒµÎñSTART»òSTOP
+SysResult_t App_LifecycleMessagesInit(void);
+
+//¼ì²éÏûÏ¢·½Ïò¼°ÕæÊµÈÎÎñÉí·İ£¬³É¹¦Ö»±íÊ¾ÍêÕûÏûÏ¢ÒÑ¾­Èë¶Ó
+SysResult_t App_LifecycleMessagesSend(AppLifecycleChannel_t channel, const AppLifecycleMessage_t *message);
+
+//Ö»ÓĞ¶ÔÓ¦ËùÓĞÕßÈÎÎñ¿ÉÒÔÈ¡ÏûÏ¢£¬Í¨ÖªÎ»²»×÷Îª½»¸¶ÒÀ¾İ
+bool App_LifecycleMessagesReceive(AppLifecycleChannel_t channel, AppLifecycleMessage_t *message);
+
 #endif

@@ -1,0 +1,29 @@
+{
+  "baseline": "35b4fb7f5c39f7339b0bf0aa2a68594fd9748e7f",
+  "checks": {
+    "only_approved_tracked_changes": true,
+    "all_old_message_c_bytes_unchanged": true,
+    "old_header_layout_and_apis_unchanged": true,
+    "project_only_new_cm7_file": true,
+    "cm4_target_unchanged": true,
+    "cm7_options_unchanged": true,
+    "no_other_production_or_old_test_changes": true,
+    "protocol_has_no_rtos_or_hardware_dependency": true,
+    "business_modules_have_no_protocol_calls": true,
+    "formal_map_queue_sizes": true,
+    "bounded_memory_increase": true
+  },
+  "all_pass": true,
+  "map_sizes": {
+    "s_message_queues": 360,
+    "s_message_storage": 1040,
+    "s_message_handles": 20,
+    "s_lifecycle_queues": 216,
+    "s_lifecycle_storage": 672,
+    "s_lifecycle_handles": 12
+  },
+  "baseline_rw_bytes": 100472,
+  "current_rw_bytes": 101376,
+  "ram_delta_bytes": 904,
+  "note": "Only preparation is live; consumer qualification, hardware control, timeout policy and STOP integration are not implemented in C1."
+}

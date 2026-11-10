@@ -1,0 +1,4190 @@
+{
+  "summary": {
+    "total": 419,
+    "passed": 419,
+    "failed": 0
+  },
+  "cases": [
+    {
+      "id": 0,
+      "group": "protocol",
+      "pass": true,
+      "return": 0,
+      "failure_line": 0,
+      "error": null,
+      "name": "Wire validation consumer=1 op=1 kind=1"
+    },
+    {
+      "id": 1,
+      "group": "protocol",
+      "pass": true,
+      "return": 0,
+      "failure_line": 0,
+      "error": null,
+      "name": "Wire validation consumer=1 op=1 kind=2"
+    },
+    {
+      "id": 2,
+      "group": "protocol",
+      "pass": true,
+      "return": 0,
+      "failure_line": 0,
+      "error": null,
+      "name": "Wire validation consumer=1 op=2 kind=1"
+    },
+    {
+      "id": 3,
+      "group": "protocol",
+      "pass": true,
+      "return": 0,
+      "failure_line": 0,
+      "error": null,
+      "name": "Wire validation consumer=1 op=2 kind=2"
+    },
+    {
+      "id": 4,
+      "group": "protocol",
+      "pass": true,
+      "return": 0,
+      "failure_line": 0,
+      "error": null,
+      "name": "Wire validation consumer=1 op=3 kind=1"
+    },
+    {
+      "id": 5,
+      "group": "protocol",
+      "pass": true,
+      "return": 0,
+      "failure_line": 0,
+      "error": null,
+      "name": "Wire validation consumer=1 op=3 kind=2"
+    },
+    {
+      "id": 6,
+      "group": "protocol",
+      "pass": true,
+      "return": 0,
+      "failure_line": 0,
+      "error": null,
+      "name": "Wire validation consumer=1 op=4 kind=1"
+    },
+    {
+      "id": 7,
+      "group": "protocol",
+      "pass": true,
+      "return": 0,
+      "failure_line": 0,
+      "error": null,
+      "name": "Wire validation consumer=1 op=4 kind=2"
+    },
+    {
+      "id": 8,
+      "group": "protocol",
+      "pass": true,
+      "return": 0,
+      "failure_line": 0,
+      "error": null,
+      "name": "Wire validation consumer=1 op=5 kind=1"
+    },
+    {
+      "id": 9,
+      "group": "protocol",
+      "pass": true,
+      "return": 0,
+      "failure_line": 0,
+      "error": null,
+      "name": "Wire validation consumer=1 op=5 kind=2"
+    },
+    {
+      "id": 10,
+      "group": "protocol",
+      "pass": true,
+      "return": 0,
+      "failure_line": 0,
+      "error": null,
+      "name": "Wire validation consumer=1 op=6 kind=1"
+    },
+    {
+      "id": 11,
+      "group": "protocol",
+      "pass": true,
+      "return": 0,
+      "failure_line": 0,
+      "error": null,
+      "name": "Wire validation consumer=1 op=6 kind=2"
+    },
+    {
+      "id": 12,
+      "group": "protocol",
+      "pass": true,
+      "return": 0,
+      "failure_line": 0,
+      "error": null,
+      "name": "Wire validation consumer=2 op=1 kind=1"
+    },
+    {
+      "id": 13,
+      "group": "protocol",
+      "pass": true,
+      "return": 0,
+      "failure_line": 0,
+      "error": null,
+      "name": "Wire validation consumer=2 op=1 kind=2"
+    },
+    {
+      "id": 14,
+      "group": "protocol",
+      "pass": true,
+      "return": 0,
+      "failure_line": 0,
+      "error": null,
+      "name": "Wire validation consumer=2 op=2 kind=1"
+    },
+    {
+      "id": 15,
+      "group": "protocol",
+      "pass": true,
+      "return": 0,
+      "failure_line": 0,
+      "error": null,
+      "name": "Wire validation consumer=2 op=2 kind=2"
+    },
+    {
+      "id": 16,
+      "group": "protocol",
+      "pass": true,
+      "return": 0,
+      "failure_line": 0,
+      "error": null,
+      "name": "Wire validation consumer=2 op=3 kind=1"
+    },
+    {
+      "id": 17,
+      "group": "protocol",
+      "pass": true,
+      "return": 0,
+      "failure_line": 0,
+      "error": null,
+      "name": "Wire validation consumer=2 op=3 kind=2"
+    },
+    {
+      "id": 18,
+      "group": "protocol",
+      "pass": true,
+      "return": 0,
+      "failure_line": 0,
+      "error": null,
+      "name": "Wire validation consumer=2 op=4 kind=1"
+    },
+    {
+      "id": 19,
+      "group": "protocol",
+      "pass": true,
+      "return": 0,
+      "failure_line": 0,
+      "error": null,
+      "name": "Wire validation consumer=2 op=4 kind=2"
+    },
+    {
+      "id": 20,
+      "group": "protocol",
+      "pass": true,
+      "return": 0,
+      "failure_line": 0,
+      "error": null,
+      "name": "Wire validation consumer=2 op=5 kind=1"
+    },
+    {
+      "id": 21,
+      "group": "protocol",
+      "pass": true,
+      "return": 0,
+      "failure_line": 0,
+      "error": null,
+      "name": "Wire validation consumer=2 op=5 kind=2"
+    },
+    {
+      "id": 22,
+      "group": "protocol",
+      "pass": true,
+      "return": 0,
+      "failure_line": 0,
+      "error": null,
+      "name": "Wire validation consumer=2 op=6 kind=1"
+    },
+    {
+      "id": 23,
+      "group": "protocol",
+      "pass": true,
+      "return": 0,
+      "failure_line": 0,
+      "error": null,
+      "name": "Wire validation consumer=2 op=6 kind=2"
+    },
+    {
+      "id": 24,
+      "group": "protocol",
+      "pass": true,
+      "return": 0,
+      "failure_line": 0,
+      "error": null,
+      "name": "NULL and invalid message"
+    },
+    {
+      "id": 25,
+      "group": "protocol",
+      "pass": true,
+      "return": 0,
+      "failure_line": 0,
+      "error": null,
+      "name": "Fixed field layout"
+    },
+    {
+      "id": 26,
+      "group": "protocol",
+      "pass": true,
+      "return": 0,
+      "failure_line": 0,
+      "error": null,
+      "name": "Query assigns session"
+    },
+    {
+      "id": 27,
+      "group": "protocol",
+      "pass": true,
+      "return": 0,
+      "failure_line": 0,
+      "error": null,
+      "name": "Query failure without session"
+    },
+    {
+      "id": 28,
+      "group": "protocol",
+      "pass": true,
+      "return": 0,
+      "failure_line": 0,
+      "error": null,
+      "name": "Old session reply"
+    },
+    {
+      "id": 29,
+      "group": "protocol",
+      "pass": true,
+      "return": 0,
+      "failure_line": 0,
+      "error": null,
+      "name": "Wrong request id"
+    },
+    {
+      "id": 30,
+      "group": "protocol",
+      "pass": true,
+      "return": 0,
+      "failure_line": 0,
+      "error": null,
+      "name": "Wrong consumer reply"
+    },
+    {
+      "id": 31,
+      "group": "protocol",
+      "pass": true,
+      "return": 0,
+      "failure_line": 0,
+      "error": null,
+      "name": "Old generation reply"
+    },
+    {
+      "id": 32,
+      "group": "protocol",
+      "pass": true,
+      "return": 0,
+      "failure_line": 0,
+      "error": null,
+      "name": "Forged reply source"
+    },
+    {
+      "id": 33,
+      "group": "protocol",
+      "pass": true,
+      "return": 0,
+      "failure_line": 0,
+      "error": null,
+      "name": "Wrong operation reply"
+    },
+    {
+      "id": 34,
+      "group": "protocol",
+      "pass": true,
+      "return": 0,
+      "failure_line": 0,
+      "error": null,
+      "name": "Wrong shutdown relation"
+    },
+    {
+      "id": 35,
+      "group": "protocol",
+      "pass": true,
+      "return": 0,
+      "failure_line": 0,
+      "error": null,
+      "name": "Current identity check"
+    },
+    {
+      "id": 36,
+      "group": "protocol",
+      "pass": true,
+      "return": 0,
+      "failure_line": 0,
+      "error": null,
+      "name": "Batch ID reservation"
+    },
+    {
+      "id": 37,
+      "group": "protocol",
+      "pass": true,
+      "return": 0,
+      "failure_line": 0,
+      "error": null,
+      "name": "ID overflow unchanged"
+    },
+    {
+      "id": 38,
+      "group": "protocol",
+      "pass": true,
+      "return": 0,
+      "failure_line": 0,
+      "error": null,
+      "name": "Last ID and exhaustion"
+    },
+    {
+      "id": 39,
+      "group": "protocol",
+      "pass": true,
+      "return": 0,
+      "failure_line": 0,
+      "error": null,
+      "name": "ID input errors"
+    },
+    {
+      "id": 40,
+      "group": "protocol",
+      "pass": true,
+      "return": 0,
+      "failure_line": 0,
+      "error": null,
+      "name": "Queue full retry original"
+    },
+    {
+      "id": 41,
+      "group": "protocol",
+      "pass": true,
+      "return": 0,
+      "failure_line": 0,
+      "error": null,
+      "name": "BUSY retry original"
+    },
+    {
+      "id": 42,
+      "group": "protocol",
+      "pass": true,
+      "return": 0,
+      "failure_line": 0,
+      "error": null,
+      "name": "TIMEOUT retry original"
+    },
+    {
+      "id": 43,
+      "group": "protocol",
+      "pass": true,
+      "return": 0,
+      "failure_line": 0,
+      "error": null,
+      "name": "IO retry original"
+    },
+    {
+      "id": 44,
+      "group": "protocol",
+      "pass": true,
+      "return": 0,
+      "failure_line": 0,
+      "error": null,
+      "name": "Submitted request retained"
+    },
+    {
+      "id": 45,
+      "group": "protocol",
+      "pass": true,
+      "return": 0,
+      "failure_line": 0,
+      "error": null,
+      "name": "Reply before enqueue rejected"
+    },
+    {
+      "id": 46,
+      "group": "protocol",
+      "pass": true,
+      "return": 0,
+      "failure_line": 0,
+      "error": null,
+      "name": "Matching reply and clear"
+    },
+    {
+      "id": 47,
+      "group": "protocol",
+      "pass": true,
+      "return": 0,
+      "failure_line": 0,
+      "error": null,
+      "name": "Late reply preserves record"
+    },
+    {
+      "id": 48,
+      "group": "protocol",
+      "pass": true,
+      "return": 0,
+      "failure_line": 0,
+      "error": null,
+      "name": "BUSY terminal reply preserved"
+    },
+    {
+      "id": 49,
+      "group": "protocol",
+      "pass": true,
+      "return": 0,
+      "failure_line": 0,
+      "error": null,
+      "name": "Reply enqueue completion"
+    },
+    {
+      "id": 50,
+      "group": "protocol",
+      "pass": true,
+      "return": 0,
+      "failure_line": 0,
+      "error": null,
+      "name": "Pending overwrite refused"
+    },
+    {
+      "id": 51,
+      "group": "protocol",
+      "pass": true,
+      "return": 0,
+      "failure_line": 0,
+      "error": null,
+      "name": "Flush reentrancy"
+    },
+    {
+      "id": 52,
+      "group": "protocol",
+      "pass": true,
+      "return": 0,
+      "failure_line": 0,
+      "error": null,
+      "name": "Duplicate reply rejected"
+    },
+    {
+      "id": 53,
+      "group": "protocol",
+      "pass": true,
+      "return": 0,
+      "failure_line": 0,
+      "error": null,
+      "name": "Duplicate request accepted once"
+    },
+    {
+      "id": 54,
+      "group": "protocol",
+      "pass": true,
+      "return": 0,
+      "failure_line": 0,
+      "error": null,
+      "name": "Same key different body"
+    },
+    {
+      "id": 55,
+      "group": "protocol",
+      "pass": true,
+      "return": 0,
+      "failure_line": 0,
+      "error": null,
+      "name": "Failure reply cannot be overwritten"
+    },
+    {
+      "id": 56,
+      "group": "protocol",
+      "pass": true,
+      "return": 0,
+      "failure_line": 0,
+      "error": null,
+      "name": "Retire only complete cache"
+    },
+    {
+      "id": 57,
+      "group": "protocol",
+      "pass": true,
+      "return": 0,
+      "failure_line": 0,
+      "error": null,
+      "name": "Pure cached reply read"
+    },
+    {
+      "id": 58,
+      "group": "protocol",
+      "pass": true,
+      "return": 0,
+      "failure_line": 0,
+      "error": null,
+      "name": "Consumer cannot release qualification"
+    },
+    {
+      "id": 59,
+      "group": "protocol",
+      "pass": true,
+      "return": 0,
+      "failure_line": 0,
+      "error": null,
+      "name": "Consumer cannot stop hardware"
+    },
+    {
+      "id": 60,
+      "group": "protocol",
+      "pass": true,
+      "return": 0,
+      "failure_line": 0,
+      "error": null,
+      "name": "File failure and frame drain separate"
+    },
+    {
+      "id": 61,
+      "group": "protocol",
+      "pass": true,
+      "return": 0,
+      "failure_line": 0,
+      "error": null,
+      "name": "Positive result rejected"
+    },
+    {
+      "id": 62,
+      "group": "protocol",
+      "pass": true,
+      "return": 0,
+      "failure_line": 0,
+      "error": null,
+      "name": "Bad reply leaves output intact"
+    },
+    {
+      "id": 63,
+      "group": "protocol",
+      "pass": true,
+      "return": 0,
+      "failure_line": 0,
+      "error": null,
+      "name": "Reply construction alias"
+    },
+    {
+      "id": 64,
+      "group": "protocol",
+      "pass": true,
+      "return": 0,
+      "failure_line": 0,
+      "error": null,
+      "name": "Query zero-session success rejected"
+    },
+    {
+      "id": 65,
+      "group": "protocol",
+      "pass": true,
+      "return": 0,
+      "failure_line": 0,
+      "error": null,
+      "name": "Other pending request BUSY"
+    },
+    {
+      "id": 66,
+      "group": "protocol",
+      "pass": true,
+      "return": 0,
+      "failure_line": 0,
+      "error": null,
+      "name": "Shutdown relation echoed"
+    },
+    {
+      "id": 67,
+      "group": "protocol",
+      "pass": true,
+      "return": 0,
+      "failure_line": 0,
+      "error": null,
+      "name": "Invalid stage preserves record"
+    },
+    {
+      "id": 68,
+      "group": "protocol",
+      "pass": true,
+      "return": 0,
+      "failure_line": 0,
+      "error": null,
+      "name": "NULL record arguments"
+    },
+    {
+      "id": 69,
+      "group": "protocol",
+      "pass": true,
+      "return": 0,
+      "failure_line": 0,
+      "error": null,
+      "name": "Zero current identity rejected"
+    },
+    {
+      "id": 70,
+      "group": "legacy_queue",
+      "case": 0,
+      "pass": true,
+      "baseline_ok": true,
+      "current_ok": true,
+      "trace_equal": true,
+      "trace_records": 1,
+      "name": "Old send matrix 0"
+    },
+    {
+      "id": 71,
+      "group": "legacy_queue",
+      "case": 1,
+      "pass": true,
+      "baseline_ok": true,
+      "current_ok": true,
+      "trace_equal": true,
+      "trace_records": 1,
+      "name": "Old send matrix 1"
+    },
+    {
+      "id": 72,
+      "group": "legacy_queue",
+      "case": 2,
+      "pass": true,
+      "baseline_ok": true,
+      "current_ok": true,
+      "trace_equal": true,
+      "trace_records": 2,
+      "name": "Old send matrix 2"
+    },
+    {
+      "id": 73,
+      "group": "legacy_queue",
+      "case": 3,
+      "pass": true,
+      "baseline_ok": true,
+      "current_ok": true,
+      "trace_equal": true,
+      "trace_records": 1,
+      "name": "Old send matrix 3"
+    },
+    {
+      "id": 74,
+      "group": "legacy_queue",
+      "case": 4,
+      "pass": true,
+      "baseline_ok": true,
+      "current_ok": true,
+      "trace_equal": true,
+      "trace_records": 2,
+      "name": "Old send matrix 4"
+    },
+    {
+      "id": 75,
+      "group": "legacy_queue",
+      "case": 5,
+      "pass": true,
+      "baseline_ok": true,
+      "current_ok": true,
+      "trace_equal": true,
+      "trace_records": 1,
+      "name": "Old send matrix 5"
+    },
+    {
+      "id": 76,
+      "group": "legacy_queue",
+      "case": 6,
+      "pass": true,
+      "baseline_ok": true,
+      "current_ok": true,
+      "trace_equal": true,
+      "trace_records": 1,
+      "name": "Old send matrix 6"
+    },
+    {
+      "id": 77,
+      "group": "legacy_queue",
+      "case": 7,
+      "pass": true,
+      "baseline_ok": true,
+      "current_ok": true,
+      "trace_equal": true,
+      "trace_records": 2,
+      "name": "Old send matrix 7"
+    },
+    {
+      "id": 78,
+      "group": "legacy_queue",
+      "case": 8,
+      "pass": true,
+      "baseline_ok": true,
+      "current_ok": true,
+      "trace_equal": true,
+      "trace_records": 2,
+      "name": "Old send matrix 8"
+    },
+    {
+      "id": 79,
+      "group": "legacy_queue",
+      "case": 9,
+      "pass": true,
+      "baseline_ok": true,
+      "current_ok": true,
+      "trace_equal": true,
+      "trace_records": 1,
+      "name": "Old send matrix 9"
+    },
+    {
+      "id": 80,
+      "group": "legacy_queue",
+      "case": 10,
+      "pass": true,
+      "baseline_ok": true,
+      "current_ok": true,
+      "trace_equal": true,
+      "trace_records": 2,
+      "name": "Old send matrix 10"
+    },
+    {
+      "id": 81,
+      "group": "legacy_queue",
+      "case": 11,
+      "pass": true,
+      "baseline_ok": true,
+      "current_ok": true,
+      "trace_equal": true,
+      "trace_records": 2,
+      "name": "Old send matrix 11"
+    },
+    {
+      "id": 82,
+      "group": "legacy_queue",
+      "case": 12,
+      "pass": true,
+      "baseline_ok": true,
+      "current_ok": true,
+      "trace_equal": true,
+      "trace_records": 2,
+      "name": "Old send matrix 12"
+    },
+    {
+      "id": 83,
+      "group": "legacy_queue",
+      "case": 13,
+      "pass": true,
+      "baseline_ok": true,
+      "current_ok": true,
+      "trace_equal": true,
+      "trace_records": 1,
+      "name": "Old send matrix 13"
+    },
+    {
+      "id": 84,
+      "group": "legacy_queue",
+      "case": 14,
+      "pass": true,
+      "baseline_ok": true,
+      "current_ok": true,
+      "trace_equal": true,
+      "trace_records": 1,
+      "name": "Old send matrix 14"
+    },
+    {
+      "id": 85,
+      "group": "legacy_queue",
+      "case": 15,
+      "pass": true,
+      "baseline_ok": true,
+      "current_ok": true,
+      "trace_equal": true,
+      "trace_records": 1,
+      "name": "Old send matrix 15"
+    },
+    {
+      "id": 86,
+      "group": "legacy_queue",
+      "case": 16,
+      "pass": true,
+      "baseline_ok": true,
+      "current_ok": true,
+      "trace_equal": true,
+      "trace_records": 1,
+      "name": "Old send matrix 16"
+    },
+    {
+      "id": 87,
+      "group": "legacy_queue",
+      "case": 17,
+      "pass": true,
+      "baseline_ok": true,
+      "current_ok": true,
+      "trace_equal": true,
+      "trace_records": 2,
+      "name": "Old send matrix 17"
+    },
+    {
+      "id": 88,
+      "group": "legacy_queue",
+      "case": 18,
+      "pass": true,
+      "baseline_ok": true,
+      "current_ok": true,
+      "trace_equal": true,
+      "trace_records": 1,
+      "name": "Old send matrix 18"
+    },
+    {
+      "id": 89,
+      "group": "legacy_queue",
+      "case": 19,
+      "pass": true,
+      "baseline_ok": true,
+      "current_ok": true,
+      "trace_equal": true,
+      "trace_records": 1,
+      "name": "Old send matrix 19"
+    },
+    {
+      "id": 90,
+      "group": "legacy_queue",
+      "case": 20,
+      "pass": true,
+      "baseline_ok": true,
+      "current_ok": true,
+      "trace_equal": true,
+      "trace_records": 1,
+      "name": "Old send matrix 20"
+    },
+    {
+      "id": 91,
+      "group": "legacy_queue",
+      "case": 21,
+      "pass": true,
+      "baseline_ok": true,
+      "current_ok": true,
+      "trace_equal": true,
+      "trace_records": 1,
+      "name": "Old send matrix 21"
+    },
+    {
+      "id": 92,
+      "group": "legacy_queue",
+      "case": 22,
+      "pass": true,
+      "baseline_ok": true,
+      "current_ok": true,
+      "trace_equal": true,
+      "trace_records": 2,
+      "name": "Old send matrix 22"
+    },
+    {
+      "id": 93,
+      "group": "legacy_queue",
+      "case": 23,
+      "pass": true,
+      "baseline_ok": true,
+      "current_ok": true,
+      "trace_equal": true,
+      "trace_records": 1,
+      "name": "Old send matrix 23"
+    },
+    {
+      "id": 94,
+      "group": "legacy_queue",
+      "case": 24,
+      "pass": true,
+      "baseline_ok": true,
+      "current_ok": true,
+      "trace_equal": true,
+      "trace_records": 1,
+      "name": "Old send matrix 24"
+    },
+    {
+      "id": 95,
+      "group": "legacy_queue",
+      "case": 25,
+      "pass": true,
+      "baseline_ok": true,
+      "current_ok": true,
+      "trace_equal": true,
+      "trace_records": 1,
+      "name": "Old receive matrix 25"
+    },
+    {
+      "id": 96,
+      "group": "legacy_queue",
+      "case": 26,
+      "pass": true,
+      "baseline_ok": true,
+      "current_ok": true,
+      "trace_equal": true,
+      "trace_records": 1,
+      "name": "Old receive matrix 26"
+    },
+    {
+      "id": 97,
+      "group": "legacy_queue",
+      "case": 27,
+      "pass": true,
+      "baseline_ok": true,
+      "current_ok": true,
+      "trace_equal": true,
+      "trace_records": 1,
+      "name": "Old receive matrix 27"
+    },
+    {
+      "id": 98,
+      "group": "legacy_queue",
+      "case": 28,
+      "pass": true,
+      "baseline_ok": true,
+      "current_ok": true,
+      "trace_equal": true,
+      "trace_records": 1,
+      "name": "Old receive matrix 28"
+    },
+    {
+      "id": 99,
+      "group": "legacy_queue",
+      "case": 29,
+      "pass": true,
+      "baseline_ok": true,
+      "current_ok": true,
+      "trace_equal": true,
+      "trace_records": 1,
+      "name": "Old receive matrix 29"
+    },
+    {
+      "id": 100,
+      "group": "legacy_queue",
+      "case": 30,
+      "pass": true,
+      "baseline_ok": true,
+      "current_ok": true,
+      "trace_equal": true,
+      "trace_records": 1,
+      "name": "Old receive matrix 30"
+    },
+    {
+      "id": 101,
+      "group": "legacy_queue",
+      "case": 31,
+      "pass": true,
+      "baseline_ok": true,
+      "current_ok": true,
+      "trace_equal": true,
+      "trace_records": 1,
+      "name": "Old receive matrix 31"
+    },
+    {
+      "id": 102,
+      "group": "legacy_queue",
+      "case": 32,
+      "pass": true,
+      "baseline_ok": true,
+      "current_ok": true,
+      "trace_equal": true,
+      "trace_records": 1,
+      "name": "Old receive matrix 32"
+    },
+    {
+      "id": 103,
+      "group": "legacy_queue",
+      "case": 33,
+      "pass": true,
+      "baseline_ok": true,
+      "current_ok": true,
+      "trace_equal": true,
+      "trace_records": 1,
+      "name": "Old receive matrix 33"
+    },
+    {
+      "id": 104,
+      "group": "legacy_queue",
+      "case": 34,
+      "pass": true,
+      "baseline_ok": true,
+      "current_ok": true,
+      "trace_equal": true,
+      "trace_records": 1,
+      "name": "Old receive matrix 34"
+    },
+    {
+      "id": 105,
+      "group": "legacy_queue",
+      "case": 35,
+      "pass": true,
+      "baseline_ok": true,
+      "current_ok": true,
+      "trace_equal": true,
+      "trace_records": 1,
+      "name": "Old receive matrix 35"
+    },
+    {
+      "id": 106,
+      "group": "legacy_queue",
+      "case": 36,
+      "pass": true,
+      "baseline_ok": true,
+      "current_ok": true,
+      "trace_equal": true,
+      "trace_records": 1,
+      "name": "Old receive matrix 36"
+    },
+    {
+      "id": 107,
+      "group": "legacy_queue",
+      "case": 37,
+      "pass": true,
+      "baseline_ok": true,
+      "current_ok": true,
+      "trace_equal": true,
+      "trace_records": 1,
+      "name": "Old receive matrix 37"
+    },
+    {
+      "id": 108,
+      "group": "legacy_queue",
+      "case": 38,
+      "pass": true,
+      "baseline_ok": true,
+      "current_ok": true,
+      "trace_equal": true,
+      "trace_records": 1,
+      "name": "Old receive matrix 38"
+    },
+    {
+      "id": 109,
+      "group": "legacy_queue",
+      "case": 39,
+      "pass": true,
+      "baseline_ok": true,
+      "current_ok": true,
+      "trace_equal": true,
+      "trace_records": 1,
+      "name": "Old receive matrix 39"
+    },
+    {
+      "id": 110,
+      "group": "legacy_queue",
+      "case": 40,
+      "pass": true,
+      "baseline_ok": true,
+      "current_ok": true,
+      "trace_equal": true,
+      "trace_records": 1,
+      "name": "Old receive matrix 40"
+    },
+    {
+      "id": 111,
+      "group": "legacy_queue",
+      "case": 41,
+      "pass": true,
+      "baseline_ok": true,
+      "current_ok": true,
+      "trace_equal": true,
+      "trace_records": 1,
+      "name": "Old receive matrix 41"
+    },
+    {
+      "id": 112,
+      "group": "legacy_queue",
+      "case": 42,
+      "pass": true,
+      "baseline_ok": true,
+      "current_ok": true,
+      "trace_equal": true,
+      "trace_records": 1,
+      "name": "Old receive matrix 42"
+    },
+    {
+      "id": 113,
+      "group": "legacy_queue",
+      "case": 43,
+      "pass": true,
+      "baseline_ok": true,
+      "current_ok": true,
+      "trace_equal": true,
+      "trace_records": 1,
+      "name": "Old receive matrix 43"
+    },
+    {
+      "id": 114,
+      "group": "legacy_queue",
+      "case": 44,
+      "pass": true,
+      "baseline_ok": true,
+      "current_ok": true,
+      "trace_equal": true,
+      "trace_records": 1,
+      "name": "Old receive matrix 44"
+    },
+    {
+      "id": 115,
+      "group": "legacy_queue",
+      "case": 45,
+      "pass": true,
+      "baseline_ok": true,
+      "current_ok": true,
+      "trace_equal": true,
+      "trace_records": 1,
+      "name": "Old receive matrix 45"
+    },
+    {
+      "id": 116,
+      "group": "legacy_queue",
+      "case": 46,
+      "pass": true,
+      "baseline_ok": true,
+      "current_ok": true,
+      "trace_equal": true,
+      "trace_records": 1,
+      "name": "Old receive matrix 46"
+    },
+    {
+      "id": 117,
+      "group": "legacy_queue",
+      "case": 47,
+      "pass": true,
+      "baseline_ok": true,
+      "current_ok": true,
+      "trace_equal": true,
+      "trace_records": 1,
+      "name": "Old receive matrix 47"
+    },
+    {
+      "id": 118,
+      "group": "legacy_queue",
+      "case": 48,
+      "pass": true,
+      "baseline_ok": true,
+      "current_ok": true,
+      "trace_equal": true,
+      "trace_records": 1,
+      "name": "Old receive matrix 48"
+    },
+    {
+      "id": 119,
+      "group": "legacy_queue",
+      "case": 49,
+      "pass": true,
+      "baseline_ok": true,
+      "current_ok": true,
+      "trace_equal": true,
+      "trace_records": 1,
+      "name": "Old receive matrix 49"
+    },
+    {
+      "id": 120,
+      "group": "legacy_queue",
+      "case": 50,
+      "pass": true,
+      "baseline_ok": true,
+      "current_ok": true,
+      "trace_equal": true,
+      "trace_records": 1,
+      "name": "Old queue edge 50"
+    },
+    {
+      "id": 121,
+      "group": "legacy_queue",
+      "case": 51,
+      "pass": true,
+      "baseline_ok": true,
+      "current_ok": true,
+      "trace_equal": true,
+      "trace_records": 1,
+      "name": "Old queue edge 51"
+    },
+    {
+      "id": 122,
+      "group": "legacy_queue",
+      "case": 52,
+      "pass": true,
+      "baseline_ok": true,
+      "current_ok": true,
+      "trace_equal": true,
+      "trace_records": 1,
+      "name": "Old queue edge 52"
+    },
+    {
+      "id": 123,
+      "group": "legacy_queue",
+      "case": 53,
+      "pass": true,
+      "baseline_ok": true,
+      "current_ok": true,
+      "trace_equal": true,
+      "trace_records": 1,
+      "name": "Old queue edge 53"
+    },
+    {
+      "id": 124,
+      "group": "legacy_queue",
+      "case": 54,
+      "pass": true,
+      "baseline_ok": true,
+      "current_ok": true,
+      "trace_equal": true,
+      "trace_records": 1,
+      "name": "Old queue edge 54"
+    },
+    {
+      "id": 125,
+      "group": "legacy_queue",
+      "case": 55,
+      "pass": true,
+      "baseline_ok": true,
+      "current_ok": true,
+      "trace_equal": true,
+      "trace_records": 1,
+      "name": "Old queue edge 55"
+    },
+    {
+      "id": 126,
+      "group": "legacy_queue",
+      "case": 56,
+      "pass": true,
+      "baseline_ok": true,
+      "current_ok": true,
+      "trace_equal": true,
+      "trace_records": 1,
+      "name": "Old queue edge 56"
+    },
+    {
+      "id": 127,
+      "group": "legacy_queue",
+      "case": 57,
+      "pass": true,
+      "baseline_ok": true,
+      "current_ok": true,
+      "trace_equal": true,
+      "trace_records": 1,
+      "name": "Old queue edge 57"
+    },
+    {
+      "id": 128,
+      "group": "legacy_queue",
+      "case": 58,
+      "pass": true,
+      "baseline_ok": true,
+      "current_ok": true,
+      "trace_equal": true,
+      "trace_records": 1,
+      "name": "Old queue edge 58"
+    },
+    {
+      "id": 129,
+      "group": "legacy_queue",
+      "case": 59,
+      "pass": true,
+      "baseline_ok": true,
+      "current_ok": true,
+      "trace_equal": true,
+      "trace_records": 1,
+      "name": "Old queue edge 59"
+    },
+    {
+      "id": 130,
+      "group": "lifecycle_queue",
+      "case": 0,
+      "pass": true,
+      "return": 0,
+      "failure_line": 0,
+      "error": null,
+      "name": "Partial init failure 1"
+    },
+    {
+      "id": 131,
+      "group": "lifecycle_queue",
+      "case": 1,
+      "pass": true,
+      "return": 0,
+      "failure_line": 0,
+      "error": null,
+      "name": "Partial init failure 2"
+    },
+    {
+      "id": 132,
+      "group": "lifecycle_queue",
+      "case": 2,
+      "pass": true,
+      "return": 0,
+      "failure_line": 0,
+      "error": null,
+      "name": "Partial init failure 3"
+    },
+    {
+      "id": 133,
+      "group": "lifecycle_queue",
+      "case": 3,
+      "pass": true,
+      "return": 0,
+      "failure_line": 0,
+      "error": null,
+      "name": "Init ISR rejected"
+    },
+    {
+      "id": 134,
+      "group": "lifecycle_queue",
+      "case": 4,
+      "pass": true,
+      "return": 0,
+      "failure_line": 0,
+      "error": null,
+      "name": "Init PRIMASK rejected"
+    },
+    {
+      "id": 135,
+      "group": "lifecycle_queue",
+      "case": 5,
+      "pass": true,
+      "return": 0,
+      "failure_line": 0,
+      "error": null,
+      "name": "Init running scheduler rejected"
+    },
+    {
+      "id": 136,
+      "group": "lifecycle_queue",
+      "case": 6,
+      "pass": true,
+      "return": 0,
+      "failure_line": 0,
+      "error": null,
+      "name": "Copy consumer=1 op=1 kind=1"
+    },
+    {
+      "id": 137,
+      "group": "lifecycle_queue",
+      "case": 7,
+      "pass": true,
+      "return": 0,
+      "failure_line": 0,
+      "error": null,
+      "name": "Copy consumer=1 op=1 kind=2"
+    },
+    {
+      "id": 138,
+      "group": "lifecycle_queue",
+      "case": 8,
+      "pass": true,
+      "return": 0,
+      "failure_line": 0,
+      "error": null,
+      "name": "Copy consumer=1 op=2 kind=1"
+    },
+    {
+      "id": 139,
+      "group": "lifecycle_queue",
+      "case": 9,
+      "pass": true,
+      "return": 0,
+      "failure_line": 0,
+      "error": null,
+      "name": "Copy consumer=1 op=2 kind=2"
+    },
+    {
+      "id": 140,
+      "group": "lifecycle_queue",
+      "case": 10,
+      "pass": true,
+      "return": 0,
+      "failure_line": 0,
+      "error": null,
+      "name": "Copy consumer=1 op=3 kind=1"
+    },
+    {
+      "id": 141,
+      "group": "lifecycle_queue",
+      "case": 11,
+      "pass": true,
+      "return": 0,
+      "failure_line": 0,
+      "error": null,
+      "name": "Copy consumer=1 op=3 kind=2"
+    },
+    {
+      "id": 142,
+      "group": "lifecycle_queue",
+      "case": 12,
+      "pass": true,
+      "return": 0,
+      "failure_line": 0,
+      "error": null,
+      "name": "Copy consumer=1 op=4 kind=1"
+    },
+    {
+      "id": 143,
+      "group": "lifecycle_queue",
+      "case": 13,
+      "pass": true,
+      "return": 0,
+      "failure_line": 0,
+      "error": null,
+      "name": "Copy consumer=1 op=4 kind=2"
+    },
+    {
+      "id": 144,
+      "group": "lifecycle_queue",
+      "case": 14,
+      "pass": true,
+      "return": 0,
+      "failure_line": 0,
+      "error": null,
+      "name": "Copy consumer=1 op=5 kind=1"
+    },
+    {
+      "id": 145,
+      "group": "lifecycle_queue",
+      "case": 15,
+      "pass": true,
+      "return": 0,
+      "failure_line": 0,
+      "error": null,
+      "name": "Copy consumer=1 op=5 kind=2"
+    },
+    {
+      "id": 146,
+      "group": "lifecycle_queue",
+      "case": 16,
+      "pass": true,
+      "return": 0,
+      "failure_line": 0,
+      "error": null,
+      "name": "Copy consumer=1 op=6 kind=1"
+    },
+    {
+      "id": 147,
+      "group": "lifecycle_queue",
+      "case": 17,
+      "pass": true,
+      "return": 0,
+      "failure_line": 0,
+      "error": null,
+      "name": "Copy consumer=1 op=6 kind=2"
+    },
+    {
+      "id": 148,
+      "group": "lifecycle_queue",
+      "case": 18,
+      "pass": true,
+      "return": 0,
+      "failure_line": 0,
+      "error": null,
+      "name": "Copy consumer=2 op=1 kind=1"
+    },
+    {
+      "id": 149,
+      "group": "lifecycle_queue",
+      "case": 19,
+      "pass": true,
+      "return": 0,
+      "failure_line": 0,
+      "error": null,
+      "name": "Copy consumer=2 op=1 kind=2"
+    },
+    {
+      "id": 150,
+      "group": "lifecycle_queue",
+      "case": 20,
+      "pass": true,
+      "return": 0,
+      "failure_line": 0,
+      "error": null,
+      "name": "Copy consumer=2 op=2 kind=1"
+    },
+    {
+      "id": 151,
+      "group": "lifecycle_queue",
+      "case": 21,
+      "pass": true,
+      "return": 0,
+      "failure_line": 0,
+      "error": null,
+      "name": "Copy consumer=2 op=2 kind=2"
+    },
+    {
+      "id": 152,
+      "group": "lifecycle_queue",
+      "case": 22,
+      "pass": true,
+      "return": 0,
+      "failure_line": 0,
+      "error": null,
+      "name": "Copy consumer=2 op=3 kind=1"
+    },
+    {
+      "id": 153,
+      "group": "lifecycle_queue",
+      "case": 23,
+      "pass": true,
+      "return": 0,
+      "failure_line": 0,
+      "error": null,
+      "name": "Copy consumer=2 op=3 kind=2"
+    },
+    {
+      "id": 154,
+      "group": "lifecycle_queue",
+      "case": 24,
+      "pass": true,
+      "return": 0,
+      "failure_line": 0,
+      "error": null,
+      "name": "Copy consumer=2 op=4 kind=1"
+    },
+    {
+      "id": 155,
+      "group": "lifecycle_queue",
+      "case": 25,
+      "pass": true,
+      "return": 0,
+      "failure_line": 0,
+      "error": null,
+      "name": "Copy consumer=2 op=4 kind=2"
+    },
+    {
+      "id": 156,
+      "group": "lifecycle_queue",
+      "case": 26,
+      "pass": true,
+      "return": 0,
+      "failure_line": 0,
+      "error": null,
+      "name": "Copy consumer=2 op=5 kind=1"
+    },
+    {
+      "id": 157,
+      "group": "lifecycle_queue",
+      "case": 27,
+      "pass": true,
+      "return": 0,
+      "failure_line": 0,
+      "error": null,
+      "name": "Copy consumer=2 op=5 kind=2"
+    },
+    {
+      "id": 158,
+      "group": "lifecycle_queue",
+      "case": 28,
+      "pass": true,
+      "return": 0,
+      "failure_line": 0,
+      "error": null,
+      "name": "Copy consumer=2 op=6 kind=1"
+    },
+    {
+      "id": 159,
+      "group": "lifecycle_queue",
+      "case": 29,
+      "pass": true,
+      "return": 0,
+      "failure_line": 0,
+      "error": null,
+      "name": "Copy consumer=2 op=6 kind=2"
+    },
+    {
+      "id": 160,
+      "group": "lifecycle_queue",
+      "case": 30,
+      "pass": true,
+      "return": 0,
+      "failure_line": 0,
+      "error": null,
+      "name": "Send ISR rejected"
+    },
+    {
+      "id": 161,
+      "group": "lifecycle_queue",
+      "case": 31,
+      "pass": true,
+      "return": 0,
+      "failure_line": 0,
+      "error": null,
+      "name": "Send suspended scheduler rejected"
+    },
+    {
+      "id": 162,
+      "group": "lifecycle_queue",
+      "case": 32,
+      "pass": true,
+      "return": 0,
+      "failure_line": 0,
+      "error": null,
+      "name": "Send PRIMASK rejected"
+    },
+    {
+      "id": 163,
+      "group": "lifecycle_queue",
+      "case": 33,
+      "pass": true,
+      "return": 0,
+      "failure_line": 0,
+      "error": null,
+      "name": "Send BASEPRI rejected"
+    },
+    {
+      "id": 164,
+      "group": "lifecycle_queue",
+      "case": 34,
+      "pass": true,
+      "return": 0,
+      "failure_line": 0,
+      "error": null,
+      "name": "Forged task rejected"
+    },
+    {
+      "id": 165,
+      "group": "lifecycle_queue",
+      "case": 35,
+      "pass": true,
+      "return": 0,
+      "failure_line": 0,
+      "error": null,
+      "name": "Wrong channel rejected"
+    },
+    {
+      "id": 166,
+      "group": "lifecycle_queue",
+      "case": 36,
+      "pass": true,
+      "return": 0,
+      "failure_line": 0,
+      "error": null,
+      "name": "Unknown version rejected"
+    },
+    {
+      "id": 167,
+      "group": "lifecycle_queue",
+      "case": 37,
+      "pass": true,
+      "return": 0,
+      "failure_line": 0,
+      "error": null,
+      "name": "Four-entry FIFO and full"
+    },
+    {
+      "id": 168,
+      "group": "lifecycle_queue",
+      "case": 38,
+      "pass": true,
+      "return": 0,
+      "failure_line": 0,
+      "error": null,
+      "name": "Pending retries real full queue"
+    },
+    {
+      "id": 169,
+      "group": "lifecycle_queue",
+      "case": 39,
+      "pass": true,
+      "return": 0,
+      "failure_line": 0,
+      "error": null,
+      "name": "Notification failure not duplicate enqueue"
+    },
+    {
+      "id": 170,
+      "group": "lifecycle_queue",
+      "case": 40,
+      "pass": true,
+      "return": 0,
+      "failure_line": 0,
+      "error": null,
+      "name": "Wrong reader preserves output"
+    },
+    {
+      "id": 171,
+      "group": "lifecycle_queue",
+      "case": 41,
+      "pass": true,
+      "return": 0,
+      "failure_line": 0,
+      "error": null,
+      "name": "Empty read preserves output"
+    },
+    {
+      "id": 172,
+      "group": "lifecycle_queue",
+      "case": 42,
+      "pass": true,
+      "return": 0,
+      "failure_line": 0,
+      "error": null,
+      "name": "Camera receive wakes USB and Storage"
+    },
+    {
+      "id": 173,
+      "group": "lifecycle_queue",
+      "case": 43,
+      "pass": true,
+      "return": 0,
+      "failure_line": 0,
+      "error": null,
+      "name": "Consumer receive wakes Camera"
+    },
+    {
+      "id": 174,
+      "group": "lifecycle_queue",
+      "case": 44,
+      "pass": true,
+      "return": 0,
+      "failure_line": 0,
+      "error": null,
+      "name": "Full new queue leaves old queue usable"
+    },
+    {
+      "id": 175,
+      "group": "lifecycle_queue",
+      "case": 45,
+      "pass": true,
+      "return": 0,
+      "failure_line": 0,
+      "error": null,
+      "name": "Old init does not reset new queue"
+    },
+    {
+      "id": 176,
+      "group": "lifecycle_queue",
+      "case": 46,
+      "pass": true,
+      "return": 0,
+      "failure_line": 0,
+      "error": null,
+      "name": "Duplicate lifecycle init"
+    },
+    {
+      "id": 177,
+      "group": "lifecycle_queue",
+      "case": 47,
+      "pass": true,
+      "return": 0,
+      "failure_line": 0,
+      "error": null,
+      "name": "NULL and invalid channel"
+    },
+    {
+      "id": 178,
+      "group": "lifecycle_queue",
+      "case": 48,
+      "pass": true,
+      "return": 0,
+      "failure_line": 0,
+      "error": null,
+      "name": "Masked receive leaves queue intact"
+    },
+    {
+      "id": 179,
+      "group": "task_permission",
+      "case": 0,
+      "pass": true,
+      "return": 0,
+      "failure_line": 0,
+      "error": null,
+      "name": "Send consumer=1 op=1 kind=1 task=0"
+    },
+    {
+      "id": 180,
+      "group": "task_permission",
+      "case": 1,
+      "pass": true,
+      "return": 0,
+      "failure_line": 0,
+      "error": null,
+      "name": "Send consumer=1 op=1 kind=1 task=1"
+    },
+    {
+      "id": 181,
+      "group": "task_permission",
+      "case": 2,
+      "pass": true,
+      "return": 0,
+      "failure_line": 0,
+      "error": null,
+      "name": "Send consumer=1 op=1 kind=1 task=2"
+    },
+    {
+      "id": 182,
+      "group": "task_permission",
+      "case": 3,
+      "pass": true,
+      "return": 0,
+      "failure_line": 0,
+      "error": null,
+      "name": "Send consumer=1 op=1 kind=1 task=3"
+    },
+    {
+      "id": 183,
+      "group": "task_permission",
+      "case": 4,
+      "pass": true,
+      "return": 0,
+      "failure_line": 0,
+      "error": null,
+      "name": "Send consumer=1 op=1 kind=1 task=4"
+    },
+    {
+      "id": 184,
+      "group": "task_permission",
+      "case": 5,
+      "pass": true,
+      "return": 0,
+      "failure_line": 0,
+      "error": null,
+      "name": "Send consumer=1 op=1 kind=2 task=0"
+    },
+    {
+      "id": 185,
+      "group": "task_permission",
+      "case": 6,
+      "pass": true,
+      "return": 0,
+      "failure_line": 0,
+      "error": null,
+      "name": "Send consumer=1 op=1 kind=2 task=1"
+    },
+    {
+      "id": 186,
+      "group": "task_permission",
+      "case": 7,
+      "pass": true,
+      "return": 0,
+      "failure_line": 0,
+      "error": null,
+      "name": "Send consumer=1 op=1 kind=2 task=2"
+    },
+    {
+      "id": 187,
+      "group": "task_permission",
+      "case": 8,
+      "pass": true,
+      "return": 0,
+      "failure_line": 0,
+      "error": null,
+      "name": "Send consumer=1 op=1 kind=2 task=3"
+    },
+    {
+      "id": 188,
+      "group": "task_permission",
+      "case": 9,
+      "pass": true,
+      "return": 0,
+      "failure_line": 0,
+      "error": null,
+      "name": "Send consumer=1 op=1 kind=2 task=4"
+    },
+    {
+      "id": 189,
+      "group": "task_permission",
+      "case": 10,
+      "pass": true,
+      "return": 0,
+      "failure_line": 0,
+      "error": null,
+      "name": "Send consumer=1 op=2 kind=1 task=0"
+    },
+    {
+      "id": 190,
+      "group": "task_permission",
+      "case": 11,
+      "pass": true,
+      "return": 0,
+      "failure_line": 0,
+      "error": null,
+      "name": "Send consumer=1 op=2 kind=1 task=1"
+    },
+    {
+      "id": 191,
+      "group": "task_permission",
+      "case": 12,
+      "pass": true,
+      "return": 0,
+      "failure_line": 0,
+      "error": null,
+      "name": "Send consumer=1 op=2 kind=1 task=2"
+    },
+    {
+      "id": 192,
+      "group": "task_permission",
+      "case": 13,
+      "pass": true,
+      "return": 0,
+      "failure_line": 0,
+      "error": null,
+      "name": "Send consumer=1 op=2 kind=1 task=3"
+    },
+    {
+      "id": 193,
+      "group": "task_permission",
+      "case": 14,
+      "pass": true,
+      "return": 0,
+      "failure_line": 0,
+      "error": null,
+      "name": "Send consumer=1 op=2 kind=1 task=4"
+    },
+    {
+      "id": 194,
+      "group": "task_permission",
+      "case": 15,
+      "pass": true,
+      "return": 0,
+      "failure_line": 0,
+      "error": null,
+      "name": "Send consumer=1 op=2 kind=2 task=0"
+    },
+    {
+      "id": 195,
+      "group": "task_permission",
+      "case": 16,
+      "pass": true,
+      "return": 0,
+      "failure_line": 0,
+      "error": null,
+      "name": "Send consumer=1 op=2 kind=2 task=1"
+    },
+    {
+      "id": 196,
+      "group": "task_permission",
+      "case": 17,
+      "pass": true,
+      "return": 0,
+      "failure_line": 0,
+      "error": null,
+      "name": "Send consumer=1 op=2 kind=2 task=2"
+    },
+    {
+      "id": 197,
+      "group": "task_permission",
+      "case": 18,
+      "pass": true,
+      "return": 0,
+      "failure_line": 0,
+      "error": null,
+      "name": "Send consumer=1 op=2 kind=2 task=3"
+    },
+    {
+      "id": 198,
+      "group": "task_permission",
+      "case": 19,
+      "pass": true,
+      "return": 0,
+      "failure_line": 0,
+      "error": null,
+      "name": "Send consumer=1 op=2 kind=2 task=4"
+    },
+    {
+      "id": 199,
+      "group": "task_permission",
+      "case": 20,
+      "pass": true,
+      "return": 0,
+      "failure_line": 0,
+      "error": null,
+      "name": "Send consumer=1 op=3 kind=1 task=0"
+    },
+    {
+      "id": 200,
+      "group": "task_permission",
+      "case": 21,
+      "pass": true,
+      "return": 0,
+      "failure_line": 0,
+      "error": null,
+      "name": "Send consumer=1 op=3 kind=1 task=1"
+    },
+    {
+      "id": 201,
+      "group": "task_permission",
+      "case": 22,
+      "pass": true,
+      "return": 0,
+      "failure_line": 0,
+      "error": null,
+      "name": "Send consumer=1 op=3 kind=1 task=2"
+    },
+    {
+      "id": 202,
+      "group": "task_permission",
+      "case": 23,
+      "pass": true,
+      "return": 0,
+      "failure_line": 0,
+      "error": null,
+      "name": "Send consumer=1 op=3 kind=1 task=3"
+    },
+    {
+      "id": 203,
+      "group": "task_permission",
+      "case": 24,
+      "pass": true,
+      "return": 0,
+      "failure_line": 0,
+      "error": null,
+      "name": "Send consumer=1 op=3 kind=1 task=4"
+    },
+    {
+      "id": 204,
+      "group": "task_permission",
+      "case": 25,
+      "pass": true,
+      "return": 0,
+      "failure_line": 0,
+      "error": null,
+      "name": "Send consumer=1 op=3 kind=2 task=0"
+    },
+    {
+      "id": 205,
+      "group": "task_permission",
+      "case": 26,
+      "pass": true,
+      "return": 0,
+      "failure_line": 0,
+      "error": null,
+      "name": "Send consumer=1 op=3 kind=2 task=1"
+    },
+    {
+      "id": 206,
+      "group": "task_permission",
+      "case": 27,
+      "pass": true,
+      "return": 0,
+      "failure_line": 0,
+      "error": null,
+      "name": "Send consumer=1 op=3 kind=2 task=2"
+    },
+    {
+      "id": 207,
+      "group": "task_permission",
+      "case": 28,
+      "pass": true,
+      "return": 0,
+      "failure_line": 0,
+      "error": null,
+      "name": "Send consumer=1 op=3 kind=2 task=3"
+    },
+    {
+      "id": 208,
+      "group": "task_permission",
+      "case": 29,
+      "pass": true,
+      "return": 0,
+      "failure_line": 0,
+      "error": null,
+      "name": "Send consumer=1 op=3 kind=2 task=4"
+    },
+    {
+      "id": 209,
+      "group": "task_permission",
+      "case": 30,
+      "pass": true,
+      "return": 0,
+      "failure_line": 0,
+      "error": null,
+      "name": "Send consumer=1 op=4 kind=1 task=0"
+    },
+    {
+      "id": 210,
+      "group": "task_permission",
+      "case": 31,
+      "pass": true,
+      "return": 0,
+      "failure_line": 0,
+      "error": null,
+      "name": "Send consumer=1 op=4 kind=1 task=1"
+    },
+    {
+      "id": 211,
+      "group": "task_permission",
+      "case": 32,
+      "pass": true,
+      "return": 0,
+      "failure_line": 0,
+      "error": null,
+      "name": "Send consumer=1 op=4 kind=1 task=2"
+    },
+    {
+      "id": 212,
+      "group": "task_permission",
+      "case": 33,
+      "pass": true,
+      "return": 0,
+      "failure_line": 0,
+      "error": null,
+      "name": "Send consumer=1 op=4 kind=1 task=3"
+    },
+    {
+      "id": 213,
+      "group": "task_permission",
+      "case": 34,
+      "pass": true,
+      "return": 0,
+      "failure_line": 0,
+      "error": null,
+      "name": "Send consumer=1 op=4 kind=1 task=4"
+    },
+    {
+      "id": 214,
+      "group": "task_permission",
+      "case": 35,
+      "pass": true,
+      "return": 0,
+      "failure_line": 0,
+      "error": null,
+      "name": "Send consumer=1 op=4 kind=2 task=0"
+    },
+    {
+      "id": 215,
+      "group": "task_permission",
+      "case": 36,
+      "pass": true,
+      "return": 0,
+      "failure_line": 0,
+      "error": null,
+      "name": "Send consumer=1 op=4 kind=2 task=1"
+    },
+    {
+      "id": 216,
+      "group": "task_permission",
+      "case": 37,
+      "pass": true,
+      "return": 0,
+      "failure_line": 0,
+      "error": null,
+      "name": "Send consumer=1 op=4 kind=2 task=2"
+    },
+    {
+      "id": 217,
+      "group": "task_permission",
+      "case": 38,
+      "pass": true,
+      "return": 0,
+      "failure_line": 0,
+      "error": null,
+      "name": "Send consumer=1 op=4 kind=2 task=3"
+    },
+    {
+      "id": 218,
+      "group": "task_permission",
+      "case": 39,
+      "pass": true,
+      "return": 0,
+      "failure_line": 0,
+      "error": null,
+      "name": "Send consumer=1 op=4 kind=2 task=4"
+    },
+    {
+      "id": 219,
+      "group": "task_permission",
+      "case": 40,
+      "pass": true,
+      "return": 0,
+      "failure_line": 0,
+      "error": null,
+      "name": "Send consumer=1 op=5 kind=1 task=0"
+    },
+    {
+      "id": 220,
+      "group": "task_permission",
+      "case": 41,
+      "pass": true,
+      "return": 0,
+      "failure_line": 0,
+      "error": null,
+      "name": "Send consumer=1 op=5 kind=1 task=1"
+    },
+    {
+      "id": 221,
+      "group": "task_permission",
+      "case": 42,
+      "pass": true,
+      "return": 0,
+      "failure_line": 0,
+      "error": null,
+      "name": "Send consumer=1 op=5 kind=1 task=2"
+    },
+    {
+      "id": 222,
+      "group": "task_permission",
+      "case": 43,
+      "pass": true,
+      "return": 0,
+      "failure_line": 0,
+      "error": null,
+      "name": "Send consumer=1 op=5 kind=1 task=3"
+    },
+    {
+      "id": 223,
+      "group": "task_permission",
+      "case": 44,
+      "pass": true,
+      "return": 0,
+      "failure_line": 0,
+      "error": null,
+      "name": "Send consumer=1 op=5 kind=1 task=4"
+    },
+    {
+      "id": 224,
+      "group": "task_permission",
+      "case": 45,
+      "pass": true,
+      "return": 0,
+      "failure_line": 0,
+      "error": null,
+      "name": "Send consumer=1 op=5 kind=2 task=0"
+    },
+    {
+      "id": 225,
+      "group": "task_permission",
+      "case": 46,
+      "pass": true,
+      "return": 0,
+      "failure_line": 0,
+      "error": null,
+      "name": "Send consumer=1 op=5 kind=2 task=1"
+    },
+    {
+      "id": 226,
+      "group": "task_permission",
+      "case": 47,
+      "pass": true,
+      "return": 0,
+      "failure_line": 0,
+      "error": null,
+      "name": "Send consumer=1 op=5 kind=2 task=2"
+    },
+    {
+      "id": 227,
+      "group": "task_permission",
+      "case": 48,
+      "pass": true,
+      "return": 0,
+      "failure_line": 0,
+      "error": null,
+      "name": "Send consumer=1 op=5 kind=2 task=3"
+    },
+    {
+      "id": 228,
+      "group": "task_permission",
+      "case": 49,
+      "pass": true,
+      "return": 0,
+      "failure_line": 0,
+      "error": null,
+      "name": "Send consumer=1 op=5 kind=2 task=4"
+    },
+    {
+      "id": 229,
+      "group": "task_permission",
+      "case": 50,
+      "pass": true,
+      "return": 0,
+      "failure_line": 0,
+      "error": null,
+      "name": "Send consumer=1 op=6 kind=1 task=0"
+    },
+    {
+      "id": 230,
+      "group": "task_permission",
+      "case": 51,
+      "pass": true,
+      "return": 0,
+      "failure_line": 0,
+      "error": null,
+      "name": "Send consumer=1 op=6 kind=1 task=1"
+    },
+    {
+      "id": 231,
+      "group": "task_permission",
+      "case": 52,
+      "pass": true,
+      "return": 0,
+      "failure_line": 0,
+      "error": null,
+      "name": "Send consumer=1 op=6 kind=1 task=2"
+    },
+    {
+      "id": 232,
+      "group": "task_permission",
+      "case": 53,
+      "pass": true,
+      "return": 0,
+      "failure_line": 0,
+      "error": null,
+      "name": "Send consumer=1 op=6 kind=1 task=3"
+    },
+    {
+      "id": 233,
+      "group": "task_permission",
+      "case": 54,
+      "pass": true,
+      "return": 0,
+      "failure_line": 0,
+      "error": null,
+      "name": "Send consumer=1 op=6 kind=1 task=4"
+    },
+    {
+      "id": 234,
+      "group": "task_permission",
+      "case": 55,
+      "pass": true,
+      "return": 0,
+      "failure_line": 0,
+      "error": null,
+      "name": "Send consumer=1 op=6 kind=2 task=0"
+    },
+    {
+      "id": 235,
+      "group": "task_permission",
+      "case": 56,
+      "pass": true,
+      "return": 0,
+      "failure_line": 0,
+      "error": null,
+      "name": "Send consumer=1 op=6 kind=2 task=1"
+    },
+    {
+      "id": 236,
+      "group": "task_permission",
+      "case": 57,
+      "pass": true,
+      "return": 0,
+      "failure_line": 0,
+      "error": null,
+      "name": "Send consumer=1 op=6 kind=2 task=2"
+    },
+    {
+      "id": 237,
+      "group": "task_permission",
+      "case": 58,
+      "pass": true,
+      "return": 0,
+      "failure_line": 0,
+      "error": null,
+      "name": "Send consumer=1 op=6 kind=2 task=3"
+    },
+    {
+      "id": 238,
+      "group": "task_permission",
+      "case": 59,
+      "pass": true,
+      "return": 0,
+      "failure_line": 0,
+      "error": null,
+      "name": "Send consumer=1 op=6 kind=2 task=4"
+    },
+    {
+      "id": 239,
+      "group": "task_permission",
+      "case": 60,
+      "pass": true,
+      "return": 0,
+      "failure_line": 0,
+      "error": null,
+      "name": "Send consumer=2 op=1 kind=1 task=0"
+    },
+    {
+      "id": 240,
+      "group": "task_permission",
+      "case": 61,
+      "pass": true,
+      "return": 0,
+      "failure_line": 0,
+      "error": null,
+      "name": "Send consumer=2 op=1 kind=1 task=1"
+    },
+    {
+      "id": 241,
+      "group": "task_permission",
+      "case": 62,
+      "pass": true,
+      "return": 0,
+      "failure_line": 0,
+      "error": null,
+      "name": "Send consumer=2 op=1 kind=1 task=2"
+    },
+    {
+      "id": 242,
+      "group": "task_permission",
+      "case": 63,
+      "pass": true,
+      "return": 0,
+      "failure_line": 0,
+      "error": null,
+      "name": "Send consumer=2 op=1 kind=1 task=3"
+    },
+    {
+      "id": 243,
+      "group": "task_permission",
+      "case": 64,
+      "pass": true,
+      "return": 0,
+      "failure_line": 0,
+      "error": null,
+      "name": "Send consumer=2 op=1 kind=1 task=4"
+    },
+    {
+      "id": 244,
+      "group": "task_permission",
+      "case": 65,
+      "pass": true,
+      "return": 0,
+      "failure_line": 0,
+      "error": null,
+      "name": "Send consumer=2 op=1 kind=2 task=0"
+    },
+    {
+      "id": 245,
+      "group": "task_permission",
+      "case": 66,
+      "pass": true,
+      "return": 0,
+      "failure_line": 0,
+      "error": null,
+      "name": "Send consumer=2 op=1 kind=2 task=1"
+    },
+    {
+      "id": 246,
+      "group": "task_permission",
+      "case": 67,
+      "pass": true,
+      "return": 0,
+      "failure_line": 0,
+      "error": null,
+      "name": "Send consumer=2 op=1 kind=2 task=2"
+    },
+    {
+      "id": 247,
+      "group": "task_permission",
+      "case": 68,
+      "pass": true,
+      "return": 0,
+      "failure_line": 0,
+      "error": null,
+      "name": "Send consumer=2 op=1 kind=2 task=3"
+    },
+    {
+      "id": 248,
+      "group": "task_permission",
+      "case": 69,
+      "pass": true,
+      "return": 0,
+      "failure_line": 0,
+      "error": null,
+      "name": "Send consumer=2 op=1 kind=2 task=4"
+    },
+    {
+      "id": 249,
+      "group": "task_permission",
+      "case": 70,
+      "pass": true,
+      "return": 0,
+      "failure_line": 0,
+      "error": null,
+      "name": "Send consumer=2 op=2 kind=1 task=0"
+    },
+    {
+      "id": 250,
+      "group": "task_permission",
+      "case": 71,
+      "pass": true,
+      "return": 0,
+      "failure_line": 0,
+      "error": null,
+      "name": "Send consumer=2 op=2 kind=1 task=1"
+    },
+    {
+      "id": 251,
+      "group": "task_permission",
+      "case": 72,
+      "pass": true,
+      "return": 0,
+      "failure_line": 0,
+      "error": null,
+      "name": "Send consumer=2 op=2 kind=1 task=2"
+    },
+    {
+      "id": 252,
+      "group": "task_permission",
+      "case": 73,
+      "pass": true,
+      "return": 0,
+      "failure_line": 0,
+      "error": null,
+      "name": "Send consumer=2 op=2 kind=1 task=3"
+    },
+    {
+      "id": 253,
+      "group": "task_permission",
+      "case": 74,
+      "pass": true,
+      "return": 0,
+      "failure_line": 0,
+      "error": null,
+      "name": "Send consumer=2 op=2 kind=1 task=4"
+    },
+    {
+      "id": 254,
+      "group": "task_permission",
+      "case": 75,
+      "pass": true,
+      "return": 0,
+      "failure_line": 0,
+      "error": null,
+      "name": "Send consumer=2 op=2 kind=2 task=0"
+    },
+    {
+      "id": 255,
+      "group": "task_permission",
+      "case": 76,
+      "pass": true,
+      "return": 0,
+      "failure_line": 0,
+      "error": null,
+      "name": "Send consumer=2 op=2 kind=2 task=1"
+    },
+    {
+      "id": 256,
+      "group": "task_permission",
+      "case": 77,
+      "pass": true,
+      "return": 0,
+      "failure_line": 0,
+      "error": null,
+      "name": "Send consumer=2 op=2 kind=2 task=2"
+    },
+    {
+      "id": 257,
+      "group": "task_permission",
+      "case": 78,
+      "pass": true,
+      "return": 0,
+      "failure_line": 0,
+      "error": null,
+      "name": "Send consumer=2 op=2 kind=2 task=3"
+    },
+    {
+      "id": 258,
+      "group": "task_permission",
+      "case": 79,
+      "pass": true,
+      "return": 0,
+      "failure_line": 0,
+      "error": null,
+      "name": "Send consumer=2 op=2 kind=2 task=4"
+    },
+    {
+      "id": 259,
+      "group": "task_permission",
+      "case": 80,
+      "pass": true,
+      "return": 0,
+      "failure_line": 0,
+      "error": null,
+      "name": "Send consumer=2 op=3 kind=1 task=0"
+    },
+    {
+      "id": 260,
+      "group": "task_permission",
+      "case": 81,
+      "pass": true,
+      "return": 0,
+      "failure_line": 0,
+      "error": null,
+      "name": "Send consumer=2 op=3 kind=1 task=1"
+    },
+    {
+      "id": 261,
+      "group": "task_permission",
+      "case": 82,
+      "pass": true,
+      "return": 0,
+      "failure_line": 0,
+      "error": null,
+      "name": "Send consumer=2 op=3 kind=1 task=2"
+    },
+    {
+      "id": 262,
+      "group": "task_permission",
+      "case": 83,
+      "pass": true,
+      "return": 0,
+      "failure_line": 0,
+      "error": null,
+      "name": "Send consumer=2 op=3 kind=1 task=3"
+    },
+    {
+      "id": 263,
+      "group": "task_permission",
+      "case": 84,
+      "pass": true,
+      "return": 0,
+      "failure_line": 0,
+      "error": null,
+      "name": "Send consumer=2 op=3 kind=1 task=4"
+    },
+    {
+      "id": 264,
+      "group": "task_permission",
+      "case": 85,
+      "pass": true,
+      "return": 0,
+      "failure_line": 0,
+      "error": null,
+      "name": "Send consumer=2 op=3 kind=2 task=0"
+    },
+    {
+      "id": 265,
+      "group": "task_permission",
+      "case": 86,
+      "pass": true,
+      "return": 0,
+      "failure_line": 0,
+      "error": null,
+      "name": "Send consumer=2 op=3 kind=2 task=1"
+    },
+    {
+      "id": 266,
+      "group": "task_permission",
+      "case": 87,
+      "pass": true,
+      "return": 0,
+      "failure_line": 0,
+      "error": null,
+      "name": "Send consumer=2 op=3 kind=2 task=2"
+    },
+    {
+      "id": 267,
+      "group": "task_permission",
+      "case": 88,
+      "pass": true,
+      "return": 0,
+      "failure_line": 0,
+      "error": null,
+      "name": "Send consumer=2 op=3 kind=2 task=3"
+    },
+    {
+      "id": 268,
+      "group": "task_permission",
+      "case": 89,
+      "pass": true,
+      "return": 0,
+      "failure_line": 0,
+      "error": null,
+      "name": "Send consumer=2 op=3 kind=2 task=4"
+    },
+    {
+      "id": 269,
+      "group": "task_permission",
+      "case": 90,
+      "pass": true,
+      "return": 0,
+      "failure_line": 0,
+      "error": null,
+      "name": "Send consumer=2 op=4 kind=1 task=0"
+    },
+    {
+      "id": 270,
+      "group": "task_permission",
+      "case": 91,
+      "pass": true,
+      "return": 0,
+      "failure_line": 0,
+      "error": null,
+      "name": "Send consumer=2 op=4 kind=1 task=1"
+    },
+    {
+      "id": 271,
+      "group": "task_permission",
+      "case": 92,
+      "pass": true,
+      "return": 0,
+      "failure_line": 0,
+      "error": null,
+      "name": "Send consumer=2 op=4 kind=1 task=2"
+    },
+    {
+      "id": 272,
+      "group": "task_permission",
+      "case": 93,
+      "pass": true,
+      "return": 0,
+      "failure_line": 0,
+      "error": null,
+      "name": "Send consumer=2 op=4 kind=1 task=3"
+    },
+    {
+      "id": 273,
+      "group": "task_permission",
+      "case": 94,
+      "pass": true,
+      "return": 0,
+      "failure_line": 0,
+      "error": null,
+      "name": "Send consumer=2 op=4 kind=1 task=4"
+    },
+    {
+      "id": 274,
+      "group": "task_permission",
+      "case": 95,
+      "pass": true,
+      "return": 0,
+      "failure_line": 0,
+      "error": null,
+      "name": "Send consumer=2 op=4 kind=2 task=0"
+    },
+    {
+      "id": 275,
+      "group": "task_permission",
+      "case": 96,
+      "pass": true,
+      "return": 0,
+      "failure_line": 0,
+      "error": null,
+      "name": "Send consumer=2 op=4 kind=2 task=1"
+    },
+    {
+      "id": 276,
+      "group": "task_permission",
+      "case": 97,
+      "pass": true,
+      "return": 0,
+      "failure_line": 0,
+      "error": null,
+      "name": "Send consumer=2 op=4 kind=2 task=2"
+    },
+    {
+      "id": 277,
+      "group": "task_permission",
+      "case": 98,
+      "pass": true,
+      "return": 0,
+      "failure_line": 0,
+      "error": null,
+      "name": "Send consumer=2 op=4 kind=2 task=3"
+    },
+    {
+      "id": 278,
+      "group": "task_permission",
+      "case": 99,
+      "pass": true,
+      "return": 0,
+      "failure_line": 0,
+      "error": null,
+      "name": "Send consumer=2 op=4 kind=2 task=4"
+    },
+    {
+      "id": 279,
+      "group": "task_permission",
+      "case": 100,
+      "pass": true,
+      "return": 0,
+      "failure_line": 0,
+      "error": null,
+      "name": "Send consumer=2 op=5 kind=1 task=0"
+    },
+    {
+      "id": 280,
+      "group": "task_permission",
+      "case": 101,
+      "pass": true,
+      "return": 0,
+      "failure_line": 0,
+      "error": null,
+      "name": "Send consumer=2 op=5 kind=1 task=1"
+    },
+    {
+      "id": 281,
+      "group": "task_permission",
+      "case": 102,
+      "pass": true,
+      "return": 0,
+      "failure_line": 0,
+      "error": null,
+      "name": "Send consumer=2 op=5 kind=1 task=2"
+    },
+    {
+      "id": 282,
+      "group": "task_permission",
+      "case": 103,
+      "pass": true,
+      "return": 0,
+      "failure_line": 0,
+      "error": null,
+      "name": "Send consumer=2 op=5 kind=1 task=3"
+    },
+    {
+      "id": 283,
+      "group": "task_permission",
+      "case": 104,
+      "pass": true,
+      "return": 0,
+      "failure_line": 0,
+      "error": null,
+      "name": "Send consumer=2 op=5 kind=1 task=4"
+    },
+    {
+      "id": 284,
+      "group": "task_permission",
+      "case": 105,
+      "pass": true,
+      "return": 0,
+      "failure_line": 0,
+      "error": null,
+      "name": "Send consumer=2 op=5 kind=2 task=0"
+    },
+    {
+      "id": 285,
+      "group": "task_permission",
+      "case": 106,
+      "pass": true,
+      "return": 0,
+      "failure_line": 0,
+      "error": null,
+      "name": "Send consumer=2 op=5 kind=2 task=1"
+    },
+    {
+      "id": 286,
+      "group": "task_permission",
+      "case": 107,
+      "pass": true,
+      "return": 0,
+      "failure_line": 0,
+      "error": null,
+      "name": "Send consumer=2 op=5 kind=2 task=2"
+    },
+    {
+      "id": 287,
+      "group": "task_permission",
+      "case": 108,
+      "pass": true,
+      "return": 0,
+      "failure_line": 0,
+      "error": null,
+      "name": "Send consumer=2 op=5 kind=2 task=3"
+    },
+    {
+      "id": 288,
+      "group": "task_permission",
+      "case": 109,
+      "pass": true,
+      "return": 0,
+      "failure_line": 0,
+      "error": null,
+      "name": "Send consumer=2 op=5 kind=2 task=4"
+    },
+    {
+      "id": 289,
+      "group": "task_permission",
+      "case": 110,
+      "pass": true,
+      "return": 0,
+      "failure_line": 0,
+      "error": null,
+      "name": "Send consumer=2 op=6 kind=1 task=0"
+    },
+    {
+      "id": 290,
+      "group": "task_permission",
+      "case": 111,
+      "pass": true,
+      "return": 0,
+      "failure_line": 0,
+      "error": null,
+      "name": "Send consumer=2 op=6 kind=1 task=1"
+    },
+    {
+      "id": 291,
+      "group": "task_permission",
+      "case": 112,
+      "pass": true,
+      "return": 0,
+      "failure_line": 0,
+      "error": null,
+      "name": "Send consumer=2 op=6 kind=1 task=2"
+    },
+    {
+      "id": 292,
+      "group": "task_permission",
+      "case": 113,
+      "pass": true,
+      "return": 0,
+      "failure_line": 0,
+      "error": null,
+      "name": "Send consumer=2 op=6 kind=1 task=3"
+    },
+    {
+      "id": 293,
+      "group": "task_permission",
+      "case": 114,
+      "pass": true,
+      "return": 0,
+      "failure_line": 0,
+      "error": null,
+      "name": "Send consumer=2 op=6 kind=1 task=4"
+    },
+    {
+      "id": 294,
+      "group": "task_permission",
+      "case": 115,
+      "pass": true,
+      "return": 0,
+      "failure_line": 0,
+      "error": null,
+      "name": "Send consumer=2 op=6 kind=2 task=0"
+    },
+    {
+      "id": 295,
+      "group": "task_permission",
+      "case": 116,
+      "pass": true,
+      "return": 0,
+      "failure_line": 0,
+      "error": null,
+      "name": "Send consumer=2 op=6 kind=2 task=1"
+    },
+    {
+      "id": 296,
+      "group": "task_permission",
+      "case": 117,
+      "pass": true,
+      "return": 0,
+      "failure_line": 0,
+      "error": null,
+      "name": "Send consumer=2 op=6 kind=2 task=2"
+    },
+    {
+      "id": 297,
+      "group": "task_permission",
+      "case": 118,
+      "pass": true,
+      "return": 0,
+      "failure_line": 0,
+      "error": null,
+      "name": "Send consumer=2 op=6 kind=2 task=3"
+    },
+    {
+      "id": 298,
+      "group": "task_permission",
+      "case": 119,
+      "pass": true,
+      "return": 0,
+      "failure_line": 0,
+      "error": null,
+      "name": "Send consumer=2 op=6 kind=2 task=4"
+    },
+    {
+      "id": 299,
+      "group": "task_permission",
+      "case": 120,
+      "pass": true,
+      "return": 0,
+      "failure_line": 0,
+      "error": null,
+      "name": "Receive consumer=1 op=1 kind=1 task=0"
+    },
+    {
+      "id": 300,
+      "group": "task_permission",
+      "case": 121,
+      "pass": true,
+      "return": 0,
+      "failure_line": 0,
+      "error": null,
+      "name": "Receive consumer=1 op=1 kind=1 task=1"
+    },
+    {
+      "id": 301,
+      "group": "task_permission",
+      "case": 122,
+      "pass": true,
+      "return": 0,
+      "failure_line": 0,
+      "error": null,
+      "name": "Receive consumer=1 op=1 kind=1 task=2"
+    },
+    {
+      "id": 302,
+      "group": "task_permission",
+      "case": 123,
+      "pass": true,
+      "return": 0,
+      "failure_line": 0,
+      "error": null,
+      "name": "Receive consumer=1 op=1 kind=1 task=3"
+    },
+    {
+      "id": 303,
+      "group": "task_permission",
+      "case": 124,
+      "pass": true,
+      "return": 0,
+      "failure_line": 0,
+      "error": null,
+      "name": "Receive consumer=1 op=1 kind=1 task=4"
+    },
+    {
+      "id": 304,
+      "group": "task_permission",
+      "case": 125,
+      "pass": true,
+      "return": 0,
+      "failure_line": 0,
+      "error": null,
+      "name": "Receive consumer=1 op=1 kind=2 task=0"
+    },
+    {
+      "id": 305,
+      "group": "task_permission",
+      "case": 126,
+      "pass": true,
+      "return": 0,
+      "failure_line": 0,
+      "error": null,
+      "name": "Receive consumer=1 op=1 kind=2 task=1"
+    },
+    {
+      "id": 306,
+      "group": "task_permission",
+      "case": 127,
+      "pass": true,
+      "return": 0,
+      "failure_line": 0,
+      "error": null,
+      "name": "Receive consumer=1 op=1 kind=2 task=2"
+    },
+    {
+      "id": 307,
+      "group": "task_permission",
+      "case": 128,
+      "pass": true,
+      "return": 0,
+      "failure_line": 0,
+      "error": null,
+      "name": "Receive consumer=1 op=1 kind=2 task=3"
+    },
+    {
+      "id": 308,
+      "group": "task_permission",
+      "case": 129,
+      "pass": true,
+      "return": 0,
+      "failure_line": 0,
+      "error": null,
+      "name": "Receive consumer=1 op=1 kind=2 task=4"
+    },
+    {
+      "id": 309,
+      "group": "task_permission",
+      "case": 130,
+      "pass": true,
+      "return": 0,
+      "failure_line": 0,
+      "error": null,
+      "name": "Receive consumer=1 op=2 kind=1 task=0"
+    },
+    {
+      "id": 310,
+      "group": "task_permission",
+      "case": 131,
+      "pass": true,
+      "return": 0,
+      "failure_line": 0,
+      "error": null,
+      "name": "Receive consumer=1 op=2 kind=1 task=1"
+    },
+    {
+      "id": 311,
+      "group": "task_permission",
+      "case": 132,
+      "pass": true,
+      "return": 0,
+      "failure_line": 0,
+      "error": null,
+      "name": "Receive consumer=1 op=2 kind=1 task=2"
+    },
+    {
+      "id": 312,
+      "group": "task_permission",
+      "case": 133,
+      "pass": true,
+      "return": 0,
+      "failure_line": 0,
+      "error": null,
+      "name": "Receive consumer=1 op=2 kind=1 task=3"
+    },
+    {
+      "id": 313,
+      "group": "task_permission",
+      "case": 134,
+      "pass": true,
+      "return": 0,
+      "failure_line": 0,
+      "error": null,
+      "name": "Receive consumer=1 op=2 kind=1 task=4"
+    },
+    {
+      "id": 314,
+      "group": "task_permission",
+      "case": 135,
+      "pass": true,
+      "return": 0,
+      "failure_line": 0,
+      "error": null,
+      "name": "Receive consumer=1 op=2 kind=2 task=0"
+    },
+    {
+      "id": 315,
+      "group": "task_permission",
+      "case": 136,
+      "pass": true,
+      "return": 0,
+      "failure_line": 0,
+      "error": null,
+      "name": "Receive consumer=1 op=2 kind=2 task=1"
+    },
+    {
+      "id": 316,
+      "group": "task_permission",
+      "case": 137,
+      "pass": true,
+      "return": 0,
+      "failure_line": 0,
+      "error": null,
+      "name": "Receive consumer=1 op=2 kind=2 task=2"
+    },
+    {
+      "id": 317,
+      "group": "task_permission",
+      "case": 138,
+      "pass": true,
+      "return": 0,
+      "failure_line": 0,
+      "error": null,
+      "name": "Receive consumer=1 op=2 kind=2 task=3"
+    },
+    {
+      "id": 318,
+      "group": "task_permission",
+      "case": 139,
+      "pass": true,
+      "return": 0,
+      "failure_line": 0,
+      "error": null,
+      "name": "Receive consumer=1 op=2 kind=2 task=4"
+    },
+    {
+      "id": 319,
+      "group": "task_permission",
+      "case": 140,
+      "pass": true,
+      "return": 0,
+      "failure_line": 0,
+      "error": null,
+      "name": "Receive consumer=1 op=3 kind=1 task=0"
+    },
+    {
+      "id": 320,
+      "group": "task_permission",
+      "case": 141,
+      "pass": true,
+      "return": 0,
+      "failure_line": 0,
+      "error": null,
+      "name": "Receive consumer=1 op=3 kind=1 task=1"
+    },
+    {
+      "id": 321,
+      "group": "task_permission",
+      "case": 142,
+      "pass": true,
+      "return": 0,
+      "failure_line": 0,
+      "error": null,
+      "name": "Receive consumer=1 op=3 kind=1 task=2"
+    },
+    {
+      "id": 322,
+      "group": "task_permission",
+      "case": 143,
+      "pass": true,
+      "return": 0,
+      "failure_line": 0,
+      "error": null,
+      "name": "Receive consumer=1 op=3 kind=1 task=3"
+    },
+    {
+      "id": 323,
+      "group": "task_permission",
+      "case": 144,
+      "pass": true,
+      "return": 0,
+      "failure_line": 0,
+      "error": null,
+      "name": "Receive consumer=1 op=3 kind=1 task=4"
+    },
+    {
+      "id": 324,
+      "group": "task_permission",
+      "case": 145,
+      "pass": true,
+      "return": 0,
+      "failure_line": 0,
+      "error": null,
+      "name": "Receive consumer=1 op=3 kind=2 task=0"
+    },
+    {
+      "id": 325,
+      "group": "task_permission",
+      "case": 146,
+      "pass": true,
+      "return": 0,
+      "failure_line": 0,
+      "error": null,
+      "name": "Receive consumer=1 op=3 kind=2 task=1"
+    },
+    {
+      "id": 326,
+      "group": "task_permission",
+      "case": 147,
+      "pass": true,
+      "return": 0,
+      "failure_line": 0,
+      "error": null,
+      "name": "Receive consumer=1 op=3 kind=2 task=2"
+    },
+    {
+      "id": 327,
+      "group": "task_permission",
+      "case": 148,
+      "pass": true,
+      "return": 0,
+      "failure_line": 0,
+      "error": null,
+      "name": "Receive consumer=1 op=3 kind=2 task=3"
+    },
+    {
+      "id": 328,
+      "group": "task_permission",
+      "case": 149,
+      "pass": true,
+      "return": 0,
+      "failure_line": 0,
+      "error": null,
+      "name": "Receive consumer=1 op=3 kind=2 task=4"
+    },
+    {
+      "id": 329,
+      "group": "task_permission",
+      "case": 150,
+      "pass": true,
+      "return": 0,
+      "failure_line": 0,
+      "error": null,
+      "name": "Receive consumer=1 op=4 kind=1 task=0"
+    },
+    {
+      "id": 330,
+      "group": "task_permission",
+      "case": 151,
+      "pass": true,
+      "return": 0,
+      "failure_line": 0,
+      "error": null,
+      "name": "Receive consumer=1 op=4 kind=1 task=1"
+    },
+    {
+      "id": 331,
+      "group": "task_permission",
+      "case": 152,
+      "pass": true,
+      "return": 0,
+      "failure_line": 0,
+      "error": null,
+      "name": "Receive consumer=1 op=4 kind=1 task=2"
+    },
+    {
+      "id": 332,
+      "group": "task_permission",
+      "case": 153,
+      "pass": true,
+      "return": 0,
+      "failure_line": 0,
+      "error": null,
+      "name": "Receive consumer=1 op=4 kind=1 task=3"
+    },
+    {
+      "id": 333,
+      "group": "task_permission",
+      "case": 154,
+      "pass": true,
+      "return": 0,
+      "failure_line": 0,
+      "error": null,
+      "name": "Receive consumer=1 op=4 kind=1 task=4"
+    },
+    {
+      "id": 334,
+      "group": "task_permission",
+      "case": 155,
+      "pass": true,
+      "return": 0,
+      "failure_line": 0,
+      "error": null,
+      "name": "Receive consumer=1 op=4 kind=2 task=0"
+    },
+    {
+      "id": 335,
+      "group": "task_permission",
+      "case": 156,
+      "pass": true,
+      "return": 0,
+      "failure_line": 0,
+      "error": null,
+      "name": "Receive consumer=1 op=4 kind=2 task=1"
+    },
+    {
+      "id": 336,
+      "group": "task_permission",
+      "case": 157,
+      "pass": true,
+      "return": 0,
+      "failure_line": 0,
+      "error": null,
+      "name": "Receive consumer=1 op=4 kind=2 task=2"
+    },
+    {
+      "id": 337,
+      "group": "task_permission",
+      "case": 158,
+      "pass": true,
+      "return": 0,
+      "failure_line": 0,
+      "error": null,
+      "name": "Receive consumer=1 op=4 kind=2 task=3"
+    },
+    {
+      "id": 338,
+      "group": "task_permission",
+      "case": 159,
+      "pass": true,
+      "return": 0,
+      "failure_line": 0,
+      "error": null,
+      "name": "Receive consumer=1 op=4 kind=2 task=4"
+    },
+    {
+      "id": 339,
+      "group": "task_permission",
+      "case": 160,
+      "pass": true,
+      "return": 0,
+      "failure_line": 0,
+      "error": null,
+      "name": "Receive consumer=1 op=5 kind=1 task=0"
+    },
+    {
+      "id": 340,
+      "group": "task_permission",
+      "case": 161,
+      "pass": true,
+      "return": 0,
+      "failure_line": 0,
+      "error": null,
+      "name": "Receive consumer=1 op=5 kind=1 task=1"
+    },
+    {
+      "id": 341,
+      "group": "task_permission",
+      "case": 162,
+      "pass": true,
+      "return": 0,
+      "failure_line": 0,
+      "error": null,
+      "name": "Receive consumer=1 op=5 kind=1 task=2"
+    },
+    {
+      "id": 342,
+      "group": "task_permission",
+      "case": 163,
+      "pass": true,
+      "return": 0,
+      "failure_line": 0,
+      "error": null,
+      "name": "Receive consumer=1 op=5 kind=1 task=3"
+    },
+    {
+      "id": 343,
+      "group": "task_permission",
+      "case": 164,
+      "pass": true,
+      "return": 0,
+      "failure_line": 0,
+      "error": null,
+      "name": "Receive consumer=1 op=5 kind=1 task=4"
+    },
+    {
+      "id": 344,
+      "group": "task_permission",
+      "case": 165,
+      "pass": true,
+      "return": 0,
+      "failure_line": 0,
+      "error": null,
+      "name": "Receive consumer=1 op=5 kind=2 task=0"
+    },
+    {
+      "id": 345,
+      "group": "task_permission",
+      "case": 166,
+      "pass": true,
+      "return": 0,
+      "failure_line": 0,
+      "error": null,
+      "name": "Receive consumer=1 op=5 kind=2 task=1"
+    },
+    {
+      "id": 346,
+      "group": "task_permission",
+      "case": 167,
+      "pass": true,
+      "return": 0,
+      "failure_line": 0,
+      "error": null,
+      "name": "Receive consumer=1 op=5 kind=2 task=2"
+    },
+    {
+      "id": 347,
+      "group": "task_permission",
+      "case": 168,
+      "pass": true,
+      "return": 0,
+      "failure_line": 0,
+      "error": null,
+      "name": "Receive consumer=1 op=5 kind=2 task=3"
+    },
+    {
+      "id": 348,
+      "group": "task_permission",
+      "case": 169,
+      "pass": true,
+      "return": 0,
+      "failure_line": 0,
+      "error": null,
+      "name": "Receive consumer=1 op=5 kind=2 task=4"
+    },
+    {
+      "id": 349,
+      "group": "task_permission",
+      "case": 170,
+      "pass": true,
+      "return": 0,
+      "failure_line": 0,
+      "error": null,
+      "name": "Receive consumer=1 op=6 kind=1 task=0"
+    },
+    {
+      "id": 350,
+      "group": "task_permission",
+      "case": 171,
+      "pass": true,
+      "return": 0,
+      "failure_line": 0,
+      "error": null,
+      "name": "Receive consumer=1 op=6 kind=1 task=1"
+    },
+    {
+      "id": 351,
+      "group": "task_permission",
+      "case": 172,
+      "pass": true,
+      "return": 0,
+      "failure_line": 0,
+      "error": null,
+      "name": "Receive consumer=1 op=6 kind=1 task=2"
+    },
+    {
+      "id": 352,
+      "group": "task_permission",
+      "case": 173,
+      "pass": true,
+      "return": 0,
+      "failure_line": 0,
+      "error": null,
+      "name": "Receive consumer=1 op=6 kind=1 task=3"
+    },
+    {
+      "id": 353,
+      "group": "task_permission",
+      "case": 174,
+      "pass": true,
+      "return": 0,
+      "failure_line": 0,
+      "error": null,
+      "name": "Receive consumer=1 op=6 kind=1 task=4"
+    },
+    {
+      "id": 354,
+      "group": "task_permission",
+      "case": 175,
+      "pass": true,
+      "return": 0,
+      "failure_line": 0,
+      "error": null,
+      "name": "Receive consumer=1 op=6 kind=2 task=0"
+    },
+    {
+      "id": 355,
+      "group": "task_permission",
+      "case": 176,
+      "pass": true,
+      "return": 0,
+      "failure_line": 0,
+      "error": null,
+      "name": "Receive consumer=1 op=6 kind=2 task=1"
+    },
+    {
+      "id": 356,
+      "group": "task_permission",
+      "case": 177,
+      "pass": true,
+      "return": 0,
+      "failure_line": 0,
+      "error": null,
+      "name": "Receive consumer=1 op=6 kind=2 task=2"
+    },
+    {
+      "id": 357,
+      "group": "task_permission",
+      "case": 178,
+      "pass": true,
+      "return": 0,
+      "failure_line": 0,
+      "error": null,
+      "name": "Receive consumer=1 op=6 kind=2 task=3"
+    },
+    {
+      "id": 358,
+      "group": "task_permission",
+      "case": 179,
+      "pass": true,
+      "return": 0,
+      "failure_line": 0,
+      "error": null,
+      "name": "Receive consumer=1 op=6 kind=2 task=4"
+    },
+    {
+      "id": 359,
+      "group": "task_permission",
+      "case": 180,
+      "pass": true,
+      "return": 0,
+      "failure_line": 0,
+      "error": null,
+      "name": "Receive consumer=2 op=1 kind=1 task=0"
+    },
+    {
+      "id": 360,
+      "group": "task_permission",
+      "case": 181,
+      "pass": true,
+      "return": 0,
+      "failure_line": 0,
+      "error": null,
+      "name": "Receive consumer=2 op=1 kind=1 task=1"
+    },
+    {
+      "id": 361,
+      "group": "task_permission",
+      "case": 182,
+      "pass": true,
+      "return": 0,
+      "failure_line": 0,
+      "error": null,
+      "name": "Receive consumer=2 op=1 kind=1 task=2"
+    },
+    {
+      "id": 362,
+      "group": "task_permission",
+      "case": 183,
+      "pass": true,
+      "return": 0,
+      "failure_line": 0,
+      "error": null,
+      "name": "Receive consumer=2 op=1 kind=1 task=3"
+    },
+    {
+      "id": 363,
+      "group": "task_permission",
+      "case": 184,
+      "pass": true,
+      "return": 0,
+      "failure_line": 0,
+      "error": null,
+      "name": "Receive consumer=2 op=1 kind=1 task=4"
+    },
+    {
+      "id": 364,
+      "group": "task_permission",
+      "case": 185,
+      "pass": true,
+      "return": 0,
+      "failure_line": 0,
+      "error": null,
+      "name": "Receive consumer=2 op=1 kind=2 task=0"
+    },
+    {
+      "id": 365,
+      "group": "task_permission",
+      "case": 186,
+      "pass": true,
+      "return": 0,
+      "failure_line": 0,
+      "error": null,
+      "name": "Receive consumer=2 op=1 kind=2 task=1"
+    },
+    {
+      "id": 366,
+      "group": "task_permission",
+      "case": 187,
+      "pass": true,
+      "return": 0,
+      "failure_line": 0,
+      "error": null,
+      "name": "Receive consumer=2 op=1 kind=2 task=2"
+    },
+    {
+      "id": 367,
+      "group": "task_permission",
+      "case": 188,
+      "pass": true,
+      "return": 0,
+      "failure_line": 0,
+      "error": null,
+      "name": "Receive consumer=2 op=1 kind=2 task=3"
+    },
+    {
+      "id": 368,
+      "group": "task_permission",
+      "case": 189,
+      "pass": true,
+      "return": 0,
+      "failure_line": 0,
+      "error": null,
+      "name": "Receive consumer=2 op=1 kind=2 task=4"
+    },
+    {
+      "id": 369,
+      "group": "task_permission",
+      "case": 190,
+      "pass": true,
+      "return": 0,
+      "failure_line": 0,
+      "error": null,
+      "name": "Receive consumer=2 op=2 kind=1 task=0"
+    },
+    {
+      "id": 370,
+      "group": "task_permission",
+      "case": 191,
+      "pass": true,
+      "return": 0,
+      "failure_line": 0,
+      "error": null,
+      "name": "Receive consumer=2 op=2 kind=1 task=1"
+    },
+    {
+      "id": 371,
+      "group": "task_permission",
+      "case": 192,
+      "pass": true,
+      "return": 0,
+      "failure_line": 0,
+      "error": null,
+      "name": "Receive consumer=2 op=2 kind=1 task=2"
+    },
+    {
+      "id": 372,
+      "group": "task_permission",
+      "case": 193,
+      "pass": true,
+      "return": 0,
+      "failure_line": 0,
+      "error": null,
+      "name": "Receive consumer=2 op=2 kind=1 task=3"
+    },
+    {
+      "id": 373,
+      "group": "task_permission",
+      "case": 194,
+      "pass": true,
+      "return": 0,
+      "failure_line": 0,
+      "error": null,
+      "name": "Receive consumer=2 op=2 kind=1 task=4"
+    },
+    {
+      "id": 374,
+      "group": "task_permission",
+      "case": 195,
+      "pass": true,
+      "return": 0,
+      "failure_line": 0,
+      "error": null,
+      "name": "Receive consumer=2 op=2 kind=2 task=0"
+    },
+    {
+      "id": 375,
+      "group": "task_permission",
+      "case": 196,
+      "pass": true,
+      "return": 0,
+      "failure_line": 0,
+      "error": null,
+      "name": "Receive consumer=2 op=2 kind=2 task=1"
+    },
+    {
+      "id": 376,
+      "group": "task_permission",
+      "case": 197,
+      "pass": true,
+      "return": 0,
+      "failure_line": 0,
+      "error": null,
+      "name": "Receive consumer=2 op=2 kind=2 task=2"
+    },
+    {
+      "id": 377,
+      "group": "task_permission",
+      "case": 198,
+      "pass": true,
+      "return": 0,
+      "failure_line": 0,
+      "error": null,
+      "name": "Receive consumer=2 op=2 kind=2 task=3"
+    },
+    {
+      "id": 378,
+      "group": "task_permission",
+      "case": 199,
+      "pass": true,
+      "return": 0,
+      "failure_line": 0,
+      "error": null,
+      "name": "Receive consumer=2 op=2 kind=2 task=4"
+    },
+    {
+      "id": 379,
+      "group": "task_permission",
+      "case": 200,
+      "pass": true,
+      "return": 0,
+      "failure_line": 0,
+      "error": null,
+      "name": "Receive consumer=2 op=3 kind=1 task=0"
+    },
+    {
+      "id": 380,
+      "group": "task_permission",
+      "case": 201,
+      "pass": true,
+      "return": 0,
+      "failure_line": 0,
+      "error": null,
+      "name": "Receive consumer=2 op=3 kind=1 task=1"
+    },
+    {
+      "id": 381,
+      "group": "task_permission",
+      "case": 202,
+      "pass": true,
+      "return": 0,
+      "failure_line": 0,
+      "error": null,
+      "name": "Receive consumer=2 op=3 kind=1 task=2"
+    },
+    {
+      "id": 382,
+      "group": "task_permission",
+      "case": 203,
+      "pass": true,
+      "return": 0,
+      "failure_line": 0,
+      "error": null,
+      "name": "Receive consumer=2 op=3 kind=1 task=3"
+    },
+    {
+      "id": 383,
+      "group": "task_permission",
+      "case": 204,
+      "pass": true,
+      "return": 0,
+      "failure_line": 0,
+      "error": null,
+      "name": "Receive consumer=2 op=3 kind=1 task=4"
+    },
+    {
+      "id": 384,
+      "group": "task_permission",
+      "case": 205,
+      "pass": true,
+      "return": 0,
+      "failure_line": 0,
+      "error": null,
+      "name": "Receive consumer=2 op=3 kind=2 task=0"
+    },
+    {
+      "id": 385,
+      "group": "task_permission",
+      "case": 206,
+      "pass": true,
+      "return": 0,
+      "failure_line": 0,
+      "error": null,
+      "name": "Receive consumer=2 op=3 kind=2 task=1"
+    },
+    {
+      "id": 386,
+      "group": "task_permission",
+      "case": 207,
+      "pass": true,
+      "return": 0,
+      "failure_line": 0,
+      "error": null,
+      "name": "Receive consumer=2 op=3 kind=2 task=2"
+    },
+    {
+      "id": 387,
+      "group": "task_permission",
+      "case": 208,
+      "pass": true,
+      "return": 0,
+      "failure_line": 0,
+      "error": null,
+      "name": "Receive consumer=2 op=3 kind=2 task=3"
+    },
+    {
+      "id": 388,
+      "group": "task_permission",
+      "case": 209,
+      "pass": true,
+      "return": 0,
+      "failure_line": 0,
+      "error": null,
+      "name": "Receive consumer=2 op=3 kind=2 task=4"
+    },
+    {
+      "id": 389,
+      "group": "task_permission",
+      "case": 210,
+      "pass": true,
+      "return": 0,
+      "failure_line": 0,
+      "error": null,
+      "name": "Receive consumer=2 op=4 kind=1 task=0"
+    },
+    {
+      "id": 390,
+      "group": "task_permission",
+      "case": 211,
+      "pass": true,
+      "return": 0,
+      "failure_line": 0,
+      "error": null,
+      "name": "Receive consumer=2 op=4 kind=1 task=1"
+    },
+    {
+      "id": 391,
+      "group": "task_permission",
+      "case": 212,
+      "pass": true,
+      "return": 0,
+      "failure_line": 0,
+      "error": null,
+      "name": "Receive consumer=2 op=4 kind=1 task=2"
+    },
+    {
+      "id": 392,
+      "group": "task_permission",
+      "case": 213,
+      "pass": true,
+      "return": 0,
+      "failure_line": 0,
+      "error": null,
+      "name": "Receive consumer=2 op=4 kind=1 task=3"
+    },
+    {
+      "id": 393,
+      "group": "task_permission",
+      "case": 214,
+      "pass": true,
+      "return": 0,
+      "failure_line": 0,
+      "error": null,
+      "name": "Receive consumer=2 op=4 kind=1 task=4"
+    },
+    {
+      "id": 394,
+      "group": "task_permission",
+      "case": 215,
+      "pass": true,
+      "return": 0,
+      "failure_line": 0,
+      "error": null,
+      "name": "Receive consumer=2 op=4 kind=2 task=0"
+    },
+    {
+      "id": 395,
+      "group": "task_permission",
+      "case": 216,
+      "pass": true,
+      "return": 0,
+      "failure_line": 0,
+      "error": null,
+      "name": "Receive consumer=2 op=4 kind=2 task=1"
+    },
+    {
+      "id": 396,
+      "group": "task_permission",
+      "case": 217,
+      "pass": true,
+      "return": 0,
+      "failure_line": 0,
+      "error": null,
+      "name": "Receive consumer=2 op=4 kind=2 task=2"
+    },
+    {
+      "id": 397,
+      "group": "task_permission",
+      "case": 218,
+      "pass": true,
+      "return": 0,
+      "failure_line": 0,
+      "error": null,
+      "name": "Receive consumer=2 op=4 kind=2 task=3"
+    },
+    {
+      "id": 398,
+      "group": "task_permission",
+      "case": 219,
+      "pass": true,
+      "return": 0,
+      "failure_line": 0,
+      "error": null,
+      "name": "Receive consumer=2 op=4 kind=2 task=4"
+    },
+    {
+      "id": 399,
+      "group": "task_permission",
+      "case": 220,
+      "pass": true,
+      "return": 0,
+      "failure_line": 0,
+      "error": null,
+      "name": "Receive consumer=2 op=5 kind=1 task=0"
+    },
+    {
+      "id": 400,
+      "group": "task_permission",
+      "case": 221,
+      "pass": true,
+      "return": 0,
+      "failure_line": 0,
+      "error": null,
+      "name": "Receive consumer=2 op=5 kind=1 task=1"
+    },
+    {
+      "id": 401,
+      "group": "task_permission",
+      "case": 222,
+      "pass": true,
+      "return": 0,
+      "failure_line": 0,
+      "error": null,
+      "name": "Receive consumer=2 op=5 kind=1 task=2"
+    },
+    {
+      "id": 402,
+      "group": "task_permission",
+      "case": 223,
+      "pass": true,
+      "return": 0,
+      "failure_line": 0,
+      "error": null,
+      "name": "Receive consumer=2 op=5 kind=1 task=3"
+    },
+    {
+      "id": 403,
+      "group": "task_permission",
+      "case": 224,
+      "pass": true,
+      "return": 0,
+      "failure_line": 0,
+      "error": null,
+      "name": "Receive consumer=2 op=5 kind=1 task=4"
+    },
+    {
+      "id": 404,
+      "group": "task_permission",
+      "case": 225,
+      "pass": true,
+      "return": 0,
+      "failure_line": 0,
+      "error": null,
+      "name": "Receive consumer=2 op=5 kind=2 task=0"
+    },
+    {
+      "id": 405,
+      "group": "task_permission",
+      "case": 226,
+      "pass": true,
+      "return": 0,
+      "failure_line": 0,
+      "error": null,
+      "name": "Receive consumer=2 op=5 kind=2 task=1"
+    },
+    {
+      "id": 406,
+      "group": "task_permission",
+      "case": 227,
+      "pass": true,
+      "return": 0,
+      "failure_line": 0,
+      "error": null,
+      "name": "Receive consumer=2 op=5 kind=2 task=2"
+    },
+    {
+      "id": 407,
+      "group": "task_permission",
+      "case": 228,
+      "pass": true,
+      "return": 0,
+      "failure_line": 0,
+      "error": null,
+      "name": "Receive consumer=2 op=5 kind=2 task=3"
+    },
+    {
+      "id": 408,
+      "group": "task_permission",
+      "case": 229,
+      "pass": true,
+      "return": 0,
+      "failure_line": 0,
+      "error": null,
+      "name": "Receive consumer=2 op=5 kind=2 task=4"
+    },
+    {
+      "id": 409,
+      "group": "task_permission",
+      "case": 230,
+      "pass": true,
+      "return": 0,
+      "failure_line": 0,
+      "error": null,
+      "name": "Receive consumer=2 op=6 kind=1 task=0"
+    },
+    {
+      "id": 410,
+      "group": "task_permission",
+      "case": 231,
+      "pass": true,
+      "return": 0,
+      "failure_line": 0,
+      "error": null,
+      "name": "Receive consumer=2 op=6 kind=1 task=1"
+    },
+    {
+      "id": 411,
+      "group": "task_permission",
+      "case": 232,
+      "pass": true,
+      "return": 0,
+      "failure_line": 0,
+      "error": null,
+      "name": "Receive consumer=2 op=6 kind=1 task=2"
+    },
+    {
+      "id": 412,
+      "group": "task_permission",
+      "case": 233,
+      "pass": true,
+      "return": 0,
+      "failure_line": 0,
+      "error": null,
+      "name": "Receive consumer=2 op=6 kind=1 task=3"
+    },
+    {
+      "id": 413,
+      "group": "task_permission",
+      "case": 234,
+      "pass": true,
+      "return": 0,
+      "failure_line": 0,
+      "error": null,
+      "name": "Receive consumer=2 op=6 kind=1 task=4"
+    },
+    {
+      "id": 414,
+      "group": "task_permission",
+      "case": 235,
+      "pass": true,
+      "return": 0,
+      "failure_line": 0,
+      "error": null,
+      "name": "Receive consumer=2 op=6 kind=2 task=0"
+    },
+    {
+      "id": 415,
+      "group": "task_permission",
+      "case": 236,
+      "pass": true,
+      "return": 0,
+      "failure_line": 0,
+      "error": null,
+      "name": "Receive consumer=2 op=6 kind=2 task=1"
+    },
+    {
+      "id": 416,
+      "group": "task_permission",
+      "case": 237,
+      "pass": true,
+      "return": 0,
+      "failure_line": 0,
+      "error": null,
+      "name": "Receive consumer=2 op=6 kind=2 task=2"
+    },
+    {
+      "id": 417,
+      "group": "task_permission",
+      "case": 238,
+      "pass": true,
+      "return": 0,
+      "failure_line": 0,
+      "error": null,
+      "name": "Receive consumer=2 op=6 kind=2 task=3"
+    },
+    {
+      "id": 418,
+      "group": "task_permission",
+      "case": 239,
+      "pass": true,
+      "return": 0,
+      "failure_line": 0,
+      "error": null,
+      "name": "Receive consumer=2 op=6 kind=2 task=4"
+    }
+  ],
+  "hardware_verified": false
+}

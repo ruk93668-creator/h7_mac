@@ -1,0 +1,14 @@
+{
+  "baseline": "35b4fb7f5c39f7339b0bf0aa2a68594fd9748e7f",
+  "previous_map_facts": [
+    "s_message_queues                         0x20007f70   Data         360  app_messages.o(.bss)",
+    "s_message_storage                        0x200080d8   Data        1040  app_messages.o(.bss)",
+    "s_message_handles                        0x200084e8   Data          20  app_messages.o(.bss)",
+    "Total RW  Size (RW Data + ZI Data)            100472 (  98.12kB)"
+  ],
+  "expected_legacy_message_bytes": 52,
+  "expected_lifecycle_message_bytes": 56,
+  "legacy_queue_count": 5,
+  "new_queue_count": 3,
+  "queue_length_unchanged": 4
+}
