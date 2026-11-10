@@ -5,10 +5,10 @@
     "exit_code": 0,
     "errors": 0,
     "warnings": 0,
-    "source_fingerprint_before": "0b118681399e354843680d6c39fe5ea450b2ae55a2c629f4f5bd2a5c58c6f8cd",
-    "source_fingerprint_after": "0b118681399e354843680d6c39fe5ea450b2ae55a2c629f4f5bd2a5c58c6f8cd",
-    "project_sha_before": "708827df17d8f0ef8bb368f60661464a38c62016730b902b03e28d2c08327c17",
-    "project_sha_after": "708827df17d8f0ef8bb368f60661464a38c62016730b902b03e28d2c08327c17",
+    "source_fingerprint_before": "da981a2ec5e13c6f371d6ba039969adf6c958363bcfb6f57f29d07979b819c07",
+    "source_fingerprint_after": "da981a2ec5e13c6f371d6ba039969adf6c958363bcfb6f57f29d07979b819c07",
+    "project_sha_before": "5cedb3aae7e401023299885ca17665c900908d09084ab5de3e43001de38a38a3",
+    "project_sha_after": "5cedb3aae7e401023299885ca17665c900908d09084ab5de3e43001de38a38a3",
     "passed": true
   },
   {
@@ -17,10 +17,10 @@
     "exit_code": 0,
     "errors": 0,
     "warnings": 0,
-    "source_fingerprint_before": "0b118681399e354843680d6c39fe5ea450b2ae55a2c629f4f5bd2a5c58c6f8cd",
-    "source_fingerprint_after": "0b118681399e354843680d6c39fe5ea450b2ae55a2c629f4f5bd2a5c58c6f8cd",
-    "project_sha_before": "708827df17d8f0ef8bb368f60661464a38c62016730b902b03e28d2c08327c17",
-    "project_sha_after": "708827df17d8f0ef8bb368f60661464a38c62016730b902b03e28d2c08327c17",
+    "source_fingerprint_before": "da981a2ec5e13c6f371d6ba039969adf6c958363bcfb6f57f29d07979b819c07",
+    "source_fingerprint_after": "da981a2ec5e13c6f371d6ba039969adf6c958363bcfb6f57f29d07979b819c07",
+    "project_sha_before": "5cedb3aae7e401023299885ca17665c900908d09084ab5de3e43001de38a38a3",
+    "project_sha_after": "5cedb3aae7e401023299885ca17665c900908d09084ab5de3e43001de38a38a3",
     "passed": true
   }
 ]
