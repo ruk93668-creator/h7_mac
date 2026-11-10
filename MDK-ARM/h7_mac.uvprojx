@@ -4636,6 +4636,11 @@
               <FilePath>../CM7/Platform/platform_time.c</FilePath>
             </File>
             <File>
+              <FileName>platform_sync.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>../CM7/Platform/platform_sync.c</FilePath>
+            </File>
+            <File>
               <FileName>platform_time.h</FileName>
               <FileType>5</FileType>
               <FilePath>../CM7/Platform/platform_time.h</FilePath>

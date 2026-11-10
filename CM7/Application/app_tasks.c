@@ -6,7 +6,7 @@
 #include "Tasks/control_task.h"
 #include "Tasks/ipc_task.h"
 #include "Tasks/storage_task.h"
-#include "stm32h7xx.h"
+#include "platform_sync.h"
 
 //记录任务创建数量、准备状态和启动屏障结果
 volatile AppTasksDebug_t g_app_tasks_debug;
@@ -20,7 +20,7 @@ SysResult_t App_TasksCreate(void)
     SysResult_t result;
 
     //只允许main在调度器启动前、全局中断未关闭时创建一次
-    if (__get_IPSR() != 0U || __get_PRIMASK() != 0U ||
+    if (Platform_SyncGetException() != 0U || Platform_SyncGetPrimask() != 0U ||
         xTaskGetSchedulerState() != taskSCHEDULER_NOT_STARTED || s_create_attempted)
         return SYS_ERR_INVALID_STATE;
 

@@ -8,7 +8,7 @@
 #include "usb_device.h"
 #include "usb_uvc.h"
 #include "platform_time.h"
-#include "stm32h7xx.h"
+#include "platform_sync.h"
 #include <stddef.h>
 
 #define USB_TASK_STACK_WORDS 2048U
@@ -73,7 +73,7 @@ SysResult_t UsbTask_Create(void)
 {
 
     //只允许在调度器启动前的非中断上下文创建任务
-    if (__get_IPSR() != 0U || xTaskGetSchedulerState() != taskSCHEDULER_NOT_STARTED)
+    if (Platform_SyncGetException() != 0U || xTaskGetSchedulerState() != taskSCHEDULER_NOT_STARTED)
         return SYS_ERR_INVALID_STATE;
 
     //已存在任务时拒绝重复创建，避免复用同一份TCB和栈

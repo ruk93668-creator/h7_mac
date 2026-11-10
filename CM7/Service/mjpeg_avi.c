@@ -1,5 +1,11 @@
 #include "mjpeg_avi.h"
 #include <string.h>
+#include "bsp_sdram.h"
+#include "camera_mjpeg_fifo.h"
+
+//索引位于JPEG接收区之后，并保持在同一个Non-cacheable窗口
+typedef char StorageIndexBounds[(MJPEG_AVI_INDEX_BASE >= CAMERA_MJPEG_REGION_END &&
+    MJPEG_AVI_INDEX_BASE + MJPEG_AVI_INDEX_BYTES <= BSP_SDRAM_END) ? 1 : -1];
 
 //索引放入独立SDRAM区，不占用任务栈
 static uint32_t (*const s_index)[4] = (uint32_t (*)[4])MJPEG_AVI_INDEX_BASE;

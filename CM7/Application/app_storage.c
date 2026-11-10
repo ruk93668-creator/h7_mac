@@ -4,9 +4,8 @@
 #include "platform_time.h"
 #include "jpeg_frame.h"
 #include "mjpeg_avi.h"
-#include "bsp_sdram.h"
 #include "camera_mjpeg_fifo.h"
-#include "stm32h7xx.h"
+#include "platform_sync.h"
 #include <string.h>
 
 //帧租借槽位的唯一所有者随状态转移，绝不覆盖WRITING
@@ -20,10 +19,6 @@
 
 //状态唯一保存在私有上下文，Debug只保存观察值
 typedef enum { STORAGE_IDLE = 0, STORAGE_VIDEO, STORAGE_SNAPSHOT, STORAGE_DRAINING, STORAGE_FAULT } StorageState_t;
-
-//索引位于JPEG接收区之后，并保持在同一个Non-cacheable窗口
-typedef char StorageIndexBounds[(MJPEG_AVI_INDEX_BASE >= CAMERA_MJPEG_REGION_END &&
-    MJPEG_AVI_INDEX_BASE + MJPEG_AVI_INDEX_BYTES <= BSP_SDRAM_END) ? 1 : -1];
 
 //槽位保存原帧描述与SD凭据，Camera确认归还后才可复用
 typedef struct
@@ -159,7 +154,7 @@ SysResult_t App_StoragePrepare(const AppStorageConfig_t *config)
         config->reserve_bytes > 0x40000000UL || config->max_segments == 0U || config->max_segments > 1000U)
         return SYS_ERR_INVALID_ARG;
     s_config = *config;
-    __DMB();
+    Platform_SyncMemoryBarrier();
     s_prepared = true;
     g_storage_status.ready = 1U;
     Storage_PublishStatus();
@@ -179,12 +174,12 @@ SysResult_t App_StorageStop(void)
     uint32_t mask;
     if (result == SYS_OK)
     {
-        mask = __get_PRIMASK();
-        __disable_irq();
-        __DMB();
+        mask = Platform_SyncGetPrimask();
+        Platform_SyncDisableIrq();
+        Platform_SyncMemoryBarrier();
         s_accepting = false;
-        __DMB();
-        __set_PRIMASK(mask);
+        Platform_SyncMemoryBarrier();
+        Platform_SyncRestoreIrq(mask);
     }
     return result;
 }
@@ -198,12 +193,12 @@ SysResult_t App_StorageGetStatus(AppStorageStatus_t *status)
     uint32_t mask;
     if (status == NULL || !Storage_Context())
         return SYS_ERR_INVALID_ARG;
-    mask = __get_PRIMASK();
-    __disable_irq();
-    __DMB();
+    mask = Platform_SyncGetPrimask();
+    Platform_SyncDisableIrq();
+    Platform_SyncMemoryBarrier();
     *status = s_status_snapshot;
-    __DMB();
-    __set_PRIMASK(mask);
+    Platform_SyncMemoryBarrier();
+    Platform_SyncRestoreIrq(mask);
     return SYS_OK;
 }
 
@@ -211,15 +206,15 @@ SysResult_t App_StorageGetStatus(AppStorageStatus_t *status)
 bool App_StorageWantsFrame(uint32_t now)
 {
     bool wanted;
-    uint32_t mask = __get_PRIMASK();
-    __disable_irq();
-    __DMB();
+    uint32_t mask = Platform_SyncGetPrimask();
+    Platform_SyncDisableIrq();
+    Platform_SyncMemoryBarrier();
     wanted = s_prepared && s_accepting && !s_snapshot_taken &&
         s_slots[0].state == SLOT_FREE &&
         (!s_offer_seen || s_mode == APP_STORAGE_SNAPSHOT ||
          (uint32_t)(now - s_last_offer) >= (1000U + s_config.record_fps - 1U) / s_config.record_fps);
-    __DMB();
-    __set_PRIMASK(mask);
+    Platform_SyncMemoryBarrier();
+    Platform_SyncRestoreIrq(mask);
     return wanted;
 }
 
@@ -246,9 +241,9 @@ SysResult_t App_StorageOfferFrame(const CameraFrame_t *frame, const AppFrameMeta
         g_storage_status.dropped_frames++;
         return SYS_ERR_INVALID_ARG;
     }
-    mask = __get_PRIMASK();
-    __disable_irq();
-    __DMB();
+    mask = Platform_SyncGetPrimask();
+    Platform_SyncDisableIrq();
+    Platform_SyncMemoryBarrier();
 
     //未确认归还的描述槽不能重用，满队列只拒绝SD
     for (slot = 0U; slot < APP_STORAGE_SLOT_COUNT; slot++)
@@ -259,20 +254,20 @@ SysResult_t App_StorageOfferFrame(const CameraFrame_t *frame, const AppFrameMeta
     if (!s_accepting || slot == APP_STORAGE_SLOT_COUNT)
     {
         g_storage_status.dropped_frames++;
-        __set_PRIMASK(mask);
+        Platform_SyncRestoreIrq(mask);
         return SYS_ERR_NO_RESOURCE;
     }
     s_slots[slot].state = SLOT_RESERVING;
     generation = ++s_slots[slot].generation;
     session = s_session;
     s_offering++;
-    __set_PRIMASK(mask);
+    Platform_SyncRestoreIrq(mask);
 
     //只增加SD所有权位，不借用图像，也不增加整帧扫描耗时
     result = CameraMjpegFifo_RetainFrame(frame, &lease);
-    mask = __get_PRIMASK();
-    __disable_irq();
-    __DMB();
+    mask = Platform_SyncGetPrimask();
+    Platform_SyncDisableIrq();
+    Platform_SyncMemoryBarrier();
     s_offering--;
     if (result == SYS_OK)
     {
@@ -314,8 +309,8 @@ SysResult_t App_StorageOfferFrame(const CameraFrame_t *frame, const AppFrameMeta
         s_slots[slot].state = SLOT_FREE;
         g_storage_status.dropped_frames++;
     }
-    __DMB();
-    __set_PRIMASK(mask);
+    Platform_SyncMemoryBarrier();
+    Platform_SyncRestoreIrq(mask);
     (void)RuntimeEvent_Post(RUNTIME_TARGET_STORAGE, RUNTIME_EVENT_WAKE);
     return result;
 }
@@ -330,24 +325,24 @@ void App_StorageProcessReturns(void)
         return;
     for (i = 0U; i < APP_STORAGE_SLOT_COUNT; i++)
     {
-        mask = __get_PRIMASK();
-        __disable_irq();
-        __DMB();
+        mask = Platform_SyncGetPrimask();
+        Platform_SyncDisableIrq();
+        Platform_SyncMemoryBarrier();
         if (s_slots[i].state != SLOT_RETURN_PENDING)
         {
-            __set_PRIMASK(mask);
+            Platform_SyncRestoreIrq(mask);
             continue;
         }
         s_slots[i].state = SLOT_RETURNING;
         generation = s_slots[i].generation;
         lease = s_slots[i].lease;
-        __set_PRIMASK(mask);
+        Platform_SyncRestoreIrq(mask);
 
         //仅Camera访问Media，文件关闭不等于其他消费者也已归还
         result = CameraMjpegFifo_ReleaseLease(&lease);
-        mask = __get_PRIMASK();
-        __disable_irq();
-        __DMB();
+        mask = Platform_SyncGetPrimask();
+        Platform_SyncDisableIrq();
+        Platform_SyncMemoryBarrier();
         g_storage_status.return_result = result;
         if (s_slots[i].generation == generation && s_slots[i].state == SLOT_RETURNING)
         {
@@ -360,8 +355,8 @@ void App_StorageProcessReturns(void)
             else
                 s_slots[i].state = SLOT_RETURN_PENDING;
         }
-        __DMB();
-        __set_PRIMASK(mask);
+        Platform_SyncMemoryBarrier();
+        Platform_SyncRestoreIrq(mask);
     }
 }
 
@@ -376,22 +371,22 @@ void App_StorageProcess(void)
     SysResult_t result = SYS_OK;
     if (!App_EventsIsOwner(RUNTIME_TARGET_STORAGE) || !s_prepared)
         return;
-    mask = __get_PRIMASK();
-    __disable_irq();
-    __DMB();
+    mask = Platform_SyncGetPrimask();
+    Platform_SyncDisableIrq();
+    Platform_SyncMemoryBarrier();
     if (s_command_count != 0U)
     {
         command = s_commands[s_command_head];
         s_command_head = (s_command_head + 1U) % STORAGE_COMMANDS;
         s_command_count--;
     }
-    __DMB();
-    __set_PRIMASK(mask);
+    Platform_SyncMemoryBarrier();
+    Platform_SyncRestoreIrq(mask);
     if (command != 0U)
         Storage_HandleEvent(command);
-    mask = __get_PRIMASK();
-    __disable_irq();
-    __DMB();
+    mask = Platform_SyncGetPrimask();
+    Platform_SyncDisableIrq();
+    Platform_SyncMemoryBarrier();
     if (s_count != 0U)
     {
         queued = s_queue[s_head];
@@ -413,8 +408,8 @@ void App_StorageProcess(void)
             generation = item.generation;
         }
     }
-    __DMB();
-    __set_PRIMASK(mask);
+    Platform_SyncMemoryBarrier();
+    Platform_SyncRestoreIrq(mask);
     if (invalid_queue)
         Storage_Fail(SYS_ERR_PROTOCOL);
     if (slot != APP_STORAGE_SLOT_COUNT)
@@ -522,14 +517,14 @@ void App_StorageProcess(void)
             }
         }
     }
-    mask = __get_PRIMASK();
-    __disable_irq();
-    __DMB();
+    mask = Platform_SyncGetPrimask();
+    Platform_SyncDisableIrq();
+    Platform_SyncMemoryBarrier();
     if (s_stop_pending)
         s_accepting = false;
     command = s_stop_pending && s_count == 0U && s_offering == 0U;
-    __DMB();
-    __set_PRIMASK(mask);
+    Platform_SyncMemoryBarrier();
+    Platform_SyncRestoreIrq(mask);
     if (command != 0U && s_state != STORAGE_FAULT)
         Storage_Finish(SYS_OK);
     start = Platform_TimeGetMs();
@@ -556,7 +551,7 @@ void App_StorageProcess(void)
 //只接受调度器内普通任务，不允许中断触发同步文件操作
 static bool Storage_Context(void)
 {
-    return __get_IPSR() == 0U && __get_PRIMASK() == 0U && __get_BASEPRI() == 0U;
+    return Platform_SyncGetException() == 0U && Platform_SyncGetPrimask() == 0U && Platform_SyncGetBasepri() == 0U;
 }
 
 //命令队列只保存编号，不携带外部对象或文件句柄
@@ -569,29 +564,29 @@ static SysResult_t Storage_Request(uint32_t command)
         (VideoConfig_GetDefault()->camera.format != CAMERA_PIXEL_FORMAT_JPEG ||
          VideoConfig_GetDefault()->output == VIDEO_OUTPUT_USB_TEST))
     {
-        mask = __get_PRIMASK();
-        __disable_irq();
-        __DMB();
+        mask = Platform_SyncGetPrimask();
+        Platform_SyncDisableIrq();
+        Platform_SyncMemoryBarrier();
         g_storage_status.rejected_requests++;
-        __DMB();
-        __set_PRIMASK(mask);
+        Platform_SyncMemoryBarrier();
+        Platform_SyncRestoreIrq(mask);
         return SYS_ERR_NOT_SUPPORTED;
     }
-    mask = __get_PRIMASK();
-    __disable_irq();
-    __DMB();
+    mask = Platform_SyncGetPrimask();
+    Platform_SyncDisableIrq();
+    Platform_SyncMemoryBarrier();
     if (s_command_count >= STORAGE_COMMANDS)
     {
         g_storage_status.rejected_requests++;
-        __DMB();
-        __set_PRIMASK(mask);
+        Platform_SyncMemoryBarrier();
+        Platform_SyncRestoreIrq(mask);
         return SYS_ERR_NO_RESOURCE;
     }
     s_commands[(s_command_head + s_command_count) % STORAGE_COMMANDS] = command;
     s_command_count++;
     g_storage_status.requested++;
-    __DMB();
-    __set_PRIMASK(mask);
+    Platform_SyncMemoryBarrier();
+    Platform_SyncRestoreIrq(mask);
     (void)RuntimeEvent_Post(RUNTIME_TARGET_STORAGE, RUNTIME_EVENT_WAKE);
     return SYS_OK;
 }
@@ -654,9 +649,9 @@ static void Storage_OnStart(uint32_t command)
     s_segments = 0U;
     s_input_tick = Platform_TimeGetMs();
     s_sync_tick = s_input_tick;
-    mask = __get_PRIMASK();
-    __disable_irq();
-    __DMB();
+    mask = Platform_SyncGetPrimask();
+    Platform_SyncDisableIrq();
+    Platform_SyncMemoryBarrier();
     s_session++;
     s_mode = command == 1U ? APP_STORAGE_VIDEO : APP_STORAGE_SNAPSHOT;
     s_accepting = true;
@@ -670,8 +665,8 @@ static void Storage_OnStart(uint32_t command)
     g_storage_status.session = s_session;
     g_storage_status.result = SYS_OK;
     g_storage_status.cleanup_result = SYS_OK;
-    __DMB();
-    __set_PRIMASK(mask);
+    Platform_SyncMemoryBarrier();
+    Platform_SyncRestoreIrq(mask);
 }
 
 //故障状态要求显式恢复，重复Stop不能伪装故障已经消失
@@ -737,9 +732,9 @@ static void Storage_OnRecover(void)
     {
         s_mounted = false;
         s_file = 0U;
-        mask = __get_PRIMASK();
-        __disable_irq();
-        __DMB();
+        mask = Platform_SyncGetPrimask();
+        Platform_SyncDisableIrq();
+        Platform_SyncMemoryBarrier();
 
         //恢复文件系统不代表帧已归还，仍交给Camera确认
         for (i = 0U; i < APP_STORAGE_SLOT_COUNT; i++)
@@ -750,8 +745,8 @@ static void Storage_OnRecover(void)
                 g_storage_status.pending_returns++;
             }
         }
-        __DMB();
-        __set_PRIMASK(mask);
+        Platform_SyncMemoryBarrier();
+        Platform_SyncRestoreIrq(mask);
         g_storage_status.cleanup_result = SYS_OK;
         Storage_Transition(STORAGE_IDLE);
     }
@@ -909,12 +904,12 @@ static SysResult_t Storage_CloseAvi(void)
 static void Storage_Finish(SysResult_t result)
 {
     SysResult_t cleanup = SYS_OK, step;
-    uint32_t mask = __get_PRIMASK();
-    __disable_irq();
-    __DMB();
+    uint32_t mask = Platform_SyncGetPrimask();
+    Platform_SyncDisableIrq();
+    Platform_SyncMemoryBarrier();
     s_accepting = false;
-    __DMB();
-    __set_PRIMASK(mask);
+    Platform_SyncMemoryBarrier();
+    Platform_SyncRestoreIrq(mask);
     if (s_file != 0U)
     {
         cleanup = s_mode == APP_STORAGE_VIDEO && result == SYS_OK ? Storage_CloseAvi() : StorageFS_Close(s_file);
@@ -942,11 +937,11 @@ static void Storage_Finish(SysResult_t result)
 //拒绝新帧租借，队列里旧帧租借会在后续轮次逐个安全回收
 static void Storage_Fail(SysResult_t result)
 {
-    uint32_t mask = __get_PRIMASK();
+    uint32_t mask = Platform_SyncGetPrimask();
     uint32_t slot;
     StorageQueueItem_t queued;
-    __disable_irq();
-    __DMB();
+    Platform_SyncDisableIrq();
+    Platform_SyncMemoryBarrier();
     s_accepting = false;
 
     //未写入帧只转入归还队列，由Camera释放对应引用
@@ -965,8 +960,8 @@ static void Storage_Fail(SysResult_t result)
         g_storage_status.dropped_frames++;
     }
     g_storage_status.queue_depth = 0U;
-    __DMB();
-    __set_PRIMASK(mask);
+    Platform_SyncMemoryBarrier();
+    Platform_SyncRestoreIrq(mask);
     g_storage_status.failures++;
     g_storage_status.stop_reason = result == SYS_ERR_TIMEOUT ? 6U : 4U;
     Storage_Finish(result);
@@ -976,10 +971,10 @@ static void Storage_Fail(SysResult_t result)
 //槽位代号必须与本次WRITING一致，旧归还不能释放新帧租借
 static bool Storage_Release(uint32_t slot, uint32_t generation)
 {
-    uint32_t mask = __get_PRIMASK();
+    uint32_t mask = Platform_SyncGetPrimask();
     bool released = false;
-    __disable_irq();
-    __DMB();
+    Platform_SyncDisableIrq();
+    Platform_SyncMemoryBarrier();
     if (slot < APP_STORAGE_SLOT_COUNT && s_slots[slot].state == SLOT_WRITING &&
         s_slots[slot].generation == generation)
     {
@@ -989,8 +984,8 @@ static bool Storage_Release(uint32_t slot, uint32_t generation)
         g_storage_status.pending_returns++;
         released = true;
     }
-    __DMB();
-    __set_PRIMASK(mask);
+    Platform_SyncMemoryBarrier();
+    Platform_SyncRestoreIrq(mask);
     if (released)
         (void)RuntimeEvent_Post(RUNTIME_TARGET_CAMERA, RUNTIME_EVENT_WAKE);
     return released;
@@ -1006,10 +1001,10 @@ static void Storage_Transition(StorageState_t state)
 //完整快照只在这里提交，Camera统计写入也不能打断这次借用
 static void Storage_PublishStatus(void)
 {
-    uint32_t mask = __get_PRIMASK();
-    __disable_irq();
-    __DMB();
+    uint32_t mask = Platform_SyncGetPrimask();
+    Platform_SyncDisableIrq();
+    Platform_SyncMemoryBarrier();
     s_status_snapshot = g_storage_status;
-    __DMB();
-    __set_PRIMASK(mask);
+    Platform_SyncMemoryBarrier();
+    Platform_SyncRestoreIrq(mask);
 }
