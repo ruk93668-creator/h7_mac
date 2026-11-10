@@ -1,7 +1,7 @@
 #include "app_messages.h"
 #include "app_events.h"
 #include "queue.h"
-#include "stm32h7xx.h"
+#include "platform_sync.h"
 #include <stddef.h>
 
 #define APP_MESSAGE_QUEUE_LENGTH 4U
@@ -38,7 +38,7 @@ SysResult_t App_MessagesInit(void)
     uint32_t i;
 
     //只允许调度前创建一次，任何部分失败都由main终止启动
-    if (s_messages_attempted || __get_IPSR() != 0U ||
+    if (s_messages_attempted || Platform_SyncGetException() != 0U ||
         xTaskGetSchedulerState() != taskSCHEDULER_NOT_STARTED)
         return SYS_ERR_INVALID_STATE;
     s_messages_attempted = true;
@@ -59,7 +59,7 @@ SysResult_t App_MessagesSend(AppChannel_t channel, const AppMessage_t *message)
 
     if ((uint32_t)channel >= APP_CHANNEL_COUNT || message == NULL)
         return SYS_ERR_INVALID_ARG;
-    if (s_message_handles[channel] == NULL || __get_IPSR() != 0U)
+    if (s_message_handles[channel] == NULL || Platform_SyncGetException() != 0U)
         return SYS_ERR_INVALID_STATE;
 
     //命令只由Control发送，帧消息只允许相应所有者发送

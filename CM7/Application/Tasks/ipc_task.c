@@ -4,7 +4,7 @@
 #include "ipc_service.h"
 #include "ipc_config.h"
 #include "platform_time.h"
-#include "stm32h7xx.h"
+#include "platform_sync.h"
 #include <stddef.h>
 
 #define IPC_TASK_STACK_WORDS 512U
@@ -37,7 +37,7 @@ SysResult_t IpcTask_Create(void)
     SysResult_t result;
 
     //只允许调度器启动前在非中断上下文创建静态任务
-    if (__get_IPSR() != 0U || xTaskGetSchedulerState() != taskSCHEDULER_NOT_STARTED)
+    if (Platform_SyncGetException() != 0U || xTaskGetSchedulerState() != taskSCHEDULER_NOT_STARTED)
         return SYS_ERR_INVALID_STATE;
 
     //拒绝重复创建，避免复用同一份TCB和栈

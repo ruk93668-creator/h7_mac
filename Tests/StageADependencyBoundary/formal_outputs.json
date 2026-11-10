@@ -1,0 +1,32 @@
+[
+  {
+    "path": "MDK-ARM/h7_mac_CM7/h7_mac_CM7.axf",
+    "exists": true,
+    "sha256": "a13a37686df95be54aee3f692526848f44b2f9f3dbc405da0ed96f958d5eeb79"
+  },
+  {
+    "path": "MDK-ARM/h7_mac_CM7/h7_mac_CM7.hex",
+    "exists": false,
+    "sha256": null
+  },
+  {
+    "path": "MDK-ARM/h7_mac_CM7/h7_mac_CM7.map",
+    "exists": true,
+    "sha256": "2e3a1d24022637a61399182e6bcb3043f16ede907df18bc9612bb593c03ba096"
+  },
+  {
+    "path": "MDK-ARM/h7_mac_CM4/h7_mac_CM4.axf",
+    "exists": true,
+    "sha256": "709e8d4a88fa9de68b68e06ae2adee5a7a52ba45861ebcb5baec13af41929f2f"
+  },
+  {
+    "path": "MDK-ARM/h7_mac_CM4/h7_mac_CM4.hex",
+    "exists": true,
+    "sha256": "3030484c03d4983a192be39142dce7b6dfdb8e6c93a49e1f8285ee846540fb17"
+  },
+  {
+    "path": "MDK-ARM/h7_mac_CM4/h7_mac_CM4.map",
+    "exists": true,
+    "sha256": "435ae1008dd0fc0441242a0f250f846010a9064beff06142d9628f902cfd3665"
+  }
+]

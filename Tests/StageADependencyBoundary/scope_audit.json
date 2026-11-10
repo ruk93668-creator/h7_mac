@@ -1,0 +1,35 @@
+{
+  "baseline": "48afa27a1ac941c541ac400a3a820474b25e65c3",
+  "protected_tree_changes": {
+    "CM4": [],
+    "Common": [],
+    "Drivers": [],
+    "Middlewares": [],
+    "CM7/BSP": [],
+    "CM7/Device": []
+  },
+  "output_configuration": [
+    {
+      "target": "h7_mac_CM4",
+      "unchanged": {
+        "OutputDirectory": true,
+        "OutputName": true,
+        "CreateHexFile": true,
+        "ListingPath": true,
+        "ScatterFile": true
+      }
+    },
+    {
+      "target": "h7_mac_CM7",
+      "unchanged": {
+        "OutputDirectory": true,
+        "OutputName": true,
+        "CreateHexFile": true,
+        "ListingPath": true,
+        "ScatterFile": true
+      }
+    }
+  ],
+  "cm4_target_identical": true,
+  "historical_assertions_changed": []
+}

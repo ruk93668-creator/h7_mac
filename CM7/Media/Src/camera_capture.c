@@ -164,6 +164,9 @@ static CameraCaptureEventCallback_t s_capture_callback;
 //保存通知接收端的静态上下文
 static void *s_capture_callback_context;
 
+//把BSP进展和错误转换为Media通知，不改变回调上下文
+static void CameraCapture_OnBspEvent(uint32_t events, void *context);
+
 //绑定静态采集通知接收端
 SysResult_t CameraCapture_SetEventCallback(CameraCaptureEventCallback_t callback, void *context)
 {
@@ -173,9 +176,32 @@ SysResult_t CameraCapture_SetEventCallback(CameraCaptureEventCallback_t callback
         return SYS_ERR_INVALID_ARG;
     if (s_capture.initialized || s_capture_callback != NULL)
         return SYS_ERR_INVALID_STATE;
+
+    //沿用原先先登记Media、再绑定BSP的顺序，保留初始化失败现场
     s_capture_callback_context = context;
     s_capture_callback = callback;
-    return SYS_OK;
+
+    //绑定仍在BSP初始化前完成，原始绑定错误交给启动流程处理
+    return BSP_DCMI_SetEventCallback(CameraCapture_OnBspEvent, NULL);
+}
+
+//完整转发BSP进展和错误，帧完成通知仍走原来的Media路径
+static void CameraCapture_OnBspEvent(uint32_t events, void *context)
+{
+    uint32_t media_events = 0U;
+    (void)context;
+
+    //BSP与Media的位定义不同，不能直接传递原始数值
+    if ((events & BSP_DCMI_NOTIFY_PROGRESS) != 0U)
+        media_events |= CAMERA_CAPTURE_EVENT_PROGRESS;
+
+    //错误独立映射，允许同一次通知同时携带进展和错误
+    if ((events & BSP_DCMI_NOTIFY_ERROR) != 0U)
+        media_events |= CAMERA_CAPTURE_EVENT_ERROR;
+
+    //绑定只发生在采集初始化前，回调不执行Stop或释放帧
+    if (s_capture_callback != NULL)
+        s_capture_callback(media_events, s_capture_callback_context);
 }
 
 //取得完整帧和丢帧计数快照

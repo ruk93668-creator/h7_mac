@@ -1,0 +1,14 @@
+[
+  {
+    "target": "h7_mac_CM7",
+    "exit": 0,
+    "errors": 0,
+    "warnings": 0
+  },
+  {
+    "target": "h7_mac_CM4",
+    "exit": 0,
+    "errors": 0,
+    "warnings": 0
+  }
+]

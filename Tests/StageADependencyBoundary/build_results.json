@@ -1,0 +1,16 @@
+[
+  {
+    "target": "h7_mac_CM7",
+    "exit": 0,
+    "errors": 0,
+    "warnings": 0,
+    "source_unchanged": true
+  },
+  {
+    "target": "h7_mac_CM4",
+    "exit": 0,
+    "errors": 0,
+    "warnings": 0,
+    "source_unchanged": true
+  }
+]

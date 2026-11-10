@@ -1,8 +1,7 @@
 #include "app_events.h"
 #include "usb_device.h"
 #include "camera_capture.h"
-#include "bsp_dcmi.h"
-#include "stm32h7xx.h"
+#include "platform_sync.h"
 #include <stddef.h>
 
 //保存各业务目标对应的静态任务句柄
@@ -52,7 +51,7 @@ SysResult_t App_EventsInit(void)
     SysResult_t result;
 
     //只允许调度器启动前的初始化流程绑定后端
-    if (__get_IPSR() != 0U || xTaskGetSchedulerState() != taskSCHEDULER_NOT_STARTED)
+    if (Platform_SyncGetException() != 0U || xTaskGetSchedulerState() != taskSCHEDULER_NOT_STARTED)
         return SYS_ERR_INVALID_STATE;
     if (s_initialized)
         return SYS_ERR_ALREADY_EXISTS;
@@ -65,9 +64,6 @@ SysResult_t App_EventsInit(void)
     //绑定静态回调表，后续提示由Application适配到任务通知
     //绑定采集进度和异常提示，两个回调都不执行Media任务侧操作
     result = CameraCapture_SetEventCallback(AppEvents_CameraNotify, NULL);
-    if (result != SYS_OK)
-        return result;
-    result = BSP_DCMI_SetEventCallback(AppEvents_CameraNotify, NULL);
     if (result != SYS_OK)
         return result;
 
@@ -89,7 +85,7 @@ SysResult_t App_EventsAttach(RuntimeEventTarget_t target, TaskHandle_t task)
         return SYS_ERR_INVALID_ARG;
 
     //只能在准备阶段登记，失败或调度运行后禁止修改接收关系
-    if (!s_initialized || s_failed || __get_IPSR() != 0U ||
+    if (!s_initialized || s_failed || Platform_SyncGetException() != 0U ||
         xTaskGetSchedulerState() != taskSCHEDULER_NOT_STARTED)
         return SYS_ERR_INVALID_STATE;
 
@@ -108,7 +104,7 @@ SysResult_t App_EventsRecordInitialization(SysResult_t result)
     uint32_t i;
 
     //初始化结果只允许在调度器启动前提交一次
-    if (!s_initialized || s_prepared || s_failed || __get_IPSR() != 0U ||
+    if (!s_initialized || s_prepared || s_failed || Platform_SyncGetException() != 0U ||
         xTaskGetSchedulerState() != taskSCHEDULER_NOT_STARTED)
         return SYS_ERR_INVALID_STATE;
 
@@ -137,7 +133,7 @@ SysResult_t App_EventsReleaseBoot(void)
     uint32_t i;
 
     //仅允许调度器运行后的Control任务放行，main不能提前广播
-    if (__get_IPSR() != 0U || !s_prepared || s_failed ||
+    if (Platform_SyncGetException() != 0U || !s_prepared || s_failed ||
         xTaskGetSchedulerState() != taskSCHEDULER_RUNNING ||
         xTaskGetCurrentTaskHandle() != s_tasks[RUNTIME_TARGET_CONTROL])
         return SYS_ERR_INVALID_STATE;
@@ -172,7 +168,7 @@ SysResult_t App_EventsWait(RuntimeEventTarget_t target, uint32_t timeout_ms, uin
         return SYS_ERR_INVALID_ARG;
 
     //只能由对应任务在可阻塞环境中等待，ISR或屏蔽状态不能调用
-    if (__get_IPSR() != 0U || __get_PRIMASK() != 0U || __get_BASEPRI() != 0U ||
+    if (Platform_SyncGetException() != 0U || Platform_SyncGetPrimask() != 0U || Platform_SyncGetBasepri() != 0U ||
         xTaskGetSchedulerState() != taskSCHEDULER_RUNNING ||
         xTaskGetCurrentTaskHandle() != s_tasks[target])
         return SYS_ERR_INVALID_STATE;
@@ -197,11 +193,11 @@ static SysResult_t AppEvents_PreparePost(RuntimeEventTarget_t target, uint32_t e
 {
 
     //保存原始全局屏蔽状态，退出时必须按原值恢复
-    uint32_t primask = __get_PRIMASK();
+    uint32_t primask = Platform_SyncGetPrimask();
     SysResult_t result = SYS_OK;
 
     //短暂屏蔽中断，使BOOT判断与早期提示合并保持一致
-    __disable_irq();
+    Platform_SyncDisableIrq();
     if (!s_initialized || s_failed)
         result = SYS_ERR_INVALID_STATE;
     else if (!s_boot_ready)
@@ -213,7 +209,7 @@ static SysResult_t AppEvents_PreparePost(RuntimeEventTarget_t target, uint32_t e
     }
 
     //恢复进入前的中断状态，不擅自开启调用者关闭的中断
-    __set_PRIMASK(primask);
+    Platform_SyncRestoreIrq(primask);
     return result;
 }
 
@@ -225,8 +221,8 @@ static SysResult_t AppEvents_Post(void *context, RuntimeEventTarget_t target, ui
     (void)context;
 
     //普通接口拒绝ISR；BOOT后也拒绝屏蔽内核中断的调用环境
-    if (__get_IPSR() != 0U || __get_PRIMASK() != 0U ||
-        (s_boot_ready && __get_BASEPRI() != 0U))
+    if (Platform_SyncGetException() != 0U || Platform_SyncGetPrimask() != 0U ||
+        (s_boot_ready && Platform_SyncGetBasepri() != 0U))
         return SYS_ERR_INVALID_STATE;
 
     //先检查准备状态，BOOT前的提示在这里被锁存
@@ -243,14 +239,14 @@ static SysResult_t AppEvents_PostFromIsr(void *context, RuntimeEventTarget_t tar
 {
 
     //取得当前异常号，用于区分外设IRQ并查询其优先级
-    uint32_t ipsr = __get_IPSR();
+    uint32_t ipsr = Platform_SyncGetException();
     BaseType_t woken = pdFALSE;
     bool deferred = false;
     SysResult_t result;
     (void)context;
 
     //仅外设IRQ，优先级数值必须不小于内核API阈值
-    if (ipsr < 16U || NVIC_GetPriority((IRQn_Type)(ipsr - 16U)) <
+    if (ipsr < 16U || Platform_SyncGetIrqPriority(ipsr - 16U) <
         configLIBRARY_MAX_SYSCALL_INTERRUPT_PRIORITY)
         return SYS_ERR_INVALID_STATE;
 
@@ -275,7 +271,7 @@ static void AppEvents_UsbNotify(uint32_t events, void *context)
     (void)context;
 
     //USB回调可能来自初始化或IRQ，按实际上下文选择通知接口
-    if (__get_IPSR() != 0U)
+    if (Platform_SyncGetException() != 0U)
         (void)RuntimeEvent_PostFromIsr(RUNTIME_TARGET_USB, RUNTIME_EVENT_USB_PROGRESS);
     else
         (void)RuntimeEvent_Post(RUNTIME_TARGET_USB, RUNTIME_EVENT_USB_PROGRESS);
@@ -284,8 +280,8 @@ static void AppEvents_UsbNotify(uint32_t events, void *context)
 //检查当前执行者是否为目标任务
 bool App_EventsIsOwner(RuntimeEventTarget_t target)
 {
-    return (uint32_t)target < RUNTIME_TARGET_COUNT && __get_IPSR() == 0U &&
-        __get_PRIMASK() == 0U && __get_BASEPRI() == 0U &&
+    return (uint32_t)target < RUNTIME_TARGET_COUNT && Platform_SyncGetException() == 0U &&
+        Platform_SyncGetPrimask() == 0U && Platform_SyncGetBasepri() == 0U &&
         xTaskGetSchedulerState() == taskSCHEDULER_RUNNING &&
         xTaskGetCurrentTaskHandle() == s_tasks[target];
 }
@@ -297,7 +293,7 @@ static void AppEvents_CameraNotify(uint32_t events, void *context)
     (void)context;
 
     //BSP或Media沿用当前上下文，ISR只发通知，不停止硬件
-    if (__get_IPSR() != 0U)
+    if (Platform_SyncGetException() != 0U)
         (void)RuntimeEvent_PostFromIsr(RUNTIME_TARGET_CAMERA, RUNTIME_EVENT_CAMERA_PROGRESS);
     else
         (void)RuntimeEvent_Post(RUNTIME_TARGET_CAMERA, RUNTIME_EVENT_CAMERA_PROGRESS);

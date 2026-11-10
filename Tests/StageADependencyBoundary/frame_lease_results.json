@@ -1,0 +1,746 @@
+{
+  "summary": {
+    "total": 92,
+    "passed": 92,
+    "failed": 0
+  },
+  "cases": [
+    {
+      "optimization": "O0",
+      "id": 0,
+      "name": "retain_only",
+      "passed": true,
+      "line": 0,
+      "error": null
+    },
+    {
+      "optimization": "O0",
+      "id": 1,
+      "name": "usb_first",
+      "passed": true,
+      "line": 0,
+      "error": null
+    },
+    {
+      "optimization": "O0",
+      "id": 2,
+      "name": "sd_first",
+      "passed": true,
+      "line": 0,
+      "error": null
+    },
+    {
+      "optimization": "O0",
+      "id": 3,
+      "name": "duplicate_return",
+      "passed": true,
+      "line": 0,
+      "error": null
+    },
+    {
+      "optimization": "O0",
+      "id": 4,
+      "name": "old_session",
+      "passed": true,
+      "line": 0,
+      "error": null
+    },
+    {
+      "optimization": "O0",
+      "id": 5,
+      "name": "seven_in_flight",
+      "passed": true,
+      "line": 0,
+      "error": null
+    },
+    {
+      "optimization": "O0",
+      "id": 6,
+      "name": "jpg_roundtrip",
+      "passed": true,
+      "line": 0,
+      "error": null
+    },
+    {
+      "optimization": "O0",
+      "id": 7,
+      "name": "jpg_split",
+      "passed": true,
+      "line": 0,
+      "error": null
+    },
+    {
+      "optimization": "O0",
+      "id": 8,
+      "name": "avi_split",
+      "passed": true,
+      "line": 0,
+      "error": null
+    },
+    {
+      "optimization": "O0",
+      "id": 9,
+      "name": "sd_one_frame_busy",
+      "passed": true,
+      "line": 0,
+      "error": null
+    },
+    {
+      "optimization": "O0",
+      "id": 10,
+      "name": "write_failure_return",
+      "passed": true,
+      "line": 0,
+      "error": null
+    },
+    {
+      "optimization": "O0",
+      "id": 11,
+      "name": "close_failure",
+      "passed": true,
+      "line": 0,
+      "error": null
+    },
+    {
+      "optimization": "O0",
+      "id": 12,
+      "name": "stop_drains_single",
+      "passed": true,
+      "line": 0,
+      "error": null
+    },
+    {
+      "optimization": "O0",
+      "id": 13,
+      "name": "wrong_return_owner",
+      "passed": true,
+      "line": 0,
+      "error": null
+    },
+    {
+      "optimization": "O0",
+      "id": 14,
+      "name": "failed_return_keeps_ownership",
+      "passed": true,
+      "line": 0,
+      "error": null
+    },
+    {
+      "optimization": "O0",
+      "id": 15,
+      "name": "dma_skips_loan",
+      "passed": true,
+      "line": 0,
+      "error": null
+    },
+    {
+      "optimization": "O0",
+      "id": 16,
+      "name": "stop_preserves_refs",
+      "passed": true,
+      "line": 0,
+      "error": null
+    },
+    {
+      "optimization": "O0",
+      "id": 17,
+      "name": "invalid_jpeg",
+      "passed": true,
+      "line": 0,
+      "error": null
+    },
+    {
+      "optimization": "O0",
+      "id": 18,
+      "name": "source_still_owned",
+      "passed": true,
+      "line": 0,
+      "error": null
+    },
+    {
+      "optimization": "O0",
+      "id": 19,
+      "name": "offer_no_io_or_crc",
+      "passed": true,
+      "line": 0,
+      "error": null
+    },
+    {
+      "optimization": "O0",
+      "id": 20,
+      "name": "off_no_retain",
+      "passed": true,
+      "line": 0,
+      "error": null
+    },
+    {
+      "optimization": "O0",
+      "id": 21,
+      "name": "return_ack_before_reuse",
+      "passed": true,
+      "line": 0,
+      "error": null
+    },
+    {
+      "optimization": "O0",
+      "id": 22,
+      "name": "new_storage_session",
+      "passed": true,
+      "line": 0,
+      "error": null
+    },
+    {
+      "optimization": "O0",
+      "id": 23,
+      "name": "bad_frame",
+      "passed": true,
+      "line": 0,
+      "error": null
+    },
+    {
+      "optimization": "O0",
+      "id": 24,
+      "name": "memory_bounds",
+      "passed": true,
+      "line": 0,
+      "error": null
+    },
+    {
+      "optimization": "O0",
+      "id": 25,
+      "name": "cancel_during_offer",
+      "passed": true,
+      "line": 0,
+      "error": null
+    },
+    {
+      "optimization": "O0",
+      "id": 26,
+      "name": "recover_pending_returns",
+      "passed": true,
+      "line": 0,
+      "error": null
+    },
+    {
+      "optimization": "O0",
+      "id": 27,
+      "name": "invalid_queue_recovery",
+      "passed": true,
+      "line": 0,
+      "error": null
+    },
+    {
+      "optimization": "O0",
+      "id": 28,
+      "name": "short_write",
+      "passed": true,
+      "line": 0,
+      "error": null
+    },
+    {
+      "optimization": "O0",
+      "id": 29,
+      "name": "reject_yuy2",
+      "passed": true,
+      "line": 0,
+      "error": null
+    },
+    {
+      "optimization": "O0",
+      "id": 30,
+      "name": "input_timeout",
+      "passed": true,
+      "line": 0,
+      "error": null
+    },
+    {
+      "optimization": "O0",
+      "id": 31,
+      "name": "stale_lease",
+      "passed": true,
+      "line": 0,
+      "error": null
+    },
+    {
+      "optimization": "O0",
+      "id": 32,
+      "name": "usb_sd_sd_first",
+      "passed": true,
+      "line": 0,
+      "error": null
+    },
+    {
+      "optimization": "O0",
+      "id": 33,
+      "name": "usb_sd_usb_first",
+      "passed": true,
+      "line": 0,
+      "error": null
+    },
+    {
+      "optimization": "O0",
+      "id": 34,
+      "name": "sd_error_keeps_usb",
+      "passed": true,
+      "line": 0,
+      "error": null
+    },
+    {
+      "optimization": "O0",
+      "id": 35,
+      "name": "abort_failure_keeps_usb",
+      "passed": true,
+      "line": 0,
+      "error": null
+    },
+    {
+      "optimization": "O0",
+      "id": 36,
+      "name": "storage_stop_keeps_usb",
+      "passed": true,
+      "line": 0,
+      "error": null
+    },
+    {
+      "optimization": "O0",
+      "id": 37,
+      "name": "usb_sd_split",
+      "passed": true,
+      "line": 0,
+      "error": null
+    },
+    {
+      "optimization": "O0",
+      "id": 38,
+      "name": "maximum_70000_jpeg",
+      "passed": true,
+      "line": 0,
+      "error": null
+    },
+    {
+      "optimization": "O0",
+      "id": 39,
+      "name": "reject_70001_jpeg",
+      "passed": true,
+      "line": 0,
+      "error": null
+    },
+    {
+      "optimization": "O0",
+      "id": 40,
+      "name": "sd_single_does_not_block_usb",
+      "passed": true,
+      "line": 0,
+      "error": null
+    },
+    {
+      "optimization": "O0",
+      "id": 41,
+      "name": "sd_single_backpressure",
+      "passed": true,
+      "line": 0,
+      "error": null
+    },
+    {
+      "optimization": "O0",
+      "id": 42,
+      "name": "latest_ready_no_rollback",
+      "passed": true,
+      "line": 0,
+      "error": null
+    },
+    {
+      "optimization": "O0",
+      "id": 43,
+      "name": "reserve_one_descriptor",
+      "passed": true,
+      "line": 0,
+      "error": null
+    },
+    {
+      "optimization": "O0",
+      "id": 44,
+      "name": "shared_block_latest_drop",
+      "passed": true,
+      "line": 0,
+      "error": null
+    },
+    {
+      "optimization": "O0",
+      "id": 45,
+      "name": "latest_drop_keeps_sd",
+      "passed": true,
+      "line": 0,
+      "error": null
+    },
+    {
+      "optimization": "O2",
+      "id": 0,
+      "name": "retain_only",
+      "passed": true,
+      "line": 0,
+      "error": null
+    },
+    {
+      "optimization": "O2",
+      "id": 1,
+      "name": "usb_first",
+      "passed": true,
+      "line": 0,
+      "error": null
+    },
+    {
+      "optimization": "O2",
+      "id": 2,
+      "name": "sd_first",
+      "passed": true,
+      "line": 0,
+      "error": null
+    },
+    {
+      "optimization": "O2",
+      "id": 3,
+      "name": "duplicate_return",
+      "passed": true,
+      "line": 0,
+      "error": null
+    },
+    {
+      "optimization": "O2",
+      "id": 4,
+      "name": "old_session",
+      "passed": true,
+      "line": 0,
+      "error": null
+    },
+    {
+      "optimization": "O2",
+      "id": 5,
+      "name": "seven_in_flight",
+      "passed": true,
+      "line": 0,
+      "error": null
+    },
+    {
+      "optimization": "O2",
+      "id": 6,
+      "name": "jpg_roundtrip",
+      "passed": true,
+      "line": 0,
+      "error": null
+    },
+    {
+      "optimization": "O2",
+      "id": 7,
+      "name": "jpg_split",
+      "passed": true,
+      "line": 0,
+      "error": null
+    },
+    {
+      "optimization": "O2",
+      "id": 8,
+      "name": "avi_split",
+      "passed": true,
+      "line": 0,
+      "error": null
+    },
+    {
+      "optimization": "O2",
+      "id": 9,
+      "name": "sd_one_frame_busy",
+      "passed": true,
+      "line": 0,
+      "error": null
+    },
+    {
+      "optimization": "O2",
+      "id": 10,
+      "name": "write_failure_return",
+      "passed": true,
+      "line": 0,
+      "error": null
+    },
+    {
+      "optimization": "O2",
+      "id": 11,
+      "name": "close_failure",
+      "passed": true,
+      "line": 0,
+      "error": null
+    },
+    {
+      "optimization": "O2",
+      "id": 12,
+      "name": "stop_drains_single",
+      "passed": true,
+      "line": 0,
+      "error": null
+    },
+    {
+      "optimization": "O2",
+      "id": 13,
+      "name": "wrong_return_owner",
+      "passed": true,
+      "line": 0,
+      "error": null
+    },
+    {
+      "optimization": "O2",
+      "id": 14,
+      "name": "failed_return_keeps_ownership",
+      "passed": true,
+      "line": 0,
+      "error": null
+    },
+    {
+      "optimization": "O2",
+      "id": 15,
+      "name": "dma_skips_loan",
+      "passed": true,
+      "line": 0,
+      "error": null
+    },
+    {
+      "optimization": "O2",
+      "id": 16,
+      "name": "stop_preserves_refs",
+      "passed": true,
+      "line": 0,
+      "error": null
+    },
+    {
+      "optimization": "O2",
+      "id": 17,
+      "name": "invalid_jpeg",
+      "passed": true,
+      "line": 0,
+      "error": null
+    },
+    {
+      "optimization": "O2",
+      "id": 18,
+      "name": "source_still_owned",
+      "passed": true,
+      "line": 0,
+      "error": null
+    },
+    {
+      "optimization": "O2",
+      "id": 19,
+      "name": "offer_no_io_or_crc",
+      "passed": true,
+      "line": 0,
+      "error": null
+    },
+    {
+      "optimization": "O2",
+      "id": 20,
+      "name": "off_no_retain",
+      "passed": true,
+      "line": 0,
+      "error": null
+    },
+    {
+      "optimization": "O2",
+      "id": 21,
+      "name": "return_ack_before_reuse",
+      "passed": true,
+      "line": 0,
+      "error": null
+    },
+    {
+      "optimization": "O2",
+      "id": 22,
+      "name": "new_storage_session",
+      "passed": true,
+      "line": 0,
+      "error": null
+    },
+    {
+      "optimization": "O2",
+      "id": 23,
+      "name": "bad_frame",
+      "passed": true,
+      "line": 0,
+      "error": null
+    },
+    {
+      "optimization": "O2",
+      "id": 24,
+      "name": "memory_bounds",
+      "passed": true,
+      "line": 0,
+      "error": null
+    },
+    {
+      "optimization": "O2",
+      "id": 25,
+      "name": "cancel_during_offer",
+      "passed": true,
+      "line": 0,
+      "error": null
+    },
+    {
+      "optimization": "O2",
+      "id": 26,
+      "name": "recover_pending_returns",
+      "passed": true,
+      "line": 0,
+      "error": null
+    },
+    {
+      "optimization": "O2",
+      "id": 27,
+      "name": "invalid_queue_recovery",
+      "passed": true,
+      "line": 0,
+      "error": null
+    },
+    {
+      "optimization": "O2",
+      "id": 28,
+      "name": "short_write",
+      "passed": true,
+      "line": 0,
+      "error": null
+    },
+    {
+      "optimization": "O2",
+      "id": 29,
+      "name": "reject_yuy2",
+      "passed": true,
+      "line": 0,
+      "error": null
+    },
+    {
+      "optimization": "O2",
+      "id": 30,
+      "name": "input_timeout",
+      "passed": true,
+      "line": 0,
+      "error": null
+    },
+    {
+      "optimization": "O2",
+      "id": 31,
+      "name": "stale_lease",
+      "passed": true,
+      "line": 0,
+      "error": null
+    },
+    {
+      "optimization": "O2",
+      "id": 32,
+      "name": "usb_sd_sd_first",
+      "passed": true,
+      "line": 0,
+      "error": null
+    },
+    {
+      "optimization": "O2",
+      "id": 33,
+      "name": "usb_sd_usb_first",
+      "passed": true,
+      "line": 0,
+      "error": null
+    },
+    {
+      "optimization": "O2",
+      "id": 34,
+      "name": "sd_error_keeps_usb",
+      "passed": true,
+      "line": 0,
+      "error": null
+    },
+    {
+      "optimization": "O2",
+      "id": 35,
+      "name": "abort_failure_keeps_usb",
+      "passed": true,
+      "line": 0,
+      "error": null
+    },
+    {
+      "optimization": "O2",
+      "id": 36,
+      "name": "storage_stop_keeps_usb",
+      "passed": true,
+      "line": 0,
+      "error": null
+    },
+    {
+      "optimization": "O2",
+      "id": 37,
+      "name": "usb_sd_split",
+      "passed": true,
+      "line": 0,
+      "error": null
+    },
+    {
+      "optimization": "O2",
+      "id": 38,
+      "name": "maximum_70000_jpeg",
+      "passed": true,
+      "line": 0,
+      "error": null
+    },
+    {
+      "optimization": "O2",
+      "id": 39,
+      "name": "reject_70001_jpeg",
+      "passed": true,
+      "line": 0,
+      "error": null
+    },
+    {
+      "optimization": "O2",
+      "id": 40,
+      "name": "sd_single_does_not_block_usb",
+      "passed": true,
+      "line": 0,
+      "error": null
+    },
+    {
+      "optimization": "O2",
+      "id": 41,
+      "name": "sd_single_backpressure",
+      "passed": true,
+      "line": 0,
+      "error": null
+    },
+    {
+      "optimization": "O2",
+      "id": 42,
+      "name": "latest_ready_no_rollback",
+      "passed": true,
+      "line": 0,
+      "error": null
+    },
+    {
+      "optimization": "O2",
+      "id": 43,
+      "name": "reserve_one_descriptor",
+      "passed": true,
+      "line": 0,
+      "error": null
+    },
+    {
+      "optimization": "O2",
+      "id": 44,
+      "name": "shared_block_latest_drop",
+      "passed": true,
+      "line": 0,
+      "error": null
+    },
+    {
+      "optimization": "O2",
+      "id": 45,
+      "name": "latest_drop_keeps_sd",
+      "passed": true,
+      "line": 0,
+      "error": null
+    }
+  ],
+  "real_hardware_verified": false
+}

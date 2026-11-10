@@ -3,7 +3,7 @@
 #include "app_events.h"
 #include "video_config.h"
 #include "platform_time.h"
-#include "stm32h7xx.h"
+#include "platform_sync.h"
 #include <stddef.h>
 
 #define STORAGE_STACK_WORDS 2048U
@@ -20,7 +20,7 @@ static void StorageTask_Run(void *argument);
 //静态创建并登记BOOT屏障，失败不使用无效句柄
 SysResult_t StorageTask_Create(void)
 {
-    if (__get_IPSR() != 0U || xTaskGetSchedulerState() != taskSCHEDULER_NOT_STARTED || s_task != NULL)
+    if (Platform_SyncGetException() != 0U || xTaskGetSchedulerState() != taskSCHEDULER_NOT_STARTED || s_task != NULL)
         return SYS_ERR_INVALID_STATE;
     s_task = xTaskCreateStatic(StorageTask_Run, "Storage", STORAGE_STACK_WORDS,
         NULL, STORAGE_PRIORITY, s_stack, &s_tcb);
