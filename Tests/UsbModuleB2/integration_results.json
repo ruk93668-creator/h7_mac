@@ -1,0 +1,219 @@
+{
+  "summary": {
+    "total": 19,
+    "passed": 19,
+    "failed": 0
+  },
+  "cases": [
+    {
+      "id": 0,
+      "name": "STOP before enumeration",
+      "pass": true,
+      "return": 0,
+      "failure_line": 0,
+      "actual": 0,
+      "expected": 0,
+      "error": null
+    },
+    {
+      "id": 1,
+      "name": "Configured without Commit/Alt1",
+      "pass": true,
+      "return": 0,
+      "failure_line": 0,
+      "actual": 0,
+      "expected": 0,
+      "error": null
+    },
+    {
+      "id": 2,
+      "name": "Real ISO EOF and Bridge Return",
+      "pass": true,
+      "return": 0,
+      "failure_line": 0,
+      "actual": 0,
+      "expected": 0,
+      "error": null
+    },
+    {
+      "id": 3,
+      "name": "STOP in flight waits for ACK",
+      "pass": true,
+      "return": 0,
+      "failure_line": 0,
+      "actual": 0,
+      "expected": 0,
+      "error": null
+    },
+    {
+      "id": 4,
+      "name": "Abort failure retains frame and retries",
+      "pass": true,
+      "return": 0,
+      "failure_line": 0,
+      "actual": 0,
+      "expected": 0,
+      "error": null
+    },
+    {
+      "id": 5,
+      "name": "Reset preserves business and returns frame",
+      "pass": true,
+      "return": 0,
+      "failure_line": 0,
+      "actual": 0,
+      "expected": 0,
+      "error": null
+    },
+    {
+      "id": 6,
+      "name": "Disconnect preserves business and returns frame",
+      "pass": true,
+      "return": 0,
+      "failure_line": 0,
+      "actual": 0,
+      "expected": 0,
+      "error": null
+    },
+    {
+      "id": 7,
+      "name": "Suspend Resume preserves loan",
+      "pass": true,
+      "return": 0,
+      "failure_line": 0,
+      "actual": 0,
+      "expected": 0,
+      "error": null
+    },
+    {
+      "id": 8,
+      "name": "DataIn only confirms in Task",
+      "pass": true,
+      "return": 0,
+      "failure_line": 0,
+      "actual": 0,
+      "expected": 0,
+      "error": null
+    },
+    {
+      "id": 9,
+      "name": "EP0 device descriptor",
+      "pass": true,
+      "return": 0,
+      "failure_line": 0,
+      "actual": 0,
+      "expected": 0,
+      "error": null
+    },
+    {
+      "id": 10,
+      "name": "EP0 STALL next SETUP recovery",
+      "pass": true,
+      "return": 0,
+      "failure_line": 0,
+      "actual": 0,
+      "expected": 0,
+      "error": null
+    },
+    {
+      "id": 11,
+      "name": "ISO Incomplete with failed Abort",
+      "pass": true,
+      "return": 0,
+      "failure_line": 0,
+      "actual": 0,
+      "expected": 0,
+      "error": null
+    },
+    {
+      "id": 12,
+      "name": "Return ACK queue full",
+      "pass": true,
+      "return": 0,
+      "failure_line": 0,
+      "actual": 0,
+      "expected": 0,
+      "error": null
+    },
+    {
+      "id": 13,
+      "name": "Hardware Stop failure retry",
+      "pass": true,
+      "return": 0,
+      "failure_line": 0,
+      "actual": 0,
+      "expected": 0,
+      "error": null
+    },
+    {
+      "id": 14,
+      "name": "Repeated STOP",
+      "pass": true,
+      "return": 0,
+      "failure_line": 0,
+      "actual": 0,
+      "expected": 0,
+      "error": null
+    },
+    {
+      "id": 15,
+      "name": "Real TEST enumeration",
+      "pass": true,
+      "return": 0,
+      "failure_line": 0,
+      "actual": 0,
+      "expected": 0,
+      "error": null
+    },
+    {
+      "id": 16,
+      "name": "NONE no physical connection",
+      "pass": true,
+      "return": 0,
+      "failure_line": 0,
+      "actual": 0,
+      "expected": 0,
+      "error": null
+    },
+    {
+      "id": 17,
+      "name": "Repeated START BUSY fault",
+      "pass": true,
+      "return": 0,
+      "failure_line": 0,
+      "actual": 0,
+      "expected": 0,
+      "error": null
+    },
+    {
+      "id": 18,
+      "name": "Mode enumeration timeout",
+      "pass": true,
+      "return": 0,
+      "failure_line": 0,
+      "actual": 0,
+      "expected": 0,
+      "error": null
+    }
+  ],
+  "hardware_verified": false,
+  "real_sources": [
+    "usb_task.c",
+    "app_usb.c",
+    "app_uvc_bridge.c",
+    "usb_mode.c",
+    "usb_device.c",
+    "usb_uvc_class.c",
+    "usb_uvc_desc.c",
+    "usb_uvc_payload.c",
+    "bsp_usb.c",
+    "ST USB Core"
+  ],
+  "mocked": [
+    "HAL hardware",
+    "message transport",
+    "RTOS environment",
+    "Media frames",
+    "Dispatcher/Storage boundary"
+  ]
+}

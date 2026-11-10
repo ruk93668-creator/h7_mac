@@ -1,0 +1,81 @@
+{
+  "targets": [
+    {
+      "target": "h7_mac_CM7",
+      "command": [
+        "D:/32/UV4/UV4.exe",
+        "-j0",
+        "-r",
+        "D:\\32\\STM32H7\\h7_mac\\MDK-ARM\\h7_mac.uvprojx",
+        "-t",
+        "h7_mac_CM7",
+        "-o",
+        "D:\\32\\STM32H7\\h7_mac\\output\\UsbModuleB2\\build\\h7_mac_CM7_rebuild.log"
+      ],
+      "exit": 0,
+      "errors": 0,
+      "warnings": 0,
+      "pass": true,
+      "artifacts": {
+        ".axf": "D:\\32\\STM32H7\\h7_mac\\MDK-ARM\\h7_mac_CM7\\h7_mac_CM7.axf",
+        ".hex": "D:\\32\\STM32H7\\h7_mac\\MDK-ARM\\h7_mac_CM7\\h7_mac_CM7.hex",
+        ".map": "D:\\32\\STM32H7\\h7_mac\\MDK-ARM\\h7_mac_CM7\\h7_mac_CM7.map"
+      },
+      "artifacts_exist": {
+        ".axf": true,
+        ".hex": false,
+        ".map": true
+      },
+      "log_sha256": "d6463e97620ece4df13c2521c5722110e7c01d44c1d94e1b8c54639363b6ba46",
+      "hex_enabled_in_unchanged_target": false,
+      "production_sha256": {
+        "CM7/Application/Tasks/usb_task.c": "23afd4161a8d4f020f1b7051e3f5993abdd4007b2e4c694571d62667e7fdb0a8",
+        "CM7/Application/app_usb.c": "9650f9c4451d48998a87ca82eec4c91ea9a3a834f76d8d60d0236d992b60329c",
+        "CM7/Application/app_usb.h": "1f817ecbc2e303e4d2d5dbfe71081af2425226d61bd051811713703317b4250d",
+        "MDK-ARM/h7_mac.uvprojx": "ddcd26bb4aaf34cf2609970a45d1408c3dbe8f4ba64cc536239bca17f0e9cd62"
+      },
+      "program_size": [
+        "Program Size: Code=136622 RO-data=3046 RW-data=1320 ZI-data=99152  "
+      ]
+    },
+    {
+      "target": "h7_mac_CM4",
+      "command": [
+        "D:/32/UV4/UV4.exe",
+        "-j0",
+        "-r",
+        "D:\\32\\STM32H7\\h7_mac\\MDK-ARM\\h7_mac.uvprojx",
+        "-t",
+        "h7_mac_CM4",
+        "-o",
+        "D:\\32\\STM32H7\\h7_mac\\output\\UsbModuleB2\\build\\h7_mac_CM4_rebuild.log"
+      ],
+      "exit": 0,
+      "errors": 0,
+      "warnings": 0,
+      "pass": true,
+      "artifacts": {
+        ".axf": "D:\\32\\STM32H7\\h7_mac\\MDK-ARM\\h7_mac_CM4\\h7_mac_CM4.axf",
+        ".hex": "D:\\32\\STM32H7\\h7_mac\\MDK-ARM\\h7_mac_CM4\\h7_mac_CM4.hex",
+        ".map": "D:\\32\\STM32H7\\h7_mac\\MDK-ARM\\h7_mac_CM4\\h7_mac_CM4.map"
+      },
+      "artifacts_exist": {
+        ".axf": true,
+        ".hex": true,
+        ".map": true
+      },
+      "log_sha256": "09107d5ec4a9961c966d28885e5a9170750f7383d79816029cd9c2e45ea0dd11",
+      "hex_enabled_in_unchanged_target": true,
+      "production_sha256": {
+        "CM7/Application/Tasks/usb_task.c": "23afd4161a8d4f020f1b7051e3f5993abdd4007b2e4c694571d62667e7fdb0a8",
+        "CM7/Application/app_usb.c": "9650f9c4451d48998a87ca82eec4c91ea9a3a834f76d8d60d0236d992b60329c",
+        "CM7/Application/app_usb.h": "1f817ecbc2e303e4d2d5dbfe71081af2425226d61bd051811713703317b4250d",
+        "MDK-ARM/h7_mac.uvprojx": "ddcd26bb4aaf34cf2609970a45d1408c3dbe8f4ba64cc536239bca17f0e9cd62"
+      },
+      "program_size": [
+        "Program Size: Code=26302 RO-data=1438 RW-data=936 ZI-data=3576  "
+      ]
+    }
+  ],
+  "project_unchanged": true
+}

@@ -3,6 +3,7 @@
 #include "app_status.h"
 #include "app_events.h"
 #include "app_messages.h"
+#include "app_usb.h"
 #include "app_uvc_bridge.h"
 #include "usb_mode.h"
 #include "usb_device.h"
@@ -27,33 +28,6 @@ static StackType_t s_usb_stack[USB_TASK_STACK_WORDS] __attribute__((aligned(8)))
 //保存唯一Usb任务句柄
 static TaskHandle_t s_usb_task;
 
-//记录本任务是否已启动USB
-static bool s_usb_started;
-
-//记录停止要求，失败时也禁止重新提交视频
-static bool s_usb_stopping;
-
-//记录停止命令是否仍在等待资源归还
-static bool s_usb_stop_command;
-
-//保留待交付的控制回复
-static AppMessage_t s_usb_ack;
-
-//记录ACK是否仍需入队
-static bool s_usb_ack_pending;
-
-//记录故障是否已通知Control
-static bool s_usb_fault_reported;
-
-//保存最近一次设备或停止故障
-static SysResult_t s_usb_fault;
-
-//保存EOF速率统计窗口
-static uint32_t s_usb_fps_tick;
-
-//保存窗口起点的累计EOF计数
-static uint32_t s_usb_fps_frames;
-
 //记录任务状态和设备侧EOF速率
 volatile UsbTaskDebug_t g_usb_task_debug;
 
@@ -69,6 +43,11 @@ static void UsbTask_PublishStatus(void);
 //重试交付ACK和故障通知
 static void UsbTask_Reply(void);
 
+//只投影业务指定的Debug字段，不修改USB业务
+static void UsbTask_Observe(AppUsbDiagnosticField_t field,
+    const AppUsbRuntimeStatus_t *status);
+
+//创建并登记唯一静态Usb任务
 SysResult_t UsbTask_Create(void)
 {
 
@@ -103,6 +82,9 @@ static void UsbTask_Run(void *argument)
     SysResult_t result;
     (void)argument;
 
+    //观察者只更新诊断投影，BOOT和等待异常仍由Task维护
+    App_USBSetDiagnosticObserver(UsbTask_Observe);
+
     for (;;)
     {
 
@@ -136,10 +118,8 @@ static void UsbTask_Run(void *argument)
 static void UsbTask_Process(uint32_t events)
 {
     AppMessage_t command;
-    UsbUvcStreamStatus_t status;
-    SysResult_t result;
     bool uvc;
-    uint32_t now, elapsed, frames, total, sof, gap;
+    uint32_t sof, gap;
 
     if (!App_MessagesIsOwner(RUNTIME_TARGET_USB))
         return;
@@ -160,123 +140,48 @@ static void UsbTask_Process(uint32_t events)
     UsbTask_Reply();
     uvc = USB_Mode_GetMode() == USB_MODE_UVC;
 
-    if (!s_usb_ack_pending && !s_usb_stop_command &&
+    //ACK和STOP未完成时不接收下一条，每轮仍只接收一条命令
+    if (App_USBCanAcceptCommand() &&
         App_MessagesReceive(APP_CHANNEL_USB_COMMAND, &command))
-    {
-        s_usb_ack = command;
-        s_usb_ack.type = APP_MESSAGE_ACK;
-        s_usb_ack.source = RUNTIME_TARGET_USB;
-        s_usb_ack.result = SYS_ERR_INVALID_ARG;
-        g_usb_task_debug.command_id = command.command_id;
-        if (command.type == APP_MESSAGE_START)
-        {
-            result = s_usb_started || s_usb_stopping ? SYS_ERR_BUSY : USB_Mode_Start();
-            if (result == SYS_OK)
-            {
-                s_usb_started = true;
-                s_usb_fault = SYS_OK;
-                s_usb_fault_reported = false;
-                s_usb_fps_tick = Platform_TimeGetMs();
-                s_usb_fps_frames = USB_UVC_GetCompletedFrameCount();
-            }
-            if (result != SYS_OK)
-                s_usb_fault = result;
-            s_usb_ack.result = result;
-            s_usb_ack_pending = true;
-            g_usb_task_debug.result = result;
-        }
-        else if (command.type == APP_MESSAGE_STOP)
-        {
+        App_USBHandleCommand(&command);
 
-            //先关提交入口，后续只推进取消、Return和ACK
-            s_usb_stopping = true;
-            s_usb_stop_command = true;
-        }
-        else
-            s_usb_ack_pending = true;
-    }
-
-    if (s_usb_started && !s_usb_stopping)
-    {
-        USB_Mode_Process();
-        result = USB_Mode_GetLastResult();
-        if (result != SYS_OK)
-        {
-            s_usb_fault = result;
-            s_usb_stopping = true;
-            g_usb_task_debug.result = result;
-        }
-    }
+    //这里只推进原模式流程，不把UVC或Bridge隐藏进业务Process
+    App_USBProcess();
     if (uvc)
     {
-        if (s_usb_stopping)
+        if (App_USBIsStopping())
             (void)USB_UVC_CancelFrame();
 
-        //所有任务侧UVC操作都在UsbTask；ISR仍同步处理EP0和保存Token
+        //保持Cancel、Process、Bridge、再次Process的原顺序
         USB_UVC_Process();
-        App_UvcBridgeUsbProcess(s_usb_started && !s_usb_stopping);
+        App_UvcBridgeUsbProcess(App_USBCanTransfer());
 
-        if (s_usb_stopping)
+        if (App_USBIsStopping())
             USB_UVC_Process();
     }
-    if (s_usb_stopping)
-    {
-        result = SYS_ERR_BUSY;
-        if (App_UvcBridgeUsbIsIdle())
-            result = USB_Mode_Stop();
-        else if (uvc && USB_UVC_GetStreamStatus(&status) == SYS_OK &&
-            status.frame_owned && status.state == USB_UVC_RECOVERY && status.result != SYS_OK)
-            result = status.result;
 
-        //Abort失败时仍保留原帧和停止要求，只返回失败ACK，不伪造已停
-        if (result == SYS_OK)
-        {
-            s_usb_started = false;
-            s_usb_stopping = false;
-        }
-        if (s_usb_stop_command && result != SYS_ERR_BUSY)
-        {
-            s_usb_ack.result = result;
-            s_usb_ack_pending = true;
-            s_usb_stop_command = false;
-            g_usb_task_debug.result = result;
-        }
-        if (result != SYS_OK && result != SYS_ERR_BUSY && s_usb_fault == SYS_OK)
-            s_usb_fault = result;
-    }
-    g_usb_task_debug.state = s_usb_stopping ? 2U : (s_usb_started ? 1U : 0U);
-    total = USB_UVC_GetCompletedFrameCount();
-    g_usb_task_debug.completed_frames = total;
-    now = Platform_TimeGetMs();
-    elapsed = now - s_usb_fps_tick;
-    if (elapsed >= 1000U)
-    {
-        frames = total - s_usb_fps_frames;
-        g_usb_task_debug.measured_fps_milli = frames <= 4294U ? frames * 1000000U / elapsed : 0U;
-        s_usb_fps_tick = now;
-        s_usb_fps_frames = total;
-    }
+    //归还处理后才判断停止完成，并按原时点更新EOF及FPS
+    App_USBFinishRound(uvc);
     UsbTask_Reply();
 }
 
-//重试交付ACK和故障通知
+//重试独立的ACK和FAULT，不把ACK失败当作跳过FAULT的条件
 static void UsbTask_Reply(void)
 {
-    AppMessage_t message = {.type = APP_MESSAGE_FAULT};
+    AppMessage_t message;
 
-    if (s_usb_ack_pending && App_MessagesSend(APP_CHANNEL_CONTROL, &s_usb_ack) == SYS_OK)
-        s_usb_ack_pending = false;
-    if (s_usb_fault != SYS_OK && !s_usb_fault_reported)
-    {
-        message.type = APP_MESSAGE_FAULT;
-        message.source = RUNTIME_TARGET_USB;
-        message.result = s_usb_fault;
-        if (App_MessagesSend(APP_CHANNEL_CONTROL, &message) == SYS_OK)
-            s_usb_fault_reported = true;
-    }
+    //只有成功入队才能确认ACK，失败时保留原记录
+    if (App_USBGetPendingAck(&message) &&
+        App_MessagesSend(APP_CHANNEL_CONTROL, &message) == SYS_OK)
+        App_USBConfirmAckEnqueued();
+
+    //FAULT始终独立尝试，成功入队不代表Control已经处理
+    if (App_USBGetPendingFault(&message) &&
+        App_MessagesSend(APP_CHANNEL_CONTROL, &message) == SYS_OK)
+        App_USBConfirmFaultEnqueued();
 }
 
-//提交USB实际完成统计，端点和UVC生命周期保持原样
+//提交原Debug口径的USB统计，保留App_Status发布位置
 static void UsbTask_PublishStatus(void)
 {
     AppUsbStatus_t status;
@@ -286,4 +191,30 @@ static void UsbTask_PublishStatus(void)
     status.completed_frames = g_usb_task_debug.completed_frames;
     status.result = g_usb_task_debug.result;
     (void)App_StatusPublishUsb(&status);
+}
+
+//仅投影本次指定字段，禁止根据Debug反向推进USB业务
+static void UsbTask_Observe(AppUsbDiagnosticField_t field,
+    const AppUsbRuntimeStatus_t *status)
+{
+    switch (field)
+    {
+        case APP_USB_DIAG_COMMAND:
+            g_usb_task_debug.command_id = status->command_id;
+            break;
+        case APP_USB_DIAG_RESULT:
+            g_usb_task_debug.result = status->last_result;
+            break;
+        case APP_USB_DIAG_STATE:
+            g_usb_task_debug.state = status->state;
+            break;
+        case APP_USB_DIAG_COMPLETED:
+            g_usb_task_debug.completed_frames = status->completed_frames;
+            break;
+        case APP_USB_DIAG_FPS:
+            g_usb_task_debug.measured_fps_milli = status->measured_fps_milli;
+            break;
+        default:
+            break;
+    }
 }

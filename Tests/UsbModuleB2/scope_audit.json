@@ -1,0 +1,60 @@
+{
+  "baseline": "8bfa9bc4316c0faaceef65bc90fbe84d03eae55f",
+  "checks": {
+    "UsbTask_Create_retained": true,
+    "UsbTask_Run_retained": true,
+    "UsbTask_PublishStatus_retained": true,
+    "SOF_observation_retained": true,
+    "command_statements_moved_exactly": true,
+    "mode_statements_moved_exactly": true,
+    "FinishRound_statements_moved_exactly": true,
+    "explicit_data_plane_retained": true,
+    "no_data_plane_hidden_in_finish": true,
+    "no_freertos_calls_in_business": true,
+    "USB_TASK_STACK_WORDS_retained": true,
+    "USB_TASK_PRIORITY_retained": true,
+    "USB_TASK_WAIT_MS_retained": true,
+    "USB_TASK_STACK_SAMPLE_MS_retained": true,
+    "CM4_project_prefix_unchanged": true,
+    "app_usb.c_registered_once": true,
+    "app_usb.h_registered_once": true,
+    "project_only_adds_CM7_entries": true,
+    "production_scope_exact": true,
+    "historical_tests_unchanged": true,
+    "main_not_modified": true,
+    "frozen_modules_byte_identical": true
+  },
+  "production_sha256": {
+    "CM7/Application/Tasks/usb_task.c": "23afd4161a8d4f020f1b7051e3f5993abdd4007b2e4c694571d62667e7fdb0a8",
+    "CM7/Application/app_usb.c": "9650f9c4451d48998a87ca82eec4c91ea9a3a834f76d8d60d0236d992b60329c",
+    "CM7/Application/app_usb.h": "1f817ecbc2e303e4d2d5dbfe71081af2425226d61bd051811713703317b4250d",
+    "MDK-ARM/h7_mac.uvprojx": "ddcd26bb4aaf34cf2609970a45d1408c3dbe8f4ba64cc536239bca17f0e9cd62"
+  },
+  "frozen_sha256": {
+    "CM7/Service/usb_mode.c": "e06dd3c918ccecbb361f0b1ffd27480cfbdd1203190a428b6f7dbe701f2163ea",
+    "CM7/Service/usb_mode.h": "e2153ec5d162057a1f51bea6e0346debbfb9fabe1c628bb0cc7303367f624be0",
+    "CM7/Platform/usb_device.c": "55d22c4d056da01e6910cae440dc21fdc7ca279db152af878808539fa96eb6e5",
+    "CM7/Platform/usb_device.h": "a42adbfb423fea50ffd105690d6914199aeb9257dc97d3e55f7df5b69220c465",
+    "CM7/Service/usb_uvc_class.c": "a3bd3d84b6a4bfa5234bd71aaafdef2e58b0bcc1f711a9620a51a7848823ade3",
+    "CM7/Service/usb_uvc.h": "535f5f615365328ae5d921022e396eddbcaf35b600f3526e534cb5bc1fafe6b7",
+    "CM7/Service/usb_uvc_desc.c": "35bd71fb7611eb9031dfe79a504a65e687e52f5ff8f33385cdfd8eb496947178",
+    "CM7/Service/usb_uvc_desc.h": "6be5f452c3530defbfde48f4ca94e8ead436b21d7d76b4873e06a6ae9c5d2ec3",
+    "CM7/Service/usb_uvc_payload.c": "05ac143e5b61c662007efc3565d840080bbf26c991eff4650bf199a78c08aab6",
+    "CM7/Service/usb_uvc_payload.h": "d370a5f2c11af38c5b0a80cd20365977842864e0cece0a5526a2807b45525187",
+    "CM7/Application/app_uvc_bridge.c": "363856a288d9ec9ee57f6f4aa5b200ec655358c77fa843f93aa0727ecd097e90",
+    "CM7/Application/app_uvc_bridge.h": "029564ee4f96c63b9d1e7207a07f636be9c6a06a241da543fd57312481948d12",
+    "CM7/Application/app_messages.c": "e224bc885ba6c1ceeb28693a65da529747e585f3f54480a4a23bdc3d71584c46",
+    "CM7/Application/app_messages.h": "49139698c67a37d2e0a787e3e19042f55fafffb0eb263c1fd5745b6723dfb69b",
+    "CM7/Application/app_events.c": "e91a65738b3c2b7ff2e253c4b34462dc5ea7538c73f62ebd0f4089cbb74fe5dd",
+    "CM7/Application/app_events.h": "4c2f458cd21ff3d2711f533e8f52a25e031838b5a79fcf08ba77ec2fd3671403",
+    "CM7/Application/Tasks/usb_task.h": "6e68addb15877d09b4757bc9d0e36b995ccf077ba2ae1d52e9e9711927c31140"
+  },
+  "changed_production_files": [
+    "CM7/Application/Tasks/usb_task.c",
+    "CM7/Application/app_usb.c",
+    "CM7/Application/app_usb.h",
+    "MDK-ARM/h7_mac.uvprojx"
+  ],
+  "historical_changes": [],
+  "note": "Pre-merge static scope/mapping audit, not a hardware or runtime test."
+}

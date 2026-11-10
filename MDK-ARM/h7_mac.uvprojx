@@ -4916,6 +4916,16 @@
               <FilePath>../CM7/Application/Tasks/control_task.h</FilePath>
             </File>
             <File>
+              <FileName>app_usb.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>../CM7/Application/app_usb.c</FilePath>
+            </File>
+            <File>
+              <FileName>app_usb.h</FileName>
+              <FileType>5</FileType>
+              <FilePath>../CM7/Application/app_usb.h</FilePath>
+            </File>
+            <File>
               <FileName>app_status.c</FileName>
               <FileType>1</FileType>
               <FilePath>../CM7/Application/app_status.c</FilePath>
