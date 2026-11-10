@@ -1,5 +1,7 @@
 //SDMMC1只负责低速1-bit识卡与诊断，不接文件系统或视频链路
 #include "bsp_sdmmc.h"
+#include "bsp_sdram.h"
+#include "bsp_sd_copy_debug.h"
 #include "stm32h7xx_hal.h"
 #include <stddef.h>
 #include <string.h>
@@ -9,6 +11,18 @@
 
 //首版初始化及识卡完成后都保持不高于400kHz
 #define SDMMC_TARGET_HZ 400000UL
+
+//临时对照实验：每次只复制8KiB，不改变32KiB的IDMA批量
+#define SDMMC_COPY_CHUNK_BYTES 8192U
+
+//设为0可对照无间隔分段复制；当前先验证段间等待至少1ms
+#ifndef SDMMC_COPY_GAP_MS
+#define SDMMC_COPY_GAP_MS 1U
+#endif
+
+#if SDMMC_COPY_GAP_MS > 1U
+#error SDMMC_COPY_GAP_MS_must_be_zero_or_one
+#endif
 
 //保存SDMMC1私有HAL句柄，不向Application公开
 static SD_HandleTypeDef s_sd;
@@ -31,6 +45,9 @@ static BspSdmmcWaitOps_t s_wait_ops;
 //记录块事务、原始错误和恢复结果
 static BspSdmmcIoDiagnostics_t s_io;
 
+//临时保存复制阶段和首次DCMI故障，不参与任何资源状态决策
+volatile BspSdCopyDebug_t g_sd_copy_debug;
+
 //IRQ只锁存硬件状态，任务侧调用HAL处理终止事件
 static volatile uint32_t s_irq_status;
 
@@ -50,6 +67,13 @@ static SysResult_t Sdmmc_Transfer(uint32_t lba, uint32_t count, void *buffer,
 
 //验证调用者CPU缓冲区及长度，排除专用DMA区域和地址回绕
 static bool Sdmmc_CpuBufferValid(const void *buffer, uint32_t bytes, bool write);
+
+//分段准备AXI写缓冲，保持原请求截止时间和源数据所有权
+static SysResult_t Sdmmc_CopyToAxi(const uint8_t *source, uint32_t bytes,
+    uint32_t started, uint32_t timeout_ms);
+
+//只标记并执行一次复制，不改变中断开关或段间等待
+static void Sdmmc_CopyMarked(uint8_t *destination, const uint8_t *source, uint32_t bytes);
 
 //处理终止事件并等待卡返回TRANSFER
 static SysResult_t Sdmmc_WaitBatch(uint32_t started, uint32_t timeout_ms);
@@ -790,12 +814,207 @@ static bool Sdmmc_CpuBufferValid(const void *buffer, uint32_t bytes, bool write)
     valid = (address >= 0x20000000UL && end < 0x20020000UL) ||
         (address >= 0x24008000UL && end < 0x24080000UL) ||
         (address >= 0x30000000UL && end < 0x30048000UL) ||
-        (address >= 0xD0000000UL && end < 0xD0400000UL);
+        //CPU可读写范围随MPU业务窗口变化，不能继续写死旧4MiB上限
+        (address >= BSP_SDRAM_BASE && end < BSP_SDRAM_END);
 
     //写卡允许从Flash读取常量，读卡不能把Flash当作可写目的区
     if (write && address >= 0x08000000UL && end < 0x08200000UL)
         valid = true;
     return valid;
+}
+
+//锁存首次DCMI错误时的复制现场
+void BSP_SDMMC_CaptureCopyFault(int32_t result, uint32_t dma_error)
+{
+    uint32_t mask = __get_PRIMASK();
+    uint32_t sequence;
+
+    //只在首次错误捕获短暂屏蔽中断，避免嵌套错误覆盖半份现场
+    __disable_irq();
+    if (g_sd_copy_debug.fault.state != 0U)
+    {
+        __set_PRIMASK(mask);
+        return;
+    }
+    g_sd_copy_debug.fault.state = 1U;
+    __DMB();
+
+    //复制标记尚未提交时明确记为不一致，不把半更新地址当成证据
+    sequence = g_sd_copy_debug.live.sequence;
+    g_sd_copy_debug.fault.copy_consistent = (sequence & 1U) == 0U ? 1U : 0U;
+    g_sd_copy_debug.fault.copy_active = g_sd_copy_debug.live.active;
+    g_sd_copy_debug.fault.sequence = sequence;
+    g_sd_copy_debug.fault.source = g_sd_copy_debug.live.source;
+    g_sd_copy_debug.fault.destination = g_sd_copy_debug.live.destination;
+    g_sd_copy_debug.fault.bytes = g_sd_copy_debug.live.bytes;
+    g_sd_copy_debug.fault.dma_lisr_before = g_sd_copy_debug.live.dma_lisr_before;
+
+    //只读取状态，不清中断、不停止DMA，也不改变原错误处理顺序
+    g_sd_copy_debug.fault.dma_lisr_fault = DMA1->LISR;
+    g_sd_copy_debug.fault.dma_error = dma_error;
+    g_sd_copy_debug.fault.dma_cr = DMA1_Stream0->CR;
+    g_sd_copy_debug.fault.dma_fcr = DMA1_Stream0->FCR;
+    g_sd_copy_debug.fault.dma_ndtr = DMA1_Stream0->NDTR;
+    g_sd_copy_debug.fault.dcmi_risr = DCMI->RISR;
+    g_sd_copy_debug.fault.sd_idmactrl = SDMMC1->IDMACTRL;
+    g_sd_copy_debug.fault.sd_idmabase0 = SDMMC1->IDMABASE0;
+    g_sd_copy_debug.fault.result = result;
+
+    //最后提交完成标记，主循环继续运行也不会覆盖本次首次现场
+    __DMB();
+    g_sd_copy_debug.fault.state = 2U;
+    __set_PRIMASK(mask);
+}
+
+//标记本段复制的源地址、目标地址及长度
+static void Sdmmc_CopyMarked(uint8_t *destination, const uint8_t *source, uint32_t bytes)
+{
+    //volatile限定实际字节访问，禁止编译器合并为宽访问或库函数复制
+    const volatile uint8_t *read_byte = source;
+    volatile uint8_t *write_byte = destination;
+    uint32_t index;
+
+    //先宣布标记更新中，IRQ若在此打断会得到copy_consistent为0的现场
+    g_sd_copy_debug.live.sequence++;
+    __DMB();
+    g_sd_copy_debug.live.active = 0U;
+    g_sd_copy_debug.live.source = (uint32_t)source;
+    g_sd_copy_debug.live.destination = (uint32_t)destination;
+    g_sd_copy_debug.live.bytes = bytes;
+    g_sd_copy_debug.live.dma_lisr_before = DMA1->LISR;
+    g_sd_copy_debug.live.active = 1U;
+
+    //标记完整后才开始复制，不为复制过程屏蔽中断
+    __DMB();
+    g_sd_copy_debug.live.sequence++;
+    __DMB();
+    if ((uint32_t)source >= BSP_SDRAM_BASE && (uint32_t)source < BSP_SDRAM_END &&
+        bytes <= BSP_SDRAM_END - (uint32_t)source)
+    {
+
+        //本轮只改变SDRAM到AXI的访问方式，8KiB分段和段间等待仍由外层控制
+        for (index = 0U; index < bytes; index++)
+            write_byte[index] = read_byte[index];
+    }
+    else
+    {
+
+        //文件头等内部RAM来源继续使用原memcpy，避免改变其他复制路径
+        memcpy(destination, source, bytes);
+    }
+
+    //离开复制区间后保留上一段地址，但active不再表示正在复制
+    __DMB();
+    g_sd_copy_debug.live.active = 0U;
+    __DMB();
+}
+
+//准备交给文件系统的小块输入数据
+SysResult_t BSP_SDMMC_PrepareWriteInput(void *destination, const void *source, uint32_t bytes)
+{
+#if SDMMC_COPY_GAP_MS != 0U
+    uint32_t started, elapsed, waits = 0U;
+    SysResult_t result;
+#endif
+
+    //独立输入缓冲不能与源或私有IDMA缓冲重叠，也不能越过已映射内存
+    if (bytes == 0U || bytes > SDMMC_COPY_CHUNK_BYTES ||
+        !Sdmmc_CpuBufferValid(source, bytes, true) ||
+        !Sdmmc_CpuBufferValid(destination, bytes, false))
+        return SYS_ERR_INVALID_ARG;
+    if ((uint32_t)source <= (uint32_t)destination + bytes - 1U &&
+        (uint32_t)destination <= (uint32_t)source + bytes - 1U)
+        return SYS_ERR_INVALID_ARG;
+
+    //文件系统已持有任务侧所有权，复制仍要求可阻塞环境且IDMA已经停止
+    if (!Sdmmc_CanInit() || s_wait_ops.can_wait == NULL ||
+        !s_wait_ops.can_wait(s_wait_ops.context))
+        return SYS_ERR_INVALID_STATE;
+    if (s_busy || s_io.active != 0U || !Sdmmc_Quiescent())
+        return SYS_ERR_BUSY;
+
+#if SDMMC_COPY_GAP_MS != 0U
+
+    //只为SDRAM输入保留1ms间隔，内部RAM的文件头不额外等待
+    if ((uint32_t)source >= BSP_SDRAM_BASE && (uint32_t)source < BSP_SDRAM_END)
+    {
+        started = HAL_GetTick();
+        while ((elapsed = HAL_GetTick() - started) < SDMMC_COPY_GAP_MS)
+        {
+
+            //残留通知不代表间隔已到，有限重试避免时钟异常时空转
+            if (waits++ >= 16U)
+                return SYS_ERR_TIMEOUT;
+            result = s_wait_ops.wait(s_wait_ops.context, SDMMC_COPY_GAP_MS - elapsed);
+            if (result != SYS_OK && result != SYS_ERR_TIMEOUT)
+                return result;
+        }
+    }
+#endif
+
+    //继续使用同一份首次故障标记，SDRAM读取实际执行逐字节访问
+    Sdmmc_CopyMarked(destination, source, bytes);
+    return SYS_OK;
+}
+
+//分段复制SDRAM数据到AXI缓冲
+static SysResult_t Sdmmc_CopyToAxi(const uint8_t *source, uint32_t bytes,
+    uint32_t started, uint32_t timeout_ms)
+{
+    uint32_t copied = 0U, amount;
+#if SDMMC_COPY_GAP_MS != 0U
+    uint32_t gap_started, elapsed, waits;
+    SysResult_t result;
+#endif
+
+    //内部调用仍核对容量，防止分段时写出专用AXI缓冲
+    if (source == NULL || bytes == 0U || bytes > BSP_SDMMC_DMA_BYTES)
+        return SYS_ERR_INVALID_ARG;
+
+    //只有SDRAM源参加实验，文件头等内部RAM数据保持原复制方式
+    if ((uint32_t)source < BSP_SDRAM_BASE || (uint32_t)source >= BSP_SDRAM_END ||
+        bytes > BSP_SDRAM_END - (uint32_t)source)
+    {
+        Sdmmc_CopyMarked(g_sdmmc_dma_buffer, source, bytes);
+        return SYS_OK;
+    }
+
+    while (copied < bytes)
+    {
+
+        //复制和段间等待都使用原请求的总超时，不重新计算截止时间
+        if (HAL_GetTick() - started >= timeout_ms)
+            return SYS_ERR_TIMEOUT;
+        amount = bytes - copied;
+        if (amount > SDMMC_COPY_CHUNK_BYTES)
+            amount = SDMMC_COPY_CHUNK_BYTES;
+        Sdmmc_CopyMarked(g_sdmmc_dma_buffer + copied, source + copied, amount);
+        copied += amount;
+
+#if SDMMC_COPY_GAP_MS != 0U
+
+        //最后一段后直接交给IDMA，不额外增加一轮等待
+        if (copied == bytes)
+            break;
+        gap_started = HAL_GetTick();
+        waits = 0U;
+        while ((elapsed = HAL_GetTick() - gap_started) < SDMMC_COPY_GAP_MS)
+        {
+
+            //残留通知可能立即返回，继续等到本地Tick确认已间隔1ms
+            if (HAL_GetTick() - started >= timeout_ms || waits++ >= 16U)
+                return SYS_ERR_TIMEOUT;
+            result = s_wait_ops.wait(s_wait_ops.context, SDMMC_COPY_GAP_MS - elapsed);
+
+            //正常唤醒和等待到期都可继续，其他等待错误保留原始结果
+            if (result != SYS_OK && result != SYS_ERR_TIMEOUT)
+                return result;
+        }
+#endif
+    }
+
+    //总超时已经到期时禁止再启动新的IDMA批次
+    return HAL_GetTick() - started >= timeout_ms ? SYS_ERR_TIMEOUT : SYS_OK;
 }
 
 //确认本次IDMA已不再访问AXI缓冲区
@@ -1004,7 +1223,14 @@ static SysResult_t Sdmmc_Transfer(uint32_t lba, uint32_t count, void *buffer,
         blocks = count - done > BSP_SDMMC_DMA_BLOCKS ? BSP_SDMMC_DMA_BLOCKS : count - done;
         bytes = blocks * BSP_SDMMC_BLOCK_SIZE;
         if (write)
-            memcpy(g_sdmmc_dma_buffer, (const uint8_t *)buffer + done * BSP_SDMMC_BLOCK_SIZE, bytes);
+        {
+
+            //仅调整SDRAM复制节奏，必须整批准备完毕后才启动原IDMA传输
+            result = Sdmmc_CopyToAxi((const uint8_t *)buffer + done * BSP_SDMMC_BLOCK_SIZE,
+                bytes, started, timeout_ms);
+            if (result != SYS_OK)
+                break;
+        }
 
         //CPU准备完成后建立本批状态，清除旧事件再交给IDMA
         primask = __get_PRIMASK();

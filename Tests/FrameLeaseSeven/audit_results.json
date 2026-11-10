@@ -1,0 +1,67 @@
+{
+  "baseline": "554a1b339cb51f41f7634ca3b93bea280415811b",
+  "total": 15,
+  "passed": 15,
+  "checks": {
+    "hardware_and_protocol_sources_unchanged": true,
+    "only_sdram_header_in_bsp": true,
+    "only_mpu_file_in_core": true,
+    "user_project_configuration_unchanged": true,
+    "no_image_copy_or_scan_in_offer": true,
+    "copy_pool_removed": true,
+    "single_sd_descriptor": true,
+    "media_leases_seven": true,
+    "latest_frame_policy_tested": true,
+    "formal_axi_idma_unchanged": true,
+    "formal_ipc_layout_unchanged": true,
+    "actual_elf_fifo_addresses": true,
+    "layout_disjoint": true,
+    "heartbeat_100_timeout_1000": true,
+    "business_freshness_unchanged": true
+  },
+  "compiled_fifo_addresses": [
+    "0xd0480000",
+    "0xd057c000"
+  ],
+  "compiled_evidence": "MDK-ARM\\h7_mac_CM7\\h7_mac_CM7.axf",
+  "settings_before": {
+    "MDK-ARM\\h7_mac.uvprojx": "708827df17d8f0ef8bb368f60661464a38c62016730b902b03e28d2c08327c17",
+    "MDK-ARM\\h7_mac.uvoptx": "910e87e6b4343a861d63ceace24c7f38ff8c3f67cd5df2b38006d67b5743a8ab"
+  },
+  "settings_now": {
+    "MDK-ARM\\h7_mac.uvprojx": "708827df17d8f0ef8bb368f60661464a38c62016730b902b03e28d2c08327c17",
+    "MDK-ARM\\h7_mac.uvoptx": "50be37f87c55dbaf217d69dd0b53df4d61ee3741d3d8ce75ca938c104646d3ae"
+  },
+  "debug_options_changed": true,
+  "settings_restored": false,
+  "formal_builds_clean": true,
+  "formal_sources_match": true,
+  "formal_build_results": [
+    {
+      "target": "h7_mac_CM7",
+      "command": "D:/32/UV4/UV4.exe -j0 -r D:\\32\\STM32H7\\h7_stage08d\\MDK-ARM\\h7_mac.uvprojx -t h7_mac_CM7 -o D:\\32\\STM32H7\\h7_stage08d\\Tests\\FrameLeaseSeven\\h7_mac_CM7_rebuild.log",
+      "exit_code": 0,
+      "errors": 0,
+      "warnings": 0,
+      "source_fingerprint_before": "ce40f493caa401808c83cf16ba040c4814c07b6127f18e8f65f84781835882e1",
+      "source_fingerprint_after": "ce40f493caa401808c83cf16ba040c4814c07b6127f18e8f65f84781835882e1",
+      "project_sha_before": "708827df17d8f0ef8bb368f60661464a38c62016730b902b03e28d2c08327c17",
+      "project_sha_after": "708827df17d8f0ef8bb368f60661464a38c62016730b902b03e28d2c08327c17",
+      "passed": true
+    },
+    {
+      "target": "h7_mac_CM4",
+      "command": "D:/32/UV4/UV4.exe -j0 -r D:\\32\\STM32H7\\h7_stage08d\\MDK-ARM\\h7_mac.uvprojx -t h7_mac_CM4 -o D:\\32\\STM32H7\\h7_stage08d\\Tests\\FrameLeaseSeven\\h7_mac_CM4_rebuild.log",
+      "exit_code": 0,
+      "errors": 0,
+      "warnings": 0,
+      "source_fingerprint_before": "ce40f493caa401808c83cf16ba040c4814c07b6127f18e8f65f84781835882e1",
+      "source_fingerprint_after": "ce40f493caa401808c83cf16ba040c4814c07b6127f18e8f65f84781835882e1",
+      "project_sha_before": "708827df17d8f0ef8bb368f60661464a38c62016730b902b03e28d2c08327c17",
+      "project_sha_after": "708827df17d8f0ef8bb368f60661464a38c62016730b902b03e28d2c08327c17",
+      "passed": true
+    }
+  ],
+  "source_sha256": "ce40f493caa401808c83cf16ba040c4814c07b6127f18e8f65f84781835882e1",
+  "hardware_verified": false
+}

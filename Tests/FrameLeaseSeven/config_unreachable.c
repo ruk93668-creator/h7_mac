@@ -1,0 +1,25 @@
+//硬件操作在配置校验用例中必须不可达；若调用则独立计数并使测试失败
+volatile unsigned unexpected_hardware;
+int BSP_Camera_Init(void){unexpected_hardware++;return -7;}
+int BSP_Camera_ReadReg(void){unexpected_hardware++;return -7;}
+int BSP_Camera_WriteReg(void){unexpected_hardware++;return -7;}
+int OV5640_ColorbarModeConfig(void){unexpected_hardware++;return -7;}
+int OV5640_Init(void){unexpected_hardware++;return -7;}
+int OV5640_RegisterBusIO(void){unexpected_hardware++;return -7;}
+int OV5640_SetPCLK(void){unexpected_hardware++;return -7;}
+int OV5640_Start(void){unexpected_hardware++;return -7;}
+int OV5640_Stop(void){unexpected_hardware++;return -7;}
+int BSP_DCMI_ProcessJpeg(void){unexpected_hardware++;return -7;}
+int BSP_DCMI_ReplaceTarget(void){unexpected_hardware++;return -7;}
+int BSP_DCMI_StartContinuous(void){unexpected_hardware++;return -7;}
+int BSP_DCMI_StartJpegSnapshot(void){unexpected_hardware++;return -7;}
+int BSP_DCMI_StartSnapshot(void){unexpected_hardware++;return -7;}
+int BSP_DCMI_Stop(void){unexpected_hardware++;return -7;}
+int BSP_DCMI_TakeEvents(void){unexpected_hardware++;return -7;}
+int CameraMjpegFifo_GetFrame(void){unexpected_hardware++;return -7;}
+int CameraMjpegFifo_GetStats(void){unexpected_hardware++;return -7;}
+int CameraMjpegFifo_HasLoan(void){unexpected_hardware++;return -7;}
+int CameraMjpegFifo_OnStopped(void){unexpected_hardware++;return -7;}
+int CameraMjpegFifo_Process(void){unexpected_hardware++;return -7;}
+int CameraMjpegFifo_ReleaseFrame(void){unexpected_hardware++;return -7;}
+int CameraMjpegFifo_Start(void){unexpected_hardware++;return -7;}

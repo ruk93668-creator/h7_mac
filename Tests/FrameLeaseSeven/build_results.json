@@ -1,0 +1,26 @@
+[
+  {
+    "target": "h7_mac_CM7",
+    "command": "D:/32/UV4/UV4.exe -j0 -r D:\\32\\STM32H7\\h7_stage08d\\MDK-ARM\\h7_mac.uvprojx -t h7_mac_CM7 -o D:\\32\\STM32H7\\h7_stage08d\\Tests\\FrameLeaseSeven\\h7_mac_CM7_rebuild.log",
+    "exit_code": 0,
+    "errors": 0,
+    "warnings": 0,
+    "source_fingerprint_before": "0b118681399e354843680d6c39fe5ea450b2ae55a2c629f4f5bd2a5c58c6f8cd",
+    "source_fingerprint_after": "0b118681399e354843680d6c39fe5ea450b2ae55a2c629f4f5bd2a5c58c6f8cd",
+    "project_sha_before": "708827df17d8f0ef8bb368f60661464a38c62016730b902b03e28d2c08327c17",
+    "project_sha_after": "708827df17d8f0ef8bb368f60661464a38c62016730b902b03e28d2c08327c17",
+    "passed": true
+  },
+  {
+    "target": "h7_mac_CM4",
+    "command": "D:/32/UV4/UV4.exe -j0 -r D:\\32\\STM32H7\\h7_stage08d\\MDK-ARM\\h7_mac.uvprojx -t h7_mac_CM4 -o D:\\32\\STM32H7\\h7_stage08d\\Tests\\FrameLeaseSeven\\h7_mac_CM4_rebuild.log",
+    "exit_code": 0,
+    "errors": 0,
+    "warnings": 0,
+    "source_fingerprint_before": "0b118681399e354843680d6c39fe5ea450b2ae55a2c629f4f5bd2a5c58c6f8cd",
+    "source_fingerprint_after": "0b118681399e354843680d6c39fe5ea450b2ae55a2c629f4f5bd2a5c58c6f8cd",
+    "project_sha_before": "708827df17d8f0ef8bb368f60661464a38c62016730b902b03e28d2c08327c17",
+    "project_sha_after": "708827df17d8f0ef8bb368f60661464a38c62016730b902b03e28d2c08327c17",
+    "passed": true
+  }
+]

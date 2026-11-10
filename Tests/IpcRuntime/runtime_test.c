@@ -195,9 +195,9 @@ int IpcRuntime_TestRun(uint32_t id)
         PeerHeartbeat(18U);
         CHECK(IPC_Runtime_Process(&s_test_runtime,0xFFFFFF64UL)==SYS_OK);
         CHECK(s_test_runtime.status.peer_state==IPC_PEER_ONLINE);
-        CHECK(IPC_Runtime_Process(&s_test_runtime,0x00000158UL)==SYS_OK);
+        CHECK(IPC_Runtime_Process(&s_test_runtime,(uint32_t)(0xFFFFFF64UL + IPC_HEARTBEAT_TIMEOUT_MS))==SYS_OK);
         CHECK(s_test_runtime.status.peer_state==IPC_PEER_TIMEOUT);
-        CHECK(s_test_runtime.status.peer_age_ms==500U);return 0;
+        CHECK(s_test_runtime.status.peer_age_ms==IPC_HEARTBEAT_TIMEOUT_MS);return 0;
     }
     if(id==18U || id==20U || id==21U || id==23U || id==27U || id==28U || id==32U || id==33U || id==34U || id==38U)
         CHECK(Online()==0);
@@ -214,12 +214,12 @@ int IpcRuntime_TestRun(uint32_t id)
         CHECK(IPC_Runtime_Process(&s_test_runtime,100U)==SYS_OK);CHECK(Local()->heartbeat==2U);break;
       case 14:CHECK(s_test_runtime.status.peer_state==IPC_PEER_STARTING && !s_test_runtime.status.progress_seen);CHECK(s_test_runtime.status.max_step_gap_ms==0U);break;
       case 15:PeerHeartbeat(18U);CHECK(IPC_Runtime_Process(&s_test_runtime,100U)==SYS_OK);CHECK(s_test_runtime.status.peer_state==IPC_PEER_ONLINE);break;
-      case 16:CHECK(IPC_Runtime_Process(&s_test_runtime,400U)==SYS_OK);CHECK(s_test_runtime.status.peer_state==IPC_PEER_STARTING);break;
-      case 17:CHECK(IPC_Runtime_Process(&s_test_runtime,400U)==SYS_OK);CHECK(s_test_runtime.status.peer_state==IPC_PEER_STARTING);CHECK(IPC_Runtime_Process(&s_test_runtime,500U)==SYS_OK);CHECK(s_test_runtime.status.peer_state==IPC_PEER_STARTUP_TIMEOUT);break;
-      case 18:CHECK(IPC_Runtime_Process(&s_test_runtime,500U)==SYS_OK);CHECK(s_test_runtime.status.peer_state==IPC_PEER_ONLINE);CHECK(IPC_Runtime_Process(&s_test_runtime,600U)==SYS_OK);CHECK(s_test_runtime.status.peer_state==IPC_PEER_TIMEOUT);break;
-      case 19:s_test_runtime.sampled=false;CHECK(IPC_Runtime_Process(&s_test_runtime,400U)==SYS_OK);CHECK(IPC_Runtime_Process(&s_test_runtime,500U)==SYS_OK);CHECK(s_test_runtime.status.peer_state==IPC_PEER_STARTUP_TIMEOUT);break;
+      case 16:CHECK(IPC_Runtime_Process(&s_test_runtime,IPC_HEARTBEAT_TIMEOUT_MS - IPC_HEARTBEAT_PERIOD_MS)==SYS_OK);CHECK(s_test_runtime.status.peer_state==IPC_PEER_STARTING);break;
+      case 17:CHECK(IPC_Runtime_Process(&s_test_runtime,IPC_HEARTBEAT_TIMEOUT_MS - IPC_HEARTBEAT_PERIOD_MS)==SYS_OK);CHECK(s_test_runtime.status.peer_state==IPC_PEER_STARTING);CHECK(IPC_Runtime_Process(&s_test_runtime,IPC_HEARTBEAT_TIMEOUT_MS)==SYS_OK);CHECK(s_test_runtime.status.peer_state==IPC_PEER_STARTUP_TIMEOUT);break;
+      case 18:CHECK(IPC_Runtime_Process(&s_test_runtime,IPC_HEARTBEAT_TIMEOUT_MS)==SYS_OK);CHECK(s_test_runtime.status.peer_state==IPC_PEER_ONLINE);CHECK(IPC_Runtime_Process(&s_test_runtime,IPC_HEARTBEAT_TIMEOUT_MS + 100U)==SYS_OK);CHECK(s_test_runtime.status.peer_state==IPC_PEER_TIMEOUT);break;
+      case 19:s_test_runtime.sampled=false;CHECK(IPC_Runtime_Process(&s_test_runtime,IPC_HEARTBEAT_TIMEOUT_MS - IPC_HEARTBEAT_PERIOD_MS)==SYS_OK);CHECK(IPC_Runtime_Process(&s_test_runtime,IPC_HEARTBEAT_TIMEOUT_MS)==SYS_OK);CHECK(s_test_runtime.status.peer_state==IPC_PEER_STARTUP_TIMEOUT);break;
       case 20:Peer()->sequence=3U;CHECK(IPC_Runtime_Process(&s_test_runtime,200U)==SYS_OK);CHECK(s_test_runtime.status.busy_reads==1U && s_test_runtime.status.peer_state==IPC_PEER_ONLINE);break;
-      case 21:Peer()->sequence=3U;CHECK(IPC_Runtime_Process(&s_test_runtime,600U)==SYS_OK);CHECK(s_test_runtime.status.busy_reads==1U && s_test_runtime.status.peer_state==IPC_PEER_TIMEOUT);break;
+      case 21:Peer()->sequence=3U;CHECK(IPC_Runtime_Process(&s_test_runtime,IPC_HEARTBEAT_TIMEOUT_MS + 100U)==SYS_OK);CHECK(s_test_runtime.status.busy_reads==1U && s_test_runtime.status.peer_state==IPC_PEER_TIMEOUT);break;
       case 22:g_ipc.header.version=1U;CHECK(IPC_Runtime_Process(&s_test_runtime,100U)==SYS_ERR_PROTOCOL);CHECK(s_test_runtime.status.peer_state==IPC_PEER_PROTOCOL_ERROR && s_test_runtime.status.protocol_errors==1U && !s_test_runtime.timed_out);break;
       case 23:g_ipc.header.version=1U;CHECK(IPC_Runtime_Process(&s_test_runtime,200U)==SYS_ERR_PROTOCOL);g_ipc.header.version=IPC_VERSION;PeerHeartbeat(19U);CHECK(IPC_Runtime_Process(&s_test_runtime,300U)==SYS_OK);CHECK(s_test_runtime.status.peer_state==IPC_PEER_ONLINE && s_test_runtime.status.protocol_errors==1U);break;
       case 24:PeerHeartbeat(UINT32_MAX);CHECK(IPC_Runtime_Process(&s_test_runtime,100U)==SYS_OK);PeerHeartbeat(0U);CHECK(IPC_Runtime_Process(&s_test_runtime,200U)==SYS_OK);CHECK(s_test_runtime.status.peer_state==IPC_PEER_ONLINE && s_test_runtime.status.peer_heartbeat==0U);break;
@@ -229,21 +229,21 @@ int IpcRuntime_TestRun(uint32_t id)
       case 29:CHECK(IPC_Runtime_Process(&s_test_runtime,0U)==SYS_OK);CHECK(Local()->heartbeat==1U);break;
       case 30:Peer()->ready=0U;PeerHeartbeat(18U);CHECK(IPC_Runtime_Process(&s_test_runtime,100U)==SYS_OK);CHECK(s_test_runtime.status.peer_state==IPC_PEER_STARTING);break;
       case 31:Peer()->ready=0U;CHECK(IPC_Runtime_Process(&s_test_runtime,100U)==SYS_OK);Peer()->ready=1U;CHECK(IPC_Runtime_Process(&s_test_runtime,200U)==SYS_OK);CHECK(!s_test_runtime.status.progress_seen);break;
-      case 32:CHECK(IPC_Runtime_Process(&s_test_runtime,600U)==SYS_OK);CHECK(IPC_Runtime_Process(&s_test_runtime,700U)==SYS_OK);CHECK(s_test_runtime.status.timeout_events==1U && s_test_runtime.status.startup_timeouts==0U);break;
-      case 33:CHECK(IPC_Runtime_Process(&s_test_runtime,600U)==SYS_OK);PeerHeartbeat(19U);CHECK(IPC_Runtime_Process(&s_test_runtime,700U)==SYS_OK);CHECK(s_test_runtime.status.peer_state==IPC_PEER_ONLINE && (Local()->fault_flags&IPC_FAULT_HEARTBEAT_TIMEOUT)!=0U);break;
-      case 34:g_ipc.header.version=99U;CHECK(IPC_Runtime_Process(&s_test_runtime,600U)==SYS_ERR_PROTOCOL);CHECK(s_test_runtime.status.protocol_errors==1U && s_test_runtime.status.timeout_events==1U && s_test_runtime.status.peer_state==IPC_PEER_PROTOCOL_ERROR);break;
+      case 32:CHECK(IPC_Runtime_Process(&s_test_runtime,IPC_HEARTBEAT_TIMEOUT_MS + 100U)==SYS_OK);CHECK(IPC_Runtime_Process(&s_test_runtime,IPC_HEARTBEAT_TIMEOUT_MS + 200U)==SYS_OK);CHECK(s_test_runtime.status.timeout_events==1U && s_test_runtime.status.startup_timeouts==0U);break;
+      case 33:CHECK(IPC_Runtime_Process(&s_test_runtime,IPC_HEARTBEAT_TIMEOUT_MS + 100U)==SYS_OK);PeerHeartbeat(19U);CHECK(IPC_Runtime_Process(&s_test_runtime,IPC_HEARTBEAT_TIMEOUT_MS + 200U)==SYS_OK);CHECK(s_test_runtime.status.peer_state==IPC_PEER_ONLINE && (Local()->fault_flags&IPC_FAULT_HEARTBEAT_TIMEOUT)!=0U);break;
+      case 34:g_ipc.header.version=99U;CHECK(IPC_Runtime_Process(&s_test_runtime,IPC_HEARTBEAT_TIMEOUT_MS + 100U)==SYS_ERR_PROTOCOL);CHECK(s_test_runtime.status.protocol_errors==1U && s_test_runtime.status.timeout_events==1U && s_test_runtime.status.peer_state==IPC_PEER_PROTOCOL_ERROR);break;
       case 35:Local()->sequence=0xFFFFFFFEUL;CHECK(IPC_Runtime_Process(&s_test_runtime,100U)==SYS_ERR_NO_RESOURCE);CHECK(s_test_runtime.status.local_heartbeat==1U);break;
       case 36:s_owner_allowed=false;before=Digest(Local(),sizeof(*Local()));CHECK(IPC_Runtime_Process(&s_test_runtime,100U)==SYS_ERR_INVALID_STATE);CHECK(Digest(Local(),sizeof(*Local()))==before && s_test_runtime.status.local_heartbeat==1U);break;
       case 37:Peer()->sequence=3U;CHECK(IPC_Runtime_Process(&s_test_runtime,100U)==SYS_OK);SeedPeer(4U);g_ipc.header.version=99U;CHECK(IPC_Runtime_Process(&s_test_runtime,200U)==SYS_ERR_PROTOCOL);CHECK(s_test_runtime.status.busy_reads==1U && s_test_runtime.status.protocol_errors==1U);break;
-      case 38:CHECK(IPC_Runtime_Process(&s_test_runtime,600U)==SYS_OK);PeerHeartbeat(19U);CHECK(IPC_Runtime_Process(&s_test_runtime,700U)==SYS_OK);CHECK(IPC_Runtime_Process(&s_test_runtime,1200U)==SYS_OK);CHECK(s_test_runtime.status.timeout_events==2U);break;
+      case 38:CHECK(IPC_Runtime_Process(&s_test_runtime,IPC_HEARTBEAT_TIMEOUT_MS + 100U)==SYS_OK);PeerHeartbeat(19U);CHECK(IPC_Runtime_Process(&s_test_runtime,IPC_HEARTBEAT_TIMEOUT_MS + 200U)==SYS_OK);CHECK(IPC_Runtime_Process(&s_test_runtime,2U * IPC_HEARTBEAT_TIMEOUT_MS + 200U)==SYS_OK);CHECK(s_test_runtime.status.timeout_events==2U);break;
       case 39:CHECK(IPC_Service_GetRuntimeStatus(NULL)==SYS_ERR_INVALID_ARG);break;
       case 40:CHECK(IPC_Service_GetRuntimeStatus((IpcRuntimeStatus_t *)0xFFFFFFF0UL)==SYS_ERR_INVALID_ARG);break;
       case 41:before=Digest(Peer(),sizeof(*Peer()));CHECK(IPC_Runtime_Process(&s_test_runtime,100U)==SYS_OK);CHECK(before==Digest(Peer(),sizeof(*Peer())));break;
       case 42:CHECK(IPC_Runtime_Process(&s_test_runtime,100U)==SYS_OK);CHECK(Local()->owner_id==LOCAL_OWNER);break;
       case 43:CHECK(sizeof(g_ipc)==320U && offsetof(IpcShared_t,m4)==192U);CHECK(Local()->reserved[4]==0U);break;
       case 44:s_thread=false;{IpcRuntimeStatus_t status;CHECK(IPC_Service_GetRuntimeStatus(&status)==SYS_ERR_INVALID_STATE);}break;
-      case 45:Peer()->sequence=0U;CHECK(IPC_Runtime_Process(&s_test_runtime,500U)==SYS_OK);CHECK(s_test_runtime.status.peer_state==IPC_PEER_STARTUP_TIMEOUT && s_test_runtime.status.busy_reads==1U);break;
-      case 46:CHECK(IPC_Runtime_Process(&s_test_runtime,500U)==SYS_OK);CHECK(s_test_runtime.status.peer_state==IPC_PEER_STARTUP_TIMEOUT);break;
+      case 45:Peer()->sequence=0U;CHECK(IPC_Runtime_Process(&s_test_runtime,IPC_HEARTBEAT_TIMEOUT_MS)==SYS_OK);CHECK(s_test_runtime.status.peer_state==IPC_PEER_STARTUP_TIMEOUT && s_test_runtime.status.busy_reads==1U);break;
+      case 46:CHECK(IPC_Runtime_Process(&s_test_runtime,IPC_HEARTBEAT_TIMEOUT_MS)==SYS_OK);CHECK(s_test_runtime.status.peer_state==IPC_PEER_STARTUP_TIMEOUT);break;
       case 49:PeerHeartbeat(0xFFFFFF00UL);CHECK(IPC_Runtime_Process(&s_test_runtime,100U)==SYS_OK);CHECK(s_test_runtime.status.peer_state==IPC_PEER_ONLINE);break;
       default:return __LINE__;
     }

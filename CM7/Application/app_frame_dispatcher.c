@@ -2,26 +2,26 @@
 #include "app_events.h"
 #include "platform_time.h"
 
-//按用途静态绑定副本服务，不进行字符串查找或动态注册
+//按用途静态绑定租借服务，不进行字符串查找或动态注册
 typedef struct
 {
     bool (*wants)(void *context, uint32_t now);
 
     SysResult_t (*offer)(void *context, const CameraFrame_t *frame, const AppFrameMeta_t *meta);
     void *context;
-} FrameCopyService_t;
+} FrameSinkService_t;
 
 //Camera独占会话和帧编号，不能由Storage或USB修改
 static uint32_t s_epoch, s_next_frame;
 
-//查询副本服务是否订阅当前帧，未开启时不复制
+//查询租借服务是否订阅当前帧，未开启时不登记租借
 static bool Dispatcher_StorageWants(void *context, uint32_t now);
 
-//把副本请求交给存储服务，返回失败不取消USB原帧
+//把租借请求交给存储服务，返回失败不取消USB原帧
 static SysResult_t Dispatcher_StorageOffer(void *context, const CameraFrame_t *frame, const AppFrameMeta_t *meta);
 
 //静态服务记录只提供能力入口，不授予Media所有权
-static const FrameCopyService_t s_storage_service =
+static const FrameSinkService_t s_storage_service =
 {
     .wants = Dispatcher_StorageWants,
 
@@ -57,7 +57,7 @@ SysResult_t App_FrameDispatcherBegin(uint32_t epoch)
     return SYS_OK;
 }
 
-//先形成元数据，再按存储需求复制；不在这里释放原帧
+//先形成元数据，再按存储需求登记租借；不在这里释放原帧
 SysResult_t App_FrameDispatcherPublish(const CameraFrame_t *frame, AppFrameMeta_t *meta)
 {
     if (!App_EventsIsOwner(RUNTIME_TARGET_CAMERA) || frame == NULL || meta == NULL || s_epoch == 0U)
@@ -80,7 +80,7 @@ SysResult_t App_FrameDispatcherRequestAi(void)
     return SYS_ERR_NOT_SUPPORTED;
 }
 
-//适配现有副本服务，Context为空是当前单实例的显式绑定
+//适配现有租借服务，Context为空是当前单实例的显式绑定
 static SysResult_t Dispatcher_StorageOffer(void *context, const CameraFrame_t *frame, const AppFrameMeta_t *meta)
 {
     (void)context;
@@ -93,8 +93,8 @@ bool App_FrameDispatcherCanAcquire(void)
     return App_EventsIsOwner(RUNTIME_TARGET_CAMERA) && s_epoch != 0U && s_next_frame != UINT32_MAX;
 }
 
-//静态服务记录先判断需求，再决定是否取得仅用于副本的原帧
-bool App_FrameDispatcherNeedsCopy(void)
+//静态服务记录先判断需求，再决定是否取得仅用于租借的原帧
+bool App_FrameDispatcherNeedsStorage(void)
 {
     return App_EventsIsOwner(RUNTIME_TARGET_CAMERA) &&
         s_storage_service.wants(s_storage_service.context, Platform_TimeGetMs());

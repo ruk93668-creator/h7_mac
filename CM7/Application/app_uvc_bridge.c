@@ -144,6 +144,9 @@ void App_UvcBridgeCameraProcess(bool enabled)
         return;
 
     //队列满时保留完整回复和凭据，不能取得第二张Media帧
+    //SD只返回凭据，由Camera确认后才允许Media回收
+    App_StorageProcessReturns();
+
     if (!Bridge_CameraFlush())
         return;
     if (s_camera_bridge.release_pending && !Bridge_CameraRelease())
@@ -212,7 +215,7 @@ void App_UvcBridgeCameraProcess(bool enabled)
 
     //没有USB请求时，SD可独立取得完整帧；仍使用同一份Media持有记录
     if (!s_camera_bridge.request_pending && !s_camera_bridge.held && enabled &&
-        App_FrameDispatcherCanAcquire() && App_FrameDispatcherNeedsCopy())
+        App_FrameDispatcherCanAcquire() && App_FrameDispatcherNeedsStorage())
     {
         if (CameraCapture_StreamGetFrame(&s_camera_bridge.offer.frame))
         {
@@ -245,7 +248,7 @@ void App_UvcBridgeCameraProcess(bool enabled)
             //先登记持有再发送，USB高优先级任务可能在入队后立即运行
             s_camera_bridge.held = true;
 
-            //原帧交给USB前复制SD副本，失败只计存储丢帧
+            //原帧交给USB前登记租借SD租借，失败只计存储丢帧
             (void)App_FrameDispatcherPublish(&s_camera_bridge.offer.frame, &meta);
             s_camera_bridge.offer.frame_id = meta.frame_id;
             s_camera_bridge.offer.timestamp_ms = meta.timestamp_ms;
@@ -334,7 +337,7 @@ void App_UvcBridgeUsbProcess(bool enabled)
         {
             VideoFrameView_t view = {0};
 
-            //只复制帧描述，JPEG字节始终留在DMA写入的SDRAM范围
+            //只登记租借帧描述，JPEG字节始终留在DMA写入的SDRAM范围
             if (frame->size_bytes2 >= frame->size_bytes ||
                 (frame->size_bytes2 != 0U && frame->data2 == NULL))
                 result = SYS_ERR_INVALID_ARG;

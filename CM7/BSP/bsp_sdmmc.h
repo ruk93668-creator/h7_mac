@@ -136,6 +136,9 @@ SysResult_t BSP_SDMMC_ReadBlocks(uint32_t lba, uint32_t count, void *buffer, uin
 //任务侧写入扇区，调用者数据先复制到内部AXI区，写超时不自动重试
 SysResult_t BSP_SDMMC_WriteBlocks(uint32_t lba, uint32_t count, const void *buffer, uint32_t timeout_ms);
 
+//将最多8KiB输入复制到独立CPU缓冲，不启动IDMA或占用其私有AXI缓冲
+SysResult_t BSP_SDMMC_PrepareWriteInput(void *destination, const void *source, uint32_t bytes);
+
 //获取最近一次块请求诊断，事务运行中返回BUSY避免读取半更新状态
 SysResult_t BSP_SDMMC_GetIoDiagnostics(BspSdmmcIoDiagnostics_t *diagnostics);
 

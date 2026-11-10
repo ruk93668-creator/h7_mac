@@ -1,0 +1,21 @@
+{
+  "compiler": "Product: MDK Plus 5.32\r\nComponent: ARM Compiler 5.06 update 7 (build 960)\r\nTool: armcc [4d365d]\r\nFor support see http://www.arm.com/support\r\nSoftware supplied by: ARM Limited\r\n",
+  "summary": {
+    "total": 10,
+    "passed": 10,
+    "failed": 0
+  },
+  "hardware_verified": false,
+  "cases": [
+    {"profile":"copy_trace","case":0,"name":"live_only","optimization":"O0","result":"PASS","checks":537,"failure_line":0,"error":null},
+    {"profile":"copy_trace","case":1,"name":"fault_during_copy","optimization":"O0","result":"PASS","checks":546,"failure_line":0,"error":null},
+    {"profile":"copy_trace","case":2,"name":"half_updated_marker","optimization":"O0","result":"PASS","checks":530,"failure_line":0,"error":null},
+    {"profile":"copy_trace","case":3,"name":"fault_outside_copy","optimization":"O0","result":"PASS","checks":544,"failure_line":0,"error":null},
+    {"profile":"copy_trace","case":4,"name":"error_already_pending","optimization":"O0","result":"PASS","checks":546,"failure_line":0,"error":null},
+    {"profile":"copy_trace","case":0,"name":"live_only","optimization":"O2","result":"PASS","checks":537,"failure_line":0,"error":null},
+    {"profile":"copy_trace","case":1,"name":"fault_during_copy","optimization":"O2","result":"PASS","checks":546,"failure_line":0,"error":null},
+    {"profile":"copy_trace","case":2,"name":"half_updated_marker","optimization":"O2","result":"PASS","checks":530,"failure_line":0,"error":null},
+    {"profile":"copy_trace","case":3,"name":"fault_outside_copy","optimization":"O2","result":"PASS","checks":544,"failure_line":0,"error":null},
+    {"profile":"copy_trace","case":4,"name":"error_already_pending","optimization":"O2","result":"PASS","checks":546,"failure_line":0,"error":null}
+  ]
+}

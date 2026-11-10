@@ -13,6 +13,32 @@ static bool fail_recover, fail_init, reenter;
 static int32_t read_fail_after = -1, write_fail_after = -1;
 static SysResult_t injected_error = SYS_ERR_IO;
 static uint32_t read_calls, write_calls, recover_calls, reenter_checks;
+static uint32_t prepare_calls;
+static uint32_t io_clock, io_clock_step;
+uint32_t Platform_TimeGetMs(void) { uint32_t value=io_clock;io_clock+=io_clock_step;return value; }
+
+static int32_t prepare_fail_after = -1;
+static bool prepare_reenter;
+static StorageFile_t prepare_file;
+
+//物理BSP替身仅准备输入副本，真实FatFS和Platform仍完整执行
+SysResult_t BSP_SDMMC_PrepareWriteInput(void *destination,const void *source,uint32_t bytes)
+{
+    uint32_t n;
+    if(destination!=s_write_input || bytes==0U || bytes>sizeof(s_write_input))
+        return SYS_ERR_INVALID_ARG;
+    if(prepare_fail_after==0)return SYS_ERR_TIMEOUT;
+    if(prepare_fail_after>0)prepare_fail_after--;
+    if(prepare_reenter)
+    {
+        prepare_reenter=false;
+        if(StorageFS_Write(prepare_file,source,bytes,&n)!=SYS_ERR_BUSY)return SYS_ERR_PROTOCOL;
+    }
+    memcpy(destination,source,bytes);
+    prepare_calls++;
+    return SYS_OK;
+}
+
 static uint8_t *const medium = (uint8_t *)0x60000000U;
 static uint8_t *const buffer = (uint8_t *)0x68000000U;
 static uint8_t *const verify = (uint8_t *)0x68040000U;
@@ -123,6 +149,20 @@ uint32_t FatFs_TestRun(uint32_t id)
     if(id==35){CHECK(StorageFS_Mount(false,5)==SYS_ERR_INVALID_ARG);CHECK(!s_lease);return 0;}
     if(id==37){fail_init=true;CHECK(StorageFS_Mount(false,0)==SYS_ERR_TIMEOUT);CHECK(!s_lease);fail_init=false;CHECK(StorageFS_Mount(false,0)==SYS_OK);CHECK(StorageFS_Unmount()==SYS_OK);return 0;}
     if(id==40)test_blocks=131072U;
+    if(id==68)
+    {
+        /* Move the FAT fixture to MBR entry 3; entry order is explicit. */
+        memcpy(medium+478,medium+446,16);
+        memset(medium+446,0,16);
+        CHECK(StorageFS_Mount(true,3)==SYS_OK);
+        CHECK(s_diag.partition==3 && s_diag.first_lba==1024);
+        CHECK(StorageFS_Open("0:/P3.BIN",6,&f)==SYS_OK);
+        CHECK(StorageFS_Write(f,buffer,1024,&n)==SYS_OK && n==1024);
+        CHECK(StorageFS_Close(f)==SYS_OK);
+        CHECK(g_sd_write_debug.last_lba>=1024);
+        CHECK(StorageFS_Unmount()==SYS_OK);
+        return 0;
+    }
     CHECK(StorageFS_Mount(id!=6,0)==SYS_OK);
     if(id==6){CHECK(StorageFS_Open("0:/TEST.BIN",6,&f)==SYS_ERR_NOT_SUPPORTED);CHECK(StorageFS_Unmount()==SYS_OK);CHECK(write_calls==0);return 0;}
     if(id==8){CHECK(StorageFS_Mount(true,0)==SYS_ERR_ALREADY_EXISTS);test_task=2;CHECK(StorageFS_Mount(true,0)==SYS_ERR_BUSY);CHECK(StorageFS_Open("0:/T.BIN",6,&f)==SYS_ERR_INVALID_STATE);CHECK(SD_Block_Write(0,1,buffer,10)==SYS_ERR_INVALID_STATE);return 0;}
@@ -133,6 +173,184 @@ uint32_t FatFs_TestRun(uint32_t id)
     if(id==30){CHECK(StorageFS_Open("0:/VERYLONGNAME.TST",6,&f)==SYS_ERR_INVALID_ARG);CHECK(StorageFS_Open("1:/TEST.BIN",6,&f)==SYS_ERR_INVALID_ARG);CHECK(StorageFS_Open("0:/../T.BIN",6,&f)==SYS_ERR_INVALID_ARG);return 0;}
     if(id==39){test_active=true;CHECK(StorageFS_GetSpace(&total,&free_bytes)==SYS_ERR_BUSY);CHECK(SD_Block_Release(SD_BLOCK_CLIENT_FATFS)==SYS_ERR_BUSY);return 0;}
     CHECK(StorageFS_Open("0:/TEST.BIN",STORAGE_FS_OPEN_READ|STORAGE_FS_OPEN_WRITE|STORAGE_FS_OPEN_CREATE_NEW,&f)==SYS_OK);
+
+    if(id>=69 && id<=74)
+    {
+        uint64_t lower;
+        uint32_t before_write=g_storage_io_timing.block_write.samples;
+        io_clock_step=1;
+        if(id==70)
+        {
+            prepare_fail_after=0;
+            CHECK(StorageFS_Write(f,buffer,1024,&n)==SYS_ERR_TIMEOUT && n==0);
+            CHECK(g_storage_io_timing.input_prepare.samples==1);
+            CHECK(g_storage_io_timing.fatfs_write.samples==0);
+            CHECK(g_storage_io_timing.block_write.samples==before_write);
+            return 0;
+        }
+        if(id==71)
+        {
+            write_fail_after=0;injected_error=SYS_ERR_IO;
+            CHECK(StorageFS_Write(f,buffer,1024,&n)==SYS_ERR_IO);
+            CHECK(g_storage_io_timing.block_write.samples==before_write+1);
+            CHECK(g_storage_io_timing.block_write.last_ms==1);
+            CHECK(g_storage_io_timing.fatfs_write.samples==1);
+            return 0;
+        }
+        if(id==72)io_clock=UINT32_MAX-3U;
+        if(id==73)
+        {
+            FatFsIoTimingSample_t sample={0};
+            FatFsDisk_RecordTiming(&sample,3);FatFsDisk_RecordTiming(&sample,8);
+            CHECK(sample.samples==2 && sample.total_ms==11 && sample.max_ms==8 && sample.average_ms==5);
+            sample.samples=UINT32_MAX;FatFsDisk_RecordTiming(&sample,100);
+            CHECK(sample.total_ms==11);
+            return 0;
+        }
+        for(i=0;i<16385;i++)buffer[i]=(uint8_t)(i*7U);
+        CHECK(StorageFS_Write(f,buffer,16385,&n)==SYS_OK && n==16385);
+        CHECK(g_storage_io_timing.input_prepare.samples==3);
+        CHECK(g_storage_io_timing.fatfs_write.samples==3);
+        CHECK(g_storage_io_timing.fatfs_other.samples==3);
+        CHECK(g_storage_io_timing.input_prepare.total_ms==3);
+        lower=g_storage_io_timing.block_read.total_ms+
+            g_storage_io_timing.block_write.total_ms+g_storage_io_timing.block_sync.total_ms;
+        CHECK(g_storage_io_timing.fatfs_other.total_ms<=g_storage_io_timing.fatfs_write.total_ms);
+        CHECK(g_storage_io_timing.fatfs_write.total_ms<10000 && lower<10000);
+        CHECK(StorageFS_Sync(f)==SYS_OK);
+        CHECK(g_storage_io_timing.file_sync.samples==1);
+        CHECK(StorageFS_Seek(f,0)==SYS_OK && g_storage_io_timing.file_seek.samples==1);
+        CHECK(StorageFS_Read(f,verify,16385,&got)==SYS_OK && got==16385);
+        CHECK(memcmp(buffer,verify,got)==0);
+        CHECK(StorageFS_Close(f)==SYS_OK && g_storage_io_timing.file_close.samples==1);
+        if(id==74)
+        {
+            CHECK(StorageFS_Unmount()==SYS_OK);
+            CHECK(g_storage_io_timing.fatfs_write.samples==3);
+            CHECK(StorageFS_Mount(true,0)==SYS_OK);
+            CHECK(g_storage_io_timing.fatfs_write.samples==0);
+        }
+        return 0;
+    }
+    if(id==60)
+    {
+        CHECK(g_sd_write_debug.layout_valid==1);
+        CHECK(g_sd_write_debug.sector_bytes==512);
+        CHECK(g_sd_write_debug.sectors_per_cluster==s_volume.csize);
+        CHECK(g_sd_write_debug.cluster_bytes==512U*s_volume.csize);
+        CHECK(g_sd_write_debug.filesystem_type==s_volume.fs_type);
+        return 0;
+    }
+    if(id==61)
+    {
+        const uint32_t counts[]={1,2,8,16,64,65};
+        CHECK(g_sd_write_debug.write_calls==0);
+        for(i=0;i<6;i++)CHECK(disk_write(0,buffer,4096,counts[i])==RES_OK);
+        CHECK(g_sd_write_debug.write_calls==6 && g_sd_write_debug.success_calls==6);
+        CHECK(g_sd_write_debug.requested_sectors==156 && g_sd_write_debug.successful_sectors==156);
+        CHECK(g_sd_write_debug.single_calls==1 && g_sd_write_debug.multi_calls==5);
+        CHECK(g_sd_write_debug.min_sectors==1 && g_sd_write_debug.max_sectors==65);
+        CHECK(g_sd_write_debug.over64_calls==1 && g_sd_write_debug.average_sectors_milli==26000);
+        for(i=0;i<5;i++)CHECK(g_sd_write_debug.sectors_histogram[counts[i]]==1);
+        CHECK(g_sd_write_debug.in_flight==0);
+        return 0;
+    }
+    if(id==62)
+    {
+        uint32_t before=write_calls;
+        CHECK(disk_write(0,NULL,4096,1)==RES_PARERR);
+        CHECK(disk_write(0,buffer,4096,0)==RES_PARERR);
+        CHECK(disk_write(0,buffer,16384,1)==RES_PARERR);
+        test_task=2;CHECK(disk_write(0,buffer,4096,1)==RES_NOTRDY);test_task=1;
+        CHECK(g_sd_write_debug.write_calls==0 && write_calls==before);
+        return 0;
+    }
+    if(id==63)
+    {
+        write_fail_after=0;injected_error=SYS_ERR_TIMEOUT;
+        CHECK(disk_write(0,buffer,4096,8)==RES_ERROR);
+        CHECK(g_sd_write_debug.write_calls==1 && g_sd_write_debug.failed_calls==1);
+        CHECK(g_sd_write_debug.requested_sectors==8 && g_sd_write_debug.successful_sectors==0);
+        CHECK(g_sd_write_debug.in_flight==0);
+        return 0;
+    }
+    if(id==64 || id==65)
+    {
+        uint32_t session=g_sd_write_debug.session, calls;
+        CHECK(StorageFS_Write(f,buffer,1024,&n)==SYS_OK && n==1024);
+        CHECK(StorageFS_Close(f)==SYS_OK);calls=g_sd_write_debug.write_calls;
+        CHECK(calls>0);CHECK(StorageFS_Unmount()==SYS_OK);
+        CHECK(g_sd_write_debug.session==session && g_sd_write_debug.write_calls==calls);
+        if(id==65)
+        {
+            CHECK(StorageFS_Mount(true,0)==SYS_OK);
+            CHECK(g_sd_write_debug.session==session+1 && g_sd_write_debug.write_calls==0);
+            CHECK(g_sd_write_debug.layout_valid==1);
+        }
+        return 0;
+    }
+    if(id==66)
+    {
+        uint32_t before=write_calls;
+        g_sd_write_debug.write_calls=UINT32_MAX;
+        CHECK(disk_write(0,buffer,4096,1)==RES_OK);
+        CHECK(write_calls==before+1 && g_sd_write_debug.saturated==1);
+        CHECK(g_sd_write_debug.write_calls==UINT32_MAX);
+        return 0;
+    }
+    if(id==67)
+    {
+        CHECK(s_volume.csize==1);
+        for(i=0;i<16385;i++)buffer[i]=(uint8_t)i;
+        CHECK(StorageFS_Write(f,buffer,16385,&n)==SYS_OK && n==16385);
+        CHECK(StorageFS_Sync(f)==SYS_OK);
+        CHECK(g_sd_write_debug.write_calls>0);
+        CHECK(g_sd_write_debug.single_calls==g_sd_write_debug.write_calls);
+        CHECK(g_sd_write_debug.multi_calls==0 && g_sd_write_debug.max_sectors==1);
+        CHECK(g_sd_write_debug.requested_sectors==g_sd_write_debug.write_calls);
+        CHECK(StorageFS_Seek(f,0)==SYS_OK);
+        CHECK(StorageFS_Read(f,verify,16385,&got)==SYS_OK && got==16385);
+        CHECK(memcmp(buffer,verify,got)==0);
+        return 0;
+    }
+
+    if(id>=54 && id<=59)
+    {
+        prepare_file=f;
+        for(i=0;i<16385U;i++)buffer[i]=(uint8_t)(i*13U+7U);
+        if(id==55)prepare_fail_after=0;
+        if(id==56)prepare_fail_after=1;
+        if(id==58)prepare_reenter=true;
+        if(id==57)
+        {
+            CHECK(StorageFS_Write(f,"12345678",8,&n)==SYS_OK && n==8);
+            CHECK(StorageFS_Write(f,buffer,2000,&n)==SYS_OK && n==2000);
+            CHECK(StorageFS_Write(f,buffer+2000,2805,&n)==SYS_OK && n==2805);
+            CHECK(StorageFS_Seek(f,0)==SYS_OK);
+            CHECK(StorageFS_Read(f,verify,4813,&n)==SYS_OK && n==4813);
+            CHECK(memcmp(verify,"12345678",8)==0 && memcmp(verify+8,buffer,4805)==0);
+            return 0;
+        }
+        result=StorageFS_Write(f,buffer,16385,&n);
+        if(id==55){CHECK(result==SYS_ERR_TIMEOUT && n==0 && prepare_calls==0);CHECK(!s_busy && s_diag.state==STORAGE_FS_MOUNTED);return 0;}
+        if(id==56)
+        {
+            CHECK(result==SYS_ERR_TIMEOUT && n==8192 && prepare_calls==1);
+            CHECK(!s_busy);prepare_fail_after=-1;
+            CHECK(StorageFS_Write(f,buffer+8192,8193,&n)==SYS_OK && n==8193);
+        }
+        else CHECK(result==SYS_OK && n==16385 && prepare_calls==3);
+        if(id==59)
+        {
+            CHECK(((uint32_t)s_write_input&31U)==0);
+            CHECK((uint32_t)s_write_input<0x24000000UL);
+        }
+        CHECK(StorageFS_Sync(f)==SYS_OK);CHECK(StorageFS_Seek(f,0)==SYS_OK);
+        CHECK(StorageFS_Read(f,verify,16385,&n)==SYS_OK && n==16385);
+        CHECK(memcmp(verify,buffer,16385)==0);CHECK(StorageFS_Close(f)==SYS_OK);
+        return 0;
+    }
+
     if(id==9){old=f;CHECK(StorageFS_Close(f)==SYS_OK);CHECK(StorageFS_Open("0:/TEST.BIN",3,&f)==SYS_OK);CHECK(old!=f);CHECK(StorageFS_GetSize(old,&n)==SYS_ERR_INVALID_STATE);for(i=1;i<4;i++){char name[]="0:/T0.BIN";name[4]=(char)('0'+i);CHECK(StorageFS_Open(name,6,&h[i])==SYS_OK);}CHECK(StorageFS_Open("0:/MORE.BIN",6,&old)==SYS_ERR_NO_RESOURCE);return 0;}
     if(id==16){test_present=false;CHECK(StorageFS_GetSize(f,&n)==SYS_ERR_NOT_FOUND);CHECK(s_diag.state==STORAGE_FS_FAULT);CHECK(StorageFS_Recover()==SYS_OK);return 0;}
     if(id==27){CHECK(StorageFS_Close(f)==SYS_OK);for(i=0;i<4;i++)s_files[i].generation=STORAGE_GENERATION_MAX;CHECK(StorageFS_Open("0:/NEW.BIN",6,&f)==SYS_ERR_NO_RESOURCE);return 0;}

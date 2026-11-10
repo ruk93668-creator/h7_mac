@@ -1,0 +1,34 @@
+{
+  "axf": "D:\\32\\STM32H7\\h7_stage08d\\MDK-ARM\\h7_mac_CM7\\h7_mac_CM7.axf",
+  "sha256": "83439c291465305475263649620aa0b52c1257b30afc96300d981d5d8243f188",
+  "total": 3,
+  "passed": 3,
+  "failed": 0,
+  "cases": [
+    {
+      "length": 1,
+      "read_count": 1,
+      "write_count": 1,
+      "access_bytes": 1,
+      "memcpy_calls": 0,
+      "passed": true
+    },
+    {
+      "length": 17,
+      "read_count": 17,
+      "write_count": 17,
+      "access_bytes": 1,
+      "memcpy_calls": 0,
+      "passed": true
+    },
+    {
+      "length": 8192,
+      "read_count": 8192,
+      "write_count": 8192,
+      "access_bytes": 1,
+      "memcpy_calls": 0,
+      "passed": true
+    }
+  ],
+  "hardware_verified": false
+}

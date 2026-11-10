@@ -9,22 +9,23 @@
 #include "stm32h7xx.h"
 #include <string.h>
 
-//副本槽位的唯一所有者随状态转移，绝不覆盖WRITING
+//帧租借槽位的唯一所有者随状态转移，绝不覆盖WRITING
 #define SLOT_FREE 0U
-#define SLOT_COPYING 1U
+#define SLOT_RESERVING 1U
+#define SLOT_RETURN_PENDING 4U
+#define SLOT_RETURNING 5U
 #define SLOT_QUEUED 2U
 #define SLOT_WRITING 3U
 #define STORAGE_COMMANDS 4U
 
-//状态唯一保存在私有上下文，Debug中的state只是观察副本
+//状态唯一保存在私有上下文，Debug只保存观察值
 typedef enum { STORAGE_IDLE = 0, STORAGE_VIDEO, STORAGE_SNAPSHOT, STORAGE_DRAINING, STORAGE_FAULT } StorageState_t;
 
-typedef char StoragePoolBounds[(APP_STORAGE_POOL_BASE >= CAMERA_MJPEG_REGION_END &&
-    APP_STORAGE_POOL_END <= MJPEG_AVI_INDEX_BASE &&
-    MJPEG_AVI_INDEX_BASE + MJPEG_AVI_INDEX_BYTES <= BSP_SDRAM_END &&
-    APP_STORAGE_SLOT_STRIDE % 32U == 0U) ? 1 : -1];
+//索引位于JPEG接收区之后，并保持在同一个Non-cacheable窗口
+typedef char StorageIndexBounds[(MJPEG_AVI_INDEX_BASE >= CAMERA_MJPEG_REGION_END &&
+    MJPEG_AVI_INDEX_BASE + MJPEG_AVI_INDEX_BYTES <= BSP_SDRAM_END) ? 1 : -1];
 
-//凭据只索引独立副本，Storage不保存Media指针
+//槽位保存原帧描述与SD凭据，Camera确认归还后才可复用
 typedef struct
 {
     uint32_t state;
@@ -33,6 +34,10 @@ typedef struct
     uint32_t size;
     uint32_t crc;
     AppFrameMeta_t meta;
+
+    //原帧地址在SD归还确认前保持有效，不分配图像副本
+    CameraFrame_t frame;
+    CameraMjpegLease_t lease;
 } StorageSlot_t;
 
 //固定槽位、帧队列及命令队列都不依赖内核堆
@@ -44,39 +49,52 @@ typedef struct
     uint32_t session;
 } StorageQueueItem_t;
 
-//队列凭据和槽位当前内容分开，过期消息不能冒充新副本
+//队列凭据和槽位当前内容分开，过期消息不能冒充新帧租借
 static volatile StorageQueueItem_t s_queue[APP_STORAGE_SLOT_COUNT];
+
 //队列头和数量只在短临界区提交
 static volatile uint32_t s_head, s_count;
+
 //命令与帧队列分开，满帧队列不能吞掉停止请求
 static volatile uint32_t s_commands[STORAGE_COMMANDS], s_command_head, s_command_count;
+
 //保存冷启动策略，不向下层传播Application全局变量
 static AppStorageConfig_t s_config;
+
 //状态是唯一决策来源，Debug只作外部观察
 static StorageState_t s_state;
-//达到容量或分段限制后只回收余下副本
+
+//达到容量或分段限制后只回收余下帧租借
 static bool s_limit_reached;
-//保存接收入口、收尾意图及单次抓拍是否已取得副本
+
+//保存接收入口、收尾意图及单次抓拍是否已取得帧租借
 static volatile bool s_prepared, s_accepting, s_stop_pending, s_snapshot_taken;
-//会话号防止旧副本混入新录像，文件编号不覆盖旧文件
-static volatile uint32_t s_session, s_copying, s_last_offer, s_next_file = 1U;
+
+//会话号防止旧帧租借混入新录像，文件编号不覆盖旧文件
+static volatile uint32_t s_session, s_offering, s_last_offer, s_next_file = 1U;
+
 //记录采样起点和文件系统是否仍由本任务挂载
 static volatile bool s_offer_seen, s_mounted;
+
 //当前用途互斥：录像或单张抓拍
 static volatile AppStorageMode_t s_mode;
+
 //当前文件句柄只由Storage任务操作
 static StorageFile_t s_file;
+
 //单个AVI的容器状态，不保存Media对象
 static MjpegAvi_t s_avi;
+
 //跟踪分段、总字节预算及已扣除待写索引的空间余额
 static uint32_t s_segment_tick, s_total_bytes, s_segments, s_free_budget;
+
 //分别跟踪实际写帧速率、输入超时和周期同步
 static uint32_t s_fps_tick, s_fps_frames, s_sync_tick;
 
 //Camera发布输入进展，Storage读取；多字段仍由临界区和DMB保护
 static volatile uint32_t s_input_tick;
 
-//查询接口只返回Storage任务发布的完整副本
+//查询接口只返回Storage任务发布的完整诊断快照
 static AppStorageStatus_t s_status_snapshot;
 
 //回读复用小型CPU缓冲，实际IDMA仍走原32KiB适配缓冲
@@ -84,6 +102,22 @@ static uint8_t s_readback[512] __attribute__((aligned(32)));
 
 //诊断没有参与USB或Media所有权判断
 volatile AppStorageStatus_t g_storage_debug;
+
+//各阶段由固定任务写入，不扩大原状态快照或IPC数据
+volatile AppStorageTimingDebug_t g_storage_timing_debug;
+
+//记录当前租借归还和空闲起点，不作为所有权判断依据
+static volatile uint32_t s_timing_return_tick, s_timing_free_tick;
+
+//在原临界区更新标记，累计和平均计算放到临界区之外
+static volatile bool s_timing_return_valid, s_timing_free_valid;
+
+//Camera记录首次检查和放行时刻，不作为调度或借帧依据
+static uint32_t s_timing_check_tick, s_timing_eligible_tick;
+
+//每次归还后重新观察，重复检查不能覆盖首次时刻
+static bool s_timing_check_valid, s_timing_eligible_valid;
+
 
 //在短临界区发布完整诊断，查询不读取半更新结构
 static void Storage_PublishStatus(void);
@@ -94,16 +128,13 @@ static bool Storage_Context(void);
 //短临界区只投递命令，不持锁等待队列或SD
 static SysResult_t Storage_Request(uint32_t command);
 
-//计算副本地址，固定步长已由编译期范围检查保护
-static uint8_t *Storage_Data(uint32_t slot);
-
 //事件分发与实际文件操作分离，不在状态退出时隐式释放外部资源
 static void Storage_HandleEvent(uint32_t command);
 
 //空闲状态才允许挂载，命令被受理不等于文件已创建
 static void Storage_OnStart(uint32_t command);
 
-//停止只关闭新副本入口，完成需要后续排空和文件关闭
+//停止只关闭新帧租借入口，完成需要后续排空和文件关闭
 static void Storage_OnStop(void);
 
 //故障恢复由存储任务显式执行，不自动反复重试
@@ -119,7 +150,7 @@ static SysResult_t Storage_OpenNew(bool video);
 static SysResult_t Storage_Write(const uint8_t *data, uint32_t size);
 
 //回读抓拍文件，校验真实长度、CRC和JPEG首尾
-static SysResult_t Storage_Snapshot(const StorageSlot_t *slot, const uint8_t *data);
+static SysResult_t Storage_Snapshot(const StorageSlot_t *slot);
 
 //关闭当前AVI，索引或同步失败时保留真实错误
 static SysResult_t Storage_CloseAvi(void);
@@ -132,6 +163,10 @@ static void Storage_Fail(SysResult_t result);
 
 //只回收已验证的WRITING凭据，防止重复或过期归还
 static bool Storage_Release(uint32_t slot, uint32_t generation);
+
+//累计阶段耗时，只在任务上下文和已有临界区之外调用
+static void Storage_TimingRecord(volatile AppStorageTimingSample_t *sample, uint32_t elapsed);
+
 
 //准备静态状态，不打开SD卡
 SysResult_t App_StoragePrepare(const AppStorageConfig_t *config)
@@ -157,7 +192,7 @@ SysResult_t App_StorageStartRecording(void) { return Storage_Request(1U); }
 //异步受理单张抓拍，不自动改变JPEG采集配置
 SysResult_t App_StorageRequestSnapshot(void) { return Storage_Request(2U); }
 
-//立即关闭新副本入口，再由Storage任务确认排空和关闭
+//立即关闭新帧租借入口，再由Storage任务确认排空和关闭
 SysResult_t App_StorageStop(void)
 {
     SysResult_t result = Storage_Request(3U);
@@ -177,7 +212,7 @@ SysResult_t App_StorageStop(void)
 //显式请求恢复，不隐式格式化或删除文件
 SysResult_t App_StorageRecover(void) { return Storage_Request(4U); }
 
-//只提供观察副本，外部不得据此归还图像
+//只提供观察帧租借，外部不得据此归还图像
 SysResult_t App_StorageGetStatus(AppStorageStatus_t *status)
 {
     uint32_t mask;
@@ -196,30 +231,63 @@ SysResult_t App_StorageGetStatus(AppStorageStatus_t *status)
 bool App_StorageWantsFrame(uint32_t now)
 {
     bool wanted;
+
+    //身份检查要求未屏蔽中断，必须在进入临界区之前保存结果
+    bool camera_owner = App_EventsIsOwner(RUNTIME_TARGET_CAMERA);
     uint32_t mask = __get_PRIMASK();
     __disable_irq();
     __DMB();
     wanted = s_prepared && s_accepting && !s_snapshot_taken &&
+        s_slots[0].state == SLOT_FREE &&
         (!s_offer_seen || s_mode == APP_STORAGE_SNAPSHOT ||
          (uint32_t)(now - s_last_offer) >= (1000U + s_config.record_fps - 1U) / s_config.record_fps);
+
+    //只观察Camera的正常检查，其他上下文不能改动分段起点
+    if (s_timing_free_valid && s_accepting && camera_owner)
+    {
+
+        //首次检查延迟包含Camera被唤醒及Bridge走到需求判断的时间
+        if (!s_timing_check_valid)
+        {
+            s_timing_check_tick = now;
+            s_timing_check_valid = true;
+        }
+
+        //只记首次满足条件，后续等待不能重复延后此起点
+        if (wanted && !s_timing_eligible_valid)
+        {
+            s_timing_eligible_tick = now;
+            s_timing_eligible_valid = true;
+        }
+    }
     __DMB();
     __set_PRIMASK(mask);
     return wanted;
 }
 
-//只在Camera持有原帧时复制，槽位满直接拒绝
+//只在Camera持有原帧时借用，槽位满直接拒绝
 SysResult_t App_StorageOfferFrame(const CameraFrame_t *frame, const AppFrameMeta_t *meta)
 {
-    uint32_t mask, slot, generation, session, first, start, elapsed;
-    uint8_t *data;
+    uint32_t mask, slot, generation, session, start;
+    CameraMjpegLease_t lease;
     SysResult_t result;
+    uint32_t next_wait = 0U;
+    uint32_t free_check = 0U, check_eligible = 0U, eligible_offer = 0U;
+    bool sample_split = false;
+    bool sample_next = false;
+
+    //Camera独占Media任务侧接口，不允许Storage或ISR自行借帧
     if (!App_EventsIsOwner(RUNTIME_TARGET_CAMERA) || meta == NULL || !s_prepared)
         return SYS_ERR_INVALID_STATE;
     if (!App_StorageWantsFrame(meta->timestamp_ms))
         return SYS_ERR_BUSY;
-    if (frame == NULL || meta->frame_id == 0U || meta->stream_epoch == 0U ||
-        meta->width != frame->width || meta->height != frame->height ||
-        frame->size_bytes > APP_STORAGE_FRAME_LIMIT || frame->size_bytes == 0U)
+
+    //这里只检查描述边界，完整JPEG扫描和CRC留给低优先级Storage
+    if (frame == NULL || frame->format != CAMERA_PIXEL_FORMAT_JPEG || frame->data == NULL ||
+        meta->frame_id == 0U || meta->stream_epoch == 0U || meta->width != frame->width ||
+        meta->height != frame->height || frame->size_bytes > APP_STORAGE_FRAME_LIMIT ||
+        frame->size_bytes < 4U || frame->size_bytes2 >= frame->size_bytes ||
+        (frame->size_bytes2 != 0U && frame->data2 == NULL))
     {
         g_storage_debug.dropped_frames++;
         return SYS_ERR_INVALID_ARG;
@@ -227,76 +295,173 @@ SysResult_t App_StorageOfferFrame(const CameraFrame_t *frame, const AppFrameMeta
     mask = __get_PRIMASK();
     __disable_irq();
     __DMB();
+
+    //未确认归还的描述槽不能重用，满队列只拒绝SD
     for (slot = 0U; slot < APP_STORAGE_SLOT_COUNT; slot++)
+    {
         if (s_slots[slot].state == SLOT_FREE && s_slots[slot].generation != UINT32_MAX)
             break;
+    }
     if (!s_accepting || slot == APP_STORAGE_SLOT_COUNT)
     {
         g_storage_debug.dropped_frames++;
-        __DMB();
         __set_PRIMASK(mask);
         return SYS_ERR_NO_RESOURCE;
     }
-    s_slots[slot].state = SLOT_COPYING;
+    s_slots[slot].state = SLOT_RESERVING;
     generation = ++s_slots[slot].generation;
     session = s_session;
-    s_copying++;
-    __DMB();
+    s_offering++;
     __set_PRIMASK(mask);
 
-    //复制和校验可被USB抢占，不在临界区扫描JPEG
+    //只增加SD所有权位，不借用图像，也不增加整帧扫描耗时
     start = Platform_TimeGetMs();
-    result = JpegFrame_Validate(frame);
-    data = Storage_Data(slot);
-    if (result == SYS_OK)
-    {
-        first = frame->size_bytes - frame->size_bytes2;
-        memcpy(data, frame->data, first);
-        if (frame->size_bytes2 != 0U)
-            memcpy(data + first, frame->data2, frame->size_bytes2);
-        s_slots[slot].size = frame->size_bytes;
-        s_slots[slot].crc = ~JpegFrame_Crc32(data, frame->size_bytes, UINT32_MAX);
-        s_slots[slot].meta = *meta;
-        s_slots[slot].session = session;
-    }
-    elapsed = Platform_TimeGetMs() - start;
+    result = CameraMjpegFifo_RetainFrame(frame, &lease);
     mask = __get_PRIMASK();
     __disable_irq();
     __DMB();
-    s_copying--;
-    if (elapsed > g_storage_debug.max_copy_ms)
-        g_storage_debug.max_copy_ms = elapsed;
-    if (result == SYS_OK && s_accepting && session == s_session && s_count < APP_STORAGE_SLOT_COUNT &&
-        s_slots[slot].generation == generation)
+    s_offering--;
+    if (Platform_TimeGetMs() - start > g_storage_debug.max_offer_ms)
+        g_storage_debug.max_offer_ms = Platform_TimeGetMs() - start;
+    if (result == SYS_OK)
     {
-        s_slots[slot].state = SLOT_QUEUED;
-        s_queue[(s_head + s_count) % APP_STORAGE_SLOT_COUNT].slot = slot;
-        s_queue[(s_head + s_count) % APP_STORAGE_SLOT_COUNT].generation = generation;
-        s_queue[(s_head + s_count) % APP_STORAGE_SLOT_COUNT].session = session;
-        s_count++;
-        g_storage_debug.queue_depth = s_count;
-        if (s_count > g_storage_debug.queue_high_water)
-            g_storage_debug.queue_high_water = s_count;
-        s_last_offer = meta->timestamp_ms;
-        s_input_tick = Platform_TimeGetMs();
-        s_offer_seen = true;
-        if (s_mode == APP_STORAGE_SNAPSHOT)
+        s_slots[slot].frame = *frame;
+        s_slots[slot].lease = lease;
+        s_slots[slot].size = frame->size_bytes;
+        s_slots[slot].meta = *meta;
+        s_slots[slot].session = session;
+
+        //Stop若已关闭入口，只排入归还，不让租借凭空消失
+        if (s_accepting && session == s_session && s_count < APP_STORAGE_SLOT_COUNT)
         {
-            s_snapshot_taken = true;
-            s_accepting = false;
+            s_slots[slot].state = SLOT_QUEUED;
+            s_queue[(s_head + s_count) % APP_STORAGE_SLOT_COUNT].slot = slot;
+            s_queue[(s_head + s_count) % APP_STORAGE_SLOT_COUNT].generation = generation;
+            s_queue[(s_head + s_count) % APP_STORAGE_SLOT_COUNT].session = session;
+            s_count++;
+            g_storage_debug.queue_depth = s_count;
+            if (s_count > g_storage_debug.queue_high_water)
+                g_storage_debug.queue_high_water = s_count;
+            s_last_offer = meta->timestamp_ms;
+            s_input_tick = Platform_TimeGetMs();
+
+            //只采样成功入队，拒绝请求不消耗下一帧等待标记
+            if (s_timing_free_valid)
+            {
+                next_wait = s_input_tick - s_timing_free_tick;
+                sample_next = true;
+
+                //三个相邻区间共用一组起点，只在完整入队后提交样本
+                if (s_timing_check_valid && s_timing_eligible_valid)
+                {
+                    free_check = s_timing_check_tick - s_timing_free_tick;
+                    check_eligible = s_timing_eligible_tick - s_timing_check_tick;
+                    eligible_offer = s_input_tick - s_timing_eligible_tick;
+                    sample_split = true;
+                }
+                s_timing_free_valid = false;
+            }
+            s_offer_seen = true;
+            if (s_mode == APP_STORAGE_SNAPSHOT)
+            {
+                s_snapshot_taken = true;
+                s_accepting = false;
+            }
+        }
+        else
+        {
+            s_slots[slot].state = SLOT_RETURN_PENDING;
+            g_storage_debug.pending_returns++;
+            result = SYS_ERR_INVALID_STATE;
         }
     }
     else
     {
         s_slots[slot].state = SLOT_FREE;
         g_storage_debug.dropped_frames++;
-        if (result == SYS_OK)
-            result = SYS_ERR_INVALID_STATE;
     }
     __DMB();
     __set_PRIMASK(mask);
+
+    //Camera独占此项统计，64位累计和除法不放在关中断区
+    if (sample_next)
+        Storage_TimingRecord(&g_storage_timing_debug.next_frame_wait, next_wait);
+
+    //均由Camera累计，除法放在原临界区外，不增加通知或等待
+    if (sample_split)
+    {
+        Storage_TimingRecord(&g_storage_timing_debug.free_to_check, free_check);
+        Storage_TimingRecord(&g_storage_timing_debug.check_to_eligible, check_eligible);
+        Storage_TimingRecord(&g_storage_timing_debug.eligible_to_offer, eligible_offer);
+    }
     (void)RuntimeEvent_Post(RUNTIME_TARGET_STORAGE, RUNTIME_EVENT_WAKE);
     return result;
+}
+
+//Camera逐项确认SD归还，失败时保留原凭据供后续重试
+void App_StorageProcessReturns(void)
+{
+    uint32_t i, mask, generation, returned_tick, return_wait;
+    bool sample_return;
+    CameraMjpegLease_t lease;
+    SysResult_t result;
+    if (!App_EventsIsOwner(RUNTIME_TARGET_CAMERA))
+        return;
+    for (i = 0U; i < APP_STORAGE_SLOT_COUNT; i++)
+    {
+        sample_return = false;
+        return_wait = 0U;
+        mask = __get_PRIMASK();
+        __disable_irq();
+        __DMB();
+        if (s_slots[i].state != SLOT_RETURN_PENDING)
+        {
+            __set_PRIMASK(mask);
+            continue;
+        }
+        s_slots[i].state = SLOT_RETURNING;
+        generation = s_slots[i].generation;
+        lease = s_slots[i].lease;
+        __set_PRIMASK(mask);
+
+        //仅Camera访问Media，文件关闭不等于其他消费者也已归还
+        result = CameraMjpegFifo_ReleaseLease(&lease);
+        mask = __get_PRIMASK();
+        __disable_irq();
+        __DMB();
+        g_storage_debug.return_result = result;
+        if (s_slots[i].generation == generation && s_slots[i].state == SLOT_RETURNING)
+        {
+            if (result == SYS_OK)
+            {
+                //Media释放成功后才结束归还等待，并开始观察下一帧交付
+                returned_tick = Platform_TimeGetMs();
+                if (s_timing_return_valid)
+                {
+                    return_wait = returned_tick - s_timing_return_tick;
+                    sample_return = true;
+                }
+                s_timing_return_valid = false;
+                s_timing_free_tick = returned_tick;
+                s_timing_free_valid = true;
+
+                //新一轮归还完成，不能沿用上一帧的检查时刻
+                s_timing_check_valid = false;
+                s_timing_eligible_valid = false;
+                s_slots[i].state = SLOT_FREE;
+                g_storage_debug.pending_returns--;
+                g_storage_debug.returned_frames++;
+            }
+            else
+                s_slots[i].state = SLOT_RETURN_PENDING;
+        }
+        __DMB();
+        __set_PRIMASK(mask);
+
+        //返回失败时保留凭据，不把失败尝试算作已完成归还
+        if (sample_return)
+            Storage_TimingRecord(&g_storage_timing_debug.return_wait, return_wait);
+    }
 }
 
 //Storage任务每轮执行有限工作，文件系统调用只在这里及私有函数发生
@@ -308,6 +473,7 @@ void App_StorageProcess(void)
     StorageQueueItem_t queued;
     bool invalid_queue = false;
     SysResult_t result = SYS_OK;
+    uint32_t phase_tick;
     if (!App_EventsIsOwner(RUNTIME_TARGET_STORAGE) || !s_prepared)
         return;
     mask = __get_PRIMASK();
@@ -354,11 +520,40 @@ void App_StorageProcess(void)
     if (slot != APP_STORAGE_SLOT_COUNT)
     {
         start = Platform_TimeGetMs();
+
+        //取得WRITING槽位后才采样，空轮询不计入等待平均值
+        Storage_TimingRecord(&g_storage_timing_debug.queue_wait, start - s_input_tick);
         if (item.session != s_session || !s_mounted || s_state == STORAGE_FAULT)
             result = SYS_ERR_INVALID_STATE;
-        else if (s_mode == APP_STORAGE_SNAPSHOT)
-            result = Storage_Snapshot(&item, Storage_Data(slot));
         else
+        {
+
+            //扫描与CRC在Storage任务执行，期间原帧仍持有SD引用
+            //结构校验和CRC分开计时，不将CPU处理全部归因于SD卡
+            phase_tick = Platform_TimeGetMs();
+            result = JpegFrame_Validate(&item.frame);
+            Storage_TimingRecord(&g_storage_timing_debug.validate,
+                Platform_TimeGetMs() - phase_tick);
+            if (result == SYS_OK)
+            {
+                phase_tick = Platform_TimeGetMs();
+                item.crc = JpegFrame_Crc32(item.frame.data, item.size - item.frame.size_bytes2, UINT32_MAX);
+                if (item.frame.size_bytes2 != 0U)
+                    item.crc = JpegFrame_Crc32(item.frame.data2, item.frame.size_bytes2, item.crc);
+                item.crc = ~item.crc;
+                Storage_TimingRecord(&g_storage_timing_debug.crc,
+                    Platform_TimeGetMs() - phase_tick);
+            }
+        }
+        //文件阶段含建文件、分段收尾及同步，不是纯IDMA搬运时间
+        phase_tick = Platform_TimeGetMs();
+        if (result == SYS_OK && s_mode == APP_STORAGE_SNAPSHOT)
+        {
+            result = Storage_Snapshot(&item);
+            Storage_TimingRecord(&g_storage_timing_debug.file_write,
+                Platform_TimeGetMs() - phase_tick);
+        }
+        else if (result == SYS_OK)
         {
             amount = item.size + 24U + (item.size & 1U);
             if (amount > s_free_budget || s_free_budget - amount < s_config.reserve_bytes)
@@ -369,7 +564,8 @@ void App_StorageProcess(void)
                 s_limit_reached = true;
                 g_storage_debug.stop_reason = 3U;
             }
-            //总预算耗尽时只排空并丢弃待写副本，不创建空的下一段
+
+            //总预算耗尽时只排空并丢弃待写帧租借，不创建空的下一段
             if (result == SYS_OK && s_file == 0U && !s_limit_reached &&
                 (s_segments >= s_config.max_segments ||
                  s_total_bytes + 224U + amount + 8U > s_config.total_bytes))
@@ -407,7 +603,7 @@ void App_StorageProcess(void)
                 limit = s_config.segment_bytes;
                 if (limit > s_config.total_bytes - s_total_bytes)
                     limit = s_config.total_bytes - s_total_bytes;
-                result = MjpegAvi_Append(&s_avi, Storage_Data(slot), item.size, item.meta.timestamp_ms, limit);
+                result = MjpegAvi_AppendFrame(&s_avi, &item.frame, item.meta.timestamp_ms, limit);
                 if (result == SYS_OK)
                 {
                     s_free_budget -= amount;
@@ -421,8 +617,11 @@ void App_StorageProcess(void)
                     }
                 }
             }
+            Storage_TimingRecord(&g_storage_timing_debug.file_write,
+                Platform_TimeGetMs() - phase_tick);
         }
         elapsed = Platform_TimeGetMs() - start;
+        Storage_TimingRecord(&g_storage_timing_debug.frame_process, elapsed);
         if (elapsed > g_storage_debug.max_write_ms)
             g_storage_debug.max_write_ms = elapsed;
         g_storage_debug.last_size = item.size;
@@ -451,7 +650,7 @@ void App_StorageProcess(void)
     __DMB();
     if (s_stop_pending)
         s_accepting = false;
-    command = s_stop_pending && s_count == 0U && s_copying == 0U;
+    command = s_stop_pending && s_count == 0U && s_offering == 0U;
     __DMB();
     __set_PRIMASK(mask);
     if (command != 0U && s_state != STORAGE_FAULT)
@@ -459,7 +658,7 @@ void App_StorageProcess(void)
     start = Platform_TimeGetMs();
 
     //采集长期没有交付完整帧时结束存储等待，不影响USB和Camera恢复路径
-    if (s_mounted && s_accepting && s_count == 0U && s_copying == 0U &&
+    if (s_mounted && s_accepting && s_count == 0U && s_offering == 0U &&
         (uint32_t)(start - s_input_tick) >= 5000U)
         Storage_Fail(SYS_ERR_TIMEOUT);
     elapsed = start - s_fps_tick;
@@ -520,11 +719,8 @@ static SysResult_t Storage_Request(uint32_t command)
     return SYS_OK;
 }
 
-//固定副本地址不与JPEG接收FIFO或索引区重叠
-static uint8_t *Storage_Data(uint32_t slot)
-{
-    return (uint8_t *)(APP_STORAGE_POOL_BASE + slot * APP_STORAGE_SLOT_STRIDE);
-}
+//固定帧租借地址不与JPEG接收FIFO或索引区重叠
+
 
 //只在Storage任务消费命令，开始请求默认不自动发出
 //统一分发保存事件，状态决策在各处理函数中完成
@@ -563,7 +759,8 @@ static void Storage_OnStart(uint32_t command)
         g_storage_debug.result = SYS_ERR_BUSY;
         return;
     }
-    result = StorageFS_Mount(true, 0U);
+    //本轮对照指定新建FAT32分区3，保留前两个分区
+    result = StorageFS_Mount(true, 3U);
     if (result != SYS_OK)
     {
         Storage_Fail(result);
@@ -591,6 +788,12 @@ static void Storage_OnStart(uint32_t command)
     s_limit_reached = false;
     s_snapshot_taken = false;
     s_offer_seen = false;
+
+    //新会话不继承旧等待起点，累计统计仍保留到复位
+    s_timing_return_valid = false;
+    s_timing_free_valid = false;
+    s_timing_check_valid = false;
+    s_timing_eligible_valid = false;
     Storage_Transition(command == 1U ? STORAGE_VIDEO : STORAGE_SNAPSHOT);
     g_storage_debug.mode = s_mode;
     g_storage_debug.stop_reason = 0U;
@@ -619,7 +822,7 @@ static void Storage_OnRecover(void)
     StorageFsDiagnostics_t diagnostics;
     SysResult_t result;
     uint32_t mask, i;
-    if (s_copying != 0U || s_count != 0U || s_state != STORAGE_FAULT)
+    if (s_offering != 0U || s_count != 0U || s_state != STORAGE_FAULT)
     {
         g_storage_debug.result = SYS_ERR_BUSY;
         return;
@@ -668,9 +871,15 @@ static void Storage_OnRecover(void)
         __disable_irq();
         __DMB();
 
-        //此时没有复制、队列或文件I/O，回收独立副本，不触碰Media/USB
+        //恢复文件系统不代表帧已归还，仍交给Camera确认
         for (i = 0U; i < APP_STORAGE_SLOT_COUNT; i++)
-            s_slots[i].state = SLOT_FREE;
+        {
+            if (s_slots[i].state == SLOT_QUEUED)
+            {
+                s_slots[i].state = SLOT_RETURN_PENDING;
+                g_storage_debug.pending_returns++;
+            }
+        }
         __DMB();
         __set_PRIMASK(mask);
         g_storage_debug.cleanup_result = SYS_OK;
@@ -735,13 +944,15 @@ static SysResult_t Storage_Write(const uint8_t *data, uint32_t size)
 }
 
 //抓拍关闭后重新打开并核对，不把写缓存比较当落卡验收
-static SysResult_t Storage_Snapshot(const StorageSlot_t *slot, const uint8_t *data)
+static SysResult_t Storage_Snapshot(const StorageSlot_t *slot)
 {
     char name[17];
     uint32_t value, i, n, size, done = 0U, crc = UINT32_MAX;
     SysResult_t result = Storage_OpenNew(false);
     if (result == SYS_OK)
-        result = Storage_Write(data, slot->size);
+        result = Storage_Write(slot->frame.data, slot->size - slot->frame.size_bytes2);
+    if (result == SYS_OK && slot->frame.size_bytes2 != 0U)
+        result = Storage_Write(slot->frame.data2, slot->frame.size_bytes2);
     if (result == SYS_OK)
         result = StorageFS_Sync(s_file);
     if (result == SYS_OK)
@@ -775,7 +986,16 @@ static SysResult_t Storage_Snapshot(const StorageSlot_t *slot, const uint8_t *da
             result = SYS_ERR_PROTOCOL;
         if (result == SYS_OK)
         {
-            if (memcmp(s_readback, data + done, n) != 0)
+
+            //读回块可能横跨原JPEG两段，分段比较而不拼接整帧
+            uint32_t first = slot->size - slot->frame.size_bytes2;
+            uint32_t part = done < first ? first - done : 0U;
+            if (part > n)
+                part = n;
+            if (part != 0U && memcmp(s_readback, slot->frame.data + done, part) != 0)
+                result = SYS_ERR_PROTOCOL;
+            if (n > part && memcmp(s_readback + part,
+                slot->frame.data2 + (done + part - first), n - part) != 0)
                 result = SYS_ERR_PROTOCOL;
             crc = JpegFrame_Crc32(s_readback, n, crc);
             done += n;
@@ -849,7 +1069,7 @@ static void Storage_Finish(SysResult_t result)
     g_storage_debug.mode = APP_STORAGE_OFF;
 }
 
-//拒绝新副本，队列里旧副本会在后续轮次逐个安全回收
+//拒绝新帧租借，队列里旧帧租借会在后续轮次逐个安全回收
 static void Storage_Fail(SysResult_t result)
 {
     uint32_t mask = __get_PRIMASK();
@@ -859,7 +1079,7 @@ static void Storage_Fail(SysResult_t result)
     __DMB();
     s_accepting = false;
 
-    //只丢弃尚未写入的副本，COPYING由原生产者检查会话后回收
+    //未写入帧只转入归还队列，由Camera释放对应引用
     while (s_count != 0U)
     {
         queued = s_queue[s_head];
@@ -868,7 +1088,10 @@ static void Storage_Fail(SysResult_t result)
         s_count--;
         if (slot < APP_STORAGE_SLOT_COUNT && s_slots[slot].state == SLOT_QUEUED &&
             s_slots[slot].generation == queued.generation && s_slots[slot].session == queued.session)
-            s_slots[slot].state = SLOT_FREE;
+        {
+            s_slots[slot].state = SLOT_RETURN_PENDING;
+            g_storage_debug.pending_returns++;
+        }
         g_storage_debug.dropped_frames++;
     }
     g_storage_debug.queue_depth = 0U;
@@ -877,9 +1100,10 @@ static void Storage_Fail(SysResult_t result)
     g_storage_debug.failures++;
     g_storage_debug.stop_reason = result == SYS_ERR_TIMEOUT ? 6U : 4U;
     Storage_Finish(result);
+    (void)RuntimeEvent_Post(RUNTIME_TARGET_CAMERA, RUNTIME_EVENT_WAKE);
 }
 
-//槽位代号必须与本次WRITING一致，旧归还不能释放新副本
+//槽位代号必须与本次WRITING一致，旧归还不能释放新帧租借
 static bool Storage_Release(uint32_t slot, uint32_t generation)
 {
     uint32_t mask = __get_PRIMASK();
@@ -889,22 +1113,30 @@ static bool Storage_Release(uint32_t slot, uint32_t generation)
     if (slot < APP_STORAGE_SLOT_COUNT && s_slots[slot].state == SLOT_WRITING &&
         s_slots[slot].generation == generation)
     {
-        s_slots[slot].state = SLOT_FREE;
+
+        //写入已返回；IDMA只持有既有AXI中转区，原帧可以请求归还
+        //只记录归还请求时刻，实际释放仍由Camera确认
+        s_timing_return_tick = Platform_TimeGetMs();
+        s_timing_return_valid = true;
+        s_slots[slot].state = SLOT_RETURN_PENDING;
+        g_storage_debug.pending_returns++;
         released = true;
     }
     __DMB();
     __set_PRIMASK(mask);
+    if (released)
+        (void)RuntimeEvent_Post(RUNTIME_TARGET_CAMERA, RUNTIME_EVENT_WAKE);
     return released;
 }
 
-//状态提交集中在这里，Debug副本不作为内部决策来源
+//状态提交集中在这里，Debug帧租借不作为内部决策来源
 static void Storage_Transition(StorageState_t state)
 {
     s_state = state;
     g_storage_debug.state = state;
 }
 
-//完整快照只在这里提交，Camera统计写入也不能打断这次复制
+//完整快照只在这里提交，Camera统计写入也不能打断这次借用
 static void Storage_PublishStatus(void)
 {
     uint32_t mask = __get_PRIMASK();
@@ -913,4 +1145,21 @@ static void Storage_PublishStatus(void)
     s_status_snapshot = g_storage_debug;
     __DMB();
     __set_PRIMASK(mask);
+}
+
+//累计一个已经完成的阶段，不改变业务状态
+static void Storage_TimingRecord(volatile AppStorageTimingSample_t *sample, uint32_t elapsed)
+{
+
+    //次数达到上限后停止累计，避免回绕；最近值和峰值仍可观察
+    sample->last_ms = elapsed;
+    if (elapsed > sample->max_ms)
+        sample->max_ms = elapsed;
+    if (sample->samples == UINT32_MAX)
+        return;
+
+    //各项仅由固定任务写入，统计结果只用于Watch观察
+    sample->total_ms += elapsed;
+    sample->samples++;
+    sample->average_ms = (uint32_t)(sample->total_ms / sample->samples);
 }

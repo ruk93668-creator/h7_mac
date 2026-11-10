@@ -12,10 +12,10 @@ SysResult_t App_FrameDispatcherBegin(uint32_t epoch);
 //Camera取帧前确认编号仍可分配，耗尽后不取得新租约
 bool App_FrameDispatcherCanAcquire(void);
 
-//查询已绑定副本服务的需求，不直接暴露存储内部状态
-bool App_FrameDispatcherNeedsCopy(void);
+//查询已绑定租借服务的需求，不直接暴露存储内部状态
+bool App_FrameDispatcherNeedsStorage(void);
 
-//原帧只在此调用期间借用，副本接收端不得保存其指针
+//为接收端登记独立租借，接收端归还后才允许Media回收
 SysResult_t App_FrameDispatcherPublish(const CameraFrame_t *frame, AppFrameMeta_t *meta);
 
 //预留按需AI接口，尚未实现时明确拒绝

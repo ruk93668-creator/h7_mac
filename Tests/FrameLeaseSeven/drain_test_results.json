@@ -1,0 +1,40 @@
+{
+  "summary": {
+    "total": 5,
+    "passed": 5,
+    "failed": 0
+  },
+  "cases": [
+    {
+      "id": 0,
+      "pass": true,
+      "failure_line": 0,
+      "error": null
+    },
+    {
+      "id": 1,
+      "pass": true,
+      "failure_line": 0,
+      "error": null
+    },
+    {
+      "id": 2,
+      "pass": true,
+      "failure_line": 0,
+      "error": null
+    },
+    {
+      "id": 3,
+      "pass": true,
+      "failure_line": 0,
+      "error": null
+    },
+    {
+      "id": 4,
+      "pass": true,
+      "failure_line": 0,
+      "error": null
+    }
+  ],
+  "hardware_verified": false
+}

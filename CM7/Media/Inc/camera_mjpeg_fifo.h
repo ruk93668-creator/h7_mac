@@ -4,13 +4,29 @@
 #include "camera_config.h"
 
 //独立JPEG字节FIFO，地址结束值均不包含自身
-#define CAMERA_MJPEG_FIFO_BASE       0xD0300000UL
+#define CAMERA_MJPEG_FIFO_BASE       0xD0480000UL
 #define CAMERA_MJPEG_FIFO_BYTES      (512UL * 1024UL)
 #define CAMERA_MJPEG_BLOCK_BYTES     (8UL * 1024UL)
 #define CAMERA_MJPEG_BLOCK_COUNT     64U
 #define CAMERA_MJPEG_DROP_BASE       (CAMERA_MJPEG_FIFO_BASE + CAMERA_MJPEG_FIFO_BYTES)
 #define CAMERA_MJPEG_REGION_END      (CAMERA_MJPEG_DROP_BASE + 2UL * CAMERA_MJPEG_BLOCK_BYTES)
-#define CAMERA_MJPEG_FRAME_QUEUE      8U
+#define CAMERA_MJPEG_FRAME_QUEUE      7U
+
+//最多保留7张在途帧；每张分别登记USB和SD引用
+#define CAMERA_MJPEG_MAX_LOANS 7U
+
+//跨任务只传递凭据，Media的释放始终由CameraTask执行
+typedef struct
+{
+    uint32_t session;
+    uint32_t id;
+} CameraMjpegLease_t;
+
+//Camera为当前持有的JPEG增加SD引用，不扫描或复制图像
+SysResult_t CameraMjpegFifo_RetainFrame(const CameraFrame_t *frame, CameraMjpegLease_t *lease);
+
+//Camera按凭据归还SD引用，重复或过期归还被拒绝
+SysResult_t CameraMjpegFifo_ReleaseLease(const CameraMjpegLease_t *lease);
 
 //Camera任务启动JPEG连续字节流，不占用原YUY2五缓冲
 SysResult_t CameraMjpegFifo_Start(const CameraConfig_t *config);

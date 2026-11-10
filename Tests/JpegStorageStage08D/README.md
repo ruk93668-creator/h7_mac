@@ -1,3 +1,5 @@
+> 本文记录554a1b3的整帧副本方案。后续已改为七帧双路租借，当前设计与验收见 `Tests/FrameLeaseSeven/` 和 `Docs/Design/Stage08D_七缓冲与双路租借.md`；此处历史通过数不代表新方案验收。
+
 # Stage08D
 
 设计：../../Docs/Design/Stage08D_JPEG分发与SD录像设计.md 。结果：verification_report.md 。实板：hardware_steps.md。

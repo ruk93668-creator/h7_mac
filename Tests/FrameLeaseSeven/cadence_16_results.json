@@ -1,0 +1,24 @@
+{
+  "summary": {
+    "total": 1,
+    "passed": 1,
+    "failed": 0
+  },
+  "cases": [
+    {
+      "id": 0,
+      "pass": true,
+      "failure_line": 0,
+      "error": null,
+      "cadence": [
+        162,
+        329,
+        150,
+        179,
+        16384,
+        8888
+      ]
+    }
+  ],
+  "hardware_verified": false
+}

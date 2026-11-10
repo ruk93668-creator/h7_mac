@@ -40,10 +40,21 @@ SysResult_t MjpegAvi_Begin(MjpegAvi_t *a, StorageFile_t file, uint16_t width, ui
 //写入00dc和偶数字节填充，idx1大小包含在预算里
 SysResult_t MjpegAvi_Append(MjpegAvi_t *a, const uint8_t *data, uint32_t size, uint32_t tick, uint32_t limit)
 {
+    CameraFrame_t frame = {0};
+    frame.data = data;
+    frame.size_bytes = size;
+    return MjpegAvi_AppendFrame(a, &frame, tick, limit);
+}
+
+//两段共用一个Chunk头、索引和完成计数
+SysResult_t MjpegAvi_AppendFrame(MjpegAvi_t *a, const CameraFrame_t *frame, uint32_t tick, uint32_t limit)
+{
+    uint32_t size = frame == NULL ? 0U : frame->size_bytes;
     uint8_t chunk[8], zero = 0U;
     uint32_t needed;
     SysResult_t result;
-    if (a == NULL || data == NULL || size < 4U || size > 70000U)
+    if (a == NULL || frame == NULL || frame->data == NULL || size < 4U || size > 70000U ||
+        frame->size_bytes2 > size || (frame->size_bytes2 != 0U && frame->data2 == NULL))
         return SYS_ERR_INVALID_ARG;
     if (a->failed || a->finished || a->file == 0U)
         return SYS_ERR_INVALID_STATE;
@@ -56,7 +67,9 @@ SysResult_t MjpegAvi_Append(MjpegAvi_t *a, const uint8_t *data, uint32_t size, u
     Avi_U32(chunk + 4U, size);
     result = Avi_Write(a->file, chunk, sizeof(chunk));
     if (result == SYS_OK)
-        result = Avi_Write(a->file, data, size);
+        result = Avi_Write(a->file, frame->data, size - frame->size_bytes2);
+    if (result == SYS_OK && frame->size_bytes2 != 0U)
+        result = Avi_Write(a->file, frame->data2, frame->size_bytes2);
     if (result == SYS_OK && (size & 1U) != 0U)
         result = Avi_Write(a->file, &zero, 1U);
     if (result != SYS_OK)

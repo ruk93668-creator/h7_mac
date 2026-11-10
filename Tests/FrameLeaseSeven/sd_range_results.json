@@ -1,0 +1,37 @@
+{
+  "compiler": "Product: MDK Plus 5.32\r\nComponent: ARM Compiler 5.06 update 7 (build 960)\r\nTool: armcc [4d365d]\r\nFor support see http://www.arm.com/support\r\nSoftware supplied by: ARM Limited\r\n",
+  "summary": {
+    "total": 26,
+    "passed": 26,
+    "failed": 0
+  },
+  "hardware_verified": false,
+  "cases": [
+    {"profile":"sdram_range","case":0,"name":"new_fifo_read_write_range","optimization":"O0","result":"PASS","checks":2,"failure_line":0,"error":null},
+    {"profile":"sdram_range","case":1,"name":"end_exact_and_overflow","optimization":"O0","result":"PASS","checks":2,"failure_line":0,"error":null},
+    {"profile":"sdram_range","case":2,"name":"outside_window","optimization":"O0","result":"PASS","checks":2,"failure_line":0,"error":null},
+    {"profile":"sdram_range","case":3,"name":"invalid_pointer_size","optimization":"O0","result":"PASS","checks":3,"failure_line":0,"error":null},
+    {"profile":"sdram_range","case":4,"name":"idma_private_and_mmio_rejected","optimization":"O0","result":"PASS","checks":2,"failure_line":0,"error":null},
+    {"profile":"sdram_range","case":5,"name":"flash_read_only_source","optimization":"O0","result":"PASS","checks":2,"failure_line":0,"error":null},
+    {"profile":"sdram_range","case":6,"name":"dtcm_cpu_bounce_range","optimization":"O0","result":"PASS","checks":2,"failure_line":0,"error":null},
+    {"profile":"sdram_range","case":7,"name":"high_sdram_write","optimization":"O0","result":"PASS","checks":533,"failure_line":0,"error":null},
+    {"profile":"sdram_range","case":8,"name":"unaligned_high_sdram_write","optimization":"O0","result":"PASS","checks":533,"failure_line":0,"error":null},
+    {"profile":"sdram_range","case":9,"name":"last_sdram_sector","optimization":"O0","result":"PASS","checks":533,"failure_line":0,"error":null},
+    {"profile":"sdram_range","case":10,"name":"cross_end_no_dma","optimization":"O0","result":"PASS","checks":531,"failure_line":0,"error":null},
+    {"profile":"sdram_range","case":11,"name":"high_sdram_read","optimization":"O0","result":"PASS","checks":1045,"failure_line":0,"error":null},
+    {"profile":"sdram_range","case":12,"name":"65_sector_high_sdram_write","optimization":"O0","result":"PASS","checks":533,"failure_line":0,"error":null},
+    {"profile":"sdram_range","case":0,"name":"new_fifo_read_write_range","optimization":"O2","result":"PASS","checks":2,"failure_line":0,"error":null},
+    {"profile":"sdram_range","case":1,"name":"end_exact_and_overflow","optimization":"O2","result":"PASS","checks":2,"failure_line":0,"error":null},
+    {"profile":"sdram_range","case":2,"name":"outside_window","optimization":"O2","result":"PASS","checks":2,"failure_line":0,"error":null},
+    {"profile":"sdram_range","case":3,"name":"invalid_pointer_size","optimization":"O2","result":"PASS","checks":3,"failure_line":0,"error":null},
+    {"profile":"sdram_range","case":4,"name":"idma_private_and_mmio_rejected","optimization":"O2","result":"PASS","checks":2,"failure_line":0,"error":null},
+    {"profile":"sdram_range","case":5,"name":"flash_read_only_source","optimization":"O2","result":"PASS","checks":2,"failure_line":0,"error":null},
+    {"profile":"sdram_range","case":6,"name":"dtcm_cpu_bounce_range","optimization":"O2","result":"PASS","checks":2,"failure_line":0,"error":null},
+    {"profile":"sdram_range","case":7,"name":"high_sdram_write","optimization":"O2","result":"PASS","checks":533,"failure_line":0,"error":null},
+    {"profile":"sdram_range","case":8,"name":"unaligned_high_sdram_write","optimization":"O2","result":"PASS","checks":533,"failure_line":0,"error":null},
+    {"profile":"sdram_range","case":9,"name":"last_sdram_sector","optimization":"O2","result":"PASS","checks":533,"failure_line":0,"error":null},
+    {"profile":"sdram_range","case":10,"name":"cross_end_no_dma","optimization":"O2","result":"PASS","checks":531,"failure_line":0,"error":null},
+    {"profile":"sdram_range","case":11,"name":"high_sdram_read","optimization":"O2","result":"PASS","checks":1045,"failure_line":0,"error":null},
+    {"profile":"sdram_range","case":12,"name":"65_sector_high_sdram_write","optimization":"O2","result":"PASS","checks":533,"failure_line":0,"error":null}
+  ]
+}

@@ -1,0 +1,70 @@
+{
+  "summary": {
+    "total": 6,
+    "passed": 6,
+    "failed": 0
+  },
+  "cases": [
+    {
+      "id": 0,
+      "name": "storage_static_create",
+      "result": "PASS",
+      "failed_line": 0,
+      "error": null,
+      "assertions": [],
+      "args": []
+    },
+    {
+      "id": 1,
+      "name": "duplicate_create",
+      "result": "PASS",
+      "failed_line": 0,
+      "error": null,
+      "assertions": [],
+      "args": []
+    },
+    {
+      "id": 2,
+      "name": "isr_rejected",
+      "result": "PASS",
+      "failed_line": 0,
+      "error": null,
+      "assertions": [],
+      "args": []
+    },
+    {
+      "id": 3,
+      "name": "create_failure",
+      "result": "PASS",
+      "failed_line": 0,
+      "error": null,
+      "assertions": [],
+      "args": []
+    },
+    {
+      "id": 4,
+      "name": "wait_before_boot",
+      "result": "PASS",
+      "failed_line": 0,
+      "error": null,
+      "assertions": [],
+      "args": [
+        4294967295
+      ]
+    },
+    {
+      "id": 5,
+      "name": "boot_then_block",
+      "result": "PASS",
+      "failed_line": 0,
+      "error": null,
+      "assertions": [],
+      "args": [
+        4294967295,
+        100
+      ]
+    }
+  ],
+  "hardware_verified": false,
+  "limits": "Real kernel task creation and notifications; current task and running state selected by fixture. SVC/PendSV/NVIC preemption not emulated. Storage infinite loop stopped at notification-wait API entry; file operations are mocked in this task-only suite."
+}
