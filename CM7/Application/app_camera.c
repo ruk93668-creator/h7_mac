@@ -1,20 +1,45 @@
 #include "app_camera.h"
 #include "video_config.h"
+#include "app_uvc_bridge.h"
+#include "platform_time.h"
 #include "camera_capture.h"
 #include "ov5640_device.h"
 #include <stddef.h>
 #include <stdbool.h>
 
-//相机APP保存已接受配置，底层不读取业务默认值
-static CameraConfig_t s_camera_config;
-static bool s_camera_config_set;
+//集中保存配置、设备和业务状态，运行期只由CameraTask推进
+typedef struct
+{
+    CameraConfig_t config;//保存已经接收的采集配置
+    bool config_set;//记录配置是否已经确定
+    bool configured;//记录传感器配置是否完成
+    bool initialized;//记录Device和Media准备是否完成
+    Device_t *device;//保存当前传感器Device
+    bool running;//记录采集是否已经成功启动
+    bool prepared;//保留原Media可推进及可停止判断
+    bool stopping;//记录后台停止是否需要继续重试
+    AppMessage_t ack;//保存当前命令对应的回复
+    bool ack_pending;//记录ACK是否等待成功入队
+    bool stop_command;//记录STOP命令是否尚待完成
+    bool fault_sent;//记录本轮FAULT是否已经入队
+    SysResult_t fault;//保存业务故障
+    SysResult_t last_result;//保存最近业务操作结果
+    uint32_t command_id;//保存最近接收的命令编号
+    uint32_t fps_tick;//保存FPS统计窗口起点
+    uint32_t fps_frames;//保存窗口起始帧数
+    uint32_t captured_frames;//保存Media完成帧计数
+    uint32_t dropped_frames;//保存Media丢帧计数
+    uint32_t measured_fps_milli;//保存按原公式计算的采集FPS
+    CameraConfig_t applied;//保存最近实际运行时采样的配置
+    bool applied_valid;//记录是否采样过实际运行配置
+    AppCameraDiagnosticObserver_t observer;//保存只读诊断投影入口
+} AppCameraContext_t;
 
-//分别记录传感器配置和公共初始化结果，失败重试不重复已成功步骤
-static bool s_camera_configured;
-static bool s_camera_initialized;
+//保存唯一Camera业务上下文，Task不再持有业务副本
+static AppCameraContext_t s_camera;
 
-//仅通过Device生命周期控制传感器输出
-static Device_t *s_camera_device;
+//在原Debug更新位置通知Task，不执行消息或硬件操作
+static void App_CameraObserve(AppCameraDiagnosticField_t field);
 
 //公共初始化，只配置OV5640和Media，不启动采集
 static SysResult_t App_CameraPrepare(void);
@@ -22,11 +47,12 @@ static SysResult_t App_CameraPrepare(void);
 //先启动传感器，再沿用Media的采集入口
 static SysResult_t App_CameraStart(bool stream);
 
+//校验并保存唯一采集配置，不启动传感器
 SysResult_t App_CameraConfigure(const CameraConfig_t *config)
 {
     SysResult_t result;
 
-    if (s_camera_config_set || s_camera_configured || s_camera_initialized)
+    if (s_camera.config_set || s_camera.configured || s_camera.initialized)
         return SYS_ERR_INVALID_STATE;
 
     result = Ov5640_ValidateConfig(config);
@@ -39,31 +65,35 @@ SysResult_t App_CameraConfigure(const CameraConfig_t *config)
     if (result != SYS_OK)
         return result;
 
-    s_camera_config = *config;
-    s_camera_config_set = true;
+    s_camera.config = *config;
+    s_camera.config_set = true;
     return SYS_OK;
 }
 
+//返回已经确定的配置或原默认配置
 const CameraConfig_t *App_CameraGetConfig(void)
 {
-	return s_camera_config_set ? &s_camera_config : &VideoConfig_GetDefault()->camera;
+	return s_camera.config_set ? &s_camera.config : &VideoConfig_GetDefault()->camera;
 }
 
+//沿用公共准备流程启动单帧采集
 SysResult_t App_CameraInit(void)
 {
 	return App_CameraStart(false);
 }
 
+//沿用公共准备流程启动连续采集
 SysResult_t App_CameraInitStream(void)
 {
 	return App_CameraStart(true);
 }
 
+//等待Media安全停止及归还完成后停止传感器
 SysResult_t App_CameraStop(void)
 {
 	SysResult_t result;
 
-	if ( !s_camera_initialized || s_camera_device == NULL)
+	if ( !s_camera.initialized || s_camera.device == NULL)
 		return SYS_ERR_INVALID_STATE;
 
 	//先确认DCMI和DMA安全停止，失败时保留传感器状态
@@ -76,23 +106,25 @@ SysResult_t App_CameraStop(void)
 		return SYS_ERR_BUSY;
 
 	//已停止的传感器不重复提交生命周期操作
-	if ( s_camera_device->state == DEVICE_STATE_READY)
+	if ( s_camera.device->state == DEVICE_STATE_READY)
 		return SYS_OK;
 
-	return Device_Stop(s_camera_device);
+	return Device_Stop(s_camera.device);
 }
 
+//推进Media，并保留原自动停止传感器行为
 void App_CameraRun(void)
 {
 	//推进采集流程，完整图像交给业务获取和释放
 	CameraCapture_Process();
 
 	//Media完成故障恢复或业务释放后，再停止传感器输出
-	if ( s_camera_initialized && CameraCapture_IsStopped() &&
-		s_camera_device != NULL && s_camera_device->state == DEVICE_STATE_RUNNING)
+	if ( s_camera.initialized && CameraCapture_IsStopped() &&
+		s_camera.device != NULL && s_camera.device->state == DEVICE_STATE_RUNNING)
 		(void)App_CameraStop();
 }
 
+//准备传感器和Media，失败时保留已完成的准备步骤
 static SysResult_t App_CameraPrepare(void)
 {
 	Device_t *device;
@@ -100,7 +132,7 @@ static SysResult_t App_CameraPrepare(void)
 	SysResult_t result;
 
     //相机APP自行读取默认配置，向Device和Media显式传递
-    if (!s_camera_config_set)
+    if (!s_camera.config_set)
     {
         result = App_CameraConfigure(&VideoConfig_GetDefault()->camera);
         if (result != SYS_OK)
@@ -108,16 +140,16 @@ static SysResult_t App_CameraPrepare(void)
     }
 
 	//公共初始化成功后，不再重复配置传感器和Media
-	if ( s_camera_initialized)
+	if ( s_camera.initialized)
 		return SYS_OK;
 
-	if ( !s_camera_configured)
+	if ( !s_camera.configured)
 	{
 		//获取自动注册的摄像头设备
 		device = Device_Find("ov5640");
 		if ( device == NULL)
 			return SYS_ERR_NOT_FOUND;
-		s_camera_device = device;
+		s_camera.device = device;
 		camera = FRAMEWORK_CONTAINER_OF(device, Ov5640Device_t, base);
 		if ( camera->ops == NULL || camera->ops->configure == NULL)
 			return SYS_ERR_NOT_SUPPORTED;
@@ -126,7 +158,7 @@ static SysResult_t App_CameraPrepare(void)
 		result = camera->ops->configure(camera, App_CameraGetConfig());
 		if ( result != SYS_OK)
 			return result;
-		s_camera_configured = true;
+		s_camera.configured = true;
 	}
 
 	//Media初始化失败时，保留已完成的传感器配置供下次重试
@@ -134,10 +166,11 @@ static SysResult_t App_CameraPrepare(void)
 	if ( result != SYS_OK)
 		return result;
 
-	s_camera_initialized = true;
+	s_camera.initialized = true;
 	return SYS_OK;
 }
 
+//先启动传感器再启动采集，失败时沿用原回退流程
 static SysResult_t App_CameraStart(bool stream)
 {
 	SysResult_t result;
@@ -149,16 +182,16 @@ static SysResult_t App_CameraStart(bool stream)
 		return result;
 
 	//重复采集由Media拒绝，不重复启动已经运行的传感器
-	if ( s_camera_device->state == DEVICE_STATE_READY)
+	if ( s_camera.device->state == DEVICE_STATE_READY)
 	{
-		result = Device_Start(s_camera_device);
+		result = Device_Start(s_camera.device);
 		if ( result != SYS_OK)
 			return result;
 		sensor_started = true;
 	}
-	else if ( s_camera_device->state == DEVICE_STATE_BUSY)
+	else if ( s_camera.device->state == DEVICE_STATE_BUSY)
 		return SYS_ERR_BUSY;
-	else if ( s_camera_device->state != DEVICE_STATE_RUNNING)
+	else if ( s_camera.device->state != DEVICE_STATE_RUNNING)
 		return SYS_ERR_INVALID_STATE;
 
 	result = stream ? CameraCapture_StartStream() : CameraCapture_Start();
@@ -168,4 +201,238 @@ static SysResult_t App_CameraStart(bool stream)
 	//本轮采集启动失败，先恢复Media，再停止本轮开启的传感器
 	stop_result = App_CameraStop();
 	return stop_result != SYS_OK ? stop_result : result;
+}
+
+//登记只做诊断投影的观察者，不推进业务或读取硬件
+void App_CameraSetDiagnosticObserver(AppCameraDiagnosticObserver_t observer)
+{
+    s_camera.observer = observer;
+}
+
+//保留ACK和STOP等待期间的命令接收门控
+bool App_CameraCanAcceptCommand(void)
+{
+    return !s_camera.ack_pending && !s_camera.stop_command;
+}
+
+//处理一条已经接收的控制命令，保持原START和STOP决策
+void App_CameraHandleCommand(const AppMessage_t *command)
+{
+    SysResult_t result;
+
+    //空参数不构造回复，合法命令仍按原队列门控调用
+    if (command == NULL)
+        return;
+
+    //先建立回复及命令诊断，再执行原命令分支
+    s_camera.ack = *command;
+    s_camera.ack.type = APP_MESSAGE_ACK;
+    s_camera.ack.source = RUNTIME_TARGET_CAMERA;
+    s_camera.ack.result = SYS_ERR_INVALID_ARG;
+    s_camera.command_id = command->command_id;
+    App_CameraObserve(APP_CAMERA_DIAG_COMMAND);
+    if (command->type == APP_MESSAGE_START)
+    {
+        //运行或停止中仍回复BUSY，不创建新的采集会话
+        if (s_camera.running || s_camera.stopping)
+            result = SYS_ERR_BUSY;
+        else
+        {
+
+            //先建立新代次，再配置并启动传感器和Media
+            result = App_UvcBridgeCameraBegin();
+            if (result == SYS_OK)
+                result = App_CameraInitStream();
+            s_camera.prepared = CameraCapture_GetLastResult() != SYS_ERR_INVALID_STATE;
+            if (result == SYS_OK)
+            {
+                s_camera.running = true;
+                s_camera.fault = SYS_OK;
+                s_camera.fault_sent = false;
+                s_camera.fps_tick = Platform_TimeGetMs();
+                s_camera.fps_frames = 0U;
+            }
+            else if (s_camera.prepared)
+                s_camera.stopping = true;
+        }
+        //保留原错误记录和ACK结果，不额外重置已交付FAULT
+        if (result != SYS_OK && result != SYS_ERR_BUSY)
+            s_camera.fault = result;
+        s_camera.ack.result = result;
+        s_camera.ack_pending = true;
+        s_camera.last_result = result;
+        App_CameraObserve(APP_CAMERA_DIAG_RESULT);
+    }
+    else if (command->type == APP_MESSAGE_STOP)
+    {
+
+        //先停止新Offer，已有租借必须由USB完成Return握手
+        s_camera.stopping = true;
+        s_camera.stop_command = true;
+    }
+    else
+        s_camera.ack_pending = true;
+}
+
+//推进Media并识别采集故障，不在这里处理Bridge和STOP回复
+void App_CameraProcess(void)
+{
+    SysResult_t result;
+
+    if (s_camera.prepared)
+    {
+
+        //只有CameraTask调用Media任务侧API，ISR仍使用原轮换回调
+        App_CameraRun();
+        result = CameraCapture_GetLastResult();
+        if (result != SYS_OK && s_camera.running)
+        {
+            s_camera.fault = result;
+            s_camera.running = false;
+            s_camera.stopping = true;
+            s_camera.last_result = result;
+            App_CameraObserve(APP_CAMERA_DIAG_RESULT);
+        }
+    }
+
+}
+
+//仅在运行且没有停止要求时允许Bridge申请新帧
+bool App_CameraCanOfferFrame(void)
+{
+    return s_camera.running && !s_camera.stopping;
+}
+
+//在Bridge处理后尝试停止，并按原时点更新采集统计
+void App_CameraFinishRound(void)
+{
+    CameraCaptureStats_t stats;
+    SysResult_t result;
+    uint32_t now, elapsed, frames;
+
+    if (s_camera.stopping)
+    {
+        result = s_camera.prepared ? App_CameraStop() : SYS_OK;
+        //只有底层停止成功才检查Bridge，不能跳过归还确认
+        if (result == SYS_OK && !App_UvcBridgeCameraIsIdle())
+            result = SYS_ERR_BUSY;
+        if (result == SYS_OK)
+        {
+            s_camera.stopping = false;
+            s_camera.running = false;
+        }
+        //BUSY继续等待，其他结果回复一次但失败后仍重试停止
+        if (s_camera.stop_command && result != SYS_ERR_BUSY)
+        {
+            s_camera.ack.result = result;
+            s_camera.ack_pending = true;
+            s_camera.stop_command = false;
+            s_camera.last_result = result;
+            App_CameraObserve(APP_CAMERA_DIAG_RESULT);
+        }
+        if (result != SYS_OK && result != SYS_ERR_BUSY && s_camera.fault == SYS_OK)
+            s_camera.fault = result;
+    }
+    App_CameraObserve(APP_CAMERA_DIAG_STATE);
+
+    //保持原统计读取及取时时点，不把配置帧率作为实测值
+    if (s_camera.prepared && CameraCapture_GetStats(&stats) == SYS_OK)
+    {
+        s_camera.captured_frames = stats.completed_frames;
+        s_camera.dropped_frames = stats.dropped_frames;
+        App_CameraObserve(APP_CAMERA_DIAG_COUNTERS);
+        now = Platform_TimeGetMs();
+        elapsed = now - s_camera.fps_tick;
+        if (elapsed >= 1000U)
+        {
+            frames = stats.completed_frames - s_camera.fps_frames;
+            s_camera.measured_fps_milli = frames <= 4294U ? frames * 1000000U / elapsed : 0U;
+            App_CameraObserve(APP_CAMERA_DIAG_FPS);
+            s_camera.fps_tick = now;
+            s_camera.fps_frames = stats.completed_frames;
+        }
+    }
+}
+
+//复制待发送ACK，读取或发送失败时不消耗原记录
+bool App_CameraGetPendingAck(AppMessage_t *message)
+{
+    if (message == NULL || !s_camera.ack_pending)
+        return false;
+    *message = s_camera.ack;
+    return true;
+}
+
+//仅在CameraTask确认ACK成功进入Control队列后清除待发标记
+void App_CameraConfirmAckEnqueued(void)
+{
+    s_camera.ack_pending = false;
+}
+
+//独立构造FAULT，不受ACK是否成功入队影响
+bool App_CameraGetPendingFault(AppMessage_t *message)
+{
+    AppMessage_t fault = {.type = APP_MESSAGE_FAULT};
+
+    if (message == NULL || s_camera.fault == SYS_OK || s_camera.fault_sent)
+        return false;
+    fault.source = RUNTIME_TARGET_CAMERA;
+    fault.result = s_camera.fault;
+    *message = fault;
+    return true;
+}
+
+//仅在FAULT成功进入Control队列后记录已经交付
+void App_CameraConfirmFaultEnqueued(void)
+{
+    s_camera.fault_sent = true;
+}
+
+//在原状态发布位置采样运行配置，停止后保留最近应用记录
+void App_CameraSampleStatus(void)
+{
+    const CameraConfig_t *config;
+
+    if (s_camera.running)
+    {
+        config = App_CameraGetConfig();
+        if (config != NULL)
+        {
+            s_camera.applied = *config;
+            s_camera.applied_valid = true;
+        }
+    }
+}
+
+//读取完整业务副本，不采样配置或修改采集及停止状态
+void App_CameraGetStatus(AppCameraRuntimeStatus_t *status)
+{
+    if (status == NULL)
+        return;
+    status->state = s_camera.stopping ? 2U : (s_camera.running ? 1U : 0U);
+    status->command_id = s_camera.command_id;
+    status->last_result = s_camera.last_result;
+    status->captured_frames = s_camera.captured_frames;
+    status->dropped_frames = s_camera.dropped_frames;
+    status->measured_fps_milli = s_camera.measured_fps_milli;
+    status->applied = s_camera.applied;
+    status->applied_valid = s_camera.applied_valid;
+}
+
+//读取最近业务结果，不覆盖任务独立记录的等待错误
+SysResult_t App_CameraGetLastResult(void)
+{
+    return s_camera.last_result;
+}
+
+//在原更新位置生成只读副本，观察者只投影指定诊断字段
+static void App_CameraObserve(AppCameraDiagnosticField_t field)
+{
+    AppCameraRuntimeStatus_t status;
+
+    if (s_camera.observer != NULL)
+    {
+        App_CameraGetStatus(&status);
+        s_camera.observer(field, &status);
+    }
 }

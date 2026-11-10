@@ -4,7 +4,6 @@
 #include "app_messages.h"
 #include "app_camera.h"
 #include "app_uvc_bridge.h"
-#include "camera_capture.h"
 #include "platform_time.h"
 #include "platform_sync.h"
 #include <stddef.h>
@@ -25,36 +24,6 @@ static StackType_t s_camera_stack[CAMERA_TASK_STACK_WORDS] __attribute__((aligne
 //保存唯一Camera任务句柄
 static TaskHandle_t s_camera_task;
 
-//记录采集是否已成功启动
-static bool s_camera_running;
-
-//记录是否已有可停止的Media实例
-static bool s_camera_prepared;
-
-//记录停止要求，失败时也不能重新交付图像
-static bool s_camera_stopping;
-
-//保留待交付ACK，不因队列满丢失命令结果
-static AppMessage_t s_camera_ack;
-
-//记录ACK是否仍需入队
-static bool s_camera_ack_pending;
-
-//记录停止命令是否仍在等待资源归还
-static bool s_camera_stop_command;
-
-//记录故障是否已送达Control
-static bool s_camera_fault_sent;
-
-//保存最近一次实际采集故障
-static SysResult_t s_camera_fault;
-
-//保存FPS统计窗口的起点
-static uint32_t s_camera_fps_tick;
-
-//保存统计窗口起点的完整帧数
-static uint32_t s_camera_fps_frames;
-
 //记录任务状态和真实采集计数
 volatile CameraTaskDebug_t g_camera_task_debug;
 
@@ -70,6 +39,11 @@ static void CameraTask_PublishStatus(void);
 //重试提交控制回复和故障提示
 static void CameraTask_Reply(void);
 
+//在原业务更新位置投影Debug，不保存第二份业务状态
+static void CameraTask_Observe(AppCameraDiagnosticField_t field,
+    const AppCameraRuntimeStatus_t *status);
+
+//创建并登记唯一静态Camera任务
 SysResult_t CameraTask_Create(void)
 {
 
@@ -104,6 +78,9 @@ static void CameraTask_Run(void *argument)
     SysResult_t result;
     (void)argument;
 
+    //观察者只复制诊断字段，BOOT和等待错误仍归任务维护
+    App_CameraSetDiagnosticObserver(CameraTask_Observe);
+
     for (;;)
     {
 
@@ -136,9 +113,6 @@ static void CameraTask_Process(uint32_t events)
 {
 
     AppMessage_t command;
-    CameraCaptureStats_t stats;
-    SysResult_t result;
-    uint32_t now, elapsed, frames;
 
     if (!App_MessagesIsOwner(RUNTIME_TARGET_CAMERA))
         return;
@@ -149,154 +123,80 @@ static void CameraTask_Process(uint32_t events)
     g_camera_task_debug.wake_count++;
     CameraTask_Reply();
 
-    //有未交付结果时不能覆盖ACK；命令和帧通道互相独立
-    if (!s_camera_ack_pending && !s_camera_stop_command &&
+    //ACK或STOP未完成时不接收新命令，每轮仍最多接收一条
+    if (App_CameraCanAcceptCommand() &&
         App_MessagesReceive(APP_CHANNEL_CAMERA_COMMAND, &command))
-    {
-        s_camera_ack = command;
-        s_camera_ack.type = APP_MESSAGE_ACK;
-        s_camera_ack.source = RUNTIME_TARGET_CAMERA;
-        s_camera_ack.result = SYS_ERR_INVALID_ARG;
-        g_camera_task_debug.command_id = command.command_id;
-        if (command.type == APP_MESSAGE_START)
-        {
-            if (s_camera_running || s_camera_stopping)
-                result = SYS_ERR_BUSY;
-            else
-            {
+        App_CameraHandleCommand(&command);
 
-                //先建立新代次，再配置并启动传感器和Media
-                result = App_UvcBridgeCameraBegin();
-                if (result == SYS_OK)
-                    result = App_CameraInitStream();
-                s_camera_prepared = CameraCapture_GetLastResult() != SYS_ERR_INVALID_STATE;
-                if (result == SYS_OK)
-                {
-                    s_camera_running = true;
-                    s_camera_fault = SYS_OK;
-                    s_camera_fault_sent = false;
-                    s_camera_fps_tick = Platform_TimeGetMs();
-                    s_camera_fps_frames = 0U;
-                }
-                else if (s_camera_prepared)
-                    s_camera_stopping = true;
-            }
-            if (result != SYS_OK && result != SYS_ERR_BUSY)
-                s_camera_fault = result;
-            s_camera_ack.result = result;
-            s_camera_ack_pending = true;
-            g_camera_task_debug.result = result;
-        }
-        else if (command.type == APP_MESSAGE_STOP)
-        {
-
-            //先停止新Offer，已有租借必须由USB完成Return握手
-            s_camera_stopping = true;
-            s_camera_stop_command = true;
-        }
-        else
-            s_camera_ack_pending = true;
-    }
-
-    if (s_camera_prepared)
-    {
-
-        //只有CameraTask调用Media任务侧API，ISR仍使用原轮换回调
-        App_CameraRun();
-        result = CameraCapture_GetLastResult();
-        if (result != SYS_OK && s_camera_running)
-        {
-            s_camera_fault = result;
-            s_camera_running = false;
-            s_camera_stopping = true;
-            g_camera_task_debug.result = result;
-        }
-    }
-
-    //归还始终可推进，停机或故障期间拒绝新的取帧请求
-    App_UvcBridgeCameraProcess(s_camera_running && !s_camera_stopping);
-    if (s_camera_stopping)
-    {
-        result = s_camera_prepared ? App_CameraStop() : SYS_OK;
-        if (result == SYS_OK && !App_UvcBridgeCameraIsIdle())
-            result = SYS_ERR_BUSY;
-        if (result == SYS_OK)
-        {
-            s_camera_stopping = false;
-            s_camera_running = false;
-        }
-        if (s_camera_stop_command && result != SYS_ERR_BUSY)
-        {
-            s_camera_ack.result = result;
-            s_camera_ack_pending = true;
-            s_camera_stop_command = false;
-            g_camera_task_debug.result = result;
-        }
-        if (result != SYS_OK && result != SYS_ERR_BUSY && s_camera_fault == SYS_OK)
-            s_camera_fault = result;
-    }
-    g_camera_task_debug.state = s_camera_stopping ? 2U : (s_camera_running ? 1U : 0U);
-
-    if (s_camera_prepared && CameraCapture_GetStats(&stats) == SYS_OK)
-    {
-        g_camera_task_debug.captured_frames = stats.completed_frames;
-        g_camera_task_debug.dropped_frames = stats.dropped_frames;
-        now = Platform_TimeGetMs();
-        elapsed = now - s_camera_fps_tick;
-        if (elapsed >= 1000U)
-        {
-            frames = stats.completed_frames - s_camera_fps_frames;
-            g_camera_task_debug.measured_fps_milli = frames <= 4294U ? frames * 1000000U / elapsed : 0U;
-            s_camera_fps_tick = now;
-            s_camera_fps_frames = stats.completed_frames;
-        }
-    }
+    //保持Media、Bridge归还和停止完成的原执行顺序
+    App_CameraProcess();
+    App_UvcBridgeCameraProcess(App_CameraCanOfferFrame());
+    App_CameraFinishRound();
     CameraTask_Reply();
 }
 
-//重试提交控制回复和故障提示
+//重试独立的ACK和FAULT，ACK队列满也继续尝试FAULT
 static void CameraTask_Reply(void)
 {
-    AppMessage_t message = {.type = APP_MESSAGE_FAULT};
+    AppMessage_t message;
 
-    if (s_camera_ack_pending && App_MessagesSend(APP_CHANNEL_CONTROL, &s_camera_ack) == SYS_OK)
-        s_camera_ack_pending = false;
-    if (s_camera_fault != SYS_OK && !s_camera_fault_sent)
-    {
-        message.type = APP_MESSAGE_FAULT;
-        message.source = RUNTIME_TARGET_CAMERA;
-        message.result = s_camera_fault;
-        if (App_MessagesSend(APP_CHANNEL_CONTROL, &message) == SYS_OK)
-            s_camera_fault_sent = true;
-    }
+    //只有成功入队才能确认ACK，失败时由业务上下文保留
+    if (App_CameraGetPendingAck(&message) &&
+        App_MessagesSend(APP_CHANNEL_CONTROL, &message) == SYS_OK)
+        App_CameraConfirmAckEnqueued();
+
+    //FAULT独立交付，不因ACK失败而跳过
+    if (App_CameraGetPendingFault(&message) &&
+        App_MessagesSend(APP_CHANNEL_CONTROL, &message) == SYS_OK)
+        App_CameraConfirmFaultEnqueued();
 }
 
-//提交Camera任务自己的统计和已成功启动过的配置
+//提交原诊断口径和最近运行配置，保持状态发布位置
 static void CameraTask_PublishStatus(void)
 {
-    static CameraConfig_t applied;
-    static bool applied_valid;
+    AppCameraRuntimeStatus_t camera;
     AppCameraStatus_t status = {0};
-    const CameraConfig_t *config;
 
-    //只有原启动路径成功后才把配置声明为实际应用
-    if (s_camera_running)
-    {
-        config = App_CameraGetConfig();
-        if (config != NULL)
-        {
-            applied = *config;
-            applied_valid = true;
-        }
-    }
+    //显式采样与只读Getter分开，保留原配置记录时点
+    App_CameraSampleStatus();
+    App_CameraGetStatus(&camera);
+
+    //业务诊断按原时点更新，result保留任务等待错误的原语义
     status.state = g_camera_task_debug.state;
     status.fps_milli = g_camera_task_debug.measured_fps_milli;
     status.captured_frames = g_camera_task_debug.captured_frames;
     status.dropped_frames = g_camera_task_debug.dropped_frames;
     status.result = g_camera_task_debug.result;
-    status.config_valid = applied_valid;
-    status.width = applied.width;
-    status.height = applied.height;
-    status.format = applied.format;
+    status.config_valid = camera.applied_valid;
+    status.width = camera.applied.width;
+    status.height = camera.applied.height;
+    status.format = camera.applied.format;
     (void)App_StatusPublishCamera(&status);
+}
+
+//只更新指定Debug字段，不根据Debug反向改变Camera业务
+static void CameraTask_Observe(AppCameraDiagnosticField_t field,
+    const AppCameraRuntimeStatus_t *status)
+{
+    switch (field)
+    {
+        case APP_CAMERA_DIAG_COMMAND:
+            g_camera_task_debug.command_id = status->command_id;
+            break;
+        case APP_CAMERA_DIAG_RESULT:
+            g_camera_task_debug.result = status->last_result;
+            break;
+        case APP_CAMERA_DIAG_STATE:
+            g_camera_task_debug.state = status->state;
+            break;
+        case APP_CAMERA_DIAG_COUNTERS:
+            g_camera_task_debug.captured_frames = status->captured_frames;
+            g_camera_task_debug.dropped_frames = status->dropped_frames;
+            break;
+        case APP_CAMERA_DIAG_FPS:
+            g_camera_task_debug.measured_fps_milli = status->measured_fps_milli;
+            break;
+        default:
+            break;
+    }
 }

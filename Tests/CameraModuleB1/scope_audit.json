@@ -1,0 +1,26 @@
+{
+  "baseline": "e44f549ee39a18f51fa2473d5ef4b10ce3b5753e",
+  "checks": {
+    "only_authorized_production_files": true,
+    "historical_tests_unchanged": true,
+    "task_stack_1536_words": true,
+    "task_priority_3": true,
+    "task_wait_20ms": true,
+    "stack_scan_1000ms": true,
+    "no_task_business_statics": true,
+    "no_business_freertos_calls": true,
+    "main_unchanged": true
+  },
+  "changed_production_files": [
+    "CM7/Application/Tasks/camera_task.c",
+    "CM7/Application/app_camera.c",
+    "CM7/Application/app_camera.h"
+  ],
+  "historical_test_changes": [],
+  "production_sha256": {
+    "CM7/Application/Tasks/camera_task.c": "b9ed8d0322a6169a5de651a4ca3396d7990c6cd4be8d0e6b88f5890184895db6",
+    "CM7/Application/app_camera.c": "c843bfe152550e30cbb8dd5282d97fa969923e0346e6b42a89a8b182e79818ab",
+    "CM7/Application/app_camera.h": "2cf42af82b35bfcd947ee8af41310579eb9e7598130625fb5434ebb14e195648"
+  },
+  "note": "Scope checks are static checks, not executable or hardware validation."
+}

@@ -1,0 +1,73 @@
+{
+  "targets": [
+    {
+      "target": "h7_mac_CM7",
+      "command": [
+        "D:/32/UV4/UV4.exe",
+        "-j0",
+        "-r",
+        "D:\\32\\STM32H7\\h7_mac\\MDK-ARM\\h7_mac.uvprojx",
+        "-t",
+        "h7_mac_CM7",
+        "-o",
+        "D:\\32\\STM32H7\\h7_mac\\output\\CameraModuleB1\\build\\h7_mac_CM7_rebuild.log"
+      ],
+      "exit": 0,
+      "errors": 0,
+      "warnings": 0,
+      "pass": true,
+      "artifacts": {
+        ".axf": "D:\\32\\STM32H7\\h7_mac\\MDK-ARM\\h7_mac_CM7\\h7_mac_CM7.axf",
+        ".hex": "D:\\32\\STM32H7\\h7_mac\\MDK-ARM\\h7_mac_CM7\\h7_mac_CM7.hex",
+        ".map": "D:\\32\\STM32H7\\h7_mac\\MDK-ARM\\h7_mac_CM7\\h7_mac_CM7.map"
+      },
+      "log_sha256": "c5667ea5622f5d1f88d4fc355bd4752a44fbf69c30198dcde1dea57ab7c3893a",
+      "artifacts_exist": {
+        ".axf": true,
+        ".hex": false,
+        ".map": true
+      },
+      "source_sha256": {
+        "CM7/Application/Tasks/camera_task.c": "b9ed8d0322a6169a5de651a4ca3396d7990c6cd4be8d0e6b88f5890184895db6",
+        "CM7/Application/app_camera.c": "c843bfe152550e30cbb8dd5282d97fa969923e0346e6b42a89a8b182e79818ab",
+        "CM7/Application/app_camera.h": "2cf42af82b35bfcd947ee8af41310579eb9e7598130625fb5434ebb14e195648"
+      },
+      "hex_enabled_in_unchanged_project": false
+    },
+    {
+      "target": "h7_mac_CM4",
+      "command": [
+        "D:/32/UV4/UV4.exe",
+        "-j0",
+        "-r",
+        "D:\\32\\STM32H7\\h7_mac\\MDK-ARM\\h7_mac.uvprojx",
+        "-t",
+        "h7_mac_CM4",
+        "-o",
+        "D:\\32\\STM32H7\\h7_mac\\output\\CameraModuleB1\\build\\h7_mac_CM4_rebuild.log"
+      ],
+      "exit": 0,
+      "errors": 0,
+      "warnings": 0,
+      "pass": true,
+      "artifacts": {
+        ".axf": "D:\\32\\STM32H7\\h7_mac\\MDK-ARM\\h7_mac_CM4\\h7_mac_CM4.axf",
+        ".hex": "D:\\32\\STM32H7\\h7_mac\\MDK-ARM\\h7_mac_CM4\\h7_mac_CM4.hex",
+        ".map": "D:\\32\\STM32H7\\h7_mac\\MDK-ARM\\h7_mac_CM4\\h7_mac_CM4.map"
+      },
+      "log_sha256": "af06751725163825344af6b2dc038590f42024a8530744e9245faafc198fb4c7",
+      "artifacts_exist": {
+        ".axf": true,
+        ".hex": true,
+        ".map": true
+      },
+      "source_sha256": {
+        "CM7/Application/Tasks/camera_task.c": "b9ed8d0322a6169a5de651a4ca3396d7990c6cd4be8d0e6b88f5890184895db6",
+        "CM7/Application/app_camera.c": "c843bfe152550e30cbb8dd5282d97fa969923e0346e6b42a89a8b182e79818ab",
+        "CM7/Application/app_camera.h": "2cf42af82b35bfcd947ee8af41310579eb9e7598130625fb5434ebb14e195648"
+      },
+      "hex_enabled_in_unchanged_project": true
+    }
+  ],
+  "project_unchanged": true
+}
