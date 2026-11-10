@@ -10,6 +10,9 @@
 #define IPC_TASK_STACK_WORDS 512U
 #define IPC_TASK_PRIORITY 1U
 
+//栈余量统计周期，不作为任务唤醒周期
+#define IPC_TASK_STACK_SAMPLE_MS 1000U
+
 //保存唯一IPC任务的静态控制块
 static StaticTask_t s_ipc_tcb;
 
@@ -60,6 +63,10 @@ SysResult_t IpcTask_Create(void)
 static void IpcTask_Run(void *argument)
 {
     uint32_t events;
+
+    //独立记录栈扫描时刻，不改变任务等待和业务周期
+    uint32_t stack_tick = Platform_TimeGetMs();
+    uint32_t stack_now;
     uint32_t application_tick = 0U;
     IpcApplicationStatus_t application = {0};
     SysResult_t result;
@@ -94,7 +101,14 @@ static void IpcTask_Run(void *argument)
 
         //记录任务运行次数和历史栈余量，供实板检查调度与资源
         g_ipc_task_debug.wake_count++;
-        g_ipc_task_debug.stack_free_words = uxTaskGetStackHighWaterMark(NULL);
+
+        //栈余量按实际经过时间更新，不补做错过的扫描
+        stack_now = Platform_TimeGetMs();
+        if ((uint32_t)(stack_now - stack_tick) >= IPC_TASK_STACK_SAMPLE_MS)
+        {
+            stack_tick = stack_now;
+            g_ipc_task_debug.stack_free_words = uxTaskGetStackHighWaterMark(NULL);
+        }
 
         //让出CPU，调度延迟只记一次真实心跳，不进行突发补偿
         vTaskDelay(pdMS_TO_TICKS(IPC_HEARTBEAT_PERIOD_MS));

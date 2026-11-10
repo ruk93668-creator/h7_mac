@@ -2,6 +2,7 @@
 
 //主机请求：IRQ -> HAL PCD -> 回调表 -> USB Device Core
 #include "bsp_usb.h"
+
 #include "framework_init.h"
 #include "stm32h7xx_hal.h"
 #include <stddef.h>
@@ -85,6 +86,7 @@ SysResult_t BSP_USB_Init(void)
     SysResult_t result;
     if (s_ready)
         return SYS_OK;
+
     result = Usb_ClockInit();
     if (result != SYS_OK)
         return result;
@@ -404,7 +406,6 @@ SysResult_t BSP_USB_AbortAll(void)
     memset(s_rx_active, 0, sizeof(s_rx_active));
     return SYS_OK;
 }
-
 
 //清空空闲端点FIFO；OUT方向共享RX，存在任一接收时禁止清空
 SysResult_t BSP_USB_FlushEp(uint8_t ep)

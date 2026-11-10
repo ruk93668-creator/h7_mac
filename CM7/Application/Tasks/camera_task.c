@@ -1,6 +1,5 @@
 #include "camera_task.h"
 #include "app_status.h"
-#include "app_camera_jpeg.h"
 #include "app_events.h"
 #include "app_messages.h"
 #include "app_camera.h"
@@ -14,6 +13,9 @@
 #define CAMERA_TASK_PRIORITY 3U
 #define CAMERA_TASK_WAIT_MS 20U
 
+//栈余量统计周期，不作为任务唤醒周期
+#define CAMERA_TASK_STACK_SAMPLE_MS 1000U
+
 //保存Camera任务的静态控制信息
 static StaticTask_t s_camera_tcb;
 
@@ -22,8 +24,6 @@ static StackType_t s_camera_stack[CAMERA_TASK_STACK_WORDS] __attribute__((aligne
 
 //保存唯一Camera任务句柄
 static TaskHandle_t s_camera_task;
-
-#if !APP_CAMERA_JPEG_TEST_ENABLED
 
 //记录采集是否已成功启动
 static bool s_camera_running;
@@ -55,8 +55,6 @@ static uint32_t s_camera_fps_tick;
 //保存统计窗口起点的完整帧数
 static uint32_t s_camera_fps_frames;
 
-#endif
-
 //记录任务状态和真实采集计数
 volatile CameraTaskDebug_t g_camera_task_debug;
 
@@ -69,12 +67,8 @@ static void CameraTask_Process(uint32_t events);
 //提交本任务已完成处理的状态，不读写其他任务或SRAM4
 static void CameraTask_PublishStatus(void);
 
-#if !APP_CAMERA_JPEG_TEST_ENABLED
-
 //重试提交控制回复和故障提示
 static void CameraTask_Reply(void);
-
-#endif
 
 SysResult_t CameraTask_Create(void)
 {
@@ -103,6 +97,10 @@ SysResult_t CameraTask_Create(void)
 static void CameraTask_Run(void *argument)
 {
     uint32_t events;
+
+    //独立记录栈扫描时刻，不改变任务等待和业务周期
+    uint32_t stack_tick = Platform_TimeGetMs();
+    uint32_t stack_now;
     SysResult_t result;
     (void)argument;
 
@@ -122,23 +120,20 @@ static void CameraTask_Run(void *argument)
         }
         CameraTask_Process(events);
         CameraTask_PublishStatus();
-        g_camera_task_debug.stack_free_words = uxTaskGetStackHighWaterMark(NULL);
+
+        //栈余量按实际经过时间更新，不补做错过的扫描
+        stack_now = Platform_TimeGetMs();
+        if ((uint32_t)(stack_now - stack_tick) >= CAMERA_TASK_STACK_SAMPLE_MS)
+        {
+            stack_tick = stack_now;
+            g_camera_task_debug.stack_free_words = uxTaskGetStackHighWaterMark(NULL);
+        }
     }
 }
 
 //处理相机命令、Media进展和帧归还
 static void CameraTask_Process(uint32_t events)
 {
-#if APP_CAMERA_JPEG_TEST_ENABLED
-
-    //独立验收仍等待BOOT屏障，并由唯一CameraTask持有资源
-    if (!App_MessagesIsOwner(RUNTIME_TARGET_CAMERA))
-        return;
-    if ((events & RUNTIME_EVENT_BOOT_READY) != 0U)
-        g_camera_task_debug.boot_seen = 1U;
-    if (g_camera_task_debug.boot_seen != 0U)
-        App_CameraJpegProcess();
-#else
 
     AppMessage_t command;
     CameraCaptureStats_t stats;
@@ -257,10 +252,7 @@ static void CameraTask_Process(uint32_t events)
         }
     }
     CameraTask_Reply();
-#endif
 }
-
-#if !APP_CAMERA_JPEG_TEST_ENABLED
 
 //重试提交控制回复和故障提示
 static void CameraTask_Reply(void)
@@ -278,12 +270,10 @@ static void CameraTask_Reply(void)
             s_camera_fault_sent = true;
     }
 }
-#endif
 
 //提交Camera任务自己的统计和已成功启动过的配置
 static void CameraTask_PublishStatus(void)
 {
-#if !APP_CAMERA_JPEG_TEST_ENABLED
     static CameraConfig_t applied;
     static bool applied_valid;
     AppCameraStatus_t status = {0};
@@ -309,5 +299,4 @@ static void CameraTask_PublishStatus(void)
     status.height = applied.height;
     status.format = applied.format;
     (void)App_StatusPublishCamera(&status);
-#endif
 }

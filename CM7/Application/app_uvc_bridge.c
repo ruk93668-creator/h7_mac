@@ -1,4 +1,6 @@
 #include "app_uvc_bridge.h"
+#include "app_frame_dispatcher.h"
+#include "platform_time.h"
 #include "video_config.h"
 #include "usb_mode.h"
 #include "framework_init.h"
@@ -23,6 +25,7 @@ typedef struct
     uint32_t epoch;
     uint32_t next_lease;
     bool held;
+    bool local_only;
     bool request_pending;
     bool offer_pending;
     bool ack_pending;
@@ -117,6 +120,7 @@ SysResult_t App_UvcBridgeCameraBegin(void)
     //即使后续硬件启动失败，也不重用已经发布过的epoch
     s_camera_bridge.epoch++;
     s_camera_bridge.next_lease = 0U;
+    (void)App_FrameDispatcherBegin(s_camera_bridge.epoch);
     g_bridge_debug.stream_epoch = s_camera_bridge.epoch;
     return SYS_OK;
 }
@@ -134,11 +138,15 @@ void App_UvcBridgeCameraProcess(bool enabled)
 {
     AppMessage_t message;
     uint32_t i;
+    AppFrameMeta_t meta = {0};
 
     if (!App_MessagesIsOwner(RUNTIME_TARGET_CAMERA) || !s_bridge_configured)
         return;
 
     //队列满时保留完整回复和凭据，不能取得第二张Media帧
+    //SD只返回凭据，由Camera确认后才允许Media回收
+    App_StorageProcessReturns();
+
     if (!Bridge_CameraFlush())
         return;
     if (s_camera_bridge.release_pending && !Bridge_CameraRelease())
@@ -205,6 +213,21 @@ void App_UvcBridgeCameraProcess(bool enabled)
             g_bridge_debug.rejected_messages++;
     }
 
+    //没有USB请求时，SD可独立取得完整帧；仍使用同一份Media持有记录
+    if (!s_camera_bridge.request_pending && !s_camera_bridge.held && enabled &&
+        App_FrameDispatcherCanAcquire() && App_FrameDispatcherNeedsStorage())
+    {
+        if (CameraCapture_StreamGetFrame(&s_camera_bridge.offer.frame))
+        {
+            s_camera_bridge.held = true;
+            s_camera_bridge.local_only = true;
+            s_camera_bridge.release_pending = true;
+            g_bridge_debug.acquired_frames++;
+            (void)App_FrameDispatcherPublish(&s_camera_bridge.offer.frame, &meta);
+            (void)Bridge_CameraRelease();
+        }
+        return;
+    }
     if (!s_camera_bridge.request_pending || s_camera_bridge.held)
         return;
     memset(&s_camera_bridge.offer, 0, sizeof(s_camera_bridge.offer));
@@ -215,7 +238,7 @@ void App_UvcBridgeCameraProcess(bool enabled)
 
     if (enabled)
     {
-        if (s_camera_bridge.next_lease == UINT32_MAX)
+        if (s_camera_bridge.next_lease == UINT32_MAX || !App_FrameDispatcherCanAcquire())
             s_camera_bridge.offer.result = SYS_ERR_NO_RESOURCE;
         else if (!CameraCapture_StreamGetFrame(&s_camera_bridge.offer.frame))
             return;
@@ -224,6 +247,11 @@ void App_UvcBridgeCameraProcess(bool enabled)
 
             //先登记持有再发送，USB高优先级任务可能在入队后立即运行
             s_camera_bridge.held = true;
+
+            //原帧交给USB前登记租借SD租借，失败只计存储丢帧
+            (void)App_FrameDispatcherPublish(&s_camera_bridge.offer.frame, &meta);
+            s_camera_bridge.offer.frame_id = meta.frame_id;
+            s_camera_bridge.offer.timestamp_ms = meta.timestamp_ms;
             s_camera_bridge.offer.lease_id = ++s_camera_bridge.next_lease;
             g_bridge_debug.acquired_frames++;
         }
@@ -309,7 +337,7 @@ void App_UvcBridgeUsbProcess(bool enabled)
         {
             VideoFrameView_t view = {0};
 
-            //只复制帧描述，JPEG字节始终留在DMA写入的SDRAM范围
+            //只登记租借帧描述，JPEG字节始终留在DMA写入的SDRAM范围
             if (frame->size_bytes2 >= frame->size_bytes ||
                 (frame->size_bytes2 != 0U && frame->data2 == NULL))
                 result = SYS_ERR_INVALID_ARG;
@@ -435,6 +463,14 @@ static bool Bridge_CameraRelease(void)
     //Media确认释放后才生成成功ACK，队列满也不会再次调用Release
     s_camera_bridge.held = false;
     s_camera_bridge.release_pending = false;
+
+    //SD-only借帧没有USB租约，不生成伪ReturnAck
+    if (s_camera_bridge.local_only)
+    {
+        s_camera_bridge.local_only = false;
+        g_bridge_debug.released_frames++;
+        return true;
+    }
     s_camera_bridge.ack = s_camera_bridge.offer;
     s_camera_bridge.ack.type = APP_MESSAGE_RETURN_ACK;
     s_camera_bridge.ack.result = SYS_OK;
@@ -470,8 +506,9 @@ static SysResult_t App_UvcBridgePrepareOutput(void)
 
     if (s_bridge_output_prepared)
         return SYS_ERR_INVALID_STATE;
-    if (config->output == VIDEO_OUTPUT_ETH || config->output == VIDEO_OUTPUT_WIFI)
-        return SYS_ERR_NOT_SUPPORTED;
+    result = App_FrameDispatcherValidateOutput(config->output);
+    if (result != SYS_OK)
+        return result;
 
     if (config->output == VIDEO_OUTPUT_USB_UVC)
     {
@@ -492,7 +529,12 @@ static SysResult_t App_UvcBridgePrepareOutput(void)
     else if (config->output == VIDEO_OUTPUT_USB_TEST)
         mode = USB_MODE_TEST;
     else if (config->output == VIDEO_OUTPUT_NONE)
+    {
+        result = App_UvcBridgeConfigure(&config->camera);
+        if (result != SYS_OK)
+            return result;
         mode = USB_MODE_NONE;
+    }
     else
         return SYS_ERR_INVALID_ARG;
 

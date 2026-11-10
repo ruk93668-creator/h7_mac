@@ -39,6 +39,9 @@ typedef struct
     uint32_t stream_epoch;
     uint32_t lease_id;
     SysResult_t result;
+    //完整帧的分发元数据，不参与原租约三元组的匹配
+    uint32_t frame_id;
+    uint32_t timestamp_ms;
     CameraFrame_t frame;
 } AppMessage_t;
 

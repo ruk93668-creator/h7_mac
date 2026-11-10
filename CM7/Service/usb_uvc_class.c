@@ -1,5 +1,6 @@
 //UVC协议与单帧异步调度，不采集图像、不管理SDRAM
 #include "usb_uvc.h"
+
 #include "usb_uvc_desc.h"
 #include "usb_device.h"
 #include "usb_uvc_payload.h"

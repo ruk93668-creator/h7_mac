@@ -5,6 +5,7 @@
 #include "Tasks/usb_task.h"
 #include "Tasks/control_task.h"
 #include "Tasks/ipc_task.h"
+#include "Tasks/storage_task.h"
 #include "stm32h7xx.h"
 
 //记录任务创建数量、准备状态和启动屏障结果
@@ -61,6 +62,14 @@ SysResult_t App_TasksCreate(void)
 
         //创建独立IPC任务，BOOT广播使用同一份任务目标集合
         result = IpcTask_Create();
+        if (result == SYS_OK)
+            g_app_tasks_debug.created_tasks++;
+    }
+
+    //存储任务也参与BOOT登记和总数检查，不改变原四任务创建顺序
+    if (result == SYS_OK)
+    {
+        result = StorageTask_Create();
         if (result == SYS_OK)
             g_app_tasks_debug.created_tasks++;
     }

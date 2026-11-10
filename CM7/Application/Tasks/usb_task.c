@@ -1,4 +1,5 @@
 #include "usb_task.h"
+
 #include "app_status.h"
 #include "app_events.h"
 #include "app_messages.h"
@@ -13,6 +14,9 @@
 #define USB_TASK_STACK_WORDS 2048U
 #define USB_TASK_PRIORITY 4U
 #define USB_TASK_WAIT_MS 20U
+
+//栈余量统计周期，不作为任务唤醒周期
+#define USB_TASK_STACK_SAMPLE_MS 1000U
 
 //保存Usb任务的静态控制信息
 static StaticTask_t s_usb_tcb;
@@ -92,6 +96,10 @@ SysResult_t UsbTask_Create(void)
 static void UsbTask_Run(void *argument)
 {
     uint32_t events;
+
+    //独立记录栈扫描时刻，不改变任务等待和业务周期
+    uint32_t stack_tick = Platform_TimeGetMs();
+    uint32_t stack_now;
     SysResult_t result;
     (void)argument;
 
@@ -101,6 +109,7 @@ static void UsbTask_Run(void *argument)
         //SOF和传输回调直接唤醒；20ms超时仅作枚举和恢复兜底
         result = App_EventsWait(RUNTIME_TARGET_USB, g_usb_task_debug.boot_seen ?
             USB_TASK_WAIT_MS : APP_EVENTS_WAIT_FOREVER, &events);
+
         if (result == SYS_ERR_TIMEOUT)
             g_usb_task_debug.timeout_count++;
         else if (result != SYS_OK)
@@ -111,7 +120,15 @@ static void UsbTask_Run(void *argument)
         }
         UsbTask_Process(events);
         UsbTask_PublishStatus();
-        g_usb_task_debug.stack_free_words = uxTaskGetStackHighWaterMark(NULL);
+
+        //栈扫描每秒最多一次，避免占用每包处理时隙
+        stack_now = Platform_TimeGetMs();
+        if ((uint32_t)(stack_now - stack_tick) >= USB_TASK_STACK_SAMPLE_MS)
+        {
+            stack_tick = stack_now;
+            g_usb_task_debug.stack_free_words = uxTaskGetStackHighWaterMark(NULL);
+        }
+
     }
 }
 
@@ -198,6 +215,7 @@ static void UsbTask_Process(uint32_t events)
         //所有任务侧UVC操作都在UsbTask；ISR仍同步处理EP0和保存Token
         USB_UVC_Process();
         App_UvcBridgeUsbProcess(s_usb_started && !s_usb_stopping);
+
         if (s_usb_stopping)
             USB_UVC_Process();
     }

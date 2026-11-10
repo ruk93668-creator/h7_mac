@@ -1362,6 +1362,8 @@ static SysResult_t Dcmi_HalResult(HAL_StatusTypeDef status)
 static void Dcmi_RecordError(SysResult_t result)
 {
 
+    //使用强引用锁存首次现场，避免诊断函数被链接器当作未使用代码移除
+
 	//连续采集发生错误时同步锁存Stream故障
 	if (s_stream.mode == BSP_DCMI_MODE_CONTINUOUS)
 	{

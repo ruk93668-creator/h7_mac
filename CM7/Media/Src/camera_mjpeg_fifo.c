@@ -49,6 +49,18 @@ typedef struct
 } MjpegFrame_t;
 
 //解析器跳过段内容，避免把APP数据中的FFD9当成帧尾
+//同一张JPEG独立记录两路引用，全部归还后才回收数据块
+typedef struct
+{
+    MjpegFrame_t frame;
+    uint32_t id;
+    bool usb_owned;
+    bool sd_owned;
+} MjpegLoan_t;
+
+//会话号跨Start保留，旧SD归还不能释放新一轮帧
+static uint32_t s_loan_session;
+
 typedef enum
 {
     MJPEG_SEEK_FF = 0,
@@ -66,6 +78,7 @@ typedef enum
 //只在Camera任务解析JPEG，ISR只更新块和输入边界
 static struct
 {
+
     //保存本轮图像尺寸和格式，不反向读取Application配置
     CameraConfig_t config;
 
@@ -113,6 +126,11 @@ static struct
     uint8_t ready_count;
     MjpegFrame_t loan;
     bool loaned;
+
+    //兼容USB单帧接口，SD可独立持有其他在途帧
+    MjpegLoan_t loans[CAMERA_MJPEG_MAX_LOANS];
+    uint8_t legacy_index;
+    uint32_t next_loan;
     uint32_t completed_frames;
     uint32_t dropped_frames;
 
@@ -144,6 +162,10 @@ static uint32_t Mjpeg_BlockAddress(uint8_t index);
 static void Mjpeg_ReleaseBlocks(uint64_t blocks);
 
 //放弃未完成图像并回到SOI搜索
+//最后一个消费者归还前核对块引用，错误时保留所有权
+static SysResult_t Mjpeg_ReleaseLoan(MjpegLoan_t *entry, bool sd);
+
+//清理未发布图像并回到SOI搜索
 static void Mjpeg_ResetParser(void);
 
 //丢弃尚未借出的READY，保留USB借用的描述
@@ -179,10 +201,14 @@ SysResult_t CameraMjpegFifo_Start(const CameraConfig_t *config)
     if (config->format != CAMERA_PIXEL_FORMAT_JPEG ||
         !CameraConfig_IsJpegSizeSupported(config))
         return SYS_ERR_NOT_SUPPORTED;
-    if (s_fifo.running || s_fifo.loaned)
+    if (s_fifo.running || CameraMjpegFifo_HasLoan())
         return SYS_ERR_BUSY;
 
     //上一轮必须安全停止，才能重建描述与引用
+    //会话耗尽时拒绝重启，不能复用旧凭据
+    if (s_loan_session == UINT32_MAX)
+        return SYS_ERR_NO_RESOURCE;
+    s_loan_session++;
     memset(&s_fifo, 0, sizeof(s_fifo));
     s_fifo.config = *config;
     s_fifo.epoch = 1U;
@@ -224,6 +250,7 @@ SysResult_t CameraMjpegFifo_Process(void)
 
     while (budget != 0U)
     {
+
         //ISR换代只表示发生过字节缺口，旧IN_USE仍由原持有者归还
         mask = __get_PRIMASK();
         __disable_irq();
@@ -297,63 +324,129 @@ SysResult_t CameraMjpegFifo_Process(void)
 //借出一张完整JPEG，不复制FIFO内容
 bool CameraMjpegFifo_GetFrame(CameraFrame_t *frame)
 {
-    uint32_t first;
+    uint32_t first, index;
+    MjpegLoan_t *entry;
 
+    //USB入口一次只持有一张，SD引用不会阻止下一张USB取帧
     if (frame == NULL || !s_fifo.running || s_fifo.result != SYS_OK ||
-        s_fifo.loaned || s_fifo.ready_count == 0U)
+        s_fifo.loaned || s_fifo.ready_count == 0U || s_fifo.next_loan == UINT32_MAX)
         return false;
 
-    //描述移出READY队列，但块引用保持到ReleaseFrame
-    s_fifo.loan = s_fifo.ready[s_fifo.ready_head];
+    //只使用已完全归还的槽，不覆盖任一路持有的数据
+    for (index = 0U; index < CAMERA_MJPEG_MAX_LOANS; index++)
+    {
+        if (!s_fifo.loans[index].usb_owned && !s_fifo.loans[index].sd_owned)
+            break;
+    }
+    if (index == CAMERA_MJPEG_MAX_LOANS)
+        return false;
+    //取帧只选择最新READY，旧帧不能在下一次取帧时回退交付
+    while (s_fifo.ready_count > 1U)
+    {
+        Mjpeg_ReleaseBlocks(s_fifo.ready[s_fifo.ready_head].blocks);
+        s_fifo.ready_head = (uint8_t)((s_fifo.ready_head + 1U) % CAMERA_MJPEG_FRAME_QUEUE);
+        s_fifo.ready_count--;
+        s_fifo.dropped_frames++;
+    }
+    entry = &s_fifo.loans[index];
+    entry->frame = s_fifo.ready[s_fifo.ready_head];
+    entry->id = ++s_fifo.next_loan;
+    entry->usb_owned = true;
+    entry->sd_owned = false;
+    s_fifo.legacy_index = (uint8_t)index;
+    s_fifo.loan = entry->frame;
     s_fifo.ready_head = (uint8_t)((s_fifo.ready_head + 1U) % CAMERA_MJPEG_FRAME_QUEUE);
     s_fifo.ready_count--;
     s_fifo.loaned = true;
-    first = CAMERA_MJPEG_FIFO_BYTES - s_fifo.loan.offset;
-    if (first > s_fifo.loan.length)
-        first = s_fifo.loan.length;
+
+    //跨FIFO末尾的帧保持两段描述，不拼接整帧
+    first = CAMERA_MJPEG_FIFO_BYTES - entry->frame.offset;
+    if (first > entry->frame.length)
+        first = entry->frame.length;
     frame->width = s_fifo.config.width;
     frame->height = s_fifo.config.height;
     frame->format = CAMERA_PIXEL_FORMAT_JPEG;
-    frame->data = (const uint8_t *)(uintptr_t)(CAMERA_MJPEG_FIFO_BASE + s_fifo.loan.offset);
-    frame->size_bytes = s_fifo.loan.length;
-    frame->size_bytes2 = s_fifo.loan.length - first;
-    frame->data2 = frame->size_bytes2 == 0U ? NULL :
-        (const uint8_t *)(uintptr_t)CAMERA_MJPEG_FIFO_BASE;
+    frame->data = (const uint8_t *)(uintptr_t)(CAMERA_MJPEG_FIFO_BASE + entry->frame.offset);
+    frame->size_bytes = entry->frame.length;
+    frame->size_bytes2 = entry->frame.length - first;
+    frame->data2 = frame->size_bytes2 == 0U ? NULL : (const uint8_t *)(uintptr_t)CAMERA_MJPEG_FIFO_BASE;
     return true;
 }
 
-//归还唯一借出JPEG的块引用
-SysResult_t CameraMjpegFifo_ReleaseFrame(void)
+//Camera为当前原帧登记独立SD引用
+SysResult_t CameraMjpegFifo_RetainFrame(const CameraFrame_t *frame, CameraMjpegLease_t *lease)
 {
-    uint32_t i;
-    uint32_t mask;
+    MjpegLoan_t *entry;
+    uint32_t first;
 
-    if (!s_fifo.loaned)
+    //只能借用当前USB或分发端仍持有的那张帧
+    if (frame == NULL || lease == NULL || !s_fifo.loaned ||
+        s_fifo.legacy_index >= CAMERA_MJPEG_MAX_LOANS)
         return SYS_ERR_INVALID_STATE;
-    mask = __get_PRIMASK();
-    __disable_irq();
+    entry = &s_fifo.loans[s_fifo.legacy_index];
+    first = CAMERA_MJPEG_FIFO_BYTES - entry->frame.offset;
+    if (first > entry->frame.length)
+        first = entry->frame.length;
+    if (!entry->usb_owned || entry->sd_owned || frame->format != CAMERA_PIXEL_FORMAT_JPEG ||
+        frame->width != s_fifo.config.width || frame->height != s_fifo.config.height ||
+        frame->data != (const uint8_t *)(uintptr_t)(CAMERA_MJPEG_FIFO_BASE + entry->frame.offset) ||
+        frame->size_bytes != entry->frame.length || frame->size_bytes2 != entry->frame.length - first ||
+        frame->data2 != (frame->size_bytes2 == 0U ? NULL : (const uint8_t *)(uintptr_t)CAMERA_MJPEG_FIFO_BASE))
+        return SYS_ERR_INVALID_ARG;
 
-    //先核对全部引用，再一次性归还，失败重试不能重复减引用
-    for (i = 0U; i < CAMERA_MJPEG_BLOCK_COUNT; i++)
-    {
-        if ((s_fifo.loan.blocks & (UINT64_C(1) << i)) != 0U &&
-            s_fifo.blocks[i].references == 0U)
-        {
-            __set_PRIMASK(mask);
-            return SYS_ERR_INVALID_STATE;
-        }
-    }
-    Mjpeg_ReleaseBlocks(s_fifo.loan.blocks);
-    memset(&s_fifo.loan, 0, sizeof(s_fifo.loan));
-    s_fifo.loaned = false;
-    __set_PRIMASK(mask);
+    //块引用归属于整张在途帧，双消费者只修改各自所有权位
+    entry->sd_owned = true;
+    lease->session = s_loan_session;
+    lease->id = entry->id;
     return SYS_OK;
 }
 
-//查询是否存在尚未归还的帧
+//Camera归还USB引用，SD尚未归还时保留数据块
+SysResult_t CameraMjpegFifo_ReleaseFrame(void)
+{
+    MjpegLoan_t *entry;
+    if (!s_fifo.loaned || s_fifo.legacy_index >= CAMERA_MJPEG_MAX_LOANS)
+        return SYS_ERR_INVALID_STATE;
+    entry = &s_fifo.loans[s_fifo.legacy_index];
+    if (!entry->usb_owned)
+        return SYS_ERR_INVALID_STATE;
+    {
+        SysResult_t result = Mjpeg_ReleaseLoan(entry, false);
+        if (result != SYS_OK)
+            return result;
+    }
+    memset(&s_fifo.loan, 0, sizeof(s_fifo.loan));
+    s_fifo.loaned = false;
+    return SYS_OK;
+}
+
+//Camera按会话和编号归还SD引用
+SysResult_t CameraMjpegFifo_ReleaseLease(const CameraMjpegLease_t *lease)
+{
+    uint32_t i;
+    MjpegLoan_t *entry;
+    if (lease == NULL || lease->session != s_loan_session || lease->id == 0U)
+        return SYS_ERR_INVALID_ARG;
+    for (i = 0U; i < CAMERA_MJPEG_MAX_LOANS; i++)
+    {
+        entry = &s_fifo.loans[i];
+        if (entry->id != lease->id || !entry->sd_owned)
+            continue;
+        return Mjpeg_ReleaseLoan(entry, true);
+    }
+    return SYS_ERR_INVALID_STATE;
+}
+
+//任一路仍持有JPEG时，Stop必须保留DRAINING状态
 bool CameraMjpegFifo_HasLoan(void)
 {
-    return s_fifo.loaned;
+    uint32_t i;
+    for (i = 0U; i < CAMERA_MJPEG_MAX_LOANS; i++)
+    {
+        if (s_fifo.loans[i].usb_owned || s_fifo.loans[i].sd_owned)
+            return true;
+    }
+    return false;
 }
 
 //底层确认停止后释放接收端，借出帧继续保留
@@ -419,6 +512,7 @@ static SysResult_t Mjpeg_BlockComplete(BspDcmiTarget_t target,
         if (entry->state != MJPEG_BLOCK_DMA || entry->references != 0U ||
             s_fifo.completed_count >= CAMERA_MJPEG_BLOCK_COUNT)
             return SYS_ERR_PROTOCOL;
+
         //TC确认Word写入完成，再发布可读取的块元数据
         __DMB();
         entry->state = MJPEG_BLOCK_SEALED;
@@ -445,6 +539,7 @@ static SysResult_t Mjpeg_BlockComplete(BspDcmiTarget_t target,
     }
     else
     {
+
         //无安全空间时写独立丢弃区，CAPTURE继续运行，旧引用仍保留
         if (!s_fifo.dropping)
         {
@@ -523,6 +618,7 @@ static void Mjpeg_HoldBlock(uint8_t index)
         return;
     mask = __get_PRIMASK();
     __disable_irq();
+
     //引用上限只来自8张READY、1张借出和1张正在解析的图像
     if (s_fifo.blocks[index].state != MJPEG_BLOCK_SEALED ||
         s_fifo.blocks[index].references >= CAMERA_MJPEG_FRAME_QUEUE + 2U)
@@ -625,6 +721,7 @@ static void Mjpeg_ParseByte(uint8_t value, uint32_t offset, uint8_t block)
                 break;
             if (value == 0U || (value >= 0xD0U && value <= 0xD7U))
             {
+
                 //FF00代表一个数据字节，RST标记本身不算熵数据
                 if (value == 0U)
                     s_fifo.saw_entropy = true;
@@ -688,6 +785,7 @@ static bool Mjpeg_Publish(void)
 {
     uint32_t mask;
     uint8_t tail;
+    uint32_t i, held = 0U;
     uint32_t next_ticket = s_fifo.frame_ticket + 1U;
 
     //只用已完成块解析出的EOI；FRAME本身不能证明内存收尾
@@ -703,12 +801,25 @@ static bool Mjpeg_Publish(void)
     __set_PRIMASK(mask);
 
     //队列满时只回收最老READY，IN_USE另存且不能被覆盖
-    if (s_fifo.ready_count == CAMERA_MJPEG_FRAME_QUEUE)
+    //扣除借用帧后保留一张描述余量，只淘汰未借出的旧READY
+    for (i = 0U; i < CAMERA_MJPEG_MAX_LOANS; i++)
+    {
+        if (s_fifo.loans[i].usb_owned || s_fifo.loans[i].sd_owned)
+            held++;
+    }
+    while (s_fifo.ready_count != 0U && s_fifo.ready_count + held >= CAMERA_MJPEG_MAX_LOANS - 1U)
     {
         Mjpeg_ReleaseBlocks(s_fifo.ready[s_fifo.ready_head].blocks);
         s_fifo.ready_head = (uint8_t)((s_fifo.ready_head + 1U) % CAMERA_MJPEG_FRAME_QUEUE);
         s_fifo.ready_count--;
         s_fifo.dropped_frames++;
+    }
+    if (held >= CAMERA_MJPEG_MAX_LOANS - 1U)
+    {
+        Mjpeg_ResetParser();
+        s_fifo.frame_ticket = next_ticket;
+        s_fifo.dropped_frames++;
+        return true;
     }
     tail = (uint8_t)((s_fifo.ready_head + s_fifo.ready_count) % CAMERA_MJPEG_FRAME_QUEUE);
     s_fifo.ready[tail] = s_fifo.partial;
@@ -723,4 +834,34 @@ static bool Mjpeg_Publish(void)
     s_fifo.saw_entropy = false;
     s_fifo.components = 0U;
     return true;
+}
+
+//引用异常时不能假装归还，防止DMA重新写入仍被读取的帧
+static SysResult_t Mjpeg_ReleaseLoan(MjpegLoan_t *entry, bool sd)
+{
+    uint32_t i, mask = __get_PRIMASK();
+    bool last = sd ? !entry->usb_owned : !entry->sd_owned;
+    __disable_irq();
+
+    //只有最后一路归还才释放整帧块引用
+    if (last)
+    {
+        for (i = 0U; i < CAMERA_MJPEG_BLOCK_COUNT; i++)
+        {
+            if ((entry->frame.blocks & (UINT64_C(1) << i)) != 0U &&
+                s_fifo.blocks[i].references == 0U)
+            {
+                __set_PRIMASK(mask);
+                return SYS_ERR_INVALID_STATE;
+            }
+        }
+    }
+    if (sd)
+        entry->sd_owned = false;
+    else
+        entry->usb_owned = false;
+    if (last)
+        Mjpeg_ReleaseBlocks(entry->frame.blocks);
+    __set_PRIMASK(mask);
+    return SYS_OK;
 }

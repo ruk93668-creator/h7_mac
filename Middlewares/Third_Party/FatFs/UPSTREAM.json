@@ -1,0 +1,18 @@
+{
+  "version": "R0.16 + official patch 1 + official patch 2",
+  "source": "https://elm-chan.org/fsw/ff/arc/ff16.zip",
+  "patches": [
+    "https://elm-chan.org/fsw/ff/patch/ff16p1.diff",
+    "https://elm-chan.org/fsw/ff/patch/ff16p2.diff"
+  ],
+  "archive_sha256": "99f7dc1f7e095356e4a9e3dbe29959090d8b948afe2bbc5441e52fdf4b85449e",
+  "files": {
+    "diskio.h": "1c2b29f53e061c55d43b2e412c3a61320b2621bac7561a05e275514baa44785a",
+    "ff.c": "3c30280ffe2d0fb19a5241d9ed9f20a2c3911c2861652ebf6ad57f74fb369250",
+    "ff.h": "42920ae4d6080bfc2a72d92a9969b5e94eeaff070e5e71d90da9ab6d7d8e158e",
+    "ff16p1.diff": "7996ddc3135f3d534a8153f7d75d587030e5c8551b003c3b7ee823ffb7fc64bf",
+    "ff16p2.diff": "5cd39f1fc299f0f1dec9fa1ce544dc0bc048b2f6eb3b8161476ed20f9cf1e290",
+    "LICENSE.txt": "5ab4bba095924ec0e6f7c05fc5fcddd44d7fb9cef72bdfe4c8e4a82c8c26136d"
+  },
+  "local_algorithm_modifications": false
+}

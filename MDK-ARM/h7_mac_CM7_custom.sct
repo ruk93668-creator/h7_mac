@@ -22,6 +22,11 @@ LR_IROM1 0x08000000 0x00100000
         *(.shared)
     }
 
+    RW_SDMMC_DMA 0x24000000 UNINIT 0x00008000
+    {
+        *(.sdmmc_dma)
+    }
+
     RW_IRAM1 0x20000000 0x00020000
     {
         .ANY (+RW +ZI)

@@ -11,7 +11,7 @@
 #define IPC_HEARTBEAT_PERIOD_MS      (100U)
 
 //连续无进展的允许周期数，用于计算超时阈值
-#define IPC_HEARTBEAT_MISS_LIMIT     (5U)
+#define IPC_HEARTBEAT_MISS_LIMIT     (10U)
 
 //本核观察对端心跳无进展的超时期限
 #define IPC_HEARTBEAT_TIMEOUT_MS \

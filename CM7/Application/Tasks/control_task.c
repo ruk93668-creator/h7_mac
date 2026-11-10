@@ -12,6 +12,9 @@
 #define CONTROL_TASK_PRIORITY 2U
 #define CONTROL_COMMAND_TIMEOUT_MS 5000U
 
+//栈余量统计周期，不作为任务唤醒周期
+#define CONTROL_TASK_STACK_SAMPLE_MS 1000U
+
 typedef enum
 {
     CONTROL_IDLE = 0,
@@ -101,6 +104,10 @@ SysResult_t ControlTask_Create(void)
 static void ControlTask_Run(void *argument)
 {
     uint32_t events;
+
+    //独立记录栈扫描时刻，不改变任务等待和业务周期
+    uint32_t stack_tick = Platform_TimeGetMs();
+    uint32_t stack_now;
     SysResult_t result;
     (void)argument;
 
@@ -125,7 +132,14 @@ static void ControlTask_Run(void *argument)
         }
         ControlTask_Process(events);
         ControlTask_PublishStatus();
-        g_control_task_debug.stack_free_words = uxTaskGetStackHighWaterMark(NULL);
+
+        //栈余量按实际经过时间更新，不补做错过的扫描
+        stack_now = Platform_TimeGetMs();
+        if ((uint32_t)(stack_now - stack_tick) >= CONTROL_TASK_STACK_SAMPLE_MS)
+        {
+            stack_tick = stack_now;
+            g_control_task_debug.stack_free_words = uxTaskGetStackHighWaterMark(NULL);
+        }
     }
 }
 
@@ -135,7 +149,9 @@ static void ControlTask_Process(uint32_t events)
     AppMessage_t message;
     uint32_t i;
     bool active;
-    bool uvc = VideoConfig_GetDefault()->output == VIDEO_OUTPUT_USB_UVC;
+    //SD-only同样需要Camera，NONE只是不连接USB
+    bool uvc = VideoConfig_GetDefault()->output == VIDEO_OUTPUT_USB_UVC ||
+        VideoConfig_GetDefault()->output == VIDEO_OUTPUT_NONE;
 
     if (!App_MessagesIsOwner(RUNTIME_TARGET_CONTROL))
         return;
