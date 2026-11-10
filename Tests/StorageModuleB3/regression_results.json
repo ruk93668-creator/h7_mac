@@ -1,0 +1,440 @@
+{
+  "baseline": "d725a698203b3bcde479a290714a75b16bc9de16",
+  "comparison": [
+    {
+      "suite": "B2Behavior",
+      "baseline_exit": 0,
+      "current_exit": 0,
+      "baseline_summary": {
+        "total": 102,
+        "passed": 102,
+        "failed": 0
+      },
+      "current_summary": {
+        "total": 102,
+        "passed": 102,
+        "failed": 0
+      },
+      "case_results_equal": true,
+      "baseline_diagnostic": "",
+      "current_diagnostic": "",
+      "new_failure": false
+    },
+    {
+      "suite": "B2Integration",
+      "baseline_exit": 0,
+      "current_exit": 0,
+      "baseline_summary": {
+        "total": 19,
+        "passed": 19,
+        "failed": 0
+      },
+      "current_summary": {
+        "total": 19,
+        "passed": 19,
+        "failed": 0
+      },
+      "case_results_equal": true,
+      "baseline_diagnostic": "",
+      "current_diagnostic": "",
+      "new_failure": false
+    },
+    {
+      "suite": "B1Behavior",
+      "baseline_exit": 0,
+      "current_exit": 0,
+      "baseline_summary": {
+        "total": 39,
+        "passed": 39,
+        "failed": 0
+      },
+      "current_summary": {
+        "total": 39,
+        "passed": 39,
+        "failed": 0
+      },
+      "case_results_equal": true,
+      "baseline_diagnostic": "",
+      "current_diagnostic": "",
+      "new_failure": false
+    },
+    {
+      "suite": "B1BridgeStorage",
+      "baseline_exit": 0,
+      "current_exit": 0,
+      "baseline_summary": {
+        "total": 11,
+        "passed": 11,
+        "failed": 0
+      },
+      "current_summary": {
+        "total": 11,
+        "passed": 11,
+        "failed": 0
+      },
+      "case_results_equal": true,
+      "baseline_diagnostic": "",
+      "current_diagnostic": "",
+      "new_failure": false
+    },
+    {
+      "suite": "B1Media",
+      "baseline_exit": 0,
+      "current_exit": 0,
+      "baseline_summary": {
+        "total": 6,
+        "passed": 6,
+        "failed": 0
+      },
+      "current_summary": {
+        "total": 6,
+        "passed": 6,
+        "failed": 0
+      },
+      "case_results_equal": true,
+      "baseline_diagnostic": "",
+      "current_diagnostic": "",
+      "new_failure": false
+    },
+    {
+      "suite": "CameraApp",
+      "baseline_exit": 1,
+      "current_exit": 1,
+      "baseline_summary": {},
+      "current_summary": {},
+      "case_results_equal": true,
+      "baseline_diagnostic": "Traceback (most recent call last):\r\n  File \"D:\\32\\STM32H7\\h7_mac\\output\\StorageModuleB3\\regression\\baseline\\Tests\\CameraAppInit\\run_tests.py\", line 18, in <module>\r\n    run(a+['-c',here/'app_test.c','-o',here/'app_test.o'])\r\n  File \"D:\\32\\STM32H7\\h7_mac\\output\\StorageModuleB3\\regression\\baseline\\Tests\\CameraAppInit\\run_tests.py\", line 14, in run\r\n    if p.returncode: raise RuntimeError(commands[-1])\r\n                     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\r\nRuntimeError: {'command': 'D:/32/ARM/ARMCC/Bin/armcc.exe --cpu Cortex-M7 --c99 -O0 -I D:\\\\32\\\\STM32H7\\\\h7_mac\\\\output\\\\StorageModuleB3\\\\regression\\\\baseline\\\\Common\\\\Inc -I D:\\\\32\\\\STM32H7\\\\h7_mac\\\\output\\\\StorageModuleB3\\\\regression\\\\baseline\\\\Board\\\\Inc -I D:\\\\32\\\\STM32H7\\\\h7_mac\\\\output\\\\StorageModuleB3\\\\regression\\\\baseline\\\\CM7\\\\Media\\\\Inc -I D:\\\\32\\\\STM32H7\\\\h7_mac\\\\output\\\\StorageModuleB3\\\\regression\\\\baseline\\\\CM7\\\\Device\\\\Inc -c D:\\\\32\\\\STM32H7\\\\h7_mac\\\\output\\\\StorageModuleB3\\\\regression\\\\baseline\\\\Tests\\\\CameraAppInit\\\\app_test.c -o D:\\\\32\\\\STM32H7\\\\h7_mac\\\\output\\\\StorageModuleB3\\\\regression\\\\baseline\\\\Tests\\\\CameraAppInit\\\\app_test.o', 'returncode': 1, 'output': '\"D:\\\\32\\\\STM32H7\\\\h7_mac\\\\output\\\\StorageModuleB3\\\\regression\\\\baseline\\\\Tests\\\\CameraAppInit\\\\../../CM7/Application/app_storage.h\", line 4: Error:  #5: cannot open source input file \"storage_fs.h\": No such file or directory\\r\\n  #include \"storage_fs.h\"\\r\\n                         ^\\r\\nD:\\\\32\\\\STM32H7\\\\h7_mac\\\\output\\\\StorageModuleB3\\\\regression\\\\baseline\\\\Tests\\\\CameraAppInit\\\\app_test.c: 0 warnings, 1 error\\r\\n'}\r\n",
+      "current_diagnostic": "Traceback (most recent call last):\r\n  File \"D:\\32\\STM32H7\\h7_mac\\output\\StorageModuleB3\\regression\\current\\Tests\\CameraAppInit\\run_tests.py\", line 18, in <module>\r\n    run(a+['-c',here/'app_test.c','-o',here/'app_test.o'])\r\n  File \"D:\\32\\STM32H7\\h7_mac\\output\\StorageModuleB3\\regression\\current\\Tests\\CameraAppInit\\run_tests.py\", line 14, in run\r\n    if p.returncode: raise RuntimeError(commands[-1])\r\n                     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\r\nRuntimeError: {'command': 'D:/32/ARM/ARMCC/Bin/armcc.exe --cpu Cortex-M7 --c99 -O0 -I D:\\\\32\\\\STM32H7\\\\h7_mac\\\\output\\\\StorageModuleB3\\\\regression\\\\current\\\\Common\\\\Inc -I D:\\\\32\\\\STM32H7\\\\h7_mac\\\\output\\\\StorageModuleB3\\\\regression\\\\current\\\\Board\\\\Inc -I D:\\\\32\\\\STM32H7\\\\h7_mac\\\\output\\\\StorageModuleB3\\\\regression\\\\current\\\\CM7\\\\Media\\\\Inc -I D:\\\\32\\\\STM32H7\\\\h7_mac\\\\output\\\\StorageModuleB3\\\\regression\\\\current\\\\CM7\\\\Device\\\\Inc -c D:\\\\32\\\\STM32H7\\\\h7_mac\\\\output\\\\StorageModuleB3\\\\regression\\\\current\\\\Tests\\\\CameraAppInit\\\\app_test.c -o D:\\\\32\\\\STM32H7\\\\h7_mac\\\\output\\\\StorageModuleB3\\\\regression\\\\current\\\\Tests\\\\CameraAppInit\\\\app_test.o', 'returncode': 1, 'output': '\"D:\\\\32\\\\STM32H7\\\\h7_mac\\\\output\\\\StorageModuleB3\\\\regression\\\\current\\\\Tests\\\\CameraAppInit\\\\../../CM7/Application/app_storage.h\", line 4: Error:  #5: cannot open source input file \"storage_fs.h\": No such file or directory\\r\\n  #include \"storage_fs.h\"\\r\\n                         ^\\r\\nD:\\\\32\\\\STM32H7\\\\h7_mac\\\\output\\\\StorageModuleB3\\\\regression\\\\current\\\\Tests\\\\CameraAppInit\\\\app_test.c: 0 warnings, 1 error\\r\\n'}\r\n",
+      "new_failure": false
+    },
+    {
+      "suite": "CameraContext",
+      "baseline_exit": 1,
+      "current_exit": 1,
+      "baseline_summary": {},
+      "current_summary": {},
+      "case_results_equal": true,
+      "baseline_diagnostic": "Error: L6218E: Undefined symbol BSP_DCMI_SetEventCallback (referred from stream_test.o).\r\r\nError: L6218E: Undefined symbol CameraMjpegFifo_GetFrame (referred from stream_test.o).\r\r\nError: L6218E: Undefined symbol CameraMjpegFifo_GetStats (referred from stream_test.o).\r\r\nError: L6218E: Undefined symbol CameraMjpegFifo_HasLoan (referred from stream_test.o).\r\r\nError: L6218E: Undefined symbol CameraMjpegFifo_OnStopped (referred from stream_test.o).\r\r\nError: L6218E: Undefined symbol CameraMjpegFifo_Process (referred from stream_test.o).\r\r\nError: L6218E: Undefined symbol CameraMjpegFifo_ReleaseFrame (referred from stream_test.o).\r\r\nError: L6218E: Undefined symbol CameraMjpegFifo_Start (referred from stream_test.o).\r\r\nFinished: 0 information, 0 warning and 8 error messages.\r\r\n\r\nTraceback (most recent call last):\r\n  File \"D:\\32\\STM32H7\\h7_mac\\output\\StorageModuleB3\\regression\\baseline\\Tests\\CameraContextRefactor\\run_tests.py\", line 21, in <module>\r\n    run(['D:/32/ARM/ARMCC/Bin/armlink.exe',here/'stream_test.o','--entry','Stream_TestRun','--scatter',here/'test.sct','--no_scanlib','-o',here/'stream_test.axf'])\r\n  File \"D:\\32\\STM32H7\\h7_mac\\output\\StorageModuleB3\\regression\\baseline\\Tests\\CameraContextRefactor\\run_tests.py\", line 16, in run\r\n    if p.returncode:print(output);raise RuntimeError('compile/link failed')\r\n                                  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\r\nRuntimeError: compile/link failed\r\n",
+      "current_diagnostic": "Error: L6218E: Undefined symbol BSP_DCMI_SetEventCallback (referred from stream_test.o).\r\r\nError: L6218E: Undefined symbol CameraMjpegFifo_GetFrame (referred from stream_test.o).\r\r\nError: L6218E: Undefined symbol CameraMjpegFifo_GetStats (referred from stream_test.o).\r\r\nError: L6218E: Undefined symbol CameraMjpegFifo_HasLoan (referred from stream_test.o).\r\r\nError: L6218E: Undefined symbol CameraMjpegFifo_OnStopped (referred from stream_test.o).\r\r\nError: L6218E: Undefined symbol CameraMjpegFifo_Process (referred from stream_test.o).\r\r\nError: L6218E: Undefined symbol CameraMjpegFifo_ReleaseFrame (referred from stream_test.o).\r\r\nError: L6218E: Undefined symbol CameraMjpegFifo_Start (referred from stream_test.o).\r\r\nFinished: 0 information, 0 warning and 8 error messages.\r\r\n\r\nTraceback (most recent call last):\r\n  File \"D:\\32\\STM32H7\\h7_mac\\output\\StorageModuleB3\\regression\\current\\Tests\\CameraContextRefactor\\run_tests.py\", line 21, in <module>\r\n    run(['D:/32/ARM/ARMCC/Bin/armlink.exe',here/'stream_test.o','--entry','Stream_TestRun','--scatter',here/'test.sct','--no_scanlib','-o',here/'stream_test.axf'])\r\n  File \"D:\\32\\STM32H7\\h7_mac\\output\\StorageModuleB3\\regression\\current\\Tests\\CameraContextRefactor\\run_tests.py\", line 16, in run\r\n    if p.returncode:print(output);raise RuntimeError('compile/link failed')\r\n                                  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\r\nRuntimeError: compile/link failed\r\n",
+      "new_failure": false
+    },
+    {
+      "suite": "CameraStream",
+      "baseline_exit": 1,
+      "current_exit": 1,
+      "baseline_summary": {},
+      "current_summary": {},
+      "case_results_equal": true,
+      "baseline_diagnostic": "Error: L6218E: Undefined symbol BSP_DCMI_SetEventCallback (referred from stream_test.o).\r\r\nError: L6218E: Undefined symbol CameraMjpegFifo_GetFrame (referred from stream_test.o).\r\r\nError: L6218E: Undefined symbol CameraMjpegFifo_GetStats (referred from stream_test.o).\r\r\nError: L6218E: Undefined symbol CameraMjpegFifo_HasLoan (referred from stream_test.o).\r\r\nError: L6218E: Undefined symbol CameraMjpegFifo_OnStopped (referred from stream_test.o).\r\r\nError: L6218E: Undefined symbol CameraMjpegFifo_Process (referred from stream_test.o).\r\r\nError: L6218E: Undefined symbol CameraMjpegFifo_ReleaseFrame (referred from stream_test.o).\r\r\nError: L6218E: Undefined symbol CameraMjpegFifo_Start (referred from stream_test.o).\r\r\nFinished: 0 information, 0 warning and 8 error messages.\r\r\n\r\nTraceback (most recent call last):\r\n  File \"D:\\32\\STM32H7\\h7_mac\\output\\StorageModuleB3\\regression\\baseline\\Tests\\CameraStreamState\\run_tests.py\", line 21, in <module>\r\n    run(['D:/32/ARM/ARMCC/Bin/armlink.exe',here/'stream_test.o','--entry','Stream_TestRun','--scatter',here/'test.sct','--no_scanlib','-o',here/'stream_test.axf'])\r\n  File \"D:\\32\\STM32H7\\h7_mac\\output\\StorageModuleB3\\regression\\baseline\\Tests\\CameraStreamState\\run_tests.py\", line 16, in run\r\n    if p.returncode:print(output);raise RuntimeError('compile/link failed')\r\n                                  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\r\nRuntimeError: compile/link failed\r\n",
+      "current_diagnostic": "Error: L6218E: Undefined symbol BSP_DCMI_SetEventCallback (referred from stream_test.o).\r\r\nError: L6218E: Undefined symbol CameraMjpegFifo_GetFrame (referred from stream_test.o).\r\r\nError: L6218E: Undefined symbol CameraMjpegFifo_GetStats (referred from stream_test.o).\r\r\nError: L6218E: Undefined symbol CameraMjpegFifo_HasLoan (referred from stream_test.o).\r\r\nError: L6218E: Undefined symbol CameraMjpegFifo_OnStopped (referred from stream_test.o).\r\r\nError: L6218E: Undefined symbol CameraMjpegFifo_Process (referred from stream_test.o).\r\r\nError: L6218E: Undefined symbol CameraMjpegFifo_ReleaseFrame (referred from stream_test.o).\r\r\nError: L6218E: Undefined symbol CameraMjpegFifo_Start (referred from stream_test.o).\r\r\nFinished: 0 information, 0 warning and 8 error messages.\r\r\n\r\nTraceback (most recent call last):\r\n  File \"D:\\32\\STM32H7\\h7_mac\\output\\StorageModuleB3\\regression\\current\\Tests\\CameraStreamState\\run_tests.py\", line 21, in <module>\r\n    run(['D:/32/ARM/ARMCC/Bin/armlink.exe',here/'stream_test.o','--entry','Stream_TestRun','--scatter',here/'test.sct','--no_scanlib','-o',here/'stream_test.axf'])\r\n  File \"D:\\32\\STM32H7\\h7_mac\\output\\StorageModuleB3\\regression\\current\\Tests\\CameraStreamState\\run_tests.py\", line 16, in run\r\n    if p.returncode:print(output);raise RuntimeError('compile/link failed')\r\n                                  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\r\nRuntimeError: compile/link failed\r\n",
+      "new_failure": false
+    },
+    {
+      "suite": "CameraDeviceLifecycle",
+      "baseline_exit": 1,
+      "current_exit": 1,
+      "baseline_summary": {},
+      "current_summary": {},
+      "case_results_equal": true,
+      "baseline_diagnostic": "Traceback (most recent call last):\r\n  File \"D:\\32\\STM32H7\\h7_mac\\output\\StorageModuleB3\\regression\\baseline\\Tests\\Ov5640Lifecycle\\run_tests.py\", line 21, in <module>\r\n    obj=here/(name+'.o');run(a+['-c',src,'-o',obj]);objs.append(obj)\r\n                         ^^^^^^^^^^^^^^^^^^^^^^^^^^\r\n  File \"D:\\32\\STM32H7\\h7_mac\\output\\StorageModuleB3\\regression\\baseline\\Tests\\Ov5640Lifecycle\\run_tests.py\", line 15, in run\r\n    if r.returncode:raise RuntimeError(out)\r\n                    ^^^^^^^^^^^^^^^^^^^^^^^\r\nRuntimeError: \"D:\\32\\STM32H7\\h7_mac\\output\\StorageModuleB3\\regression\\baseline\\Tests\\Ov5640Lifecycle\\lifecycle_test.c\", line 45: Error:  #20: identifier \"s_camera_initialized\" is undefined\r\r\n    if(s_camera_initialized && !s_configuring && !CameraCapture_IsStopped())g_unsafe_sensor_stops++;\r\r\n       ^\r\r\nD:\\32\\STM32H7\\h7_mac\\output\\StorageModuleB3\\regression\\baseline\\Tests\\Ov5640Lifecycle\\lifecycle_test.c: 0 warnings, 1 error\r\r\n\r\n",
+      "current_diagnostic": "Traceback (most recent call last):\r\n  File \"D:\\32\\STM32H7\\h7_mac\\output\\StorageModuleB3\\regression\\current\\Tests\\Ov5640Lifecycle\\run_tests.py\", line 21, in <module>\r\n    obj=here/(name+'.o');run(a+['-c',src,'-o',obj]);objs.append(obj)\r\n                         ^^^^^^^^^^^^^^^^^^^^^^^^^^\r\n  File \"D:\\32\\STM32H7\\h7_mac\\output\\StorageModuleB3\\regression\\current\\Tests\\Ov5640Lifecycle\\run_tests.py\", line 15, in run\r\n    if r.returncode:raise RuntimeError(out)\r\n                    ^^^^^^^^^^^^^^^^^^^^^^^\r\nRuntimeError: \"D:\\32\\STM32H7\\h7_mac\\output\\StorageModuleB3\\regression\\current\\Tests\\Ov5640Lifecycle\\lifecycle_test.c\", line 45: Error:  #20: identifier \"s_camera_initialized\" is undefined\r\r\n    if(s_camera_initialized && !s_configuring && !CameraCapture_IsStopped())g_unsafe_sensor_stops++;\r\r\n       ^\r\r\nD:\\32\\STM32H7\\h7_mac\\output\\StorageModuleB3\\regression\\current\\Tests\\Ov5640Lifecycle\\lifecycle_test.c: 0 warnings, 1 error\r\r\n\r\n",
+      "new_failure": false
+    },
+    {
+      "suite": "JpegMedia",
+      "baseline_exit": 1,
+      "current_exit": 1,
+      "baseline_summary": {},
+      "current_summary": {},
+      "case_results_equal": true,
+      "baseline_diagnostic": "Traceback (most recent call last):\r\n  File \"D:\\32\\STM32H7\\h7_mac\\output\\StorageModuleB3\\regression\\baseline\\Tests\\CameraJpegStage03A\\run_media.py\", line 22, in <module>\r\n    run(['D:/32/ARM/ARMCC/Bin/armlink.exe',obj,'--entry','Stage02_TestRun','--scatter',HERE/'test.sct','--no_scanlib','-o',axf])\r\n  File \"D:\\32\\STM32H7\\h7_mac\\output\\StorageModuleB3\\regression\\baseline\\Tests\\CameraJpegStage03A\\run_media.py\", line 15, in run\r\n    if p.returncode:raise RuntimeError(commands[-1]['output'])\r\n                    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\r\nRuntimeError: Error: L6218E: Undefined symbol BSP_DCMI_SetEventCallback (referred from media_test.o).\r\r\nError: L6218E: Undefined symbol CameraMjpegFifo_GetFrame (referred from media_test.o).\r\r\nError: L6218E: Undefined symbol CameraMjpegFifo_GetStats (referred from media_test.o).\r\r\nError: L6218E: Undefined symbol CameraMjpegFifo_HasLoan (referred from media_test.o).\r\r\nError: L6218E: Undefined symbol CameraMjpegFifo_OnStopped (referred from media_test.o).\r\r\nError: L6218E: Undefined symbol CameraMjpegFifo_Process (referred from media_test.o).\r\r\nError: L6218E: Undefined symbol CameraMjpegFifo_ReleaseFrame (referred from media_test.o).\r\r\nError: L6218E: Undefined symbol CameraMjpegFifo_Start (referred from media_test.o).\r\r\nFinished: 0 information, 0 warning and 8 error messages.\r\r\n\r\n",
+      "current_diagnostic": "Traceback (most recent call last):\r\n  File \"D:\\32\\STM32H7\\h7_mac\\output\\StorageModuleB3\\regression\\current\\Tests\\CameraJpegStage03A\\run_media.py\", line 22, in <module>\r\n    run(['D:/32/ARM/ARMCC/Bin/armlink.exe',obj,'--entry','Stage02_TestRun','--scatter',HERE/'test.sct','--no_scanlib','-o',axf])\r\n  File \"D:\\32\\STM32H7\\h7_mac\\output\\StorageModuleB3\\regression\\current\\Tests\\CameraJpegStage03A\\run_media.py\", line 15, in run\r\n    if p.returncode:raise RuntimeError(commands[-1]['output'])\r\n                    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\r\nRuntimeError: Error: L6218E: Undefined symbol BSP_DCMI_SetEventCallback (referred from media_test.o).\r\r\nError: L6218E: Undefined symbol CameraMjpegFifo_GetFrame (referred from media_test.o).\r\r\nError: L6218E: Undefined symbol CameraMjpegFifo_GetStats (referred from media_test.o).\r\r\nError: L6218E: Undefined symbol CameraMjpegFifo_HasLoan (referred from media_test.o).\r\r\nError: L6218E: Undefined symbol CameraMjpegFifo_OnStopped (referred from media_test.o).\r\r\nError: L6218E: Undefined symbol CameraMjpegFifo_Process (referred from media_test.o).\r\r\nError: L6218E: Undefined symbol CameraMjpegFifo_ReleaseFrame (referred from media_test.o).\r\r\nError: L6218E: Undefined symbol CameraMjpegFifo_Start (referred from media_test.o).\r\r\nFinished: 0 information, 0 warning and 8 error messages.\r\r\n\r\n",
+      "new_failure": false
+    },
+    {
+      "suite": "JpegDevice",
+      "baseline_exit": 1,
+      "current_exit": 1,
+      "baseline_summary": {},
+      "current_summary": {},
+      "case_results_equal": true,
+      "baseline_diagnostic": "Traceback (most recent call last):\r\n  File \"D:\\32\\STM32H7\\h7_mac\\output\\StorageModuleB3\\regression\\baseline\\Tests\\CameraJpegStage03A\\run_device.py\", line 21, in <module>\r\n    obj=here/(name+'.o');run(a+['-c',src,'-o',obj]);objs.append(obj)\r\n                         ^^^^^^^^^^^^^^^^^^^^^^^^^^\r\n  File \"D:\\32\\STM32H7\\h7_mac\\output\\StorageModuleB3\\regression\\baseline\\Tests\\CameraJpegStage03A\\run_device.py\", line 15, in run\r\n    if r.returncode:raise RuntimeError(out)\r\n                    ^^^^^^^^^^^^^^^^^^^^^^^\r\nRuntimeError: \"D:\\32\\STM32H7\\h7_mac\\output\\StorageModuleB3\\regression\\baseline\\Tests\\CameraJpegStage03A\\../Ov5640Lifecycle/lifecycle_test.c\", line 45: Error:  #20: identifier \"s_camera_initialized\" is undefined\r\r\n    if(s_camera_initialized && !s_configuring && !CameraCapture_IsStopped())g_unsafe_sensor_stops++;\r\r\n       ^\r\r\nD:\\32\\STM32H7\\h7_mac\\output\\StorageModuleB3\\regression\\baseline\\Tests\\CameraJpegStage03A\\device_test.c: 0 warnings, 1 error\r\r\n\r\n",
+      "current_diagnostic": "Traceback (most recent call last):\r\n  File \"D:\\32\\STM32H7\\h7_mac\\output\\StorageModuleB3\\regression\\current\\Tests\\CameraJpegStage03A\\run_device.py\", line 21, in <module>\r\n    obj=here/(name+'.o');run(a+['-c',src,'-o',obj]);objs.append(obj)\r\n                         ^^^^^^^^^^^^^^^^^^^^^^^^^^\r\n  File \"D:\\32\\STM32H7\\h7_mac\\output\\StorageModuleB3\\regression\\current\\Tests\\CameraJpegStage03A\\run_device.py\", line 15, in run\r\n    if r.returncode:raise RuntimeError(out)\r\n                    ^^^^^^^^^^^^^^^^^^^^^^^\r\nRuntimeError: \"D:\\32\\STM32H7\\h7_mac\\output\\StorageModuleB3\\regression\\current\\Tests\\CameraJpegStage03A\\../Ov5640Lifecycle/lifecycle_test.c\", line 45: Error:  #20: identifier \"s_camera_initialized\" is undefined\r\r\n    if(s_camera_initialized && !s_configuring && !CameraCapture_IsStopped())g_unsafe_sensor_stops++;\r\r\n       ^\r\r\nD:\\32\\STM32H7\\h7_mac\\output\\StorageModuleB3\\regression\\current\\Tests\\CameraJpegStage03A\\device_test.c: 0 warnings, 1 error\r\r\n\r\n",
+      "new_failure": false
+    },
+    {
+      "suite": "ContinuousMedia",
+      "baseline_exit": 1,
+      "current_exit": 1,
+      "baseline_summary": {},
+      "current_summary": {},
+      "case_results_equal": true,
+      "baseline_diagnostic": "Traceback (most recent call last):\r\n  File \"D:\\32\\STM32H7\\h7_mac\\output\\StorageModuleB3\\regression\\baseline\\Tests\\NativeRuntimeStage02\\run_arm.py\", line 22, in <module>\r\n    run(['D:/32/ARM/ARMCC/Bin/armlink.exe',obj,'--entry','Stage02_TestRun','--scatter',HERE/'test.sct','--no_scanlib','-o',axf])\r\n  File \"D:\\32\\STM32H7\\h7_mac\\output\\StorageModuleB3\\regression\\baseline\\Tests\\NativeRuntimeStage02\\run_arm.py\", line 15, in run\r\n    if p.returncode:raise RuntimeError(commands[-1]['output'])\r\n                    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\r\nRuntimeError: Error: L6218E: Undefined symbol BSP_DCMI_SetEventCallback (referred from phase02a.o).\r\r\nError: L6218E: Undefined symbol CameraMjpegFifo_GetFrame (referred from phase02a.o).\r\r\nError: L6218E: Undefined symbol CameraMjpegFifo_GetStats (referred from phase02a.o).\r\r\nError: L6218E: Undefined symbol CameraMjpegFifo_HasLoan (referred from phase02a.o).\r\r\nError: L6218E: Undefined symbol CameraMjpegFifo_OnStopped (referred from phase02a.o).\r\r\nError: L6218E: Undefined symbol CameraMjpegFifo_Process (referred from phase02a.o).\r\r\nError: L6218E: Undefined symbol CameraMjpegFifo_ReleaseFrame (referred from phase02a.o).\r\r\nError: L6218E: Undefined symbol CameraMjpegFifo_Start (referred from phase02a.o).\r\r\nFinished: 0 information, 0 warning and 8 error messages.\r\r\n\r\n",
+      "current_diagnostic": "Traceback (most recent call last):\r\n  File \"D:\\32\\STM32H7\\h7_mac\\output\\StorageModuleB3\\regression\\current\\Tests\\NativeRuntimeStage02\\run_arm.py\", line 22, in <module>\r\n    run(['D:/32/ARM/ARMCC/Bin/armlink.exe',obj,'--entry','Stage02_TestRun','--scatter',HERE/'test.sct','--no_scanlib','-o',axf])\r\n  File \"D:\\32\\STM32H7\\h7_mac\\output\\StorageModuleB3\\regression\\current\\Tests\\NativeRuntimeStage02\\run_arm.py\", line 15, in run\r\n    if p.returncode:raise RuntimeError(commands[-1]['output'])\r\n                    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\r\nRuntimeError: Error: L6218E: Undefined symbol BSP_DCMI_SetEventCallback (referred from phase02a.o).\r\r\nError: L6218E: Undefined symbol CameraMjpegFifo_GetFrame (referred from phase02a.o).\r\r\nError: L6218E: Undefined symbol CameraMjpegFifo_GetStats (referred from phase02a.o).\r\r\nError: L6218E: Undefined symbol CameraMjpegFifo_HasLoan (referred from phase02a.o).\r\r\nError: L6218E: Undefined symbol CameraMjpegFifo_OnStopped (referred from phase02a.o).\r\r\nError: L6218E: Undefined symbol CameraMjpegFifo_Process (referred from phase02a.o).\r\r\nError: L6218E: Undefined symbol CameraMjpegFifo_ReleaseFrame (referred from phase02a.o).\r\r\nError: L6218E: Undefined symbol CameraMjpegFifo_Start (referred from phase02a.o).\r\r\nFinished: 0 information, 0 warning and 8 error messages.\r\r\n\r\n",
+      "new_failure": false
+    },
+    {
+      "suite": "Bridge",
+      "baseline_exit": 1,
+      "current_exit": 1,
+      "baseline_summary": {},
+      "current_summary": {},
+      "case_results_equal": true,
+      "baseline_diagnostic": "Traceback (most recent call last):\r\n  File \"D:\\32\\STM32H7\\h7_mac\\output\\StorageModuleB3\\regression\\baseline\\Tests\\NativeRuntimeStage02\\run_arm.py\", line 22, in <module>\r\n    run(['D:/32/ARM/ARMCC/Bin/armlink.exe',obj,'--entry','Stage02_TestRun','--scatter',HERE/'test.sct','--no_scanlib','-o',axf])\r\n  File \"D:\\32\\STM32H7\\h7_mac\\output\\StorageModuleB3\\regression\\baseline\\Tests\\NativeRuntimeStage02\\run_arm.py\", line 15, in run\r\n    if p.returncode:raise RuntimeError(commands[-1]['output'])\r\n                    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\r\nRuntimeError: Error: L6218E: Undefined symbol App_FrameDispatcherBegin (referred from phase02c.o).\r\r\nError: L6218E: Undefined symbol App_FrameDispatcherCanAcquire (referred from phase02c.o).\r\r\nError: L6218E: Undefined symbol App_FrameDispatcherNeedsStorage (referred from phase02c.o).\r\r\nError: L6218E: Undefined symbol App_FrameDispatcherPublish (referred from phase02c.o).\r\r\nError: L6218E: Undefined symbol App_FrameDispatcherValidateOutput (referred from phase02c.o).\r\r\nError: L6218E: Undefined symbol App_StorageProcessReturns (referred from phase02c.o).\r\r\nError: L6218E: Undefined symbol USB_UVC_SubmitFrameView (referred from phase02c.o).\r\r\nFinished: 0 information, 0 warning and 7 error messages.\r\r\n\r\n",
+      "current_diagnostic": "Traceback (most recent call last):\r\n  File \"D:\\32\\STM32H7\\h7_mac\\output\\StorageModuleB3\\regression\\current\\Tests\\NativeRuntimeStage02\\run_arm.py\", line 22, in <module>\r\n    run(['D:/32/ARM/ARMCC/Bin/armlink.exe',obj,'--entry','Stage02_TestRun','--scatter',HERE/'test.sct','--no_scanlib','-o',axf])\r\n  File \"D:\\32\\STM32H7\\h7_mac\\output\\StorageModuleB3\\regression\\current\\Tests\\NativeRuntimeStage02\\run_arm.py\", line 15, in run\r\n    if p.returncode:raise RuntimeError(commands[-1]['output'])\r\n                    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\r\nRuntimeError: Error: L6218E: Undefined symbol App_FrameDispatcherBegin (referred from phase02c.o).\r\r\nError: L6218E: Undefined symbol App_FrameDispatcherCanAcquire (referred from phase02c.o).\r\r\nError: L6218E: Undefined symbol App_FrameDispatcherNeedsStorage (referred from phase02c.o).\r\r\nError: L6218E: Undefined symbol App_FrameDispatcherPublish (referred from phase02c.o).\r\r\nError: L6218E: Undefined symbol App_FrameDispatcherValidateOutput (referred from phase02c.o).\r\r\nError: L6218E: Undefined symbol App_StorageProcessReturns (referred from phase02c.o).\r\r\nError: L6218E: Undefined symbol USB_UVC_SubmitFrameView (referred from phase02c.o).\r\r\nFinished: 0 information, 0 warning and 7 error messages.\r\r\n\r\n",
+      "new_failure": false
+    },
+    {
+      "suite": "NativeIntegrated",
+      "baseline_exit": 1,
+      "current_exit": 1,
+      "baseline_summary": {},
+      "current_summary": {},
+      "case_results_equal": true,
+      "baseline_diagnostic": "18E: Undefined symbol App_USBCanAcceptCommand (referred from phase02d_phase02d.o).\r\r\nError: L6218E: Undefined symbol App_USBCanTransfer (referred from phase02d_phase02d.o).\r\r\nError: L6218E: Undefined symbol App_USBConfirmAckEnqueued (referred from phase02d_phase02d.o).\r\r\nError: L6218E: Undefined symbol App_USBConfirmFaultEnqueued (referred from phase02d_phase02d.o).\r\r\nError: L6218E: Undefined symbol App_USBFinishRound (referred from phase02d_phase02d.o).\r\r\nError: L6218E: Undefined symbol App_USBGetPendingAck (referred from phase02d_phase02d.o).\r\r\nError: L6218E: Undefined symbol App_USBGetPendingFault (referred from phase02d_phase02d.o).\r\r\nError: L6218E: Undefined symbol App_USBHandleCommand (referred from phase02d_phase02d.o).\r\r\nError: L6218E: Undefined symbol App_USBIsStopping (referred from phase02d_phase02d.o).\r\r\nError: L6218E: Undefined symbol App_USBProcess (referred from phase02d_phase02d.o).\r\r\nError: L6218E: Undefined symbol App_USBSetDiagnosticObserver (referred from phase02d_phase02d.o).\r\r\nError: L6218E: Undefined symbol CameraMjpegFifo_GetFrame (referred from phase02d_phase02d.o).\r\r\nError: L6218E: Undefined symbol CameraMjpegFifo_GetStats (referred from phase02d_phase02d.o).\r\r\nError: L6218E: Undefined symbol CameraMjpegFifo_HasLoan (referred from phase02d_phase02d.o).\r\r\nError: L6218E: Undefined symbol CameraMjpegFifo_OnStopped (referred from phase02d_phase02d.o).\r\r\nError: L6218E: Undefined symbol CameraMjpegFifo_Process (referred from phase02d_phase02d.o).\r\r\nError: L6218E: Undefined symbol CameraMjpegFifo_ReleaseFrame (referred from phase02d_phase02d.o).\r\r\nError: L6218E: Undefined symbol CameraMjpegFifo_Start (referred from phase02d_phase02d.o).\r\r\nError: L6218E: Undefined symbol IpcTask_Create (referred from phase02d_phase02d.o).\r\r\nError: L6218E: Undefined symbol Platform_SyncDisableIrq (referred from phase02d_phase02d.o).\r\r\nError: L6218E: Undefined symbol Platform_SyncGetBasepri (referred from phase02d_phase02d.o).\r\r\nError: L6218E: Undefined symbol Platform_SyncGetException (referred from phase02d_phase02d.o).\r\r\nError: L6218E: Undefined symbol Platform_SyncGetIrqPriority (referred from phase02d_phase02d.o).\r\r\nError: L6218E: Undefined symbol Platform_SyncGetPrimask (referred from phase02d_phase02d.o).\r\r\nError: L6218E: Undefined symbol Platform_SyncRestoreIrq (referred from phase02d_phase02d.o).\r\r\nError: L6218E: Undefined symbol StorageTask_Create (referred from phase02d_phase02d.o).\r\r\nFinished: 0 information, 0 warning and 35 error messages.\r\r\n\r\n",
+      "current_diagnostic": "18E: Undefined symbol App_USBCanAcceptCommand (referred from phase02d_phase02d.o).\r\r\nError: L6218E: Undefined symbol App_USBCanTransfer (referred from phase02d_phase02d.o).\r\r\nError: L6218E: Undefined symbol App_USBConfirmAckEnqueued (referred from phase02d_phase02d.o).\r\r\nError: L6218E: Undefined symbol App_USBConfirmFaultEnqueued (referred from phase02d_phase02d.o).\r\r\nError: L6218E: Undefined symbol App_USBFinishRound (referred from phase02d_phase02d.o).\r\r\nError: L6218E: Undefined symbol App_USBGetPendingAck (referred from phase02d_phase02d.o).\r\r\nError: L6218E: Undefined symbol App_USBGetPendingFault (referred from phase02d_phase02d.o).\r\r\nError: L6218E: Undefined symbol App_USBHandleCommand (referred from phase02d_phase02d.o).\r\r\nError: L6218E: Undefined symbol App_USBIsStopping (referred from phase02d_phase02d.o).\r\r\nError: L6218E: Undefined symbol App_USBProcess (referred from phase02d_phase02d.o).\r\r\nError: L6218E: Undefined symbol App_USBSetDiagnosticObserver (referred from phase02d_phase02d.o).\r\r\nError: L6218E: Undefined symbol CameraMjpegFifo_GetFrame (referred from phase02d_phase02d.o).\r\r\nError: L6218E: Undefined symbol CameraMjpegFifo_GetStats (referred from phase02d_phase02d.o).\r\r\nError: L6218E: Undefined symbol CameraMjpegFifo_HasLoan (referred from phase02d_phase02d.o).\r\r\nError: L6218E: Undefined symbol CameraMjpegFifo_OnStopped (referred from phase02d_phase02d.o).\r\r\nError: L6218E: Undefined symbol CameraMjpegFifo_Process (referred from phase02d_phase02d.o).\r\r\nError: L6218E: Undefined symbol CameraMjpegFifo_ReleaseFrame (referred from phase02d_phase02d.o).\r\r\nError: L6218E: Undefined symbol CameraMjpegFifo_Start (referred from phase02d_phase02d.o).\r\r\nError: L6218E: Undefined symbol IpcTask_Create (referred from phase02d_phase02d.o).\r\r\nError: L6218E: Undefined symbol Platform_SyncDisableIrq (referred from phase02d_phase02d.o).\r\r\nError: L6218E: Undefined symbol Platform_SyncGetBasepri (referred from phase02d_phase02d.o).\r\r\nError: L6218E: Undefined symbol Platform_SyncGetException (referred from phase02d_phase02d.o).\r\r\nError: L6218E: Undefined symbol Platform_SyncGetIrqPriority (referred from phase02d_phase02d.o).\r\r\nError: L6218E: Undefined symbol Platform_SyncGetPrimask (referred from phase02d_phase02d.o).\r\r\nError: L6218E: Undefined symbol Platform_SyncRestoreIrq (referred from phase02d_phase02d.o).\r\r\nError: L6218E: Undefined symbol StorageTask_Create (referred from phase02d_phase02d.o).\r\r\nFinished: 0 information, 0 warning and 35 error messages.\r\r\n\r\n",
+      "new_failure": false
+    },
+    {
+      "suite": "NativeTest",
+      "baseline_exit": 1,
+      "current_exit": 1,
+      "baseline_summary": {},
+      "current_summary": {},
+      "case_results_equal": true,
+      "baseline_diagnostic": " phase02test_phase02test.o).\r\r\nError: L6218E: Undefined symbol App_USBConfirmAckEnqueued (referred from phase02test_phase02test.o).\r\r\nError: L6218E: Undefined symbol App_USBConfirmFaultEnqueued (referred from phase02test_phase02test.o).\r\r\nError: L6218E: Undefined symbol App_USBFinishRound (referred from phase02test_phase02test.o).\r\r\nError: L6218E: Undefined symbol App_USBGetPendingAck (referred from phase02test_phase02test.o).\r\r\nError: L6218E: Undefined symbol App_USBGetPendingFault (referred from phase02test_phase02test.o).\r\r\nError: L6218E: Undefined symbol App_USBHandleCommand (referred from phase02test_phase02test.o).\r\r\nError: L6218E: Undefined symbol App_USBIsStopping (referred from phase02test_phase02test.o).\r\r\nError: L6218E: Undefined symbol App_USBProcess (referred from phase02test_phase02test.o).\r\r\nError: L6218E: Undefined symbol App_USBSetDiagnosticObserver (referred from phase02test_phase02test.o).\r\r\nError: L6218E: Undefined symbol CameraMjpegFifo_GetFrame (referred from phase02test_phase02test.o).\r\r\nError: L6218E: Undefined symbol CameraMjpegFifo_GetStats (referred from phase02test_phase02test.o).\r\r\nError: L6218E: Undefined symbol CameraMjpegFifo_HasLoan (referred from phase02test_phase02test.o).\r\r\nError: L6218E: Undefined symbol CameraMjpegFifo_OnStopped (referred from phase02test_phase02test.o).\r\r\nError: L6218E: Undefined symbol CameraMjpegFifo_Process (referred from phase02test_phase02test.o).\r\r\nError: L6218E: Undefined symbol CameraMjpegFifo_ReleaseFrame (referred from phase02test_phase02test.o).\r\r\nError: L6218E: Undefined symbol CameraMjpegFifo_Start (referred from phase02test_phase02test.o).\r\r\nError: L6218E: Undefined symbol IpcTask_Create (referred from phase02test_phase02test.o).\r\r\nError: L6218E: Undefined symbol Platform_SyncDisableIrq (referred from phase02test_phase02test.o).\r\r\nError: L6218E: Undefined symbol Platform_SyncGetBasepri (referred from phase02test_phase02test.o).\r\r\nError: L6218E: Undefined symbol Platform_SyncGetException (referred from phase02test_phase02test.o).\r\r\nError: L6218E: Undefined symbol Platform_SyncGetIrqPriority (referred from phase02test_phase02test.o).\r\r\nError: L6218E: Undefined symbol Platform_SyncGetPrimask (referred from phase02test_phase02test.o).\r\r\nError: L6218E: Undefined symbol Platform_SyncRestoreIrq (referred from phase02test_phase02test.o).\r\r\nError: L6218E: Undefined symbol StorageTask_Create (referred from phase02test_phase02test.o).\r\r\nFinished: 0 information, 0 warning and 35 error messages.\r\r\n\r\n",
+      "current_diagnostic": " phase02test_phase02test.o).\r\r\nError: L6218E: Undefined symbol App_USBConfirmAckEnqueued (referred from phase02test_phase02test.o).\r\r\nError: L6218E: Undefined symbol App_USBConfirmFaultEnqueued (referred from phase02test_phase02test.o).\r\r\nError: L6218E: Undefined symbol App_USBFinishRound (referred from phase02test_phase02test.o).\r\r\nError: L6218E: Undefined symbol App_USBGetPendingAck (referred from phase02test_phase02test.o).\r\r\nError: L6218E: Undefined symbol App_USBGetPendingFault (referred from phase02test_phase02test.o).\r\r\nError: L6218E: Undefined symbol App_USBHandleCommand (referred from phase02test_phase02test.o).\r\r\nError: L6218E: Undefined symbol App_USBIsStopping (referred from phase02test_phase02test.o).\r\r\nError: L6218E: Undefined symbol App_USBProcess (referred from phase02test_phase02test.o).\r\r\nError: L6218E: Undefined symbol App_USBSetDiagnosticObserver (referred from phase02test_phase02test.o).\r\r\nError: L6218E: Undefined symbol CameraMjpegFifo_GetFrame (referred from phase02test_phase02test.o).\r\r\nError: L6218E: Undefined symbol CameraMjpegFifo_GetStats (referred from phase02test_phase02test.o).\r\r\nError: L6218E: Undefined symbol CameraMjpegFifo_HasLoan (referred from phase02test_phase02test.o).\r\r\nError: L6218E: Undefined symbol CameraMjpegFifo_OnStopped (referred from phase02test_phase02test.o).\r\r\nError: L6218E: Undefined symbol CameraMjpegFifo_Process (referred from phase02test_phase02test.o).\r\r\nError: L6218E: Undefined symbol CameraMjpegFifo_ReleaseFrame (referred from phase02test_phase02test.o).\r\r\nError: L6218E: Undefined symbol CameraMjpegFifo_Start (referred from phase02test_phase02test.o).\r\r\nError: L6218E: Undefined symbol IpcTask_Create (referred from phase02test_phase02test.o).\r\r\nError: L6218E: Undefined symbol Platform_SyncDisableIrq (referred from phase02test_phase02test.o).\r\r\nError: L6218E: Undefined symbol Platform_SyncGetBasepri (referred from phase02test_phase02test.o).\r\r\nError: L6218E: Undefined symbol Platform_SyncGetException (referred from phase02test_phase02test.o).\r\r\nError: L6218E: Undefined symbol Platform_SyncGetIrqPriority (referred from phase02test_phase02test.o).\r\r\nError: L6218E: Undefined symbol Platform_SyncGetPrimask (referred from phase02test_phase02test.o).\r\r\nError: L6218E: Undefined symbol Platform_SyncRestoreIrq (referred from phase02test_phase02test.o).\r\r\nError: L6218E: Undefined symbol StorageTask_Create (referred from phase02test_phase02test.o).\r\r\nFinished: 0 information, 0 warning and 35 error messages.\r\r\n\r\n",
+      "new_failure": false
+    },
+    {
+      "suite": "Core",
+      "baseline_exit": 1,
+      "current_exit": 1,
+      "baseline_summary": {
+        "total": 204,
+        "passed": 201,
+        "failed": 3,
+        "assertions": 2947
+      },
+      "current_summary": {
+        "total": 204,
+        "passed": 201,
+        "failed": 3,
+        "assertions": 2947
+      },
+      "case_results_equal": true,
+      "baseline_diagnostic": "影响OUT: checks=18, fail_line=0, error=None\r\n333 PASS 共享RX Flush保护其他OUT: checks=14, fail_line=0, error=None\r\n334 PASS 关闭一个方向失败保留资源: checks=18, fail_line=0, error=None\r\n335 PASS HAL发送BUSY后能继续使用: checks=12, fail_line=0, error=None\r\n336 PASS 运行期间禁止重排FIFO: checks=9, fail_line=0, error=None\r\n337 PASS 默认FIFO真实寄存器布局: checks=24, fail_line=0, error=None\r\n338 PASS EP1 ISO512兼容原能力: checks=34, fail_line=0, error=None\r\n339 PASS EP7最大ISO包及OUT最大包: checks=33, fail_line=0, error=None\r\n340 PASS 512字节FIFO组合容量边界: checks=28, fail_line=0, error=None\r\n341 PASS 1023字节FIFO组合容量边界: checks=28, fail_line=0, error=None\r\n342 PASS 备用设置取最大FIFO需求: checks=12, fail_line=0, error=None\r\n343 PASS OUT不占用额外TX FIFO: checks=31, fail_line=0, error=None\r\n344 PASS 描述符中的非法端点拒绝: checks=8, fail_line=0, error=None\r\n345 PASS FIFO硬件配置失败禁止启动: checks=9, fail_line=0, error=None\r\n346 PASS 官方Stop兜底清理通用端点: checks=14, fail_line=0, error=None\r\n347 PASS 多轮启停无泄漏: checks=136, fail_line=0, error=None\r\n348 PASS 描述符中的重复地址拒绝: checks=5, fail_line=0, error=None\r\n349 PASS 全部8组双向Bulk端点: checks=95, fail_line=0, error=None\r\n350 PASS ISO通知不清除已有真实错误: checks=13, fail_line=0, error=None\r\n351 PASS 可选ISO回调为空: checks=11, fail_line=0, error=None\r\n352 PASS 注册拒绝旧池占用: checks=6, fail_line=0, error=None\r\n353 PASS Reset时发现内存泄漏: checks=15, fail_line=0, error=None\r\n354 PASS 取消配置和再次配置生命周期: checks=14, fail_line=0, error=None\r\n355 PASS 多个OUT接收长度互不影响: checks=16, fail_line=0, error=None\r\n356 PASS 官方DeInit失败保留Class外部绑定: checks=21, fail_line=0, error=None\r\n357 PASS Core分发失败仍记录真实错误: checks=15, fail_line=0, error=None\r\n358 PASS HAL打开BUSY回滚PCD上下文: checks=14, fail_line=0, error=None\r\n359 PASS PCD反初始化失败恢复注册绑定: checks=18, fail_line=0, error=None\r\n360 PASS PIO尾部补齐且多包续传: checks=21, fail_line=0, error=None\r\n361 PASS Abort释放传输所有权但保留端点: checks=14, fail_line=0, error=None\r\n362 PASS Abort失败保留缓冲所有权: checks=17, fail_line=0, error=None\r\n363 PASS 未声明端点不进入HAL: checks=15, fail_line=0, error=None\r\n364 PASS Close中Abort失败保留所有权并重试: checks=25, fail_line=0, error=None\r\n365 PASS 描述符属性和备用设置重复校验: checks=8, fail_line=0, error=None\r\n366 PASS EP0复位重开及Control边界: checks=30, fail_line=0, error=None\r\n367 PASS EP0复位后的描述符请求: checks=23, fail_line=0, error=None\r\n368 PASS EP0复位后的地址设置: checks=10, fail_line=0, error=None\r\n369 PASS Class接口不得管理EP0生命周期: checks=19, fail_line=0, error=None\r\n370 PASS Core关闭并重开EP0: checks=22, fail_line=0, error=None\r\n371 PASS Class控制请求仍经EP0处理: checks=19, fail_line=0, error=None\r\nTOTAL {'total': 204, 'passed': 201, 'failed': 3, 'assertions': 2947} source changed: []\r\n",
+      "current_diagnostic": "影响OUT: checks=18, fail_line=0, error=None\r\n333 PASS 共享RX Flush保护其他OUT: checks=14, fail_line=0, error=None\r\n334 PASS 关闭一个方向失败保留资源: checks=18, fail_line=0, error=None\r\n335 PASS HAL发送BUSY后能继续使用: checks=12, fail_line=0, error=None\r\n336 PASS 运行期间禁止重排FIFO: checks=9, fail_line=0, error=None\r\n337 PASS 默认FIFO真实寄存器布局: checks=24, fail_line=0, error=None\r\n338 PASS EP1 ISO512兼容原能力: checks=34, fail_line=0, error=None\r\n339 PASS EP7最大ISO包及OUT最大包: checks=33, fail_line=0, error=None\r\n340 PASS 512字节FIFO组合容量边界: checks=28, fail_line=0, error=None\r\n341 PASS 1023字节FIFO组合容量边界: checks=28, fail_line=0, error=None\r\n342 PASS 备用设置取最大FIFO需求: checks=12, fail_line=0, error=None\r\n343 PASS OUT不占用额外TX FIFO: checks=31, fail_line=0, error=None\r\n344 PASS 描述符中的非法端点拒绝: checks=8, fail_line=0, error=None\r\n345 PASS FIFO硬件配置失败禁止启动: checks=9, fail_line=0, error=None\r\n346 PASS 官方Stop兜底清理通用端点: checks=14, fail_line=0, error=None\r\n347 PASS 多轮启停无泄漏: checks=136, fail_line=0, error=None\r\n348 PASS 描述符中的重复地址拒绝: checks=5, fail_line=0, error=None\r\n349 PASS 全部8组双向Bulk端点: checks=95, fail_line=0, error=None\r\n350 PASS ISO通知不清除已有真实错误: checks=13, fail_line=0, error=None\r\n351 PASS 可选ISO回调为空: checks=11, fail_line=0, error=None\r\n352 PASS 注册拒绝旧池占用: checks=6, fail_line=0, error=None\r\n353 PASS Reset时发现内存泄漏: checks=15, fail_line=0, error=None\r\n354 PASS 取消配置和再次配置生命周期: checks=14, fail_line=0, error=None\r\n355 PASS 多个OUT接收长度互不影响: checks=16, fail_line=0, error=None\r\n356 PASS 官方DeInit失败保留Class外部绑定: checks=21, fail_line=0, error=None\r\n357 PASS Core分发失败仍记录真实错误: checks=15, fail_line=0, error=None\r\n358 PASS HAL打开BUSY回滚PCD上下文: checks=14, fail_line=0, error=None\r\n359 PASS PCD反初始化失败恢复注册绑定: checks=18, fail_line=0, error=None\r\n360 PASS PIO尾部补齐且多包续传: checks=21, fail_line=0, error=None\r\n361 PASS Abort释放传输所有权但保留端点: checks=14, fail_line=0, error=None\r\n362 PASS Abort失败保留缓冲所有权: checks=17, fail_line=0, error=None\r\n363 PASS 未声明端点不进入HAL: checks=15, fail_line=0, error=None\r\n364 PASS Close中Abort失败保留所有权并重试: checks=25, fail_line=0, error=None\r\n365 PASS 描述符属性和备用设置重复校验: checks=8, fail_line=0, error=None\r\n366 PASS EP0复位重开及Control边界: checks=30, fail_line=0, error=None\r\n367 PASS EP0复位后的描述符请求: checks=23, fail_line=0, error=None\r\n368 PASS EP0复位后的地址设置: checks=10, fail_line=0, error=None\r\n369 PASS Class接口不得管理EP0生命周期: checks=19, fail_line=0, error=None\r\n370 PASS Core关闭并重开EP0: checks=22, fail_line=0, error=None\r\n371 PASS Class控制请求仍经EP0处理: checks=19, fail_line=0, error=None\r\nTOTAL {'total': 204, 'passed': 201, 'failed': 3, 'assertions': 2947} source changed: []\r\n",
+      "new_failure": false
+    },
+    {
+      "suite": "EP0IRQ",
+      "baseline_exit": 0,
+      "current_exit": 0,
+      "baseline_summary": {
+        "total": 4,
+        "passed": 4,
+        "failed": 0
+      },
+      "current_summary": {
+        "total": 4,
+        "passed": 4,
+        "failed": 0
+      },
+      "case_results_equal": true,
+      "baseline_diagnostic": "",
+      "current_diagnostic": "",
+      "new_failure": false
+    },
+    {
+      "suite": "Probe",
+      "baseline_exit": 1,
+      "current_exit": 1,
+      "baseline_summary": {
+        "total": 89,
+        "passed": 0,
+        "failed": 89
+      },
+      "current_summary": {
+        "total": 89,
+        "passed": 0,
+        "failed": 89
+      },
+      "case_results_equal": true,
+      "baseline_diagnostic": "绝 FAIL (33, 2, 4294967292, 0) None\r\nCommit字节7变更拒绝 FAIL (33, 2, 4294967292, 0) None\r\nCommit字节8变更拒绝 FAIL (33, 2, 4294967292, 0) None\r\nCommit字节9变更拒绝 FAIL (33, 2, 4294967292, 0) None\r\nCommit字节10变更拒绝 FAIL (33, 2, 4294967292, 0) None\r\nCommit字节11变更拒绝 FAIL (33, 2, 4294967292, 0) None\r\nCommit字节12变更拒绝 FAIL (33, 2, 4294967292, 0) None\r\nCommit字节13变更拒绝 FAIL (33, 2, 4294967292, 0) None\r\nCommit字节14变更拒绝 FAIL (33, 2, 4294967292, 0) None\r\nCommit字节15变更拒绝 FAIL (33, 2, 4294967292, 0) None\r\nCommit字节16变更拒绝 FAIL (33, 2, 4294967292, 0) None\r\nCommit字节17变更拒绝 FAIL (33, 2, 4294967292, 0) None\r\nCommit字节18变更拒绝 FAIL (33, 2, 4294967292, 0) None\r\nCommit字节19变更拒绝 FAIL (33, 2, 4294967292, 0) None\r\nCommit字节20变更拒绝 FAIL (33, 2, 4294967292, 0) None\r\nCommit字节21变更拒绝 FAIL (33, 2, 4294967292, 0) None\r\nCommit字节22变更拒绝 FAIL (33, 2, 4294967292, 0) None\r\nCommit字节23变更拒绝 FAIL (33, 2, 4294967292, 0) None\r\nCommit字节24变更拒绝 FAIL (33, 2, 4294967292, 0) None\r\nCommit字节25变更拒绝 FAIL (33, 2, 4294967292, 0) None\r\nCommit字节26变更拒绝 FAIL (33, 2, 4294967292, 0) None\r\nCommit字节27变更拒绝 FAIL (33, 2, 4294967292, 0) None\r\nCommit字节28变更拒绝 FAIL (33, 2, 4294967292, 0) None\r\nCommit字节29变更拒绝 FAIL (33, 2, 4294967292, 0) None\r\nCommit字节30变更拒绝 FAIL (33, 2, 4294967292, 0) None\r\nCommit字节31变更拒绝 FAIL (33, 2, 4294967292, 0) None\r\nCommit字节32变更拒绝 FAIL (33, 2, 4294967292, 0) None\r\nCommit字节33变更拒绝 FAIL (33, 2, 4294967292, 0) None\r\n协商归一 FAIL (33, 2, 4294967292, 0) None\r\n禁止增加带宽 FAIL (33, 2, 4294967292, 0) None\r\n拒绝过小Payload FAIL (33, 2, 4294967292, 0) None\r\n版本非法 FAIL (33, 2, 4294967292, 0) None\r\n未读Probe拒绝Commit FAIL (33, 2, 4294967292, 0) None\r\n短读Probe拒绝Commit FAIL (33, 2, 4294967292, 0) None\r\n新SETUP取消SET FAIL (33, 2, 4294967292, 0) None\r\n新Probe撤销授权 FAIL (33, 2, 4294967292, 0) None\r\n完整Core协商提交 FAIL (33, 2, 4294967292, 0) None\r\nCore拒绝非法Commit边界 FAIL (33, 2, 4294967292, 0) None\r\nCore接收短包边界 FAIL (33, 2, 4294967292, 0) None\r\n缓冲区对齐与尾部 FAIL (33, 2, 4294967292, 0) None\r\n两个Selector初始CUR返回默认且不授权 FAIL (33, 2, 4294967292, 0) None\r\nGET短读截断 FAIL (33, 2, 4294967292, 0) None\r\nGET_LEN和INFO截断 FAIL (33, 2, 4294967292, 0) None\r\nDeInit释放状态 FAIL (33, 2, 4294967292, 0) None\r\nSTALL后新SETUP恢复 FAIL (33, 2, 4294967292, 0) None\r\n协商失败返回默认且不继承旧授权 FAIL (33, 2, 4294967292, 0) None\r\nProbe只读字段归一 FAIL (33, 2, 4294967292, 0) None\r\nCore拒绝26字节SET FAIL (33, 2, 4294967292, 0) None\r\nCore拒绝超长实际数据 FAIL (33, 2, 4294967292, 0) None\r\nCore拒绝Commit GET_DEF FAIL (33, 2, 4294967292, 0) None\r\n短Probe撤销旧协商与Commit授权 FAIL (33, 2, 4294967292, 0) None\r\n{'total': 89, 'passed': 0, 'failed': 89} source_changed []\r\n",
+      "current_diagnostic": "绝 FAIL (33, 2, 4294967292, 0) None\r\nCommit字节7变更拒绝 FAIL (33, 2, 4294967292, 0) None\r\nCommit字节8变更拒绝 FAIL (33, 2, 4294967292, 0) None\r\nCommit字节9变更拒绝 FAIL (33, 2, 4294967292, 0) None\r\nCommit字节10变更拒绝 FAIL (33, 2, 4294967292, 0) None\r\nCommit字节11变更拒绝 FAIL (33, 2, 4294967292, 0) None\r\nCommit字节12变更拒绝 FAIL (33, 2, 4294967292, 0) None\r\nCommit字节13变更拒绝 FAIL (33, 2, 4294967292, 0) None\r\nCommit字节14变更拒绝 FAIL (33, 2, 4294967292, 0) None\r\nCommit字节15变更拒绝 FAIL (33, 2, 4294967292, 0) None\r\nCommit字节16变更拒绝 FAIL (33, 2, 4294967292, 0) None\r\nCommit字节17变更拒绝 FAIL (33, 2, 4294967292, 0) None\r\nCommit字节18变更拒绝 FAIL (33, 2, 4294967292, 0) None\r\nCommit字节19变更拒绝 FAIL (33, 2, 4294967292, 0) None\r\nCommit字节20变更拒绝 FAIL (33, 2, 4294967292, 0) None\r\nCommit字节21变更拒绝 FAIL (33, 2, 4294967292, 0) None\r\nCommit字节22变更拒绝 FAIL (33, 2, 4294967292, 0) None\r\nCommit字节23变更拒绝 FAIL (33, 2, 4294967292, 0) None\r\nCommit字节24变更拒绝 FAIL (33, 2, 4294967292, 0) None\r\nCommit字节25变更拒绝 FAIL (33, 2, 4294967292, 0) None\r\nCommit字节26变更拒绝 FAIL (33, 2, 4294967292, 0) None\r\nCommit字节27变更拒绝 FAIL (33, 2, 4294967292, 0) None\r\nCommit字节28变更拒绝 FAIL (33, 2, 4294967292, 0) None\r\nCommit字节29变更拒绝 FAIL (33, 2, 4294967292, 0) None\r\nCommit字节30变更拒绝 FAIL (33, 2, 4294967292, 0) None\r\nCommit字节31变更拒绝 FAIL (33, 2, 4294967292, 0) None\r\nCommit字节32变更拒绝 FAIL (33, 2, 4294967292, 0) None\r\nCommit字节33变更拒绝 FAIL (33, 2, 4294967292, 0) None\r\n协商归一 FAIL (33, 2, 4294967292, 0) None\r\n禁止增加带宽 FAIL (33, 2, 4294967292, 0) None\r\n拒绝过小Payload FAIL (33, 2, 4294967292, 0) None\r\n版本非法 FAIL (33, 2, 4294967292, 0) None\r\n未读Probe拒绝Commit FAIL (33, 2, 4294967292, 0) None\r\n短读Probe拒绝Commit FAIL (33, 2, 4294967292, 0) None\r\n新SETUP取消SET FAIL (33, 2, 4294967292, 0) None\r\n新Probe撤销授权 FAIL (33, 2, 4294967292, 0) None\r\n完整Core协商提交 FAIL (33, 2, 4294967292, 0) None\r\nCore拒绝非法Commit边界 FAIL (33, 2, 4294967292, 0) None\r\nCore接收短包边界 FAIL (33, 2, 4294967292, 0) None\r\n缓冲区对齐与尾部 FAIL (33, 2, 4294967292, 0) None\r\n两个Selector初始CUR返回默认且不授权 FAIL (33, 2, 4294967292, 0) None\r\nGET短读截断 FAIL (33, 2, 4294967292, 0) None\r\nGET_LEN和INFO截断 FAIL (33, 2, 4294967292, 0) None\r\nDeInit释放状态 FAIL (33, 2, 4294967292, 0) None\r\nSTALL后新SETUP恢复 FAIL (33, 2, 4294967292, 0) None\r\n协商失败返回默认且不继承旧授权 FAIL (33, 2, 4294967292, 0) None\r\nProbe只读字段归一 FAIL (33, 2, 4294967292, 0) None\r\nCore拒绝26字节SET FAIL (33, 2, 4294967292, 0) None\r\nCore拒绝超长实际数据 FAIL (33, 2, 4294967292, 0) None\r\nCore拒绝Commit GET_DEF FAIL (33, 2, 4294967292, 0) None\r\n短Probe撤销旧协商与Commit授权 FAIL (33, 2, 4294967292, 0) None\r\n{'total': 89, 'passed': 0, 'failed': 89} source_changed []\r\n",
+      "new_failure": false
+    },
+    {
+      "suite": "Cancellation",
+      "baseline_exit": 1,
+      "current_exit": 1,
+      "baseline_summary": {
+        "total": 39,
+        "passed": 0,
+        "failed": 39
+      },
+      "current_summary": {
+        "total": 39,
+        "passed": 0,
+        "failed": 39
+      },
+      "case_results_equal": true,
+      "baseline_diagnostic": "Probe GET_CUR被设备描述符打断不得授权Commit FAIL (28, 2, 4294967292, 0) None\r\n旧Probe SET_CUR回调不能处理设备GET_DESCRIPTOR FAIL (28, 2, 4294967292, 0) None\r\n旧Commit SET_CUR不能由其他完成授权 FAIL (28, 2, 4294967292, 0) None\r\n旧SET_CUR被设备OUT SETUP取消 FAIL (28, 2, 4294967292, 0) None\r\n旧OUT中断不污染描述符IN FAIL (28, 2, 4294967292, 0) None\r\n正常Probe GET_CUR到Commit FAIL (28, 2, 4294967292, 0) None\r\nVC GET_STATUS两字节 FAIL (28, 2, 4294967292, 0) None\r\nVS GET_STATUS两字节 FAIL (28, 2, 4294967292, 0) None\r\n持久GET_STATUS响应与重复请求 FAIL (28, 2, 4294967292, 0) None\r\nGET_STATUS非法字段0 FAIL (28, 2, 4294967292, 0) None\r\nGET_STATUS非法字段1 FAIL (28, 2, 4294967292, 0) None\r\nGET_STATUS非法字段2 FAIL (28, 2, 4294967292, 0) None\r\nGET_STATUS非法字段3 FAIL (28, 2, 4294967292, 0) None\r\nGET_STATUS非法字段4 FAIL (28, 2, 4294967292, 0) None\r\nGET_STATUS非法字段5 FAIL (28, 2, 4294967292, 0) None\r\nGET_STATUS非法字段6 FAIL (28, 2, 4294967292, 0) None\r\nGET_STATUS非法字段7 FAIL (28, 2, 4294967292, 0) None\r\nGET_STATUS非法字段8 FAIL (28, 2, 4294967292, 0) None\r\nGET_STATUS非法字段9 FAIL (28, 2, 4294967292, 0) None\r\nGET_STATUS非法字段10 FAIL (28, 2, 4294967292, 0) None\r\nGET_STATUS非法字段11 FAIL (28, 2, 4294967292, 0) None\r\nSTALL后接口GET_STATUS恢复 FAIL (28, 2, 4294967292, 0) None\r\nSTALL后设备GET_DESCRIPTOR恢复 FAIL (28, 2, 4294967292, 0) None\r\nTxSent当前事务字段校验0 FAIL (28, 2, 4294967292, 0) None\r\nTxSent当前事务字段校验1 FAIL (28, 2, 4294967292, 0) None\r\nTxSent当前事务字段校验2 FAIL (28, 2, 4294967292, 0) None\r\nTxSent当前事务字段校验3 FAIL (28, 2, 4294967292, 0) None\r\nTxSent当前事务字段校验4 FAIL (28, 2, 4294967292, 0) None\r\nTxSent当前事务字段校验5 FAIL (28, 2, 4294967292, 0) None\r\nTxSent当前事务字段校验6 FAIL (28, 2, 4294967292, 0) None\r\nTxSent当前事务字段校验7 FAIL (28, 2, 4294967292, 0) None\r\nRxReady当前事务字段校验0 FAIL (28, 2, 4294967292, 0) None\r\nRxReady当前事务字段校验1 FAIL (28, 2, 4294967292, 0) None\r\nRxReady当前事务字段校验2 FAIL (28, 2, 4294967292, 0) None\r\nRxReady当前事务字段校验3 FAIL (28, 2, 4294967292, 0) None\r\nRxReady当前事务字段校验4 FAIL (28, 2, 4294967292, 0) None\r\nRxReady当前事务字段校验5 FAIL (28, 2, 4294967292, 0) None\r\nRxReady当前事务字段校验6 FAIL (28, 2, 4294967292, 0) None\r\nRxReady当前事务字段校验7 FAIL (28, 2, 4294967292, 0) None\r\n{'total': 39, 'passed': 0, 'failed': 39} source_changed []\r\n",
+      "current_diagnostic": "Probe GET_CUR被设备描述符打断不得授权Commit FAIL (28, 2, 4294967292, 0) None\r\n旧Probe SET_CUR回调不能处理设备GET_DESCRIPTOR FAIL (28, 2, 4294967292, 0) None\r\n旧Commit SET_CUR不能由其他完成授权 FAIL (28, 2, 4294967292, 0) None\r\n旧SET_CUR被设备OUT SETUP取消 FAIL (28, 2, 4294967292, 0) None\r\n旧OUT中断不污染描述符IN FAIL (28, 2, 4294967292, 0) None\r\n正常Probe GET_CUR到Commit FAIL (28, 2, 4294967292, 0) None\r\nVC GET_STATUS两字节 FAIL (28, 2, 4294967292, 0) None\r\nVS GET_STATUS两字节 FAIL (28, 2, 4294967292, 0) None\r\n持久GET_STATUS响应与重复请求 FAIL (28, 2, 4294967292, 0) None\r\nGET_STATUS非法字段0 FAIL (28, 2, 4294967292, 0) None\r\nGET_STATUS非法字段1 FAIL (28, 2, 4294967292, 0) None\r\nGET_STATUS非法字段2 FAIL (28, 2, 4294967292, 0) None\r\nGET_STATUS非法字段3 FAIL (28, 2, 4294967292, 0) None\r\nGET_STATUS非法字段4 FAIL (28, 2, 4294967292, 0) None\r\nGET_STATUS非法字段5 FAIL (28, 2, 4294967292, 0) None\r\nGET_STATUS非法字段6 FAIL (28, 2, 4294967292, 0) None\r\nGET_STATUS非法字段7 FAIL (28, 2, 4294967292, 0) None\r\nGET_STATUS非法字段8 FAIL (28, 2, 4294967292, 0) None\r\nGET_STATUS非法字段9 FAIL (28, 2, 4294967292, 0) None\r\nGET_STATUS非法字段10 FAIL (28, 2, 4294967292, 0) None\r\nGET_STATUS非法字段11 FAIL (28, 2, 4294967292, 0) None\r\nSTALL后接口GET_STATUS恢复 FAIL (28, 2, 4294967292, 0) None\r\nSTALL后设备GET_DESCRIPTOR恢复 FAIL (28, 2, 4294967292, 0) None\r\nTxSent当前事务字段校验0 FAIL (28, 2, 4294967292, 0) None\r\nTxSent当前事务字段校验1 FAIL (28, 2, 4294967292, 0) None\r\nTxSent当前事务字段校验2 FAIL (28, 2, 4294967292, 0) None\r\nTxSent当前事务字段校验3 FAIL (28, 2, 4294967292, 0) None\r\nTxSent当前事务字段校验4 FAIL (28, 2, 4294967292, 0) None\r\nTxSent当前事务字段校验5 FAIL (28, 2, 4294967292, 0) None\r\nTxSent当前事务字段校验6 FAIL (28, 2, 4294967292, 0) None\r\nTxSent当前事务字段校验7 FAIL (28, 2, 4294967292, 0) None\r\nRxReady当前事务字段校验0 FAIL (28, 2, 4294967292, 0) None\r\nRxReady当前事务字段校验1 FAIL (28, 2, 4294967292, 0) None\r\nRxReady当前事务字段校验2 FAIL (28, 2, 4294967292, 0) None\r\nRxReady当前事务字段校验3 FAIL (28, 2, 4294967292, 0) None\r\nRxReady当前事务字段校验4 FAIL (28, 2, 4294967292, 0) None\r\nRxReady当前事务字段校验5 FAIL (28, 2, 4294967292, 0) None\r\nRxReady当前事务字段校验6 FAIL (28, 2, 4294967292, 0) None\r\nRxReady当前事务字段校验7 FAIL (28, 2, 4294967292, 0) None\r\n{'total': 39, 'passed': 0, 'failed': 39} source_changed []\r\n",
+      "new_failure": false
+    },
+    {
+      "suite": "Payload",
+      "baseline_exit": 1,
+      "current_exit": 1,
+      "baseline_summary": {
+        "unique_cases": 62,
+        "executions": 124,
+        "passed": 122,
+        "failed": 2
+      },
+      "current_summary": {
+        "unique_cases": 62,
+        "executions": 124,
+        "passed": 122,
+        "failed": 2
+      },
+      "case_results_equal": true,
+      "baseline_diagnostic": " (0, 384, 0, 0) None []\r\n-O2 9 511B最大包长 PASS (0, 3134, 0, 0) None []\r\n-O2 10 4B包长 PASS (0, 168, 0, 0) None []\r\n-O2 11 非对齐输入 PASS (0, 2098, 0, 0) None []\r\n-O2 12 重复Build不重建不推进 PASS (0, 20, 0, 0) None []\r\n-O2 13 重复完成无待确认包 PASS (0, 15, 0, 0) None []\r\n-O2 14 重复旧完成不能推进下一包 PASS (0, 16, 0, 0) None []\r\n-O2 15 错误与零Token PASS (0, 16, 0, 0) None []\r\n-O2 16 末包构造不能提前翻FID PASS (0, 18, 0, 0) None []\r\n-O2 17 构包前取消 PASS (0, 16, 0, 0) None []\r\n-O2 18 待确认取消保留引用 PASS (0, 26, 0, 0) None []\r\n-O2 19 Abort确认后释放取消帧 PASS (0, 26, 0, 0) None []\r\n-O2 20 Cancel与成功完成交错 PASS (0, 26, 0, 0) None []\r\n-O2 21 包间取消切换帧边界 PASS (0, 17, 0, 0) None []\r\n-O2 22 重复空闲取消 PASS (0, 15, 0, 0) None []\r\n-O2 23 重复待确认取消 PASS (0, 29, 0, 0) None []\r\n-O2 24 未请求取消禁止Abort PASS (0, 14, 0, 0) None []\r\n-O2 25 错误Abort Token不能释放 PASS (0, 28, 0, 0) None []\r\n-O2 26 取消后旧完成不能命中新帧 PASS (0, 32, 0, 0) None []\r\n-O2 27 活动帧Reset拒绝 PASS (0, 13, 0, 0) None []\r\n-O2 28 待确认包Reset拒绝 PASS (0, 14, 0, 0) None []\r\n-O2 29 取消等待时Reset拒绝 PASS (0, 28, 0, 0) None []\r\n-O2 30 空闲Reset保留Token PASS (0, 36, 0, 0) None []\r\n-O2 31 Reset后旧完成不能命中新包 PASS (0, 40, 0, 0) None []\r\n-O2 32 零帧长 PASS (0, 12, 0, 0) None []\r\n-O2 33 空图像指针 PASS (0, 12, 0, 0) None []\r\n-O2 34 包长0 PASS (0, 12, 0, 0) None []\r\n-O2 35 包长1 PASS (0, 12, 0, 0) None []\r\n-O2 36 包长2 PASS (0, 12, 0, 0) None []\r\n-O2 37 包长513 FAIL (217, 2, 0, 4294967295) None []\r\n-O2 38 包长65535 PASS (0, 12, 0, 0) None []\r\n-O2 39 图像地址溢出 PASS (0, 12, 0, 0) None []\r\n-O2 40 图像覆盖上下文 PASS (0, 12, 0, 0) None []\r\n-O2 41 图像覆盖内部包 PASS (0, 12, 0, 0) None []\r\n-O2 42 空输出视图 PASS (0, 13, 0, 0) None []\r\n-O2 43 输出视图覆盖上下文 PASS (0, 13, 0, 0) None []\r\n-O2 44 输出视图覆盖只读帧 PASS (0, 13, 0, 0) None []\r\n-O2 45 未开始帧禁止构包 PASS (0, 12, 0, 0) None []\r\n-O2 46 无待确认包禁止完成 PASS (0, 12, 0, 0) None []\r\n-O2 47 Init空指针 PASS (0, 11, 0, 0) None []\r\n-O2 48 其他API空对象 PASS (0, 16, 0, 0) None []\r\n-O2 49 未初始化对象 PASS (0, 16, 0, 0) None []\r\n-O2 50 重复Init空闲对象 PASS (0, 12, 0, 0) None []\r\n-O2 51 重复Init不能丢待确认所有权 PASS (0, 14, 0, 0) None []\r\n-O2 52 最后有效Token后拒绝回绕 PASS (0, 21, 0, 0) None []\r\n-O2 53 Token耗尽无状态推进 PASS (0, 16, 0, 0) None []\r\n-O2 54 独立实例互不影响 PASS (0, 23, 0, 0) None []\r\n-O2 55 输入只读且末端边界 PASS (0, 2102, 0, 0) None []\r\n-O2 56 取消等待禁止Build且不写输出 PASS (0, 32, 0, 0) None []\r\n-O2 57 PIO尾部补齐不越界 PASS (0, 2102, 0, 0) None []\r\n-O2 58 取消末包不重复翻FID PASS (0, 32, 0, 0) None []\r\n-O2 59 Start不能覆盖活动状态 PASS (0, 19, 0, 0) None []\r\n-O2 60 损坏偏移保护 PASS (0, 13, 0, 0) None []\r\n-O2 61 损坏待确认长度保护 PASS (0, 14, 0, 0) None []\r\n{'unique_cases': 62, 'executions': 124, 'passed': 122, 'failed': 2}\r\n",
+      "current_diagnostic": " (0, 384, 0, 0) None []\r\n-O2 9 511B最大包长 PASS (0, 3134, 0, 0) None []\r\n-O2 10 4B包长 PASS (0, 168, 0, 0) None []\r\n-O2 11 非对齐输入 PASS (0, 2098, 0, 0) None []\r\n-O2 12 重复Build不重建不推进 PASS (0, 20, 0, 0) None []\r\n-O2 13 重复完成无待确认包 PASS (0, 15, 0, 0) None []\r\n-O2 14 重复旧完成不能推进下一包 PASS (0, 16, 0, 0) None []\r\n-O2 15 错误与零Token PASS (0, 16, 0, 0) None []\r\n-O2 16 末包构造不能提前翻FID PASS (0, 18, 0, 0) None []\r\n-O2 17 构包前取消 PASS (0, 16, 0, 0) None []\r\n-O2 18 待确认取消保留引用 PASS (0, 26, 0, 0) None []\r\n-O2 19 Abort确认后释放取消帧 PASS (0, 26, 0, 0) None []\r\n-O2 20 Cancel与成功完成交错 PASS (0, 26, 0, 0) None []\r\n-O2 21 包间取消切换帧边界 PASS (0, 17, 0, 0) None []\r\n-O2 22 重复空闲取消 PASS (0, 15, 0, 0) None []\r\n-O2 23 重复待确认取消 PASS (0, 29, 0, 0) None []\r\n-O2 24 未请求取消禁止Abort PASS (0, 14, 0, 0) None []\r\n-O2 25 错误Abort Token不能释放 PASS (0, 28, 0, 0) None []\r\n-O2 26 取消后旧完成不能命中新帧 PASS (0, 32, 0, 0) None []\r\n-O2 27 活动帧Reset拒绝 PASS (0, 13, 0, 0) None []\r\n-O2 28 待确认包Reset拒绝 PASS (0, 14, 0, 0) None []\r\n-O2 29 取消等待时Reset拒绝 PASS (0, 28, 0, 0) None []\r\n-O2 30 空闲Reset保留Token PASS (0, 36, 0, 0) None []\r\n-O2 31 Reset后旧完成不能命中新包 PASS (0, 40, 0, 0) None []\r\n-O2 32 零帧长 PASS (0, 12, 0, 0) None []\r\n-O2 33 空图像指针 PASS (0, 12, 0, 0) None []\r\n-O2 34 包长0 PASS (0, 12, 0, 0) None []\r\n-O2 35 包长1 PASS (0, 12, 0, 0) None []\r\n-O2 36 包长2 PASS (0, 12, 0, 0) None []\r\n-O2 37 包长513 FAIL (217, 2, 0, 4294967295) None []\r\n-O2 38 包长65535 PASS (0, 12, 0, 0) None []\r\n-O2 39 图像地址溢出 PASS (0, 12, 0, 0) None []\r\n-O2 40 图像覆盖上下文 PASS (0, 12, 0, 0) None []\r\n-O2 41 图像覆盖内部包 PASS (0, 12, 0, 0) None []\r\n-O2 42 空输出视图 PASS (0, 13, 0, 0) None []\r\n-O2 43 输出视图覆盖上下文 PASS (0, 13, 0, 0) None []\r\n-O2 44 输出视图覆盖只读帧 PASS (0, 13, 0, 0) None []\r\n-O2 45 未开始帧禁止构包 PASS (0, 12, 0, 0) None []\r\n-O2 46 无待确认包禁止完成 PASS (0, 12, 0, 0) None []\r\n-O2 47 Init空指针 PASS (0, 11, 0, 0) None []\r\n-O2 48 其他API空对象 PASS (0, 16, 0, 0) None []\r\n-O2 49 未初始化对象 PASS (0, 16, 0, 0) None []\r\n-O2 50 重复Init空闲对象 PASS (0, 12, 0, 0) None []\r\n-O2 51 重复Init不能丢待确认所有权 PASS (0, 14, 0, 0) None []\r\n-O2 52 最后有效Token后拒绝回绕 PASS (0, 21, 0, 0) None []\r\n-O2 53 Token耗尽无状态推进 PASS (0, 16, 0, 0) None []\r\n-O2 54 独立实例互不影响 PASS (0, 23, 0, 0) None []\r\n-O2 55 输入只读且末端边界 PASS (0, 2102, 0, 0) None []\r\n-O2 56 取消等待禁止Build且不写输出 PASS (0, 32, 0, 0) None []\r\n-O2 57 PIO尾部补齐不越界 PASS (0, 2102, 0, 0) None []\r\n-O2 58 取消末包不重复翻FID PASS (0, 32, 0, 0) None []\r\n-O2 59 Start不能覆盖活动状态 PASS (0, 19, 0, 0) None []\r\n-O2 60 损坏偏移保护 PASS (0, 13, 0, 0) None []\r\n-O2 61 损坏待确认长度保护 PASS (0, 14, 0, 0) None []\r\n{'unique_cases': 62, 'executions': 124, 'passed': 122, 'failed': 2}\r\n",
+      "new_failure": false
+    },
+    {
+      "suite": "UvcLifecycle",
+      "baseline_exit": 1,
+      "current_exit": 1,
+      "baseline_summary": {
+        "total": 40,
+        "passed": 34,
+        "failed": 6
+      },
+      "current_summary": {
+        "total": 40,
+        "passed": 34,
+        "failed": 6
+      },
+      "case_results_equal": true,
+      "baseline_diagnostic": "Init空句柄 PASS (0, 2, 0, 0) None\r\nInit配置0 PASS (0, 3, 0, 0) None\r\nInit配置2 PASS (0, 3, 0, 0) None\r\n重复Init保持原上下文 PASS (0, 4, 0, 0) None\r\n固定池耗尽 PASS (0, 5, 0, 0) None\r\n完整清零与Alt0 PASS (0, 214, 0, 0) None\r\nDeInit空句柄 PASS (0, 2, 0, 0) None\r\n空上下文DeInit PASS (0, 2, 0, 0) None\r\n正常及重复DeInit PASS (0, 5, 0, 0) None\r\nCore延迟归还 PASS (0, 5, 0, 0) None\r\n释放后可重新Init PASS (0, 4, 0, 0) None\r\nClass操作表14项映射 FAIL (82, 15, 0, 1) None\r\nSetup空句柄 PASS (0, 2, 0, 0) None\r\nSetup空请求 PASS (0, 2, 0, 0) None\r\nSetup空上下文 PASS (0, 1, 0, 0) None\r\nSetup未配置上下文 PASS (0, 5, 0, 0) None\r\nSetup设备未配置 PASS (0, 5, 0, 0) None\r\n拒绝Class请求 PASS (0, 5, 0, 0) None\r\n拒绝Vendor请求 PASS (0, 5, 0, 0) None\r\n拒绝Device对象 PASS (0, 5, 0, 0) None\r\n拒绝Endpoint对象 PASS (0, 5, 0, 0) None\r\n拒绝保留对象位 PASS (0, 5, 0, 0) None\r\n拒绝接口2 PASS (0, 5, 0, 0) None\r\n拒绝接口高字节 PASS (0, 5, 0, 0) None\r\nGET方向错误 PASS (0, 5, 0, 0) None\r\nGET非零Value PASS (0, 5, 0, 0) None\r\nGET零长度 PASS (0, 5, 0, 0) None\r\nGET长度2 PASS (0, 5, 0, 0) None\r\nSET Alt1 PASS (0, 5, 0, 0) None\r\nSET Alt高字节 PASS (0, 5, 0, 0) None\r\nSET方向错误 PASS (0, 5, 0, 0) None\r\nSET非零长度 PASS (0, 5, 0, 0) None\r\n拒绝其他标准请求 PASS (0, 5, 0, 0) None\r\nSET接口0由Core负责状态 PASS (0, 9, 0, 0) None\r\nSET接口1由Core负责状态 PASS (0, 9, 0, 0) None\r\nCore GET接口0 FAIL (112, 2, 4294967295, 0) None\r\nCore GET接口1 FAIL (112, 2, 4294967295, 0) None\r\nCore SET接口0单次状态 FAIL (112, 2, 4294967295, 0) None\r\nCore SET接口1单次状态 FAIL (112, 2, 4294967295, 0) None\r\nCore拒绝Alt1且不开EP1 FAIL (112, 2, 4294967295, 0) None\r\n{'total': 40, 'passed': 34, 'failed': 6} source_changed []\r\n",
+      "current_diagnostic": "Init空句柄 PASS (0, 2, 0, 0) None\r\nInit配置0 PASS (0, 3, 0, 0) None\r\nInit配置2 PASS (0, 3, 0, 0) None\r\n重复Init保持原上下文 PASS (0, 4, 0, 0) None\r\n固定池耗尽 PASS (0, 5, 0, 0) None\r\n完整清零与Alt0 PASS (0, 214, 0, 0) None\r\nDeInit空句柄 PASS (0, 2, 0, 0) None\r\n空上下文DeInit PASS (0, 2, 0, 0) None\r\n正常及重复DeInit PASS (0, 5, 0, 0) None\r\nCore延迟归还 PASS (0, 5, 0, 0) None\r\n释放后可重新Init PASS (0, 4, 0, 0) None\r\nClass操作表14项映射 FAIL (82, 15, 0, 1) None\r\nSetup空句柄 PASS (0, 2, 0, 0) None\r\nSetup空请求 PASS (0, 2, 0, 0) None\r\nSetup空上下文 PASS (0, 1, 0, 0) None\r\nSetup未配置上下文 PASS (0, 5, 0, 0) None\r\nSetup设备未配置 PASS (0, 5, 0, 0) None\r\n拒绝Class请求 PASS (0, 5, 0, 0) None\r\n拒绝Vendor请求 PASS (0, 5, 0, 0) None\r\n拒绝Device对象 PASS (0, 5, 0, 0) None\r\n拒绝Endpoint对象 PASS (0, 5, 0, 0) None\r\n拒绝保留对象位 PASS (0, 5, 0, 0) None\r\n拒绝接口2 PASS (0, 5, 0, 0) None\r\n拒绝接口高字节 PASS (0, 5, 0, 0) None\r\nGET方向错误 PASS (0, 5, 0, 0) None\r\nGET非零Value PASS (0, 5, 0, 0) None\r\nGET零长度 PASS (0, 5, 0, 0) None\r\nGET长度2 PASS (0, 5, 0, 0) None\r\nSET Alt1 PASS (0, 5, 0, 0) None\r\nSET Alt高字节 PASS (0, 5, 0, 0) None\r\nSET方向错误 PASS (0, 5, 0, 0) None\r\nSET非零长度 PASS (0, 5, 0, 0) None\r\n拒绝其他标准请求 PASS (0, 5, 0, 0) None\r\nSET接口0由Core负责状态 PASS (0, 9, 0, 0) None\r\nSET接口1由Core负责状态 PASS (0, 9, 0, 0) None\r\nCore GET接口0 FAIL (112, 2, 4294967295, 0) None\r\nCore GET接口1 FAIL (112, 2, 4294967295, 0) None\r\nCore SET接口0单次状态 FAIL (112, 2, 4294967295, 0) None\r\nCore SET接口1单次状态 FAIL (112, 2, 4294967295, 0) None\r\nCore拒绝Alt1且不开EP1 FAIL (112, 2, 4294967295, 0) None\r\n{'total': 40, 'passed': 34, 'failed': 6} source_changed []\r\n",
+      "new_failure": false
+    },
+    {
+      "suite": "EP1",
+      "baseline_exit": 1,
+      "current_exit": 1,
+      "baseline_summary": {
+        "total": 45,
+        "passed": 0,
+        "failed": 45
+      },
+      "current_summary": {
+        "total": 45,
+        "passed": 0,
+        "failed": 45
+      },
+      "case_results_equal": true,
+      "baseline_diagnostic": "未Commit拒绝Alt1 FAIL (53, 2, 4294967292, 0) None\r\nAlt0到Alt1到Alt0 FAIL (53, 2, 4294967292, 0) None\r\n打开参数严格匹配编译后描述符 FAIL (53, 2, 4294967292, 0) None\r\n重复Alt1不重复Open FAIL (53, 2, 4294967292, 0) None\r\n重复Alt0不重复Close FAIL (53, 2, 4294967292, 0) None\r\nVC Alt0不影响VS Alt1 FAIL (53, 2, 4294967292, 0) None\r\nVC拒绝Alt1 FAIL (53, 2, 4294967292, 0) None\r\nVS拒绝Alt2 FAIL (53, 2, 4294967292, 0) None\r\n拒绝Alt高字节 FAIL (53, 2, 4294967292, 0) None\r\n拒绝接口2 FAIL (53, 2, 4294967292, 0) None\r\n拒绝接口高字节 FAIL (53, 2, 4294967292, 0) None\r\n拒绝SET方向错误 FAIL (53, 2, 4294967292, 0) None\r\n拒绝SET非零长度 FAIL (53, 2, 4294967292, 0) None\r\nOpen HAL_ERROR后重试 FAIL (53, 2, 4294967292, 0) None\r\nOpen HAL_BUSY后重试 FAIL (53, 2, 4294967292, 0) None\r\n空闲Close失败保留状态并重试 FAIL (53, 2, 4294967292, 0) None\r\nbusy Abort失败保留PIO及重试 FAIL (53, 2, 4294967292, 0) None\r\nbusy Flush失败保留PIO及重试 FAIL (53, 2, 4294967292, 0) None\r\nbusy Close失败只归还已取消传输 FAIL (53, 2, 4294967292, 0) None\r\nDeInit关闭Alt1并归还上下文 FAIL (53, 2, 4294967292, 0) None\r\nDeInit Abort失败保留上下文 FAIL (53, 2, 4294967292, 0) None\r\nDeInit Close失败保留上下文 FAIL (53, 2, 4294967292, 0) None\r\nReset回收并要求重新Commit FAIL (53, 2, 4294967292, 0) None\r\nReset Abort失败和Stop恢复 FAIL (53, 2, 4294967292, 0) None\r\nReset Close失败和Stop恢复 FAIL (53, 2, 4294967292, 0) None\r\n重复Alt1保留busy缓冲区 FAIL (53, 2, 4294967292, 0) None\r\n新Probe独立于当前Commit FAIL (53, 2, 4294967292, 0) None\r\nAlt0后保留Commit可重新Alt1 FAIL (53, 2, 4294967292, 0) None\r\nGET_INTERFACE反映实际Alt FAIL (53, 2, 4294967292, 0) None\r\nOpen失败STALL后GET_DESCRIPTOR恢复 FAIL (53, 2, 4294967292, 0) None\r\nClose失败STALL后GET_STATUS恢复 FAIL (53, 2, 4294967292, 0) None\r\n失败后强制Status仍被Platform拒绝 FAIL (53, 2, 4294967292, 0) None\r\n重复DeInit不重复释放 FAIL (53, 2, 4294967292, 0) None\r\nSET_CONFIGURATION0正常释放 FAIL (53, 2, 4294967292, 0) None\r\nSET_CONFIGURATION0 Abort失败不得成功Status FAIL (53, 2, 4294967292, 0) None\r\nSET_CONFIGURATION0 Close失败不得成功Status FAIL (53, 2, 4294967292, 0) None\r\nDevice Stop后可重新配置 FAIL (53, 2, 4294967292, 0) None\r\nDevice Stop失败不释放busy资源 FAIL (53, 2, 4294967292, 0) None\r\nDataIn完成不自动发送下一包 FAIL (53, 2, 4294967292, 0) None\r\nDisconnect正常回收 FAIL (53, 2, 4294967292, 0) None\r\nAlt0 DeInit不操作EP1 FAIL (53, 2, 4294967292, 0) None\r\n关闭失败后Alt1必须拒绝直到Alt0恢复 FAIL (53, 2, 4294967292, 0) None\r\nAlt1时非法SET保持端点状态 FAIL (53, 2, 4294967292, 0) None\r\n失败新Probe不清除活动Commit FAIL (53, 2, 4294967292, 0) None\r\n失败新Commit保留原活动Commit FAIL (53, 2, 4294967292, 0) None\r\n{'total': 45, 'passed': 0, 'failed': 45} source_changed []\r\n",
+      "current_diagnostic": "未Commit拒绝Alt1 FAIL (53, 2, 4294967292, 0) None\r\nAlt0到Alt1到Alt0 FAIL (53, 2, 4294967292, 0) None\r\n打开参数严格匹配编译后描述符 FAIL (53, 2, 4294967292, 0) None\r\n重复Alt1不重复Open FAIL (53, 2, 4294967292, 0) None\r\n重复Alt0不重复Close FAIL (53, 2, 4294967292, 0) None\r\nVC Alt0不影响VS Alt1 FAIL (53, 2, 4294967292, 0) None\r\nVC拒绝Alt1 FAIL (53, 2, 4294967292, 0) None\r\nVS拒绝Alt2 FAIL (53, 2, 4294967292, 0) None\r\n拒绝Alt高字节 FAIL (53, 2, 4294967292, 0) None\r\n拒绝接口2 FAIL (53, 2, 4294967292, 0) None\r\n拒绝接口高字节 FAIL (53, 2, 4294967292, 0) None\r\n拒绝SET方向错误 FAIL (53, 2, 4294967292, 0) None\r\n拒绝SET非零长度 FAIL (53, 2, 4294967292, 0) None\r\nOpen HAL_ERROR后重试 FAIL (53, 2, 4294967292, 0) None\r\nOpen HAL_BUSY后重试 FAIL (53, 2, 4294967292, 0) None\r\n空闲Close失败保留状态并重试 FAIL (53, 2, 4294967292, 0) None\r\nbusy Abort失败保留PIO及重试 FAIL (53, 2, 4294967292, 0) None\r\nbusy Flush失败保留PIO及重试 FAIL (53, 2, 4294967292, 0) None\r\nbusy Close失败只归还已取消传输 FAIL (53, 2, 4294967292, 0) None\r\nDeInit关闭Alt1并归还上下文 FAIL (53, 2, 4294967292, 0) None\r\nDeInit Abort失败保留上下文 FAIL (53, 2, 4294967292, 0) None\r\nDeInit Close失败保留上下文 FAIL (53, 2, 4294967292, 0) None\r\nReset回收并要求重新Commit FAIL (53, 2, 4294967292, 0) None\r\nReset Abort失败和Stop恢复 FAIL (53, 2, 4294967292, 0) None\r\nReset Close失败和Stop恢复 FAIL (53, 2, 4294967292, 0) None\r\n重复Alt1保留busy缓冲区 FAIL (53, 2, 4294967292, 0) None\r\n新Probe独立于当前Commit FAIL (53, 2, 4294967292, 0) None\r\nAlt0后保留Commit可重新Alt1 FAIL (53, 2, 4294967292, 0) None\r\nGET_INTERFACE反映实际Alt FAIL (53, 2, 4294967292, 0) None\r\nOpen失败STALL后GET_DESCRIPTOR恢复 FAIL (53, 2, 4294967292, 0) None\r\nClose失败STALL后GET_STATUS恢复 FAIL (53, 2, 4294967292, 0) None\r\n失败后强制Status仍被Platform拒绝 FAIL (53, 2, 4294967292, 0) None\r\n重复DeInit不重复释放 FAIL (53, 2, 4294967292, 0) None\r\nSET_CONFIGURATION0正常释放 FAIL (53, 2, 4294967292, 0) None\r\nSET_CONFIGURATION0 Abort失败不得成功Status FAIL (53, 2, 4294967292, 0) None\r\nSET_CONFIGURATION0 Close失败不得成功Status FAIL (53, 2, 4294967292, 0) None\r\nDevice Stop后可重新配置 FAIL (53, 2, 4294967292, 0) None\r\nDevice Stop失败不释放busy资源 FAIL (53, 2, 4294967292, 0) None\r\nDataIn完成不自动发送下一包 FAIL (53, 2, 4294967292, 0) None\r\nDisconnect正常回收 FAIL (53, 2, 4294967292, 0) None\r\nAlt0 DeInit不操作EP1 FAIL (53, 2, 4294967292, 0) None\r\n关闭失败后Alt1必须拒绝直到Alt0恢复 FAIL (53, 2, 4294967292, 0) None\r\nAlt1时非法SET保持端点状态 FAIL (53, 2, 4294967292, 0) None\r\n失败新Probe不清除活动Commit FAIL (53, 2, 4294967292, 0) None\r\n失败新Commit保留原活动Commit FAIL (53, 2, 4294967292, 0) None\r\n{'total': 45, 'passed': 0, 'failed': 45} source_changed []\r\n",
+      "new_failure": false
+    },
+    {
+      "suite": "Streaming",
+      "baseline_exit": 1,
+      "current_exit": 1,
+      "baseline_summary": {
+        "total": 36,
+        "passed": 1,
+        "failed": 35
+      },
+      "current_summary": {
+        "total": 36,
+        "passed": 1,
+        "failed": 35
+      },
+      "case_results_equal": true,
+      "baseline_diagnostic": "默认TEST及SOF不受影响 PASS (0, 10, 0, 0) None\r\n完整76包与偏移确认 FAIL (61, 2, 4294967292, 0) None\r\n两帧FID与10FPS FAIL (61, 2, 4294967292, 0) None\r\n无SOF不能提交 FAIL (61, 2, 4294967292, 0) None\r\n同一SOF不重复提交 FAIL (61, 2, 4294967292, 0) None\r\nSOF不累计无限额度 FAIL (61, 2, 4294967292, 0) None\r\nHAL BUSY等待新SOF FAIL (61, 2, 4294967292, 0) None\r\nHAL ERROR恢复取消 FAIL (61, 2, 4294967292, 0) None\r\n重复完成只消费一次 FAIL (61, 2, 4294967292, 0) None\r\n错误完成Token拒绝 FAIL (61, 2, 4294967292, 0) None\r\nIncomplete等待Abort FAIL (61, 2, 4294967292, 0) None\r\nAbort失败保留所有权 FAIL (61, 2, 4294967292, 0) None\r\n在途Alt0安全关闭 FAIL (61, 2, 4294967292, 0) None\r\nAlt0 Abort失败保留上下文 FAIL (61, 2, 4294967292, 0) None\r\nReset新流拒绝旧Token FAIL (61, 2, 4294967292, 0) None\r\nDisconnect释放帧 FAIL (61, 2, 4294967292, 0) None\r\nDeInit失败保留固定池 FAIL (61, 2, 4294967292, 0) None\r\n主动取消确认后释放 FAIL (61, 2, 4294967292, 0) None\r\n取消和DataIn交错 FAIL (61, 2, 4294967292, 0) None\r\n外来PCD SOF忽略 FAIL (61, 2, 4294967292, 0) None\r\n未Commit或Alt0拒绝注入 FAIL (61, 2, 4294967292, 0) None\r\n帧率间隔不提前发送 FAIL (61, 2, 4294967292, 0) None\r\n末包真实完成前不翻FID FAIL (61, 2, 4294967292, 0) None\r\nAbort后迟到DataIn忽略 FAIL (61, 2, 4294967292, 0) None\r\nIncomplete后DataIn不变成功 FAIL (61, 2, 4294967292, 0) None\r\n完成后Incomplete错误优先 FAIL (61, 2, 4294967292, 0) None\r\n外部busy不错误确认 FAIL (61, 2, 4294967292, 0) None\r\nClass固定池限制 FAIL (61, 2, 4294967292, 0) None\r\n迟到Class回调不能确认新的在途序号 FAIL (61, 2, 4294967292, 0) None\r\n外部帧异常参数 FAIL (61, 2, 4294967292, 0) None\r\n传输序号耗尽不复用 FAIL (61, 2, 4294967292, 0) None\r\n真实HAL IRQ处理SOF通路 FAIL (61, 2, 4294967292, 0) None\r\nAbort成功才应答本端点旧XFRC FAIL (61, 2, 4294967292, 0) None\r\nAlt1无外部帧时100SOF不生成假视频 FAIL (61, 2, 4294967292, 0) None\r\n在途Close失败保持图像直到重试确认 FAIL (61, 2, 4294967292, 0) None\r\nReset Close失败保留上下文和图像 FAIL (61, 2, 4294967292, 0) None\r\n{'total': 36, 'passed': 1, 'failed': 35} source_changed []\r\n",
+      "current_diagnostic": "默认TEST及SOF不受影响 PASS (0, 10, 0, 0) None\r\n完整76包与偏移确认 FAIL (61, 2, 4294967292, 0) None\r\n两帧FID与10FPS FAIL (61, 2, 4294967292, 0) None\r\n无SOF不能提交 FAIL (61, 2, 4294967292, 0) None\r\n同一SOF不重复提交 FAIL (61, 2, 4294967292, 0) None\r\nSOF不累计无限额度 FAIL (61, 2, 4294967292, 0) None\r\nHAL BUSY等待新SOF FAIL (61, 2, 4294967292, 0) None\r\nHAL ERROR恢复取消 FAIL (61, 2, 4294967292, 0) None\r\n重复完成只消费一次 FAIL (61, 2, 4294967292, 0) None\r\n错误完成Token拒绝 FAIL (61, 2, 4294967292, 0) None\r\nIncomplete等待Abort FAIL (61, 2, 4294967292, 0) None\r\nAbort失败保留所有权 FAIL (61, 2, 4294967292, 0) None\r\n在途Alt0安全关闭 FAIL (61, 2, 4294967292, 0) None\r\nAlt0 Abort失败保留上下文 FAIL (61, 2, 4294967292, 0) None\r\nReset新流拒绝旧Token FAIL (61, 2, 4294967292, 0) None\r\nDisconnect释放帧 FAIL (61, 2, 4294967292, 0) None\r\nDeInit失败保留固定池 FAIL (61, 2, 4294967292, 0) None\r\n主动取消确认后释放 FAIL (61, 2, 4294967292, 0) None\r\n取消和DataIn交错 FAIL (61, 2, 4294967292, 0) None\r\n外来PCD SOF忽略 FAIL (61, 2, 4294967292, 0) None\r\n未Commit或Alt0拒绝注入 FAIL (61, 2, 4294967292, 0) None\r\n帧率间隔不提前发送 FAIL (61, 2, 4294967292, 0) None\r\n末包真实完成前不翻FID FAIL (61, 2, 4294967292, 0) None\r\nAbort后迟到DataIn忽略 FAIL (61, 2, 4294967292, 0) None\r\nIncomplete后DataIn不变成功 FAIL (61, 2, 4294967292, 0) None\r\n完成后Incomplete错误优先 FAIL (61, 2, 4294967292, 0) None\r\n外部busy不错误确认 FAIL (61, 2, 4294967292, 0) None\r\nClass固定池限制 FAIL (61, 2, 4294967292, 0) None\r\n迟到Class回调不能确认新的在途序号 FAIL (61, 2, 4294967292, 0) None\r\n外部帧异常参数 FAIL (61, 2, 4294967292, 0) None\r\n传输序号耗尽不复用 FAIL (61, 2, 4294967292, 0) None\r\n真实HAL IRQ处理SOF通路 FAIL (61, 2, 4294967292, 0) None\r\nAbort成功才应答本端点旧XFRC FAIL (61, 2, 4294967292, 0) None\r\nAlt1无外部帧时100SOF不生成假视频 FAIL (61, 2, 4294967292, 0) None\r\n在途Close失败保持图像直到重试确认 FAIL (61, 2, 4294967292, 0) None\r\nReset Close失败保留上下文和图像 FAIL (61, 2, 4294967292, 0) None\r\n{'total': 36, 'passed': 1, 'failed': 35} source_changed []\r\n",
+      "new_failure": false
+    },
+    {
+      "suite": "Descriptors",
+      "baseline_exit": 1,
+      "current_exit": 1,
+      "baseline_summary": {
+        "total": 8,
+        "passed": 7,
+        "failures": 0,
+        "errors": 1
+      },
+      "current_summary": {
+        "total": 8,
+        "passed": 7,
+        "failures": 0,
+        "errors": 1
+      },
+      "case_results_equal": true,
+      "baseline_diagnostic": "setUpClass (__main__.DescriptorTests) ... ERROR\r\n\r\n======================================================================\r\nERROR: setUpClass (__main__.DescriptorTests)\r\n----------------------------------------------------------------------\r\nTraceback (most recent call last):\r\n  File \"D:\\32\\STM32H7\\h7_mac\\output\\StorageModuleB3\\regression\\baseline\\Tests\\UsbUvcDescriptors\\run_tests.py\", line 68, in setUpClass\r\n    cls.symbols, cls.sizes, sections = compile_module()\r\n                                       ^^^^^^^^^^^^^^^^\r\n  File \"D:\\32\\STM32H7\\h7_mac\\output\\StorageModuleB3\\regression\\baseline\\Tests\\UsbUvcDescriptors\\run_tests.py\", line 50, in compile_module\r\n    run(args + ['-c', helper, '-o', temp / 'config.o'])\r\n  File \"D:\\32\\STM32H7\\h7_mac\\output\\StorageModuleB3\\regression\\baseline\\Tests\\UsbUvcDescriptors\\run_tests.py\", line 32, in run\r\n    raise RuntimeError(output)\r\nRuntimeError: \"D:\\32\\STM32H7\\h7_mac\\output\\StorageModuleB3\\regression\\baseline\\CM7\\Application\\app_storage.h\", line 5: Error:  #5: cannot open source input file \"camera_mjpeg_fifo.h\": No such file or directory\r\r\n  #include \"camera_mjpeg_fifo.h\"\r\r\n                                ^\r\r\nC:\\Users\\29062\\AppData\\Local\\Temp\\UsbUvcDescriptors_ces9h95q\\config.c: 0 warnings, 1 error\r\r\n\r\n\r\n----------------------------------------------------------------------\r\nRan 0 tests in 0.102s\r\n\r\nFAILED (errors=1)\r\n\r\n正式UVC注册及回调绑定 True line 0 (0, 0) None\r\r\nCore语言描述符 True line 0 (0, 0) None\r\r\nCore功能名称24字节 True line 0 (0, 0) None\r\r\n主机请求255仍只返回24 True line 0 (0, 0) None\r\r\n短请求只返回8字节 True line 0 (0, 0) None\r\r\n不支持索引按Core规则STALL True line 0 (0, 0) None\r\r\nPIO对齐尾部及读取边界 True line 0 (0, 0) None\r\r\n交错重复请求与静态地址 True line 0 (0, 0) None\r\r\n{'total': 8, 'passed': 8, 'failed': 0}\r\r\n\r\n",
+      "current_diagnostic": "setUpClass (__main__.DescriptorTests) ... ERROR\r\n\r\n======================================================================\r\nERROR: setUpClass (__main__.DescriptorTests)\r\n----------------------------------------------------------------------\r\nTraceback (most recent call last):\r\n  File \"D:\\32\\STM32H7\\h7_mac\\output\\StorageModuleB3\\regression\\current\\Tests\\UsbUvcDescriptors\\run_tests.py\", line 68, in setUpClass\r\n    cls.symbols, cls.sizes, sections = compile_module()\r\n                                       ^^^^^^^^^^^^^^^^\r\n  File \"D:\\32\\STM32H7\\h7_mac\\output\\StorageModuleB3\\regression\\current\\Tests\\UsbUvcDescriptors\\run_tests.py\", line 50, in compile_module\r\n    run(args + ['-c', helper, '-o', temp / 'config.o'])\r\n  File \"D:\\32\\STM32H7\\h7_mac\\output\\StorageModuleB3\\regression\\current\\Tests\\UsbUvcDescriptors\\run_tests.py\", line 32, in run\r\n    raise RuntimeError(output)\r\nRuntimeError: \"D:\\32\\STM32H7\\h7_mac\\output\\StorageModuleB3\\regression\\current\\CM7\\Application\\app_storage.h\", line 5: Error:  #5: cannot open source input file \"camera_mjpeg_fifo.h\": No such file or directory\r\r\n  #include \"camera_mjpeg_fifo.h\"\r\r\n                                ^\r\r\nC:\\Users\\29062\\AppData\\Local\\Temp\\UsbUvcDescriptors_2ifdgzjx\\config.c: 0 warnings, 1 error\r\r\n\r\n\r\n----------------------------------------------------------------------\r\nRan 0 tests in 0.086s\r\n\r\nFAILED (errors=1)\r\n\r\n正式UVC注册及回调绑定 True line 0 (0, 0) None\r\r\nCore语言描述符 True line 0 (0, 0) None\r\r\nCore功能名称24字节 True line 0 (0, 0) None\r\r\n主机请求255仍只返回24 True line 0 (0, 0) None\r\r\n短请求只返回8字节 True line 0 (0, 0) None\r\r\n不支持索引按Core规则STALL True line 0 (0, 0) None\r\r\nPIO对齐尾部及读取边界 True line 0 (0, 0) None\r\r\n交错重复请求与静态地址 True line 0 (0, 0) None\r\r\n{'total': 8, 'passed': 8, 'failed': 0}\r\r\n\r\n",
+      "new_failure": false
+    },
+    {
+      "suite": "Strings",
+      "baseline_exit": 0,
+      "current_exit": 0,
+      "baseline_summary": {
+        "total": 8,
+        "passed": 8,
+        "failed": 0
+      },
+      "current_summary": {
+        "total": 8,
+        "passed": 8,
+        "failed": 0
+      },
+      "case_results_equal": true,
+      "baseline_diagnostic": "",
+      "current_diagnostic": "",
+      "new_failure": false
+    },
+    {
+      "suite": "VideoConfig",
+      "baseline_exit": 1,
+      "current_exit": 1,
+      "baseline_summary": {},
+      "current_summary": {},
+      "case_results_equal": true,
+      "baseline_diagnostic": "Traceback (most recent call last):\r\n  File \"D:\\32\\STM32H7\\h7_mac\\output\\StorageModuleB3\\regression\\baseline\\Tests\\VideoConfig\\run_tests.py\", line 46, in <module>\r\n    run([\"D:/32/ARM/ARMCC/Bin/armlink.exe\", *objects, \"--entry\", \"Video_TestRun\", \"--scatter\",\r\n  File \"D:\\32\\STM32H7\\h7_mac\\output\\StorageModuleB3\\regression\\baseline\\Tests\\VideoConfig\\run_tests.py\", line 30, in run\r\n    raise RuntimeError(output)\r\nRuntimeError: Error: L6218E: Undefined symbol App_FrameDispatcherBegin (referred from video_test.o).\r\r\nError: L6218E: Undefined symbol App_FrameDispatcherCanAcquire (referred from video_test.o).\r\r\nError: L6218E: Undefined symbol App_FrameDispatcherNeedsStorage (referred from video_test.o).\r\r\nError: L6218E: Undefined symbol App_FrameDispatcherPublish (referred from video_test.o).\r\r\nError: L6218E: Undefined symbol App_FrameDispatcherValidateOutput (referred from video_test.o).\r\r\nError: L6218E: Undefined symbol App_MessagesIsOwner (referred from video_test.o).\r\r\nError: L6218E: Undefined symbol App_MessagesReceive (referred from video_test.o).\r\r\nError: L6218E: Undefined symbol App_MessagesSend (referred from video_test.o).\r\r\nError: L6218E: Undefined symbol App_StorageProcessReturns (referred from video_test.o).\r\r\nError: L6218E: Undefined symbol App_UvcBridgeProcess (referred from video_test.o).\r\r\nFinished: 0 information, 0 warning and 10 error messages.\r\r\n\r\n",
+      "current_diagnostic": "Traceback (most recent call last):\r\n  File \"D:\\32\\STM32H7\\h7_mac\\output\\StorageModuleB3\\regression\\current\\Tests\\VideoConfig\\run_tests.py\", line 46, in <module>\r\n    run([\"D:/32/ARM/ARMCC/Bin/armlink.exe\", *objects, \"--entry\", \"Video_TestRun\", \"--scatter\",\r\n  File \"D:\\32\\STM32H7\\h7_mac\\output\\StorageModuleB3\\regression\\current\\Tests\\VideoConfig\\run_tests.py\", line 30, in run\r\n    raise RuntimeError(output)\r\nRuntimeError: Error: L6218E: Undefined symbol App_FrameDispatcherBegin (referred from video_test.o).\r\r\nError: L6218E: Undefined symbol App_FrameDispatcherCanAcquire (referred from video_test.o).\r\r\nError: L6218E: Undefined symbol App_FrameDispatcherNeedsStorage (referred from video_test.o).\r\r\nError: L6218E: Undefined symbol App_FrameDispatcherPublish (referred from video_test.o).\r\r\nError: L6218E: Undefined symbol App_FrameDispatcherValidateOutput (referred from video_test.o).\r\r\nError: L6218E: Undefined symbol App_MessagesIsOwner (referred from video_test.o).\r\r\nError: L6218E: Undefined symbol App_MessagesReceive (referred from video_test.o).\r\r\nError: L6218E: Undefined symbol App_MessagesSend (referred from video_test.o).\r\r\nError: L6218E: Undefined symbol App_StorageProcessReturns (referred from video_test.o).\r\r\nError: L6218E: Undefined symbol App_UvcBridgeProcess (referred from video_test.o).\r\r\nFinished: 0 information, 0 warning and 10 error messages.\r\r\n\r\n",
+      "new_failure": false
+    },
+    {
+      "suite": "IpcStatus",
+      "baseline_exit": 0,
+      "current_exit": 0,
+      "baseline_summary": {
+        "total": 448,
+        "passed": 448,
+        "failed": 0
+      },
+      "current_summary": {
+        "total": 448,
+        "passed": 448,
+        "failed": 0
+      },
+      "case_results_equal": true,
+      "baseline_diagnostic": "",
+      "current_diagnostic": "",
+      "new_failure": false
+    }
+  ],
+  "new_failures": 0,
+  "actual_workspace_changed_by_regression": [],
+  "historical_tests_modified": false,
+  "note": "Historical suites including B1/B2 run unchanged; unavailable fixtures and their first diagnostic remain visible."
+}

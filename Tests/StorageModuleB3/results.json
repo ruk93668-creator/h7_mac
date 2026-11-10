@@ -1,0 +1,473 @@
+{
+  "baseline": "d725a698203b3bcde479a290714a75b16bc9de16",
+  "summary": {
+    "total": 51,
+    "passed": 51,
+    "failed": 0
+  },
+  "cases": [
+    {
+      "id": 0,
+      "name": "NULL prepare",
+      "pass": true,
+      "baseline_ok": true,
+      "current_ok": true,
+      "trace_equal": true,
+      "trace_records": 0
+    },
+    {
+      "id": 1,
+      "name": "Invalid config",
+      "pass": true,
+      "baseline_ok": true,
+      "current_ok": true,
+      "trace_equal": true,
+      "trace_records": 0
+    },
+    {
+      "id": 2,
+      "name": "Unprepared request",
+      "pass": true,
+      "baseline_ok": true,
+      "current_ok": true,
+      "trace_equal": true,
+      "trace_records": 0
+    },
+    {
+      "id": 3,
+      "name": "Duplicate prepare",
+      "pass": true,
+      "baseline_ok": true,
+      "current_ok": true,
+      "trace_equal": true,
+      "trace_records": 5
+    },
+    {
+      "id": 4,
+      "name": "Command queue full",
+      "pass": true,
+      "baseline_ok": true,
+      "current_ok": true,
+      "trace_equal": true,
+      "trace_records": 123
+    },
+    {
+      "id": 5,
+      "name": "Non JPEG rejection",
+      "pass": true,
+      "baseline_ok": true,
+      "current_ok": true,
+      "trace_equal": true,
+      "trace_records": 10
+    },
+    {
+      "id": 6,
+      "name": "TEST rejection",
+      "pass": true,
+      "baseline_ok": true,
+      "current_ok": true,
+      "trace_equal": true,
+      "trace_records": 11
+    },
+    {
+      "id": 7,
+      "name": "Context and NULL status",
+      "pass": true,
+      "baseline_ok": true,
+      "current_ok": true,
+      "trace_equal": true,
+      "trace_records": 5
+    },
+    {
+      "id": 8,
+      "name": "Mount failure recovery",
+      "pass": true,
+      "baseline_ok": true,
+      "current_ok": true,
+      "trace_equal": true,
+      "trace_records": 73
+    },
+    {
+      "id": 9,
+      "name": "Space query failure recovery",
+      "pass": true,
+      "baseline_ok": true,
+      "current_ok": true,
+      "trace_equal": true,
+      "trace_records": 74
+    },
+    {
+      "id": 10,
+      "name": "Recover outside FAULT",
+      "pass": true,
+      "baseline_ok": true,
+      "current_ok": true,
+      "trace_equal": true,
+      "trace_records": 29
+    },
+    {
+      "id": 11,
+      "name": "STOP before start",
+      "pass": true,
+      "baseline_ok": true,
+      "current_ok": true,
+      "trace_equal": true,
+      "trace_records": 33
+    },
+    {
+      "id": 12,
+      "name": "Four request FIFO",
+      "pass": true,
+      "baseline_ok": true,
+      "current_ok": true,
+      "trace_equal": true,
+      "trace_records": 132
+    },
+    {
+      "id": 13,
+      "name": "Snapshot complete",
+      "pass": true,
+      "baseline_ok": true,
+      "current_ok": true,
+      "trace_equal": true,
+      "trace_records": 104
+    },
+    {
+      "id": 14,
+      "name": "Two-span snapshot",
+      "pass": true,
+      "baseline_ok": true,
+      "current_ok": true,
+      "trace_equal": true,
+      "trace_records": 105
+    },
+    {
+      "id": 15,
+      "name": "Readback corruption",
+      "pass": true,
+      "baseline_ok": true,
+      "current_ok": true,
+      "trace_equal": true,
+      "trace_records": 107
+    },
+    {
+      "id": 16,
+      "name": "Read failure",
+      "pass": true,
+      "baseline_ok": true,
+      "current_ok": true,
+      "trace_equal": true,
+      "trace_records": 107
+    },
+    {
+      "id": 17,
+      "name": "Snapshot close failure",
+      "pass": true,
+      "baseline_ok": true,
+      "current_ok": true,
+      "trace_equal": true,
+      "trace_records": 104
+    },
+    {
+      "id": 18,
+      "name": "Two-span JPEG CRC",
+      "pass": true,
+      "baseline_ok": true,
+      "current_ok": true,
+      "trace_equal": true,
+      "trace_records": 105
+    },
+    {
+      "id": 19,
+      "name": "No-frame timeout",
+      "pass": true,
+      "baseline_ok": true,
+      "current_ok": true,
+      "trace_equal": true,
+      "trace_records": 68
+    },
+    {
+      "id": 20,
+      "name": "Repeated START",
+      "pass": true,
+      "baseline_ok": true,
+      "current_ok": true,
+      "trace_equal": true,
+      "trace_records": 64
+    },
+    {
+      "id": 21,
+      "name": "STOP admission gate",
+      "pass": true,
+      "baseline_ok": true,
+      "current_ok": true,
+      "trace_equal": true,
+      "trace_records": 77
+    },
+    {
+      "id": 22,
+      "name": "Generation exhausted",
+      "pass": true,
+      "baseline_ok": true,
+      "current_ok": true,
+      "trace_equal": true,
+      "trace_records": 46
+    },
+    {
+      "id": 23,
+      "name": "Retain failure",
+      "pass": true,
+      "baseline_ok": true,
+      "current_ok": true,
+      "trace_equal": true,
+      "trace_records": 52
+    },
+    {
+      "id": 24,
+      "name": "Occupied slot",
+      "pass": true,
+      "baseline_ok": true,
+      "current_ok": true,
+      "trace_equal": true,
+      "trace_records": 101
+    },
+    {
+      "id": 25,
+      "name": "JPEG invalid",
+      "pass": true,
+      "baseline_ok": true,
+      "current_ok": true,
+      "trace_equal": true,
+      "trace_records": 99
+    },
+    {
+      "id": 26,
+      "name": "Open failure",
+      "pass": true,
+      "baseline_ok": true,
+      "current_ok": true,
+      "trace_equal": true,
+      "trace_records": 100
+    },
+    {
+      "id": 27,
+      "name": "AVI partial failure",
+      "pass": true,
+      "baseline_ok": true,
+      "current_ok": true,
+      "trace_equal": true,
+      "trace_records": 106
+    },
+    {
+      "id": 28,
+      "name": "Short write",
+      "pass": true,
+      "baseline_ok": true,
+      "current_ok": true,
+      "trace_equal": true,
+      "trace_records": 107
+    },
+    {
+      "id": 29,
+      "name": "Periodic sync failure",
+      "pass": true,
+      "baseline_ok": true,
+      "current_ok": true,
+      "trace_equal": true,
+      "trace_records": 111
+    },
+    {
+      "id": 30,
+      "name": "Old session",
+      "pass": true,
+      "baseline_ok": true,
+      "current_ok": true,
+      "trace_equal": true,
+      "trace_records": 83
+    },
+    {
+      "id": 31,
+      "name": "Old generation",
+      "pass": true,
+      "baseline_ok": true,
+      "current_ok": true,
+      "trace_equal": true,
+      "trace_records": 83
+    },
+    {
+      "id": 32,
+      "name": "Queued frame then STOP",
+      "pass": true,
+      "baseline_ok": true,
+      "current_ok": true,
+      "trace_equal": true,
+      "trace_records": 118
+    },
+    {
+      "id": 33,
+      "name": "Release failure retry",
+      "pass": true,
+      "baseline_ok": true,
+      "current_ok": true,
+      "trace_equal": true,
+      "trace_records": 147
+    },
+    {
+      "id": 34,
+      "name": "Wrong owner return",
+      "pass": true,
+      "baseline_ok": true,
+      "current_ok": true,
+      "trace_equal": true,
+      "trace_records": 138
+    },
+    {
+      "id": 35,
+      "name": "Repeated return",
+      "pass": true,
+      "baseline_ok": true,
+      "current_ok": true,
+      "trace_equal": true,
+      "trace_records": 142
+    },
+    {
+      "id": 36,
+      "name": "Cached status timing",
+      "pass": true,
+      "baseline_ok": true,
+      "current_ok": true,
+      "trace_equal": true,
+      "trace_records": 164
+    },
+    {
+      "id": 37,
+      "name": "Tick wrap",
+      "pass": true,
+      "baseline_ok": true,
+      "current_ok": true,
+      "trace_equal": true,
+      "trace_records": 156
+    },
+    {
+      "id": 38,
+      "name": "AVI Finish write failure",
+      "pass": true,
+      "baseline_ok": true,
+      "current_ok": true,
+      "trace_equal": true,
+      "trace_records": 132
+    },
+    {
+      "id": 39,
+      "name": "AVI Close failure",
+      "pass": true,
+      "baseline_ok": true,
+      "current_ok": true,
+      "trace_equal": true,
+      "trace_records": 137
+    },
+    {
+      "id": 40,
+      "name": "Unmount failure",
+      "pass": true,
+      "baseline_ok": true,
+      "current_ok": true,
+      "trace_equal": true,
+      "trace_records": 137
+    },
+    {
+      "id": 41,
+      "name": "AVI Header seek failure",
+      "pass": true,
+      "baseline_ok": true,
+      "current_ok": true,
+      "trace_equal": true,
+      "trace_records": 134
+    },
+    {
+      "id": 42,
+      "name": "Repeated STOP",
+      "pass": true,
+      "baseline_ok": true,
+      "current_ok": true,
+      "trace_equal": true,
+      "trace_records": 165
+    },
+    {
+      "id": 43,
+      "name": "Static task create",
+      "pass": true,
+      "baseline_ok": true,
+      "current_ok": true,
+      "trace_equal": true,
+      "trace_records": 2
+    },
+    {
+      "id": 44,
+      "name": "Allocation failure",
+      "pass": true,
+      "baseline_ok": true,
+      "current_ok": true,
+      "trace_equal": true,
+      "trace_records": 1
+    },
+    {
+      "id": 45,
+      "name": "BOOT wait and stack cadence",
+      "pass": true,
+      "baseline_ok": true,
+      "current_ok": true,
+      "trace_equal": true,
+      "trace_records": 90
+    },
+    {
+      "id": 46,
+      "name": "Prepare failure gate",
+      "pass": true,
+      "baseline_ok": true,
+      "current_ok": true,
+      "trace_equal": true,
+      "trace_records": 7
+    },
+    {
+      "id": 47,
+      "name": "Ready authority and pure getters",
+      "pass": true,
+      "failure_line": 0,
+      "error": null
+    },
+    {
+      "id": 48,
+      "name": "FPS private counter",
+      "pass": true,
+      "failure_line": 0,
+      "error": null
+    },
+    {
+      "id": 49,
+      "name": "Snapshot private filename",
+      "pass": true,
+      "failure_line": 0,
+      "error": null
+    },
+    {
+      "id": 50,
+      "name": "Task gate ignores diagnostic ready tamper",
+      "pass": true,
+      "baseline_process_owner_checks": 1,
+      "current_process_owner_checks": 4
+    }
+  ],
+  "hardware_verified": false,
+  "real_sources": [
+    "app_storage.c",
+    "storage_task.c",
+    "jpeg_frame.c",
+    "mjpeg_avi.c"
+  ],
+  "stubs": [
+    "StorageFS medium",
+    "RTOS environment",
+    "Media lease boundary"
+  ]
+}

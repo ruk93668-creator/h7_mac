@@ -95,6 +95,15 @@ static AppStorageStatus_t s_status_snapshot;
 //回读复用小型CPU缓冲，实际IDMA仍走原32KiB适配缓冲
 static uint8_t s_readback[512] __attribute__((aligned(32)));
 
+//保存业务累计帧数和当前文件编号，诊断字段不参与业务判断
+static struct
+{
+    //累计成功保存的帧数，供FPS统计使用
+    uint32_t saved_frames;
+    //当前成功创建的文件编号，供抓拍回读使用
+    uint32_t file_number;
+} s_business;
+
 //保存正式运行结果与计数，不提供Watch写入控制入口
 volatile AppStorageStatus_t g_storage_status;
 
@@ -159,6 +168,12 @@ SysResult_t App_StoragePrepare(const AppStorageConfig_t *config)
     g_storage_status.ready = 1U;
     Storage_PublishStatus();
     return SYS_OK;
+}
+
+//查询Storage准备状态，不读取或更新诊断副本
+bool App_StorageIsReady(void)
+{
+    return s_prepared;
 }
 
 //异步受理录像请求
@@ -485,7 +500,7 @@ void App_StorageProcess(void)
                 if (result == SYS_OK)
                 {
                     s_free_budget -= amount;
-                    g_storage_status.saved_frames++;
+                    g_storage_status.saved_frames = ++s_business.saved_frames;
 
                     //周期同步在低优先级存储任务进行，不修改AVI已接收帧的所有权
                     if ((uint32_t)(Platform_TimeGetMs() - s_sync_tick) >= 1000U)
@@ -513,7 +528,7 @@ void App_StorageProcess(void)
             if (s_state == STORAGE_IDLE)
             {
                 g_storage_status.saved_files++;
-                g_storage_status.saved_frames++;
+                g_storage_status.saved_frames = ++s_business.saved_frames;
             }
         }
     }
@@ -536,10 +551,10 @@ void App_StorageProcess(void)
     elapsed = start - s_fps_tick;
     if (elapsed >= 1000U)
     {
-        amount = g_storage_status.saved_frames - s_fps_frames;
+        amount = s_business.saved_frames - s_fps_frames;
         g_storage_status.measured_fps_milli = amount <= 4294U ? amount * 1000000U / elapsed : 0U;
         s_fps_tick = start;
-        s_fps_frames = g_storage_status.saved_frames;
+        s_fps_frames = s_business.saved_frames;
     }
     Storage_PublishStatus();
 
@@ -774,7 +789,8 @@ static SysResult_t Storage_OpenNew(bool video)
             continue;
         if (result != SYS_OK)
             return result;
-        g_storage_status.file_number = s_next_file - 1U;
+        s_business.file_number = s_next_file - 1U;
+        g_storage_status.file_number = s_business.file_number;
         if (video)
         {
             result = MjpegAvi_Begin(&s_avi, s_file, VideoConfig_GetDefault()->camera.width,
@@ -830,7 +846,7 @@ static SysResult_t Storage_Snapshot(const StorageSlot_t *slot)
         return result;
     memcpy(name, "0:/IMG00000.JPG", 15U);
     name[15] = 0;
-    value = g_storage_status.file_number;
+    value = s_business.file_number;
     for (i = 0U; i < 5U; i++)
     {
         name[10U - i] = (char)('0' + value % 10U);

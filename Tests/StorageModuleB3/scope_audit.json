@@ -1,0 +1,17 @@
+{
+  "baseline": "d725a698203b3bcde479a290714a75b16bc9de16",
+  "checks": {
+    "tracked_changes_are_only_approved": true,
+    "entire_app_restores_exactly_after_approved_inverse": true,
+    "task_only_ready_gate_changed": true,
+    "diagnostic_layout_unchanged": true,
+    "synchronization_sequence_unchanged": true,
+    "no_debug_ready_business_read": true,
+    "no_debug_fps_read": true,
+    "no_debug_filename_read": true,
+    "no_protected_tracked_differences": true
+  },
+  "all_pass": true,
+  "protected_file_count": 2938,
+  "build_or_hardware_verification": false
+}

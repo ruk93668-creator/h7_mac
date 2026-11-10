@@ -74,6 +74,9 @@ extern volatile AppStorageStatus_t g_storage_status;
 //Storage任务在BOOT后准备静态队列，不识卡或写入
 SysResult_t App_StoragePrepare(const AppStorageConfig_t *config);
 
+//查询业务准备状态，不依赖诊断ready字段
+bool App_StorageIsReady(void);
+
 //请求录像，成功只表示命令进入有界队列
 SysResult_t App_StorageStartRecording(void);
 

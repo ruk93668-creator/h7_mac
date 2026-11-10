@@ -48,7 +48,7 @@ static void StorageTask_Run(void *argument)
             result = App_StoragePrepare(VideoConfig_GetStorage());
             g_storage_status.result = result;
         }
-        if (!boot || g_storage_status.ready == 0U)
+        if (!boot || !App_StorageIsReady())
             continue;
 
         App_StorageProcess();
