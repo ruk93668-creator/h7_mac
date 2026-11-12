@@ -22,6 +22,9 @@ SysResult_t App_CameraInitStream(void);
 //先停止Media并等待帧归还，再通过Device_Stop停止传感器
 SysResult_t App_CameraStop(void);
 
+//在接收本轮命令前建立停止事实边界
+void App_CameraBeginRound(void);
+
 //推进Media采集流程，由App_Run持续调用
 void App_CameraRun(void);
 

@@ -120,6 +120,8 @@ static void CameraTask_Process(uint32_t events)
         g_camera_task_debug.boot_seen = 1U;
     if (!g_camera_task_debug.boot_seen)
         return;
+    //在START回退可能发生前建立停止记账边界
+    App_CameraBeginRound();
     g_camera_task_debug.wake_count++;
     CameraTask_Reply();
 

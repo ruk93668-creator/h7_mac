@@ -58,12 +58,40 @@ static SysResult_t Start(void *context)
     hw_state = start_result == SYS_OK ? APP_RESOURCE_RUNNING : APP_RESOURCE_FAULT_DRAINING;
     return start_result;
 }
-static SysResult_t Stop(void *context)
+//异步资源桩保存身份，实际停止由测试调度边界推进
+static AppLifecycleIdentity_t stop_identity;
+static AppQualificationStopResult_t stopped_result;
+static uint32_t stop_valid;
+static SysResult_t RequestStop(void *context, const AppLifecycleIdentity_t *identity)
 {
-    (void)context; stops++;
+    (void)context;
+    if (stop_valid) return memcmp(&stop_identity,identity,sizeof(*identity)) == 0 ? SYS_OK : SYS_ERR_BUSY;
+    stop_identity=*identity;stop_valid=1U;memset(&stopped_result,0,sizeof(stopped_result));return SYS_OK;
+}
+static SysResult_t ReadStop(void *context, const AppLifecycleIdentity_t *identity, AppQualificationStopResult_t *result)
+{
+    (void)context;
+    if (!stop_valid) return SYS_ERR_NOT_FOUND;
+    if (memcmp(&stop_identity,identity,sizeof(*identity)) != 0) return SYS_ERR_PROTOCOL;
+    *result=stopped_result;return SYS_OK;
+}
+static SysResult_t ConsumeStop(void *context, const AppLifecycleIdentity_t *identity)
+{
+    (void)context;
+    if (!stop_valid || !stopped_result.complete || memcmp(&stop_identity,identity,sizeof(*identity)) != 0) return SYS_ERR_PROTOCOL;
+    stop_valid=0U;return SYS_OK;
+}
+static void FinishStop(void)
+{
+    if (!stop_valid || stopped_result.complete) return;
+    stops++;
     hw_state = stop_result == SYS_OK ? APP_RESOURCE_STOPPED_CONFIRMED :
         stop_result == SYS_ERR_BUSY ? APP_RESOURCE_STOPPING : APP_RESOURCE_FAULT_DRAINING;
-    return stop_result;
+    if (stop_result != SYS_ERR_BUSY)
+    {
+        stopped_result.complete=1U;stopped_result.result=stop_result;
+        stopped_result.hardware_stopped=stop_result==SYS_OK;
+    }
 }
 static SysResult_t Released(void *context, const AppLifecycleIdentity_t *grant)
 {
@@ -73,7 +101,7 @@ static SysResult_t Released(void *context, const AppLifecycleIdentity_t *grant)
     return drain[grant->consumer_id - 1U];
 }
 static SysResult_t Idle(void *context) { (void)context; checks++; return idle_result; }
-static const AppQualificationResourceOps_t ops = { State, Start, Stop, Released, Idle };
+static const AppQualificationResourceOps_t ops = { State, Start, RequestStop, ReadStop, ConsumeStop, Released, Idle };
 
 //真实Tx在入队完成后保留WAIT_REPLY，回复消费与入队分开
 static SysResult_t ToCamera(void *context, const AppLifecycleMessage_t *message)
@@ -98,7 +126,7 @@ static void Reset(void)
 {
     memset(&core, 0, sizeof(core)); memset(tx, 0, sizeof(tx));
     memset(generation, 0, sizeof(generation));
-    g_failure = 0U; starts = stops = checks = fault_mode = send_count = reentry = 0U;
+    stop_valid = 0U; g_failure = 0U; starts = stops = checks = fault_mode = send_count = reentry = 0U;
     releases[0] = releases[1] = 0U;
     hw_state = APP_RESOURCE_UNSTARTED;
     start_result = stop_result = idle_result = send_result = SYS_OK;
@@ -125,7 +153,16 @@ static void BeginMessage(AppLifecycleMessage_t m)
     CK(App_LifecycleTxFlush(&tx[index], ToCamera, NULL) == SYS_OK);
 }
 static void Begin(uint32_t consumer, uint32_t op, uint32_t gen) { BeginMessage(Request(consumer, op, gen)); }
-static void Process(void) { (void)App_QualificationProcess(&core, &ops, NULL); }
+//保留原断言的完成检查点，显式模拟任务轮末后再读取停止结果
+static void Process(void)
+{
+    (void)App_QualificationProcess(&core, &ops, NULL);
+    if (stop_valid && !stopped_result.complete)
+    {
+        FinishStop();
+        if (stopped_result.complete) (void)App_QualificationProcess(&core, &ops, NULL);
+    }
+}
 static void Finish(uint32_t consumer, SysResult_t expected)
 {
     AppLifecycleMessage_t reply;

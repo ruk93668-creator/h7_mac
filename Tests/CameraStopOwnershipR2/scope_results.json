@@ -1,0 +1,63 @@
+{
+  "baseline": "fa9ce5df130246b685c93ca8bde0d8248c420867",
+  "branch": "codex/stage-C2-2A-R2-stop-ownership",
+  "main": "182c84e7334f0a62d96f1d3109b0d7fb8efb8158",
+  "production_files": [
+    "CM7/Application/Tasks/camera_task.c",
+    "CM7/Application/app_camera.c",
+    "CM7/Application/app_camera.h",
+    "CM7/Application/app_camera_qualification.c",
+    "CM7/Application/app_camera_qualification.h",
+    "CM7/Media/Inc/camera_capture.h",
+    "CM7/Media/Src/camera_capture.c"
+  ],
+  "protected_sources_and_test_scripts": [
+    "Tests/CameraLifecycleC1/audit_scope.py",
+    "Tests/CameraLifecycleC1/protocol_test.c",
+    "Tests/CameraLifecycleC1/regression_compare.py",
+    "Tests/CameraLifecycleC1/run_build.py",
+    "Tests/CameraLifecycleC1/run_regression.py",
+    "Tests/CameraLifecycleC1/run_tests.py",
+    "Tests/CameraLifecycleC1/transport_test.c",
+    "Tests/CameraLifecycleC1_1/audit_scope.py",
+    "Tests/CameraLifecycleC1_1/reliability_test.c",
+    "Tests/CameraLifecycleC1_1/run_build.py",
+    "Tests/CameraLifecycleC1_1/run_tests.py",
+    "Tests/CameraLifecycleC1_1/test_regression_compare.py",
+    "Tests/CameraLifecycleC2_1_1/audit_scope.py",
+    "Tests/CameraLifecycleC2_1_1/layout_probe.c",
+    "Tests/CameraLifecycleC2_1_1/replay_test.c",
+    "Tests/CameraLifecycleC2_1_1/run_build.py",
+    "Tests/CameraLifecycleC2_1_1/run_legacy.py",
+    "Tests/CameraLifecycleC2_1_1/run_regression.py",
+    "Tests/CameraLifecycleC2_1_1/run_tests.py",
+    "CM7/Application/app_camera_lifecycle.c",
+    "CM7/Application/app_camera_lifecycle.h",
+    "CM7/Application/app_camera_lifecycle_replay.c",
+    "CM7/Application/app_camera_lifecycle_replay.h",
+    "CM7/Application/app_messages.c",
+    "CM7/Application/app_messages.h"
+  ],
+  "assertions": [
+    {
+      "file": "Tests/ConsumerQualificationC2_2A/qualification_test.c",
+      "assertions_preserved": 122
+    },
+    {
+      "file": "Tests/ConsumerQualificationC2_2A/adapter_test.c",
+      "assertions_preserved": 34
+    }
+  ],
+  "b1_test_bodies_unchanged": true,
+  "project_unchanged": true,
+  "production_sha256": {
+    "CM7/Application/Tasks/camera_task.c": "fc80c874b3024c0c4f3a65383987d2b81e1ded43c9f32a801572d7451d526be6",
+    "CM7/Application/app_camera.c": "a2bd3e85edfb278d2fa095133d7d69fca37679b1c3a335434ef729294afe4425",
+    "CM7/Application/app_camera.h": "6f17e478214c4c38bd8fcbc3db3cf8ad798ebd3f304be13bb3ffc2bed735fa42",
+    "CM7/Application/app_camera_qualification.c": "348b8a6d891993b27ecf707f78738279155fbcc33824080106f2138aa067a3bc",
+    "CM7/Application/app_camera_qualification.h": "7b50c8930091cf6f6c4fa6a837d4b71ce92ce2ed0f34058beddd3dccb0cd3969",
+    "CM7/Media/Inc/camera_capture.h": "ee9ec76d304ca0c225f2786963517260d2980d07e075aec8b82a7cf78aebddb6",
+    "CM7/Media/Src/camera_capture.c": "616c4080411aefc6521f7ef173d6884598f066e8a3a8dfb83a2e45e564651c75"
+  },
+  "output_untracked": true
+}

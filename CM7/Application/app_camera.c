@@ -36,6 +36,13 @@ typedef struct
     AppCameraQualification_t qualifications;//保存唯一资格核心，尚不接入业务消息
     bool resource_preparing;//同步资源启动正在执行
     bool resource_stop_confirmed;//实际硬件停止已经确认
+    AppLifecycleIdentity_t stop_identity;//资格停止结果对应的完整事务身份
+    AppQualificationStopResult_t stop_result;//冻结真实停止结果，后台恢复不改写
+    bool stop_result_valid;//结果只允许对应请求消费
+    bool round_open;//标记CameraTask本轮记账边界
+    bool round_stop_attempted;//本轮App停止或START回退已经推进
+    SysResult_t round_stop_result;//保留本轮实际停止失败
+    uint32_t round_media_sequence;//记录进入本轮前的Media实际停止序号
     AppCameraDiagnosticObserver_t observer;//保存只读诊断投影入口
 } AppCameraContext_t;
 
@@ -53,6 +60,12 @@ static SysResult_t App_CameraStart(bool stream);
 
 //复用旧START资源操作，不复制硬件启停算法
 static SysResult_t App_CameraStartResource(void);
+
+//推进实际停止，仅供轮末普通停止和START失败保护性回退使用
+static SysResult_t App_CameraAdvanceStop(void);
+
+//精确比较停止请求身份，禁止跨会话读取或消费结果
+static bool App_CameraStopIdentityMatches(const AppLifecycleIdentity_t *identity);
 
 //校验并保存唯一采集配置，不启动传感器
 SysResult_t App_CameraConfigure(const CameraConfig_t *config)
@@ -98,37 +111,88 @@ SysResult_t App_CameraInitStream(void)
 //等待Media安全停止及归还完成后停止传感器
 SysResult_t App_CameraStop(void)
 {
-	SysResult_t result;
+    if (!s_camera.initialized || s_camera.device == NULL)
+        return SYS_ERR_INVALID_STATE;
 
-	if ( !s_camera.initialized || s_camera.device == NULL)
-		return SYS_ERR_INVALID_STATE;
-
-	//先确认DCMI和DMA安全停止，失败时保留传感器状态
-	result = CameraCapture_Stop();
-	if ( result != SYS_OK)
-		return result;
-
-	//故障停止可能进入DRAINING，必须等待消费者归还帧
-	if ( !CameraCapture_IsStopped())
-		return SYS_ERR_BUSY;
-
-	//已停止的传感器不重复提交生命周期操作
-	if ( s_camera.device->state == DEVICE_STATE_READY)
-		return SYS_OK;
-
-	return Device_Stop(s_camera.device);
+    //普通调用只登记停止意图，不能把受理当成硬件停止完成
+    s_camera.stopping = true;
+    return SYS_ERR_BUSY;
 }
 
-//推进Media，并保留原自动停止传感器行为
+//推进实际停止并保留同轮尝试结果
+static SysResult_t App_CameraAdvanceStop(void)
+{
+    CameraCaptureStopFacts_t facts;
+    SysResult_t result;
+
+    //START回退和轮末共享本轮事实，失败不能被同轮再次调用覆盖
+    if (s_camera.round_open && s_camera.round_stop_attempted)
+        return s_camera.round_stop_result;
+    s_camera.round_stop_attempted = true;
+    result = CameraCapture_GetStopFacts(&facts);
+    if (result != SYS_OK)
+        goto done;
+
+    //Media保护性停止已经失败时，不在同一轮重复下发硬件操作
+    if (s_camera.round_open && facts.attempt_sequence != s_camera.round_media_sequence &&
+        facts.hardware_result != SYS_OK)
+    {
+        result = facts.hardware_result;
+        goto done;
+    }
+    if (!s_camera.initialized || s_camera.device == NULL)
+    {
+        result = SYS_ERR_INVALID_STATE;
+        goto done;
+    }
+
+    //同轮保护已完全停止时不重复Stop；其他轮次保留原Media检查和排空路径
+    if ((facts.flags & CAMERA_STOP_COMPLETE) == 0U ||
+        !s_camera.round_open || facts.attempt_sequence == s_camera.round_media_sequence)
+    {
+        result = CameraCapture_Stop();
+        if (result != SYS_OK)
+            goto done;
+    }
+    if (!CameraCapture_IsStopped())
+    {
+        result = SYS_ERR_BUSY;
+        goto done;
+    }
+    result = s_camera.device->state == DEVICE_STATE_READY ? SYS_OK : Device_Stop(s_camera.device);
+done:
+    s_camera.round_stop_result = result;
+    return result;
+}
+
+//建立本轮停止事实边界，不推进资源或诊断
+void App_CameraBeginRound(void)
+{
+    CameraCaptureStopFacts_t facts;
+    s_camera.round_open = true;
+    s_camera.round_stop_attempted = false;
+    s_camera.round_stop_result = SYS_OK;
+    if (CameraCapture_GetStopFacts(&facts) == SYS_OK)
+        s_camera.round_media_sequence = facts.attempt_sequence;
+}
+
+//推进Media并登记传感器停止意图
 void App_CameraRun(void)
 {
-	//推进采集流程，完整图像交给业务获取和释放
-	CameraCapture_Process();
+    CameraCaptureStopFacts_t facts;
+    bool skip_error_retry = false;
 
-	//Media完成故障恢复或业务释放后，再停止传感器输出
-	if ( s_camera.initialized && CameraCapture_IsStopped() &&
-		s_camera.device != NULL && s_camera.device->state == DEVICE_STATE_RUNNING)
-		(void)App_CameraStop();
+    //回退仍为ERROR才跳过本轮保护重试，已排空时保留原Media推进调用
+    if (s_camera.round_open && s_camera.round_stop_attempted &&
+        CameraCapture_GetStopFacts(&facts) == SYS_OK)
+        skip_error_retry = (facts.flags & CAMERA_STOP_ERROR) != 0U;
+    if (!skip_error_retry)
+        CameraCapture_Process();
+
+    //自动停止只登记意图，普通停止始终留到Bridge推进后的轮末
+    if (s_camera.initialized && CameraCapture_IsStopped() &&
+        s_camera.device != NULL && s_camera.device->state == DEVICE_STATE_RUNNING)
+        s_camera.stopping = true;
 }
 
 //准备传感器和Media，失败时保留已完成的准备步骤
@@ -206,7 +270,7 @@ static SysResult_t App_CameraStart(bool stream)
 		return result;
 
 	//本轮采集启动失败，先恢复Media，再停止本轮开启的传感器
-	stop_result = App_CameraStop();
+	stop_result = App_CameraAdvanceStop();
 	return stop_result != SYS_OK ? stop_result : result;
 }
 
@@ -304,9 +368,9 @@ void App_CameraFinishRound(void)
     SysResult_t result;
     uint32_t now, elapsed, frames;
 
-    if (s_camera.stopping)
+    if (s_camera.stopping && s_camera.round_open)
     {
-        result = s_camera.prepared ? App_CameraStop() : SYS_OK;
+        result = s_camera.prepared ? App_CameraAdvanceStop() : SYS_OK;
         //只有底层停止成功才检查Bridge，不能跳过归还确认
         if (result == SYS_OK && !App_UvcBridgeCameraIsIdle())
             result = SYS_ERR_BUSY;
@@ -315,6 +379,13 @@ void App_CameraFinishRound(void)
             s_camera.stopping = false;
             s_camera.running = false;
             s_camera.resource_stop_confirmed = s_camera.prepared;
+        }
+        //请求结果只冻结一次，后续后台恢复不能把原失败改成成功
+        if (s_camera.stop_result_valid && s_camera.stop_result.complete == 0U && result != SYS_ERR_BUSY)
+        {
+            s_camera.stop_result.result = result;
+            s_camera.stop_result.hardware_stopped = result == SYS_OK && s_camera.resource_stop_confirmed;
+            s_camera.stop_result.complete = 1U;
         }
         //BUSY继续等待，其他结果回复一次但失败后仍重试停止
         if (s_camera.stop_command && result != SYS_ERR_BUSY)
@@ -328,6 +399,7 @@ void App_CameraFinishRound(void)
         if (result != SYS_OK && result != SYS_ERR_BUSY && s_camera.fault == SYS_OK)
             s_camera.fault = result;
     }
+    s_camera.round_open = false;
     App_CameraObserve(APP_CAMERA_DIAG_STATE);
 
     //保持原统计读取及取时时点，不把配置帧率作为实测值
@@ -487,31 +559,67 @@ static SysResult_t App_CameraQualificationStart(void *context)
     return result;
 }
 
-//沿原Stop和Bridge排空顺序确认硬件，不代替消费者归还帧
-static SysResult_t App_CameraQualificationStop(void *context)
+//精确比较停止请求身份
+static bool App_CameraStopIdentityMatches(const AppLifecycleIdentity_t *identity)
 {
-    SysResult_t result;
+    return identity != NULL && s_camera.stop_result_valid &&
+        s_camera.stop_identity.session_id == identity->session_id &&
+        s_camera.stop_identity.request_id == identity->request_id &&
+        s_camera.stop_identity.consumer_id == identity->consumer_id &&
+        s_camera.stop_identity.consumer_generation == identity->consumer_generation;
+}
+
+//登记资格停止请求，不调用Media或Device
+static SysResult_t App_CameraRequestStop(void *context, const AppLifecycleIdentity_t *identity)
+{
     (void)context;
+    if (identity == NULL || identity->session_id == 0U || identity->request_id == 0U ||
+        identity->consumer_generation == 0U ||
+        (identity->consumer_id != APP_CONSUMER_USB && identity->consumer_id != APP_CONSUMER_STORAGE))
+        return SYS_ERR_INVALID_ARG;
+    if (s_camera.stop_result_valid)
+        return App_CameraStopIdentityMatches(identity) ? SYS_OK : SYS_ERR_BUSY;
+
+    //只绑定当前事务，不覆盖尚未消费的旧结果
+    s_camera.stop_identity = *identity;
+    s_camera.stop_result.complete = 0U;
+    s_camera.stop_result.result = SYS_ERR_BUSY;
+    s_camera.stop_result.hardware_stopped = 0U;
+    s_camera.stop_result_valid = true;
     s_camera.stopping = true;
-    result = s_camera.prepared ? App_CameraStop() : SYS_ERR_INVALID_STATE;
-    if (result == SYS_OK && !App_UvcBridgeCameraIsIdle())
-        result = SYS_ERR_BUSY;
-    if (result == SYS_OK)
-    {
-        s_camera.stopping = false;
-        s_camera.running = false;
-        s_camera.resource_stop_confirmed = true;
-    }
-    else if (result != SYS_ERR_BUSY && s_camera.fault == SYS_OK)
-        s_camera.fault = result;
-    return result;
+    return SYS_OK;
+}
+
+//读取对应请求的停止结果，不根据全局状态猜测完成
+static SysResult_t App_CameraReadStopResult(void *context, const AppLifecycleIdentity_t *identity,
+    AppQualificationStopResult_t *result)
+{
+    (void)context;
+    if (identity == NULL || result == NULL)
+        return SYS_ERR_INVALID_ARG;
+    if (!s_camera.stop_result_valid)
+        return SYS_ERR_NOT_FOUND;
+    if (!App_CameraStopIdentityMatches(identity))
+        return SYS_ERR_PROTOCOL;
+    *result = s_camera.stop_result;
+    return SYS_OK;
+}
+
+//在资格决策冻结后消费相同请求的完成记录
+static SysResult_t App_CameraConsumeStopResult(void *context, const AppLifecycleIdentity_t *identity)
+{
+    (void)context;
+    if (!App_CameraStopIdentityMatches(identity) || s_camera.stop_result.complete != 1U)
+        return SYS_ERR_PROTOCOL;
+    s_camera.stop_result_valid = false;
+    return SYS_OK;
 }
 
 //未绑定真实归还证明，空回调必须阻止资格释放成功
 static const AppQualificationResourceOps_t s_qualification_ops =
 {
     App_CameraResourceState, App_CameraQualificationStart,
-    App_CameraQualificationStop, NULL, NULL
+    App_CameraRequestStop, App_CameraReadStopResult, App_CameraConsumeStopResult, NULL, NULL
 };
 
 //仅向已经完成任务身份校验的同模块资格适配借出上下文
