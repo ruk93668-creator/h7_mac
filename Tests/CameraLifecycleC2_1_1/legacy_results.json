@@ -1,0 +1,17 @@
+{
+  "baseline": "182c84e7334f0a62d96f1d3109b0d7fb8efb8158",
+  "snapshot": "D:\\32\\STM32H7\\h7_mac\\output\\CameraLifecycleC2_1_1\\legacy_1794463572448012000",
+  "scripts": [
+    {
+      "script": "Tests/CameraLifecycleC1_1/run_tests.py",
+      "exit": 0,
+      "log": "D:\\32\\STM32H7\\h7_mac\\output\\CameraLifecycleC2_1_1\\legacy_1794463572448012000\\run_tests.log"
+    },
+    {
+      "script": "Tests/CameraLifecycleC1_1/test_regression_compare.py",
+      "exit": 0,
+      "log": "D:\\32\\STM32H7\\h7_mac\\output\\CameraLifecycleC2_1_1\\legacy_1794463572448012000\\test_regression_compare.log"
+    }
+  ],
+  "original_assertions_changed": false
+}
