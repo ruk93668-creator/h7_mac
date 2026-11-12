@@ -1,0 +1,358 @@
+{
+  "mapping": [
+    {
+      "q": "Q01",
+      "scenario": "QUERY首次非零session",
+      "core_case_id": 0,
+      "O0": "PASS",
+      "O2": "PASS",
+      "scope": "纯核心/证据桩；未验证真实硬件"
+    },
+    {
+      "q": "Q02",
+      "scenario": "QUERY重复/退休/旧缓存",
+      "core_case_id": 1,
+      "O0": "PASS",
+      "O2": "PASS",
+      "scope": "纯核心/证据桩；未验证真实硬件"
+    },
+    {
+      "q": "Q03",
+      "scenario": "首个ACQUIRE成功",
+      "core_case_id": 2,
+      "O0": "PASS",
+      "O2": "PASS",
+      "scope": "纯核心/证据桩；未验证真实硬件"
+    },
+    {
+      "q": "Q04",
+      "scenario": "第二消费者成功",
+      "core_case_id": 3,
+      "O0": "PASS",
+      "O2": "PASS",
+      "scope": "纯核心/证据桩；未验证真实硬件"
+    },
+    {
+      "q": "Q05",
+      "scenario": "两消费者相同request_id",
+      "core_case_id": 4,
+      "O0": "PASS",
+      "O2": "PASS",
+      "scope": "纯核心/证据桩；未验证真实硬件"
+    },
+    {
+      "q": "Q06",
+      "scenario": "同request重复ACQUIRE",
+      "core_case_id": 5,
+      "O0": "PASS",
+      "O2": "PASS",
+      "scope": "纯核心/证据桩；未验证真实硬件"
+    },
+    {
+      "q": "Q07",
+      "scenario": "ACTIVE上的新request",
+      "core_case_id": 6,
+      "O0": "PASS",
+      "O2": "PASS",
+      "scope": "纯核心/证据桩；未验证真实硬件"
+    },
+    {
+      "q": "Q08",
+      "scenario": "失败ACQUIRE同Generation新request",
+      "core_case_id": 7,
+      "O0": "PASS",
+      "O2": "PASS",
+      "scope": "纯核心/证据桩；未验证真实硬件"
+    },
+    {
+      "q": "Q09",
+      "scenario": "失败后新Generation",
+      "core_case_id": 8,
+      "O0": "PASS",
+      "O2": "PASS",
+      "scope": "纯核心/证据桩；未验证真实硬件"
+    },
+    {
+      "q": "Q10",
+      "scenario": "g跳号/耗尽/取消",
+      "core_case_id": 9,
+      "O0": "PASS",
+      "O2": "PASS",
+      "scope": "纯核心/证据桩；未验证真实硬件"
+    },
+    {
+      "q": "Q11",
+      "scenario": "被拒更高g与仍有效旧grant",
+      "core_case_id": 10,
+      "O0": "PASS",
+      "O2": "PASS",
+      "scope": "纯核心/证据桩；未验证真实硬件"
+    },
+    {
+      "q": "Q12",
+      "scenario": "旧session/g的新请求",
+      "core_case_id": 11,
+      "O0": "PASS",
+      "O2": "PASS",
+      "scope": "纯核心/证据桩；未验证真实硬件"
+    },
+    {
+      "q": "Q13",
+      "scenario": "READY取消和WAIT_REPLY停止意图",
+      "core_case_id": 12,
+      "O0": "PASS",
+      "O2": "PASS",
+      "scope": "受控Tx工具部分通过；消费者业务接入待后续阶段"
+    },
+    {
+      "q": "Q14",
+      "scenario": "RELEASE声明FRAMES_DRAINED但无证据",
+      "core_case_id": 13,
+      "O0": "PASS",
+      "O2": "PASS",
+      "scope": "纯核心/证据桩；未验证真实硬件"
+    },
+    {
+      "q": "Q15",
+      "scenario": "真正排空后RELEASE",
+      "core_case_id": 14,
+      "O0": "PASS",
+      "O2": "PASS",
+      "scope": "纯核心/证据桩；未验证真实硬件"
+    },
+    {
+      "q": "Q16",
+      "scenario": "归还失败与超时",
+      "core_case_id": 15,
+      "O0": "PASS",
+      "O2": "PASS",
+      "scope": "纯核心/证据桩；未验证真实硬件"
+    },
+    {
+      "q": "Q17",
+      "scenario": "同request重复RELEASE",
+      "core_case_id": 16,
+      "O0": "PASS",
+      "O2": "PASS",
+      "scope": "纯核心/证据桩；未验证真实硬件"
+    },
+    {
+      "q": "Q18",
+      "scenario": "INACTIVE后新request RELEASE",
+      "core_case_id": 17,
+      "O0": "PASS",
+      "O2": "PASS",
+      "scope": "纯核心/证据桩；未验证真实硬件"
+    },
+    {
+      "q": "Q19",
+      "scenario": "USB退出而Storage ACTIVE",
+      "core_case_id": 18,
+      "O0": "PASS",
+      "O2": "PASS",
+      "scope": "纯核心/证据桩；未验证真实硬件"
+    },
+    {
+      "q": "Q20",
+      "scenario": "Storage退出而USB ACTIVE",
+      "core_case_id": 19,
+      "O0": "PASS",
+      "O2": "PASS",
+      "scope": "纯核心/证据桩；未验证真实硬件"
+    },
+    {
+      "q": "Q21",
+      "scenario": "同时退出",
+      "core_case_id": 20,
+      "O0": "PASS",
+      "O2": "PASS",
+      "scope": "纯核心/证据桩；未验证真实硬件"
+    },
+    {
+      "q": "Q22",
+      "scenario": "Camera FAULT持帧",
+      "core_case_id": 21,
+      "O0": "PASS",
+      "O2": "PASS",
+      "scope": "纯核心/证据桩；未验证真实硬件"
+    },
+    {
+      "q": "Q23",
+      "scenario": "STOP_IF_IDLE从未启动",
+      "core_case_id": 22,
+      "O0": "PASS",
+      "O2": "PASS",
+      "scope": "纯核心/证据桩；未验证真实硬件"
+    },
+    {
+      "q": "Q24",
+      "scenario": "STOP_IF_IDLE真正可停",
+      "core_case_id": 23,
+      "O0": "PASS",
+      "O2": "PASS",
+      "scope": "纯核心/证据桩；未验证真实硬件"
+    },
+    {
+      "q": "Q25",
+      "scenario": "停止中收到START",
+      "core_case_id": 24,
+      "O0": "PASS",
+      "O2": "PASS",
+      "scope": "纯核心/证据桩；未验证真实硬件"
+    },
+    {
+      "q": "Q26",
+      "scenario": "会话安全关闭再QUERY",
+      "core_case_id": 25,
+      "O0": "PASS",
+      "O2": "PASS",
+      "scope": "纯核心/证据桩；未验证真实硬件"
+    },
+    {
+      "q": "Q27",
+      "scenario": "编号预留和资源申请失败",
+      "core_case_id": 26,
+      "O0": "PASS",
+      "O2": "PASS",
+      "scope": "受控Tx工具部分通过；消费者业务接入待后续阶段"
+    },
+    {
+      "q": "Q28",
+      "scenario": "回复固定与队列失败分别处理〔R1细化〕",
+      "core_case_id": 27,
+      "O0": "PASS",
+      "O2": "PASS",
+      "scope": "纯核心/证据桩；未验证真实硬件"
+    },
+    {
+      "q": "Q29",
+      "scenario": "候选、通知合并和反方向消息",
+      "core_case_id": 28,
+      "O0": "PASS",
+      "O2": "PASS",
+      "scope": "双路核心隔离及原协议队列通过；真实Task接入待后续阶段"
+    },
+    {
+      "q": "Q30",
+      "scenario": "只读状态接口",
+      "core_case_id": 29,
+      "O0": "PASS",
+      "O2": "PASS",
+      "scope": "纯核心/证据桩；未验证真实硬件"
+    },
+    {
+      "q": "Q31",
+      "scenario": "ACQUIRE成功、RxComplete入口BUSY",
+      "core_case_id": 30,
+      "O0": "PASS",
+      "O2": "PASS",
+      "scope": "纯核心/证据桩；未验证真实硬件"
+    },
+    {
+      "q": "Q32",
+      "scenario": "RELEASE已真实排空且撤销、RxComplete BUSY",
+      "core_case_id": 31,
+      "O0": "PASS",
+      "O2": "PASS",
+      "scope": "纯核心/证据桩；未验证真实硬件"
+    },
+    {
+      "q": "Q33",
+      "scenario": "Replay固定、回复队列NO_RESOURCE",
+      "core_case_id": 32,
+      "O0": "PASS",
+      "O2": "PASS",
+      "scope": "纯核心/证据桩；未验证真实硬件"
+    },
+    {
+      "q": "Q34",
+      "scenario": "DECIDED但Replay未固定时重复request",
+      "core_case_id": 33,
+      "O0": "PASS",
+      "O2": "PASS",
+      "scope": "纯核心/证据桩；未验证真实硬件"
+    },
+    {
+      "q": "Q35",
+      "scenario": "两消费者同时操作，一方提交失败",
+      "core_case_id": 34,
+      "O0": "PASS",
+      "O2": "PASS",
+      "scope": "纯核心/证据桩；未验证真实硬件"
+    },
+    {
+      "q": "Q36",
+      "scenario": "Camera启动成功、ACQUIRE结果未交付",
+      "core_case_id": 35,
+      "O0": "PASS",
+      "O2": "PASS",
+      "scope": "纯核心/证据桩；未验证真实硬件"
+    },
+    {
+      "q": "Q37",
+      "scenario": "STOP完成后旧回复重传且新session已运行",
+      "core_case_id": 36,
+      "O0": "PASS",
+      "O2": "PASS",
+      "scope": "纯核心/证据桩；未验证真实硬件"
+    },
+    {
+      "q": "Q38",
+      "scenario": "QUERY已分配session、RxComplete BUSY",
+      "core_case_id": 37,
+      "O0": "PASS",
+      "O2": "PASS",
+      "scope": "纯核心/证据桩；未验证真实硬件"
+    },
+    {
+      "q": "Q39",
+      "scenario": "Complete参数/未初始化/身份错误",
+      "core_case_id": 38,
+      "O0": "PASS",
+      "O2": "PASS",
+      "scope": "纯核心/证据桩；未验证真实硬件"
+    },
+    {
+      "q": "Q40",
+      "scenario": "ALREADY_EXISTS与不同已固定回复",
+      "core_case_id": 39,
+      "O0": "PASS",
+      "O2": "PASS",
+      "scope": "纯核心/证据桩；未验证真实硬件"
+    },
+    {
+      "q": "Q41",
+      "scenario": "异常部分固定后无待发记录、未入队",
+      "core_case_id": 40,
+      "O0": "PASS",
+      "O2": "PASS",
+      "scope": "纯核心/证据桩；未验证真实硬件"
+    },
+    {
+      "q": "Q42",
+      "scenario": "提交等待超时",
+      "core_case_id": 41,
+      "O0": "PASS",
+      "O2": "PASS",
+      "scope": "纯核心/证据桩；未验证真实硬件"
+    },
+    {
+      "q": "Q43",
+      "scenario": "两消费者同时退出，只有一路证据成立",
+      "core_case_id": 42,
+      "O0": "PASS",
+      "O2": "PASS",
+      "scope": "纯核心/证据桩；未验证真实硬件"
+    },
+    {
+      "q": "Q44",
+      "scenario": "原调用问题消除后的同一决策再提交",
+      "core_case_id": 43,
+      "O0": "PASS",
+      "O2": "PASS",
+      "scope": "纯核心/证据桩；未验证真实硬件"
+    }
+  ],
+  "hardware_verified": false,
+  "full_business_integration_verified": false
+}

@@ -1,4 +1,5 @@
 #include "app_camera.h"
+#include "app_camera_qualification_internal.h"
 #include "video_config.h"
 #include "app_uvc_bridge.h"
 #include "platform_time.h"
@@ -32,6 +33,9 @@ typedef struct
     uint32_t measured_fps_milli;//保存按原公式计算的采集FPS
     CameraConfig_t applied;//保存最近实际运行时采样的配置
     bool applied_valid;//记录是否采样过实际运行配置
+    AppCameraQualification_t qualifications;//保存唯一资格核心，尚不接入业务消息
+    bool resource_preparing;//同步资源启动正在执行
+    bool resource_stop_confirmed;//实际硬件停止已经确认
     AppCameraDiagnosticObserver_t observer;//保存只读诊断投影入口
 } AppCameraContext_t;
 
@@ -46,6 +50,9 @@ static SysResult_t App_CameraPrepare(void);
 
 //先启动传感器，再沿用Media的采集入口
 static SysResult_t App_CameraStart(bool stream);
+
+//复用旧START资源操作，不复制硬件启停算法
+static SysResult_t App_CameraStartResource(void);
 
 //校验并保存唯一采集配置，不启动传感器
 SysResult_t App_CameraConfigure(const CameraConfig_t *config)
@@ -240,20 +247,7 @@ void App_CameraHandleCommand(const AppMessage_t *command)
         {
 
             //先建立新代次，再配置并启动传感器和Media
-            result = App_UvcBridgeCameraBegin();
-            if (result == SYS_OK)
-                result = App_CameraInitStream();
-            s_camera.prepared = CameraCapture_GetLastResult() != SYS_ERR_INVALID_STATE;
-            if (result == SYS_OK)
-            {
-                s_camera.running = true;
-                s_camera.fault = SYS_OK;
-                s_camera.fault_sent = false;
-                s_camera.fps_tick = Platform_TimeGetMs();
-                s_camera.fps_frames = 0U;
-            }
-            else if (s_camera.prepared)
-                s_camera.stopping = true;
+            result = App_CameraStartResource();
         }
         //保留原错误记录和ACK结果，不额外重置已交付FAULT
         if (result != SYS_OK && result != SYS_ERR_BUSY)
@@ -320,6 +314,7 @@ void App_CameraFinishRound(void)
         {
             s_camera.stopping = false;
             s_camera.running = false;
+            s_camera.resource_stop_confirmed = s_camera.prepared;
         }
         //BUSY继续等待，其他结果回复一次但失败后仍重试停止
         if (s_camera.stop_command && result != SYS_ERR_BUSY)
@@ -435,4 +430,100 @@ static void App_CameraObserve(AppCameraDiagnosticField_t field)
         App_CameraGetStatus(&status);
         s_camera.observer(field, &status);
     }
+}
+
+//沿原路径建立资源周期，旧START和资格核心共用一次启动实现
+static SysResult_t App_CameraStartResource(void)
+{
+    SysResult_t result;
+    //记录启动窗口，旧的硬件停止确认不能用于新周期
+    s_camera.resource_preparing = true;
+    s_camera.resource_stop_confirmed = false;
+
+    //保留原先先建立Bridge代次、再启动Device和Media的顺序
+    result = App_UvcBridgeCameraBegin();
+    if (result == SYS_OK)
+        result = App_CameraInitStream();
+    //部分准备失败仍由原后台停止路径继续排空
+    s_camera.prepared = CameraCapture_GetLastResult() != SYS_ERR_INVALID_STATE;
+    if (result == SYS_OK)
+    {
+        s_camera.running = true;
+        s_camera.fault = SYS_OK;
+        s_camera.fault_sent = false;
+        s_camera.fps_tick = Platform_TimeGetMs();
+        s_camera.fps_frames = 0U;
+    }
+    else if (s_camera.prepared)
+        s_camera.stopping = true;
+    s_camera.resource_preparing = false;
+    return result;
+}
+
+//读取原资源权威字段，不另存运行或停止状态副本
+static uint32_t App_CameraResourceState(void *context)
+{
+    (void)context;
+    if (s_camera.resource_preparing)
+        return APP_RESOURCE_PREPARING;
+    if (s_camera.stopping)
+        return s_camera.fault == SYS_OK ? APP_RESOURCE_STOPPING : APP_RESOURCE_FAULT_DRAINING;
+    if (s_camera.running)
+        return APP_RESOURCE_RUNNING;
+    if (s_camera.resource_stop_confirmed)
+        return APP_RESOURCE_STOPPED_CONFIRMED;
+    return s_camera.prepared || s_camera.fault != SYS_OK ?
+        APP_RESOURCE_FAULT_DRAINING : APP_RESOURCE_UNSTARTED;
+}
+
+//复用现有Device和Media启动路径
+static SysResult_t App_CameraQualificationStart(void *context)
+{
+    SysResult_t result;
+    (void)context;
+    result = App_CameraStartResource();
+    if (result != SYS_OK && result != SYS_ERR_BUSY)
+        s_camera.fault = result;
+    return result;
+}
+
+//沿原Stop和Bridge排空顺序确认硬件，不代替消费者归还帧
+static SysResult_t App_CameraQualificationStop(void *context)
+{
+    SysResult_t result;
+    (void)context;
+    s_camera.stopping = true;
+    result = s_camera.prepared ? App_CameraStop() : SYS_ERR_INVALID_STATE;
+    if (result == SYS_OK && !App_UvcBridgeCameraIsIdle())
+        result = SYS_ERR_BUSY;
+    if (result == SYS_OK)
+    {
+        s_camera.stopping = false;
+        s_camera.running = false;
+        s_camera.resource_stop_confirmed = true;
+    }
+    else if (result != SYS_ERR_BUSY && s_camera.fault == SYS_OK)
+        s_camera.fault = result;
+    return result;
+}
+
+//未绑定真实归还证明，空回调必须阻止资格释放成功
+static const AppQualificationResourceOps_t s_qualification_ops =
+{
+    App_CameraResourceState, App_CameraQualificationStart,
+    App_CameraQualificationStop, NULL, NULL
+};
+
+//仅向已经完成任务身份校验的同模块资格适配借出上下文
+SysResult_t App_CameraQualificationAccess(AppCameraQualification_t **core,
+    const AppQualificationResourceOps_t **ops, bool preparing)
+{
+    if (core == NULL || ops == NULL)
+        return SYS_ERR_INVALID_ARG;
+    if (preparing && (s_camera.running || s_camera.stopping || s_camera.prepared ||
+        s_camera.initialized || s_camera.configured))
+        return SYS_ERR_INVALID_STATE;
+    *core = &s_camera.qualifications;
+    *ops = &s_qualification_ops;
+    return SYS_OK;
 }
