@@ -1,0 +1,175 @@
+{
+  "baseline": "182c84e7334f0a62d96f1d3109b0d7fb8efb8158",
+  "checks": {
+    "scope_only": true,
+    "all_existing_production_and_tests_byte_unchanged": true,
+    "only_cm7_source_registration": true,
+    "no_dynamic_memory_tasks_or_business_hooks": true,
+    "no_runtime_manager_instances": true,
+    "formal_manager_compiled_and_removed": true,
+    "formal_manager_not_called": true,
+    "queue_memory_and_capacities_unchanged": true,
+    "O0_s_probe_tx_map_size": true,
+    "O0_s_probe_rx_map_size": true,
+    "O0_stack_evidence_present": true,
+    "O2_s_probe_tx_map_size": true,
+    "O2_s_probe_rx_map_size": true,
+    "O2_stack_evidence_present": true,
+    "h7_mac_CM7_program_size_unchanged": true,
+    "h7_mac_CM7_zero_errors_warnings": true,
+    "h7_mac_CM4_program_size_unchanged": true,
+    "h7_mac_CM4_zero_errors_warnings": true,
+    "previous_formal_outputs_preserved": true
+  },
+  "all_pass": true,
+  "modified_protected_files": [],
+  "files": [
+    "CM7/Application/app_camera_lifecycle_replay.c",
+    "CM7/Application/app_camera_lifecycle_replay.h",
+    "Docs/Design/C2.1.1_Replay安全复用.md",
+    "MDK-ARM/h7_mac.uvprojx",
+    "Tests/CameraLifecycleC2_1_1/README.md",
+    "Tests/CameraLifecycleC2_1_1/abi_results.json",
+    "Tests/CameraLifecycleC2_1_1/artifact_manifest.json",
+    "Tests/CameraLifecycleC2_1_1/audit_scope.py",
+    "Tests/CameraLifecycleC2_1_1/build_results.json",
+    "Tests/CameraLifecycleC2_1_1/gate_results.json",
+    "Tests/CameraLifecycleC2_1_1/h7_mac_CM4_rebuild.log",
+    "Tests/CameraLifecycleC2_1_1/h7_mac_CM7_rebuild.log",
+    "Tests/CameraLifecycleC2_1_1/layout_probe.c",
+    "Tests/CameraLifecycleC2_1_1/legacy_results.json",
+    "Tests/CameraLifecycleC2_1_1/original_c1_1_results.json",
+    "Tests/CameraLifecycleC2_1_1/original_c1_results.json",
+    "Tests/CameraLifecycleC2_1_1/regression_results.json",
+    "Tests/CameraLifecycleC2_1_1/replay_test.c",
+    "Tests/CameraLifecycleC2_1_1/results.json",
+    "Tests/CameraLifecycleC2_1_1/run_build.py",
+    "Tests/CameraLifecycleC2_1_1/run_legacy.py",
+    "Tests/CameraLifecycleC2_1_1/run_regression.py",
+    "Tests/CameraLifecycleC2_1_1/run_tests.py",
+    "Tests/CameraLifecycleC2_1_1/scope_memory_audit.json",
+    "Tests/CameraLifecycleC2_1_1/verification_report.md"
+  ],
+  "registration": [
+    {
+      "target": "h7_mac_CM7",
+      "path": "../CM7/Application/app_camera_lifecycle_replay.c"
+    }
+  ],
+  "queue_symbols": {
+    "s_message_queues": 360,
+    "s_message_storage": 1040,
+    "s_message_handles": 20,
+    "s_lifecycle_queues": 216,
+    "s_lifecycle_storage": 672,
+    "s_lifecycle_handles": 12
+  },
+  "program_sizes": {
+    "h7_mac_CM7": {
+      "baseline": [
+        136802,
+        3086,
+        1328,
+        100048
+      ],
+      "current": [
+        136802,
+        3086,
+        1328,
+        100048
+      ],
+      "delta": [
+        0,
+        0,
+        0,
+        0
+      ]
+    },
+    "h7_mac_CM4": {
+      "baseline": [
+        26302,
+        1438,
+        936,
+        3576
+      ],
+      "current": [
+        26302,
+        1438,
+        936,
+        3576
+      ],
+      "delta": [
+        0,
+        0,
+        0,
+        0
+      ]
+    }
+  },
+  "standalone_abi": [
+    {
+      "optimization": "O0",
+      "symbols": {
+        "s_probe_tx": {
+          "address": "0x20000004",
+          "size": 144
+        },
+        "s_probe_rx": {
+          "address": "0x20000094",
+          "size": 332
+        }
+      },
+      "stacks": {
+        "App_LifecycleRxPromote": {
+          "local_bytes": 144,
+          "known_depth_bytes": 200
+        },
+        "App_LifecycleTxFlush": {
+          "local_bytes": 24,
+          "known_depth_bytes": 48
+        },
+        "App_LifecycleRxFlushReply": {
+          "local_bytes": 24,
+          "known_depth_bytes": 72
+        }
+      },
+      "indirect_callback_stack_not_included": true
+    },
+    {
+      "optimization": "O2",
+      "symbols": {
+        "s_probe_tx": {
+          "address": "0x20000004",
+          "size": 144
+        },
+        "s_probe_rx": {
+          "address": "0x20000094",
+          "size": 332
+        }
+      },
+      "stacks": {
+        "App_LifecycleRxPromote": {
+          "local_bytes": 152,
+          "known_depth_bytes": 200
+        },
+        "App_LifecycleTxFlush": {
+          "local_bytes": 16,
+          "known_depth_bytes": 24
+        },
+        "App_LifecycleRxFlushReply": {
+          "local_bytes": 24,
+          "known_depth_bytes": 64
+        }
+      },
+      "indirect_callback_stack_not_included": true
+    }
+  ],
+  "future_four_domain_ram_bytes": 1904,
+  "formal_static_ram_delta_bytes": 0,
+  "formal_task_stack_delta_bytes": 0,
+  "hardware_verified": false,
+  "new_source_sha256": {
+    "CM7/Application/app_camera_lifecycle_replay.c": "efc65a4690934a45649e2da9536498963b0e2fad2a26d2967b294e516e98eec8",
+    "CM7/Application/app_camera_lifecycle_replay.h": "3847eaeb367fa0d108ebccacac6ada0a5d4a94728109d255fba90173f3fb9b3b"
+  }
+}

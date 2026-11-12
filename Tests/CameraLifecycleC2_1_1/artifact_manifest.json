@@ -1,0 +1,38 @@
+{
+  "output/CameraLifecycleC2_1_1/final_special.log": {
+    "bytes": 6826,
+    "sha256": "6f4a3f4742ca30d85fbf614a35d5b922ebe4f8125edc4cc62ad844365e0eb92c"
+  },
+  "output/CameraLifecycleC2_1_1/final_audit.log": {
+    "bytes": 2878,
+    "sha256": "0d3c8287bd3a8bcdcfbd0870f6435b773f63aecb0430a7f5a0a37b952feecdc3"
+  },
+  "output/CameraLifecycleC2_1_1/arm/commands.json": {
+    "bytes": 21713,
+    "sha256": "bc5e4eb960c1ba9068574242ee8e9709894e6991f4bd9908de047ddf5a5b6f7e"
+  },
+  "MDK-ARM/h7_mac_CM7/h7_mac_CM7.map": {
+    "bytes": 915912,
+    "sha256": "8418ead56d433b603253f99f25c656da52d76d43259407853596ea61333939fd"
+  },
+  "MDK-ARM/h7_mac_CM4/h7_mac_CM4.map": {
+    "bytes": 262704,
+    "sha256": "435ae1008dd0fc0441242a0f250f846010a9064beff06142d9628f902cfd3665"
+  },
+  "output/CameraLifecycleC2_1_1/arm/abi_O0.map": {
+    "bytes": 8409,
+    "sha256": "f79a67fa0c1fa70c5e7ef27f86c41ce6d157835f829cf27e3a0c8d6243812e1f"
+  },
+  "output/CameraLifecycleC2_1_1/arm/abi_O0.htm": {
+    "bytes": 23358,
+    "sha256": "29b1b0a2c6fe1e44c648382ede6958e2200b48533cca2f4d2db986fb46896dc7"
+  },
+  "output/CameraLifecycleC2_1_1/arm/abi_O2.map": {
+    "bytes": 8315,
+    "sha256": "e4bd17f14ae064d22b539dc81636ca71d6d685f460a08e7abbbc5ad1fe73f5c9"
+  },
+  "output/CameraLifecycleC2_1_1/arm/abi_O2.htm": {
+    "bytes": 22984,
+    "sha256": "334eb3708143986b70abc1cdd9f4dd9f633b379e25a70fe310a744cf1fb92175"
+  }
+}
