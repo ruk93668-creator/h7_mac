@@ -1,4 +1,6 @@
 #include "app_usb.h"
+#include "app_camera_consumer.h"
+#include "video_config.h"
 #include "usb_mode.h"
 #include "usb_uvc.h"
 #include "app_uvc_bridge.h"
@@ -8,6 +10,10 @@
 //只保存USB业务协调状态，底层模式、端点、Token及租约仍归原模块
 typedef struct
 {
+    AppCameraConsumer_t camera;//本USB方向的受控Tx，不是Camera资格表
+    bool lifecycle_initialized;//首次绑定后普通停止不得复位
+    bool start_command;//保留原START命令，获得资格前不启动USB
+
     bool started;//记录业务START是否成功
     bool stopping;//记录后台停止是否仍需推进
     bool stop_command;//记录STOP是否等待完成结果
@@ -39,7 +45,7 @@ void App_USBSetDiagnosticObserver(AppUsbDiagnosticObserver_t observer)
 //保留原ACK和STOP等待期间的命令接收门控
 bool App_USBCanAcceptCommand(void)
 {
-    return !s_usb.ack_pending && !s_usb.stop_command;
+    return !s_usb.ack_pending && !s_usb.stop_command && !s_usb.start_command;
 }
 
 //处理已经出队的一条命令，保持原START与STOP语义
@@ -61,7 +67,28 @@ void App_USBHandleCommand(const AppMessage_t *command)
     if (command->type == APP_MESSAGE_START)
     {
         //重复START仍返回BUSY，并按原规则记录为业务故障
-        result = s_usb.started || s_usb.stopping ? SYS_ERR_BUSY : USB_Mode_Start();
+        if (s_usb.started || s_usb.stopping)
+            result = SYS_ERR_BUSY;
+        else if (VideoConfig_GetDefault()->output == VIDEO_OUTPUT_USB_UVC)
+        {
+            //UVC必须先取得Camera资格，TEST完全不申请Camera
+            if (!s_usb.lifecycle_initialized)
+            {
+                result = App_CameraConsumerInit(&s_usb.camera, APP_LIFECYCLE_USB, APP_CONSUMER_USB);
+                s_usb.lifecycle_initialized = result == SYS_OK;
+            }
+            else
+                result = SYS_OK;
+            if (result == SYS_OK)
+                result = App_CameraConsumerBegin(&s_usb.camera);
+            if (result == SYS_OK)
+            {
+                s_usb.start_command = true;
+                return;
+            }
+        }
+        else
+            result = USB_Mode_Start();
         if (result == SYS_OK)
         {
             s_usb.started = true;
@@ -106,6 +133,33 @@ void App_USBProcess(void)
 {
     SysResult_t result;
 
+    if (s_usb.lifecycle_initialized)
+        (void)App_CameraConsumerProcess(&s_usb.camera);
+    if (s_usb.start_command && (s_usb.camera.phase == APP_CONSUMER_GRANTED ||
+        s_usb.camera.phase == APP_CONSUMER_FAILED))
+    {
+        //资格回复和业务START结果分开，只有GRANTED才调用USB原启动入口
+        result = s_usb.camera.phase == APP_CONSUMER_GRANTED ? USB_Mode_Start() : s_usb.camera.result;
+        s_usb.start_command = false;
+        if (result == SYS_OK)
+        {
+            s_usb.started = true;
+            s_usb.fault = SYS_OK;
+            s_usb.fault_reported = false;
+            s_usb.fps_tick = Platform_TimeGetMs();
+            s_usb.fps_frames = USB_UVC_GetCompletedFrameCount();
+        }
+        else
+        {
+            s_usb.fault = result;
+            if (s_usb.camera.granted != 0U)
+                (void)App_CameraConsumerEnd(&s_usb.camera, result, SYS_OK);
+        }
+        s_usb.ack.result = result;
+        s_usb.ack_pending = true;
+        s_usb.last_result = result;
+        App_USBObserve(APP_USB_DIAG_RESULT);
+    }
     if (s_usb.started && !s_usb.stopping)
     {
         USB_Mode_Process();
@@ -146,6 +200,9 @@ void App_USBFinishRound(bool uvc_this_round)
         //BUSY继续等待，失败ACK发出后仍保留停止要求供后台重试
         if (s_usb.stop_command && result != SYS_ERR_BUSY)
         {
+            //业务STOP ACK仅表达USB停止；资格释放仍保留独立WAIT_REPLY
+            if (result == SYS_OK && s_usb.lifecycle_initialized && s_usb.camera.granted != 0U)
+                (void)App_CameraConsumerEnd(&s_usb.camera, s_usb.fault, SYS_OK);
             s_usb.ack.result = result;
             s_usb.ack_pending = true;
             s_usb.stop_command = false;
@@ -234,4 +291,22 @@ static void App_USBObserve(AppUsbDiagnosticField_t field)
         App_USBGetStatus(&status);
         s_usb.observer(field, &status);
     }
+}
+
+//接收Task已经取出的生命周期回复，旧身份不得改变当前启动
+SysResult_t App_USBReceiveLifecycle(const AppLifecycleMessage_t *message)
+{
+    return s_usb.lifecycle_initialized ? App_CameraConsumerReceive(&s_usb.camera, message) : SYS_ERR_INVALID_STATE;
+}
+
+//所属UsbTask负责真实运输，模块只保留原Tx重试记录
+SysResult_t App_USBFlushLifecycle(AppLifecycleSendFn send, void *context)
+{
+    return s_usb.lifecycle_initialized ? App_CameraConsumerFlush(&s_usb.camera, send, context) : SYS_OK;
+}
+
+//读取USB业务STOP之外的资格事务进度，不作为帧归还证明
+void App_USBGetLifecycleStatus(AppCameraConsumerStatus_t *status)
+{
+    App_CameraConsumerGetStatus(&s_usb.camera, status);
 }

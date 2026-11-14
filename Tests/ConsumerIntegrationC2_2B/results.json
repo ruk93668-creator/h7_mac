@@ -1,0 +1,318 @@
+{
+  "summary": {
+    "total": 34,
+    "passed": 34,
+    "failed": 0
+  },
+  "cases": [
+    {
+      "id": 0,
+      "optimization": "O0",
+      "release_proof_stub": true,
+      "pass": true,
+      "return": 0,
+      "failure_line": 0,
+      "error": null
+    },
+    {
+      "id": 1,
+      "optimization": "O0",
+      "release_proof_stub": true,
+      "pass": true,
+      "return": 0,
+      "failure_line": 0,
+      "error": null
+    },
+    {
+      "id": 2,
+      "optimization": "O0",
+      "release_proof_stub": true,
+      "pass": true,
+      "return": 0,
+      "failure_line": 0,
+      "error": null
+    },
+    {
+      "id": 3,
+      "optimization": "O0",
+      "release_proof_stub": true,
+      "pass": true,
+      "return": 0,
+      "failure_line": 0,
+      "error": null
+    },
+    {
+      "id": 4,
+      "optimization": "O0",
+      "release_proof_stub": false,
+      "pass": true,
+      "return": 0,
+      "failure_line": 0,
+      "error": null
+    },
+    {
+      "id": 5,
+      "optimization": "O0",
+      "release_proof_stub": true,
+      "pass": true,
+      "return": 0,
+      "failure_line": 0,
+      "error": null
+    },
+    {
+      "id": 6,
+      "optimization": "O0",
+      "release_proof_stub": true,
+      "pass": true,
+      "return": 0,
+      "failure_line": 0,
+      "error": null
+    },
+    {
+      "id": 7,
+      "optimization": "O0",
+      "release_proof_stub": true,
+      "pass": true,
+      "return": 0,
+      "failure_line": 0,
+      "error": null
+    },
+    {
+      "id": 8,
+      "optimization": "O0",
+      "release_proof_stub": true,
+      "pass": true,
+      "return": 0,
+      "failure_line": 0,
+      "error": null
+    },
+    {
+      "id": 9,
+      "optimization": "O0",
+      "release_proof_stub": true,
+      "pass": true,
+      "return": 0,
+      "failure_line": 0,
+      "error": null
+    },
+    {
+      "id": 10,
+      "optimization": "O0",
+      "release_proof_stub": true,
+      "pass": true,
+      "return": 0,
+      "failure_line": 0,
+      "error": null
+    },
+    {
+      "id": 11,
+      "optimization": "O0",
+      "release_proof_stub": true,
+      "pass": true,
+      "return": 0,
+      "failure_line": 0,
+      "error": null
+    },
+    {
+      "id": 12,
+      "optimization": "O0",
+      "release_proof_stub": true,
+      "pass": true,
+      "return": 0,
+      "failure_line": 0,
+      "error": null
+    },
+    {
+      "id": 13,
+      "optimization": "O0",
+      "release_proof_stub": true,
+      "pass": true,
+      "return": 0,
+      "failure_line": 0,
+      "error": null
+    },
+    {
+      "id": 14,
+      "optimization": "O0",
+      "release_proof_stub": true,
+      "pass": true,
+      "return": 0,
+      "failure_line": 0,
+      "error": null
+    },
+    {
+      "id": 15,
+      "optimization": "O0",
+      "release_proof_stub": false,
+      "pass": true,
+      "return": 0,
+      "failure_line": 0,
+      "error": null
+    },
+    {
+      "id": 16,
+      "optimization": "O0",
+      "release_proof_stub": true,
+      "pass": true,
+      "return": 0,
+      "failure_line": 0,
+      "error": null
+    },
+    {
+      "id": 0,
+      "optimization": "O2",
+      "release_proof_stub": true,
+      "pass": true,
+      "return": 0,
+      "failure_line": 0,
+      "error": null
+    },
+    {
+      "id": 1,
+      "optimization": "O2",
+      "release_proof_stub": true,
+      "pass": true,
+      "return": 0,
+      "failure_line": 0,
+      "error": null
+    },
+    {
+      "id": 2,
+      "optimization": "O2",
+      "release_proof_stub": true,
+      "pass": true,
+      "return": 0,
+      "failure_line": 0,
+      "error": null
+    },
+    {
+      "id": 3,
+      "optimization": "O2",
+      "release_proof_stub": true,
+      "pass": true,
+      "return": 0,
+      "failure_line": 0,
+      "error": null
+    },
+    {
+      "id": 4,
+      "optimization": "O2",
+      "release_proof_stub": false,
+      "pass": true,
+      "return": 0,
+      "failure_line": 0,
+      "error": null
+    },
+    {
+      "id": 5,
+      "optimization": "O2",
+      "release_proof_stub": true,
+      "pass": true,
+      "return": 0,
+      "failure_line": 0,
+      "error": null
+    },
+    {
+      "id": 6,
+      "optimization": "O2",
+      "release_proof_stub": true,
+      "pass": true,
+      "return": 0,
+      "failure_line": 0,
+      "error": null
+    },
+    {
+      "id": 7,
+      "optimization": "O2",
+      "release_proof_stub": true,
+      "pass": true,
+      "return": 0,
+      "failure_line": 0,
+      "error": null
+    },
+    {
+      "id": 8,
+      "optimization": "O2",
+      "release_proof_stub": true,
+      "pass": true,
+      "return": 0,
+      "failure_line": 0,
+      "error": null
+    },
+    {
+      "id": 9,
+      "optimization": "O2",
+      "release_proof_stub": true,
+      "pass": true,
+      "return": 0,
+      "failure_line": 0,
+      "error": null
+    },
+    {
+      "id": 10,
+      "optimization": "O2",
+      "release_proof_stub": true,
+      "pass": true,
+      "return": 0,
+      "failure_line": 0,
+      "error": null
+    },
+    {
+      "id": 11,
+      "optimization": "O2",
+      "release_proof_stub": true,
+      "pass": true,
+      "return": 0,
+      "failure_line": 0,
+      "error": null
+    },
+    {
+      "id": 12,
+      "optimization": "O2",
+      "release_proof_stub": true,
+      "pass": true,
+      "return": 0,
+      "failure_line": 0,
+      "error": null
+    },
+    {
+      "id": 13,
+      "optimization": "O2",
+      "release_proof_stub": true,
+      "pass": true,
+      "return": 0,
+      "failure_line": 0,
+      "error": null
+    },
+    {
+      "id": 14,
+      "optimization": "O2",
+      "release_proof_stub": true,
+      "pass": true,
+      "return": 0,
+      "failure_line": 0,
+      "error": null
+    },
+    {
+      "id": 15,
+      "optimization": "O2",
+      "release_proof_stub": false,
+      "pass": true,
+      "return": 0,
+      "failure_line": 0,
+      "error": null
+    },
+    {
+      "id": 16,
+      "optimization": "O2",
+      "release_proof_stub": true,
+      "pass": true,
+      "return": 0,
+      "failure_line": 0,
+      "error": null
+    }
+  ],
+  "hardware_verified": false,
+  "resource_hardware_mocked": true,
+  "artifact_root": "D:\\32\\STM32H7\\h7_mac\\output\\ConsumerIntegrationC2_2B\\special_1794652171782843200"
+}

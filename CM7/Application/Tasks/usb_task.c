@@ -31,6 +31,13 @@ static TaskHandle_t s_usb_task;
 //记录任务状态和设备侧EOF速率
 volatile UsbTaskDebug_t g_usb_task_debug;
 
+//记录运输结果，不参与原USB业务或资格决策
+volatile SysResult_t g_usb_lifecycle_receive_result;
+volatile SysResult_t g_usb_lifecycle_send_result;
+
+//只通过原生命周期Camera收件箱提交请求
+static SysResult_t UsbTask_SendLifecycle(void *context, const AppLifecycleMessage_t *message);
+
 //等待USB事件并推进数据面
 static void UsbTask_Run(void *argument);
 
@@ -118,6 +125,8 @@ static void UsbTask_Run(void *argument)
 static void UsbTask_Process(uint32_t events)
 {
     AppMessage_t command;
+    AppLifecycleMessage_t lifecycle;
+    uint32_t count;
     bool uvc;
     uint32_t sof, gap;
 
@@ -139,6 +148,10 @@ static void UsbTask_Process(uint32_t events)
     g_usb_task_debug.sof_sequence = sof;
     UsbTask_Reply();
     uvc = USB_Mode_GetMode() == USB_MODE_UVC;
+    //生命周期回复不借用帧消息通道，四项有界处理后仍可推进UVC
+    for (count = 0U; count < 4U &&
+        App_LifecycleMessagesReceive(APP_LIFECYCLE_CHANNEL_USB, &lifecycle); ++count)
+        g_usb_lifecycle_receive_result = App_USBReceiveLifecycle(&lifecycle);
 
     //ACK和STOP未完成时不接收下一条，每轮仍只接收一条命令
     if (App_USBCanAcceptCommand() &&
@@ -162,6 +175,7 @@ static void UsbTask_Process(uint32_t events)
 
     //归还处理后才判断停止完成，并按原时点更新EOF及FPS
     App_USBFinishRound(uvc);
+    g_usb_lifecycle_send_result = App_USBFlushLifecycle(UsbTask_SendLifecycle, NULL);
     UsbTask_Reply();
 }
 
@@ -217,4 +231,11 @@ static void UsbTask_Observe(AppUsbDiagnosticField_t field,
         default:
             break;
     }
+}
+
+//入队只表示运输成功，Camera是否授权仍等待完整回复
+static SysResult_t UsbTask_SendLifecycle(void *context, const AppLifecycleMessage_t *message)
+{
+    (void)context;
+    return App_LifecycleMessagesSend(APP_LIFECYCLE_CHANNEL_CAMERA, message);
 }

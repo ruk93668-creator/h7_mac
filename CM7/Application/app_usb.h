@@ -2,6 +2,7 @@
 #define CM7_APP_USB_H
 
 #include "app_messages.h"
+#include "app_camera_consumer.h"
 #include <stdbool.h>
 #include <stdint.h>
 
@@ -69,4 +70,9 @@ void App_USBGetStatus(AppUsbRuntimeStatus_t *status);
 //只读取最近业务操作结果，不覆盖Task等待异常
 SysResult_t App_USBGetLastResult(void);
 
+//Task接收和发送生命周期消息，权限仍由原队列适配校验
+SysResult_t App_USBReceiveLifecycle(const AppLifecycleMessage_t *message);
+SysResult_t App_USBFlushLifecycle(AppLifecycleSendFn send, void *context);
+//只读资格进度，与原USB业务状态分开显示
+void App_USBGetLifecycleStatus(AppCameraConsumerStatus_t *status);
 #endif
