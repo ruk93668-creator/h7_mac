@@ -149,9 +149,8 @@ static void ControlTask_Process(uint32_t events)
     AppMessage_t message;
     uint32_t i;
     bool active;
-    //SD-only同样需要Camera，NONE只是不连接USB
-    bool uvc = VideoConfig_GetDefault()->output == VIDEO_OUTPUT_USB_UVC ||
-        VideoConfig_GetDefault()->output == VIDEO_OUTPUT_NONE;
+    //NONE按需采集，只有Storage请求才申请Camera；Control不再控制Camera资源
+    bool output_enabled = VideoConfig_GetDefault()->output != VIDEO_OUTPUT_NONE;
 
     if (!App_MessagesIsOwner(RUNTIME_TARGET_CONTROL))
         return;
@@ -163,7 +162,8 @@ static void ControlTask_Process(uint32_t events)
     if (!s_control_boot_started)
     {
         s_control_boot_started = true;
-        ControlTask_Command(uvc ? CONTROL_START_CAMERA : CONTROL_START_USB);
+        if (output_enabled)
+            ControlTask_Command(CONTROL_START_USB);
     }
 
     for (i = 0U; i < 4U && App_MessagesReceive(APP_CHANNEL_CONTROL, &message); i++)
@@ -171,7 +171,7 @@ static void ControlTask_Process(uint32_t events)
         if (message.type == APP_MESSAGE_FAULT)
         {
 
-            //故障停止也先要求USB归还，Camera ISR错误路径仍可先停危险DMA
+            //故障只通知主输出停止；Camera保护性停止和Storage收尾由各自所有者推进
             g_control_task_debug.result = message.result;
             ControlTask_RecordFault(message.result);
             g_control_task_debug.last_fault = message.result;
@@ -185,49 +185,37 @@ static void ControlTask_Process(uint32_t events)
         }
         else if (message.type == APP_MESSAGE_START)
         {
-
-            //ERROR必须先完成一次协调Stop，不能直接重启未知资源状态
-            if (s_control_state == CONTROL_IDLE)
-                ControlTask_Command(uvc ? CONTROL_START_CAMERA : CONTROL_START_USB);
+            //Control仅请求主输出，NONE不借整体START隐式开启采集
+            if (!output_enabled)
+                g_control_task_debug.result = SYS_ERR_NOT_SUPPORTED;
+            else if (s_control_state == CONTROL_IDLE)
+                ControlTask_Command(CONTROL_START_USB);
             else
                 g_control_task_debug.result = SYS_ERR_BUSY;
         }
         else if (message.type == APP_MESSAGE_ACK && s_control_command_sent &&
             message.command_id == s_control_command.command_id &&
-            message.source == ((s_control_state == CONTROL_START_CAMERA ||
-                s_control_state == CONTROL_STOP_CAMERA) ? RUNTIME_TARGET_CAMERA : RUNTIME_TARGET_USB))
+            message.source == RUNTIME_TARGET_USB)
         {
             s_control_command_sent = false;
             g_control_task_debug.result = message.result;
             ControlTask_RecordFault(message.result);
             if (message.result != SYS_OK)
                 s_control_state = CONTROL_ERROR;
-            else if (s_control_state == CONTROL_START_CAMERA)
-                ControlTask_Command(CONTROL_START_USB);
             else if (s_control_state == CONTROL_START_USB)
                 s_control_state = CONTROL_RUNNING;
             else if (s_control_state == CONTROL_STOP_USB)
-            {
-                if (uvc)
-                    ControlTask_Command(CONTROL_STOP_CAMERA);
-                else
-                    s_control_state = CONTROL_IDLE;
-            }
-            else if (s_control_state == CONTROL_STOP_CAMERA)
                 s_control_state = CONTROL_IDLE;
         }
     }
-    active = s_control_state == CONTROL_START_CAMERA || s_control_state == CONTROL_START_USB ||
-        s_control_state == CONTROL_STOP_USB || s_control_state == CONTROL_STOP_CAMERA;
+    active = s_control_state == CONTROL_START_USB || s_control_state == CONTROL_STOP_USB;
     if (active)
     {
 
         //消息入队失败时保留同一编号，不能丢命令或生成第二次启停
         if (!s_control_command_sent)
         {
-            AppChannel_t channel = (s_control_state == CONTROL_START_CAMERA ||
-                s_control_state == CONTROL_STOP_CAMERA) ? APP_CHANNEL_CAMERA_COMMAND : APP_CHANNEL_USB_COMMAND;
-            if (App_MessagesSend(channel, &s_control_command) == SYS_OK)
+            if (App_MessagesSend(APP_CHANNEL_USB_COMMAND, &s_control_command) == SYS_OK)
                 s_control_command_sent = true;
         }
         if ((uint32_t)(Platform_TimeGetMs() - s_control_command_tick) >= CONTROL_COMMAND_TIMEOUT_MS)
@@ -246,7 +234,8 @@ static void ControlTask_Process(uint32_t events)
 //建立下一条协调命令
 static void ControlTask_Command(ControlState_t state)
 {
-    if (s_control_sequence == UINT32_MAX)
+    //保留旧状态编号供诊断兼容，但禁止再建立Camera控制命令
+    if ((state != CONTROL_START_USB && state != CONTROL_STOP_USB) || s_control_sequence == UINT32_MAX)
     {
         s_control_state = CONTROL_ERROR;
         s_control_command_sent = false;
@@ -255,8 +244,7 @@ static void ControlTask_Command(ControlState_t state)
         return;
     }
     s_control_state = state;
-    s_control_command.type = state == CONTROL_START_CAMERA || state == CONTROL_START_USB ?
-        APP_MESSAGE_START : APP_MESSAGE_STOP;
+    s_control_command.type = state == CONTROL_START_USB ? APP_MESSAGE_START : APP_MESSAGE_STOP;
     s_control_command.source = RUNTIME_TARGET_CONTROL;
     s_control_command.command_id = ++s_control_sequence;
     s_control_command_sent = false;
