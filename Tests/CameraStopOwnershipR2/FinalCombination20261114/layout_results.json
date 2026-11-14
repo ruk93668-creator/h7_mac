@@ -1,0 +1,479 @@
+{
+  "abi_columns": [
+    "camera_context",
+    "qualification",
+    "entry",
+    "decision",
+    "lifecycle",
+    "old_message",
+    "camera_frame",
+    "camera_stack",
+    "priority",
+    "ops",
+    "rx_offset",
+    "stop_facts",
+    "identity_offset",
+    "session_offset",
+    "request_offset",
+    "consumer_offset",
+    "generation_offset",
+    "debug_size"
+  ],
+  "rows": [
+    {
+      "variant": "baseline",
+      "optimization": "O0",
+      "abi": [
+        948,
+        824,
+        72,
+        32,
+        56,
+        52,
+        24,
+        6144,
+        3,
+        20,
+        144,
+        12,
+        20,
+        0,
+        4,
+        8,
+        12,
+        40
+      ],
+      "stack": {
+        "CameraTask_Run": {
+          "local": 8,
+          "known_depth": 208
+        },
+        "CameraTask_Process": {
+          "local": 64,
+          "known_depth": 200
+        },
+        "App_CameraHandleCommand": {
+          "local": 16,
+          "known_depth": 124
+        },
+        "App_CameraStartResource": {
+          "local": 8,
+          "known_depth": 108
+        },
+        "App_CameraBeginRound": {
+          "local": null,
+          "known_depth": null
+        },
+        "App_CameraAdvanceStop": {
+          "local": null,
+          "known_depth": null
+        },
+        "App_CameraFinishRound": {
+          "local": 32,
+          "known_depth": 72
+        },
+        "CameraCapture_GetStopFacts": {
+          "local": 0,
+          "known_depth": null
+        }
+      }
+    },
+    {
+      "variant": "current",
+      "optimization": "O0",
+      "abi": [
+        988,
+        824,
+        72,
+        32,
+        56,
+        52,
+        24,
+        6144,
+        3,
+        28,
+        144,
+        12,
+        20,
+        0,
+        4,
+        8,
+        12,
+        40
+      ],
+      "stack": {
+        "CameraTask_Run": {
+          "local": 8,
+          "known_depth": 208
+        },
+        "CameraTask_Process": {
+          "local": 64,
+          "known_depth": 200
+        },
+        "App_CameraHandleCommand": {
+          "local": 16,
+          "known_depth": 124
+        },
+        "App_CameraStartResource": {
+          "local": 8,
+          "known_depth": 108
+        },
+        "App_CameraBeginRound": {
+          "local": 16,
+          "known_depth": 16
+        },
+        "App_CameraAdvanceStop": {
+          "local": 24,
+          "known_depth": 52
+        },
+        "App_CameraFinishRound": {
+          "local": 32,
+          "known_depth": 84
+        },
+        "CameraCapture_GetStopFacts": {
+          "local": 0,
+          "known_depth": null
+        }
+      }
+    },
+    {
+      "variant": "baseline",
+      "optimization": "O2",
+      "abi": [
+        948,
+        824,
+        72,
+        32,
+        56,
+        52,
+        24,
+        6144,
+        3,
+        20,
+        144,
+        12,
+        20,
+        0,
+        4,
+        8,
+        12,
+        40
+      ],
+      "stack": {
+        "CameraTask_Run": {
+          "local": 8,
+          "known_depth": 192
+        },
+        "CameraTask_Process": {
+          "local": 56,
+          "known_depth": 184
+        },
+        "App_CameraHandleCommand": {
+          "local": 16,
+          "known_depth": 112
+        },
+        "App_CameraStartResource": {
+          "local": 24,
+          "known_depth": 96
+        },
+        "App_CameraBeginRound": {
+          "local": null,
+          "known_depth": null
+        },
+        "App_CameraAdvanceStop": {
+          "local": null,
+          "known_depth": null
+        },
+        "App_CameraFinishRound": {
+          "local": 24,
+          "known_depth": 64
+        },
+        "CameraCapture_GetStopFacts": {
+          "local": 0,
+          "known_depth": null
+        }
+      }
+    },
+    {
+      "variant": "current",
+      "optimization": "O2",
+      "abi": [
+        988,
+        824,
+        72,
+        32,
+        56,
+        52,
+        24,
+        6144,
+        3,
+        28,
+        144,
+        12,
+        20,
+        0,
+        4,
+        8,
+        12,
+        40
+      ],
+      "stack": {
+        "CameraTask_Run": {
+          "local": 8,
+          "known_depth": 200
+        },
+        "CameraTask_Process": {
+          "local": 64,
+          "known_depth": 192
+        },
+        "App_CameraHandleCommand": {
+          "local": 16,
+          "known_depth": 112
+        },
+        "App_CameraStartResource": {
+          "local": 24,
+          "known_depth": 96
+        },
+        "App_CameraBeginRound": {
+          "local": 16,
+          "known_depth": 16
+        },
+        "App_CameraAdvanceStop": {
+          "local": 24,
+          "known_depth": 48
+        },
+        "App_CameraFinishRound": {
+          "local": 24,
+          "known_depth": 72
+        },
+        "CameraCapture_GetStopFacts": {
+          "local": 0,
+          "known_depth": null
+        }
+      }
+    }
+  ],
+  "formal": [
+    {
+      "variant": "baseline_previous_output",
+      "target": "h7_mac_CM7",
+      "map_sha256": "ba954654e74f6e2841375ea01d5a9a1425973ce16016ce293a0380fe4f736422",
+      "totals": [
+        137030,
+        8970,
+        3106,
+        1328,
+        100880,
+        2683462
+      ],
+      "symbols": {
+        "s_camera": {
+          "address": "0x2000040c",
+          "bytes": 948
+        },
+        "s_camera_stack": {
+          "address": "0x20008c50",
+          "bytes": 6144
+        }
+      },
+      "stack": {
+        "CameraTask_Run": {
+          "local": 8,
+          "known_depth": 320
+        },
+        "CameraTask_Process": {
+          "local": 64,
+          "known_depth": 312
+        },
+        "App_CameraHandleCommand": {
+          "local": 16,
+          "known_depth": 248
+        },
+        "App_CameraStartResource": {
+          "local": 8,
+          "known_depth": 232
+        },
+        "App_CameraBeginRound": {
+          "local": null,
+          "known_depth": null
+        },
+        "App_CameraAdvanceStop": {
+          "local": null,
+          "known_depth": null
+        },
+        "App_CameraFinishRound": {
+          "local": 32,
+          "known_depth": 168
+        },
+        "CameraCapture_GetStopFacts": {
+          "local": null,
+          "known_depth": null
+        }
+      }
+    },
+    {
+      "variant": "baseline_previous_output",
+      "target": "h7_mac_CM4",
+      "map_sha256": "435ae1008dd0fc0441242a0f250f846010a9064beff06142d9628f902cfd3665",
+      "totals": [
+        26302,
+        1508,
+        1438,
+        936,
+        3576,
+        1469154
+      ],
+      "symbols": {},
+      "stack": {
+        "CameraTask_Run": {
+          "local": null,
+          "known_depth": null
+        },
+        "CameraTask_Process": {
+          "local": null,
+          "known_depth": null
+        },
+        "App_CameraHandleCommand": {
+          "local": null,
+          "known_depth": null
+        },
+        "App_CameraStartResource": {
+          "local": null,
+          "known_depth": null
+        },
+        "App_CameraBeginRound": {
+          "local": null,
+          "known_depth": null
+        },
+        "App_CameraAdvanceStop": {
+          "local": null,
+          "known_depth": null
+        },
+        "App_CameraFinishRound": {
+          "local": null,
+          "known_depth": null
+        },
+        "CameraCapture_GetStopFacts": {
+          "local": null,
+          "known_depth": null
+        }
+      }
+    },
+    {
+      "variant": "current",
+      "target": "h7_mac_CM7",
+      "map_sha256": "cf566226b47895faeb5012ef25b61202fa22d6cda20a0e5955bfcebb938e34a9",
+      "totals": [
+        137690,
+        9030,
+        3114,
+        1340,
+        100932,
+        2750645
+      ],
+      "symbols": {
+        "s_camera": {
+          "address": "0x20000418",
+          "bytes": 988
+        },
+        "s_camera_stack": {
+          "address": "0x20008c90",
+          "bytes": 6144
+        },
+        "s_stop_attempt_sequence": {
+          "address": "0x200002b0",
+          "bytes": 4
+        },
+        "s_stop_hardware_result": {
+          "address": "0x200002b8",
+          "bytes": 4
+        }
+      },
+      "stack": {
+        "CameraTask_Run": {
+          "local": 8,
+          "known_depth": 320
+        },
+        "CameraTask_Process": {
+          "local": 64,
+          "known_depth": 312
+        },
+        "App_CameraHandleCommand": {
+          "local": 16,
+          "known_depth": 248
+        },
+        "App_CameraStartResource": {
+          "local": 8,
+          "known_depth": 232
+        },
+        "App_CameraBeginRound": {
+          "local": 16,
+          "known_depth": 20
+        },
+        "App_CameraAdvanceStop": {
+          "local": 24,
+          "known_depth": 152
+        },
+        "App_CameraFinishRound": {
+          "local": 32,
+          "known_depth": 184
+        },
+        "CameraCapture_GetStopFacts": {
+          "local": 4,
+          "known_depth": 4
+        }
+      }
+    },
+    {
+      "variant": "current",
+      "target": "h7_mac_CM4",
+      "map_sha256": "7eee40d7b299c3a11d4e4479eb6843197ef934625841fafa0b680133746fa8a0",
+      "totals": [
+        26302,
+        1508,
+        1438,
+        936,
+        3576,
+        1481994
+      ],
+      "symbols": {},
+      "stack": {
+        "CameraTask_Run": {
+          "local": null,
+          "known_depth": null
+        },
+        "CameraTask_Process": {
+          "local": null,
+          "known_depth": null
+        },
+        "App_CameraHandleCommand": {
+          "local": null,
+          "known_depth": null
+        },
+        "App_CameraStartResource": {
+          "local": null,
+          "known_depth": null
+        },
+        "App_CameraBeginRound": {
+          "local": null,
+          "known_depth": null
+        },
+        "App_CameraAdvanceStop": {
+          "local": null,
+          "known_depth": null
+        },
+        "App_CameraFinishRound": {
+          "local": null,
+          "known_depth": null
+        },
+        "CameraCapture_GetStopFacts": {
+          "local": null,
+          "known_depth": null
+        }
+      }
+    }
+  ],
+  "hardware_stack_verified": false,
+  "stack_limitations": "Static known-depth only; indirect calls, exception frames and library unknowns require hardware high-water verification.",
+  "baseline_artifact_provenance": "Preserved previous formal output; ABI baseline independently compiled from fa9ce5d source/headers."
+}

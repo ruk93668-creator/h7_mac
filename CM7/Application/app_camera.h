@@ -4,6 +4,7 @@
 #include "sys_result.h"
 #include "camera_config.h"
 #include "app_messages.h"
+#include "app_camera_qualification.h"
 #include <stdbool.h>
 
 //冷启动显式传入相机配置，不允许运行中覆盖
@@ -20,6 +21,9 @@ SysResult_t App_CameraInitStream(void);
 
 //先停止Media并等待帧归还，再通过Device_Stop停止传感器
 SysResult_t App_CameraStop(void);
+
+//在接收本轮命令前建立停止事实边界
+void App_CameraBeginRound(void);
 
 //推进Media采集流程，由App_Run持续调用
 void App_CameraRun(void);
@@ -90,5 +94,17 @@ void App_CameraGetStatus(AppCameraRuntimeStatus_t *status);
 
 //读取最近业务结果，不混入任务等待错误
 SysResult_t App_CameraGetLastResult(void);
+
+//以下资格接口仅允许CameraTask串行调用，不替换旧START/STOP
+//首次显式准备工具，拒绝接管旧业务已经启动的资源
+SysResult_t App_CameraQualificationPrepare(void);
+//只接收协议请求，重复和候选不触发业务
+SysResult_t App_CameraQualificationReceive(const AppLifecycleMessage_t *request, uint32_t *disposition);
+//显式推进资格，真实归还证明未绑定时不能成功释放
+SysResult_t App_CameraQualificationProcess(void);
+//沿原运输函数可靠发送已固定回复
+SysResult_t App_CameraQualificationFlush(uint32_t consumer, AppLifecycleSendFn send, void *context);
+//只读当前资格，不作为帧释放证据
+SysResult_t App_CameraQualificationGetStatus(uint32_t consumer, AppQualificationStatus_t *status);
 
 #endif

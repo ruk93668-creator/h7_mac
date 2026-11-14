@@ -158,6 +158,12 @@ typedef struct
 //CM7唯一的图像采集实例
 static CameraCapture_t s_capture;
 
+//保留最近实际停止结果，初始化采集不能擦除同轮失败现场
+static uint32_t s_stop_attempt_sequence;
+//区分最近一次正常停止与ERROR后的保护性停止
+static uint32_t s_stop_attempt_kind;
+static SysResult_t s_stop_hardware_result = SYS_ERR_INVALID_STATE;
+
 //保存Application提供的普通C通知入口
 static CameraCaptureEventCallback_t s_capture_callback;
 
@@ -660,7 +666,12 @@ SysResult_t CameraCapture_ReleaseFrame(void)
 
 	SysResult_t result;
 
-	result = BSP_DCMI_Stop();
+	s_stop_attempt_kind = s_capture.state == CAMERA_CAPTURE_ERROR ?
+        CAMERA_STOP_PROTECTIVE_ATTEMPT : CAMERA_STOP_NORMAL_ATTEMPT;
+    result = BSP_DCMI_Stop();
+    //只记录实际底层调用，BUSY排空检查不伪造新的硬件尝试
+    ++s_stop_attempt_sequence;
+    s_stop_hardware_result = result;
 
 	if (result != SYS_OK)
 	{
@@ -752,7 +763,12 @@ SysResult_t CameraCapture_Stop(void)
     }
 
     //4. 停止DCMI和DMA
+    s_stop_attempt_kind = s_capture.state == CAMERA_CAPTURE_ERROR ?
+        CAMERA_STOP_PROTECTIVE_ATTEMPT : CAMERA_STOP_NORMAL_ATTEMPT;
     result = BSP_DCMI_Stop();
+    //只记录实际底层调用，BUSY排空检查不伪造新的硬件尝试
+    ++s_stop_attempt_sequence;
+    s_stop_hardware_result = result;
 
     if (result != SYS_OK)
     {
@@ -801,6 +817,23 @@ bool CameraCapture_IsStopped(void)
     return s_capture.initialized &&
         s_capture.mode == CAMERA_CAPTURE_MODE_NONE &&
         s_capture.state == CAMERA_CAPTURE_IDLE;
+}
+
+//读取本地停止事实，不把历史失败改写为后续排空成功
+SysResult_t CameraCapture_GetStopFacts(CameraCaptureStopFacts_t *facts)
+{
+    if (facts == NULL)
+        return SYS_ERR_INVALID_ARG;
+    facts->attempt_sequence = s_stop_attempt_sequence;
+    facts->hardware_result = s_stop_hardware_result;
+    facts->flags = s_stop_attempt_kind | (s_capture.initialized ? CAMERA_STOP_INITIALIZED : 0U);
+    if (s_capture.initialized && s_capture.state == CAMERA_CAPTURE_ERROR)
+        facts->flags |= CAMERA_STOP_ERROR;
+    if (s_capture.initialized && s_capture.state == CAMERA_CAPTURE_DRAINING)
+        facts->flags |= CAMERA_STOP_DRAINING;
+    if (CameraCapture_IsStopped())
+        facts->flags |= CAMERA_STOP_COMPLETE;
+    return SYS_OK;
 }
 
 //返回最近一次采集结果

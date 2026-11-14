@@ -1,0 +1,246 @@
+{
+  "summary": {
+    "total": 26,
+    "passed": 26,
+    "failed": 0
+  },
+  "cases": [
+    {
+      "id": 0,
+      "optimization": "O0",
+      "name": "BASEPRI0 init and repeat",
+      "pass": true,
+      "return": 0,
+      "failure_line": 0,
+      "error": null
+    },
+    {
+      "id": 1,
+      "optimization": "O0",
+      "name": "BASEPRI0x50 init and repeat",
+      "pass": true,
+      "return": 0,
+      "failure_line": 0,
+      "error": null
+    },
+    {
+      "id": 2,
+      "optimization": "O0",
+      "name": "Other nonzero BASEPRI init",
+      "pass": true,
+      "return": 0,
+      "failure_line": 0,
+      "error": null
+    },
+    {
+      "id": 3,
+      "optimization": "O0",
+      "name": "PRIMASK reject",
+      "pass": true,
+      "return": 0,
+      "failure_line": 0,
+      "error": null
+    },
+    {
+      "id": 4,
+      "optimization": "O0",
+      "name": "ISR reject",
+      "pass": true,
+      "return": 0,
+      "failure_line": 0,
+      "error": null
+    },
+    {
+      "id": 5,
+      "optimization": "O0",
+      "name": "Running reject",
+      "pass": true,
+      "return": 0,
+      "failure_line": 0,
+      "error": null
+    },
+    {
+      "id": 6,
+      "optimization": "O0",
+      "name": "Suspended reject",
+      "pass": true,
+      "return": 0,
+      "failure_line": 0,
+      "error": null
+    },
+    {
+      "id": 7,
+      "optimization": "O0",
+      "name": "Partial creation failure latch",
+      "pass": true,
+      "return": 0,
+      "failure_line": 0,
+      "error": null
+    },
+    {
+      "id": 8,
+      "optimization": "O0",
+      "name": "Runtime send BASEPRI0x50",
+      "pass": true,
+      "return": 0,
+      "failure_line": 0,
+      "error": null
+    },
+    {
+      "id": 9,
+      "optimization": "O0",
+      "name": "Runtime send other nonzero",
+      "pass": true,
+      "return": 0,
+      "failure_line": 0,
+      "error": null
+    },
+    {
+      "id": 10,
+      "optimization": "O0",
+      "name": "Runtime receive BASEPRI0x50 preserves queue",
+      "pass": true,
+      "return": 0,
+      "failure_line": 0,
+      "error": null
+    },
+    {
+      "id": 11,
+      "optimization": "O0",
+      "name": "Runtime receive other nonzero preserves queue",
+      "pass": true,
+      "return": 0,
+      "failure_line": 0,
+      "error": null
+    },
+    {
+      "id": 12,
+      "optimization": "O0",
+      "name": "Runtime normal transfer and ABI",
+      "pass": true,
+      "return": 0,
+      "failure_line": 0,
+      "error": null
+    },
+    {
+      "id": 0,
+      "optimization": "O2",
+      "name": "BASEPRI0 init and repeat",
+      "pass": true,
+      "return": 0,
+      "failure_line": 0,
+      "error": null
+    },
+    {
+      "id": 1,
+      "optimization": "O2",
+      "name": "BASEPRI0x50 init and repeat",
+      "pass": true,
+      "return": 0,
+      "failure_line": 0,
+      "error": null
+    },
+    {
+      "id": 2,
+      "optimization": "O2",
+      "name": "Other nonzero BASEPRI init",
+      "pass": true,
+      "return": 0,
+      "failure_line": 0,
+      "error": null
+    },
+    {
+      "id": 3,
+      "optimization": "O2",
+      "name": "PRIMASK reject",
+      "pass": true,
+      "return": 0,
+      "failure_line": 0,
+      "error": null
+    },
+    {
+      "id": 4,
+      "optimization": "O2",
+      "name": "ISR reject",
+      "pass": true,
+      "return": 0,
+      "failure_line": 0,
+      "error": null
+    },
+    {
+      "id": 5,
+      "optimization": "O2",
+      "name": "Running reject",
+      "pass": true,
+      "return": 0,
+      "failure_line": 0,
+      "error": null
+    },
+    {
+      "id": 6,
+      "optimization": "O2",
+      "name": "Suspended reject",
+      "pass": true,
+      "return": 0,
+      "failure_line": 0,
+      "error": null
+    },
+    {
+      "id": 7,
+      "optimization": "O2",
+      "name": "Partial creation failure latch",
+      "pass": true,
+      "return": 0,
+      "failure_line": 0,
+      "error": null
+    },
+    {
+      "id": 8,
+      "optimization": "O2",
+      "name": "Runtime send BASEPRI0x50",
+      "pass": true,
+      "return": 0,
+      "failure_line": 0,
+      "error": null
+    },
+    {
+      "id": 9,
+      "optimization": "O2",
+      "name": "Runtime send other nonzero",
+      "pass": true,
+      "return": 0,
+      "failure_line": 0,
+      "error": null
+    },
+    {
+      "id": 10,
+      "optimization": "O2",
+      "name": "Runtime receive BASEPRI0x50 preserves queue",
+      "pass": true,
+      "return": 0,
+      "failure_line": 0,
+      "error": null
+    },
+    {
+      "id": 11,
+      "optimization": "O2",
+      "name": "Runtime receive other nonzero preserves queue",
+      "pass": true,
+      "return": 0,
+      "failure_line": 0,
+      "error": null
+    },
+    {
+      "id": 12,
+      "optimization": "O2",
+      "name": "Runtime normal transfer and ABI",
+      "pass": true,
+      "return": 0,
+      "failure_line": 0,
+      "error": null
+    }
+  ],
+  "real_queue": true,
+  "mocked_port_and_task_context": true,
+  "hardware_verified": false
+}

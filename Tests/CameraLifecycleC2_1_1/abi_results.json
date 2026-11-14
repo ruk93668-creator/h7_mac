@@ -1,0 +1,19 @@
+{
+  "cases": [
+    {
+      "optimization": "O0",
+      "pass": true,
+      "return": 0,
+      "failure_line": 0,
+      "error": null
+    },
+    {
+      "optimization": "O2",
+      "pass": true,
+      "return": 0,
+      "failure_line": 0,
+      "error": null
+    }
+  ],
+  "all_pass": true
+}

@@ -4866,6 +4866,16 @@
               <FilePath>../CM7/Application/app_camera_lifecycle.c</FilePath>
             </File>
             <File>
+              <FileName>app_camera_lifecycle_replay.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>../CM7/Application/app_camera_lifecycle_replay.c</FilePath>
+            </File>
+            <File>
+              <FileName>app_camera_qualification.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>../CM7/Application/app_camera_qualification.c</FilePath>
+            </File>
+            <File>
               <FileName>app_messages.h</FileName>
               <FileType>5</FileType>
               <FilePath>../CM7/Application/app_messages.h</FilePath>

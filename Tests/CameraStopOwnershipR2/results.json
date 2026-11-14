@@ -1,0 +1,691 @@
+{
+  "summary": {
+    "total": 74,
+    "passed": 74,
+    "failed": 0
+  },
+  "cases": [
+    {
+      "group": "stop",
+      "optimization": "O0",
+      "id": 0,
+      "pass": true,
+      "return": 0,
+      "failure_line": 0,
+      "error": null
+    },
+    {
+      "group": "stop",
+      "optimization": "O0",
+      "id": 1,
+      "pass": true,
+      "return": 0,
+      "failure_line": 0,
+      "error": null
+    },
+    {
+      "group": "stop",
+      "optimization": "O0",
+      "id": 2,
+      "pass": true,
+      "return": 0,
+      "failure_line": 0,
+      "error": null
+    },
+    {
+      "group": "stop",
+      "optimization": "O0",
+      "id": 3,
+      "pass": true,
+      "return": 0,
+      "failure_line": 0,
+      "error": null
+    },
+    {
+      "group": "stop",
+      "optimization": "O0",
+      "id": 4,
+      "pass": true,
+      "return": 0,
+      "failure_line": 0,
+      "error": null
+    },
+    {
+      "group": "stop",
+      "optimization": "O0",
+      "id": 5,
+      "pass": true,
+      "return": 0,
+      "failure_line": 0,
+      "error": null
+    },
+    {
+      "group": "stop",
+      "optimization": "O0",
+      "id": 6,
+      "pass": true,
+      "return": 0,
+      "failure_line": 0,
+      "error": null
+    },
+    {
+      "group": "stop",
+      "optimization": "O0",
+      "id": 7,
+      "pass": true,
+      "return": 0,
+      "failure_line": 0,
+      "error": null
+    },
+    {
+      "group": "stop",
+      "optimization": "O0",
+      "id": 8,
+      "pass": true,
+      "return": 0,
+      "failure_line": 0,
+      "error": null
+    },
+    {
+      "group": "stop",
+      "optimization": "O0",
+      "id": 9,
+      "pass": true,
+      "return": 0,
+      "failure_line": 0,
+      "error": null
+    },
+    {
+      "group": "stop",
+      "optimization": "O0",
+      "id": 10,
+      "pass": true,
+      "return": 0,
+      "failure_line": 0,
+      "error": null
+    },
+    {
+      "group": "stop",
+      "optimization": "O0",
+      "id": 11,
+      "pass": true,
+      "return": 0,
+      "failure_line": 0,
+      "error": null
+    },
+    {
+      "group": "stop",
+      "optimization": "O0",
+      "id": 12,
+      "pass": true,
+      "return": 0,
+      "failure_line": 0,
+      "error": null
+    },
+    {
+      "group": "stop",
+      "optimization": "O0",
+      "id": 13,
+      "pass": true,
+      "return": 0,
+      "failure_line": 0,
+      "error": null
+    },
+    {
+      "group": "stop",
+      "optimization": "O0",
+      "id": 14,
+      "pass": true,
+      "return": 0,
+      "failure_line": 0,
+      "error": null
+    },
+    {
+      "group": "stop",
+      "optimization": "O0",
+      "id": 15,
+      "pass": true,
+      "return": 0,
+      "failure_line": 0,
+      "error": null
+    },
+    {
+      "group": "stop",
+      "optimization": "O0",
+      "id": 16,
+      "pass": true,
+      "return": 0,
+      "failure_line": 0,
+      "error": null
+    },
+    {
+      "group": "stop",
+      "optimization": "O0",
+      "id": 17,
+      "pass": true,
+      "return": 0,
+      "failure_line": 0,
+      "error": null
+    },
+    {
+      "group": "stop",
+      "optimization": "O0",
+      "id": 18,
+      "pass": true,
+      "return": 0,
+      "failure_line": 0,
+      "error": null
+    },
+    {
+      "group": "stop",
+      "optimization": "O0",
+      "id": 19,
+      "pass": true,
+      "return": 0,
+      "failure_line": 0,
+      "error": null
+    },
+    {
+      "group": "stop",
+      "optimization": "O0",
+      "id": 20,
+      "pass": true,
+      "return": 0,
+      "failure_line": 0,
+      "error": null
+    },
+    {
+      "group": "stop",
+      "optimization": "O0",
+      "id": 21,
+      "pass": true,
+      "return": 0,
+      "failure_line": 0,
+      "error": null
+    },
+    {
+      "group": "stop",
+      "optimization": "O0",
+      "id": 22,
+      "pass": true,
+      "return": 0,
+      "failure_line": 0,
+      "error": null
+    },
+    {
+      "group": "stop",
+      "optimization": "O0",
+      "id": 23,
+      "pass": true,
+      "return": 0,
+      "failure_line": 0,
+      "error": null
+    },
+    {
+      "group": "stop",
+      "optimization": "O0",
+      "id": 24,
+      "pass": true,
+      "return": 0,
+      "failure_line": 0,
+      "error": null
+    },
+    {
+      "group": "decision",
+      "optimization": "O0",
+      "id": 0,
+      "pass": true,
+      "return": 0,
+      "failure_line": 0,
+      "error": null
+    },
+    {
+      "group": "decision",
+      "optimization": "O0",
+      "id": 1,
+      "pass": true,
+      "return": 0,
+      "failure_line": 0,
+      "error": null
+    },
+    {
+      "group": "decision",
+      "optimization": "O0",
+      "id": 2,
+      "pass": true,
+      "return": 0,
+      "failure_line": 0,
+      "error": null
+    },
+    {
+      "group": "decision",
+      "optimization": "O0",
+      "id": 3,
+      "pass": true,
+      "return": 0,
+      "failure_line": 0,
+      "error": null
+    },
+    {
+      "group": "decision",
+      "optimization": "O0",
+      "id": 4,
+      "pass": true,
+      "return": 0,
+      "failure_line": 0,
+      "error": null
+    },
+    {
+      "group": "decision",
+      "optimization": "O0",
+      "id": 5,
+      "pass": true,
+      "return": 0,
+      "failure_line": 0,
+      "error": null
+    },
+    {
+      "group": "decision",
+      "optimization": "O0",
+      "id": 6,
+      "pass": true,
+      "return": 0,
+      "failure_line": 0,
+      "error": null
+    },
+    {
+      "group": "decision",
+      "optimization": "O0",
+      "id": 7,
+      "pass": true,
+      "return": 0,
+      "failure_line": 0,
+      "error": null
+    },
+    {
+      "group": "decision",
+      "optimization": "O0",
+      "id": 8,
+      "pass": true,
+      "return": 0,
+      "failure_line": 0,
+      "error": null
+    },
+    {
+      "group": "decision",
+      "optimization": "O0",
+      "id": 9,
+      "pass": true,
+      "return": 0,
+      "failure_line": 0,
+      "error": null
+    },
+    {
+      "group": "decision",
+      "optimization": "O0",
+      "id": 10,
+      "pass": true,
+      "return": 0,
+      "failure_line": 0,
+      "error": null
+    },
+    {
+      "group": "decision",
+      "optimization": "O0",
+      "id": 11,
+      "pass": true,
+      "return": 0,
+      "failure_line": 0,
+      "error": null
+    },
+    {
+      "group": "stop",
+      "optimization": "O2",
+      "id": 0,
+      "pass": true,
+      "return": 0,
+      "failure_line": 0,
+      "error": null
+    },
+    {
+      "group": "stop",
+      "optimization": "O2",
+      "id": 1,
+      "pass": true,
+      "return": 0,
+      "failure_line": 0,
+      "error": null
+    },
+    {
+      "group": "stop",
+      "optimization": "O2",
+      "id": 2,
+      "pass": true,
+      "return": 0,
+      "failure_line": 0,
+      "error": null
+    },
+    {
+      "group": "stop",
+      "optimization": "O2",
+      "id": 3,
+      "pass": true,
+      "return": 0,
+      "failure_line": 0,
+      "error": null
+    },
+    {
+      "group": "stop",
+      "optimization": "O2",
+      "id": 4,
+      "pass": true,
+      "return": 0,
+      "failure_line": 0,
+      "error": null
+    },
+    {
+      "group": "stop",
+      "optimization": "O2",
+      "id": 5,
+      "pass": true,
+      "return": 0,
+      "failure_line": 0,
+      "error": null
+    },
+    {
+      "group": "stop",
+      "optimization": "O2",
+      "id": 6,
+      "pass": true,
+      "return": 0,
+      "failure_line": 0,
+      "error": null
+    },
+    {
+      "group": "stop",
+      "optimization": "O2",
+      "id": 7,
+      "pass": true,
+      "return": 0,
+      "failure_line": 0,
+      "error": null
+    },
+    {
+      "group": "stop",
+      "optimization": "O2",
+      "id": 8,
+      "pass": true,
+      "return": 0,
+      "failure_line": 0,
+      "error": null
+    },
+    {
+      "group": "stop",
+      "optimization": "O2",
+      "id": 9,
+      "pass": true,
+      "return": 0,
+      "failure_line": 0,
+      "error": null
+    },
+    {
+      "group": "stop",
+      "optimization": "O2",
+      "id": 10,
+      "pass": true,
+      "return": 0,
+      "failure_line": 0,
+      "error": null
+    },
+    {
+      "group": "stop",
+      "optimization": "O2",
+      "id": 11,
+      "pass": true,
+      "return": 0,
+      "failure_line": 0,
+      "error": null
+    },
+    {
+      "group": "stop",
+      "optimization": "O2",
+      "id": 12,
+      "pass": true,
+      "return": 0,
+      "failure_line": 0,
+      "error": null
+    },
+    {
+      "group": "stop",
+      "optimization": "O2",
+      "id": 13,
+      "pass": true,
+      "return": 0,
+      "failure_line": 0,
+      "error": null
+    },
+    {
+      "group": "stop",
+      "optimization": "O2",
+      "id": 14,
+      "pass": true,
+      "return": 0,
+      "failure_line": 0,
+      "error": null
+    },
+    {
+      "group": "stop",
+      "optimization": "O2",
+      "id": 15,
+      "pass": true,
+      "return": 0,
+      "failure_line": 0,
+      "error": null
+    },
+    {
+      "group": "stop",
+      "optimization": "O2",
+      "id": 16,
+      "pass": true,
+      "return": 0,
+      "failure_line": 0,
+      "error": null
+    },
+    {
+      "group": "stop",
+      "optimization": "O2",
+      "id": 17,
+      "pass": true,
+      "return": 0,
+      "failure_line": 0,
+      "error": null
+    },
+    {
+      "group": "stop",
+      "optimization": "O2",
+      "id": 18,
+      "pass": true,
+      "return": 0,
+      "failure_line": 0,
+      "error": null
+    },
+    {
+      "group": "stop",
+      "optimization": "O2",
+      "id": 19,
+      "pass": true,
+      "return": 0,
+      "failure_line": 0,
+      "error": null
+    },
+    {
+      "group": "stop",
+      "optimization": "O2",
+      "id": 20,
+      "pass": true,
+      "return": 0,
+      "failure_line": 0,
+      "error": null
+    },
+    {
+      "group": "stop",
+      "optimization": "O2",
+      "id": 21,
+      "pass": true,
+      "return": 0,
+      "failure_line": 0,
+      "error": null
+    },
+    {
+      "group": "stop",
+      "optimization": "O2",
+      "id": 22,
+      "pass": true,
+      "return": 0,
+      "failure_line": 0,
+      "error": null
+    },
+    {
+      "group": "stop",
+      "optimization": "O2",
+      "id": 23,
+      "pass": true,
+      "return": 0,
+      "failure_line": 0,
+      "error": null
+    },
+    {
+      "group": "stop",
+      "optimization": "O2",
+      "id": 24,
+      "pass": true,
+      "return": 0,
+      "failure_line": 0,
+      "error": null
+    },
+    {
+      "group": "decision",
+      "optimization": "O2",
+      "id": 0,
+      "pass": true,
+      "return": 0,
+      "failure_line": 0,
+      "error": null
+    },
+    {
+      "group": "decision",
+      "optimization": "O2",
+      "id": 1,
+      "pass": true,
+      "return": 0,
+      "failure_line": 0,
+      "error": null
+    },
+    {
+      "group": "decision",
+      "optimization": "O2",
+      "id": 2,
+      "pass": true,
+      "return": 0,
+      "failure_line": 0,
+      "error": null
+    },
+    {
+      "group": "decision",
+      "optimization": "O2",
+      "id": 3,
+      "pass": true,
+      "return": 0,
+      "failure_line": 0,
+      "error": null
+    },
+    {
+      "group": "decision",
+      "optimization": "O2",
+      "id": 4,
+      "pass": true,
+      "return": 0,
+      "failure_line": 0,
+      "error": null
+    },
+    {
+      "group": "decision",
+      "optimization": "O2",
+      "id": 5,
+      "pass": true,
+      "return": 0,
+      "failure_line": 0,
+      "error": null
+    },
+    {
+      "group": "decision",
+      "optimization": "O2",
+      "id": 6,
+      "pass": true,
+      "return": 0,
+      "failure_line": 0,
+      "error": null
+    },
+    {
+      "group": "decision",
+      "optimization": "O2",
+      "id": 7,
+      "pass": true,
+      "return": 0,
+      "failure_line": 0,
+      "error": null
+    },
+    {
+      "group": "decision",
+      "optimization": "O2",
+      "id": 8,
+      "pass": true,
+      "return": 0,
+      "failure_line": 0,
+      "error": null
+    },
+    {
+      "group": "decision",
+      "optimization": "O2",
+      "id": 9,
+      "pass": true,
+      "return": 0,
+      "failure_line": 0,
+      "error": null
+    },
+    {
+      "group": "decision",
+      "optimization": "O2",
+      "id": 10,
+      "pass": true,
+      "return": 0,
+      "failure_line": 0,
+      "error": null
+    },
+    {
+      "group": "decision",
+      "optimization": "O2",
+      "id": 11,
+      "pass": true,
+      "return": 0,
+      "failure_line": 0,
+      "error": null
+    }
+  ],
+  "hardware_verified": false,
+  "actual_sources": [
+    "camera_task.c",
+    "app_camera.c",
+    "camera_capture.c",
+    "app_camera_qualification.c",
+    "app_camera_lifecycle.c",
+    "app_camera_lifecycle_replay.c"
+  ],
+  "mocked": [
+    "BSP hardware",
+    "Device callbacks",
+    "Bridge idle evidence",
+    "FIFO loan boundary",
+    "transport"
+  ]
+}

@@ -25,6 +25,23 @@ SysResult_t CameraCapture_GetStats(CameraCaptureStats_t *stats);
 //启动前校验格式及对应接收范围，不修改采集状态
 SysResult_t CameraCapture_ValidateStreamConfig(const CameraConfig_t *config);
 
+//停止事实只由Media所有者读取，不代表帧租约已经归还
+#define CAMERA_STOP_INITIALIZED 1U
+#define CAMERA_STOP_ERROR       2U
+#define CAMERA_STOP_DRAINING    4U
+#define CAMERA_STOP_COMPLETE    8U
+#define CAMERA_STOP_NORMAL_ATTEMPT     16U
+#define CAMERA_STOP_PROTECTIVE_ATTEMPT 32U
+typedef struct
+{
+    uint32_t attempt_sequence;//实际BSP停止调用序号，只用于同轮去重
+    SysResult_t hardware_result;//最近实际调用结果，不随后续查询改写
+    uint32_t flags;//当前状态与最近一次普通或保护性硬件停止事实
+} CameraCaptureStopFacts_t;
+
+//读取停止事实，不推进硬件或清理缓冲
+SysResult_t CameraCapture_GetStopFacts(CameraCaptureStopFacts_t *facts);
+
 //初始化图像采集模块
 SysResult_t CameraCapture_Init(const CameraConfig_t *config);
 

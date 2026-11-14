@@ -1,0 +1,166 @@
+{
+  "rows": [
+    {
+      "variant": "baseline",
+      "optimization": "O0",
+      "abi_words": [
+        120,
+        536871032,
+        824,
+        72,
+        32,
+        56,
+        52,
+        24,
+        6144,
+        3,
+        20,
+        144
+      ],
+      "context_address": "0x20000078",
+      "context_bytes": 120,
+      "stack": {
+        "CameraTask_Process": {
+          "local": 64,
+          "known_depth": 200
+        },
+        "App_CameraHandleCommand": {
+          "local": 16,
+          "known_depth": 116
+        },
+        "App_CameraStartResource": {
+          "local": null,
+          "known_depth": null
+        },
+        "App_CameraFinishRound": {
+          "local": 32,
+          "known_depth": 72
+        }
+      },
+      "unit_assertions_pass": true
+    },
+    {
+      "variant": "current",
+      "optimization": "O0",
+      "abi_words": [
+        948,
+        536871032,
+        824,
+        72,
+        32,
+        56,
+        52,
+        24,
+        6144,
+        3,
+        20,
+        144
+      ],
+      "context_address": "0x20000078",
+      "context_bytes": 948,
+      "stack": {
+        "CameraTask_Process": {
+          "local": 64,
+          "known_depth": 200
+        },
+        "App_CameraHandleCommand": {
+          "local": 16,
+          "known_depth": 124
+        },
+        "App_CameraStartResource": {
+          "local": 8,
+          "known_depth": 108
+        },
+        "App_CameraFinishRound": {
+          "local": 32,
+          "known_depth": 72
+        }
+      },
+      "unit_assertions_pass": true
+    },
+    {
+      "variant": "baseline",
+      "optimization": "O2",
+      "abi_words": [
+        120,
+        536871032,
+        824,
+        72,
+        32,
+        56,
+        52,
+        24,
+        6144,
+        3,
+        20,
+        144
+      ],
+      "context_address": "0x20000078",
+      "context_bytes": 120,
+      "stack": {
+        "CameraTask_Process": {
+          "local": 56,
+          "known_depth": 184
+        },
+        "App_CameraHandleCommand": {
+          "local": 24,
+          "known_depth": 96
+        },
+        "App_CameraStartResource": {
+          "local": null,
+          "known_depth": null
+        },
+        "App_CameraFinishRound": {
+          "local": 24,
+          "known_depth": 64
+        }
+      },
+      "unit_assertions_pass": true
+    },
+    {
+      "variant": "current",
+      "optimization": "O2",
+      "abi_words": [
+        948,
+        536871032,
+        824,
+        72,
+        32,
+        56,
+        52,
+        24,
+        6144,
+        3,
+        20,
+        144
+      ],
+      "context_address": "0x20000078",
+      "context_bytes": 948,
+      "stack": {
+        "CameraTask_Process": {
+          "local": 56,
+          "known_depth": 184
+        },
+        "App_CameraHandleCommand": {
+          "local": 16,
+          "known_depth": 112
+        },
+        "App_CameraStartResource": {
+          "local": 24,
+          "known_depth": 96
+        },
+        "App_CameraFinishRound": {
+          "local": 24,
+          "known_depth": 64
+        }
+      },
+      "unit_assertions_pass": true
+    }
+  ],
+  "core_bytes": 824,
+  "rx_pair_bytes": 664,
+  "qualification_semantics_bytes": 160,
+  "decision_bytes": 32,
+  "task_stack_bytes": 6144,
+  "hardware_stack_verified": false
+}

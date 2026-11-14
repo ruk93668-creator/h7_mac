@@ -1,0 +1,163 @@
+{
+  "baseline_artifacts": {
+    "h7_mac_CM7": {
+      "preserved_map": "D:\\32\\STM32H7\\h7_mac\\output\\ConsumerQualificationC2_2A\\build\\previous_output\\h7_mac_CM7\\h7_mac_CM7.map",
+      "sha256": "8418ead56d433b603253f99f25c656da52d76d43259407853596ea61333939fd",
+      "matches_c6d2bed_manifest": true
+    },
+    "h7_mac_CM4": {
+      "preserved_map": "D:\\32\\STM32H7\\h7_mac\\output\\ConsumerQualificationC2_2A\\build\\previous_output\\h7_mac_CM4\\h7_mac_CM4.map",
+      "sha256": "435ae1008dd0fc0441242a0f250f846010a9064beff06142d9628f902cfd3665",
+      "matches_c6d2bed_manifest": true
+    }
+  },
+  "baseline": "c6d2bedc28683883ffa433f802f8c06aaec3c542",
+  "checks": {
+    "scope_only": true,
+    "prerequisite_and_existing_boundaries_unchanged": true,
+    "all_old_test_files_byte_identical": true,
+    "original_c6d2bed_is_ancestor": true,
+    "only_cm7_file_registration": true,
+    "map_s_message_queues": true,
+    "map_s_message_storage": true,
+    "map_s_message_handles": true,
+    "map_s_lifecycle_queues": true,
+    "map_s_lifecycle_storage": true,
+    "map_s_lifecycle_handles": true,
+    "map_s_camera_stack": true,
+    "map_s_camera": true,
+    "core_compiled_not_business_activated": true,
+    "h7_mac_CM7_full_build_zero_errors_warnings": true,
+    "h7_mac_CM4_full_build_zero_errors_warnings": true,
+    "O0_stack_evidence": true,
+    "O2_stack_evidence": true,
+    "no_business_activation": true,
+    "h7_mac_CM7_baseline_map_preserved": true,
+    "h7_mac_CM4_baseline_map_preserved": true
+  },
+  "all_pass": true,
+  "map_symbols": {
+    "s_message_queues": {
+      "address": "0x200082b0",
+      "bytes": 360
+    },
+    "s_message_storage": {
+      "address": "0x20008418",
+      "bytes": 1040
+    },
+    "s_message_handles": {
+      "address": "0x20008828",
+      "bytes": 20
+    },
+    "s_lifecycle_queues": {
+      "address": "0x2000883c",
+      "bytes": 216
+    },
+    "s_lifecycle_storage": {
+      "address": "0x20008918",
+      "bytes": 672
+    },
+    "s_lifecycle_handles": {
+      "address": "0x20008bb8",
+      "bytes": 12
+    },
+    "s_camera_stack": {
+      "address": "0x20008c50",
+      "bytes": 6144
+    },
+    "s_camera": {
+      "address": "0x2000040c",
+      "bytes": 948
+    }
+  },
+  "program_sizes": {
+    "h7_mac_CM7": [
+      137030,
+      3106,
+      1328,
+      100880
+    ],
+    "h7_mac_CM4": [
+      26302,
+      1438,
+      936,
+      3576
+    ]
+  },
+  "core_stack": [
+    {
+      "optimization": "O0",
+      "functions": {
+        "App_QualificationProcess": {
+          "local": 88,
+          "known_depth": 408
+        },
+        "Qual_Submit": {
+          "local": 168,
+          "known_depth": 320
+        },
+        "Qual_Execute": {
+          "local": 72,
+          "known_depth": 92
+        },
+        "App_CameraQualificationProcess": {
+          "local": 16,
+          "known_depth": 424
+        }
+      },
+      "indirect_callbacks_and_isr_not_fully_bounded": true
+    },
+    {
+      "optimization": "O2",
+      "functions": {
+        "App_QualificationProcess": {
+          "local": 88,
+          "known_depth": 400
+        },
+        "Qual_Submit": {
+          "local": 168,
+          "known_depth": 312
+        },
+        "Qual_Execute": {
+          "local": 72,
+          "known_depth": 88
+        },
+        "App_CameraQualificationProcess": {
+          "local": 16,
+          "known_depth": 416
+        }
+      },
+      "indirect_callbacks_and_isr_not_fully_bounded": true
+    }
+  ],
+  "changed_paths_excluding_output": [
+    "CM7/Application/app_camera.c",
+    "CM7/Application/app_camera.h",
+    "CM7/Application/app_camera_qualification.c",
+    "CM7/Application/app_camera_qualification.h",
+    "CM7/Application/app_camera_qualification_internal.h",
+    "Docs/Design/C2.2A_ConsumerQualificationCore实施报告.md",
+    "Docs/Design/C2.2_Consumer资格管理设计.md",
+    "MDK-ARM/h7_mac.uvprojx",
+    "Tests/ConsumerQualificationC2_2A/README.md",
+    "Tests/ConsumerQualificationC2_2A/adapter_test.c",
+    "Tests/ConsumerQualificationC2_2A/audit_scope.py",
+    "Tests/ConsumerQualificationC2_2A/build_results.json",
+    "Tests/ConsumerQualificationC2_2A/h7_mac_CM4_rebuild.log",
+    "Tests/ConsumerQualificationC2_2A/h7_mac_CM7_rebuild.log",
+    "Tests/ConsumerQualificationC2_2A/layout_results.json",
+    "Tests/ConsumerQualificationC2_2A/layout_test.c",
+    "Tests/ConsumerQualificationC2_2A/protocol_results.json",
+    "Tests/ConsumerQualificationC2_2A/q_mapping.json",
+    "Tests/ConsumerQualificationC2_2A/qualification_test.c",
+    "Tests/ConsumerQualificationC2_2A/regression_results.json",
+    "Tests/ConsumerQualificationC2_2A/results.json",
+    "Tests/ConsumerQualificationC2_2A/run_build.py",
+    "Tests/ConsumerQualificationC2_2A/run_layout.py",
+    "Tests/ConsumerQualificationC2_2A/run_protocol.py",
+    "Tests/ConsumerQualificationC2_2A/run_regression.py",
+    "Tests/ConsumerQualificationC2_2A/run_tests.py",
+    "Tests/ConsumerQualificationC2_2A/scope_memory_audit.json"
+  ],
+  "hardware_verified": false
+}
