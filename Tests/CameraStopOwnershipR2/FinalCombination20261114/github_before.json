@@ -1,0 +1,24 @@
+{
+  "6": {
+    "state": "open",
+    "draft": false,
+    "merged": false,
+    "mergeable": true,
+    "mergeable_state": "clean",
+    "head": "fa9ce5df130246b685c93ca8bde0d8248c420867",
+    "head_ref": "codex/stage-C2-2A-consumer-qualification-core",
+    "base": "182c84e7334f0a62d96f1d3109b0d7fb8efb8158",
+    "base_ref": "main"
+  },
+  "7": {
+    "state": "open",
+    "draft": true,
+    "merged": false,
+    "mergeable": true,
+    "mergeable_state": "clean",
+    "head": "199e24ac07e29fcd2f9be37401045e8999b42d2e",
+    "head_ref": "codex/stage-C2-2A-R2-stop-ownership",
+    "base": "fa9ce5df130246b685c93ca8bde0d8248c420867",
+    "base_ref": "codex/stage-C2-2A-consumer-qualification-core"
+  }
+}

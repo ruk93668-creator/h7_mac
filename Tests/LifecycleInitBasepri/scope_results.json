@@ -1,0 +1,40 @@
+{
+  "baseline": "2a927374c5cbdaa5e6bca8267e0ccf500d041045",
+  "branch": "fix/lifecycle-init-basepri",
+  "production_delta": [
+    "CM7/Application/app_messages.c"
+  ],
+  "outside_init_identical": true,
+  "guard_removal_only": true,
+  "protected_files": [
+    "Tests/CameraLifecycleC1/audit_scope.py",
+    "Tests/CameraLifecycleC1/protocol_test.c",
+    "Tests/CameraLifecycleC1/regression_compare.py",
+    "Tests/CameraLifecycleC1/run_build.py",
+    "Tests/CameraLifecycleC1/run_regression.py",
+    "Tests/CameraLifecycleC1/run_tests.py",
+    "Tests/CameraLifecycleC1/transport_test.c",
+    "Tests/CameraLifecycleC1_1/audit_scope.py",
+    "Tests/CameraLifecycleC1_1/reliability_test.c",
+    "Tests/CameraLifecycleC1_1/run_build.py",
+    "Tests/CameraLifecycleC1_1/run_tests.py",
+    "Tests/CameraLifecycleC1_1/test_regression_compare.py",
+    "Tests/CameraLifecycleC2_1_1/audit_scope.py",
+    "Tests/CameraLifecycleC2_1_1/layout_probe.c",
+    "Tests/CameraLifecycleC2_1_1/replay_test.c",
+    "Tests/CameraLifecycleC2_1_1/run_build.py",
+    "Tests/CameraLifecycleC2_1_1/run_legacy.py",
+    "Tests/CameraLifecycleC2_1_1/run_regression.py",
+    "Tests/CameraLifecycleC2_1_1/run_tests.py",
+    "CM7/Application/app_camera_lifecycle.c",
+    "CM7/Application/app_camera_lifecycle.h",
+    "CM7/Application/app_camera_lifecycle_replay.c",
+    "CM7/Application/app_camera_lifecycle_replay.h",
+    "MDK-ARM/h7_mac.uvprojx"
+  ],
+  "existing_assertions_unchanged": true,
+  "no_basepri_clear_added": true,
+  "main": "182c84e7334f0a62d96f1d3109b0d7fb8efb8158",
+  "r2_branch": "2a927374c5cbdaa5e6bca8267e0ccf500d041045",
+  "production_sha256": "10304714d68a8acd15f313df9b33dcf1ae262a7f42d721f61e56d50ed762fbf6"
+}

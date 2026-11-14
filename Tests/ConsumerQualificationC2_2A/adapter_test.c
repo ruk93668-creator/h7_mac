@@ -27,6 +27,16 @@ static SysResult_t Perform(uint32_t c, uint32_t op, uint32_t id)
     if(result!=SYS_OK)return result;
     return App_CameraQualificationFlush(c,DropReply,NULL);
 }
+//旧断言保留，资源完成改由真实Camera轮末推进
+static SysResult_t ProcessRound(const AppQualificationResourceOps_t *ops)
+{
+    SysResult_t result;
+    App_CameraBeginRound();
+    result=App_QualificationProcess(&s_camera.qualifications,ops,NULL);
+    App_CameraFinishRound();
+    if (result!=SYS_OK) return result;
+    return App_QualificationProcess(&s_camera.qualifications,ops,NULL);
+}
 #define VERIFY(x) do { if (!(x)) { g_failure=__LINE__; return (int)g_failure; } } while(0)
 
 //所有硬件动作仍为B1桩，只验证原资源路径调用顺序与资格适配边界
@@ -93,18 +103,18 @@ int C2A_AdapterRun(uint32_t id)
     proven=s_qualification_ops;proven.released=ReleasedEvidence;proven.idle=Evidence;
     r=Make(1U,APP_LIFECYCLE_RELEASE,3U);
     VERIFY(App_CameraQualificationReceive(&r,&disposition)==SYS_OK);
-    VERIFY(App_QualificationProcess(&s_camera.qualifications,&proven,NULL)==SYS_OK);
+    VERIFY(ProcessRound(&proven)==SYS_OK);
     VERIFY(App_CameraQualificationFlush(1U,DropReply,NULL)==SYS_OK);
     r=Make(1U,APP_LIFECYCLE_STOP_IF_IDLE,4U);
     VERIFY(App_CameraQualificationReceive(&r,&disposition)==SYS_OK);
     if(id==9U)bridge_idle=false;
     if(id==10U)stop_error_rounds=1U;
-    VERIFY(App_QualificationProcess(&s_camera.qualifications,&proven,NULL)==SYS_OK);
+    VERIFY(ProcessRound(&proven)==SYS_OK);
     if(id==9U)
     {
         VERIFY(s_camera.stopping && s_camera.qualifications.rx[0].replay.completed==0U);
         bridge_idle=true;
-        VERIFY(App_QualificationProcess(&s_camera.qualifications,&proven,NULL)==SYS_OK);
+        VERIFY(ProcessRound(&proven)==SYS_OK);
     }
     if(id==10U)
     {

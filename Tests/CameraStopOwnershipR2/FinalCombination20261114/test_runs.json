@@ -1,0 +1,37 @@
+[
+  {
+    "script": "Tests/LifecycleInitBasepri/run_tests.py",
+    "exit": 0,
+    "log": "D:\\32\\STM32H7\\h7_mac\\output\\FinalCombinationR2\\1794645549512203500\\Tests_LifecycleInitBasepri_run_tests.py.retry.log"
+  },
+  {
+    "script": "Tests/CameraStopOwnershipR2/run_tests.py",
+    "exit": 0,
+    "log": "D:\\32\\STM32H7\\h7_mac\\output\\FinalCombinationR2\\1794645549512203500\\Tests_CameraStopOwnershipR2_run_tests.py.retry.log"
+  },
+  {
+    "script": "Tests/CameraStopOwnershipR2/run_original.py",
+    "exit": 0,
+    "log": "D:\\32\\STM32H7\\h7_mac\\output\\FinalCombinationR2\\1794645549512203500\\Tests_CameraStopOwnershipR2_run_original.py.retry.log"
+  },
+  {
+    "script": "Tests/LifecycleInitBasepri/run_protocol.py",
+    "exit": 0,
+    "log": "D:\\32\\STM32H7\\h7_mac\\output\\FinalCombinationR2\\1794645549512203500\\Tests_LifecycleInitBasepri_run_protocol.py.retry.log"
+  },
+  {
+    "script": "Tests/CameraModuleB1/run_tests.py",
+    "exit": 1,
+    "log": "D:\\32\\STM32H7\\h7_mac\\output\\FinalCombinationR2\\1794645549512203500\\Tests_CameraModuleB1_run_tests.py.retry.log"
+  },
+  {
+    "script": "Tests/CameraModuleB1/run_media.py",
+    "exit": 0,
+    "log": "D:\\32\\STM32H7\\h7_mac\\output\\FinalCombinationR2\\1794645549512203500\\Tests_CameraModuleB1_run_media.py.retry.log"
+  },
+  {
+    "script": "Tests/CameraModuleB1/run_integration.py",
+    "exit": 0,
+    "log": "D:\\32\\STM32H7\\h7_mac\\output\\FinalCombinationR2\\1794645549512203500\\Tests_CameraModuleB1_run_integration.py.retry.log"
+  }
+]

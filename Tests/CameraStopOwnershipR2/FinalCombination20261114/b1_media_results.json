@@ -1,0 +1,64 @@
+{
+  "summary": {
+    "total": 6,
+    "passed": 6,
+    "failed": 0
+  },
+  "cases": [
+    {
+      "id": 0,
+      "name": "YUY2 held frame STOP",
+      "pass": true,
+      "failure_line": 0,
+      "error": null
+    },
+    {
+      "id": 1,
+      "name": "BSP stop error retry",
+      "pass": true,
+      "failure_line": 0,
+      "error": null
+    },
+    {
+      "id": 2,
+      "name": "JPEG held frame STOP",
+      "pass": true,
+      "failure_line": 0,
+      "error": null
+    },
+    {
+      "id": 3,
+      "name": "JPEG FAULT DRAINING",
+      "pass": true,
+      "failure_line": 0,
+      "error": null
+    },
+    {
+      "id": 4,
+      "name": "JPEG FAULT without loan",
+      "pass": true,
+      "failure_line": 0,
+      "error": null
+    },
+    {
+      "id": 5,
+      "name": "BSP BUSY retry",
+      "pass": true,
+      "failure_line": 0,
+      "error": null
+    }
+  ],
+  "hardware_verified": false,
+  "real_sources": [
+    "app_camera.c",
+    "camera_task.c",
+    "camera_capture.c"
+  ],
+  "mocked": [
+    "Device",
+    "Bridge",
+    "BSP hardware",
+    "JPEG FIFO loan boundary",
+    "message transport"
+  ]
+}

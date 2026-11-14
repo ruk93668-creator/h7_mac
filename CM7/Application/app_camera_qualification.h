@@ -17,6 +17,14 @@
 #define APP_RESOURCE_STOPPED_CONFIRMED 4U
 #define APP_RESOURCE_FAULT_DRAINING 5U
 
+//只读请求结果与全局资源状态分开，complete为0表示仍在推进
+typedef struct
+{
+    uint32_t complete;
+    SysResult_t result;
+    uint32_t hardware_stopped;
+} AppQualificationStopResult_t;
+
 //资源状态只读取App_Camera权威对象，归还证据由后续独立适配提供
 //所有回调只能在Camera所有者上下文串行执行，不能重入本核心
 //released/idle未绑定表示没有证据，不能默认排空成功
@@ -24,7 +32,10 @@ typedef struct
 {
     uint32_t (*state)(void *context);
     SysResult_t (*start)(void *context);
-    SysResult_t (*stop)(void *context);
+    SysResult_t (*request_stop)(void *context, const AppLifecycleIdentity_t *identity);
+    SysResult_t (*read_stop_result)(void *context, const AppLifecycleIdentity_t *identity,
+        AppQualificationStopResult_t *result);
+    SysResult_t (*consume_stop_result)(void *context, const AppLifecycleIdentity_t *identity);
     SysResult_t (*released)(void *context, const AppLifecycleIdentity_t *grant);
     SysResult_t (*idle)(void *context);
 } AppQualificationResourceOps_t;

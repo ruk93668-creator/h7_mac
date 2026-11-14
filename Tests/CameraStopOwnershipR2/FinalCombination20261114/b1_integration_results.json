@@ -1,0 +1,102 @@
+{
+  "summary": {
+    "total": 11,
+    "passed": 11,
+    "failed": 0
+  },
+  "cases": [
+    {
+      "id": 0,
+      "name": "USB+SD lease and AVI finish",
+      "pass": true,
+      "failure_line": 0,
+      "error": null
+    },
+    {
+      "id": 1,
+      "name": "Two-span JPEG",
+      "pass": true,
+      "failure_line": 0,
+      "error": null
+    },
+    {
+      "id": 2,
+      "name": "Offer queue full retry",
+      "pass": true,
+      "failure_line": 0,
+      "error": null
+    },
+    {
+      "id": 3,
+      "name": "Storage slot occupied",
+      "pass": true,
+      "failure_line": 0,
+      "error": null
+    },
+    {
+      "id": 4,
+      "name": "Storage I/O failure",
+      "pass": true,
+      "failure_line": 0,
+      "error": null
+    },
+    {
+      "id": 5,
+      "name": "SD return failure retry",
+      "pass": true,
+      "failure_line": 0,
+      "error": null
+    },
+    {
+      "id": 6,
+      "name": "Camera STOP with dual loans",
+      "pass": true,
+      "failure_line": 0,
+      "error": null
+    },
+    {
+      "id": 7,
+      "name": "USB cancel failure retains frame",
+      "pass": true,
+      "failure_line": 0,
+      "error": null
+    },
+    {
+      "id": 8,
+      "name": "Return ACK full retry",
+      "pass": true,
+      "failure_line": 0,
+      "error": null
+    },
+    {
+      "id": 9,
+      "name": "Duplicate Return",
+      "pass": true,
+      "failure_line": 0,
+      "error": null
+    },
+    {
+      "id": 10,
+      "name": "Wrong lease Return",
+      "pass": true,
+      "failure_line": 0,
+      "error": null
+    }
+  ],
+  "hardware_verified": false,
+  "real_sources": [
+    "app_camera.c",
+    "camera_task.c",
+    "app_uvc_bridge.c",
+    "app_frame_dispatcher.c",
+    "app_storage.c",
+    "jpeg_frame.c",
+    "mjpeg_avi.c"
+  ],
+  "mocked": [
+    "Device/Media/hardware",
+    "USB service",
+    "message channel transport",
+    "StorageFS medium"
+  ]
+}

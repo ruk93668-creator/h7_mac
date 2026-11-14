@@ -118,6 +118,18 @@ bool App_UvcBridgeCameraIsIdle(void){Trace(16,bridge_idle,0);return bridge_idle;
 
 #endif
 
+#ifndef B1_REAL_MEDIA
+//提供新增只读事实依赖，不推进桩状态或增加原轨迹
+SysResult_t CameraCapture_GetStopFacts(CameraCaptureStopFacts_t *facts)
+{
+    if (facts == NULL) return SYS_ERR_INVALID_ARG;
+    facts->attempt_sequence = 0U;
+    facts->hardware_result = SYS_OK;
+    facts->flags = (ready ? CAMERA_STOP_INITIALIZED : 0U) | (stopped ? CAMERA_STOP_COMPLETE : 0U);
+    return SYS_OK;
+}
+#endif
+
 //模拟Device和Media的正常、部分准备及停止失败路径
 const VideoConfig_t *VideoConfig_GetDefault(void){Trace(17,0,0);return &config;}
 SysResult_t Ov5640_ValidateConfig(const CameraConfig_t *c){Trace(18,c->width,c->height);return configure_result;}

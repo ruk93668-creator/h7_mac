@@ -360,26 +360,61 @@ static void Qual_Execute(AppCameraQualification_t *core, uint32_t index,
         Qual_Decide(core, index, SYS_ERR_INVALID_STATE, core->session_id, 0U);
         return;
     }
-    if (Qual_OtherWork(core, index) || ops->idle == NULL || ops->idle(context) != SYS_OK)
     {
-        Qual_Decide(core, index, SYS_ERR_BUSY, core->session_id, 0U);
-        return;
-    }
+        AppQualificationStopResult_t stopped;
 
-    //从未启动不执行假Stop，已确认停止只表达本次会话的历史事实
-    if (state == APP_RESOURCE_UNSTARTED || state == APP_RESOURCE_STOPPED_CONFIRMED)
-        result = SYS_OK;
-    else
-        result = ops->stop(context);
-    if (result == SYS_ERR_BUSY)
-        return;
-    state = ops->state(context);
-    if (result == SYS_OK && state != APP_RESOURCE_UNSTARTED && state != APP_RESOURCE_STOPPED_CONFIRMED)
-        result = SYS_ERR_INVALID_STATE;
-    if (result == SYS_OK)
-        core->session_closed = 1U;
-    Qual_Decide(core, index, result, core->session_id,
-        result == SYS_OK && state == APP_RESOURCE_STOPPED_CONFIRMED ? APP_LIFECYCLE_HARDWARE_STOPPED : 0U);
+        //已经受理的请求先读专属结果，不能用后台恢复后的全局STOPPED覆盖原失败
+        result = ops->read_stop_result(context, &r->identity, &stopped);
+        if (result == SYS_ERR_NOT_FOUND)
+        {
+            if (Qual_OtherWork(core, index) || ops->idle == NULL || ops->idle(context) != SYS_OK)
+            {
+                Qual_Decide(core, index, SYS_ERR_BUSY, core->session_id, 0U);
+                return;
+            }
+
+            //从未启动不初始化硬件，也不声明实际执行过Stop
+            if (state == APP_RESOURCE_UNSTARTED || state == APP_RESOURCE_STOPPED_CONFIRMED)
+            {
+                core->session_closed = 1U;
+                Qual_Decide(core, index, SYS_OK, core->session_id,
+                    state == APP_RESOURCE_STOPPED_CONFIRMED ? APP_LIFECYCLE_HARDWARE_STOPPED : 0U);
+                return;
+            }
+
+            //这里只登记完整身份和意图，真正停止由Camera轮末推进
+            result = ops->request_stop(context, &r->identity);
+            if (result == SYS_OK || result == SYS_ERR_BUSY)
+                return;
+        }
+        else if (result == SYS_OK)
+        {
+            if (stopped.complete == 0U)
+                return;
+            if (stopped.complete != 1U || stopped.hardware_stopped > 1U ||
+                stopped.result == SYS_ERR_BUSY || stopped.result > SYS_OK ||
+                (stopped.hardware_stopped != 0U && stopped.result != SYS_OK))
+                result = SYS_ERR_PROTOCOL;
+            else
+            {
+                if (stopped.result == SYS_OK)
+                    core->session_closed = 1U;
+                Qual_Decide(core, index, stopped.result, core->session_id,
+                    stopped.hardware_stopped != 0U ? APP_LIFECYCLE_HARDWARE_STOPPED : 0U);
+
+                //必须先冻结DECIDED，再消费对应结果；失败保留事实并禁止重复资源操作
+                result = ops->consume_stop_result(context, &r->identity);
+                if (result == SYS_OK)
+                    return;
+            }
+        }
+
+        //身份、结果或消费异常不是运输背压，保留现场等待人工处理
+        if (e->decision.phase == APP_QUAL_NONE)
+            Qual_Decide(core, index, result, core->session_id, 0U);
+        e->decision.phase = APP_QUAL_BLOCKED;
+        e->decision.submit_error = result;
+    }
 }
 
 //每方向最多一笔，不因一方等待证据或固定失败阻塞另一方
@@ -389,7 +424,8 @@ SysResult_t App_QualificationProcess(AppCameraQualification_t *core,
     uint32_t i;
     AppLifecycleMessage_t request;
     SysResult_t result, first = SYS_OK;
-    if (ops == NULL || ops->state == NULL || ops->start == NULL || ops->stop == NULL)
+    if (ops == NULL || ops->state == NULL || ops->start == NULL ||
+        ops->request_stop == NULL || ops->read_stop_result == NULL || ops->consume_stop_result == NULL)
         return SYS_ERR_INVALID_ARG;
     result = Qual_Enter(core);
     if (result != SYS_OK)
