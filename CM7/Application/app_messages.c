@@ -171,8 +171,10 @@ SysResult_t App_LifecycleMessagesInit(void)
     uint32_t i;
 
     //初始化只能发生一次，失败后保持所有新通道关闭
+    //调度器启动前，FreeRTOS创建任务/队列可能保留BASEPRI，不能据此拒绝初始化
+    //仍拒绝重复初始化、ISR、PRIMASK屏蔽和已经启动的调度器
     if (s_lifecycle_attempted || Platform_SyncGetException() != 0U ||
-        Platform_SyncGetPrimask() != 0U || Platform_SyncGetBasepri() != 0U ||
+        Platform_SyncGetPrimask() != 0U ||
         xTaskGetSchedulerState() != taskSCHEDULER_NOT_STARTED)
         return SYS_ERR_INVALID_STATE;
     s_lifecycle_attempted = true;

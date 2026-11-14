@@ -1,0 +1,13 @@
+{
+  "hardware_verified": false,
+  "artifacts": {
+    "CM7": {
+      "path": "MDK-ARM/h7_mac_CM7/h7_mac_CM7.axf",
+      "sha256": "adf24cac1bfc7ad77855aade040c9b7b17634abec4a24264a9cb60150987efd2"
+    },
+    "CM4": {
+      "path": "MDK-ARM/h7_mac_CM4/h7_mac_CM4.axf",
+      "sha256": "c3ad88dd0312215666da4301bad59dee6a27e0e959904f947c72dc38f10d94c8"
+    }
+  }
+}
