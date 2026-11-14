@@ -1,4 +1,5 @@
 #include "app_storage.h"
+#include "app_camera_consumer.h"
 #include "app_events.h"
 #include "video_config.h"
 #include "platform_time.h"
@@ -104,6 +105,18 @@ static struct
     uint32_t file_number;
 } s_business;
 
+//Storage任务唯一持有本方向Tx，资格权威仍在Camera
+static AppCameraConsumer_t s_camera_consumer;
+//保留已出队的原START用途，等待授权时不挂载或接收帧
+static uint32_t s_pending_start;
+//保留释放请求中的真实文件结果，诊断字段不反向参与业务
+static SysResult_t s_camera_business, s_camera_cleanup;
+
+//已取得资格后才执行原挂载和输入准备
+static void Storage_StartGranted(uint32_t command);
+//先确认本地工作已结束再提交RELEASE，Camera仍须独立核验
+static void Storage_LifecycleFinish(void);
+
 //保存正式运行结果与计数，不提供Watch写入控制入口
 volatile AppStorageStatus_t g_storage_status;
 
@@ -162,6 +175,9 @@ SysResult_t App_StoragePrepare(const AppStorageConfig_t *config)
         config->total_bytes < config->segment_bytes || config->total_bytes > 0x40000000UL ||
         config->reserve_bytes > 0x40000000UL || config->max_segments == 0U || config->max_segments > 1000U)
         return SYS_ERR_INVALID_ARG;
+    //只在初次准备时绑定协议，普通STOP/RECOVER不得清空编号
+    if (App_CameraConsumerInit(&s_camera_consumer, APP_LIFECYCLE_STORAGE, APP_CONSUMER_STORAGE) != SYS_OK)
+        return SYS_ERR_INVALID_STATE;
     s_config = *config;
     Platform_SyncMemoryBarrier();
     s_prepared = true;
@@ -397,8 +413,21 @@ void App_StorageProcess(void)
     }
     Platform_SyncMemoryBarrier();
     Platform_SyncRestoreIrq(mask);
+    //先消费原生命周期回复，再按FIFO处理本轮命令
+    (void)App_CameraConsumerProcess(&s_camera_consumer);
     if (command != 0U)
         Storage_HandleEvent(command);
+    if (s_pending_start != 0U && s_camera_consumer.phase == APP_CONSUMER_GRANTED)
+    {
+        command = s_pending_start;
+        s_pending_start = 0U;
+        Storage_StartGranted(command);
+    }
+    else if (s_pending_start != 0U && s_camera_consumer.phase == APP_CONSUMER_FAILED)
+    {
+        s_pending_start = 0U;
+        Storage_Fail(s_camera_consumer.result);
+    }
     mask = Platform_SyncGetPrimask();
     Platform_SyncDisableIrq();
     Platform_SyncMemoryBarrier();
@@ -556,6 +585,7 @@ void App_StorageProcess(void)
         s_fps_tick = start;
         s_fps_frames = s_business.saved_frames;
     }
+    Storage_LifecycleFinish();
     Storage_PublishStatus();
 
     //通知位可以合并，队列仍有工作时自行保留后续处理机会
@@ -635,7 +665,27 @@ static void Storage_HandleEvent(uint32_t command)
 }
 
 //同一会话只选录像或抓拍，不能在活动时直接切换用途
+//请求只绑定事务，文件系统和输入入口必须等待Camera授权
 static void Storage_OnStart(uint32_t command)
+{
+    SysResult_t result;
+    if (s_mounted || s_state != STORAGE_IDLE || s_pending_start != 0U || s_session == UINT32_MAX)
+        result = SYS_ERR_BUSY;
+    else
+        result = App_CameraConsumerBegin(&s_camera_consumer);
+    if (result != SYS_OK)
+    {
+        g_storage_status.rejected_requests++;
+        g_storage_status.result = result;
+        return;
+    }
+    s_camera_business = SYS_OK;
+    s_camera_cleanup = SYS_OK;
+    s_pending_start = command;
+}
+
+//保留原文件挂载和准备顺序，调用者必须先取得有效资格
+static void Storage_StartGranted(uint32_t command)
 {
     SysResult_t result;
     uint64_t total, free_bytes;
@@ -687,6 +737,8 @@ static void Storage_OnStart(uint32_t command)
 //故障状态要求显式恢复，重复Stop不能伪装故障已经消失
 static void Storage_OnStop(void)
 {
+    //停止等待中的业务START，但不取消已经入队的生命周期事务
+    s_pending_start = 0U;
     if (s_state == STORAGE_FAULT)
         return;
     s_accepting = false;
@@ -942,6 +994,8 @@ static void Storage_Finish(SysResult_t result)
     }
     (void)StorageFS_GetDiagnostics((StorageFsDiagnostics_t *)&g_storage_status.filesystem);
     s_stop_pending = false;
+    s_camera_business = result;
+    s_camera_cleanup = cleanup;
     g_storage_status.result = result;
     g_storage_status.cleanup_result = cleanup;
     if (cleanup != SYS_OK && result == SYS_OK)
@@ -1023,4 +1077,43 @@ static void Storage_PublishStatus(void)
     s_status_snapshot = g_storage_status;
     Platform_SyncMemoryBarrier();
     Platform_SyncRestoreIrq(mask);
+}
+
+//本地槽位检查只决定何时请求释放，不向Camera提供FRAMES_DRAINED证明
+static void Storage_LifecycleFinish(void)
+{
+    uint32_t i, mask;
+    bool quiet;
+    if (s_pending_start != 0U || s_camera_consumer.phase != APP_CONSUMER_GRANTED)
+        return;
+    mask = Platform_SyncGetPrimask();
+    Platform_SyncDisableIrq();
+    Platform_SyncMemoryBarrier();
+    quiet = !s_accepting && s_offering == 0U && s_count == 0U &&
+        (s_state == STORAGE_IDLE || s_state == STORAGE_FAULT);
+    for (i = 0U; i < APP_STORAGE_SLOT_COUNT; ++i)
+        if (s_slots[i].state != SLOT_FREE)
+            quiet = false;
+    Platform_SyncMemoryBarrier();
+    Platform_SyncRestoreIrq(mask);
+    if (quiet)
+        (void)App_CameraConsumerEnd(&s_camera_consumer, s_camera_business, s_camera_cleanup);
+}
+
+//仅由StorageTask交付已出队的生命周期回复
+SysResult_t App_StorageReceiveLifecycle(const AppLifecycleMessage_t *message)
+{
+    return App_CameraConsumerReceive(&s_camera_consumer, message);
+}
+
+//真实发送由Task执行，队列满不会丢失原请求
+SysResult_t App_StorageFlushLifecycle(AppLifecycleSendFn send, void *context)
+{
+    return App_CameraConsumerFlush(&s_camera_consumer, send, context);
+}
+
+//只读本消费者进度，文件故障和资格释放分别表达
+void App_StorageGetLifecycleStatus(AppCameraConsumerStatus_t *status)
+{
+    App_CameraConsumerGetStatus(&s_camera_consumer, status);
 }

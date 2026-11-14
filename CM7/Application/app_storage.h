@@ -1,6 +1,7 @@
 #ifndef APP_STORAGE_H
 #define APP_STORAGE_H
 #include "camera_config.h"
+#include "app_camera_consumer.h"
 #include "storage_fs.h"
 #include "camera_mjpeg_fifo.h"
 
@@ -103,4 +104,9 @@ void App_StorageProcess(void);
 
 //Camera归还SD引用，Storage任务不得直接操作Media
 void App_StorageProcessReturns(void);
+//StorageTask负责原生命周期通道运输，不允许其他任务借此处理文件
+SysResult_t App_StorageReceiveLifecycle(const AppLifecycleMessage_t *message);
+SysResult_t App_StorageFlushLifecycle(AppLifecycleSendFn send, void *context);
+//只读事务结果，不将Storage IDLE当成资格或租约释放证明
+void App_StorageGetLifecycleStatus(AppCameraConsumerStatus_t *status);
 #endif
