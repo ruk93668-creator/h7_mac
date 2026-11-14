@@ -5,10 +5,14 @@
 
 **这是待执行方案，不是实板通过报告。** 本轮只阅读源码、新增本文档；不重编、不运行软件专项、不写入或清理output、不改生产代码和原断言，不进入C2.2B。
 
+## 本轮入口补充（2026-11-14）
+
+现已提供独立Watch验收构建，详见 [KeilWatchUsage.md](KeilWatchUsage.md)。原正式固件仍无此入口；只有烧录独立验收AXF后才能通过g_r2_hw投递。本方案的源码行号固定于原d0bebf5，新增Control测试条件调用会使当前Control行号移动，按函数名定位。BASEPRI修复已包含；旧固件哈希不能用于新验收镜像，实际哈希见watch_build_results.json。
+
 ## 1. 开始前必须确认的限制
 
 1. 当前正式代码没有 START/STOP 故障注入开关。H1/H2 使用调试器一次性修改函数返回后的局部 `result`，只验证错误分支、停止协调和去重，不能证明真实硬件失败后的恢复能力。硬件自然故障另行记录，不人为短接、断传感器供电或改时钟制造故障。
-2. 全部CM7源码搜索中，`ControlTask_RequestStart/Stop`、Storage四个请求接口只有定义，没有按键/串口等生产调用点；也没有可写 `g_storage_debug.request` 入口。**正常STOP、Restart、USB+SD联合验收存在手动触发入口前置条件。**
+2. 全部CM7源码搜索中，`ControlTask_RequestStart/Stop`、Storage四个请求接口只有定义，没有按键/串口等生产调用点；也没有可写 `g_storage_debug.request` 入口。**正式固件仍缺少手动触发入口；独立Watch镜像已按KeilWatchUsage提供。**
 3. 应由现有合法任务侧控制途径调用公共接口。若使用调试器目标函数调用，先确认该Keil版本确实支持、运行的是目标函数、没有切换所有者上下文，并检查返回值。本文未验证Keil支持这种调用，不能直接把 `ControlTask_RequestStop()` 当作已经验证可执行的Command命令。
 4. `ControlTask_Request*` 要求调用者为已登记业务任务，消息接口还检查ISR和PRIMASK等条件；Storage请求要求Thread模式且PRIMASK/BASEPRI为0。调用返回SYS_OK仅表示入队，不是停止完成。
 5. 没有可用合法控制入口时，H3/H4以及H5的SD子项填写**BLOCKED：缺少触发入口**。不要写Task句柄、控制状态、队列内存、引用计数来绕过。需要另行批准受控独立验收适配；本轮不增加它。
@@ -280,7 +284,7 @@ CameraTask BeginRound → Media Process → Bridge（含Storage归还）→ Fini
 | 场景/墙钟时刻 | Camera FPS/帧数/丢帧 | USB FPS/完成帧 | 主机FPS | Bridge借/还/在途 | Storage结果/待还/帧数 | DMA/DCMI/Control错误 | Camera/USB/Storage/IPC最小栈words | IPC/OLED | 结论 |
 | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |
 | UVC-only，0/60/.../600s逐行填写 | 待填 | 待填 | 待填 | 待填 | OFF | 待填 | 待填 | 待填 | 未执行 |
-| USB+SD，0/60/.../600s逐行填写 | 待填 | 待填 | 待填 | 待填 | 待填 | 待填 | 待填 | 待填 | 未执行/入口待确认 |
+| USB+SD，0/60/.../600s逐行填写 | 待填 | 待填 | 待填 | 待填 | 待填 | 待填 | 待填 | 待填 | 未执行；使用独立Watch入口 |
 
 ## 11. 源码依据（固定于d0bebf5）
 
@@ -308,9 +312,9 @@ CameraTask BeginRound → Media Process → Bridge（含Storage归还）→ Fini
 | --- | --- | --- |
 | H1 首次START失败/停止成功 | 未执行 | API注入结果不得冒充自然故障 |
 | H2 首次START失败/停止失败 | 未执行 | 硬件确实关不掉/HAL确实恢复失败尚无安全注入办法 |
-| H3A USB正常STOP | 未执行，控制入口待确认 | 不能用播放器关闭或断USB替代 |
-| H3B USB+SD归还 | 未执行，控制入口待确认 | Storage显式Stop；没有全局正常录像封尾新协议 |
-| H4 STOP/START循环 | 未执行，控制入口待确认 | 不提供Device ERROR自动恢复 |
+| H3A USB正常STOP | 未执行；独立Watch入口已提供 | 不能用播放器关闭或断USB替代 |
+| H3B USB+SD归还 | 未执行；独立Watch入口已提供 | Storage显式Stop；没有全局正常录像封尾新协议 |
+| H4 STOP/START循环 | 未执行；独立Watch入口已提供 | 不提供Device ERROR自动恢复 |
 | H5 无断点连续运行 | 未执行 | FPS/栈/IPC必须实测，不复用软件专项结果 |
 
 签字记录：执行人____；板卡____；实烧CM7/CM4____；日期____；原始记录位置____；失败项____；待补项____；审核人____。

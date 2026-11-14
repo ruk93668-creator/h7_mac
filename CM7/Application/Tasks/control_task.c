@@ -8,6 +8,16 @@
 #include "platform_sync.h"
 #include <stddef.h>
 
+#ifndef APP_R2_HW_ACCEPTANCE_ENABLED
+#define APP_R2_HW_ACCEPTANCE_ENABLED 0
+#endif
+#if APP_R2_HW_ACCEPTANCE_ENABLED != 0 && APP_R2_HW_ACCEPTANCE_ENABLED != 1
+#error APP_R2_HW_ACCEPTANCE_ENABLED_must_be_zero_or_one
+#endif
+#if APP_R2_HW_ACCEPTANCE_ENABLED
+#include "HardwareControl.h"
+#endif
+
 #define CONTROL_TASK_STACK_WORDS 768U
 #define CONTROL_TASK_PRIORITY 2U
 #define CONTROL_COMMAND_TIMEOUT_MS 5000U
@@ -132,6 +142,11 @@ static void ControlTask_Run(void *argument)
         }
         ControlTask_Process(events);
         ControlTask_PublishStatus();
+
+#if APP_R2_HW_ACCEPTANCE_ENABLED
+        //独立验收构建才读取Watch邮箱，不改变原Control状态处理与发布顺序
+        (void)R2_HardwareControlProcess();
+#endif
 
         //栈余量按实际经过时间更新，不补做错过的扫描
         stack_now = Platform_TimeGetMs();

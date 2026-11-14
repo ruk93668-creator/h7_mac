@@ -1,0 +1,106 @@
+{
+  "project_unchanged": true,
+  "formal_project_sha256": "a8f9e0d08c9cceb9ec0934fe287f6c71ad99bb846f13246ef884e801369c9aa1",
+  "generated_watch_project": "D:\\32\\STM32H7\\h7_mac\\output\\CameraModuleR2\\watch_build\\h7_mac_r2_watch.uvprojx",
+  "targets": [
+    {
+      "variant": "formal_cm7",
+      "target": "h7_mac_CM7",
+      "command": [
+        "D:/32/UV4/UV4.exe",
+        "-j0",
+        "-r",
+        "D:\\32\\STM32H7\\h7_mac\\MDK-ARM\\h7_mac.uvprojx",
+        "-t",
+        "h7_mac_CM7",
+        "-o",
+        "D:\\32\\STM32H7\\h7_mac\\output\\CameraModuleR2\\watch_build\\formal_cm7_rebuild.log"
+      ],
+      "exit": 0,
+      "errors": 0,
+      "warnings": 0,
+      "pass": true,
+      "log_sha256": "ef677cbd82b18f733ea297dc359345a41d62b04a107a936fee3d42d358920bdf",
+      "axf": "D:\\32\\STM32H7\\h7_mac\\MDK-ARM\\h7_mac_CM7\\h7_mac_CM7.axf",
+      "axf_sha256": "8dd3abb0a0ce4a6074e02c515c8fe52b6cf8f5b563a1d0e22ba7723c81ed53db",
+      "mailbox_present": false,
+      "totals": [
+        137690,
+        9030,
+        3114,
+        1340,
+        100932,
+        2687245
+      ],
+      "isolation_pass": true
+    },
+    {
+      "variant": "formal_cm4",
+      "target": "h7_mac_CM4",
+      "command": [
+        "D:/32/UV4/UV4.exe",
+        "-j0",
+        "-r",
+        "D:\\32\\STM32H7\\h7_mac\\MDK-ARM\\h7_mac.uvprojx",
+        "-t",
+        "h7_mac_CM4",
+        "-o",
+        "D:\\32\\STM32H7\\h7_mac\\output\\CameraModuleR2\\watch_build\\formal_cm4_rebuild.log"
+      ],
+      "exit": 0,
+      "errors": 0,
+      "warnings": 0,
+      "pass": true,
+      "log_sha256": "8160724b296d00a17e58479aebf2aa1043448a62a40e24fae7e0fbca06a67150",
+      "axf": "D:\\32\\STM32H7\\h7_mac\\MDK-ARM\\h7_mac_CM4\\h7_mac_CM4.axf",
+      "axf_sha256": "4fc7c7493eb2a964a9621641a5be7c187e6dd3370d07a4b012438b02e71bb2c1",
+      "mailbox_present": false,
+      "totals": [
+        26302,
+        1508,
+        1438,
+        936,
+        3576,
+        1469154
+      ],
+      "isolation_pass": true
+    },
+    {
+      "variant": "watch",
+      "target": "h7_mac_CM7_R2_Watch",
+      "command": [
+        "D:/32/UV4/UV4.exe",
+        "-j0",
+        "-r",
+        "D:\\32\\STM32H7\\h7_mac\\output\\CameraModuleR2\\watch_build\\h7_mac_r2_watch.uvprojx",
+        "-t",
+        "h7_mac_CM7_R2_Watch",
+        "-o",
+        "D:\\32\\STM32H7\\h7_mac\\output\\CameraModuleR2\\watch_build\\watch_rebuild.log"
+      ],
+      "exit": 0,
+      "errors": 0,
+      "warnings": 0,
+      "pass": true,
+      "log_sha256": "a5f763548bfcf952bcf0e67b28b218b8449197626e551dd98711fc731c5e8173",
+      "axf": "D:\\32\\STM32H7\\h7_mac\\output\\CameraModuleR2\\watch_build\\firmware\\h7_mac_CM7_R2_Watch.axf",
+      "axf_sha256": "ee8118b170634c590d5beaca6912f508478457996bee2522938b2cdffba59a22",
+      "mailbox_present": true,
+      "totals": [
+        137550,
+        8268,
+        3326,
+        1348,
+        100948,
+        2679664
+      ],
+      "mailbox": {
+        "address": "0x2000fbe0",
+        "bytes": 24
+      },
+      "isolation_pass": true,
+      "control_hook_linked": true
+    }
+  ],
+  "hardware_verified": false
+}
