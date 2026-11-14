@@ -1,5 +1,9 @@
 # R2 Keil Watch独立验收入口交付报告
 
+> 2026-11-14 清理状态：用户报告本轮Watch正常操作通过后，已要求移除验收代码、Control调用点、生成脚本及临时工程/镜像。本文作为历史验收文档保留；下文Watch工程路径和脚本命令属于`0d88b1a`历史版本，当前不再存在，不能直接照旧执行。正式固件不包含`g_r2_hw`。
+> 实板反馈仅记录用户确认的手动START/STOP、录像/抓拍/存储停止与恢复正常；没有新增故障注入现场、H/M/B/D逐项数据、长时间运行或栈余量测量。不能据此宣布全部R2异常路径通过。
+
+
 日期：2026-11-14。基线：`fix/lifecycle-init-basepri@1c97d7cca0c19927f4405d2abd34e5cc918fcd51`。
 分支：`test/r2-keil-watch-control`。包含已实板确认的BASEPRI修复，但不改变其分支和PR #7，不合并main。
 
@@ -88,3 +92,17 @@ python Tests/CameraModuleR2/audit_watch_scope.py
 ```
 
 只有独立工程配置/验收源变化、正式两核构建已通过且工程哈希一致时，才可使用 `run_watch_build.py --watch-only` 仅重编独立Target。完整命令默认重编三项，不把旧报告当作新构建。
+
+## 2026-11-14 本轮验收入口清理
+
+用户确认只清理本轮Watch验收代码、调用点、临时工程和镜像，保留历史回归测试、验收文档及正式功能。
+
+实际移除：HardwareControl.c/.h、hardware_control_test.c、control_integration_test.c、prepare_watch_project.py、run_watch_build.py、run_watch_protocol.py、run_watch_tests.py、audit_watch_scope.py及本目录__pycache__。ControlTask测试宏、头文件包含和条件调用点全部移除，文件与已通过BASEPRI修复的1c97d7c版本逐字一致。
+
+本轮生成目录output/CameraModuleR2整体移除，删除前核对仓库内绝对路径和无重解析点；其余历史output和回归测试不清理。原正式Keil工程、BASEPRI修复、Camera/USB/Storage业务实现保持不变。
+
+文档与既有软件结果保留作为历史记录；其中测试脚本和临时镜像路径已经失效。正常手动操作的实板结果按用户反馈记录，未新增故障注入或运行性能数据。
+
+清理后直接完整重编正式CM7/CM4，不再生成独立验收工程。当前结果见cleanup_build_results.json及h7_mac_CM7_cleanup_rebuild.log、h7_mac_CM4_cleanup_rebuild.log；本轮不重新执行或新增已删除的Watch测试代码。
+
+磁盘删除不会改变板上已烧录内容。后续应关闭旧验收工程，打开原MDK-ARM/h7_mac.uvprojx，选择h7_mac_CM7并Download正式镜像。正式符号中不再存在g_r2_hw是预期结果。

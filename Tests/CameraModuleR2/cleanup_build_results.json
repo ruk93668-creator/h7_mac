@@ -1,0 +1,47 @@
+{
+  "targets": [
+    {
+      "target": "h7_mac_CM7",
+      "command": [
+        "D:/32/UV4/UV4.exe",
+        "-j0",
+        "-r",
+        "D:\\32\\STM32H7\\h7_mac\\MDK-ARM\\h7_mac.uvprojx",
+        "-t",
+        "h7_mac_CM7",
+        "-o",
+        "D:\\32\\STM32H7\\h7_mac\\Tests\\CameraModuleR2\\h7_mac_CM7_cleanup_rebuild.log"
+      ],
+      "exit": 0,
+      "errors": 0,
+      "warnings": 0,
+      "pass": true,
+      "mailbox_absent": true,
+      "axf": "D:\\32\\STM32H7\\h7_mac\\MDK-ARM\\h7_mac_CM7\\h7_mac_CM7.axf",
+      "log_sha256": "853c4246828693d2c84aec4353176a7d453747519c0e26c43b8c94eaaa8f9ec1"
+    },
+    {
+      "target": "h7_mac_CM4",
+      "command": [
+        "D:/32/UV4/UV4.exe",
+        "-j0",
+        "-r",
+        "D:\\32\\STM32H7\\h7_mac\\MDK-ARM\\h7_mac.uvprojx",
+        "-t",
+        "h7_mac_CM4",
+        "-o",
+        "D:\\32\\STM32H7\\h7_mac\\Tests\\CameraModuleR2\\h7_mac_CM4_cleanup_rebuild.log"
+      ],
+      "exit": 0,
+      "errors": 0,
+      "warnings": 0,
+      "pass": true,
+      "mailbox_absent": true,
+      "axf": "D:\\32\\STM32H7\\h7_mac\\MDK-ARM\\h7_mac_CM4\\h7_mac_CM4.axf",
+      "log_sha256": "16286865d95004abcca19424197a0c8fbfa7d9eb4c82d0559c341b6871a484c0"
+    }
+  ],
+  "keil_settings_unchanged": true,
+  "watch_output_removed": true,
+  "hardware_verified": false
+}
