@@ -302,6 +302,16 @@ void App_CameraHandleCommand(const AppMessage_t *command)
     s_camera.ack.result = SYS_ERR_INVALID_ARG;
     s_camera.command_id = command->command_id;
     App_CameraObserve(APP_CAMERA_DIAG_COMMAND);
+    //真实任务启用资格协议后，旧Camera控制消息不得并行操作同一硬件
+    if (s_camera.qualifications.initialized != 0U &&
+        (command->type == APP_MESSAGE_START || command->type == APP_MESSAGE_STOP))
+    {
+        s_camera.ack.result = SYS_ERR_NOT_SUPPORTED;
+        s_camera.ack_pending = true;
+        s_camera.last_result = SYS_ERR_NOT_SUPPORTED;
+        App_CameraObserve(APP_CAMERA_DIAG_RESULT);
+        return;
+    }
     if (command->type == APP_MESSAGE_START)
     {
         //运行或停止中仍回复BUSY，不创建新的采集会话
