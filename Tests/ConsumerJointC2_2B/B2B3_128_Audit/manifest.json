@@ -1,0 +1,13 @@
+{
+  "baseline": "177c0e1b3ed3e1d8ed5ba23cec67a85965daf789",
+  "snapshot": "D:\\32\\STM32H7\\h7_mac\\output\\B2B6\\worktree\\output\\ConsumerJoint\\B2B3Audit_1794751445025414800",
+  "historical_unchanged": {
+    "Tests/ConsumerJointC2_2B/ID7/baseline_results.json": "6f293f1400ca04cd20896dfd4feeeb95245a4a1ab4bd1cf29bcf3a8dea550aac",
+    "Tests/ConsumerJointC2_2B/legacy_153_gate.json": "11e0dd401e0fd623b8a2659983b174d4340e4b6d473444989c7015e789392e74"
+  },
+  "production_files_modified": [],
+  "required_command_count": 14,
+  "exit_mismatches": [
+    "id17"
+  ]
+}

@@ -1,0 +1,156 @@
+{
+  "ABI": [
+    232,
+    144,
+    332,
+    824,
+    56,
+    52,
+    24,
+    40,
+    144,
+    200
+  ],
+  "related_offset_reference": {
+    "Consumer": 232,
+    "Tx": 144,
+    "Rx": 332,
+    "Qualification": 824,
+    "LifecycleMessage": 56,
+    "AppMessage": 52,
+    "CameraFrame": 24,
+    "Consumer.request": 144,
+    "Consumer.generation": 204,
+    "Consumer.granted": 220,
+    "Tx.allocated_through": 12,
+    "Tx.issued_through": 16,
+    "Tx.pending": 28,
+    "Rx.replay": 40,
+    "Rx.reply_pending": 160,
+    "Rx.candidate": 276,
+    "Qualification.rx": 144,
+    "Qualification.session_id": 808,
+    "Lifecycle.identity": 20,
+    "Lifecycle.related": 36,
+    "Lifecycle.flags": 40,
+    "Lifecycle.result": 44,
+    "AppMessage.source": 1,
+    "AppMessage.command_id": 4,
+    "AppMessage.stream_epoch": 8,
+    "AppMessage.lease_id": 12,
+    "AppMessage.result": 16,
+    "AppMessage.frame": 28
+  },
+  "Map_comparison_to_177c0e1": [
+    {
+      "target": "h7_mac_CM7",
+      "RW_ZI_current": [
+        1376,
+        101536
+      ],
+      "RW_ZI_delta": [
+        0,
+        0
+      ],
+      "runtime_columns_equal": true,
+      "debug_bytes_delta": 6472,
+      "stack": {
+        "CameraTask_Run": {
+          "local": "8",
+          "known_depth": "496"
+        },
+        "UsbTask_Run": {
+          "local": "8",
+          "known_depth": "540"
+        },
+        "StorageTask_Run": {
+          "local": "88",
+          "known_depth": "1416"
+        },
+        "App_CameraConsumerProcess": {
+          "local": "72",
+          "known_depth": "232"
+        },
+        "App_QualificationProcess": {
+          "local": "88",
+          "known_depth": "408"
+        }
+      },
+      "symbols": {
+        "s_camera_stack": {
+          "address": "0x20008dd0",
+          "bytes": 6144
+        },
+        "s_usb_stack": {
+          "address": "0x2000a660",
+          "bytes": 8192
+        },
+        "s_stack": {
+          "address": "0x2000dcb8",
+          "bytes": 8192
+        },
+        "s_camera_consumer": {
+          "address": "0x20000ca0",
+          "bytes": 232
+        },
+        "s_lifecycle_storage": {
+          "address": "0x20008a98",
+          "bytes": 672
+        }
+      },
+      "loadable_SHA256": "04258bc24b5f376bd005b7ba5738b9d7002d6b95bc488aeed6d9100fae0c9e37",
+      "baseline_loadable_SHA256": "04258bc24b5f376bd005b7ba5738b9d7002d6b95bc488aeed6d9100fae0c9e37",
+      "artifacts": {
+        "axf": {
+          "path": "D:\\32\\STM32H7\\h7_mac\\output\\B2B6\\worktree\\output\\ConsumerJoint\\B2B3Audit_1794751445025414800\\output\\B2B6\\formal_1794751543250743700\\MDK-ARM\\h7_mac_CM7\\h7_mac_CM7.axf",
+          "sha256": "345d28d0944253a0f9d754ef40cd555aec5695edcd90901abf7faaeae37020f7"
+        },
+        "map": {
+          "path": "D:\\32\\STM32H7\\h7_mac\\output\\B2B6\\worktree\\output\\ConsumerJoint\\B2B3Audit_1794751445025414800\\output\\B2B6\\formal_1794751543250743700\\MDK-ARM\\h7_mac_CM7\\h7_mac_CM7.map",
+          "sha256": "aa775b441913ef5d1559a9338693729472f3163feb2d3122b4d56fbcf84682e8"
+        },
+        "htm": {
+          "path": "D:\\32\\STM32H7\\h7_mac\\output\\B2B6\\worktree\\output\\ConsumerJoint\\B2B3Audit_1794751445025414800\\output\\B2B6\\formal_1794751543250743700\\MDK-ARM\\h7_mac_CM7\\h7_mac_CM7.htm",
+          "sha256": "2c4ff50465a2d02f978a33286ec69a7ddf04a706bb580caf36baaf4b55ad20ca"
+        }
+      }
+    },
+    {
+      "target": "h7_mac_CM4",
+      "RW_ZI_current": [
+        936,
+        3576
+      ],
+      "RW_ZI_delta": [
+        0,
+        0
+      ],
+      "runtime_columns_equal": true,
+      "debug_bytes_delta": 1220,
+      "stack": {},
+      "symbols": {},
+      "loadable_SHA256": "a2582cdfc3d12bbecb3bcc4b0ac935216422383ff0395ff5f40dea480494bf04",
+      "baseline_loadable_SHA256": "a2582cdfc3d12bbecb3bcc4b0ac935216422383ff0395ff5f40dea480494bf04",
+      "artifacts": {
+        "axf": {
+          "path": "D:\\32\\STM32H7\\h7_mac\\output\\B2B6\\worktree\\output\\ConsumerJoint\\B2B3Audit_1794751445025414800\\output\\B2B6\\formal_1794751543250743700\\MDK-ARM\\h7_mac_CM4\\h7_mac_CM4.axf",
+          "sha256": "a05ae3da10d9b26b3d667c3e51bb78d7c8ed6d5316ab7813a04d4e003a746935"
+        },
+        "map": {
+          "path": "D:\\32\\STM32H7\\h7_mac\\output\\B2B6\\worktree\\output\\ConsumerJoint\\B2B3Audit_1794751445025414800\\output\\B2B6\\formal_1794751543250743700\\MDK-ARM\\h7_mac_CM4\\h7_mac_CM4.map",
+          "sha256": "202e2789f5ee337dc95c3c082f52a10b82a5fbf2200557c086d40971667e3c88"
+        },
+        "htm": {
+          "path": "D:\\32\\STM32H7\\h7_mac\\output\\B2B6\\worktree\\output\\ConsumerJoint\\B2B3Audit_1794751445025414800\\output\\B2B6\\formal_1794751543250743700\\MDK-ARM\\h7_mac_CM4\\h7_mac_CM4.htm",
+          "sha256": "ba3bd56c8640a5ca2b1a905e628f5caad5fa2458e865e5d497d2c7ec1f36da79"
+        },
+        "hex": {
+          "path": "D:\\32\\STM32H7\\h7_mac\\output\\B2B6\\worktree\\output\\ConsumerJoint\\B2B3Audit_1794751445025414800\\output\\B2B6\\formal_1794751543250743700\\MDK-ARM\\h7_mac_CM4\\h7_mac_CM4.hex",
+          "sha256": "3030484c03d4983a192be39142dce7b6dfdb8e6c93a49e1f8285ee846540fb17"
+        }
+      }
+    }
+  ],
+  "production_RAM_delta": 0,
+  "all_indirect_stack_proven": false
+}

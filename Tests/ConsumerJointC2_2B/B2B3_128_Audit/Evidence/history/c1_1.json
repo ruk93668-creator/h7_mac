@@ -1,0 +1,209 @@
+{
+  "summary": {
+    "original_c1": {
+      "total": 419,
+      "passed": 419,
+      "failed": 0
+    },
+    "added_total": 24,
+    "added_passed": 24,
+    "added_failed": 0,
+    "arm_total": 443
+  },
+  "cases": [
+    {
+      "id": 0,
+      "name": "ACK not enqueued cannot retire",
+      "pass": true,
+      "return": 0,
+      "failure_line": 0,
+      "error": null
+    },
+    {
+      "id": 1,
+      "name": "ACK queued unconsumed duplicate",
+      "pass": true,
+      "return": 0,
+      "failure_line": 0,
+      "error": null
+    },
+    {
+      "id": 2,
+      "name": "Retire refused old request still duplicate",
+      "pass": true,
+      "return": 0,
+      "failure_line": 0,
+      "error": null
+    },
+    {
+      "id": 3,
+      "name": "New session old request guarded",
+      "pass": true,
+      "return": 0,
+      "failure_line": 0,
+      "error": null
+    },
+    {
+      "id": 4,
+      "name": "New generation late ACK",
+      "pass": true,
+      "return": 0,
+      "failure_line": 0,
+      "error": null
+    },
+    {
+      "id": 5,
+      "name": "READY cancel repeat and retransmit",
+      "pass": true,
+      "return": 0,
+      "failure_line": 0,
+      "error": null
+    },
+    {
+      "id": 6,
+      "name": "WAIT_REPLY cancel and force clear refused",
+      "pass": true,
+      "return": 0,
+      "failure_line": 0,
+      "error": null
+    },
+    {
+      "id": 7,
+      "name": "SENDING cancel refused then READY cancel",
+      "pass": true,
+      "return": 0,
+      "failure_line": 0,
+      "error": null
+    },
+    {
+      "id": 8,
+      "name": "COMPLETE cancel refused",
+      "pass": true,
+      "return": 0,
+      "failure_line": 0,
+      "error": null
+    },
+    {
+      "id": 9,
+      "name": "COMMITTED cancel refused",
+      "pass": true,
+      "return": 0,
+      "failure_line": 0,
+      "error": null
+    },
+    {
+      "id": 10,
+      "name": "Pending reply cannot be cancelled",
+      "pass": true,
+      "return": 0,
+      "failure_line": 0,
+      "error": null
+    },
+    {
+      "id": 11,
+      "name": "NULL cancel",
+      "pass": true,
+      "return": 0,
+      "failure_line": 0,
+      "error": null
+    },
+    {
+      "id": 12,
+      "name": "Empty and duplicate cancel",
+      "pass": true,
+      "return": 0,
+      "failure_line": 0,
+      "error": null
+    },
+    {
+      "id": 13,
+      "name": "Full request queue cancelled request absent",
+      "pass": true,
+      "return": 0,
+      "failure_line": 0,
+      "error": null
+    },
+    {
+      "id": 14,
+      "name": "Full ACK queue duplicate request reply retry",
+      "pass": true,
+      "return": 0,
+      "failure_line": 0,
+      "error": null
+    },
+    {
+      "id": 15,
+      "name": "Bounded replay pool full no eviction",
+      "pass": true,
+      "return": 0,
+      "failure_line": 0,
+      "error": null
+    },
+    {
+      "id": 16,
+      "name": "Failure cache cannot become success",
+      "pass": true,
+      "return": 0,
+      "failure_line": 0,
+      "error": null
+    },
+    {
+      "id": 17,
+      "name": "Old request ID ACK rejected",
+      "pass": true,
+      "return": 0,
+      "failure_line": 0,
+      "error": null
+    },
+    {
+      "id": 18,
+      "name": "Cancel leaves identity counter and notifications unchanged",
+      "pass": true,
+      "return": 0,
+      "failure_line": 0,
+      "error": null
+    },
+    {
+      "id": 19,
+      "name": "Cancelled unsubmitted request sends once",
+      "pass": true,
+      "return": 0,
+      "failure_line": 0,
+      "error": null
+    },
+    {
+      "id": 20,
+      "name": "Invalid and in-progress retirement",
+      "pass": true,
+      "return": 0,
+      "failure_line": 0,
+      "error": null
+    },
+    {
+      "id": 21,
+      "name": "Session and generation mismatch",
+      "pass": true,
+      "return": 0,
+      "failure_line": 0,
+      "error": null
+    },
+    {
+      "id": 22,
+      "name": "Duplicate completion unchanged",
+      "pass": true,
+      "return": 0,
+      "failure_line": 0,
+      "error": null
+    },
+    {
+      "id": 23,
+      "name": "BUSY reply remains terminal outcome",
+      "pass": true,
+      "return": 0,
+      "failure_line": 0,
+      "error": null
+    }
+  ],
+  "original_contract_update": "C1 case56 retained; completed retirement must return NOT_SUPPORTED and cached reply must be unchanged.",
+  "hardware_verified": false
+}

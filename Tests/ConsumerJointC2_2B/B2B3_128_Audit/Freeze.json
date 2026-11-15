@@ -1,0 +1,23 @@
+{
+  "baseline": "177c0e1b3ed3e1d8ed5ba23cec67a85965daf789",
+  "branch": "codex/stage-C2-2B-B2B6-v1-compat",
+  "gate_sha256": "11e0dd401e0fd623b8a2659983b174d4340e4b6d473444989c7015e789392e74",
+  "status_counts": {
+    "PASS": 24,
+    "BLOCKED": 128,
+    "FAIL": 1
+  },
+  "freeze_files": {
+    "128_blocked.json": "e90a78bbf354a5db7284355dc77d4249324f6053acab6dda169f14d4c7f14207",
+    "153_gate.json": "11e0dd401e0fd623b8a2659983b174d4340e4b6d473444989c7015e789392e74",
+    "Acceptance.md": "37fc05d2a37161ace4c58d1bd849ee2f4764378ed3df6bd52764dfc93d1a93cf",
+    "Defects.md": "a0f7a21cd25a4342d4808ef9eea56e484b628e508c42bed1bd2e8a383cd53b13",
+    "ID17_Report.md": "da92b8c3fdad0f17f161ccc3b4c16d3d7814ff464df842bfe9744939c9790c83",
+    "ID7_baseline_results.json": "6f293f1400ca04cd20896dfd4feeeb95245a4a1ab4bd1cf29bcf3a8dea550aac",
+    "ID7_Report.md": "3e52bf64b21beea7bd0671abea2956240e058fa74fef4618db5307d80bb21988",
+    "Legacy153Review.md": "aaa01cd01a78b464736dea3770b05137e79f9ff7390b5c6015877ab6b011ef5a",
+    "original_joint_ID7_failure.json.gz": "7e8a6823be06c4573e091e61d1f6e87f8935a9683ab7636421d7a1030c8991b1",
+    "unique_fail.json": "6b299c8f9d9d1f5c55ee5909248a8261e249cd7d89d6ff87b5b3a3f449635530",
+    "unique_fail_raw_pair.json.gz": "2706b400452cf4376bc9426a1d4823499d2dd8cf4ea660a4a8dcd14c49417d4c"
+  }
+}

@@ -1,0 +1,454 @@
+{
+  "original_suite": "b2",
+  "original_id": 26,
+  "name": "Frame loan then STOP",
+  "original_status": "BLOCKED",
+  "original_assertions": {
+    "C_executed": [],
+    "Python": "baseline.ok && candidate.ok && full trace equality"
+  },
+  "test_entry": {
+    "file": "Tests/UsbModuleB2/behavior_test.c",
+    "function": "B2_TestRun",
+    "case_argument": 26,
+    "mode_input_from_trace": [
+      1
+    ],
+    "source_start_line": 165,
+    "source_end_line": 212,
+    "matched_source_clauses": [
+      {
+        "line": 200,
+        "condition": "scenario==26",
+        "static_match": true,
+        "source": "if(scenario==26){auto_loan=true;configured=true;Round(0);}"
+      }
+    ]
+  },
+  "production_source": [
+    {
+      "function": "App_USBSetDiagnosticObserver",
+      "file": "CM7/Application/app_usb.c",
+      "line": 40
+    },
+    {
+      "function": "App_USBCanAcceptCommand",
+      "file": "CM7/Application/app_usb.c",
+      "line": 46
+    },
+    {
+      "function": "App_USBHandleCommand",
+      "file": "CM7/Application/app_usb.c",
+      "line": 52
+    },
+    {
+      "function": "App_USBCanTransfer",
+      "file": "CM7/Application/app_usb.c",
+      "line": 120
+    },
+    {
+      "function": "App_USBIsStopping",
+      "file": "CM7/Application/app_usb.c",
+      "line": 126
+    },
+    {
+      "function": "App_USBProcess",
+      "file": "CM7/Application/app_usb.c",
+      "line": 132
+    },
+    {
+      "function": "App_USBFinishRound",
+      "file": "CM7/Application/app_usb.c",
+      "line": 179
+    },
+    {
+      "function": "App_USBGetPendingAck",
+      "file": "CM7/Application/app_usb.c",
+      "line": 240
+    },
+    {
+      "function": "App_USBConfirmAckEnqueued",
+      "file": "CM7/Application/app_usb.c",
+      "line": 249
+    },
+    {
+      "function": "App_USBGetPendingFault",
+      "file": "CM7/Application/app_usb.c",
+      "line": 255
+    },
+    {
+      "function": "App_USBConfirmFaultEnqueued",
+      "file": "CM7/Application/app_usb.c",
+      "line": 268
+    },
+    {
+      "function": "App_USBGetStatus",
+      "file": "CM7/Application/app_usb.c",
+      "line": 274
+    },
+    {
+      "function": "App_USBGetLastResult",
+      "file": "CM7/Application/app_usb.c",
+      "line": 286
+    },
+    {
+      "function": "App_USBObserve",
+      "file": "CM7/Application/app_usb.c",
+      "line": 292
+    },
+    {
+      "function": "App_USBReceiveLifecycle",
+      "file": "CM7/Application/app_usb.c",
+      "line": 304
+    },
+    {
+      "function": "App_USBFlushLifecycle",
+      "file": "CM7/Application/app_usb.c",
+      "line": 313
+    },
+    {
+      "function": "App_USBGetLifecycleStatus",
+      "file": "CM7/Application/app_usb.c",
+      "line": 322
+    },
+    {
+      "function": "UsbTask_Create",
+      "file": "CM7/Application/Tasks/usb_task.c",
+      "line": 60
+    },
+    {
+      "function": "UsbTask_Run",
+      "file": "CM7/Application/Tasks/usb_task.c",
+      "line": 84
+    },
+    {
+      "function": "UsbTask_Process",
+      "file": "CM7/Application/Tasks/usb_task.c",
+      "line": 127
+    },
+    {
+      "function": "UsbTask_Reply",
+      "file": "CM7/Application/Tasks/usb_task.c",
+      "line": 185
+    },
+    {
+      "function": "UsbTask_PublishStatus",
+      "file": "CM7/Application/Tasks/usb_task.c",
+      "line": 201
+    },
+    {
+      "function": "UsbTask_Observe",
+      "file": "CM7/Application/Tasks/usb_task.c",
+      "line": 216
+    },
+    {
+      "function": "UsbTask_SendLifecycle",
+      "file": "CM7/Application/Tasks/usb_task.c",
+      "line": 242
+    },
+    {
+      "function": "App_CameraConsumerInit",
+      "file": "CM7/Application/app_camera_consumer.c",
+      "line": 9
+    },
+    {
+      "function": "App_CameraConsumerBegin",
+      "file": "CM7/Application/app_camera_consumer.c",
+      "line": 17
+    },
+    {
+      "function": "App_CameraConsumerEnd",
+      "file": "CM7/Application/app_camera_consumer.c",
+      "line": 41
+    },
+    {
+      "function": "App_CameraConsumerReceive",
+      "file": "CM7/Application/app_camera_consumer.c",
+      "line": 55
+    },
+    {
+      "function": "App_CameraConsumerProcess",
+      "file": "CM7/Application/app_camera_consumer.c",
+      "line": 64
+    },
+    {
+      "function": "App_CameraConsumerFlush",
+      "file": "CM7/Application/app_camera_consumer.c",
+      "line": 132
+    },
+    {
+      "function": "Consumer_Stage",
+      "file": "CM7/Application/app_camera_consumer.c",
+      "line": 138
+    },
+    {
+      "function": "App_CameraConsumerGetStatus",
+      "file": "CM7/Application/app_camera_consumer.c",
+      "line": 162
+    }
+  ],
+  "runtime_trace_origins": [
+    {
+      "code": 1,
+      "observed_calls": 8,
+      "dependency_or_test_function": "Platform_TimeGetMs",
+      "file": "Tests/UsbModuleB2/behavior_test.c",
+      "line": 65
+    },
+    {
+      "code": 8,
+      "observed_calls": 2,
+      "dependency_or_test_function": "App_MessagesReceive",
+      "file": "Tests/UsbModuleB2/behavior_test.c",
+      "line": 84
+    },
+    {
+      "code": 7,
+      "observed_calls": 6,
+      "dependency_or_test_function": "App_MessagesReceive",
+      "file": "Tests/UsbModuleB2/behavior_test.c",
+      "line": 84
+    },
+    {
+      "code": 9,
+      "observed_calls": 2,
+      "dependency_or_test_function": "App_MessagesSend",
+      "file": "Tests/UsbModuleB2/behavior_test.c",
+      "line": 86
+    },
+    {
+      "code": 10,
+      "observed_calls": 2,
+      "dependency_or_test_function": "App_MessagesSend",
+      "file": "Tests/UsbModuleB2/behavior_test.c",
+      "line": 86
+    },
+    {
+      "code": 11,
+      "observed_calls": 2,
+      "dependency_or_test_function": "App_MessagesSend",
+      "file": "Tests/UsbModuleB2/behavior_test.c",
+      "line": 86
+    },
+    {
+      "code": 12,
+      "observed_calls": 6,
+      "dependency_or_test_function": "App_StatusPublishUsb",
+      "file": "Tests/UsbModuleB2/behavior_test.c",
+      "line": 95
+    },
+    {
+      "code": 13,
+      "observed_calls": 6,
+      "dependency_or_test_function": "App_StatusPublishUsb",
+      "file": "Tests/UsbModuleB2/behavior_test.c",
+      "line": 95
+    },
+    {
+      "code": 14,
+      "observed_calls": 8,
+      "dependency_or_test_function": "USB_Mode_GetMode",
+      "file": "Tests/UsbModuleB2/behavior_test.c",
+      "line": 99
+    },
+    {
+      "code": 15,
+      "observed_calls": 1,
+      "dependency_or_test_function": "USB_Mode_Start",
+      "file": "Tests/UsbModuleB2/behavior_test.c",
+      "line": 100
+    },
+    {
+      "code": 16,
+      "observed_calls": 2,
+      "dependency_or_test_function": "USB_Mode_Process",
+      "file": "Tests/UsbModuleB2/behavior_test.c",
+      "line": 108
+    },
+    {
+      "code": 17,
+      "observed_calls": 2,
+      "dependency_or_test_function": "USB_Mode_GetLastResult",
+      "file": "Tests/UsbModuleB2/behavior_test.c",
+      "line": 113
+    },
+    {
+      "code": 18,
+      "observed_calls": 1,
+      "dependency_or_test_function": "USB_Mode_Stop",
+      "file": "Tests/UsbModuleB2/behavior_test.c",
+      "line": 114
+    },
+    {
+      "code": 19,
+      "observed_calls": 6,
+      "dependency_or_test_function": "USB_Device_GetSofSequence",
+      "file": "Tests/UsbModuleB2/behavior_test.c",
+      "line": 123
+    },
+    {
+      "code": 20,
+      "observed_calls": 8,
+      "dependency_or_test_function": "USB_UVC_GetCompletedFrameCount",
+      "file": "Tests/UsbModuleB2/behavior_test.c",
+      "line": 124
+    },
+    {
+      "code": 21,
+      "observed_calls": 1,
+      "dependency_or_test_function": "USB_UVC_CancelFrame",
+      "file": "Tests/UsbModuleB2/behavior_test.c",
+      "line": 125
+    },
+    {
+      "code": 22,
+      "observed_calls": 7,
+      "dependency_or_test_function": "USB_UVC_Process",
+      "file": "Tests/UsbModuleB2/behavior_test.c",
+      "line": 132
+    },
+    {
+      "code": 23,
+      "observed_calls": 6,
+      "dependency_or_test_function": "App_UvcBridgeUsbProcess",
+      "file": "Tests/UsbModuleB2/behavior_test.c",
+      "line": 141
+    },
+    {
+      "code": 24,
+      "observed_calls": 2,
+      "dependency_or_test_function": "App_UvcBridgeUsbIsIdle",
+      "file": "Tests/UsbModuleB2/behavior_test.c",
+      "line": 147
+    },
+    {
+      "code": 26,
+      "observed_calls": 6,
+      "dependency_or_test_function": "Round",
+      "file": "Tests/UsbModuleB2/behavior_test.c",
+      "line": 160
+    }
+  ],
+  "compiled_real": [
+    "CM7/Application/app_usb.c",
+    "CM7/Application/Tasks/usb_task.c",
+    "CM7/Application/app_camera_consumer.c",
+    "CM7/Application/app_camera_lifecycle.c",
+    "CM7/Application/app_camera_lifecycle_replay.c",
+    "CM7/Application/app_camera_qualification.c"
+  ],
+  "mock_boundary": "USB Mode/Core/UVC physical transport, Bridge idle, RTOS; actual App_USB owns Consumer",
+  "preconditions": [
+    "Fresh zeroed ARM image per case",
+    "Original BOOT/owner/config/fault inputs from the actual matched source clauses",
+    "QUERY/ACQUIRE through actual Tx/Rx/Replay/Qualification before dependent Mode Start/Mount when requested",
+    "No test writes to granted/phase/qualification/Replay"
+  ],
+  "original_missing_evidence": [
+    "Original Python full-state/Debug/ACK predicate has not been translated to a causal contract for this ID; C success alone is insufficient."
+  ],
+  "original_first_unable_reason": "Original Python full-state/Debug/ACK predicate has not been translated to a causal contract for this ID; C success alone is insufficient.",
+  "first_legacy_trace_difference": {
+    "index": 4,
+    "baseline": [
+      15,
+      1,
+      0,
+      0,
+      1,
+      1,
+      0,
+      0,
+      0,
+      0,
+      10,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      1,
+      0,
+      1,
+      0,
+      0,
+      0
+    ],
+    "current": [
+      14,
+      1,
+      0,
+      0,
+      1,
+      1,
+      0,
+      0,
+      0,
+      0,
+      10,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      1,
+      0,
+      1,
+      0,
+      0,
+      0
+    ]
+  },
+  "software_verifiable": true,
+  "hardware_needed_for_this_unit_contract": false,
+  "hardware_limit": "Real ISO/DMA/SD/FIFO timing is outside these historical unit fixtures; listed separately as HARDWARE_REQUIRED, never claimed by software",
+  "classification": [
+    "B: missing complete transport/assertion/state evidence supplied",
+    "D: historical full-event trace identity no longer holds; new causal contract executed O0/O2"
+  ],
+  "current_status": "CONTRACT_CHANGED",
+  "new_contract_O0": "PASS",
+  "new_contract_O2": "PASS",
+  "causal_check_names": [
+    "ACK command identities preserve consumed FIFO",
+    "Mode Stop requires Bridge idle and no owned frame",
+    "QUERY reply precedes ACQUIRE and uses the granted session",
+    "SOF coalescing/wrap uses unsigned sequence difference",
+    "Task Cancel/Process/Bridge/Process order",
+    "UVC Mode Start occurs only after actual ACQUIRE reply",
+    "every original standard transport call has a complete captured message",
+    "full ACK/FAULT body agrees with original transport hash and result",
+    "no duplicate successful original ACK delivery",
+    "no fabricated released/hardware stopped reply",
+    "observed lifecycle format and direction are valid",
+    "original C requirements execute without failure/drop",
+    "public Debug/status milestones match original logical rounds",
+    "published EOF/FPS matches Debug sampling point",
+    "published state/result matches original Debug sampling point",
+    "reply matches complete request identity"
+  ],
+  "original_exact_trace_equal_O0_O2": [
+    false,
+    false
+  ],
+  "current_first_contract_violation": null,
+  "next_action": "Review/approve the explicit old/new contract mapping; do not relabel old FAIL as PASS",
+  "raw_O0": "RawResults/Current/usb_candidate_O0_26.json.gz",
+  "raw_O2": "RawResults/Current/usb_candidate_O2_26.json.gz"
+}

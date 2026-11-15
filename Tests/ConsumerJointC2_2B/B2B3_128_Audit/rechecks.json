@@ -1,0 +1,6 @@
+{
+  "initial": "ID17 preflight rejected a snapshot already modified by prior result writers; original log preserved",
+  "fix": "Run ID17 first in a clean archive; no source/predicate changes",
+  "snapshot": "D:\\32\\STM32H7\\h7_mac\\output\\B2B6\\worktree\\output\\ConsumerJoint\\B2B3_ID17_clean_1794752462530644700",
+  "exit": 0
+}

@@ -1,0 +1,4 @@
+Traceback (most recent call last):
+  File "D:\32\STM32H7\h7_mac\output\B2B6\worktree\output\ConsumerJoint\B2B3Audit_1794751445025414800\Tests\ConsumerJointC2_2B\ID17\trace_id17.py", line 7, in <module>
+    assert not subprocess.check_output(g+['diff',BASE,'--','CM7','Tests/ConsumerIntegrationC2_2B','Tests/ConsumerQualificationC2_2A','Tests/CameraModuleB1'],cwd=ROOT)
+AssertionError

@@ -1,0 +1,68 @@
+{
+  "original": "b2/10",
+  "root_closed": true,
+  "production_fix_this_round": false,
+  "prior_fix": "8a83591",
+  "reproduction": [
+    {
+      "optimization": "O0",
+      "old_C_return": 0,
+      "old_semantic_status": "FAIL",
+      "old_first_contract_violation": {
+        "name": "ID7/ID10 fixed path stages RELEASE while retaining grant",
+        "pass": false,
+        "evidence": [
+          1,
+          1,
+          1,
+          1,
+          3,
+          1,
+          0,
+          0
+        ]
+      },
+      "old_consumer_phase_grant": [
+        3,
+        1
+      ],
+      "current_status": "PASS",
+      "current_phase_grant": [
+        4,
+        1
+      ],
+      "old_raw": "RawResults/OldID7Reproduction/usb_candidate_O0_10.json.gz",
+      "current_raw": "RawResults/Current/usb_candidate_O0_10.json.gz"
+    },
+    {
+      "optimization": "O2",
+      "old_C_return": 0,
+      "old_semantic_status": "FAIL",
+      "old_first_contract_violation": {
+        "name": "ID7/ID10 fixed path stages RELEASE while retaining grant",
+        "pass": false,
+        "evidence": [
+          1,
+          1,
+          1,
+          1,
+          3,
+          1,
+          0,
+          0
+        ]
+      },
+      "old_consumer_phase_grant": [
+        3,
+        1
+      ],
+      "current_status": "PASS",
+      "current_phase_grant": [
+        4,
+        1
+      ],
+      "old_raw": "RawResults/OldID7Reproduction/usb_candidate_O2_10.json.gz",
+      "current_raw": "RawResults/Current/usb_candidate_O2_10.json.gz"
+    }
+  ]
+}

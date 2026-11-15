@@ -1,0 +1,3 @@
+b3 40 O0 Unmount failure retains FAULT separately from already closed AVI
+b3 40 O2 Unmount failure retains FAULT separately from already closed AVI
+Contract runs 306 passed 304

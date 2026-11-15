@@ -1,0 +1,70 @@
+{
+  "cases": [
+    {
+      "name": "ACK body corruption",
+      "status": "PASS",
+      "expected_gate": "FAIL",
+      "first_rejection": "full ACK/FAULT body agrees with original transport hash and result"
+    },
+    {
+      "name": "Mode Stop while frame owned",
+      "status": "PASS",
+      "expected_gate": "FAIL",
+      "first_rejection": "Mode Stop requires Bridge idle and no owned frame"
+    },
+    {
+      "name": "Reply generation mismatch",
+      "status": "PASS",
+      "expected_gate": "FAIL",
+      "first_rejection": "reply matches complete request identity"
+    },
+    {
+      "name": "File byte/hash mismatch",
+      "status": "PASS",
+      "expected_gate": "FAIL",
+      "first_rejection": "filesystem calls/parameters/bytes/CRC agree with original business baseline"
+    },
+    {
+      "name": "Actual lease release in Storage owner",
+      "status": "PASS",
+      "expected_gate": "FAIL",
+      "first_rejection": "retain/actual SD release stays in Camera owner"
+    },
+    {
+      "name": "Debug/status projection mismatch",
+      "status": "PASS",
+      "expected_gate": "FAIL",
+      "first_rejection": "published state/result matches original Debug sampling point"
+    },
+    {
+      "name": "FIFO command order changed",
+      "status": "PASS",
+      "expected_gate": "FAIL",
+      "first_rejection": "commands preserve actual FIFO ordering"
+    },
+    {
+      "name": "Lost assertion observations",
+      "status": "PASS",
+      "expected_gate": "FAIL",
+      "first_rejection": "all original baseline requirement sites remain executed"
+    },
+    {
+      "name": "Missing full message observations",
+      "status": "PASS",
+      "expected_gate": "FAIL",
+      "first_rejection": "UVC Mode Start occurs only after actual ACQUIRE reply"
+    },
+    {
+      "name": "Missing publication evidence",
+      "status": "PASS",
+      "expected_gate": "FAIL",
+      "first_rejection": "real private status cache publishes once per valid Process and prepare"
+    },
+    {
+      "name": "Independent retry original evidence",
+      "status": "PASS",
+      "expected_gate": "PASS"
+    }
+  ],
+  "passed": 11
+}

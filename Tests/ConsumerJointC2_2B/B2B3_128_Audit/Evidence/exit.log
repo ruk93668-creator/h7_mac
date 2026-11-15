@@ -1,0 +1,16 @@
+{'id': 'R01', 'optimization': 'O0', 'status': 'PASS', 'pass': True, 'return': 0, 'failure_line': 0, 'error': None}
+{'id': 'R02', 'optimization': 'O0', 'status': 'PASS', 'pass': True, 'return': 0, 'failure_line': 0, 'error': None}
+{'id': 'R03', 'optimization': 'O0', 'status': 'PASS', 'pass': True, 'return': 0, 'failure_line': 0, 'error': None}
+{'id': 'R04', 'optimization': 'O0', 'status': 'PASS', 'pass': True, 'return': 0, 'failure_line': 0, 'error': None}
+{'id': 'R05', 'optimization': 'O0', 'status': 'PASS', 'pass': True, 'return': 0, 'failure_line': 0, 'error': None}
+{'id': 'R06', 'optimization': 'O0', 'status': 'PASS', 'pass': True, 'return': 0, 'failure_line': 0, 'error': None}
+{'id': 'R07', 'optimization': 'O0', 'status': 'PASS', 'pass': True, 'return': 0, 'failure_line': 0, 'error': None}
+{'id': 'R08', 'optimization': 'O0', 'status': 'PASS', 'pass': True, 'return': 0, 'failure_line': 0, 'error': None}
+{'id': 'R01', 'optimization': 'O2', 'status': 'PASS', 'pass': True, 'return': 0, 'failure_line': 0, 'error': None}
+{'id': 'R02', 'optimization': 'O2', 'status': 'PASS', 'pass': True, 'return': 0, 'failure_line': 0, 'error': None}
+{'id': 'R03', 'optimization': 'O2', 'status': 'PASS', 'pass': True, 'return': 0, 'failure_line': 0, 'error': None}
+{'id': 'R04', 'optimization': 'O2', 'status': 'PASS', 'pass': True, 'return': 0, 'failure_line': 0, 'error': None}
+{'id': 'R05', 'optimization': 'O2', 'status': 'PASS', 'pass': True, 'return': 0, 'failure_line': 0, 'error': None}
+{'id': 'R06', 'optimization': 'O2', 'status': 'PASS', 'pass': True, 'return': 0, 'failure_line': 0, 'error': None}
+{'id': 'R07', 'optimization': 'O2', 'status': 'PASS', 'pass': True, 'return': 0, 'failure_line': 0, 'error': None}
+{'id': 'R08', 'optimization': 'O2', 'status': 'PASS', 'pass': True, 'return': 0, 'failure_line': 0, 'error': None}

@@ -1,0 +1,217 @@
+[
+  {
+    "suite": "c1",
+    "IDs": 419,
+    "missing": [],
+    "new": [],
+    "duplicate": [],
+    "order_equal": true,
+    "outcome_changes": [],
+    "summary": {
+      "total": 419,
+      "passed": 419,
+      "failed": 0
+    },
+    "raw_status": "PASS"
+  },
+  {
+    "suite": "c1_1",
+    "IDs": 24,
+    "missing": [],
+    "new": [],
+    "duplicate": [],
+    "order_equal": true,
+    "outcome_changes": [],
+    "summary": {
+      "original_c1": {
+        "total": 419,
+        "passed": 419,
+        "failed": 0
+      },
+      "added_total": 24,
+      "added_passed": 24,
+      "added_failed": 0,
+      "arm_total": 443
+    },
+    "raw_status": "PASS"
+  },
+  {
+    "suite": "c2_1_1",
+    "IDs": 648,
+    "missing": [],
+    "new": [],
+    "duplicate": [],
+    "order_equal": true,
+    "outcome_changes": [],
+    "summary": {
+      "total": 648,
+      "passed": 648,
+      "failed": 0,
+      "stress_transactions": 40960
+    },
+    "raw_status": "PASS"
+  },
+  {
+    "suite": "c2a",
+    "IDs": 162,
+    "missing": [],
+    "new": [],
+    "duplicate": [],
+    "order_equal": true,
+    "outcome_changes": [],
+    "summary": {
+      "total": 162,
+      "passed": 162,
+      "failed": 0
+    },
+    "raw_status": "PASS"
+  },
+  {
+    "suite": "r2",
+    "IDs": 74,
+    "missing": [],
+    "new": [],
+    "duplicate": [],
+    "order_equal": true,
+    "outcome_changes": [],
+    "summary": {
+      "total": 74,
+      "passed": 74,
+      "failed": 0
+    },
+    "raw_status": "PASS"
+  },
+  {
+    "suite": "b1",
+    "IDs": 39,
+    "missing": [],
+    "new": [],
+    "duplicate": [],
+    "order_equal": true,
+    "outcome_changes": [],
+    "summary": {
+      "total": 39,
+      "passed": 37,
+      "failed": 2
+    },
+    "raw_status": "FAIL"
+  },
+  {
+    "suite": "b1_media",
+    "IDs": 6,
+    "missing": [],
+    "new": [],
+    "duplicate": [],
+    "order_equal": true,
+    "outcome_changes": [],
+    "summary": {
+      "total": 6,
+      "passed": 6,
+      "failed": 0
+    },
+    "raw_status": "PASS"
+  },
+  {
+    "suite": "b1_integration",
+    "IDs": 11,
+    "missing": [],
+    "new": [],
+    "duplicate": [],
+    "order_equal": true,
+    "outcome_changes": [],
+    "summary": {
+      "total": 11,
+      "passed": 0,
+      "failed": 11
+    },
+    "raw_status": "FAIL"
+  },
+  {
+    "suite": "b2",
+    "IDs": 102,
+    "missing": [],
+    "new": [],
+    "duplicate": [],
+    "order_equal": true,
+    "outcome_changes": [],
+    "summary": {
+      "total": 102,
+      "passed": 16,
+      "failed": 86
+    },
+    "raw_status": "FAIL"
+  },
+  {
+    "suite": "b3",
+    "IDs": 51,
+    "missing": [],
+    "new": [],
+    "duplicate": [],
+    "order_equal": true,
+    "outcome_changes": [],
+    "summary": {
+      "total": 51,
+      "passed": 14,
+      "failed": 37
+    },
+    "raw_status": "FAIL"
+  },
+  {
+    "suite": "business",
+    "IDs": 62,
+    "missing": [],
+    "new": [],
+    "duplicate": [],
+    "order_equal": true,
+    "outcome_changes": [],
+    "summary": {
+      "total": 62,
+      "passed": 62,
+      "failed": 0
+    },
+    "raw_status": "PASS"
+  },
+  {
+    "suite": "consumer",
+    "IDs": 44,
+    "missing": [],
+    "new": [],
+    "duplicate": [],
+    "order_equal": true,
+    "outcome_changes": [],
+    "summary": {
+      "total": 44,
+      "passed": 42,
+      "failed": 2
+    },
+    "raw_status": "FAIL"
+  },
+  {
+    "suite": "power",
+    "IDs": 14,
+    "missing": [],
+    "new": [],
+    "duplicate": [],
+    "order_equal": true,
+    "outcome_changes": [],
+    "summary": {
+      "total": 14,
+      "passed": 14
+    },
+    "raw_status": "PASS"
+  },
+  {
+    "suite": "i2c",
+    "IDs": 24,
+    "missing": [],
+    "new": [],
+    "duplicate": [],
+    "order_equal": true,
+    "outcome_changes": [],
+    "summary": {
+      "total": 24,
+      "passed": 24
+    },
+    "raw_status": "PASS"
+  }
+]

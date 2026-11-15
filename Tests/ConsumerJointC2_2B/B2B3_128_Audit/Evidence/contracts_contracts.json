@@ -1,0 +1,1374 @@
+{
+  "cases": [
+    {
+      "id": 0,
+      "status": "PASS",
+      "classification": null,
+      "C_assertions_pass": true,
+      "first_contract_violation": null,
+      "contracts": [
+        {
+          "contract": "UsbTask: QUERY_REPLY < ACQUIRE_REPLY < real GRANTED < business start",
+          "status": "PASS",
+          "evidence_sequences": [
+            285,
+            601,
+            629,
+            630
+          ]
+        },
+        {
+          "contract": "StorageTask: QUERY_REPLY < ACQUIRE_REPLY < real GRANTED < business start",
+          "status": "PASS",
+          "evidence_sequences": [
+            1819,
+            2073,
+            2103,
+            2105
+          ]
+        },
+        {
+          "contract": "Camera owner prepare before any consumer START",
+          "status": "PASS",
+          "evidence_sequences": [
+            5,
+            34
+          ]
+        },
+        {
+          "contract": "SD write/failed-write attempt < return pending < Camera lease return",
+          "status": "PASS",
+          "evidence_sequences": [
+            4218,
+            4226,
+            4298
+          ]
+        },
+        {
+          "contract": "SD actual release executes only in CameraTask",
+          "status": "PASS",
+          "evidence_sequences": [
+            4298
+          ]
+        },
+        {
+          "contract": "USB STOP < cancel < Return < Camera release < Return ACK < Mode Stop",
+          "status": "PASS",
+          "evidence_sequences": [
+            4346,
+            4361,
+            4374,
+            4465,
+            4467,
+            4554
+          ]
+        },
+        {
+          "contract": "USB complete Return/ACK < RELEASE intent (not success)",
+          "status": "PASS",
+          "evidence_sequences": [
+            4467,
+            4594
+          ]
+        },
+        {
+          "contract": "AVI Finish < file Close < Unmount",
+          "status": "PASS",
+          "evidence_sequences": [
+            4630,
+            4642,
+            4645
+          ]
+        },
+        {
+          "contract": "No forced Camera hardware stop",
+          "status": "PASS",
+          "evidence_sequences": []
+        },
+        {
+          "contract": "Real adapter does not fabricate released/hardware-stopped flags",
+          "status": "PASS",
+          "evidence_sequences": []
+        },
+        {
+          "contract": "Each Camera round preserves Begin/Media/Bridge/Finish",
+          "status": "PASS",
+          "evidence_sequences": [
+            117,
+            369,
+            687,
+            843,
+            997,
+            1151,
+            1305,
+            1459,
+            1631,
+            1883,
+            2131,
+            2261,
+            2391,
+            2521,
+            2651,
+            2781,
+            2937,
+            4247,
+            4411,
+            4689,
+            4899,
+            5113,
+            5305
+          ]
+        }
+      ],
+      "raw_trace": "Evidence/0.json.gz",
+      "resource_release_complete": false
+    },
+    {
+      "id": 1,
+      "status": "PASS",
+      "classification": null,
+      "C_assertions_pass": true,
+      "first_contract_violation": null,
+      "contracts": [
+        {
+          "contract": "UsbTask: QUERY_REPLY < ACQUIRE_REPLY < real GRANTED < business start",
+          "status": "PASS",
+          "evidence_sequences": [
+            285,
+            601,
+            629,
+            630
+          ]
+        },
+        {
+          "contract": "StorageTask: QUERY_REPLY < ACQUIRE_REPLY < real GRANTED < business start",
+          "status": "PASS",
+          "evidence_sequences": [
+            1819,
+            2073,
+            2103,
+            2105
+          ]
+        },
+        {
+          "contract": "Camera owner prepare before any consumer START",
+          "status": "PASS",
+          "evidence_sequences": [
+            5,
+            34
+          ]
+        },
+        {
+          "contract": "SD write/failed-write attempt < return pending < Camera lease return",
+          "status": "PASS",
+          "evidence_sequences": [
+            4220,
+            4230,
+            4302
+          ]
+        },
+        {
+          "contract": "SD actual release executes only in CameraTask",
+          "status": "PASS",
+          "evidence_sequences": [
+            4302
+          ]
+        },
+        {
+          "contract": "USB STOP < cancel < Return < Camera release < Return ACK < Mode Stop",
+          "status": "PASS",
+          "evidence_sequences": [
+            4350,
+            4365,
+            4378,
+            4469,
+            4471,
+            4558
+          ]
+        },
+        {
+          "contract": "USB complete Return/ACK < RELEASE intent (not success)",
+          "status": "PASS",
+          "evidence_sequences": [
+            4471,
+            4598
+          ]
+        },
+        {
+          "contract": "AVI Finish < file Close < Unmount",
+          "status": "PASS",
+          "evidence_sequences": [
+            4634,
+            4646,
+            4649
+          ]
+        },
+        {
+          "contract": "No forced Camera hardware stop",
+          "status": "PASS",
+          "evidence_sequences": []
+        },
+        {
+          "contract": "Real adapter does not fabricate released/hardware-stopped flags",
+          "status": "PASS",
+          "evidence_sequences": []
+        },
+        {
+          "contract": "Each Camera round preserves Begin/Media/Bridge/Finish",
+          "status": "PASS",
+          "evidence_sequences": [
+            117,
+            369,
+            687,
+            843,
+            997,
+            1151,
+            1305,
+            1459,
+            1631,
+            1883,
+            2131,
+            2261,
+            2391,
+            2521,
+            2651,
+            2781,
+            2937,
+            4251,
+            4415,
+            4693,
+            4903,
+            5117,
+            5309
+          ]
+        }
+      ],
+      "raw_trace": "Evidence/1.json.gz",
+      "resource_release_complete": false
+    },
+    {
+      "id": 2,
+      "status": "PASS",
+      "classification": null,
+      "C_assertions_pass": true,
+      "first_contract_violation": null,
+      "contracts": [
+        {
+          "contract": "UsbTask: QUERY_REPLY < ACQUIRE_REPLY < real GRANTED < business start",
+          "status": "PASS",
+          "evidence_sequences": [
+            285,
+            601,
+            629,
+            630
+          ]
+        },
+        {
+          "contract": "StorageTask: QUERY_REPLY < ACQUIRE_REPLY < real GRANTED < business start",
+          "status": "PASS",
+          "evidence_sequences": [
+            1819,
+            2073,
+            2103,
+            2105
+          ]
+        },
+        {
+          "contract": "Camera owner prepare before any consumer START",
+          "status": "PASS",
+          "evidence_sequences": [
+            5,
+            34
+          ]
+        },
+        {
+          "contract": "SD write/failed-write attempt < return pending < Camera lease return",
+          "status": "PASS",
+          "evidence_sequences": [
+            4318,
+            4326,
+            4398
+          ]
+        },
+        {
+          "contract": "SD actual release executes only in CameraTask",
+          "status": "PASS",
+          "evidence_sequences": [
+            4398
+          ]
+        },
+        {
+          "contract": "USB STOP < cancel < Return < Camera release < Return ACK < Mode Stop",
+          "status": "PASS",
+          "evidence_sequences": [
+            4446,
+            4461,
+            4474,
+            4565,
+            4567,
+            4654
+          ]
+        },
+        {
+          "contract": "USB complete Return/ACK < RELEASE intent (not success)",
+          "status": "PASS",
+          "evidence_sequences": [
+            4567,
+            4694
+          ]
+        },
+        {
+          "contract": "AVI Finish < file Close < Unmount",
+          "status": "PASS",
+          "evidence_sequences": [
+            4730,
+            4742,
+            4745
+          ]
+        },
+        {
+          "contract": "No forced Camera hardware stop",
+          "status": "PASS",
+          "evidence_sequences": []
+        },
+        {
+          "contract": "Real adapter does not fabricate released/hardware-stopped flags",
+          "status": "PASS",
+          "evidence_sequences": []
+        },
+        {
+          "contract": "Each Camera round preserves Begin/Media/Bridge/Finish",
+          "status": "PASS",
+          "evidence_sequences": [
+            117,
+            369,
+            687,
+            843,
+            997,
+            1151,
+            1305,
+            1459,
+            1631,
+            1883,
+            2131,
+            2261,
+            2391,
+            2521,
+            2651,
+            2781,
+            2937,
+            3057,
+            4347,
+            4511,
+            4789,
+            4999,
+            5213,
+            5405
+          ]
+        }
+      ],
+      "raw_trace": "Evidence/2.json.gz",
+      "resource_release_complete": false
+    },
+    {
+      "id": 3,
+      "status": "PASS",
+      "classification": null,
+      "C_assertions_pass": true,
+      "first_contract_violation": null,
+      "contracts": [
+        {
+          "contract": "UsbTask: QUERY_REPLY < ACQUIRE_REPLY < real GRANTED < business start",
+          "status": "PASS",
+          "evidence_sequences": [
+            285,
+            601,
+            629,
+            630
+          ]
+        },
+        {
+          "contract": "StorageTask: QUERY_REPLY < ACQUIRE_REPLY < real GRANTED < business start",
+          "status": "PASS",
+          "evidence_sequences": [
+            1819,
+            2073,
+            2103,
+            2105
+          ]
+        },
+        {
+          "contract": "Camera owner prepare before any consumer START",
+          "status": "PASS",
+          "evidence_sequences": [
+            5,
+            34
+          ]
+        },
+        {
+          "contract": "SD write/failed-write attempt < return pending < Camera lease return",
+          "status": "PASS",
+          "evidence_sequences": [
+            4222,
+            4230,
+            4302
+          ]
+        },
+        {
+          "contract": "SD actual release executes only in CameraTask",
+          "status": "PASS",
+          "evidence_sequences": [
+            4302
+          ]
+        },
+        {
+          "contract": "USB STOP < cancel < Return < Camera release < Return ACK < Mode Stop",
+          "status": "PASS",
+          "evidence_sequences": [
+            4350,
+            4365,
+            4378,
+            4469,
+            4471,
+            4558
+          ]
+        },
+        {
+          "contract": "USB complete Return/ACK < RELEASE intent (not success)",
+          "status": "PASS",
+          "evidence_sequences": [
+            4471,
+            4598
+          ]
+        },
+        {
+          "contract": "AVI Finish < file Close < Unmount",
+          "status": "PASS",
+          "evidence_sequences": [
+            4634,
+            4646,
+            4649
+          ]
+        },
+        {
+          "contract": "No forced Camera hardware stop",
+          "status": "PASS",
+          "evidence_sequences": []
+        },
+        {
+          "contract": "Real adapter does not fabricate released/hardware-stopped flags",
+          "status": "PASS",
+          "evidence_sequences": []
+        },
+        {
+          "contract": "Each Camera round preserves Begin/Media/Bridge/Finish",
+          "status": "PASS",
+          "evidence_sequences": [
+            117,
+            369,
+            687,
+            843,
+            997,
+            1151,
+            1305,
+            1459,
+            1631,
+            1883,
+            2131,
+            2261,
+            2391,
+            2521,
+            2651,
+            2781,
+            2937,
+            4251,
+            4415,
+            4693,
+            4903,
+            5117,
+            5309
+          ]
+        }
+      ],
+      "raw_trace": "Evidence/3.json.gz",
+      "resource_release_complete": false
+    },
+    {
+      "id": 4,
+      "status": "PASS",
+      "classification": null,
+      "C_assertions_pass": true,
+      "first_contract_violation": null,
+      "contracts": [
+        {
+          "contract": "UsbTask: QUERY_REPLY < ACQUIRE_REPLY < real GRANTED < business start",
+          "status": "PASS",
+          "evidence_sequences": [
+            285,
+            601,
+            629,
+            630
+          ]
+        },
+        {
+          "contract": "StorageTask: QUERY_REPLY < ACQUIRE_REPLY < real GRANTED < business start",
+          "status": "PASS",
+          "evidence_sequences": [
+            1819,
+            2073,
+            2103,
+            2105
+          ]
+        },
+        {
+          "contract": "Camera owner prepare before any consumer START",
+          "status": "PASS",
+          "evidence_sequences": [
+            5,
+            34
+          ]
+        },
+        {
+          "contract": "SD write/failed-write attempt < return pending < Camera lease return",
+          "status": "PASS",
+          "evidence_sequences": [
+            4214,
+            4218,
+            4302
+          ]
+        },
+        {
+          "contract": "SD actual release executes only in CameraTask",
+          "status": "PASS",
+          "evidence_sequences": [
+            4302
+          ]
+        },
+        {
+          "contract": "USB STOP < cancel < Return < Camera release < Return ACK < Mode Stop",
+          "status": "PASS",
+          "evidence_sequences": [
+            4350,
+            4365,
+            4378,
+            4469,
+            4471,
+            4558
+          ]
+        },
+        {
+          "contract": "USB complete Return/ACK < RELEASE intent (not success)",
+          "status": "PASS",
+          "evidence_sequences": [
+            4471,
+            4598
+          ]
+        },
+        {
+          "contract": "IO failure is retained as FAULT, not normal AVI completion",
+          "status": "PASS",
+          "evidence_sequences": []
+        },
+        {
+          "contract": "No forced Camera hardware stop",
+          "status": "PASS",
+          "evidence_sequences": []
+        },
+        {
+          "contract": "Real adapter does not fabricate released/hardware-stopped flags",
+          "status": "PASS",
+          "evidence_sequences": []
+        },
+        {
+          "contract": "Each Camera round preserves Begin/Media/Bridge/Finish",
+          "status": "PASS",
+          "evidence_sequences": [
+            117,
+            369,
+            687,
+            843,
+            997,
+            1151,
+            1305,
+            1459,
+            1631,
+            1883,
+            2131,
+            2261,
+            2391,
+            2521,
+            2651,
+            2781,
+            2937,
+            4251,
+            4415,
+            4613,
+            4837,
+            5051,
+            5243
+          ]
+        }
+      ],
+      "raw_trace": "Evidence/4.json.gz",
+      "resource_release_complete": false
+    },
+    {
+      "id": 5,
+      "status": "PASS",
+      "classification": null,
+      "C_assertions_pass": true,
+      "first_contract_violation": null,
+      "contracts": [
+        {
+          "contract": "UsbTask: QUERY_REPLY < ACQUIRE_REPLY < real GRANTED < business start",
+          "status": "PASS",
+          "evidence_sequences": [
+            285,
+            601,
+            629,
+            630
+          ]
+        },
+        {
+          "contract": "StorageTask: QUERY_REPLY < ACQUIRE_REPLY < real GRANTED < business start",
+          "status": "PASS",
+          "evidence_sequences": [
+            1819,
+            2073,
+            2103,
+            2105
+          ]
+        },
+        {
+          "contract": "Camera owner prepare before any consumer START",
+          "status": "PASS",
+          "evidence_sequences": [
+            5,
+            34
+          ]
+        },
+        {
+          "contract": "SD write/failed-write attempt < return pending < Camera lease return",
+          "status": "PASS",
+          "evidence_sequences": [
+            4218,
+            4226,
+            4298
+          ]
+        },
+        {
+          "contract": "SD actual release executes only in CameraTask",
+          "status": "PASS",
+          "evidence_sequences": [
+            4298,
+            4398
+          ]
+        },
+        {
+          "contract": "USB STOP < cancel < Return < Camera release < Return ACK < Mode Stop",
+          "status": "PASS",
+          "evidence_sequences": [
+            4446,
+            4461,
+            4474,
+            4565,
+            4567,
+            4654
+          ]
+        },
+        {
+          "contract": "USB complete Return/ACK < RELEASE intent (not success)",
+          "status": "PASS",
+          "evidence_sequences": [
+            4567,
+            4694
+          ]
+        },
+        {
+          "contract": "AVI Finish < file Close < Unmount",
+          "status": "PASS",
+          "evidence_sequences": [
+            4730,
+            4742,
+            4745
+          ]
+        },
+        {
+          "contract": "No forced Camera hardware stop",
+          "status": "PASS",
+          "evidence_sequences": []
+        },
+        {
+          "contract": "Real adapter does not fabricate released/hardware-stopped flags",
+          "status": "PASS",
+          "evidence_sequences": []
+        },
+        {
+          "contract": "Each Camera round preserves Begin/Media/Bridge/Finish",
+          "status": "PASS",
+          "evidence_sequences": [
+            117,
+            369,
+            687,
+            843,
+            997,
+            1151,
+            1305,
+            1459,
+            1631,
+            1883,
+            2131,
+            2261,
+            2391,
+            2521,
+            2651,
+            2781,
+            2937,
+            4247,
+            4347,
+            4511,
+            4789,
+            4999,
+            5213,
+            5405
+          ]
+        }
+      ],
+      "raw_trace": "Evidence/5.json.gz",
+      "resource_release_complete": false
+    },
+    {
+      "id": 6,
+      "status": "PASS",
+      "classification": null,
+      "C_assertions_pass": true,
+      "first_contract_violation": null,
+      "contracts": [
+        {
+          "contract": "UsbTask: QUERY_REPLY < ACQUIRE_REPLY < real GRANTED < business start",
+          "status": "PASS",
+          "evidence_sequences": [
+            285,
+            601,
+            629,
+            630
+          ]
+        },
+        {
+          "contract": "StorageTask: QUERY_REPLY < ACQUIRE_REPLY < real GRANTED < business start",
+          "status": "PASS",
+          "evidence_sequences": [
+            1819,
+            2073,
+            2103,
+            2105
+          ]
+        },
+        {
+          "contract": "Camera owner prepare before any consumer START",
+          "status": "PASS",
+          "evidence_sequences": [
+            5,
+            34
+          ]
+        },
+        {
+          "contract": "SD write/failed-write attempt < return pending < Camera lease return",
+          "status": "PASS",
+          "evidence_sequences": [
+            4344,
+            4352,
+            4424
+          ]
+        },
+        {
+          "contract": "SD actual release executes only in CameraTask",
+          "status": "PASS",
+          "evidence_sequences": [
+            4424
+          ]
+        },
+        {
+          "contract": "USB STOP < cancel < Return < Camera release < Return ACK < Mode Stop",
+          "status": "PASS",
+          "evidence_sequences": [
+            4472,
+            4487,
+            4500,
+            4591,
+            4593,
+            4680
+          ]
+        },
+        {
+          "contract": "USB complete Return/ACK < RELEASE intent (not success)",
+          "status": "PASS",
+          "evidence_sequences": [
+            4593,
+            4720
+          ]
+        },
+        {
+          "contract": "AVI Finish < file Close < Unmount",
+          "status": "PASS",
+          "evidence_sequences": [
+            4756,
+            4768,
+            4771
+          ]
+        },
+        {
+          "contract": "No forced Camera hardware stop",
+          "status": "PASS",
+          "evidence_sequences": []
+        },
+        {
+          "contract": "Real adapter does not fabricate released/hardware-stopped flags",
+          "status": "PASS",
+          "evidence_sequences": []
+        },
+        {
+          "contract": "Each Camera round preserves Begin/Media/Bridge/Finish",
+          "status": "PASS",
+          "evidence_sequences": [
+            117,
+            369,
+            687,
+            843,
+            997,
+            1151,
+            1305,
+            1459,
+            1631,
+            1883,
+            2131,
+            2261,
+            2391,
+            2521,
+            2651,
+            2781,
+            2937,
+            3111,
+            4373,
+            4537,
+            4815,
+            5025,
+            5239,
+            5431
+          ]
+        },
+        {
+          "contract": "ID6 exact Camera STOP ACK NOT_SUPPORTED",
+          "status": "PASS",
+          "evidence_sequences": [
+            3215
+          ]
+        }
+      ],
+      "raw_trace": "Evidence/6.json.gz",
+      "resource_release_complete": false
+    },
+    {
+      "id": 7,
+      "status": "PASS",
+      "classification": "C",
+      "C_assertions_pass": true,
+      "first_contract_violation": null,
+      "contracts": [
+        {
+          "contract": "UsbTask: QUERY_REPLY < ACQUIRE_REPLY < real GRANTED < business start",
+          "status": "PASS",
+          "evidence_sequences": [
+            285,
+            601,
+            629,
+            630
+          ]
+        },
+        {
+          "contract": "StorageTask: QUERY_REPLY < ACQUIRE_REPLY < real GRANTED < business start",
+          "status": "PASS",
+          "evidence_sequences": [
+            1819,
+            2073,
+            2103,
+            2105
+          ]
+        },
+        {
+          "contract": "Camera owner prepare before any consumer START",
+          "status": "PASS",
+          "evidence_sequences": [
+            5,
+            34
+          ]
+        },
+        {
+          "contract": "SD write/failed-write attempt < return pending < Camera lease return",
+          "status": "PASS",
+          "evidence_sequences": [
+            4218,
+            4226,
+            4298
+          ]
+        },
+        {
+          "contract": "SD actual release executes only in CameraTask",
+          "status": "PASS",
+          "evidence_sequences": [
+            4298
+          ]
+        },
+        {
+          "contract": "USB STOP < cancel < Return < Camera release < Return ACK < Mode Stop",
+          "status": "PASS",
+          "evidence_sequences": [
+            4346,
+            4361,
+            4440,
+            4531,
+            4533,
+            4620
+          ]
+        },
+        {
+          "contract": "USB complete Return/ACK < RELEASE intent (not success)",
+          "status": "PASS",
+          "evidence_sequences": [
+            4533,
+            4654
+          ]
+        },
+        {
+          "contract": "AVI Finish < file Close < Unmount",
+          "status": "PASS",
+          "evidence_sequences": [
+            4690,
+            4702,
+            4705
+          ]
+        },
+        {
+          "contract": "No forced Camera hardware stop",
+          "status": "PASS",
+          "evidence_sequences": []
+        },
+        {
+          "contract": "Real adapter does not fabricate released/hardware-stopped flags",
+          "status": "PASS",
+          "evidence_sequences": []
+        },
+        {
+          "contract": "Each Camera round preserves Begin/Media/Bridge/Finish",
+          "status": "PASS",
+          "evidence_sequences": [
+            117,
+            369,
+            687,
+            843,
+            997,
+            1151,
+            1305,
+            1459,
+            1631,
+            1883,
+            2131,
+            2261,
+            2391,
+            2521,
+            2651,
+            2781,
+            2937,
+            4247,
+            4477,
+            4749,
+            4959,
+            5173,
+            5365
+          ]
+        }
+      ],
+      "raw_trace": "Evidence/7.json.gz",
+      "resource_release_complete": false
+    },
+    {
+      "id": 8,
+      "status": "PASS",
+      "classification": null,
+      "C_assertions_pass": true,
+      "first_contract_violation": null,
+      "contracts": [
+        {
+          "contract": "UsbTask: QUERY_REPLY < ACQUIRE_REPLY < real GRANTED < business start",
+          "status": "PASS",
+          "evidence_sequences": [
+            285,
+            601,
+            629,
+            630
+          ]
+        },
+        {
+          "contract": "StorageTask: QUERY_REPLY < ACQUIRE_REPLY < real GRANTED < business start",
+          "status": "PASS",
+          "evidence_sequences": [
+            1819,
+            2073,
+            2103,
+            2105
+          ]
+        },
+        {
+          "contract": "Camera owner prepare before any consumer START",
+          "status": "PASS",
+          "evidence_sequences": [
+            5,
+            34
+          ]
+        },
+        {
+          "contract": "SD write/failed-write attempt < return pending < Camera lease return",
+          "status": "PASS",
+          "evidence_sequences": [
+            4218,
+            4226,
+            4298
+          ]
+        },
+        {
+          "contract": "SD actual release executes only in CameraTask",
+          "status": "PASS",
+          "evidence_sequences": [
+            4298
+          ]
+        },
+        {
+          "contract": "USB STOP < cancel < Return < Camera release < Return ACK < Mode Stop",
+          "status": "PASS",
+          "evidence_sequences": [
+            4346,
+            4361,
+            4374,
+            4465,
+            4467,
+            4652
+          ]
+        },
+        {
+          "contract": "USB complete Return/ACK < RELEASE intent (not success)",
+          "status": "PASS",
+          "evidence_sequences": [
+            4467,
+            4692
+          ]
+        },
+        {
+          "contract": "AVI Finish < file Close < Unmount",
+          "status": "PASS",
+          "evidence_sequences": [
+            4728,
+            4740,
+            4743
+          ]
+        },
+        {
+          "contract": "No forced Camera hardware stop",
+          "status": "PASS",
+          "evidence_sequences": []
+        },
+        {
+          "contract": "Real adapter does not fabricate released/hardware-stopped flags",
+          "status": "PASS",
+          "evidence_sequences": []
+        },
+        {
+          "contract": "Each Camera round preserves Begin/Media/Bridge/Finish",
+          "status": "PASS",
+          "evidence_sequences": [
+            117,
+            369,
+            687,
+            843,
+            997,
+            1151,
+            1305,
+            1459,
+            1631,
+            1883,
+            2131,
+            2261,
+            2391,
+            2521,
+            2651,
+            2781,
+            2937,
+            4247,
+            4411,
+            4513,
+            4787,
+            4997,
+            5211,
+            5403
+          ]
+        }
+      ],
+      "raw_trace": "Evidence/8.json.gz",
+      "resource_release_complete": false
+    },
+    {
+      "id": 9,
+      "status": "PASS",
+      "classification": null,
+      "C_assertions_pass": true,
+      "first_contract_violation": null,
+      "contracts": [
+        {
+          "contract": "UsbTask: QUERY_REPLY < ACQUIRE_REPLY < real GRANTED < business start",
+          "status": "PASS",
+          "evidence_sequences": [
+            285,
+            601,
+            629,
+            630
+          ]
+        },
+        {
+          "contract": "StorageTask: QUERY_REPLY < ACQUIRE_REPLY < real GRANTED < business start",
+          "status": "PASS",
+          "evidence_sequences": [
+            1819,
+            2073,
+            2103,
+            2105
+          ]
+        },
+        {
+          "contract": "Camera owner prepare before any consumer START",
+          "status": "PASS",
+          "evidence_sequences": [
+            5,
+            34
+          ]
+        },
+        {
+          "contract": "SD write/failed-write attempt < return pending < Camera lease return",
+          "status": "PASS",
+          "evidence_sequences": [
+            4218,
+            4226,
+            4298
+          ]
+        },
+        {
+          "contract": "SD actual release executes only in CameraTask",
+          "status": "PASS",
+          "evidence_sequences": [
+            4298
+          ]
+        },
+        {
+          "contract": "USB STOP < cancel < Return < Camera release < Return ACK < Mode Stop",
+          "status": "PASS",
+          "evidence_sequences": [
+            4346,
+            4361,
+            4374,
+            4465,
+            4467,
+            4554
+          ]
+        },
+        {
+          "contract": "USB complete Return/ACK < RELEASE intent (not success)",
+          "status": "PASS",
+          "evidence_sequences": [
+            4467,
+            4594
+          ]
+        },
+        {
+          "contract": "AVI Finish < file Close < Unmount",
+          "status": "PASS",
+          "evidence_sequences": [
+            4820,
+            4832,
+            4835
+          ]
+        },
+        {
+          "contract": "No forced Camera hardware stop",
+          "status": "PASS",
+          "evidence_sequences": []
+        },
+        {
+          "contract": "Real adapter does not fabricate released/hardware-stopped flags",
+          "status": "PASS",
+          "evidence_sequences": []
+        },
+        {
+          "contract": "Each Camera round preserves Begin/Media/Bridge/Finish",
+          "status": "PASS",
+          "evidence_sequences": [
+            117,
+            369,
+            687,
+            843,
+            997,
+            1151,
+            1305,
+            1459,
+            1631,
+            1883,
+            2131,
+            2261,
+            2391,
+            2521,
+            2651,
+            2781,
+            2937,
+            4247,
+            4411,
+            4609,
+            4879,
+            5093,
+            5285,
+            5477
+          ]
+        }
+      ],
+      "raw_trace": "Evidence/9.json.gz",
+      "resource_release_complete": false
+    },
+    {
+      "id": 10,
+      "status": "PASS",
+      "classification": null,
+      "C_assertions_pass": true,
+      "first_contract_violation": null,
+      "contracts": [
+        {
+          "contract": "UsbTask: QUERY_REPLY < ACQUIRE_REPLY < real GRANTED < business start",
+          "status": "PASS",
+          "evidence_sequences": [
+            285,
+            601,
+            629,
+            630
+          ]
+        },
+        {
+          "contract": "StorageTask: QUERY_REPLY < ACQUIRE_REPLY < real GRANTED < business start",
+          "status": "PASS",
+          "evidence_sequences": [
+            1819,
+            2073,
+            2103,
+            2105
+          ]
+        },
+        {
+          "contract": "Camera owner prepare before any consumer START",
+          "status": "PASS",
+          "evidence_sequences": [
+            5,
+            34
+          ]
+        },
+        {
+          "contract": "SD write/failed-write attempt < return pending < Camera lease return",
+          "status": "PASS",
+          "evidence_sequences": [
+            4218,
+            4226,
+            4298
+          ]
+        },
+        {
+          "contract": "SD actual release executes only in CameraTask",
+          "status": "PASS",
+          "evidence_sequences": [
+            4298
+          ]
+        },
+        {
+          "contract": "USB STOP < cancel < Return < Camera release < Return ACK < Mode Stop",
+          "status": "PASS",
+          "evidence_sequences": [
+            4346,
+            4361,
+            4374,
+            4465,
+            4467,
+            4554
+          ]
+        },
+        {
+          "contract": "USB complete Return/ACK < RELEASE intent (not success)",
+          "status": "PASS",
+          "evidence_sequences": [
+            4467,
+            4594
+          ]
+        },
+        {
+          "contract": "AVI Finish < file Close < Unmount",
+          "status": "PASS",
+          "evidence_sequences": [
+            4816,
+            4828,
+            4831
+          ]
+        },
+        {
+          "contract": "No forced Camera hardware stop",
+          "status": "PASS",
+          "evidence_sequences": []
+        },
+        {
+          "contract": "Real adapter does not fabricate released/hardware-stopped flags",
+          "status": "PASS",
+          "evidence_sequences": []
+        },
+        {
+          "contract": "Each Camera round preserves Begin/Media/Bridge/Finish",
+          "status": "PASS",
+          "evidence_sequences": [
+            117,
+            369,
+            687,
+            843,
+            997,
+            1151,
+            1305,
+            1459,
+            1631,
+            1883,
+            2131,
+            2261,
+            2391,
+            2521,
+            2651,
+            2781,
+            2937,
+            4247,
+            4411,
+            4609,
+            4875,
+            5089,
+            5281,
+            5473
+          ]
+        }
+      ],
+      "raw_trace": "Evidence/10.json.gz",
+      "resource_release_complete": false
+    }
+  ],
+  "summary": {
+    "total": 11,
+    "passed": 11
+  },
+  "first_contract_violation_semantics": "first unsatisfied causal obligation; normal added async events are not violations",
+  "in_flight_storage_stop_total_order": "NOT_RUN: this joint set stops Storage after frame drain; original B3 queued-stop remains separately tracked",
+  "C2_2C_real_close": "NOT_RUN"
+}

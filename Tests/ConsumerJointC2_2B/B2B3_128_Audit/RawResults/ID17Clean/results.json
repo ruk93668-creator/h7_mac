@@ -1,0 +1,3910 @@
+{
+  "cases": [
+    {
+      "group": "core",
+      "original_id": 17,
+      "raw": {
+        "return": 114,
+        "failure_line": 114,
+        "error": null,
+        "returned": true,
+        "original_status": "FAIL"
+      },
+      "acceptance_status": "EXPECTED_REJECT",
+      "expectation_matched": true,
+      "final": {
+        "session_id": 0,
+        "starts": 0,
+        "hardware_entries": {},
+        "consumers": [
+          {
+            "phase": 6,
+            "result": -5,
+            "session": 0,
+            "generation": 1,
+            "granted": 0,
+            "request_id": 1
+          },
+          {
+            "phase": 6,
+            "result": -5,
+            "session": 0,
+            "generation": 1,
+            "granted": 0,
+            "request_id": 1
+          }
+        ],
+        "qualification_phase": [
+          0,
+          0
+        ],
+        "final_reply_enqueued": [
+          1,
+          1
+        ],
+        "self_wakes": null,
+        "inbox_count": null
+      },
+      "rounds": [
+        {
+          "round": 0,
+          "before": {
+            "session_id": 0,
+            "starts": 0,
+            "hardware_entries": {},
+            "consumers": [
+              {
+                "phase": 1,
+                "result": -5,
+                "session": 0,
+                "generation": 1,
+                "granted": 0,
+                "request_id": 1
+              },
+              {
+                "phase": 1,
+                "result": -5,
+                "session": 0,
+                "generation": 1,
+                "granted": 0,
+                "request_id": 1
+              }
+            ],
+            "qualification_phase": [
+              0,
+              0
+            ],
+            "final_reply_enqueued": [
+              0,
+              0
+            ],
+            "self_wakes": null,
+            "inbox_count": null
+          },
+          "received": [
+            {
+              "sequence": 65,
+              "message": [
+                1,
+                1,
+                1,
+                2,
+                1,
+                0,
+                1,
+                1,
+                1,
+                0,
+                0,
+                0,
+                0,
+                0
+              ],
+              "inbox_after_dequeue": null
+            },
+            {
+              "sequence": 87,
+              "message": [
+                1,
+                1,
+                1,
+                3,
+                1,
+                0,
+                1,
+                2,
+                1,
+                0,
+                0,
+                0,
+                0,
+                0
+              ],
+              "inbox_after_dequeue": null
+            }
+          ],
+          "after_both_flushes": {
+            "session_id": 0,
+            "starts": 0,
+            "hardware_entries": {},
+            "consumers": [
+              {
+                "phase": 1,
+                "result": -5,
+                "session": 0,
+                "generation": 1,
+                "granted": 0,
+                "request_id": 1
+              },
+              {
+                "phase": 1,
+                "result": -5,
+                "session": 0,
+                "generation": 1,
+                "granted": 0,
+                "request_id": 1
+              }
+            ],
+            "qualification_phase": [
+              0,
+              0
+            ],
+            "final_reply_enqueued": [
+              0,
+              0
+            ],
+            "self_wakes": null,
+            "inbox_count": null
+          },
+          "after": {
+            "session_id": 0,
+            "starts": 0,
+            "hardware_entries": {},
+            "consumers": [
+              {
+                "phase": 6,
+                "result": -5,
+                "session": 0,
+                "generation": 1,
+                "granted": 0,
+                "request_id": 1
+              },
+              {
+                "phase": 6,
+                "result": -5,
+                "session": 0,
+                "generation": 1,
+                "granted": 0,
+                "request_id": 1
+              }
+            ],
+            "qualification_phase": [
+              0,
+              0
+            ],
+            "final_reply_enqueued": [
+              1,
+              1
+            ],
+            "self_wakes": null,
+            "inbox_count": null
+          },
+          "self_wake_delta": null
+        },
+        {
+          "round": 1,
+          "before": {
+            "session_id": 0,
+            "starts": 0,
+            "hardware_entries": {},
+            "consumers": [
+              {
+                "phase": 6,
+                "result": -5,
+                "session": 0,
+                "generation": 1,
+                "granted": 0,
+                "request_id": 1
+              },
+              {
+                "phase": 6,
+                "result": -5,
+                "session": 0,
+                "generation": 1,
+                "granted": 0,
+                "request_id": 1
+              }
+            ],
+            "qualification_phase": [
+              0,
+              0
+            ],
+            "final_reply_enqueued": [
+              1,
+              1
+            ],
+            "self_wakes": null,
+            "inbox_count": null
+          },
+          "received": [],
+          "after_both_flushes": {
+            "session_id": 0,
+            "starts": 0,
+            "hardware_entries": {},
+            "consumers": [
+              {
+                "phase": 6,
+                "result": -5,
+                "session": 0,
+                "generation": 1,
+                "granted": 0,
+                "request_id": 1
+              },
+              {
+                "phase": 6,
+                "result": -5,
+                "session": 0,
+                "generation": 1,
+                "granted": 0,
+                "request_id": 1
+              }
+            ],
+            "qualification_phase": [
+              0,
+              0
+            ],
+            "final_reply_enqueued": [
+              1,
+              1
+            ],
+            "self_wakes": null,
+            "inbox_count": null
+          },
+          "after": {
+            "session_id": 0,
+            "starts": 0,
+            "hardware_entries": {},
+            "consumers": [
+              {
+                "phase": 6,
+                "result": -5,
+                "session": 0,
+                "generation": 1,
+                "granted": 0,
+                "request_id": 1
+              },
+              {
+                "phase": 6,
+                "result": -5,
+                "session": 0,
+                "generation": 1,
+                "granted": 0,
+                "request_id": 1
+              }
+            ],
+            "qualification_phase": [
+              0,
+              0
+            ],
+            "final_reply_enqueued": [
+              1,
+              1
+            ],
+            "self_wakes": null,
+            "inbox_count": null
+          },
+          "self_wake_delta": null
+        },
+        {
+          "round": 2,
+          "before": {
+            "session_id": 0,
+            "starts": 0,
+            "hardware_entries": {},
+            "consumers": [
+              {
+                "phase": 6,
+                "result": -5,
+                "session": 0,
+                "generation": 1,
+                "granted": 0,
+                "request_id": 1
+              },
+              {
+                "phase": 6,
+                "result": -5,
+                "session": 0,
+                "generation": 1,
+                "granted": 0,
+                "request_id": 1
+              }
+            ],
+            "qualification_phase": [
+              0,
+              0
+            ],
+            "final_reply_enqueued": [
+              1,
+              1
+            ],
+            "self_wakes": null,
+            "inbox_count": null
+          },
+          "received": [],
+          "after_both_flushes": {
+            "session_id": 0,
+            "starts": 0,
+            "hardware_entries": {},
+            "consumers": [
+              {
+                "phase": 6,
+                "result": -5,
+                "session": 0,
+                "generation": 1,
+                "granted": 0,
+                "request_id": 1
+              },
+              {
+                "phase": 6,
+                "result": -5,
+                "session": 0,
+                "generation": 1,
+                "granted": 0,
+                "request_id": 1
+              }
+            ],
+            "qualification_phase": [
+              0,
+              0
+            ],
+            "final_reply_enqueued": [
+              1,
+              1
+            ],
+            "self_wakes": null,
+            "inbox_count": null
+          },
+          "after": {
+            "session_id": 0,
+            "starts": 0,
+            "hardware_entries": {},
+            "consumers": [
+              {
+                "phase": 6,
+                "result": -5,
+                "session": 0,
+                "generation": 1,
+                "granted": 0,
+                "request_id": 1
+              },
+              {
+                "phase": 6,
+                "result": -5,
+                "session": 0,
+                "generation": 1,
+                "granted": 0,
+                "request_id": 1
+              }
+            ],
+            "qualification_phase": [
+              0,
+              0
+            ],
+            "final_reply_enqueued": [
+              1,
+              1
+            ],
+            "self_wakes": null,
+            "inbox_count": null
+          },
+          "self_wake_delta": null
+        },
+        {
+          "round": 3,
+          "before": {
+            "session_id": 0,
+            "starts": 0,
+            "hardware_entries": {},
+            "consumers": [
+              {
+                "phase": 6,
+                "result": -5,
+                "session": 0,
+                "generation": 1,
+                "granted": 0,
+                "request_id": 1
+              },
+              {
+                "phase": 6,
+                "result": -5,
+                "session": 0,
+                "generation": 1,
+                "granted": 0,
+                "request_id": 1
+              }
+            ],
+            "qualification_phase": [
+              0,
+              0
+            ],
+            "final_reply_enqueued": [
+              1,
+              1
+            ],
+            "self_wakes": null,
+            "inbox_count": null
+          },
+          "received": [],
+          "after_both_flushes": {
+            "session_id": 0,
+            "starts": 0,
+            "hardware_entries": {},
+            "consumers": [
+              {
+                "phase": 6,
+                "result": -5,
+                "session": 0,
+                "generation": 1,
+                "granted": 0,
+                "request_id": 1
+              },
+              {
+                "phase": 6,
+                "result": -5,
+                "session": 0,
+                "generation": 1,
+                "granted": 0,
+                "request_id": 1
+              }
+            ],
+            "qualification_phase": [
+              0,
+              0
+            ],
+            "final_reply_enqueued": [
+              1,
+              1
+            ],
+            "self_wakes": null,
+            "inbox_count": null
+          },
+          "after": {
+            "session_id": 0,
+            "starts": 0,
+            "hardware_entries": {},
+            "consumers": [
+              {
+                "phase": 6,
+                "result": -5,
+                "session": 0,
+                "generation": 1,
+                "granted": 0,
+                "request_id": 1
+              },
+              {
+                "phase": 6,
+                "result": -5,
+                "session": 0,
+                "generation": 1,
+                "granted": 0,
+                "request_id": 1
+              }
+            ],
+            "qualification_phase": [
+              0,
+              0
+            ],
+            "final_reply_enqueued": [
+              1,
+              1
+            ],
+            "self_wakes": null,
+            "inbox_count": null
+          },
+          "self_wake_delta": null
+        },
+        {
+          "round": 4,
+          "before": {
+            "session_id": 0,
+            "starts": 0,
+            "hardware_entries": {},
+            "consumers": [
+              {
+                "phase": 6,
+                "result": -5,
+                "session": 0,
+                "generation": 1,
+                "granted": 0,
+                "request_id": 1
+              },
+              {
+                "phase": 6,
+                "result": -5,
+                "session": 0,
+                "generation": 1,
+                "granted": 0,
+                "request_id": 1
+              }
+            ],
+            "qualification_phase": [
+              0,
+              0
+            ],
+            "final_reply_enqueued": [
+              1,
+              1
+            ],
+            "self_wakes": null,
+            "inbox_count": null
+          },
+          "received": [],
+          "after_both_flushes": {
+            "session_id": 0,
+            "starts": 0,
+            "hardware_entries": {},
+            "consumers": [
+              {
+                "phase": 6,
+                "result": -5,
+                "session": 0,
+                "generation": 1,
+                "granted": 0,
+                "request_id": 1
+              },
+              {
+                "phase": 6,
+                "result": -5,
+                "session": 0,
+                "generation": 1,
+                "granted": 0,
+                "request_id": 1
+              }
+            ],
+            "qualification_phase": [
+              0,
+              0
+            ],
+            "final_reply_enqueued": [
+              1,
+              1
+            ],
+            "self_wakes": null,
+            "inbox_count": null
+          },
+          "after": {
+            "session_id": 0,
+            "starts": 0,
+            "hardware_entries": {},
+            "consumers": [
+              {
+                "phase": 6,
+                "result": -5,
+                "session": 0,
+                "generation": 1,
+                "granted": 0,
+                "request_id": 1
+              },
+              {
+                "phase": 6,
+                "result": -5,
+                "session": 0,
+                "generation": 1,
+                "granted": 0,
+                "request_id": 1
+              }
+            ],
+            "qualification_phase": [
+              0,
+              0
+            ],
+            "final_reply_enqueued": [
+              1,
+              1
+            ],
+            "self_wakes": null,
+            "inbox_count": null
+          },
+          "self_wake_delta": null
+        },
+        {
+          "round": 5,
+          "before": {
+            "session_id": 0,
+            "starts": 0,
+            "hardware_entries": {},
+            "consumers": [
+              {
+                "phase": 6,
+                "result": -5,
+                "session": 0,
+                "generation": 1,
+                "granted": 0,
+                "request_id": 1
+              },
+              {
+                "phase": 6,
+                "result": -5,
+                "session": 0,
+                "generation": 1,
+                "granted": 0,
+                "request_id": 1
+              }
+            ],
+            "qualification_phase": [
+              0,
+              0
+            ],
+            "final_reply_enqueued": [
+              1,
+              1
+            ],
+            "self_wakes": null,
+            "inbox_count": null
+          },
+          "received": [],
+          "after_both_flushes": {
+            "session_id": 0,
+            "starts": 0,
+            "hardware_entries": {},
+            "consumers": [
+              {
+                "phase": 6,
+                "result": -5,
+                "session": 0,
+                "generation": 1,
+                "granted": 0,
+                "request_id": 1
+              },
+              {
+                "phase": 6,
+                "result": -5,
+                "session": 0,
+                "generation": 1,
+                "granted": 0,
+                "request_id": 1
+              }
+            ],
+            "qualification_phase": [
+              0,
+              0
+            ],
+            "final_reply_enqueued": [
+              1,
+              1
+            ],
+            "self_wakes": null,
+            "inbox_count": null
+          },
+          "after": {
+            "session_id": 0,
+            "starts": 0,
+            "hardware_entries": {},
+            "consumers": [
+              {
+                "phase": 6,
+                "result": -5,
+                "session": 0,
+                "generation": 1,
+                "granted": 0,
+                "request_id": 1
+              },
+              {
+                "phase": 6,
+                "result": -5,
+                "session": 0,
+                "generation": 1,
+                "granted": 0,
+                "request_id": 1
+              }
+            ],
+            "qualification_phase": [
+              0,
+              0
+            ],
+            "final_reply_enqueued": [
+              1,
+              1
+            ],
+            "self_wakes": null,
+            "inbox_count": null
+          },
+          "self_wake_delta": null
+        }
+      ],
+      "call_counts": {
+        "App_QualificationInit": 1,
+        "App_LifecycleRxInit": 2,
+        "App_LifecycleTxInit": 4,
+        "App_CameraConsumerInit": 2,
+        "App_CameraConsumerBegin": 2,
+        "App_QualificationNextGeneration": 2,
+        "App_LifecycleTxReserveIds": 2,
+        "App_LifecycleAllocateIds": 2,
+        "App_LifecycleTxStage": 2,
+        "App_LifecycleValidate": 44,
+        "App_LifecycleStage": 4,
+        "App_CameraConsumerFlush": 12,
+        "App_LifecycleTxFlush": 12,
+        "App_LifecycleFlush": 14,
+        "App_QualificationReceive": 2,
+        "Qual_Overlap": 4,
+        "Qual_Index": 14,
+        "Qual_Enter": 20,
+        "App_LifecycleRxReceiveRequest": 2,
+        "App_QualificationProcess": 6,
+        "App_LifecycleRxPromote": 12,
+        "App_LifecycleReplayBegin": 2,
+        "Qual_Window": 4,
+        "Qual_Execute": 2,
+        "Qual_OtherWork": 2,
+        "Qual_Decide": 2,
+        "Qual_Submit": 2,
+        "App_LifecycleRxGetStatus": 2,
+        "Qual_Reply": 2,
+        "App_LifecycleMakeReply": 2,
+        "App_LifecycleMatchesReply": 12,
+        "App_LifecycleRxComplete": 2,
+        "App_LifecycleReplayComplete": 2,
+        "App_LifecycleReplayGetReply": 2,
+        "App_QualificationFlush": 12,
+        "App_LifecycleRxFlushReply": 2,
+        "App_CameraConsumerReceive": 2,
+        "App_LifecycleTxAcceptReply": 2,
+        "App_LifecycleAcceptReply": 2,
+        "App_LifecycleClear": 4,
+        "App_CameraConsumerProcess": 12,
+        "App_LifecycleTxGetCompleted": 2,
+        "App_LifecycleTxConfirmConsumed": 2
+      },
+      "layout": [
+        232,
+        216,
+        224,
+        208,
+        204,
+        220,
+        168,
+        808,
+        144,
+        332,
+        20,
+        72,
+        0,
+        0,
+        824
+      ],
+      "hardware_real": false,
+      "optimization": "O0",
+      "raw_trace": "ProbeEvidence/core_O0.json.gz"
+    },
+    {
+      "group": "task",
+      "original_id": 5,
+      "raw": {
+        "return": 0,
+        "failure_line": 0,
+        "error": null,
+        "returned": true,
+        "original_status": "PASS"
+      },
+      "acceptance_status": "PASS",
+      "expectation_matched": true,
+      "final": {
+        "session_id": 1,
+        "starts": 1,
+        "hardware_entries": {
+          "Device_Start": 1,
+          "CameraCapture_StartStream": 1,
+          "CameraCapture_Start": 0
+        },
+        "consumers": [
+          {
+            "phase": 3,
+            "result": 0,
+            "session": 1,
+            "generation": 1,
+            "granted": 1,
+            "request_id": 2
+          },
+          {
+            "phase": 3,
+            "result": 0,
+            "session": 1,
+            "generation": 1,
+            "granted": 1,
+            "request_id": 2
+          }
+        ],
+        "qualification_phase": [
+          2,
+          2
+        ],
+        "final_reply_enqueued": [
+          1,
+          1
+        ],
+        "self_wakes": 4,
+        "inbox_count": 0
+      },
+      "rounds": [
+        {
+          "round": 0,
+          "before": {
+            "session_id": 0,
+            "starts": 0,
+            "hardware_entries": {
+              "Device_Start": 0,
+              "CameraCapture_StartStream": 0,
+              "CameraCapture_Start": 0
+            },
+            "consumers": [
+              {
+                "phase": 1,
+                "result": -5,
+                "session": 0,
+                "generation": 1,
+                "granted": 0,
+                "request_id": 1
+              },
+              {
+                "phase": 1,
+                "result": -5,
+                "session": 0,
+                "generation": 1,
+                "granted": 0,
+                "request_id": 1
+              }
+            ],
+            "qualification_phase": [
+              0,
+              0
+            ],
+            "final_reply_enqueued": [
+              0,
+              0
+            ],
+            "self_wakes": 0,
+            "inbox_count": 0
+          },
+          "received": [
+            {
+              "sequence": 109,
+              "message": [
+                1,
+                1,
+                1,
+                2,
+                1,
+                0,
+                1,
+                1,
+                1,
+                0,
+                0,
+                0,
+                0,
+                0
+              ],
+              "inbox_after_dequeue": 1
+            }
+          ],
+          "after_both_flushes": {
+            "session_id": 0,
+            "starts": 0,
+            "hardware_entries": {
+              "Device_Start": 0,
+              "CameraCapture_StartStream": 0,
+              "CameraCapture_Start": 0
+            },
+            "consumers": [
+              {
+                "phase": 1,
+                "result": -5,
+                "session": 0,
+                "generation": 1,
+                "granted": 0,
+                "request_id": 1
+              },
+              {
+                "phase": 1,
+                "result": -5,
+                "session": 0,
+                "generation": 1,
+                "granted": 0,
+                "request_id": 1
+              }
+            ],
+            "qualification_phase": [
+              0,
+              0
+            ],
+            "final_reply_enqueued": [
+              0,
+              0
+            ],
+            "self_wakes": 0,
+            "inbox_count": 2
+          },
+          "after": {
+            "session_id": 1,
+            "starts": 0,
+            "hardware_entries": {
+              "Device_Start": 0,
+              "CameraCapture_StartStream": 0,
+              "CameraCapture_Start": 0
+            },
+            "consumers": [
+              {
+                "phase": 2,
+                "result": 0,
+                "session": 1,
+                "generation": 1,
+                "granted": 0,
+                "request_id": 2
+              },
+              {
+                "phase": 1,
+                "result": -5,
+                "session": 0,
+                "generation": 1,
+                "granted": 0,
+                "request_id": 1
+              }
+            ],
+            "qualification_phase": [
+              0,
+              0
+            ],
+            "final_reply_enqueued": [
+              1,
+              0
+            ],
+            "self_wakes": 1,
+            "inbox_count": 1
+          },
+          "self_wake_delta": 1
+        },
+        {
+          "round": 1,
+          "before": {
+            "session_id": 1,
+            "starts": 0,
+            "hardware_entries": {
+              "Device_Start": 0,
+              "CameraCapture_StartStream": 0,
+              "CameraCapture_Start": 0
+            },
+            "consumers": [
+              {
+                "phase": 2,
+                "result": 0,
+                "session": 1,
+                "generation": 1,
+                "granted": 0,
+                "request_id": 2
+              },
+              {
+                "phase": 1,
+                "result": -5,
+                "session": 0,
+                "generation": 1,
+                "granted": 0,
+                "request_id": 1
+              }
+            ],
+            "qualification_phase": [
+              0,
+              0
+            ],
+            "final_reply_enqueued": [
+              1,
+              0
+            ],
+            "self_wakes": 1,
+            "inbox_count": 1
+          },
+          "received": [
+            {
+              "sequence": 347,
+              "message": [
+                1,
+                1,
+                1,
+                3,
+                1,
+                0,
+                1,
+                2,
+                1,
+                0,
+                0,
+                0,
+                0,
+                0
+              ],
+              "inbox_after_dequeue": 1
+            }
+          ],
+          "after_both_flushes": {
+            "session_id": 1,
+            "starts": 0,
+            "hardware_entries": {
+              "Device_Start": 0,
+              "CameraCapture_StartStream": 0,
+              "CameraCapture_Start": 0
+            },
+            "consumers": [
+              {
+                "phase": 2,
+                "result": 0,
+                "session": 1,
+                "generation": 1,
+                "granted": 0,
+                "request_id": 2
+              },
+              {
+                "phase": 1,
+                "result": -5,
+                "session": 0,
+                "generation": 1,
+                "granted": 0,
+                "request_id": 1
+              }
+            ],
+            "qualification_phase": [
+              0,
+              0
+            ],
+            "final_reply_enqueued": [
+              1,
+              0
+            ],
+            "self_wakes": 1,
+            "inbox_count": 2
+          },
+          "after": {
+            "session_id": 1,
+            "starts": 0,
+            "hardware_entries": {
+              "Device_Start": 0,
+              "CameraCapture_StartStream": 0,
+              "CameraCapture_Start": 0
+            },
+            "consumers": [
+              {
+                "phase": 2,
+                "result": 0,
+                "session": 1,
+                "generation": 1,
+                "granted": 0,
+                "request_id": 2
+              },
+              {
+                "phase": 2,
+                "result": 0,
+                "session": 1,
+                "generation": 1,
+                "granted": 0,
+                "request_id": 2
+              }
+            ],
+            "qualification_phase": [
+              0,
+              0
+            ],
+            "final_reply_enqueued": [
+              1,
+              1
+            ],
+            "self_wakes": 2,
+            "inbox_count": 1
+          },
+          "self_wake_delta": 1
+        },
+        {
+          "round": 2,
+          "before": {
+            "session_id": 1,
+            "starts": 0,
+            "hardware_entries": {
+              "Device_Start": 0,
+              "CameraCapture_StartStream": 0,
+              "CameraCapture_Start": 0
+            },
+            "consumers": [
+              {
+                "phase": 2,
+                "result": 0,
+                "session": 1,
+                "generation": 1,
+                "granted": 0,
+                "request_id": 2
+              },
+              {
+                "phase": 2,
+                "result": 0,
+                "session": 1,
+                "generation": 1,
+                "granted": 0,
+                "request_id": 2
+              }
+            ],
+            "qualification_phase": [
+              0,
+              0
+            ],
+            "final_reply_enqueued": [
+              1,
+              1
+            ],
+            "self_wakes": 2,
+            "inbox_count": 1
+          },
+          "received": [
+            {
+              "sequence": 581,
+              "message": [
+                1,
+                1,
+                2,
+                2,
+                1,
+                1,
+                2,
+                1,
+                1,
+                0,
+                0,
+                0,
+                0,
+                0
+              ],
+              "inbox_after_dequeue": 1
+            }
+          ],
+          "after_both_flushes": {
+            "session_id": 1,
+            "starts": 0,
+            "hardware_entries": {
+              "Device_Start": 0,
+              "CameraCapture_StartStream": 0,
+              "CameraCapture_Start": 0
+            },
+            "consumers": [
+              {
+                "phase": 2,
+                "result": 0,
+                "session": 1,
+                "generation": 1,
+                "granted": 0,
+                "request_id": 2
+              },
+              {
+                "phase": 2,
+                "result": 0,
+                "session": 1,
+                "generation": 1,
+                "granted": 0,
+                "request_id": 2
+              }
+            ],
+            "qualification_phase": [
+              0,
+              0
+            ],
+            "final_reply_enqueued": [
+              1,
+              1
+            ],
+            "self_wakes": 2,
+            "inbox_count": 2
+          },
+          "after": {
+            "session_id": 1,
+            "starts": 1,
+            "hardware_entries": {
+              "Device_Start": 1,
+              "CameraCapture_StartStream": 1,
+              "CameraCapture_Start": 0
+            },
+            "consumers": [
+              {
+                "phase": 3,
+                "result": 0,
+                "session": 1,
+                "generation": 1,
+                "granted": 1,
+                "request_id": 2
+              },
+              {
+                "phase": 2,
+                "result": 0,
+                "session": 1,
+                "generation": 1,
+                "granted": 0,
+                "request_id": 2
+              }
+            ],
+            "qualification_phase": [
+              2,
+              0
+            ],
+            "final_reply_enqueued": [
+              1,
+              1
+            ],
+            "self_wakes": 3,
+            "inbox_count": 1
+          },
+          "self_wake_delta": 1
+        },
+        {
+          "round": 3,
+          "before": {
+            "session_id": 1,
+            "starts": 1,
+            "hardware_entries": {
+              "Device_Start": 1,
+              "CameraCapture_StartStream": 1,
+              "CameraCapture_Start": 0
+            },
+            "consumers": [
+              {
+                "phase": 3,
+                "result": 0,
+                "session": 1,
+                "generation": 1,
+                "granted": 1,
+                "request_id": 2
+              },
+              {
+                "phase": 2,
+                "result": 0,
+                "session": 1,
+                "generation": 1,
+                "granted": 0,
+                "request_id": 2
+              }
+            ],
+            "qualification_phase": [
+              2,
+              0
+            ],
+            "final_reply_enqueued": [
+              1,
+              1
+            ],
+            "self_wakes": 3,
+            "inbox_count": 1
+          },
+          "received": [
+            {
+              "sequence": 849,
+              "message": [
+                1,
+                1,
+                2,
+                3,
+                1,
+                1,
+                2,
+                2,
+                1,
+                0,
+                0,
+                0,
+                0,
+                0
+              ],
+              "inbox_after_dequeue": 0
+            }
+          ],
+          "after_both_flushes": {
+            "session_id": 1,
+            "starts": 1,
+            "hardware_entries": {
+              "Device_Start": 1,
+              "CameraCapture_StartStream": 1,
+              "CameraCapture_Start": 0
+            },
+            "consumers": [
+              {
+                "phase": 3,
+                "result": 0,
+                "session": 1,
+                "generation": 1,
+                "granted": 1,
+                "request_id": 2
+              },
+              {
+                "phase": 2,
+                "result": 0,
+                "session": 1,
+                "generation": 1,
+                "granted": 0,
+                "request_id": 2
+              }
+            ],
+            "qualification_phase": [
+              2,
+              0
+            ],
+            "final_reply_enqueued": [
+              1,
+              1
+            ],
+            "self_wakes": 3,
+            "inbox_count": 1
+          },
+          "after": {
+            "session_id": 1,
+            "starts": 1,
+            "hardware_entries": {
+              "Device_Start": 1,
+              "CameraCapture_StartStream": 1,
+              "CameraCapture_Start": 0
+            },
+            "consumers": [
+              {
+                "phase": 3,
+                "result": 0,
+                "session": 1,
+                "generation": 1,
+                "granted": 1,
+                "request_id": 2
+              },
+              {
+                "phase": 3,
+                "result": 0,
+                "session": 1,
+                "generation": 1,
+                "granted": 1,
+                "request_id": 2
+              }
+            ],
+            "qualification_phase": [
+              2,
+              2
+            ],
+            "final_reply_enqueued": [
+              1,
+              1
+            ],
+            "self_wakes": 4,
+            "inbox_count": 0
+          },
+          "self_wake_delta": 1
+        },
+        {
+          "round": 4,
+          "before": {
+            "session_id": 1,
+            "starts": 1,
+            "hardware_entries": {
+              "Device_Start": 1,
+              "CameraCapture_StartStream": 1,
+              "CameraCapture_Start": 0
+            },
+            "consumers": [
+              {
+                "phase": 3,
+                "result": 0,
+                "session": 1,
+                "generation": 1,
+                "granted": 1,
+                "request_id": 2
+              },
+              {
+                "phase": 3,
+                "result": 0,
+                "session": 1,
+                "generation": 1,
+                "granted": 1,
+                "request_id": 2
+              }
+            ],
+            "qualification_phase": [
+              2,
+              2
+            ],
+            "final_reply_enqueued": [
+              1,
+              1
+            ],
+            "self_wakes": 4,
+            "inbox_count": 0
+          },
+          "received": [],
+          "after_both_flushes": {
+            "session_id": 1,
+            "starts": 1,
+            "hardware_entries": {
+              "Device_Start": 1,
+              "CameraCapture_StartStream": 1,
+              "CameraCapture_Start": 0
+            },
+            "consumers": [
+              {
+                "phase": 3,
+                "result": 0,
+                "session": 1,
+                "generation": 1,
+                "granted": 1,
+                "request_id": 2
+              },
+              {
+                "phase": 3,
+                "result": 0,
+                "session": 1,
+                "generation": 1,
+                "granted": 1,
+                "request_id": 2
+              }
+            ],
+            "qualification_phase": [
+              2,
+              2
+            ],
+            "final_reply_enqueued": [
+              1,
+              1
+            ],
+            "self_wakes": 4,
+            "inbox_count": 0
+          },
+          "after": {
+            "session_id": 1,
+            "starts": 1,
+            "hardware_entries": {
+              "Device_Start": 1,
+              "CameraCapture_StartStream": 1,
+              "CameraCapture_Start": 0
+            },
+            "consumers": [
+              {
+                "phase": 3,
+                "result": 0,
+                "session": 1,
+                "generation": 1,
+                "granted": 1,
+                "request_id": 2
+              },
+              {
+                "phase": 3,
+                "result": 0,
+                "session": 1,
+                "generation": 1,
+                "granted": 1,
+                "request_id": 2
+              }
+            ],
+            "qualification_phase": [
+              2,
+              2
+            ],
+            "final_reply_enqueued": [
+              1,
+              1
+            ],
+            "self_wakes": 4,
+            "inbox_count": 0
+          },
+          "self_wake_delta": 0
+        },
+        {
+          "round": 5,
+          "before": {
+            "session_id": 1,
+            "starts": 1,
+            "hardware_entries": {
+              "Device_Start": 1,
+              "CameraCapture_StartStream": 1,
+              "CameraCapture_Start": 0
+            },
+            "consumers": [
+              {
+                "phase": 3,
+                "result": 0,
+                "session": 1,
+                "generation": 1,
+                "granted": 1,
+                "request_id": 2
+              },
+              {
+                "phase": 3,
+                "result": 0,
+                "session": 1,
+                "generation": 1,
+                "granted": 1,
+                "request_id": 2
+              }
+            ],
+            "qualification_phase": [
+              2,
+              2
+            ],
+            "final_reply_enqueued": [
+              1,
+              1
+            ],
+            "self_wakes": 4,
+            "inbox_count": 0
+          },
+          "received": [],
+          "after_both_flushes": {
+            "session_id": 1,
+            "starts": 1,
+            "hardware_entries": {
+              "Device_Start": 1,
+              "CameraCapture_StartStream": 1,
+              "CameraCapture_Start": 0
+            },
+            "consumers": [
+              {
+                "phase": 3,
+                "result": 0,
+                "session": 1,
+                "generation": 1,
+                "granted": 1,
+                "request_id": 2
+              },
+              {
+                "phase": 3,
+                "result": 0,
+                "session": 1,
+                "generation": 1,
+                "granted": 1,
+                "request_id": 2
+              }
+            ],
+            "qualification_phase": [
+              2,
+              2
+            ],
+            "final_reply_enqueued": [
+              1,
+              1
+            ],
+            "self_wakes": 4,
+            "inbox_count": 0
+          },
+          "after": {
+            "session_id": 1,
+            "starts": 1,
+            "hardware_entries": {
+              "Device_Start": 1,
+              "CameraCapture_StartStream": 1,
+              "CameraCapture_Start": 0
+            },
+            "consumers": [
+              {
+                "phase": 3,
+                "result": 0,
+                "session": 1,
+                "generation": 1,
+                "granted": 1,
+                "request_id": 2
+              },
+              {
+                "phase": 3,
+                "result": 0,
+                "session": 1,
+                "generation": 1,
+                "granted": 1,
+                "request_id": 2
+              }
+            ],
+            "qualification_phase": [
+              2,
+              2
+            ],
+            "final_reply_enqueued": [
+              1,
+              1
+            ],
+            "self_wakes": 4,
+            "inbox_count": 0
+          },
+          "self_wake_delta": 0
+        },
+        {
+          "round": 6,
+          "before": {
+            "session_id": 1,
+            "starts": 1,
+            "hardware_entries": {
+              "Device_Start": 1,
+              "CameraCapture_StartStream": 1,
+              "CameraCapture_Start": 0
+            },
+            "consumers": [
+              {
+                "phase": 3,
+                "result": 0,
+                "session": 1,
+                "generation": 1,
+                "granted": 1,
+                "request_id": 2
+              },
+              {
+                "phase": 3,
+                "result": 0,
+                "session": 1,
+                "generation": 1,
+                "granted": 1,
+                "request_id": 2
+              }
+            ],
+            "qualification_phase": [
+              2,
+              2
+            ],
+            "final_reply_enqueued": [
+              1,
+              1
+            ],
+            "self_wakes": 4,
+            "inbox_count": 0
+          },
+          "received": [],
+          "after_both_flushes": {
+            "session_id": 1,
+            "starts": 1,
+            "hardware_entries": {
+              "Device_Start": 1,
+              "CameraCapture_StartStream": 1,
+              "CameraCapture_Start": 0
+            },
+            "consumers": [
+              {
+                "phase": 3,
+                "result": 0,
+                "session": 1,
+                "generation": 1,
+                "granted": 1,
+                "request_id": 2
+              },
+              {
+                "phase": 3,
+                "result": 0,
+                "session": 1,
+                "generation": 1,
+                "granted": 1,
+                "request_id": 2
+              }
+            ],
+            "qualification_phase": [
+              2,
+              2
+            ],
+            "final_reply_enqueued": [
+              1,
+              1
+            ],
+            "self_wakes": 4,
+            "inbox_count": 0
+          },
+          "after": {
+            "session_id": 1,
+            "starts": 1,
+            "hardware_entries": {
+              "Device_Start": 1,
+              "CameraCapture_StartStream": 1,
+              "CameraCapture_Start": 0
+            },
+            "consumers": [
+              {
+                "phase": 3,
+                "result": 0,
+                "session": 1,
+                "generation": 1,
+                "granted": 1,
+                "request_id": 2
+              },
+              {
+                "phase": 3,
+                "result": 0,
+                "session": 1,
+                "generation": 1,
+                "granted": 1,
+                "request_id": 2
+              }
+            ],
+            "qualification_phase": [
+              2,
+              2
+            ],
+            "final_reply_enqueued": [
+              1,
+              1
+            ],
+            "self_wakes": 4,
+            "inbox_count": 0
+          },
+          "self_wake_delta": 0
+        },
+        {
+          "round": 7,
+          "before": {
+            "session_id": 1,
+            "starts": 1,
+            "hardware_entries": {
+              "Device_Start": 1,
+              "CameraCapture_StartStream": 1,
+              "CameraCapture_Start": 0
+            },
+            "consumers": [
+              {
+                "phase": 3,
+                "result": 0,
+                "session": 1,
+                "generation": 1,
+                "granted": 1,
+                "request_id": 2
+              },
+              {
+                "phase": 3,
+                "result": 0,
+                "session": 1,
+                "generation": 1,
+                "granted": 1,
+                "request_id": 2
+              }
+            ],
+            "qualification_phase": [
+              2,
+              2
+            ],
+            "final_reply_enqueued": [
+              1,
+              1
+            ],
+            "self_wakes": 4,
+            "inbox_count": 0
+          },
+          "received": [],
+          "after_both_flushes": {
+            "session_id": 1,
+            "starts": 1,
+            "hardware_entries": {
+              "Device_Start": 1,
+              "CameraCapture_StartStream": 1,
+              "CameraCapture_Start": 0
+            },
+            "consumers": [
+              {
+                "phase": 3,
+                "result": 0,
+                "session": 1,
+                "generation": 1,
+                "granted": 1,
+                "request_id": 2
+              },
+              {
+                "phase": 3,
+                "result": 0,
+                "session": 1,
+                "generation": 1,
+                "granted": 1,
+                "request_id": 2
+              }
+            ],
+            "qualification_phase": [
+              2,
+              2
+            ],
+            "final_reply_enqueued": [
+              1,
+              1
+            ],
+            "self_wakes": 4,
+            "inbox_count": 0
+          },
+          "after": {
+            "session_id": 1,
+            "starts": 1,
+            "hardware_entries": {
+              "Device_Start": 1,
+              "CameraCapture_StartStream": 1,
+              "CameraCapture_Start": 0
+            },
+            "consumers": [
+              {
+                "phase": 3,
+                "result": 0,
+                "session": 1,
+                "generation": 1,
+                "granted": 1,
+                "request_id": 2
+              },
+              {
+                "phase": 3,
+                "result": 0,
+                "session": 1,
+                "generation": 1,
+                "granted": 1,
+                "request_id": 2
+              }
+            ],
+            "qualification_phase": [
+              2,
+              2
+            ],
+            "final_reply_enqueued": [
+              1,
+              1
+            ],
+            "self_wakes": 4,
+            "inbox_count": 0
+          },
+          "self_wake_delta": 0
+        }
+      ],
+      "call_counts": {
+        "App_CameraQualificationPrepare": 1,
+        "Qual_AppAccess": 29,
+        "App_MessagesIsOwner": 37,
+        "App_CameraQualificationAccess": 29,
+        "App_QualificationInit": 1,
+        "App_LifecycleRxInit": 2,
+        "App_CameraConsumerInit": 2,
+        "App_LifecycleTxInit": 2,
+        "App_CameraConsumerBegin": 2,
+        "App_QualificationNextGeneration": 2,
+        "App_LifecycleTxReserveIds": 2,
+        "App_LifecycleAllocateIds": 2,
+        "App_LifecycleTxStage": 4,
+        "App_LifecycleValidate": 88,
+        "App_LifecycleStage": 8,
+        "App_CameraConsumerFlush": 16,
+        "App_LifecycleTxFlush": 16,
+        "App_LifecycleFlush": 20,
+        "App_LifecycleMessagesSend": 8,
+        "CameraTask_Process": 8,
+        "App_CameraBeginRound": 8,
+        "CameraCapture_GetStopFacts": 8,
+        "CameraTask_Reply": 16,
+        "App_CameraGetPendingAck": 16,
+        "App_CameraGetPendingFault": 16,
+        "App_CameraCanAcceptCommand": 8,
+        "App_MessagesReceive": 8,
+        "CameraTask_ReceiveLifecycle": 8,
+        "App_LifecycleMessagesReceive": 8,
+        "App_CameraQualificationReceive": 4,
+        "App_QualificationReceive": 4,
+        "Qual_Overlap": 8,
+        "Qual_Index": 20,
+        "Qual_Enter": 28,
+        "App_LifecycleRxReceiveRequest": 4,
+        "RuntimeEvent_Post": 4,
+        "App_CameraQualificationProcess": 8,
+        "App_QualificationProcess": 8,
+        "App_LifecycleRxPromote": 16,
+        "App_LifecycleReplayBegin": 4,
+        "Qual_Window": 8,
+        "Qual_Execute": 4,
+        "App_CameraResourceState": 6,
+        "Qual_OtherWork": 1,
+        "Qual_Decide": 4,
+        "Qual_Submit": 4,
+        "App_LifecycleRxGetStatus": 4,
+        "Qual_Reply": 4,
+        "App_LifecycleMakeReply": 4,
+        "App_LifecycleMatchesReply": 24,
+        "App_LifecycleRxComplete": 4,
+        "App_LifecycleReplayComplete": 4,
+        "App_LifecycleReplayGetReply": 4,
+        "App_CameraProcess": 8,
+        "App_CameraCanOfferFrame": 8,
+        "App_UvcBridgeCameraProcess": 8,
+        "App_CameraFinishRound": 8,
+        "App_CameraObserve": 14,
+        "App_CameraQualificationFlush": 16,
+        "App_QualificationFlush": 16,
+        "App_LifecycleRxFlushReply": 5,
+        "CameraTask_SendLifecycle": 4,
+        "App_CameraConsumerReceive": 4,
+        "App_LifecycleTxAcceptReply": 4,
+        "App_LifecycleAcceptReply": 4,
+        "App_LifecycleClear": 8,
+        "App_CameraConsumerProcess": 16,
+        "App_LifecycleTxGetCompleted": 7,
+        "App_LifecycleTxConfirmConsumed": 4,
+        "App_CameraQualificationStart": 1,
+        "App_CameraStartResource": 1,
+        "App_UvcBridgeCameraBegin": 1,
+        "App_CameraInitStream": 1,
+        "App_CameraStart": 1,
+        "App_CameraPrepare": 1,
+        "App_CameraConfigure": 1,
+        "CameraCapture_ValidateStreamConfig": 1,
+        "Device_Find": 1,
+        "App_CameraGetConfig": 2,
+        "CameraCapture_Init": 1,
+        "Device_Start": 1,
+        "CameraCapture_StartStream": 1,
+        "CameraCapture_GetLastResult": 7,
+        "App_CameraRun": 6,
+        "CameraCapture_Process": 6,
+        "CameraCapture_IsStopped": 6,
+        "CameraCapture_GetStats": 6
+      },
+      "layout": [
+        232,
+        216,
+        224,
+        208,
+        204,
+        220,
+        168,
+        808,
+        144,
+        332,
+        20,
+        72,
+        0,
+        116,
+        824
+      ],
+      "hardware_real": false,
+      "optimization": "O0",
+      "raw_trace": "ProbeEvidence/task_O0.json.gz"
+    },
+    {
+      "group": "core",
+      "original_id": 17,
+      "raw": {
+        "return": 114,
+        "failure_line": 114,
+        "error": null,
+        "returned": true,
+        "original_status": "FAIL"
+      },
+      "acceptance_status": "EXPECTED_REJECT",
+      "expectation_matched": true,
+      "final": {
+        "session_id": 0,
+        "starts": 0,
+        "hardware_entries": {},
+        "consumers": [
+          {
+            "phase": 6,
+            "result": -5,
+            "session": 0,
+            "generation": 1,
+            "granted": 0,
+            "request_id": 1
+          },
+          {
+            "phase": 6,
+            "result": -5,
+            "session": 0,
+            "generation": 1,
+            "granted": 0,
+            "request_id": 1
+          }
+        ],
+        "qualification_phase": [
+          0,
+          0
+        ],
+        "final_reply_enqueued": [
+          1,
+          1
+        ],
+        "self_wakes": null,
+        "inbox_count": null
+      },
+      "rounds": [
+        {
+          "round": 0,
+          "before": {
+            "session_id": 0,
+            "starts": 0,
+            "hardware_entries": {},
+            "consumers": [
+              {
+                "phase": 1,
+                "result": -5,
+                "session": 0,
+                "generation": 1,
+                "granted": 0,
+                "request_id": 1
+              },
+              {
+                "phase": 1,
+                "result": -5,
+                "session": 0,
+                "generation": 1,
+                "granted": 0,
+                "request_id": 1
+              }
+            ],
+            "qualification_phase": [
+              0,
+              0
+            ],
+            "final_reply_enqueued": [
+              0,
+              0
+            ],
+            "self_wakes": null,
+            "inbox_count": null
+          },
+          "received": [
+            {
+              "sequence": 65,
+              "message": [
+                1,
+                1,
+                1,
+                2,
+                1,
+                0,
+                1,
+                1,
+                1,
+                0,
+                0,
+                0,
+                0,
+                0
+              ],
+              "inbox_after_dequeue": null
+            },
+            {
+              "sequence": 87,
+              "message": [
+                1,
+                1,
+                1,
+                3,
+                1,
+                0,
+                1,
+                2,
+                1,
+                0,
+                0,
+                0,
+                0,
+                0
+              ],
+              "inbox_after_dequeue": null
+            }
+          ],
+          "after_both_flushes": {
+            "session_id": 0,
+            "starts": 0,
+            "hardware_entries": {},
+            "consumers": [
+              {
+                "phase": 1,
+                "result": -5,
+                "session": 0,
+                "generation": 1,
+                "granted": 0,
+                "request_id": 1
+              },
+              {
+                "phase": 1,
+                "result": -5,
+                "session": 0,
+                "generation": 1,
+                "granted": 0,
+                "request_id": 1
+              }
+            ],
+            "qualification_phase": [
+              0,
+              0
+            ],
+            "final_reply_enqueued": [
+              0,
+              0
+            ],
+            "self_wakes": null,
+            "inbox_count": null
+          },
+          "after": {
+            "session_id": 0,
+            "starts": 0,
+            "hardware_entries": {},
+            "consumers": [
+              {
+                "phase": 6,
+                "result": -5,
+                "session": 0,
+                "generation": 1,
+                "granted": 0,
+                "request_id": 1
+              },
+              {
+                "phase": 6,
+                "result": -5,
+                "session": 0,
+                "generation": 1,
+                "granted": 0,
+                "request_id": 1
+              }
+            ],
+            "qualification_phase": [
+              0,
+              0
+            ],
+            "final_reply_enqueued": [
+              1,
+              1
+            ],
+            "self_wakes": null,
+            "inbox_count": null
+          },
+          "self_wake_delta": null
+        },
+        {
+          "round": 1,
+          "before": {
+            "session_id": 0,
+            "starts": 0,
+            "hardware_entries": {},
+            "consumers": [
+              {
+                "phase": 6,
+                "result": -5,
+                "session": 0,
+                "generation": 1,
+                "granted": 0,
+                "request_id": 1
+              },
+              {
+                "phase": 6,
+                "result": -5,
+                "session": 0,
+                "generation": 1,
+                "granted": 0,
+                "request_id": 1
+              }
+            ],
+            "qualification_phase": [
+              0,
+              0
+            ],
+            "final_reply_enqueued": [
+              1,
+              1
+            ],
+            "self_wakes": null,
+            "inbox_count": null
+          },
+          "received": [],
+          "after_both_flushes": {
+            "session_id": 0,
+            "starts": 0,
+            "hardware_entries": {},
+            "consumers": [
+              {
+                "phase": 6,
+                "result": -5,
+                "session": 0,
+                "generation": 1,
+                "granted": 0,
+                "request_id": 1
+              },
+              {
+                "phase": 6,
+                "result": -5,
+                "session": 0,
+                "generation": 1,
+                "granted": 0,
+                "request_id": 1
+              }
+            ],
+            "qualification_phase": [
+              0,
+              0
+            ],
+            "final_reply_enqueued": [
+              1,
+              1
+            ],
+            "self_wakes": null,
+            "inbox_count": null
+          },
+          "after": {
+            "session_id": 0,
+            "starts": 0,
+            "hardware_entries": {},
+            "consumers": [
+              {
+                "phase": 6,
+                "result": -5,
+                "session": 0,
+                "generation": 1,
+                "granted": 0,
+                "request_id": 1
+              },
+              {
+                "phase": 6,
+                "result": -5,
+                "session": 0,
+                "generation": 1,
+                "granted": 0,
+                "request_id": 1
+              }
+            ],
+            "qualification_phase": [
+              0,
+              0
+            ],
+            "final_reply_enqueued": [
+              1,
+              1
+            ],
+            "self_wakes": null,
+            "inbox_count": null
+          },
+          "self_wake_delta": null
+        },
+        {
+          "round": 2,
+          "before": {
+            "session_id": 0,
+            "starts": 0,
+            "hardware_entries": {},
+            "consumers": [
+              {
+                "phase": 6,
+                "result": -5,
+                "session": 0,
+                "generation": 1,
+                "granted": 0,
+                "request_id": 1
+              },
+              {
+                "phase": 6,
+                "result": -5,
+                "session": 0,
+                "generation": 1,
+                "granted": 0,
+                "request_id": 1
+              }
+            ],
+            "qualification_phase": [
+              0,
+              0
+            ],
+            "final_reply_enqueued": [
+              1,
+              1
+            ],
+            "self_wakes": null,
+            "inbox_count": null
+          },
+          "received": [],
+          "after_both_flushes": {
+            "session_id": 0,
+            "starts": 0,
+            "hardware_entries": {},
+            "consumers": [
+              {
+                "phase": 6,
+                "result": -5,
+                "session": 0,
+                "generation": 1,
+                "granted": 0,
+                "request_id": 1
+              },
+              {
+                "phase": 6,
+                "result": -5,
+                "session": 0,
+                "generation": 1,
+                "granted": 0,
+                "request_id": 1
+              }
+            ],
+            "qualification_phase": [
+              0,
+              0
+            ],
+            "final_reply_enqueued": [
+              1,
+              1
+            ],
+            "self_wakes": null,
+            "inbox_count": null
+          },
+          "after": {
+            "session_id": 0,
+            "starts": 0,
+            "hardware_entries": {},
+            "consumers": [
+              {
+                "phase": 6,
+                "result": -5,
+                "session": 0,
+                "generation": 1,
+                "granted": 0,
+                "request_id": 1
+              },
+              {
+                "phase": 6,
+                "result": -5,
+                "session": 0,
+                "generation": 1,
+                "granted": 0,
+                "request_id": 1
+              }
+            ],
+            "qualification_phase": [
+              0,
+              0
+            ],
+            "final_reply_enqueued": [
+              1,
+              1
+            ],
+            "self_wakes": null,
+            "inbox_count": null
+          },
+          "self_wake_delta": null
+        },
+        {
+          "round": 3,
+          "before": {
+            "session_id": 0,
+            "starts": 0,
+            "hardware_entries": {},
+            "consumers": [
+              {
+                "phase": 6,
+                "result": -5,
+                "session": 0,
+                "generation": 1,
+                "granted": 0,
+                "request_id": 1
+              },
+              {
+                "phase": 6,
+                "result": -5,
+                "session": 0,
+                "generation": 1,
+                "granted": 0,
+                "request_id": 1
+              }
+            ],
+            "qualification_phase": [
+              0,
+              0
+            ],
+            "final_reply_enqueued": [
+              1,
+              1
+            ],
+            "self_wakes": null,
+            "inbox_count": null
+          },
+          "received": [],
+          "after_both_flushes": {
+            "session_id": 0,
+            "starts": 0,
+            "hardware_entries": {},
+            "consumers": [
+              {
+                "phase": 6,
+                "result": -5,
+                "session": 0,
+                "generation": 1,
+                "granted": 0,
+                "request_id": 1
+              },
+              {
+                "phase": 6,
+                "result": -5,
+                "session": 0,
+                "generation": 1,
+                "granted": 0,
+                "request_id": 1
+              }
+            ],
+            "qualification_phase": [
+              0,
+              0
+            ],
+            "final_reply_enqueued": [
+              1,
+              1
+            ],
+            "self_wakes": null,
+            "inbox_count": null
+          },
+          "after": {
+            "session_id": 0,
+            "starts": 0,
+            "hardware_entries": {},
+            "consumers": [
+              {
+                "phase": 6,
+                "result": -5,
+                "session": 0,
+                "generation": 1,
+                "granted": 0,
+                "request_id": 1
+              },
+              {
+                "phase": 6,
+                "result": -5,
+                "session": 0,
+                "generation": 1,
+                "granted": 0,
+                "request_id": 1
+              }
+            ],
+            "qualification_phase": [
+              0,
+              0
+            ],
+            "final_reply_enqueued": [
+              1,
+              1
+            ],
+            "self_wakes": null,
+            "inbox_count": null
+          },
+          "self_wake_delta": null
+        },
+        {
+          "round": 4,
+          "before": {
+            "session_id": 0,
+            "starts": 0,
+            "hardware_entries": {},
+            "consumers": [
+              {
+                "phase": 6,
+                "result": -5,
+                "session": 0,
+                "generation": 1,
+                "granted": 0,
+                "request_id": 1
+              },
+              {
+                "phase": 6,
+                "result": -5,
+                "session": 0,
+                "generation": 1,
+                "granted": 0,
+                "request_id": 1
+              }
+            ],
+            "qualification_phase": [
+              0,
+              0
+            ],
+            "final_reply_enqueued": [
+              1,
+              1
+            ],
+            "self_wakes": null,
+            "inbox_count": null
+          },
+          "received": [],
+          "after_both_flushes": {
+            "session_id": 0,
+            "starts": 0,
+            "hardware_entries": {},
+            "consumers": [
+              {
+                "phase": 6,
+                "result": -5,
+                "session": 0,
+                "generation": 1,
+                "granted": 0,
+                "request_id": 1
+              },
+              {
+                "phase": 6,
+                "result": -5,
+                "session": 0,
+                "generation": 1,
+                "granted": 0,
+                "request_id": 1
+              }
+            ],
+            "qualification_phase": [
+              0,
+              0
+            ],
+            "final_reply_enqueued": [
+              1,
+              1
+            ],
+            "self_wakes": null,
+            "inbox_count": null
+          },
+          "after": {
+            "session_id": 0,
+            "starts": 0,
+            "hardware_entries": {},
+            "consumers": [
+              {
+                "phase": 6,
+                "result": -5,
+                "session": 0,
+                "generation": 1,
+                "granted": 0,
+                "request_id": 1
+              },
+              {
+                "phase": 6,
+                "result": -5,
+                "session": 0,
+                "generation": 1,
+                "granted": 0,
+                "request_id": 1
+              }
+            ],
+            "qualification_phase": [
+              0,
+              0
+            ],
+            "final_reply_enqueued": [
+              1,
+              1
+            ],
+            "self_wakes": null,
+            "inbox_count": null
+          },
+          "self_wake_delta": null
+        },
+        {
+          "round": 5,
+          "before": {
+            "session_id": 0,
+            "starts": 0,
+            "hardware_entries": {},
+            "consumers": [
+              {
+                "phase": 6,
+                "result": -5,
+                "session": 0,
+                "generation": 1,
+                "granted": 0,
+                "request_id": 1
+              },
+              {
+                "phase": 6,
+                "result": -5,
+                "session": 0,
+                "generation": 1,
+                "granted": 0,
+                "request_id": 1
+              }
+            ],
+            "qualification_phase": [
+              0,
+              0
+            ],
+            "final_reply_enqueued": [
+              1,
+              1
+            ],
+            "self_wakes": null,
+            "inbox_count": null
+          },
+          "received": [],
+          "after_both_flushes": {
+            "session_id": 0,
+            "starts": 0,
+            "hardware_entries": {},
+            "consumers": [
+              {
+                "phase": 6,
+                "result": -5,
+                "session": 0,
+                "generation": 1,
+                "granted": 0,
+                "request_id": 1
+              },
+              {
+                "phase": 6,
+                "result": -5,
+                "session": 0,
+                "generation": 1,
+                "granted": 0,
+                "request_id": 1
+              }
+            ],
+            "qualification_phase": [
+              0,
+              0
+            ],
+            "final_reply_enqueued": [
+              1,
+              1
+            ],
+            "self_wakes": null,
+            "inbox_count": null
+          },
+          "after": {
+            "session_id": 0,
+            "starts": 0,
+            "hardware_entries": {},
+            "consumers": [
+              {
+                "phase": 6,
+                "result": -5,
+                "session": 0,
+                "generation": 1,
+                "granted": 0,
+                "request_id": 1
+              },
+              {
+                "phase": 6,
+                "result": -5,
+                "session": 0,
+                "generation": 1,
+                "granted": 0,
+                "request_id": 1
+              }
+            ],
+            "qualification_phase": [
+              0,
+              0
+            ],
+            "final_reply_enqueued": [
+              1,
+              1
+            ],
+            "self_wakes": null,
+            "inbox_count": null
+          },
+          "self_wake_delta": null
+        }
+      ],
+      "call_counts": {
+        "App_QualificationInit": 1,
+        "App_LifecycleRxInit": 2,
+        "App_LifecycleTxInit": 4,
+        "App_CameraConsumerInit": 2,
+        "App_CameraConsumerBegin": 2,
+        "App_QualificationNextGeneration": 2,
+        "App_LifecycleTxReserveIds": 2,
+        "App_LifecycleAllocateIds": 2,
+        "App_LifecycleTxStage": 2,
+        "App_LifecycleValidate": 44,
+        "App_LifecycleStage": 4,
+        "App_CameraConsumerFlush": 12,
+        "App_LifecycleTxFlush": 12,
+        "App_LifecycleFlush": 14,
+        "App_QualificationReceive": 2,
+        "Qual_Overlap": 4,
+        "Qual_Index": 14,
+        "Qual_Enter": 20,
+        "App_LifecycleRxReceiveRequest": 2,
+        "App_QualificationProcess": 6,
+        "App_LifecycleRxPromote": 12,
+        "App_LifecycleReplayBegin": 2,
+        "Qual_Window": 4,
+        "Qual_Execute": 2,
+        "Qual_OtherWork": 2,
+        "Qual_Decide": 2,
+        "Qual_Submit": 2,
+        "App_LifecycleRxGetStatus": 2,
+        "Qual_Reply": 2,
+        "App_LifecycleMakeReply": 2,
+        "App_LifecycleMatchesReply": 12,
+        "App_LifecycleRxComplete": 2,
+        "App_LifecycleReplayComplete": 2,
+        "App_LifecycleReplayGetReply": 2,
+        "App_QualificationFlush": 12,
+        "App_LifecycleRxFlushReply": 2,
+        "App_CameraConsumerReceive": 2,
+        "App_LifecycleTxAcceptReply": 2,
+        "App_LifecycleAcceptReply": 2,
+        "App_LifecycleClear": 4,
+        "App_CameraConsumerProcess": 12,
+        "App_LifecycleTxGetCompleted": 2,
+        "App_LifecycleTxConfirmConsumed": 2
+      },
+      "layout": [
+        232,
+        216,
+        224,
+        208,
+        204,
+        220,
+        168,
+        808,
+        144,
+        332,
+        20,
+        72,
+        0,
+        0,
+        824
+      ],
+      "hardware_real": false,
+      "optimization": "O2",
+      "raw_trace": "ProbeEvidence/core_O2.json.gz"
+    },
+    {
+      "group": "task",
+      "original_id": 5,
+      "raw": {
+        "return": 0,
+        "failure_line": 0,
+        "error": null,
+        "returned": true,
+        "original_status": "PASS"
+      },
+      "acceptance_status": "PASS",
+      "expectation_matched": true,
+      "final": {
+        "session_id": 1,
+        "starts": 1,
+        "hardware_entries": {
+          "Device_Start": 1,
+          "CameraCapture_StartStream": 1,
+          "CameraCapture_Start": 0
+        },
+        "consumers": [
+          {
+            "phase": 3,
+            "result": 0,
+            "session": 1,
+            "generation": 1,
+            "granted": 1,
+            "request_id": 2
+          },
+          {
+            "phase": 3,
+            "result": 0,
+            "session": 1,
+            "generation": 1,
+            "granted": 1,
+            "request_id": 2
+          }
+        ],
+        "qualification_phase": [
+          2,
+          2
+        ],
+        "final_reply_enqueued": [
+          1,
+          1
+        ],
+        "self_wakes": 4,
+        "inbox_count": 0
+      },
+      "rounds": [
+        {
+          "round": 0,
+          "before": {
+            "session_id": 0,
+            "starts": 0,
+            "hardware_entries": {
+              "Device_Start": 0,
+              "CameraCapture_StartStream": 0,
+              "CameraCapture_Start": 0
+            },
+            "consumers": [
+              {
+                "phase": 1,
+                "result": -5,
+                "session": 0,
+                "generation": 1,
+                "granted": 0,
+                "request_id": 1
+              },
+              {
+                "phase": 1,
+                "result": -5,
+                "session": 0,
+                "generation": 1,
+                "granted": 0,
+                "request_id": 1
+              }
+            ],
+            "qualification_phase": [
+              0,
+              0
+            ],
+            "final_reply_enqueued": [
+              0,
+              0
+            ],
+            "self_wakes": 0,
+            "inbox_count": 0
+          },
+          "received": [
+            {
+              "sequence": 106,
+              "message": [
+                1,
+                1,
+                1,
+                2,
+                1,
+                0,
+                1,
+                1,
+                1,
+                0,
+                0,
+                0,
+                0,
+                0
+              ],
+              "inbox_after_dequeue": 1
+            }
+          ],
+          "after_both_flushes": {
+            "session_id": 0,
+            "starts": 0,
+            "hardware_entries": {
+              "Device_Start": 0,
+              "CameraCapture_StartStream": 0,
+              "CameraCapture_Start": 0
+            },
+            "consumers": [
+              {
+                "phase": 1,
+                "result": -5,
+                "session": 0,
+                "generation": 1,
+                "granted": 0,
+                "request_id": 1
+              },
+              {
+                "phase": 1,
+                "result": -5,
+                "session": 0,
+                "generation": 1,
+                "granted": 0,
+                "request_id": 1
+              }
+            ],
+            "qualification_phase": [
+              0,
+              0
+            ],
+            "final_reply_enqueued": [
+              0,
+              0
+            ],
+            "self_wakes": 0,
+            "inbox_count": 2
+          },
+          "after": {
+            "session_id": 1,
+            "starts": 0,
+            "hardware_entries": {
+              "Device_Start": 0,
+              "CameraCapture_StartStream": 0,
+              "CameraCapture_Start": 0
+            },
+            "consumers": [
+              {
+                "phase": 2,
+                "result": 0,
+                "session": 1,
+                "generation": 1,
+                "granted": 0,
+                "request_id": 2
+              },
+              {
+                "phase": 1,
+                "result": -5,
+                "session": 0,
+                "generation": 1,
+                "granted": 0,
+                "request_id": 1
+              }
+            ],
+            "qualification_phase": [
+              0,
+              0
+            ],
+            "final_reply_enqueued": [
+              1,
+              0
+            ],
+            "self_wakes": 1,
+            "inbox_count": 1
+          },
+          "self_wake_delta": 1
+        },
+        {
+          "round": 1,
+          "before": {
+            "session_id": 1,
+            "starts": 0,
+            "hardware_entries": {
+              "Device_Start": 0,
+              "CameraCapture_StartStream": 0,
+              "CameraCapture_Start": 0
+            },
+            "consumers": [
+              {
+                "phase": 2,
+                "result": 0,
+                "session": 1,
+                "generation": 1,
+                "granted": 0,
+                "request_id": 2
+              },
+              {
+                "phase": 1,
+                "result": -5,
+                "session": 0,
+                "generation": 1,
+                "granted": 0,
+                "request_id": 1
+              }
+            ],
+            "qualification_phase": [
+              0,
+              0
+            ],
+            "final_reply_enqueued": [
+              1,
+              0
+            ],
+            "self_wakes": 1,
+            "inbox_count": 1
+          },
+          "received": [
+            {
+              "sequence": 340,
+              "message": [
+                1,
+                1,
+                1,
+                3,
+                1,
+                0,
+                1,
+                2,
+                1,
+                0,
+                0,
+                0,
+                0,
+                0
+              ],
+              "inbox_after_dequeue": 1
+            }
+          ],
+          "after_both_flushes": {
+            "session_id": 1,
+            "starts": 0,
+            "hardware_entries": {
+              "Device_Start": 0,
+              "CameraCapture_StartStream": 0,
+              "CameraCapture_Start": 0
+            },
+            "consumers": [
+              {
+                "phase": 2,
+                "result": 0,
+                "session": 1,
+                "generation": 1,
+                "granted": 0,
+                "request_id": 2
+              },
+              {
+                "phase": 1,
+                "result": -5,
+                "session": 0,
+                "generation": 1,
+                "granted": 0,
+                "request_id": 1
+              }
+            ],
+            "qualification_phase": [
+              0,
+              0
+            ],
+            "final_reply_enqueued": [
+              1,
+              0
+            ],
+            "self_wakes": 1,
+            "inbox_count": 2
+          },
+          "after": {
+            "session_id": 1,
+            "starts": 0,
+            "hardware_entries": {
+              "Device_Start": 0,
+              "CameraCapture_StartStream": 0,
+              "CameraCapture_Start": 0
+            },
+            "consumers": [
+              {
+                "phase": 2,
+                "result": 0,
+                "session": 1,
+                "generation": 1,
+                "granted": 0,
+                "request_id": 2
+              },
+              {
+                "phase": 2,
+                "result": 0,
+                "session": 1,
+                "generation": 1,
+                "granted": 0,
+                "request_id": 2
+              }
+            ],
+            "qualification_phase": [
+              0,
+              0
+            ],
+            "final_reply_enqueued": [
+              1,
+              1
+            ],
+            "self_wakes": 2,
+            "inbox_count": 1
+          },
+          "self_wake_delta": 1
+        },
+        {
+          "round": 2,
+          "before": {
+            "session_id": 1,
+            "starts": 0,
+            "hardware_entries": {
+              "Device_Start": 0,
+              "CameraCapture_StartStream": 0,
+              "CameraCapture_Start": 0
+            },
+            "consumers": [
+              {
+                "phase": 2,
+                "result": 0,
+                "session": 1,
+                "generation": 1,
+                "granted": 0,
+                "request_id": 2
+              },
+              {
+                "phase": 2,
+                "result": 0,
+                "session": 1,
+                "generation": 1,
+                "granted": 0,
+                "request_id": 2
+              }
+            ],
+            "qualification_phase": [
+              0,
+              0
+            ],
+            "final_reply_enqueued": [
+              1,
+              1
+            ],
+            "self_wakes": 2,
+            "inbox_count": 1
+          },
+          "received": [
+            {
+              "sequence": 570,
+              "message": [
+                1,
+                1,
+                2,
+                2,
+                1,
+                1,
+                2,
+                1,
+                1,
+                0,
+                0,
+                0,
+                0,
+                0
+              ],
+              "inbox_after_dequeue": 1
+            }
+          ],
+          "after_both_flushes": {
+            "session_id": 1,
+            "starts": 0,
+            "hardware_entries": {
+              "Device_Start": 0,
+              "CameraCapture_StartStream": 0,
+              "CameraCapture_Start": 0
+            },
+            "consumers": [
+              {
+                "phase": 2,
+                "result": 0,
+                "session": 1,
+                "generation": 1,
+                "granted": 0,
+                "request_id": 2
+              },
+              {
+                "phase": 2,
+                "result": 0,
+                "session": 1,
+                "generation": 1,
+                "granted": 0,
+                "request_id": 2
+              }
+            ],
+            "qualification_phase": [
+              0,
+              0
+            ],
+            "final_reply_enqueued": [
+              1,
+              1
+            ],
+            "self_wakes": 2,
+            "inbox_count": 2
+          },
+          "after": {
+            "session_id": 1,
+            "starts": 1,
+            "hardware_entries": {
+              "Device_Start": 1,
+              "CameraCapture_StartStream": 1,
+              "CameraCapture_Start": 0
+            },
+            "consumers": [
+              {
+                "phase": 3,
+                "result": 0,
+                "session": 1,
+                "generation": 1,
+                "granted": 1,
+                "request_id": 2
+              },
+              {
+                "phase": 2,
+                "result": 0,
+                "session": 1,
+                "generation": 1,
+                "granted": 0,
+                "request_id": 2
+              }
+            ],
+            "qualification_phase": [
+              2,
+              0
+            ],
+            "final_reply_enqueued": [
+              1,
+              1
+            ],
+            "self_wakes": 3,
+            "inbox_count": 1
+          },
+          "self_wake_delta": 1
+        },
+        {
+          "round": 3,
+          "before": {
+            "session_id": 1,
+            "starts": 1,
+            "hardware_entries": {
+              "Device_Start": 1,
+              "CameraCapture_StartStream": 1,
+              "CameraCapture_Start": 0
+            },
+            "consumers": [
+              {
+                "phase": 3,
+                "result": 0,
+                "session": 1,
+                "generation": 1,
+                "granted": 1,
+                "request_id": 2
+              },
+              {
+                "phase": 2,
+                "result": 0,
+                "session": 1,
+                "generation": 1,
+                "granted": 0,
+                "request_id": 2
+              }
+            ],
+            "qualification_phase": [
+              2,
+              0
+            ],
+            "final_reply_enqueued": [
+              1,
+              1
+            ],
+            "self_wakes": 3,
+            "inbox_count": 1
+          },
+          "received": [
+            {
+              "sequence": 834,
+              "message": [
+                1,
+                1,
+                2,
+                3,
+                1,
+                1,
+                2,
+                2,
+                1,
+                0,
+                0,
+                0,
+                0,
+                0
+              ],
+              "inbox_after_dequeue": 0
+            }
+          ],
+          "after_both_flushes": {
+            "session_id": 1,
+            "starts": 1,
+            "hardware_entries": {
+              "Device_Start": 1,
+              "CameraCapture_StartStream": 1,
+              "CameraCapture_Start": 0
+            },
+            "consumers": [
+              {
+                "phase": 3,
+                "result": 0,
+                "session": 1,
+                "generation": 1,
+                "granted": 1,
+                "request_id": 2
+              },
+              {
+                "phase": 2,
+                "result": 0,
+                "session": 1,
+                "generation": 1,
+                "granted": 0,
+                "request_id": 2
+              }
+            ],
+            "qualification_phase": [
+              2,
+              0
+            ],
+            "final_reply_enqueued": [
+              1,
+              1
+            ],
+            "self_wakes": 3,
+            "inbox_count": 1
+          },
+          "after": {
+            "session_id": 1,
+            "starts": 1,
+            "hardware_entries": {
+              "Device_Start": 1,
+              "CameraCapture_StartStream": 1,
+              "CameraCapture_Start": 0
+            },
+            "consumers": [
+              {
+                "phase": 3,
+                "result": 0,
+                "session": 1,
+                "generation": 1,
+                "granted": 1,
+                "request_id": 2
+              },
+              {
+                "phase": 3,
+                "result": 0,
+                "session": 1,
+                "generation": 1,
+                "granted": 1,
+                "request_id": 2
+              }
+            ],
+            "qualification_phase": [
+              2,
+              2
+            ],
+            "final_reply_enqueued": [
+              1,
+              1
+            ],
+            "self_wakes": 4,
+            "inbox_count": 0
+          },
+          "self_wake_delta": 1
+        },
+        {
+          "round": 4,
+          "before": {
+            "session_id": 1,
+            "starts": 1,
+            "hardware_entries": {
+              "Device_Start": 1,
+              "CameraCapture_StartStream": 1,
+              "CameraCapture_Start": 0
+            },
+            "consumers": [
+              {
+                "phase": 3,
+                "result": 0,
+                "session": 1,
+                "generation": 1,
+                "granted": 1,
+                "request_id": 2
+              },
+              {
+                "phase": 3,
+                "result": 0,
+                "session": 1,
+                "generation": 1,
+                "granted": 1,
+                "request_id": 2
+              }
+            ],
+            "qualification_phase": [
+              2,
+              2
+            ],
+            "final_reply_enqueued": [
+              1,
+              1
+            ],
+            "self_wakes": 4,
+            "inbox_count": 0
+          },
+          "received": [],
+          "after_both_flushes": {
+            "session_id": 1,
+            "starts": 1,
+            "hardware_entries": {
+              "Device_Start": 1,
+              "CameraCapture_StartStream": 1,
+              "CameraCapture_Start": 0
+            },
+            "consumers": [
+              {
+                "phase": 3,
+                "result": 0,
+                "session": 1,
+                "generation": 1,
+                "granted": 1,
+                "request_id": 2
+              },
+              {
+                "phase": 3,
+                "result": 0,
+                "session": 1,
+                "generation": 1,
+                "granted": 1,
+                "request_id": 2
+              }
+            ],
+            "qualification_phase": [
+              2,
+              2
+            ],
+            "final_reply_enqueued": [
+              1,
+              1
+            ],
+            "self_wakes": 4,
+            "inbox_count": 0
+          },
+          "after": {
+            "session_id": 1,
+            "starts": 1,
+            "hardware_entries": {
+              "Device_Start": 1,
+              "CameraCapture_StartStream": 1,
+              "CameraCapture_Start": 0
+            },
+            "consumers": [
+              {
+                "phase": 3,
+                "result": 0,
+                "session": 1,
+                "generation": 1,
+                "granted": 1,
+                "request_id": 2
+              },
+              {
+                "phase": 3,
+                "result": 0,
+                "session": 1,
+                "generation": 1,
+                "granted": 1,
+                "request_id": 2
+              }
+            ],
+            "qualification_phase": [
+              2,
+              2
+            ],
+            "final_reply_enqueued": [
+              1,
+              1
+            ],
+            "self_wakes": 4,
+            "inbox_count": 0
+          },
+          "self_wake_delta": 0
+        },
+        {
+          "round": 5,
+          "before": {
+            "session_id": 1,
+            "starts": 1,
+            "hardware_entries": {
+              "Device_Start": 1,
+              "CameraCapture_StartStream": 1,
+              "CameraCapture_Start": 0
+            },
+            "consumers": [
+              {
+                "phase": 3,
+                "result": 0,
+                "session": 1,
+                "generation": 1,
+                "granted": 1,
+                "request_id": 2
+              },
+              {
+                "phase": 3,
+                "result": 0,
+                "session": 1,
+                "generation": 1,
+                "granted": 1,
+                "request_id": 2
+              }
+            ],
+            "qualification_phase": [
+              2,
+              2
+            ],
+            "final_reply_enqueued": [
+              1,
+              1
+            ],
+            "self_wakes": 4,
+            "inbox_count": 0
+          },
+          "received": [],
+          "after_both_flushes": {
+            "session_id": 1,
+            "starts": 1,
+            "hardware_entries": {
+              "Device_Start": 1,
+              "CameraCapture_StartStream": 1,
+              "CameraCapture_Start": 0
+            },
+            "consumers": [
+              {
+                "phase": 3,
+                "result": 0,
+                "session": 1,
+                "generation": 1,
+                "granted": 1,
+                "request_id": 2
+              },
+              {
+                "phase": 3,
+                "result": 0,
+                "session": 1,
+                "generation": 1,
+                "granted": 1,
+                "request_id": 2
+              }
+            ],
+            "qualification_phase": [
+              2,
+              2
+            ],
+            "final_reply_enqueued": [
+              1,
+              1
+            ],
+            "self_wakes": 4,
+            "inbox_count": 0
+          },
+          "after": {
+            "session_id": 1,
+            "starts": 1,
+            "hardware_entries": {
+              "Device_Start": 1,
+              "CameraCapture_StartStream": 1,
+              "CameraCapture_Start": 0
+            },
+            "consumers": [
+              {
+                "phase": 3,
+                "result": 0,
+                "session": 1,
+                "generation": 1,
+                "granted": 1,
+                "request_id": 2
+              },
+              {
+                "phase": 3,
+                "result": 0,
+                "session": 1,
+                "generation": 1,
+                "granted": 1,
+                "request_id": 2
+              }
+            ],
+            "qualification_phase": [
+              2,
+              2
+            ],
+            "final_reply_enqueued": [
+              1,
+              1
+            ],
+            "self_wakes": 4,
+            "inbox_count": 0
+          },
+          "self_wake_delta": 0
+        },
+        {
+          "round": 6,
+          "before": {
+            "session_id": 1,
+            "starts": 1,
+            "hardware_entries": {
+              "Device_Start": 1,
+              "CameraCapture_StartStream": 1,
+              "CameraCapture_Start": 0
+            },
+            "consumers": [
+              {
+                "phase": 3,
+                "result": 0,
+                "session": 1,
+                "generation": 1,
+                "granted": 1,
+                "request_id": 2
+              },
+              {
+                "phase": 3,
+                "result": 0,
+                "session": 1,
+                "generation": 1,
+                "granted": 1,
+                "request_id": 2
+              }
+            ],
+            "qualification_phase": [
+              2,
+              2
+            ],
+            "final_reply_enqueued": [
+              1,
+              1
+            ],
+            "self_wakes": 4,
+            "inbox_count": 0
+          },
+          "received": [],
+          "after_both_flushes": {
+            "session_id": 1,
+            "starts": 1,
+            "hardware_entries": {
+              "Device_Start": 1,
+              "CameraCapture_StartStream": 1,
+              "CameraCapture_Start": 0
+            },
+            "consumers": [
+              {
+                "phase": 3,
+                "result": 0,
+                "session": 1,
+                "generation": 1,
+                "granted": 1,
+                "request_id": 2
+              },
+              {
+                "phase": 3,
+                "result": 0,
+                "session": 1,
+                "generation": 1,
+                "granted": 1,
+                "request_id": 2
+              }
+            ],
+            "qualification_phase": [
+              2,
+              2
+            ],
+            "final_reply_enqueued": [
+              1,
+              1
+            ],
+            "self_wakes": 4,
+            "inbox_count": 0
+          },
+          "after": {
+            "session_id": 1,
+            "starts": 1,
+            "hardware_entries": {
+              "Device_Start": 1,
+              "CameraCapture_StartStream": 1,
+              "CameraCapture_Start": 0
+            },
+            "consumers": [
+              {
+                "phase": 3,
+                "result": 0,
+                "session": 1,
+                "generation": 1,
+                "granted": 1,
+                "request_id": 2
+              },
+              {
+                "phase": 3,
+                "result": 0,
+                "session": 1,
+                "generation": 1,
+                "granted": 1,
+                "request_id": 2
+              }
+            ],
+            "qualification_phase": [
+              2,
+              2
+            ],
+            "final_reply_enqueued": [
+              1,
+              1
+            ],
+            "self_wakes": 4,
+            "inbox_count": 0
+          },
+          "self_wake_delta": 0
+        },
+        {
+          "round": 7,
+          "before": {
+            "session_id": 1,
+            "starts": 1,
+            "hardware_entries": {
+              "Device_Start": 1,
+              "CameraCapture_StartStream": 1,
+              "CameraCapture_Start": 0
+            },
+            "consumers": [
+              {
+                "phase": 3,
+                "result": 0,
+                "session": 1,
+                "generation": 1,
+                "granted": 1,
+                "request_id": 2
+              },
+              {
+                "phase": 3,
+                "result": 0,
+                "session": 1,
+                "generation": 1,
+                "granted": 1,
+                "request_id": 2
+              }
+            ],
+            "qualification_phase": [
+              2,
+              2
+            ],
+            "final_reply_enqueued": [
+              1,
+              1
+            ],
+            "self_wakes": 4,
+            "inbox_count": 0
+          },
+          "received": [],
+          "after_both_flushes": {
+            "session_id": 1,
+            "starts": 1,
+            "hardware_entries": {
+              "Device_Start": 1,
+              "CameraCapture_StartStream": 1,
+              "CameraCapture_Start": 0
+            },
+            "consumers": [
+              {
+                "phase": 3,
+                "result": 0,
+                "session": 1,
+                "generation": 1,
+                "granted": 1,
+                "request_id": 2
+              },
+              {
+                "phase": 3,
+                "result": 0,
+                "session": 1,
+                "generation": 1,
+                "granted": 1,
+                "request_id": 2
+              }
+            ],
+            "qualification_phase": [
+              2,
+              2
+            ],
+            "final_reply_enqueued": [
+              1,
+              1
+            ],
+            "self_wakes": 4,
+            "inbox_count": 0
+          },
+          "after": {
+            "session_id": 1,
+            "starts": 1,
+            "hardware_entries": {
+              "Device_Start": 1,
+              "CameraCapture_StartStream": 1,
+              "CameraCapture_Start": 0
+            },
+            "consumers": [
+              {
+                "phase": 3,
+                "result": 0,
+                "session": 1,
+                "generation": 1,
+                "granted": 1,
+                "request_id": 2
+              },
+              {
+                "phase": 3,
+                "result": 0,
+                "session": 1,
+                "generation": 1,
+                "granted": 1,
+                "request_id": 2
+              }
+            ],
+            "qualification_phase": [
+              2,
+              2
+            ],
+            "final_reply_enqueued": [
+              1,
+              1
+            ],
+            "self_wakes": 4,
+            "inbox_count": 0
+          },
+          "self_wake_delta": 0
+        }
+      ],
+      "call_counts": {
+        "App_CameraQualificationPrepare": 1,
+        "Qual_AppAccess": 29,
+        "App_MessagesIsOwner": 29,
+        "App_CameraQualificationAccess": 29,
+        "App_QualificationInit": 1,
+        "App_LifecycleRxInit": 2,
+        "App_CameraConsumerInit": 2,
+        "App_LifecycleTxInit": 2,
+        "App_CameraConsumerBegin": 2,
+        "App_QualificationNextGeneration": 2,
+        "App_LifecycleTxReserveIds": 2,
+        "App_LifecycleAllocateIds": 2,
+        "App_LifecycleTxStage": 4,
+        "App_LifecycleValidate": 88,
+        "App_LifecycleStage": 8,
+        "App_CameraConsumerFlush": 16,
+        "App_LifecycleTxFlush": 16,
+        "App_LifecycleFlush": 20,
+        "App_LifecycleMessagesSend": 8,
+        "CameraTask_Process": 8,
+        "App_CameraBeginRound": 8,
+        "CameraCapture_GetStopFacts": 8,
+        "CameraTask_Reply": 16,
+        "App_CameraGetPendingAck": 16,
+        "App_CameraGetPendingFault": 16,
+        "App_CameraCanAcceptCommand": 8,
+        "App_MessagesReceive": 8,
+        "App_LifecycleMessagesReceive": 8,
+        "App_CameraQualificationReceive": 4,
+        "App_QualificationReceive": 4,
+        "Qual_Overlap": 8,
+        "Qual_Index": 20,
+        "Qual_Enter": 28,
+        "App_LifecycleRxReceiveRequest": 4,
+        "RuntimeEvent_Post": 4,
+        "App_CameraQualificationProcess": 8,
+        "App_QualificationProcess": 8,
+        "App_LifecycleRxPromote": 16,
+        "App_LifecycleReplayBegin": 4,
+        "Qual_Window": 8,
+        "Qual_Execute": 4,
+        "App_CameraResourceState": 6,
+        "Qual_OtherWork": 1,
+        "Qual_Decide": 4,
+        "Qual_Submit": 4,
+        "App_LifecycleRxGetStatus": 4,
+        "Qual_Reply": 4,
+        "App_LifecycleMakeReply": 4,
+        "App_LifecycleMatchesReply": 24,
+        "App_LifecycleRxComplete": 4,
+        "App_LifecycleReplayComplete": 4,
+        "App_LifecycleReplayGetReply": 4,
+        "App_CameraProcess": 8,
+        "App_CameraCanOfferFrame": 8,
+        "App_UvcBridgeCameraProcess": 8,
+        "App_CameraFinishRound": 8,
+        "App_CameraObserve": 14,
+        "App_CameraQualificationFlush": 16,
+        "App_QualificationFlush": 16,
+        "App_LifecycleRxFlushReply": 5,
+        "CameraTask_SendLifecycle": 4,
+        "App_CameraConsumerReceive": 4,
+        "App_LifecycleTxAcceptReply": 4,
+        "App_LifecycleAcceptReply": 4,
+        "App_LifecycleClear": 8,
+        "App_CameraConsumerProcess": 16,
+        "App_LifecycleTxGetCompleted": 7,
+        "App_LifecycleTxConfirmConsumed": 4,
+        "App_CameraQualificationStart": 1,
+        "App_CameraStartResource": 1,
+        "App_UvcBridgeCameraBegin": 1,
+        "App_CameraInitStream": 1,
+        "App_CameraStart": 1,
+        "App_CameraPrepare": 1,
+        "App_CameraConfigure": 1,
+        "CameraCapture_ValidateStreamConfig": 1,
+        "Device_Find": 1,
+        "App_CameraGetConfig": 2,
+        "CameraCapture_Init": 1,
+        "Device_Start": 1,
+        "CameraCapture_StartStream": 1,
+        "CameraCapture_GetLastResult": 7,
+        "App_CameraRun": 6,
+        "CameraCapture_Process": 6,
+        "CameraCapture_IsStopped": 6,
+        "CameraCapture_GetStats": 6
+      },
+      "layout": [
+        232,
+        216,
+        224,
+        208,
+        204,
+        220,
+        168,
+        808,
+        144,
+        332,
+        20,
+        72,
+        0,
+        116,
+        824
+      ],
+      "hardware_real": false,
+      "optimization": "O2",
+      "raw_trace": "ProbeEvidence/task_O2.json.gz"
+    }
+  ],
+  "executions": 4,
+  "baseline": "8a83591b4baa0a850ccdfb269b68d752af5bee81",
+  "snapshot_sources_unchanged": true,
+  "artifact_root": "D:\\32\\STM32H7\\h7_mac\\output\\B2B6\\worktree\\output\\ConsumerJoint\\B2B3_ID17_clean_1794752462530644700\\output\\ConsumerJoint\\ID17_probe_1794752476034622600",
+  "core_original_FAIL_preserved": true
+}

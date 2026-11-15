@@ -1,0 +1,22 @@
+{
+  "total": 153,
+  "final_status_counts": {
+    "PASS": 34,
+    "CONTRACT_CHANGED": 119
+  },
+  "original_128": {
+    "CONTRACT_CHANGED": 118,
+    "PASS": 10
+  },
+  "unique_FAIL_root_closed": true,
+  "current_production_defects_found": 0,
+  "production_modified": false,
+  "new_contract_executions": 306,
+  "new_contract_PASS": 306,
+  "new_contract_checks": 7400,
+  "hardware_required_within_unit_scope": 0,
+  "hardware_product_scope": "separate HARDWARE_REQUIRED matrix; NOT_RUN",
+  "remaining_software_BLOCKED": 0,
+  "legacy_failures_preserved": true,
+  "signed_off_full_gate": false
+}

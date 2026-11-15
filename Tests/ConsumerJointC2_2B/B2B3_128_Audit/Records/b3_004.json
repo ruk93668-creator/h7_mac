@@ -1,0 +1,620 @@
+{
+  "original_suite": "b3",
+  "original_id": 4,
+  "name": "Command queue full",
+  "original_status": "BLOCKED",
+  "original_assertions": {
+    "C_executed": [
+      {
+        "line": 107,
+        "pass": true,
+        "expression": "App_StoragePrepare(&storage_config)==SYS_OK",
+        "trace_index": 5
+      },
+      {
+        "line": 109,
+        "pass": true,
+        "expression": "App_StorageStartRecording()==SYS_OK",
+        "trace_index": 12
+      },
+      {
+        "line": 109,
+        "pass": true,
+        "expression": "App_StorageStartRecording()==SYS_OK",
+        "trace_index": 19
+      },
+      {
+        "line": 109,
+        "pass": true,
+        "expression": "App_StorageStartRecording()==SYS_OK",
+        "trace_index": 26
+      },
+      {
+        "line": 109,
+        "pass": true,
+        "expression": "App_StorageStartRecording()==SYS_OK",
+        "trace_index": 33
+      },
+      {
+        "line": 109,
+        "pass": true,
+        "expression": "App_StorageStop()==SYS_ERR_NO_RESOURCE",
+        "trace_index": 37
+      },
+      {
+        "line": 109,
+        "pass": true,
+        "expression": "s_state==STORAGE_VIDEO",
+        "trace_index": 179
+      }
+    ],
+    "Python": "baseline.ok && candidate.ok && full trace equality"
+  },
+  "test_entry": {
+    "file": "Tests/StorageModuleB3/behavior_test.c",
+    "function": "B3_TestRun",
+    "case_argument": 4,
+    "mode_input_from_trace": [],
+    "source_start_line": 101,
+    "source_end_line": 158,
+    "matched_source_clauses": [
+      {
+        "line": 109,
+        "condition": "id==4",
+        "static_match": true,
+        "source": "if(id==4){uint32_t i;for(i=0;i<4;i++)CHECK(App_StorageStartRecording()==SYS_OK);CHECK(App_StorageStop()==SYS_ERR_NO_RESOURCE);for(i=0;i<4;i++)Process();CHECK(s_state==STORAGE_VIDEO);return 0;}"
+      }
+    ]
+  },
+  "production_source": [
+    {
+      "function": "App_StoragePrepare",
+      "file": "CM7/Application/app_storage.c",
+      "line": 169
+    },
+    {
+      "function": "App_StorageIsReady",
+      "file": "CM7/Application/app_storage.c",
+      "line": 190
+    },
+    {
+      "function": "App_StorageStartRecording",
+      "file": "CM7/Application/app_storage.c",
+      "line": 196
+    },
+    {
+      "function": "App_StorageRequestSnapshot",
+      "file": "CM7/Application/app_storage.c",
+      "line": 199
+    },
+    {
+      "function": "App_StorageStop",
+      "file": "CM7/Application/app_storage.c",
+      "line": 202
+    },
+    {
+      "function": "App_StorageRecover",
+      "file": "CM7/Application/app_storage.c",
+      "line": 219
+    },
+    {
+      "function": "App_StorageGetStatus",
+      "file": "CM7/Application/app_storage.c",
+      "line": 222
+    },
+    {
+      "function": "App_StorageWantsFrame",
+      "file": "CM7/Application/app_storage.c",
+      "line": 237
+    },
+    {
+      "function": "App_StorageOfferFrame",
+      "file": "CM7/Application/app_storage.c",
+      "line": 253
+    },
+    {
+      "function": "App_StorageProcessReturns",
+      "file": "CM7/Application/app_storage.c",
+      "line": 350
+    },
+    {
+      "function": "App_StorageProcess",
+      "file": "CM7/Application/app_storage.c",
+      "line": 395
+    },
+    {
+      "function": "Storage_Context",
+      "file": "CM7/Application/app_storage.c",
+      "line": 597
+    },
+    {
+      "function": "Storage_Request",
+      "file": "CM7/Application/app_storage.c",
+      "line": 603
+    },
+    {
+      "function": "VideoConfig_GetDefault",
+      "file": "CM7/Application/app_storage.c",
+      "line": 610
+    },
+    {
+      "function": "Storage_HandleEvent",
+      "file": "CM7/Application/app_storage.c",
+      "line": 644
+    },
+    {
+      "function": "Storage_OnStart",
+      "file": "CM7/Application/app_storage.c",
+      "line": 669
+    },
+    {
+      "function": "Storage_StartGranted",
+      "file": "CM7/Application/app_storage.c",
+      "line": 688
+    },
+    {
+      "function": "Storage_OnStop",
+      "file": "CM7/Application/app_storage.c",
+      "line": 738
+    },
+    {
+      "function": "Storage_OnRecover",
+      "file": "CM7/Application/app_storage.c",
+      "line": 752
+    },
+    {
+      "function": "Storage_OpenNew",
+      "file": "CM7/Application/app_storage.c",
+      "line": 824
+    },
+    {
+      "function": "Storage_Write",
+      "file": "CM7/Application/app_storage.c",
+      "line": 862
+    },
+    {
+      "function": "Storage_Snapshot",
+      "file": "CM7/Application/app_storage.c",
+      "line": 880
+    },
+    {
+      "function": "Storage_CloseAvi",
+      "file": "CM7/Application/app_storage.c",
+      "line": 952
+    },
+    {
+      "function": "Storage_Finish",
+      "file": "CM7/Application/app_storage.c",
+      "line": 972
+    },
+    {
+      "function": "Storage_Fail",
+      "file": "CM7/Application/app_storage.c",
+      "line": 1008
+    },
+    {
+      "function": "Storage_Release",
+      "file": "CM7/Application/app_storage.c",
+      "line": 1042
+    },
+    {
+      "function": "Storage_Transition",
+      "file": "CM7/Application/app_storage.c",
+      "line": 1065
+    },
+    {
+      "function": "Storage_PublishStatus",
+      "file": "CM7/Application/app_storage.c",
+      "line": 1072
+    },
+    {
+      "function": "Storage_LifecycleFinish",
+      "file": "CM7/Application/app_storage.c",
+      "line": 1083
+    },
+    {
+      "function": "App_StorageReceiveLifecycle",
+      "file": "CM7/Application/app_storage.c",
+      "line": 1104
+    },
+    {
+      "function": "App_StorageFlushLifecycle",
+      "file": "CM7/Application/app_storage.c",
+      "line": 1113
+    },
+    {
+      "function": "App_StorageGetLifecycleStatus",
+      "file": "CM7/Application/app_storage.c",
+      "line": 1122
+    },
+    {
+      "function": "StorageTask_Create",
+      "file": "CM7/Application/Tasks/storage_task.c",
+      "line": 31
+    },
+    {
+      "function": "StorageTask_Run",
+      "file": "CM7/Application/Tasks/storage_task.c",
+      "line": 41
+    },
+    {
+      "function": "StorageTask_SendLifecycle",
+      "file": "CM7/Application/Tasks/storage_task.c",
+      "line": 86
+    },
+    {
+      "function": "JpegFrame_Validate",
+      "file": "CM7/Service/jpeg_frame.c",
+      "line": 7
+    },
+    {
+      "function": "JpegFrame_Crc32",
+      "file": "CM7/Service/jpeg_frame.c",
+      "line": 82
+    },
+    {
+      "function": "Jpeg_Byte",
+      "file": "CM7/Service/jpeg_frame.c",
+      "line": 95
+    },
+    {
+      "function": "MjpegAvi_Begin",
+      "file": "CM7/Service/mjpeg_avi.c",
+      "line": 23
+    },
+    {
+      "function": "MjpegAvi_Append",
+      "file": "CM7/Service/mjpeg_avi.c",
+      "line": 47
+    },
+    {
+      "function": "MjpegAvi_AppendFrame",
+      "file": "CM7/Service/mjpeg_avi.c",
+      "line": 56
+    },
+    {
+      "function": "MjpegAvi_Finish",
+      "file": "CM7/Service/mjpeg_avi.c",
+      "line": 103
+    },
+    {
+      "function": "Avi_Header",
+      "file": "CM7/Service/mjpeg_avi.c",
+      "line": 149
+    },
+    {
+      "function": "Avi_Write",
+      "file": "CM7/Service/mjpeg_avi.c",
+      "line": 195
+    },
+    {
+      "function": "Avi_U32",
+      "file": "CM7/Service/mjpeg_avi.c",
+      "line": 213
+    }
+  ],
+  "runtime_trace_origins": [
+    {
+      "code": 1,
+      "observed_calls": 7,
+      "dependency_or_test_function": "Platform_TimeGetMs",
+      "file": "Tests/StorageModuleB3/behavior_test.c",
+      "line": 47
+    },
+    {
+      "code": 2,
+      "observed_calls": 35,
+      "dependency_or_test_function": "Platform_SyncDisableIrq",
+      "file": "Tests/StorageModuleB3/behavior_test.c",
+      "line": 51
+    },
+    {
+      "code": 3,
+      "observed_calls": 35,
+      "dependency_or_test_function": "Platform_SyncRestoreIrq",
+      "file": "Tests/StorageModuleB3/behavior_test.c",
+      "line": 52
+    },
+    {
+      "code": 4,
+      "observed_calls": 71,
+      "dependency_or_test_function": "Platform_SyncMemoryBarrier",
+      "file": "Tests/StorageModuleB3/behavior_test.c",
+      "line": 53
+    },
+    {
+      "code": 5,
+      "observed_calls": 10,
+      "dependency_or_test_function": "App_EventsIsOwner",
+      "file": "Tests/StorageModuleB3/behavior_test.c",
+      "line": 54
+    },
+    {
+      "code": 6,
+      "observed_calls": 7,
+      "dependency_or_test_function": "RuntimeEvent_Post",
+      "file": "Tests/StorageModuleB3/behavior_test.c",
+      "line": 55
+    },
+    {
+      "code": 7,
+      "observed_calls": 8,
+      "dependency_or_test_function": "VideoConfig_GetDefault",
+      "file": "Tests/StorageModuleB3/behavior_test.c",
+      "line": 56
+    },
+    {
+      "code": 30,
+      "observed_calls": 1,
+      "dependency_or_test_function": "StorageFS_Mount",
+      "file": "Tests/StorageModuleB3/behavior_test.c",
+      "line": 78
+    },
+    {
+      "code": 31,
+      "observed_calls": 1,
+      "dependency_or_test_function": "StorageFS_GetSpace",
+      "file": "Tests/StorageModuleB3/behavior_test.c",
+      "line": 79
+    },
+    {
+      "code": 90,
+      "observed_calls": 4,
+      "dependency_or_test_function": "Process",
+      "file": "Tests/StorageModuleB3/behavior_test.c",
+      "line": 95
+    }
+  ],
+  "compiled_real": [
+    "CM7/Application/app_storage.c",
+    "CM7/Application/Tasks/storage_task.c",
+    "CM7/Service/jpeg_frame.c",
+    "CM7/Service/mjpeg_avi.c",
+    "CM7/Application/app_camera_lifecycle.c",
+    "CM7/Application/app_camera_lifecycle_replay.c",
+    "CM7/Application/app_camera_qualification.c"
+  ],
+  "mock_boundary": "StorageFS medium, FIFO lease boundary, RTOS; actual Storage/JPEG/AVI",
+  "preconditions": [
+    "Fresh zeroed ARM image per case",
+    "Original BOOT/owner/config/fault inputs from the actual matched source clauses",
+    "QUERY/ACQUIRE through actual Tx/Rx/Replay/Qualification before dependent Mode Start/Mount when requested",
+    "No test writes to granted/phase/qualification/Replay"
+  ],
+  "original_missing_evidence": [
+    "Original Python full-state/Debug/ACK predicate has not been translated to a causal contract for this ID; C success alone is insufficient."
+  ],
+  "original_first_unable_reason": "Original Python full-state/Debug/ACK predicate has not been translated to a causal contract for this ID; C success alone is insufficient.",
+  "first_legacy_trace_difference": {
+    "index": 42,
+    "baseline": [
+      30,
+      1,
+      0,
+      100,
+      4,
+      0,
+      1,
+      0,
+      0,
+      0,
+      0,
+      4,
+      0,
+      0,
+      0,
+      1,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      3,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0
+    ],
+    "current": [
+      2,
+      0,
+      0,
+      100,
+      4,
+      0,
+      1,
+      0,
+      0,
+      0,
+      0,
+      4,
+      0,
+      0,
+      0,
+      1,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      3,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0
+    ]
+  },
+  "software_verifiable": true,
+  "hardware_needed_for_this_unit_contract": false,
+  "hardware_limit": "Real ISO/DMA/SD/FIFO timing is outside these historical unit fixtures; listed separately as HARDWARE_REQUIRED, never claimed by software",
+  "classification": [
+    "B: missing complete transport/assertion/state evidence supplied",
+    "D: historical full-event trace identity no longer holds; new causal contract executed O0/O2"
+  ],
+  "current_status": "CONTRACT_CHANGED",
+  "new_contract_O0": "PASS",
+  "new_contract_O2": "PASS",
+  "causal_check_names": [
+    "Mount follows actual ACQUIRE reply",
+    "QUERY reply precedes ACQUIRE and uses the granted session",
+    "all original baseline requirement sites remain executed",
+    "commands preserve actual FIFO ordering",
+    "filesystem calls/parameters/bytes/CRC agree with original business baseline",
+    "filesystem operation stays in Storage owner",
+    "no fabricated released/hardware stopped reply",
+    "observed lifecycle format and direction are valid",
+    "original C requirements execute without failure/drop",
+    "published cache matches completed logical Process boundary",
+    "queue-full rejection preserves four START FIFO entries despite async admission",
+    "real private status cache publishes once per valid Process and prepare",
+    "reply matches complete request identity"
+  ],
+  "original_exact_trace_equal_O0_O2": [
+    false,
+    false
+  ],
+  "current_first_contract_violation": null,
+  "next_action": "Review/approve the explicit old/new contract mapping; do not relabel old FAIL as PASS",
+  "raw_O0": "RawResults/Current/storage_candidate_O0_4.json.gz",
+  "raw_O2": "RawResults/Current/storage_candidate_O2_4.json.gz"
+}

@@ -1,0 +1,7 @@
+Traceback (most recent call last):
+  File "D:\32\STM32H7\h7_mac\output\B2B6\worktree\output\ConsumerJoint\B2B3Audit_1794751445025414800\output\B2B6\original_1794751529177836100\Tests\ConsumerIntegrationC2_2B\run_legacy.py", line 9, in <module>
+    sys.path.insert(0,str(ROOT/'Tests/CameraLifecycleC1'));import run_tests as c
+                                                           ^^^^^^^^^^^^^^^^^^^^^
+  File "D:\32\STM32H7\h7_mac\output\B2B6\worktree\output\ConsumerJoint\B2B3Audit_1794751445025414800\output\B2B6\original_1794751529177836100\Tests\CameraLifecycleC1\run_tests.py", line 8, in <module>
+    from unicorn import Uc,UC_ARCH_ARM,UC_MODE_THUMB,UC_MODE_MCLASS
+ModuleNotFoundError: No module named 'unicorn'
