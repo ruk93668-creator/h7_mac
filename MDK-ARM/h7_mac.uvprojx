@@ -4406,6 +4406,11 @@
               <FilePath>../CM7/Application/app_camera.c</FilePath>
             </File>
             <File>
+              <FileName>app_camera_consumer.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>../CM7/Application/app_camera_consumer.c</FilePath>
+            </File>
+            <File>
               <FileName>app_camera.h</FileName>
               <FileType>5</FileType>
               <FilePath>../CM7/Application/app_camera.h</FilePath>

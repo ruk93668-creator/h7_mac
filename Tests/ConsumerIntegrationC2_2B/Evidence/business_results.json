@@ -1,0 +1,572 @@
+{
+  "summary": {
+    "total": 62,
+    "passed": 62,
+    "failed": 0
+  },
+  "cases": [
+    {
+      "group": "usb",
+      "id": 0,
+      "optimization": "O0",
+      "pass": true,
+      "return": 0,
+      "failure_line": 0,
+      "error": null
+    },
+    {
+      "group": "usb",
+      "id": 1,
+      "optimization": "O0",
+      "pass": true,
+      "return": 0,
+      "failure_line": 0,
+      "error": null
+    },
+    {
+      "group": "usb",
+      "id": 2,
+      "optimization": "O0",
+      "pass": true,
+      "return": 0,
+      "failure_line": 0,
+      "error": null
+    },
+    {
+      "group": "usb",
+      "id": 3,
+      "optimization": "O0",
+      "pass": true,
+      "return": 0,
+      "failure_line": 0,
+      "error": null
+    },
+    {
+      "group": "usb",
+      "id": 4,
+      "optimization": "O0",
+      "pass": true,
+      "return": 0,
+      "failure_line": 0,
+      "error": null
+    },
+    {
+      "group": "usb",
+      "id": 5,
+      "optimization": "O0",
+      "pass": true,
+      "return": 0,
+      "failure_line": 0,
+      "error": null
+    },
+    {
+      "group": "usb",
+      "id": 6,
+      "optimization": "O0",
+      "pass": true,
+      "return": 0,
+      "failure_line": 0,
+      "error": null
+    },
+    {
+      "group": "usb",
+      "id": 7,
+      "optimization": "O0",
+      "pass": true,
+      "return": 0,
+      "failure_line": 0,
+      "error": null
+    },
+    {
+      "group": "usb",
+      "id": 8,
+      "optimization": "O0",
+      "pass": true,
+      "return": 0,
+      "failure_line": 0,
+      "error": null
+    },
+    {
+      "group": "usb",
+      "id": 9,
+      "optimization": "O0",
+      "pass": true,
+      "return": 0,
+      "failure_line": 0,
+      "error": null
+    },
+    {
+      "group": "storage",
+      "id": 0,
+      "optimization": "O0",
+      "pass": true,
+      "return": 0,
+      "failure_line": 0,
+      "error": null
+    },
+    {
+      "group": "storage",
+      "id": 1,
+      "optimization": "O0",
+      "pass": true,
+      "return": 0,
+      "failure_line": 0,
+      "error": null
+    },
+    {
+      "group": "storage",
+      "id": 2,
+      "optimization": "O0",
+      "pass": true,
+      "return": 0,
+      "failure_line": 0,
+      "error": null
+    },
+    {
+      "group": "storage",
+      "id": 3,
+      "optimization": "O0",
+      "pass": true,
+      "return": 0,
+      "failure_line": 0,
+      "error": null
+    },
+    {
+      "group": "storage",
+      "id": 4,
+      "optimization": "O0",
+      "pass": true,
+      "return": 0,
+      "failure_line": 0,
+      "error": null
+    },
+    {
+      "group": "storage",
+      "id": 5,
+      "optimization": "O0",
+      "pass": true,
+      "return": 0,
+      "failure_line": 0,
+      "error": null
+    },
+    {
+      "group": "storage",
+      "id": 6,
+      "optimization": "O0",
+      "pass": true,
+      "return": 0,
+      "failure_line": 0,
+      "error": null
+    },
+    {
+      "group": "storage",
+      "id": 7,
+      "optimization": "O0",
+      "pass": true,
+      "return": 0,
+      "failure_line": 0,
+      "error": null
+    },
+    {
+      "group": "storage",
+      "id": 8,
+      "optimization": "O0",
+      "pass": true,
+      "return": 0,
+      "failure_line": 0,
+      "error": null
+    },
+    {
+      "group": "control",
+      "id": 0,
+      "optimization": "O0",
+      "pass": true,
+      "return": 0,
+      "failure_line": 0,
+      "error": null
+    },
+    {
+      "group": "control",
+      "id": 1,
+      "optimization": "O0",
+      "pass": true,
+      "return": 0,
+      "failure_line": 0,
+      "error": null
+    },
+    {
+      "group": "control",
+      "id": 2,
+      "optimization": "O0",
+      "pass": true,
+      "return": 0,
+      "failure_line": 0,
+      "error": null
+    },
+    {
+      "group": "control",
+      "id": 3,
+      "optimization": "O0",
+      "pass": true,
+      "return": 0,
+      "failure_line": 0,
+      "error": null
+    },
+    {
+      "group": "control",
+      "id": 4,
+      "optimization": "O0",
+      "pass": true,
+      "return": 0,
+      "failure_line": 0,
+      "error": null
+    },
+    {
+      "group": "control",
+      "id": 5,
+      "optimization": "O0",
+      "pass": true,
+      "return": 0,
+      "failure_line": 0,
+      "error": null
+    },
+    {
+      "group": "camera_task",
+      "id": 0,
+      "optimization": "O0",
+      "pass": true,
+      "return": 0,
+      "failure_line": 0,
+      "error": null
+    },
+    {
+      "group": "camera_task",
+      "id": 1,
+      "optimization": "O0",
+      "pass": true,
+      "return": 0,
+      "failure_line": 0,
+      "error": null
+    },
+    {
+      "group": "camera_task",
+      "id": 2,
+      "optimization": "O0",
+      "pass": true,
+      "return": 0,
+      "failure_line": 0,
+      "error": null
+    },
+    {
+      "group": "camera_task",
+      "id": 3,
+      "optimization": "O0",
+      "pass": true,
+      "return": 0,
+      "failure_line": 0,
+      "error": null
+    },
+    {
+      "group": "camera_task",
+      "id": 4,
+      "optimization": "O0",
+      "pass": true,
+      "return": 0,
+      "failure_line": 0,
+      "error": null
+    },
+    {
+      "group": "camera_task",
+      "id": 5,
+      "optimization": "O0",
+      "pass": true,
+      "return": 0,
+      "failure_line": 0,
+      "error": null
+    },
+    {
+      "group": "usb",
+      "id": 0,
+      "optimization": "O2",
+      "pass": true,
+      "return": 0,
+      "failure_line": 0,
+      "error": null
+    },
+    {
+      "group": "usb",
+      "id": 1,
+      "optimization": "O2",
+      "pass": true,
+      "return": 0,
+      "failure_line": 0,
+      "error": null
+    },
+    {
+      "group": "usb",
+      "id": 2,
+      "optimization": "O2",
+      "pass": true,
+      "return": 0,
+      "failure_line": 0,
+      "error": null
+    },
+    {
+      "group": "usb",
+      "id": 3,
+      "optimization": "O2",
+      "pass": true,
+      "return": 0,
+      "failure_line": 0,
+      "error": null
+    },
+    {
+      "group": "usb",
+      "id": 4,
+      "optimization": "O2",
+      "pass": true,
+      "return": 0,
+      "failure_line": 0,
+      "error": null
+    },
+    {
+      "group": "usb",
+      "id": 5,
+      "optimization": "O2",
+      "pass": true,
+      "return": 0,
+      "failure_line": 0,
+      "error": null
+    },
+    {
+      "group": "usb",
+      "id": 6,
+      "optimization": "O2",
+      "pass": true,
+      "return": 0,
+      "failure_line": 0,
+      "error": null
+    },
+    {
+      "group": "usb",
+      "id": 7,
+      "optimization": "O2",
+      "pass": true,
+      "return": 0,
+      "failure_line": 0,
+      "error": null
+    },
+    {
+      "group": "usb",
+      "id": 8,
+      "optimization": "O2",
+      "pass": true,
+      "return": 0,
+      "failure_line": 0,
+      "error": null
+    },
+    {
+      "group": "usb",
+      "id": 9,
+      "optimization": "O2",
+      "pass": true,
+      "return": 0,
+      "failure_line": 0,
+      "error": null
+    },
+    {
+      "group": "storage",
+      "id": 0,
+      "optimization": "O2",
+      "pass": true,
+      "return": 0,
+      "failure_line": 0,
+      "error": null
+    },
+    {
+      "group": "storage",
+      "id": 1,
+      "optimization": "O2",
+      "pass": true,
+      "return": 0,
+      "failure_line": 0,
+      "error": null
+    },
+    {
+      "group": "storage",
+      "id": 2,
+      "optimization": "O2",
+      "pass": true,
+      "return": 0,
+      "failure_line": 0,
+      "error": null
+    },
+    {
+      "group": "storage",
+      "id": 3,
+      "optimization": "O2",
+      "pass": true,
+      "return": 0,
+      "failure_line": 0,
+      "error": null
+    },
+    {
+      "group": "storage",
+      "id": 4,
+      "optimization": "O2",
+      "pass": true,
+      "return": 0,
+      "failure_line": 0,
+      "error": null
+    },
+    {
+      "group": "storage",
+      "id": 5,
+      "optimization": "O2",
+      "pass": true,
+      "return": 0,
+      "failure_line": 0,
+      "error": null
+    },
+    {
+      "group": "storage",
+      "id": 6,
+      "optimization": "O2",
+      "pass": true,
+      "return": 0,
+      "failure_line": 0,
+      "error": null
+    },
+    {
+      "group": "storage",
+      "id": 7,
+      "optimization": "O2",
+      "pass": true,
+      "return": 0,
+      "failure_line": 0,
+      "error": null
+    },
+    {
+      "group": "storage",
+      "id": 8,
+      "optimization": "O2",
+      "pass": true,
+      "return": 0,
+      "failure_line": 0,
+      "error": null
+    },
+    {
+      "group": "control",
+      "id": 0,
+      "optimization": "O2",
+      "pass": true,
+      "return": 0,
+      "failure_line": 0,
+      "error": null
+    },
+    {
+      "group": "control",
+      "id": 1,
+      "optimization": "O2",
+      "pass": true,
+      "return": 0,
+      "failure_line": 0,
+      "error": null
+    },
+    {
+      "group": "control",
+      "id": 2,
+      "optimization": "O2",
+      "pass": true,
+      "return": 0,
+      "failure_line": 0,
+      "error": null
+    },
+    {
+      "group": "control",
+      "id": 3,
+      "optimization": "O2",
+      "pass": true,
+      "return": 0,
+      "failure_line": 0,
+      "error": null
+    },
+    {
+      "group": "control",
+      "id": 4,
+      "optimization": "O2",
+      "pass": true,
+      "return": 0,
+      "failure_line": 0,
+      "error": null
+    },
+    {
+      "group": "control",
+      "id": 5,
+      "optimization": "O2",
+      "pass": true,
+      "return": 0,
+      "failure_line": 0,
+      "error": null
+    },
+    {
+      "group": "camera_task",
+      "id": 0,
+      "optimization": "O2",
+      "pass": true,
+      "return": 0,
+      "failure_line": 0,
+      "error": null
+    },
+    {
+      "group": "camera_task",
+      "id": 1,
+      "optimization": "O2",
+      "pass": true,
+      "return": 0,
+      "failure_line": 0,
+      "error": null
+    },
+    {
+      "group": "camera_task",
+      "id": 2,
+      "optimization": "O2",
+      "pass": true,
+      "return": 0,
+      "failure_line": 0,
+      "error": null
+    },
+    {
+      "group": "camera_task",
+      "id": 3,
+      "optimization": "O2",
+      "pass": true,
+      "return": 0,
+      "failure_line": 0,
+      "error": null
+    },
+    {
+      "group": "camera_task",
+      "id": 4,
+      "optimization": "O2",
+      "pass": true,
+      "return": 0,
+      "failure_line": 0,
+      "error": null
+    },
+    {
+      "group": "camera_task",
+      "id": 5,
+      "optimization": "O2",
+      "pass": true,
+      "return": 0,
+      "failure_line": 0,
+      "error": null
+    }
+  ],
+  "hardware_verified": false,
+  "transport_mocked": true,
+  "BSP_and_filesystem_mocked": true,
+  "release_evidence_missing": true,
+  "artifact_root": "D:\\32\\STM32H7\\h7_mac\\output\\ConsumerIntegrationC2_2B\\final_1794655254854843100\\source\\output\\ConsumerIntegrationC2_2B\\business_1794657714790205100"
+}

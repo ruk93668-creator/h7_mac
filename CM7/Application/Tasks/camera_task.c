@@ -24,8 +24,26 @@ static StackType_t s_camera_stack[CAMERA_TASK_STACK_WORDS] __attribute__((aligne
 //保存唯一Camera任务句柄
 static TaskHandle_t s_camera_task;
 
+//记录资格运输的初始化及最近真实错误，不作为资格或帧归还证明
+static bool s_lifecycle_ready;
+volatile struct
+{
+    SysResult_t init_result;
+    SysResult_t receive_result;
+    SysResult_t process_result;
+    SysResult_t usb_reply_result;
+    SysResult_t storage_reply_result;
+} g_camera_lifecycle_debug;
+
 //记录任务状态和真实采集计数
 volatile CameraTaskDebug_t g_camera_task_debug;
+
+
+//向现有生命周期队列发送Camera固定回复
+static SysResult_t CameraTask_SendLifecycle(void *context, const AppLifecycleMessage_t *message);
+
+//每轮接收一条生命周期消息，让决策和回复先于下一次准入
+static void CameraTask_ReceiveLifecycle(void);
 
 //等待事件并推进相机数据面
 static void CameraTask_Run(void *argument);
@@ -81,6 +99,10 @@ static void CameraTask_Run(void *argument)
     //观察者只复制诊断字段，BOOT和等待错误仍归任务维护
     App_CameraSetDiagnosticObserver(CameraTask_Observe);
 
+    //只在Camera任务首次准备资格核心，不启动传感器或清空运行期Replay
+    g_camera_lifecycle_debug.init_result = App_CameraQualificationPrepare();
+    s_lifecycle_ready = g_camera_lifecycle_debug.init_result == SYS_OK;
+
     for (;;)
     {
 
@@ -130,10 +152,26 @@ static void CameraTask_Process(uint32_t events)
         App_MessagesReceive(APP_CHANNEL_CAMERA_COMMAND, &command))
         App_CameraHandleCommand(&command);
 
+    //资格先登记启动或停止意图；真实停止仍只由本轮FinishRound推进
+    if (s_lifecycle_ready)
+    {
+        CameraTask_ReceiveLifecycle();
+        g_camera_lifecycle_debug.process_result = App_CameraQualificationProcess();
+    }
+
     //保持Media、Bridge归还和停止完成的原执行顺序
     App_CameraProcess();
     App_UvcBridgeCameraProcess(App_CameraCanOfferFrame());
     App_CameraFinishRound();
+
+    //本轮停止结果下一轮才由资格核心读取，回复失败只保留原固定回复
+    if (s_lifecycle_ready)
+    {
+        g_camera_lifecycle_debug.usb_reply_result =
+            App_CameraQualificationFlush(APP_CONSUMER_USB, CameraTask_SendLifecycle, NULL);
+        g_camera_lifecycle_debug.storage_reply_result =
+            App_CameraQualificationFlush(APP_CONSUMER_STORAGE, CameraTask_SendLifecycle, NULL);
+    }
     CameraTask_Reply();
 }
 
@@ -200,5 +238,28 @@ static void CameraTask_Observe(AppCameraDiagnosticField_t field,
             break;
         default:
             break;
+    }
+}
+
+//只路由原有固定回复，发送权限仍由App_Messages检查
+static SysResult_t CameraTask_SendLifecycle(void *context, const AppLifecycleMessage_t *message)
+{
+    (void)context;
+    return App_LifecycleMessagesSend(message->target == APP_LIFECYCLE_USB ?
+        APP_LIFECYCLE_CHANNEL_USB : APP_LIFECYCLE_CHANNEL_STORAGE, message);
+}
+
+//所属Camera任务串行接收，资格内部继续使用受控Rx和Replay
+static void CameraTask_ReceiveLifecycle(void)
+{
+    AppLifecycleMessage_t message;
+    uint32_t disposition;
+    //先让本轮QUERY建立会话，不能先把双路冷QUERY同时登记为Core候选
+    if (App_LifecycleMessagesReceive(APP_LIFECYCLE_CHANNEL_CAMERA, &message))
+    {
+        g_camera_lifecycle_debug.receive_result =
+            App_CameraQualificationReceive(&message, &disposition);
+        //消息仍在原有界队列，自唤醒只保证合并通知后还有下一轮处理机会
+        (void)RuntimeEvent_Post(RUNTIME_TARGET_CAMERA, RUNTIME_EVENT_WAKE);
     }
 }

@@ -1,0 +1,7 @@
+0 YUY2 held frame STOP PASS 0 None
+1 BSP stop error retry PASS 0 None
+2 JPEG held frame STOP PASS 0 None
+3 JPEG FAULT DRAINING PASS 0 None
+4 JPEG FAULT without loan PASS 0 None
+5 BSP BUSY retry PASS 0 None
+{'total': 6, 'passed': 6, 'failed': 0}

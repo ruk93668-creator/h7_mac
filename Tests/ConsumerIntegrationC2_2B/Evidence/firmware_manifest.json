@@ -1,0 +1,54 @@
+{
+  "h7_mac_CM7": {
+    ".axf": {
+      "exists": true,
+      "path": "D:\\32\\STM32H7\\h7_mac\\output\\ConsumerIntegrationC2_2B\\final_1794655254854843100\\source\\MDK-ARM\\h7_mac_CM7\\h7_mac_CM7.axf",
+      "sha256": "5dc5a2f28e65ea4e9ce5290269f42ce9e9a76d9dd3f1d6bbf7674979aca572dd",
+      "bytes": 3265900
+    },
+    ".hex": {
+      "exists": false,
+      "path": "D:\\32\\STM32H7\\h7_mac\\output\\ConsumerIntegrationC2_2B\\final_1794655254854843100\\source\\MDK-ARM\\h7_mac_CM7\\h7_mac_CM7.hex",
+      "sha256": null,
+      "bytes": null
+    },
+    ".map": {
+      "exists": true,
+      "path": "D:\\32\\STM32H7\\h7_mac\\output\\ConsumerIntegrationC2_2B\\final_1794655254854843100\\source\\MDK-ARM\\h7_mac_CM7\\h7_mac_CM7.map",
+      "sha256": "608b5c8948dfb83c19b2999e6c0ad6b982dd2a010d425b511dc042dc8535eef4",
+      "bytes": 966282
+    },
+    ".htm": {
+      "exists": true,
+      "path": "D:\\32\\STM32H7\\h7_mac\\output\\ConsumerIntegrationC2_2B\\final_1794655254854843100\\source\\MDK-ARM\\h7_mac_CM7\\h7_mac_CM7.htm",
+      "sha256": "48acbea8d68aed35c897afa1c126a42639237295e4d6d41258a7e6c33df23586",
+      "bytes": 700135
+    }
+  },
+  "h7_mac_CM4": {
+    ".axf": {
+      "exists": true,
+      "path": "D:\\32\\STM32H7\\h7_mac\\output\\ConsumerIntegrationC2_2B\\final_1794655254854843100\\source\\MDK-ARM\\h7_mac_CM4\\h7_mac_CM4.axf",
+      "sha256": "9f4f7ba7dcfbb80e55234d648c4a0f365cfa9490706e91aff3a28b50479a0fe8",
+      "bytes": 1598032
+    },
+    ".hex": {
+      "exists": true,
+      "path": "D:\\32\\STM32H7\\h7_mac\\output\\ConsumerIntegrationC2_2B\\final_1794655254854843100\\source\\MDK-ARM\\h7_mac_CM4\\h7_mac_CM4.hex",
+      "sha256": "3030484c03d4983a192be39142dce7b6dfdb8e6c93a49e1f8285ee846540fb17",
+      "bytes": 78200
+    },
+    ".map": {
+      "exists": true,
+      "path": "D:\\32\\STM32H7\\h7_mac\\output\\ConsumerIntegrationC2_2B\\final_1794655254854843100\\source\\MDK-ARM\\h7_mac_CM4\\h7_mac_CM4.map",
+      "sha256": "1fe11abb1925a8cd0ef02c421efcc4b77d5afb33c9f1bf0c71c226407a0e0700",
+      "bytes": 262704
+    },
+    ".htm": {
+      "exists": true,
+      "path": "D:\\32\\STM32H7\\h7_mac\\output\\ConsumerIntegrationC2_2B\\final_1794655254854843100\\source\\MDK-ARM\\h7_mac_CM4\\h7_mac_CM4.htm",
+      "sha256": "c91c25efe181ba0612503c7892c3833877260bdf990fe7bb5cc91bd7f34cc1aa",
+      "bytes": 156780
+    }
+  }
+}

@@ -1,6 +1,7 @@
 #include "storage_task.h"
 #include "app_storage.h"
 #include "app_events.h"
+#include "app_messages.h"
 #include "video_config.h"
 #include "platform_time.h"
 #include "platform_sync.h"
@@ -13,6 +14,15 @@
 static StaticTask_t s_tcb;
 static StackType_t s_stack[STORAGE_STACK_WORDS] __attribute__((aligned(8)));
 static TaskHandle_t s_task;
+
+//记录真实运输结果，不作为文件或帧完成条件
+volatile SysResult_t g_storage_lifecycle_receive_result;
+volatile SysResult_t g_storage_lifecycle_send_result;
+//单写者诊断投影，不作为Camera归还核验的输入
+volatile AppCameraConsumerStatus_t g_storage_camera_consumer;
+
+//只沿原Camera收件箱运输本消费者请求
+static SysResult_t StorageTask_SendLifecycle(void *context, const AppLifecycleMessage_t *message);
 
 //等待BOOT，再处理有界保存命令与副本
 static void StorageTask_Run(void *argument);
@@ -30,7 +40,9 @@ SysResult_t StorageTask_Create(void)
 //文件系统由本任务唯一使用，空闲轮次不识卡或写入
 static void StorageTask_Run(void *argument)
 {
-    uint32_t events, stack_tick = 0U, now;
+    uint32_t events, stack_tick = 0U, now, count;
+    AppLifecycleMessage_t lifecycle;
+    AppCameraConsumerStatus_t camera_status;
     bool boot = false;
     SysResult_t result;
     (void)argument;
@@ -51,7 +63,14 @@ static void StorageTask_Run(void *argument)
         if (!boot || !App_StorageIsReady())
             continue;
 
+        //先投递匹配回复，再推进原文件流程；处理数量有界，不同步等待Camera
+        for (count = 0U; count < 4U &&
+            App_LifecycleMessagesReceive(APP_LIFECYCLE_CHANNEL_STORAGE, &lifecycle); ++count)
+            g_storage_lifecycle_receive_result = App_StorageReceiveLifecycle(&lifecycle);
         App_StorageProcess();
+        g_storage_lifecycle_send_result = App_StorageFlushLifecycle(StorageTask_SendLifecycle, NULL);
+        App_StorageGetLifecycleStatus(&camera_status);
+        g_storage_camera_consumer = camera_status;
 
         //最多每1000ms扫描一次栈，避免历史高频扫描引入视频降帧
         now = Platform_TimeGetMs();
@@ -61,4 +80,11 @@ static void StorageTask_Run(void *argument)
             g_storage_status.stack_free_words = uxTaskGetStackHighWaterMark(NULL);
         }
     }
+}
+
+//队列成功只代表请求运输，文件和资格完成仍分别等待
+static SysResult_t StorageTask_SendLifecycle(void *context, const AppLifecycleMessage_t *message)
+{
+    (void)context;
+    return App_LifecycleMessagesSend(APP_LIFECYCLE_CHANNEL_CAMERA, message);
 }

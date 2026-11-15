@@ -33,7 +33,7 @@ typedef struct
     uint32_t measured_fps_milli;//保存按原公式计算的采集FPS
     CameraConfig_t applied;//保存最近实际运行时采样的配置
     bool applied_valid;//记录是否采样过实际运行配置
-    AppCameraQualification_t qualifications;//保存唯一资格核心，尚不接入业务消息
+    AppCameraQualification_t qualifications;//保存唯一资格核心，由CameraTask接收业务生命周期消息
     bool resource_preparing;//同步资源启动正在执行
     bool resource_stop_confirmed;//实际硬件停止已经确认
     AppLifecycleIdentity_t stop_identity;//资格停止结果对应的完整事务身份
@@ -302,6 +302,16 @@ void App_CameraHandleCommand(const AppMessage_t *command)
     s_camera.ack.result = SYS_ERR_INVALID_ARG;
     s_camera.command_id = command->command_id;
     App_CameraObserve(APP_CAMERA_DIAG_COMMAND);
+    //真实任务启用资格协议后，旧Camera控制消息不得并行操作同一硬件
+    if (s_camera.qualifications.initialized != 0U &&
+        (command->type == APP_MESSAGE_START || command->type == APP_MESSAGE_STOP))
+    {
+        s_camera.ack.result = SYS_ERR_NOT_SUPPORTED;
+        s_camera.ack_pending = true;
+        s_camera.last_result = SYS_ERR_NOT_SUPPORTED;
+        App_CameraObserve(APP_CAMERA_DIAG_RESULT);
+        return;
+    }
     if (command->type == APP_MESSAGE_START)
     {
         //运行或停止中仍回复BUSY，不创建新的采集会话
