@@ -1,0 +1,111 @@
+{
+  "cases": [
+    {
+      "id": 0,
+      "baseline_return": 115,
+      "candidate_return": 156,
+      "pass": false,
+      "first_event_difference": 0,
+      "trace": "D:\\32\\STM32H7\\h7_mac\\output\\B2B6\\worktree\\Tests\\ConsumerIntegrationB2B6\\Evidence\\b1_minimal\\0.json.gz",
+      "classification": "D"
+    },
+    {
+      "id": 1,
+      "baseline_return": 115,
+      "candidate_return": 156,
+      "pass": false,
+      "first_event_difference": 0,
+      "trace": "D:\\32\\STM32H7\\h7_mac\\output\\B2B6\\worktree\\Tests\\ConsumerIntegrationB2B6\\Evidence\\b1_minimal\\1.json.gz",
+      "classification": "D"
+    },
+    {
+      "id": 2,
+      "baseline_return": 115,
+      "candidate_return": 156,
+      "pass": false,
+      "first_event_difference": 0,
+      "trace": "D:\\32\\STM32H7\\h7_mac\\output\\B2B6\\worktree\\Tests\\ConsumerIntegrationB2B6\\Evidence\\b1_minimal\\2.json.gz",
+      "classification": "D"
+    },
+    {
+      "id": 3,
+      "baseline_return": 115,
+      "candidate_return": 156,
+      "pass": false,
+      "first_event_difference": 0,
+      "trace": "D:\\32\\STM32H7\\h7_mac\\output\\B2B6\\worktree\\Tests\\ConsumerIntegrationB2B6\\Evidence\\b1_minimal\\3.json.gz",
+      "classification": "D"
+    },
+    {
+      "id": 4,
+      "baseline_return": 115,
+      "candidate_return": 156,
+      "pass": false,
+      "first_event_difference": 0,
+      "trace": "D:\\32\\STM32H7\\h7_mac\\output\\B2B6\\worktree\\Tests\\ConsumerIntegrationB2B6\\Evidence\\b1_minimal\\4.json.gz",
+      "classification": "D"
+    },
+    {
+      "id": 5,
+      "baseline_return": 115,
+      "candidate_return": 156,
+      "pass": false,
+      "first_event_difference": 0,
+      "trace": "D:\\32\\STM32H7\\h7_mac\\output\\B2B6\\worktree\\Tests\\ConsumerIntegrationB2B6\\Evidence\\b1_minimal\\5.json.gz",
+      "classification": "D"
+    },
+    {
+      "id": 6,
+      "baseline_return": 115,
+      "candidate_return": 130,
+      "pass": false,
+      "first_event_difference": 0,
+      "trace": "D:\\32\\STM32H7\\h7_mac\\output\\B2B6\\worktree\\Tests\\ConsumerIntegrationB2B6\\Evidence\\b1_minimal\\6.json.gz",
+      "classification": "D"
+    },
+    {
+      "id": 7,
+      "baseline_return": 115,
+      "candidate_return": 156,
+      "pass": false,
+      "first_event_difference": 0,
+      "trace": "D:\\32\\STM32H7\\h7_mac\\output\\B2B6\\worktree\\Tests\\ConsumerIntegrationB2B6\\Evidence\\b1_minimal\\7.json.gz",
+      "classification": "D"
+    },
+    {
+      "id": 8,
+      "baseline_return": 115,
+      "candidate_return": 156,
+      "pass": false,
+      "first_event_difference": 0,
+      "trace": "D:\\32\\STM32H7\\h7_mac\\output\\B2B6\\worktree\\Tests\\ConsumerIntegrationB2B6\\Evidence\\b1_minimal\\8.json.gz",
+      "classification": "D"
+    },
+    {
+      "id": 9,
+      "baseline_return": 115,
+      "candidate_return": 156,
+      "pass": false,
+      "first_event_difference": 0,
+      "trace": "D:\\32\\STM32H7\\h7_mac\\output\\B2B6\\worktree\\Tests\\ConsumerIntegrationB2B6\\Evidence\\b1_minimal\\9.json.gz",
+      "classification": "D"
+    },
+    {
+      "id": 10,
+      "baseline_return": 115,
+      "candidate_return": 156,
+      "pass": false,
+      "first_event_difference": 0,
+      "trace": "D:\\32\\STM32H7\\h7_mac\\output\\B2B6\\worktree\\Tests\\ConsumerIntegrationB2B6\\Evidence\\b1_minimal\\10.json.gz",
+      "classification": "D"
+    }
+  ],
+  "baseline_axf": "D:\\32\\STM32H7\\h7_mac\\output\\B2B6\\worktree\\output\\B2B6\\b1_1794729254116597200\\arm\\b1.axf",
+  "candidate_axf": "D:\\32\\STM32H7\\h7_mac\\output\\B2B6\\worktree\\output\\B2B6\\b1_1794731265884315800\\arm\\b1.axf",
+  "baseline_sha256": "c87da9ed8406f7ccdc506f235aa51abb117be48de9ad7b8e49e0902c4d52d3e5",
+  "candidate_sha256": "e490565e6c0a444de0a13064c1abc2467f1392843748787f31963261f25ae014",
+  "generated_fixture": "D:\\32\\STM32H7\\h7_mac\\output\\B2B6\\worktree\\output\\B2B6\\b1_1794731265884315800\\fixture.c",
+  "original_assertions_preserved": true,
+  "id_gate": true,
+  "release_proof_supplied": false
+}

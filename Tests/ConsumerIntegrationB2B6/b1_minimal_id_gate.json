@@ -1,0 +1,35 @@
+{
+  "baseline_ids": [
+    0,
+    1,
+    2,
+    3,
+    4,
+    5,
+    6,
+    7,
+    8,
+    9,
+    10
+  ],
+  "candidate_ids": [
+    0,
+    1,
+    2,
+    3,
+    4,
+    5,
+    6,
+    7,
+    8,
+    9,
+    10
+  ],
+  "missing": [],
+  "added": [],
+  "duplicate": [],
+  "runner_exit": 1,
+  "full_acceptance_pass": false,
+  "all_ids_executed": true,
+  "original_assertions_preserved": true
+}
