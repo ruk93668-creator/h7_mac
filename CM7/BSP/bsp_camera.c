@@ -4,15 +4,21 @@
 #include <stdbool.h>
 #include <stddef.h>
 
-//V0接线：PB8为SDA，PB9为SCL，PH15为RESETB，PA8为XCLK
-//供电沿用旧板修订：R31已拆，U10 CE硬件拉高，不用GPIO控制供电
+//V1接线：PA15控制U10的1.5V电源，PH13为PWDN，PH15为RESETB
+//PB8为SDA，PB9为SCL，PA8继续输出原有24MHz XCLK
 #define CAMERA_SDA      GPIO_PIN_8
 #define CAMERA_SCL      GPIO_PIN_9
 #define CAMERA_RESET    GPIO_PIN_15
+#define CAMERA_PWDN     GPIO_PIN_13
+#define CAMERA_DVDD_EN  GPIO_PIN_15
+#define CAMERA_XCLK    GPIO_PIN_8
 #define CAMERA_PLLQ_HZ 240000000UL
 
+//记录SCCB是否已经具备访问传感器的上电条件
 static bool s_camera_ready;
+//记录共享端口是否完成一次性配置
 static bool s_camera_pins_ready;
+//保存最近一次软件SCCB错误
 static volatile uint32_t s_sccb_error;
 
 //内部功能函数声明
@@ -51,9 +57,18 @@ void BSP_Camera_EarlyInit(void)
 	__HAL_RCC_GPIOH_CLK_ENABLE();
 	__HAL_RCC_GPIOB_CLK_ENABLE();
 
-	//保持传感器复位
+	//先预装低电平，再把PA15从调试复用切为输出，避免软件配置时误使能
+	HAL_GPIO_WritePin(GPIOA, CAMERA_DVDD_EN, GPIO_PIN_RESET);
+	gpio.Pin = CAMERA_DVDD_EN;
+	gpio.Mode = GPIO_MODE_OUTPUT_PP;
+	gpio.Pull = GPIO_PULLDOWN;
+	gpio.Speed = GPIO_SPEED_FREQ_LOW;
+	HAL_GPIO_Init(GPIOA, &gpio);
+
+	//保持传感器复位，并用原有PH13保持PWDN有效，等待DVDD稳定
+	HAL_GPIO_WritePin(GPIOH, CAMERA_PWDN, GPIO_PIN_SET);
 	HAL_GPIO_WritePin(GPIOH, CAMERA_RESET, GPIO_PIN_RESET);
-	gpio.Pin = CAMERA_RESET;
+	gpio.Pin = CAMERA_RESET | CAMERA_PWDN;
 	gpio.Mode = GPIO_MODE_OUTPUT_PP;
 	gpio.Pull = GPIO_NOPULL;
 	gpio.Speed = GPIO_SPEED_FREQ_LOW;
@@ -68,7 +83,34 @@ void BSP_Camera_EarlyInit(void)
 	s_camera_pins_ready = true;
 }
 
-//先保持复位，再建立24MHz时钟，最后释放RESETB
+//使能摄像头1.5V数字电源
+void BSP_Camera_PowerEnable(void)
+{
+	//使能只控制U10，不代表传感器已经初始化或允许访问SCCB
+	BSP_Camera_EarlyInit();
+	HAL_GPIO_WritePin(GPIOA, CAMERA_DVDD_EN, GPIO_PIN_SET);
+}
+
+//关闭摄像头1.5V数字电源并禁止继续访问SCCB
+void BSP_Camera_PowerDisable(void)
+{
+	GPIO_InitTypeDef gpio = {0};
+
+	//调用者必须先停止采集并释放资源；此接口不替代Device或Media停止
+	BSP_Camera_EarlyInit();
+	HAL_GPIO_WritePin(GPIOH, CAMERA_RESET, GPIO_PIN_RESET);
+	HAL_GPIO_WritePin(GPIOH, CAMERA_PWDN, GPIO_PIN_SET);
+
+	//先停止向传感器输出XCLK，再关闭DVDD；不改PLL或MCO分频
+	gpio.Pin = CAMERA_XCLK;
+	gpio.Mode = GPIO_MODE_ANALOG;
+	gpio.Pull = GPIO_NOPULL;
+	HAL_GPIO_Init(GPIOA, &gpio);
+	HAL_GPIO_WritePin(GPIOA, CAMERA_DVDD_EN, GPIO_PIN_RESET);
+	s_camera_ready = false;
+}
+
+//建立数字电源和24MHz时钟，再按外部DVDD时序释放PWDN和RESETB
 SysResult_t BSP_Camera_Init(void)
 {
 	PLL1_ClocksTypeDef clocks;
@@ -91,9 +133,6 @@ SysResult_t BSP_Camera_Init(void)
 	if ( SystemCoreClock < 1000000U)
 		return SYS_ERR_INVALID_STATE;
 
-	//HAL同时配置PA8复用输出，240MHz除以10得到24MHz
-	HAL_RCC_MCOConfig(RCC_MCO1, RCC_MCO1SOURCE_PLL1QCLK, RCC_MCODIV_10);
-
 	//不清零已运行的周期计数器，避免干扰其他DWT用户
 	CoreDebug->DEMCR |= CoreDebug_DEMCR_TRCENA_Msk;
 	DWT->CTRL |= DWT_CTRL_CYCCNTENA_Msk;
@@ -105,7 +144,17 @@ SysResult_t BSP_Camera_Init(void)
 	if ( DWT->CYCCNT == start)
 		return SYS_ERR_NOT_SUPPORTED;
 
+	//沿用10ms等待：预留DVDD上升小于5ms及稳定后至少5ms的要求
+	//实际电压上升时间必须在TP2测量，软件延时不作为电源稳定证明
+	BSP_Camera_PowerEnable();
 	HAL_Delay(10U);
+	HAL_GPIO_WritePin(GPIOH, CAMERA_PWDN, GPIO_PIN_RESET);
+
+	//HAL同时配置PA8复用输出，240MHz除以10得到24MHz
+	HAL_RCC_MCOConfig(RCC_MCO1, RCC_MCO1SOURCE_PLL1QCLK, RCC_MCODIV_10);
+
+	//PWDN释放后至少1ms才能释放RESETB，之后保留20ms SCCB等待
+	HAL_Delay(1U);
 	HAL_GPIO_WritePin(GPIOH, CAMERA_RESET, GPIO_PIN_SET);
 	HAL_Delay(20U);
 	s_camera_ready = true;
