@@ -1,0 +1,188 @@
+{
+  "cases": [
+    {
+      "id": 0,
+      "optimization": "O0",
+      "status": "FAIL",
+      "return": 223,
+      "error": null,
+      "exit": 1
+    },
+    {
+      "id": 1,
+      "optimization": "O0",
+      "status": "FAIL",
+      "return": 224,
+      "error": null,
+      "exit": 1
+    },
+    {
+      "id": 2,
+      "optimization": "O0",
+      "status": "FAIL",
+      "return": 223,
+      "error": null,
+      "exit": 1
+    },
+    {
+      "id": 3,
+      "optimization": "O0",
+      "status": "FAIL",
+      "return": 223,
+      "error": null,
+      "exit": 1
+    },
+    {
+      "id": 4,
+      "optimization": "O0",
+      "status": "PASS",
+      "return": 0,
+      "error": null,
+      "exit": 0
+    },
+    {
+      "id": 5,
+      "optimization": "O0",
+      "status": "PASS",
+      "return": 0,
+      "error": null,
+      "exit": 0
+    },
+    {
+      "id": 6,
+      "optimization": "O0",
+      "status": "FAIL",
+      "return": 224,
+      "error": null,
+      "exit": 1
+    },
+    {
+      "id": 7,
+      "optimization": "O0",
+      "status": "FAIL",
+      "return": 224,
+      "error": null,
+      "exit": 1
+    },
+    {
+      "id": 8,
+      "optimization": "O0",
+      "status": "FAIL",
+      "return": 223,
+      "error": null,
+      "exit": 1
+    },
+    {
+      "id": 9,
+      "optimization": "O0",
+      "status": "FAIL",
+      "return": 224,
+      "error": null,
+      "exit": 1
+    },
+    {
+      "id": 10,
+      "optimization": "O0",
+      "status": "PASS",
+      "return": 0,
+      "error": null,
+      "exit": 0
+    },
+    {
+      "id": 0,
+      "optimization": "O2",
+      "status": "FAIL",
+      "return": 223,
+      "error": null,
+      "exit": 1
+    },
+    {
+      "id": 1,
+      "optimization": "O2",
+      "status": "FAIL",
+      "return": 224,
+      "error": null,
+      "exit": 1
+    },
+    {
+      "id": 2,
+      "optimization": "O2",
+      "status": "FAIL",
+      "return": 223,
+      "error": null,
+      "exit": 1
+    },
+    {
+      "id": 3,
+      "optimization": "O2",
+      "status": "FAIL",
+      "return": 223,
+      "error": null,
+      "exit": 1
+    },
+    {
+      "id": 4,
+      "optimization": "O2",
+      "status": "PASS",
+      "return": 0,
+      "error": null,
+      "exit": 0
+    },
+    {
+      "id": 5,
+      "optimization": "O2",
+      "status": "PASS",
+      "return": 0,
+      "error": null,
+      "exit": 0
+    },
+    {
+      "id": 6,
+      "optimization": "O2",
+      "status": "FAIL",
+      "return": 224,
+      "error": null,
+      "exit": 1
+    },
+    {
+      "id": 7,
+      "optimization": "O2",
+      "status": "FAIL",
+      "return": 224,
+      "error": null,
+      "exit": 1
+    },
+    {
+      "id": 8,
+      "optimization": "O2",
+      "status": "FAIL",
+      "return": 223,
+      "error": null,
+      "exit": 1
+    },
+    {
+      "id": 9,
+      "optimization": "O2",
+      "status": "FAIL",
+      "return": 224,
+      "error": null,
+      "exit": 1
+    },
+    {
+      "id": 10,
+      "optimization": "O2",
+      "status": "PASS",
+      "return": 0,
+      "error": null,
+      "exit": 0
+    }
+  ],
+  "executions": 22,
+  "passed": 6,
+  "artifact_root": "D:\\32\\STM32H7\\h7_mac\\output\\B2B6\\worktree\\output\\ConsumerJoint\\1794735890462629100",
+  "stage_fault_injected_cases": [
+    2,
+    8,
+    10
+  ]
+}

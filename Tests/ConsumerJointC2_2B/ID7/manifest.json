@@ -1,0 +1,30 @@
+{
+  "base_sha": "3cf288faf28781e4ab24551a610bb2031946a21a",
+  "app_usb_sha256": "74d687b9d9cba5f5db901e572073360cdc7d66c84e9aafef58de66e262f83581",
+  "production_only": [
+    "CM7/Application/app_usb.c"
+  ],
+  "parent_evidence_unchanged": {
+    "Tests/ConsumerJointC2_2B/results.json": "7fa19b0607e1890fdccef62a55570c50a37db49f8e299708371b73c34ada5711",
+    "Tests/ConsumerJointC2_2B/legacy_153_gate.json": "11e0dd401e0fd623b8a2659983b174d4340e4b6d473444989c7015e789392e74",
+    "Tests/ConsumerJointC2_2B/Acceptance.md": "37fc05d2a37161ace4c58d1bd849ee2f4764378ed3df6bd52764dfc93d1a93cf",
+    "Tests/ConsumerJointC2_2B/Evidence/7.json.gz": "7e8a6823be06c4573e091e61d1f6e87f8935a9683ab7636421d7a1030c8991b1"
+  },
+  "candidate_tests": {
+    "special": 22,
+    "joint": 22,
+    "B2_C_entries": 204
+  },
+  "hardware_verified": false,
+  "test_source_hashes": {
+    "audit_id7_resources.py": "c322c4884750adca16c8ee8e888386a0fffedaf9eea501134bcced63ea3c4181",
+    "check_id7.py": "fdc72c0c2de1decac22a0c490ef6e87f5e014851654a415dfbad59949dc1390d",
+    "id7_consumer.c": "2076b1ac897b9b9d78d60230121119508d57e86e51379d18dbcb2054689aa163",
+    "id7_test.c": "ecfdd8f76b0e00f0973af020c9a8612c147ac1a0f859fb7370396b154cd0ccdc",
+    "run_id7.py": "c30e9ac0b94069c203e26dfaa15f4bb9e40b87ed1a7b59fbddda3793fca6b7c9",
+    "run_id7_b2.py": "e22a4bda47d3cc14610b9b422cd49575c55de366aa0e51e8d588682ff2637396",
+    "run_id7_build.py": "210666797431b1d1b7f45f1c90fa683a3c7988e3bee4181ca10e2bb27d5062f8",
+    "run_id7_joint.py": "79c0e1f70d9adfd2e786d1f3e9e2ee104d42e7d181ce99c18da95b3984d21db2",
+    "run_id7_regression.py": "0e4b50264bb22c7712f365eb29ab49de401267b2a3c30785367e05bc5688da83"
+  }
+}

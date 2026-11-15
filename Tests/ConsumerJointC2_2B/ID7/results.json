@@ -1,0 +1,366 @@
+{
+  "cases": [
+    {
+      "id": 0,
+      "optimization": "O0",
+      "status": "PASS",
+      "return": 0,
+      "error": null,
+      "observations": {
+        "id7_stage_calls": 1,
+        "id7_stage_success": 1,
+        "id7_stop_calls": 1,
+        "phase": 4,
+        "granted": 1,
+        "release_message": "0100000001000000030000000200000001000000010000000300000001000000010000000000000000000000000000000000000000000000"
+      },
+      "exit": 0
+    },
+    {
+      "id": 1,
+      "optimization": "O0",
+      "status": "PASS",
+      "return": 0,
+      "error": null,
+      "observations": {
+        "id7_stage_calls": 1,
+        "id7_stage_success": 1,
+        "id7_stop_calls": 1,
+        "phase": 4,
+        "granted": 1,
+        "release_message": "010000000100000003000000020000000100000001000000030000000100000001000000000000000000000000000000f7ffffff00000000"
+      },
+      "exit": 0
+    },
+    {
+      "id": 2,
+      "optimization": "O0",
+      "status": "PASS",
+      "return": 0,
+      "error": null,
+      "observations": {
+        "id7_stage_calls": 2,
+        "id7_stage_success": 1,
+        "id7_stop_calls": 1,
+        "phase": 4,
+        "granted": 1,
+        "release_message": "010000000100000003000000020000000100000001000000030000000100000001000000000000000000000000000000f7ffffff00000000"
+      },
+      "exit": 0
+    },
+    {
+      "id": 3,
+      "optimization": "O0",
+      "status": "PASS",
+      "return": 0,
+      "error": null,
+      "observations": {
+        "id7_stage_calls": 1,
+        "id7_stage_success": 1,
+        "id7_stop_calls": 1,
+        "phase": 4,
+        "granted": 1,
+        "release_message": "0100000001000000030000000200000001000000010000000300000001000000010000000000000000000000000000000000000000000000"
+      },
+      "exit": 0
+    },
+    {
+      "id": 4,
+      "optimization": "O0",
+      "status": "PASS",
+      "return": 0,
+      "error": null,
+      "observations": {
+        "id7_stage_calls": 1,
+        "id7_stage_success": 1,
+        "id7_stop_calls": 1,
+        "phase": 4,
+        "granted": 1,
+        "release_message": "010000000100000003000000020000000100000001000000030000000100000001000000000000000000000000000000f7ffffff00000000"
+      },
+      "exit": 0
+    },
+    {
+      "id": 5,
+      "optimization": "O0",
+      "status": "PASS",
+      "return": 0,
+      "error": null,
+      "observations": {
+        "id7_stage_calls": 0,
+        "id7_stage_success": 0,
+        "id7_stop_calls": 1,
+        "phase": 0,
+        "granted": 0,
+        "release_message": "0000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000"
+      },
+      "exit": 0
+    },
+    {
+      "id": 6,
+      "optimization": "O0",
+      "status": "PASS",
+      "return": 0,
+      "error": null,
+      "observations": {
+        "id7_stage_calls": 1,
+        "id7_stage_success": 1,
+        "id7_stop_calls": 1,
+        "phase": 4,
+        "granted": 1,
+        "release_message": "010000000100000003000000020000000100000001000000030000000100000001000000000000000000000000000000f7ffffff00000000"
+      },
+      "exit": 0
+    },
+    {
+      "id": 7,
+      "optimization": "O0",
+      "status": "PASS",
+      "return": 0,
+      "error": null,
+      "observations": {
+        "id7_stage_calls": 1,
+        "id7_stage_success": 1,
+        "id7_stop_calls": 1,
+        "phase": 4,
+        "granted": 1,
+        "release_message": "010000000100000003000000020000000100000001000000030000000100000001000000000000000000000000000000f7ffffff00000000"
+      },
+      "exit": 0
+    },
+    {
+      "id": 8,
+      "optimization": "O0",
+      "status": "PASS",
+      "return": 0,
+      "error": null,
+      "observations": {
+        "id7_stage_calls": 3,
+        "id7_stage_success": 1,
+        "id7_stop_calls": 1,
+        "phase": 4,
+        "granted": 1,
+        "release_message": "010000000100000003000000020000000100000001000000030000000100000001000000000000000000000000000000f7ffffff00000000"
+      },
+      "exit": 0
+    },
+    {
+      "id": 9,
+      "optimization": "O0",
+      "status": "PASS",
+      "return": 0,
+      "error": null,
+      "observations": {
+        "id7_stage_calls": 1,
+        "id7_stage_success": 1,
+        "id7_stop_calls": 2,
+        "phase": 4,
+        "granted": 1,
+        "release_message": "010000000100000003000000020000000100000001000000030000000100000001000000000000000000000000000000f7ffffff00000000"
+      },
+      "exit": 0
+    },
+    {
+      "id": 10,
+      "optimization": "O0",
+      "status": "PASS",
+      "return": 0,
+      "error": null,
+      "observations": {
+        "id7_stage_calls": 2,
+        "id7_stage_success": 1,
+        "id7_stop_calls": 1,
+        "phase": 4,
+        "granted": 1,
+        "release_message": "010000000100000003000000020000000100000001000000030000000100000001000000000000000000000000000000f7ffffff00000000"
+      },
+      "exit": 0
+    },
+    {
+      "id": 0,
+      "optimization": "O2",
+      "status": "PASS",
+      "return": 0,
+      "error": null,
+      "observations": {
+        "id7_stage_calls": 1,
+        "id7_stage_success": 1,
+        "id7_stop_calls": 1,
+        "phase": 4,
+        "granted": 1,
+        "release_message": "0100000001000000030000000200000001000000010000000300000001000000010000000000000000000000000000000000000000000000"
+      },
+      "exit": 0
+    },
+    {
+      "id": 1,
+      "optimization": "O2",
+      "status": "PASS",
+      "return": 0,
+      "error": null,
+      "observations": {
+        "id7_stage_calls": 1,
+        "id7_stage_success": 1,
+        "id7_stop_calls": 1,
+        "phase": 4,
+        "granted": 1,
+        "release_message": "010000000100000003000000020000000100000001000000030000000100000001000000000000000000000000000000f7ffffff00000000"
+      },
+      "exit": 0
+    },
+    {
+      "id": 2,
+      "optimization": "O2",
+      "status": "PASS",
+      "return": 0,
+      "error": null,
+      "observations": {
+        "id7_stage_calls": 2,
+        "id7_stage_success": 1,
+        "id7_stop_calls": 1,
+        "phase": 4,
+        "granted": 1,
+        "release_message": "010000000100000003000000020000000100000001000000030000000100000001000000000000000000000000000000f7ffffff00000000"
+      },
+      "exit": 0
+    },
+    {
+      "id": 3,
+      "optimization": "O2",
+      "status": "PASS",
+      "return": 0,
+      "error": null,
+      "observations": {
+        "id7_stage_calls": 1,
+        "id7_stage_success": 1,
+        "id7_stop_calls": 1,
+        "phase": 4,
+        "granted": 1,
+        "release_message": "0100000001000000030000000200000001000000010000000300000001000000010000000000000000000000000000000000000000000000"
+      },
+      "exit": 0
+    },
+    {
+      "id": 4,
+      "optimization": "O2",
+      "status": "PASS",
+      "return": 0,
+      "error": null,
+      "observations": {
+        "id7_stage_calls": 1,
+        "id7_stage_success": 1,
+        "id7_stop_calls": 1,
+        "phase": 4,
+        "granted": 1,
+        "release_message": "010000000100000003000000020000000100000001000000030000000100000001000000000000000000000000000000f7ffffff00000000"
+      },
+      "exit": 0
+    },
+    {
+      "id": 5,
+      "optimization": "O2",
+      "status": "PASS",
+      "return": 0,
+      "error": null,
+      "observations": {
+        "id7_stage_calls": 0,
+        "id7_stage_success": 0,
+        "id7_stop_calls": 1,
+        "phase": 0,
+        "granted": 0,
+        "release_message": "0000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000"
+      },
+      "exit": 0
+    },
+    {
+      "id": 6,
+      "optimization": "O2",
+      "status": "PASS",
+      "return": 0,
+      "error": null,
+      "observations": {
+        "id7_stage_calls": 1,
+        "id7_stage_success": 1,
+        "id7_stop_calls": 1,
+        "phase": 4,
+        "granted": 1,
+        "release_message": "010000000100000003000000020000000100000001000000030000000100000001000000000000000000000000000000f7ffffff00000000"
+      },
+      "exit": 0
+    },
+    {
+      "id": 7,
+      "optimization": "O2",
+      "status": "PASS",
+      "return": 0,
+      "error": null,
+      "observations": {
+        "id7_stage_calls": 1,
+        "id7_stage_success": 1,
+        "id7_stop_calls": 1,
+        "phase": 4,
+        "granted": 1,
+        "release_message": "010000000100000003000000020000000100000001000000030000000100000001000000000000000000000000000000f7ffffff00000000"
+      },
+      "exit": 0
+    },
+    {
+      "id": 8,
+      "optimization": "O2",
+      "status": "PASS",
+      "return": 0,
+      "error": null,
+      "observations": {
+        "id7_stage_calls": 3,
+        "id7_stage_success": 1,
+        "id7_stop_calls": 1,
+        "phase": 4,
+        "granted": 1,
+        "release_message": "010000000100000003000000020000000100000001000000030000000100000001000000000000000000000000000000f7ffffff00000000"
+      },
+      "exit": 0
+    },
+    {
+      "id": 9,
+      "optimization": "O2",
+      "status": "PASS",
+      "return": 0,
+      "error": null,
+      "observations": {
+        "id7_stage_calls": 1,
+        "id7_stage_success": 1,
+        "id7_stop_calls": 2,
+        "phase": 4,
+        "granted": 1,
+        "release_message": "010000000100000003000000020000000100000001000000030000000100000001000000000000000000000000000000f7ffffff00000000"
+      },
+      "exit": 0
+    },
+    {
+      "id": 10,
+      "optimization": "O2",
+      "status": "PASS",
+      "return": 0,
+      "error": null,
+      "observations": {
+        "id7_stage_calls": 2,
+        "id7_stage_success": 1,
+        "id7_stop_calls": 1,
+        "phase": 4,
+        "granted": 1,
+        "release_message": "010000000100000003000000020000000100000001000000030000000100000001000000000000000000000000000000f7ffffff00000000"
+      },
+      "exit": 0
+    }
+  ],
+  "executions": 22,
+  "passed": 22,
+  "artifact_root": "D:\\32\\STM32H7\\h7_mac\\output\\B2B6\\worktree\\output\\ConsumerJoint\\1794736729923533800",
+  "stage_fault_injected_cases": [
+    2,
+    8,
+    10
+  ],
+  "baseline_negative_control": false,
+  "app_usb_sha256": "74d687b9d9cba5f5db901e572073360cdc7d66c84e9aafef58de66e262f83581"
+}

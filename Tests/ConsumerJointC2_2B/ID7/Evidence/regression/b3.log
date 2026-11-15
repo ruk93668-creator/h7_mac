@@ -1,0 +1,52 @@
+0 NULL prepare PASS
+1 Invalid config PASS
+2 Unprepared request PASS
+3 Duplicate prepare PASS
+4 Command queue full FAIL
+5 Non JPEG rejection PASS
+6 TEST rejection PASS
+7 Context and NULL status PASS
+8 Mount failure recovery FAIL
+9 Space query failure recovery FAIL
+10 Recover outside FAULT PASS
+11 STOP before start PASS
+12 Four request FIFO FAIL
+13 Snapshot complete FAIL
+14 Two-span snapshot FAIL
+15 Readback corruption FAIL
+16 Read failure FAIL
+17 Snapshot close failure FAIL
+18 Two-span JPEG CRC FAIL
+19 No-frame timeout FAIL
+20 Repeated START FAIL
+21 STOP admission gate FAIL
+22 Generation exhausted FAIL
+23 Retain failure FAIL
+24 Occupied slot FAIL
+25 JPEG invalid FAIL
+26 Open failure FAIL
+27 AVI partial failure FAIL
+28 Short write FAIL
+29 Periodic sync failure FAIL
+30 Old session FAIL
+31 Old generation FAIL
+32 Queued frame then STOP FAIL
+33 Release failure retry FAIL
+34 Wrong owner return FAIL
+35 Repeated return FAIL
+36 Cached status timing FAIL
+37 Tick wrap FAIL
+38 AVI Finish write failure FAIL
+39 AVI Close failure FAIL
+40 Unmount failure FAIL
+41 AVI Header seek failure FAIL
+42 Repeated STOP FAIL
+43 Static task create PASS
+44 Allocation failure PASS
+45 BOOT wait and stack cadence FAIL
+46 Prepare failure gate PASS
+Ready authority and pure getters {'id': 47, 'name': 'Ready authority and pure getters', 'pass': True, 'failure_line': 0, 'error': None}
+FPS private counter {'id': 48, 'name': 'FPS private counter', 'pass': False, 'failure_line': 177, 'error': None}
+Snapshot private filename {'id': 49, 'name': 'Snapshot private filename', 'pass': False, 'failure_line': 178, 'error': None}
+{'id': 50, 'name': 'Task gate ignores diagnostic ready tamper', 'pass': True, 'baseline_process_owner_checks': 1, 'current_process_owner_checks': 8}
+{'total': 51, 'passed': 14, 'failed': 37}

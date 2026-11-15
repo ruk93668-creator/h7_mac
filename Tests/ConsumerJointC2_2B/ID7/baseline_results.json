@@ -1,0 +1,46 @@
+{
+  "cases": [
+    {
+      "id": 1,
+      "optimization": "O0",
+      "status": "FAIL",
+      "return": 216,
+      "error": null,
+      "observations": {
+        "id7_stage_calls": 0,
+        "id7_stage_success": 0,
+        "id7_stop_calls": 1,
+        "phase": 3,
+        "granted": 1,
+        "release_message": "0000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000"
+      },
+      "exit": 1
+    },
+    {
+      "id": 1,
+      "optimization": "O2",
+      "status": "FAIL",
+      "return": 216,
+      "error": null,
+      "observations": {
+        "id7_stage_calls": 0,
+        "id7_stage_success": 0,
+        "id7_stop_calls": 1,
+        "phase": 3,
+        "granted": 1,
+        "release_message": "0000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000"
+      },
+      "exit": 1
+    }
+  ],
+  "executions": 2,
+  "passed": 0,
+  "artifact_root": "D:\\32\\STM32H7\\h7_mac\\output\\B2B6\\worktree\\output\\ConsumerJoint\\1794736749665910000",
+  "stage_fault_injected_cases": [
+    2,
+    8,
+    10
+  ],
+  "baseline_negative_control": true,
+  "app_usb_sha256": "dcf13b14f4e922d49d4fa0479323b444cdfbc4e461e6fa53f5a2673f20e47afa"
+}

@@ -1,0 +1,507 @@
+{
+  "baseline": "e44f549ee39a18f51fa2473d5ef4b10ce3b5753e",
+  "summary": {
+    "total": 39,
+    "passed": 37,
+    "failed": 2
+  },
+  "cases": [
+    {
+      "id": 0,
+      "name": "BOOT gate",
+      "pass": true,
+      "trace_records": 10,
+      "baseline_ok": true,
+      "current_ok": true,
+      "trace_equal": true
+    },
+    {
+      "id": 1,
+      "name": "Owner gate",
+      "pass": true,
+      "trace_records": 4,
+      "baseline_ok": true,
+      "current_ok": true,
+      "trace_equal": true
+    },
+    {
+      "id": 2,
+      "name": "STOP before START",
+      "pass": true,
+      "trace_records": 16,
+      "baseline_ok": true,
+      "current_ok": true,
+      "trace_equal": true
+    },
+    {
+      "id": 3,
+      "name": "Unknown command",
+      "pass": true,
+      "trace_records": 9,
+      "baseline_ok": true,
+      "current_ok": true,
+      "trace_equal": true
+    },
+    {
+      "id": 4,
+      "name": "Bridge BUSY",
+      "pass": true,
+      "trace_records": 35,
+      "baseline_ok": true,
+      "current_ok": true,
+      "trace_equal": true
+    },
+    {
+      "id": 5,
+      "name": "Bridge IO",
+      "pass": true,
+      "trace_records": 37,
+      "baseline_ok": true,
+      "current_ok": true,
+      "trace_equal": true
+    },
+    {
+      "id": 6,
+      "name": "Configure failure",
+      "pass": true,
+      "trace_records": 39,
+      "baseline_ok": true,
+      "current_ok": true,
+      "trace_equal": true
+    },
+    {
+      "id": 7,
+      "name": "Media init failure",
+      "pass": true,
+      "trace_records": 43,
+      "baseline_ok": true,
+      "current_ok": true,
+      "trace_equal": true
+    },
+    {
+      "id": 8,
+      "name": "Device start failure",
+      "pass": true,
+      "trace_records": 72,
+      "baseline_ok": true,
+      "current_ok": true,
+      "trace_equal": true
+    },
+    {
+      "id": 9,
+      "name": "Media start failure",
+      "pass": false,
+      "trace_records": 74,
+      "baseline_ok": true,
+      "current_ok": true,
+      "trace_equal": false,
+      "old": {
+        "ok": true,
+        "error": null,
+        "failure": 0,
+        "return": 0
+      },
+      "new": {
+        "ok": true,
+        "error": null,
+        "failure": 0,
+        "return": 0
+      },
+      "first_difference": {
+        "record": 19,
+        "old": [
+          27,
+          0,
+          0,
+          0,
+          1,
+          1,
+          0,
+          0,
+          4294967287,
+          0,
+          10,
+          0,
+          0,
+          0,
+          7,
+          0,
+          1,
+          1,
+          1,
+          0,
+          4294967287,
+          0,
+          0,
+          0,
+          1
+        ],
+        "new": [
+          16,
+          1,
+          0,
+          0,
+          1,
+          1,
+          0,
+          0,
+          4294967287,
+          0,
+          10,
+          0,
+          0,
+          0,
+          7,
+          0,
+          1,
+          1,
+          1,
+          0,
+          4294967287,
+          0,
+          0,
+          0,
+          1
+        ]
+      }
+    },
+    {
+      "id": 10,
+      "name": "Start rollback failure",
+      "pass": false,
+      "trace_records": 75,
+      "baseline_ok": true,
+      "current_ok": true,
+      "trace_equal": false,
+      "old": {
+        "ok": true,
+        "error": null,
+        "failure": 0,
+        "return": 0
+      },
+      "new": {
+        "ok": true,
+        "error": null,
+        "failure": 0,
+        "return": 0
+      },
+      "first_difference": {
+        "record": 17,
+        "old": [
+          27,
+          0,
+          0,
+          0,
+          1,
+          1,
+          0,
+          0,
+          4294967287,
+          0,
+          10,
+          0,
+          0,
+          0,
+          7,
+          0,
+          1,
+          1,
+          1,
+          0,
+          4294967287,
+          0,
+          0,
+          0,
+          2
+        ],
+        "new": [
+          31,
+          0,
+          0,
+          0,
+          1,
+          1,
+          0,
+          0,
+          4294967287,
+          2,
+          10,
+          0,
+          0,
+          0,
+          7,
+          0,
+          1,
+          1,
+          1,
+          0,
+          4294967287,
+          0,
+          0,
+          0,
+          2
+        ]
+      }
+    },
+    {
+      "id": 11,
+      "name": "ACK full retry",
+      "pass": true,
+      "trace_records": 77,
+      "baseline_ok": true,
+      "current_ok": true,
+      "trace_equal": true
+    },
+    {
+      "id": 12,
+      "name": "Repeated START",
+      "pass": true,
+      "trace_records": 101,
+      "baseline_ok": true,
+      "current_ok": true,
+      "trace_equal": true
+    },
+    {
+      "id": 13,
+      "name": "FAULT and full queue",
+      "pass": true,
+      "trace_records": 92,
+      "baseline_ok": true,
+      "current_ok": true,
+      "trace_equal": true
+    },
+    {
+      "id": 14,
+      "name": "DRAINING not stopped",
+      "pass": true,
+      "trace_records": 87,
+      "baseline_ok": true,
+      "current_ok": true,
+      "trace_equal": true
+    },
+    {
+      "id": 15,
+      "name": "STOP BUSY retry",
+      "pass": true,
+      "trace_records": 87,
+      "baseline_ok": true,
+      "current_ok": true,
+      "trace_equal": true
+    },
+    {
+      "id": 16,
+      "name": "STOP error background retry",
+      "pass": true,
+      "trace_records": 91,
+      "baseline_ok": true,
+      "current_ok": true,
+      "trace_equal": true
+    },
+    {
+      "id": 17,
+      "name": "Bridge return pending",
+      "pass": true,
+      "trace_records": 91,
+      "baseline_ok": true,
+      "current_ok": true,
+      "trace_equal": true
+    },
+    {
+      "id": 18,
+      "name": "Device stop failure",
+      "pass": true,
+      "trace_records": 100,
+      "baseline_ok": true,
+      "current_ok": true,
+      "trace_equal": true
+    },
+    {
+      "id": 19,
+      "name": "Stats unavailable",
+      "pass": true,
+      "trace_records": 82,
+      "baseline_ok": true,
+      "current_ok": true,
+      "trace_equal": true
+    },
+    {
+      "id": 20,
+      "name": "Tick and frame wrap",
+      "pass": true,
+      "trace_records": 47,
+      "baseline_ok": true,
+      "current_ok": true,
+      "trace_equal": true
+    },
+    {
+      "id": 21,
+      "name": "FPS overflow guard",
+      "pass": true,
+      "trace_records": 36,
+      "baseline_ok": true,
+      "current_ok": true,
+      "trace_equal": true
+    },
+    {
+      "id": 22,
+      "name": "Wait error result retained",
+      "pass": true,
+      "trace_records": 36,
+      "baseline_ok": true,
+      "current_ok": true,
+      "trace_equal": true
+    },
+    {
+      "id": 23,
+      "name": "STOP then START FIFO",
+      "pass": true,
+      "trace_records": 84,
+      "baseline_ok": true,
+      "current_ok": true,
+      "trace_equal": true
+    },
+    {
+      "id": 24,
+      "name": "Repeated STOP",
+      "pass": true,
+      "trace_records": 82,
+      "baseline_ok": true,
+      "current_ok": true,
+      "trace_equal": true
+    },
+    {
+      "id": 25,
+      "name": "FPS windows",
+      "pass": true,
+      "trace_records": 47,
+      "baseline_ok": true,
+      "current_ok": true,
+      "trace_equal": true
+    },
+    {
+      "id": 26,
+      "name": "Media invalid after start",
+      "pass": true,
+      "trace_records": 45,
+      "baseline_ok": true,
+      "current_ok": true,
+      "trace_equal": true
+    },
+    {
+      "id": 27,
+      "name": "ACK full does not block FAULT",
+      "pass": true,
+      "trace_records": 135,
+      "baseline_ok": true,
+      "current_ok": true,
+      "trace_equal": true
+    },
+    {
+      "id": 28,
+      "name": "Real task wait and stack cadence",
+      "pass": true,
+      "trace_records": 103,
+      "baseline_ok": true,
+      "current_ok": true,
+      "trace_equal": true
+    },
+    {
+      "id": 29,
+      "name": "Task stack and priority",
+      "pass": true,
+      "trace_records": 27,
+      "baseline_ok": true,
+      "current_ok": true,
+      "trace_equal": true
+    },
+    {
+      "id": 30,
+      "name": "Duplicate task create",
+      "pass": true,
+      "trace_records": 27,
+      "baseline_ok": true,
+      "current_ok": true,
+      "trace_equal": true
+    },
+    {
+      "id": 31,
+      "name": "Fault notification reset",
+      "pass": true,
+      "trace_records": 78,
+      "baseline_ok": true,
+      "current_ok": true,
+      "trace_equal": true
+    },
+    {
+      "id": 32,
+      "name": "TEST output path",
+      "pass": true,
+      "trace_records": 43,
+      "baseline_ok": true,
+      "current_ok": true,
+      "trace_equal": true
+    },
+    {
+      "id": 33,
+      "name": "NONE output path",
+      "pass": true,
+      "trace_records": 43,
+      "baseline_ok": true,
+      "current_ok": true,
+      "trace_equal": true
+    },
+    {
+      "id": 34,
+      "name": "NULL command",
+      "pass": true,
+      "failure_line": 0,
+      "error": null
+    },
+    {
+      "id": 35,
+      "name": "NULL reply",
+      "pass": true,
+      "failure_line": 0,
+      "error": null
+    },
+    {
+      "id": 36,
+      "name": "ACK retention and confirm",
+      "pass": true,
+      "failure_line": 0,
+      "error": null
+    },
+    {
+      "id": 37,
+      "name": "Explicit sample and pure getter",
+      "pass": true,
+      "failure_line": 0,
+      "error": null
+    },
+    {
+      "id": 38,
+      "name": "Independent FAULT confirm",
+      "pass": true,
+      "failure_line": 0,
+      "error": null
+    }
+  ],
+  "hardware_verified": false,
+  "trace_fields": [
+    "call",
+    "arg1",
+    "arg2",
+    "tick",
+    "Debug[11]",
+    "running",
+    "prepared",
+    "stopping",
+    "ack_pending",
+    "stop_command",
+    "fault",
+    "fault_sent",
+    "fps_tick",
+    "fps_frames",
+    "device_state"
+  ]
+}

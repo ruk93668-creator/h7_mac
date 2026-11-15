@@ -1,0 +1,189 @@
+[
+  {
+    "suite": "c1",
+    "ID_count": 419,
+    "missing": [],
+    "added": [],
+    "duplicates": [],
+    "outcome_changes": [],
+    "order_equal": true,
+    "summary": {
+      "total": 419,
+      "passed": 419,
+      "failed": 0
+    },
+    "note": "Historical suite FAILs remain FAILs."
+  },
+  {
+    "suite": "c1_1",
+    "ID_count": 24,
+    "missing": [],
+    "added": [],
+    "duplicates": [],
+    "outcome_changes": [],
+    "order_equal": true,
+    "summary": {
+      "original_c1": {
+        "total": 419,
+        "passed": 419,
+        "failed": 0
+      },
+      "added_total": 24,
+      "added_passed": 24,
+      "added_failed": 0,
+      "arm_total": 443
+    },
+    "note": "Historical suite FAILs remain FAILs."
+  },
+  {
+    "suite": "c2_1_1",
+    "ID_count": 648,
+    "missing": [],
+    "added": [],
+    "duplicates": [],
+    "outcome_changes": [],
+    "order_equal": true,
+    "summary": {
+      "total": 648,
+      "passed": 648,
+      "failed": 0,
+      "stress_transactions": 40960
+    },
+    "note": "Historical suite FAILs remain FAILs."
+  },
+  {
+    "suite": "c2a",
+    "ID_count": 162,
+    "missing": [],
+    "added": [],
+    "duplicates": [],
+    "outcome_changes": [],
+    "order_equal": true,
+    "summary": {
+      "total": 162,
+      "passed": 162,
+      "failed": 0
+    },
+    "note": "Historical suite FAILs remain FAILs."
+  },
+  {
+    "suite": "r2",
+    "ID_count": 74,
+    "missing": [],
+    "added": [],
+    "duplicates": [],
+    "outcome_changes": [],
+    "order_equal": true,
+    "summary": {
+      "total": 74,
+      "passed": 74,
+      "failed": 0
+    },
+    "note": "Historical suite FAILs remain FAILs."
+  },
+  {
+    "suite": "b1",
+    "ID_count": 39,
+    "missing": [],
+    "added": [],
+    "duplicates": [],
+    "outcome_changes": [],
+    "order_equal": true,
+    "summary": {
+      "total": 39,
+      "passed": 37,
+      "failed": 2
+    },
+    "note": "Historical suite FAILs remain FAILs."
+  },
+  {
+    "suite": "b1_media",
+    "ID_count": 6,
+    "missing": [],
+    "added": [],
+    "duplicates": [],
+    "outcome_changes": [],
+    "order_equal": true,
+    "summary": {
+      "total": 6,
+      "passed": 6,
+      "failed": 0
+    },
+    "note": "Historical suite FAILs remain FAILs."
+  },
+  {
+    "suite": "b1_integration",
+    "ID_count": 11,
+    "missing": [],
+    "added": [],
+    "duplicates": [],
+    "outcome_changes": [],
+    "order_equal": true,
+    "summary": {
+      "total": 11,
+      "passed": 0,
+      "failed": 11
+    },
+    "note": "Historical suite FAILs remain FAILs."
+  },
+  {
+    "suite": "b2",
+    "ID_count": 102,
+    "missing": [],
+    "added": [],
+    "duplicates": [],
+    "outcome_changes": [],
+    "order_equal": true,
+    "summary": {
+      "total": 102,
+      "passed": 16,
+      "failed": 86
+    },
+    "note": "Historical suite FAILs remain FAILs."
+  },
+  {
+    "suite": "b3",
+    "ID_count": 51,
+    "missing": [],
+    "added": [],
+    "duplicates": [],
+    "outcome_changes": [],
+    "order_equal": true,
+    "summary": {
+      "total": 51,
+      "passed": 14,
+      "failed": 37
+    },
+    "note": "Historical suite FAILs remain FAILs."
+  },
+  {
+    "suite": "business",
+    "ID_count": 62,
+    "missing": [],
+    "added": [],
+    "duplicates": [],
+    "outcome_changes": [],
+    "order_equal": true,
+    "summary": {
+      "total": 62,
+      "passed": 62,
+      "failed": 0
+    },
+    "note": "Historical suite FAILs remain FAILs."
+  },
+  {
+    "suite": "consumer",
+    "ID_count": 44,
+    "missing": [],
+    "added": [],
+    "duplicates": [],
+    "outcome_changes": [],
+    "order_equal": true,
+    "summary": {
+      "total": 44,
+      "passed": 42,
+      "failed": 2
+    },
+    "note": "Historical suite FAILs remain FAILs."
+  }
+]

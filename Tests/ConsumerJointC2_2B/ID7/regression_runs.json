@@ -1,0 +1,171 @@
+[
+  {
+    "suite": "c1_1",
+    "exit": 0,
+    "seconds": 6.56,
+    "report_present": true,
+    "snapshot": "D:\\32\\STM32H7\\h7_mac\\output\\B2B6\\worktree\\output\\B2B6\\original_1794736054666287800",
+    "summary": {
+      "original_c1": {
+        "total": 419,
+        "passed": 419,
+        "failed": 0
+      },
+      "added_total": 24,
+      "added_passed": 24,
+      "added_failed": 0,
+      "arm_total": 443
+    }
+  },
+  {
+    "suite": "c2_1_1",
+    "exit": 0,
+    "seconds": 17.8,
+    "report_present": true,
+    "snapshot": "D:\\32\\STM32H7\\h7_mac\\output\\B2B6\\worktree\\output\\B2B6\\original_1794736054666287800",
+    "summary": {
+      "total": 648,
+      "passed": 648,
+      "failed": 0,
+      "stress_transactions": 40960
+    }
+  },
+  {
+    "suite": "c2a",
+    "exit": 0,
+    "seconds": 7.41,
+    "report_present": true,
+    "snapshot": "D:\\32\\STM32H7\\h7_mac\\output\\B2B6\\worktree\\output\\B2B6\\original_1794736054666287800",
+    "summary": {
+      "total": 162,
+      "passed": 162,
+      "failed": 0
+    }
+  },
+  {
+    "suite": "r2",
+    "exit": 0,
+    "seconds": 4.76,
+    "report_present": true,
+    "snapshot": "D:\\32\\STM32H7\\h7_mac\\output\\B2B6\\worktree\\output\\B2B6\\original_1794736054666287800",
+    "summary": {
+      "total": 74,
+      "passed": 74,
+      "failed": 0
+    }
+  },
+  {
+    "suite": "b1",
+    "exit": 1,
+    "seconds": 2.14,
+    "report_present": true,
+    "snapshot": "D:\\32\\STM32H7\\h7_mac\\output\\B2B6\\worktree\\output\\B2B6\\original_1794736054666287800",
+    "summary": {
+      "total": 39,
+      "passed": 37,
+      "failed": 2
+    }
+  },
+  {
+    "suite": "b1_media",
+    "exit": 0,
+    "seconds": 1.85,
+    "report_present": true,
+    "snapshot": "D:\\32\\STM32H7\\h7_mac\\output\\B2B6\\worktree\\output\\B2B6\\original_1794736054666287800",
+    "summary": {
+      "total": 6,
+      "passed": 6,
+      "failed": 0
+    }
+  },
+  {
+    "suite": "b1_integration",
+    "exit": 1,
+    "seconds": 1.83,
+    "report_present": true,
+    "snapshot": "D:\\32\\STM32H7\\h7_mac\\output\\B2B6\\worktree\\output\\B2B6\\original_1794736054666287800",
+    "summary": {
+      "total": 11,
+      "passed": 0,
+      "failed": 11
+    }
+  },
+  {
+    "suite": "b2",
+    "exit": 1,
+    "seconds": 3.9,
+    "report_present": true,
+    "snapshot": "D:\\32\\STM32H7\\h7_mac\\output\\B2B6\\worktree\\output\\B2B6\\original_1794736054666287800",
+    "summary": {
+      "total": 102,
+      "passed": 16,
+      "failed": 86
+    }
+  },
+  {
+    "suite": "b3",
+    "exit": 1,
+    "seconds": 4.64,
+    "report_present": true,
+    "snapshot": "D:\\32\\STM32H7\\h7_mac\\output\\B2B6\\worktree\\output\\B2B6\\original_1794736054666287800",
+    "summary": {
+      "total": 51,
+      "passed": 14,
+      "failed": 37
+    }
+  },
+  {
+    "suite": "business",
+    "exit": 0,
+    "seconds": 11.79,
+    "report_present": true,
+    "snapshot": "D:\\32\\STM32H7\\h7_mac\\output\\B2B6\\worktree\\output\\B2B6\\original_1794736054666287800",
+    "summary": {
+      "total": 62,
+      "passed": 62,
+      "failed": 0
+    }
+  },
+  {
+    "suite": "consumer",
+    "exit": 1,
+    "seconds": 4.98,
+    "report_present": true,
+    "snapshot": "D:\\32\\STM32H7\\h7_mac\\output\\B2B6\\worktree\\output\\B2B6\\original_1794736054666287800",
+    "summary": {
+      "total": 44,
+      "passed": 42,
+      "failed": 2
+    }
+  },
+  {
+    "suite": "gate",
+    "exit": 0,
+    "seconds": 0.46,
+    "report_present": true,
+    "snapshot": "D:\\32\\STM32H7\\h7_mac\\output\\B2B6\\worktree\\output\\B2B6\\original_1794736054666287800",
+    "summary": null
+  },
+  {
+    "suite": "power",
+    "exit": 0,
+    "seconds": 1.24,
+    "report_present": true,
+    "snapshot": "D:\\32\\STM32H7\\h7_mac\\output\\B2B6\\worktree\\output\\B2B6\\original_1794736054666287800",
+    "summary": {
+      "total": 14,
+      "passed": 14
+    }
+  },
+  {
+    "suite": "i2c",
+    "exit": 0,
+    "seconds": 1.27,
+    "report_present": true,
+    "snapshot": "D:\\32\\STM32H7\\h7_mac\\output\\B2B6\\worktree\\output\\B2B6\\original_1794736054666287800",
+    "summary": {
+      "total": 24,
+      "passed": 24
+    }
+  }
+]
