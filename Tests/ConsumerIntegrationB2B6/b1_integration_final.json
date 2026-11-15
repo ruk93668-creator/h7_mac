@@ -1,0 +1,84 @@
+{
+  "cases": [
+    {
+      "id": 0,
+      "pass": false,
+      "return": 115,
+      "failure_line": 0,
+      "error": null
+    },
+    {
+      "id": 1,
+      "pass": false,
+      "return": 115,
+      "failure_line": 0,
+      "error": null
+    },
+    {
+      "id": 2,
+      "pass": false,
+      "return": 115,
+      "failure_line": 0,
+      "error": null
+    },
+    {
+      "id": 3,
+      "pass": false,
+      "return": 115,
+      "failure_line": 0,
+      "error": null
+    },
+    {
+      "id": 4,
+      "pass": false,
+      "return": 115,
+      "failure_line": 0,
+      "error": null
+    },
+    {
+      "id": 5,
+      "pass": false,
+      "return": 115,
+      "failure_line": 0,
+      "error": null
+    },
+    {
+      "id": 6,
+      "pass": false,
+      "return": 115,
+      "failure_line": 0,
+      "error": null
+    },
+    {
+      "id": 7,
+      "pass": false,
+      "return": 115,
+      "failure_line": 0,
+      "error": null
+    },
+    {
+      "id": 8,
+      "pass": false,
+      "return": 115,
+      "failure_line": 0,
+      "error": null
+    },
+    {
+      "id": 9,
+      "pass": false,
+      "return": 115,
+      "failure_line": 0,
+      "error": null
+    },
+    {
+      "id": 10,
+      "pass": false,
+      "return": 115,
+      "failure_line": 0,
+      "error": null
+    }
+  ],
+  "generated_fixture": "D:\\32\\STM32H7\\h7_mac\\output\\B2B6\\worktree\\output\\B2B6\\b1_1794729254116597200\\fixture.c",
+  "original_assertions_changed": false,
+  "release_proof_supplied": false
+}

@@ -1,26 +1,7 @@
 {
-  "status": "incomplete",
-  "compat_assertions_only": {
-    "usb": {
-      "total": 102,
-      "original_C_assertions_pass": 102,
-      "authorization_complete": 102,
-      "not_full_trace_compatibility": true
-    },
-    "storage": {
-      "total": 51,
-      "original_C_assertions_pass": 51,
-      "authorization_complete": 51,
-      "not_full_trace_compatibility": true
-    }
-  },
-  "production_changed_after_V1_merge": false,
-  "hardware_verified": false,
-  "remaining": [
-    "B1 integration fixture",
-    "complete original trace comparison and ID gate",
-    "final CM7 CM4 rebuild",
-    "ABI Map RAM stack report",
-    "hardware acceptance template and final audit"
-  ]
+  "status": "audit_rejected_incomplete_acceptance",
+  "build_pass": true,
+  "software_gate_pass": false,
+  "user_reported_hardware_seven_pass": true,
+  "tested_hardware_firmware_sha_known": false
 }
