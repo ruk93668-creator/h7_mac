@@ -1103,12 +1103,18 @@ static void Storage_LifecycleFinish(void)
 //仅由StorageTask交付已出队的生命周期回复
 SysResult_t App_StorageReceiveLifecycle(const AppLifecycleMessage_t *message)
 {
+    //只有Storage所有者可以修改本消费者的Tx，ISR和其他任务一律拒绝
+    if (Platform_SyncGetException() != 0U || !App_EventsIsOwner(RUNTIME_TARGET_STORAGE))
+        return SYS_ERR_INVALID_STATE;
     return App_CameraConsumerReceive(&s_camera_consumer, message);
 }
 
 //真实发送由Task执行，队列满不会丢失原请求
 SysResult_t App_StorageFlushLifecycle(AppLifecycleSendFn send, void *context)
 {
+    //只有Storage所有者可以修改本消费者的Tx，ISR和其他任务一律拒绝
+    if (Platform_SyncGetException() != 0U || !App_EventsIsOwner(RUNTIME_TARGET_STORAGE))
+        return SYS_ERR_INVALID_STATE;
     return App_CameraConsumerFlush(&s_camera_consumer, send, context);
 }
 

@@ -3,6 +3,7 @@
 
 //复用真实资格核心和原故障注入，仅资源完成证据由测试桩提供
 static AppCameraConsumer_t clients[2];
+volatile uint32_t g_concurrent_state[10];
 static AppQualificationResourceOps_t test_ops;
 static uint32_t request_full, reply_full;
 static SysResult_t ConsumerSend(void *context, const AppLifecycleMessage_t *message)
@@ -102,6 +103,34 @@ int Integration_Run(uint32_t id)
         CK(App_CameraConsumerEnd(&clients[0],SYS_OK,SYS_OK)==SYS_OK);Rounds(6);
         CK(clients[0].phase==APP_CONSUMER_STOP_IDLE && clients[0].granted==0);
         CK(App_CameraConsumerBegin(&clients[0])==SYS_ERR_BUSY);break;
+    case 17:
+        CK(App_CameraConsumerBegin(&clients[0])==SYS_OK);
+        CK(App_CameraConsumerBegin(&clients[1])==SYS_OK);Rounds(6);
+        g_concurrent_state[0]=core.session_id;g_concurrent_state[1]=starts;
+        g_concurrent_state[2]=clients[0].phase;g_concurrent_state[3]=clients[1].phase;
+        g_concurrent_state[4]=clients[0].result;g_concurrent_state[5]=clients[1].result;
+        g_concurrent_state[6]=core.entries[0].phase;g_concurrent_state[7]=core.entries[1].phase;
+        g_concurrent_state[8]=core.rx[0].final_reply_enqueued;g_concurrent_state[9]=core.rx[1].final_reply_enqueued;
+        CK(clients[0].granted==1 && clients[1].granted==1 && starts==1);break;
+    case 18:
+        StartClient(0);StartClient(1);test_ops.released=NULL;test_ops.idle=NULL;
+        CK(App_CameraConsumerEnd(&clients[0],SYS_OK,SYS_OK)==SYS_OK);
+        CK(App_CameraConsumerEnd(&clients[1],SYS_OK,SYS_OK)==SYS_OK);Rounds(10);
+        CK(clients[0].granted==1 && clients[1].granted==1 && stops==0);
+        CK(core.entries[0].phase==APP_QUAL_RELEASING && core.entries[1].phase==APP_QUAL_RELEASING);break;
+    case 19:
+        CK(App_CameraConsumerBegin(&clients[0])==SYS_OK);Round();reply_full=1;Rounds(4);
+        CK(starts==1 && clients[0].granted==0 && core.entries[0].phase==APP_QUAL_ACTIVE);
+        reply_full=0;Rounds(4);CK(starts==1 && clients[0].granted==1);break;
+    case 20:
+        CK(App_CameraConsumerBegin(&clients[0])==SYS_OK);Round();
+        CK(App_CameraConsumerBegin(&clients[1])==SYS_OK);Rounds(6);
+        CK(clients[0].granted==1 && clients[1].granted==1 && starts==1);break;
+    case 21:
+        CK(App_CameraConsumerBegin(&clients[0])==SYS_OK);
+        CK(App_CameraConsumerBegin(&clients[1])==SYS_OK);Rounds(6);
+        CK(clients[0].phase==APP_CONSUMER_FAILED && clients[1].phase==APP_CONSUMER_FAILED);
+        StartClient(0);StartClient(1);CK(starts==1);break;
     default: CK(0);break;
     }
     return g_failure;

@@ -1,0 +1,4 @@
+Tests/CameraLifecycleC2_1_1/run_tests.py exit 0
+Tests/CameraLifecycleC1_1/run_tests.py exit 0
+Tests/CameraLifecycleC1_1/test_regression_compare.py exit 0
+{'c2_1_1': {'total': 648, 'passed': 648, 'failed': 0, 'stress_transactions': 40960}, 'abi': True, 'c1': {'total': 419, 'passed': 419, 'failed': 0}, 'c1_1': {'original_c1': {'total': 419, 'passed': 419, 'failed': 0}, 'added_total': 24, 'added_passed': 24, 'added_failed': 0, 'arm_total': 443}, 'gate': 29}

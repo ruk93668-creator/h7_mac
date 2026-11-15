@@ -13,7 +13,7 @@
 
 //仅由所属USB或Storage任务使用，普通停止不得重新初始化
 //request保留完整原文供ConfirmConsumed匹配，所有编号由原Tx分配
- typedef struct
+typedef struct
 {
     AppLifecycleTxContext_t tx;
     AppLifecycleMessage_t request;
@@ -28,7 +28,7 @@
 } AppCameraConsumer_t;
 
 //只读诊断分别显示本方向进度与授权结果，不证明帧已归还
- typedef struct
+typedef struct
 {
     uint32_t phase;
     uint32_t session;

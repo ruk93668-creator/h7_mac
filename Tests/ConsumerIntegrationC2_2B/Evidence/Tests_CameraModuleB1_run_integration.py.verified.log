@@ -1,0 +1,12 @@
+0 USB+SD lease and AVI finish FAIL 113 None
+1 Two-span JPEG FAIL 113 None
+2 Offer queue full retry FAIL 113 None
+3 Storage slot occupied FAIL 113 None
+4 Storage I/O failure FAIL 113 None
+5 SD return failure retry FAIL 113 None
+6 Camera STOP with dual loans FAIL 113 None
+7 USB cancel failure retains frame FAIL 113 None
+8 Return ACK full retry FAIL 113 None
+9 Duplicate Return FAIL 113 None
+10 Wrong lease Return FAIL 113 None
+{'total': 11, 'passed': 0, 'failed': 11}

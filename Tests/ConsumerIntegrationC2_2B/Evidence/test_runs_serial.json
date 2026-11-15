@@ -1,0 +1,38 @@
+[
+  {
+    "script": "Tests/ConsumerIntegrationC2_2B/run_tests.py",
+    "exit": 1,
+    "log": "D:\\32\\STM32H7\\h7_mac\\output\\ConsumerIntegrationC2_2B\\final_1794655254854843100\\Tests_ConsumerIntegrationC2_2B_run_tests.py.serial.log",
+    "missing_transport_fixture": false
+  },
+  {
+    "script": "Tests/ConsumerIntegrationC2_2B/run_business.py",
+    "exit": 0,
+    "log": "D:\\32\\STM32H7\\h7_mac\\output\\ConsumerIntegrationC2_2B\\final_1794655254854843100\\Tests_ConsumerIntegrationC2_2B_run_business.py.serial.log",
+    "missing_transport_fixture": false
+  },
+  {
+    "script": "Tests/CameraStopOwnershipR2/run_tests.py",
+    "exit": 0,
+    "log": "D:\\32\\STM32H7\\h7_mac\\output\\ConsumerIntegrationC2_2B\\final_1794655254854843100\\Tests_CameraStopOwnershipR2_run_tests.py.serial.log",
+    "missing_transport_fixture": true
+  },
+  {
+    "script": "Tests/CameraStopOwnershipR2/run_original.py",
+    "exit": 0,
+    "log": "D:\\32\\STM32H7\\h7_mac\\output\\ConsumerIntegrationC2_2B\\final_1794655254854843100\\Tests_CameraStopOwnershipR2_run_original.py.serial.log",
+    "missing_transport_fixture": true
+  },
+  {
+    "script": "Tests/CameraModuleB1/run_tests.py",
+    "exit": 1,
+    "log": "D:\\32\\STM32H7\\h7_mac\\output\\ConsumerIntegrationC2_2B\\final_1794655254854843100\\Tests_CameraModuleB1_run_tests.py.serial.log",
+    "missing_transport_fixture": true
+  },
+  {
+    "script": "Tests/CameraModuleB1/run_media.py",
+    "exit": 0,
+    "log": "D:\\32\\STM32H7\\h7_mac\\output\\ConsumerIntegrationC2_2B\\final_1794655254854843100\\Tests_CameraModuleB1_run_media.py.serial.log",
+    "missing_transport_fixture": true
+  }
+]

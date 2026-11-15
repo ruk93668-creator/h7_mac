@@ -18,6 +18,8 @@ static TaskHandle_t s_task;
 //记录真实运输结果，不作为文件或帧完成条件
 volatile SysResult_t g_storage_lifecycle_receive_result;
 volatile SysResult_t g_storage_lifecycle_send_result;
+//单写者诊断投影，不作为Camera归还核验的输入
+volatile AppCameraConsumerStatus_t g_storage_camera_consumer;
 
 //只沿原Camera收件箱运输本消费者请求
 static SysResult_t StorageTask_SendLifecycle(void *context, const AppLifecycleMessage_t *message);
@@ -40,6 +42,7 @@ static void StorageTask_Run(void *argument)
 {
     uint32_t events, stack_tick = 0U, now, count;
     AppLifecycleMessage_t lifecycle;
+    AppCameraConsumerStatus_t camera_status;
     bool boot = false;
     SysResult_t result;
     (void)argument;
@@ -66,6 +69,8 @@ static void StorageTask_Run(void *argument)
             g_storage_lifecycle_receive_result = App_StorageReceiveLifecycle(&lifecycle);
         App_StorageProcess();
         g_storage_lifecycle_send_result = App_StorageFlushLifecycle(StorageTask_SendLifecycle, NULL);
+        App_StorageGetLifecycleStatus(&camera_status);
+        g_storage_camera_consumer = camera_status;
 
         //最多每1000ms扫描一次栈，避免历史高频扫描引入视频降帧
         now = Platform_TimeGetMs();

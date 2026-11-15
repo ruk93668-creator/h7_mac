@@ -1,8 +1,8 @@
 {
   "summary": {
-    "total": 34,
-    "passed": 34,
-    "failed": 0
+    "total": 44,
+    "passed": 42,
+    "failed": 2
   },
   "cases": [
     {
@@ -12,7 +12,19 @@
       "pass": true,
       "return": 0,
       "failure_line": 0,
-      "error": null
+      "error": null,
+      "concurrent_state": [
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0
+      ]
     },
     {
       "id": 1,
@@ -21,7 +33,19 @@
       "pass": true,
       "return": 0,
       "failure_line": 0,
-      "error": null
+      "error": null,
+      "concurrent_state": [
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0
+      ]
     },
     {
       "id": 2,
@@ -30,7 +54,19 @@
       "pass": true,
       "return": 0,
       "failure_line": 0,
-      "error": null
+      "error": null,
+      "concurrent_state": [
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0
+      ]
     },
     {
       "id": 3,
@@ -39,7 +75,19 @@
       "pass": true,
       "return": 0,
       "failure_line": 0,
-      "error": null
+      "error": null,
+      "concurrent_state": [
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0
+      ]
     },
     {
       "id": 4,
@@ -48,7 +96,19 @@
       "pass": true,
       "return": 0,
       "failure_line": 0,
-      "error": null
+      "error": null,
+      "concurrent_state": [
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0
+      ]
     },
     {
       "id": 5,
@@ -57,7 +117,19 @@
       "pass": true,
       "return": 0,
       "failure_line": 0,
-      "error": null
+      "error": null,
+      "concurrent_state": [
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0
+      ]
     },
     {
       "id": 6,
@@ -66,7 +138,19 @@
       "pass": true,
       "return": 0,
       "failure_line": 0,
-      "error": null
+      "error": null,
+      "concurrent_state": [
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0
+      ]
     },
     {
       "id": 7,
@@ -75,7 +159,19 @@
       "pass": true,
       "return": 0,
       "failure_line": 0,
-      "error": null
+      "error": null,
+      "concurrent_state": [
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0
+      ]
     },
     {
       "id": 8,
@@ -84,7 +180,19 @@
       "pass": true,
       "return": 0,
       "failure_line": 0,
-      "error": null
+      "error": null,
+      "concurrent_state": [
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0
+      ]
     },
     {
       "id": 9,
@@ -93,7 +201,19 @@
       "pass": true,
       "return": 0,
       "failure_line": 0,
-      "error": null
+      "error": null,
+      "concurrent_state": [
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0
+      ]
     },
     {
       "id": 10,
@@ -102,7 +222,19 @@
       "pass": true,
       "return": 0,
       "failure_line": 0,
-      "error": null
+      "error": null,
+      "concurrent_state": [
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0
+      ]
     },
     {
       "id": 11,
@@ -111,7 +243,19 @@
       "pass": true,
       "return": 0,
       "failure_line": 0,
-      "error": null
+      "error": null,
+      "concurrent_state": [
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0
+      ]
     },
     {
       "id": 12,
@@ -120,7 +264,19 @@
       "pass": true,
       "return": 0,
       "failure_line": 0,
-      "error": null
+      "error": null,
+      "concurrent_state": [
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0
+      ]
     },
     {
       "id": 13,
@@ -129,7 +285,19 @@
       "pass": true,
       "return": 0,
       "failure_line": 0,
-      "error": null
+      "error": null,
+      "concurrent_state": [
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0
+      ]
     },
     {
       "id": 14,
@@ -138,7 +306,19 @@
       "pass": true,
       "return": 0,
       "failure_line": 0,
-      "error": null
+      "error": null,
+      "concurrent_state": [
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0
+      ]
     },
     {
       "id": 15,
@@ -147,7 +327,19 @@
       "pass": true,
       "return": 0,
       "failure_line": 0,
-      "error": null
+      "error": null,
+      "concurrent_state": [
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0
+      ]
     },
     {
       "id": 16,
@@ -156,7 +348,124 @@
       "pass": true,
       "return": 0,
       "failure_line": 0,
-      "error": null
+      "error": null,
+      "concurrent_state": [
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0
+      ]
+    },
+    {
+      "id": 17,
+      "optimization": "O0",
+      "release_proof_stub": true,
+      "pass": false,
+      "return": 114,
+      "failure_line": 114,
+      "error": null,
+      "concurrent_state": [
+        0,
+        0,
+        6,
+        6,
+        4294967291,
+        4294967291,
+        0,
+        0,
+        1,
+        1
+      ]
+    },
+    {
+      "id": 18,
+      "optimization": "O0",
+      "release_proof_stub": false,
+      "pass": true,
+      "return": 0,
+      "failure_line": 0,
+      "error": null,
+      "concurrent_state": [
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0
+      ]
+    },
+    {
+      "id": 19,
+      "optimization": "O0",
+      "release_proof_stub": true,
+      "pass": true,
+      "return": 0,
+      "failure_line": 0,
+      "error": null,
+      "concurrent_state": [
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0
+      ]
+    },
+    {
+      "id": 20,
+      "optimization": "O0",
+      "release_proof_stub": true,
+      "pass": true,
+      "return": 0,
+      "failure_line": 0,
+      "error": null,
+      "concurrent_state": [
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0
+      ]
+    },
+    {
+      "id": 21,
+      "optimization": "O0",
+      "release_proof_stub": true,
+      "pass": true,
+      "return": 0,
+      "failure_line": 0,
+      "error": null,
+      "concurrent_state": [
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0
+      ]
     },
     {
       "id": 0,
@@ -165,7 +474,19 @@
       "pass": true,
       "return": 0,
       "failure_line": 0,
-      "error": null
+      "error": null,
+      "concurrent_state": [
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0
+      ]
     },
     {
       "id": 1,
@@ -174,7 +495,19 @@
       "pass": true,
       "return": 0,
       "failure_line": 0,
-      "error": null
+      "error": null,
+      "concurrent_state": [
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0
+      ]
     },
     {
       "id": 2,
@@ -183,7 +516,19 @@
       "pass": true,
       "return": 0,
       "failure_line": 0,
-      "error": null
+      "error": null,
+      "concurrent_state": [
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0
+      ]
     },
     {
       "id": 3,
@@ -192,7 +537,19 @@
       "pass": true,
       "return": 0,
       "failure_line": 0,
-      "error": null
+      "error": null,
+      "concurrent_state": [
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0
+      ]
     },
     {
       "id": 4,
@@ -201,7 +558,19 @@
       "pass": true,
       "return": 0,
       "failure_line": 0,
-      "error": null
+      "error": null,
+      "concurrent_state": [
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0
+      ]
     },
     {
       "id": 5,
@@ -210,7 +579,19 @@
       "pass": true,
       "return": 0,
       "failure_line": 0,
-      "error": null
+      "error": null,
+      "concurrent_state": [
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0
+      ]
     },
     {
       "id": 6,
@@ -219,7 +600,19 @@
       "pass": true,
       "return": 0,
       "failure_line": 0,
-      "error": null
+      "error": null,
+      "concurrent_state": [
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0
+      ]
     },
     {
       "id": 7,
@@ -228,7 +621,19 @@
       "pass": true,
       "return": 0,
       "failure_line": 0,
-      "error": null
+      "error": null,
+      "concurrent_state": [
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0
+      ]
     },
     {
       "id": 8,
@@ -237,7 +642,19 @@
       "pass": true,
       "return": 0,
       "failure_line": 0,
-      "error": null
+      "error": null,
+      "concurrent_state": [
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0
+      ]
     },
     {
       "id": 9,
@@ -246,7 +663,19 @@
       "pass": true,
       "return": 0,
       "failure_line": 0,
-      "error": null
+      "error": null,
+      "concurrent_state": [
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0
+      ]
     },
     {
       "id": 10,
@@ -255,7 +684,19 @@
       "pass": true,
       "return": 0,
       "failure_line": 0,
-      "error": null
+      "error": null,
+      "concurrent_state": [
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0
+      ]
     },
     {
       "id": 11,
@@ -264,7 +705,19 @@
       "pass": true,
       "return": 0,
       "failure_line": 0,
-      "error": null
+      "error": null,
+      "concurrent_state": [
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0
+      ]
     },
     {
       "id": 12,
@@ -273,7 +726,19 @@
       "pass": true,
       "return": 0,
       "failure_line": 0,
-      "error": null
+      "error": null,
+      "concurrent_state": [
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0
+      ]
     },
     {
       "id": 13,
@@ -282,7 +747,19 @@
       "pass": true,
       "return": 0,
       "failure_line": 0,
-      "error": null
+      "error": null,
+      "concurrent_state": [
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0
+      ]
     },
     {
       "id": 14,
@@ -291,7 +768,19 @@
       "pass": true,
       "return": 0,
       "failure_line": 0,
-      "error": null
+      "error": null,
+      "concurrent_state": [
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0
+      ]
     },
     {
       "id": 15,
@@ -300,7 +789,19 @@
       "pass": true,
       "return": 0,
       "failure_line": 0,
-      "error": null
+      "error": null,
+      "concurrent_state": [
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0
+      ]
     },
     {
       "id": 16,
@@ -309,10 +810,127 @@
       "pass": true,
       "return": 0,
       "failure_line": 0,
-      "error": null
+      "error": null,
+      "concurrent_state": [
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0
+      ]
+    },
+    {
+      "id": 17,
+      "optimization": "O2",
+      "release_proof_stub": true,
+      "pass": false,
+      "return": 114,
+      "failure_line": 114,
+      "error": null,
+      "concurrent_state": [
+        0,
+        0,
+        6,
+        6,
+        4294967291,
+        4294967291,
+        0,
+        0,
+        1,
+        1
+      ]
+    },
+    {
+      "id": 18,
+      "optimization": "O2",
+      "release_proof_stub": false,
+      "pass": true,
+      "return": 0,
+      "failure_line": 0,
+      "error": null,
+      "concurrent_state": [
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0
+      ]
+    },
+    {
+      "id": 19,
+      "optimization": "O2",
+      "release_proof_stub": true,
+      "pass": true,
+      "return": 0,
+      "failure_line": 0,
+      "error": null,
+      "concurrent_state": [
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0
+      ]
+    },
+    {
+      "id": 20,
+      "optimization": "O2",
+      "release_proof_stub": true,
+      "pass": true,
+      "return": 0,
+      "failure_line": 0,
+      "error": null,
+      "concurrent_state": [
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0
+      ]
+    },
+    {
+      "id": 21,
+      "optimization": "O2",
+      "release_proof_stub": true,
+      "pass": true,
+      "return": 0,
+      "failure_line": 0,
+      "error": null,
+      "concurrent_state": [
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0
+      ]
     }
   ],
   "hardware_verified": false,
   "resource_hardware_mocked": true,
-  "artifact_root": "D:\\32\\STM32H7\\h7_mac\\output\\ConsumerIntegrationC2_2B\\special_1794652171782843200"
+  "artifact_root": "D:\\32\\STM32H7\\h7_mac\\output\\ConsumerIntegrationC2_2B\\special_1794656514541067200"
 }

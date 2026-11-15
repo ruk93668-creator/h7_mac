@@ -34,6 +34,8 @@ volatile UsbTaskDebug_t g_usb_task_debug;
 //记录运输结果，不参与原USB业务或资格决策
 volatile SysResult_t g_usb_lifecycle_receive_result;
 volatile SysResult_t g_usb_lifecycle_send_result;
+//只投影本消费者的资格事务进度，业务代码不得读取此诊断
+volatile AppCameraConsumerStatus_t g_usb_camera_consumer;
 
 //只通过原生命周期Camera收件箱提交请求
 static SysResult_t UsbTask_SendLifecycle(void *context, const AppLifecycleMessage_t *message);
@@ -199,12 +201,15 @@ static void UsbTask_Reply(void)
 static void UsbTask_PublishStatus(void)
 {
     AppUsbStatus_t status;
+    AppCameraConsumerStatus_t lifecycle;
 
     status.state = g_usb_task_debug.state;
     status.fps_milli = g_usb_task_debug.measured_fps_milli;
     status.completed_frames = g_usb_task_debug.completed_frames;
     status.result = g_usb_task_debug.result;
     (void)App_StatusPublishUsb(&status);
+    App_USBGetLifecycleStatus(&lifecycle);
+    g_usb_camera_consumer = lifecycle;
 }
 
 //仅投影本次指定字段，禁止根据Debug反向推进USB业务

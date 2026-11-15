@@ -33,7 +33,7 @@ typedef struct
     uint32_t measured_fps_milli;//保存按原公式计算的采集FPS
     CameraConfig_t applied;//保存最近实际运行时采样的配置
     bool applied_valid;//记录是否采样过实际运行配置
-    AppCameraQualification_t qualifications;//保存唯一资格核心，尚不接入业务消息
+    AppCameraQualification_t qualifications;//保存唯一资格核心，由CameraTask接收业务生命周期消息
     bool resource_preparing;//同步资源启动正在执行
     bool resource_stop_confirmed;//实际硬件停止已经确认
     AppLifecycleIdentity_t stop_identity;//资格停止结果对应的完整事务身份

@@ -1,0 +1,40 @@
+0 BOOT gate PASS
+1 Owner gate PASS
+2 STOP before START PASS
+3 Unknown command PASS
+4 Bridge BUSY PASS
+5 Bridge IO PASS
+6 Configure failure PASS
+7 Media init failure PASS
+8 Device start failure PASS
+9 Media start failure FAIL
+10 Start rollback failure FAIL
+11 ACK full retry PASS
+12 Repeated START PASS
+13 FAULT and full queue PASS
+14 DRAINING not stopped PASS
+15 STOP BUSY retry PASS
+16 STOP error background retry PASS
+17 Bridge return pending PASS
+18 Device stop failure PASS
+19 Stats unavailable PASS
+20 Tick and frame wrap PASS
+21 FPS overflow guard PASS
+22 Wait error result retained PASS
+23 STOP then START FIFO PASS
+24 Repeated STOP PASS
+25 FPS windows PASS
+26 Media invalid after start PASS
+27 ACK full does not block FAULT PASS
+28 Real task wait and stack cadence PASS
+29 Task stack and priority PASS
+30 Duplicate task create PASS
+31 Fault notification reset PASS
+32 TEST output path PASS
+33 NONE output path PASS
+34 NULL command PASS 0
+35 NULL reply PASS 0
+36 ACK retention and confirm PASS 0
+37 Explicit sample and pure getter PASS 0
+38 Independent FAULT confirm PASS 0
+{'total': 39, 'passed': 37, 'failed': 2}

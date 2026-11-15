@@ -95,7 +95,7 @@ void App_CameraGetStatus(AppCameraRuntimeStatus_t *status);
 //读取最近业务结果，不混入任务等待错误
 SysResult_t App_CameraGetLastResult(void);
 
-//以下资格接口仅允许CameraTask串行调用，不替换旧START/STOP
+//以下资格接口仅允许CameraTask串行调用，运行期替代旧Camera控制命令
 //首次显式准备工具，拒绝接管旧业务已经启动的资源
 SysResult_t App_CameraQualificationPrepare(void);
 //只接收协议请求，重复和候选不触发业务

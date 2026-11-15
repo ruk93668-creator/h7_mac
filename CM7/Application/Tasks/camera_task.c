@@ -24,9 +24,6 @@ static StackType_t s_camera_stack[CAMERA_TASK_STACK_WORDS] __attribute__((aligne
 //保存唯一Camera任务句柄
 static TaskHandle_t s_camera_task;
 
-//记录任务状态和真实采集计数
-volatile CameraTaskDebug_t g_camera_task_debug;
-
 //记录资格运输的初始化及最近真实错误，不作为资格或帧归还证明
 static bool s_lifecycle_ready;
 volatile struct
@@ -38,10 +35,14 @@ volatile struct
     SysResult_t storage_reply_result;
 } g_camera_lifecycle_debug;
 
+//记录任务状态和真实采集计数
+volatile CameraTaskDebug_t g_camera_task_debug;
+
+
 //向现有生命周期队列发送Camera固定回复
 static SysResult_t CameraTask_SendLifecycle(void *context, const AppLifecycleMessage_t *message);
 
-//每轮最多接收四条生命周期消息，不把通知位当成消息
+//每轮接收一条生命周期消息，让决策和回复先于下一次准入
 static void CameraTask_ReceiveLifecycle(void);
 
 //等待事件并推进相机数据面
@@ -252,9 +253,13 @@ static SysResult_t CameraTask_SendLifecycle(void *context, const AppLifecycleMes
 static void CameraTask_ReceiveLifecycle(void)
 {
     AppLifecycleMessage_t message;
-    uint32_t count, disposition;
-    for (count = 0U; count < 4U &&
-        App_LifecycleMessagesReceive(APP_LIFECYCLE_CHANNEL_CAMERA, &message); ++count)
+    uint32_t disposition;
+    //先让本轮QUERY建立会话，不能先把双路冷QUERY同时登记为Core候选
+    if (App_LifecycleMessagesReceive(APP_LIFECYCLE_CHANNEL_CAMERA, &message))
+    {
         g_camera_lifecycle_debug.receive_result =
             App_CameraQualificationReceive(&message, &disposition);
+        //消息仍在原有界队列，自唤醒只保证合并通知后还有下一轮处理机会
+        (void)RuntimeEvent_Post(RUNTIME_TARGET_CAMERA, RUNTIME_EVENT_WAKE);
+    }
 }

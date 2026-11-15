@@ -1,10 +1,10 @@
 #include "app_usb.h"
 #include "app_camera_consumer.h"
-#include "video_config.h"
 #include "usb_mode.h"
 #include "usb_uvc.h"
 #include "app_uvc_bridge.h"
 #include "platform_time.h"
+#include "platform_sync.h"
 #include <stddef.h>
 
 //只保存USB业务协调状态，底层模式、端点、Token及租约仍归原模块
@@ -69,7 +69,7 @@ void App_USBHandleCommand(const AppMessage_t *command)
         //重复START仍返回BUSY，并按原规则记录为业务故障
         if (s_usb.started || s_usb.stopping)
             result = SYS_ERR_BUSY;
-        else if (VideoConfig_GetDefault()->output == VIDEO_OUTPUT_USB_UVC)
+        else if (USB_Mode_GetMode() == USB_MODE_UVC)
         {
             //UVC必须先取得Camera资格，TEST完全不申请Camera
             if (!s_usb.lifecycle_initialized)
@@ -296,12 +296,18 @@ static void App_USBObserve(AppUsbDiagnosticField_t field)
 //接收Task已经取出的生命周期回复，旧身份不得改变当前启动
 SysResult_t App_USBReceiveLifecycle(const AppLifecycleMessage_t *message)
 {
+    //模块入口也校验所属任务，不能绕过原运输通道伪造资格回复
+    if (Platform_SyncGetException() != 0U || !App_MessagesIsOwner(RUNTIME_TARGET_USB))
+        return SYS_ERR_INVALID_STATE;
     return s_usb.lifecycle_initialized ? App_CameraConsumerReceive(&s_usb.camera, message) : SYS_ERR_INVALID_STATE;
 }
 
 //所属UsbTask负责真实运输，模块只保留原Tx重试记录
 SysResult_t App_USBFlushLifecycle(AppLifecycleSendFn send, void *context)
 {
+    //模块入口也校验所属任务，不能绕过原运输通道伪造资格回复
+    if (Platform_SyncGetException() != 0U || !App_MessagesIsOwner(RUNTIME_TARGET_USB))
+        return SYS_ERR_INVALID_STATE;
     return s_usb.lifecycle_initialized ? App_CameraConsumerFlush(&s_usb.camera, send, context) : SYS_OK;
 }
 

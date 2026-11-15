@@ -1,0 +1,61 @@
+{
+  "targets": [
+    {
+      "target": "h7_mac_CM7",
+      "command": [
+        "D:/32/UV4/UV4.exe",
+        "-j0",
+        "-r",
+        "D:\\32\\STM32H7\\h7_mac\\output\\ConsumerIntegrationC2_2B\\final_1794655254854843100\\source\\MDK-ARM\\h7_mac.uvprojx",
+        "-t",
+        "h7_mac_CM7",
+        "-o",
+        "D:\\32\\STM32H7\\h7_mac\\output\\ConsumerIntegrationC2_2B\\final_1794655254854843100\\source\\output\\LifecycleInitBasepri\\build\\h7_mac_CM7_rebuild.log"
+      ],
+      "exit": 0,
+      "errors": 0,
+      "warnings": 0,
+      "pass": true,
+      "artifacts": {
+        ".axf": "D:\\32\\STM32H7\\h7_mac\\output\\ConsumerIntegrationC2_2B\\final_1794655254854843100\\source\\MDK-ARM\\h7_mac_CM7\\h7_mac_CM7.axf",
+        ".hex": "D:\\32\\STM32H7\\h7_mac\\output\\ConsumerIntegrationC2_2B\\final_1794655254854843100\\source\\MDK-ARM\\h7_mac_CM7\\h7_mac_CM7.hex",
+        ".map": "D:\\32\\STM32H7\\h7_mac\\output\\ConsumerIntegrationC2_2B\\final_1794655254854843100\\source\\MDK-ARM\\h7_mac_CM7\\h7_mac_CM7.map"
+      },
+      "artifacts_exist": {
+        ".axf": true,
+        ".hex": false,
+        ".map": true
+      },
+      "log_sha256": "88b2a4a06d5a5fa96a16ef770f3f5af94a32d1be110a7bf0eafdfcd077e49829"
+    },
+    {
+      "target": "h7_mac_CM4",
+      "command": [
+        "D:/32/UV4/UV4.exe",
+        "-j0",
+        "-r",
+        "D:\\32\\STM32H7\\h7_mac\\output\\ConsumerIntegrationC2_2B\\final_1794655254854843100\\source\\MDK-ARM\\h7_mac.uvprojx",
+        "-t",
+        "h7_mac_CM4",
+        "-o",
+        "D:\\32\\STM32H7\\h7_mac\\output\\ConsumerIntegrationC2_2B\\final_1794655254854843100\\source\\output\\LifecycleInitBasepri\\build\\h7_mac_CM4_rebuild.log"
+      ],
+      "exit": 0,
+      "errors": 0,
+      "warnings": 0,
+      "pass": true,
+      "artifacts": {
+        ".axf": "D:\\32\\STM32H7\\h7_mac\\output\\ConsumerIntegrationC2_2B\\final_1794655254854843100\\source\\MDK-ARM\\h7_mac_CM4\\h7_mac_CM4.axf",
+        ".hex": "D:\\32\\STM32H7\\h7_mac\\output\\ConsumerIntegrationC2_2B\\final_1794655254854843100\\source\\MDK-ARM\\h7_mac_CM4\\h7_mac_CM4.hex",
+        ".map": "D:\\32\\STM32H7\\h7_mac\\output\\ConsumerIntegrationC2_2B\\final_1794655254854843100\\source\\MDK-ARM\\h7_mac_CM4\\h7_mac_CM4.map"
+      },
+      "artifacts_exist": {
+        ".axf": true,
+        ".hex": true,
+        ".map": true
+      },
+      "log_sha256": "ec79b07ace26187bfd71a8f907503ed3f40c356253b22eddedd5bc9d0402a635"
+    }
+  ],
+  "project_unchanged": true
+}
