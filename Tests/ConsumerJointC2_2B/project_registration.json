@@ -1,0 +1,38 @@
+[
+  {
+    "target": "h7_mac_CM4",
+    "required_files": {
+      "app_camera.c": 1,
+      "app_camera_consumer.c": 0,
+      "app_camera_qualification.c": 0,
+      "app_usb.c": 0,
+      "app_storage.c": 1,
+      "camera_task.c": 1,
+      "app_uvc_bridge.c": 1,
+      "app_frame_dispatcher.c": 1,
+      "jpeg_frame.c": 1,
+      "mjpeg_avi.c": 1,
+      "app_camera_lifecycle.c": 0,
+      "app_camera_lifecycle_replay.c": 0
+    },
+    "new_test_files_present": false
+  },
+  {
+    "target": "h7_mac_CM7",
+    "required_files": {
+      "app_camera.c": 1,
+      "app_camera_consumer.c": 1,
+      "app_camera_qualification.c": 1,
+      "app_usb.c": 1,
+      "app_storage.c": 1,
+      "camera_task.c": 1,
+      "app_uvc_bridge.c": 1,
+      "app_frame_dispatcher.c": 1,
+      "jpeg_frame.c": 1,
+      "mjpeg_avi.c": 1,
+      "app_camera_lifecycle.c": 1,
+      "app_camera_lifecycle_replay.c": 1
+    },
+    "new_test_files_present": false
+  }
+]

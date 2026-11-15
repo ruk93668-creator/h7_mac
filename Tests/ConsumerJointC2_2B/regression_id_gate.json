@@ -1,0 +1,213 @@
+[
+  {
+    "suite": "c1",
+    "baseline_count": 419,
+    "candidate_count": 419,
+    "missing": [],
+    "added": [],
+    "duplicate": [],
+    "order_equal": true,
+    "outcome_transitions": [],
+    "ID_gate": "PASS",
+    "current_summary": {
+      "total": 419,
+      "passed": 419,
+      "failed": 0
+    },
+    "note": "ID gate PASS is not suite PASS; original failures retained"
+  },
+  {
+    "suite": "c1_1",
+    "baseline_count": 24,
+    "candidate_count": 24,
+    "missing": [],
+    "added": [],
+    "duplicate": [],
+    "order_equal": true,
+    "outcome_transitions": [],
+    "ID_gate": "PASS",
+    "current_summary": {
+      "original_c1": {
+        "total": 419,
+        "passed": 419,
+        "failed": 0
+      },
+      "added_total": 24,
+      "added_passed": 24,
+      "added_failed": 0,
+      "arm_total": 443
+    },
+    "note": "ID gate PASS is not suite PASS; original failures retained"
+  },
+  {
+    "suite": "c2_1_1",
+    "baseline_count": 648,
+    "candidate_count": 648,
+    "missing": [],
+    "added": [],
+    "duplicate": [],
+    "order_equal": true,
+    "outcome_transitions": [],
+    "ID_gate": "PASS",
+    "current_summary": {
+      "total": 648,
+      "passed": 648,
+      "failed": 0,
+      "stress_transactions": 40960
+    },
+    "note": "ID gate PASS is not suite PASS; original failures retained"
+  },
+  {
+    "suite": "c2a",
+    "baseline_count": 162,
+    "candidate_count": 162,
+    "missing": [],
+    "added": [],
+    "duplicate": [],
+    "order_equal": true,
+    "outcome_transitions": [],
+    "ID_gate": "PASS",
+    "current_summary": {
+      "total": 162,
+      "passed": 162,
+      "failed": 0
+    },
+    "note": "ID gate PASS is not suite PASS; original failures retained"
+  },
+  {
+    "suite": "r2",
+    "baseline_count": 74,
+    "candidate_count": 74,
+    "missing": [],
+    "added": [],
+    "duplicate": [],
+    "order_equal": true,
+    "outcome_transitions": [],
+    "ID_gate": "PASS",
+    "current_summary": {
+      "total": 74,
+      "passed": 74,
+      "failed": 0
+    },
+    "note": "ID gate PASS is not suite PASS; original failures retained"
+  },
+  {
+    "suite": "b1",
+    "baseline_count": 39,
+    "candidate_count": 39,
+    "missing": [],
+    "added": [],
+    "duplicate": [],
+    "order_equal": true,
+    "outcome_transitions": [],
+    "ID_gate": "PASS",
+    "current_summary": {
+      "total": 39,
+      "passed": 37,
+      "failed": 2
+    },
+    "note": "ID gate PASS is not suite PASS; original failures retained"
+  },
+  {
+    "suite": "b1_media",
+    "baseline_count": 6,
+    "candidate_count": 6,
+    "missing": [],
+    "added": [],
+    "duplicate": [],
+    "order_equal": true,
+    "outcome_transitions": [],
+    "ID_gate": "PASS",
+    "current_summary": {
+      "total": 6,
+      "passed": 6,
+      "failed": 0
+    },
+    "note": "ID gate PASS is not suite PASS; original failures retained"
+  },
+  {
+    "suite": "b1_integration",
+    "baseline_count": 11,
+    "candidate_count": 11,
+    "missing": [],
+    "added": [],
+    "duplicate": [],
+    "order_equal": true,
+    "outcome_transitions": [],
+    "ID_gate": "PASS",
+    "current_summary": {
+      "total": 11,
+      "passed": 0,
+      "failed": 11
+    },
+    "note": "ID gate PASS is not suite PASS; original failures retained"
+  },
+  {
+    "suite": "b2",
+    "baseline_count": 102,
+    "candidate_count": 102,
+    "missing": [],
+    "added": [],
+    "duplicate": [],
+    "order_equal": true,
+    "outcome_transitions": [],
+    "ID_gate": "PASS",
+    "current_summary": {
+      "total": 102,
+      "passed": 16,
+      "failed": 86
+    },
+    "note": "ID gate PASS is not suite PASS; original failures retained"
+  },
+  {
+    "suite": "b3",
+    "baseline_count": 51,
+    "candidate_count": 51,
+    "missing": [],
+    "added": [],
+    "duplicate": [],
+    "order_equal": true,
+    "outcome_transitions": [],
+    "ID_gate": "PASS",
+    "current_summary": {
+      "total": 51,
+      "passed": 14,
+      "failed": 37
+    },
+    "note": "ID gate PASS is not suite PASS; original failures retained"
+  },
+  {
+    "suite": "business",
+    "baseline_count": 62,
+    "candidate_count": 62,
+    "missing": [],
+    "added": [],
+    "duplicate": [],
+    "order_equal": true,
+    "outcome_transitions": [],
+    "ID_gate": "PASS",
+    "current_summary": {
+      "total": 62,
+      "passed": 62,
+      "failed": 0
+    },
+    "note": "ID gate PASS is not suite PASS; original failures retained"
+  },
+  {
+    "suite": "consumer",
+    "baseline_count": 44,
+    "candidate_count": 44,
+    "missing": [],
+    "added": [],
+    "duplicate": [],
+    "order_equal": true,
+    "outcome_transitions": [],
+    "ID_gate": "PASS",
+    "current_summary": {
+      "total": 44,
+      "passed": 42,
+      "failed": 2
+    },
+    "note": "ID gate PASS is not suite PASS; original failures retained"
+  }
+]

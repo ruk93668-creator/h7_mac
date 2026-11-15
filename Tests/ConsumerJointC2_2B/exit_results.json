@@ -1,0 +1,156 @@
+{
+  "cases": [
+    {
+      "id": "R01",
+      "optimization": "O0",
+      "status": "PASS",
+      "pass": true,
+      "return": 0,
+      "failure_line": 0,
+      "error": null
+    },
+    {
+      "id": "R02",
+      "optimization": "O0",
+      "status": "PASS",
+      "pass": true,
+      "return": 0,
+      "failure_line": 0,
+      "error": null
+    },
+    {
+      "id": "R03",
+      "optimization": "O0",
+      "status": "PASS",
+      "pass": true,
+      "return": 0,
+      "failure_line": 0,
+      "error": null
+    },
+    {
+      "id": "R04",
+      "optimization": "O0",
+      "status": "PASS",
+      "pass": true,
+      "return": 0,
+      "failure_line": 0,
+      "error": null
+    },
+    {
+      "id": "R05",
+      "optimization": "O0",
+      "status": "PASS",
+      "pass": true,
+      "return": 0,
+      "failure_line": 0,
+      "error": null
+    },
+    {
+      "id": "R06",
+      "optimization": "O0",
+      "status": "PASS",
+      "pass": true,
+      "return": 0,
+      "failure_line": 0,
+      "error": null
+    },
+    {
+      "id": "R07",
+      "optimization": "O0",
+      "status": "PASS",
+      "pass": true,
+      "return": 0,
+      "failure_line": 0,
+      "error": null
+    },
+    {
+      "id": "R08",
+      "optimization": "O0",
+      "status": "PASS",
+      "pass": true,
+      "return": 0,
+      "failure_line": 0,
+      "error": null
+    },
+    {
+      "id": "R01",
+      "optimization": "O2",
+      "status": "PASS",
+      "pass": true,
+      "return": 0,
+      "failure_line": 0,
+      "error": null
+    },
+    {
+      "id": "R02",
+      "optimization": "O2",
+      "status": "PASS",
+      "pass": true,
+      "return": 0,
+      "failure_line": 0,
+      "error": null
+    },
+    {
+      "id": "R03",
+      "optimization": "O2",
+      "status": "PASS",
+      "pass": true,
+      "return": 0,
+      "failure_line": 0,
+      "error": null
+    },
+    {
+      "id": "R04",
+      "optimization": "O2",
+      "status": "PASS",
+      "pass": true,
+      "return": 0,
+      "failure_line": 0,
+      "error": null
+    },
+    {
+      "id": "R05",
+      "optimization": "O2",
+      "status": "PASS",
+      "pass": true,
+      "return": 0,
+      "failure_line": 0,
+      "error": null
+    },
+    {
+      "id": "R06",
+      "optimization": "O2",
+      "status": "PASS",
+      "pass": true,
+      "return": 0,
+      "failure_line": 0,
+      "error": null
+    },
+    {
+      "id": "R07",
+      "optimization": "O2",
+      "status": "PASS",
+      "pass": true,
+      "return": 0,
+      "failure_line": 0,
+      "error": null
+    },
+    {
+      "id": "R08",
+      "optimization": "O2",
+      "status": "PASS",
+      "pass": true,
+      "return": 0,
+      "failure_line": 0,
+      "error": null
+    }
+  ],
+  "summary": {
+    "unique_cases": 8,
+    "executions": 16,
+    "passed": 16
+  },
+  "test_ops_only": true,
+  "real_release_proven": false,
+  "artifact_root": "D:\\32\\STM32H7\\h7_mac\\output\\B2B6\\worktree\\output\\ConsumerJoint\\exit_1794734957560236000"
+}

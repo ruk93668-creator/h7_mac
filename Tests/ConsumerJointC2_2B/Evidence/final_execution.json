@@ -1,0 +1,27 @@
+[
+  {
+    "runner": "run_tests.py",
+    "exit": 1,
+    "log": "D:\\32\\STM32H7\\h7_mac\\output\\B2B6\\worktree\\output\\ConsumerJoint\\acceptance_1794734943654380500\\run_tests.py.log"
+  },
+  {
+    "runner": "check_contracts.py",
+    "exit": 1,
+    "log": "D:\\32\\STM32H7\\h7_mac\\output\\B2B6\\worktree\\output\\ConsumerJoint\\acceptance_1794734943654380500\\check_contracts.py.log"
+  },
+  {
+    "runner": "run_exit.py",
+    "exit": 0,
+    "log": "D:\\32\\STM32H7\\h7_mac\\output\\B2B6\\worktree\\output\\ConsumerJoint\\acceptance_1794734943654380500\\run_exit.py.log"
+  },
+  {
+    "runner": "audit_gates.py",
+    "exit": 0,
+    "log": "D:\\32\\STM32H7\\h7_mac\\output\\B2B6\\worktree\\output\\ConsumerJoint\\acceptance_1794734943654380500\\audit_gates.py.log"
+  },
+  {
+    "runner": "audit_resources.py",
+    "exit": 0,
+    "log": "D:\\32\\STM32H7\\h7_mac\\output\\B2B6\\worktree\\output\\ConsumerJoint\\acceptance_1794734943654380500\\audit_resources.py.log"
+  }
+]

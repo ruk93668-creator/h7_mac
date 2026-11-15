@@ -1,0 +1,23 @@
+{
+  "ARMCC5_offsets": [
+    52,
+    56,
+    1,
+    4,
+    8,
+    12,
+    16,
+    220
+  ],
+  "columns": [
+    "AppMessage_size",
+    "Lifecycle_size",
+    "source",
+    "command_id",
+    "stream_epoch",
+    "lease_id",
+    "result",
+    "consumer_granted"
+  ],
+  "enum_packing": "AppMessage enums occupy byte fields on ARMCC5; lifecycle fields fixed uint32"
+}

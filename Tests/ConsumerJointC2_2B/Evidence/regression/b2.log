@@ -1,0 +1,103 @@
+0 UVC BOOT gate PASS
+1 UVC Owner gate PASS
+2 UVC STOP before START PASS
+3 UVC Unknown command PASS
+4 UVC START IO failure FAIL
+5 UVC Not initialized FAIL
+6 UVC ACK failure with FAULT FAIL
+7 UVC Configured after START FAIL
+8 UVC Repeated START BUSY fault FAIL
+9 UVC Mode error same-round cancel FAIL
+10 UVC Abort failure ownership FAIL
+11 UVC Bridge Return ACK wait FAIL
+12 UVC Mode Stop IO retry FAIL
+13 UVC Mode Stop BUSY retry FAIL
+14 UVC Stream query failure FAIL
+15 UVC Class absent on STOP FAIL
+16 UVC EOF FPS sample FAIL
+17 UVC Tick and EOF wrap FAIL
+18 UVC FPS overflow guard FAIL
+19 UVC Task wait error retained FAIL
+20 UVC SOF coalescing FAIL
+21 UVC SOF wrap FAIL
+22 UVC ACK and FAULT independent retry FAIL
+23 UVC STOP START FIFO FAIL
+24 UVC Repeated STOP FAIL
+25 UVC EOF event observation (stub) FAIL
+26 UVC Frame loan then STOP FAIL
+27 UVC Wait and stack cadence FAIL
+28 UVC Task stack and priority FAIL
+29 UVC Duplicate task create FAIL
+30 UVC Task allocation failure FAIL
+31 UVC Fault report reset on START FAIL
+32 TEST BOOT gate PASS
+33 TEST Owner gate PASS
+34 TEST STOP before START PASS
+35 TEST Unknown command PASS
+36 TEST START IO failure FAIL
+37 TEST Not initialized FAIL
+38 TEST ACK failure with FAULT FAIL
+39 TEST Configured after START FAIL
+40 TEST Repeated START BUSY fault FAIL
+41 TEST Mode error same-round cancel FAIL
+42 TEST Abort failure ownership FAIL
+43 TEST Bridge Return ACK wait FAIL
+44 TEST Mode Stop IO retry FAIL
+45 TEST Mode Stop BUSY retry FAIL
+46 TEST Stream query failure FAIL
+47 TEST Class absent on STOP FAIL
+48 TEST EOF FPS sample FAIL
+49 TEST Tick and EOF wrap FAIL
+50 TEST FPS overflow guard FAIL
+51 TEST Task wait error retained FAIL
+52 TEST SOF coalescing FAIL
+53 TEST SOF wrap FAIL
+54 TEST ACK and FAULT independent retry FAIL
+55 TEST STOP START FIFO FAIL
+56 TEST Repeated STOP FAIL
+57 TEST EOF event observation (stub) FAIL
+58 TEST Frame loan then STOP FAIL
+59 TEST Wait and stack cadence FAIL
+60 TEST Task stack and priority FAIL
+61 TEST Duplicate task create FAIL
+62 TEST Task allocation failure FAIL
+63 TEST Fault report reset on START FAIL
+64 NONE BOOT gate PASS
+65 NONE Owner gate PASS
+66 NONE STOP before START PASS
+67 NONE Unknown command PASS
+68 NONE START IO failure FAIL
+69 NONE Not initialized FAIL
+70 NONE ACK failure with FAULT FAIL
+71 NONE Configured after START FAIL
+72 NONE Repeated START BUSY fault FAIL
+73 NONE Mode error same-round cancel FAIL
+74 NONE Abort failure ownership FAIL
+75 NONE Bridge Return ACK wait FAIL
+76 NONE Mode Stop IO retry FAIL
+77 NONE Mode Stop BUSY retry FAIL
+78 NONE Stream query failure FAIL
+79 NONE Class absent on STOP FAIL
+80 NONE EOF FPS sample FAIL
+81 NONE Tick and EOF wrap FAIL
+82 NONE FPS overflow guard FAIL
+83 NONE Task wait error retained FAIL
+84 NONE SOF coalescing FAIL
+85 NONE SOF wrap FAIL
+86 NONE ACK and FAULT independent retry FAIL
+87 NONE STOP START FIFO FAIL
+88 NONE Repeated STOP FAIL
+89 NONE EOF event observation (stub) FAIL
+90 NONE Frame loan then STOP FAIL
+91 NONE Wait and stack cadence FAIL
+92 NONE Task stack and priority FAIL
+93 NONE Duplicate task create FAIL
+94 NONE Task allocation failure FAIL
+95 NONE Fault report reset on START FAIL
+96 NULL command PASS 0
+97 NULL reply PASS 0
+98 Pure getters and ACK confirmation FAIL 230
+99 FAULT confirmation preserves ACK FAIL 231
+100 ACK confirmation preserves FAULT PASS 0
+101 Diagnostic observer is optional PASS 0
+{'total': 102, 'passed': 16, 'failed': 86}

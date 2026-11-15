@@ -1,0 +1,90 @@
+{
+  "source_sha": "cc9f25a54d95cdfbe332c1c5f7a4791ff06e68d3",
+  "snapshot": "D:\\32\\STM32H7\\h7_mac\\output\\B2B6\\worktree\\output\\B2B6\\formal_1794733703644216300",
+  "targets": [
+    {
+      "target": "h7_mac_CM7",
+      "exit": 0,
+      "errors": 0,
+      "warnings": 0,
+      "artifacts": {
+        "axf": {
+          "path": "D:\\32\\STM32H7\\h7_mac\\output\\B2B6\\worktree\\output\\B2B6\\formal_1794733703644216300\\MDK-ARM\\h7_mac_CM7\\h7_mac_CM7.axf",
+          "sha256": "72e963178ccdd63af475e7866704306cd864009a1d700a8baf340cd43e115658"
+        },
+        "map": {
+          "path": "D:\\32\\STM32H7\\h7_mac\\output\\B2B6\\worktree\\output\\B2B6\\formal_1794733703644216300\\MDK-ARM\\h7_mac_CM7\\h7_mac_CM7.map",
+          "sha256": "215fe7f4a7ea893196bfd88d3a462b332661e8afb6df7e9bc933eb50f54f47ae"
+        },
+        "htm": {
+          "path": "D:\\32\\STM32H7\\h7_mac\\output\\B2B6\\worktree\\output\\B2B6\\formal_1794733703644216300\\MDK-ARM\\h7_mac_CM7\\h7_mac_CM7.htm",
+          "sha256": "2edcf87e38586f62bff73847376236dd773d78be13cf2a1b48e23b367c43e4b9"
+        }
+      }
+    },
+    {
+      "target": "h7_mac_CM4",
+      "exit": 0,
+      "errors": 0,
+      "warnings": 0,
+      "artifacts": {
+        "axf": {
+          "path": "D:\\32\\STM32H7\\h7_mac\\output\\B2B6\\worktree\\output\\B2B6\\formal_1794733703644216300\\MDK-ARM\\h7_mac_CM4\\h7_mac_CM4.axf",
+          "sha256": "ab181c4f180da0686d058c4d1362e70f7af6a208683ddc5f4123d782898dc31d"
+        },
+        "map": {
+          "path": "D:\\32\\STM32H7\\h7_mac\\output\\B2B6\\worktree\\output\\B2B6\\formal_1794733703644216300\\MDK-ARM\\h7_mac_CM4\\h7_mac_CM4.map",
+          "sha256": "2f40e160fbd06d6f6dd25489598e8ef6c94bcac2978919dedd2f901e7e2a4f15"
+        },
+        "htm": {
+          "path": "D:\\32\\STM32H7\\h7_mac\\output\\B2B6\\worktree\\output\\B2B6\\formal_1794733703644216300\\MDK-ARM\\h7_mac_CM4\\h7_mac_CM4.htm",
+          "sha256": "97b4b1f1b8a49391682801c3d61fa6417565006da8279ee4729290cdc4f88992"
+        },
+        "hex": {
+          "path": "D:\\32\\STM32H7\\h7_mac\\output\\B2B6\\worktree\\output\\B2B6\\formal_1794733703644216300\\MDK-ARM\\h7_mac_CM4\\h7_mac_CM4.hex",
+          "sha256": "3030484c03d4983a192be39142dce7b6dfdb8e6c93a49e1f8285ee846540fb17"
+        }
+      }
+    }
+  ],
+  "baseline_commit": "cc9f25a54d95cdfbe332c1c5f7a4791ff06e68d3",
+  "production_directories_unchanged": true,
+  "new_tests_registered_in_firmware_project": false,
+  "source_hashes": {
+    "CM7/Application/app_camera.c": "6b32066aacaaa4a18adf3242903c00f3a7ae203ae9fbc84be4e3bbfddfaf1731",
+    "CM7/Application/app_camera_consumer.c": "450e123e3f782ad6b46891e9146d3a7c5da3b9e5e679f9bde4f7100042209759",
+    "CM7/Application/app_camera_lifecycle.c": "cd41f1fa9faa490371bcc2ae9639a56a777ff96b703ddc652fbce82e5ea97582",
+    "CM7/Application/app_camera_lifecycle_replay.c": "efc65a4690934a45649e2da9536498963b0e2fad2a26d2967b294e516e98eec8",
+    "CM7/Application/app_camera_qualification.c": "348b8a6d891993b27ecf707f78738279155fbcc33824080106f2138aa067a3bc",
+    "CM7/Application/app_events.c": "e91a65738b3c2b7ff2e253c4b34462dc5ea7538c73f62ebd0f4089cbb74fe5dd",
+    "CM7/Application/app_frame_dispatcher.c": "4de3404702980d22e6556f6966f406b38e3835e5d99b2d43770e6c81370849a3",
+    "CM7/Application/app_main.c": "65ffa77ef536f0bfb84fbd8e880a7b945d368b54e4339975732bc2a118d9d394",
+    "CM7/Application/app_messages.c": "10304714d68a8acd15f313df9b33dcf1ae262a7f42d721f61e56d50ed762fbf6",
+    "CM7/Application/app_status.c": "d2a2fc2070210c21a5b6b28d83812e0300d06aca8a917a085b280c4d9b92440e",
+    "CM7/Application/app_storage.c": "6aa65bde10c2d89c29648e406b070b7efb75c6e6ffb5c3a06714f663a3c2a9c5",
+    "CM7/Application/app_tasks.c": "3330a519c09741c0c843c626feedb7a6b1c3e3c075a2c258d2e4cd4d21f14afb",
+    "CM7/Application/app_usb.c": "dcf13b14f4e922d49d4fa0479323b444cdfbc4e461e6fa53f5a2673f20e47afa",
+    "CM7/Application/app_uvc_bridge.c": "363856a288d9ec9ee57f6f4aa5b200ec655358c77fa843f93aa0727ecd097e90",
+    "CM7/Application/video_config.c": "0779c9b9232dcb9a2b3323f99da5f1a0e11550695559cb39355ee0ca54ad6f1a",
+    "CM7/Application/Tasks/camera_task.c": "60554bd3f3abbba8d98128b64249087ece1b0c7d0aebe10dec7e061b8e2c5c40",
+    "CM7/Application/Tasks/control_task.c": "ef4446d6d22cffccfbb63240fdce0891cfedfd6991117e4f1b1070daca2a0684",
+    "CM7/Application/Tasks/ipc_task.c": "3b924fd5963deb63d1ec7cbcca470a7db980874807bd5d35d69e2c1070594d75",
+    "CM7/Application/Tasks/storage_task.c": "667ad484d37ae41218b753a832c6ea682299dec36da0644c1d7e0f0bb78e5406",
+    "CM7/Application/Tasks/usb_task.c": "173b1f18da0c2669f050ca083bb6cfd899454dc603a2aaa336164f69c993dcac"
+  },
+  "test_source_hashes": {
+    "audit_gates.py": "e6c8842503b16f7f65e139aa21da4e8751fc166d479b46e491ef4029498fe7f5",
+    "audit_resources.py": "28664fcb8efecb21abfe6056582900e327065df027f585b0db9577f978975309",
+    "check_contracts.py": "f27eda5fac37cac7f34afa1e00a54c4fac22503cde32274cb81d8810f6343fbd",
+    "exit_safety_test.c": "a768f950d491e2b512bfc59b5fda25f29f3ea9d646535234d3ce5e6dfab71324",
+    "joint_test.c": "81da84ceb3fdb67c8798a2a9fc61f6f662c4ce67856499de4f64a0d47f357277",
+    "joint_transport.h": "09791977a5feadc061f78851cb1741e5f738a67d8bd986bce9b13184d1ffc6e8",
+    "layout_probe.c": "06de8f2f16f89da8019e1e0a37d4625a2e00f85c5e32928772487ced7f122d35",
+    "run_acceptance.py": "4257f466b6197a8435b6b01fde64d25eade5c9bff6c5288ce30564873fac31a1",
+    "run_build.py": "132b231aef7a733aa444e46c6fc97dfe0001de10391282a018f0728e9bcf795a",
+    "run_exit.py": "687916aa881307bc4f44648bfb4c54075b5d5f748a195052fe0add2c72cd84c6",
+    "run_legacy_compat.py": "bf58a49308bce9e127a9cbb6cd49b5d56cf9e3f195427d60f6d9aace4a0e49c7",
+    "run_regression.py": "f228bd8e128d937f9efe1450cf74aa134f784b162126636130ba981e70277d3c",
+    "run_tests.py": "29259e3e118cc2f7a5193b40dc45d4e67be1e5b91a5e8d750ddd52f0a746435c"
+  }
+}

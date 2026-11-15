@@ -1,0 +1,50 @@
+{
+  "source_sha": "cc9f25a54d95cdfbe332c1c5f7a4791ff06e68d3",
+  "snapshot": "D:\\32\\STM32H7\\h7_mac\\output\\B2B6\\worktree\\output\\B2B6\\formal_1794733703644216300",
+  "targets": [
+    {
+      "target": "h7_mac_CM7",
+      "exit": 0,
+      "errors": 0,
+      "warnings": 0,
+      "artifacts": {
+        "axf": {
+          "path": "D:\\32\\STM32H7\\h7_mac\\output\\B2B6\\worktree\\output\\B2B6\\formal_1794733703644216300\\MDK-ARM\\h7_mac_CM7\\h7_mac_CM7.axf",
+          "sha256": "72e963178ccdd63af475e7866704306cd864009a1d700a8baf340cd43e115658"
+        },
+        "map": {
+          "path": "D:\\32\\STM32H7\\h7_mac\\output\\B2B6\\worktree\\output\\B2B6\\formal_1794733703644216300\\MDK-ARM\\h7_mac_CM7\\h7_mac_CM7.map",
+          "sha256": "215fe7f4a7ea893196bfd88d3a462b332661e8afb6df7e9bc933eb50f54f47ae"
+        },
+        "htm": {
+          "path": "D:\\32\\STM32H7\\h7_mac\\output\\B2B6\\worktree\\output\\B2B6\\formal_1794733703644216300\\MDK-ARM\\h7_mac_CM7\\h7_mac_CM7.htm",
+          "sha256": "2edcf87e38586f62bff73847376236dd773d78be13cf2a1b48e23b367c43e4b9"
+        }
+      }
+    },
+    {
+      "target": "h7_mac_CM4",
+      "exit": 0,
+      "errors": 0,
+      "warnings": 0,
+      "artifacts": {
+        "axf": {
+          "path": "D:\\32\\STM32H7\\h7_mac\\output\\B2B6\\worktree\\output\\B2B6\\formal_1794733703644216300\\MDK-ARM\\h7_mac_CM4\\h7_mac_CM4.axf",
+          "sha256": "ab181c4f180da0686d058c4d1362e70f7af6a208683ddc5f4123d782898dc31d"
+        },
+        "map": {
+          "path": "D:\\32\\STM32H7\\h7_mac\\output\\B2B6\\worktree\\output\\B2B6\\formal_1794733703644216300\\MDK-ARM\\h7_mac_CM4\\h7_mac_CM4.map",
+          "sha256": "2f40e160fbd06d6f6dd25489598e8ef6c94bcac2978919dedd2f901e7e2a4f15"
+        },
+        "htm": {
+          "path": "D:\\32\\STM32H7\\h7_mac\\output\\B2B6\\worktree\\output\\B2B6\\formal_1794733703644216300\\MDK-ARM\\h7_mac_CM4\\h7_mac_CM4.htm",
+          "sha256": "97b4b1f1b8a49391682801c3d61fa6417565006da8279ee4729290cdc4f88992"
+        },
+        "hex": {
+          "path": "D:\\32\\STM32H7\\h7_mac\\output\\B2B6\\worktree\\output\\B2B6\\formal_1794733703644216300\\MDK-ARM\\h7_mac_CM4\\h7_mac_CM4.hex",
+          "sha256": "3030484c03d4983a192be39142dce7b6dfdb8e6c93a49e1f8285ee846540fb17"
+        }
+      }
+    }
+  ]
+}
