@@ -1,7 +1,7 @@
 #ifndef CAMERA_POWER_TEST_HAL
 #define CAMERA_POWER_TEST_HAL
 #include <stdint.h>
-typedef struct { uint32_t Pin,Mode,Pull,Speed; } GPIO_InitTypeDef;
+typedef struct { uint32_t Pin,Mode,Pull,Speed,Alternate; } GPIO_InitTypeDef;
 typedef uint32_t GPIO_PinState;
 typedef struct { uint32_t PLL1_Q_Frequency; } PLL1_ClocksTypeDef;
 typedef struct { uint32_t PLLCFGR; } RCC_TypeDef;
@@ -49,4 +49,32 @@ void HAL_RCCEx_GetPLL1ClockFreq(PLL1_ClocksTypeDef *clocks);
 void HAL_RCC_MCOConfig(uint32_t mco,uint32_t src,uint32_t div);
 void HAL_Delay(uint32_t ms);
 void SystemCoreClockUpdate(void);
+#define GPIO_MODE_AF_OD 4U
+#define GPIO_AF4_I2C1 4U
+#define I2C1 4U
+#define RCC_I2C123CLKSOURCE_D2PCLK1 0U
+#define I2C_ADDRESSINGMODE_7BIT 0U
+#define I2C_DUALADDRESS_DISABLE 0U
+#define I2C_OA2_NOMASK 0U
+#define I2C_GENERALCALL_DISABLE 0U
+#define I2C_NOSTRETCH_DISABLE 0U
+#define I2C_ANALOGFILTER_ENABLE 1U
+#define HAL_I2C_ERROR_NONE 0U
+#define HAL_I2C_ERROR_AF 4U
+#define HAL_I2C_ERROR_BERR 1U
+#define HAL_I2C_ERROR_TIMEOUT 32U
+#define __HAL_RCC_I2C1_CLK_ENABLE() ((void)0)
+extern uint32_t mock_i2c_mux,mock_i2c_kernel;
+#define __HAL_RCC_GET_I2C1_SOURCE() mock_i2c_mux
+typedef enum {HAL_OK,HAL_ERROR,HAL_BUSY,HAL_TIMEOUT} HAL_StatusTypeDef;
+typedef struct {uint32_t Timing,OwnAddress1,AddressingMode,DualAddressMode,OwnAddress2,OwnAddress2Masks,GeneralCallMode,NoStretchMode;} I2C_InitTypeDef;
+typedef struct {uint32_t Instance;I2C_InitTypeDef Init;uint32_t ErrorCode;} I2C_HandleTypeDef;
+uint32_t HAL_RCC_GetPCLK1Freq(void);
+HAL_StatusTypeDef HAL_I2C_Init(I2C_HandleTypeDef *h);
+HAL_StatusTypeDef HAL_I2C_DeInit(I2C_HandleTypeDef *h);
+HAL_StatusTypeDef HAL_I2CEx_ConfigAnalogFilter(I2C_HandleTypeDef *h,uint32_t value);
+HAL_StatusTypeDef HAL_I2CEx_ConfigDigitalFilter(I2C_HandleTypeDef *h,uint32_t value);
+HAL_StatusTypeDef HAL_I2C_Master_Transmit(I2C_HandleTypeDef *h,uint16_t addr,uint8_t *data,uint16_t size,uint32_t timeout);
+HAL_StatusTypeDef HAL_I2C_Master_Receive(I2C_HandleTypeDef *h,uint16_t addr,uint8_t *data,uint16_t size,uint32_t timeout);
+uint32_t HAL_I2C_GetError(I2C_HandleTypeDef *h);
 #endif

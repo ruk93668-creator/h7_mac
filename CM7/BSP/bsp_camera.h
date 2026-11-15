@@ -16,13 +16,13 @@ void BSP_Camera_PowerDisable(void);
 //初始化数字电源、XCLK和传感器复位时序
 SysResult_t BSP_Camera_Init(void);
 
-//通过软件SCCB读取一个寄存器
+//通过I2C1读取一个寄存器，仅供启动初始化或Camera所有者任务调用
 SysResult_t BSP_Camera_ReadReg(
     uint16_t reg,
     uint8_t *value
 );
 
-//通过软件SCCB写入一个寄存器
+//通过I2C1写入一个寄存器，仅供启动初始化或Camera所有者任务调用
 SysResult_t BSP_Camera_WriteReg(
 	uint16_t reg,
 	uint8_t value
