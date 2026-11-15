@@ -1,0 +1,100 @@
+{
+  "ABI": [
+    232,
+    144,
+    332,
+    824,
+    56,
+    52,
+    24,
+    40,
+    144,
+    200
+  ],
+  "columns": [
+    "consumer",
+    "tx",
+    "rx",
+    "qualification",
+    "lifecycle_message",
+    "AppMessage",
+    "CameraFrame",
+    "CameraDebug",
+    "request_offset",
+    "generation_offset"
+  ],
+  "map": [
+    {
+      "target": "h7_mac_CM7",
+      "totals": [
+        147746,
+        9294,
+        3114,
+        1376,
+        101536,
+        2905208
+      ],
+      "symbols": {
+        "s_camera_stack": {
+          "address": "0x20008dd0",
+          "bytes": 6144
+        },
+        "s_usb_stack": {
+          "address": "0x2000a660",
+          "bytes": 8192
+        },
+        "s_stack": {
+          "address": "0x2000dcb8",
+          "bytes": 8192
+        },
+        "s_camera_consumer": {
+          "address": "0x20000ca0",
+          "bytes": 232
+        },
+        "s_lifecycle_storage": {
+          "address": "0x20008a98",
+          "bytes": 672
+        }
+      },
+      "stack": {
+        "CameraTask_Run": {
+          "local": "8",
+          "known_depth": "496"
+        },
+        "UsbTask_Run": {
+          "local": "8",
+          "known_depth": "540"
+        },
+        "StorageTask_Run": {
+          "local": "88",
+          "known_depth": "1416"
+        },
+        "App_CameraConsumerProcess": {
+          "local": "72",
+          "known_depth": "232"
+        },
+        "App_QualificationProcess": {
+          "local": "88",
+          "known_depth": "408"
+        }
+      }
+    },
+    {
+      "target": "h7_mac_CM4",
+      "totals": [
+        26302,
+        1508,
+        1438,
+        936,
+        3576,
+        1494802
+      ],
+      "symbols": {},
+      "stack": {}
+    }
+  ],
+  "stack_verified_on_hardware": false,
+  "all_indirect_call_depth_proven": false,
+  "only_app_usb_changed": true,
+  "static_RAM_delta_this_task": 0
+}

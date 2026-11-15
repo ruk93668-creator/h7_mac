@@ -1,0 +1,15 @@
+{
+  "ID17_production_path": "PASS",
+  "Core_batch_boundary": "EXPECTED_REJECT",
+  "raw_Consumer_suite": "FAIL 42/44 preserved",
+  "C2_2B_complete_gate": "BLOCKED",
+  "historical_128_BLOCKED": "retained, not promoted",
+  "production_changes": [],
+  "source_hashes": {
+    "CM7/Application/app_camera_qualification.c": "348b8a6d891993b27ecf707f78738279155fbcc33824080106f2138aa067a3bc",
+    "CM7/Application/Tasks/camera_task.c": "60554bd3f3abbba8d98128b64249087ece1b0c7d0aebe10dec7e061b8e2c5c40",
+    "Tests/ConsumerIntegrationC2_2B/consumer_test.c": "e9391652f81f0d6eb9a0a72641bfef88b6bec2ae3108c2e4a1ed0b606f519c58",
+    "Tests/ConsumerIntegrationC2_2B/camera_task_test.c": "ca75d0e47868a9d073300fe5b62870f05dc00b290f97deed8badf43c3194acf5"
+  },
+  "C2_2C": "NOT_RUN"
+}

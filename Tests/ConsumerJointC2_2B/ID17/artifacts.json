@@ -1,0 +1,64 @@
+[
+  {
+    "target": "h7_mac_CM7",
+    "kind": "axf",
+    "status": "PASS",
+    "path": "D:\\32\\STM32H7\\h7_mac\\output\\B2B6\\worktree\\output\\ConsumerJoint\\ID17_1794739717538473200\\output\\B2B6\\formal_1794739811741678400\\MDK-ARM\\h7_mac_CM7\\h7_mac_CM7.axf",
+    "bytes": 3343492,
+    "SHA256": "ebc3d2a8c8760498de94d880631938511ad724ad91daf45737fd93a3dc4d7cfa"
+  },
+  {
+    "target": "h7_mac_CM7",
+    "kind": "map",
+    "status": "PASS",
+    "path": "D:\\32\\STM32H7\\h7_mac\\output\\B2B6\\worktree\\output\\ConsumerJoint\\ID17_1794739717538473200\\output\\B2B6\\formal_1794739811741678400\\MDK-ARM\\h7_mac_CM7\\h7_mac_CM7.map",
+    "bytes": 970354,
+    "SHA256": "f878e8386fbfb2f055748583276d2995b247abf210bc92b649f964fcde0b0bb4"
+  },
+  {
+    "target": "h7_mac_CM7",
+    "kind": "htm",
+    "status": "PASS",
+    "path": "D:\\32\\STM32H7\\h7_mac\\output\\B2B6\\worktree\\output\\ConsumerJoint\\ID17_1794739717538473200\\output\\B2B6\\formal_1794739811741678400\\MDK-ARM\\h7_mac_CM7\\h7_mac_CM7.htm",
+    "bytes": 705092,
+    "SHA256": "8def84e981c37356add71537cc31c25e4892cc003a0c6ba827c4b1da6a393d31"
+  },
+  {
+    "target": "h7_mac_CM7",
+    "kind": "hex",
+    "status": "NOT_RUN",
+    "reason": "Original Keil Target did not generate this artifact; option not enabled."
+  },
+  {
+    "target": "h7_mac_CM4",
+    "kind": "axf",
+    "status": "PASS",
+    "path": "D:\\32\\STM32H7\\h7_mac\\output\\B2B6\\worktree\\output\\ConsumerJoint\\ID17_1794739717538473200\\output\\B2B6\\formal_1794739811741678400\\MDK-ARM\\h7_mac_CM4\\h7_mac_CM4.axf",
+    "bytes": 1607936,
+    "SHA256": "a4e766ecae58eb641492b437b9c4b32c8a10d7502337d9ad3e6a1ce64f176a22"
+  },
+  {
+    "target": "h7_mac_CM4",
+    "kind": "map",
+    "status": "PASS",
+    "path": "D:\\32\\STM32H7\\h7_mac\\output\\B2B6\\worktree\\output\\ConsumerJoint\\ID17_1794739717538473200\\output\\B2B6\\formal_1794739811741678400\\MDK-ARM\\h7_mac_CM4\\h7_mac_CM4.map",
+    "bytes": 262704,
+    "SHA256": "19d2bfdff0ec429778dc86e97776c397bf57a455b5689de15e1b5a2a63cba975"
+  },
+  {
+    "target": "h7_mac_CM4",
+    "kind": "htm",
+    "status": "PASS",
+    "path": "D:\\32\\STM32H7\\h7_mac\\output\\B2B6\\worktree\\output\\ConsumerJoint\\ID17_1794739717538473200\\output\\B2B6\\formal_1794739811741678400\\MDK-ARM\\h7_mac_CM4\\h7_mac_CM4.htm",
+    "bytes": 156780,
+    "SHA256": "80712256f5aff22d470bd610d1ec4b9b4ed2292fca47ed39bef9c4be8b9e99eb"
+  },
+  {
+    "target": "h7_mac_CM4",
+    "kind": "hex",
+    "status": "PASS",
+    "path": "D:\\32\\STM32H7\\h7_mac\\output\\B2B6\\worktree\\output\\ConsumerJoint\\ID17_1794739717538473200\\output\\B2B6\\formal_1794739811741678400\\MDK-ARM\\h7_mac_CM4\\h7_mac_CM4.hex",
+    "bytes": 78200,
+    "SHA256": "3030484c03d4983a192be39142dce7b6dfdb8e6c93a49e1f8285ee846540fb17"
+  }
+]

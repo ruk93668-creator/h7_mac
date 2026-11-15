@@ -1,0 +1,34 @@
+test_added_failure_fails (__main__.GateTests.test_added_failure_fails) ... ok
+test_added_pass_is_explicit (__main__.GateTests.test_added_pass_is_explicit) ... ok
+test_added_suite_duplicate_cases_fail (__main__.GateTests.test_added_suite_duplicate_cases_fail) ... ok
+test_added_suite_exit_zero_with_failure_fails (__main__.GateTests.test_added_suite_exit_zero_with_failure_fails) ... ok
+test_added_suite_is_recorded (__main__.GateTests.test_added_suite_is_recorded) ... ok
+test_boolean_summary_count_is_invalid (__main__.GateTests.test_boolean_summary_count_is_invalid) ... ok
+test_both_zero_without_reports_fails (__main__.GateTests.test_both_zero_without_reports_fails) ... ok
+test_changed_id_same_count_fails (__main__.GateTests.test_changed_id_same_count_fails) ... ok
+test_core_role_is_part_of_id (__main__.GateTests.test_core_role_is_part_of_id) ... ok
+test_duplicate_ids_fail (__main__.GateTests.test_duplicate_ids_fail) ... ok
+test_duplicate_suites_fail (__main__.GateTests.test_duplicate_suites_fail) ... ok
+test_exit_zero_cannot_hide_new_fail (__main__.GateTests.test_exit_zero_cannot_hide_new_fail) ... ok
+test_improvement_is_explicit (__main__.GateTests.test_improvement_is_explicit) ... ok
+test_invalid_status_not_truthy (__main__.GateTests.test_invalid_status_not_truthy) ... ok
+test_ipc_case_id_is_qualified (__main__.GateTests.test_ipc_case_id_is_qualified) ... ok
+test_known_compile_failure_can_be_compared (__main__.GateTests.test_known_compile_failure_can_be_compared) ... ok
+test_missing_baseline_fail_also_fails (__main__.GateTests.test_missing_baseline_fail_also_fails) ... ok
+test_missing_baseline_pass_fails (__main__.GateTests.test_missing_baseline_pass_fails) ... ok
+test_missing_case_id_rejected (__main__.GateTests.test_missing_case_id_rejected) ... ok
+test_missing_optimization_fails (__main__.GateTests.test_missing_optimization_fails) ... ok
+test_missing_suite_fails (__main__.GateTests.test_missing_suite_fails) ... ok
+test_new_compile_diagnostic_is_not_hidden (__main__.GateTests.test_new_compile_diagnostic_is_not_hidden) ... ok
+test_optimization_is_part_of_id (__main__.GateTests.test_optimization_is_part_of_id) ... ok
+test_order_does_not_hide_or_create_case (__main__.GateTests.test_order_does_not_hide_or_create_case) ... ok
+test_original_failed_case_preserved (__main__.GateTests.test_original_failed_case_preserved) ... ok
+test_scenario_id_not_position (__main__.GateTests.test_scenario_id_not_position) ... ok
+test_summary_passed_mismatch_fails (__main__.GateTests.test_summary_passed_mismatch_fails) ... ok
+test_summary_total_mismatch_fails (__main__.GateTests.test_summary_total_mismatch_fails) ... ok
+test_unknown_report_not_success (__main__.GateTests.test_unknown_report_not_success) ... ok
+
+----------------------------------------------------------------------
+Ran 29 tests in 0.001s
+
+OK

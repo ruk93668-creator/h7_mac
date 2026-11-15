@@ -1,0 +1,235 @@
+{
+  "measured_ABI": {
+    "Consumer": 232,
+    "Tx": 144,
+    "Rx": 332,
+    "Qualification": 824,
+    "LifecycleMessage": 56,
+    "AppMessage": 52,
+    "CameraFrame": 24,
+    "Consumer.request": 144,
+    "Consumer.generation": 204,
+    "Consumer.granted": 220,
+    "Tx.allocated_through": 12,
+    "Tx.issued_through": 16,
+    "Tx.pending": 28,
+    "Rx.replay": 40,
+    "Rx.reply_pending": 160,
+    "Rx.candidate": 276,
+    "Qualification.rx": 144,
+    "Qualification.session_id": 808,
+    "Lifecycle.identity": 20,
+    "Lifecycle.related": 36,
+    "Lifecycle.flags": 40,
+    "Lifecycle.result": 44,
+    "AppMessage.source": 1,
+    "AppMessage.command_id": 4,
+    "AppMessage.stream_epoch": 8,
+    "AppMessage.lease_id": 12,
+    "AppMessage.result": 16,
+    "AppMessage.frame": 28
+  },
+  "loadable_sections": [
+    {
+      "target": "h7_mac_CM7",
+      "baseline_loadable_SHA256": "04258bc24b5f376bd005b7ba5738b9d7002d6b95bc488aeed6d9100fae0c9e37",
+      "current_loadable_SHA256": "04258bc24b5f376bd005b7ba5738b9d7002d6b95bc488aeed6d9100fae0c9e37",
+      "match": true
+    },
+    {
+      "target": "h7_mac_CM4",
+      "baseline_loadable_SHA256": "a2582cdfc3d12bbecb3bcc4b0ac935216422383ff0395ff5f40dea480494bf04",
+      "current_loadable_SHA256": "a2582cdfc3d12bbecb3bcc4b0ac935216422383ff0395ff5f40dea480494bf04",
+      "match": true
+    }
+  ],
+  "Maps": [
+    {
+      "target": "h7_mac_CM7",
+      "current_totals": [
+        147746,
+        9294,
+        3114,
+        1376,
+        101536,
+        2905208
+      ],
+      "ID7_post_fix_totals": [
+        147746,
+        9294,
+        3114,
+        1376,
+        101536,
+        2845572
+      ],
+      "ID7_pre_fix_totals": [
+        147714,
+        9298,
+        3114,
+        1376,
+        101536,
+        2845548
+      ],
+      "runtime_columns_delta_from_8a83591": [
+        0,
+        0,
+        0,
+        0,
+        0
+      ],
+      "debug_bytes_delta": 59636,
+      "RW_delta_from_pre_fix": 0,
+      "ZI_delta_from_pre_fix": 0,
+      "stack": {
+        "CameraTask_Run": {
+          "local": "8",
+          "known_depth": "496"
+        },
+        "UsbTask_Run": {
+          "local": "8",
+          "known_depth": "540"
+        },
+        "StorageTask_Run": {
+          "local": "88",
+          "known_depth": "1416"
+        },
+        "App_CameraConsumerProcess": {
+          "local": "72",
+          "known_depth": "232"
+        },
+        "App_QualificationProcess": {
+          "local": "88",
+          "known_depth": "408"
+        }
+      },
+      "symbols": {
+        "s_camera_stack": {
+          "address": "0x20008dd0",
+          "bytes": 6144
+        },
+        "s_usb_stack": {
+          "address": "0x2000a660",
+          "bytes": 8192
+        },
+        "s_stack": {
+          "address": "0x2000dcb8",
+          "bytes": 8192
+        },
+        "s_camera_consumer": {
+          "address": "0x20000ca0",
+          "bytes": 232
+        },
+        "s_lifecycle_storage": {
+          "address": "0x20008a98",
+          "bytes": 672
+        }
+      }
+    },
+    {
+      "target": "h7_mac_CM4",
+      "current_totals": [
+        26302,
+        1508,
+        1438,
+        936,
+        3576,
+        1494802
+      ],
+      "ID7_post_fix_totals": [
+        26302,
+        1508,
+        1438,
+        936,
+        3576,
+        1483674
+      ],
+      "ID7_pre_fix_totals": [
+        26302,
+        1508,
+        1438,
+        936,
+        3576,
+        1483674
+      ],
+      "runtime_columns_delta_from_8a83591": [
+        0,
+        0,
+        0,
+        0,
+        0
+      ],
+      "debug_bytes_delta": 11128,
+      "RW_delta_from_pre_fix": 0,
+      "ZI_delta_from_pre_fix": 0,
+      "stack": {},
+      "symbols": {}
+    }
+  ],
+  "AppUsbContext": [
+    {
+      "version": "baseline",
+      "address": "0x2000fcd4",
+      "bytes": 332
+    },
+    {
+      "version": "candidate",
+      "address": "0x2000fcd4",
+      "bytes": 332
+    }
+  ],
+  "RAM_delta": 0,
+  "all_indirect_worst_case_stack_proven": false,
+  "hardware_stack_verified": false,
+  "build": {
+    "base_sha": "8a83591b4baa0a850ccdfb269b68d752af5bee81",
+    "app_usb_sha256": "74d687b9d9cba5f5db901e572073360cdc7d66c84e9aafef58de66e262f83581",
+    "snapshot": "D:\\32\\STM32H7\\h7_mac\\output\\B2B6\\worktree\\output\\ConsumerJoint\\ID17_1794739717538473200\\output\\B2B6\\formal_1794739811741678400",
+    "targets": [
+      {
+        "target": "h7_mac_CM7",
+        "exit": 0,
+        "errors": 0,
+        "warnings": 0,
+        "artifacts": {
+          "axf": {
+            "path": "D:\\32\\STM32H7\\h7_mac\\output\\B2B6\\worktree\\output\\ConsumerJoint\\ID17_1794739717538473200\\output\\B2B6\\formal_1794739811741678400\\MDK-ARM\\h7_mac_CM7\\h7_mac_CM7.axf",
+            "sha256": "ebc3d2a8c8760498de94d880631938511ad724ad91daf45737fd93a3dc4d7cfa"
+          },
+          "map": {
+            "path": "D:\\32\\STM32H7\\h7_mac\\output\\B2B6\\worktree\\output\\ConsumerJoint\\ID17_1794739717538473200\\output\\B2B6\\formal_1794739811741678400\\MDK-ARM\\h7_mac_CM7\\h7_mac_CM7.map",
+            "sha256": "f878e8386fbfb2f055748583276d2995b247abf210bc92b649f964fcde0b0bb4"
+          },
+          "htm": {
+            "path": "D:\\32\\STM32H7\\h7_mac\\output\\B2B6\\worktree\\output\\ConsumerJoint\\ID17_1794739717538473200\\output\\B2B6\\formal_1794739811741678400\\MDK-ARM\\h7_mac_CM7\\h7_mac_CM7.htm",
+            "sha256": "8def84e981c37356add71537cc31c25e4892cc003a0c6ba827c4b1da6a393d31"
+          }
+        }
+      },
+      {
+        "target": "h7_mac_CM4",
+        "exit": 0,
+        "errors": 0,
+        "warnings": 0,
+        "artifacts": {
+          "axf": {
+            "path": "D:\\32\\STM32H7\\h7_mac\\output\\B2B6\\worktree\\output\\ConsumerJoint\\ID17_1794739717538473200\\output\\B2B6\\formal_1794739811741678400\\MDK-ARM\\h7_mac_CM4\\h7_mac_CM4.axf",
+            "sha256": "a4e766ecae58eb641492b437b9c4b32c8a10d7502337d9ad3e6a1ce64f176a22"
+          },
+          "map": {
+            "path": "D:\\32\\STM32H7\\h7_mac\\output\\B2B6\\worktree\\output\\ConsumerJoint\\ID17_1794739717538473200\\output\\B2B6\\formal_1794739811741678400\\MDK-ARM\\h7_mac_CM4\\h7_mac_CM4.map",
+            "sha256": "19d2bfdff0ec429778dc86e97776c397bf57a455b5689de15e1b5a2a63cba975"
+          },
+          "htm": {
+            "path": "D:\\32\\STM32H7\\h7_mac\\output\\B2B6\\worktree\\output\\ConsumerJoint\\ID17_1794739717538473200\\output\\B2B6\\formal_1794739811741678400\\MDK-ARM\\h7_mac_CM4\\h7_mac_CM4.htm",
+            "sha256": "80712256f5aff22d470bd610d1ec4b9b4ed2292fca47ed39bef9c4be8b9e99eb"
+          },
+          "hex": {
+            "path": "D:\\32\\STM32H7\\h7_mac\\output\\B2B6\\worktree\\output\\ConsumerJoint\\ID17_1794739717538473200\\output\\B2B6\\formal_1794739811741678400\\MDK-ARM\\h7_mac_CM4\\h7_mac_CM4.hex",
+            "sha256": "3030484c03d4983a192be39142dce7b6dfdb8e6c93a49e1f8285ee846540fb17"
+          }
+        }
+      }
+    ]
+  },
+  "ABI_artifact_root": "D:\\32\\STM32H7\\h7_mac\\output\\B2B6\\worktree\\output\\ConsumerJoint\\ID17_abi_1794750251958479500"
+}

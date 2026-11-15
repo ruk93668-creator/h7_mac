@@ -1,0 +1,373 @@
+{
+  "checks": [
+    {
+      "id": 0,
+      "optimization": "O0",
+      "C_exit": 0,
+      "observations": {
+        "id7_stage_calls": 1,
+        "id7_stage_success": 1,
+        "id7_stop_calls": 1,
+        "phase": 4,
+        "granted": 1,
+        "release_message": "0100000001000000030000000200000001000000010000000300000001000000010000000000000000000000000000000000000000000000"
+      },
+      "no_false_release_reply": true,
+      "identical_release_body": true
+    },
+    {
+      "id": 1,
+      "optimization": "O0",
+      "C_exit": 0,
+      "observations": {
+        "id7_stage_calls": 1,
+        "id7_stage_success": 1,
+        "id7_stop_calls": 1,
+        "phase": 4,
+        "granted": 1,
+        "release_message": "010000000100000003000000020000000100000001000000030000000100000001000000000000000000000000000000f7ffffff00000000"
+      },
+      "no_false_release_reply": true,
+      "identical_release_body": true,
+      "critical_order": {
+        "names": [
+          "original IO ACK",
+          "Frame Return",
+          "actual Camera Media release",
+          "Return ACK",
+          "Mode Stop OK",
+          "RELEASE Stage"
+        ],
+        "sequences": [
+          4451,
+          4492,
+          4584,
+          4585,
+          4677,
+          4683
+        ]
+      }
+    },
+    {
+      "id": 2,
+      "optimization": "O0",
+      "C_exit": 0,
+      "observations": {
+        "id7_stage_calls": 2,
+        "id7_stage_success": 1,
+        "id7_stop_calls": 1,
+        "phase": 4,
+        "granted": 1,
+        "release_message": "010000000100000003000000020000000100000001000000030000000100000001000000000000000000000000000000f7ffffff00000000"
+      },
+      "no_false_release_reply": true,
+      "identical_release_body": true
+    },
+    {
+      "id": 3,
+      "optimization": "O0",
+      "C_exit": 0,
+      "observations": {
+        "id7_stage_calls": 1,
+        "id7_stage_success": 1,
+        "id7_stop_calls": 1,
+        "phase": 4,
+        "granted": 1,
+        "release_message": "0100000001000000030000000200000001000000010000000300000001000000010000000000000000000000000000000000000000000000"
+      },
+      "no_false_release_reply": true,
+      "identical_release_body": true
+    },
+    {
+      "id": 4,
+      "optimization": "O0",
+      "C_exit": 0,
+      "observations": {
+        "id7_stage_calls": 1,
+        "id7_stage_success": 1,
+        "id7_stop_calls": 1,
+        "phase": 4,
+        "granted": 1,
+        "release_message": "010000000100000003000000020000000100000001000000030000000100000001000000000000000000000000000000f7ffffff00000000"
+      },
+      "no_false_release_reply": true,
+      "identical_release_body": true
+    },
+    {
+      "id": 5,
+      "optimization": "O0",
+      "C_exit": 0,
+      "observations": {
+        "id7_stage_calls": 0,
+        "id7_stage_success": 0,
+        "id7_stop_calls": 1,
+        "phase": 0,
+        "granted": 0,
+        "release_message": "0000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000"
+      },
+      "no_false_release_reply": true,
+      "identical_release_body": true
+    },
+    {
+      "id": 6,
+      "optimization": "O0",
+      "C_exit": 0,
+      "observations": {
+        "id7_stage_calls": 1,
+        "id7_stage_success": 1,
+        "id7_stop_calls": 1,
+        "phase": 4,
+        "granted": 1,
+        "release_message": "010000000100000003000000020000000100000001000000030000000100000001000000000000000000000000000000f7ffffff00000000"
+      },
+      "no_false_release_reply": true,
+      "identical_release_body": true
+    },
+    {
+      "id": 7,
+      "optimization": "O0",
+      "C_exit": 0,
+      "observations": {
+        "id7_stage_calls": 1,
+        "id7_stage_success": 1,
+        "id7_stop_calls": 1,
+        "phase": 4,
+        "granted": 1,
+        "release_message": "010000000100000003000000020000000100000001000000030000000100000001000000000000000000000000000000f7ffffff00000000"
+      },
+      "no_false_release_reply": true,
+      "identical_release_body": true
+    },
+    {
+      "id": 8,
+      "optimization": "O0",
+      "C_exit": 0,
+      "observations": {
+        "id7_stage_calls": 3,
+        "id7_stage_success": 1,
+        "id7_stop_calls": 1,
+        "phase": 4,
+        "granted": 1,
+        "release_message": "010000000100000003000000020000000100000001000000030000000100000001000000000000000000000000000000f7ffffff00000000"
+      },
+      "no_false_release_reply": true,
+      "identical_release_body": true
+    },
+    {
+      "id": 9,
+      "optimization": "O0",
+      "C_exit": 0,
+      "observations": {
+        "id7_stage_calls": 1,
+        "id7_stage_success": 1,
+        "id7_stop_calls": 2,
+        "phase": 4,
+        "granted": 1,
+        "release_message": "010000000100000003000000020000000100000001000000030000000100000001000000000000000000000000000000f7ffffff00000000"
+      },
+      "no_false_release_reply": true,
+      "identical_release_body": true
+    },
+    {
+      "id": 10,
+      "optimization": "O0",
+      "C_exit": 0,
+      "observations": {
+        "id7_stage_calls": 2,
+        "id7_stage_success": 1,
+        "id7_stop_calls": 1,
+        "phase": 4,
+        "granted": 1,
+        "release_message": "010000000100000003000000020000000100000001000000030000000100000001000000000000000000000000000000f7ffffff00000000"
+      },
+      "no_false_release_reply": true,
+      "identical_release_body": true
+    },
+    {
+      "id": 0,
+      "optimization": "O2",
+      "C_exit": 0,
+      "observations": {
+        "id7_stage_calls": 1,
+        "id7_stage_success": 1,
+        "id7_stop_calls": 1,
+        "phase": 4,
+        "granted": 1,
+        "release_message": "0100000001000000030000000200000001000000010000000300000001000000010000000000000000000000000000000000000000000000"
+      },
+      "no_false_release_reply": true,
+      "identical_release_body": true
+    },
+    {
+      "id": 1,
+      "optimization": "O2",
+      "C_exit": 0,
+      "observations": {
+        "id7_stage_calls": 1,
+        "id7_stage_success": 1,
+        "id7_stop_calls": 1,
+        "phase": 4,
+        "granted": 1,
+        "release_message": "010000000100000003000000020000000100000001000000030000000100000001000000000000000000000000000000f7ffffff00000000"
+      },
+      "no_false_release_reply": true,
+      "identical_release_body": true
+    },
+    {
+      "id": 2,
+      "optimization": "O2",
+      "C_exit": 0,
+      "observations": {
+        "id7_stage_calls": 2,
+        "id7_stage_success": 1,
+        "id7_stop_calls": 1,
+        "phase": 4,
+        "granted": 1,
+        "release_message": "010000000100000003000000020000000100000001000000030000000100000001000000000000000000000000000000f7ffffff00000000"
+      },
+      "no_false_release_reply": true,
+      "identical_release_body": true
+    },
+    {
+      "id": 3,
+      "optimization": "O2",
+      "C_exit": 0,
+      "observations": {
+        "id7_stage_calls": 1,
+        "id7_stage_success": 1,
+        "id7_stop_calls": 1,
+        "phase": 4,
+        "granted": 1,
+        "release_message": "0100000001000000030000000200000001000000010000000300000001000000010000000000000000000000000000000000000000000000"
+      },
+      "no_false_release_reply": true,
+      "identical_release_body": true
+    },
+    {
+      "id": 4,
+      "optimization": "O2",
+      "C_exit": 0,
+      "observations": {
+        "id7_stage_calls": 1,
+        "id7_stage_success": 1,
+        "id7_stop_calls": 1,
+        "phase": 4,
+        "granted": 1,
+        "release_message": "010000000100000003000000020000000100000001000000030000000100000001000000000000000000000000000000f7ffffff00000000"
+      },
+      "no_false_release_reply": true,
+      "identical_release_body": true
+    },
+    {
+      "id": 5,
+      "optimization": "O2",
+      "C_exit": 0,
+      "observations": {
+        "id7_stage_calls": 0,
+        "id7_stage_success": 0,
+        "id7_stop_calls": 1,
+        "phase": 0,
+        "granted": 0,
+        "release_message": "0000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000"
+      },
+      "no_false_release_reply": true,
+      "identical_release_body": true
+    },
+    {
+      "id": 6,
+      "optimization": "O2",
+      "C_exit": 0,
+      "observations": {
+        "id7_stage_calls": 1,
+        "id7_stage_success": 1,
+        "id7_stop_calls": 1,
+        "phase": 4,
+        "granted": 1,
+        "release_message": "010000000100000003000000020000000100000001000000030000000100000001000000000000000000000000000000f7ffffff00000000"
+      },
+      "no_false_release_reply": true,
+      "identical_release_body": true
+    },
+    {
+      "id": 7,
+      "optimization": "O2",
+      "C_exit": 0,
+      "observations": {
+        "id7_stage_calls": 1,
+        "id7_stage_success": 1,
+        "id7_stop_calls": 1,
+        "phase": 4,
+        "granted": 1,
+        "release_message": "010000000100000003000000020000000100000001000000030000000100000001000000000000000000000000000000f7ffffff00000000"
+      },
+      "no_false_release_reply": true,
+      "identical_release_body": true
+    },
+    {
+      "id": 8,
+      "optimization": "O2",
+      "C_exit": 0,
+      "observations": {
+        "id7_stage_calls": 3,
+        "id7_stage_success": 1,
+        "id7_stop_calls": 1,
+        "phase": 4,
+        "granted": 1,
+        "release_message": "010000000100000003000000020000000100000001000000030000000100000001000000000000000000000000000000f7ffffff00000000"
+      },
+      "no_false_release_reply": true,
+      "identical_release_body": true
+    },
+    {
+      "id": 9,
+      "optimization": "O2",
+      "C_exit": 0,
+      "observations": {
+        "id7_stage_calls": 1,
+        "id7_stage_success": 1,
+        "id7_stop_calls": 2,
+        "phase": 4,
+        "granted": 1,
+        "release_message": "010000000100000003000000020000000100000001000000030000000100000001000000000000000000000000000000f7ffffff00000000"
+      },
+      "no_false_release_reply": true,
+      "identical_release_body": true
+    },
+    {
+      "id": 10,
+      "optimization": "O2",
+      "C_exit": 0,
+      "observations": {
+        "id7_stage_calls": 2,
+        "id7_stage_success": 1,
+        "id7_stop_calls": 1,
+        "phase": 4,
+        "granted": 1,
+        "release_message": "010000000100000003000000020000000100000001000000030000000100000001000000000000000000000000000000f7ffffff00000000"
+      },
+      "no_false_release_reply": true,
+      "identical_release_body": true
+    }
+  ],
+  "B2_ID10": [
+    {
+      "optimization": "O0",
+      "id": 10,
+      "C_assertions": "PASS",
+      "consumer_phase": "RELEASE",
+      "granted": 1,
+      "executions": 1
+    },
+    {
+      "optimization": "O2",
+      "id": 10,
+      "C_assertions": "PASS",
+      "consumer_phase": "RELEASE",
+      "granted": 1,
+      "executions": 1
+    }
+  ],
+  "baseline_negative_control": "2 expected FAIL",
+  "candidate": "22 PASS",
+  "historical_128_BLOCKED_unchanged": true
+}

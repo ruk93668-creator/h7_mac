@@ -1,0 +1,27 @@
+{
+  "baseline": "8a83591b4baa0a850ccdfb269b68d752af5bee81",
+  "snapshot": "D:\\32\\STM32H7\\h7_mac\\output\\B2B6\\worktree\\output\\ConsumerJoint\\ID17_1794739717538473200",
+  "historical_unchanged": {
+    "Tests/ConsumerJointC2_2B/ID7/baseline_results.json": "6f293f1400ca04cd20896dfd4feeeb95245a4a1ab4bd1cf29bcf3a8dea550aac",
+    "Tests/ConsumerJointC2_2B/legacy_153_gate.json": "11e0dd401e0fd623b8a2659983b174d4340e4b6d473444989c7015e789392e74"
+  },
+  "production_files_modified": [],
+  "required_command_count": 13,
+  "exit_mismatches": [],
+  "added_test_source_sha256": {
+    "audit_results.py": "5c371a8d6bd1944c32c74b4a8080ddb8aff5746d399e35389bf9fdd0b9837cd4",
+    "core_probe.c": "1c6b7982d94023d803321ac011cf67c38c010c4ee881819ef75b39b81ad721ac",
+    "layout_probe.c": "458493daf08f1ec9f9729a42723f7f2d7515e55efac337c1257a5346fb6a50c4",
+    "run_acceptance.py": "aab3772bc12ffa9f2b5c2afc83e9dbd406ea27e3cf28187debeeda7fa1071e3a",
+    "task_probe.c": "7bb6a0a37215ec70f4c4bb599a43446b3d8fcb3d179b159042004d821cb08905",
+    "trace_id17.py": "ce036ca071954b5c7bd27516dc0d62dab35c7ded52f20b6bd8ba202a12e236ff"
+  },
+  "project_configuration_unchanged": true,
+  "baseline_production_trees": {
+    "CM7": "14a24097c519b3f187419197e35a5b6398cb3f26",
+    "CM4": "26db3d86cab078ca9f34e85b25280593a5b9c7ff",
+    "Common": "d94f54359d892d59c32fabc7adc5e6dcd284548b",
+    "Board": "cbba9a5e17eafe8e923be1b9b572e87eca031b39",
+    "MDK-ARM": "6133c3c6ac75988256b169a26294239f83f144ab"
+  }
+}

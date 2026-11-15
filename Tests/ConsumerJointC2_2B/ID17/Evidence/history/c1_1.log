@@ -1,0 +1,5 @@
+Traceback (most recent call last):
+  File "D:\32\STM32H7\h7_mac\output\B2B6\worktree\output\ConsumerJoint\ID17_1794739717538473200\output\B2B6\original_1794739798694691300\Tests\CameraLifecycleC1\run_tests.py", line 8, in <module>
+    from unicorn import Uc,UC_ARCH_ARM,UC_MODE_THUMB,UC_MODE_MCLASS
+ModuleNotFoundError: No module named 'unicorn'
+

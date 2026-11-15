@@ -1,0 +1,2116 @@
+[
+  {
+    "suite": "c1",
+    "failure_details": [],
+    "IDs": 419,
+    "missing": [],
+    "added": [],
+    "duplicate": [],
+    "order_equal": true,
+    "result_changes": [],
+    "current_summary": {
+      "total": 419,
+      "passed": 419,
+      "failed": 0
+    },
+    "ID_check": "PASS",
+    "raw_suite_status": "PASS"
+  },
+  {
+    "suite": "c1_1",
+    "failure_details": [],
+    "IDs": 24,
+    "missing": [],
+    "added": [],
+    "duplicate": [],
+    "order_equal": true,
+    "result_changes": [],
+    "current_summary": {
+      "original_c1": {
+        "total": 419,
+        "passed": 419,
+        "failed": 0
+      },
+      "added_total": 24,
+      "added_passed": 24,
+      "added_failed": 0,
+      "arm_total": 443
+    },
+    "ID_check": "PASS",
+    "raw_suite_status": "PASS"
+  },
+  {
+    "suite": "c2_1_1",
+    "failure_details": [],
+    "IDs": 648,
+    "missing": [],
+    "added": [],
+    "duplicate": [],
+    "order_equal": true,
+    "result_changes": [],
+    "current_summary": {
+      "total": 648,
+      "passed": 648,
+      "failed": 0,
+      "stress_transactions": 40960
+    },
+    "ID_check": "PASS",
+    "raw_suite_status": "PASS"
+  },
+  {
+    "suite": "c2a",
+    "failure_details": [],
+    "IDs": 162,
+    "missing": [],
+    "added": [],
+    "duplicate": [],
+    "order_equal": true,
+    "result_changes": [],
+    "current_summary": {
+      "total": 162,
+      "passed": 162,
+      "failed": 0
+    },
+    "ID_check": "PASS",
+    "raw_suite_status": "PASS"
+  },
+  {
+    "suite": "r2",
+    "failure_details": [],
+    "IDs": 74,
+    "missing": [],
+    "added": [],
+    "duplicate": [],
+    "order_equal": true,
+    "result_changes": [],
+    "current_summary": {
+      "total": 74,
+      "passed": 74,
+      "failed": 0
+    },
+    "ID_check": "PASS",
+    "raw_suite_status": "PASS"
+  },
+  {
+    "suite": "b1",
+    "failure_details": [
+      {
+        "case": "[null, null, 9, null]",
+        "previous": {
+          "baseline_ok": true,
+          "current_ok": true
+        },
+        "current": {
+          "baseline_ok": true,
+          "current_ok": true
+        },
+        "unchanged": true
+      },
+      {
+        "case": "[null, null, 10, null]",
+        "previous": {
+          "baseline_ok": true,
+          "current_ok": true
+        },
+        "current": {
+          "baseline_ok": true,
+          "current_ok": true
+        },
+        "unchanged": true
+      }
+    ],
+    "IDs": 39,
+    "missing": [],
+    "added": [],
+    "duplicate": [],
+    "order_equal": true,
+    "result_changes": [],
+    "current_summary": {
+      "total": 39,
+      "passed": 37,
+      "failed": 2
+    },
+    "ID_check": "PASS",
+    "raw_suite_status": "FAIL"
+  },
+  {
+    "suite": "b1_media",
+    "failure_details": [],
+    "IDs": 6,
+    "missing": [],
+    "added": [],
+    "duplicate": [],
+    "order_equal": true,
+    "result_changes": [],
+    "current_summary": {
+      "total": 6,
+      "passed": 6,
+      "failed": 0
+    },
+    "ID_check": "PASS",
+    "raw_suite_status": "PASS"
+  },
+  {
+    "suite": "b1_integration",
+    "failure_details": [
+      {
+        "case": "[null, null, 0, null]",
+        "previous": {
+          "failure_line": 113,
+          "error": null
+        },
+        "current": {
+          "failure_line": 113,
+          "error": null
+        },
+        "unchanged": true
+      },
+      {
+        "case": "[null, null, 1, null]",
+        "previous": {
+          "failure_line": 113,
+          "error": null
+        },
+        "current": {
+          "failure_line": 113,
+          "error": null
+        },
+        "unchanged": true
+      },
+      {
+        "case": "[null, null, 2, null]",
+        "previous": {
+          "failure_line": 113,
+          "error": null
+        },
+        "current": {
+          "failure_line": 113,
+          "error": null
+        },
+        "unchanged": true
+      },
+      {
+        "case": "[null, null, 3, null]",
+        "previous": {
+          "failure_line": 113,
+          "error": null
+        },
+        "current": {
+          "failure_line": 113,
+          "error": null
+        },
+        "unchanged": true
+      },
+      {
+        "case": "[null, null, 4, null]",
+        "previous": {
+          "failure_line": 113,
+          "error": null
+        },
+        "current": {
+          "failure_line": 113,
+          "error": null
+        },
+        "unchanged": true
+      },
+      {
+        "case": "[null, null, 5, null]",
+        "previous": {
+          "failure_line": 113,
+          "error": null
+        },
+        "current": {
+          "failure_line": 113,
+          "error": null
+        },
+        "unchanged": true
+      },
+      {
+        "case": "[null, null, 6, null]",
+        "previous": {
+          "failure_line": 113,
+          "error": null
+        },
+        "current": {
+          "failure_line": 113,
+          "error": null
+        },
+        "unchanged": true
+      },
+      {
+        "case": "[null, null, 7, null]",
+        "previous": {
+          "failure_line": 113,
+          "error": null
+        },
+        "current": {
+          "failure_line": 113,
+          "error": null
+        },
+        "unchanged": true
+      },
+      {
+        "case": "[null, null, 8, null]",
+        "previous": {
+          "failure_line": 113,
+          "error": null
+        },
+        "current": {
+          "failure_line": 113,
+          "error": null
+        },
+        "unchanged": true
+      },
+      {
+        "case": "[null, null, 9, null]",
+        "previous": {
+          "failure_line": 113,
+          "error": null
+        },
+        "current": {
+          "failure_line": 113,
+          "error": null
+        },
+        "unchanged": true
+      },
+      {
+        "case": "[null, null, 10, null]",
+        "previous": {
+          "failure_line": 113,
+          "error": null
+        },
+        "current": {
+          "failure_line": 113,
+          "error": null
+        },
+        "unchanged": true
+      }
+    ],
+    "IDs": 11,
+    "missing": [],
+    "added": [],
+    "duplicate": [],
+    "order_equal": true,
+    "result_changes": [],
+    "current_summary": {
+      "total": 11,
+      "passed": 0,
+      "failed": 11
+    },
+    "ID_check": "PASS",
+    "raw_suite_status": "FAIL"
+  },
+  {
+    "suite": "b2",
+    "failure_details": [
+      {
+        "case": "[null, null, 4, null]",
+        "previous": {
+          "baseline_ok": true,
+          "current_ok": true
+        },
+        "current": {
+          "baseline_ok": true,
+          "current_ok": true
+        },
+        "unchanged": true
+      },
+      {
+        "case": "[null, null, 5, null]",
+        "previous": {
+          "baseline_ok": true,
+          "current_ok": true
+        },
+        "current": {
+          "baseline_ok": true,
+          "current_ok": true
+        },
+        "unchanged": true
+      },
+      {
+        "case": "[null, null, 6, null]",
+        "previous": {
+          "baseline_ok": true,
+          "current_ok": true
+        },
+        "current": {
+          "baseline_ok": true,
+          "current_ok": true
+        },
+        "unchanged": true
+      },
+      {
+        "case": "[null, null, 7, null]",
+        "previous": {
+          "baseline_ok": true,
+          "current_ok": true
+        },
+        "current": {
+          "baseline_ok": true,
+          "current_ok": true
+        },
+        "unchanged": true
+      },
+      {
+        "case": "[null, null, 8, null]",
+        "previous": {
+          "baseline_ok": true,
+          "current_ok": true
+        },
+        "current": {
+          "baseline_ok": true,
+          "current_ok": true
+        },
+        "unchanged": true
+      },
+      {
+        "case": "[null, null, 9, null]",
+        "previous": {
+          "baseline_ok": true,
+          "current_ok": true
+        },
+        "current": {
+          "baseline_ok": true,
+          "current_ok": true
+        },
+        "unchanged": true
+      },
+      {
+        "case": "[null, null, 10, null]",
+        "previous": {
+          "baseline_ok": true,
+          "current_ok": true
+        },
+        "current": {
+          "baseline_ok": true,
+          "current_ok": true
+        },
+        "unchanged": true
+      },
+      {
+        "case": "[null, null, 11, null]",
+        "previous": {
+          "baseline_ok": true,
+          "current_ok": true
+        },
+        "current": {
+          "baseline_ok": true,
+          "current_ok": true
+        },
+        "unchanged": true
+      },
+      {
+        "case": "[null, null, 12, null]",
+        "previous": {
+          "baseline_ok": true,
+          "current_ok": true
+        },
+        "current": {
+          "baseline_ok": true,
+          "current_ok": true
+        },
+        "unchanged": true
+      },
+      {
+        "case": "[null, null, 13, null]",
+        "previous": {
+          "baseline_ok": true,
+          "current_ok": true
+        },
+        "current": {
+          "baseline_ok": true,
+          "current_ok": true
+        },
+        "unchanged": true
+      },
+      {
+        "case": "[null, null, 14, null]",
+        "previous": {
+          "baseline_ok": true,
+          "current_ok": true
+        },
+        "current": {
+          "baseline_ok": true,
+          "current_ok": true
+        },
+        "unchanged": true
+      },
+      {
+        "case": "[null, null, 15, null]",
+        "previous": {
+          "baseline_ok": true,
+          "current_ok": true
+        },
+        "current": {
+          "baseline_ok": true,
+          "current_ok": true
+        },
+        "unchanged": true
+      },
+      {
+        "case": "[null, null, 16, null]",
+        "previous": {
+          "baseline_ok": true,
+          "current_ok": true
+        },
+        "current": {
+          "baseline_ok": true,
+          "current_ok": true
+        },
+        "unchanged": true
+      },
+      {
+        "case": "[null, null, 17, null]",
+        "previous": {
+          "baseline_ok": true,
+          "current_ok": true
+        },
+        "current": {
+          "baseline_ok": true,
+          "current_ok": true
+        },
+        "unchanged": true
+      },
+      {
+        "case": "[null, null, 18, null]",
+        "previous": {
+          "baseline_ok": true,
+          "current_ok": true
+        },
+        "current": {
+          "baseline_ok": true,
+          "current_ok": true
+        },
+        "unchanged": true
+      },
+      {
+        "case": "[null, null, 19, null]",
+        "previous": {
+          "baseline_ok": true,
+          "current_ok": true
+        },
+        "current": {
+          "baseline_ok": true,
+          "current_ok": true
+        },
+        "unchanged": true
+      },
+      {
+        "case": "[null, null, 20, null]",
+        "previous": {
+          "baseline_ok": true,
+          "current_ok": true
+        },
+        "current": {
+          "baseline_ok": true,
+          "current_ok": true
+        },
+        "unchanged": true
+      },
+      {
+        "case": "[null, null, 21, null]",
+        "previous": {
+          "baseline_ok": true,
+          "current_ok": true
+        },
+        "current": {
+          "baseline_ok": true,
+          "current_ok": true
+        },
+        "unchanged": true
+      },
+      {
+        "case": "[null, null, 22, null]",
+        "previous": {
+          "baseline_ok": true,
+          "current_ok": true
+        },
+        "current": {
+          "baseline_ok": true,
+          "current_ok": true
+        },
+        "unchanged": true
+      },
+      {
+        "case": "[null, null, 23, null]",
+        "previous": {
+          "baseline_ok": true,
+          "current_ok": true
+        },
+        "current": {
+          "baseline_ok": true,
+          "current_ok": true
+        },
+        "unchanged": true
+      },
+      {
+        "case": "[null, null, 24, null]",
+        "previous": {
+          "baseline_ok": true,
+          "current_ok": true
+        },
+        "current": {
+          "baseline_ok": true,
+          "current_ok": true
+        },
+        "unchanged": true
+      },
+      {
+        "case": "[null, null, 25, null]",
+        "previous": {
+          "baseline_ok": true,
+          "current_ok": true
+        },
+        "current": {
+          "baseline_ok": true,
+          "current_ok": true
+        },
+        "unchanged": true
+      },
+      {
+        "case": "[null, null, 26, null]",
+        "previous": {
+          "baseline_ok": true,
+          "current_ok": true
+        },
+        "current": {
+          "baseline_ok": true,
+          "current_ok": true
+        },
+        "unchanged": true
+      },
+      {
+        "case": "[null, null, 27, null]",
+        "previous": {
+          "baseline_ok": true,
+          "current_ok": true
+        },
+        "current": {
+          "baseline_ok": true,
+          "current_ok": true
+        },
+        "unchanged": true
+      },
+      {
+        "case": "[null, null, 28, null]",
+        "previous": {
+          "baseline_ok": true,
+          "current_ok": true
+        },
+        "current": {
+          "baseline_ok": true,
+          "current_ok": true
+        },
+        "unchanged": true
+      },
+      {
+        "case": "[null, null, 29, null]",
+        "previous": {
+          "baseline_ok": true,
+          "current_ok": true
+        },
+        "current": {
+          "baseline_ok": true,
+          "current_ok": true
+        },
+        "unchanged": true
+      },
+      {
+        "case": "[null, null, 30, null]",
+        "previous": {
+          "baseline_ok": true,
+          "current_ok": true
+        },
+        "current": {
+          "baseline_ok": true,
+          "current_ok": true
+        },
+        "unchanged": true
+      },
+      {
+        "case": "[null, null, 31, null]",
+        "previous": {
+          "baseline_ok": true,
+          "current_ok": true
+        },
+        "current": {
+          "baseline_ok": true,
+          "current_ok": true
+        },
+        "unchanged": true
+      },
+      {
+        "case": "[null, null, 36, null]",
+        "previous": {
+          "baseline_ok": true,
+          "current_ok": true
+        },
+        "current": {
+          "baseline_ok": true,
+          "current_ok": true
+        },
+        "unchanged": true
+      },
+      {
+        "case": "[null, null, 37, null]",
+        "previous": {
+          "baseline_ok": true,
+          "current_ok": true
+        },
+        "current": {
+          "baseline_ok": true,
+          "current_ok": true
+        },
+        "unchanged": true
+      },
+      {
+        "case": "[null, null, 38, null]",
+        "previous": {
+          "baseline_ok": true,
+          "current_ok": true
+        },
+        "current": {
+          "baseline_ok": true,
+          "current_ok": true
+        },
+        "unchanged": true
+      },
+      {
+        "case": "[null, null, 39, null]",
+        "previous": {
+          "baseline_ok": true,
+          "current_ok": true
+        },
+        "current": {
+          "baseline_ok": true,
+          "current_ok": true
+        },
+        "unchanged": true
+      },
+      {
+        "case": "[null, null, 40, null]",
+        "previous": {
+          "baseline_ok": true,
+          "current_ok": true
+        },
+        "current": {
+          "baseline_ok": true,
+          "current_ok": true
+        },
+        "unchanged": true
+      },
+      {
+        "case": "[null, null, 41, null]",
+        "previous": {
+          "baseline_ok": true,
+          "current_ok": true
+        },
+        "current": {
+          "baseline_ok": true,
+          "current_ok": true
+        },
+        "unchanged": true
+      },
+      {
+        "case": "[null, null, 42, null]",
+        "previous": {
+          "baseline_ok": true,
+          "current_ok": true
+        },
+        "current": {
+          "baseline_ok": true,
+          "current_ok": true
+        },
+        "unchanged": true
+      },
+      {
+        "case": "[null, null, 43, null]",
+        "previous": {
+          "baseline_ok": true,
+          "current_ok": true
+        },
+        "current": {
+          "baseline_ok": true,
+          "current_ok": true
+        },
+        "unchanged": true
+      },
+      {
+        "case": "[null, null, 44, null]",
+        "previous": {
+          "baseline_ok": true,
+          "current_ok": true
+        },
+        "current": {
+          "baseline_ok": true,
+          "current_ok": true
+        },
+        "unchanged": true
+      },
+      {
+        "case": "[null, null, 45, null]",
+        "previous": {
+          "baseline_ok": true,
+          "current_ok": true
+        },
+        "current": {
+          "baseline_ok": true,
+          "current_ok": true
+        },
+        "unchanged": true
+      },
+      {
+        "case": "[null, null, 46, null]",
+        "previous": {
+          "baseline_ok": true,
+          "current_ok": true
+        },
+        "current": {
+          "baseline_ok": true,
+          "current_ok": true
+        },
+        "unchanged": true
+      },
+      {
+        "case": "[null, null, 47, null]",
+        "previous": {
+          "baseline_ok": true,
+          "current_ok": true
+        },
+        "current": {
+          "baseline_ok": true,
+          "current_ok": true
+        },
+        "unchanged": true
+      },
+      {
+        "case": "[null, null, 48, null]",
+        "previous": {
+          "baseline_ok": true,
+          "current_ok": true
+        },
+        "current": {
+          "baseline_ok": true,
+          "current_ok": true
+        },
+        "unchanged": true
+      },
+      {
+        "case": "[null, null, 49, null]",
+        "previous": {
+          "baseline_ok": true,
+          "current_ok": true
+        },
+        "current": {
+          "baseline_ok": true,
+          "current_ok": true
+        },
+        "unchanged": true
+      },
+      {
+        "case": "[null, null, 50, null]",
+        "previous": {
+          "baseline_ok": true,
+          "current_ok": true
+        },
+        "current": {
+          "baseline_ok": true,
+          "current_ok": true
+        },
+        "unchanged": true
+      },
+      {
+        "case": "[null, null, 51, null]",
+        "previous": {
+          "baseline_ok": true,
+          "current_ok": true
+        },
+        "current": {
+          "baseline_ok": true,
+          "current_ok": true
+        },
+        "unchanged": true
+      },
+      {
+        "case": "[null, null, 52, null]",
+        "previous": {
+          "baseline_ok": true,
+          "current_ok": true
+        },
+        "current": {
+          "baseline_ok": true,
+          "current_ok": true
+        },
+        "unchanged": true
+      },
+      {
+        "case": "[null, null, 53, null]",
+        "previous": {
+          "baseline_ok": true,
+          "current_ok": true
+        },
+        "current": {
+          "baseline_ok": true,
+          "current_ok": true
+        },
+        "unchanged": true
+      },
+      {
+        "case": "[null, null, 54, null]",
+        "previous": {
+          "baseline_ok": true,
+          "current_ok": true
+        },
+        "current": {
+          "baseline_ok": true,
+          "current_ok": true
+        },
+        "unchanged": true
+      },
+      {
+        "case": "[null, null, 55, null]",
+        "previous": {
+          "baseline_ok": true,
+          "current_ok": true
+        },
+        "current": {
+          "baseline_ok": true,
+          "current_ok": true
+        },
+        "unchanged": true
+      },
+      {
+        "case": "[null, null, 56, null]",
+        "previous": {
+          "baseline_ok": true,
+          "current_ok": true
+        },
+        "current": {
+          "baseline_ok": true,
+          "current_ok": true
+        },
+        "unchanged": true
+      },
+      {
+        "case": "[null, null, 57, null]",
+        "previous": {
+          "baseline_ok": true,
+          "current_ok": true
+        },
+        "current": {
+          "baseline_ok": true,
+          "current_ok": true
+        },
+        "unchanged": true
+      },
+      {
+        "case": "[null, null, 58, null]",
+        "previous": {
+          "baseline_ok": true,
+          "current_ok": true
+        },
+        "current": {
+          "baseline_ok": true,
+          "current_ok": true
+        },
+        "unchanged": true
+      },
+      {
+        "case": "[null, null, 59, null]",
+        "previous": {
+          "baseline_ok": true,
+          "current_ok": true
+        },
+        "current": {
+          "baseline_ok": true,
+          "current_ok": true
+        },
+        "unchanged": true
+      },
+      {
+        "case": "[null, null, 60, null]",
+        "previous": {
+          "baseline_ok": true,
+          "current_ok": true
+        },
+        "current": {
+          "baseline_ok": true,
+          "current_ok": true
+        },
+        "unchanged": true
+      },
+      {
+        "case": "[null, null, 61, null]",
+        "previous": {
+          "baseline_ok": true,
+          "current_ok": true
+        },
+        "current": {
+          "baseline_ok": true,
+          "current_ok": true
+        },
+        "unchanged": true
+      },
+      {
+        "case": "[null, null, 62, null]",
+        "previous": {
+          "baseline_ok": true,
+          "current_ok": true
+        },
+        "current": {
+          "baseline_ok": true,
+          "current_ok": true
+        },
+        "unchanged": true
+      },
+      {
+        "case": "[null, null, 63, null]",
+        "previous": {
+          "baseline_ok": true,
+          "current_ok": true
+        },
+        "current": {
+          "baseline_ok": true,
+          "current_ok": true
+        },
+        "unchanged": true
+      },
+      {
+        "case": "[null, null, 68, null]",
+        "previous": {
+          "baseline_ok": true,
+          "current_ok": true
+        },
+        "current": {
+          "baseline_ok": true,
+          "current_ok": true
+        },
+        "unchanged": true
+      },
+      {
+        "case": "[null, null, 69, null]",
+        "previous": {
+          "baseline_ok": true,
+          "current_ok": true
+        },
+        "current": {
+          "baseline_ok": true,
+          "current_ok": true
+        },
+        "unchanged": true
+      },
+      {
+        "case": "[null, null, 70, null]",
+        "previous": {
+          "baseline_ok": true,
+          "current_ok": true
+        },
+        "current": {
+          "baseline_ok": true,
+          "current_ok": true
+        },
+        "unchanged": true
+      },
+      {
+        "case": "[null, null, 71, null]",
+        "previous": {
+          "baseline_ok": true,
+          "current_ok": true
+        },
+        "current": {
+          "baseline_ok": true,
+          "current_ok": true
+        },
+        "unchanged": true
+      },
+      {
+        "case": "[null, null, 72, null]",
+        "previous": {
+          "baseline_ok": true,
+          "current_ok": true
+        },
+        "current": {
+          "baseline_ok": true,
+          "current_ok": true
+        },
+        "unchanged": true
+      },
+      {
+        "case": "[null, null, 73, null]",
+        "previous": {
+          "baseline_ok": true,
+          "current_ok": true
+        },
+        "current": {
+          "baseline_ok": true,
+          "current_ok": true
+        },
+        "unchanged": true
+      },
+      {
+        "case": "[null, null, 74, null]",
+        "previous": {
+          "baseline_ok": true,
+          "current_ok": true
+        },
+        "current": {
+          "baseline_ok": true,
+          "current_ok": true
+        },
+        "unchanged": true
+      },
+      {
+        "case": "[null, null, 75, null]",
+        "previous": {
+          "baseline_ok": true,
+          "current_ok": true
+        },
+        "current": {
+          "baseline_ok": true,
+          "current_ok": true
+        },
+        "unchanged": true
+      },
+      {
+        "case": "[null, null, 76, null]",
+        "previous": {
+          "baseline_ok": true,
+          "current_ok": true
+        },
+        "current": {
+          "baseline_ok": true,
+          "current_ok": true
+        },
+        "unchanged": true
+      },
+      {
+        "case": "[null, null, 77, null]",
+        "previous": {
+          "baseline_ok": true,
+          "current_ok": true
+        },
+        "current": {
+          "baseline_ok": true,
+          "current_ok": true
+        },
+        "unchanged": true
+      },
+      {
+        "case": "[null, null, 78, null]",
+        "previous": {
+          "baseline_ok": true,
+          "current_ok": true
+        },
+        "current": {
+          "baseline_ok": true,
+          "current_ok": true
+        },
+        "unchanged": true
+      },
+      {
+        "case": "[null, null, 79, null]",
+        "previous": {
+          "baseline_ok": true,
+          "current_ok": true
+        },
+        "current": {
+          "baseline_ok": true,
+          "current_ok": true
+        },
+        "unchanged": true
+      },
+      {
+        "case": "[null, null, 80, null]",
+        "previous": {
+          "baseline_ok": true,
+          "current_ok": true
+        },
+        "current": {
+          "baseline_ok": true,
+          "current_ok": true
+        },
+        "unchanged": true
+      },
+      {
+        "case": "[null, null, 81, null]",
+        "previous": {
+          "baseline_ok": true,
+          "current_ok": true
+        },
+        "current": {
+          "baseline_ok": true,
+          "current_ok": true
+        },
+        "unchanged": true
+      },
+      {
+        "case": "[null, null, 82, null]",
+        "previous": {
+          "baseline_ok": true,
+          "current_ok": true
+        },
+        "current": {
+          "baseline_ok": true,
+          "current_ok": true
+        },
+        "unchanged": true
+      },
+      {
+        "case": "[null, null, 83, null]",
+        "previous": {
+          "baseline_ok": true,
+          "current_ok": true
+        },
+        "current": {
+          "baseline_ok": true,
+          "current_ok": true
+        },
+        "unchanged": true
+      },
+      {
+        "case": "[null, null, 84, null]",
+        "previous": {
+          "baseline_ok": true,
+          "current_ok": true
+        },
+        "current": {
+          "baseline_ok": true,
+          "current_ok": true
+        },
+        "unchanged": true
+      },
+      {
+        "case": "[null, null, 85, null]",
+        "previous": {
+          "baseline_ok": true,
+          "current_ok": true
+        },
+        "current": {
+          "baseline_ok": true,
+          "current_ok": true
+        },
+        "unchanged": true
+      },
+      {
+        "case": "[null, null, 86, null]",
+        "previous": {
+          "baseline_ok": true,
+          "current_ok": true
+        },
+        "current": {
+          "baseline_ok": true,
+          "current_ok": true
+        },
+        "unchanged": true
+      },
+      {
+        "case": "[null, null, 87, null]",
+        "previous": {
+          "baseline_ok": true,
+          "current_ok": true
+        },
+        "current": {
+          "baseline_ok": true,
+          "current_ok": true
+        },
+        "unchanged": true
+      },
+      {
+        "case": "[null, null, 88, null]",
+        "previous": {
+          "baseline_ok": true,
+          "current_ok": true
+        },
+        "current": {
+          "baseline_ok": true,
+          "current_ok": true
+        },
+        "unchanged": true
+      },
+      {
+        "case": "[null, null, 89, null]",
+        "previous": {
+          "baseline_ok": true,
+          "current_ok": true
+        },
+        "current": {
+          "baseline_ok": true,
+          "current_ok": true
+        },
+        "unchanged": true
+      },
+      {
+        "case": "[null, null, 90, null]",
+        "previous": {
+          "baseline_ok": true,
+          "current_ok": true
+        },
+        "current": {
+          "baseline_ok": true,
+          "current_ok": true
+        },
+        "unchanged": true
+      },
+      {
+        "case": "[null, null, 91, null]",
+        "previous": {
+          "baseline_ok": true,
+          "current_ok": true
+        },
+        "current": {
+          "baseline_ok": true,
+          "current_ok": true
+        },
+        "unchanged": true
+      },
+      {
+        "case": "[null, null, 92, null]",
+        "previous": {
+          "baseline_ok": true,
+          "current_ok": true
+        },
+        "current": {
+          "baseline_ok": true,
+          "current_ok": true
+        },
+        "unchanged": true
+      },
+      {
+        "case": "[null, null, 93, null]",
+        "previous": {
+          "baseline_ok": true,
+          "current_ok": true
+        },
+        "current": {
+          "baseline_ok": true,
+          "current_ok": true
+        },
+        "unchanged": true
+      },
+      {
+        "case": "[null, null, 94, null]",
+        "previous": {
+          "baseline_ok": true,
+          "current_ok": true
+        },
+        "current": {
+          "baseline_ok": true,
+          "current_ok": true
+        },
+        "unchanged": true
+      },
+      {
+        "case": "[null, null, 95, null]",
+        "previous": {
+          "baseline_ok": true,
+          "current_ok": true
+        },
+        "current": {
+          "baseline_ok": true,
+          "current_ok": true
+        },
+        "unchanged": true
+      },
+      {
+        "case": "[null, null, 98, null]",
+        "previous": {
+          "failure_line": 230,
+          "error": null
+        },
+        "current": {
+          "failure_line": 230,
+          "error": null
+        },
+        "unchanged": true
+      },
+      {
+        "case": "[null, null, 99, null]",
+        "previous": {
+          "failure_line": 231,
+          "error": null
+        },
+        "current": {
+          "failure_line": 231,
+          "error": null
+        },
+        "unchanged": true
+      }
+    ],
+    "IDs": 102,
+    "missing": [],
+    "added": [],
+    "duplicate": [],
+    "order_equal": true,
+    "result_changes": [],
+    "current_summary": {
+      "total": 102,
+      "passed": 16,
+      "failed": 86
+    },
+    "ID_check": "PASS",
+    "raw_suite_status": "FAIL"
+  },
+  {
+    "suite": "b3",
+    "failure_details": [
+      {
+        "case": "[null, null, 4, null]",
+        "previous": {
+          "baseline_ok": true,
+          "current_ok": false
+        },
+        "current": {
+          "baseline_ok": true,
+          "current_ok": false
+        },
+        "unchanged": true
+      },
+      {
+        "case": "[null, null, 8, null]",
+        "previous": {
+          "baseline_ok": true,
+          "current_ok": false
+        },
+        "current": {
+          "baseline_ok": true,
+          "current_ok": false
+        },
+        "unchanged": true
+      },
+      {
+        "case": "[null, null, 9, null]",
+        "previous": {
+          "baseline_ok": true,
+          "current_ok": false
+        },
+        "current": {
+          "baseline_ok": true,
+          "current_ok": false
+        },
+        "unchanged": true
+      },
+      {
+        "case": "[null, null, 12, null]",
+        "previous": {
+          "baseline_ok": true,
+          "current_ok": true
+        },
+        "current": {
+          "baseline_ok": true,
+          "current_ok": true
+        },
+        "unchanged": true
+      },
+      {
+        "case": "[null, null, 13, null]",
+        "previous": {
+          "baseline_ok": true,
+          "current_ok": false
+        },
+        "current": {
+          "baseline_ok": true,
+          "current_ok": false
+        },
+        "unchanged": true
+      },
+      {
+        "case": "[null, null, 14, null]",
+        "previous": {
+          "baseline_ok": true,
+          "current_ok": false
+        },
+        "current": {
+          "baseline_ok": true,
+          "current_ok": false
+        },
+        "unchanged": true
+      },
+      {
+        "case": "[null, null, 15, null]",
+        "previous": {
+          "baseline_ok": true,
+          "current_ok": false
+        },
+        "current": {
+          "baseline_ok": true,
+          "current_ok": false
+        },
+        "unchanged": true
+      },
+      {
+        "case": "[null, null, 16, null]",
+        "previous": {
+          "baseline_ok": true,
+          "current_ok": false
+        },
+        "current": {
+          "baseline_ok": true,
+          "current_ok": false
+        },
+        "unchanged": true
+      },
+      {
+        "case": "[null, null, 17, null]",
+        "previous": {
+          "baseline_ok": true,
+          "current_ok": false
+        },
+        "current": {
+          "baseline_ok": true,
+          "current_ok": false
+        },
+        "unchanged": true
+      },
+      {
+        "case": "[null, null, 18, null]",
+        "previous": {
+          "baseline_ok": true,
+          "current_ok": false
+        },
+        "current": {
+          "baseline_ok": true,
+          "current_ok": false
+        },
+        "unchanged": true
+      },
+      {
+        "case": "[null, null, 19, null]",
+        "previous": {
+          "baseline_ok": true,
+          "current_ok": false
+        },
+        "current": {
+          "baseline_ok": true,
+          "current_ok": false
+        },
+        "unchanged": true
+      },
+      {
+        "case": "[null, null, 20, null]",
+        "previous": {
+          "baseline_ok": true,
+          "current_ok": true
+        },
+        "current": {
+          "baseline_ok": true,
+          "current_ok": true
+        },
+        "unchanged": true
+      },
+      {
+        "case": "[null, null, 21, null]",
+        "previous": {
+          "baseline_ok": true,
+          "current_ok": true
+        },
+        "current": {
+          "baseline_ok": true,
+          "current_ok": true
+        },
+        "unchanged": true
+      },
+      {
+        "case": "[null, null, 22, null]",
+        "previous": {
+          "baseline_ok": true,
+          "current_ok": false
+        },
+        "current": {
+          "baseline_ok": true,
+          "current_ok": false
+        },
+        "unchanged": true
+      },
+      {
+        "case": "[null, null, 23, null]",
+        "previous": {
+          "baseline_ok": true,
+          "current_ok": false
+        },
+        "current": {
+          "baseline_ok": true,
+          "current_ok": false
+        },
+        "unchanged": true
+      },
+      {
+        "case": "[null, null, 24, null]",
+        "previous": {
+          "baseline_ok": true,
+          "current_ok": false
+        },
+        "current": {
+          "baseline_ok": true,
+          "current_ok": false
+        },
+        "unchanged": true
+      },
+      {
+        "case": "[null, null, 25, null]",
+        "previous": {
+          "baseline_ok": true,
+          "current_ok": false
+        },
+        "current": {
+          "baseline_ok": true,
+          "current_ok": false
+        },
+        "unchanged": true
+      },
+      {
+        "case": "[null, null, 26, null]",
+        "previous": {
+          "baseline_ok": true,
+          "current_ok": false
+        },
+        "current": {
+          "baseline_ok": true,
+          "current_ok": false
+        },
+        "unchanged": true
+      },
+      {
+        "case": "[null, null, 27, null]",
+        "previous": {
+          "baseline_ok": true,
+          "current_ok": false
+        },
+        "current": {
+          "baseline_ok": true,
+          "current_ok": false
+        },
+        "unchanged": true
+      },
+      {
+        "case": "[null, null, 28, null]",
+        "previous": {
+          "baseline_ok": true,
+          "current_ok": false
+        },
+        "current": {
+          "baseline_ok": true,
+          "current_ok": false
+        },
+        "unchanged": true
+      },
+      {
+        "case": "[null, null, 29, null]",
+        "previous": {
+          "baseline_ok": true,
+          "current_ok": false
+        },
+        "current": {
+          "baseline_ok": true,
+          "current_ok": false
+        },
+        "unchanged": true
+      },
+      {
+        "case": "[null, null, 30, null]",
+        "previous": {
+          "baseline_ok": true,
+          "current_ok": false
+        },
+        "current": {
+          "baseline_ok": true,
+          "current_ok": false
+        },
+        "unchanged": true
+      },
+      {
+        "case": "[null, null, 31, null]",
+        "previous": {
+          "baseline_ok": true,
+          "current_ok": false
+        },
+        "current": {
+          "baseline_ok": true,
+          "current_ok": false
+        },
+        "unchanged": true
+      },
+      {
+        "case": "[null, null, 32, null]",
+        "previous": {
+          "baseline_ok": true,
+          "current_ok": false
+        },
+        "current": {
+          "baseline_ok": true,
+          "current_ok": false
+        },
+        "unchanged": true
+      },
+      {
+        "case": "[null, null, 33, null]",
+        "previous": {
+          "baseline_ok": true,
+          "current_ok": false
+        },
+        "current": {
+          "baseline_ok": true,
+          "current_ok": false
+        },
+        "unchanged": true
+      },
+      {
+        "case": "[null, null, 34, null]",
+        "previous": {
+          "baseline_ok": true,
+          "current_ok": false
+        },
+        "current": {
+          "baseline_ok": true,
+          "current_ok": false
+        },
+        "unchanged": true
+      },
+      {
+        "case": "[null, null, 35, null]",
+        "previous": {
+          "baseline_ok": true,
+          "current_ok": false
+        },
+        "current": {
+          "baseline_ok": true,
+          "current_ok": false
+        },
+        "unchanged": true
+      },
+      {
+        "case": "[null, null, 36, null]",
+        "previous": {
+          "baseline_ok": true,
+          "current_ok": false
+        },
+        "current": {
+          "baseline_ok": true,
+          "current_ok": false
+        },
+        "unchanged": true
+      },
+      {
+        "case": "[null, null, 37, null]",
+        "previous": {
+          "baseline_ok": true,
+          "current_ok": false
+        },
+        "current": {
+          "baseline_ok": true,
+          "current_ok": false
+        },
+        "unchanged": true
+      },
+      {
+        "case": "[null, null, 38, null]",
+        "previous": {
+          "baseline_ok": true,
+          "current_ok": false
+        },
+        "current": {
+          "baseline_ok": true,
+          "current_ok": false
+        },
+        "unchanged": true
+      },
+      {
+        "case": "[null, null, 39, null]",
+        "previous": {
+          "baseline_ok": true,
+          "current_ok": false
+        },
+        "current": {
+          "baseline_ok": true,
+          "current_ok": false
+        },
+        "unchanged": true
+      },
+      {
+        "case": "[null, null, 40, null]",
+        "previous": {
+          "baseline_ok": true,
+          "current_ok": false
+        },
+        "current": {
+          "baseline_ok": true,
+          "current_ok": false
+        },
+        "unchanged": true
+      },
+      {
+        "case": "[null, null, 41, null]",
+        "previous": {
+          "baseline_ok": true,
+          "current_ok": false
+        },
+        "current": {
+          "baseline_ok": true,
+          "current_ok": false
+        },
+        "unchanged": true
+      },
+      {
+        "case": "[null, null, 42, null]",
+        "previous": {
+          "baseline_ok": true,
+          "current_ok": false
+        },
+        "current": {
+          "baseline_ok": true,
+          "current_ok": false
+        },
+        "unchanged": true
+      },
+      {
+        "case": "[null, null, 45, null]",
+        "previous": {
+          "baseline_ok": true,
+          "current_ok": true
+        },
+        "current": {
+          "baseline_ok": true,
+          "current_ok": true
+        },
+        "unchanged": true
+      },
+      {
+        "case": "[null, null, 48, null]",
+        "previous": {
+          "failure_line": 177,
+          "error": null
+        },
+        "current": {
+          "failure_line": 177,
+          "error": null
+        },
+        "unchanged": true
+      },
+      {
+        "case": "[null, null, 49, null]",
+        "previous": {
+          "failure_line": 178,
+          "error": null
+        },
+        "current": {
+          "failure_line": 178,
+          "error": null
+        },
+        "unchanged": true
+      }
+    ],
+    "IDs": 51,
+    "missing": [],
+    "added": [],
+    "duplicate": [],
+    "order_equal": true,
+    "result_changes": [],
+    "current_summary": {
+      "total": 51,
+      "passed": 14,
+      "failed": 37
+    },
+    "ID_check": "PASS",
+    "raw_suite_status": "FAIL"
+  },
+  {
+    "suite": "business",
+    "failure_details": [],
+    "IDs": 62,
+    "missing": [],
+    "added": [],
+    "duplicate": [],
+    "order_equal": true,
+    "result_changes": [],
+    "current_summary": {
+      "total": 62,
+      "passed": 62,
+      "failed": 0
+    },
+    "ID_check": "PASS",
+    "raw_suite_status": "PASS"
+  },
+  {
+    "suite": "consumer",
+    "failure_details": [
+      {
+        "case": "[null, \"O0\", 17, null]",
+        "previous": {
+          "return": 114,
+          "failure_line": 114,
+          "error": null,
+          "concurrent_state": [
+            0,
+            0,
+            6,
+            6,
+            4294967291,
+            4294967291,
+            0,
+            0,
+            1,
+            1
+          ]
+        },
+        "current": {
+          "return": 114,
+          "failure_line": 114,
+          "error": null,
+          "concurrent_state": [
+            0,
+            0,
+            6,
+            6,
+            4294967291,
+            4294967291,
+            0,
+            0,
+            1,
+            1
+          ]
+        },
+        "unchanged": true
+      },
+      {
+        "case": "[null, \"O2\", 17, null]",
+        "previous": {
+          "return": 114,
+          "failure_line": 114,
+          "error": null,
+          "concurrent_state": [
+            0,
+            0,
+            6,
+            6,
+            4294967291,
+            4294967291,
+            0,
+            0,
+            1,
+            1
+          ]
+        },
+        "current": {
+          "return": 114,
+          "failure_line": 114,
+          "error": null,
+          "concurrent_state": [
+            0,
+            0,
+            6,
+            6,
+            4294967291,
+            4294967291,
+            0,
+            0,
+            1,
+            1
+          ]
+        },
+        "unchanged": true
+      }
+    ],
+    "IDs": 44,
+    "missing": [],
+    "added": [],
+    "duplicate": [],
+    "order_equal": true,
+    "result_changes": [],
+    "current_summary": {
+      "total": 44,
+      "passed": 42,
+      "failed": 2
+    },
+    "ID_check": "PASS",
+    "raw_suite_status": "FAIL"
+  },
+  {
+    "suite": "power",
+    "failure_details": [],
+    "IDs": 14,
+    "missing": [],
+    "added": [],
+    "duplicate": [],
+    "order_equal": true,
+    "result_changes": [],
+    "current_summary": {
+      "total": 14,
+      "passed": 14
+    },
+    "ID_check": "PASS",
+    "raw_suite_status": "PASS"
+  },
+  {
+    "suite": "i2c",
+    "failure_details": [],
+    "IDs": 24,
+    "missing": [],
+    "added": [],
+    "duplicate": [],
+    "order_equal": true,
+    "result_changes": [],
+    "current_summary": {
+      "total": 24,
+      "passed": 24
+    },
+    "ID_check": "PASS",
+    "raw_suite_status": "PASS"
+  },
+  {
+    "suite": "Regression Gate",
+    "IDs": 29,
+    "missing": [],
+    "added": [],
+    "duplicate": [],
+    "order_equal": true,
+    "result_changes": [],
+    "ID_check": "PASS",
+    "raw_suite_status": "PASS",
+    "case_IDs": [
+      [
+        "test_added_failure_fails",
+        "__main__.GateTests.test_added_failure_fails",
+        "ok"
+      ],
+      [
+        "test_added_pass_is_explicit",
+        "__main__.GateTests.test_added_pass_is_explicit",
+        "ok"
+      ],
+      [
+        "test_added_suite_duplicate_cases_fail",
+        "__main__.GateTests.test_added_suite_duplicate_cases_fail",
+        "ok"
+      ],
+      [
+        "test_added_suite_exit_zero_with_failure_fails",
+        "__main__.GateTests.test_added_suite_exit_zero_with_failure_fails",
+        "ok"
+      ],
+      [
+        "test_added_suite_is_recorded",
+        "__main__.GateTests.test_added_suite_is_recorded",
+        "ok"
+      ],
+      [
+        "test_boolean_summary_count_is_invalid",
+        "__main__.GateTests.test_boolean_summary_count_is_invalid",
+        "ok"
+      ],
+      [
+        "test_both_zero_without_reports_fails",
+        "__main__.GateTests.test_both_zero_without_reports_fails",
+        "ok"
+      ],
+      [
+        "test_changed_id_same_count_fails",
+        "__main__.GateTests.test_changed_id_same_count_fails",
+        "ok"
+      ],
+      [
+        "test_core_role_is_part_of_id",
+        "__main__.GateTests.test_core_role_is_part_of_id",
+        "ok"
+      ],
+      [
+        "test_duplicate_ids_fail",
+        "__main__.GateTests.test_duplicate_ids_fail",
+        "ok"
+      ],
+      [
+        "test_duplicate_suites_fail",
+        "__main__.GateTests.test_duplicate_suites_fail",
+        "ok"
+      ],
+      [
+        "test_exit_zero_cannot_hide_new_fail",
+        "__main__.GateTests.test_exit_zero_cannot_hide_new_fail",
+        "ok"
+      ],
+      [
+        "test_improvement_is_explicit",
+        "__main__.GateTests.test_improvement_is_explicit",
+        "ok"
+      ],
+      [
+        "test_invalid_status_not_truthy",
+        "__main__.GateTests.test_invalid_status_not_truthy",
+        "ok"
+      ],
+      [
+        "test_ipc_case_id_is_qualified",
+        "__main__.GateTests.test_ipc_case_id_is_qualified",
+        "ok"
+      ],
+      [
+        "test_known_compile_failure_can_be_compared",
+        "__main__.GateTests.test_known_compile_failure_can_be_compared",
+        "ok"
+      ],
+      [
+        "test_missing_baseline_fail_also_fails",
+        "__main__.GateTests.test_missing_baseline_fail_also_fails",
+        "ok"
+      ],
+      [
+        "test_missing_baseline_pass_fails",
+        "__main__.GateTests.test_missing_baseline_pass_fails",
+        "ok"
+      ],
+      [
+        "test_missing_case_id_rejected",
+        "__main__.GateTests.test_missing_case_id_rejected",
+        "ok"
+      ],
+      [
+        "test_missing_optimization_fails",
+        "__main__.GateTests.test_missing_optimization_fails",
+        "ok"
+      ],
+      [
+        "test_missing_suite_fails",
+        "__main__.GateTests.test_missing_suite_fails",
+        "ok"
+      ],
+      [
+        "test_new_compile_diagnostic_is_not_hidden",
+        "__main__.GateTests.test_new_compile_diagnostic_is_not_hidden",
+        "ok"
+      ],
+      [
+        "test_optimization_is_part_of_id",
+        "__main__.GateTests.test_optimization_is_part_of_id",
+        "ok"
+      ],
+      [
+        "test_order_does_not_hide_or_create_case",
+        "__main__.GateTests.test_order_does_not_hide_or_create_case",
+        "ok"
+      ],
+      [
+        "test_original_failed_case_preserved",
+        "__main__.GateTests.test_original_failed_case_preserved",
+        "ok"
+      ],
+      [
+        "test_scenario_id_not_position",
+        "__main__.GateTests.test_scenario_id_not_position",
+        "ok"
+      ],
+      [
+        "test_summary_passed_mismatch_fails",
+        "__main__.GateTests.test_summary_passed_mismatch_fails",
+        "ok"
+      ],
+      [
+        "test_summary_total_mismatch_fails",
+        "__main__.GateTests.test_summary_total_mismatch_fails",
+        "ok"
+      ],
+      [
+        "test_unknown_report_not_success",
+        "__main__.GateTests.test_unknown_report_not_success",
+        "ok"
+      ]
+    ]
+  }
+]

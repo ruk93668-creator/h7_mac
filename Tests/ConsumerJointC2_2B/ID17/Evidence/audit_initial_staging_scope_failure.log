@@ -1,0 +1,4 @@
+Traceback (most recent call last):
+  File "D:\32\STM32H7\h7_mac\output\B2B6\worktree\Tests\ConsumerJointC2_2B\ID17\audit_results.py", line 83, in <module>
+    assert not subprocess.check_output(g+['diff','--name-only'],cwd=ROOT)
+AssertionError

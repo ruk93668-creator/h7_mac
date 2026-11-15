@@ -1,0 +1,5 @@
+Traceback (most recent call last):
+  File "D:\32\STM32H7\h7_mac\output\B2B6\worktree\Tests\ConsumerJointC2_2B\ID17\audit_results.py", line 40, in <module>
+    assert a['totals']==b['totals'] and a['symbols']==b['symbols'] and a['stack']==b['stack']
+                                                                       ^^^^^^^^^^^^^^^^^^^^^^
+AssertionError

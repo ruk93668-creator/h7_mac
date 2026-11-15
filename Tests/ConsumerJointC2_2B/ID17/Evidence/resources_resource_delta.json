@@ -1,0 +1,86 @@
+{
+  "deltas": [
+    {
+      "target": "h7_mac_CM7",
+      "RW_delta": 0,
+      "ZI_delta": 0,
+      "stack_before": {
+        "CameraTask_Run": {
+          "local": "8",
+          "known_depth": "496"
+        },
+        "UsbTask_Run": {
+          "local": "8",
+          "known_depth": "540"
+        },
+        "StorageTask_Run": {
+          "local": "88",
+          "known_depth": "1416"
+        },
+        "App_CameraConsumerProcess": {
+          "local": "72",
+          "known_depth": "232"
+        },
+        "App_QualificationProcess": {
+          "local": "88",
+          "known_depth": "408"
+        }
+      },
+      "stack_after": {
+        "CameraTask_Run": {
+          "local": "8",
+          "known_depth": "496"
+        },
+        "UsbTask_Run": {
+          "local": "8",
+          "known_depth": "540"
+        },
+        "StorageTask_Run": {
+          "local": "88",
+          "known_depth": "1416"
+        },
+        "App_CameraConsumerProcess": {
+          "local": "72",
+          "known_depth": "232"
+        },
+        "App_QualificationProcess": {
+          "local": "88",
+          "known_depth": "408"
+        }
+      }
+    },
+    {
+      "target": "h7_mac_CM4",
+      "RW_delta": 0,
+      "ZI_delta": 0,
+      "stack_before": {},
+      "stack_after": {}
+    }
+  ],
+  "AppUsbContext": [
+    {
+      "version": "baseline",
+      "address": "0x2000fcd4",
+      "bytes": 332
+    },
+    {
+      "version": "candidate",
+      "address": "0x2000fcd4",
+      "bytes": 332
+    }
+  ],
+  "ABI": [
+    232,
+    144,
+    332,
+    824,
+    56,
+    52,
+    24,
+    40,
+    144,
+    200
+  ],
+  "indirect_worst_case_stack_proven": false,
+  "new_state_fields": 0
+}

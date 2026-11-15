@@ -1,0 +1,219 @@
+{
+  "baseline": "8a83591b4baa0a850ccdfb269b68d752af5bee81",
+  "snapshot": "D:\\32\\STM32H7\\h7_mac\\output\\B2B6\\worktree\\output\\ConsumerJoint\\ID17_1794739717538473200",
+  "runs": [
+    {
+      "name": "consumer",
+      "command": [
+        "C:\\Users\\29062\\AppData\\Local\\Programs\\Python\\Python311\\python.exe",
+        "Tests/ConsumerIntegrationC2_2B/run_tests.py"
+      ],
+      "environment": {},
+      "exit": 1,
+      "expected_exit": 1,
+      "exit_as_expected": true,
+      "seconds": 2.84,
+      "reports": [
+        "Evidence\\consumer_results.json"
+      ],
+      "log": "Evidence\\consumer.log"
+    },
+    {
+      "name": "business",
+      "command": [
+        "C:\\Users\\29062\\AppData\\Local\\Programs\\Python\\Python311\\python.exe",
+        "Tests/ConsumerIntegrationC2_2B/run_business.py"
+      ],
+      "environment": {},
+      "exit": 0,
+      "expected_exit": 0,
+      "exit_as_expected": true,
+      "seconds": 6.54,
+      "reports": [
+        "Evidence\\business_business_results.json"
+      ],
+      "log": "Evidence\\business.log"
+    },
+    {
+      "name": "joint",
+      "command": [
+        "C:\\Users\\29062\\AppData\\Local\\Programs\\Python\\Python311\\python.exe",
+        "Tests/ConsumerJointC2_2B/run_tests.py"
+      ],
+      "environment": {},
+      "exit": 0,
+      "expected_exit": 0,
+      "exit_as_expected": true,
+      "seconds": 12.01,
+      "reports": [
+        "Evidence\\joint_results.json"
+      ],
+      "log": "Evidence\\joint.log"
+    },
+    {
+      "name": "contracts",
+      "command": [
+        "C:\\Users\\29062\\AppData\\Local\\Programs\\Python\\Python311\\python.exe",
+        "Tests/ConsumerJointC2_2B/check_contracts.py"
+      ],
+      "environment": {},
+      "exit": 0,
+      "expected_exit": 0,
+      "exit_as_expected": true,
+      "seconds": 1.44,
+      "reports": [
+        "Evidence\\contracts_contracts.json"
+      ],
+      "log": "Evidence\\contracts.log"
+    },
+    {
+      "name": "exit",
+      "command": [
+        "C:\\Users\\29062\\AppData\\Local\\Programs\\Python\\Python311\\python.exe",
+        "Tests/ConsumerJointC2_2B/run_exit.py"
+      ],
+      "environment": {},
+      "exit": 0,
+      "expected_exit": 0,
+      "exit_as_expected": true,
+      "seconds": 1.4,
+      "reports": [
+        "Evidence\\exit_exit_results.json"
+      ],
+      "log": "Evidence\\exit.log"
+    },
+    {
+      "name": "id7",
+      "command": [
+        "C:\\Users\\29062\\AppData\\Local\\Programs\\Python\\Python311\\python.exe",
+        "Tests/ConsumerJointC2_2B/run_id7.py"
+      ],
+      "environment": {},
+      "exit": 0,
+      "expected_exit": 0,
+      "exit_as_expected": true,
+      "seconds": 19.06,
+      "reports": [
+        "Evidence\\id7_results.json"
+      ],
+      "log": "Evidence\\id7.log"
+    },
+    {
+      "name": "id7_joint",
+      "command": [
+        "C:\\Users\\29062\\AppData\\Local\\Programs\\Python\\Python311\\python.exe",
+        "Tests/ConsumerJointC2_2B/run_id7_joint.py"
+      ],
+      "environment": {},
+      "exit": 0,
+      "expected_exit": 0,
+      "exit_as_expected": true,
+      "seconds": 22.78,
+      "reports": [
+        "Evidence\\id7_joint_results.json"
+      ],
+      "log": "Evidence\\id7_joint.log"
+    },
+    {
+      "name": "b2_O0",
+      "command": [
+        "C:\\Users\\29062\\AppData\\Local\\Programs\\Python\\Python311\\python.exe",
+        "Tests/ConsumerJointC2_2B/run_id7_b2.py"
+      ],
+      "environment": {
+        "ID7_OPT": "O0"
+      },
+      "exit": 0,
+      "expected_exit": 0,
+      "exit_as_expected": true,
+      "seconds": 1.82,
+      "reports": [
+        "Evidence\\b2_O0_usb_compat.json"
+      ],
+      "log": "Evidence\\b2_O0.log"
+    },
+    {
+      "name": "b2_O2",
+      "command": [
+        "C:\\Users\\29062\\AppData\\Local\\Programs\\Python\\Python311\\python.exe",
+        "Tests/ConsumerJointC2_2B/run_id7_b2.py"
+      ],
+      "environment": {
+        "ID7_OPT": "O2"
+      },
+      "exit": 0,
+      "expected_exit": 0,
+      "exit_as_expected": true,
+      "seconds": 1.75,
+      "reports": [
+        "Evidence\\b2_O2_usb_compat.json"
+      ],
+      "log": "Evidence\\b2_O2.log"
+    },
+    {
+      "name": "history",
+      "command": [
+        "C:\\Users\\29062\\AppData\\Local\\Programs\\Python\\Python311\\python.exe",
+        "Tests/ConsumerJointC2_2B/run_id7_regression.py"
+      ],
+      "environment": {},
+      "exit": 0,
+      "expected_exit": 0,
+      "exit_as_expected": true,
+      "seconds": 13.02,
+      "reports": [
+        "Evidence\\history_regression_runs.json"
+      ],
+      "log": "Evidence\\history.log"
+    },
+    {
+      "name": "build",
+      "command": [
+        "C:\\Users\\29062\\AppData\\Local\\Programs\\Python\\Python311\\python.exe",
+        "Tests/ConsumerJointC2_2B/run_id7_build.py"
+      ],
+      "environment": {},
+      "exit": 0,
+      "expected_exit": 0,
+      "exit_as_expected": true,
+      "seconds": 115.81,
+      "reports": [
+        "Evidence\\build_build.json"
+      ],
+      "log": "Evidence\\build.log"
+    },
+    {
+      "name": "resources",
+      "command": [
+        "C:\\Users\\29062\\AppData\\Local\\Programs\\Python\\Python311\\python.exe",
+        "Tests/ConsumerJointC2_2B/audit_id7_resources.py"
+      ],
+      "environment": {},
+      "exit": 0,
+      "expected_exit": 0,
+      "exit_as_expected": true,
+      "seconds": 0.67,
+      "reports": [
+        "Evidence\\resources_abi_map_stack.json",
+        "Evidence\\resources_resource_delta.json"
+      ],
+      "log": "Evidence\\resources.log"
+    },
+    {
+      "name": "id7_contracts",
+      "command": [
+        "C:\\Users\\29062\\AppData\\Local\\Programs\\Python\\Python311\\python.exe",
+        "Tests/ConsumerJointC2_2B/check_id7.py"
+      ],
+      "environment": {},
+      "exit": 0,
+      "expected_exit": 0,
+      "exit_as_expected": true,
+      "seconds": 1.84,
+      "reports": [
+        "Evidence\\id7_contracts_contracts.json"
+      ],
+      "log": "Evidence\\id7_contracts.log"
+    }
+  ]
+}

@@ -1,0 +1,12 @@
+[
+  {
+    "target": "h7_mac_CM4",
+    "new_test_registered": false,
+    "source_count": 170
+  },
+  {
+    "target": "h7_mac_CM7",
+    "new_test_registered": false,
+    "source_count": 177
+  }
+]

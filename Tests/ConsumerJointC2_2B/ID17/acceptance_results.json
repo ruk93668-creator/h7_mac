@@ -1,0 +1,123 @@
+{
+  "baseline": "8a83591b4baa0a850ccdfb269b68d752af5bee81",
+  "items": [
+    {
+      "item": "Core batch ID17 probe",
+      "executions": 2,
+      "O0": 1,
+      "O2": 1,
+      "original_PASS": 0,
+      "original_FAIL": 2,
+      "status": "EXPECTED_REJECT",
+      "raw_return": 114
+    },
+    {
+      "item": "CameraTask ID5 probe",
+      "executions": 2,
+      "O0": 1,
+      "O2": 1,
+      "PASS": 2,
+      "FAIL": 0,
+      "status": "PASS",
+      "raw_return": 0
+    },
+    {
+      "item": "Consumer original direct runner",
+      "reported_cases": 44,
+      "PASS": 42,
+      "FAIL": 2,
+      "status": "FAIL",
+      "process_exit": 1,
+      "boundary_note": "Only original ID17 O0/O2 failed; accepted boundary recorded separately."
+    },
+    {
+      "item": "Business direct runner",
+      "reported_cases": 62,
+      "PASS": 62,
+      "FAIL": 0,
+      "status": "PASS",
+      "process_exit": 0
+    },
+    {
+      "item": "Joint original runner",
+      "executions": 11,
+      "O0": 11,
+      "O2": 0,
+      "PASS": 11,
+      "FAIL": 0,
+      "status": "PASS",
+      "process_exit": 0
+    },
+    {
+      "item": "Joint causal analyzer",
+      "checks": 11,
+      "O0": 11,
+      "O2": 0,
+      "PASS": 11,
+      "FAIL": 0,
+      "status": "PASS",
+      "process_exit": 0,
+      "O2_analyzer": "NOT_RUN: existing analyzer consumes original O0 evidence; O2 C execution recorded separately."
+    },
+    {
+      "item": "R01-R08 exit safety",
+      "unique_scenarios": 8,
+      "executions": 16,
+      "O0": 8,
+      "O2": 8,
+      "PASS": 16,
+      "FAIL": 0,
+      "status": "PASS",
+      "process_exit": 0
+    },
+    {
+      "item": "ID7 fix",
+      "executions": 22,
+      "O0": 11,
+      "O2": 11,
+      "PASS": 22,
+      "FAIL": 0,
+      "status": "PASS",
+      "process_exit": 0
+    },
+    {
+      "item": "ID7 joint original assertions",
+      "executions": 22,
+      "O0": 11,
+      "O2": 11,
+      "PASS": 22,
+      "FAIL": 0,
+      "status": "PASS",
+      "process_exit": 0
+    },
+    {
+      "item": "B2 C entries with lifecycle prerequisites",
+      "executions": 204,
+      "O0": 102,
+      "O2": 102,
+      "PASS": 204,
+      "FAIL": 0,
+      "status": "PASS",
+      "process_exit": 0,
+      "note": "Not the original full Python gate."
+    },
+    {
+      "item": "Historical unresolved full-gate cases",
+      "cases": 128,
+      "status": "BLOCKED",
+      "promotion_to_PASS": 0
+    },
+    {
+      "item": "V1 hardware checklist",
+      "cases": 10,
+      "status": "NOT_RUN"
+    },
+    {
+      "item": "C2.2C real RELEASE/STOP_IF_IDLE closure",
+      "status": "NOT_RUN"
+    }
+  ],
+  "CameraTask_ID5_total_executions_including_history_and_probes": 6,
+  "Core_ID17_total_executions_including_history_and_probes": 6,
+  "complete_C2_2B_gate": "BLOCKED"
+}

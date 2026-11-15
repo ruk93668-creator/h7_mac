@@ -1,0 +1,83 @@
+{
+  "cases": [
+    {
+      "id": 0,
+      "status": "PASS",
+      "return": 0,
+      "first_contract_violation": null,
+      "classification": null
+    },
+    {
+      "id": 1,
+      "status": "PASS",
+      "return": 0,
+      "first_contract_violation": null,
+      "classification": null
+    },
+    {
+      "id": 2,
+      "status": "PASS",
+      "return": 0,
+      "first_contract_violation": null,
+      "classification": null
+    },
+    {
+      "id": 3,
+      "status": "PASS",
+      "return": 0,
+      "first_contract_violation": null,
+      "classification": null
+    },
+    {
+      "id": 4,
+      "status": "PASS",
+      "return": 0,
+      "first_contract_violation": null,
+      "classification": null
+    },
+    {
+      "id": 5,
+      "status": "PASS",
+      "return": 0,
+      "first_contract_violation": null,
+      "classification": null
+    },
+    {
+      "id": 6,
+      "status": "PASS",
+      "return": 0,
+      "first_contract_violation": null,
+      "classification": null
+    },
+    {
+      "id": 7,
+      "status": "PASS",
+      "return": 0,
+      "first_contract_violation": null,
+      "classification": null
+    },
+    {
+      "id": 8,
+      "status": "PASS",
+      "return": 0,
+      "first_contract_violation": null,
+      "classification": null
+    },
+    {
+      "id": 9,
+      "status": "PASS",
+      "return": 0,
+      "first_contract_violation": null,
+      "classification": null
+    },
+    {
+      "id": 10,
+      "status": "PASS",
+      "return": 0,
+      "first_contract_violation": null,
+      "classification": null
+    }
+  ],
+  "artifact_root": "D:\\32\\STM32H7\\h7_mac\\output\\B2B6\\worktree\\output\\ConsumerJoint\\ID17_1794739717538473200\\output\\ConsumerJoint\\1794739738422157200",
+  "hardware_verified": false
+}
