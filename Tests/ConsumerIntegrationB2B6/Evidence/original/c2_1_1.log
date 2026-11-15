@@ -1,0 +1,137 @@
+O0 0 ARMCC layout and queue sizes PASS 0 None
+O0 1 Running duplicate executes once PASS 0 None
+O0 2 Completed duplicate replays exact reply PASS 0 None
+O0 3 Same ID modified generation conflicts PASS 0 None
+O0 4 Successor while running quarantined PASS 0 None
+O0 5 Successor before first ACK quarantined PASS 0 None
+O0 6 Committed ACK permits safe successor PASS 0 None
+O0 7 Retired request rejected PASS 0 None
+O0 8 Gap request rejected PASS 0 None
+O0 9 Duplicate reply backlog holds successor PASS 0 None
+O0 10 Candidate duplicate coalesced PASS 0 None
+O0 11 Candidate same ID changed body quarantined PASS 0 None
+O0 12 Second distinct candidate quarantined PASS 0 None
+O0 13 Zero-session query replay and retirement PASS 0 None
+O0 14 Session and generation do not reset watermark PASS 0 None
+O0 15 Malformed large ID leaves window unchanged PASS 0 None
+O0 16 READY cancel burns issued ID PASS 0 None
+O0 17 WAIT_REPLY timeout never clears PASS 0 None
+O0 18 Result read is not consumption PASS 0 None
+O0 19 Four domains isolated PASS 0 None
+O0 20 Reinitialization rejected PASS 0 None
+O0 21 Stage failure leaves issued unchanged PASS 0 None
+O0 22 Maximum ID and exhaustion PASS 0 None
+O0 23 Rollback malformed candidate PASS 0 None
+O0 24 Rollback backward candidate PASS 0 None
+O0 25 Rollback wrong-domain candidate PASS 0 None
+O0 26 Tx callback reentry guarded PASS 0 None
+O0 27 Rx callback reentry guarded PASS 0 None
+O0 28 BUSY completion immutable PASS 0 None
+O0 29 Failure completion immutable PASS 0 None
+O0 30 Real full request queue retry PASS 0 None
+O0 31 Real full reply queue retry PASS 0 None
+O0 32 Notification loss does not duplicate PASS 0 None
+O0 33 Candidate preserved across real full replay queue PASS 0 None
+O0 34 Single pending Stage gate PASS 0 None
+O0 35 Original ReplayRetire still sealed PASS 0 None
+O0 36 Pure protocol status PASS 0 None
+O0 37 NULL input checks PASS 0 None
+O0 38 Output alias checks PASS 0 None
+O0 39 Wrong domain rejected PASS 0 None
+O0 40 Submission timeout preserves READY PASS 0 None
+O0 41 Reply failure preserves pending PASS 0 None
+O0 42 No automatic duplicate reply sends PASS 0 None
+O0 43 Premature reply rejected PASS 0 None
+O0 44 Late generation ACK rejected PASS 0 None
+O0 45 Promotion output failure rollback PASS 0 None
+O0 46 Cancel identity mismatch PASS 0 None
+O0 47 Promote delivers at most once PASS 0 None
+O0 48 Invalid initialization and context PASS 0 None
+O0 49 Zero reservation rollback PASS 0 None
+O0 50 Temporary ReplayBegin failure rolls back all state PASS 0 None
+O0 51 Mismatched pending reply cannot authorize retirement PASS 0 None
+O0 52 4096 transactions on one persistent window PASS 0 None
+O0 53 Shared inbox drains other domain and reverse reply despite held candidate PASS 0 None
+O0 60 Full identity word 0 PASS 0 None
+O0 61 Full identity word 1 PASS 0 None
+O0 62 Full identity word 2 PASS 0 None
+O0 63 Full identity word 3 PASS 0 None
+O0 64 Full identity word 4 PASS 0 None
+O0 65 Full identity word 5 PASS 0 None
+O0 66 Full identity word 6 PASS 0 None
+O0 67 Full identity word 7 PASS 0 None
+O0 68 Full identity word 8 PASS 0 None
+O0 69 Full identity word 9 PASS 0 None
+O0 70 Full identity word 10 PASS 0 None
+O0 71 Full identity word 11 PASS 0 None
+O0 72 Full identity word 12 PASS 0 None
+O0 73 Full identity word 13 PASS 0 None
+O2 0 ARMCC layout and queue sizes PASS 0 None
+O2 1 Running duplicate executes once PASS 0 None
+O2 2 Completed duplicate replays exact reply PASS 0 None
+O2 3 Same ID modified generation conflicts PASS 0 None
+O2 4 Successor while running quarantined PASS 0 None
+O2 5 Successor before first ACK quarantined PASS 0 None
+O2 6 Committed ACK permits safe successor PASS 0 None
+O2 7 Retired request rejected PASS 0 None
+O2 8 Gap request rejected PASS 0 None
+O2 9 Duplicate reply backlog holds successor PASS 0 None
+O2 10 Candidate duplicate coalesced PASS 0 None
+O2 11 Candidate same ID changed body quarantined PASS 0 None
+O2 12 Second distinct candidate quarantined PASS 0 None
+O2 13 Zero-session query replay and retirement PASS 0 None
+O2 14 Session and generation do not reset watermark PASS 0 None
+O2 15 Malformed large ID leaves window unchanged PASS 0 None
+O2 16 READY cancel burns issued ID PASS 0 None
+O2 17 WAIT_REPLY timeout never clears PASS 0 None
+O2 18 Result read is not consumption PASS 0 None
+O2 19 Four domains isolated PASS 0 None
+O2 20 Reinitialization rejected PASS 0 None
+O2 21 Stage failure leaves issued unchanged PASS 0 None
+O2 22 Maximum ID and exhaustion PASS 0 None
+O2 23 Rollback malformed candidate PASS 0 None
+O2 24 Rollback backward candidate PASS 0 None
+O2 25 Rollback wrong-domain candidate PASS 0 None
+O2 26 Tx callback reentry guarded PASS 0 None
+O2 27 Rx callback reentry guarded PASS 0 None
+O2 28 BUSY completion immutable PASS 0 None
+O2 29 Failure completion immutable PASS 0 None
+O2 30 Real full request queue retry PASS 0 None
+O2 31 Real full reply queue retry PASS 0 None
+O2 32 Notification loss does not duplicate PASS 0 None
+O2 33 Candidate preserved across real full replay queue PASS 0 None
+O2 34 Single pending Stage gate PASS 0 None
+O2 35 Original ReplayRetire still sealed PASS 0 None
+O2 36 Pure protocol status PASS 0 None
+O2 37 NULL input checks PASS 0 None
+O2 38 Output alias checks PASS 0 None
+O2 39 Wrong domain rejected PASS 0 None
+O2 40 Submission timeout preserves READY PASS 0 None
+O2 41 Reply failure preserves pending PASS 0 None
+O2 42 No automatic duplicate reply sends PASS 0 None
+O2 43 Premature reply rejected PASS 0 None
+O2 44 Late generation ACK rejected PASS 0 None
+O2 45 Promotion output failure rollback PASS 0 None
+O2 46 Cancel identity mismatch PASS 0 None
+O2 47 Promote delivers at most once PASS 0 None
+O2 48 Invalid initialization and context PASS 0 None
+O2 49 Zero reservation rollback PASS 0 None
+O2 50 Temporary ReplayBegin failure rolls back all state PASS 0 None
+O2 51 Mismatched pending reply cannot authorize retirement PASS 0 None
+O2 52 4096 transactions on one persistent window PASS 0 None
+O2 53 Shared inbox drains other domain and reverse reply despite held candidate PASS 0 None
+O2 60 Full identity word 0 PASS 0 None
+O2 61 Full identity word 1 PASS 0 None
+O2 62 Full identity word 2 PASS 0 None
+O2 63 Full identity word 3 PASS 0 None
+O2 64 Full identity word 4 PASS 0 None
+O2 65 Full identity word 5 PASS 0 None
+O2 66 Full identity word 6 PASS 0 None
+O2 67 Full identity word 7 PASS 0 None
+O2 68 Full identity word 8 PASS 0 None
+O2 69 Full identity word 9 PASS 0 None
+O2 70 Full identity word 10 PASS 0 None
+O2 71 Full identity word 11 PASS 0 None
+O2 72 Full identity word 12 PASS 0 None
+O2 73 Full identity word 13 PASS 0 None
+{'total': 648, 'passed': 648, 'failed': 0, 'stress_transactions': 40960}

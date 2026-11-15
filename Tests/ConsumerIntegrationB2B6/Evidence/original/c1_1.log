@@ -1,0 +1,25 @@
+0 ACK not enqueued cannot retire PASS 0 None
+1 ACK queued unconsumed duplicate PASS 0 None
+2 Retire refused old request still duplicate PASS 0 None
+3 New session old request guarded PASS 0 None
+4 New generation late ACK PASS 0 None
+5 READY cancel repeat and retransmit PASS 0 None
+6 WAIT_REPLY cancel and force clear refused PASS 0 None
+7 SENDING cancel refused then READY cancel PASS 0 None
+8 COMPLETE cancel refused PASS 0 None
+9 COMMITTED cancel refused PASS 0 None
+10 Pending reply cannot be cancelled PASS 0 None
+11 NULL cancel PASS 0 None
+12 Empty and duplicate cancel PASS 0 None
+13 Full request queue cancelled request absent PASS 0 None
+14 Full ACK queue duplicate request reply retry PASS 0 None
+15 Bounded replay pool full no eviction PASS 0 None
+16 Failure cache cannot become success PASS 0 None
+17 Old request ID ACK rejected PASS 0 None
+18 Cancel leaves identity counter and notifications unchanged PASS 0 None
+19 Cancelled unsubmitted request sends once PASS 0 None
+20 Invalid and in-progress retirement PASS 0 None
+21 Session and generation mismatch PASS 0 None
+22 Duplicate completion unchanged PASS 0 None
+23 BUSY reply remains terminal outcome PASS 0 None
+{'original_c1': {'total': 419, 'passed': 419, 'failed': 0}, 'added_total': 24, 'added_passed': 24, 'added_failed': 0, 'arm_total': 443}
