@@ -15,7 +15,7 @@ c6d2bed、fa9ce5d、1c97d7c是main祖先（git merge-base --is-ancestor均返回
 | [H7_V2_ApplicationArchitecture.md](H7_V2_ApplicationArchitecture.md) | 当前/目标架构、权威分离、Clean Restart时间边界 |
 | [H7_LegacyApplicationAudit.md](H7_LegacyApplicationAudit.md) | 全文件/函数、全局对象、宏、私有字段、回调/间接调用、初始化与执行链 |
 | [H7_LowLevelReuseMatrix.md](H7_LowLevelReuseMatrix.md) | 十二类底层KEEP/ADAPT及未决板型/接口问题 |
-| [H7_V2_ModuleContract.md](H7_V2_ModuleContract.md) | Graph/Format/Lifecycle/Resource/Camera/USB/Storage/Supervisor/Network草案 |
+| [H7_V2_ModuleContract.md](H7_V2_ModuleContract.md) | 第1节为R2 Static Typed Media Graph的C结构/表/验证/实例；其余为既有模块契约草案 |
 | [H7_V2_DirectoryStructure.md](H7_V2_DirectoryStructure.md) | V2目录、允许/禁止依赖、开发隔离与最终唯一活动Application |
 | [H7_V2_DependencyRules.md](H7_V2_DependencyRules.md) | 状态权威、同步/运输/ISR、依赖门禁设计 |
 | [H7_V2_MigrationPlan.md](H7_V2_MigrationPlan.md) | 迁移计划；同时承载 LegacyCleanupPlan 的清理原则、逐文件退休、Keil/链接清理及验收回滚内容，见下方映射 |
@@ -56,6 +56,25 @@ ADR-01～ADR-07仍全部UNRESOLVED；Grant→Frame Lease与Stable Admission Clos
 
 当前只准备以上定位，等待人工逐轮意见；不开始Phase 1或V2生产代码实施。
 
+### 2.3 Application V2 R2审核包定位
+
+本轮输入HEAD为2108b42，仍在研究分支，生产源码与main f0ce45f一致。只深化Static Typed Media Graph；ADR-01～07全部UNRESOLVED，Grant→Frame Lease和Stable Admission Closure仍NOT_PROVEN，未进入V2代码实施/Phase1/C2.2C。
+
+| 审核项 | ModuleContract定位 | 本轮建议（待批） |
+|---|---|---|
+| R2-01 Source Pad fan-out | 第1.1、1.3、1.4节 | 多静态Link共享Source端点，显式上限；不自动产生Frame持有 |
+| R2-02 Raw/JPEG Backend | 第1.1、1.4、1.5节 | 具体Pipeline固定Backend；同源/同格式路由可合并，不能运行中隐藏切换 |
+| R2-03 格式权威 | 第1.2、1.6节 | Graph聚合能力交集，各底层纯验证器保留否决权，运行配置/帧校验独立 |
+| C结构与静态表/容量 | 第1.2～1.5、1.7节 | 包装ID、Typed Pad、11 Entity/16 Pad/11 Link/7 Pipeline；现上限暂可容纳 |
+| 验证与失败提交 | 第1.8节 | 有界Catalog/选择集合校验、最后提交、失败out不变；非硬件回滚 |
+| 模块/采集/所有权边界 | 第1.9节 | 复用CameraCapture及原后端；Graph不持Frame、不执行STOP |
+| 三个拓扑实例 | 第1.10节 | YUY2→UVC、JPEG→Storage、未来Ethernet+Storage；未来执行配置明确拒绝 |
+| 测试设计/布局/结论 | 第1.11节 | 仅负向/正向用例设计与ARM32布局预测，未编译/运行 |
+
+ADR-01只补深化定位，不变更决策状态；ResourceBudget第5节同步R2结构预算，并保留未测量声明。源码交叉检查更正LowLevelReuseMatrix的一处UVC实现文件名：USB_UVC_ValidateConfig/Process/CancelFrame/GetStreamStatus实现在usb_uvc_class.c，不是不存在的usb_uvc.c。
+
+本轮没有修改其余Lifecycle/Resource设计、生产代码、测试、ABI、Replay、Keil、任务或M4文件；Legacy未删除。Graph类型/配置检查不是Resource安全证明，未来网络/AI模板不可据此启用。本轮软件测试、ARMCC5布局/编译、实板、WCET均NOT_RUN/UNMEASURED。提交后等待人工审核。
+
 ## 3. 全量审计覆盖与证据边界
 
 已建立CM7/Application 39个C/H、210个C函数的索引，并补充107个宏定义条目（含头保护/条件分支）、100个文件级数据对象条目、私有上下文/函数表字段、显式回调注册/静态对象以及初始化偏序。它们是源码统计，不是依赖闭包或运行覆盖率；条件编译、函数指针、链接段顺序、外部调用及其他target仍需后续编译/链接/动态证据。
@@ -89,7 +108,7 @@ Linux MC的Pipeline是拓扑占用/校验，不是DMA控制器；V2 Graph因此�
 
 SOURCE_CALCULATED：五角色静态栈27648B；普通队列载荷按当前52B工程ABI为1040B，Lifecycle载荷672B；JPEG区含drop为540672B；固定池4300800B；AVI索引65536B，三用途独立范围合计4907008B。Snapshot63KiB/单次JPEG容量与固定区域复用，不重复计。SDMMC独占AXI32KiB、StorageFS8KiB、Snapshot回读512B及USB packet成员1024B分别列账。
 
-V2 Graph的const数据约2528B和RAM示例232B只是未冻结布局的DESIGN_ESTIMATE。关联/T/计划容量和新代码Flash仍UNRESOLVED；真实每bank RW/ZI、调用栈、WCET、CPU利用率均UNMEASURED。本轮不能声称内存已通过或性能已改善。无新增任务、优先级/栈/队列/复制参数变化。
+R2 Graph示例产品const数据预计2168B，含名称上限共≤2744B；暂存/诊断/发布视图396B，加最多8条可变请求544B时共940B，均为未编译的DESIGN_ESTIMATE（替代Phase0的2528B/232B占位估算）。关联/T/计划容量和新代码Flash仍UNRESOLVED；真实每bank RW/ZI、调用栈、WCET、CPU利用率均UNMEASURED。本轮不能声称内存已通过或性能已改善。无新增任务、优先级/栈/队列/复制参数变化。
 
 USB/Storage复用当前Service；Ethernet/Wi-Fi加入需独立发送缓存/多DMA与背压预算；AI需模型/tensor/转换开销和真实Frame消费者协议。增加逻辑sink不自动增加Media能力，不释放其他消费者owner。
 

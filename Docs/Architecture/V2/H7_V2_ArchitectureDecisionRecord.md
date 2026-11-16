@@ -10,6 +10,12 @@
 
 未来USB/Storage多sink由一source分支表达；Ethernet/Wi-Fi/AI可增加逻辑节点，是否实现由能力标志验证。增加Link不产生消费者资格或帧引用，未来节点不可被误激活。
 
+### R2深化审核定位（仍UNRESOLVED）
+
+本轮只认可Static Typed Media Graph研究方向，未批准ADR-01。完整C值类型/描述表、Pad协议和格式能力、Pipeline固定Backend、fan-out、纯校验算法/失败提交和三个实例见[ModuleContract第1.1～1.11节](H7_V2_ModuleContract.md)。R2-01建议Source Pad按明确上限多Link fan-out；R2-02建议不同Pipeline固定Raw/JPEG并合并同源相容路由；R2-03建议Graph聚合各层格式否决权，不取代真实验证器。
+
+11/16/11/7的示例Catalog暂不超16/32/32/8上限；未来节点不能执行。新结构预算替代Phase0粗估，见ResourceBudget第5节。Graph不分配Frame、不Retain/Release、不启动硬件；两个Resource NOT_PROVEN不变。所有具体结构、边界、容量及API继续等待人工审核，不授权代码实施。
+
 ## ADR-02：每模块Managed Lifecycle与异步完成
 
 参考ROS 2状态/转换与业务回调结果分离，推荐Configure/Activate/Deactivate/Cleanup/Error Processing契约；owner任务异步推进。拒绝全局模块状态镜像和同步串联回调等待，避免形成新版巨型ControlTask和死锁。每模块保留一份权威上下文，受控事务保留冻结结果；不新增Lifecycle Task或ROS运行库。

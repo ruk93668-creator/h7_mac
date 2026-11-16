@@ -60,8 +60,8 @@ DMA地址32B对齐与JPEG帧起始地址必须分开：JPEG SOI可能在块内�
 
 | 分类 | 暂定设计预算方法/估算 | 审核条件 |
 |---|---|---|
-| Graph ROM | 假设9entity×32+16pad×32+9link×28+8caps×48+5pipeline×48+5format×64+30索引×4+8ops×4+graph头60＝2208B；名称预算≤320B，则数据约2528B | 全为假设布局/候选拓扑，不是已冻结结构；真实const段、代码Flash另测 |
-| Graph RAM | 示例manager16+workspace160+report32+plan24＝232B，不含已有业务对象 | 这些尺寸只是设计占位预算；无动态注册、无运行期全图副本；需ARMCC5布局冻结 |
+| Graph ROM | R2示例：11Entity×20+16Pad×16+11Link×16+11Caps×48+7Pipeline×104+3Format×64+5Ops×4+GraphDesc40+CheckContext8＝2168B；18个名称各≤32B，共≤2744B产品描述数据 | 替代Phase0的2528B占位估算；均按指针4B/普通ARM32对齐预测，需ARMCC5/Map；不含代码/协议规则表/请求表/链接填充 |
+| Graph RAM | R2 Scratch240+Issue28+已验证视图128＝396B；可变请求每条68B，最多8条544B，同时保留总940B | 替代Phase0的232B占位估算；const请求改计ROM（68×N）；初期BOOT前验证/安装，运行只读；无Graph Task或可变注册表 |
 | 资格/事务 | 优先复用/迁移现824B核心和既有Tx/Rx；4方向各1Tx+1Rx理论1904B | 不在本轮实例化；是否需要全部方向待审；避免与824内两Rx重复计 |
 | Grant/Handoff关联 | 初期评估USB1、Storage1、Camera内部1三个并发交接记录；若每条64～128B，则192～384B | 容量必须来自真实可达交接，不是另加引用计数；字段和旧消息存活边界待精确审核 |
 | Terminal Receipt | 每条暂估64～96B；容量至少覆盖未消费的合法终结消息 | 精确条数UNRESOLVED；满时有界背压，不覆盖旧身份，不无限增大，不阻塞无关SD-only |
@@ -74,7 +74,7 @@ DMA地址32B对齐与JPEG帧起始地址必须分开：JPEG SOI可能在块内�
 
 ## 6. CPU、实时性和临界区
 
-Graph全量验证仅初始化/非活动配置时做；上限N16/P32/L32/K8，查询线性扫描O(N)/O(L)，重复检查可O(N²+L²)，环检测采用有界迭代拓扑排序O(N×L)，依赖图同样有界；禁止递归。WCET微秒数UNMEASURED，后续DWT测量覆盖最大表、失败分支及中断干扰。不是在DMA ISR或每帧做全图扫描。
+Graph全量验证初期仅在BOOT前静态配置时做，未来运行期重配必须先证明资源排空并另审发布同步。R2上限Entity16/Pad32/Link32/Pipeline8；稠密ID Getter直接索引且先检查范围；Catalog重复检查O(N²+P²+L²)，每路由可达/环O(N×L)，K路最坏O(K×N×L)+K²依赖检查，合并视图最多N次纯Ops和有界GCD；禁止递归。WCET微秒数UNMEASURED，后续DWT测量覆盖最大表、失败分支及中断干扰。不是在DMA ISR或每帧做全图扫描。
 
 现有Camera Bridge每轮最多处理4条消息，Camera控制至多1条，Storage至多1命令/1帧；V2应明确每轮budget，不能因额外Lifecycle收发饿死Return。PRIMASK保护只做有界元数据提交，文件/USB Abort/SD等待在外。Framework Event/Timer不是默认可多任务并发的可靠运输，不增加高优先级周期轮询。
 
@@ -95,3 +95,7 @@ Network/AI Task数量和优先级UNRESOLVED，不能以未来支持为由现在�
 ## 8. 未来预算验收记录要求
 
 源码SHA、板型、ARMCC版本/短枚举、有效Keil源表、CM7/CM4 Map、scatter与绝对地址清单、每bank RW/ZI、Flash RO代码/数据、全部结构偏移、静态任务配置、调用图和high-water、队列/slot/receipt最大水位、DWT时延与IRQ占用、固件哈希。当前这些新增实测统一NOT_RUN/UNMEASURED。本文件提供可执行预算模型，不冒充验收结果。
+
+### R2布局预算说明
+
+具体声明见ModuleContract第1.2、1.3、1.7节。预测尺寸：Entity20、Pad16、Link16、Pipeline104、Caps48、Format64、GraphDesc40、Ops4、CheckContext8、Issue28、Selection68、Workspace112、ValidatedView128、Scratch240B。采用固定宽度枚举码和包装ID，不改旧消息ABI；未编译，全部仍为DESIGN_ESTIMATE/UNRESOLVED。当前示例Catalog用11 Entity/16 Pad/11 Link/7 Pipeline，留5/16/21/1余量；不为所有未来sink组合预创建Pipeline，不默默扩容。

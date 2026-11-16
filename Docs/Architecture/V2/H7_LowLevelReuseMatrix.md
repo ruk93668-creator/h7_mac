@@ -14,7 +14,7 @@ KEEP＝保留实现与公开行为；ADAPT＝保留算法、增加/调整明确�
 | DCMI/DMA | KEEP | `CM7/BSP/bsp_dcmi.c`；`CameraCapture_Process/Stop` 的调用边界 | IRQ、DMA target、FIFO阈值、错误捕获和保护性停止不由应用重写。停止事实必须区分硬件、DRAINING、完全停止 |
 | CameraStream | ADAPT | `camera_capture.c::CameraStream_Init`、`CameraCapture_StreamGetFrame/StreamReleaseFrame`及内部buffer状态 | 固定池单个IN_USE、DMA目标排除。统一Resource视图，不新增同名物理池；并行多消费者能力不能从JPEG推断 |
 | CameraMjpegFifo | ADAPT | `CM7/Media/Src/camera_mjpeg_fifo.c::GetFrame/RetainFrame/ReleaseFrame/ReleaseLease/HasLoan`（均为CameraMjpegFifo_前缀） | 保留块引用与Loan算法。后续只读身份查询/通用消费者扩展另审；HasLoan不是分消费者退出证明 |
-| USB Device/UVC | KEEP | `CM7/Platform/usb_device.c`、`CM7/Service/usb_mode.c`、`usb_uvc.c::USB_UVC_Process/CancelFrame/GetStreamStatus`、`usb_uvc_desc.c::USB_UVC_ValidateFSConfig` | Core/EP0/Probe/Commit/Alt/Token/Abort不变；V2 USB模块替代旧业务层，不复制这些状态。Reset/Disconnect/Suspend/Resume不隐式释放资格 |
+| USB Device/UVC | KEEP | `CM7/Platform/usb_device.c`、`CM7/Service/usb_mode.c`、`CM7/Service/usb_uvc_class.c::USB_UVC_Process/CancelFrame/GetStreamStatus`、`usb_uvc_desc.c::USB_UVC_ValidateFSConfig` | Core/EP0/Probe/Commit/Alt/Token/Abort不变；V2 USB模块替代旧业务层，不复制这些状态。Reset/Disconnect/Suspend/Resume不隐式释放资格 |
 | SDMMC | KEEP | `CM7/Platform/sd_block.c::SD_Block_Claim/Release/Read/Write/Recover`；`CM7/BSP/bsp_sdmmc.c`、`bsp_sdmmc_memory.c` | 现有block owner、完成等待和恢复保留；32KiB AXI/8KiB复制/1ms参数不变。Resource只管媒体资源，不加另一SD owner |
 | FatFS/StorageFS/JPEG/AVI | KEEP | `CM7/Platform/storage_fs.c`、`diskio.c`；`CM7/Service/jpeg_frame.c`、`mjpeg_avi.c` | 文件凭据/卷会话/部分写入/Sync/Finish错误保留，Storage owner独占。格式化、MSC、Volume Manager不在本阶段 |
 | FreeRTOS | KEEP | `CM7/Application/Tasks/*_task.c`、`CM7/Core/Src/main.c`、工程的FreeRTOS源与配置 | 复用既有内核和五角色调度约束。旧任务源码最终替换，不等于替换RTOS。不得擅改优先级、栈、等待周期、IRQ门限或BASEPRI |
