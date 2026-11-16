@@ -1,0 +1,74 @@
+{
+  "date": "2026-11-16",
+  "strict_armclang_compile": "PASS: all four modules; C99 -Wall -Wextra -Werror",
+  "builds": [
+    {
+      "variant": "baseline",
+      "exit": 0,
+      "errors": 0,
+      "warnings": 0,
+      "size": {
+        "code": 137690,
+        "ro": 3114,
+        "rw": 1340,
+        "zi": 100932
+      }
+    },
+    {
+      "variant": "integrated",
+      "exit": 0,
+      "errors": 0,
+      "warnings": 0,
+      "size": {
+        "code": 137998,
+        "ro": 3114,
+        "rw": 1396,
+        "zi": 113484
+      },
+      "source_hashes": {
+        "Platform/Ethernet/eth_dma.c": "3a4c850a9500607385772007df76cce6e8ffc40082d68024e8f2e602e6cb59ff",
+        "Platform/Ethernet/eth_dma.h": "d55d7f5fe557da918a4dd6ac094c901b5e80f81bf5ed565052dfdaa617a492c1",
+        "Platform/Ethernet/eth_mac.c": "9a040bc4da0849419db8952460b4b072e457abc341db06aa060707acb8039dab",
+        "Platform/Ethernet/eth_mac.h": "6e1f4fc53f85bb9b1ee87dd05d01c9e2222e0a55bffe6d341e7504d513e38bb5",
+        "Platform/Ethernet/eth_memory.c": "0bc8361c01c2eac04a53d453791cdc6297d1fe3c34cb3ba02d0aeb04a033a649",
+        "Platform/Ethernet/eth_memory.h": "390db42b9b4edec794426bf33b0179d9c01583513bbecedb2f11971d6371464c",
+        "Platform/Ethernet/eth_phy.c": "53ed08d32600350843e49bdf52c7050d72c40e9edee00daf9dac1d013b7db405",
+        "Platform/Ethernet/eth_phy.h": "4404cc9c9fe82e162e5707817405b929ba25670197011ce6c0c0341804927860",
+        "CM7/Core/Src/main.c": "e5ac578160fa83f55bf17519868554174195e2927acf4364d2f01d9f2e2928cf",
+        "Tests/Ethernet/test_main.c": "7b29d4780bd2747e344f880d3bd72f38b4bdc141af983a99a46b5f354422d60f",
+        "MDK-ARM/h7_mac.uvprojx": "4b8245f977d38a8affb8396084852cc4b9485ebc6ed33569a0f2e51387949e30",
+        "MDK-ARM/h7_mac_CM7_custom.sct": "8aa7908b6072f0b98440d96ebd6473af8b5a2d71393c5325f5263cac36e7bac8"
+      },
+      "source_stable": true,
+      "dma_link_valid": true
+    },
+    {
+      "variant": "smoke",
+      "exit": 0,
+      "errors": 0,
+      "warnings": 0,
+      "size": {
+        "code": 66682,
+        "ro": 2834,
+        "rw": 1220,
+        "zi": 82468
+      },
+      "source_hashes": {
+        "Platform/Ethernet/eth_dma.c": "3a4c850a9500607385772007df76cce6e8ffc40082d68024e8f2e602e6cb59ff",
+        "Platform/Ethernet/eth_dma.h": "d55d7f5fe557da918a4dd6ac094c901b5e80f81bf5ed565052dfdaa617a492c1",
+        "Platform/Ethernet/eth_mac.c": "9a040bc4da0849419db8952460b4b072e457abc341db06aa060707acb8039dab",
+        "Platform/Ethernet/eth_mac.h": "6e1f4fc53f85bb9b1ee87dd05d01c9e2222e0a55bffe6d341e7504d513e38bb5",
+        "Platform/Ethernet/eth_memory.c": "0bc8361c01c2eac04a53d453791cdc6297d1fe3c34cb3ba02d0aeb04a033a649",
+        "Platform/Ethernet/eth_memory.h": "390db42b9b4edec794426bf33b0179d9c01583513bbecedb2f11971d6371464c",
+        "Platform/Ethernet/eth_phy.c": "53ed08d32600350843e49bdf52c7050d72c40e9edee00daf9dac1d013b7db405",
+        "Platform/Ethernet/eth_phy.h": "4404cc9c9fe82e162e5707817405b929ba25670197011ce6c0c0341804927860",
+        "CM7/Core/Src/main.c": "e5ac578160fa83f55bf17519868554174195e2927acf4364d2f01d9f2e2928cf",
+        "Tests/Ethernet/test_main.c": "7b29d4780bd2747e344f880d3bd72f38b4bdc141af983a99a46b5f354422d60f",
+        "MDK-ARM/h7_mac.uvprojx": "4b8245f977d38a8affb8396084852cc4b9485ebc6ed33569a0f2e51387949e30",
+        "MDK-ARM/h7_mac_CM7_custom.sct": "8aa7908b6072f0b98440d96ebd6473af8b5a2d71393c5325f5263cac36e7bac8"
+      },
+      "source_stable": true,
+      "dma_link_valid": true
+    }
+  ]
+}

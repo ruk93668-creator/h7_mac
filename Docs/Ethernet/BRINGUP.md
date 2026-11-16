@@ -1,5 +1,8 @@
 # Ethernet independent bring-up — work in progress
 
+Current E2/E3 implementation and validation: [E2_E3_IMPLEMENTATION.md](E2_E3_IMPLEMENTATION.md).
+The text below preserves the original PHY checkpoint; its outstanding list is historical.
+
 2026-11-16. Branch `codex/ethernet-bringup`, initial baseline `f0ce45f` (local main).
 The sibling h7_mac working tree is read-only input. No merge into main is authorized.
 This checkpoint is NOT a production Ethernet driver or a completed delivery.
