@@ -1,0 +1,33 @@
+﻿ID,冻结阶段,契约,输入/交错,预期判据,执行方式,状态
+P2-01,Phase2/3,新增描述符无需修改Resolver,增加第四Mock模块/能力,闭包和ID排序正确，核心源码hash不变,O0/O2真实模块+可控底层；集成后另行实板,NOT_RUN
+P2-02,Phase2/3,Provider策略,两个provider/显式pin/坏版本,歧义拒绝，合法pin成功，版本不匹配拒绝,O0/O2真实模块+可控底层；集成后另行实板,NOT_RUN
+P2-03,Phase2/3,Optional,默认/已选/AUTO/缺失/歧义,不隐式拉起默认optional；计数/顺序准确,O0/O2真实模块+可控底层；集成后另行实板,NOT_RUN
+P2-04,Phase2/3,产品Graph,Raw/JPEG各路由与同JPEG双sink,拓扑合法但无Frame操作；互斥拒绝,O0/O2真实模块+可控底层；集成后另行实板,NOT_RUN
+P2-05,Phase2/3,Scratch,同对象重入/并发共享尝试,重入拒绝；无批准同步不得接并发任务,O0/O2真实模块+可控底层；集成后另行实板,NOT_RUN
+P2-06,Phase2/3,回滚,每层失败注入/别名非法调用,合法存储失败out不变；嵌套别名加固另行授权,O0/O2真实模块+可控底层；集成后另行实板,NOT_RUN
+P2-07,Phase2/3,能力端口,格式/尺寸/速率/对齐边界,底层保留否决；纯查询无Offer/Get/硬件操作,O0/O2真实模块+可控底层；集成后另行实板,NOT_RUN
+P2-08,Phase2/3,证据等级,10FPS基线/25目标/候选成功,不升级为实际运行达标,O0/O2真实模块+可控底层；集成后另行实板,NOT_RUN
+R-01,Phase4及后续集成,Raw单路,真实Get与Release,IN_USE不为DMA M0/M1，归还后FREE,O0/O2真实模块+可控底层；集成后另行实板,NOT_RUN
+R-02,Phase4及后续集成,Raw多路,双consumer同帧,无Backend支持明确拒绝，不伪造Retain,O0/O2真实模块+可控底层；集成后另行实板,NOT_RUN
+R-03,Phase4及后续集成,JPEG双路,真Get/Retain及USB先Return,SD仍持有，不提前回收块,O0/O2真实模块+可控底层；集成后另行实板,NOT_RUN
+R-04,Phase4及后续集成,JPEG逆序,SD先Return及重复/错owner,USB仍有效；重复/错owner不变账本,O0/O2真实模块+可控底层；集成后另行实板,NOT_RUN
+R-05,Phase4及后续集成,双span,FIFO末端跨界帧,两span均有效，最后owner才回收,O0/O2真实模块+可控底层；集成后另行实板,NOT_RUN
+R-06,Phase4及后续集成,SD-only,内部原始持有→SD归还,不伪标USB grant，内部持有最终真实归还,O0/O2真实模块+可控底层；集成后另行实板,NOT_RUN
+R-07,Phase4及后续集成,Grant关联,G/H/M/S分别变旧,旧session/generation/request/slot拒绝,O0/O2真实模块+可控底层；集成后另行实板,NOT_RUN
+R-08,Phase4及后续集成,关闭竞态,Admit与Close双序列,先准入排空，后准入拒绝，旧G不重开,O0/O2真实模块+可控底层；集成后另行实板,NOT_RUN
+R-09,Phase4及后续集成,延迟运输,已入队未消费/通知合并,记录不丢、不当作资源完成,O0/O2真实模块+可控底层；集成后另行实板,NOT_RUN
+R-10,Phase4及后续集成,未提交取消,D发布后队列满并取消,仅本地退休，无假Camera ACK，H不复用,O0/O2真实模块+可控底层；集成后另行实板,NOT_RUN
+R-11,Phase4及后续集成,已提交取消,Camera已接受但consumer超时,不强清，保留终结协作,O0/O2真实模块+可控底层；集成后另行实板,NOT_RUN
+R-12,Phase4及后续集成,Receipt,ACK入队未消费且SD继续,旧T不被覆盖，SD可在有界能力内继续,O0/O2真实模块+可控底层；集成后另行实板,NOT_RUN
+R-13,Phase4及后续集成,收据容量满,未消费T后再发请求,背压，禁止覆盖旧身份,O0/O2真实模块+可控底层；集成后另行实板,NOT_RUN
+R-14,Phase4及后续集成,ABA,复用槽后迟到ACK/Return,完整身份拒绝，不影响新M/G,O0/O2真实模块+可控底层；集成后另行实板,NOT_RUN
+R-15,Phase4及后续集成,部分释放错误,物理Release成功但回复失败,事实不回滚，冻结原结果，不重复Release,O0/O2真实模块+可控底层；集成后另行实板,NOT_RUN
+R-16,Phase4及后续集成,RELEASE核验,RETURN_PENDING/有效loan/待ACK,拒绝退出确认，不清资格,O0/O2真实模块+可控底层；集成后另行实板,NOT_RUN
+R-17,Phase4及后续集成,独立退出,USB退出SD继续及反向,只释放指定G，不操作另一owner,O0/O2真实模块+可控底层；集成后另行实板,NOT_RUN
+R-18,Phase4及后续集成,最后退出,两路退出但内部持有或DMA仍读,不得关闭/覆盖源缓冲,O0/O2真实模块+可控底层；集成后另行实板,NOT_RUN
+R-19,Phase4及后续集成,USB DMA,异步完成/Abort成功/失败,只有真实不再访问原帧才归还,O0/O2软件；DMA/硬件故障项另需真实V1/选定板型,NOT_RUN
+R-20,Phase4及后续集成,SD DMA,IDMA完成/Abort失败/CPU读取,各独立完成证据，不以文件Close替代,O0/O2软件；DMA/硬件故障项另需真实V1/选定板型,NOT_RUN
+R-21,Phase4及后续集成,多异步DMA,一个完成另一个仍读,仍保留Lease，超时不得强清,O0/O2软件；DMA/硬件故障项另需真实V1/选定板型,NOT_RUN
+R-22,Phase4及后续集成,Replay,退休旧请求/合法后继/编号耗尽,沿用C2.1.1，旧事务不重新获资格，无额外配额,O0/O2真实模块+可控底层；集成后另行实板,NOT_RUN
+R-23,Phase4及后续集成,启动停止故障,真实Stop失败/重启,不伪造停止或擦除旧资源事实,O0/O2软件；DMA/硬件故障项另需真实V1/选定板型,NOT_RUN
+R-24,Phase4及后续集成,扩展能力,第三consumer/Network断线,后端无支持拒绝；断线/发送成功不是Release ACK,O0/O2真实模块+可控底层；集成后另行实板,NOT_RUN
