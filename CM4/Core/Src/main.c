@@ -104,6 +104,9 @@ int main(void)
   /* USER CODE END Init */
 
   /* USER CODE BEGIN SysInit */
+  
+  HAL_Delay(500);
+  
   init_error = Framework_InitRuntime();
   if (init_error != SYS_OK)
   {
