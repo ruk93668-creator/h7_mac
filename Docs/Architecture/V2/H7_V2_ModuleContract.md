@@ -43,7 +43,9 @@ typedef struct {
 } GraphEndpoint;
 
 enum { GRAPH_PAD_SINK = 1, GRAPH_PAD_SOURCE = 2 };
-enum { GRAPH_MEDIA_VIDEO = 1U, GRAPH_MEDIA_METADATA = 2U };
+enum { CORE_MEDIA_VIDEO = 1U, CORE_MEDIA_METADATA = 2U };
+#define GRAPH_MEDIA_VIDEO CORE_MEDIA_VIDEO
+#define GRAPH_MEDIA_METADATA CORE_MEDIA_METADATA
 enum {
     GRAPH_PROTO_SENSOR_BYTES = 1,   /* sensor外部视频字节流 */
     GRAPH_PROTO_DCMI_WORDS = 2,     /* 外设到DMA的逻辑word流 */
@@ -51,10 +53,18 @@ enum {
     GRAPH_PROTO_FRAME_VIEW = 4,     /* 完整帧的不可变视图 */
     GRAPH_PROTO_METADATA = 5        /* FUTURE；当前无实现 */
 };
-enum { GRAPH_PIXEL_Y8 = 1, GRAPH_PIXEL_RGB565 = 2,
-       GRAPH_PIXEL_YUY2 = 3, GRAPH_PIXEL_JPEG = 4 };
-enum { GRAPH_BACKEND_RAW = 1, GRAPH_BACKEND_JPEG = 2 };
-enum { GRAPH_STREAM_RAW_FRAMES = 1, GRAPH_STREAM_JPEG_FRAMES = 2 };
+enum { CORE_PIXEL_Y8 = 1, CORE_PIXEL_RGB565 = 2,
+       CORE_PIXEL_YUY2 = 3, CORE_PIXEL_JPEG = 4 };
+#define GRAPH_PIXEL_Y8 CORE_PIXEL_Y8
+#define GRAPH_PIXEL_RGB565 CORE_PIXEL_RGB565
+#define GRAPH_PIXEL_YUY2 CORE_PIXEL_YUY2
+#define GRAPH_PIXEL_JPEG CORE_PIXEL_JPEG
+enum { CORE_BACKEND_RAW = 1, CORE_BACKEND_JPEG = 2 };
+#define GRAPH_BACKEND_RAW CORE_BACKEND_RAW
+#define GRAPH_BACKEND_JPEG CORE_BACKEND_JPEG
+enum { CORE_STREAM_RAW_FRAMES = 1, CORE_STREAM_JPEG_FRAMES = 2 };
+#define GRAPH_STREAM_RAW_FRAMES CORE_STREAM_RAW_FRAMES
+#define GRAPH_STREAM_JPEG_FRAMES CORE_STREAM_JPEG_FRAMES
 enum { GRAPH_ENTITY_HW = 1, GRAPH_ENTITY_CAPTURE = 2,
        GRAPH_ENTITY_TRANSFER = 3, GRAPH_ENTITY_PROVIDER = 4,
        GRAPH_ENTITY_PROCESSOR = 5, GRAPH_ENTITY_CONSUMER = 6 };
@@ -439,7 +449,7 @@ GraphIssue.code拟使用固定uint32错误码，至少区分：BOUND、DUP_ENTIT
 
 Graph是纯验证器，失败不写旧out、不修改const表、不更新任何模块状态；scratch半成品直接无效，下次显式重新初始化工作数组。不存在清Frame、清grant、回绕ID或停止硬件的Graph回滚。若纯Ops违反契约产生副作用，属于适配器缺陷，不能靠Graph恢复硬件掩盖。
 
-“最后一次复制”是逻辑提交，不保证168B拷贝对其他任务原子可见。Configuration拥有已验证视图；初期只在BOOT前且无并发读取者时安装一次，运行期只读。模块Active/资格或Lease尚未退出时不得替换该Source的格式/Backend/路由。未来重配需要Lifecycle/Resource真实排空后再发布新视图；其安全前提仍NOT_PROVEN，Graph不另造关闭屏障。168B视图不能当作原52B命令载荷发送，后续Runtime适配不得擅改消息ABI；初期只支持静态产品配置的装配/读取。
+“最后一次复制”是逻辑提交，不保证168B拷贝对其他任务原子可见。Configuration拥有已验证视图；初期只在BOOT前且无并发读取者时安装一次，运行期只读；本轮统一目标的Runtime Selection先生成候选，不自动放开安装/重配边界。模块Active/资格或Lease尚未退出时不得替换该Source的格式/Backend/路由。未来重配需要Lifecycle/Resource真实排空后再发布新视图；其安全前提仍NOT_PROVEN，Graph不另造关闭屏障。168B视图不能当作原52B命令载荷发送，后续Runtime适配不得擅改消息ABI；R2初期可只支持BOOT静态装配；最新统一目标允许运行期计算候选Selection，但真实安装/Apply仍需已证明的排空、生命周期及重配能力，不能因为Resolver计算完成就替换Active视图。
 
 USB_TEST或无Camera活动计划不创建伪空Pipeline、不为通过count检查启动Camera：可只校验静态Catalog，Supervisor不提交媒体路由激活。Graph不改变main已有启动行为；按需模式的业务迁移仍需单独授权。
 
@@ -622,9 +632,109 @@ StorageFormat_GetCaps输出中立pixel码；StorageFormat_Validate只读CoreMedi
 
 FrameRoute只表达拓扑，无第二套真实分发、Retain/Release或资源账本。真实交接、关联和排空详见[H7_V2_ResourceOwnershipArchitecture.md](H7_V2_ResourceOwnershipArchitecture.md)及[并发/验收矩阵](H7_V2_ResourceOwnershipAcceptance.md)。后者是R3设计，不是已实现功能。Grant→Frame Lease和Stable Admission Closure继续NOT_PROVEN，released/idle生产回调仍NULL。
 
+### 1.18 R2-09最终复核：Storage公共API依赖修订
+
+输入c52490b，以下为DESIGN_PROPOSED的正式文档契约修订，不是新增生产头。Core中唯一CoreMediaFormat定义及中立媒体/像素码见第1.2节；GraphFormat仅别名。Graph公共Selection/View/Ops只使用该中立值/别名，不传CameraConfig_t或CameraPixelFormat_t；后者只允许出现在Camera Port的显式转换实现中。UVC兼容端口构造VideoStreamConfig_t属于Service适配，不泄漏到Graph Core。Storage公共接口固定为第1.14节的StorageFormatCaps、GetCaps(out)、Validate(const CoreMediaFormat*)。
+
+GetCaps仅返回不可变静态接收能力，Validate只检查中立格式值；不读任务、Debug、slot/Lease，不Mount/Open、不发送消息、不Retain/Release。Source Camera配置、Graph私有对象、Frame指针及运行时资源证明不能作为它们参数。Configuration装配公开纯Ops，不以依赖注入为由偷传私有可变context；Core不include Camera/Storage/Graph/HAL。
+
+能力来源仍是`CM7/Application/app_storage.h:9`的APP_STORAGE_FRAME_LIMIT=70000U及当前接收规则。 SOURCE_CONFIRMED使用链：`app_storage.c::App_StorageOfferFrame`252检查实际帧上限；`Storage_OnStart`657用同常量加reserve/开销检查可用空间；不是两个独立定义。未来GetCaps/Validator也应读这个同一来源。后续纯接口和真实Offer应共用该唯一规则，迁移仅移动定义/保留兼容别名；Core/Graph禁止独立70000常量。GraphCaps.max_payload=0委托精确Validator，不是无限能力。
+
+| 检查层 | 校验输入/时机 | 权威/禁止混合 |
+|---|---|---|
+| 静态格式能力 | CoreMediaFormat，配置前 | Storage纯Validator；JPEG/布局/配置接收上限，不看真实像素内容 |
+| 实际Frame长度 | 每次收到真实Frame | 运行接收适配按同一上限核验，目标上限不保证实际每帧小于它 |
+| SOI/EOI/JPEG完整性/CRC | 实际帧数据，Storage工作阶段 | JPEG/业务Service真实检查，不塞进纯能力查询 |
+| span指针/分段长度 | 实际数据描述 | Frame Port检查可达/边界/合计，不能从max_spans推断指针合法 |
+| Slot/Lease | 真实受理、写入、归还 | Camera/Storage原槽和Media权威，FORMAT_VALIDATED不是持有或释放证明 |
+
+**R2-09结论：设计修订完成、依赖方向符合条件；纯接口实现IMPLEMENTATION_REQUIRED，人工最终批准待定。** 现StorageFrame/Lease仍用旧类型的事实不被改写为已迁移。
+
+### 1.19 R2-10最终复核：速率所有者与证据
+
+| 速率 | 用户/配置意图所有者 | 真实统计所有者 | 验收证据 |
+|---|---|---|---|
+| Source Capture Rate | Configuration记录采集意图，Camera/Device能力决定能否应用；当前CameraConfig_t无FPS配置字段 | CameraCapture的完整帧/时间事实；中断/块事件不能直接当完整JPEG帧数 | 源固件/板型/窗口、完整帧增量、错误/丢帧；不得拿USB计数冒充传感器产出 |
+| USB Delivery Rate | USB Sink策略，单一用户快照派生VideoStreamConfig/广告间隔 | UVC完整帧完成计数（usb_uvc_class.c::USB_UVC_GetCompletedFrameCount），不是Submit/包/SOF计数 | PC协议就绪、真实完成帧和持续时间、丢弃/Abort；配置10或25不等于实测 |
+| Storage Sampling Rate | Storage策略record_fps；既有WantsFrame按间隔筛选 | Storage分别记录选择/接收/实际保存帧及时间，文件正常完成另计 | offers/accepted/saved各自增量，slot背压、AVI时间与错误；不能将record_fps直接写为保存率 |
+
+三者可以不同；Graph只校验目标可表达与约束相容，不控制Camera时钟。10FPS YUY2继续是USER_CONFIRMED稳定输出基线，不自动等于Source实测10。25FPS仍TARGET/RUNTIME_NOT_PROVEN。三种测量可由Diagnostics只读投影，不新增业务统计权威副本。**R2-10结论：语义/所有者已区分，本轮配置/实测均NOT_RUN。**
+
+### 1.20 R2-11最终复核：Graph公共面清单
+
+| 对象/API | 最终候选契约 | 审核状态 |
+|---|---|---|
+| Entity/Pad/Link/Pipeline/Caps ID | 各自包装uint16，Entity/Link/Pipeline/Caps为1..count且稠密；Pad为父Entity内0..count-1；先界限再索引/shift | DESIGN_PROPOSED；不是consumer/lease ID |
+| Entity / Pad | const Entity范围完整覆盖Pad表；单一SOURCE/SINK方向、协议/caps、SINK单入 | 第1.3～1.4节；无Frame地址/Task |
+| Link | 固定两个合法端点，方向/协议/已知媒体交集一致；effective enabled由只读选中mask派生 | 不另存第二可写enabled |
+| Pipeline | 固定Backend和所选边，Raw/JPEG Provider同互斥组；依赖明确列入 | 不隐藏运行中Backend切换 |
+| GraphFormat/CoreMediaFormat | 一个Core定义/Graph别名，14个uint32，媒体布局不含FPS | 公共接口无Camera私有配置 |
+| GraphCaps | 只读粗能力；精确约束由纯Ops否决，Storage不复制长度常量 | 不证明资源/性能 |
+| GraphSelection | Pipeline+媒体格式+独立Sink策略，count/身份完整 | 同Source媒体一致；不同Sink速率独立，同Sink策略冲突拒绝 |
+| GraphValidatedView | const graph引用/mask/媒体/topo/Sink策略 | 逻辑最后提交，跨任务安装另需同步；不是可发入52B消息的结构 |
+| GraphIssue | 有限错误码、位置、字段、原backend结果 | 失败保留首错，out不变 |
+| GraphEntityOps | validate_format/validate_sink_config，中立媒体值、常量版本context | 只读、禁止重入及Configure/Start/Offer/Retain/Release/HAL/BSP |
+| ValidateCatalog / ValidateSet | 配置所有者串行、有界scratch、无动态内存 | Graph合法不等于Lifecycle Active或后端能多持有 |
+| GetEntity/GetLink/GetPipeline | 范围合法返回const描述，否则NULL | 不隐式启动、分配或采样业务状态 |
+
+FANOUT只在显式Source Pad且出边≤max_links成立；共享前缀去重，多Pipeline合并媒体/路由相容但不增加业务grant。Graph不返回Buffer/Lease、不管理Lifecycle或直接控制硬件。**R2-11结论：公共值类型已贯穿，当前接口仍DESIGN_PROPOSED/IMPLEMENTATION_REQUIRED，未修改现有消息ABI。**
+
+### 1.21 R2-12最终复核：遍历上限与首错规则
+
+N≤16、P≤32、L≤32、K≤8、C≤32、S≤5、每Pipeline依赖≤4。第1.8节所有入口先检查count、reserved、指针/存储不重叠，再访问数组。默认ValidateSet先ValidateCatalog；可信静态C指针的对象真实长度由装配声明保证，不能宣称运行时检查可识别任意伪造C指针。
+
+| 有界阶段 | 最大迭代/操作单位（设计保守上限） |
+|---|---|
+| 稠密ID/字段扫描 | 各N/P/L/K/C范围扫描；名称每个≤32字节；描述/查询无动态Map |
+| 重复/范围配对 | 若使用全配对，N²+P²+L²+C²+K²≤3392次成对检查；固定字段比较为常数成本 |
+| 一次路径/环helper | 前向N×L、反向N×L、Kahn移除最多N×L=各≤512边探测；ready选择≤N²=256；入度构建与degree检查各≤L=32。该helper合计≤1856个上述探测/选择单位，其他字段/互斥检查另计 |
+| Catalog路径helper | 每Pipeline K次+完整Catalog一次，共≤9次；不能漏掉完整Catalog环检测 |
+| Request/merge helper | 逐请求≤K次+合并一次，共≤9次；不得因Catalog已检查跳过合并环/可达性 |
+| 合并调用Catalog的路径预算 | 最多18个helper槽位；可达/移除边探测≤27648、ready选择≤4608、建度扫描≤1152；共≤33408个helper单位，不是全部CPU指令或WCET |
+| 后端互斥/规范格式 | 每视图按N²≤256检查group；每请求/默认14媒体字段与有界caps/Link扫描；先溢出/窄化再算式 |
+| rate规范化 | 默认与请求各最多K×S=40，再加C=32个能力rate，最多112个GCD校验；每个≤64次模运算，≤7168步；无浮点/静默取整 |
+| Pipeline依赖 | ≤K×4=32个声明边；Kahn最多K²=64扫描/选择量级，各实现循环需逐项标注，不递归 |
+| 精确Ops | 合并格式与终端验证总≤N+S=21次；只在结构/caps检查成功后调用一次，不逐Pipeline重复 |
+
+完整复杂度为O(N²+P²+L²+C²+K² + (2K+2)NL + KSL + KN²)，另加有界GCD和最多21次纯Ops；各常数需后续代码逐循环核对。上表是明确设计循环槽位，不是本轮性能测量，也不把验证器内部CPU指令数纳入图边探测单位。Ops自身也必须有界、无阻塞/硬件操作。
+
+边界、Pad方向、Link/protocol/媒体、互斥/FANOUT、Source可达/反向路径、环、合并Sink冲突及Ops否决任一失败，立刻输出首个GraphIssue并返回原SysResult类别；out原字节不变。约分只能形成局部比较值，不能把不支持的速率/尺寸自动改成另一个用户配置；原请求不改。临时scratch不作为部分成功视图。**R2-12结论：算法义务与上限已明确，实际实现/WCET仍NOT_RUN/RUNTIME_NOT_PROVEN。**
+
+### 1.22 R2-13最终复核：预算及Graph/Resource联合门禁
+
+Graph候选尺寸和描述预算仍见第1.11节；Core别名移动不多建一份格式。Resource第二轮身份/端点/快照候选布局见ResourceOwnershipArchitecture第13节，统一逐对象成本见ResourceBudget的“R2-13/R3第二轮”表；不可将两套表相加重复计算同一对象。
+
+必须分开验收：Graph FORMAT_VALIDATED → Resource后端使用组合可满足（纯能力预检，不Get/Retain）→各模块真实配置/资格完成→真实DMA/帧交接→实测速率。Graph fan-out合法不能跳过Raw单IN_USE或JPEG两owner位限制。Resource不遍历Graph决定拓扑；Configuration从已验证视图生成中立ConsumerUseSet，Resource端口只校验使用需求/后端能力。该新预检接口仍待审，不能用运行试探替代纯查询。
+
+联合矩阵J01～J08见ResourceOwnershipAcceptance第7节，R3-01～32原设计仍NOT_RUN。尤其当前Raw→USB+Storage先因Storage只JPEG而格式拒绝，不能冒充“Raw双消费者所有权拒绝”证据；专门的同格式合成图负对照应区分两阶段。本轮没有sizeof/offsetof、Map、栈high-water或DWT/实板结果。**R2-13结论：预测预算/验收义务完成，编译和运行证据仍NOT_RUN；不批准生产实现。**
+
+### 1.23 R2-14：Module Registry / Runtime Dependency Resolver
+
+完整契约及新外部源码研究见[ModuleDependencyDesign](H7_V2_ModuleDependencyDesign.md)第2～4节。静态注册已编译Module描述，不动态加载；每模块声明ID/Version、Provided/Required/Optional/Conflicting能力、公开/Lifecycle Ops和ResourceRequirements，不持Frame或镜像Lifecycle状态。
+
+纯Registry Validate/Get、Resolver Resolve接口只处理Core值与const描述。迭代展开Required闭包（逻辑递归、C调用不递归）、版本/Provider明确选择、Optional显式规则、冲突与环检测、有界拓扑排序/资源汇总。最多8个产品允许替代尝试，歧义/缺失/容量/预算用明确错误返回，不能启动设备试探。M≤16等候选容量不是永久扩展保证；字段布局/ABI未冻结。**R2-14：设计完成供审，具体策略/容量UNRESOLVED；运行/实现NOT_RUN。**
+
+### 1.24 R2-15：Runtime Pipeline Selection
+
+Desired → Resolver → SelectedModules → 声明候选Topology → Graph Validation → 资源使用能力纯预检 → ExecutionPlan。分别保存候选结果，不将GraphValidatedView直接当Applied/Active。Entity/Link表const，运行时只从声明的≤8允许组合挑选有效mask/格式/各Sink策略；不是任意动态Link编辑。
+
+替代Provider/路径仅按显式等价声明和确定顺序，不静默改变用户尺寸/速率/功能。资源不支持第三owner/Raw多零拷贝即拒绝，Graph合法也不能越过；资源支持但类型/协议错误也拒绝。新Sink同格式可增量激活的能力须模块声明，Camera格式/Backend改变必须先真实Drain并走受审重配。**R2-15：流程/边界设计完成，实际热重配置/后端证明仍IMPLEMENTATION_REQUIRED、NOT_PROVEN。**
+
+### 1.25 R2-16：Transport-independent Control Plane
+
+公开语义：GET_CAPABILITIES、GET_CONFIGURATION、APPLY_CONFIGURATION、GET_STATUS、SUBSCRIBE_EVENTS、GET_TRANSACTION、CANCEL_TRANSACTION。全部入口经Adapter→M7 Gateway身份/权限验证→统一Configuration事务路径。M4 OLED是普通客户端，Adapter可在硬件实际owner核心；不能假定全部在M7，也不能直接调用Camera/Storage/UVC内部业务。
+
+Control Client/Transport Session与Module/Consumer/G/R/H/B/M/S/T身份独立。USB Control/UVC、Wi-Fi Control/Video即使共享物理链路也分别管理逻辑状态和资源；控制恢复根不能依赖媒体Pipeline。当前USB_Mode_Stop会停Device，IPC V3无完整控制命令，这些适配缺口如实保留，不能用新图冒充实现。完整候选API/跨核/身份/缓存见[ControlPlaneArchitecture](H7_V2_ControlPlaneArchitecture.md)。**R2-16：统一契约设计完成，协议/认证/控制传输ABI待审，NOT_RUN。**
+
+### 1.26 R2-17：Configuration Transaction
+
+Configuration Manager唯一写Desired事务、Applied/revision，M7配置写串行：同一时刻一活动写；其他返回BUSY，base_revision过旧拒绝，不Last Writer Wins。完整Desired/请求身份比对实现幂等；旧缓存已退休只返回RESULT_EXPIRED，不重执行。读取/订阅不占媒体Lease，不推进配置写水位。
+
+RECEIVED→AUTHORIZING→VALIDATING→PLANNING→APPLYING→COMMITTED；失败/取消按是否已执行进入FAILED/CANCELLED或ROLLING_BACK。接收ACK/ACCEPTED/COMMITTED分开，取消不强退Frame。客户端断线不取消既有grant或Frame，执行中修改不隐式覆盖。文件追加无法简单回滚、旧硬件配置必须实际重新应用才宣称恢复，失败状态可DEGRADED。Supervisor只执行有界Plan，Lifecycle管模块转换，不集中接管所有业务状态。完整并发/回滚/重连待审项见ControlPlaneArchitecture第3～4节。**R2-17：仲裁和事务设计完成；boot/client身份、编码/认证/容量/补偿政策仍UNRESOLVED/NOT_RUN。**
+
 ## 2. Lifecycle与完成语义
 
-每模块有独立Unconfigured→Inactive→Active→Deactivating→Inactive；Cleanup仅在资源清理条件满足后转Unconfigured。Error Processing不是所有资源已释放；故障与排空可并存，失败结果冻结。它们是V2目标概念，不能机械映射一个enum覆盖现有Media、Device、USB_Mode和StorageFS状态。
+每模块独立UNCONFIGURED→CONFIGURING→INACTIVE→ACTIVATING→ACTIVE→DEACTIVATING→INACTIVE；Cleanup经CLEANING_UP返回UNCONFIGURED，失败进入ERROR/错误处理，不将ERROR当已排空。Cleanup仅在资源清理条件满足后转Unconfigured。Error Processing不是所有资源已释放；故障与排空可并存，失败结果冻结。它们是V2目标概念，不能机械映射一个enum覆盖现有Media、Device、USB_Mode和StorageFS状态。
 
 候选接口：`Module_RequestTransition(id, command)` 返回接受/队列满/非法身份；`Module_Process(now,budget)` 由owner调用；`Module_GetCompletion(identity,out)` 返回只读匹配完成；`Module_ConfirmCompletion(identity)` 只确认交付；`Module_GetStatus(out)` 无业务副作用。不会将同名接口实现为跨任务同步等待。Task只有运输、调度、诊断和端口调用；模块唯一拥有业务状态。
 
@@ -699,3 +809,33 @@ DESIGN_PROPOSED与本轮ADR的UNRESOLVED同义：都是待审核建议，非已�
 对齐约束按用途区分：DMA块/固定池基址对齐、CPU JPEG字节视图、USB packet和SDMMC中转分别验证。JPEG两span起点不必都32B对齐；不可因统一格式模型拒绝现有合法帧或偷偷复制整帧。
 
 Cleanup只处理已由V2持有的上层配置/关联与明确可清理资源，不伪造现有Device不存在的deinit/unregister。静态Device注册可保留；若需求要实际断电/卸载设备，须另行设计底层接口并批准，不把Lifecycle的Cleanup成功冒称为硬件电源已关闭。
+
+## 9. R3-06与统一公共接口依赖
+
+R3-01～05的精确候选以ResourceOwnershipArchitecture13节为准；R3-06新增跨核/控制/媒体边界见其14节和ControlPlaneArchitecture5节。这里的R3议题号不是验收矩阵R3-01～32的场景编号。
+
+Core中立媒体、身份/结果为各层基础；Module Registry与Graph为不同描述表，Resolver不启动硬件，Resource不管理拓扑，Lifecycle不拥有Frame，Supervisor只接受ExecutionPlan并匹配异步完成。Adapters不成为配置权威，M4不读取M7所有权账本。控制请求身份/IPC接收ACK/Config提交/Frame ACK/USB消费证明严格分开。所有接口只为文档候选，未冻结二进制协议或注册未来模块。
+
+R2-10补充未来速率：Network Delivery目标由Network Sink策略、实测由其完整发送/接收定义的端到端口径分别提供；AI Processing目标由AI策略、实测按实际推理完成/时间和丢弃/排队统计。复制/零拷贝背压、丢帧和最大持有时长由各模块声明，不能超过后端能力或用超时强释放。当前Network/AI无实现、口径/缓冲容量UNRESOLVED，全部NOT_RUN。源采集/USB/Storage详细口径仍见1.19；320×240 MJPEG@25FPS为TARGET，不是已验收。
+
+### 9.1 五类速率、缓冲与超限策略（R2-10整合补充）
+
+| 域 | 配置所有者 / 实际测量者 | 统计与缓冲/超限契约 |
+|---|---|---|
+| Source Capture | Configuration目标、Camera/Device应用能力；CameraCapture完整帧事实 | Raw/FIFO原READY/块策略保留；压力可丢未借出帧/使用原drop目标，不覆盖IN_USE/Loan；测完整产出与丢帧/时间，不拿块IRQ数当帧 |
+| USB Delivery | USB Sink目标，UVC完成计数 | 原Bridge单未完成/逐包传输，背压不借第二原始帧；Abort失败保留M；统计完成帧、丢弃/错误和窗口 |
+| Storage Sampling | Storage record_fps，分别计选择/接收/保存 | 原slot1与采样间隔，满槽拒收/丢未受理，不强退M；文件正常Finish另计，不能按目标推保存FPS |
+| Network Delivery | 未来Network Sink策略，模块记录定义清楚的完整帧传送/接收完成率 | 复制/零拷贝各自有界缓存/背压/断线策略；驱动接受/TCP入队不当最终交付或Camera ACK；实现/端到端口径UNRESOLVED |
+| AI Processing | 未来AI采样/处理目标，实际推理完成计数 | 有界工作/可丢尚未受理输入，推理取消/异步读取结束后才Return；模型/tensor/缓冲容量待审 |
+
+所有域报告固件/板卡/时间窗口、分子定义、丢弃/错误、实际负载。Source实际率不受Sink目标自动控制，USB与Storage目标可不同；160×120 YUY2@10FPS是用户确认输出基线，320×240 MJPEG@25FPS仍TARGET/NOT_RUN，不从配置或纯验证升级为实测达标。
+
+## 10. 五核心冻结契约与阶段边界（最新约束）
+
+本轮所有Manager名称限定内属：Control Gateway/Adapters/Request/Event∈Control Service；Configuration Transaction/Module Registry/Resolver/Graph Selector/Plan Builder∈Composition Manager；Supervisor/Lifecycle协调∈Execution Manager；Camera/USB/Storage等∈Application Modules；Resource Ports/后端关联∈Media Resource。没有额外顶层Manager；Core只是中立公共值基础，底层Platform仍复用。
+
+公开边界语义为ControlService提交统一请求→CompositionManager产生候选/事务/Plan→ExecutionManager执行计划并报告→各Module owner完成业务/MediaResource完成真实交接；这些名称是冻结子系统的接口角色，不是新的生产符号/目录。不得通过泛化调用绕过Module Task权限或让Composition直接Get/Stop。
+
+明确区分注册/解析/图选择/真实切换：Registry绑定const描述不激活；Resolver计算Modules不配置；Selector/Graph验证候选不持Frame；只有Execution按已批准能力完成Drain/实际Configure/生命周期结果后才发布新的Applied。现一次配置/资源缺口不因候选成功消失。
+
+Phase0～10路线及原目录结构未改；Phase7/8的USB/Storage接口可在此提前澄清，但本轮不实施这些生产功能，也不新增Control/Resolver Task或Queue。IPC、USB、BLE、Wi-Fi、Ethernet都是统一Control Service入口，Client断线不等于Lease归还、网络发送完成不等于Camera Release ACK。所有新API/策略均PROPOSED/UNRESOLVED，原Replay/NOT_PROVEN保持。

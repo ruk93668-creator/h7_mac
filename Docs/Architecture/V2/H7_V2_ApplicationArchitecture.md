@@ -40,29 +40,44 @@ SOURCE_CONFIRMED：`CM7/Application/app_camera.c::s_qualification_ops` 的 relea
 
 ```mermaid
 flowchart TB
-  Product[Configuration: 静态产品配置 / Pipeline 描述] --> Super[Supervisor: 有界计划执行器]
-  Product --> Graph[MediaGraph: const Entity / Pad / Link / Pipeline]
-  Super -->|异步命令及匹配完成| Camera[Camera Module]
-  Super -->|异步命令及匹配完成| USB[USB Module]
-  Super -->|异步命令及匹配完成| Storage[Storage Module]
-  Super -. FUTURE .-> Net[Network Module]
-  Camera --> Life[Lifecycle / Qualification / Transaction]
-  USB --> Life
-  Storage --> Life
-  Camera --> Resource[Resource Port / Association / Admission]
-  USB -->|描述符交接及完成| Resource
-  Storage -->|描述符交接及完成| Resource
-  Resource --> Media[既有 CameraCapture / CameraStream / JPEG FIFO]
-  Camera --> Device[既有 Device Port]
-  USB --> USBSvc[既有 USB_Mode / UVC Service]
-  Storage --> FS[既有 JPEG / AVI / StorageFS]
-  Graph --> Types[Core: ID / Result / Format 值类型]
-  Life --> Types
-  Resource --> Types
-  Diag[Diagnostics 只读投影] -.-> Super
-  Diag -.-> Camera
-  Diag -.-> Resource
+  Clients[External Control Clients: M4 OLED / USB / BLE / Wi-Fi / Ethernet]
+  subgraph CS[Control Service]
+    A[Transport adapters / Gateway / Authorization / Request / Events]
+  end
+  subgraph CM[Composition Manager - M7]
+    C[Configuration transaction internal unit]
+    R[Static Registry / Runtime Dependency Resolver]
+    MG[Static Media Graph / Candidate Pipeline Selector]
+    RC[Pure Resource capability validation / Plan Builder]
+  end
+  subgraph EM[Execution Manager - M7]
+    S[Supervisor plan executor]
+    LC[Lifecycle transition contracts / completion routing]
+  end
+  subgraph AM[Application Modules]
+    MOD[Camera / USB UVC / Storage / future Network and AI]
+  end
+  subgraph MR[Media Resource - M7]
+    RES[Resource association / admission / retirement ports]
+    MB[Existing Raw / JPEG backends]
+  end
+  LOW[Existing external Platform: Device / BSP / USB / SDMMC / FreeRTOS / IPC]
+  Clients --> A
+  A --> C
+  C --> R
+  R --> MG
+  MG --> RC
+  RC --> S
+  S --> LC
+  LC --> MOD
+  MOD --> RES
+  RES --> MB
+  MB --> LOW
 ```
+
+该图只沿用已冻结五个核心子系统，Core为公共值基础，不新增第六个管理器。控制客户端在系统外部，Platform为底层复用边界，不另设Platform Manager。Adapter实际核心由硬件owner决定；M7最终配置/资源权威不变。
+
+此图是统一目标的逻辑请求/执行流，不是所有源文件include方向，也不是现有生产功能。Adapter实际核心随硬件owner决定；M7最终仲裁配置/计划/资源。Core值类型被各层使用，不能反向依赖这些层。
 
 Supervisor 只拥有“本次计划、步骤位置、命令身份、期限和错误策略”，不保存第二份模块 running/stopping、资格表或 Frame 引用。模块自主 STOP 与 Supervisor 编排兼容：USB-only STOP 只向 USB 发命令；全 Pipeline 停止计划才请求各相关模块退出。Camera 仍是采集生命周期唯一推进者，最后消费者真实排空后才可能停硬件。Supervisor 不能调用 Device_Stop、CameraCapture_Stop、USB 端点或 FatFS。
 
@@ -117,3 +132,38 @@ V2 完成对应功能和联合验收后，分阶段移除旧工程引用、头�
 输入54718ee。人工通过R2-01/02/04/05/07/08，03原则通过，06有条件通过；ADR-01仍UNRESOLVED。Storage格式Validator推荐依赖CoreMediaFormat，不依赖CameraConfig_t；GraphFormat为同一中立值的别名，Core不反向依赖Graph/Camera。Source采集率、USB交付率、Storage采样率分别配置/观测，FrameRoute继续仅表达拓扑。
 
 R3已形成[资源架构](H7_V2_ResourceOwnershipArchitecture.md)与[并发/验收设计](H7_V2_ResourceOwnershipAcceptance.md)：保留原固定池与FIFO，显式关联G/H/B/M/S，区分请求入队/准入/真实归还/ACK消费/资格撤销/硬件停止。D/T与Media快照、G/R接口及退休边界均待审核实施；当前生产Frame数据面未携带完整grant、released/idle仍NULL，两个NOT_PROVEN不变。成熟项目实际源码机制与H7自行适配设计在资源报告第2节区分。本轮没有测试、编译、硬件执行或应用切换。
+
+## 9. R2/R3统一架构整合（输入c52490b，新增要求）
+
+此前六层仅作职责分析视角，正式顶层仍为冻结五子系统，不改变目录和路线。具体接口/容量/新ADR仍UNRESOLVED；没有开始V2生产实施。L3分成Config事务权威、只读Registry、纯Resolver/Graph/资源预检/Plan Builder；L4只执行声明式步骤，各L5模块保留自己状态，L6后端保留唯一Frame所有权。不能建立万能AppManager或把全部功能塞进Supervisor。
+
+| 独立机制 | 唯一问题与不允许替代 |
+|---|---|
+| Module Dependency Graph | 需要哪些模块/Provider/版本；不描述Frame持有或像素连线 |
+| Media Graph | 静态媒体端点和运行时合法路由选择；不自动Get/Start |
+| Resource Ownership | G/H/M/B/S/T实际关联/准入/归还；不决定用户业务组合 |
+| Lifecycle | 各模块Configure/Activate/Deactivate/Cleanup/Error及真实完成；不复制后端引用 |
+
+[ModuleDependencyDesign](H7_V2_ModuleDependencyDesign.md)给出静态描述/运行时有界解析、显式Provider/替代策略、确定拓扑排序、增量计划和资源拒绝边界。新增Ethernet/Wi-Fi/AI理想只增加模块/能力/端口/合法图及产品策略，不修改已有业务或Supervisor组合分支；后端无第三owner时仍必须拒绝。
+
+[ControlPlaneArchitecture](H7_V2_ControlPlaneArchitecture.md)给出统一控制API、M7单写配置事务、base_revision冲突、幂等、取消/断线/补偿及事件。M4仅一个Control Client，IPC仅一种Transport；其他入口相同路径。控制Client/Transport Session/ConfigTx不等于媒体Consumer/G/R/Lease。
+
+当前IPC V3主要心跳/状态，无完整配置命令通道；当前USB_Mode_Stop会停USB Device，无独立USB Control存活保证。控制/媒体逻辑分离和故障恢复根是目标，需单独受审适配，不能宣称现已可用。原ABI/HSEM/共享SRAM4完全保留，不偷用reserved或跨核裸传资源指针。
+
+R2-09～17、R3-01～06具体定位在ModuleContract及FinalReview最新索引。原32项R3场景、J01～08和新增C01～32均NOT_RUN；Grant→Frame Lease与Stable Admission Closure仍NOT_PROVEN，ADR-01～10全部UNRESOLVED。所有新增配置/解析/控制预算是预测，非Map/栈/DWT实测；保持M4延时、Legacy和驱动，不进入Phase1/C2.2C、不合并main。
+
+## 10. 最新冻结约束：五子系统与Phase 0～10保持
+
+| 冻结核心 | 本轮概念的内属关系 | 不能新增/接管的权威 |
+|---|---|---|
+| Control Service | IPC/USB/BLE/Wi-Fi/Ethernet适配、Gateway、认证/请求关联/事件 | 不启动私有业务，不是唯一IPC通道，不持Frame |
+| Composition Manager | Desired/Applied/revision/配置事务、静态模块描述、Resolver、图选择/纯验证、Plan Builder | Configuration Manager/Transaction Manager是内部职能名，不是第六个顶层管理器，不保存所有模块状态 |
+| Execution Manager | Supervisor/生命周期协调与异步计划完成 | Supervisor/Lifecycle Manager是内部执行职能，不直控硬件或清Lease |
+| Application Modules | 各自业务状态、公开异步接口；Camera实际采集/Get/Release，USB独占UVC，Storage独占文件 | 不把状态迁到统一巨型Manager |
+| Media Resource | 准入/关联/终结退休端口及复用后端所有权 | Resource Manager为内部角色，不管产品拓扑、不复制引用计数 |
+
+六层分析图中的客户端是外部参与者、Control/Composition/Execution/Modules分别映射上述核心、Resource/Platform区分应用资源与外部平台，不据此增加子系统、目录或Task。新文档文件只是独立审核材料，不代表新增生产目录。
+
+冻结路线不改：仓库MigrationPlan现有矩阵的1 Core、2 Graph、3 Format、4 Resource、5 Lifecycle、6 Camera、7 USB、8 Storage、9 Supervisor、10 Network连同当前Phase0设计基线全部保留；本轮没有对实施阶段重新排序、插入或改名。该矩阵及DirectoryStructure文件逐字节保持输入c52490b。可以提前定义Phase7/8接口边界，但不提前实现这些模块或后续控制/解析功能。若后续冻结文档另有更精确接口落点，应人工核对后实施，不在本轮自行调整路线。
+
+静态注册是编译集合/描述绑定；运行时依赖解析是纯候选闭包；媒体拓扑选择是从const图选择候选mask；真实Pipeline切换是Execution Manager协调模块关闭/Drain/实际重配/重新激活。前三项成功都不等于第四项已发生，当前重配API及两项资源证明缺口继续保留。所有未批字段/策略为PROPOSED或UNRESOLVED，不因名称统一而获APPROVED。

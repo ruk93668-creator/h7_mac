@@ -28,6 +28,18 @@
 
 这些取舍是H7基于Linux MC思想的本地适配，不是要求照搬Linux实体划分。Graph不分配Frame、不Retain/Release、不启动硬件；两个Resource NOT_PROVEN不变。R2-04/05/07/08设计方向已通过，R2-06依赖澄清及具体新接口、布局、预算仍等待人工复核，不授权Phase1/C2.2C。
 
+### R2最终复核记录（输入c52490b，不改变ADR状态）
+
+| 项 | 独立结论 | 设计/证据状态 |
+|---|---|---|
+| R2-09 | 唯一CoreMediaFormat/Graph别名，Storage纯能力只依赖Core；Camera/Frame/Lease适配留Ports，70000B同一来源 | DESIGN_PROPOSED修订完成；API实现IMPLEMENTATION_REQUIRED |
+| R2-10 | Source Capture、USB Delivery、Storage Sampling分别配置/统计/验收，10输出基线与25目标不混写 | DESIGN_PROPOSED；实测NOT_RUN |
+| R2-11 | 全部Graph对象/ID/纯Ops/Getter与Selection/View公共面完成核对，无Camera私有类型 | DESIGN_PROPOSED；精确API仍待批 |
+| R2-12 | 有界算法、合并/环/Sink冲突/否决/失败out不变；默认含Catalog最多18路径helper预算槽位 | DESIGN_PROPOSED；实际CPU/WCET RUNTIME_NOT_PROVEN |
+| R2-13 | Graph及Resource按同一候选布局预算，J01～J08覆盖图fan-out与后端不支持的差异 | DESIGN_PROPOSED；ARMCC5/Map/栈/DWT/实板NOT_RUN |
+
+详见ModuleContract1.18～1.22、ResourceBudget9和DependencyRules8。R2方向审核通过不使ADR-01从UNRESOLVED变为批准，也不意味着Resource问题已闭合。
+
 ## ADR-02：每模块Managed Lifecycle与异步完成
 
 参考ROS 2状态/转换与业务回调结果分离，推荐Configure/Activate/Deactivate/Cleanup/Error Processing契约；owner任务异步推进。拒绝全局模块状态镜像和同步串联回调等待，避免形成新版巨型ControlTask和死锁。每模块保留一份权威上下文，受控事务保留冻结结果；不新增Lifecycle Task或ROS运行库。
@@ -98,6 +110,12 @@ Ethernet/Wi-Fi/AI扩展时，后端若不能表达新增owner必须先单独升�
 
 必须先审：原非回绕FrameRequest票据在新D中的承接/退休边界、Raw/JPEG纯身份查询、USB ACK消费证明、完整G/R资源核验与D/T容量。现RELEASE不直接验证related字段等于grant_request，不把它写成已证明的线关联，也不擅改C1规则；Camera应从权威资格表关联原G，精确API另审。released/idle仍NULL，无消费者真实退出接入。Grant→Frame Lease与Stable Admission Closure继续NOT_PROVEN；ADR-03和04不因此批准，不授权Phase1或C2.2C。
 
+### 3.8 R3第二轮精确契约（仍UNRESOLVED）
+
+第13节新增Raw/JPEG多消费者矩阵；G/R/H/B/M/S/T完整候选字段；USB Publication64B单写、Camera Endpoint/T100B单写、Storage原槽仅加G/H32B；ACK生成→入队→消费发布→Camera核验→退休cookie→D复用的严格顺序。T是端点终结状态，不另复制T、不持原Frame；原非回绕command_id作为USB ticket，无新增编号器。Raw/JPEG Snapshot64/256B只读，中立接口不泄漏模块私有类型。
+
+Raw实例epoch4B为尚未存在的最小ADAPT提案，只在安全重建时消耗，查询不推进。Persistent200B+static workspace296B=496B为未编译候选，不是实际净RAM测量；具体批准仍等待人工。每个入口的L_admit/L_close由Camera owner串行，入口关闭不阻止Return。32项原场景及新增8项联合设计均NOT_RUN；Grant→Frame Lease和Stable Admission Closure继续NOT_PROVEN。保留AC-01～06、B2 ID23=A/ID31=B、原Replay和唯一普通停止推进，不授权Phase1/C2.2C。
+
 ## ADR-04：CameraCapture专项 — 复用采集门面和两种物理后端
 
 ### 4.1 当前关系（SOURCE_CONFIRMED）
@@ -136,6 +154,24 @@ Y8/RGB565/YUV422保持固定后端支持，JPEG/MJPEG用FIFO；没有证据不�
 
 参考成熟框架清晰接口边界，但工程迁移策略为H7自行提出。开发期独立ApplicationV2，Legacy完整；最终只有V2活动，删除被承接的旧源/头/工程登记，旧代码只留Git历史。不采用长期双栈或Legacy文件夹。短期Flash/仓库存储可能增加，发布固件不得编入双应用；RAM不得双实例化。逐文件清理与完整回滚见MigrationPlan。具体切换提交/Keil有效源表待批准。
 
+## ADR-08：静态Module Registry与运行期有界依赖解析
+
+状态**UNRESOLVED**。参考Zephyr v4.0.0 Device静态声明/依赖handle、ESP Component Manager v2.1.2固定SHA的manifest/版本约束；后者是构建期，不直接移植为运行期库。H7推荐const Module/Capability Catalog+确定Provider/版本/Optional/冲突/环解析，显式替代最多8次，不动态加载/分配、不启动硬件试探。与固定Supervisor业务分支相比可扩展；与无界SAT/Python下载解析相比成本有上限。细节/源码指纹见ModuleDependencyDesign。
+
+估算Registry ROM≤5296B、Resolver512B、Plan1088B，均未编译；无新Task。未来Ethernet/Wi-Fi/AI以描述和端口扩展，后端不足拒绝，不修改既有模块业务来伪造第三owner。Provider策略/搜索预算/16模块容量待批准。
+
+## ADR-09：Transport-independent Control Plane与M7权威
+
+状态**UNRESOLVED**。复用现HSEM/IPC、Framework/Task基础，但不把M4当唯一总控，不把Control连接当Media Consumer。统一Gateway/Auth/Request/Event语义，各Adapter由硬件owner核心执行，M7最终仲裁；USB/Wi-Fi控制与媒体逻辑分离。没有引入新网络库/设备消费者。控制Session/认证/IPC新codec、共享USB基础设备保持仍待设计批准；当前IPC状态通道和USB_Mode_Stop事实见ControlPlaneArchitecture。
+
+候选Client512B、订阅256B、事件256B、Gateway512B，不含TLS/驱动/包缓存，不新增Task/Queue实现；未来控制面可独立恢复，但前提是实际控制通道能力已具备。不能把目标图画成当前USB Composite或跨核命令已可用。
+
+## ADR-10：配置写事务串行化、Revision冲突与真实补偿
+
+状态**UNRESOLVED**。采用M7唯一配置写权威、单活动事务、base_revision核验、同请求固定结果和旧请求不重执行；拒绝Last Writer Wins、断线强清及以配置结构回滚代替资源归还。Supervisor仅执行Plan，Module状态和Media权威不转交Manager。事务生命周期/幂等/取消/文件不可逆与DEGRADED见ControlPlaneArchitecture。
+
+候选Tx1536B+Applied/rollback512B；4记录容量、控制结果退休/boot identity、安全会话/补偿策略未批准。Flash/CPU/实际栈UNMEASURED；原52B/56B、Replay单调编号/高水位/退休约束不变。R3两个NOT_PROVEN继续，不因控制事务方案而关闭。
+
 ## 决策审核清单
 
 | ADR | 当前状态 | 实施前必须补齐 |
@@ -147,5 +183,14 @@ Y8/RGB565/YUV422保持固定后端支持，JPEG/MJPEG用FIFO；没有证据不�
 | 05 Supervisor | UNRESOLVED | 计划/冲突/取消语义，保持ID23/31批准行为 |
 | 06 Framework/运输 | UNRESOLVED | 无算法变化工具迁移、链接唯一性、队列和ABI证据 |
 | 07 Clean Restart | UNRESOLVED | 功能承接签核、Keil切换/删除门禁及回滚包 |
+| 08 Registry/Resolver | UNRESOLVED | Provider/版本/替代策略、静态容量、确定性/成本验收 |
+| 09 Control Plane | UNRESOLVED | 认证/传输核心归属、IPC/USB控制能力、Client/Media身份分离 |
+| 10 Configuration Tx | UNRESOLVED | Revision/幂等/取消/补偿、boot身份和记录退休门禁 |
 
 源研究支持采用这些思想，不证明本项目实现安全。此表无“已批准具体架构”条目；用户既有安全约束持续有效，任何变更另行审批。
+
+## 最新冻结约束说明
+
+用户冻结的五个核心及Phase0～10路线不变。ADR08仅深化Composition Manager内部Registry/Resolver；ADR09深化Control Service内部入口/协议边界；ADR10深化Composition Manager内部配置事务，不是提出第六/七/八个顶层管理器。Supervisor/Lifecycle协调仍内属Execution Manager，Module和Media Resource权威不迁移。目录及MigrationPlan均不修改。
+
+这些具体接口/容量/策略未获批准，仍PROPOSED/UNRESOLVED；冻结既有架构方向不使任何本轮ADR自动APPROVED。可提前定义Phase7/8接口，不能提前生产实施；原Replay、客户端与媒体身份分离、两项NOT_PROVEN持续有效。

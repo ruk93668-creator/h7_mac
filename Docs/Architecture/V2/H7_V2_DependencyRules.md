@@ -66,3 +66,62 @@ AC-02/03：ACQUIRE grant 与 RELEASE 请求身份不同，RELEASE 必须绑定�
 输入54718ee。CoreMediaFormat为中立媒体值草案，GraphFormat只作别名；Storage公共纯格式接口只依赖Core，不依赖CameraConfig_t或Graph业务结构。Camera和UVC端口各自显式转换到原配置类型；Storage真实Frame/Lease交接适配与纯能力接口分开，唯一70000B限制源不复制。目录/字段均待审核，不是新生产API。
 
 Source Capture Rate、USB Delivery Rate、Storage Sampling Rate分别有配置意图和运行证据，互不冒充；Graph无新运行时FrameDispatch/引用账本。R3资源关联仅记录G/H/M与B/S，权威owner仍归后端。候选D/T的USB端发布/消费字段和Camera端受理/终结字段各自单写；发布与队列发送分开，禁止共享phase多写者。完整契约及未决项见[资源架构](H7_V2_ResourceOwnershipArchitecture.md)第5～8节；本轮不因文档存在而改变NOT_PROVEN或准入实施状态。
+
+## 8. R2最终依赖与R3第二轮接口审核（输入c52490b）
+
+本图箭头表示“依赖/使用”，不是初始化执行顺序；Core只有中立值/结果码，不反向include任何模块。
+
+```mermaid
+flowchart BT
+  Graph[MediaGraph] --> Core[Core: MediaFormat / identities / results]
+  Lifecycle --> Core
+  Resource --> Core
+  Camera[Camera Module / Port] --> Core
+  USB[USB Module / Port] --> Core
+  Storage[Storage Module / Format Contract] --> Core
+  Network[Future Network: no implementation] -.-> Core
+  Configuration --> Graph
+  Configuration --> PurePorts[Public pure capabilities]
+  PurePorts --> Core
+  Supervisor --> Graph
+  Supervisor --> PublicModules[Modules asynchronous public interfaces]
+```
+
+| 接口/层 | 允许类型/依赖 | 必须阻止的反向依赖 |
+|---|---|---|
+| CoreMediaFormat / identity值 | 标准定宽类型、公共结果值 | CameraConfig/CameraPixelFormat、Graph私有结构、HAL、运行时Lease |
+| StorageFormat_GetCaps/Validate | CoreMediaFormat/中立Caps/SysResult | CameraConfig_t、Graph私有头、Debug/任务/FS/Media所有权访问 |
+| Camera兼容Port | Core媒体/身份与原CameraConfig/Media公开API显式转换 | 把Camera枚举直接当Core码cast；把私有Capture上下文指针传Graph |
+| UVC兼容Port | Core值到VideoStreamConfig/B值的映射，USB独占Service | Resource/Graph读取UVC私有ctx、硬件EP/Abort旁路 |
+| Storage帧Port | 中立G/H/S值与现Frame/Lease/原槽的内部映射 | Resource公共API参数暴露StorageSlot_t/CameraMjpegLease_t；第二Storage槽账本 |
+| Resource公共API | CoreGrantKey/ReleaseKey/HandoffKey/MediaToken、ExitProof | AppMessage_t/Bridge结构/USB私有状态/Camera业务配置。52B运输映射留Ports，协议不重定义 |
+| Media纯Snapshot | 公开中立只读schema、固定容量与码域 | Application私有头/Debug、查询中Get/Release或DMA操作 |
+| Lifecycle/Qualification | 原Tx/Rx/Replay及注入的中立资源结果Ops | 直接Get/Release、关闭文件、USB端点、Resource私有记录 |
+| Supervisor | 已验证图、异步模块请求/完成 | 直接硬件/Frame操作，复制消费者资格或所有模块状态 |
+
+FrameRoute只管理拓扑。Resource只管理交接契约，后端继续唯一持有权威；Camera是实际采集/Get/Retain/Release执行者，USB独占UVC，Storage独占FatFS/AVI。端口类型转换不增加第二套引用计数或资格状态机。公共接口虽中立，不代表任何任务可直接调用；任务权限由Runtime/Ports校验，Snapshot本身不成为Release capability。
+
+R2-09～13独立结论见ModuleContract1.18～1.22；R3-01～05身份/单写/关闭/快照见ResourceOwnershipArchitecture13。原非回绕Frame command票据优先复用，不新增Replay配额或通道。R3字段布局是候选，现released/idle仍NULL；Grant→Frame Lease及Stable Admission Closure继续NOT_PROVEN，ADR全UNRESOLVED。此表未修改任何include/工程/ABI。
+
+## 9. 统一Composition/Control依赖与循环消除
+
+本轮六层逻辑图见ApplicationArchitecture第3节；代码依赖必须通过Core中立DTO/纯接口反转，不按逻辑执行箭头建立源代码循环。
+
+- Control Adapter只依赖Core控制语义/Transport公开接口，向M7 Gateway提交；不include Module私有业务头或直接Start/Resource Release。M4前端不依赖M7资源私有表。
+- Gateway认证/Request/Event与Configuration Manager公开接口分开；Manager调用纯Composition接口，接收Supervisor计划进度/结果，但Supervisor只依赖Core的Plan/Completion契约，不反向include Manager。进度通过注入完成端口/消息返回。
+- Module Registry只提供const Module/Capability描述。Resolver依赖这些描述/版本规则和Core值；不依赖模块ctx/硬件、不改变Lifecycle，不与Device Registry合并。
+- PipelineSelector依赖Resolver的中立Resolution与Graph公开值。Resource能力预检只接收CoreMediaFormat/中立ConsumerUseSet，不反向读取Graph。Plan Builder使用二者结果，不把业务选择交给Resource。
+- Supervisor仅执行Core Plan步骤和Module公开异步端口；Lifecycle转换状态在各Module唯一。Module不反向读取Supervisor/Configuration私有事务，配置通过不可变绑定传入。
+- Resource通过注入的资格只读/关闭接口匹配G/R，生命周期回调只返回资源事实；两者共享Core身份/结果，不互相include私有结构。Media Snapshot为公开只读schema，M7 owner负责核验。
+
+潜在循环及明确修订：Manager↔Supervisor改为Core Plan/Completion双向消息端口；Graph↔Resource改为Configuration派生UseSet；Registry↔Module runtime改为const描述+公开Ops，无Module状态镜像；跨核Adapter↔M7私有对象改为受审控制codec（当前IPC未实现，不能传指针或用reserved）。这是具体依赖方案，不只是给循环起别名。
+
+Control基础依赖与媒体Pipeline停/重配解耦；共享USB/Wi-Fi设备由独立基础能力的公开生命周期约束，当前缺独立USB Control能力不写成已实现。所有入口由M7单写配置/Revision裁决，Control Client/Transport Session与媒体Consumer/Lease独立。新模块优先通过描述/端口/策略扩展，不能在Supervisor新增组合分支；后端资源不足仍拒绝。
+
+新增模块/控制/事务ADR仍UNRESOLVED。未来动态运行解析指在已编译静态集合内计算合法选择，不是动态链接、动态内存或新增Task。既有Framework Initcall/Timer/Event复用，但通知/事件仅唤醒或状态投影，不能替代可靠命令与ACK。
+
+## 10. 冻结五子系统与无新增顶层管理器
+
+以ApplicationArchitecture第10节为统一归属：Control Service负责所有传输入口/统一控制；Composition Manager内含Config事务与纯组合；Execution Manager内含Supervisor/生命周期协调；Application Modules独占业务状态；Media Resource独占资源交接契约/后端适配。旧六层只作逻辑分析，不增加第六个核心，也不重画目录。
+
+Configuration Manager、Request Manager、Lifecycle Manager、Resource Manager这些称谓均是上述子系统内部职责，不生成新顶层服务/状态权威。静态注册/运行依赖解析/媒体选择与真实切换分别有接口及完成条件；候选结果不能发布为“重配置已成功”。Phase0～10原表和DirectoryStructure不改，Phase7/8提前接口定义不构成进入实施。

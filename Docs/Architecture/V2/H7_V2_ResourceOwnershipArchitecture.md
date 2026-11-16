@@ -88,7 +88,7 @@ flowchart LR
 
 Consumer ID不是Task handle或Graph Entity ID。A/G的request是建立资格的ACQUIRE request；R.request为另一次事务，R的资源核验记录必须显式关联原G。SOURCE_CONFIRMED：现Core按consumer/session/generation定位grant，related字段进入请求/回复匹配，但RELEASE分支不直接比对related与grant_request。V2应由Camera权威表提供完整原G；是否将非零related的严格一致检查加入后续适配须单独审核，不能把线上的0/可选字段静默变成C1新必填规则。B.stream_epoch/lease_id、Media loan_session/id、S.session/generation不等于Qualification session/generation。H是帧交接票据，不能拿Lifecycle request_id直接代用；T绑定原G/H/B或S和实际终结结果。
 
-生命周期身份继续用既有Tx/Rx/Replay，单调编号不回绕，跨session/generation不清高水位，无新增配额。Media和Bridge字段继续原语义。未来适配若需新的Raw实例代次或其他端点交接标识，单调耗尽拒绝，不用地址、时间戳或复位计数冒充唯一性；精确字段/API待审。
+生命周期身份继续用既有Tx/Rx/Replay，单调编号不回绕，跨session/generation不清高水位，无新增配额。Media和Bridge字段继续原语义。未来适配若需新的Raw实例代次或其他端点交接标识，单调耗尽拒绝，不用地址、时间戳或复位计数冒充唯一性；第二轮候选字段见第13.2节，API仍待审。
 
 ## 5. Grant→Lease关联：承接原后端，不创建另一引用系统
 
@@ -245,7 +245,7 @@ AC-01～06保持。消费者端口按身份和后端能力描述，不在Camera�
 
 Graph FrameRoute只声明可选边，Configuration装配选中端口；Resource不解释业务拓扑，不新增Dispatcher。适配继续复用固定池4300800B、JPEG FIFO/drop540672B，无新整帧池设计。预估关联记录的容量至少覆盖USB单交接、Storage slot1及SD-only内部；未消费T独立占描述RAM，不占Frame。候选每记录64～128B只是范围，不是冻结layout；T每64～96B，具体容量由队列4深/合法重复/消费窗口推导，不能直接取队列数当已证明的同时在途数量。
 
-预算方法：按各端单写字段分别求sizeof/offsetof，计算D端点发布+Camera绑定+Storage槽新增G/H+T+纯查询workspace，扣除被替代旧记录；不把已有824B资格或144/332B Tx/Rx再加一遍。关联上限/收据条数、Raw快照API、ARMCC5对齐和Flash仍UNRESOLVED。Graph CoreMediaFormat别名调整预计不改R2的56B布局；没有实际编译/Map故不报告真实RAM增量0或栈PASS。静态scratch不放高优先级栈，所有临界区有界，无新任务/队列/动态内存提案。
+预算方法：按各端单写字段分别求sizeof/offsetof，计算D端点发布+Camera绑定+Storage槽新增G/H+T+纯查询workspace，扣除被替代旧记录；不把已有824B资格或144/332B Tx/Rx再加一遍。第一轮范围估算由第13节单端点候选布局深化；容量前提/Raw快照API/ARMCC5对齐和Flash仍待批或未测，不将范围估算与新布局重复相加。Graph CoreMediaFormat别名调整预计不改R2的56B布局；没有实际编译/Map故不报告真实RAM增量0或栈PASS。静态scratch不放高优先级栈，所有临界区有界，无新任务/队列/动态内存提案。
 
 ## 12. 推荐、阻塞与分阶段设计门禁
 
@@ -259,3 +259,250 @@ Graph FrameRoute只声明可选边，Configuration装配选中端口；Resource�
 Grant→Frame Lease现缺完整G进入Frame路径、可核验M/Raw令牌及sideband长期身份拒绝；Stable Admission Closure现缺入口接入、全部未消费消息的终结、USB消费证明、真实released/idle适配。两项继续NOT_PROVEN；不能因为本报告覆盖了设计义务就改为PASS。ADR-03/04也继续UNRESOLVED。
 
 并发/可测试契约和硬件门禁详见[H7_V2_ResourceOwnershipAcceptance.md](H7_V2_ResourceOwnershipAcceptance.md)。完成本轮文档后停止，不开始Phase1/C2.2C或任何生产修改。
+
+## 13. R3第二轮精确契约（输入c52490b）
+
+本节细化并优先于前文“字段/容量尚待设计”的占位表述；字段已有可审阅候选，**批准、实现和运行证明仍未完成**。全部声明只存在于文档。EXTERNAL_SOURCE_CONFIRMED仍限第2节所列固定源码，以下G/R/D/T协议是H7 DESIGN_PROPOSED，不是vb2或GStreamer原生功能。
+
+### 13.1 R3-01：物理能力与消费者组合矩阵
+
+| 格式/组合 | SOURCE_CONFIRMED后端与格式能力 | 目标使用与限制 |
+|---|---|---|
+| Raw Y8/RGB565/YUY2单消费者 | 固定池单IN_USE；当前UVC只YUY2，Storage只JPEG | 保留各格式原采集能力；不支持的Sink显式拒绝，不能为统一接口删除Raw能力 |
+| Raw USB+Storage | Storage纯/运行接收均只JPEG | 先格式拒绝，不用它证明“所有权多持有”测试；无隐式JPEG编码 |
+| Raw同格式多零拷贝消费者 | 无多owner/refcount，单IN_USE | Graph可描述分支但Resource使用能力应拒绝；不得靠前端refcount承诺共享 |
+| Raw复制到独立私有缓冲 | 原始帧仍单IN_USE | 未来复制读全部完成才归还原帧；私有副本另管异步发送，不新增原Frame Pool；RAM/CPU另审 |
+| JPEG USB单路 | GetFrame产生当前原始Loan，原始位名usb_owned | G/H绑定该实际M，完成Return只释放原始权利 |
+| JPEG USB+Storage | Retain为同Loan置独立sd_owned，返回session/id | 两G可关联同Loan不同owner_kind；最后owner离开才减Loan块引用，不额外加整帧块计数 |
+| JPEG SD-only | Camera内部Get+Storage Retain+内部原始Release | 原始用途INTERNAL_DISPATCH，不创建USB grant；USB无资格也可保存SD，但真实授权接入仍待实现 |
+| JPEG USB先退出 | SD权利仍可持有同Loan | 仅清原始位/USB G；T留在USB端点记录、内部借帧记录可继续服务SD |
+| JPEG Storage先退出 | USB原始位仍有效 | 仅清SD位；文件失败与帧归还分开，不停USB |
+| Network复制/零拷贝 | 当前无Network consumer及独立第三owner | 复制可作为未来适配；零拷贝第三owner必须另审Media实际能力，不能借USB/SD位或只加consumer ID |
+
+Graph验证类型/路由，Resource只接受Configuration派生的中立使用需求，如`ConsumerUseSet{consumer_id, endpoint, ownership_mode}`（有界数组、容量另审），并按后端公开能力拒绝不能满足的组合。该纯预检不Get/Retain，不管理拓扑；通过也不是未来每次准入的授权，L_admit仍查当前G与资源。Raw捕获DMA与单消费者读取的并发由原池保证，不与多消费者读取混为一谈。
+
+### 13.2 R3-02：完整身份字段与失败关闭规则
+
+以下候选Core值全部使用固定32位字段，码域经验证，不泄漏CameraConfig_t、AppMessage_t、USB私有ctx或StorageSlot_t到Resource公共接口。现52B/56B运输在Ports显式映射；这些不是新的队列载荷。
+
+```c
+typedef struct CoreGrantKey {
+    uint32_t consumer_id, session_id, consumer_generation, acquire_request_id;
+} CoreGrantKey;                    /* 预测16B */
+typedef struct CoreReleaseKey {
+    CoreGrantKey grant;
+    uint32_t release_request_id;
+} CoreReleaseKey;                  /* 20B */
+typedef struct CoreHandoffKey {
+    uint32_t consumer_id, endpoint_id, scope, ticket;
+} CoreHandoffKey;                  /* 16B */
+typedef struct CoreBridgeKey {
+    uint32_t stream_epoch, lease_id, command_id;
+} CoreBridgeKey;                   /* 12B */
+typedef struct CoreStorageKey {
+    uint32_t slot_index, slot_generation, storage_session;
+} CoreStorageKey;                  /* 12B */
+typedef struct CoreMediaToken {
+    uint32_t backend, instance_epoch, record_index;
+    uint32_t frame_sequence, loan_id, owner_kind;
+} CoreMediaToken;                  /* 24B */
+```
+
+| 身份 | 创建/权威、单调性及关联 | 退休/ABA/耗尽 |
+|---|---|---|
+| G | Camera资格表ACQUIRE产生；consumer/session/generation/acquire request全匹配 | 真实R核验才失效；generation/session/request沿原协议耗尽拒绝，不回绕 |
+| R | consumer新RELEASE事务，其identity匹配原G的consumer/session/generation；独立request。Camera从权威表补入原acquire request | CoreReleaseKey含完整G，不能以R.request等于G.request匹配。related非零如何严格检查需审批，不静默将原可选0变为C1必填 |
+| H USB | 复用现有非回绕FrameRequest.command_id为ticket；endpoint固定USB帧端口，scope=0（本启动周期），consumer=USB | 不随START/STOP/ACK清计数；UINT32_MAX拒新；D复用必须有Camera退休确认；不是Lifecycle request |
+| H Storage | endpoint标识原slot；ticket取已有slot_generation，scope=0（原generation启动期不重置），consumer=Storage | slot已在耗尽时拒绝复用；原S还含storage_session，H与S显式绑定，不额外增加编号器 |
+| B | Camera对成功Offer赋stream_epoch/lease_id，command_id关联原H票据 | epoch跨CameraBegin不回退；lease在新epoch内从原规则生成，不能仅按lease单字段拒迟到 |
+| M Raw | 实际IN_USE index/sequence，加候选只读实例epoch；loan_id=0、owner_kind=RAW_EXCLUSIVE | sequence允许原算法回绕，不能独自作永久身份；H/G先验证再查M；epoch仅安全重新准备时消耗，耗尽拒绝，不在query内推进 |
+| M JPEG | instance_epoch=真实loan_session，loan_id=实际id，record_index=Loan槽；frame_sequence=0、owner_kind=ORIGINAL或SD | 原始与SD分别验证；Loan id在session内不复用，不能用槽index/指针单独释放；用途USB/内部由关联记录判断 |
+| S | 原Storage槽及队列凭据的index/generation/session | 旧环项或归还必须全匹配；FREE不允许改变尚被引用旧身份的含义 |
+| T | 复用下述Camera端点记录的不可变G/H/B/M/S及终结result/kind，不增加Frame持有 | 无M的合法拒绝也可终结；非匹配/冲突请求不覆盖T。消费与Camera退休确认前不可复用 |
+
+INTERNAL_DISPATCH不是新Lifecycle consumer：其关联不含有效G，不伪造USB身份；JPEG内部交接可用consumer_id=0的内部端口、scope=loan_session、ticket=loan_id，仅在Media内部借用用途有效，不可送入ACQUIRE/RELEASE通道。Raw capture-only或未来内部复制按原独占记录管理，若需新内部票据必须另审，不能借未授权consumer ID。
+
+任何M释放前必须先验证当前完整G/H和端点B/S，再由Camera owner查询实际M并执行原后端释放；不能把CoreMediaToken直接当可任意调用Release的能力。重复Return只读取匹配T重放结果，旧/错误owner身份不得触及无参原始Release。当前G→M尚未绑定，因此规则仍IMPLEMENTATION_REQUIRED/NOT_PROVEN。
+
+### 13.3 R3-03：ACK消费与双端退休的单写布局
+
+USB单未完成Frame请求保持；下面是一个USB端点的候选描述，不是为每个消费者另建引用系统：
+
+```c
+typedef struct ResourceUsbPublication {
+    CoreGrantKey grant;            /* USB写，当前D存活期不可改 */
+    CoreHandoffKey handoff;        /* USB写 */
+    uint32_t published;            /* 0/1，最后发布 */
+    uint32_t queue_commit;         /* UNKNOWN/NOT_SUBMITTED/COMMITTED */
+    uint32_t local_cancel;         /* USB写，不能假装取消已提交资源 */
+    CoreBridgeKey consumed_bridge; /* USB仅在匹配原Return ACK时写 */
+    int32_t consumed_result;
+    uint32_t consume_valid;        /* USB最后发布 */
+} ResourceUsbPublication;          /* 预测64B */
+
+typedef struct ResourceCameraEndpoint {
+    CoreGrantKey grant;            /* Camera写，从pub/资格表核验固定 */
+    CoreHandoffKey handoff;
+    CoreMediaToken media;
+    CoreBridgeKey bridge;
+    CoreStorageKey storage;        /* USB端点填0；类型保持通用 */
+    uint32_t phase;                /* ACCEPTED/BOUND/RETURN_WAIT/TERMINAL/RETIRED */
+    int32_t result;                /* TERMINAL后不可变 */
+    uint32_t fact_flags;           /* 实际绑定/归还/负向终结等，不是completion推断 */
+    uint32_t reply_enqueued;       /* 运输事实，Camera写 */
+    uint32_t retired;              /* Camera最后发布，保留旧G/H退休cookie */
+} ResourceCameraEndpoint;          /* 预测100B；TERMINAL部分就是T，不再复制T */
+```
+
+双方只写各自对象。published、consume_valid、reply_enqueued、retired均只允许0/1，其余phase/owner/commit使用明确定义的中立码域，未知值拒绝，不直接cast旧短enum。完整G/H写入后再以屏障发布published；读取端在原Platform PRIMASK保存/恢复与短临界区内复制一致视图。queue_commit可能晚于Camera合法接收，因此UNKNOWN在“真实队列已交付匹配消息”条件下可受理；明确NOT_SUBMITTED不能凭无消息旁路受理。若队列报告失败却已存在相同Camera受理，属内部违约，保留事实/BLOCKED，不能当LOCAL_UNCOMMITTED清除。临界区禁止队列发送、FS、Abort和等待，volatile本身不作锁。
+
+重试前USB必须先在短临界区把尚未提交的queue_commit置UNKNOWN，再离开临界区调用原QueueSend；返回明确失败且从未成功入队才记NOT_SUBMITTED，成功记COMMITTED。COMMITTED为该D的粘滞事实，后续重复发送失败也不得回退。否则NOT_SUBMITTED状态下第二次发送被Camera抢先消费，会错误拒绝合法请求。COMMITTED或UNKNOWN的取消不能伪装成未入队本地退休。
+
+既有Frame Request票据在Bridge USB端私有分配，因此迁移端口必须在**同USB owner、原票据分配之后/首次发送之前**提供中立D发布适配；不能让Resource裸读next_request或另分配编号，也不能等QueueSend后才补G/H。可作为USB Frame Port显式阶段接口，具体内部签名另审，不向Resource暴露Bridge私有struct。Storage端同理由原RESERVING窗口传入中立G/H，不从外部猜generation。
+
+严格顺序：
+
+1. USB发布D→原FrameRequest入队；Camera先完整核验G/H/路由键，再预留记录/取M/发Offer。
+2. USB不再访问原Frame→提交原Return；Camera真实后端Release成功才将结果冻结TERMINAL并生成既有ACK。Release失败保留M，不生成成功结果。
+3. Camera ACK入队后仅reply_enqueued=1，**不置consume_valid或retired**；队列满重试同ACK，不再Release。
+4. USB在原UsbProcess匹配RETURN状态、return_sent、完整B、SYS_OK后，将当前D的G/H和匹配B关联；先写consumed_bridge/result，再发布consume_valid，随后才清原USB lease。该位置必须留在原ACK消费分支，不能从USB_IDLE/Debug推导。终结负向Offer也按对应D及原结果发布消费，不伪造Return ACK。
+5. Camera每轮先处理消费/终结：同一完整G/H/B、已固定结果/无实际持有、无未决补偿都满足，才发布retired=1。结果不匹配保持原T、报错误；不清api_busy或Replay。
+6. USB经受保护只读端口观察到相同G/H的retired=1后才可复用publication。Camera旧退休cookie保持到接受下一完整D；不能先清cookie让USB永远等不到确认。新D ticket不同，旧ACK/Return不得匹配新记录。
+
+此消费记录是原ACK的端点元数据，不新增平行ACK队列。Camera只读USB消费字段，USB只读Camera退休cookie，不共享写phase。USB T/CameraEndpoint与现Camera公共内部借帧记录分离，T不持有Frame；ACK未消费期间SD-only可继续使用内部记录，不覆盖T。一个USB端点按单请求限制只需一个当前CameraEndpoint/T；这要求“下一D等待退休”闸门真实实现，不能既允许无界新请求又声称1槽足够。合法重复可用当前T重放；退休后迟到报文仅拒绝，不承诺无限旧回复。
+
+T中的M是历史身份，不继续占有Frame，也不要求原Loan槽在退休前不能复用。后端已为SD-only/另一G复用相同index但session/id不同，不代表旧M仍持有；核验结合T中的真实Release确认和当前实际M身份，不按同地址/index误判。历史M只能用于匹配/证明，绝不能据它再次调用Release。已被释放的Raw槽也允许按原池规则供DMA使用；T不能成为隐式Frame引用。
+
+LOCAL_UNCOMMITTED仅在所有发送均明确失败、无匹配Camera受理时可由USB本地清publication，不生成Camera ACK；已消耗ticket不回退。COMMITTED/已受理取消仍等Camera终结与消费，超时只报未完成。处于TERMINAL的负向回复与正向归还各保留原result，不让内部背压伪装成业务成功。所有等待异步返回调度器。
+
+Storage不再建立另一份100B CameraEndpoint：优先在原StorageSlot中新增G/H两个不可变身份（预测32B），S与实际Media lease仍用原字段，M由该lease和纯快照构造。真实ReleaseLease成功→原槽FREE/generation确认即归还终结，原队列项全S核验；没有USB ACK或额外引用计数。Storage退出入口已关时槽身份保持到资格核验完成；若仍ACTIVE正常复用，新generation使旧项失效。当前本地FS失败/RETURN_PENDING、FREE写入顺序保持原权威，不凭新增字段清资源。
+
+### 13.4 R3-04：所有入口与L_admit/L_close串行边界
+
+| 入口 | L_close前 | L_close后 | 唯一处理者 |
+|---|---|---|---|
+| USB FrameRequest入队但未消费 | 仅运输，不拥有M | Camera消费时拒旧G，终结原D，不清队列 | Camera owner |
+| Camera request_pending | 同G ACTIVE可预留记录并Get | 尚无M不得Get；冻结负向终结 | Camera owner |
+| offer_pending，有M | 原B/M重试，不再次Get | 继续原Offer/Return排空，不绑定新G | Camera owner，USB负责结束自身访问 |
+| offer_pending，无M | 发送已固定负向结果 | 同样发送原结果，不借资源 | Camera owner |
+| Dispatcher/Storage Publish | 显式携带该G，进入原槽RESERVING | 不再为旧G创建新预留/Retain | Camera owner |
+| Storage Retain/提交 | 同owner已核验G，预留G/H/S及记录空间，再Retain | 与L_close不能重入交错；此前真实Retain必须走归还，不能丢槽 | Camera owner；本地STOP可影响accepting但不是L_close |
+| Storage Return / USB Return | 无论是否仍Active都匹配身份排空 | 继续真实Release，不被关闭入口禁止 | 原consumer提交；Camera实际释放 |
+| 队列迟到/旧通知 | 通知只是唤醒，按pending身份推进 | 不创造新G/H；不匹配D或已退休即拒绝，无资源调用 | 对应owner任务 |
+
+L_admit与L_close都由Camera任务串行：受理检查→预留元数据→成功绑定实际M的过程禁止重入/异步分裂；Get/Retain无阻塞外部业务回调。L_close采用Qualification ACTIVE→RELEASING这一权威转换，不维护第二张Resource active表。旧G永不重开，新G必须通过新ACQUIRE；是否有新消费者不影响旧G拒绝条件。
+
+L_verify(G,R)只在入口已关、相应发布/提交/受理均终结、实际M无该权利、消费/退休条件满足的同owner一致点产生。其他consumer有帧不阻止本G的释放；但最后Camera停止还需全局内部借用/后端/DMA安全。核验结果按完整R和G使用，不能缓存一个bool用于下一会话。准入所需中立纯MatchesGrant/GetGrant接口也尚缺：应由Qualification公开Ops/Camera owner适配提供完整G核对，不让Resource取App_CameraQualificationAccess返回core后裸读entries。现released只有G参数，完整R应由Camera适配显式传入或受控上下文绑定；具体Ops修订仍待审批，不私读rx。生产released/idle仍NULL，稳定关闭仍NOT_PROVEN。
+
+### 13.5 R3-05：Raw/JPEG只读Snapshot精确草案
+
+中立snapshot头归Media公开能力/Ports契约，不能include Application私有状态。原状态码由适配显式映射；数组容量引用现有后端唯一常量（当前Raw7、JPEG Loan7），若将常量移为公开别名不得另立一个可独立变化的池容量。示例数组尺寸仅为本基线预测，未来超限必须拒绝/重新审核schema，不截断漏报。
+
+```c
+typedef struct RawOwnershipSnapshot {
+    uint32_t schema, instance_epoch, capture_state, has_in_use;
+    int32_t media_result;
+    uint32_t in_use_index, in_use_sequence;
+    uint32_t dma_target_index[2];
+    uint32_t buffer_states[7];     /* 实施时用原池容量的公开别名 */
+} RawOwnershipSnapshot;            /* 预测64B */
+
+typedef struct JpegLoanSnapshot {
+    uint32_t record_index, loan_id, owner_flags;
+    uint32_t frame_offset, frame_length;
+    uint32_t blocks_low, blocks_high, reserved;
+} JpegLoanSnapshot;                /* 32B，避免uint64对齐假设 */
+typedef struct JpegOwnershipSnapshot {
+    uint32_t schema, loan_session, running;
+    int32_t media_result;
+    uint32_t current_original_index, loan_capacity;
+    uint32_t dma_target_index[2];
+    JpegLoanSnapshot loans[7];
+} JpegOwnershipSnapshot;           /* 预测256B */
+
+SysResult_t Media_ReadRawOwnership(uint32_t schema,
+    RawOwnershipSnapshot *out);
+SysResult_t Media_ReadJpegOwnership(uint32_t schema,
+    JpegOwnershipSnapshot *out);
+```
+
+Raw has_in_use=0时index按INVALID编码，sequence不得作有效令牌；有效时index必须在池内、不在M0/M1且state=IN_USE。instance_epoch是**尚未存在的最小ADAPT元数据**，由Media在已安全排空、准备重建Raw实例前消耗（启动失败也不回退），不由查询生成、不镜像running/stopping；预测持久增加4B。当前sequence是帧序号、允许原算法回绕，必须连同G/H和instance/index验证，不能用它独立拒绝所有旧事务。
+
+JPEG owner_flags只表示后端实际ORIGINAL/SD位，不会神奇地知道原始位是USB还是SD-only内部持有；用途由Camera关联端口的G/内部用途与M精确连接。loan_session/id来自真实s_loan_session/Loan，不由query分配；record_index只是定位。snapshot只复制Loan/块mask/当前目标元数据，不改引用数，不解析新JPEG，不决定回收；即使snapshot显示没有某owner也不能绕过D/T及R身份核验。
+
+单写/原状态责任：snapshot out仅由Camera query写；Raw实例epoch仅Media安全准备路径写，in_use由Camera Get/Release写；原Raw buffer state涉及IRQ轮换与任务获取/归还，沿用原临界区而非虚构单任务独写。JPEG Loan/owner由Camera任务写，DMA目标/完成块由IRQ写、解析/READY由Camera任务推进；只读快照统一在受保护窗口采样，不改变这些原所有者。
+
+调用契约：Camera owner在Media/Bridge安全调度边界调用；Runtime/Resource Port验证任务所有者，Media层不反向依赖App_Events。Media纯查询拒绝ISR；任务权限错误在Port返回INVALID_STATE。用原PRIMASK保存/嵌套恢复及屏障在有限区间复制（Raw最多7项，JPEG最多7Loan与两个目标），不关DMA、不发HAL/BSP调用；不能拿单核屏蔽当DMA或CM4同步。snapshot不能被其他任务裸读私有表拼接。
+
+错误契约：调用者提供生命周期足够且与Media对象/数据区不重叠的静态out；Port按既定scratch范围验证，不能宣称任意伪造指针都可安全探测。NULL/未知schema/可检测输出别名非法→INVALID_ARG；后端不适用→NOT_SUPPORTED；未初始化/状态不一致→INVALID_STATE；容量无法完整表示→NO_RESOURCE；已存在Media IO错误仍完整返回它对应的事实，不把原错误覆盖OK。SysResult成功只表示快照复制一致，out.media_result/状态、D/T和实际访问结束证据仍要独立解释。失败out不变。若Media从未创建实例，不能用错误返回推断空资源；由Camera初始化事实和UNSTARTED分支单独核验。现没有这两个纯query，均IMPLEMENTATION_REQUIRED。
+
+快照只在同Camera owner当前核验动作内有效；Raw IRQ/目标可能继续变化，但单IN_USE与Loan权利必须保持原后端保护。未来纯查询实现需证明采样字段的一致区间；IRQ恢复后，不能将整张DMA目标快照当作稍后仍不变的硬件事实。消费证明和资格关闭稳定条件才允许将核验结论提交到匹配G/R，不把snapshot当永久Release证书，更不提供Snapshot_Release之类能力。
+
+### 13.6 中立资源接口、预算与最终结论
+
+候选公共签名只使用CoreGrantKey/ReleaseKey/HandoffKey/MediaToken及中立结果：`Resource_RequestFrame(G,H)`、`Resource_Return(G,H,M)`、`Resource_CloseAdmission(R)`、`Resource_QueryExit(R,out)`。B/S映射由相应Ports完成；Resource端口内部记录使用中立B/S值，不include Bridge/Storage私有头。媒体快照有独立Media公开schema，Camera owner负责通过端口核验，Snapshot不提供Release入口。Configuration生成ConsumerUseSet不使Resource成为拓扑管理者；Lifecycle不接管Frame引用。
+
+ExitProof候选含CoreReleaseKey20B、flags4B、backend_result4B、pending_handoffs4B、pending_terminals4B、unresolved_binding4B，共40B。pending数是本次有界扫描诊断，不是新的持久引用计数；只针对该G/R，不拿另一个消费者的内部持有阻塞本G。完整硬件idle单独查询，不与消费者退出混成一个bool。
+
+候选新增持久元数据：USB Publication64+Camera Endpoint/T100+原Storage slot新增G/H32+Raw instance epoch4=200B；snapshot union max(64,256)=256B与ExitProof40共296B调用者静态workspace，合计候选496B。T不再次加一份，原Storage lease/队列S及既有Media refcount不重复计。该数字仅此最小单USB请求/slot1模型的DESIGN_PROPOSED布局估算，不含新增代码、对齐填充或未来端口，不能当实际RAM/栈测量。现有旧记录是否可抵扣须后续链接净增减审核；ARMCC5 sizeof/offset/Map、高水位和DWT均NOT_RUN。
+
+R3-01～05设计已形成独立契约；字段候选不等于API获批。第3节源码事实与第2节外部机制支持取舍，不证明H7 G→M或关闭屏障已实现。Grant→Frame Lease及Stable Admission Closure继续NOT_PROVEN。原32项场景保持NOT_RUN，新增R2/R3联合矩阵只设计不执行；所有ADR仍UNRESOLVED，不授权Phase1/C2.2C。
+
+## 14. R3-06：Control / Media / Cross-Core Ownership Boundary
+
+本节DESIGN_PROPOSED；完整控制/配置契约见[ControlPlaneArchitecture](H7_V2_ControlPlaneArchitecture.md)，静态注册/运行时解析见[ModuleDependencyDesign](H7_V2_ModuleDependencyDesign.md)。新增控制平面不能弱化第13节资源证明，也不能借“配置已提交”提前归还Frame。
+
+### 14.1 身份域与ACK域
+
+```mermaid
+flowchart LR
+  CI[Control client + principal] --> TS[Transport session / request]
+  TS --> CT[M7 configuration transaction / base revision]
+  CT --> PL[Execution Plan / module command]
+  PL --> MI[Module identity / lifecycle completion]
+  MI --> G[Media consumer Grant G]
+  G --> H[H / B / M / S / T]
+  TS -. not Frame ACK .-> CK[Transport receive ACK]
+  CT -. not Frame release .-> CC[Configuration committed revision]
+```
+
+箭头表示因果/关联，不表示相同编号。Control Client、Transport Session、ConfigTx、Module ID、Media Consumer ID、G/R/H/B/M/S/T不能互换。用户启用USB不直接拥有USB Frame；同一个Wi-Fi物理连接上的控制服务与媒体服务也不能共用资源身份。只有实际持Frame的媒体consumer通过原资格协议参与归还。
+
+| 事件 | 唯一证明 | 不证明 |
+|---|---|---|
+| IPC/USB/BLE/Network控制接收ACK | 传输请求已接收/解析，绑定该连接身份 | Manager已接受/应用，Frame或DMA已释放 |
+| Configuration ACCEPTED | M7固定事务和期望配置 | 模块已ACTIVE或达到FPS |
+| Configuration COMMITTED | 必需实际配置/生命周期步骤成功，revision发布 | 某未来Frame自动归还，性能已实测 |
+| Frame Return ACK | Camera匹配B/M后实际执行后端归还 | USB已经消费ACK或其他consumer也归还 |
+| USB ACK消费证明 | 原端点匹配并消费指定D/B终结 | 新配置事务成功、全部硬件停止 |
+| Lifecycle RELEASE回复 | 指定G/R资格退出条件真实满足 | 全局Camera已停止或文件必然正常完成 |
+
+### 14.2 M4/M7与IPC实际边界
+
+SOURCE_CONFIRMED：Common/Inc/ipc_shared.h的V3为320B共享布局，Common/Inc/ipc_application.h的80B应用状态由M7生产、CM4状态受空值约束；现HSEM与SRAM4 4KiB基础保留。该源码不能证明M4已能提交全部统一配置操作，不能将reserved当Command或共享M7 ctx指针。
+
+目标M4仅客户端：提交期望配置、读能力/状态、订阅；不Get/Retain/Release、不读写Raw/FIFO/D/T/资格表，不操作DCMI/DMA，不直接执行M7模块转换。Adapter可在硬件owner核解析/转发，但M7 Gateway最终鉴权、Manager唯一写配置、Camera owner最终执行Media交接；Media后端持有事实仍唯一权威。现Control IPC wire schema/完整会话与ACK需另行审批，本轮没有IPC ABI/代码变更。
+
+单核PRIMASK不使跨核读写原子；HSEM通知也不是Lease归还证明。原共享状态以既有两核单写/屏障/seqlock契约读取，M4获得的是带age/错误的状态副本而非可用作退出证明的私有快照。Snapshot API始终在M7 Camera owner核验当前G/R，不允许M4隔空调用或从状态报告拼接“归还成功”。
+
+### 14.3 断线、重配置与未来请求入口
+
+Control客户端断线/M4重启/IPC心跳超时不等于Media STOP，不清G/M。M7保留已接受ConfigTx，按事务明确策略继续/安全取消；媒体消费者由模块独立完成原始访问/Return/ACK/释放。若Network视频连接断线导致模块业务停止，也必须逐DMA完成及真实归还，不能从TCP断开就撤资格。
+
+未来Network/AI Request同USB/Storage一样进入Camera owner的L_admit，必须有独立有效G/H/后端能力；L_close后旧G不得因控制重连、新Desired或旧通知重新取得资源。已绑定M继续排空，控制事务取消/回滚不能强清。新配置所需新的G只能在其合法ACQUIRE后产生；旧M/收据未终结时不能因configuration revision变化覆盖身份。
+
+Cold boot时所有内部票据仅在真实本地初始化边界建立，后端未安全停止不能假装“干净启动”；Control boot/session handshake的持久失效源仍UNRESOLVED，不能把当前IPC版本或M4重启当新M7 session证明。重配置沿用第13节不复用command票据，配置Revision不是Media/Bridge epoch，不重置Replay。
+
+若未来网络硬件归M4，Adapter/驱动核心归属不等于将原Frame Lease交给M4：原始Frame仍由M7 owner管理，可研究M7先完成读取到独立传输私有缓冲，再由另一核驱动使用该副本；副本/跨核完成/缓存一致性和容量必须另审，不复用IPC状态窗口当Frame池。本轮不实现该数据通路。
+
+控制恢复根与媒体根依赖分离：停Pipeline应保留已声明控制服务及共享基础设备；当前USB_Mode_Stop实际停USB Device，未来需受审的基础设备/Class契约适配。Registry/Resolver静态能力不能让不具备此能力的硬件接口“自动”维持连接；未实现即拒绝相关组合/明确缺口。控制流不承载Frame所有权，媒体端口不处理用户权限策略。
+
+### 14.4 独立结论
+
+R3-01～05第13节精确草案完成供审；R3-06的控制身份/跨核/多传输边界已设计，生产适配IMPLEMENTATION_REQUIRED。原32场景及联合J/C矩阵均NOT_RUN；Grant→Frame Lease与Stable Admission Closure继续NOT_PROVEN。原AC-01～06、B2 ID23=A/ID31=B、Raw单IN_USE/JPEG FIFO和所有Replay约束保持，不因新增Composition Plane改变资源算法或授权。
+
+## 15. 冻结架构内的归属与阶段限制
+
+Media Resource是既定五核心之一；本文Resource Manager仅其内部端口/关联职责，不另加顶层管理器。控制适配内属Control Service，配置事务/候选解析内属Composition Manager，计划/生命周期协调内属Execution Manager，真实Camera/USB/Storage业务仍在Application Modules。Core中立身份不因此成为新的状态总控。
+
+Phase0～10原路线及总体目录不改，仅提前定义Phase7/8有关帧/模块接口，不实施后续功能。静态注册、依赖候选、图选择均不等于真实Pipeline切换；后者仍需实际Drain/配置/完成证明。Client断线和Network发送完成分别不能代替Lease归还与Camera Release ACK，Replay和两个NOT_PROVEN不变。
