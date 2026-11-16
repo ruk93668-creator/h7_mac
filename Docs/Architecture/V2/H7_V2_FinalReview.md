@@ -8,7 +8,7 @@ c6d2bed、fa9ce5d、1c97d7c是main祖先（git merge-base --is-ancestor均返回
 
 任务只新增本目录11份Markdown文档，不创建新分支，不改main、生产源码、测试、ABI、Replay、任务配置、Keil或M4文件；不删除Legacy、不动历史output、不执行测试/构建、不进入C2.2C。提交号由实际Git提交产生，不在文档里预填或自引用预计SHA。
 
-## 2. 十一份交付文件
+## 2. 实际交付文件与 Legacy Cleanup 合并映射
 
 | 文件 | 内容 |
 |---|---|
@@ -18,13 +18,43 @@ c6d2bed、fa9ce5d、1c97d7c是main祖先（git merge-base --is-ancestor均返回
 | [H7_V2_ModuleContract.md](H7_V2_ModuleContract.md) | Graph/Format/Lifecycle/Resource/Camera/USB/Storage/Supervisor/Network草案 |
 | [H7_V2_DirectoryStructure.md](H7_V2_DirectoryStructure.md) | V2目录、允许/禁止依赖、开发隔离与最终唯一活动Application |
 | [H7_V2_DependencyRules.md](H7_V2_DependencyRules.md) | 状态权威、同步/运输/ISR、依赖门禁设计 |
-| [H7_V2_MigrationPlan.md](H7_V2_MigrationPlan.md) | 十阶段依赖/接口/文件/回归/验收/回滚、逐文件清理门禁 |
+| [H7_V2_MigrationPlan.md](H7_V2_MigrationPlan.md) | 迁移计划；同时承载 LegacyCleanupPlan 的清理原则、逐文件退休、Keil/链接清理及验收回滚内容，见下方映射 |
 | [H7_V2_OpenSourceArchitectureStudy.md](H7_V2_OpenSourceArchitectureStudy.md) | 五个官方项目固定版本源码、对象/函数/机制、H7映射和读取指纹 |
 | [H7_V2_ArchitectureDecisionRecord.md](H7_V2_ArchitectureDecisionRecord.md) | 七项待批ADR，含Resource Ownership与CameraCapture两项专项 |
 | [H7_V2_ResourceBudget.md](H7_V2_ResourceBudget.md) | RAM/SDRAM/Flash/CPU/栈/队列/缓冲与扩展预算 |
 | 本文件 | 范围核查、结论、未决事项和后续审核门禁 |
 
-ResourceBudget是按本轮新增要求独立补充的第11份；不把它冒称成此前已有命名文件。ADR两专项作为独立章节完整论证，不另增未经列入的生产或测试文件。
+### 2.1 清单问题处理记录
+
+本目录实际有11份物理文档。`H7_V2_LegacyCleanupPlan.md` **未作为独立文件生成**：此前有意将清理计划放入MigrationPlan，依据是该文档原有“迁移与Legacy退休计划”标题及第1、3、4、5节的清理内容。但最终交付索引遗漏了合并说明，不能把“11份实际文件存在”表述为“原定11个文件名逐项齐全”。本次只补明合并关系，不拆分或改写已提交的清理设计。
+
+`H7_V2_ResourceBudget.md` 是独立资源预算交付，**不是 LegacyCleanupPlan 的替代文件**。Legacy Cleanup 按下表作为逻辑交付项定位；没有创建同名空壳文件，也不声称独立文件已经交付。合并交付形式记录在此供人工审核，不表示清理方案已获批准。
+
+| Legacy Cleanup 审核内容 | 合并承载位置 | 定位内容 |
+|---|---|---|
+| 清理策略及删除前置条件 | MigrationPlan 第1节“迁移纪律” | 当前保留旧Application；功能承接、引用和链接/实板门禁后再删除；Git历史回滚 |
+| 各旧源/头文件承接与退休 | MigrationPlan 第3节“文件级退休映射” | 19组旧C/同名头及internal头的V2承接、阶段和删除前特有检查 |
+| Keil和链接清理 | MigrationPlan 第4节“Keil与链接清理门禁” | 有效源、头路径、宏、初始化入口、重复/未解析符号及唯一活动Application |
+| 回归、验收和回滚证据 | MigrationPlan 第5节，结合第2节阶段矩阵 | 软件/硬件证据、资源核对和逐阶段完整回滚；未迁移必要功能不能删除 |
+
+ADR-01～ADR-07仍全部UNRESOLVED；Grant→Frame Lease与Stable Admission Closure仍NOT_PROVEN。本次清单澄清不改变任何架构决策、证据结论或实施授权。
+
+### 2.2 后续分轮人工审核文件索引
+
+以下仅为文件和章节定位，不预先批准审核顺序或方案。具体文件链接见上表；以节标题为稳定定位，代码/文档行号可能随后续批准的修订移动。
+
+| 建议审核轮次 | 文件与章节定位 | 本轮审核关注 |
+|---|---|---|
+| R1 事实基线与审计覆盖 | LegacyApplicationAudit：文件状态表、真实运行链、间接入口、全函数索引、全局对象/宏/私有字段补充；LowLevelReuseMatrix 第1～3节 | 源码事实、底层复用边界、依赖覆盖限制 |
+| R2 成熟架构与静态拓扑 | OpenSourceArchitectureStudy 第2～8节；ArchitectureDecisionRecord ADR-01；ModuleContract 第1节 | 固定Tag/SHA、Graph/Format职责与MCU适配 |
+| R3 Resource Ownership | ArchitectureDecisionRecord ADR-03第3.1～3.6节；ModuleContract 第3节；DependencyRules 第2～4节 | 身份关联、ACK/DMA、独立归还、稳定关闭及两个NOT_PROVEN |
+| R4 CameraCapture边界 | ArchitectureDecisionRecord ADR-04第4.1～4.4节；ModuleContract 第4节；LowLevelReuseMatrix 中Capture/Stream/FIFO条目 | 唯一采集门面、复用后端、普通/保护性STOP |
+| R5 模块生命周期与Supervisor | ArchitectureDecisionRecord ADR-02/05/06；ModuleContract 第2、5～8节及兼容补充 | 异步完成、业务与资格分离、ID23/31和错误策略 |
+| R6 目录与依赖 | DirectoryStructure 第1～4节；DependencyRules 第1～6节 | 允许/禁止依赖、任务/ISR/Framework/ABI边界 |
+| R7 迁移与Legacy Cleanup | MigrationPlan 第1～5节；ArchitectureDecisionRecord ADR-07；本文件第2.1节 | 功能承接、逐文件退休、Keil清理、最终唯一应用及回滚 |
+| R8 预算及综合门禁 | ResourceBudget 第1～8节；ApplicationArchitecture 第5～7节；本文件第5～8节 | 计算/估算/实测区别，未决项、扩展成本与实施前置条件 |
+
+当前只准备以上定位，等待人工逐轮意见；不开始Phase 1或V2生产代码实施。
 
 ## 3. 全量审计覆盖与证据边界
 
@@ -79,7 +109,7 @@ USB/Storage复用当前Service；Ethernet/Wi-Fi加入需独立发送缓存/多DM
 
 ## 8. 本轮检查与下一步
 
-文档检查包括：11份指定文件齐全；源码路径/函数行索引与绑定核对；宏/全局/间接入口补充；开源引用固定版本；预算算式与模式复用；未决项不标APPROVED/PASS；跨文档权威和Clean Restart策略一致。提交前检查Git diff --check和暂存清单，要求仅本目录11份新Markdown，无修改/删除既有文件。
+文档检查包括：11份实际文件已登记，LegacyCleanup独立文件未生成及合并位置见第2.1节；源码路径/函数行索引与绑定核对；宏/全局/间接入口补充；开源引用固定版本；预算算式与模式复用；未决项不标APPROVED/PASS；跨文档权威和Clean Restart策略一致。提交前检查Git diff --check和暂存清单，要求仅本目录11份新Markdown，无修改/删除既有文件。
 
 软件测试：NOT_RUN；CM7/CM4编译：NOT_RUN；实板：NOT_RUN；新增运行资源测量：NOT_RUN。未使用设计推导替代Grant→Lease或稳定关闭运行证据。
 
@@ -87,6 +117,6 @@ USB/Storage复用当前Service；Ethernet/Wi-Fi加入需独立发送缓存/多DM
 
 ### 实际完成的文档检查记录
 
-11份文件清单精确匹配；210个函数位置均对照源码声明核对；62个唯一完整源码路径检查存在；UTF-8、代码围栏和本目录Markdown链接检查通过。预算地址算式核对固定池尾0xD041A400、三用途合计4907008B。检查时既有跟踪文件无diff。以上是文档一致性检查，不是运行生产测试。
+此前检查确认11份实际文件存在；原定文件名与合并交付的差异已在第2.1节更正，不能据数量宣称逐名齐全。210个函数位置均对照源码声明核对；62个唯一完整源码路径检查存在；UTF-8、代码围栏和本目录Markdown链接检查通过。预算地址算式核对固定池尾0xD041A400、三用途合计4907008B。检查时既有跟踪文件无diff。以上是文档一致性检查，不是运行生产测试。
 
 受保护文件逐字节与输入HEAD比较相同：CM4/Core/Src/main.c SHA256 `1dec895ef44e568a9a263fc8b229fc2622c6a625c54b8e291286e186be36454c`；MDK-ARM/h7_mac.uvprojx SHA256 `a8f9e0d08c9cceb9ec0934fe287f6c71ad99bb846f13246ef884e801369c9aa1`。本轮没有删除/修改M4延时或注释。
