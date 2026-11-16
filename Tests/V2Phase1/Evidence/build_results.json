@@ -1,0 +1,104 @@
+{
+  "source_head": "ce33d0714211c237009d63f36c26bafe1ed47804",
+  "output": "D:\\32\\STM32H7\\h7_mac\\output\\V2Phase1\\build_20261116_202422",
+  "targets": [
+    {
+      "target": "h7_mac_CM7",
+      "command": [
+        "D:/32/UV4/UV4.exe",
+        "-j0",
+        "-r",
+        "D:\\32\\STM32H7\\h7_mac\\MDK-ARM\\h7_mac.uvprojx",
+        "-t",
+        "h7_mac_CM7",
+        "-o",
+        "D:\\32\\STM32H7\\h7_mac\\output\\V2Phase1\\build_20261116_202422\\h7_mac_CM7.log"
+      ],
+      "exit": 0,
+      "zero_errors_warnings": true,
+      "program_size": [
+        "Program Size: Code=137690 RO-data=3114 RW-data=1340 ZI-data=100932  \r"
+      ],
+      "artifacts": [
+        {
+          "file": "artifacts\\h7_mac_CM7\\h7_mac_CM7.axf",
+          "sha256": "dfa56fb10d355f598a024b9fe3f9bf3b9564b2a7f0077081308cac04b93b790d",
+          "bytes": 3105928
+        },
+        {
+          "file": "artifacts\\h7_mac_CM7\\h7_mac_CM7.build_log.htm",
+          "sha256": "bb6d1a8f7769ef093256327d43a19da1cb64a2bdd7f2104dd93bebadea9ed378",
+          "bytes": 6531
+        },
+        {
+          "file": "artifacts\\h7_mac_CM7\\h7_mac_CM7.htm",
+          "sha256": "c667c5faa1e544dd949277cf2edff5f9ffd9020b9da593c8b1601417cdfbd918",
+          "bytes": 648070
+        },
+        {
+          "file": "artifacts\\h7_mac_CM7\\h7_mac_CM7.map",
+          "sha256": "ff21d368cd8852ff843e7a378b572f8e1a91b692817d9c40ef60feea72b25637",
+          "bytes": 930002
+        }
+      ]
+    },
+    {
+      "target": "h7_mac_CM4",
+      "command": [
+        "D:/32/UV4/UV4.exe",
+        "-j0",
+        "-r",
+        "D:\\32\\STM32H7\\h7_mac\\MDK-ARM\\h7_mac.uvprojx",
+        "-t",
+        "h7_mac_CM4",
+        "-o",
+        "D:\\32\\STM32H7\\h7_mac\\output\\V2Phase1\\build_20261116_202422\\h7_mac_CM4.log"
+      ],
+      "exit": 0,
+      "zero_errors_warnings": true,
+      "program_size": [
+        "Program Size: Code=26350 RO-data=1438 RW-data=936 ZI-data=3576  \r"
+      ],
+      "artifacts": [
+        {
+          "file": "artifacts\\h7_mac_CM4\\h7_mac_CM4.axf",
+          "sha256": "9e1230dfee3ad2b7306ca073a0b0518b21abd35bbb8f2a39a49c818387a1f420",
+          "bytes": 1582948
+        },
+        {
+          "file": "artifacts\\h7_mac_CM4\\h7_mac_CM4.build_log.htm",
+          "sha256": "6637345d88532f1545e89ede80cdc0906906aeca08605c937fd86585d57111d3",
+          "bytes": 3321
+        },
+        {
+          "file": "artifacts\\h7_mac_CM4\\h7_mac_CM4.hex",
+          "sha256": "7be9685cb70201486281dcc0a327ea485705f3c7ba271a5dc2e1feb7ccdbd301",
+          "bytes": 78335
+        },
+        {
+          "file": "artifacts\\h7_mac_CM4\\h7_mac_CM4.htm",
+          "sha256": "9cc46b186bbb448e0492243a1ee163c1c2241040c8e2a9ee146ee3f51131d505",
+          "bytes": 157264
+        },
+        {
+          "file": "artifacts\\h7_mac_CM4\\h7_mac_CM4.map",
+          "sha256": "4106908c971fc085175a2d003a87e84d929d66c1b431a6283286b4039422532a",
+          "bytes": 263039
+        }
+      ]
+    }
+  ],
+  "source_sha256": {
+    "CM7\\ApplicationV2\\Configuration\\v2_composition.c": "3714e242237aee6ce3940cbfeb80690762f862744b3d5531a0d704a0d4fc4872",
+    "CM7\\ApplicationV2\\Configuration\\v2_composition.h": "cd7abb497180392d52332b978e9189d3f3105f13c0e2d95d9ecfd97487da96cc",
+    "CM7\\ApplicationV2\\Configuration\\v2_registry.c": "86db515e3985af1334a605c4343ae3f710e7b67cf2e6684ea24d21fd977b9e26",
+    "CM7\\ApplicationV2\\Configuration\\v2_registry.h": "933f373278e4a1068ccf7f755ef55406709b6cbb24435a7b90df541f1d5f8c03",
+    "CM7\\ApplicationV2\\Core\\media_format.c": "590207b34bca68d4b3c0df70f7478488665d7970e75049f195c7d0b5cf6f0f9a",
+    "CM7\\ApplicationV2\\Core\\media_format.h": "497f56785ff400bb1cfb571ea8a6dfa88138632356e6cdedd6f81b417c2a68fe",
+    "CM7\\ApplicationV2\\Core\\v2_types.h": "e0b7dbb5e2dccaa3a67d8b0387bebdd2c1bd18d9464131403b6e91f0cb0bbdc8",
+    "CM7\\ApplicationV2\\MediaGraph\\media_graph.c": "6329ad333b973c583d2bd4a224dc7f30859a44a5415e545ed25a439e51238b40",
+    "CM7\\ApplicationV2\\MediaGraph\\media_graph.h": "253f61ba430a842e22fe9bb81d8235accac172b504968aa3bb4b5bc6647f2696"
+  },
+  "project_sha256": "a8f9e0d08c9cceb9ec0934fe287f6c71ad99bb846f13246ef884e801369c9aa1",
+  "toolchain": "Product: MDK Plus 5.32\r\nComponent: ARM Compiler 5.06 update 7 (build 960)\r\nTool: armcc [4d365d]\r\nFor support see http://www.arm.com/support\r\nSoftware supplied by: ARM Limited\r\n"
+}

@@ -1,0 +1,72 @@
+{
+  "protected_identical": {
+    "MDK-ARM/h7_mac.uvprojx": true,
+    "CM4/Core/Src/main.c": true
+  },
+  "protected_sha256": {
+    "MDK-ARM/h7_mac.uvprojx": "a8f9e0d08c9cceb9ec0934fe287f6c71ad99bb846f13246ef884e801369c9aa1",
+    "CM4/Core/Src/main.c": "1dec895ef44e568a9a263fc8b229fc2622c6a625c54b8e291286e186be36454c"
+  },
+  "baseline": "ce33d0714211c237009d63f36c26bafe1ed47804",
+  "build_output": "D:\\32\\STM32H7\\h7_mac\\output\\V2Phase1\\build_20261116_202422",
+  "test_id_set_complete": true,
+  "tracked_changes": [
+    "CM7/ApplicationV2/Configuration/v2_composition.c",
+    "CM7/ApplicationV2/Configuration/v2_composition.h",
+    "CM7/ApplicationV2/Configuration/v2_registry.c",
+    "CM7/ApplicationV2/Configuration/v2_registry.h",
+    "CM7/ApplicationV2/Core/media_format.c",
+    "CM7/ApplicationV2/Core/media_format.h",
+    "CM7/ApplicationV2/Core/v2_types.h",
+    "CM7/ApplicationV2/MediaGraph/media_graph.c",
+    "CM7/ApplicationV2/MediaGraph/media_graph.h",
+    "Docs/Architecture/V2/Phase1/Phase1_ImplementationReport.md",
+    "Docs/Architecture/V2/Phase1/Phase1_ResourceBudgetReport.md",
+    "Docs/Architecture/V2/Phase1/Phase1_TestReport.md",
+    "Tests/V2Phase1/CaseIndex.csv",
+    "Tests/V2Phase1/Evidence/abi_probe_initial_failure.log",
+    "Tests/V2Phase1/Evidence/abi_probe_measured.json",
+    "Tests/V2Phase1/Evidence/build_results.json",
+    "Tests/V2Phase1/Evidence/first_rebuild_warnings.log",
+    "Tests/V2Phase1/Evidence/h7_mac_CM4.log",
+    "Tests/V2Phase1/Evidence/h7_mac_CM7.log",
+    "Tests/V2Phase1/Evidence/test_commands.json",
+    "Tests/V2Phase1/Evidence/test_stdout.log",
+    "Tests/V2Phase1/ScopeAudit.json",
+    "Tests/V2Phase1/audit_delivery.py",
+    "Tests/V2Phase1/phase1_test.c",
+    "Tests/V2Phase1/resources.json",
+    "Tests/V2Phase1/results.json",
+    "Tests/V2Phase1/run_build.py",
+    "Tests/V2Phase1/run_tests.py"
+  ],
+  "targets": [
+    {
+      "target": "h7_mac_CM7",
+      "exit": 0,
+      "zero_errors_warnings": true,
+      "program_size": [
+        "Program Size: Code=137690 RO-data=3114 RW-data=1340 ZI-data=100932  \r"
+      ]
+    },
+    {
+      "target": "h7_mac_CM4",
+      "exit": 0,
+      "zero_errors_warnings": true,
+      "program_size": [
+        "Program Size: Code=26350 RO-data=1438 RW-data=936 ZI-data=3576  \r"
+      ]
+    }
+  ],
+  "task_stack_map": {
+    "s_camera_stack": 6144,
+    "s_usb_stack": 8192,
+    "s_stack": 8192
+  },
+  "map_totals": [
+    "Total RO  Size (Code + RO Data)               140804 ( 137.50kB)",
+    "Total RW  Size (RW Data + ZI Data)            102272 (  99.88kB)",
+    "Total ROM Size (Code + RO Data + RW Data)     141176 ( 137.87kB)"
+  ],
+  "new_dynamic_allocations": 0
+}

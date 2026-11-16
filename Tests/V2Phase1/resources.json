@@ -1,0 +1,188 @@
+{
+  "O0": {
+    "probes": [
+      {
+        "case": 0,
+        "return": 0,
+        "measured_mock_test_stack_bytes": 136,
+        "sizeof": {
+          "CoreMediaFormat": 56,
+          "GraphPipelineDesc": 108,
+          "GraphSelection": 124,
+          "GraphValidatedView": 168,
+          "GraphScratch": 280,
+          "V2ModuleDesc": 52,
+          "V2Resolution": 104,
+          "V2ResolverScratch": 136,
+          "V2CompositionCandidate": 276,
+          "V2CompositionScratch": 696,
+          "GraphCaps": 48,
+          "GraphEntityDesc": 20,
+          "GraphPadDesc": 16,
+          "GraphLinkDesc": 16,
+          "GraphDesc": 40,
+          "GraphWorkspace": 112,
+          "V2Provided": 8,
+          "V2Requirement": 20,
+          "V2Registry": 8,
+          "V2Issue": 20,
+          "GraphIssue": 28,
+          "V2EntityBinding": 8,
+          "V2Desired": 16,
+          "GraphEntityOps": 8,
+          "GraphFrameRate": 8,
+          "GraphSinkPolicy": 12,
+          "AppMessage_t": 52,
+          "AppLifecycleMessage_t": 56,
+          "CameraFrame_t": 24,
+          "V2Status": 4
+        }
+      },
+      {
+        "case": 89,
+        "return": 0,
+        "measured_mock_test_stack_bytes": 556,
+        "sizeof": null
+      },
+      {
+        "case": 100,
+        "return": 0,
+        "measured_mock_test_stack_bytes": 188,
+        "sizeof": null
+      },
+      {
+        "case": 102,
+        "return": 0,
+        "measured_mock_test_stack_bytes": 412,
+        "sizeof": null
+      },
+      {
+        "case": 103,
+        "return": 0,
+        "measured_mock_test_stack_bytes": 412,
+        "sizeof": null
+      }
+    ],
+    "objects": [
+      {
+        "source": "CM7\\ApplicationV2\\Configuration\\v2_composition.c",
+        "RO": 850,
+        "RW": 0,
+        "ZI": 0
+      },
+      {
+        "source": "CM7\\ApplicationV2\\Configuration\\v2_registry.c",
+        "RO": 2562,
+        "RW": 0,
+        "ZI": 0
+      },
+      {
+        "source": "CM7\\ApplicationV2\\Core\\media_format.c",
+        "RO": 276,
+        "RW": 0,
+        "ZI": 0
+      },
+      {
+        "source": "CM7\\ApplicationV2\\MediaGraph\\media_graph.c",
+        "RO": 6400,
+        "RW": 0,
+        "ZI": 0
+      }
+    ],
+    "total_v2_object_RO": 10088,
+    "linker_stack_header": "Maximum Stack Usage =        552 bytes + Unknown(Untraceable Function Pointers)</H3>"
+  },
+  "O2": {
+    "probes": [
+      {
+        "case": 0,
+        "return": 0,
+        "measured_mock_test_stack_bytes": 184,
+        "sizeof": {
+          "CoreMediaFormat": 56,
+          "GraphPipelineDesc": 108,
+          "GraphSelection": 124,
+          "GraphValidatedView": 168,
+          "GraphScratch": 280,
+          "V2ModuleDesc": 52,
+          "V2Resolution": 104,
+          "V2ResolverScratch": 136,
+          "V2CompositionCandidate": 276,
+          "V2CompositionScratch": 696,
+          "GraphCaps": 48,
+          "GraphEntityDesc": 20,
+          "GraphPadDesc": 16,
+          "GraphLinkDesc": 16,
+          "GraphDesc": 40,
+          "GraphWorkspace": 112,
+          "V2Provided": 8,
+          "V2Requirement": 20,
+          "V2Registry": 8,
+          "V2Issue": 20,
+          "GraphIssue": 28,
+          "V2EntityBinding": 8,
+          "V2Desired": 16,
+          "GraphEntityOps": 8,
+          "GraphFrameRate": 8,
+          "GraphSinkPolicy": 12,
+          "AppMessage_t": 52,
+          "AppLifecycleMessage_t": 56,
+          "CameraFrame_t": 24,
+          "V2Status": 4
+        }
+      },
+      {
+        "case": 89,
+        "return": 0,
+        "measured_mock_test_stack_bytes": 580,
+        "sizeof": null
+      },
+      {
+        "case": 100,
+        "return": 0,
+        "measured_mock_test_stack_bytes": 184,
+        "sizeof": null
+      },
+      {
+        "case": 102,
+        "return": 0,
+        "measured_mock_test_stack_bytes": 428,
+        "sizeof": null
+      },
+      {
+        "case": 103,
+        "return": 0,
+        "measured_mock_test_stack_bytes": 428,
+        "sizeof": null
+      }
+    ],
+    "objects": [
+      {
+        "source": "CM7\\ApplicationV2\\Configuration\\v2_composition.c",
+        "RO": 718,
+        "RW": 0,
+        "ZI": 0
+      },
+      {
+        "source": "CM7\\ApplicationV2\\Configuration\\v2_registry.c",
+        "RO": 2074,
+        "RW": 0,
+        "ZI": 0
+      },
+      {
+        "source": "CM7\\ApplicationV2\\Core\\media_format.c",
+        "RO": 212,
+        "RW": 0,
+        "ZI": 0
+      },
+      {
+        "source": "CM7\\ApplicationV2\\MediaGraph\\media_graph.c",
+        "RO": 5140,
+        "RW": 0,
+        "ZI": 0
+      }
+    ],
+    "total_v2_object_RO": 8144,
+    "linker_stack_header": "Maximum Stack Usage =        576 bytes + Unknown(Untraceable Function Pointers)</H3>"
+  }
+}

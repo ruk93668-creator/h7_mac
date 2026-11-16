@@ -1,0 +1,126 @@
+﻿ID,Group,Contract,Source,Function,Line,O0,O2
+0,Core,"ARM sizeof, existing ABI and layout",Tests/V2Phase1/phase1_test.c,V2_Phase1Run,257,PASS,PASS
+1,Core,Valid and invalid numeric ID,Tests/V2Phase1/phase1_test.c,V2_Phase1Run,303,PASS,PASS
+2,Core,Success and error conventions,Tests/V2Phase1/phase1_test.c,V2_Phase1Run,306,PASS,PASS
+3,Core,Nonzero rational rate,Tests/V2Phase1/phase1_test.c,V2_Phase1Run,309,PASS,PASS
+4,Core,JPEG layout,Tests/V2Phase1/phase1_test.c,V2_Phase1Run,314,PASS,PASS
+5,Core,YUY2 layout,Tests/V2Phase1/phase1_test.c,V2_Phase1Run,317,PASS,PASS
+6,Core,Y8 layout,Tests/V2Phase1/phase1_test.c,V2_Phase1Run,320,PASS,PASS
+7,Core,RGB565 layout,Tests/V2Phase1/phase1_test.c,V2_Phase1Run,326,PASS,PASS
+8,Core,Odd YUY2 width rejected,Tests/V2Phase1/phase1_test.c,V2_Phase1Run,330,PASS,PASS
+9,Core,Wrong Raw size rejected,Tests/V2Phase1/phase1_test.c,V2_Phase1Run,333,PASS,PASS
+10,Core,Extra plane rejected,Tests/V2Phase1/phase1_test.c,V2_Phase1Run,336,PASS,PASS
+11,Core,Wrong Raw backend rejected,Tests/V2Phase1/phase1_test.c,V2_Phase1Run,339,PASS,PASS
+12,Core,Non-power-of-two alignment rejected,Tests/V2Phase1/phase1_test.c,V2_Phase1Run,342,PASS,PASS
+13,Core,Width narrowing overflow rejected,Tests/V2Phase1/phase1_test.c,V2_Phase1Run,345,PASS,PASS
+14,Core,Unknown pixel rejected,Tests/V2Phase1/phase1_test.c,V2_Phase1Run,348,PASS,PASS
+15,Core,Raw second span rejected,Tests/V2Phase1/phase1_test.c,V2_Phase1Run,351,PASS,PASS
+16,Core,Unknown format flag rejected,Tests/V2Phase1/phase1_test.c,V2_Phase1Run,354,PASS,PASS
+17,Core,Null media rejected,Tests/V2Phase1/phase1_test.c,V2_Phase1Run,357,PASS,PASS
+18,Core,JPEG payload mismatch rejected,Tests/V2Phase1/phase1_test.c,V2_Phase1Run,360,PASS,PASS
+19,Registry,Registry validation,Tests/V2Phase1/phase1_test.c,V2_Phase1Run,372,PASS,PASS
+20,Registry,Module lookup,Tests/V2Phase1/phase1_test.c,V2_Phase1Run,375,PASS,PASS
+21,Registry,Unknown module lookup,Tests/V2Phase1/phase1_test.c,V2_Phase1Run,378,PASS,PASS
+22,Registry,Provider lookup,Tests/V2Phase1/phase1_test.c,V2_Phase1Run,382,PASS,PASS
+23,Registry,Duplicate module rejected,Tests/V2Phase1/phase1_test.c,V2_Phase1Run,385,PASS,PASS
+24,Registry,Module count overflow rejected,Tests/V2Phase1/phase1_test.c,V2_Phase1Run,388,PASS,PASS
+25,Registry,Zero module ID rejected,Tests/V2Phase1/phase1_test.c,V2_Phase1Run,391,PASS,PASS
+26,Registry,Provided count overflow rejected,Tests/V2Phase1/phase1_test.c,V2_Phase1Run,394,PASS,PASS
+27,Registry,Missing provided array rejected,Tests/V2Phase1/phase1_test.c,V2_Phase1Run,397,PASS,PASS
+28,Registry,Invalid version interval rejected,Tests/V2Phase1/phase1_test.c,V2_Phase1Run,400,PASS,PASS
+29,Registry,Zero capability rejected,Tests/V2Phase1/phase1_test.c,V2_Phase1Run,403,PASS,PASS
+30,Registry,Registry reserved field rejected,Tests/V2Phase1/phase1_test.c,V2_Phase1Run,406,PASS,PASS
+31,Registry,Unknown module flag rejected,Tests/V2Phase1/phase1_test.c,V2_Phase1Run,409,PASS,PASS
+32,Registry,Required count overflow rejected,Tests/V2Phase1/phase1_test.c,V2_Phase1Run,412,PASS,PASS
+33,Registry,Optional count overflow rejected,Tests/V2Phase1/phase1_test.c,V2_Phase1Run,416,PASS,PASS
+34,Registry,Conflict count overflow rejected,Tests/V2Phase1/phase1_test.c,V2_Phase1Run,420,PASS,PASS
+35,Registry,Null registry rejected,Tests/V2Phase1/phase1_test.c,V2_Phase1Run,424,PASS,PASS
+36,Resolver,Mock Camera + USB closure,Tests/V2Phase1/phase1_test.c,V2_Phase1Run,435,PASS,PASS
+37,Resolver,Mock Camera + Storage closure,Tests/V2Phase1/phase1_test.c,V2_Phase1Run,439,PASS,PASS
+38,Resolver,Mock dual consumer deterministic order,Tests/V2Phase1/phase1_test.c,V2_Phase1Run,444,PASS,PASS
+39,Resolver,Missing required provider rejected,Tests/V2Phase1/phase1_test.c,V2_Phase1Run,449,PASS,PASS
+40,Resolver,Selected capability conflict rejected,Tests/V2Phase1/phase1_test.c,V2_Phase1Run,452,PASS,PASS
+41,Resolver,Dependency cycle rejected,Tests/V2Phase1/phase1_test.c,V2_Phase1Run,456,PASS,PASS
+42,Resolver,Ambiguous provider rejected,Tests/V2Phase1/phase1_test.c,V2_Phase1Run,461,PASS,PASS
+43,Resolver,Explicit preferred provider accepted,Tests/V2Phase1/phase1_test.c,V2_Phase1Run,465,PASS,PASS
+44,Resolver,Required version mismatch rejected,Tests/V2Phase1/phase1_test.c,V2_Phase1Run,472,PASS,PASS
+45,Resolver,Optional absent recorded,Tests/V2Phase1/phase1_test.c,V2_Phase1Run,476,PASS,PASS
+46,Resolver,AUTO optional closure,Tests/V2Phase1/phase1_test.c,V2_Phase1Run,484,PASS,PASS
+47,Resolver,Duplicate roots rejected,Tests/V2Phase1/phase1_test.c,V2_Phase1Run,492,PASS,PASS
+48,Resolver,Unknown root rejected,Tests/V2Phase1/phase1_test.c,V2_Phase1Run,495,PASS,PASS
+49,Resolver,Future required provider rejected,Tests/V2Phase1/phase1_test.c,V2_Phase1Run,498,PASS,PASS
+50,Resolver,Root capacity overflow preserves output,Tests/V2Phase1/phase1_test.c,V2_Phase1Run,501,PASS,PASS
+51,Resolver,100 deterministic resolve iterations,Tests/V2Phase1/phase1_test.c,V2_Phase1Run,505,PASS,PASS
+52,Resolver,Resolver scratch/output alias rejected,Tests/V2Phase1/phase1_test.c,V2_Phase1Run,509,PASS,PASS
+53,Graph_Format,Catalog validates,Tests/V2Phase1/phase1_test.c,V2_Phase1Run,521,PASS,PASS
+54,Graph_Format,Single JPEG route,Tests/V2Phase1/phase1_test.c,V2_Phase1Run,524,PASS,PASS
+55,Graph_Format,JPEG fan-out with independent sink rates,Tests/V2Phase1/phase1_test.c,V2_Phase1Run,528,PASS,PASS
+56,Graph_Format,Raw route,Tests/V2Phase1/phase1_test.c,V2_Phase1Run,532,PASS,PASS
+57,Graph_Format,Invalid Entity ID rejected,Tests/V2Phase1/phase1_test.c,V2_Phase1Run,537,PASS,PASS
+58,Graph_Format,Wrong pad direction rejected,Tests/V2Phase1/phase1_test.c,V2_Phase1Run,540,PASS,PASS
+59,Graph_Format,Invalid endpoint local Pad ID rejected,Tests/V2Phase1/phase1_test.c,V2_Phase1Run,543,PASS,PASS
+60,Graph_Format,Invalid Link ID rejected,Tests/V2Phase1/phase1_test.c,V2_Phase1Run,546,PASS,PASS
+61,Graph_Format,Capture internal protocol rejected,Tests/V2Phase1/phase1_test.c,V2_Phase1Run,549,PASS,PASS
+62,Graph_Format,Fan-out capacity rejected,Tests/V2Phase1/phase1_test.c,V2_Phase1Run,552,PASS,PASS
+63,Graph_Format,Invalid JPEG payload rejected,Tests/V2Phase1/phase1_test.c,V2_Phase1Run,556,PASS,PASS
+64,Graph_Format,Duplicate Pipeline rejected,Tests/V2Phase1/phase1_test.c,V2_Phase1Run,559,PASS,PASS
+65,Graph_Format,Zero rate denominator rejected,Tests/V2Phase1/phase1_test.c,V2_Phase1Run,562,PASS,PASS
+66,Graph_Format,Wrong policy sink rejected,Tests/V2Phase1/phase1_test.c,V2_Phase1Run,565,PASS,PASS
+67,Graph_Format,Sink pure validator rate veto,Tests/V2Phase1/phase1_test.c,V2_Phase1Run,568,PASS,PASS
+68,Graph_Format,Backend pure validator veto,Tests/V2Phase1/phase1_test.c,V2_Phase1Run,571,PASS,PASS
+69,Graph_Format,Template execution rejected,Tests/V2Phase1/phase1_test.c,V2_Phase1Run,574,PASS,PASS
+70,Graph_Format,Future Entity execution rejected,Tests/V2Phase1/phase1_test.c,V2_Phase1Run,577,PASS,PASS
+71,Graph_Format,Invalid caps step rejected,Tests/V2Phase1/phase1_test.c,V2_Phase1Run,580,PASS,PASS
+72,Graph_Format,Invalid source rejected,Tests/V2Phase1/phase1_test.c,V2_Phase1Run,583,PASS,PASS
+73,Graph_Format,Zero Link reference rejected,Tests/V2Phase1/phase1_test.c,V2_Phase1Run,586,PASS,PASS
+74,Graph_Format,Missing path edge rejected,Tests/V2Phase1/phase1_test.c,V2_Phase1Run,589,PASS,PASS
+75,Graph_Format,Missing Pipeline dependency rejected,Tests/V2Phase1/phase1_test.c,V2_Phase1Run,592,PASS,PASS
+76,Graph_Format,Pipeline dependency cycle rejected,Tests/V2Phase1/phase1_test.c,V2_Phase1Run,597,PASS,PASS
+77,Graph_Format,Entity capacity overflow rejected,Tests/V2Phase1/phase1_test.c,V2_Phase1Run,603,PASS,PASS
+78,Graph_Format,Pad capacity overflow rejected,Tests/V2Phase1/phase1_test.c,V2_Phase1Run,606,PASS,PASS
+79,Graph_Format,Link capacity overflow rejected,Tests/V2Phase1/phase1_test.c,V2_Phase1Run,609,PASS,PASS
+80,Graph_Format,Pipeline capacity overflow rejected,Tests/V2Phase1/phase1_test.c,V2_Phase1Run,612,PASS,PASS
+81,Graph_Format,Caps capacity overflow rejected,Tests/V2Phase1/phase1_test.c,V2_Phase1Run,615,PASS,PASS
+82,Graph_Format,Zero pad degree limit rejected,Tests/V2Phase1/phase1_test.c,V2_Phase1Run,618,PASS,PASS
+83,Graph_Format,Incompatible sink caps rejected,Tests/V2Phase1/phase1_test.c,V2_Phase1Run,621,PASS,PASS
+84,Graph_Format,Wrong Pipeline backend rejected,Tests/V2Phase1/phase1_test.c,V2_Phase1Run,624,PASS,PASS
+85,Graph_Format,Selection reserved rejected,Tests/V2Phase1/phase1_test.c,V2_Phase1Run,627,PASS,PASS
+86,Graph_Format,Sink policy reserved rejected,Tests/V2Phase1/phase1_test.c,V2_Phase1Run,630,PASS,PASS
+87,Graph_Format,Graph scratch/output alias rejected,Tests/V2Phase1/phase1_test.c,V2_Phase1Run,633,PASS,PASS
+88,Graph_Format,25 repeated Graph validations,Tests/V2Phase1/phase1_test.c,V2_Phase1Run,637,PASS,PASS
+89,Composition,Composition Mock Camera + USB,Tests/V2Phase1/phase1_test.c,V2_Phase1Run,891,PASS,PASS
+90,Composition,Composition Mock Camera + Storage,Tests/V2Phase1/phase1_test.c,V2_Phase1Run,895,PASS,PASS
+91,Composition,Composition Mock dual consumer,Tests/V2Phase1/phase1_test.c,V2_Phase1Run,901,PASS,PASS
+92,Composition,Resource Validator veto,Tests/V2Phase1/phase1_test.c,V2_Phase1Run,903,PASS,PASS
+93,Composition,Missing root,Tests/V2Phase1/phase1_test.c,V2_Phase1Run,906,PASS,PASS
+94,Composition,Invalid neutral media,Tests/V2Phase1/phase1_test.c,V2_Phase1Run,909,PASS,PASS
+95,Composition,Unselected entity module rejected,Tests/V2Phase1/phase1_test.c,V2_Phase1Run,912,PASS,PASS
+96,Composition,Missing Resource Validator rejected,Tests/V2Phase1/phase1_test.c,V2_Phase1Run,916,PASS,PASS
+97,Composition,Duplicate Entity binding rejected,Tests/V2Phase1/phase1_test.c,V2_Phase1Run,920,PASS,PASS
+98,Composition,Composition scratch/output alias rejected,Tests/V2Phase1/phase1_test.c,V2_Phase1Run,923,PASS,PASS
+99,Composition,10 repeated Composition validations,Tests/V2Phase1/phase1_test.c,V2_Phase1Run,927,PASS,PASS
+100,Resolver,16 modules stable ID order,Tests/V2Phase1/phase1_test.c,V2_Phase1Run,769,PASS,PASS
+101,Graph_Format,32 caps accepted,Tests/V2Phase1/phase1_test.c,V2_Phase1Run,785,PASS,PASS
+102,Graph_Format,8 Pipeline shared route merge,Tests/V2Phase1/phase1_test.c,V2_Phase1Run,793,PASS,PASS
+103,Graph_Format,16 Entity 30 Pad DAG,Tests/V2Phase1/phase1_test.c,V2_Phase1Run,807,PASS,PASS
+104,Graph_Format,Known sink max-rate rejection,Tests/V2Phase1/phase1_test.c,V2_Phase1Run,858,PASS,PASS
+105,Graph_Format,Rational rate normalization,Tests/V2Phase1/phase1_test.c,V2_Phase1Run,866,PASS,PASS
+106,Graph_Format,Self Link rejected,Tests/V2Phase1/phase1_test.c,V2_Phase1Run,874,PASS,PASS
+107,Resolver,Capability version mismatch,Tests/V2Phase1/phase1_test.c,V2_Phase1Run,880,PASS,PASS
+108,Graph_Format,Graph reentry guard,Tests/V2Phase1/phase1_test.c,V2_Phase1Run,647,PASS,PASS
+109,Composition,Composition reentry guard,Tests/V2Phase1/phase1_test.c,V2_Phase1Run,655,PASS,PASS
+110,Resolver,Selected Optional dependency order,Tests/V2Phase1/phase1_test.c,V2_Phase1Run,664,PASS,PASS
+111,Core,Typed ID helpers,Tests/V2Phase1/phase1_test.c,V2_Phase1Run,673,PASS,PASS
+112,Core,Status validity,Tests/V2Phase1/phase1_test.c,V2_Phase1Run,683,PASS,PASS
+113,Graph_Format,Original adapter error and diagnostic preserved,Tests/V2Phase1/phase1_test.c,V2_Phase1Run,688,PASS,PASS
+114,Graph_Format,Capture internal output type rejection,Tests/V2Phase1/phase1_test.c,V2_Phase1Run,696,PASS,PASS
+115,Graph_Format,Provider internal input type rejection,Tests/V2Phase1/phase1_test.c,V2_Phase1Run,696,PASS,PASS
+116,Graph_Format,FrameRoute internal input type rejection,Tests/V2Phase1/phase1_test.c,V2_Phase1Run,696,PASS,PASS
+117,Graph_Format,Consumer input type rejection,Tests/V2Phase1/phase1_test.c,V2_Phase1Run,696,PASS,PASS
+118,Graph_Format,Capture-only terminal Provider,Tests/V2Phase1/phase1_test.c,V2_Phase1Run,704,PASS,PASS
+119,Composition,Binding error identity propagation,Tests/V2Phase1/phase1_test.c,V2_Phase1Run,715,PASS,PASS
+120,Resolver,AUTO missing Optional recorded,Tests/V2Phase1/phase1_test.c,V2_Phase1Run,724,PASS,PASS
+121,Graph_Format,Valid but different JPEG limits cannot merge,Tests/V2Phase1/phase1_test.c,V2_Phase1Run,735,PASS,PASS
+122,Graph_Format,Raw and JPEG cannot merge,Tests/V2Phase1/phase1_test.c,V2_Phase1Run,744,PASS,PASS
+123,Graph_Format,Terminal Provider needs format veto,Tests/V2Phase1/phase1_test.c,V2_Phase1Run,753,PASS,PASS
+124,Graph_Format,Catalog default sink rate limit,Tests/V2Phase1/phase1_test.c,V2_Phase1Run,762,PASS,PASS
