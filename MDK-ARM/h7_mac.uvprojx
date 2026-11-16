@@ -3420,7 +3420,7 @@
               <MiscControls>--preinclude ../CM7/BSP/bsp_sdram_hal_config.h --preinclude ../CM7/BSP/bsp_dcmi_hal_config.h --preinclude ../CM7/BSP/bsp_usb_hal_config.h --preinclude ../CM7/BSP/bsp_sdmmc_hal_config.h </MiscControls>
               <Define>CORE_CM7,USE_HAL_DRIVER,STM32H747xx,USE_PWR_LDO_SUPPLY,APP_VIDEO_MJPEG_MODE=1</Define>
               <Undefine></Undefine>
-              <IncludePath>../CM7/Core/Inc;../Drivers/STM32H7xx_HAL_Driver/Inc;../Drivers/STM32H7xx_HAL_Driver/Inc/Legacy;../Drivers/CMSIS/Device/ST/STM32H7xx/Include;../Drivers/CMSIS/Include;..\Common\Inc;..\Board\Inc;..\CM7\Application;..\CM7\Service;..\CM7\Device\Inc;..\CM7\Media\Inc;..\CM7\Platform;..\CM7\BSP;..\CM7\Framework;..\CM7\Device\Components\OV5640;../Middlewares/ST/STM32_USB_Device_Library/Core/Inc;../Middlewares/Third_Party/FreeRTOS/Source/include;../Middlewares/Third_Party/FreeRTOS/Source/portable/RVDS/ARM_CM7/r0p1;../Middlewares/Third_Party/FatFs</IncludePath>
+              <IncludePath>../Platform/Ethernet;../CM7/Core/Inc;../Drivers/STM32H7xx_HAL_Driver/Inc;../Drivers/STM32H7xx_HAL_Driver/Inc/Legacy;../Drivers/CMSIS/Device/ST/STM32H7xx/Include;../Drivers/CMSIS/Include;..\Common\Inc;..\Board\Inc;..\CM7\Application;..\CM7\Service;..\CM7\Device\Inc;..\CM7\Media\Inc;..\CM7\Platform;..\CM7\BSP;..\CM7\Framework;..\CM7\Device\Components\OV5640;../Middlewares/ST/STM32_USB_Device_Library/Core/Inc;../Middlewares/Third_Party/FreeRTOS/Source/include;../Middlewares/Third_Party/FreeRTOS/Source/portable/RVDS/ARM_CM7/r0p1;../Middlewares/Third_Party/FatFs</IncludePath>
             </VariousControls>
           </Cads>
           <Aads>
@@ -3456,7 +3456,8 @@
             <IncludeLibsPath></IncludeLibsPath>
             <Misc>--keep=g_ipc
 --keep=*(.framework_init)
---keep=*(.device_export)</Misc>
+--keep=*(.device_export)
+--keep=*(.ethernet_dma)</Misc>
             <LinkerInputFile></LinkerInputFile>
             <DisabledWarnings></DisabledWarnings>
           </LDads>
@@ -4984,6 +4985,15 @@
         </Group>
         <Group>
           <GroupName>::CMSIS</GroupName>
+        </Group>
+      <Group>
+          <GroupName>Ethernet independent driver</GroupName>
+          <Files>
+            <File><FileName>eth_phy.c</FileName><FileType>1</FileType><FilePath>../Platform/Ethernet/eth_phy.c</FilePath></File>
+            <File><FileName>eth_dma.c</FileName><FileType>1</FileType><FilePath>../Platform/Ethernet/eth_dma.c</FilePath></File>
+            <File><FileName>eth_memory.c</FileName><FileType>1</FileType><FilePath>../Platform/Ethernet/eth_memory.c</FilePath></File>
+            <File><FileName>eth_mac.c</FileName><FileType>1</FileType><FilePath>../Platform/Ethernet/eth_mac.c</FilePath></File>
+          </Files>
         </Group>
       </Groups>
     </Target>
