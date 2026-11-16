@@ -22,11 +22,13 @@ c6d2bed、fa9ce5d、1c97d7c是main祖先（git merge-base --is-ancestor均返回
 | [H7_V2_OpenSourceArchitectureStudy.md](H7_V2_OpenSourceArchitectureStudy.md) | 五个官方项目固定版本源码、对象/函数/机制、H7映射和读取指纹 |
 | [H7_V2_ArchitectureDecisionRecord.md](H7_V2_ArchitectureDecisionRecord.md) | 七项待批ADR，含Resource Ownership与CameraCapture两项专项 |
 | [H7_V2_ResourceBudget.md](H7_V2_ResourceBudget.md) | RAM/SDRAM/Flash/CPU/栈/队列/缓冲与扩展预算 |
+| [H7_V2_ResourceOwnershipArchitecture.md](H7_V2_ResourceOwnershipArchitecture.md) | R3：固定版本源码映射、后端/身份、关闭/ACK/DMA/退休及独立停止设计 |
+| [H7_V2_ResourceOwnershipAcceptance.md](H7_V2_ResourceOwnershipAcceptance.md) | R3：32项并发场景、9项不变量、5组硬件门禁；全部NOT_RUN |
 | 本文件 | 范围核查、结论、未决事项和后续审核门禁 |
 
 ### 2.1 清单问题处理记录
 
-本目录实际有11份物理文档。`H7_V2_LegacyCleanupPlan.md` **未作为独立文件生成**：此前有意将清理计划放入MigrationPlan，依据是该文档原有“迁移与Legacy退休计划”标题及第1、3、4、5节的清理内容。但最终交付索引遗漏了合并说明，不能把“11份实际文件存在”表述为“原定11个文件名逐项齐全”。本次只补明合并关系，不拆分或改写已提交的清理设计。
+Phase0交付时本目录有11份物理文档（R3另新增两份，当前13份）。`H7_V2_LegacyCleanupPlan.md` **未作为独立文件生成**：此前有意将清理计划放入MigrationPlan，依据是该文档原有“迁移与Legacy退休计划”标题及第1、3、4、5节的清理内容。但最终交付索引遗漏了合并说明，不能把“11份实际文件存在”表述为“原定11个文件名逐项齐全”。本次只补明合并关系，不拆分或改写已提交的清理设计。
 
 `H7_V2_ResourceBudget.md` 是独立资源预算交付，**不是 LegacyCleanupPlan 的替代文件**。Legacy Cleanup 按下表作为逻辑交付项定位；没有创建同名空壳文件，也不声称独立文件已经交付。合并交付形式记录在此供人工审核，不表示清理方案已获批准。
 
@@ -76,6 +78,16 @@ ADR-01～ADR-07仍全部UNRESOLVED；Grant→Frame Lease与Stable Admission Clos
 ADR-01～07全部UNRESOLVED，Grant→Frame Lease及Stable Admission Closure仍NOT_PROVEN。配置派生与回调签名变化仅为文档草案，不是生产实现；Source采集率没有可虚构的配置字段。保留B2 ID23/31批准行为，不调整Lifecycle/Replay契约。无测试、构建或实板执行；软件/ARMCC5布局/WCET均NOT_RUN/UNMEASURED。审核源码依据见ModuleContract第1.12～1.16节。
 
 本轮文档检查包括：五文件差异范围、所有旧生产/测试/工程/M4文件不变、结构预算算术、描述ID/路由/速率配置及章节交叉一致性。检查结果在提交后交付回复记录；不把文档检查当作生产测试。待人工审核，不进入Phase1/C2.2C，不合并main。
+
+### 2.4 R2人工条件闭合与R3审核包
+
+输入HEAD54718ee，研究分支/远端输入同SHA，main仍f0ce45f，开始工作区干净。R2-01/02/04/05/07/08人工通过；03原则通过；06有条件通过。补充内容是CoreMediaFormat中立媒体描述及GraphFormat别名，Storage公共Validator不依赖CameraConfig_t；各边界Ports再转旧配置，唯一能力源不复制。FrameRoute无真实Dispatcher/第二账本，Source Capture Rate、USB Delivery Rate、Storage Sampling Rate分别定义。ModuleContract第1.17节和DependencyRules第7节为复核位置，ADR-01不因此批准。
+
+R3新增两份设计文件，现V2目录共13份文档。实际重新读取官方Linux v6.12 vb2与GStreamer1.24.10六个源码文件、核对原hash；SourceStudy第9节记录，完整映射见ResourceOwnershipArchitecture第2～3节。后者第4～8节含身份关系图、受保护D/T发布与退休、未提交/已提交区分、G/R关闭核验；第9节逐访问者审DMA；第10节含状态机及两消费者独立停止。Acceptance第3节有32项设计场景，未执行测试，不填PASS。
+
+仍待审/待实现：现有非回绕FrameRequest票据在新D中的关联/退休边界；Raw/JPEG最小只读身份查询；USB ACK消费/双端退休确认；G/R资源核验及released/idle真实适配；D/T最小容量和ARMCC5成本。当前Core不直接检查RELEASE.related等于grant_request，不擅改C1语义或写成已证明关联。Grant→Frame Lease和Stable Admission Closure两项继续NOT_PROVEN，所有ADR继续UNRESOLVED。
+
+本轮仅改架构Markdown，不改生产/测试/ABI/Replay/Keil/任务/M4，不删除Legacy或历史output；不执行测试、编译、实板，不进入Phase1/C2.2C、不合并main。R3是设计交付，不是Resource软件/硬件验收完成。实际Diff/路径/指纹检查及提交推送状态以本轮最终报告为准。
 
 ## 3. 全量审计覆盖与证据边界
 

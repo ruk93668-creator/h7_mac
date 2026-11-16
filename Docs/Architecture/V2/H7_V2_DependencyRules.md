@@ -60,3 +60,9 @@ AC-01：按 consumer identity 核验，不在 Camera 核心不断增加 USB/SD/N
 AC-02/03：ACQUIRE grant 与 RELEASE 请求身份不同，RELEASE 必须绑定原 grant。AC-04：消费者各自拥有的 Frame 不互相释放；未来 Network 的所有权需要后端真实支持，不能只加 owner 数字。AC-05：传输完成、DMA 完成、ACK 入队、ACK 消费、Camera Release 和消费者退出分别验证。AC-06：复制发送在全部原始读取/DMA 结束后才能归还，零拷贝在全部异步访问结束后才能归还。
 
 这些是用户批准的安全约束，不声称当前 main 已完整实现。V2 改变实现位置可以提出，改变行为必须另行批准；尤其 B2 ID23/31 不能随重写被静默恢复成旧同步重启。
+
+## 7. R2条件补充与R3所有权审核
+
+输入54718ee。CoreMediaFormat为中立媒体值草案，GraphFormat只作别名；Storage公共纯格式接口只依赖Core，不依赖CameraConfig_t或Graph业务结构。Camera和UVC端口各自显式转换到原配置类型；Storage真实Frame/Lease交接适配与纯能力接口分开，唯一70000B限制源不复制。目录/字段均待审核，不是新生产API。
+
+Source Capture Rate、USB Delivery Rate、Storage Sampling Rate分别有配置意图和运行证据，互不冒充；Graph无新运行时FrameDispatch/引用账本。R3资源关联仅记录G/H/M与B/S，权威owner仍归后端。候选D/T的USB端发布/消费字段和Camera端受理/终结字段各自单写；发布与队列发送分开，禁止共享phase多写者。完整契约及未决项见[资源架构](H7_V2_ResourceOwnershipArchitecture.md)第5～8节；本轮不因文档存在而改变NOT_PROVEN或准入实施状态。

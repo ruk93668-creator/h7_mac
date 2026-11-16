@@ -111,3 +111,9 @@ V2 完成对应功能和联合验收后，分阶段移除旧工程引用、头�
 ## 7. 本阶段决策范围
 
 推荐本架构进入人工审查；不授权实施。待审核：Resource 身份关联与 terminal receipt、受控 Tx/Rx 的迁移位置、每模块生命周期精确完成契约、Supervisor 计划接口，以及 V2 编译切换方案。B2 ID23 的有界 BUSY 与 ID31 的“未退出拒绝 START / 合法成功 START 后故障复位”保持，不因 Clean Restart 自动变更。
+
+## 8. R2条件澄清及R3 Resource Ownership设计
+
+输入54718ee。人工通过R2-01/02/04/05/07/08，03原则通过，06有条件通过；ADR-01仍UNRESOLVED。Storage格式Validator推荐依赖CoreMediaFormat，不依赖CameraConfig_t；GraphFormat为同一中立值的别名，Core不反向依赖Graph/Camera。Source采集率、USB交付率、Storage采样率分别配置/观测，FrameRoute继续仅表达拓扑。
+
+R3已形成[资源架构](H7_V2_ResourceOwnershipArchitecture.md)与[并发/验收设计](H7_V2_ResourceOwnershipAcceptance.md)：保留原固定池与FIFO，显式关联G/H/B/M/S，区分请求入队/准入/真实归还/ACK消费/资格撤销/硬件停止。D/T与Media快照、G/R接口及退休边界均待审核实施；当前生产Frame数据面未携带完整grant、released/idle仍NULL，两个NOT_PROVEN不变。成熟项目实际源码机制与H7自行适配设计在资源报告第2节区分。本轮没有测试、编译、硬件执行或应用切换。

@@ -14,7 +14,7 @@ R2第二轮输入研究分支HEAD `cd8daa6`，实际CM7源码仍与main `f0ce45f
 
 Typed含义为：端点身份类型分离、Pad方向/数据协议/媒体类型/像素格式/Backend/能力可机械校验；不是把模块名和箭头硬编码在switch中。Graph Core不得依赖USB/Storage私有状态。下述ID使用结构包装，避免普通整数typedef在C中仍能任意互换；存储的枚举码用固定宽度字段，避免ARMCC短枚举影响Graph内部布局预测。
 
-第一轮人工意见已认可R2-01、R2-02，R2-03原则认可但接口需完善；仅记录这些意见，不把ADR-01改为批准。本轮R2-04～08的比较与推荐见第1.12～1.16节。推荐主表已合并DCMI/DMA为CameraCapture，并将FrameDispatch明确为纯逻辑FrameRoute；旧11/16/11表只保留作方案B历史比较，非当前推荐表。
+人工第二轮结论：R2-01/02/04/05/07/08通过，R2-03原则通过，R2-06有条件通过（补充Storage公共接口依赖方向）。只记录设计项审核意见，ADR-01继续UNRESOLVED。R2-06补充及R3入口见第1.17节；R2-04～08比较见第1.12～1.16节。推荐主表已合并DCMI/DMA为CameraCapture，并将FrameDispatch明确为纯逻辑FrameRoute；旧11/16/11表只保留作方案B历史比较，非当前推荐表。
 
 参考固定Linux v6.12：[media-entity.h](https://github.com/torvalds/linux/blob/v6.12/include/media/media-entity.h)、[mc-entity.c](https://github.com/torvalds/linux/blob/v6.12/drivers/media/mc/mc-entity.c)。借鉴端点/链路/管线校验模型；const冻结、迭代有界算法和后面的接口是H7适配建议，不声称Linux采用相同静态表。
 
@@ -65,7 +65,7 @@ enum { GRAPH_L_AVAILABLE = 1U, GRAPH_L_FUTURE = 2U };
 enum { GRAPH_PIPE_TEMPLATE = 1U };
 enum { GRAPH_CAP_RATE_UNKNOWN = 1U, GRAPH_CAP_COARSE = 2U };
 
-typedef struct GraphFormat {
+typedef struct CoreMediaFormat {
     uint32_t media_type;            /* 单一媒体码，不是mask */
     uint32_t pixel_format;
     uint32_t stream_kind;
@@ -79,7 +79,10 @@ typedef struct GraphFormat {
     uint32_t dma_alignment;         /* DMA目标要求 */
     uint32_t frame_alignment;       /* 完整Frame地址要求，JPEG可为1 */
     uint32_t flags;                 /* R2要求0，拒绝未知位 */
-} GraphFormat;
+} CoreMediaFormat;
+
+/* 声明归Core；Graph只作兼容命名，不再独立定义同字段结构 */
+typedef CoreMediaFormat GraphFormat;
 
 typedef struct GraphFrameRate {
     uint32_t num, den;              /* Sink目标交付/采样率，不是Sensor FPS */
@@ -339,7 +342,7 @@ max_payload=0仅表示Graph不增加独立上限，不承诺无限内存。Raw�
 
 格式适配器由公开能力端口/V2 Ports提供，使用Graph/Core定义的纯接口；Configuration只装配const Ops。Graph Core不include Device/Media/USB/业务模块头，模块也不以Graph状态替代自身配置权威。能力验证端口与实际控制/资源端口分离，不能经函数指针隐式执行生命周期操作。
 
-适配步骤：GraphFormat码域检查→显式映射到现有CameraPixelFormat_t（不直接cast）→检查uint16 width/height可表示→构造局部CameraConfig_t；UVC另读取本Sink rate，确认整数及uint16 fps可表示后构造VideoStreamConfig_t→调用上述只读验证器。Storage record_fps按自身uint32策略约束，不经UVC窄化。UVC和Storage当前Sink rate.den必须1，拒绝静默取整；所有Sink rate进入Graph时要求非0且约分，比较上限采用uint64_t交叉乘法。约分GCD对uint32最多固定64轮，非递归；不引入浮点。
+适配步骤：GraphFormat/CoreMediaFormat码域检查；仅Camera/Sensor端口显式映射到现有CameraPixelFormat_t（不直接cast），检查uint16 width/height可表示并构造局部CameraConfig_t；UVC另读取本Sink rate，确认整数及uint16 fps可表示后构造VideoStreamConfig_t→调用上述只读验证器。Storage格式端口直接传CoreMediaFormat，不构造CameraConfig_t；Storage record_fps按自身uint32策略约束，不经UVC窄化。UVC和Storage当前Sink rate.den必须1，拒绝静默取整；所有Sink rate进入Graph时要求非0且约分，比较上限采用uint64_t交叉乘法。约分GCD对uint32最多固定64轮，非递归；不引入浮点。
 
 最终配置为**用户明确选择的同一个规范格式与所有节点能力的交集**。Graph不自动改分辨率、JPEG上限或fps来“协商成功”，没有转换实体时也不能将RGB565接到当前UVC或把YUY2直接送AVI。共享Source的多个请求必须同56B规范媒体格式一致，但不同Sink的目标交付/采样率独立；JPEG_UVC与JPEG_Storage都选择40000B可共享，若分别选择40000/70000则拒绝，不能默默降低另一媒体请求。USB 10FPS与Storage 25FPS目标可作为两条Sink策略，不要求修改Sensor或互相取同一FPS。
 
@@ -498,7 +501,7 @@ Resource必须为Ethernet和Storage独立绑定G/H/M。复制发送等待所有�
 
 Catalog/请求验证只有有界循环：ID/重复检查O(N²+P²+L²)，可达/环O(N×L)，Catalog遍历K个描述、请求再检查最多K条路由，均为O(K×N×L)加K²依赖检查；只有ValidateSet对合并视图调用≤N+S次纯Ops（S≤5），另有有界GCD/算术。上限分别16/32/32/8；具体循环次数/优化和WCET需后续实现与DWT测量。本轮没有微秒数、真实栈或CPU利用率证据。
 
-R2结论：给出可以人工逐项审阅的Typed Graph结构、数据表、配置视图、完整验证与失败原子性方案。R2-01/02人工方向认可；R2-03原则认可、接口待审，第二轮R2-04～08方案等待审核；ADR-01～07不因此获批。Graph设计深化不关闭两个Resource NOT_PROVEN，不授权V2 Phase1或C2.2C。
+R2结论：给出可以人工逐项审阅的Typed Graph结构、数据表、配置视图、完整验证与失败原子性方案。R2-01/02/04/05/07/08人工通过；R2-03原则通过，R2-06有条件通过、接口依赖澄清见第1.17节；ADR-01～07不因此获批。Graph设计深化不关闭两个Resource NOT_PROVEN，不授权V2 Phase1或C2.2C。
 
 
 
@@ -543,12 +546,11 @@ Resource只执行已选消费者端口的身份/准入/归还契约，不遍历G
 
 ```c
 typedef struct StorageFormatCaps {
-    uint32_t camera_format_code; /* 现有CameraPixelFormat码；显式映射 */
+    uint32_t pixel_format; /* Core中立pixel码，不是CameraPixelFormat_t */
     uint32_t min_frame_bytes, max_frame_bytes, max_spans;
 } StorageFormatCaps;             /* ARM32预测16B */
 SysResult_t StorageFormat_GetCaps(StorageFormatCaps *out);
-SysResult_t StorageFormat_Validate(const CameraConfig_t *camera,
-    uint32_t max_frame_bytes, uint32_t max_spans);
+SysResult_t StorageFormat_Validate(const CoreMediaFormat *format);
 ```
 
 接口由Storage接收策略所属层定义，数据来自**同一个规范常量/纯规则实现**。现有APP_STORAGE_FRAME_LIMIT=70000U仍为唯一上限源；若未来迁移头文件，只移动定义并保持旧名别名，不同时定义两个70000，也不在Graph设置独立70000 fallback。实际Offer/运行时帧检查与纯能力接口必须共享规则；Graph Storage粗caps.max_payload=0表示交由精确适配器，不是无限容量。GetCaps只写out，不读Debug/任务状态，不挂载、不打开文件、不发消息、不Retain。Validate核验JPEG/有效尺寸、格式码、最大帧和span数量能力；配置与实际帧尺寸的一致性、JPEG内容SOI/EOI、实际span长度/指针、槽位和运行期错误仍在真实接收路径检查。配置上限<=能力不保证每个实际JPEG都满足上限。
@@ -604,7 +606,21 @@ GraphEntityOps分媒体validate_format和终端validate_sink_config，避免把�
 | 10/25FPS分级 | Validator成功只生成FORMAT_VALIDATED；无真实配置结果不可宣称DEVICE_CONFIG_APPLIED；无计数/窗口不可生成RUNTIME_MEASURED |
 | 容量与预算 | 最大表/多Sink/错误分支有界，ARMCC5后续检查sizeof/offset/Map与调用栈；不改现有Task配置 |
 
-GraphFormat/Selection/回调等是尚未编码的V2本地设计类型，本轮修订不改变现有52B AppMessage、56B Lifecycle消息、Frame结构或任何协议。R2-04～08具体方案待人工审核；ADR-01及其他ADR继续UNRESOLVED。
+GraphFormat/Selection/回调等是尚未编码的V2本地设计类型，本轮修订不改变现有52B AppMessage、56B Lifecycle消息、Frame结构或任何协议。R2-04/05/07/08设计项人工通过，R2-06的公共接口依赖澄清仍待复核；ADR-01及其他ADR继续UNRESOLVED。
+
+### 1.17 R2条件澄清与R3审核入口（输入54718ee）
+
+**人工状态**：R2-01/02/04/05/07/08通过，03原则通过，06有条件通过。ADR-01仍UNRESOLVED；下述接口完善不是自行批准新API。
+
+Storage公共Validator不得include CameraConfig_t或Graph私有头。推荐把第1.2节14个uint32的媒体值移至Core定义为CoreMediaFormat（预测56B），GraphFormat仅typedef别名，不建立两套字段/可写状态。Core pixel/backend码归Core中立定义；上文GRAPH_PIXEL等名称是文档兼容别名，未来可迁为CORE_PIXEL，值映射由适配器显式完成，非强制cast或已实施符号变化。
+
+依赖方向为：`Graph → Core`，`Storage Format Contract → Core`；`Configuration/Ports → Graph公开Ops + Storage纯能力接口`；`Camera Port → Core + CameraConfig_t + Media/Device纯接口`；`UVC Port → Core + VideoStreamConfig_t + UVC纯接口`。只有边界适配器做Camera类型转换，Core、Graph Core和Storage格式契约不反向依赖Camera Module。Storage的实际CameraFrame_t/Lease兼容适配仍留在迁移端口，不以此为理由把Camera类型泄漏回纯格式接口。未来独立Storage公共头路径可为Modules/Storage/storage_format.h，只include Core媒体/结果类型；不是本轮创建文件或改变目录。
+
+StorageFormat_GetCaps输出中立pixel码；StorageFormat_Validate只读CoreMediaFormat的pixel/尺寸/布局/最大帧/spans，不能依赖Camera运行态。真实Offer检查所需的指针、实际长度、metadata、slot、SOI/EOI等是另一运行期契约。纯验证和真实接收仍共享单一Storage能力源，不另放70000B。CoreMediaFormat代表共享像素/内存表示，不拥有Buffer，不包含资格/Lease，也不携带实际FPS。提案只改变尚未编码的V2文档类型归属，不改任何现有消息/配置ABI。
+
+三类速率分别定义：**Source Capture Rate**是Sensor/DCMI实际产出完整帧的速率（配置能力与测量事实分开，当前CameraConfig_t没有FPS setter）；**USB Delivery Rate**是UVC交付目标及单独测量的完整帧完成率；**Storage Sampling Rate**是Storage选择/接收帧目标及单独测量的保存率。后两者由各Sink策略给出，不反向成为Source实际FPS。共享Source仅共享媒体表示，不强制这三类数字相等。10FPS是用户确认YUY2稳定基线；25FPS仍待实测。
+
+FrameRoute只表达拓扑，无第二套真实分发、Retain/Release或资源账本。真实交接、关联和排空详见[H7_V2_ResourceOwnershipArchitecture.md](H7_V2_ResourceOwnershipArchitecture.md)及[并发/验收矩阵](H7_V2_ResourceOwnershipAcceptance.md)。后者是R3设计，不是已实现功能。Grant→Frame Lease和Stable Admission Closure继续NOT_PROVEN，released/idle生产回调仍NULL。
 
 ## 2. Lifecycle与完成语义
 

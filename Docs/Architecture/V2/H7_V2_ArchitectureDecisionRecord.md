@@ -12,7 +12,7 @@
 
 ### R2深化审核定位（仍UNRESOLVED）
 
-首轮已完成于cd8daa6；第二轮输入cd8daa6，生产源码仍为研究分支实际源码（除既有M4延时外与main f0ce45f相同）。人工认可R2-01 Source Pad显式fan-out、R2-02固定Raw/JPEG Pipeline；R2-03仅原则认可。**ADR-01仍UNRESOLVED**，本轮推荐不构成接口/容量或代码实施批准。
+首轮已完成于cd8daa6；第二轮输入cd8daa6，生产源码仍为研究分支实际源码（除既有M4延时外与main f0ce45f相同）。人工认可R2-01 Source Pad显式fan-out、R2-02固定Raw/JPEG Pipeline；R2-03仅原则认可。后续人工已通过01/02/04/05/07/08，06有条件通过，最新澄清见ModuleContract第1.17节。**ADR-01仍UNRESOLVED**，本轮推荐不构成接口/容量或代码实施批准。
 
 第二轮精确契约见[ModuleContract第1.12～1.16节](H7_V2_ModuleContract.md)，并同步第1.2～1.11节的结构/示例/预算：
 
@@ -20,13 +20,13 @@
 |---|---|
 | R2-04 | CameraCapture统一Capture Entity封装耦合DCMI/DMA；Raw/JPEG Provider仅能力视图，非新Pool；不采用独立硬件启停节点。依据BSP_DCMI_Init/StartContinuous/Stop与CameraCapture_StartStream/Stop的共同handle和停止顺序 |
 | R2-05 | FrameRoute纯逻辑Graph节点；USB经Bridge、Storage经Camera端交接适配/Resource端口；不建立另一运行时Dispatcher、引用计数或Ledger |
-| R2-06 | Graph聚合各层纯否决；Core权威值语义，OV/Capture/UVC/Storage各管自身能力。Storage新增纯能力/验证接口属于待审ADAPT，真实Offer与预检共用唯一上限源，不能用Offer/Prepare试探 |
+| R2-06 | 有条件通过。Storage纯Validator拟接受CoreMediaFormat，不能直接依赖CameraConfig_t；GraphFormat别名不另建类型副本。Ports转换旧配置；真实Offer与预检共用唯一能力源，不能用Offer/Prepare试探 |
 | R2-07 | 10FPS稳定YUY2基线为用户确认；25FPS只是目标/待验证。格式合法、配置成功、实测性能分级记录，Graph不证明FPS |
 | R2-08 | 一个用户配置快照派生Graph媒体值、各Sink速率策略、Camera/UVC/Storage配置；Commit只选择已广告能力，不直接改Camera。当前一次配置API不支持通用热重配，相关API和排空证明仍待审 |
 
 接口修订理由：共享GraphFormat移出FPS（草案56B），独立GraphSinkPolicy记录各Sink目标（12B），避免USB交付率与Storage采样率被错误绑定。Ops分媒体/终端配置验证；这是未实施V2本地类型调整，不改变52B/56B消息ABI。新主表10 Entity/14 Pad/10 Link/7 Pipeline，保留16/32/32/8上限。预测const描述2108B、含名称≤2652B；最坏8请求同时保留RAM1468B，全部待ARMCC5/Map证实。
 
-这些取舍是H7基于Linux MC思想的本地适配，不是要求照搬Linux实体划分。Graph不分配Frame、不Retain/Release、不启动硬件；两个Resource NOT_PROVEN不变。R2-04～08及具体接口、布局、预算仍等待人工审核，不授权Phase1/C2.2C。
+这些取舍是H7基于Linux MC思想的本地适配，不是要求照搬Linux实体划分。Graph不分配Frame、不Retain/Release、不启动硬件；两个Resource NOT_PROVEN不变。R2-04/05/07/08设计方向已通过，R2-06依赖澄清及具体新接口、布局、预算仍等待人工复核，不授权Phase1/C2.2C。
 
 ## ADR-02：每模块Managed Lifecycle与异步完成
 
@@ -89,6 +89,14 @@ USB、Storage各自Return；一个退出不得清另一个owner。SD-only内部�
 不采用“统一普通refcount”：它不能验证consumer身份、请求代次、入口关闭、ACK和DMA事实。也不采用“每模块各自管理物理池”：会重复分配与破坏唯一释放者。推荐后端权威+有界关联账本，Flash是适配/校验逻辑，RAM是描述元数据，SDRAM不额外复制整帧；容量公式及未决上限见预算。无新Resource Task；Camera owner操作和临界区必须有界。
 
 Ethernet/Wi-Fi/AI扩展时，后端若不能表达新增owner必须先单独升级能力或用完成复制的独立数据，不借用USB/SD owner位。网络/AI不影响其他消费者的退出证明。具体API、元数据和端口扩展均UNRESOLVED，后续逐项批准。
+
+### 3.7 R3源码研究与精确所有权审核入口（仍UNRESOLVED）
+
+重新读取Linux v6.12 videobuf2与GStreamer 1.24.10实际源码、复核原指纹；外部完成/池关闭思想与H7新增契约严格分开。推荐原Raw固定池/JPEG FIFO唯一权威、有界G/H/M/B/S关联和独立终结收据，不采用统一普通refcount、第二Frame Pool或Graph运行时Dispatcher。
+
+[ResourceOwnershipArchitecture](H7_V2_ResourceOwnershipArchitecture.md)第2～3节为源码映射；第4～8节为身份、D/T单写、准入/关闭、ACK消费和退休设计；第9～10节为DMA及独立停止；第11～12节为预算和待决项。[ResourceOwnershipAcceptance](H7_V2_ResourceOwnershipAcceptance.md)含32个并发/异常场景、9条不变量和5组硬件门禁，全部NOT_RUN。
+
+必须先审：原非回绕FrameRequest票据在新D中的承接/退休边界、Raw/JPEG纯身份查询、USB ACK消费证明、完整G/R资源核验与D/T容量。现RELEASE不直接验证related字段等于grant_request，不把它写成已证明的线关联，也不擅改C1规则；Camera应从权威资格表关联原G，精确API另审。released/idle仍NULL，无消费者真实退出接入。Grant→Frame Lease与Stable Admission Closure继续NOT_PROVEN；ADR-03和04不因此批准，不授权Phase1或C2.2C。
 
 ## ADR-04：CameraCapture专项 — 复用采集门面和两种物理后端
 

@@ -103,3 +103,11 @@ Network/AI Task数量和优先级UNRESOLVED，不能以未来支持为由现在�
 与首轮cd8daa6的2168/2744B描述和940B RAM预测相比，第二轮主表归并Capture并分离Sink速率，布局同时变化，不能把差额当作已测优化。按**同一第二轮schema**比较A/B实体方案时，B比A多116B描述、名称最多32B；软件适配Flash、纯Storage查询局部16B及uint64算术临时栈均需后续ARMCC5调用图/Map实测。保持所有现有任务栈配置，不因估算擅自扩大。
 
 三种证据分开：FORMAT_VALIDATED、DEVICE_CONFIG_APPLIED、RUNTIME_MEASURED，详细门禁见ModuleContract第1.15节。Graph预算没有给出采集/传送/保存25FPS保证，也没有解决两个Resource NOT_PROVEN。
+
+### R3资源关联预算审核
+
+输入54718ee，仅设计。CoreMediaFormat从原Graph文档类型移为Core中立定义、GraphFormat作别名，预测仍56B，不增加第二份媒体值；R2描述数据2108B/含名称2652B、最坏请求工作区1468B估算保持，未重新编译测量。Source采集、USB交付、Storage采样分别预算，不将record_fps或UVC目标25当Source实测。
+
+R3新增成本项目为两端单写D发布/绑定/消费/退休字段、原Storage槽内G/H关联、独立T、只读查询workspace及可能的票据/捕获实例代次。既有Tx/Rx、824B资格核心、后端Loan/refcount不重复计。精确容量和字段仍待批准，不能把Phase0每记录64～128B或T64～96B范围当确定布局/安全容量；Flash代码、每bank RAM、O0/O2间接调用栈和同步时延均UNMEASURED。Media数据池继续复用，不提出新Frame Pool、任务、队列或动态内存。
+
+后续必须按真实并发交接和未消费T峰值推导容量，检查Storage/USB单路背压不会死锁另一方；静态查询workspace不塞入高优先级栈。结构冻结后才运行ARMCC5 sizeof/offsetof、Map与high-water审核。本轮所有生产字节未改，不能把“源码无改”写成新固件资源测量通过。两个NOT_PROVEN不变。

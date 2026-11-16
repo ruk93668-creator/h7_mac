@@ -105,3 +105,9 @@ SHA256用于复核此次读取的原始内容；没有把下载源码加入仓�
 ## 8. 研究之后的设计约束
 
 不新造Graph分配器、通用状态总控、平行Replay或第二引用计数。H7特有的实时任务所有者、旧ABI、外部SDRAM、SD-only、USB双端ACK和Grant绑定需要本地适配；不能拿框架内部的一次“stop成功”替代全部事实。可移植思想已经落入ADR和ModuleContract；精确布局、内存预算、Resource proof与Supervisor计划接口继续UNRESOLVED，不因参考了成熟项目而自动获批。
+
+## 9. R3固定版本源码复读与机制映射
+
+R3输入54718ee。本轮实际重新读取第7节Linux v6.12的videobuf2-core.h/.c及GStreamer 1.24.10的gstbuffer.c、gstmemory.h、gstminiobject.c、gstbufferpool.c；六项SHA256全部与该表一致，不新增源码副本到仓库。官方tag和精确路径未变；未编译/运行外部项目。GStreamer raw页面初次浏览失败后经官方raw源码读取成功，不把失败请求当已研究证据。
+
+重点复核vb2驱动持有/完成、启动失败/queue cancel的回收边界，及GStreamer flushing与未归还buffer、dispose到pool和MiniObject最后引用的关系。外部机制概括仍见第4～5节；不将其驱动count/refcount复制为H7资格或资源证明。R3的G/H/B/M/S、D/T单写、完整R关联和USB ACK消费证明是H7自行适配，详见[资源架构第2～10节](H7_V2_ResourceOwnershipArchitecture.md)。不声称成熟库提供了本工程现成Grant→Lease闭环。
