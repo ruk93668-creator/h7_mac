@@ -2214,6 +2214,11 @@
               <FileType>5</FileType>
               <FilePath>../CM7/Platform/ffconf.h</FilePath>
             </File>
+            <File>
+              <FileName>platform_sync.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>../CM7/Platform/platform_sync.c</FilePath>
+            </File>
           </Files>
         </Group>
         <Group>
@@ -2949,6 +2954,31 @@
                 </CommonProperty>
                 <FileArmAds/>
               </FileOption>
+            </File>
+            <File>
+              <FileName>app_camera_lifecycle.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>../CM7/Application/app_camera_lifecycle.c</FilePath>
+            </File>
+            <File>
+              <FileName>app_camera_lifecycle_replay.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>../CM7/Application/app_camera_lifecycle_replay.c</FilePath>
+            </File>
+            <File>
+              <FileName>app_camera_qualification.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>../CM7/Application/app_camera_qualification.c</FilePath>
+            </File>
+            <File>
+              <FileName>app_usb.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>../CM7/Application/app_usb.c</FilePath>
+            </File>
+            <File>
+              <FileName>app_usb.h</FileName>
+              <FileType>5</FileType>
+              <FilePath>../CM7/Application/app_usb.h</FilePath>
             </File>
           </Files>
         </Group>
@@ -4636,11 +4666,6 @@
               <FilePath>../CM7/Platform/platform_time.c</FilePath>
             </File>
             <File>
-              <FileName>platform_sync.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>../CM7/Platform/platform_sync.c</FilePath>
-            </File>
-            <File>
               <FileName>platform_time.h</FileName>
               <FileType>5</FileType>
               <FilePath>../CM7/Platform/platform_time.h</FilePath>
@@ -4694,6 +4719,11 @@
               <FileName>ffconf.h</FileName>
               <FileType>5</FileType>
               <FilePath>../CM7/Platform/ffconf.h</FilePath>
+            </File>
+            <File>
+              <FileName>platform_sync.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>../CM7/Platform/platform_sync.c</FilePath>
             </File>
           </Files>
         </Group>
@@ -4861,21 +4891,6 @@
               <FilePath>../CM7/Application/app_messages.c</FilePath>
             </File>
             <File>
-              <FileName>app_camera_lifecycle.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>../CM7/Application/app_camera_lifecycle.c</FilePath>
-            </File>
-            <File>
-              <FileName>app_camera_lifecycle_replay.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>../CM7/Application/app_camera_lifecycle_replay.c</FilePath>
-            </File>
-            <File>
-              <FileName>app_camera_qualification.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>../CM7/Application/app_camera_qualification.c</FilePath>
-            </File>
-            <File>
               <FileName>app_messages.h</FileName>
               <FileType>5</FileType>
               <FilePath>../CM7/Application/app_messages.h</FilePath>
@@ -4931,16 +4946,6 @@
               <FilePath>../CM7/Application/Tasks/control_task.h</FilePath>
             </File>
             <File>
-              <FileName>app_usb.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>../CM7/Application/app_usb.c</FilePath>
-            </File>
-            <File>
-              <FileName>app_usb.h</FileName>
-              <FileType>5</FileType>
-              <FilePath>../CM7/Application/app_usb.h</FilePath>
-            </File>
-            <File>
               <FileName>app_status.c</FileName>
               <FileType>1</FileType>
               <FilePath>../CM7/Application/app_status.c</FilePath>
@@ -4969,6 +4974,31 @@
               <FileName>storage_task.h</FileName>
               <FileType>5</FileType>
               <FilePath>../CM7/Application/Tasks/storage_task.h</FilePath>
+            </File>
+            <File>
+              <FileName>app_camera_lifecycle.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>../CM7/Application/app_camera_lifecycle.c</FilePath>
+            </File>
+            <File>
+              <FileName>app_camera_lifecycle_replay.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>../CM7/Application/app_camera_lifecycle_replay.c</FilePath>
+            </File>
+            <File>
+              <FileName>app_camera_qualification.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>../CM7/Application/app_camera_qualification.c</FilePath>
+            </File>
+            <File>
+              <FileName>app_usb.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>../CM7/Application/app_usb.c</FilePath>
+            </File>
+            <File>
+              <FileName>app_usb.h</FileName>
+              <FileType>5</FileType>
+              <FilePath>../CM7/Application/app_usb.h</FilePath>
             </File>
           </Files>
         </Group>
