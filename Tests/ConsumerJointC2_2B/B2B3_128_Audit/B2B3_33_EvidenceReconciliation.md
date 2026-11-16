@@ -959,4 +959,3 @@ O0/O2原始证据：[{"optimization": "O0", "raw_file": "RawResults/Current/usb_
 工具：YES: explicit independent RTOS expected values from source；专项：YES for uncovered Attach failure/race; existing parameter evidence can be asserted without rerunning new scenarios；生产：NO production change or RTOS config change
 
 范围：Camera:1536words/priority3/20ms; USB:2048words/priority4/20ms; Storage:2048words/priority1/100ms. BOOT-before wait FOREVER. Existing Map proves reserved storage only; indirect depths and live stack safety remain unproven.
-
