@@ -12,9 +12,21 @@
 
 ### R2深化审核定位（仍UNRESOLVED）
 
-本轮只认可Static Typed Media Graph研究方向，未批准ADR-01。完整C值类型/描述表、Pad协议和格式能力、Pipeline固定Backend、fan-out、纯校验算法/失败提交和三个实例见[ModuleContract第1.1～1.11节](H7_V2_ModuleContract.md)。R2-01建议Source Pad按明确上限多Link fan-out；R2-02建议不同Pipeline固定Raw/JPEG并合并同源相容路由；R2-03建议Graph聚合各层格式否决权，不取代真实验证器。
+首轮已完成于cd8daa6；第二轮输入cd8daa6，生产源码仍为研究分支实际源码（除既有M4延时外与main f0ce45f相同）。人工认可R2-01 Source Pad显式fan-out、R2-02固定Raw/JPEG Pipeline；R2-03仅原则认可。**ADR-01仍UNRESOLVED**，本轮推荐不构成接口/容量或代码实施批准。
 
-11/16/11/7的示例Catalog暂不超16/32/32/8上限；未来节点不能执行。新结构预算替代Phase0粗估，见ResourceBudget第5节。Graph不分配Frame、不Retain/Release、不启动硬件；两个Resource NOT_PROVEN不变。所有具体结构、边界、容量及API继续等待人工审核，不授权代码实施。
+第二轮精确契约见[ModuleContract第1.12～1.16节](H7_V2_ModuleContract.md)，并同步第1.2～1.11节的结构/示例/预算：
+
+| 议题 | 推荐与未决边界 |
+|---|---|
+| R2-04 | CameraCapture统一Capture Entity封装耦合DCMI/DMA；Raw/JPEG Provider仅能力视图，非新Pool；不采用独立硬件启停节点。依据BSP_DCMI_Init/StartContinuous/Stop与CameraCapture_StartStream/Stop的共同handle和停止顺序 |
+| R2-05 | FrameRoute纯逻辑Graph节点；USB经Bridge、Storage经Camera端交接适配/Resource端口；不建立另一运行时Dispatcher、引用计数或Ledger |
+| R2-06 | Graph聚合各层纯否决；Core权威值语义，OV/Capture/UVC/Storage各管自身能力。Storage新增纯能力/验证接口属于待审ADAPT，真实Offer与预检共用唯一上限源，不能用Offer/Prepare试探 |
+| R2-07 | 10FPS稳定YUY2基线为用户确认；25FPS只是目标/待验证。格式合法、配置成功、实测性能分级记录，Graph不证明FPS |
+| R2-08 | 一个用户配置快照派生Graph媒体值、各Sink速率策略、Camera/UVC/Storage配置；Commit只选择已广告能力，不直接改Camera。当前一次配置API不支持通用热重配，相关API和排空证明仍待审 |
+
+接口修订理由：共享GraphFormat移出FPS（草案56B），独立GraphSinkPolicy记录各Sink目标（12B），避免USB交付率与Storage采样率被错误绑定。Ops分媒体/终端配置验证；这是未实施V2本地类型调整，不改变52B/56B消息ABI。新主表10 Entity/14 Pad/10 Link/7 Pipeline，保留16/32/32/8上限。预测const描述2108B、含名称≤2652B；最坏8请求同时保留RAM1468B，全部待ARMCC5/Map证实。
+
+这些取舍是H7基于Linux MC思想的本地适配，不是要求照搬Linux实体划分。Graph不分配Frame、不Retain/Release、不启动硬件；两个Resource NOT_PROVEN不变。R2-04～08及具体接口、布局、预算仍等待人工审核，不授权Phase1/C2.2C。
 
 ## ADR-02：每模块Managed Lifecycle与异步完成
 
@@ -84,7 +96,7 @@ Ethernet/Wi-Fi/AI扩展时，后端若不能表达新增owner必须先单独升�
 
 `CM7/Media/Src/camera_capture.c`提供Init/Start/StartStream/Process/Stop/GetStopFacts等门面，内部有CameraStream；不是独立camera_stream.c。CameraStream固定7个描述缓冲，FREE/DMA/READY/IN_USE，DMA M0/M1目标不应复用IN_USE。`CM7/Media/Src/camera_mjpeg_fifo.c`是JPEG流解析/块与Loan后端，GetFrame取得原始持有、RetainFrame生成独立SD Lease。CameraCapture按格式选择后端并聚合停止/排空状态。
 
-Media Graph描述Sensor→DCMI→DMA→后端→分发→sink；图中的多个节点不意味着多个硬件控制对象。Resource Manager在采集门面之上适配G/H/M，不拥有另一份Frame Pool；后端继续决定物理资源能否回收。
+第二轮推荐Media Graph描述Sensor→CameraCapture→Raw/JPEG Provider→逻辑FrameRoute→sink；DCMI/DMA保留为Capture内部诊断路径，不作为独立启停Entity。Provider不是另建池或独立的硬件控制对象，见ModuleContract第1.12节。Resource Manager在采集门面之上适配G/H/M，不拥有另一份Frame Pool；后端继续决定物理资源能否回收。
 
 ### 4.2 推荐边界与替代方案
 
@@ -96,7 +108,7 @@ Media Graph描述Sensor→DCMI→DMA→后端→分发→sink；图中的多个�
 
 CameraCapture_Stop的真实硬件结果、DRAINING和IsStopped必须区分；GetStopFacts只读不能推进。普通STOP仍只由Camera收尾入口推进，ERROR保护性停止独立记账避免同轮重复；Media完全停止后才能Device_Stop。只有身份和真实归还证据闭合才可重配置/覆盖缓冲。
 
-Y8/RGB565/YUV422保持固定后端支持，JPEG/MJPEG用FIFO；没有证据不能声称所有raw格式可UVC/AVI输出。分辨率和格式切换须在旧资源安全排空后重新配置，当前一次配置约束如何放开属于UNRESOLVED，不能自动承诺在线切换。
+Y8/RGB565/YUV422保持固定后端支持，JPEG/MJPEG用FIFO；没有证据不能声称所有raw格式可UVC/AVI输出。分辨率和格式切换须在旧资源安全排空后重新配置，当前一次配置约束如何放开属于UNRESOLVED，不能自动承诺在线切换。Graph纯能力成功、设备应用成功和实际FPS分别验收；UVC Commit没有Camera重配权限。Storage纯能力ADAPT和唯一常量来源见ModuleContract第1.14节，禁止调用带副作用Offer进行预检。
 
 ### 4.4 成本和扩展
 

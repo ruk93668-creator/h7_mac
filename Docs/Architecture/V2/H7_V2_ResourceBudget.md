@@ -60,8 +60,8 @@ DMA地址32B对齐与JPEG帧起始地址必须分开：JPEG SOI可能在块内�
 
 | 分类 | 暂定设计预算方法/估算 | 审核条件 |
 |---|---|---|
-| Graph ROM | R2示例：11Entity×20+16Pad×16+11Link×16+11Caps×48+7Pipeline×104+3Format×64+5Ops×4+GraphDesc40+CheckContext8＝2168B；18个名称各≤32B，共≤2744B产品描述数据 | 替代Phase0的2528B占位估算；均按指针4B/普通ARM32对齐预测，需ARMCC5/Map；不含代码/协议规则表/请求表/链接填充 |
-| Graph RAM | R2 Scratch240+Issue28+已验证视图128＝396B；可变请求每条68B，最多8条544B，同时保留总940B | 替代Phase0的232B占位估算；const请求改计ROM（68×N）；初期BOOT前验证/安装，运行只读；无Graph Task或可变注册表 |
+| Graph ROM | R2第二轮：10Entity×20+14Pad×16+10Link×16+10Caps×48+7Pipeline×108+3Format×56+4FrameRate×8+5Ops×8+GraphDesc40+CheckContext8＝2108B；17个名称各≤32B，共≤2652B产品描述数据 | 替代Phase0的2528B占位估算；均按指针4B/普通ARM32对齐预测，需ARMCC5/Map；不含代码/协议规则表/请求表/链接填充 |
+| Graph RAM | R2第二轮 Scratch280+Issue28+已验证视图168＝476B；可变请求每条124B，最多8条992B，同时保留总1468B | 替代Phase0的232B占位估算；const请求改计ROM（124×N）；初期BOOT前验证/安装，运行只读；无Graph Task或可变注册表 |
 | 资格/事务 | 优先复用/迁移现824B核心和既有Tx/Rx；4方向各1Tx+1Rx理论1904B | 不在本轮实例化；是否需要全部方向待审；避免与824内两Rx重复计 |
 | Grant/Handoff关联 | 初期评估USB1、Storage1、Camera内部1三个并发交接记录；若每条64～128B，则192～384B | 容量必须来自真实可达交接，不是另加引用计数；字段和旧消息存活边界待精确审核 |
 | Terminal Receipt | 每条暂估64～96B；容量至少覆盖未消费的合法终结消息 | 精确条数UNRESOLVED；满时有界背压，不覆盖旧身份，不无限增大，不阻塞无关SD-only |
@@ -74,11 +74,11 @@ DMA地址32B对齐与JPEG帧起始地址必须分开：JPEG SOI可能在块内�
 
 ## 6. CPU、实时性和临界区
 
-Graph全量验证初期仅在BOOT前静态配置时做，未来运行期重配必须先证明资源排空并另审发布同步。R2上限Entity16/Pad32/Link32/Pipeline8；稠密ID Getter直接索引且先检查范围；Catalog重复检查O(N²+P²+L²)，每路由可达/环O(N×L)，K路最坏O(K×N×L)+K²依赖检查，合并视图最多N次纯Ops和有界GCD；禁止递归。WCET微秒数UNMEASURED，后续DWT测量覆盖最大表、失败分支及中断干扰。不是在DMA ISR或每帧做全图扫描。
+Graph全量验证初期仅在BOOT前静态配置时做，未来运行期重配必须先证明资源排空并另审发布同步。R2上限Entity16/Pad32/Link32/Pipeline8；稠密ID Getter直接索引且先检查范围；Catalog重复检查O(N²+P²+L²)，每路由可达/环O(N×L)，K路最坏O(K×N×L)+K²依赖检查，合并视图最多N+S次纯Ops（S≤5，即最多21次）和有界GCD；禁止递归。WCET微秒数UNMEASURED，后续DWT测量覆盖最大表、失败分支及中断干扰。不是在DMA ISR或每帧做全图扫描。
 
 现有Camera Bridge每轮最多处理4条消息，Camera控制至多1条，Storage至多1命令/1帧；V2应明确每轮budget，不能因额外Lifecycle收发饿死Return。PRIMASK保护只做有界元数据提交，文件/USB Abort/SD等待在外。Framework Event/Timer不是默认可多任务并发的可靠运输，不增加高优先级周期轮询。
 
-以当前默认raw160×120×2×25计算单向有效数据为960000B/s（SOURCE_CALCULATED目标流量，不是实测FPS）。JPEG40000B×25上限规划约1000000B/s/消费者；双sink和CPU/IDMA中转会增加内存访问，不能将输出字节数视作总线负载。SDMMC当前8192B复制及1ms间隔保留，FE因果关系不由带宽算式证明。CRC/解析/写入/同步和高优先级USB竞争需实板分项测量。
+按用户确认稳定输出基线raw160×120×2×10计算有效载荷384000B/s；当前源码默认25对应960000B/s目标流量（SOURCE_CALCULATED，不是实际FPS）。10FPS基线未附本次固件SHA/测量窗口，不冒充本轮独立实测。JPEG40000B×25上限规划约1000000B/s/消费者；双sink和CPU/IDMA中转会增加内存访问，不能将输出字节数视作总线负载。SDMMC当前8192B复制及1ms间隔保留，FE因果关系不由带宽算式证明。CRC/解析/写入/同步和高优先级USB竞争需实板分项测量。
 
 ## 7. 扩展影响
 
@@ -98,4 +98,8 @@ Network/AI Task数量和优先级UNRESOLVED，不能以未来支持为由现在�
 
 ### R2布局预算说明
 
-具体声明见ModuleContract第1.2、1.3、1.7节。预测尺寸：Entity20、Pad16、Link16、Pipeline104、Caps48、Format64、GraphDesc40、Ops4、CheckContext8、Issue28、Selection68、Workspace112、ValidatedView128、Scratch240B。采用固定宽度枚举码和包装ID，不改旧消息ABI；未编译，全部仍为DESIGN_ESTIMATE/UNRESOLVED。当前示例Catalog用11 Entity/16 Pad/11 Link/7 Pipeline，留5/16/21/1余量；不为所有未来sink组合预创建Pipeline，不默默扩容。
+具体声明见ModuleContract第1.2、1.3、1.7节。第二轮预测尺寸：Entity20、Pad16、Link16、Pipeline108、Caps48、Format56、FrameRate8、SinkPolicy12、GraphDesc40、Ops8、CheckContext8、Issue28、Selection124、Workspace112、ValidatedView168、Scratch280B。采用固定宽度枚举码和包装ID，不改旧消息ABI；未编译，全部仍为DESIGN_ESTIMATE/UNRESOLVED。当前主表10 Entity/14 Pad/10 Link/7 Pipeline，留6/18/22/1余量，不为所有未来sink组合预创建Pipeline，不默默扩容。
+
+与首轮cd8daa6的2168/2744B描述和940B RAM预测相比，第二轮主表归并Capture并分离Sink速率，布局同时变化，不能把差额当作已测优化。按**同一第二轮schema**比较A/B实体方案时，B比A多116B描述、名称最多32B；软件适配Flash、纯Storage查询局部16B及uint64算术临时栈均需后续ARMCC5调用图/Map实测。保持所有现有任务栈配置，不因估算擅自扩大。
+
+三种证据分开：FORMAT_VALIDATED、DEVICE_CONFIG_APPLIED、RUNTIME_MEASURED，详细门禁见ModuleContract第1.15节。Graph预算没有给出采集/传送/保存25FPS保证，也没有解决两个Resource NOT_PROVEN。

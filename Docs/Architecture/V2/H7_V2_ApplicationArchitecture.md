@@ -68,6 +68,16 @@ Supervisor 只拥有“本次计划、步骤位置、命令身份、期限和错
 
 Resource 是端口和关联层，不是第二个 Media 分配器。Camera 执行上下文负责最终 Media Get/Retain/Release；USB 和 Storage 提交完成交接。权威引用继续归原后端，V2 关联账本只记录身份、交接进度和后端令牌，不复制引用计数。Graph 无 Frame 地址、Loan、ACK 或启动硬件函数。
 
+### 3.1 R2第二轮职责收敛（DESIGN_PROPOSED，未实施）
+
+R2输入cd8daa6。主拓扑采用`OV5640 → CameraCapture（内部DCMI/DMA） → RawProvider或JpegProvider → FrameRoute → Sink`。FrameRoute纯逻辑，不引入真实分发任务、Buffer或账本；Provider是现有CameraStream/FIFO的能力视图。USB实际交接沿Bridge端口，Storage沿Camera端数据适配/Storage端口；Resource负责准入/关联/完成，不负责决定业务拓扑。Legacy Dispatcher生成metadata等必要职责必须在功能迁移时显式承接，本轮不删旧代码。
+
+用户配置唯一权威在Configuration不可变请求快照；Core派生媒体layout、Graph聚合纯能力否决，CameraConfig_t、VideoStreamConfig_t、Storage策略分别从同一快照生成。共享媒体与每Sink交付/采样目标分开（候选GraphFormat56B、GraphSinkPolicy12B）；Storage采样不重设Camera/USB。UVC Probe/Commit仅协议选择已配置能力，不直接改运行Camera。当前Configure一次性约束和VideoConfig_RequestUpdate不支持必须保留为事实，未来动态Pipeline重配仍缺API与真实排空证明，UNRESOLVED。
+
+CameraCapture为采集能力权威、OV5640为传感器能力权威、UVC为USB能力权威；Storage拟增加纯能力接口，与真实接收共用现有唯一帧长度上限，Graph不另存一套70000B。纯Validator全部通过只证明合法性，不证明设备已应用。160×120 YUY2@10FPS是用户确认稳定输出基线；25FPS只是目标/待验证，配置返回成功也不证明实际FPS。详见ModuleContract第1.12～1.16节、ADR-01/04和ResourceBudget。
+
+R2-01/02方向认可、03原则认可；04～08具体推荐待审。全部ADR继续UNRESOLVED，Grant→Frame Lease与Stable Admission Closure继续NOT_PROVEN。这里没有网络实现、热重配实现或新资源安全证明。
+
 ## 4. 成熟架构参考与 H7 自行适配
 
 | 参考 | 仅吸收的思想 | H7 自行设计；不移植部分 |
