@@ -1,0 +1,104 @@
+{
+  "base": "f097d38",
+  "head": "5d8ed49e540b94a0714a5982323f2bd3bc409948",
+  "method": "Function-body statement comparison after explicit renames, pointer-NULL spelling, declaration splitting and timeout constant expansion; not a formal proof for all paths",
+  "checks": [
+    {
+      "file": "Platform/Ethernet/eth_mac.c",
+      "before_function": "ETH_IRQHandler",
+      "after_function": "ETH_IRQHandler",
+      "normalized_statements_equal": true
+    },
+    {
+      "file": "Platform/Ethernet/eth_mac.c",
+      "before_function": "reset",
+      "after_function": "EthMac_Reset",
+      "normalized_statements_equal": true
+    },
+    {
+      "file": "Platform/Ethernet/eth_mac.c",
+      "before_function": "configure",
+      "after_function": "EthMac_Configure",
+      "normalized_statements_equal": true
+    },
+    {
+      "file": "Platform/Ethernet/eth_mac.c",
+      "before_function": "eth_mac_stop",
+      "after_function": "eth_mac_stop",
+      "normalized_statements_equal": true
+    },
+    {
+      "file": "Platform/Ethernet/eth_mac.c",
+      "before_function": "eth_mac_service",
+      "after_function": "eth_mac_service",
+      "normalized_statements_equal": true
+    },
+    {
+      "file": "Platform/Ethernet/eth_memory.c",
+      "before_function": "eth_memory_configure",
+      "after_function": "eth_memory_configure",
+      "normalized_statements_equal": true
+    },
+    {
+      "file": "Platform/Ethernet/eth_memory.c",
+      "before_function": "eth_memory_valid",
+      "after_function": "eth_memory_valid",
+      "normalized_statements_equal": true
+    },
+    {
+      "file": "Platform/Ethernet/eth_dma.c",
+      "before_function": "eth_ring_reset",
+      "after_function": "eth_ring_reset",
+      "normalized_statements_equal": true
+    },
+    {
+      "file": "Platform/Ethernet/eth_dma.c",
+      "before_function": "eth_ring_tx",
+      "after_function": "eth_ring_tx",
+      "normalized_statements_equal": true
+    },
+    {
+      "file": "Platform/Ethernet/eth_dma.c",
+      "before_function": "eth_ring_reclaim",
+      "after_function": "eth_ring_reclaim",
+      "normalized_statements_equal": true
+    },
+    {
+      "file": "Platform/Ethernet/eth_dma.c",
+      "before_function": "eth_ring_rx",
+      "after_function": "eth_ring_rx",
+      "normalized_statements_equal": true
+    },
+    {
+      "file": "Platform/Ethernet/eth_dma.c",
+      "before_function": "rx_post",
+      "after_function": "EthDma_PostRx",
+      "normalized_statements_equal": true
+    },
+    {
+      "file": "Platform/Ethernet/eth_mac.c",
+      "before_function": "eth_mac_start",
+      "after_function": "eth_mac_start",
+      "normalized_statements_equal": true,
+      "additional_normalization": "DMA_IRQ_MASK -> ETH_MAC_DMA_IRQ_MASK; mask expression unchanged"
+    },
+    {
+      "file": "Platform/Ethernet/eth_mac.c",
+      "before_function": "tx_kick",
+      "after_function": "EthMac_KickTx",
+      "normalized_statements_equal": true
+    },
+    {
+      "file": "Platform/Ethernet/eth_mac.c",
+      "before_function": "rx_kick",
+      "after_function": "EthMac_KickRx",
+      "normalized_statements_equal": true
+    },
+    {
+      "file": "Platform/Ethernet/eth_mac.c",
+      "before_function": "barrier",
+      "after_function": "EthMac_MemoryBarrier",
+      "normalized_statements_equal": true
+    }
+  ]
+}

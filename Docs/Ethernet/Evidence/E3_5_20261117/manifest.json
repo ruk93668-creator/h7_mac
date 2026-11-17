@@ -1,0 +1,64 @@
+{
+  "date": "2026-11-17T12:54:46.925851+08:00",
+  "driver_source_commit": "5d8ed49e540b94a0714a5982323f2bd3bc409948",
+  "verified_test_source_commit": "175b14da6e98a63702a6d09846986ba10e03ef26",
+  "all_compiled_source_hashes_match_commit": true,
+  "build_result_head_note": "build executed before source commit; verified each compiled input against committed blob afterwards",
+  "firmware": {
+    "integrated": {
+      "firmware_sha256": "22893f388b0246f755fad423caf1edaadbdb383123f628c345b8a2c754af8297",
+      "map_sha256": "f6b77c83debe98b9b3b0a1a7e8d0b67aaeafb5c7db7d52e13572d54415120de2",
+      "size": {
+        "code": 137998,
+        "ro": 3114,
+        "rw": 1396,
+        "zi": 113484
+      },
+      "errors": 0,
+      "warnings": 0
+    },
+    "smoke": {
+      "firmware_sha256": "1b88bf89934371f890a1a7fa1740b0c164dc2508db88be7692df99a0bdbb2e57",
+      "map_sha256": "0b00a2020220bb57e7596096e40595775bdd497706c95393c37b81fa5d4e9ce3",
+      "size": {
+        "code": 67194,
+        "ro": 2846,
+        "rw": 1220,
+        "zi": 82636
+      },
+      "errors": 0,
+      "warnings": 0
+    },
+    "e35": {
+      "firmware_sha256": "2cb678e48429b6e12b56f30186f360c7da18f236e348fa61ab2310a49f06980c",
+      "map_sha256": "008d590ee0fca63eb9c66e5bf59d18a32e8c101f074b191633f2d7e5746b0c47",
+      "size": {
+        "code": 68398,
+        "ro": 2862,
+        "rw": 37096,
+        "zi": 81824
+      },
+      "errors": 0,
+      "warnings": 0
+    }
+  },
+  "hardware_status": "NOT_RUN",
+  "historical_rx_zero_status": "OPEN",
+  "local_raw_root": "D:\\32\\STM32H7\\h7_mac_wk\\output\\Ethernet\\E3_5",
+  "evidence_sha256": {
+    "baseline_host.log": "10f722051874bcb0bbbbfa0dca5ebe2b04373dc30fd695438ecb66d2aee55fa2",
+    "behavior_audit.json": "f5dbbe737d2a6421aa5d3622b83bc33e5d6f0bf4606fbcb34a4bcb8472816a23",
+    "e35_build.log": "7635e609e571b430c618e39bf13ac6dcf73c63356dc4f07cfef4c8b58317ba37",
+    "e35_layout.txt": "0d0b0cd5026eb0decdda75f8f65cbcbd8b55e578657d09ed46487fd0af59549b",
+    "e35_result.json": "f44f9cd3df5f457c590bdd5946f965dc60b5161cf540b71dee0705dbb07cd8bb",
+    "extended_host.log": "df1e16f73cd87c66d9e9ad0269a651f15ffc5c33d0593c085738d7830062862d",
+    "integrated_build.log": "31e61159efed5fd4f6fe19f41b29fcde4c7f4f7583b401a0bef265646220f0ee",
+    "integrated_layout.txt": "ae82e283aef1ffd3e191c80253db5a900ec4e1beea4f2d7d414d7b55c3a8ba09",
+    "integrated_result.json": "bf835aef2a53abf9fa74e95fc0031321963e04c31d229df87f20d6336f4883fd",
+    "npcap_api_only.json": "578f07b7a95f37650dd443bc83a846979690d7d2ad558b0a44c38bbfeeca03bf",
+    "protocol_python.log": "b6aed115567bb62e74f3978098d06de77c7047d922222199e212499e5b690aed",
+    "smoke_build.log": "268b0c1bdb08b9ab2e4ede9aa9fe01ea09325f906e3989dfe6eca872a529a71d",
+    "smoke_layout.txt": "4f3303482b93990fc57e461e8dd9411c1f722ee0963886b972b0b41231180a6b",
+    "smoke_result.json": "1e1fd6f39e2b85a56b4cd3043a46946547edeb055e2376edfafc6f21eca27886"
+  }
+}

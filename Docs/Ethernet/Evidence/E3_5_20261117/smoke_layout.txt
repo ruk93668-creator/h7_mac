@@ -1,0 +1,3 @@
+    g_eth_dma_memory                         0x24078000   Data       12544  eth_memory.o(.ethernet_dma)
+    Execution Region RW_IRAM1 (Exec base: 0x20000000, Load base: 0x0801119c, Size: 0x00009550, Max: 0x00020000, ABSOLUTE, COMPRESSED[0x00000168])
+    Execution Region RW_ETHERNET_DMA (Exec base: 0x24078000, Load base: 0x0801119c, Size: 0x00003100, Max: 0x00008000, ABSOLUTE, UNINIT)
