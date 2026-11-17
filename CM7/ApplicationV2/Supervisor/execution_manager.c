@@ -229,7 +229,14 @@ SysResult_t EM_Process(EMContext *c, uint32_t now)
     }
     z = e->consume(e->port, &c->completion);
     if (z)
+    {
+        if (z != SYS_ERR_BUSY && z != SYS_ERR_NO_RESOURCE)
+        {
+            first(c, z);
+            c->state = EM_BLOCKED;
+        }
         return leave(c, z);
+    }
     finish(c);
     return leave(c, SYS_OK);
 }
