@@ -1,0 +1,20 @@
+[
+  {
+    "url": "https://raw.githubusercontent.com/ros2/rcl/24eab4efb5043025bc5eac4ef408fa94867b283c/rcl_lifecycle/include/rcl_lifecycle/data_types.h",
+    "sha256": "e71a47255392afc7ea9b33c6de3ca8d64ca35c9986325d091b037ab6121fe1b4",
+    "bytes": 4493,
+    "status": "SOURCE_READ"
+  },
+  {
+    "url": "https://raw.githubusercontent.com/ros2/rcl/24eab4efb5043025bc5eac4ef408fa94867b283c/rcl_lifecycle/src/default_state_machine.c",
+    "sha256": "2f910cd90256f9b3e3e4cb05bb87d27993be097c98466e86e3c7844b726247fd",
+    "bytes": 23330,
+    "status": "SOURCE_READ"
+  },
+  {
+    "url": "https://raw.githubusercontent.com/ros2/rcl/24eab4efb5043025bc5eac4ef408fa94867b283c/rcl_lifecycle/src/rcl_lifecycle.c",
+    "sha256": "6f9dc3ce6749a17633e33e63c1f1a878ea39fb62de024b8bfc6019ec01919c91",
+    "bytes": 14726,
+    "status": "SOURCE_READ"
+  }
+]

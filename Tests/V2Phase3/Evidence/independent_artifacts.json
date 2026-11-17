@@ -1,0 +1,32 @@
+[
+  {
+    "path": "output\\V2Phase3\\tests\\execution_O0.axf",
+    "bytes": 34224,
+    "sha256": "57ff6b62fdd5e2275ae0a4517245a24d26f4cf817f0fb01d74c206e21002db6a"
+  },
+  {
+    "path": "output\\V2Phase3\\tests\\execution_O0.htm",
+    "bytes": 57281,
+    "sha256": "294968ae6df1774a7a6c4e2dc74c945cb9943109327952c7b8831333c8bd686d"
+  },
+  {
+    "path": "output\\V2Phase3\\tests\\execution_O0.map",
+    "bytes": 19451,
+    "sha256": "3f2c819da6a800041698b55ce97e9608a47105e7f2e3f5dcff87f4d691b14c23"
+  },
+  {
+    "path": "output\\V2Phase3\\tests\\execution_O2.axf",
+    "bytes": 28936,
+    "sha256": "4ee8ccd2df8a085111f10c92d93e675af26eeb3a228aff89ec4203303ffb5956"
+  },
+  {
+    "path": "output\\V2Phase3\\tests\\execution_O2.htm",
+    "bytes": 53047,
+    "sha256": "86bd099cbe07208a01b44942e84624f2c32a88a81b4245fbb28ed25ca2eb6402"
+  },
+  {
+    "path": "output\\V2Phase3\\tests\\execution_O2.map",
+    "bytes": 19184,
+    "sha256": "d0e66d4c82e7308af6c6b26b1694281010965615ef0895c3c1c041645422a4a4"
+  }
+]

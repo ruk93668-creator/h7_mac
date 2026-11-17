@@ -1,0 +1,80 @@
+ID,Contract,O0,O2,Scope
+0,ARMCC sizes,PASS,PASS,controlled modules; actual Execution C; hardware NOT_RUN
+1,Request accepted is not completed,PASS,PASS,controlled modules; actual Execution C; hardware NOT_RUN
+2,Illegal activation,PASS,PASS,controlled modules; actual Execution C; hardware NOT_RUN
+3,Stale expected state,PASS,PASS,controlled modules; actual Execution C; hardware NOT_RUN
+4,Duplicate pending request,PASS,PASS,controlled modules; actual Execution C; hardware NOT_RUN
+5,Same ID conflicting request,PASS,PASS,controlled modules; actual Execution C; hardware NOT_RUN
+6,Single pending request,PASS,PASS,controlled modules; actual Execution C; hardware NOT_RUN
+7,Wrong session,PASS,PASS,controlled modules; actual Execution C; hardware NOT_RUN
+8,Wrong module,PASS,PASS,controlled modules; actual Execution C; hardware NOT_RUN
+9,Completion before dispatch,PASS,PASS,controlled modules; actual Execution C; hardware NOT_RUN
+10,Late request completion,PASS,PASS,controlled modules; actual Execution C; hardware NOT_RUN
+11,Wrong success fact,PASS,PASS,controlled modules; actual Execution C; hardware NOT_RUN
+12,Real asynchronous completion,PASS,PASS,controlled modules; actual Execution C; hardware NOT_RUN
+13,Error fact preserves IO,PASS,PASS,controlled modules; actual Execution C; hardware NOT_RUN
+14,Resource drain BUSY,PASS,PASS,controlled modules; actual Execution C; hardware NOT_RUN
+15,Guard IO freezes first error,PASS,PASS,controlled modules; actual Execution C; hardware NOT_RUN
+16,Timeout keeps inflight operation,PASS,PASS,controlled modules; actual Execution C; hardware NOT_RUN
+17,Unsent request expiry does not dispatch,PASS,PASS,controlled modules; actual Execution C; hardware NOT_RUN
+18,Full completion confirmation identity,PASS,PASS,controlled modules; actual Execution C; hardware NOT_RUN
+19,Old reply after new request,PASS,PASS,controlled modules; actual Execution C; hardware NOT_RUN
+20,Seal rejects new start,PASS,PASS,controlled modules; actual Execution C; hardware NOT_RUN
+21,Owner callback reentry,PASS,PASS,controlled modules; actual Execution C; hardware NOT_RUN
+22,Wrong module owner,PASS,PASS,controlled modules; actual Execution C; hardware NOT_RUN
+23,Explicit error processing precondition,PASS,PASS,controlled modules; actual Execution C; hardware NOT_RUN
+24,Request number exhaustion,PASS,PASS,controlled modules; actual Execution C; hardware NOT_RUN
+25,Invalid timeout,PASS,PASS,controlled modules; actual Execution C; hardware NOT_RUN
+26,Time counter wrap,PASS,PASS,controlled modules; actual Execution C; hardware NOT_RUN
+27,Duplicate completion and conflict,PASS,PASS,controlled modules; actual Execution C; hardware NOT_RUN
+28,Seal permits cleanup,PASS,PASS,controlled modules; actual Execution C; hardware NOT_RUN
+29,Pure status,PASS,PASS,controlled modules; actual Execution C; hardware NOT_RUN
+30,Resolver dependency startup plan,PASS,PASS,controlled modules; actual Execution C; hardware NOT_RUN
+31,Three modules activate,PASS,PASS,controlled modules; actual Execution C; hardware NOT_RUN
+32,Reverse dependency full stop,PASS,PASS,controlled modules; actual Execution C; hardware NOT_RUN
+33,USB-only stop,PASS,PASS,controlled modules; actual Execution C; hardware NOT_RUN
+34,Live dependent pins Camera,PASS,PASS,controlled modules; actual Execution C; hardware NOT_RUN
+35,Both consumers stop Camera stays,PASS,PASS,controlled modules; actual Execution C; hardware NOT_RUN
+36,Partial activation rollback,PASS,PASS,controlled modules; actual Execution C; hardware NOT_RUN
+37,Unknown failure blocks rollback,PASS,PASS,controlled modules; actual Execution C; hardware NOT_RUN
+38,Stop failure pins providers,PASS,PASS,controlled modules; actual Execution C; hardware NOT_RUN
+39,Late completion after timeout compensation,PASS,PASS,controlled modules; actual Execution C; hardware NOT_RUN
+40,Submission queue full identity retry,PASS,PASS,controlled modules; actual Execution C; hardware NOT_RUN
+41,Completion consume queue full,PASS,PASS,controlled modules; actual Execution C; hardware NOT_RUN
+42,Foreign completion blocks,PASS,PASS,controlled modules; actual Execution C; hardware NOT_RUN
+43,Pending plan replacement rejected,PASS,PASS,controlled modules; actual Execution C; hardware NOT_RUN
+44,Compensation failure first error,PASS,PASS,controlled modules; actual Execution C; hardware NOT_RUN
+45,Completion guard BUSY,PASS,PASS,controlled modules; actual Execution C; hardware NOT_RUN
+46,Pre-start old resource BUSY,PASS,PASS,controlled modules; actual Execution C; hardware NOT_RUN
+47,Forged dependency rejected,PASS,PASS,controlled modules; actual Execution C; hardware NOT_RUN
+48,Bad topological order,PASS,PASS,controlled modules; actual Execution C; hardware NOT_RUN
+49,Candidate is not applied config,PASS,PASS,controlled modules; actual Execution C; hardware NOT_RUN
+50,Invalid plan kind,PASS,PASS,controlled modules; actual Execution C; hardware NOT_RUN
+51,Supervisor number exhaustion,PASS,PASS,controlled modules; actual Execution C; hardware NOT_RUN
+52,Already active no-op plan,PASS,PASS,controlled modules; actual Execution C; hardware NOT_RUN
+53,Stop cleanup restart,PASS,PASS,controlled modules; actual Execution C; hardware NOT_RUN
+54,Failure after actual target compensation,PASS,PASS,controlled modules; actual Execution C; hardware NOT_RUN
+55,Consumer drain keeps provider running,PASS,PASS,controlled modules; actual Execution C; hardware NOT_RUN
+56,Real Resource exit_safe blocks operation,PASS,PASS,controlled modules; actual Execution C; hardware NOT_RUN
+57,Unsubmitted plan timeout,PASS,PASS,controlled modules; actual Execution C; hardware NOT_RUN
+58,Wrong Supervisor owner,PASS,PASS,controlled modules; actual Execution C; hardware NOT_RUN
+59,Deactivate without cleanup,PASS,PASS,controlled modules; actual Execution C; hardware NOT_RUN
+60,Precondition IO no hardware,PASS,PASS,controlled modules; actual Execution C; hardware NOT_RUN
+61,Consumed duplicate frozen reply,PASS,PASS,controlled modules; actual Execution C; hardware NOT_RUN
+62,Absent reply output unchanged,PASS,PASS,controlled modules; actual Execution C; hardware NOT_RUN
+63,Stop plan cannot activate,PASS,PASS,controlled modules; actual Execution C; hardware NOT_RUN
+64,Completion wrong session,PASS,PASS,controlled modules; actual Execution C; hardware NOT_RUN
+65,Corrupt factual completion,PASS,PASS,controlled modules; actual Execution C; hardware NOT_RUN
+66,Unknown endpoint,PASS,PASS,controlled modules; actual Execution C; hardware NOT_RUN
+67,Completion consume IO blocks,PASS,PASS,controlled modules; actual Execution C; hardware NOT_RUN
+68,Start during drain rejected,PASS,PASS,controlled modules; actual Execution C; hardware NOT_RUN
+69,Duplicate module order,PASS,PASS,controlled modules; actual Execution C; hardware NOT_RUN
+70,No context reset,PASS,PASS,controlled modules; actual Execution C; hardware NOT_RUN
+71,Real Resource unretired receipt blocks start,PASS,PASS,controlled modules; actual Execution C; hardware NOT_RUN
+72,First IO survives later timeout,PASS,PASS,controlled modules; actual Execution C; hardware NOT_RUN
+73,Aliased output rejected,PASS,PASS,controlled modules; actual Execution C; hardware NOT_RUN
+74,Transport preserves full identity,PASS,PASS,controlled modules; actual Execution C; hardware NOT_RUN
+75,Inconsistent dependency runtime snapshot,PASS,PASS,controlled modules; actual Execution C; hardware NOT_RUN
+76,Candidate cannot hide live consumers,PASS,PASS,controlled modules; actual Execution C; hardware NOT_RUN
+77,Rejected plan leaves output unchanged,PASS,PASS,controlled modules; actual Execution C; hardware NOT_RUN
+78,Observed operation error precedes later transport timeout,PASS,PASS,controlled modules; actual Execution C; hardware NOT_RUN

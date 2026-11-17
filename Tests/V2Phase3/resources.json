@@ -1,0 +1,172 @@
+{
+  "O0": {
+    "probes": [
+      {
+        "case": 0,
+        "stack": 776,
+        "sizes": [
+          112,
+          1212,
+          392,
+          28,
+          24,
+          16,
+          16,
+          20
+        ]
+      },
+      {
+        "case": 31,
+        "stack": 1496,
+        "sizes": null
+      },
+      {
+        "case": 32,
+        "stack": 1496,
+        "sizes": null
+      },
+      {
+        "case": 36,
+        "stack": 1488,
+        "sizes": null
+      },
+      {
+        "case": 39,
+        "stack": 1488,
+        "sizes": null
+      },
+      {
+        "case": 44,
+        "stack": 1488,
+        "sizes": null
+      },
+      {
+        "case": 56,
+        "stack": 776,
+        "sizes": null
+      }
+    ],
+    "objects": [
+      {
+        "RO": 1382,
+        "RW": 0,
+        "ZI": 0
+      },
+      {
+        "RO": 1958,
+        "RW": 0,
+        "ZI": 0
+      },
+      {
+        "RO": 1108,
+        "RW": 0,
+        "ZI": 0
+      }
+    ],
+    "linker_stack": "Maximum Stack Usage =       1496 bytes + Unknown(Untraceable Function Pointers)",
+    "production_totals": {
+      "RO": 4448,
+      "RW": 0,
+      "ZI": 0
+    },
+    "functions": {
+      "LC_Process": {
+        "own_stack": "16",
+        "depth": "24"
+      },
+      "EM_Process": {
+        "own_stack": "56",
+        "depth": "96"
+      },
+      "EM_BuildPlan": {
+        "own_stack": "768",
+        "depth": "936"
+      }
+    }
+  },
+  "O2": {
+    "probes": [
+      {
+        "case": 0,
+        "stack": 784,
+        "sizes": [
+          112,
+          1212,
+          392,
+          28,
+          24,
+          16,
+          16,
+          20
+        ]
+      },
+      {
+        "case": 31,
+        "stack": 1464,
+        "sizes": null
+      },
+      {
+        "case": 32,
+        "stack": 1464,
+        "sizes": null
+      },
+      {
+        "case": 36,
+        "stack": 1456,
+        "sizes": null
+      },
+      {
+        "case": 39,
+        "stack": 1456,
+        "sizes": null
+      },
+      {
+        "case": 44,
+        "stack": 1456,
+        "sizes": null
+      },
+      {
+        "case": 56,
+        "stack": 784,
+        "sizes": null
+      }
+    ],
+    "objects": [
+      {
+        "RO": 1110,
+        "RW": 0,
+        "ZI": 0
+      },
+      {
+        "RO": 1454,
+        "RW": 0,
+        "ZI": 0
+      },
+      {
+        "RO": 966,
+        "RW": 0,
+        "ZI": 0
+      }
+    ],
+    "linker_stack": "Maximum Stack Usage =       1464 bytes + Unknown(Untraceable Function Pointers)",
+    "production_totals": {
+      "RO": 3530,
+      "RW": 0,
+      "ZI": 0
+    },
+    "functions": {
+      "LC_Process": {
+        "own_stack": "24",
+        "depth": "32"
+      },
+      "EM_Process": {
+        "own_stack": "64",
+        "depth": "104"
+      },
+      "EM_BuildPlan": {
+        "own_stack": "760",
+        "depth": "880"
+      }
+    }
+  }
+}

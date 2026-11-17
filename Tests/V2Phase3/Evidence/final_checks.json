@@ -1,0 +1,15 @@
+{
+  "input": "cbabe23e28325e9fa37821951387ce6763f6db5c",
+  "production_head": "69415e0c01d0c8cbcfe9017ca46bfb2db0ad7abf",
+  "ids": "79 exact IDs O0/O2; no duplicates/missing",
+  "source_hashes": "MATCH final independent compile and Keil snapshot inputs",
+  "compile_commands": "all recorded exit0; no diagnostic warning/error",
+  "protected": "Keil external files and M4 input hashes unchanged",
+  "previous_sources_and_tests": "unchanged",
+  "NOT_PROVEN": [
+    "Grant->real Frame Lease",
+    "Stable Admission Closure across actual tasks"
+  ],
+  "hardware": "NOT_RUN",
+  "phase4": "NOT_IMPLEMENTED"
+}
