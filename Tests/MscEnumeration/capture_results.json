@@ -1,0 +1,79 @@
+{
+  "date": "2026-11-17",
+  "firmware_commit": "83fdaf8771da02dd210c676907ffca8a9b4a6c3d",
+  "source_file": "output/MSC1/msc1-enum-02.pcapng",
+  "source_sha256": "15cc4a35c8a6872da95b7546ce0bb1c4c5a2781491c64ee9bcfef5c50b15cbca",
+  "source_size": 121192,
+  "source_magic": "0a0d0d0a",
+  "source_target_filter": "usb.bus_id == 1 && usb.device_address == 55",
+  "target_vid_pid": "1209:0001",
+  "filtered_file": "Tests/MscEnumeration/msc1-enumeration-filtered.pcapng",
+  "filtered_sha256": "a6c19391ce6e578a4c042e2530c6bd90504c5d6bdcecf246823f06b2b60e11e1",
+  "filtered_packets": 23,
+  "original_frame_range": [
+    800,
+    822
+  ],
+  "synthetic_initial_frames_excluded": [
+    31,
+    32,
+    33,
+    34,
+    35,
+    36
+  ],
+  "checks": [
+    {
+      "request": 800,
+      "response": 801,
+      "response_status": "USBD_STATUS_SUCCESS"
+    },
+    {
+      "request": 802,
+      "response": 803,
+      "response_status": "USBD_STATUS_SUCCESS"
+    },
+    {
+      "request": 804,
+      "response": 805,
+      "response_status": "USBD_STATUS_SUCCESS"
+    },
+    {
+      "request": 806,
+      "response": 807,
+      "response_status": "USBD_STATUS_SUCCESS"
+    },
+    {
+      "request": 808,
+      "response": 809,
+      "response_status": "USBD_STATUS_SUCCESS"
+    }
+  ],
+  "descriptor": {
+    "length": 32,
+    "interface_count": 1,
+    "interface": "0/alt0",
+    "class": "08/06/50",
+    "bulk_in": "0x82",
+    "bulk_out": "0x02",
+    "max_packet_sizes": [
+      64,
+      64
+    ]
+  },
+  "current_configuration_request": 1,
+  "get_max_lun_stall_frames": [
+    811,
+    815,
+    819
+  ],
+  "warnings": [
+    "USBMS Malformed Packet on zero-length STALL responses does not mean configuration descriptor corruption",
+    "Frames 812/816/820: USBPcap did not recognize CLEAR_FEATURE_TO_ENDPOINT URB; associated completions report STALL; exact setup bytes not available, not accepted as passing CLEAR_FEATURE coverage",
+    "Frame 822 is only host-submitted 31-byte INQUIRY CBW, not device-accepted or completed BOT/SCSI",
+    "USBPcap records host URBs, not all on-wire reset, SET_ADDRESS, ACK/NAK tokens; no protocol-analyzer completeness claim",
+    "Default UVC hardware regression still has no new evidence"
+  ],
+  "enumeration_descriptor_and_select_configuration_urb_checks": "PASS",
+  "all_msc1_acceptance_complete": false
+}

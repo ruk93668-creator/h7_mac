@@ -70,3 +70,23 @@ Class通过现有USB_Device_RegisterClass注册；SET_CONFIGURATION时以USB_Dev
 实际配置字节：`09 02 20 00 01 01 00 80 fa 09 04 00 00 02 08 06 50 00 07 05 82 02 40 00 00 07 05 02 02 40 00 00`。机器可读证据见Tests/MscEnumeration/hardware_results.json，未纳入主机其他USB设备身份或流量。
 
 Wireshark/tshark尝试通过USBPcap1捕获复位枚举，但报“magic=0x00000000，非有效pcap/pcapng”，0 packets captured；不能视为有效抓包，也不能声称观察到线上SET_CONFIGURATION成功包。Hub当前配置值1只证明当前配置状态。结论：MSC-1实板描述符与端点配置检查通过，USBPcap完整枚举时序证据仍待补充；无磁盘读写验收，不进入MSC-2。
+
+## 2026-11-17 用户抓包分析：枚举关键事务证据已补齐
+
+用户使用Wireshark保存output/MSC1/msc1-enum-02.pcapng（121192字节），文件头0A0D0D0A，tshark可正常解析。原始文件含整个Hub流量，只留在被忽略的output；提交的msc1-enumeration-filtered.pcapng仅含STM32新连接bus1/address55的23个包，过滤前后SHA256及分析结果见Tests/MscEnumeration/capture_results.json。
+
+原抓包帧31～36为起始描述符注入，IRP ID为0、时间相同，不当作此次真实枚举事务证据。实际重连对应帧800～822，IRP非零、请求/响应匹配，具体如下（过滤后的文件帧号从1重新编号）：
+
+|原始帧号|事务|结果|
+|---|---|---|
+|800/801|GET_DESCRIPTOR Device，18字节|USBD_STATUS_SUCCESS，VID/PID1209:0001|
+|802/803|GET_DESCRIPTOR Configuration header，9字节|成功，总长度32、接口数1|
+|804/805|GET_DESCRIPTOR完整Configuration，32字节|成功，接口0/Alt0、08/06/50，EP82/02 Bulk64|
+|806/807|URB_FUNCTION_SELECT_CONFIGURATION，值1|成功完成，相同IRP，间隔705微秒|
+|808/809|URB_FUNCTION_SELECT_INTERFACE，接口0/Alt0|成功完成；按URB级事实记录，不将工具合成Setup当作物理总线逐字节证据|
+|810/811、814/815、818/819|GET_MAX_LUN|三次STALL，0xC0000004，符合当前未实现BOT的范围|
+|822|主机提交31字节INQUIRY CBW|只观察到主机提交，不证明设备接收/完成；无BOT/SCSI成功结论|
+
+Wireshark在GET_MAX_LUN零数据STALL响应上标记USBMS Malformed，不是配置描述符损坏证据。另有帧812/816/820为USBPcap未识别的CLEAR_FEATURE_TO_ENDPOINT URB，其后续完成也报告STALL；缺少完整Setup字节，保留为异常观察，不能认定Clear HALT路径通过。此阶段不因此修改MCU固件。
+
+结论：有效抓包已确认描述符读取与配置选择成功，此前“USBPcap格式错误、无有效数据”不再是本轮证据状态。USBPcap不提供全部线上Reset/SET_ADDRESS/ACK/NAK时序，不能称物理总线完整协议分析。MSC-1默认UVC实板回归仍未提交新证据，整体验收尚未全部完成。保持当前分支，仅更新证据，不进入MSC-2。
