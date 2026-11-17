@@ -1,0 +1,29 @@
+{
+  "capture": "output/Ethernet/rx_batch_20261117_111509.pcapng",
+  "sender_elapsed_seconds": 12.812000000005355,
+  "captured_matching_frames": 1000,
+  "valid_frames": 1000,
+  "bad_frames": 0,
+  "sequences_exact_1_to_1000": true,
+  "board_result_pending": false,
+  "capture_sha256": "28a3409a37aefc35c763d0683e78b9838b126f2b6e0d185477b5746342056308",
+  "date": "2026-11-17",
+  "board_observation_source": "User confirmed every requested field matches after command 6; not automatically read from target",
+  "board_statistics": {
+    "received": 1000,
+    "unique": 1000,
+    "missing": 0,
+    "bad": 0,
+    "duplicates": 0,
+    "out_of_order": 0,
+    "last_sequence": 1000,
+    "active": 0,
+    "passed": 1
+  },
+  "test_frame_bytes": 60,
+  "requested_interval_ms": 10,
+  "firmware_build_reference": "d976b5f",
+  "board_sha_independently_read": false,
+  "mac_dma_error_counter_deltas": "not separately collected in this round",
+  "throughput_benchmark": false
+}
