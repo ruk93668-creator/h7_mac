@@ -1,0 +1,78 @@
+ID,Contract,O0,O2,Scope
+0,ARMCC sizeof/offsetof,PASS,PASS,real V2/validators; controlled native/resource/transport; hardware NOT_RUN
+1,YUY2 neutral conversion,PASS,PASS,real V2/validators; controlled native/resource/transport; hardware NOT_RUN
+2,Y8 neutral conversion,PASS,PASS,real V2/validators; controlled native/resource/transport; hardware NOT_RUN
+3,RGB565 neutral conversion,PASS,PASS,real V2/validators; controlled native/resource/transport; hardware NOT_RUN
+4,JPEG neutral conversion,PASS,PASS,real V2/validators; controlled native/resource/transport; hardware NOT_RUN
+5,Actual sensor rejects unsupported Raw size,PASS,PASS,real V2/validators; controlled native/resource/transport; hardware NOT_RUN
+6,Core rejects bad stride,PASS,PASS,real V2/validators; controlled native/resource/transport; hardware NOT_RUN
+7,Actual sensor rejects unsupported JPEG size,PASS,PASS,real V2/validators; controlled native/resource/transport; hardware NOT_RUN
+8,Pure capability query no hardware,PASS,PASS,real V2/validators; controlled native/resource/transport; hardware NOT_RUN
+9,Backend layout veto,PASS,PASS,real V2/validators; controlled native/resource/transport; hardware NOT_RUN
+10,Immutable backend binding,PASS,PASS,real V2/validators; controlled native/resource/transport; hardware NOT_RUN
+11,Configure without sensor/DCMI,PASS,PASS,real V2/validators; controlled native/resource/transport; hardware NOT_RUN
+12,Asynchronous activation proof,PASS,PASS,real V2/validators; controlled native/resource/transport; hardware NOT_RUN
+13,Enqueue is not module acceptance,PASS,PASS,real V2/validators; controlled native/resource/transport; hardware NOT_RUN
+14,Request queue full and duplicate,PASS,PASS,real V2/validators; controlled native/resource/transport; hardware NOT_RUN
+15,Completion queue full,PASS,PASS,real V2/validators; controlled native/resource/transport; hardware NOT_RUN
+16,Notification failure/coalescing safety,PASS,PASS,real V2/validators; controlled native/resource/transport; hardware NOT_RUN
+17,Consumed ACK queue full,PASS,PASS,real V2/validators; controlled native/resource/transport; hardware NOT_RUN
+18,Duplicate activation no restart,PASS,PASS,real V2/validators; controlled native/resource/transport; hardware NOT_RUN
+19,Normal stop despite unused sensor-failure injection,PASS,PASS,real V2/validators; controlled native/resource/transport; hardware NOT_RUN
+20,Partial sensor initialization failure,PASS,PASS,real V2/validators; controlled native/resource/transport; hardware NOT_RUN
+21,Capture start failure,PASS,PASS,real V2/validators; controlled native/resource/transport; hardware NOT_RUN
+22,Protective stop failure same-round dedup,PASS,PASS,real V2/validators; controlled native/resource/transport; hardware NOT_RUN
+23,Normal stop,PASS,PASS,real V2/validators; controlled native/resource/transport; hardware NOT_RUN
+24,Consumer active prevents stop,PASS,PASS,real V2/validators; controlled native/resource/transport; hardware NOT_RUN
+25,Outstanding SD loan prevents stop,PASS,PASS,real V2/validators; controlled native/resource/transport; hardware NOT_RUN
+26,Original stop IO survives recovery,PASS,PASS,real V2/validators; controlled native/resource/transport; hardware NOT_RUN
+27,Explicit error processing after safe stop,PASS,PASS,real V2/validators; controlled native/resource/transport; hardware NOT_RUN
+28,Timeout then late actual stop,PASS,PASS,real V2/validators; controlled native/resource/transport; hardware NOT_RUN
+29,Protective and normal stop same round,PASS,PASS,real V2/validators; controlled native/resource/transport; hardware NOT_RUN
+30,Cold cleanup no initialization,PASS,PASS,real V2/validators; controlled native/resource/transport; hardware NOT_RUN
+31,Stop cleanup and same-config restart,PASS,PASS,real V2/validators; controlled native/resource/transport; hardware NOT_RUN
+32,Round order rejection,PASS,PASS,real V2/validators; controlled native/resource/transport; hardware NOT_RUN
+33,Cross-owner rejection,PASS,PASS,real V2/validators; controlled native/resource/transport; hardware NOT_RUN
+34,Activation completion queue full no restart,PASS,PASS,real V2/validators; controlled native/resource/transport; hardware NOT_RUN
+35,USB exit SD remains,PASS,PASS,real V2/validators; controlled native/resource/transport; hardware NOT_RUN
+36,SD exit USB remains,PASS,PASS,real V2/validators; controlled native/resource/transport; hardware NOT_RUN
+37,Held lease rejects exit proof,PASS,PASS,real V2/validators; controlled native/resource/transport; hardware NOT_RUN
+38,Physical release without Receipt retirement,PASS,PASS,real V2/validators; controlled native/resource/transport; hardware NOT_RUN
+39,Old generation rejected,PASS,PASS,real V2/validators; controlled native/resource/transport; hardware NOT_RUN
+40,Independent RELEASE identity,PASS,PASS,real V2/validators; controlled native/resource/transport; hardware NOT_RUN
+41,DMA reader blocks release,PASS,PASS,real V2/validators; controlled native/resource/transport; hardware NOT_RUN
+42,Late B binding and wrong token,PASS,PASS,real V2/validators; controlled native/resource/transport; hardware NOT_RUN
+43,Last dual-consumer exit stop,PASS,PASS,real V2/validators; controlled native/resource/transport; hardware NOT_RUN
+44,Stale execution reply drained,PASS,PASS,real V2/validators; controlled native/resource/transport; hardware NOT_RUN
+45,Wrong consumed identity,PASS,PASS,real V2/validators; controlled native/resource/transport; hardware NOT_RUN
+46,Wrong native result identity,PASS,PASS,real V2/validators; controlled native/resource/transport; hardware NOT_RUN
+47,Native consume backpressure,PASS,PASS,real V2/validators; controlled native/resource/transport; hardware NOT_RUN
+48,Wrong execution session,PASS,PASS,real V2/validators; controlled native/resource/transport; hardware NOT_RUN
+49,Same request conflicting body,PASS,PASS,real V2/validators; controlled native/resource/transport; hardware NOT_RUN
+50,Illegal transition reliable rejection,PASS,PASS,real V2/validators; controlled native/resource/transport; hardware NOT_RUN
+51,Old resources block activation,PASS,PASS,real V2/validators; controlled native/resource/transport; hardware NOT_RUN
+52,Resource proof IO preserves no-start,PASS,PASS,real V2/validators; controlled native/resource/transport; hardware NOT_RUN
+53,Process/Return/Finish ordering,PASS,PASS,real V2/validators; controlled native/resource/transport; hardware NOT_RUN
+54,Historical stop failure preserved,PASS,PASS,real V2/validators; controlled native/resource/transport; hardware NOT_RUN
+55,Pure cold status,PASS,PASS,real V2/validators; controlled native/resource/transport; hardware NOT_RUN
+56,Empty rounds do not initialize,PASS,PASS,real V2/validators; controlled native/resource/transport; hardware NOT_RUN
+57,DMA layout alignment veto,PASS,PASS,real V2/validators; controlled native/resource/transport; hardware NOT_RUN
+58,Invalid conversion leaves output unchanged,PASS,PASS,real V2/validators; controlled native/resource/transport; hardware NOT_RUN
+59,Old completion after newer operation,PASS,PASS,real V2/validators; controlled native/resource/transport; hardware NOT_RUN
+60,Native submission queue full,PASS,PASS,real V2/validators; controlled native/resource/transport; hardware NOT_RUN
+61,Unsubmitted native request expires,PASS,PASS,real V2/validators; controlled native/resource/transport; hardware NOT_RUN
+62,Runtime protective error observations,PASS,PASS,real V2/validators; controlled native/resource/transport; hardware NOT_RUN
+63,Same binding idempotent,PASS,PASS,real V2/validators; controlled native/resource/transport; hardware NOT_RUN
+64,Active different binding rejected,PASS,PASS,real V2/validators; controlled native/resource/transport; hardware NOT_RUN
+65,Cleanup waits resources,PASS,PASS,real V2/validators; controlled native/resource/transport; hardware NOT_RUN
+66,Error processing waits resources,PASS,PASS,real V2/validators; controlled native/resource/transport; hardware NOT_RUN
+67,Execution numbering no wrap,PASS,PASS,real V2/validators; controlled native/resource/transport; hardware NOT_RUN
+68,Unverified release identity rejected,PASS,PASS,real V2/validators; controlled native/resource/transport; hardware NOT_RUN
+69,Context reinitialization rejected,PASS,PASS,real V2/validators; controlled native/resource/transport; hardware NOT_RUN
+70,Real Composition validation and binding,PASS,PASS,real V2/validators; controlled native/resource/transport; hardware NOT_RUN
+71,Real Supervisor endpoint startup/stop,PASS,PASS,real V2/validators; controlled native/resource/transport; hardware NOT_RUN
+72,Forged stop flags cannot prove exit,PASS,PASS,real V2/validators; controlled native/resource/transport; hardware NOT_RUN
+73,Stale start facts cannot prove current running,PASS,PASS,real V2/validators; controlled native/resource/transport; hardware NOT_RUN
+74,Native submission occurs once,PASS,PASS,real V2/validators; controlled native/resource/transport; hardware NOT_RUN
+75,Valid stale-session reply cannot change current request,PASS,PASS,real V2/validators; controlled native/resource/transport; hardware NOT_RUN
+76,Actual MR Receipt retirement gates final stop,PASS,PASS,real MR API controlled backend; hardware NOT_RUN

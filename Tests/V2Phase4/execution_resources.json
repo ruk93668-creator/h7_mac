@@ -1,0 +1,132 @@
+{
+  "O0": {
+    "probes": [
+      {
+        "case": 0,
+        "stack": 776,
+        "sizes": [
+          112,
+          1212,
+          392,
+          28,
+          24,
+          16,
+          16,
+          20
+        ]
+      },
+      {
+        "case": 31,
+        "stack": 1496,
+        "sizes": null
+      },
+      {
+        "case": 32,
+        "stack": 1496,
+        "sizes": null
+      },
+      {
+        "case": 36,
+        "stack": 1488,
+        "sizes": null
+      },
+      {
+        "case": 39,
+        "stack": 1488,
+        "sizes": null
+      },
+      {
+        "case": 44,
+        "stack": 1488,
+        "sizes": null
+      },
+      {
+        "case": 56,
+        "stack": 776,
+        "sizes": null
+      }
+    ],
+    "objects": [
+      {
+        "RO": 1384,
+        "RW": 0,
+        "ZI": 0
+      },
+      {
+        "RO": 1962,
+        "RW": 0,
+        "ZI": 0
+      },
+      {
+        "RO": 1108,
+        "RW": 0,
+        "ZI": 0
+      }
+    ]
+  },
+  "O2": {
+    "probes": [
+      {
+        "case": 0,
+        "stack": 784,
+        "sizes": [
+          112,
+          1212,
+          392,
+          28,
+          24,
+          16,
+          16,
+          20
+        ]
+      },
+      {
+        "case": 31,
+        "stack": 1464,
+        "sizes": null
+      },
+      {
+        "case": 32,
+        "stack": 1464,
+        "sizes": null
+      },
+      {
+        "case": 36,
+        "stack": 1456,
+        "sizes": null
+      },
+      {
+        "case": 39,
+        "stack": 1456,
+        "sizes": null
+      },
+      {
+        "case": 44,
+        "stack": 1456,
+        "sizes": null
+      },
+      {
+        "case": 56,
+        "stack": 784,
+        "sizes": null
+      }
+    ],
+    "objects": [
+      {
+        "RO": 1116,
+        "RW": 0,
+        "ZI": 0
+      },
+      {
+        "RO": 1468,
+        "RW": 0,
+        "ZI": 0
+      },
+      {
+        "RO": 966,
+        "RW": 0,
+        "ZI": 0
+      }
+    ]
+  }
+}

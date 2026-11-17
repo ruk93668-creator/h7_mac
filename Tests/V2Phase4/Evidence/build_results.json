@@ -1,0 +1,84 @@
+{
+  "source_head": "63958244110b414dfd50780c52152cd747828834",
+  "snapshot": "D:\\32\\STM32H7\\h7_mac\\output\\V2Phase4\\build_20261117_123843\\workspace",
+  "external_project_hashes": {
+    "D:\\32\\STM32H7\\h7_mac\\MDK-ARM\\h7_mac.uvprojx": "cdcb4b53a43a3e7fdbcbea0a8167023cfd5b3af58a1a7a24a1cf4883299bd2ef",
+    "D:\\32\\STM32H7\\h7_mac\\MDK-ARM\\h7_mac.uvoptx": "1b11560819dda9214bc6d070078d0fd300a29973fb07953adaa60478fa744377"
+  },
+  "targets": [
+    {
+      "target": "h7_mac_CM7",
+      "exit": 0,
+      "zero_errors_warnings": true,
+      "program_size": [
+        "Program Size: Code=137690 RO-data=3114 RW-data=1340 ZI-data=100932  \r"
+      ],
+      "artifacts": [
+        {
+          "path": "D:\\32\\STM32H7\\h7_mac\\output\\V2Phase4\\build_20261117_123843\\workspace\\MDK-ARM\\h7_mac_CM7\\h7_mac_CM7.axf",
+          "sha256": "442b100503ef112678fa0d9e346609c9ecdbb9436904ce3244c534c12af600d7",
+          "bytes": 3163308
+        },
+        {
+          "path": "D:\\32\\STM32H7\\h7_mac\\output\\V2Phase4\\build_20261117_123843\\workspace\\MDK-ARM\\h7_mac_CM7\\h7_mac_CM7.build_log.htm",
+          "sha256": "3e97d369f880760bd80cffdd750b5d519679b2d00c97cad3ed5ca97b5aa0a686",
+          "bytes": 6579
+        },
+        {
+          "path": "D:\\32\\STM32H7\\h7_mac\\output\\V2Phase4\\build_20261117_123843\\workspace\\MDK-ARM\\h7_mac_CM7\\h7_mac_CM7.htm",
+          "sha256": "f388e5268814e3db3b2db2721398e29007f4964f79e4b27d95bfd52afdd24446",
+          "bytes": 648070
+        },
+        {
+          "path": "D:\\32\\STM32H7\\h7_mac\\output\\V2Phase4\\build_20261117_123843\\workspace\\MDK-ARM\\h7_mac_CM7\\h7_mac_CM7.map",
+          "sha256": "e70892ca9147b57a20ffb118c4012b4311bc7f561ac4236f3554b7b143034592",
+          "bytes": 930002
+        }
+      ]
+    },
+    {
+      "target": "h7_mac_CM4",
+      "exit": 0,
+      "zero_errors_warnings": true,
+      "program_size": [
+        "Program Size: Code=26350 RO-data=1438 RW-data=936 ZI-data=3576  \r"
+      ],
+      "artifacts": [
+        {
+          "path": "D:\\32\\STM32H7\\h7_mac\\output\\V2Phase4\\build_20261117_123843\\workspace\\MDK-ARM\\h7_mac_CM4\\h7_mac_CM4.axf",
+          "sha256": "a3f4499391a06d54610a4fa2d08ab6ef15cb5be4b902250afe45f4b995b5ec6a",
+          "bytes": 1594644
+        },
+        {
+          "path": "D:\\32\\STM32H7\\h7_mac\\output\\V2Phase4\\build_20261117_123843\\workspace\\MDK-ARM\\h7_mac_CM4\\h7_mac_CM4.build_log.htm",
+          "sha256": "b460a401ee2a6102ff748ef721d135ab6d7e2dd426312bc18e26a2855d06724c",
+          "bytes": 3369
+        },
+        {
+          "path": "D:\\32\\STM32H7\\h7_mac\\output\\V2Phase4\\build_20261117_123843\\workspace\\MDK-ARM\\h7_mac_CM4\\h7_mac_CM4.hex",
+          "sha256": "7be9685cb70201486281dcc0a327ea485705f3c7ba271a5dc2e1feb7ccdbd301",
+          "bytes": 78335
+        },
+        {
+          "path": "D:\\32\\STM32H7\\h7_mac\\output\\V2Phase4\\build_20261117_123843\\workspace\\MDK-ARM\\h7_mac_CM4\\h7_mac_CM4.htm",
+          "sha256": "eff6685704f57d5c383e08636f99d11fc8813164b1224fc3c045d5d0e6747dd9",
+          "bytes": 157264
+        },
+        {
+          "path": "D:\\32\\STM32H7\\h7_mac\\output\\V2Phase4\\build_20261117_123843\\workspace\\MDK-ARM\\h7_mac_CM4\\h7_mac_CM4.map",
+          "sha256": "a14600026683141daaab953d6479802628286443aaf018fa30ac8ceb0ce08cdd",
+          "bytes": 263039
+        }
+      ]
+    }
+  ],
+  "camera_registered_in_original_targets": false,
+  "camera_source_sha256": {
+    "CM7\\ApplicationV2\\Modules\\Camera\\camera_endpoint.c": "71e1b14839f3977c9d268f9cff8ca4e3e2da80ab0cc45cec6b27510cebbae03b",
+    "CM7\\ApplicationV2\\Modules\\Camera\\camera_endpoint.h": "3cb763295a87a60ec6a287287e3f574a8f1c12eb4c785821d066487a321ca14d",
+    "CM7\\ApplicationV2\\Modules\\Camera\\camera_format.c": "48423fd4565114617ef04251f47856ebf63c292bcc72da7ddc7b045a3b3968c8",
+    "CM7\\ApplicationV2\\Modules\\Camera\\camera_format.h": "c12ed19474b14efc7fa2a7059fdcfe6261666a14e0951216b20db12c5f5e3d72",
+    "CM7\\ApplicationV2\\Modules\\Camera\\camera_module.c": "662af278b7d32995077bd6f58860dd71a8b8beb1d63f39e9a89db29a4d78da22",
+    "CM7\\ApplicationV2\\Modules\\Camera\\camera_module.h": "3da7801e93d81cb9d14d03757d76529f64a9cdcce314b32befe6416cfb0a5bae"
+  }
+}

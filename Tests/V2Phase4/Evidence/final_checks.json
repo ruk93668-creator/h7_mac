@@ -1,0 +1,18 @@
+{
+  "input": "9179dde62a37b35001d3ed77dcf3e850b0e874fd",
+  "production_head": "63958244110b414dfd50780c52152cd747828834",
+  "exact_ids": "77 each O0/O2;154 PASS",
+  "negative": "10 assertion failures detected",
+  "frozen_source": "Phase1/2/3,Legacy,Media,Device,BSP,old tests,M4 unchanged",
+  "protected_files": "initial hash MATCH",
+  "native_validator": "actual production sources; any physical dependency execution traps",
+  "new_keil_registration": false,
+  "NOT_PROVEN": [
+    "Grant to actual Frame Lease",
+    "Stable Admission Closure across actual tasks"
+  ],
+  "real_task_hardware": "NOT_RUN",
+  "legacy_proposal": "NOT_APPLIED_NOT_COMPILED",
+  "phase5": "NOT_IMPLEMENTED",
+  "auto_review_note": "Rejected test-condition removal was not executed; existing condition retained"
+}

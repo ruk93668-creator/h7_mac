@@ -1,0 +1,33 @@
+OriginalID,OriginalGate,Original72Association,Phase4SubcontractCases,SoftwareOnly,OriginalFullGate
+P2-01,新增描述符无需修改Resolver,"C09,C10","70,71","controlled model subcontracts, not independent hardware acceptance",NOT_RUN / BLOCKED real backend and task integration
+P2-02,Provider策略,C12,NOT_APPLICABLE in Camera module; preserved regressions,"controlled model subcontracts, not independent hardware acceptance",NOT_RUN / BLOCKED real backend and task integration
+P2-03,Optional,C11,NOT_APPLICABLE in Camera module; preserved regressions,"controlled model subcontracts, not independent hardware acceptance",NOT_RUN / BLOCKED real backend and task integration
+P2-04,产品Graph,"J01,J03,C03","70,71","controlled model subcontracts, not independent hardware acceptance",NOT_RUN / BLOCKED real backend and task integration
+P2-05,Scratch,J06,70,"controlled model subcontracts, not independent hardware acceptance",NOT_RUN / BLOCKED real backend and task integration
+P2-06,回滚,J08,NOT_APPLICABLE in Camera module; preserved regressions,"controlled model subcontracts, not independent hardware acceptance",NOT_RUN / BLOCKED real backend and task integration
+P2-07,能力端口,"J07,C16","1-9,57","controlled model subcontracts, not independent hardware acceptance",NOT_RUN / BLOCKED real backend and task integration
+P2-08,证据等级,C17,"8,55,56,70","controlled model subcontracts, not independent hardware acceptance",NOT_RUN / BLOCKED real backend and task integration
+R-01,Raw单路,R3-25,"12,23","controlled model subcontracts, not independent hardware acceptance",NOT_RUN / BLOCKED real backend and task integration
+R-02,Raw多路,C07,Phase2 regression only,"controlled model subcontracts, not independent hardware acceptance",NOT_RUN / BLOCKED real backend and task integration
+R-03,JPEG双路,R3-17,"35,36,43","controlled model subcontracts, not independent hardware acceptance",NOT_RUN / BLOCKED real backend and task integration
+R-04,JPEG逆序,"R3-13,R3-14,R3-18","35,36","controlled model subcontracts, not independent hardware acceptance",NOT_RUN / BLOCKED real backend and task integration
+R-05,双span,R3-26,"35,36","controlled model subcontracts, not independent hardware acceptance",NOT_RUN / BLOCKED real backend and task integration
+R-06,SD-only,R3-12,NOT_APPLICABLE in Camera module; preserved regressions,"controlled model subcontracts, not independent hardware acceptance",NOT_RUN / BLOCKED real backend and task integration
+R-07,Grant关联,"R3-14,R3-16",35-42,"controlled model subcontracts, not independent hardware acceptance",NOT_RUN / BLOCKED real backend and task integration
+R-08,关闭竞态,"R3-05,R3-06,R3-09,C29","24,37,43","controlled model subcontracts, not independent hardware acceptance",NOT_RUN / BLOCKED real backend and task integration
+R-09,延迟运输,"R3-03,R3-07","14-18,44-49","controlled model subcontracts, not independent hardware acceptance",NOT_RUN / BLOCKED real backend and task integration
+R-10,未提交取消,R3-02,NOT_APPLICABLE in Camera module; preserved regressions,"controlled model subcontracts, not independent hardware acceptance",NOT_RUN / BLOCKED real backend and task integration
+R-11,已提交取消,R3-04,NOT_APPLICABLE in Camera module; preserved regressions,"controlled model subcontracts, not independent hardware acceptance",NOT_RUN / BLOCKED real backend and task integration
+R-12,Receipt,"R3-10,R3-11,R3-12,J05","17,38,47","controlled model subcontracts, not independent hardware acceptance",NOT_RUN / BLOCKED real backend and task integration
+R-13,收据容量满,R3-10,NOT_APPLICABLE in Camera module; preserved regressions,"controlled model subcontracts, not independent hardware acceptance",NOT_RUN / BLOCKED real backend and task integration
+R-14,ABA,"R3-15,R3-16","39,40,42,48,59,67,75","controlled model subcontracts, not independent hardware acceptance",NOT_RUN / BLOCKED real backend and task integration
+R-15,部分释放错误,"R3-21,R3-22","26,27,54","controlled model subcontracts, not independent hardware acceptance",NOT_RUN / BLOCKED real backend and task integration
+R-16,RELEASE核验,R3-19,"35-40,68","controlled model subcontracts, not independent hardware acceptance",NOT_RUN / BLOCKED real backend and task integration
+R-17,独立退出,"R3-17,R3-18","35,36","controlled model subcontracts, not independent hardware acceptance",NOT_RUN / BLOCKED real backend and task integration
+R-18,最后退出,"R3-19,R3-30",43,"controlled model subcontracts, not independent hardware acceptance",NOT_RUN / BLOCKED real backend and task integration
+R-19,USB DMA,"R3-27,R3-28","41,72","controlled model subcontracts, not independent hardware acceptance",NOT_RUN / BLOCKED real backend and task integration
+R-20,SD DMA,R3-29,"25,41","controlled model subcontracts, not independent hardware acceptance",NOT_RUN / BLOCKED real backend and task integration
+R-21,多异步DMA,R3-31,Phase2 regression only,"controlled model subcontracts, not independent hardware acceptance",NOT_RUN / BLOCKED real backend and task integration
+R-22,Replay,"R3-23,R3-24",67 + Replay regression,"controlled model subcontracts, not independent hardware acceptance",NOT_RUN / BLOCKED real backend and task integration
+R-23,启动停止故障,R3-30,"20-29,51-54,60-66","controlled model subcontracts, not independent hardware acceptance",NOT_RUN / BLOCKED real backend and task integration
+R-24,扩展能力,"R3-31,C31",NOT_APPLICABLE in Camera module; preserved regressions,"controlled model subcontracts, not independent hardware acceptance",NOT_RUN / BLOCKED real backend and task integration

@@ -1,0 +1,32 @@
+[
+  {
+    "path": "output\\V2Phase4\\tests\\camera_O0.axf",
+    "sha256": "7c04a61fdef9f4c21c9583a28997abec8795ce69231340908af977bf122f5182",
+    "bytes": 71880
+  },
+  {
+    "path": "output\\V2Phase4\\tests\\camera_O0.htm",
+    "sha256": "9caf29d831666b20c1316cff79a213e103c9bd756a3bfeed7c3740a25761745d",
+    "bytes": 118747
+  },
+  {
+    "path": "output\\V2Phase4\\tests\\camera_O0.map",
+    "sha256": "fee8bc6ec2c7e230bbede29cbd9be949e0bb3bb44eade414c1f74fe56273d958",
+    "bytes": 74828
+  },
+  {
+    "path": "output\\V2Phase4\\tests\\camera_O2.axf",
+    "sha256": "848d1b72b20a0a098353b0fb9bba6d610b54e2058e8b10a6c14754fc2a9a4f84",
+    "bytes": 61284
+  },
+  {
+    "path": "output\\V2Phase4\\tests\\camera_O2.htm",
+    "sha256": "9d18bf7598929db30af2dddb5836b50b18d713e8627aa3bc04dd4db3c64ed1f0",
+    "bytes": 108956
+  },
+  {
+    "path": "output\\V2Phase4\\tests\\camera_O2.map",
+    "sha256": "fb6d4583d1428e28823be50072218b063e710411e42ea8f597a5a2e86f80bfc4",
+    "bytes": 72191
+  }
+]

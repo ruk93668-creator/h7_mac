@@ -1,0 +1,82 @@
+--- a/CM7/Media/Inc/camera_capture.h
++++ b/CM7/Media/Inc/camera_capture.h
+@@ -79,0 +80,7 @@
++
++/* PROPOSED ONLY: Camera owner, pure layout query. No capture mutation. */
++typedef struct {
++    uint32_t frame_bytes, buffer_capacity, buffer_alignment;
++    uint32_t dma_word_bytes, max_dma_words;
++} CameraRawLayout_t;
++SysResult_t CameraCapture_QueryRawLayout(const CameraConfig_t *, CameraRawLayout_t *);
+--- a/CM7/Media/Inc/camera_mjpeg_fifo.h
++++ b/CM7/Media/Inc/camera_mjpeg_fifo.h
+@@ -51,0 +52,8 @@
++
++/* PROPOSED ONLY: original_owned is native original use, NOT necessarily USB. */
++typedef struct {
++    uint32_t session, id, frame_epoch, offset, bytes;
++    uint32_t original_owned, sd_owned;
++} CameraMjpegLoanSnapshot_t;
++SysResult_t CameraMjpegFifo_QueryLoan(const CameraMjpegLease_t *, CameraMjpegLoanSnapshot_t *);
++SysResult_t CameraMjpegFifo_QueryMaxFrameBytes(uint32_t *);
+--- a/CM7/Media/Src/camera_capture.c
++++ b/CM7/Media/Src/camera_capture.c
+@@ -1415,0 +1416,19 @@
++
++/* PROPOSED, NOT APPLIED/COMPILED: owner-only pure layout facts. */
++SysResult_t CameraCapture_QueryRawLayout(const CameraConfig_t *config, CameraRawLayout_t *out)
++{
++    CameraRawLayout_t v;
++    SysResult_t z;
++    if (config == NULL || out == NULL) return SYS_ERR_INVALID_ARG;
++    if (CameraConfig_IsVariableLength(config->format)) return SYS_ERR_NOT_SUPPORTED;
++    z = CameraCapture_ValidateStreamConfig(config);
++    if (z != SYS_OK) return z;
++    z = CameraCapture_CalcSize(config, &v.frame_bytes);
++    if (z != SYS_OK) return z;
++    v.buffer_capacity = CAMERA_STREAM_BUFFER_CAPACITY;
++    v.buffer_alignment = CAMERA_STREAM_BUFFER_ALIGN;
++    v.dma_word_bytes = sizeof(uint32_t);
++    v.max_dma_words = CAMERA_DMA_MAX_WORDS;
++    *out = v;
++    return SYS_OK;
++}
+--- a/CM7/Media/Src/camera_mjpeg_fifo.c
++++ b/CM7/Media/Src/camera_mjpeg_fifo.c
+@@ -867,0 +868,36 @@
++
++/* PROPOSED, NOT APPLIED/COMPILED: no Loan/owner/refcount mutation. */
++SysResult_t CameraMjpegFifo_QueryMaxFrameBytes(uint32_t *out)
++{
++    if (out == NULL) return SYS_ERR_INVALID_ARG;
++    *out = MJPEG_MAX_FRAME_BYTES;
++    return SYS_OK;
++}
++SysResult_t CameraMjpegFifo_QueryLoan(const CameraMjpegLease_t *lease, CameraMjpegLoanSnapshot_t *out)
++{
++    CameraMjpegLoanSnapshot_t v;
++    uint32_t i, mask;
++    if (lease == NULL || out == NULL || lease->id == 0U) return SYS_ERR_INVALID_ARG;
++    /* Camera owner only; is_owner transport guard is outside Media. */
++    mask = __get_PRIMASK();
++    __disable_irq();
++    if (lease->session != s_loan_session) {
++        __set_PRIMASK(mask);
++        return SYS_ERR_PROTOCOL;
++    }
++    for (i = 0U; i < CAMERA_MJPEG_MAX_LOANS; ++i) {
++        const MjpegLoan_t *entry = &s_fifo.loans[i];
++        if (entry->id != lease->id) continue;
++        v.session = s_loan_session; v.id = entry->id;
++        v.frame_epoch = entry->frame.epoch;
++        v.offset = entry->frame.offset; v.bytes = entry->frame.length;
++        v.original_owned = entry->usb_owned ? 1U : 0U;
++        v.sd_owned = entry->sd_owned ? 1U : 0U;
++        __DMB();
++        __set_PRIMASK(mask);
++        *out = v;
++        return SYS_OK;
++    }
++    __set_PRIMASK(mask);
++    return SYS_ERR_NOT_FOUND;
++}

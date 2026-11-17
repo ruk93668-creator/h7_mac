@@ -1,0 +1,62 @@
+Traceback (most recent call last):
+  File "D:\32\STM32H7\h7_mac\Tests\V2Phase4\probe_native.py", line 7, in <module>
+    a.build('native',[ROOT/'Tests/V2Phase4/native_probe.c',ROOT/'CM7/ApplicationV2/Modules/Camera/camera_format.c',ROOT/'CM7/ApplicationV2/Core/media_format.c',ROOT/'CM7/Device/Src/ov5640_device.c',ROOT/'CM7/Media/Src/camera_capture.c'],'Native_Run')
+  File "D:\32\STM32H7\h7_mac\Tests\CameraLifecycleC1\run_tests.py", line 33, in build
+    axf=OUT/(name+'.axf');run(['D:/32/ARM/ARMCC/Bin/armlink.exe',*objs,'--entry',entry,'--scatter',link_sc,'-o',axf])
+                          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "D:\32\STM32H7\h7_mac\Tests\CameraLifecycleC1\run_tests.py", line 17, in run
+    if p.returncode:raise RuntimeError(text)
+                    ^^^^^^^^^^^^^^^^^^^^^^^^
+RuntimeError: Error: L6218E: Undefined symbol BSP_Camera_Init (referred from native3.o).
+
+Error: L6218E: Undefined symbol BSP_Camera_ReadReg (referred from native3.o).
+
+Error: L6218E: Undefined symbol BSP_Camera_WriteReg (referred from native3.o).
+
+Error: L6218E: Undefined symbol OV5640_ColorbarModeConfig (referred from native3.o).
+
+Error: L6218E: Undefined symbol OV5640_Init (referred from native3.o).
+
+Error: L6218E: Undefined symbol OV5640_RegisterBusIO (referred from native3.o).
+
+Error: L6218E: Undefined symbol OV5640_SetPCLK (referred from native3.o).
+
+Error: L6218E: Undefined symbol OV5640_Start (referred from native3.o).
+
+Error: L6218E: Undefined symbol OV5640_Stop (referred from native3.o).
+
+Error: L6218E: Undefined symbol Platform_TimeGetMs (referred from native3.o).
+
+Error: L6218E: Undefined symbol BSP_DCMI_ProcessJpeg (referred from native4.o).
+
+Error: L6218E: Undefined symbol BSP_DCMI_ReplaceTarget (referred from native4.o).
+
+Error: L6218E: Undefined symbol BSP_DCMI_SetEventCallback (referred from native4.o).
+
+Error: L6218E: Undefined symbol BSP_DCMI_StartContinuous (referred from native4.o).
+
+Error: L6218E: Undefined symbol BSP_DCMI_StartJpegSnapshot (referred from native4.o).
+
+Error: L6218E: Undefined symbol BSP_DCMI_StartSnapshot (referred from native4.o).
+
+Error: L6218E: Undefined symbol BSP_DCMI_Stop (referred from native4.o).
+
+Error: L6218E: Undefined symbol BSP_DCMI_TakeEvents (referred from native4.o).
+
+Error: L6218E: Undefined symbol CameraMjpegFifo_GetFrame (referred from native4.o).
+
+Error: L6218E: Undefined symbol CameraMjpegFifo_GetStats (referred from native4.o).
+
+Error: L6218E: Undefined symbol CameraMjpegFifo_HasLoan (referred from native4.o).
+
+Error: L6218E: Undefined symbol CameraMjpegFifo_OnStopped (referred from native4.o).
+
+Error: L6218E: Undefined symbol CameraMjpegFifo_Process (referred from native4.o).
+
+Error: L6218E: Undefined symbol CameraMjpegFifo_ReleaseFrame (referred from native4.o).
+
+Error: L6218E: Undefined symbol CameraMjpegFifo_Start (referred from native4.o).
+
+Finished: 0 information, 0 warning and 25 error messages.
+
+

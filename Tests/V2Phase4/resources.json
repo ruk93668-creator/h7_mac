@@ -1,0 +1,244 @@
+{
+  "O0": {
+    "probes": [
+      {
+        "case": 0,
+        "stack": 668,
+        "offsets": [
+          44,
+          156,
+          212,
+          20,
+          28,
+          24,
+          84,
+          56
+        ],
+        "sizes": [
+          336,
+          124,
+          88,
+          48,
+          36,
+          64,
+          40,
+          32,
+          24,
+          32,
+          6,
+          28
+        ]
+      },
+      {
+        "case": 12,
+        "stack": 796,
+        "offsets": null,
+        "sizes": null
+      },
+      {
+        "case": 20,
+        "stack": 764,
+        "offsets": null,
+        "sizes": null
+      },
+      {
+        "case": 23,
+        "stack": 796,
+        "offsets": null,
+        "sizes": null
+      },
+      {
+        "case": 27,
+        "stack": 796,
+        "offsets": null,
+        "sizes": null
+      },
+      {
+        "case": 35,
+        "stack": 796,
+        "offsets": null,
+        "sizes": null
+      },
+      {
+        "case": 43,
+        "stack": 796,
+        "offsets": null,
+        "sizes": null
+      },
+      {
+        "case": 47,
+        "stack": 764,
+        "offsets": null,
+        "sizes": null
+      },
+      {
+        "case": 71,
+        "stack": 1356,
+        "offsets": null,
+        "sizes": null
+      }
+    ],
+    "objects": [
+      {
+        "RO": 1340,
+        "RW": 0,
+        "ZI": 0
+      },
+      {
+        "RO": 228,
+        "RW": 0,
+        "ZI": 0
+      },
+      {
+        "RO": 2670,
+        "RW": 0,
+        "ZI": 0
+      }
+    ],
+    "linker_stack": "Maximum Stack Usage =       1392 bytes + Unknown(Cycles, Untraceable Function Pointers)",
+    "production_totals": {
+      "RO": 4238,
+      "RW": 0,
+      "ZI": 0
+    },
+    "functions": {
+      "VCamera_Translate": {
+        "own_stack": "32",
+        "depth": "76"
+      },
+      "VCamera_Process": {
+        "own_stack": "24",
+        "depth": "64"
+      },
+      "VCamera_FinishRound": {
+        "own_stack": "40",
+        "depth": "176"
+      },
+      "VCameraEndpoint_RunRound": {
+        "own_stack": "16",
+        "depth": "192"
+      }
+    }
+  },
+  "O2": {
+    "probes": [
+      {
+        "case": 0,
+        "stack": 676,
+        "offsets": [
+          44,
+          156,
+          212,
+          20,
+          28,
+          24,
+          84,
+          56
+        ],
+        "sizes": [
+          336,
+          124,
+          88,
+          48,
+          36,
+          64,
+          40,
+          32,
+          24,
+          32,
+          6,
+          28
+        ]
+      },
+      {
+        "case": 12,
+        "stack": 824,
+        "offsets": null,
+        "sizes": null
+      },
+      {
+        "case": 20,
+        "stack": 792,
+        "offsets": null,
+        "sizes": null
+      },
+      {
+        "case": 23,
+        "stack": 824,
+        "offsets": null,
+        "sizes": null
+      },
+      {
+        "case": 27,
+        "stack": 824,
+        "offsets": null,
+        "sizes": null
+      },
+      {
+        "case": 35,
+        "stack": 824,
+        "offsets": null,
+        "sizes": null
+      },
+      {
+        "case": 43,
+        "stack": 824,
+        "offsets": null,
+        "sizes": null
+      },
+      {
+        "case": 47,
+        "stack": 792,
+        "offsets": null,
+        "sizes": null
+      },
+      {
+        "case": 71,
+        "stack": 1332,
+        "offsets": null,
+        "sizes": null
+      }
+    ],
+    "objects": [
+      {
+        "RO": 1140,
+        "RW": 0,
+        "ZI": 0
+      },
+      {
+        "RO": 158,
+        "RW": 0,
+        "ZI": 0
+      },
+      {
+        "RO": 2076,
+        "RW": 0,
+        "ZI": 0
+      }
+    ],
+    "linker_stack": "Maximum Stack Usage =       1352 bytes + Unknown(Cycles, Untraceable Function Pointers)",
+    "production_totals": {
+      "RO": 3374,
+      "RW": 0,
+      "ZI": 0
+    },
+    "functions": {
+      "VCamera_Translate": {
+        "own_stack": "24",
+        "depth": "52"
+      },
+      "VCamera_Process": {
+        "own_stack": "24",
+        "depth": "56"
+      },
+      "VCamera_FinishRound": {
+        "own_stack": "40",
+        "depth": "184"
+      },
+      "VCameraEndpoint_RunRound": {
+        "own_stack": "32",
+        "depth": "216"
+      }
+    }
+  }
+}
