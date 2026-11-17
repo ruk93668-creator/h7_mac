@@ -96,4 +96,28 @@ uint32_t USB_Device_Lock(void);
 //恢复USB中断使能状态
 void USB_Device_Unlock(uint32_t saved);
 
+//延迟状态只保留当前控制事务身份，不代表任何块设备或DMA所有权
+//SUBMITTED仅表示硬件提交成功，COMPLETE必须由EP0 IN完成回调确认
+typedef enum
+{
+    USB_CONTROL_NONE = 0,
+    USB_CONTROL_WAITING,
+    USB_CONTROL_SUBMITTED,
+    USB_CONTROL_COMPLETE,
+    USB_CONTROL_CANCELLED,
+    USB_CONTROL_FAILED
+} UsbControlStatus_t;
+
+//仅允许当前Class的零长度OUT Setup登记；Class随后必须返回USBD_BUSY
+SysResult_t USB_Device_DeferControlStatus(const USBD_SetupReqTypedef *request, uint32_t *token);
+
+//任务确认外部资源已安全排空后续接状态阶段，不在ISR中调用
+SysResult_t USB_Device_CompleteControlStatus(uint32_t token);
+
+//任务超时或外部排空失败时拒绝当前控制事务，不释放外部IO资源
+SysResult_t USB_Device_FailControlStatus(uint32_t token);
+
+//按Token读取提交与完成状态；新事务覆盖旧槽后返回INVALID_STATE
+SysResult_t USB_Device_GetControlStatus(uint32_t token, UsbControlStatus_t *status);
+
 #endif

@@ -56,3 +56,6 @@ Thumbs.db
 # MSC-1 local build, emulation and dependency outputs
 /output/MSC1/
 /output/msc1-deps/
+
+# MSC-2 to MSC-4 local firmware and regression workspaces
+/output/MSC24/

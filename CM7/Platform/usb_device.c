@@ -97,6 +97,19 @@ static volatile bool s_class_memory_used;
 //两个方向独立管理资源，不规定具体端点类型或地址
 static volatile UsbDeviceEndpointState_t s_endpoints[2][USB_DEVICE_EP_COUNT];
 
+//控制事务Token在整个启动周期单调递增，耗尽后拒绝新建，不随USB复位清零
+static uint32_t s_control_token_seed;
+static uint32_t s_control_token;
+static volatile UsbControlStatus_t s_deferred_status;
+static USBD_SetupReqTypedef s_deferred_request;
+static bool s_control_setup_active;
+
+//取消控制事务资格，不取消或释放任何外部DMA缓冲
+static void Usb_InvalidateControl(void);
+
+//比较实际Setup字段，避免结构体填充字节影响事务身份校验
+static bool Usb_ControlRequestMatches(const USBD_SetupReqTypedef *request);
+
 //准备通用Core和BSP
 static SysResult_t Usb_InitDevice(void);
 
@@ -552,6 +565,8 @@ USBD_StatusTypeDef USBD_LL_DeInit(USBD_HandleTypeDef *device)
 {
     SysResult_t result = SYS_ERR_IO;
 
+    Usb_InvalidateControl();
+
     //官方Core传入的设备必须属于当前通用管理实例
     if (device != &s_device)
         return USBD_FAIL;
@@ -839,6 +854,11 @@ USBD_StatusTypeDef USBD_LL_Transmit(USBD_HandleTypeDef *device, uint8_t ep, uint
         (buffer == NULL && size != 0U))
         return Usb_LlResult(SYS_ERR_INVALID_ARG);
 
+    //已登记延期时，Class必须返回BUSY；拒绝Core在Setup中提前补发状态
+    if ((ep & 0x7FU) == 0U && s_control_setup_active &&
+        s_deferred_status == USB_CONTROL_WAITING && device->ep0_state == USBD_EP0_STATUS_IN)
+        return Usb_LlResult(SYS_ERR_INVALID_STATE);
+
     //串行检查设备和端点状态，防止IRQ提前完成当前提交
     enabled = Usb_Lock();
     if (!s_initialized || !s_started || s_stop_required || !entry->opened)
@@ -966,6 +986,116 @@ void USB_Device_Free(void *memory)
             s_class_memory_used = false;
     }
     Usb_Unlock(enabled);
+}
+
+//取消控制事务资格；Token失效与外部IO实际停止是两个独立事实
+static void Usb_InvalidateControl(void)
+{
+    if (s_control_token != 0U)
+        s_deferred_status = USB_CONTROL_CANCELLED;
+    s_control_setup_active = false;
+}
+
+//只比较USB实际传输字段，不使用含填充的结构体memcmp
+static bool Usb_ControlRequestMatches(const USBD_SetupReqTypedef *request)
+{
+    return request != NULL && request->bmRequest == s_deferred_request.bmRequest &&
+        request->bRequest == s_deferred_request.bRequest &&
+        request->wValue == s_deferred_request.wValue &&
+        request->wIndex == s_deferred_request.wIndex &&
+        request->wLength == s_deferred_request.wLength;
+}
+
+//Class只能在本次Setup分发窗口登记延迟状态，其他BUSY仍按原行为处理
+SysResult_t USB_Device_DeferControlStatus(const USBD_SetupReqTypedef *request, uint32_t *token)
+{
+    if (request == NULL || token == NULL)
+        return SYS_ERR_INVALID_ARG;
+    if (!s_control_setup_active || s_deferred_status == USB_CONTROL_WAITING ||
+        s_device.ep0_state != USBD_EP0_SETUP || !USB_Device_IsConfigured() ||
+        request->wLength != 0U || request->bmRequest != 0x21U ||
+        request->bmRequest != s_device.request.bmRequest ||
+        request->bRequest != s_device.request.bRequest ||
+        request->wValue != s_device.request.wValue ||
+        request->wIndex != s_device.request.wIndex)
+        return SYS_ERR_INVALID_STATE;
+    if (s_control_token_seed == UINT32_MAX)
+        return SYS_ERR_NO_RESOURCE;
+    s_control_token = ++s_control_token_seed;
+    s_deferred_request = *request;
+    s_deferred_status = USB_CONTROL_WAITING;
+    *token = s_control_token;
+    return SYS_OK;
+}
+
+//任务推进时只提交一次状态包，不能把Core的固定OK返回值当作提交证据
+SysResult_t USB_Device_CompleteControlStatus(uint32_t token)
+{
+    uint32_t enabled;
+    SysResult_t result;
+
+    if (__get_IPSR() != 0U)
+        return SYS_ERR_INVALID_STATE;
+    enabled = Usb_Lock();
+    if (token == 0U || token != s_control_token || s_control_setup_active ||
+        s_deferred_status != USB_CONTROL_WAITING || !USB_Device_IsConfigured() ||
+        s_device.ep0_state != USBD_EP0_SETUP ||
+        !Usb_ControlRequestMatches(&s_device.request))
+    {
+        Usb_Unlock(enabled);
+        return SYS_ERR_INVALID_STATE;
+    }
+
+    //IRQ被屏蔽，完成回调不会抢先更新状态；LL保存真实BSP提交结果
+    s_deferred_status = USB_CONTROL_SUBMITTED;
+    s_operation_result = SYS_ERR_IO;
+    (void)USBD_CtlSendStatus(&s_device);
+    result = s_operation_result;
+    if (result != SYS_OK || !s_endpoints[1][0].busy)
+    {
+        s_deferred_status = USB_CONTROL_FAILED;
+        if (result == SYS_OK)
+            result = SYS_ERR_IO;
+    }
+    Usb_Unlock(enabled);
+    return result;
+}
+
+//外部排空超时只能拒绝请求，不能借此声称DMA或数据端点已停止
+SysResult_t USB_Device_FailControlStatus(uint32_t token)
+{
+    uint32_t enabled;
+    if (__get_IPSR() != 0U)
+        return SYS_ERR_INVALID_STATE;
+    enabled = Usb_Lock();
+    if (token == 0U || token != s_control_token || s_control_setup_active ||
+        s_deferred_status != USB_CONTROL_WAITING ||
+        !Usb_ControlRequestMatches(&s_device.request))
+    {
+        Usb_Unlock(enabled);
+        return SYS_ERR_INVALID_STATE;
+    }
+    s_deferred_status = USB_CONTROL_FAILED;
+    USBD_CtlError(&s_device, &s_device.request);
+    Usb_Unlock(enabled);
+    return SYS_OK;
+}
+
+//查询不会推进协议，也不会归还任何数据缓冲
+SysResult_t USB_Device_GetControlStatus(uint32_t token, UsbControlStatus_t *status)
+{
+    uint32_t enabled;
+    if (status == NULL)
+        return SYS_ERR_INVALID_ARG;
+    enabled = Usb_Lock();
+    if (token == 0U || token != s_control_token)
+    {
+        Usb_Unlock(enabled);
+        return SYS_ERR_INVALID_STATE;
+    }
+    *status = s_deferred_status;
+    Usb_Unlock(enabled);
+    return SYS_OK;
 }
 
 //DEVICE阶段只准备通用Core，不指定设备用途
@@ -1173,6 +1303,7 @@ static void Usb_Setup(uint8_t *data)
     //没有Class或没有SETUP数据时不进行分发
     if (!s_registered || data == NULL)
         return;
+    Usb_InvalidateControl();
     recipient = data[0] & 0x1FU;
 
     //新SETUP可能中止旧控制事务，先确认硬件停止再回收PIO上下文
@@ -1230,8 +1361,18 @@ static void Usb_Setup(uint8_t *data)
     }
 
     //标准请求保留官方实现，Class和Vendor由已注册Setup通用分发
+    s_control_setup_active = true;
     status = USBD_LL_SetupStage(&s_device, data);
-    if (status != USBD_OK)
+    s_control_setup_active = false;
+    if (s_deferred_status == USB_CONTROL_WAITING)
+    {
+        if (status != USBD_BUSY || !Usb_ControlRequestMatches(&s_device.request))
+        {
+            Usb_InvalidateControl();
+            USBD_CtlError(&s_device, &s_device.request);
+        }
+    }
+    else if (status != USBD_OK)
         USBD_CtlError(&s_device, &s_device.request);
 
     //请求处理完成后只通知状态变化，不把协议处理搬到任务
@@ -1269,6 +1410,12 @@ static void Usb_DataIn(uint8_t ep, uint8_t *data)
         s_in_completed[ep] = s_in_sequence[ep];
     }
 
+    //只有当前Token实际提交的EP0状态包才可确认，软件提交不等于完成
+    if (ep == 0U && s_endpoints[1][0].busy &&
+        s_deferred_status == USB_CONTROL_SUBMITTED &&
+        s_device.ep0_state == USBD_EP0_STATUS_IN)
+        s_deferred_status = USB_CONTROL_COMPLETE;
+
     //BSP已经交付真实完成，先归还端点占用，再进入官方Core回调
     s_endpoints[1][ep].busy = false;
     if (USBD_LL_DataInStage(&s_device, ep, data) != USBD_OK)
@@ -1286,6 +1433,9 @@ static void Usb_DataInError(uint8_t ep, SysResult_t result)
 {
     if (ep >= USB_DEVICE_EP_COUNT || !s_endpoints[1][ep].opened) return;
 
+    if (ep == 0U && s_deferred_status == USB_CONTROL_SUBMITTED)
+        s_deferred_status = USB_CONTROL_FAILED;
+
     //BSP已交付失败结束，清除本次占用并保留原失败码，不上报成功完成
     s_endpoints[1][ep].busy = false;
     s_endpoints[1][ep].last_result = result;
@@ -1299,6 +1449,8 @@ static void Usb_Reset(void)
 {
     USBD_StatusTypeDef reset_result;
     SysResult_t release_result;
+
+    Usb_InvalidateControl();
     if (!s_registered)
         return;
 
@@ -1354,6 +1506,7 @@ static void Usb_Connect(void)
 //处理断线并回收Class资源
 static void Usb_Disconnect(void)
 {
+    Usb_InvalidateControl();
     if (!s_registered)
         return;
 
@@ -1539,6 +1692,8 @@ SysResult_t Usb_StopDevice(void)
     SysResult_t result;
     SysResult_t release_result;
 
+    Usb_InvalidateControl();
+
     //停止只允许从普通上下文进入，不能在USB ISR中释放生命周期资源
     if (!s_initialized || __get_IPSR() != 0U)
         return SYS_ERR_INVALID_STATE;
@@ -1661,6 +1816,8 @@ static uint8_t Usb_ManagedClassDeInit(USBD_HandleTypeDef *device, uint8_t config
 {
     uint8_t status;
     bool control_busy;
+
+    Usb_InvalidateControl();
 
     //硬件未安全停止或生命周期正在重入时禁止释放上下文
     if (device != &s_device || s_hardware_stop_failed ||
