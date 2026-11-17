@@ -26,4 +26,8 @@ if errorlevel 1 exit /b 1
 cl /nologo /W4 /WX /std:c11 /IPlatform\Ethernet Platform\Ethernet\eth_dma.c Tests\Ethernet\test_engine.c /FoTests\Ethernet\build\ /FeTests\Ethernet\build\test_engine.exe
 if errorlevel 1 exit /b 1
 Tests\Ethernet\build\test_engine.exe
+if errorlevel 1 exit /b 1
+cl /nologo /W4 /WX /std:c11 Tests\Ethernet\eth_test_rx.c Tests\Ethernet\test_rx_check.c /FoTests\Ethernet\build\ /FeTests\Ethernet\build\test_rx_check.exe
+if errorlevel 1 exit /b 1
+Tests\Ethernet\build\test_rx_check.exe
 exit /b %errorlevel%

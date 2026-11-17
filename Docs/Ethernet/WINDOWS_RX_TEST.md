@@ -33,6 +33,15 @@
 
 ## 后续多帧
 
-工具支持 --count 1000 --interval-ms 10，但完成单帧后再开始。必须取消单帧断点，避免暂停 CPU 导致人为耗尽。现有 rx_count 会包含 ARP/DHCP，last_rx 也只保存最后一帧，不能据此声称 1000 帧完整校验通过；严格多帧验收还需专用序号/数据校验计数或逐帧证据。
+单帧已由用户反馈全量匹配，见 BOARD_SMOKE_EVIDENCE.md。新测试固件加入独立 EthTestRx 校验器：只统计本站目的 MAC、当前 PC 源 MAC、EtherType 0x88B5 的 60 字节向量，ARP/DHCP 等背景数据计入 ignored，不混入有效帧数。逐帧检查序号 1..1000 和全部 payload，并用位图识别重复及最终缺帧，记录乱序。
+
+1. 重新构建/下载最新 smoke 固件，命令 1、2 后 result=0、state=2。
+2. 移除或禁用之前的单帧断点，g_eth_test_continuous=0，保持 CPU 连续运行。
+3. 写 g_eth_test_command=5，等命令清零；确认 g_eth_test_rx_check.active=1、missing=1000、unique=0。
+4. 对端工具运行 `--count 1000 --interval-ms 10`，至少约 10 秒，以脚本退出为准；Windows 调度可能增加实际间隔，这不是吞吐测试。不得在途中暂停 CPU；Npcap 提交计数不作为板端验收值。
+5. 发包结束后让板卡再运行 1 秒，写命令 6，等命令清零并确认 active=0，再暂停查看 g_eth_test_rx_check。
+6. 通过标准：received=1000、unique=1000、missing=0、bad=0、duplicates=0、out_of_order=0、last_sequence=1000、passed=1；同时 MAC/DMA 保持 RUNNING，相关错误计数无新增。ignored 可以非零。
+
+passed 只在命令 6 结束采样时计算；未发完的 missing 不是最终丢包结论。命令 5 会重置专用统计并从序号 1 开始新一轮；命令 6 只结束校验，不停止 MAC。当前校验源 MAC 固定为 EC:1A:C3:3E:DB:B2，只适用于已核对的对端。
 
 工具的 --dry-run 只生成向量，不打开网卡；--check 打开并核对 Npcap 网卡但不发包。没有实际板卡结果时，报告必须保持未验证。

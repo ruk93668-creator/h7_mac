@@ -2,8 +2,10 @@
 #include "stm32h7xx_hal.h"
 #include "eth_mac.h"
 #include "eth_memory.h"
+#include "eth_test_rx.h"
 #include <string.h>
-volatile uint32_t g_eth_test_command; /* 1 init, 2 start, 3 stop, 4 send once */
+volatile uint32_t
+	g_eth_test_command; //1 初始化，2 启动，3 停止，4 发送，5 开始 RX 校验，6 结束 RX 校验
 volatile uint32_t g_eth_test_continuous;
 volatile int32_t g_eth_test_result;
 volatile uint32_t g_eth_test_rx_count, g_eth_test_tx_done, g_eth_test_sequence;
@@ -46,6 +48,17 @@ int main(void)
 			g_eth_test_continuous = 0U;
 			g_eth_test_result = eth_mac_stop();
 		}
+		if (command == 5U)
+		{
+			g_eth_test_continuous = 0U;
+			EthTestRx_Reset();
+			g_eth_test_result = ETH_OK;
+		}
+		else if (command == 6U)
+		{
+			EthTestRx_Finish();
+			g_eth_test_result = ETH_OK;
+		}
 		if (command == 4U || (g_eth_test_continuous && HAL_GetTick() != last))
 		{
 			uint32_t n = ++g_eth_test_sequence;
@@ -66,6 +79,7 @@ int main(void)
 		if (result == ETH_OK)
 		{
 			++g_eth_test_rx_count;
+			EthTestRx_Inspect(g_eth_test_last_rx, length);
 			g_eth_test_last_rx_length = (uint32_t)length;
 		}
 		if (eth_mac_get_statistics(&snapshot) == ETH_OK)

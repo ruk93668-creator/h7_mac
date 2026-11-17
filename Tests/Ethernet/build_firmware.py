@@ -31,6 +31,12 @@ if smoke:
     for f in t.findall('.//File'):
         if f.findtext('FilePath','').replace('\\','/').endswith('/Core/Src/main.c'):
             f.find('FilePath').text='../Tests/Ethernet/test_main.c'
+    group=ET.SubElement(t.find('Groups'),'Group')
+    ET.SubElement(group,'GroupName').text='Ethernet RX verification only'
+    files=ET.SubElement(group,'Files');file=ET.SubElement(files,'File')
+    ET.SubElement(file,'FileName').text='eth_test_rx.c'
+    ET.SubElement(file,'FileType').text='1'
+    ET.SubElement(file,'FilePath').text='../Tests/Ethernet/eth_test_rx.c'
     # Dedicated test entry; no Application code is changed or invoked.
 project=ROOT/'MDK-ARM/h7_mac_ethernet_verify.uvprojx'
 ET.ElementTree(root).write(project,encoding='utf-8',xml_declaration=True)
@@ -38,7 +44,7 @@ if '--prepare-only' in sys.argv: print(project);sys.exit(0)
 log=OUT/(name+'_build.log')
 cmd=['D:/32/UV4/UV4.exe','-j0','-r',str(project),'-t','h7_mac_CM7','-o',str(log)]
 si=subprocess.STARTUPINFO();si.dwFlags|=subprocess.STARTF_USESHOWWINDOW;si.wShowWindow=0
-inputs=list((ROOT/'Platform/Ethernet').glob('*.[ch]'))+[ROOT/'CM7/Core/Src/main.c',ROOT/'Tests/Ethernet/test_main.c',ROOT/'MDK-ARM/h7_mac.uvprojx',ROOT/'MDK-ARM/h7_mac_CM7_custom.sct']
+inputs=list((ROOT/'Platform/Ethernet').glob('*.[ch]'))+list((ROOT/'Tests/Ethernet').glob('*.[ch]'))+[ROOT/'CM7/Core/Src/main.c',ROOT/'Tests/Ethernet/test_main.c',ROOT/'MDK-ARM/h7_mac.uvprojx',ROOT/'MDK-ARM/h7_mac_CM7_custom.sct']
 def hashes():
     return {p.relative_to(ROOT).as_posix():hashlib.sha256(p.read_bytes()).hexdigest() for p in inputs}
 before=hashes()
