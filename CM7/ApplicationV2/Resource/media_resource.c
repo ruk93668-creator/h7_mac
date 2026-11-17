@@ -180,3 +180,14 @@ SysResult_t MR_Retire(MRContext *c,const MRReceipt *r) {
     }
     return leave(c,SYS_ERR_INVALID_STATE);
 }
+
+SysResult_t MR_VerifyExit(MRContext *c,const MRRelease *r) {
+    MRAdmission *a; uint32_t i; SysResult_t z;
+    if(!r) return SYS_ERR_INVALID_ARG;
+    z=enter(c); if(z) return z; a=admission(c,&r->grant);
+    if(!a||!a->closed||memcmp(&a->closing,r,sizeof(*r))) return leave(c,SYS_ERR_INVALID_STATE);
+    for(i=0;i<MR_HANDOFF_MAX;i++) if(c->records[i].state && MRGrant_Equal(&c->records[i].request.g,&r->grant)) return leave(c,SYS_ERR_BUSY);
+    for(i=0;i<MR_RECEIPT_MAX;i++) if(c->receipts[i].occupied && MRGrant_Equal(&c->receipts[i].value.g,&r->grant)) return leave(c,SYS_ERR_BUSY);
+    z=c->source.ops->exit_safe(c->source.context,&r->grant);
+    return leave(c,z);
+}
