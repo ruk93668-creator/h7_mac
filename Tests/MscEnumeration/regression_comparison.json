@@ -1,0 +1,129 @@
+{
+  "baseline": "0d81ba137bd38dded3c8dcda56abae26d0cd3fd9",
+  "comparison": [
+    {
+      "file": "UvcStreaming/results.json",
+      "identical_cases_and_summary": true,
+      "baseline_summary": {
+        "total": 36,
+        "passed": 1,
+        "failed": 35
+      },
+      "current_summary": {
+        "total": 36,
+        "passed": 1,
+        "failed": 35
+      }
+    },
+    {
+      "file": "UvcPayload/results.json",
+      "identical_cases_and_summary": true,
+      "baseline_summary": {
+        "unique_cases": 62,
+        "executions": 124,
+        "passed": 122,
+        "failed": 2
+      },
+      "current_summary": {
+        "unique_cases": 62,
+        "executions": 124,
+        "passed": 122,
+        "failed": 2
+      }
+    },
+    {
+      "file": "UvcEp1Lifecycle/results.json",
+      "identical_cases_and_summary": true,
+      "baseline_summary": {
+        "total": 45,
+        "passed": 0,
+        "failed": 45
+      },
+      "current_summary": {
+        "total": 45,
+        "passed": 0,
+        "failed": 45
+      }
+    },
+    {
+      "file": "UvcProbeCommit/results.json",
+      "identical_cases_and_summary": true,
+      "baseline_summary": {
+        "total": 89,
+        "passed": 0,
+        "failed": 89
+      },
+      "current_summary": {
+        "total": 89,
+        "passed": 0,
+        "failed": 89
+      }
+    },
+    {
+      "file": "UvcProbeCommit/cancellation_results.json",
+      "identical_cases_and_summary": true,
+      "baseline_summary": {
+        "total": 39,
+        "passed": 0,
+        "failed": 39
+      },
+      "current_summary": {
+        "total": 39,
+        "passed": 0,
+        "failed": 39
+      }
+    },
+    {
+      "file": "UsbCoreDecoupling/results.json",
+      "identical_cases_and_summary": true,
+      "baseline_summary": {
+        "total": 204,
+        "passed": 201,
+        "failed": 3,
+        "assertions": 2947
+      },
+      "current_summary": {
+        "total": 204,
+        "passed": 201,
+        "failed": 3,
+        "assertions": 2947
+      }
+    },
+    {
+      "file": "Ep0IrqRace/results.json",
+      "identical_cases_and_summary": true,
+      "baseline_summary": null,
+      "current_summary": null
+    },
+    {
+      "file": "UvcLifecycle/results.json",
+      "identical_cases_and_summary": true,
+      "baseline_summary": {
+        "total": 40,
+        "passed": 34,
+        "failed": 6
+      },
+      "current_summary": {
+        "total": 40,
+        "passed": 34,
+        "failed": 6
+      }
+    },
+    {
+      "file": "UvcUsbCleanup/results.json",
+      "identical_cases_and_summary": true,
+      "baseline_summary": {
+        "total": 14,
+        "passed": 0,
+        "failed": 14
+      },
+      "current_summary": {
+        "total": 14,
+        "passed": 0,
+        "failed": 14
+      }
+    }
+  ],
+  "descriptor_suite": "main descriptor unit tests do not execute: missing camera_mjpeg_fifo.h include path in historical runner; string subtests 8/8 on both snapshots",
+  "warning": "baseline equivalence is not a green UVC regression result"
+}

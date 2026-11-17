@@ -1,4 +1,5 @@
 #include "video_config.h"
+#include "usb_mode.h"
 
 #ifndef APP_VIDEO_TEST_MODE
 #define APP_VIDEO_TEST_MODE 0
@@ -25,7 +26,7 @@ static const VideoConfig_t s_default_config =
         .height = APP_VIDEO_MJPEG_MODE ? 240U : 120U,
         .format = APP_VIDEO_MJPEG_MODE ? CAMERA_PIXEL_FORMAT_JPEG : CAMERA_PIXEL_FORMAT_YUV422
     },
-    .output = APP_VIDEO_TEST_MODE ? VIDEO_OUTPUT_USB_TEST : VIDEO_OUTPUT_USB_UVC,
+    .output = (APP_VIDEO_TEST_MODE || USB_MODE_BOOT_MSC) ? VIDEO_OUTPUT_USB_TEST : VIDEO_OUTPUT_USB_UVC,
 
     //输出目标25FPS，实际采集与主机接收速率另行测量
     .output_fps =  25U,

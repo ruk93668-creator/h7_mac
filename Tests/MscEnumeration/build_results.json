@@ -1,0 +1,19 @@
+[
+  {
+    "mode": "msc",
+    "exit": 0,
+    "summary": "0 Error(s), 0 Warning(s)",
+    "passed": true,
+    "axf_sha256": "60f8e4f40b3d6abaf9f7a264e2395c71b6e17b3226774530bee8b1acbd57d78a",
+    "map_sha256": "aeca577148f0fb41abf9ca551ec46576030d0969f9490d93e93075581f3026ab",
+    "hex_sha256": "750e4d6841a31b464fbaae19a2b74c8373d86d802948ce42ae8ee0250b96a6df"
+  },
+  {
+    "mode": "default_uvc",
+    "exit": 0,
+    "summary": "0 Error(s), 0 Warning(s)",
+    "passed": true,
+    "axf_sha256": "69e7702c61bb71c000ac1257c3660a557181d53de749755ab9029d099ef726ee",
+    "map_sha256": "e828ef2d261ea9c7d26d0de0a4943c003c1a6435cdc6778e5f46fe9c88c96f20"
+  }
+]

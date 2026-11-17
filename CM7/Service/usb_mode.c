@@ -1,5 +1,6 @@
 #include "usb_mode.h"
 #include "usb_device.h"
+#include "usb_msc_class.h"
 #include "framework_init.h"
 #include <stdbool.h>
 #include "platform_time.h"
@@ -51,6 +52,10 @@ static SysResult_t UsbMode_RegisterClass(UsbMode_t mode);
 SysResult_t USB_Mode_SelectBootMode(UsbMode_t mode, SysResult_t (*register_class)(void))
 {
     uint16_t length = 0U;
+#if USB_MODE_BOOT_MSC
+    /* Enumeration build uses the existing TEST (no-video) application path. */
+    if (mode == USB_MODE_TEST) { mode = USB_MODE_MSC; register_class = USB_MSC_Register; }
+#endif
 
     //模式只能在准备和Class注册之前选择一次
     if (s_usb_mode.initialized || s_boot_mode_selected ||
@@ -58,9 +63,9 @@ SysResult_t USB_Mode_SelectBootMode(UsbMode_t mode, SysResult_t (*register_class
         return SYS_ERR_INVALID_STATE;
 
     //未实现的输出模式明确拒绝，不把预留枚举当成功能支持
-    if (mode != USB_MODE_TEST && mode != USB_MODE_UVC && mode != USB_MODE_NONE)
+    if (mode != USB_MODE_TEST && mode != USB_MODE_UVC && mode != USB_MODE_NONE && mode != USB_MODE_MSC)
         return SYS_ERR_NOT_SUPPORTED;
-    if (mode == USB_MODE_UVC && register_class == NULL)
+    if ((mode == USB_MODE_UVC || mode == USB_MODE_MSC) && register_class == NULL)
         return SYS_ERR_INVALID_ARG;
 
     //只保存模式及注册入口，不在这里连接USB
@@ -117,10 +122,10 @@ SysResult_t USB_Mode_Start(void)
         return SYS_ERR_INVALID_STATE;
 
     if (s_usb_mode.mode != USB_MODE_TEST && s_usb_mode.mode != USB_MODE_UVC &&
-        s_usb_mode.mode != USB_MODE_NONE)
+        s_usb_mode.mode != USB_MODE_NONE && s_usb_mode.mode != USB_MODE_MSC)
         return SYS_ERR_NOT_SUPPORTED;
 
-    if (s_usb_mode.mode == USB_MODE_UVC && s_boot_register == NULL)
+    if ((s_usb_mode.mode == USB_MODE_UVC || s_usb_mode.mode == USB_MODE_MSC) && s_boot_register == NULL)
         return SYS_ERR_NOT_SUPPORTED;
 
     //无输出时保持USB断开
@@ -198,7 +203,7 @@ UsbMode_t USB_Mode_GetMode(void)
     if (s_usb_mode.initialized)
         return s_usb_mode.mode;
 
-    return s_boot_mode_selected ? s_boot_mode : (USB_MODE_BOOT_UVC ? USB_MODE_UVC : USB_MODE_TEST);
+    return s_boot_mode_selected ? s_boot_mode : (USB_MODE_BOOT_MSC ? USB_MODE_MSC : (USB_MODE_BOOT_UVC ? USB_MODE_UVC : USB_MODE_TEST));
 }
 
 //非阻塞推进枚举和同模式重连
@@ -327,6 +332,7 @@ static SysResult_t UsbMode_RegisterClass(UsbMode_t mode)
         case USB_MODE_UVC:
             return s_boot_register != NULL ? s_boot_register() : SYS_ERR_NOT_SUPPORTED;
         case USB_MODE_MSC:
+            return s_boot_register != NULL ? s_boot_register() : SYS_ERR_NOT_SUPPORTED;
         default:
             return SYS_ERR_NOT_SUPPORTED;
     }

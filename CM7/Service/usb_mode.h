@@ -3,6 +3,14 @@
 
 #include "sys_result.h"
 
+#ifndef USB_MODE_BOOT_MSC
+#define USB_MODE_BOOT_MSC 0
+#endif
+#if USB_MODE_BOOT_MSC != 0 && USB_MODE_BOOT_MSC != 1
+#error USB_MODE_BOOT_MSC_must_be_0_or_1
+#endif
+
+
 //置1只选择UVC USB Class，默认保留TEST；不改变Application
 #ifndef USB_MODE_BOOT_UVC
 #define USB_MODE_BOOT_UVC 0
@@ -10,6 +18,9 @@
 
 #if USB_MODE_BOOT_UVC != 0 && USB_MODE_BOOT_UVC != 1
 #error USB_MODE_BOOT_UVC_must_be_0_or_1
+#endif
+#if USB_MODE_BOOT_MSC && USB_MODE_BOOT_UVC
+#error USB_boot_modes_are_mutually_exclusive
 #endif
 
 //USB冷启动模式，MSC暂未接入
