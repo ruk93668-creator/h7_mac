@@ -60,3 +60,13 @@ Class通过现有USB_Device_RegisterClass注册；SET_CONFIGURATION时以USB_Dev
 对照主线usb_test_device.c与usb_uvc_payload.c整理MSC新增模块：模块职责与静态状态采用中文注释；内部函数改为Msc_前缀，先声明、再公开接口、最后内部实现；大括号独立行，分开变量声明与多条语句；描述符按字段注释，使用USB描述符常量、VID/PID常量及无符号字面量；头文件补齐接口注释；启动接入整理排版并统一CRLF，保留既有文件编码。
 
 描述符字节、接口/端点地址、控制请求判断及端点生命周期行为保持不变。复用现有34项Class测试与30项真实栈集成断言，全部通过；重编MSC和默认UVC两个CM7配置，结果记录于更新后的build_results.json。未修改UVC/Core/SDMMC/FatFS/MPU或Keil源文件清单，未开展MSC-2。此前实板及历史回归限制继续有效。
+
+## 2026-11-17 实板复位后描述符验证
+
+此记录更新前文实板NOT_TESTED状态中的描述符/当前连接部分；完整枚举时序抓包仍未通过工具验证。
+
+用户复位板卡后，通过Windows USB Hub的只读IOCTL读取目标端口，VID/PID为1209:0001。实际Device Descriptor为18字节；Configuration为32字节，接口0/Alt0、端点数2、类别08/06/50；EP82 IN和EP02 OUT均Bulk、wMaxPacketSize64。连接信息报告Full-Speed、CurrentConfigurationValue=1、NumberOfOpenPipes=2、DeviceConnected。最新PnP快照为“USB大容量存储设备”、Status OK、ProblemCode 0。此前曾观察Code 10，本次复位后快照不等于BOT/SCSI已经支持。
+
+实际配置字节：`09 02 20 00 01 01 00 80 fa 09 04 00 00 02 08 06 50 00 07 05 82 02 40 00 00 07 05 02 02 40 00 00`。机器可读证据见Tests/MscEnumeration/hardware_results.json，未纳入主机其他USB设备身份或流量。
+
+Wireshark/tshark尝试通过USBPcap1捕获复位枚举，但报“magic=0x00000000，非有效pcap/pcapng”，0 packets captured；不能视为有效抓包，也不能声称观察到线上SET_CONFIGURATION成功包。Hub当前配置值1只证明当前配置状态。结论：MSC-1实板描述符与端点配置检查通过，USBPcap完整枚举时序证据仍待补充；无磁盘读写验收，不进入MSC-2。

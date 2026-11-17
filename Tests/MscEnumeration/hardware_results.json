@@ -1,0 +1,29 @@
+{
+  "date": "2026-11-17",
+  "firmware_commit": "83fdaf8771da02dd210c676907ffca8a9b4a6c3d",
+  "method": "Windows USB Hub IOCTL_USB_GET_DESCRIPTOR_FROM_NODE_CONNECTION and IOCTL_USB_GET_NODE_CONNECTION_INFORMATION_EX; read-only",
+  "descriptor_checks_passed": true,
+  "device_descriptor_hex": "12 01 00 02 00 00 00 40 09 12 01 00 00 01 01 02 00 01",
+  "configuration_descriptor_hex": "09 02 20 00 01 01 00 80 fa 09 04 00 00 02 08 06 50 00 07 05 82 02 40 00 00 07 05 02 02 40 00 00",
+  "configuration_length": 32,
+  "interface_count": 1,
+  "interface_class": "08/06/50",
+  "bulk_in": "0x82",
+  "bulk_out": "0x02",
+  "max_packet_size": 64,
+  "speed": "Full-Speed",
+  "current_configuration": 1,
+  "open_pipes": 2,
+  "connection_status": "DeviceConnected",
+  "pnp": {
+    "Status": "OK",
+    "Name": "USB 大容量存储设备",
+    "ProblemCode": 0
+  },
+  "usbpcap_enumeration_capture": "NOT_VERIFIED: tshark reported invalid pipe data magic 0x00000000; 0 packets captured",
+  "limitations": [
+    "No BOT/SCSI or disk read/write acceptance",
+    "Initial PnP Code 10 was observed; after user reset the PnP snapshot is recorded above",
+    "Hub status verifies current configuration but is not an on-wire SET_CONFIGURATION trace"
+  ]
+}
