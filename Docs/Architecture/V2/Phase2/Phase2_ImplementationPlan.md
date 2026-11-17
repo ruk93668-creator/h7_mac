@@ -1,4 +1,4 @@
-# Phase 2 — Media Resource Implementation Plan（PROPOSED，尚未授权编码）
+# Phase 2 — Media Resource Implementation Plan（规划基线；本轮独立软件实施已授权，真实适配待审）
 
 输入bd24c03，沿用501330a全部纯基础实现和Phase1有条件验收。依据用户2026-11-17最终冻结路线同步；不是新架构或阶段重排。阶段号已确定，不再列为待决。接口/布局/容量仍待审核。
 
@@ -26,3 +26,7 @@ Raw Pool复用camera_capture.c中的固定物理slot及DMA M0/M1状态；JPEG复
 Phase3执行协调、Phase4/5/6 Camera/USB/Storage模块迁移、Phase7统一控制、Phase8真实重配置、Phase9扩展、Phase10最终清理均未在本轮实施。允许设计适配端口，不偷偷接旧启动。原资源预算的576B仅候选元数据估算，须ARMCC5 sizeof/Map/栈证明；不擅扩任务/队列，不复制Raw/JPEG SDRAM池。
 
 纯未活动V2实现可逐包回退；真实硬件绑定须独立授权并以整固件回滚，不能新旧owner混用。遗留实现不在Phase2删除。32项新增矩阵与原72项仅按集合身份保留，覆盖交叉表明确重叠，不累计为104项独立资源验收。
+
+## 4. 本轮授权与实际落地
+
+本轮用户已授权MR-A～MR-F独立软件基础，源码/测试/构建见Phase2_ImplementationReport.md。真实Legacy端口及双端运输/ACK消费发布未绑定，最小待审差异见Phase2_BackendAdaptationGate.md；该部分不因本轮软件结果获得修改许可。原32项和72项NOT_RUN及两个NOT_PROVEN保持，不以Mock关闭。

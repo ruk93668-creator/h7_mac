@@ -1,0 +1,57 @@
+﻿ID,Contract,O0,O2,Evidence
+0,ABI and caps,PASS,PASS,results.json + resources.json selected identity probes
+1,Raw single owner,PASS,PASS,results.json + resources.json selected identity probes
+2,Raw concurrent rejection,PASS,PASS,results.json + resources.json selected identity probes
+3,JPEG USB first,PASS,PASS,results.json + resources.json selected identity probes
+4,JPEG SD first,PASS,PASS,results.json + resources.json selected identity probes
+5,SD-only internal use without qualification,PASS,PASS,results.json + resources.json selected identity probes
+6,Local cancel burns H,PASS,PASS,results.json + resources.json selected identity probes
+7,Committed close negative terminal,PASS,PASS,results.json + resources.json selected identity probes
+8,Close prevents grant reopening,PASS,PASS,results.json + resources.json selected identity probes
+9,Admitted but unbound close,PASS,PASS,results.json + resources.json selected identity probes
+10,Invalid caps,PASS,PASS,results.json + resources.json selected identity probes
+11,Wrong execution owner,PASS,PASS,results.json + resources.json selected identity probes
+12,Repeated Init rejected,PASS,PASS,results.json + resources.json selected identity probes
+13,Duplicate obtain no Get,PASS,PASS,results.json + resources.json selected identity probes
+14,Wrong consumer Return,PASS,PASS,results.json + resources.json selected identity probes
+15,Wrong media Return,PASS,PASS,results.json + resources.json selected identity probes
+16,Wrong generation Return,PASS,PASS,results.json + resources.json selected identity probes
+17,DMA pending,PASS,PASS,results.json + resources.json selected identity probes
+18,Release failure frozen,PASS,PASS,results.json + resources.json selected identity probes
+19,Release succeeded confirmation pending,PASS,PASS,results.json + resources.json selected identity probes
+20,Duplicate Return,PASS,PASS,results.json + resources.json selected identity probes
+21,Consume before enqueue,PASS,PASS,results.json + resources.json selected identity probes
+22,Queue full retry,PASS,PASS,results.json + resources.json selected identity probes
+23,Queued unconsumed T,PASS,PASS,results.json + resources.json selected identity probes
+24,Wrong/duplicate consume,PASS,PASS,results.json + resources.json selected identity probes
+25,Late T and ABA,PASS,PASS,results.json + resources.json selected identity probes
+26,Verify waits retirement,PASS,PASS,results.json + resources.json selected identity probes
+27,USB exit SD stays,PASS,PASS,results.json + resources.json selected identity probes
+28,Wrong release transaction,PASS,PASS,results.json + resources.json selected identity probes
+29,Callback reentry,PASS,PASS,results.json + resources.json selected identity probes
+30,Bounded terminal capacity,PASS,PASS,results.json + resources.json selected identity probes
+31,Exit requires DMA safe,PASS,PASS,results.json + resources.json selected identity probes
+32,100 handoffs,PASS,PASS,results.json + resources.json selected identity probes
+33,New G while old in flight,PASS,PASS,results.json + resources.json selected identity probes
+34,Wrong B,PASS,PASS,results.json + resources.json selected identity probes
+35,Wrong S,PASS,PASS,results.json + resources.json selected identity probes
+36,No early receipt,PASS,PASS,results.json + resources.json selected identity probes
+37,USB T and 100 SD handoffs,PASS,PASS,results.json + resources.json selected identity probes
+38,IO after actual release,PASS,PASS,results.json + resources.json selected identity probes
+39,ID exhaustion,PASS,PASS,results.json + resources.json selected identity probes
+40,New generation and real token generation,PASS,PASS,results.json + resources.json selected identity probes
+41,Authority revocation,PASS,PASS,results.json + resources.json selected identity probes
+42,Commit required,PASS,PASS,results.json + resources.json selected identity probes
+43,Bad acquisition quarantined,PASS,PASS,results.json + resources.json selected identity probes
+44,Unsupported arbitrary consumer ID,PASS,PASS,results.json + resources.json selected identity probes
+45,JPEG handoff budget seven,PASS,PASS,results.json + resources.json selected identity probes
+46,SD exit USB stays,PASS,PASS,results.json + resources.json selected identity probes
+47,Two asynchronous readers,PASS,PASS,results.json + resources.json selected identity probes
+48,Abort failure,PASS,PASS,results.json + resources.json selected identity probes
+49,Internal use cannot obtain qualification,PASS,PASS,results.json + resources.json selected identity probes
+50,Explicit no acquisition negative terminal,PASS,PASS,results.json
+51,Unknown acquisition without M must remain blocked,PASS,PASS,results.json
+52,Bind B after actual M and lookup retirement,PASS,PASS,results.json
+53,Reject wrong bridge ticket after Get,PASS,PASS,results.json
+54,Bind bridge idempotence and conflict,PASS,PASS,results.json
+55,Close after M before bridge publication,PASS,PASS,results.json

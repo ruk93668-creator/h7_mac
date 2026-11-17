@@ -51,3 +51,13 @@ Receipt独立有界、不持Frame；USB ACK入队未消费时保留旧T，不能
 采集DMA对Raw必须排除M0/M1，JPEG块回收必须服从原Backend写目标/块引用；外围视图不证明硬件停。USB异步端点/Abort确认、SDMMC IDMA完成/成功Abort及CPU复制均各自证明不再读原Frame。复制式发送仅在最后一次原Frame读取完成且无其它异步读取者后才可归还；零拷贝等待驱动真实完成/成功Abort。函数返回成功、网络/TCP接受、客户端断线均不是释放证据。异常超时保留Lease，不强收。
 
 USB退出不碰SD owner，反之亦然；最后消费者退出还须内部SD-only持有和采集DMA安全证明。当前Raw双消费者零拷贝、JPEG第三owner均NOT_PROVEN/UNSUPPORTED，真实资源能力应拒绝，不能因图fan-out合法就放行。未来Network仅在真的持Frame时参与，需先扩展真实Backend权威，不添加第二套全局计数。
+
+## 6. 本轮实施定位
+
+上述草案的“不能写入生产头”属于本轮正式实施授权之前的状态。本轮独立C API已按用户MR-A～MR-F授权建立，实际名称/布局/行为以ApplicationV2/Resource头与Phase2_ImplementationReport为准，不改变任何既有ABI。内部持有不是第三个qualification；owner查询/消费证明的真实适配仍待审，两项总体证明保持NOT_PROVEN。
+
+### Phase2最终Bridge绑定补充
+
+MR_Stage的B是请求ticket，USB epoch/command非零，lease可为0。Camera owner必须先Admit/Obtain得到真实M，再调用MR_BindBridge绑定实际完整B，成功后才可发布Offer。相同B重试幂等，不同B冲突拒绝且保持原物理持有。MR_LookupBridge返回原不可变请求/M；不能用新Grant重建旧Return。Close不会禁止已有M安全归还。若取得M但尚未发布B，允许Camera本地归还，无B终结不得伪造USB帧ACK。
+
+MRReceipt为本地64B对象，非原消息ABI；冻结result、physical_returned和实际B独立。接口不实现双端受保护发布或真实ACK消费，适配仍需单独审核。

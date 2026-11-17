@@ -1,0 +1,33 @@
+﻿OriginalID,OriginalGate,Original72Association,ExecutedSoftwareCases,SoftwareScope,FullOriginalGate
+P2-01,新增描述符无需修改Resolver,"C09,C10",Phase1,PASS: controlled-port subcontracts only; not whole original scenario,NOT_RUN / BLOCKED real backend or transport binding
+P2-02,Provider策略,C12,Phase1,PASS: controlled-port subcontracts only; not whole original scenario,NOT_RUN / BLOCKED real backend or transport binding
+P2-03,Optional,C11,Phase1,PASS: controlled-port subcontracts only; not whole original scenario,NOT_RUN / BLOCKED real backend or transport binding
+P2-04,产品Graph,"J01,J03,C03",Phase1,PASS: controlled-port subcontracts only; not whole original scenario,NOT_RUN / BLOCKED real backend or transport binding
+P2-05,Scratch,J06,"11,29",PASS: controlled-port subcontracts only; not whole original scenario,NOT_RUN / BLOCKED real backend or transport binding
+P2-06,回滚,J08,Phase1 limited alias,PASS: controlled-port subcontracts only; not whole original scenario,NOT_RUN / BLOCKED real backend or transport binding
+P2-07,能力端口,"J07,C16","0,10,45 + Phase1",PASS: controlled-port subcontracts only; not whole original scenario,NOT_RUN / BLOCKED real backend or transport binding
+P2-08,证据等级,C17,Phase1,PASS: controlled-port subcontracts only; not whole original scenario,NOT_RUN / BLOCKED real backend or transport binding
+R-01,Raw单路,R3-25,1,PASS: controlled-port subcontracts only; not whole original scenario,NOT_RUN / BLOCKED real backend or transport binding
+R-02,Raw多路,C07,"2,10",PASS: controlled-port subcontracts only; not whole original scenario,NOT_RUN / BLOCKED real backend or transport binding
+R-03,JPEG双路,R3-17,3,PASS: controlled-port subcontracts only; not whole original scenario,NOT_RUN / BLOCKED real backend or transport binding
+R-04,JPEG逆序,"R3-13,R3-14,R3-18","4,14,15,20",PASS: controlled-port subcontracts only; not whole original scenario,NOT_RUN / BLOCKED real backend or transport binding
+R-05,双span,R3-26,"3,4",PASS: controlled-port subcontracts only; not whole original scenario,NOT_RUN / BLOCKED real backend or transport binding
+R-06,SD-only,R3-12,"5,49",PASS: controlled-port subcontracts only; not whole original scenario,NOT_RUN / BLOCKED real backend or transport binding
+R-07,Grant关联,"R3-14,R3-16","16,34,35,40",PASS: controlled-port subcontracts only; not whole original scenario,NOT_RUN / BLOCKED real backend or transport binding
+R-08,关闭竞态,"R3-05,R3-06,R3-09,C29","7,8,9",PASS: controlled-port subcontracts only; not whole original scenario,NOT_RUN / BLOCKED real backend or transport binding
+R-09,延迟运输,"R3-03,R3-07","7,22,42",PARTIAL: local API identity/commit only; real wire publication and late-B mapping BLOCKED,NOT_RUN / BLOCKED real backend or transport binding
+R-10,未提交取消,R3-02,6,PASS: controlled-port subcontracts only; not whole original scenario,NOT_RUN / BLOCKED real backend or transport binding
+R-11,已提交取消,R3-04,"7,43",PASS: controlled-port subcontracts only; not whole original scenario,NOT_RUN / BLOCKED real backend or transport binding
+R-12,Receipt,"R3-10,R3-11,R3-12,J05","21,23,37",PASS: controlled-port subcontracts only; not whole original scenario,NOT_RUN / BLOCKED real backend or transport binding
+R-13,收据容量满,R3-10,30,PASS: controlled-port subcontracts only; not whole original scenario,NOT_RUN / BLOCKED real backend or transport binding
+R-14,ABA,"R3-15,R3-16","25,40",PARTIAL: local API identity/commit only; real wire publication and late-B mapping BLOCKED,NOT_RUN / BLOCKED real backend or transport binding
+R-15,部分释放错误,"R3-21,R3-22","18,19,38,43",PASS: controlled-port subcontracts only; not whole original scenario,NOT_RUN / BLOCKED real backend or transport binding
+R-16,RELEASE核验,R3-19,26,PARTIAL: local API identity/commit only; real wire publication and late-B mapping BLOCKED,NOT_RUN / BLOCKED real backend or transport binding
+R-17,独立退出,"R3-17,R3-18","27,46",PASS: controlled-port subcontracts only; not whole original scenario,NOT_RUN / BLOCKED real backend or transport binding
+R-18,最后退出,"R3-19,R3-30","5,31",PASS: controlled-port subcontracts only; not whole original scenario,NOT_RUN / BLOCKED real backend or transport binding
+R-19,USB DMA,"R3-27,R3-28","17,47,48",PASS: controlled-port subcontracts only; not whole original scenario,NOT_RUN / BLOCKED real backend or transport binding
+R-20,SD DMA,R3-29,"17,47,48",PASS: controlled-port subcontracts only; not whole original scenario,NOT_RUN / BLOCKED real backend or transport binding
+R-21,多异步DMA,R3-31,47,PASS: controlled-port subcontracts only; not whole original scenario,NOT_RUN / BLOCKED real backend or transport binding
+R-22,Replay,"R3-23,R3-24",39 + C2.1.1,PASS: controlled-port subcontracts only; not whole original scenario,NOT_RUN / BLOCKED real backend or transport binding
+R-23,启动停止故障,R3-30,NOT_RUN,NOT_RUN,NOT_RUN / BLOCKED real backend or transport binding
+R-24,扩展能力,"R3-31,C31",44 (unsupported only),PASS: controlled-port subcontracts only; not whole original scenario,NOT_RUN / BLOCKED real backend or transport binding

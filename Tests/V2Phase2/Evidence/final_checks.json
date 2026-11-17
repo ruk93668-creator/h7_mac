@@ -1,0 +1,11 @@
+{
+  "resource_ids": "56 exact IDs each O0/O2;112 PASS;final source hashes match",
+  "protected": "Keil uvprojx/uvoptx and M4 main exact input hashes preserved",
+  "NOT_PROVEN": [
+    "Grant -> real Media Lease",
+    "Stable Admission Closure across actual tasks"
+  ],
+  "hardware": "NOT_RUN",
+  "new_global_RAM": "0;caller allocates1404B context;no frame pool",
+  "commands": "See unmodified raw command arrays;compile/link exit checked separately"
+}

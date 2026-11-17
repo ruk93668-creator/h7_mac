@@ -1,0 +1,280 @@
+{
+  "summary": {
+    "total": 6,
+    "detected": 6
+  },
+  "cases": [
+    {
+      "mutation": "dma",
+      "opt": "O0",
+      "case": 17,
+      "detected": true,
+      "pass": false,
+      "return": 544,
+      "failure_line": 544,
+      "error": null,
+      "trace": [
+        [
+          1,
+          1,
+          1,
+          1,
+          7,
+          1,
+          0,
+          0
+        ],
+        [
+          2,
+          1,
+          1,
+          1,
+          7,
+          1,
+          0,
+          1
+        ],
+        [
+          3,
+          1,
+          1,
+          1,
+          7,
+          1,
+          0,
+          2
+        ],
+        [
+          4,
+          1,
+          1,
+          1,
+          7,
+          1,
+          0,
+          3
+        ]
+      ]
+    },
+    {
+      "mutation": "close",
+      "opt": "O0",
+      "case": 8,
+      "detected": true,
+      "pass": false,
+      "return": 491,
+      "failure_line": 491,
+      "error": null,
+      "trace": [
+        [
+          5,
+          1,
+          1,
+          1,
+          7,
+          19,
+          0,
+          0
+        ]
+      ]
+    },
+    {
+      "mutation": "ack",
+      "opt": "O0",
+      "case": 21,
+      "detected": true,
+      "pass": false,
+      "return": 569,
+      "failure_line": 569,
+      "error": null,
+      "trace": [
+        [
+          1,
+          1,
+          1,
+          1,
+          7,
+          1,
+          0,
+          0
+        ],
+        [
+          2,
+          1,
+          1,
+          1,
+          7,
+          1,
+          0,
+          1
+        ],
+        [
+          3,
+          1,
+          1,
+          1,
+          7,
+          1,
+          0,
+          2
+        ],
+        [
+          4,
+          1,
+          1,
+          1,
+          7,
+          1,
+          0,
+          3
+        ],
+        [
+          8,
+          1,
+          1,
+          1,
+          7,
+          1,
+          0,
+          4
+        ]
+      ]
+    },
+    {
+      "mutation": "dma",
+      "opt": "O2",
+      "case": 17,
+      "detected": true,
+      "pass": false,
+      "return": 544,
+      "failure_line": 544,
+      "error": null,
+      "trace": [
+        [
+          1,
+          1,
+          1,
+          1,
+          7,
+          1,
+          0,
+          0
+        ],
+        [
+          2,
+          1,
+          1,
+          1,
+          7,
+          1,
+          0,
+          1
+        ],
+        [
+          3,
+          1,
+          1,
+          1,
+          7,
+          1,
+          0,
+          2
+        ],
+        [
+          4,
+          1,
+          1,
+          1,
+          7,
+          1,
+          0,
+          3
+        ]
+      ]
+    },
+    {
+      "mutation": "close",
+      "opt": "O2",
+      "case": 8,
+      "detected": true,
+      "pass": false,
+      "return": 491,
+      "failure_line": 491,
+      "error": null,
+      "trace": [
+        [
+          5,
+          1,
+          1,
+          1,
+          7,
+          19,
+          0,
+          0
+        ]
+      ]
+    },
+    {
+      "mutation": "ack",
+      "opt": "O2",
+      "case": 21,
+      "detected": true,
+      "pass": false,
+      "return": 569,
+      "failure_line": 569,
+      "error": null,
+      "trace": [
+        [
+          1,
+          1,
+          1,
+          1,
+          7,
+          1,
+          0,
+          0
+        ],
+        [
+          2,
+          1,
+          1,
+          1,
+          7,
+          1,
+          0,
+          1
+        ],
+        [
+          3,
+          1,
+          1,
+          1,
+          7,
+          1,
+          0,
+          2
+        ],
+        [
+          4,
+          1,
+          1,
+          1,
+          7,
+          1,
+          0,
+          3
+        ],
+        [
+          8,
+          1,
+          1,
+          1,
+          7,
+          1,
+          0,
+          4
+        ]
+      ]
+    }
+  ]
+}
