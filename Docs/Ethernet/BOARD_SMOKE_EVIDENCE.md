@@ -21,3 +21,11 @@
 用户按命令 6 结束后反馈所有期望字段符合：received=1000、unique=1000、missing=0、bad=0、duplicates=0、out_of_order=0、last_sequence=1000、active=0、passed=1。板侧统计来源为用户调试反馈，尚无独立读回的实板 SHA；本轮没有另行采集 MAC/DMA 错误计数的前后差值。
 
 本轮结论：1000 帧固定内容 RX 实板校验通过。只覆盖当前帧长与设定速率；不同帧长、连续 TX/双向流量、资源耗尽、掉线重连、重复 stop/start、长稳和性能测试仍待验收。
+
+## 掉线恢复后的 RX 重测
+
+用户说明拔线时观察不到状态变化是 Watch 未刷新。恢复后第一批电脑抓包正确，但板侧结果未确认，用户要求重测。第二批电脑抓包 1000 帧正确，板侧却反馈 received=0、unique=0、missing=1000；截图显示 RUNNING、累计 RX/IRQ 均为 1026、MAC/DMA 中断错误为 0、ignored=0、passed=0。该轮不记为通过，根因未定位。
+
+随后累计 RX 从 1029 增至 1032，说明仍有接收活动。明确 active=1、CPU 正运行后发送 1 帧，用户确认 received=1、unique=1、missing=999、bad=0。再次清零并确认运行状态后发送本轮 1000 帧，电脑抓包序号 1..1000 且全部 payload 正确；用户结束采样后确认 received=1000、unique=1000、missing/bad/duplicates/out_of_order 均为 0、last_sequence=1000、passed=1。
+
+结论：在用户报告的掉线恢复场景中，重新同步采样后的 1000 帧固定内容 RX 通过。先前零计数的原因仍未定位，保留为验收限制；未单独采集最终批次的 MAC/DMA 错误计数差值，不推导吞吐或长期稳定性。摘要与抓包 SHA256 见 Tests/Ethernet/rx_recovery_board_results.json。

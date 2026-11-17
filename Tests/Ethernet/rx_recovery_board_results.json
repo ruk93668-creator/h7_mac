@@ -1,0 +1,36 @@
+{
+  "capture": "output/Ethernet/rx_confirmed_active_20261117_113427.pcapng",
+  "scenario": "1000-frame RX retest after successful single-frame diagnostic and explicit active/reset confirmation",
+  "sender_elapsed_seconds": 14.297000000005937,
+  "captured_matching_frames": 1000,
+  "valid_frames": 1000,
+  "bad_frames": 0,
+  "sequences_exact_1_to_1000": true,
+  "board_result_pending": false,
+  "date": "2026-11-17",
+  "capture_sha256": "21e16a967c58c3e992b1e6d75c831893ef78cf1b35a52324447d2aa9a73f85f3",
+  "board_observation_source": "User confirmed all expected fields after command 6; no automatic target readback",
+  "board_statistics": {
+    "received": 1000,
+    "unique": 1000,
+    "missing": 0,
+    "bad": 0,
+    "duplicates": 0,
+    "out_of_order": 0,
+    "last_sequence": 1000,
+    "active": 0,
+    "passed": 1
+  },
+  "prior_zero_count_attempt": {
+    "capture": "output/Ethernet/rx_retest_20261117_112533.pcapng",
+    "received": 0,
+    "unique": 0,
+    "missing": 1000,
+    "active": 0,
+    "ignored": 0,
+    "passed": 0,
+    "root_cause": "unresolved"
+  },
+  "throughput_benchmark": false,
+  "mac_dma_counter_deltas": "not separately collected for final batch"
+}
