@@ -4993,6 +4993,7 @@
             <File><FileName>eth_dma.c</FileName><FileType>1</FileType><FilePath>../Platform/Ethernet/eth_dma.c</FilePath></File>
             <File><FileName>eth_memory.c</FileName><FileType>1</FileType><FilePath>../Platform/Ethernet/eth_memory.c</FilePath></File>
             <File><FileName>eth_mac.c</FileName><FileType>1</FileType><FilePath>../Platform/Ethernet/eth_mac.c</FilePath></File>
+            <File><FileName>eth_board_stm32h747.c</FileName><FileType>1</FileType><FilePath>../Platform/Ethernet/eth_board_stm32h747.c</FilePath></File>
           </Files>
         </Group>
       </Groups>
