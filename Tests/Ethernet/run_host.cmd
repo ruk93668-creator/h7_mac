@@ -15,7 +15,7 @@ cl /nologo /W4 /WX /std:c11 /IPlatform\Ethernet Platform\Ethernet\eth_dma.c Test
 if errorlevel 1 exit /b 1
 Tests\Ethernet\build\test_dma.exe
 if errorlevel 1 exit /b 1
-cl /nologo /W4 /WX /std:c11 /DETH_MAC_HOST_TEST /IPlatform\Ethernet /ITests\Ethernet Platform\Ethernet\eth_phy.c Platform\Ethernet\eth_dma.c Platform\Ethernet\eth_mac.c Tests\Ethernet\test_mac.c /FoTests\Ethernet\build\ /FeTests\Ethernet\build\test_mac.exe
+cl /nologo /W4 /WX /std:c11 /DETH_MAC_HOST_TEST /IPlatform\Ethernet /ITests\Ethernet Platform\Ethernet\eth_phy.c Platform\Ethernet\eth_dma.c Platform\Ethernet\eth_mac.c Platform\Ethernet\eth_board_stm32h747.c Tests\Ethernet\test_mac.c /FoTests\Ethernet\build\ /FeTests\Ethernet\build\test_mac.exe
 if errorlevel 1 exit /b 1
 Tests\Ethernet\build\test_mac.exe
 if errorlevel 1 exit /b 1

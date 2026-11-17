@@ -1,8 +1,8 @@
 //STM32H747 原始以太网帧收发后端
 #ifndef ETH_MAC_H
 #define ETH_MAC_H
-#include "eth_dma.h"
-#include "eth_phy.h"
+#include "eth_types.h"
+#include <stddef.h>
 typedef enum
 {
 	ETH_MAC_OFF = 0,
