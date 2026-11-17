@@ -54,6 +54,8 @@
 
 Grant→Frame Lease、Stable Admission Closure均NOT_PROVEN；72项R3均NOT_RUN；真实硬件验证NOT_RUN。旧AppMessage52B、Lifecycle56B和CameraFrame24B沿用前次ARM证据，未改ABI/Replay/M4/Legacy/Keil。本轮不运行新测试，不重签ADR，原ADR保持UNRESOLVED。
 
-## 6. 路线冲突与下一步
+## 6. 冻结路线同步（替代上一轮阶段冲突判断）
 
-H7_V2_ApplicationArchitecture.md第10节与H7_V2_MigrationPlan.md第2节明确冻结1 Core / 2 Graph / 3 Format / 4 Resource / 5 Lifecycle / 6 Camera / 7 USB / 8 Storage / 9 Supervisor / 10 Network。Phase1授权提前完成Graph/Format纯基础不等于路线被重编号。本次用户所列资源工作按Phase4前置设计记录；Phase2计划仅做产品静态图装配及尚缺能力适配规划。若拟把Resource实施改为名为Phase2，必须先由人工明确修订路线。本轮没有替用户批准变更。
+2026-11-17用户明确最后批准路线：Phase0架构冻结，1 Core+Composition，2 Media Resource，3 Execution Manager，4 Camera，5 USB，6 Storage，7 Control Service，8 Runtime Reconfiguration，9 Network/AI，10 Legacy Cleanup。此前依据历史MigrationPlan认定Phase2=Graph、Resource=Phase4的结论现已失效；原文保留于bd24c03历史，不丢弃此前源码审核成果。
+
+本报告第1～5节源码指纹、FR-01～05及单owner纯基础库有条件验收保持；路线同步不批准并发/硬件。Graph/Format已由Phase1实现，不在Phase2重复开发。两个NOT_PROVEN、原72和新增32项NOT_RUN保持；集合核对见同步索引及交叉表，不按104项独立契约汇总。

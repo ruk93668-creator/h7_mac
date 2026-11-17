@@ -165,7 +165,7 @@ R3首轮新增两份设计文件，该轮V2目录共13份；本次统一任务�
 
 五核心固定为Control Service、Composition Manager、Execution Manager、Application Modules、Media Resource；六层图只保留为逻辑分析映射，最新总图已回归五子系统。Gateway/Auth/Request/Event是Control Service内部；Configuration Transaction、Registry/Resolver/Selector/Plan Builder是Composition Manager内部；Supervisor/Lifecycle协调是Execution Manager内部，不新增顶层管理器或重新安排目录。
 
-Phase0～10原路线不改。MigrationPlan及DirectoryStructure文件保持输入c52490b逐字节一致；本轮不改阶段顺序/名称/实现门禁，不为控制/组合功能插入新阶段。Phase7/8只提前定义接口，不实施。静态注册、运行依赖解析、媒体候选选择、真实Pipeline切换四件事分别验收；计算成功不是重配置成功。
+2026-11-17同步：此前本段依据旧矩阵宣称冻结路线的判断已由用户最新明确路线更正。当前唯一编号为0架构冻结、1 Core+Composition、2 Media Resource、3 Execution Manager、4 Camera、5 USB、6 Storage、7 Control Service、8 Runtime Reconfiguration、9 Network/AI、10 Legacy Cleanup。五核心、目录和安全门禁不变；早期轮次的文件未改/未实施等陈述是历史记录，不作为当前路线依据。
 
 MigrationPlan SHA256 `6c0c0c12a422e9307e184650626b3cd09eb89f25503a222f56c1fd9ddcd1d69f`；DirectoryStructure SHA256 `64721c0029422eb0f6da9a546b8392ce737a687ce60d1716dabe5fb70a7a051e`。这证明本轮未修改该文件，不代表本轮重新批准内容。所有未批决定PROPOSED/UNRESOLVED；原R3/Replay/客户端断线与媒体归还的区分保留，NOT_PROVEN/NOT_RUN不变。
 
@@ -233,3 +233,5 @@ USB/Storage复用当前Service；Ethernet/Wi-Fi加入需独立发送缓存/多DM
 此前检查确认11份实际文件存在；原定文件名与合并交付的差异已在第2.1节更正，不能据数量宣称逐名齐全。210个函数位置均对照源码声明核对；62个唯一完整源码路径检查存在；UTF-8、代码围栏和本目录Markdown链接检查通过。预算地址算式核对固定池尾0xD041A400、三用途合计4907008B。检查时既有跟踪文件无diff。以上是文档一致性检查，不是运行生产测试。
 
 受保护文件逐字节与输入HEAD比较相同：CM4/Core/Src/main.c SHA256 `1dec895ef44e568a9a263fc8b229fc2622c6a625c54b8e291286e186be36454c`；MDK-ARM/h7_mac.uvprojx SHA256 `a8f9e0d08c9cceb9ec0934fe287f6c71ad99bb846f13246ef884e801369c9aa1`。本轮没有删除/修改M4延时或注释。
+
+当前实现/审核事实请同时读取Phase1/Phase1_FinalReview.md与H7_V2_FrozenRoadmapSynchronization.md；Phase1有条件验收与资源NOT_PROVEN不因路线同步改变。

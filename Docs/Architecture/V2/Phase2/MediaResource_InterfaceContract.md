@@ -1,4 +1,4 @@
-# Media Resource 模块接口契约草案（Phase4前置 / PROPOSED）
+# Media Resource 模块接口契约草案（Phase2设计 / PROPOSED）
 
 ## 1. 实际资源基础
 

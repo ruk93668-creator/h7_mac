@@ -67,3 +67,7 @@ CameraStream 是 `CM7/Media/Src/camera_capture.c` 内部实现，不假设存在
 Storage格式公开头建议只依赖Core/media_format.h和结果值类型，不直接使用CameraConfig_t、Graph私有定义或HAL。GraphFormat建议为CoreMediaFormat别名；Camera/UVC配置类型转换留Ports，Storage实际Frame/Lease承接也留其端口。上述路径和符号均为文档方案，未创建目录、修改include或工程登记。
 
 R3新增资源架构/验收设计见ResourceOwnershipArchitecture与ResourceOwnershipAcceptance；D/T/消费证明尚未实施、两个NOT_PROVEN保持。Resource不拥有拓扑，Graph不拥有Buffer，不新增Resource Task。
+
+## 6. 冻结路线落点同步（2026-11-17）
+
+目录树与允许/禁止依赖逐项保持；阶段号不等于目录层号。Core/Configuration/MediaGraph基础实现归Phase1；Resource与Ports归Phase2；Lifecycle/Supervisor的执行协调归Phase3；Modules/Camera、USB、Storage分别归4/5/6；Control Service归7（复用既定内部目录，不新增顶层）；真实重配置归8；Network/AI归9；最终删除Legacy归10。树中早期未创建/未实施说明是历史设计状态，以501330a源码和Phase1审核为当前事实。

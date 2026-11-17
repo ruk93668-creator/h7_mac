@@ -1,28 +1,28 @@
-# Phase 2 Implementation Planning（PROPOSED）
+# Phase 2 — Media Resource Implementation Plan（PROPOSED，尚未授权编码）
 
-输入501330a及Phase1_FinalReview；不构成实施授权。冻结路线唯一权威：MigrationPlan第2节、ApplicationArchitecture第10节。Phase2仍为Static Media Graph；本组资源文档是Phase4前置契约，不能据标题实施Resource或提前迁移Phase6/7/8。
+输入bd24c03，沿用501330a全部纯基础实现和Phase1有条件验收。依据用户2026-11-17最终冻结路线同步；不是新架构或阶段重排。阶段号已确定，不再列为待决。接口/布局/容量仍待审核。
 
-## 1. Phase2工作包
+## 1. 实施依赖与工作包
 
-| 顺序 | 工作/候选文件 | 输入/输出 | 验收与回退 |
-|---|---|---|---|
-| P2-A | Configuration/product_graph只读装配 | 已验证Graph算法→实际产品Entity/Pad/Link/Raw及JPEG固定Pipeline表 | 静态ID/能力/主线板型核对，future拒绝；无启动绑定；独立提交可整体回退 |
-| P2-B | 产品Module描述/Entity绑定 | Registry仅扩大描述，无Resolver业务分支 | 新增Mock模块不改Resolver；依赖/歧义/optional及容量完整测试 |
-| P2-C | 能力适配接口审核 | Source/Backend/UVC/Storage纯查询，Core中立类型 | 缺少纯查询先列最小ADAPT申请，不调用Offer/Prepare试探；实际生产Port实施归Phase3及单独授权 |
-| P2-D | 联合纯配置门禁 | 表/输入→候选拓扑，Resource暂用明确Mock/拒绝器 | 10FPS输出基线与25目标分开；候选成功不Apply；未支持Raw双消费者必须拒绝真实运行 |
+| 顺序 | 拟修改位置/责任 | 验收及依赖 |
+|---|---|---|
+| MR-A | Resource/Ports：Buffer Source只读能力/身份查询；既有Raw CameraStream和JPEG FIFO差异契约 | 先审核底层最小ADAPT范围；无Loan副作用。Raw7slot单IN_USE与JPEG双span/块引用不抹平，不重复建池 |
+| MR-B | Resource关联：Consumer identity、Grant G、独立RELEASE R、交接H、真实M和Storage S | A后绑定，Grant来源沿用权威资格，不复制资格状态机/物理引用计数；错owner/旧代次/耗尽拒绝 |
+| MR-C | Resource准入：同owner L_admit/L_close/在途记录 | 依赖B；关后同G不再新Get/Retain，已受理工作排空，迟到通知不重开 |
+| MR-D | Resource交接/Terminal Receipt/ACK消费与退休 | 可与C开发，但依赖B身份；原ACK队列/Tx/Rx/Replay规则保持，队列满重试原身份；T不持Frame、不覆盖SD-only历史证据 |
+| MR-E | Resource退出核验/DMA端口 | 依赖A～D；逐消费者真实Backend归还、所有原始CPU/DMA读取结束、终结消费、内部持有逐项证明 |
+| MR-F | 联合软件/实板门禁与预算 | O0/O2、负对照、两核/Map/ABI/栈，按授权硬件固件验证；未执行即NOT_RUN |
 
-依赖顺序A→B→D，C接口设计可并行但缺真实能力时不得伪造成功。保留Legacy唯一活动入口、原Target、任务/栈。每包独立提交；不增加启动器或顶层管理器。Phase1本地接口和容量先人工确认，FR-01/02/04不解决前不接入并发任务。
+每工作包独立提交。没有生产修改授权前不得开始；先固定真实后端能力，Raw多owner复制/后端扩展及第三consumer能力均待专项决策。新模块声明可扩展但不重写Resolver/Graph/Format。Phase1别名/单owner/栈保留项在实际调用上下文设计时核对，不以Resource实现为借口修改Phase1或旧协议。
 
-## 2. Phase4资源前置设计与实施顺序
+## 2. 安全门禁
 
-1. 先冻结身份和Backend公开能力；Raw不能虚构独立多owner Retain，JPEG不能泛化现有USB/SD位为任意consumer。
-2. 只读Backend快照/精确M身份与DMA证据接口先单独审核；不在外围重建物理引用计数。
-3. Media Resource的Grant关联元数据和准入关闭，先做单owner纯模型，再接真实Backend适配；事务工具沿用原Replay，不复制。
-4. Terminal Receipt、ACK消费和退休必须先通过故障交错，后进行逐消费者退出核验；没有证明返回BUSY/错误并保留事实。
-5. 最后验证真实Raw/JPEG双backend、SD-only、独立退出、最后消费者排空。Camera/USB/Storage真实业务绑定仍在Phase6/7/8；硬件切换在已授权集成门禁后进行。
+Raw Pool复用camera_capture.c中的固定物理slot及DMA M0/M1状态；JPEG复用FIFO块和实际usb_owned/sd_owned。统一的是视图和身份/请求契约，不是物理分配策略。Buffer Source不能替CameraCapture重新控制DCMI；Media Graph只拓扑，Resource管实际交接/归还，Lifecycle不替代所有权，Supervisor不直接Device/BSP/HAL。
 
-1是2/3前提；Receipt设计可与Backend端口设计并行，但最终核验依赖二者完整。失败只回退未活动V2提交；一旦进行硬件实验必须回退完整固件，不能把旧新owner账本混用。不得通过清空Replay或重置session解决排空失败。
+完整G→H→M关联与稳定关闭两个NOT_PROVEN必须通过真实源码、可复现轨迹、负对照和必要硬件证据逐个关闭。RETURN_PENDING、文件关闭、ACK入队、发送返回、客户端断线都不能代替归还。DMA完成/Abort成功和每个并行原始读取者分别核验；错误或超时保留资源事实，不强清。永久存储文件错误与资格/帧退出结果分开。
 
-## 3. 人工待决事项
+## 3. 后续边界、预算及回退
 
-阶段编号冲突、Raw多消费者采用复制后端还是经审核扩展底层所有权、第三consumer后端适配、Receipt与在途上限、启动Source代次持久边界均UNRESOLVED。接口/预算为PROPOSED，Grant关联和稳定关闭继续NOT_PROVEN。不得以本计划直接开始Phase2或Phase4生产代码。
+Phase3执行协调、Phase4/5/6 Camera/USB/Storage模块迁移、Phase7统一控制、Phase8真实重配置、Phase9扩展、Phase10最终清理均未在本轮实施。允许设计适配端口，不偷偷接旧启动。原资源预算的576B仅候选元数据估算，须ARMCC5 sizeof/Map/栈证明；不擅扩任务/队列，不复制Raw/JPEG SDRAM池。
+
+纯未活动V2实现可逐包回退；真实硬件绑定须独立授权并以整固件回滚，不能新旧owner混用。遗留实现不在Phase2删除。32项新增矩阵与原72项仅按集合身份保留，覆盖交叉表明确重叠，不累计为104项独立资源验收。

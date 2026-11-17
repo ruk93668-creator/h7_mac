@@ -20,4 +20,4 @@ Raw零拷贝独立多owner若需新增slot账本/复制缓存，内存与CPU都U
 
 现任务Camera6144B、USB/Storage各8192B，保持原配置。Resource owner不得在栈上分配Frame或大临时池；短临界区持有时间、IRQ延迟、每次核验扫描上限、缓存维护及DWT必须实测。完整调用图需纳入真实纯Validator和Backend回调，间接调用Unknown不得忽略。真实stack high-water需故障/双消费者压力下采样；CPU/WCET、DMA退休均NOT_PROVEN。
 
-Phase2只能消费静态图及资源可行性声明，不分配上述元数据和物理内存。以上属于冻结Phase4准备材料，不改变Phase0～10路线。
+Phase2的目标是实现资源权威端口及必要元数据，物理后端优先复用；本轮仅文档，不实际分配。以上属于冻结Phase2设计材料，不改变Phase0～10路线。

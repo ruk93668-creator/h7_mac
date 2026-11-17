@@ -164,6 +164,8 @@ R2-09～17、R3-01～06具体定位在ModuleContract及FinalReview最新索引�
 
 六层分析图中的客户端是外部参与者、Control/Composition/Execution/Modules分别映射上述核心、Resource/Platform区分应用资源与外部平台，不据此增加子系统、目录或Task。新文档文件只是独立审核材料，不代表新增生产目录。
 
-冻结路线不改：仓库MigrationPlan现有矩阵的1 Core、2 Graph、3 Format、4 Resource、5 Lifecycle、6 Camera、7 USB、8 Storage、9 Supervisor、10 Network连同当前Phase0设计基线全部保留；本轮没有对实施阶段重新排序、插入或改名。该矩阵及DirectoryStructure文件逐字节保持输入c52490b。可以提前定义Phase7/8接口边界，但不提前实现这些模块或后续控制/解析功能。若后续冻结文档另有更精确接口落点，应人工核对后实施，不在本轮自行调整路线。
+2026-11-17冻结路线同步（替代历史错误编号，非架构重设计）：Phase 0 Architecture Freeze；Phase 1 Core + Composition；Phase 2 Media Resource；Phase 3 Execution Manager；Phase 4 Camera Module；Phase 5 USB Module；Phase 6 Storage Module；Phase 7 Control Service；Phase 8 Runtime Reconfiguration；Phase 9 Network / AI Extension；Phase 10 Legacy Cleanup。Phase1已完成Core/Registry/Resolver/Graph/Format/Composition纯基础；资源归Phase2，Lifecycle/Supervisor执行协调归Phase3。旧编号仅可作为历史引用，不再作为实施依据。
 
 静态注册是编译集合/描述绑定；运行时依赖解析是纯候选闭包；媒体拓扑选择是从const图选择候选mask；真实Pipeline切换是Execution Manager协调模块关闭/Drain/实际重配/重新激活。前三项成功都不等于第四项已发生，当前重配API及两项资源证明缺口继续保留。所有未批字段/策略为PROPOSED或UNRESOLVED，不因名称统一而获APPROVED。
+
+当前实施检查点501330a、源码审核bd24c03；早期“未进入Phase1”等描述仅表示对应历史轮次，并非当前状态。五核心和目录结构不变；同步索引见H7_V2_FrozenRoadmapSynchronization.md。
