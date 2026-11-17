@@ -11,6 +11,8 @@
 #define MR_BOUND 4U
 #define MR_TERMINAL 5U
 #define MR_BLOCKED 6U
+#define MR_RETURN_PENDING 7U
+#define MR_RELEASED 8U
 typedef struct { MRGrant g; MRHandoff h; MRBridge b; MRSlot s; } MRRequest;
 typedef struct { MRGrant g; MRHandoff h; MRMedia m; uint32_t serial; SysResult_t result; } MRReceipt;
 typedef struct { MRRequest request; MRMedia media; MRView view; uint32_t state; SysResult_t last_release; } MRRecord;

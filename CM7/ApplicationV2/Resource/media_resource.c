@@ -116,7 +116,7 @@ SysResult_t MR_Obtain(MRContext *c,const MRRequest *r,MRMedia *m,MRView *v) {
     a=admission(c,&r->g);
     if(!a||a->closed) { terminal(e,t,SYS_ERR_INVALID_STATE); return leave(c,SYS_ERR_INVALID_STATE); }
     z=c->source.ops->grant_valid(c->source.context,&r->g); if(z) { terminal(e,t,z); return leave(c,z); }
-    for(i=0;i<MR_HANDOFF_MAX;i++) if(c->records[i].state==MR_BOUND || c->records[i].state==MR_BLOCKED) n++;
+    for(i=0;i<MR_HANDOFF_MAX;i++) if(c->records[i].state==MR_BOUND || c->records[i].state==MR_BLOCKED || c->records[i].state==MR_RETURN_PENDING || c->records[i].state==MR_RELEASED) n++;
     if(n>=c->caps.concurrent) return leave(c,SYS_ERR_BUSY);
     z=c->source.ops->obtain(c->source.context,&r->g,&r->h,&e->media,&e->view);
     if(z) {
@@ -130,4 +130,53 @@ SysResult_t MR_Obtain(MRContext *c,const MRRequest *r,MRMedia *m,MRView *v) {
        ((e->view.bytes2!=0)!=(e->view.data2!=NULL))) return leave(c,SYS_ERR_INVALID_STATE);
     z=c->source.ops->validate(c->source.context,&r->g,&e->media,&e->view); if(z) return leave(c,z);
     e->state=MR_BOUND; *m=e->media; *v=e->view; return leave(c,SYS_OK);
+}
+
+SysResult_t MR_Return(MRContext *c,const MRRequest *r,const MRMedia *m) {
+    MRRecord *e; MRReceiptRecord *t; SysResult_t z=enter(c); if(z) return z;
+    e=record(c,r); if(!e||!MRMedia_Equal(&e->media,m)) return leave(c,SYS_ERR_INVALID_ARG);
+    if(e->state==MR_TERMINAL) return leave(c,for_record(c,e)->value.result);
+    if(e->state!=MR_BOUND && e->state!=MR_RETURN_PENDING && e->state!=MR_RELEASED) return leave(c,SYS_ERR_INVALID_STATE);
+    t=for_record(c,e); if(!t) return leave(c,SYS_ERR_INVALID_STATE);
+    if(e->state!=MR_RELEASED) {
+        e->state=MR_RETURN_PENDING;
+        z=c->source.ops->readers_quiescent(c->source.context,&r->g,m); if(z) return leave(c,z);
+        z=c->source.ops->release(c->source.context,&r->g,m);
+        if(z) { if(z!=SYS_ERR_BUSY && !e->last_release) e->last_release=z; return leave(c,z); }
+        e->state=MR_RELEASED;
+    }
+    z=c->source.ops->released(c->source.context,&r->g,m); if(z) return leave(c,z);
+    terminal(e,t,e->last_release); return leave(c,e->last_release);
+}
+SysResult_t MR_ReadReceipt(MRContext *c,const MRRequest *r,MRReceipt *out) {
+    MRRecord *e; MRReceiptRecord *t; SysResult_t z;
+    if(!c||!out||V2_Overlap(c,sizeof(*c),out,sizeof(*out))) return SYS_ERR_INVALID_ARG;
+    z=enter(c); if(z) return z; e=record(c,r);
+    if(!e||e->state!=MR_TERMINAL) return leave(c,SYS_ERR_BUSY);
+    t=for_record(c,e); if(!t) return leave(c,SYS_ERR_INVALID_STATE);
+    *out=t->value; return leave(c,SYS_OK);
+}
+SysResult_t MR_FlushReceipt(MRContext *c,const MRReceipt *r,MRSendReceipt send,void *context) {
+    MRReceiptRecord *t; MRRecord *e; uint32_t i; SysResult_t z;
+    if(!send) return SYS_ERR_INVALID_ARG;
+    z=enter(c); if(z) return z; t=receipt(c,r);
+    if(!t) return leave(c,SYS_ERR_INVALID_ARG);
+    e=NULL; for(i=0;i<MR_HANDOFF_MAX;i++) if(c->records[i].state==MR_TERMINAL && for_record(c,&c->records[i])==t) { e=&c->records[i]; break; }
+    if(!e) return leave(c,SYS_ERR_INVALID_STATE);
+    if(t->enqueued) return leave(c,SYS_OK);
+    z=send(context,&t->value); if(!z) t->enqueued=1;
+    return leave(c,z);
+}
+SysResult_t MR_ConfirmConsumed(MRContext *c,const MRReceipt *r) {
+    MRReceiptRecord *t; SysResult_t z=enter(c); if(z) return z;
+    t=receipt(c,r); if(!t||!t->enqueued) return leave(c,SYS_ERR_INVALID_STATE);
+    t->consumed=1; return leave(c,SYS_OK);
+}
+SysResult_t MR_Retire(MRContext *c,const MRReceipt *r) {
+    MRReceiptRecord *t; uint32_t i; SysResult_t z=enter(c); if(z) return z;
+    t=receipt(c,r); if(!t||!t->consumed) return leave(c,SYS_ERR_BUSY);
+    for(i=0;i<MR_HANDOFF_MAX;i++) if(c->records[i].state==MR_TERMINAL && for_record(c,&c->records[i])==t) {
+        memset(&c->records[i],0,sizeof(c->records[i])); memset(t,0,sizeof(*t)); return leave(c,SYS_OK);
+    }
+    return leave(c,SYS_ERR_INVALID_STATE);
 }
