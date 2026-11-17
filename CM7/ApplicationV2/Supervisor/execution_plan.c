@@ -46,6 +46,15 @@ SysResult_t EM_BuildPlan(const V2Registry *r, const V2CompositionCandidate *c,
     }
     if (seen != c->modules.selected_mask)
         return SYS_ERR_PROTOCOL;
+    /* A target candidate cannot hide a live module from stop-dependency checks.
+     * Phase8 incremental live/target reconciliation is deliberately absent. */
+    for (i = 0; i < r->count; i++)
+    {
+        if (!LC_Stable(states[i]))
+            return SYS_ERR_INVALID_STATE;
+        if (!(seen & (1U << i)) && states[i] != LC_UNCONFIGURED)
+            return SYS_ERR_BUSY;
+    }
     memset(&scratch, 0, sizeof(scratch));
     z = V2Resolver_Resolve(r, c->modules.order, c->modules.count, &scratch, &verified, &issue);
     if (z)
