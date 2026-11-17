@@ -223,6 +223,8 @@ SysResult_t EM_Process(EMContext *c, uint32_t now)
             c->state = EM_BLOCKED;
             return leave(c, SYS_ERR_PROTOCOL);
         }
+        /* Freeze an observed business failure before transport consumption retries. */
+        first(c, v.result);
         c->completion = v;
         c->stage = 3;
         return leave(c, SYS_OK);
