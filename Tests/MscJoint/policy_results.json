@@ -1,0 +1,67 @@
+[
+  {
+    "defines": [],
+    "expected_error": null,
+    "exit": 0,
+    "output": "",
+    "passed": true
+  },
+  {
+    "defines": [
+      "USB_MODE_BOOT_MSC=1"
+    ],
+    "expected_error": null,
+    "exit": 0,
+    "output": "",
+    "passed": true
+  },
+  {
+    "defines": [
+      "USB_MODE_BOOT_MSC=1",
+      "USB_MSC_SD_TEST=1"
+    ],
+    "expected_error": null,
+    "exit": 0,
+    "output": "",
+    "passed": true
+  },
+  {
+    "defines": [
+      "USB_MODE_BOOT_MSC=1",
+      "USB_MSC_SD_TEST=1",
+      "USB_MSC_SD_WRITE_ENABLE=1"
+    ],
+    "expected_error": null,
+    "exit": 0,
+    "output": "",
+    "passed": true
+  },
+  {
+    "defines": [
+      "USB_MSC_SD_TEST=1"
+    ],
+    "expected_error": "SD_test_requires_explicit_MSC_boot_mode",
+    "exit": 1,
+    "output": "\"D:\\32\\STM32H7\\h7_mac_sd\\CM7\\Platform\\msc_test_config.h\", line 11: Error:  #35: #error directive: SD_test_requires_explicit_MSC_boot_mode\r\n  #error SD_test_requires_explicit_MSC_boot_mode\r\n   ^\r\nD:\\32\\STM32H7\\h7_mac_sd\\output\\MSC24\\policy\\policy.c: 0 warnings, 1 error\r\n",
+    "passed": true
+  },
+  {
+    "defines": [
+      "USB_MODE_BOOT_MSC=0",
+      "USB_MSC_SD_TEST=1"
+    ],
+    "expected_error": "SD_test_requires_explicit_MSC_boot_mode",
+    "exit": 1,
+    "output": "\"D:\\32\\STM32H7\\h7_mac_sd\\CM7\\Platform\\msc_test_config.h\", line 11: Error:  #35: #error directive: SD_test_requires_explicit_MSC_boot_mode\r\n  #error SD_test_requires_explicit_MSC_boot_mode\r\n   ^\r\nD:\\32\\STM32H7\\h7_mac_sd\\output\\MSC24\\policy\\policy.c: 0 warnings, 1 error\r\n",
+    "passed": true
+  },
+  {
+    "defines": [
+      "USB_MSC_SD_WRITE_ENABLE=1"
+    ],
+    "expected_error": "SD_write_requires_controlled_test_mode",
+    "exit": 1,
+    "output": "\"D:\\32\\STM32H7\\h7_mac_sd\\CM7\\Platform\\msc_test_config.h\", line 14: Error:  #35: #error directive: SD_write_requires_controlled_test_mode\r\n  #error SD_write_requires_controlled_test_mode\r\n   ^\r\nD:\\32\\STM32H7\\h7_mac_sd\\output\\MSC24\\policy\\policy.c: 0 warnings, 1 error\r\n",
+    "passed": true
+  }
+]

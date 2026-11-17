@@ -1,6 +1,7 @@
 //块设备适配只负责RTOS等待，HAL和IDMA细节保持在BSP
 #include <stddef.h>
 #include "sd_block.h"
+#include "msc_test_config.h"
 #include "FreeRTOS.h"
 #include "task.h"
 #include "semphr.h"
@@ -42,6 +43,9 @@ SysResult_t SD_Block_Claim(SdBlockClient_t client)
 {
     uint32_t mask;
     TaskHandle_t task;
+
+    if (USB_MSC_SD_TEST && client == SD_BLOCK_CLIENT_FATFS)
+        return SYS_ERR_INVALID_STATE;
 
     //不允许无效客户端或不可阻塞环境取得设备
     if (client != SD_BLOCK_CLIENT_FATFS && client != SD_BLOCK_CLIENT_RAW)
@@ -271,3 +275,15 @@ static SysResult_t SdBlock_Prepare(void)
 }
 
 FRAMEWORK_INIT_REGISTER(SdBlock_Prepare, INIT_LEVEL_PLATFORM);
+
+SysResult_t SD_Block_GetIoDiagnostics(BspSdmmcIoDiagnostics_t *diagnostics)
+{
+    if (!SdBlock_HasOwner())
+        return SYS_ERR_INVALID_STATE;
+    return BSP_SDMMC_GetIoDiagnostics(diagnostics);
+}
+
+bool SD_Block_FatFsAllowed(void)
+{
+    return USB_MSC_SD_TEST == 0;
+}

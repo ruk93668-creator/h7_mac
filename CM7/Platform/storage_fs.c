@@ -89,6 +89,9 @@ SysResult_t StorageFS_Mount(bool writable, uint8_t partition)
     FRESULT fr;
     SdBlockStatus_t previous;
 
+    if (!SD_Block_FatFsAllowed())
+        return SYS_ERR_INVALID_STATE;
+
     if (partition > 4U)
         return SYS_ERR_INVALID_ARG;
     if (s_diag.state == 0U || s_diag.state == STORAGE_FS_FAULT)
@@ -560,6 +563,8 @@ SysResult_t StorageFS_GetDiagnostics(StorageFsDiagnostics_t *diagnostics)
 //检查允许执行文件操作的上下文
 static SysResult_t Storage_Enter(void)
 {
+    if (!SD_Block_FatFsAllowed())
+        return SYS_ERR_INVALID_STATE;
     if (!SD_Block_IsOwner(SD_BLOCK_CLIENT_FATFS) || s_diag.state != STORAGE_FS_MOUNTED)
         return SYS_ERR_INVALID_STATE;
     if (s_busy)

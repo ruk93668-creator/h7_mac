@@ -4,6 +4,8 @@
 #include "usb_device.h"
 #include "usbd_ioreq.h"
 #include "usb_msc_bot.h"
+#include "usb_msc_storage.h"
+#include "msc_test_config.h"
 #include "platform_time.h"
 #include <stddef.h>
 
@@ -69,7 +71,7 @@ static uint8_t Msc_Init(USBD_HandleTypeDef *device, uint8_t config)
         return USBD_FAIL;
     }
     s_out_open = true;
-    if (USB_MSC_BotStart(USB_MSC_RamBackend()) != SYS_OK)
+    if (USB_MSC_BotStart(USB_MSC_SD_TEST ? USB_MSC_StorageBackend() : USB_MSC_RamBackend()) != SYS_OK)
     {
         (void)Msc_DeInit(device, config);
         return USBD_FAIL;

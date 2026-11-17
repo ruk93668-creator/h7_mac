@@ -248,6 +248,12 @@ void USB_MSC_BotDataOut(uint32_t length)
 }
 void USB_MSC_BotClearHalt(uint8_t endpoint)
 {
+    //非法CBW/phase error的故障锁定不能仅靠Clear HALT绕过Reset
+    if (s_bot.state == BOT_FAULT)
+    {
+        (void)USB_Device_StallEp(endpoint);
+        return;
+    }
     if (s_bot.state == BOT_RESET_STATUS && USB_Device_WasControlStatusComplete(s_bot.control_token))
         s_bot.state = BOT_RESET_CLEAR;
     if (s_bot.state == BOT_RESET_CLEAR)

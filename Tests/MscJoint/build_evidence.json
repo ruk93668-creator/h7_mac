@@ -1,0 +1,166 @@
+[
+  {
+    "mode": "msc",
+    "program_size": {
+      "code": 144002,
+      "ro": 3134,
+      "rw": 1528,
+      "zi": 110600
+    },
+    "regions": [
+      {
+        "name": "ER_IROM1",
+        "base": "0x08000000",
+        "size": "0x00023dfc",
+        "limit": "0x00100000"
+      },
+      {
+        "name": "ER_FW_INIT",
+        "base": "0x08023dfc",
+        "size": "0x000000c0",
+        "limit": "0xffffffff"
+      },
+      {
+        "name": "ER_DEVICE_EXPORT",
+        "base": "0x08023ebc",
+        "size": "0x00000004",
+        "limit": "0xffffffff"
+      },
+      {
+        "name": "RW_IRAM1",
+        "base": "0x20000000",
+        "size": "0x000134c0",
+        "limit": "0x00020000"
+      },
+      {
+        "name": "RW_SDMMC_DMA",
+        "base": "0x24000000",
+        "size": "0x00008000",
+        "limit": "0x00008000"
+      },
+      {
+        "name": "RW_SHARED",
+        "base": "0x38000000",
+        "size": "0x00000140",
+        "limit": "0x00001000"
+      }
+    ],
+    "symbols": [
+      "s_bot                                    0x200014a0   Data        1344  usb_msc_bot.o(.bss)",
+      "s_ram                                    0x200019e0   Data        8192  usb_msc_ram.o(.bss)",
+      "g_sdmmc_dma_buffer                       0x24000000   Data       32768  bsp_sdmmc_memory.o(.sdmmc_dma)"
+    ],
+    "artifact": "D:\\32\\STM32H7\\h7_mac_sd\\output\\MSC24\\build\\h7_mac_CM7_msc.axf",
+    "artifact_bytes": 3180328,
+    "sha256": "ea8a2facbd3016cdcbfead9546518e9e8a378a7517ee3daf67e779d4d0c2c36c"
+  },
+  {
+    "mode": "uvc",
+    "program_size": {
+      "code": 142282,
+      "ro": 3114,
+      "rw": 1364,
+      "zi": 102316
+    },
+    "regions": [
+      {
+        "name": "ER_IROM1",
+        "base": "0x08000000",
+        "size": "0x00023730",
+        "limit": "0x00100000"
+      },
+      {
+        "name": "ER_FW_INIT",
+        "base": "0x08023730",
+        "size": "0x000000c0",
+        "limit": "0xffffffff"
+      },
+      {
+        "name": "ER_DEVICE_EXPORT",
+        "base": "0x080237f0",
+        "size": "0x00000004",
+        "limit": "0xffffffff"
+      },
+      {
+        "name": "RW_IRAM1",
+        "base": "0x20000000",
+        "size": "0x000113c0",
+        "limit": "0x00020000"
+      },
+      {
+        "name": "RW_SDMMC_DMA",
+        "base": "0x24000000",
+        "size": "0x00008000",
+        "limit": "0x00008000"
+      },
+      {
+        "name": "RW_SHARED",
+        "base": "0x38000000",
+        "size": "0x00000140",
+        "limit": "0x00001000"
+      }
+    ],
+    "symbols": [
+      "s_bot                                    0x200013c0   Data        1344  usb_msc_bot.o(.bss)",
+      "g_sdmmc_dma_buffer                       0x24000000   Data       32768  bsp_sdmmc_memory.o(.sdmmc_dma)"
+    ],
+    "artifact": "D:\\32\\STM32H7\\h7_mac_sd\\output\\MSC24\\build\\h7_mac_CM7_uvc.axf",
+    "artifact_bytes": 3159488,
+    "sha256": "ba14397c1f40d9b33c1efd1e8c7e786e7638e86a456ac053f7cb71c9db52d636"
+  },
+  {
+    "mode": "sd_readonly",
+    "program_size": {
+      "code": 127086,
+      "ro": 3022,
+      "rw": 1496,
+      "zi": 102440
+    },
+    "regions": [
+      {
+        "name": "ER_IROM1",
+        "base": "0x08000000",
+        "size": "0x0001fb78",
+        "limit": "0x00100000"
+      },
+      {
+        "name": "ER_FW_INIT",
+        "base": "0x0801fb78",
+        "size": "0x000000c0",
+        "limit": "0xffffffff"
+      },
+      {
+        "name": "ER_DEVICE_EXPORT",
+        "base": "0x0801fc38",
+        "size": "0x00000004",
+        "limit": "0xffffffff"
+      },
+      {
+        "name": "RW_IRAM1",
+        "base": "0x20000000",
+        "size": "0x000114c0",
+        "limit": "0x00020000"
+      },
+      {
+        "name": "RW_SDMMC_DMA",
+        "base": "0x24000000",
+        "size": "0x00008000",
+        "limit": "0x00008000"
+      },
+      {
+        "name": "RW_SHARED",
+        "base": "0x38000000",
+        "size": "0x00000140",
+        "limit": "0x00001000"
+      }
+    ],
+    "symbols": [
+      "s_bot                                    0x20001480   Data        1344  usb_msc_bot.o(.bss)",
+      "s_storage                                0x200019c0   Data          64  usb_msc_storage.o(.bss)",
+      "g_sdmmc_dma_buffer                       0x24000000   Data       32768  bsp_sdmmc_memory.o(.sdmmc_dma)"
+    ],
+    "artifact": "D:\\32\\STM32H7\\h7_mac_sd\\output\\MSC24\\build\\h7_mac_CM7_sd_readonly.axf",
+    "artifact_bytes": 3074364,
+    "sha256": "e3776057c4e2a90e9a2b92779dfd1e63d381815a5f8005da0c4dcd6ca366584c"
+  }
+]

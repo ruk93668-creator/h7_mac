@@ -1,0 +1,60 @@
+[
+  {
+    "suite": "MscDeferredStatus/run_tests.py",
+    "args": [],
+    "exit": 0,
+    "passed": true
+  },
+  {
+    "suite": "MscProtocol/run_tests.py",
+    "args": [],
+    "exit": 0,
+    "passed": true
+  },
+  {
+    "suite": "MscBlockAdapter/run_tests.py",
+    "args": [],
+    "exit": 0,
+    "passed": true
+  },
+  {
+    "suite": "MscSdIntegration/run_tests.py",
+    "args": [],
+    "exit": 0,
+    "passed": true
+  },
+  {
+    "suite": "MscSdIntegration/run_tests.py",
+    "args": [
+      "--write"
+    ],
+    "exit": 0,
+    "passed": true
+  },
+  {
+    "suite": "MscSdIntegration/run_gate.py",
+    "args": [],
+    "exit": 0,
+    "passed": true
+  },
+  {
+    "suite": "MscJoint/run_tests.py",
+    "args": [],
+    "exit": 0,
+    "passed": true
+  },
+  {
+    "suite": "MscJoint/run_test_compat.py",
+    "args": [],
+    "exit": 0,
+    "passed": true
+  },
+  {
+    "suite": "MscJoint/run_test_compat.py",
+    "args": [
+      "--baseline"
+    ],
+    "exit": 0,
+    "passed": true
+  }
+]

@@ -4,6 +4,10 @@
 #include "video_config.h"
 #include "platform_time.h"
 #include "platform_sync.h"
+#include "msc_test_config.h"
+#if USB_MSC_SD_TEST
+#include "usb_msc_sd.h"
+#endif
 #include <stddef.h>
 
 #define STORAGE_STACK_WORDS 2048U
@@ -45,13 +49,22 @@ static void StorageTask_Run(void *argument)
         if (!boot && (events & RUNTIME_EVENT_BOOT_READY) != 0U)
         {
             boot = true;
+#if USB_MSC_SD_TEST
+            result = USB_MSC_StorageInit(USB_MSC_SdDevice());
+#else
             result = App_StoragePrepare(VideoConfig_GetStorage());
+#endif
             g_storage_status.result = result;
         }
-        if (!boot || !App_StorageIsReady())
+        if (!boot)
             continue;
-
+#if USB_MSC_SD_TEST
+        USB_MSC_StorageProcess();
+#else
+        if (!App_StorageIsReady())
+            continue;
         App_StorageProcess();
+#endif
 
         //最多每1000ms扫描一次栈，避免历史高频扫描引入视频降帧
         now = Platform_TimeGetMs();

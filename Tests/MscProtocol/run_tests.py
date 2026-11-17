@@ -33,7 +33,7 @@ def invalid(cpu,access,address,size,value,user):
     return False
 cpu.hook_add(UC_HOOK_MEM_INVALID,invalid)
 rows = []
-for scenario in range(32):
+for scenario in range(41):
     # 重建全部可写内存，避免上一场景的静态状态污染下一场景
     cpu.mem_write(0x20000000, bytes(0x40000))
     with image.open('rb') as source:
@@ -46,9 +46,13 @@ for scenario in range(32):
     failure, checks = struct.unpack('<2I', cpu.mem_read(symbols['g_result'], 8))
     rows.append(dict(scenario=scenario, passed=result == 0 and failure == 0,
                      failed_line=failure, assertions=checks))
-report = dict(source_commit='14f44ca678647421d3519f192d441724178a7882',
+report = dict(base_commit='14f44ca678647421d3519f192d441724178a7882',
               meaning='Real Core/Platform, mocked HAL, BOT matrix / SCSI / RAM / reset integration',
               cases=rows, commands=commands)
+import hashlib
+report['tested_parent'] = subprocess.check_output(['git','-c','safe.directory='+ROOT.as_posix(),'rev-parse','HEAD'],cwd=ROOT).decode().strip()
+source_paths = sorted((ROOT/'CM7/Service').glob('usb_msc*')) + [ROOT/name for name in ['CM7/Platform/usb_device.c','CM7/Platform/sd_block.c','CM7/Platform/storage_fs.c','CM7/Application/Tasks/storage_task.c','CM7/Application/Tasks/usb_task.c']]
+report['source_sha256'] = {str(path.relative_to(ROOT)): hashlib.sha256(path.read_bytes()).hexdigest() for path in source_paths}
 (ROOT/'Tests/MscProtocol/results.json').write_text(json.dumps(report, indent=2), encoding='utf-8')
 for row in rows:
     print(row)

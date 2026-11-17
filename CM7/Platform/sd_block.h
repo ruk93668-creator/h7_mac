@@ -53,4 +53,10 @@ SysResult_t SD_Block_GetInfo(BspSdmmcCardInfo_t *info);
 //停止并重置故障外设，成功后需要再次Init
 SysResult_t SD_Block_Recover(void);
 
+//MSC Worker在持租约任务中读取完成块数与硬件活动证据
+SysResult_t SD_Block_GetIoDiagnostics(BspSdmmcIoDiagnostics_t *diagnostics);
+
+//受控MSC SD测试固件全程禁止本地FAT卷访问
+bool SD_Block_FatFsAllowed(void);
+
 #endif

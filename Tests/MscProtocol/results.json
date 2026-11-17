@@ -1,5 +1,5 @@
 {
-  "source_commit": "14f44ca678647421d3519f192d441724178a7882",
+  "base_commit": "14f44ca678647421d3519f192d441724178a7882",
   "meaning": "Real Core/Platform, mocked HAL, BOT matrix / SCSI / RAM / reset integration",
   "cases": [
     {
@@ -193,6 +193,60 @@
       "passed": true,
       "failed_line": 0,
       "assertions": 2
+    },
+    {
+      "scenario": 32,
+      "passed": true,
+      "failed_line": 0,
+      "assertions": 8
+    },
+    {
+      "scenario": 33,
+      "passed": true,
+      "failed_line": 0,
+      "assertions": 8
+    },
+    {
+      "scenario": 34,
+      "passed": true,
+      "failed_line": 0,
+      "assertions": 7
+    },
+    {
+      "scenario": 35,
+      "passed": true,
+      "failed_line": 0,
+      "assertions": 6
+    },
+    {
+      "scenario": 36,
+      "passed": true,
+      "failed_line": 0,
+      "assertions": 6
+    },
+    {
+      "scenario": 37,
+      "passed": true,
+      "failed_line": 0,
+      "assertions": 6
+    },
+    {
+      "scenario": 38,
+      "passed": true,
+      "failed_line": 0,
+      "assertions": 11
+    },
+    {
+      "scenario": 39,
+      "passed": true,
+      "failed_line": 0,
+      "assertions": 32
+    },
+    {
+      "scenario": 40,
+      "passed": true,
+      "failed_line": 0,
+      "assertions": 20
     }
   ],
   "commands": [
@@ -538,5 +592,27 @@
       "exit": 0,
       "output": ""
     }
-  ]
+  ],
+  "tested_parent": "deedde566887d59783745664a16775bfc181a56f",
+  "source_sha256": {
+    "CM7\\Service\\usb_msc_backend.h": "3ca867084d400864750a3516c7a8b01eb1d6687ea39d2456b1bf74781c476b56",
+    "CM7\\Service\\usb_msc_bot.c": "59cf0aaeaf0dd2360178d30546baab761b5fe25e67387caba15d9592f06b1f48",
+    "CM7\\Service\\usb_msc_bot.h": "860dfb4c1cfd37acd3ffc80390f9c08c5fa46b40b81708f171015c8ed0784f65",
+    "CM7\\Service\\usb_msc_class.c": "b7fa3dea9bf8333857ca07f55494453af191110944fb1e4776369dc34c72abec",
+    "CM7\\Service\\usb_msc_class.h": "0f54c0df4a17d7a901f99ed0cf4e53617d6c335f0943f9a38866b8ae976b4be7",
+    "CM7\\Service\\usb_msc_desc.c": "12986c388ef118eda8beaaedec9b357d7db7f1f6620f7d0256336e4aa6b3864f",
+    "CM7\\Service\\usb_msc_desc.h": "185fbde747f6c447f69766f79ec09f6ea213cf869d792731cf248abd385e0ea2",
+    "CM7\\Service\\usb_msc_ram.c": "8693516dc9c5678b9be7d6600a4138aa3acea04e54058d2ec3a8986eb1f9cc89",
+    "CM7\\Service\\usb_msc_scsi.c": "35032e3d6f4ca214c53d573ea4d1aa8e2afde0c0838f7a3482185ce272555d64",
+    "CM7\\Service\\usb_msc_scsi.h": "d21d00d157a3184f0221ccc0908ce48a4057fa6eb01aabfd3930167549e6d69e",
+    "CM7\\Service\\usb_msc_sd.c": "c3be756388a5fb54e41e80d3d7072193b8cc42c5cfff202e57860b4c23b769c9",
+    "CM7\\Service\\usb_msc_sd.h": "f3958af5dfecf342afe96676cda35d4525cabde41d69c1abe91cb4c3b94055f0",
+    "CM7\\Service\\usb_msc_storage.c": "d7fc331803dfb5943b1ef5c8274f50ba73e51c55cce02286740447e3ec1bbec2",
+    "CM7\\Service\\usb_msc_storage.h": "4e372f695ea9f10db97d1da75d1fd9ee4570a049ee69a2d60e1e264e27b41d37",
+    "CM7\\Platform\\usb_device.c": "ef0e5da80c55ffb7163b9e35ea03b5b01c2997196b04b6a48c50b815b49fbb32",
+    "CM7\\Platform\\sd_block.c": "602ecc862db01672ae63484c34751490fb11f1de586b0571ff925d7be54ae76f",
+    "CM7\\Platform\\storage_fs.c": "3a728ae731e901eeb811df3b2b8a5d60620ec9966a24697154afbfc205f34aa8",
+    "CM7\\Application\\Tasks\\storage_task.c": "d33ed74361e3165b6d6927063efd8fac1dad2a1de95207ccfec3327936bdc60f",
+    "CM7\\Application\\Tasks\\usb_task.c": "c88133b93188fd3a8ef096d8df9dafd632e5a2fe85719fb5944f9fb4fec3bdf3"
+  }
 }

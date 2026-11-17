@@ -1,0 +1,82 @@
+{
+  "approval_baseline": "14f44ca678647421d3519f192d441724178a7882",
+  "user_keil_before": {
+    "MDK-ARM/h7_mac.uvprojx": "9b9e14ae11473f069e6659b02b95dc72737e3b24cad3fd519abe8a91e377b340",
+    "MDK-ARM/h7_mac.uvoptx": "f5158ab882a8d82da9ecc268f700a3d18a5c87c4b445bcfbf0ed71c7e12c76bb"
+  },
+  "user_keil_after_removing_only_our_additions": {
+    "MDK-ARM/h7_mac.uvprojx": "9b9e14ae11473f069e6659b02b95dc72737e3b24cad3fd519abe8a91e377b340",
+    "MDK-ARM/h7_mac.uvoptx": "f5158ab882a8d82da9ecc268f700a3d18a5c87c4b445bcfbf0ed71c7e12c76bb"
+  },
+  "user_edits_preserved": true,
+  "keil_added_cm7_files": [
+    "usb_msc_bot.c",
+    "usb_msc_scsi.c",
+    "usb_msc_ram.c",
+    "usb_msc_storage.c",
+    "usb_msc_sd.c"
+  ],
+  "protected_paths_unchanged": [
+    "CM7/BSP",
+    "CM7/Media",
+    "CM7/Device",
+    "CM4",
+    "Middlewares",
+    "Drivers",
+    "CM7/Core",
+    "Common",
+    "Board"
+  ],
+  "protected_diff": [],
+  "uvc_diff": [],
+  "final_staged_files": [
+    "CM7/Application/Tasks/storage_task.c",
+    "CM7/Platform/msc_test_config.h",
+    "CM7/Platform/sd_block.c",
+    "CM7/Platform/sd_block.h",
+    "CM7/Platform/storage_fs.c",
+    "CM7/Service/usb_msc_bot.c",
+    "CM7/Service/usb_msc_class.c",
+    "CM7/Service/usb_msc_sd.c",
+    "CM7/Service/usb_msc_sd.h",
+    "Docs/msc-2-4/MSC-2-4_Joint_Verification.md",
+    "Docs/msc-4/MSC-4_SDMMC_Integration.md",
+    "MDK-ARM/h7_mac.uvprojx",
+    "Tests/MscBlockAdapter/results.json",
+    "Tests/MscBlockAdapter/run_tests.py",
+    "Tests/MscJoint/build.py",
+    "Tests/MscJoint/build_evidence.json",
+    "Tests/MscJoint/build_results.json",
+    "Tests/MscJoint/final_regression_results.json",
+    "Tests/MscJoint/git_scope_results.json",
+    "Tests/MscJoint/joint_test.c",
+    "Tests/MscJoint/legacy_comparison.json",
+    "Tests/MscJoint/policy_results.json",
+    "Tests/MscJoint/results.json",
+    "Tests/MscJoint/run_all.py",
+    "Tests/MscJoint/run_legacy.py",
+    "Tests/MscJoint/run_policy.py",
+    "Tests/MscJoint/run_test_compat.py",
+    "Tests/MscJoint/run_tests.py",
+    "Tests/MscJoint/software_results.json",
+    "Tests/MscJoint/test_compat.c",
+    "Tests/MscJoint/test_compat_baseline_results.json",
+    "Tests/MscJoint/test_compat_results.json",
+    "Tests/MscProtocol/protocol_test.c",
+    "Tests/MscProtocol/results.json",
+    "Tests/MscProtocol/run_tests.py",
+    "Tests/MscSdIntegration/gate_results.json",
+    "Tests/MscSdIntegration/gate_test.c",
+    "Tests/MscSdIntegration/gate_trap.s",
+    "Tests/MscSdIntegration/results.json",
+    "Tests/MscSdIntegration/run_gate.py",
+    "Tests/MscSdIntegration/run_tests.py",
+    "Tests/MscSdIntegration/sd_test.c",
+    "Tests/MscSdIntegration/test.sct",
+    "Tests/MscSdIntegration/write_results.json"
+  ],
+  "remaining_user_modified_files": [
+    "MDK-ARM/h7_mac.uvoptx",
+    "MDK-ARM/h7_mac.uvprojx"
+  ]
+}

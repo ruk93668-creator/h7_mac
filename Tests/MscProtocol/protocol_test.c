@@ -78,6 +78,59 @@ int Protocol_Run(uint32_t scenario)
         Protocol_Tick(); EQ(s_bot.state, status[scenario] == 2U ? BOT_FAULT : BOT_CBW);
         return 0;
     }
+    if (scenario >= 32U)
+    {
+        if (Protocol_Init()) return 1;
+        if (scenario == 40U)
+        {
+            Request(0x80,6,0x200,0,255);EQ(tx_size,32);EQ(tx_data[2],32);EQ(tx_data[4],1);
+            EQ(tx_data[14],8);EQ(tx_data[15],6);EQ(tx_data[16],0x50);
+            EQ(tx_data[20],0x82);EQ(tx_data[21],2);EQ(tx_data[22],64);
+            EQ(tx_data[27],2);EQ(tx_data[28],2);EQ(tx_data[29],64);
+            Request(0xA1,0xFE,0,0,1);EQ(tx_size,1);EQ(tx_data[0],0);
+            Request(0xA1,0xFE,1,0,1);EQ(stall_count>0,true);return 0;
+        }
+        if (scenario == 32U)
+        {
+            memset(data,0,31);Protocol_Out(data,31);Protocol_Tick();
+            Request(2,1,0,0x82,0);Request(2,1,0,2,0);
+            EQ(s_bot.state,BOT_FAULT);EQ(s_endpoints[1][2].stalled,true);EQ(s_endpoints[0][2].stalled,true);return 0;
+        }
+        if (scenario == 33U)
+        {
+            Protocol_Cbw(0x2A,1024,false,2);Protocol_Out(data,512);Protocol_Tick();Protocol_Tick();
+            EQ(s_bot.state,BOT_CSW);EQ(s_bot.csw[12],2);EQ(MscBot_Read32(s_bot.csw+8),1024);return 0;
+        }
+        if (scenario == 34U)
+        {
+            Protocol_Cbw(0,0,false,0);fault=9;Protocol_Tick();EQ(s_bot.state,BOT_FAULT);EQ(s_endpoints[0][2].busy,false);return 0;
+        }
+        if (scenario == 35U || scenario == 36U || scenario == 37U)
+        {
+            memset(data,0,31);MscBot_Write32(data,0x43425355);data[14]=6;
+            if(scenario==35U)data[13]=1;if(scenario==36U)data[12]=1;if(scenario==37U)data[14]=17;
+            Protocol_Out(data,31);Protocol_Tick();EQ(s_bot.state,BOT_FAULT);return 0;
+        }
+        //单块和16块分批，逐批核对RAM后端与Transport的数据一致性
+        {
+            uint32_t blocks=scenario==38U?1U:16U,bytes=blocks*512U,offset=0,chunk;
+            Protocol_Cbw(0x2A,bytes,false,blocks);
+            while(offset<bytes)
+            {
+                chunk=s_bot.chunk;for(i=0;i<chunk;i++)data[i]=(uint8_t)((offset+i)*7U+(offset/1024U));
+                EQ(s_bot.state,BOT_OUT);Protocol_Out(data,chunk);Protocol_Tick();Protocol_Tick();offset+=chunk;
+            }
+            Protocol_Tick();EQ(s_bot.state,BOT_CSW);Protocol_In();Protocol_Tick();
+            Protocol_Cbw(0x28,bytes,true,blocks);offset=0;
+            while(offset<bytes)
+            {
+                Protocol_Tick();EQ(s_bot.state,BOT_IN);chunk=s_bot.chunk;
+                for(i=0;i<chunk;i++)data[i]=(uint8_t)((offset+i)*7U+(offset/1024U));
+                EQ(memcmp(data,s_bot.data,chunk),0);Protocol_In();Protocol_Tick();offset+=chunk;
+            }
+            Protocol_Tick();EQ(s_bot.state,BOT_CSW);EQ(s_bot.csw[12],0);return 0;
+        }
+    }
     if (scenario >= 20U)
     {
         memset(cdb, 0, sizeof(cdb));

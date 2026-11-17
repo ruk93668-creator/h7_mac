@@ -1,0 +1,42 @@
+[
+  {
+    "suite": "UvcStreaming/run_tests.py",
+    "same_assertion_outcomes": true
+  },
+  {
+    "suite": "UvcPayload/run_tests.py",
+    "same_assertion_outcomes": true
+  },
+  {
+    "suite": "UvcEp1Lifecycle/run_tests.py",
+    "same_assertion_outcomes": true
+  },
+  {
+    "suite": "UvcProbeCommit/run_tests.py",
+    "same_assertion_outcomes": true
+  },
+  {
+    "suite": "UvcProbeCommit/run_cancellation_tests.py",
+    "same_assertion_outcomes": true
+  },
+  {
+    "suite": "UsbCoreDecoupling/run_tests.py",
+    "same_assertion_outcomes": true
+  },
+  {
+    "suite": "Ep0IrqRace/run_race.py",
+    "same_assertion_outcomes": true
+  },
+  {
+    "suite": "UvcLifecycle/run_tests.py",
+    "same_assertion_outcomes": true
+  },
+  {
+    "suite": "UsbUvcDescriptors/run_tests.py",
+    "same_assertion_outcomes": true
+  },
+  {
+    "suite": "UvcUsbCleanup/run_tests.py",
+    "same_assertion_outcomes": true
+  }
+]
