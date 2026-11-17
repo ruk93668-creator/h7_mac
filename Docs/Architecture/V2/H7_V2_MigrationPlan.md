@@ -50,7 +50,7 @@ Phase1基础算法不再列为Phase2主任务；Phase2可补产品必要能力�
 | Tasks/usb_task | Runtime USB角色/5,8 | Cancel/Process/Bridge/再次Process/Stop顺序、SOF统计 |
 | Tasks/storage_task | Runtime Storage角色/6,8 | Prepare/IsReady、等待和栈采样 |
 | Tasks/control_task | Execution协调/3；Control/7；重配置/8 | 用户命令、启动策略、超时/首错、IPC状态承接；不保留旧全局业务if/else |
-| Tasks/ipc_task | Runtime IPC角色+Diagnostics/9 | IPC owner注入、应用载荷/心跳和CM4兼容；Service不删除 |
+| Tasks/ipc_task | Runtime IPC角色+Diagnostics/7,8 | IPC owner注入、应用载荷/心跳和CM4兼容；Service不删除 |
 
 其余文件由全量审计39项清单作为删除工作包输入，头文件搜索路径、extern debug观察、测试include生产C的夹具需一起迁移。历史原始断言/FAIL保留；新V2测试独立，不为了删除文件破坏历史可复现性，可固定历史commit构建历史夹具。
 
