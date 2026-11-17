@@ -32,4 +32,10 @@ if errorlevel 1 exit /b 1
 Tests\Ethernet\build\test_rx_check.exe
 if errorlevel 1 exit /b 1
 python "%~dp0test_mdio_clock.py"
+if errorlevel 1 exit /b 1
+cl /nologo /W4 /WX /std:c11 Tests\Ethernet\e35_frame.c Tests\Ethernet\test_e35_frame.c /FoTests\Ethernet\build\ /FeTests\Ethernet\build\test_e35_frame.exe
+if errorlevel 1 exit /b 1
+Tests\Ethernet\build\test_e35_frame.exe
+if errorlevel 1 exit /b 1
+python "%~dp0test_e35_peer.py"
 exit /b %errorlevel%
