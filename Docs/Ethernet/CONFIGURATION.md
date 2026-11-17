@@ -20,4 +20,6 @@ AXI 窗口共预留 32768 字节，实际 Ethernet 内存 12544 字节，余下 
 
 Keil 验证脚本只生成 MDK-ARM/h7_mac_ethernet_verify.uvprojx，并在 output/Ethernet 下生成映像。脚本保存/恢复 Keil 自动改写的 RTE 注释；不下载固件。基线使用 b282c7c 的 main、工程和 scatter，不引用改后的 scatter。请串行运行这些构建，避免 Keil 共用生成工程发生竞争。
 
+2026-11-17 构建路径修正：用户从 C:\Users\29062 启动 smoke 构建时，ARMCC 报 C3904U，无法打开相对路径的 .__i 参数文件。生成的 OutputDirectory/ListingPath 现使用绝对路径，并显式创建输出目录；uVision 从生成工程所在 MDK-ARM 目录启动，避免响应文件依赖继承工作目录。构建失败时不再读取旧 map 宣称 DMA 地址通过；仅在构建成功且 AXF/map 是本轮新产物时校验 DMA 链接地址。复验结果见 Tests/Ethernet/build_path_fix_results.json。本修正不改变 MAC/DMA 源码或正式工程配置。
+
 FreeRTOS 任务、栈、优先级、队列、时钟树、现有 NVIC priority 均未修改。Ethernet IRQ 只 enable/disable，保留其 priority；ISR 不调用任何 RTOS API。

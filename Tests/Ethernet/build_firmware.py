@@ -1,6 +1,6 @@
 """Generate isolated Keil validation targets; never flash automatically."""
 from pathlib import Path
-import subprocess,xml.etree.ElementTree as ET,copy,re,json,sys,hashlib
+import subprocess,xml.etree.ElementTree as ET,copy,re,json,sys,hashlib,time
 ROOT=Path(__file__).resolve().parents[2]
 OUT=ROOT/'output/Ethernet';OUT.mkdir(parents=True,exist_ok=True)
 baseline='--baseline' in sys.argv
@@ -12,7 +12,11 @@ root=ET.fromstring(project_bytes);targets=root.find('Targets')
 base=next(t for t in targets if t.findtext('TargetName')=='h7_mac_CM7')
 for t in list(targets): targets.remove(t)
 t=copy.deepcopy(base);targets.append(t)
-t.find('.//TargetCommonOption/OutputDirectory').text='..\\output\\Ethernet\\'+name+'\\'
+build_dir=OUT/name
+build_dir.mkdir(parents=True,exist_ok=True)
+# ARMCC response-file paths must not depend on uVision's inherited directory.
+t.find('.//TargetCommonOption/OutputDirectory').text=str(build_dir)+'\\'
+t.find('.//TargetCommonOption/ListingPath').text=str(build_dir)+'\\'
 t.find('.//TargetCommonOption/OutputName').text='eth_'+name
 if baseline:
     scatter=OUT/'baseline.sct'
@@ -38,10 +42,11 @@ inputs=list((ROOT/'Platform/Ethernet').glob('*.[ch]'))+[ROOT/'CM7/Core/Src/main.
 def hashes():
     return {p.relative_to(ROOT).as_posix():hashlib.sha256(p.read_bytes()).hexdigest() for p in inputs}
 before=hashes()
+build_started=time.time()
 rte=ROOT/'MDK-ARM/RTE/_h7_mac_CM7/RTE_Components.h'
 rte_before=rte.read_bytes()
 try:
-    r=subprocess.run(cmd,cwd=ROOT,startupinfo=si,creationflags=subprocess.CREATE_NO_WINDOW,timeout=600)
+    r=subprocess.run(cmd,cwd=project.parent,startupinfo=si,creationflags=subprocess.CREATE_NO_WINDOW,timeout=600)
 finally:
     rte.write_bytes(rte_before)
 text=log.read_text(errors='replace') if log.exists() else ''
@@ -52,8 +57,12 @@ result['source_hashes']=before
 result['source_stable']=before==hashes()
 if not baseline:
     map_path=OUT/name/('eth_'+name+'.map')
-    map_text=map_path.read_text(errors='replace')
-    result['dma_link_valid']=bool(re.search(r'g_eth_dma_memory\s+0x24078000\s+Data\s+12544',map_text))
+    axf_path=OUT/name/('eth_'+name+'.axf')
+    succeeded=r.returncode==0 and bool(m) and m.groups()==('0','0')
+    fresh=succeeded and all(p.exists() and p.stat().st_mtime>=build_started-1 for p in (map_path,axf_path))
+    result['artifacts_fresh']=bool(fresh)
+    map_text=map_path.read_text(errors='replace') if fresh else ''
+    result['dma_link_valid']=bool(fresh and re.search(r'g_eth_dma_memory\s+0x24078000\s+Data\s+12544',map_text))
 (OUT/(name+'_result.json')).write_text(json.dumps(result,indent=2),encoding='utf-8')
 print(json.dumps(result),flush=True)
 if not m or m.groups()!=('0','0') or r.returncode!=0 or not result['source_stable'] or (not baseline and not result['dma_link_valid']):
