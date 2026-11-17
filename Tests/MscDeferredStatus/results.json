@@ -97,6 +97,12 @@
       "passed": true,
       "failed_line": 0,
       "assertions": 10
+    },
+    {
+      "scenario": 16,
+      "passed": true,
+      "failed_line": 0,
+      "assertions": 22
     }
   ],
   "commands": [

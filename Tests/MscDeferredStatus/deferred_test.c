@@ -136,6 +136,15 @@ int DeferredTest_Run(uint32_t scenario)
     EQ(USB_Device_GetControlStatus(s_token, &status), SYS_OK);
     EQ(status, USB_CONTROL_COMPLETE);
     EQ(s_worker_owns_buffer, true);
+    if (scenario == 16U)
+    {
+        EQ(USB_Device_WasControlStatusComplete(s_token), true);
+        Request(0x80U, USB_REQ_GET_DESCRIPTOR, 0x0100U, 0U, 18U);
+        EQ(USB_Device_GetControlStatus(s_token, &status), SYS_OK);
+        EQ(status, USB_CONTROL_CANCELLED);
+        EQ(USB_Device_WasControlStatusComplete(s_token), true);
+        EQ(USB_Device_CompleteControlStatus(s_token), SYS_ERR_INVALID_STATE);
+    }
     return 0;
 }
 HAL_StatusTypeDef HAL_PCD_EP_Abort(PCD_HandleTypeDef *device, uint8_t endpoint)

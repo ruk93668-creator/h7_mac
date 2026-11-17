@@ -1,8 +1,10 @@
-//独立MSC枚举：只管理描述符、接口请求和端点生命周期
+//独立MSC Class：管理描述符、端点和BOT任务入口
 #include "usb_msc_class.h"
 #include "usb_msc_desc.h"
 #include "usb_device.h"
 #include "usbd_ioreq.h"
+#include "usb_msc_bot.h"
+#include "platform_time.h"
 #include <stddef.h>
 
 //关闭失败时保留各方向资源标记，供后续DeInit重试
@@ -21,18 +23,22 @@ static uint8_t Msc_Init(USBD_HandleTypeDef *device, uint8_t config);
 //逐方向关闭端点，失败时保留尚未释放的资源
 static uint8_t Msc_DeInit(USBD_HandleTypeDef *device, uint8_t config);
 
-//仅处理枚举所需的标准接口请求，不实现BOT请求
+//路由标准接口请求及两个BOT Class控制请求
 static uint8_t Msc_Setup(USBD_HandleTypeDef *device, USBD_SetupReqTypedef *request);
 
 //拒绝高速、其他速度和设备限定描述符
+static uint8_t Msc_DataIn(USBD_HandleTypeDef *device, uint8_t endpoint);
+static uint8_t Msc_DataOut(USBD_HandleTypeDef *device, uint8_t endpoint);
 static uint8_t *Msc_NoDescriptor(uint16_t *length);
 
-//Class操作表交给现有单Class注册机制，不接收或发送Bulk数据
+//沿用单Class注册，Bulk完成只登记BOT事件
 static USBD_ClassTypeDef s_class =
 {
     .Init = Msc_Init,
     .DeInit = Msc_DeInit,
     .Setup = Msc_Setup,
+    .DataIn = Msc_DataIn,
+    .DataOut = Msc_DataOut,
     .GetFSConfigDescriptor = USB_MSC_GetFSConfigDescriptor,
     .GetHSConfigDescriptor = Msc_NoDescriptor,
     .GetOtherSpeedConfigDescriptor = Msc_NoDescriptor,
@@ -63,6 +69,11 @@ static uint8_t Msc_Init(USBD_HandleTypeDef *device, uint8_t config)
         return USBD_FAIL;
     }
     s_out_open = true;
+    if (USB_MSC_BotStart(USB_MSC_RamBackend()) != SYS_OK)
+    {
+        (void)Msc_DeInit(device, config);
+        return USBD_FAIL;
+    }
     s_configured = true;
     return USBD_OK;
 }
@@ -76,6 +87,7 @@ static uint8_t Msc_DeInit(USBD_HandleTypeDef *device, uint8_t config)
 
     //先禁止接口请求，再分别尝试关闭两个方向，不因单方向失败而提前退出
     s_configured = false;
+    USB_MSC_BotStop();
     if (s_out_open)
     {
         if (USB_Device_CloseEp(USB_MSC_OUT_EP) == SYS_OK)
@@ -93,7 +105,7 @@ static uint8_t Msc_DeInit(USBD_HandleTypeDef *device, uint8_t config)
     return failed ? USBD_FAIL : USBD_OK;
 }
 
-//仅处理枚举所需的标准接口请求，不实现BOT请求
+//路由标准接口请求及两个BOT Class控制请求
 static uint8_t Msc_Setup(USBD_HandleTypeDef *device, USBD_SetupReqTypedef *request)
 {
     if (device == NULL || request == NULL || !s_configured ||
@@ -104,10 +116,28 @@ static uint8_t Msc_Setup(USBD_HandleTypeDef *device, USBD_SetupReqTypedef *reque
     if (request->bmRequest == 0x02U && request->bRequest == USB_REQ_CLEAR_FEATURE &&
         request->wValue == 0U && request->wLength == 0U &&
         (request->wIndex == USB_MSC_IN_EP || request->wIndex == USB_MSC_OUT_EP))
+    {
+        USB_MSC_BotClearHalt((uint8_t)request->wIndex);
         return USBD_OK;
+    }
     if (request->wIndex != 0U)
         return USBD_FAIL;
 
+    if (request->bmRequest == 0xA1U && request->bRequest == 0xFEU &&
+        request->wValue == 0U && request->wLength == 1U)
+    {
+        s_reply[0] = 0U;
+        return USBD_CtlSendData(device, s_reply, 1U);
+    }
+    if (request->bmRequest == 0x21U && request->bRequest == 0xFFU &&
+        request->wValue == 0U && request->wLength == 0U)
+    {
+        uint32_t token;
+        if (USB_Device_DeferControlStatus(request, &token) != SYS_OK ||
+            USB_MSC_BotReset(token, Platform_TimeGetMs()) != SYS_OK)
+            return USBD_FAIL;
+        return USBD_BUSY;
+    }
     //接口0没有状态位，且只提供Alt0；发送缓冲在控制事务结束前保持有效
     s_reply[0] = 0U;
     s_reply[1] = 0U;
@@ -122,7 +152,7 @@ static uint8_t Msc_Setup(USBD_HandleTypeDef *device, USBD_SetupReqTypedef *reque
         request->wValue == 0U && request->wLength == 0U)
         return USBD_OK;
 
-    //包括GET_MAX_LUN和Bulk-Only Reset在内的未实现请求均交上层STALL
+    //其余请求交上层STALL
     return USBD_FAIL;
 }
 
@@ -132,4 +162,23 @@ static uint8_t *Msc_NoDescriptor(uint16_t *length)
     if (length != NULL)
         *length = 0U;
     return NULL;
+}
+
+static uint8_t Msc_DataIn(USBD_HandleTypeDef *device, uint8_t endpoint)
+{
+    (void)device;
+    if (!s_configured || endpoint != (USB_MSC_IN_EP & 0x7FU)) return USBD_FAIL;
+    USB_MSC_BotDataIn();
+    return USBD_OK;
+}
+static uint8_t Msc_DataOut(USBD_HandleTypeDef *device, uint8_t endpoint)
+{
+    (void)device;
+    if (!s_configured || endpoint != USB_MSC_OUT_EP) return USBD_FAIL;
+    USB_MSC_BotDataOut(USB_Device_GetRxSize(USB_MSC_OUT_EP));
+    return USBD_OK;
+}
+void USB_MSC_Process(uint32_t now_ms)
+{
+    USB_MSC_BotProcess(now_ms);
 }

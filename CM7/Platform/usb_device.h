@@ -117,6 +117,9 @@ SysResult_t USB_Device_CompleteControlStatus(uint32_t token);
 //任务超时或外部排空失败时拒绝当前控制事务，不释放外部IO资源
 SysResult_t USB_Device_FailControlStatus(uint32_t token);
 
+//查询最近一次实际完成证据；即使新SETUP取消旧资格，历史事实仍可核对
+bool USB_Device_WasControlStatusComplete(uint32_t token);
+
 //按Token读取提交与完成状态；新事务覆盖旧槽后返回INVALID_STATE
 SysResult_t USB_Device_GetControlStatus(uint32_t token, UsbControlStatus_t *status);
 

@@ -6,6 +6,7 @@
 #include "app_usb.h"
 #include "app_uvc_bridge.h"
 #include "usb_mode.h"
+#include "usb_msc_class.h"
 #include "usb_device.h"
 #include "usb_uvc.h"
 #include "platform_time.h"
@@ -147,6 +148,8 @@ static void UsbTask_Process(uint32_t events)
 
     //这里只推进原模式流程，不把UVC或Bridge隐藏进业务Process
     App_USBProcess();
+    if (USB_Mode_GetMode() == USB_MODE_MSC)
+        USB_MSC_Process(Platform_TimeGetMs());
     if (uvc)
     {
         if (App_USBIsStopping())

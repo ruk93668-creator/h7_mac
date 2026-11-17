@@ -1,0 +1,542 @@
+{
+  "source_commit": "14f44ca678647421d3519f192d441724178a7882",
+  "meaning": "Real Core/Platform, mocked HAL, BOT matrix / SCSI / RAM / reset integration",
+  "cases": [
+    {
+      "scenario": 0,
+      "passed": true,
+      "failed_line": 0,
+      "assertions": 14
+    },
+    {
+      "scenario": 1,
+      "passed": true,
+      "failed_line": 0,
+      "assertions": 14
+    },
+    {
+      "scenario": 2,
+      "passed": true,
+      "failed_line": 0,
+      "assertions": 14
+    },
+    {
+      "scenario": 3,
+      "passed": true,
+      "failed_line": 0,
+      "assertions": 14
+    },
+    {
+      "scenario": 4,
+      "passed": true,
+      "failed_line": 0,
+      "assertions": 14
+    },
+    {
+      "scenario": 5,
+      "passed": true,
+      "failed_line": 0,
+      "assertions": 14
+    },
+    {
+      "scenario": 6,
+      "passed": true,
+      "failed_line": 0,
+      "assertions": 14
+    },
+    {
+      "scenario": 7,
+      "passed": true,
+      "failed_line": 0,
+      "assertions": 14
+    },
+    {
+      "scenario": 8,
+      "passed": true,
+      "failed_line": 0,
+      "assertions": 14
+    },
+    {
+      "scenario": 9,
+      "passed": true,
+      "failed_line": 0,
+      "assertions": 14
+    },
+    {
+      "scenario": 10,
+      "passed": true,
+      "failed_line": 0,
+      "assertions": 14
+    },
+    {
+      "scenario": 11,
+      "passed": true,
+      "failed_line": 0,
+      "assertions": 14
+    },
+    {
+      "scenario": 12,
+      "passed": true,
+      "failed_line": 0,
+      "assertions": 14
+    },
+    {
+      "scenario": 13,
+      "passed": true,
+      "failed_line": 0,
+      "assertions": 7
+    },
+    {
+      "scenario": 14,
+      "passed": true,
+      "failed_line": 0,
+      "assertions": 7
+    },
+    {
+      "scenario": 15,
+      "passed": true,
+      "failed_line": 0,
+      "assertions": 11
+    },
+    {
+      "scenario": 16,
+      "passed": true,
+      "failed_line": 0,
+      "assertions": 10
+    },
+    {
+      "scenario": 17,
+      "passed": true,
+      "failed_line": 0,
+      "assertions": 8
+    },
+    {
+      "scenario": 18,
+      "passed": true,
+      "failed_line": 0,
+      "assertions": 10
+    },
+    {
+      "scenario": 19,
+      "passed": true,
+      "failed_line": 0,
+      "assertions": 9
+    },
+    {
+      "scenario": 20,
+      "passed": true,
+      "failed_line": 0,
+      "assertions": 3
+    },
+    {
+      "scenario": 21,
+      "passed": true,
+      "failed_line": 0,
+      "assertions": 3
+    },
+    {
+      "scenario": 22,
+      "passed": true,
+      "failed_line": 0,
+      "assertions": 2
+    },
+    {
+      "scenario": 23,
+      "passed": true,
+      "failed_line": 0,
+      "assertions": 2
+    },
+    {
+      "scenario": 24,
+      "passed": true,
+      "failed_line": 0,
+      "assertions": 2
+    },
+    {
+      "scenario": 25,
+      "passed": true,
+      "failed_line": 0,
+      "assertions": 4
+    },
+    {
+      "scenario": 26,
+      "passed": true,
+      "failed_line": 0,
+      "assertions": 3
+    },
+    {
+      "scenario": 27,
+      "passed": true,
+      "failed_line": 0,
+      "assertions": 2
+    },
+    {
+      "scenario": 28,
+      "passed": true,
+      "failed_line": 0,
+      "assertions": 3
+    },
+    {
+      "scenario": 29,
+      "passed": true,
+      "failed_line": 0,
+      "assertions": 3
+    },
+    {
+      "scenario": 30,
+      "passed": true,
+      "failed_line": 0,
+      "assertions": 3
+    },
+    {
+      "scenario": 31,
+      "passed": true,
+      "failed_line": 0,
+      "assertions": 2
+    }
+  ],
+  "commands": [
+    {
+      "command": [
+        "D:\\32\\ARM\\ARMCC\\Bin\\armcc.exe",
+        "--cpu",
+        "Cortex-M7",
+        "--c99",
+        "-O0",
+        "-DSTM32H747xx",
+        "-DCORE_CM7",
+        "-DUSE_HAL_DRIVER",
+        "--preinclude",
+        "D:\\32\\STM32H7\\h7_mac_sd\\CM7\\BSP\\bsp_usb_hal_config.h",
+        "-I",
+        "D:\\32\\STM32H7\\h7_mac_sd\\CM7\\Core\\Inc",
+        "-I",
+        "D:\\32\\STM32H7\\h7_mac_sd\\CM7\\BSP",
+        "-I",
+        "D:\\32\\STM32H7\\h7_mac_sd\\Drivers\\STM32H7xx_HAL_Driver\\Inc",
+        "-I",
+        "D:\\32\\STM32H7\\h7_mac_sd\\CM7\\Service",
+        "-I",
+        "D:\\32\\STM32H7\\h7_mac_sd\\CM7\\Platform",
+        "-I",
+        "D:\\32\\STM32H7\\h7_mac_sd\\CM7\\Framework",
+        "-I",
+        "D:\\32\\STM32H7\\h7_mac_sd\\Common\\Inc",
+        "-I",
+        "D:\\32\\STM32H7\\h7_mac_sd\\Drivers\\CMSIS\\Include",
+        "-I",
+        "D:\\32\\STM32H7\\h7_mac_sd\\Drivers\\CMSIS\\Device\\ST\\STM32H7xx\\Include",
+        "-I",
+        "D:\\32\\STM32H7\\h7_mac_sd\\Middlewares\\ST\\STM32_USB_Device_Library\\Core\\Inc",
+        "-c",
+        "D:\\32\\STM32H7\\h7_mac_sd\\Tests\\MscProtocol\\protocol_test.c",
+        "-o",
+        "D:\\32\\STM32H7\\h7_mac_sd\\output\\MSC24\\protocol\\protocol_test.o"
+      ],
+      "exit": 0,
+      "output": ""
+    },
+    {
+      "command": [
+        "D:\\32\\ARM\\ARMCC\\Bin\\armcc.exe",
+        "--cpu",
+        "Cortex-M7",
+        "--c99",
+        "-O0",
+        "-DSTM32H747xx",
+        "-DCORE_CM7",
+        "-DUSE_HAL_DRIVER",
+        "--preinclude",
+        "D:\\32\\STM32H7\\h7_mac_sd\\CM7\\BSP\\bsp_usb_hal_config.h",
+        "-I",
+        "D:\\32\\STM32H7\\h7_mac_sd\\CM7\\Core\\Inc",
+        "-I",
+        "D:\\32\\STM32H7\\h7_mac_sd\\CM7\\BSP",
+        "-I",
+        "D:\\32\\STM32H7\\h7_mac_sd\\Drivers\\STM32H7xx_HAL_Driver\\Inc",
+        "-I",
+        "D:\\32\\STM32H7\\h7_mac_sd\\CM7\\Service",
+        "-I",
+        "D:\\32\\STM32H7\\h7_mac_sd\\CM7\\Platform",
+        "-I",
+        "D:\\32\\STM32H7\\h7_mac_sd\\CM7\\Framework",
+        "-I",
+        "D:\\32\\STM32H7\\h7_mac_sd\\Common\\Inc",
+        "-I",
+        "D:\\32\\STM32H7\\h7_mac_sd\\Drivers\\CMSIS\\Include",
+        "-I",
+        "D:\\32\\STM32H7\\h7_mac_sd\\Drivers\\CMSIS\\Device\\ST\\STM32H7xx\\Include",
+        "-I",
+        "D:\\32\\STM32H7\\h7_mac_sd\\Middlewares\\ST\\STM32_USB_Device_Library\\Core\\Inc",
+        "-c",
+        "D:\\32\\STM32H7\\h7_mac_sd\\CM7\\Service\\usb_msc_desc.c",
+        "-o",
+        "D:\\32\\STM32H7\\h7_mac_sd\\output\\MSC24\\protocol\\usb_msc_desc.o"
+      ],
+      "exit": 0,
+      "output": ""
+    },
+    {
+      "command": [
+        "D:\\32\\ARM\\ARMCC\\Bin\\armcc.exe",
+        "--cpu",
+        "Cortex-M7",
+        "--c99",
+        "-O0",
+        "-DSTM32H747xx",
+        "-DCORE_CM7",
+        "-DUSE_HAL_DRIVER",
+        "--preinclude",
+        "D:\\32\\STM32H7\\h7_mac_sd\\CM7\\BSP\\bsp_usb_hal_config.h",
+        "-I",
+        "D:\\32\\STM32H7\\h7_mac_sd\\CM7\\Core\\Inc",
+        "-I",
+        "D:\\32\\STM32H7\\h7_mac_sd\\CM7\\BSP",
+        "-I",
+        "D:\\32\\STM32H7\\h7_mac_sd\\Drivers\\STM32H7xx_HAL_Driver\\Inc",
+        "-I",
+        "D:\\32\\STM32H7\\h7_mac_sd\\CM7\\Service",
+        "-I",
+        "D:\\32\\STM32H7\\h7_mac_sd\\CM7\\Platform",
+        "-I",
+        "D:\\32\\STM32H7\\h7_mac_sd\\CM7\\Framework",
+        "-I",
+        "D:\\32\\STM32H7\\h7_mac_sd\\Common\\Inc",
+        "-I",
+        "D:\\32\\STM32H7\\h7_mac_sd\\Drivers\\CMSIS\\Include",
+        "-I",
+        "D:\\32\\STM32H7\\h7_mac_sd\\Drivers\\CMSIS\\Device\\ST\\STM32H7xx\\Include",
+        "-I",
+        "D:\\32\\STM32H7\\h7_mac_sd\\Middlewares\\ST\\STM32_USB_Device_Library\\Core\\Inc",
+        "-c",
+        "D:\\32\\STM32H7\\h7_mac_sd\\CM7\\Service\\usb_msc_class.c",
+        "-o",
+        "D:\\32\\STM32H7\\h7_mac_sd\\output\\MSC24\\protocol\\usb_msc_class.o"
+      ],
+      "exit": 0,
+      "output": ""
+    },
+    {
+      "command": [
+        "D:\\32\\ARM\\ARMCC\\Bin\\armcc.exe",
+        "--cpu",
+        "Cortex-M7",
+        "--c99",
+        "-O0",
+        "-DSTM32H747xx",
+        "-DCORE_CM7",
+        "-DUSE_HAL_DRIVER",
+        "--preinclude",
+        "D:\\32\\STM32H7\\h7_mac_sd\\CM7\\BSP\\bsp_usb_hal_config.h",
+        "-I",
+        "D:\\32\\STM32H7\\h7_mac_sd\\CM7\\Core\\Inc",
+        "-I",
+        "D:\\32\\STM32H7\\h7_mac_sd\\CM7\\BSP",
+        "-I",
+        "D:\\32\\STM32H7\\h7_mac_sd\\Drivers\\STM32H7xx_HAL_Driver\\Inc",
+        "-I",
+        "D:\\32\\STM32H7\\h7_mac_sd\\CM7\\Service",
+        "-I",
+        "D:\\32\\STM32H7\\h7_mac_sd\\CM7\\Platform",
+        "-I",
+        "D:\\32\\STM32H7\\h7_mac_sd\\CM7\\Framework",
+        "-I",
+        "D:\\32\\STM32H7\\h7_mac_sd\\Common\\Inc",
+        "-I",
+        "D:\\32\\STM32H7\\h7_mac_sd\\Drivers\\CMSIS\\Include",
+        "-I",
+        "D:\\32\\STM32H7\\h7_mac_sd\\Drivers\\CMSIS\\Device\\ST\\STM32H7xx\\Include",
+        "-I",
+        "D:\\32\\STM32H7\\h7_mac_sd\\Middlewares\\ST\\STM32_USB_Device_Library\\Core\\Inc",
+        "-c",
+        "D:\\32\\STM32H7\\h7_mac_sd\\CM7\\Service\\usb_msc_scsi.c",
+        "-o",
+        "D:\\32\\STM32H7\\h7_mac_sd\\output\\MSC24\\protocol\\usb_msc_scsi.o"
+      ],
+      "exit": 0,
+      "output": ""
+    },
+    {
+      "command": [
+        "D:\\32\\ARM\\ARMCC\\Bin\\armcc.exe",
+        "--cpu",
+        "Cortex-M7",
+        "--c99",
+        "-O0",
+        "-DSTM32H747xx",
+        "-DCORE_CM7",
+        "-DUSE_HAL_DRIVER",
+        "--preinclude",
+        "D:\\32\\STM32H7\\h7_mac_sd\\CM7\\BSP\\bsp_usb_hal_config.h",
+        "-I",
+        "D:\\32\\STM32H7\\h7_mac_sd\\CM7\\Core\\Inc",
+        "-I",
+        "D:\\32\\STM32H7\\h7_mac_sd\\CM7\\BSP",
+        "-I",
+        "D:\\32\\STM32H7\\h7_mac_sd\\Drivers\\STM32H7xx_HAL_Driver\\Inc",
+        "-I",
+        "D:\\32\\STM32H7\\h7_mac_sd\\CM7\\Service",
+        "-I",
+        "D:\\32\\STM32H7\\h7_mac_sd\\CM7\\Platform",
+        "-I",
+        "D:\\32\\STM32H7\\h7_mac_sd\\CM7\\Framework",
+        "-I",
+        "D:\\32\\STM32H7\\h7_mac_sd\\Common\\Inc",
+        "-I",
+        "D:\\32\\STM32H7\\h7_mac_sd\\Drivers\\CMSIS\\Include",
+        "-I",
+        "D:\\32\\STM32H7\\h7_mac_sd\\Drivers\\CMSIS\\Device\\ST\\STM32H7xx\\Include",
+        "-I",
+        "D:\\32\\STM32H7\\h7_mac_sd\\Middlewares\\ST\\STM32_USB_Device_Library\\Core\\Inc",
+        "-c",
+        "D:\\32\\STM32H7\\h7_mac_sd\\CM7\\Service\\usb_msc_ram.c",
+        "-o",
+        "D:\\32\\STM32H7\\h7_mac_sd\\output\\MSC24\\protocol\\usb_msc_ram.o"
+      ],
+      "exit": 0,
+      "output": ""
+    },
+    {
+      "command": [
+        "D:\\32\\ARM\\ARMCC\\Bin\\armcc.exe",
+        "--cpu",
+        "Cortex-M7",
+        "--c99",
+        "-O0",
+        "-DSTM32H747xx",
+        "-DCORE_CM7",
+        "-DUSE_HAL_DRIVER",
+        "--preinclude",
+        "D:\\32\\STM32H7\\h7_mac_sd\\CM7\\BSP\\bsp_usb_hal_config.h",
+        "-I",
+        "D:\\32\\STM32H7\\h7_mac_sd\\CM7\\Core\\Inc",
+        "-I",
+        "D:\\32\\STM32H7\\h7_mac_sd\\CM7\\BSP",
+        "-I",
+        "D:\\32\\STM32H7\\h7_mac_sd\\Drivers\\STM32H7xx_HAL_Driver\\Inc",
+        "-I",
+        "D:\\32\\STM32H7\\h7_mac_sd\\CM7\\Service",
+        "-I",
+        "D:\\32\\STM32H7\\h7_mac_sd\\CM7\\Platform",
+        "-I",
+        "D:\\32\\STM32H7\\h7_mac_sd\\CM7\\Framework",
+        "-I",
+        "D:\\32\\STM32H7\\h7_mac_sd\\Common\\Inc",
+        "-I",
+        "D:\\32\\STM32H7\\h7_mac_sd\\Drivers\\CMSIS\\Include",
+        "-I",
+        "D:\\32\\STM32H7\\h7_mac_sd\\Drivers\\CMSIS\\Device\\ST\\STM32H7xx\\Include",
+        "-I",
+        "D:\\32\\STM32H7\\h7_mac_sd\\Middlewares\\ST\\STM32_USB_Device_Library\\Core\\Inc",
+        "-c",
+        "D:\\32\\STM32H7\\h7_mac_sd\\Middlewares\\ST\\STM32_USB_Device_Library\\Core\\Src\\usbd_core.c",
+        "-o",
+        "D:\\32\\STM32H7\\h7_mac_sd\\output\\MSC24\\protocol\\usbd_core.o"
+      ],
+      "exit": 0,
+      "output": ""
+    },
+    {
+      "command": [
+        "D:\\32\\ARM\\ARMCC\\Bin\\armcc.exe",
+        "--cpu",
+        "Cortex-M7",
+        "--c99",
+        "-O0",
+        "-DSTM32H747xx",
+        "-DCORE_CM7",
+        "-DUSE_HAL_DRIVER",
+        "--preinclude",
+        "D:\\32\\STM32H7\\h7_mac_sd\\CM7\\BSP\\bsp_usb_hal_config.h",
+        "-I",
+        "D:\\32\\STM32H7\\h7_mac_sd\\CM7\\Core\\Inc",
+        "-I",
+        "D:\\32\\STM32H7\\h7_mac_sd\\CM7\\BSP",
+        "-I",
+        "D:\\32\\STM32H7\\h7_mac_sd\\Drivers\\STM32H7xx_HAL_Driver\\Inc",
+        "-I",
+        "D:\\32\\STM32H7\\h7_mac_sd\\CM7\\Service",
+        "-I",
+        "D:\\32\\STM32H7\\h7_mac_sd\\CM7\\Platform",
+        "-I",
+        "D:\\32\\STM32H7\\h7_mac_sd\\CM7\\Framework",
+        "-I",
+        "D:\\32\\STM32H7\\h7_mac_sd\\Common\\Inc",
+        "-I",
+        "D:\\32\\STM32H7\\h7_mac_sd\\Drivers\\CMSIS\\Include",
+        "-I",
+        "D:\\32\\STM32H7\\h7_mac_sd\\Drivers\\CMSIS\\Device\\ST\\STM32H7xx\\Include",
+        "-I",
+        "D:\\32\\STM32H7\\h7_mac_sd\\Middlewares\\ST\\STM32_USB_Device_Library\\Core\\Inc",
+        "-c",
+        "D:\\32\\STM32H7\\h7_mac_sd\\Middlewares\\ST\\STM32_USB_Device_Library\\Core\\Src\\usbd_ctlreq.c",
+        "-o",
+        "D:\\32\\STM32H7\\h7_mac_sd\\output\\MSC24\\protocol\\usbd_ctlreq.o"
+      ],
+      "exit": 0,
+      "output": ""
+    },
+    {
+      "command": [
+        "D:\\32\\ARM\\ARMCC\\Bin\\armcc.exe",
+        "--cpu",
+        "Cortex-M7",
+        "--c99",
+        "-O0",
+        "-DSTM32H747xx",
+        "-DCORE_CM7",
+        "-DUSE_HAL_DRIVER",
+        "--preinclude",
+        "D:\\32\\STM32H7\\h7_mac_sd\\CM7\\BSP\\bsp_usb_hal_config.h",
+        "-I",
+        "D:\\32\\STM32H7\\h7_mac_sd\\CM7\\Core\\Inc",
+        "-I",
+        "D:\\32\\STM32H7\\h7_mac_sd\\CM7\\BSP",
+        "-I",
+        "D:\\32\\STM32H7\\h7_mac_sd\\Drivers\\STM32H7xx_HAL_Driver\\Inc",
+        "-I",
+        "D:\\32\\STM32H7\\h7_mac_sd\\CM7\\Service",
+        "-I",
+        "D:\\32\\STM32H7\\h7_mac_sd\\CM7\\Platform",
+        "-I",
+        "D:\\32\\STM32H7\\h7_mac_sd\\CM7\\Framework",
+        "-I",
+        "D:\\32\\STM32H7\\h7_mac_sd\\Common\\Inc",
+        "-I",
+        "D:\\32\\STM32H7\\h7_mac_sd\\Drivers\\CMSIS\\Include",
+        "-I",
+        "D:\\32\\STM32H7\\h7_mac_sd\\Drivers\\CMSIS\\Device\\ST\\STM32H7xx\\Include",
+        "-I",
+        "D:\\32\\STM32H7\\h7_mac_sd\\Middlewares\\ST\\STM32_USB_Device_Library\\Core\\Inc",
+        "-c",
+        "D:\\32\\STM32H7\\h7_mac_sd\\Middlewares\\ST\\STM32_USB_Device_Library\\Core\\Src\\usbd_ioreq.c",
+        "-o",
+        "D:\\32\\STM32H7\\h7_mac_sd\\output\\MSC24\\protocol\\usbd_ioreq.o"
+      ],
+      "exit": 0,
+      "output": ""
+    },
+    {
+      "command": [
+        "D:\\32\\ARM\\ARMCC\\Bin\\armlink.exe",
+        "D:\\32\\STM32H7\\h7_mac_sd\\output\\MSC24\\protocol\\protocol_test.o",
+        "D:\\32\\STM32H7\\h7_mac_sd\\output\\MSC24\\protocol\\usb_msc_desc.o",
+        "D:\\32\\STM32H7\\h7_mac_sd\\output\\MSC24\\protocol\\usb_msc_class.o",
+        "D:\\32\\STM32H7\\h7_mac_sd\\output\\MSC24\\protocol\\usb_msc_scsi.o",
+        "D:\\32\\STM32H7\\h7_mac_sd\\output\\MSC24\\protocol\\usb_msc_ram.o",
+        "D:\\32\\STM32H7\\h7_mac_sd\\output\\MSC24\\protocol\\usbd_core.o",
+        "D:\\32\\STM32H7\\h7_mac_sd\\output\\MSC24\\protocol\\usbd_ctlreq.o",
+        "D:\\32\\STM32H7\\h7_mac_sd\\output\\MSC24\\protocol\\usbd_ioreq.o",
+        "--entry",
+        "Protocol_Run",
+        "--no_scanlib",
+        "--scatter",
+        "D:\\32\\STM32H7\\h7_mac_sd\\Tests\\UsbDeviceStage1\\test.sct",
+        "-o",
+        "D:\\32\\STM32H7\\h7_mac_sd\\output\\MSC24\\protocol\\test.axf"
+      ],
+      "exit": 0,
+      "output": ""
+    }
+  ]
+}

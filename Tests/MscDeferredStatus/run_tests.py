@@ -28,7 +28,7 @@ def invoke(name):
  cpu.reg_write(UC_ARM_REG_SP,0x2003fff0);cpu.reg_write(UC_ARM_REG_LR,0x01000001);cpu.emu_start(symbols[name]|1,0x01000000,count=1000000);return cpu.reg_read(UC_ARM_REG_R0)
 
 rows = []
-for scenario in range(16):
+for scenario in range(17):
     # 重建全部可写内存，避免上一场景的静态状态污染下一场景
     cpu.mem_write(0x20000000, bytes(0x40000))
     with image.open('rb') as source:

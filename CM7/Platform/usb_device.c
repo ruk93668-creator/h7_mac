@@ -99,6 +99,7 @@ static volatile UsbDeviceEndpointState_t s_endpoints[2][USB_DEVICE_EP_COUNT];
 
 //控制事务Token在整个启动周期单调递增，耗尽后拒绝新建，不随USB复位清零
 static uint32_t s_control_token_seed;
+static uint32_t s_control_completed_token;
 static uint32_t s_control_token;
 static volatile UsbControlStatus_t s_deferred_status;
 static USBD_SetupReqTypedef s_deferred_request;
@@ -1082,6 +1083,15 @@ SysResult_t USB_Device_FailControlStatus(uint32_t token)
 }
 
 //查询不会推进协议，也不会归还任何数据缓冲
+//完成历史仅作为证据，不赋予已取消Token任何再次提交资格
+bool USB_Device_WasControlStatusComplete(uint32_t token)
+{
+    uint32_t saved = Usb_Lock();
+    bool complete = token != 0U && token == s_control_completed_token;
+    Usb_Unlock(saved);
+    return complete;
+}
+
 SysResult_t USB_Device_GetControlStatus(uint32_t token, UsbControlStatus_t *status)
 {
     uint32_t enabled;
@@ -1414,7 +1424,10 @@ static void Usb_DataIn(uint8_t ep, uint8_t *data)
     if (ep == 0U && s_endpoints[1][0].busy &&
         s_deferred_status == USB_CONTROL_SUBMITTED &&
         s_device.ep0_state == USBD_EP0_STATUS_IN)
+    {
         s_deferred_status = USB_CONTROL_COMPLETE;
+        s_control_completed_token = s_control_token;
+    }
 
     //BSP已经交付真实完成，先归还端点占用，再进入官方Core回调
     s_endpoints[1][ep].busy = false;
