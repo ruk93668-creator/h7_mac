@@ -1,6 +1,6 @@
 # E3.5 MAC/DMA 验收报告
 
-日期：2026-11-17。当前结论：**软件基线和独立验收工具已准备；本轮已完成 60 字节双向帧内容与计数核对，驱动错误/IRQ 统计待补，其余实板用例 NOT_RUN，E3.5 尚未关闭，E4 仍被阻塞。** 之前聊天、抓包和板端“符合预期”不计为本轮结果。
+日期：2026-11-17。当前结论：**软件基线和独立验收工具已准备；本轮 60 字节双向实板测试 PASS（含用户补报五项驱动错误计数均为 0），其余实板用例 NOT_RUN，E3.5 尚未关闭，E4 仍被阻塞。** 之前聊天、抓包和板端“符合预期”不计为本轮结果。
 
 ## 版本和证据
 
@@ -91,7 +91,7 @@ region 4 为 Normal TEX=1、C=0、B=0、shareable、XN、全访问。所有 DMA 
 | 用例 | 状态 | 双向数量/错误/丢帧率 | 缺失证据 |
 | --- | --- | --- | --- |
 | PHY ID、Link、MAC/DMA Start 基线 | PASS（截图所示状态） | PHY 0x0007C131，100 Mbps 全双工，RUNNING | 板上固件 SHA 未独立读回 |
-| 60 字节 | PASS（帧内容/计数）；完整验收待补统计 | PC→板 1000/1000，板→PC 1499/1499；两向丢帧率 0%，损坏/重复/乱序 0 | 驱动 ring 错误与 IRQ 错误前后快照 |
+| 60 字节 | PASS | PC→板 1000/1000，板→PC 1499/1499；两向丢帧率 0%，损坏/重复/乱序 0；五项驱动错误计数均为 0 | 错误计数由用户文字补报，无新增计数截图；固件独立读回仍为全局遗留项 |
 | 512 字节 | NOT_RUN | 未取得 | 同上 |
 | 1514 字节 | NOT_RUN | 未取得 | 同上 |
 | VLAN 线上 1522（软件 1518） | NOT_RUN | 未取得 | MAC/VLAN 寄存器、PC 标签观察、双向数据 |
@@ -108,7 +108,7 @@ region 4 为 Normal TEX=1、C=0、B=0、shareable、XN、全访问。所有 DMA 
 
 PC 原始目录 `output/Ethernet/E3_5/board_60_20261117_130941`，PCAP SHA256 `034866aefbda64ea021fc883ade7743b7db0afca5eea68d4ddd5df7e7c63389f`。用户两张原始截图、PC JSON 和逐字段转录保存在 `Evidence/E3_5_20261117/board_60_run1/`。PC JSON 的 hardware_pass=false 是工具生成时尚未取得板端数据的保守标记，保留原文件，不改写为实板通过。
 
-用户结束采样截图 active=0，valid_rx=0x3E8=1000、next_sequence=0x3E9=1001、raw_rx=1003、ignored=3；corrupt/gaps/late_or_duplicate/errors/first_error/service_result 均为 0。TX accepted=completed=0x5DB=1499、BUSY=0，与 PC 唯一收到的序号 1..1499 相等；PC 已捕获本机发送的 1000 帧，无抓包丢弃。两向帧内容、序号及数量核对 PASS，无尾部缺帧。完整 60 字节验收仍待驱动 ring.rx_errors/tx_errors/ownership_errors 和 irq_dma_error/irq_mac_error 统计及初值依据，不能把 metrics.errors=0 等同于所有硬件错误计数为零。
+用户结束采样截图 active=0，valid_rx=0x3E8=1000、next_sequence=0x3E9=1001、raw_rx=1003、ignored=3；corrupt/gaps/late_or_duplicate/errors/first_error/service_result 均为 0。TX accepted=completed=0x5DB=1499、BUSY=0，与 PC 唯一收到的序号 1..1499 相等；PC 已捕获本机发送的 1000 帧，无抓包丢弃。两向帧内容、序号及数量核对 PASS，无尾部缺帧。随后用户明确补报 ring.tx_errors、ring.rx_errors、ring.ownership_errors、irq_dma_error、irq_mac_error 五项累计值均为 0；这是用户实板观察反馈，不是自动调试器采集，无单独初值/终值计数截图。结合本轮 PCAP 与板端会话截图，将 60 字节双向用例标记 PASS；不把该结论扩展到其他长度、资源耗尽、重启或长时间测试。
 
 CCR.DC=1、memory_valid=1、调用者缓存地址为 0x24010000/0x24010600，压力循环计数 0x2D31；TX OWN mask=0、RX OWN mask=7。DMACSR=0x400 对应本芯片 ETI（Early Transmit Interrupt）状态，不是 RBU 或总线错误，不能据此单独判断异常。以上为短帧运行证据，不能关闭所有长度/长时间缓存一致性项目。
 
@@ -121,7 +121,7 @@ PCAP 双向时间交集约 9.354 秒，板端发包跨度约 14.976 秒，绝不
 | 项目 | 状态 | 是否阻塞 E4 |
 | --- | --- | --- |
 | 历史 RX 0/1000 无同时段采样/CPU/Poll/OWN 证据，根因未证明 | OPEN | 是，至少需完成复现调查与本轮受控恢复验收，不能标 FIXED |
-| 本轮板上固件 SHA 未独立读回、完整 MPU 属性及驱动错误/IRQ 统计待补；速率/双工和 CCR/memory_valid 已有截图 | OPEN | 是 |
+| 本轮板上固件 SHA 未独立读回、完整 MPU 属性待补；速率/双工和 CCR/memory_valid 已有截图，60 字节错误计数已由用户补报为 0 | OPEN | 是 |
 | 帧长/VLAN、资源耗尽恢复、100 重启、Link 恢复尚未实测 | OPEN | 是 |
 | >=600 秒实际双向重叠及错误/丢帧/数据一致性未实测 | OPEN | 是 |
 | LAN8742A 模式解析仍位于 MAC 后端（已有职责问题） | OPEN | 本身不阻塞 E3.5；后续单独评估，不混入本轮驱动修改 |
@@ -132,4 +132,4 @@ PCAP 双向时间交集约 9.354 秒，板端发包跨度约 14.976 秒，绝不
 
 本轮只增加 Ethernet 测试工具、生成工程脚本、报告和证据。没有修改生产 OWN/Tail/错误判定、正式 Keil/scatter、FreeRTOS、USB、Storage、CM4 OLED 或 Application V2；未操作另外两个工程，未进入 lwIP，未合并 main。保留用户原有 RTE 文件变化。本报告提交后推送 `codex/ethernet-bringup` 并核对远端；最终回执记录实际 SHA。
 
-下一步补齐 60 字节驱动 ring/IRQ 错误统计，再按顺序进行 512 字节及余下实板项目，依据原始证据更新 PASS/FAIL。当前仍为**部分实板结果，E3.5 未关闭**。
+下一步按顺序进行 512 字节及余下实板项目，依据原始证据更新 PASS/FAIL。当前仍为**部分实板结果，E3.5 未关闭**。

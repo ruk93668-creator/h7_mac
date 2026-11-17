@@ -74,9 +74,9 @@
     "board_to_pc_frames": 1499,
     "pc_to_board_loss_percent": 0,
     "board_to_pc_loss_percent": 0,
-    "driver_error_irq_counter_deltas": "NOT_RUN: before/after full statistics not supplied",
+    "driver_error_irq_counter_deltas": "Final cumulative counters all zero per user report; no separate initial screenshot",
     "exact_loaded_axf_hash": "not independently read back",
-    "complete_case_acceptance": "PENDING driver statistics",
+    "complete_case_acceptance": "PASS: 60-byte bidirectional test only; firmware readback and remaining E3.5 gates remain open",
     "historical_rx_zero": "OPEN"
   },
   "pcap_path": "D:\\32\\STM32H7\\h7_mac_wk\\output\\Ethernet\\E3_5\\board_60_20261117_130941\\capture.pcap",
@@ -85,5 +85,13 @@
     "board_metrics.png": "ca78ff62fe4bd6254f649d2e65f02e0f6fd816cdf3d496d00a0eac5242e71d81",
     "board_startup.png": "1a25414a75c44fb7a2f4c42c46664df34c675be98d4ca27c94f041b065374eb1",
     "peer.json": "23444c65cb0611affd4dae362f88fb8e5880c95dfe74f367a857c360b52be355"
+  },
+  "driver_counters_user_report": {
+    "provenance": "User reply on 2026-11-17: all five requested counters are 0; no additional debugger screenshot supplied",
+    "ring.tx_errors": 0,
+    "ring.rx_errors": 0,
+    "ring.ownership_errors": 0,
+    "irq_dma_error": 0,
+    "irq_mac_error": 0
   }
 }
