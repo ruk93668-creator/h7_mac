@@ -29,3 +29,11 @@
 随后累计 RX 从 1029 增至 1032，说明仍有接收活动。明确 active=1、CPU 正运行后发送 1 帧，用户确认 received=1、unique=1、missing=999、bad=0。再次清零并确认运行状态后发送本轮 1000 帧，电脑抓包序号 1..1000 且全部 payload 正确；用户结束采样后确认 received=1000、unique=1000、missing/bad/duplicates/out_of_order 均为 0、last_sequence=1000、passed=1。
 
 结论：在用户报告的掉线恢复场景中，重新同步采样后的 1000 帧固定内容 RX 通过。先前零计数的原因仍未定位，保留为验收限制；未单独采集最终批次的 MAC/DMA 错误计数差值，不推导吞吐或长期稳定性。摘要与抓包 SHA256 见 Tests/Ethernet/rx_recovery_board_results.json。
+
+## 五轮 stop/start 后的接收
+
+用户反馈 5 轮显式 stop/start 均符合预期：stop 返回 0、状态 READY，start 返回 0、状态 RUNNING；MAC/DMA 中断错误计数未增加。随后用户重新开启采样并保持 CPU 运行，对端提交 1000 帧。结束采样后用户确认 received=1000、unique=1000、missing/bad/duplicates/out_of_order 均为 0、last_sequence=1000、passed=1，MAC 状态仍为 RUNNING。
+
+本轮发送程序耗时约 69.703 秒，超过 35 秒抓包窗口，电脑仅捕获 664 个匹配帧，已捕获内容均正确；不能把这份 PCAP 描述为完整 1000 帧证据，也不能把未抓到的 336 帧直接认作板卡丢包。完整板端批次结果来源是用户调试反馈，未自动读回。
+
+结论：5 轮启停状态/错误计数检查，以及启停后的 1000 帧 RX 校验通过；保留电脑端抓包不完整的限制。摘要及抓包 SHA256 见 Tests/Ethernet/rx_restart_board_results.json。尚不能据此宣称持续 TX/双向流量、长稳、不同帧长、资源耗尽或性能测试通过。

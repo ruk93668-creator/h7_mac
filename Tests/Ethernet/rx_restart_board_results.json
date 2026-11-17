@@ -1,0 +1,29 @@
+{
+  "capture": "output/Ethernet/rx_after_5_restarts_20261117_114238.pcapng",
+  "scenario": "RX after five user-confirmed stop/start cycles; sampler reset and CPU running confirmed",
+  "sender_elapsed_seconds": 69.70299999999406,
+  "captured_matching_frames": 664,
+  "valid_frames": 664,
+  "bad_frames": 0,
+  "sequences_exact_1_to_1000": false,
+  "board_result_pending": false,
+  "date": "2026-11-17",
+  "capture_sha256": "8d13925cb4a0a501875e5523ee0d3eae3ea4ab8c0fd0ed066c40696cf839d2aa",
+  "board_observation_source": "User confirmed requested statistics; no automatic target readback",
+  "board_statistics": {
+    "received": 1000,
+    "unique": 1000,
+    "missing": 0,
+    "bad": 0,
+    "duplicates": 0,
+    "out_of_order": 0,
+    "last_sequence": 1000,
+    "active": 0,
+    "passed": 1,
+    "mac_state": 2
+  },
+  "stop_start_cycles": 5,
+  "cycle_result_source": "User confirmed each stop result=0/state=1, start result=0/state=2 and no MAC/DMA interrupt error counter increases",
+  "capture_limitation": "35-second capture window ended before sender completion; sender elapsed about 69.7 seconds; captured 664 frames only, not proof of board loss",
+  "throughput_benchmark": false
+}
