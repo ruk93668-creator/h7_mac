@@ -70,40 +70,47 @@
 #define GPIO_SPEED_FREQ_LOW (0x00000000U)
 #define GPIO_SPEED_FREQ_VERY_HIGH (0x00000003U)
 #define SYSCFG_ETH_RMII (0x4UL << (21U))
-typedef struct {
-    volatile uint32_t DMACCR;
-    volatile uint32_t DMACIER;
-    volatile uint32_t DMACRCR;
-    volatile uint32_t DMACRDLAR;
-    volatile uint32_t DMACRDRLR;
-    volatile uint32_t DMACRDTPR;
-    volatile uint32_t DMACSR;
-    volatile uint32_t DMACTCR;
-    volatile uint32_t DMACTDLAR;
-    volatile uint32_t DMACTDRLR;
-    volatile uint32_t DMACTDTPR;
-    volatile uint32_t DMAMR;
-    volatile uint32_t DMASBMR;
-    volatile uint32_t MACA0HR;
-    volatile uint32_t MACA0LR;
-    volatile uint32_t MACCR;
-    volatile uint32_t MACIER;
-    volatile uint32_t MACISR;
-    volatile uint32_t MACMDIOAR;
-    volatile uint32_t MACMDIODR;
-    volatile uint32_t MACPFR;
-    volatile uint32_t MACRXTXSR;
-    volatile uint32_t MMCRIMR;
-    volatile uint32_t MMCTIMR;
-    volatile uint32_t MTLRQOMR;
-    volatile uint32_t MTLTQOMR;
+typedef struct
+{
+	volatile uint32_t DMACCR;
+	volatile uint32_t DMACIER;
+	volatile uint32_t DMACRCR;
+	volatile uint32_t DMACRDLAR;
+	volatile uint32_t DMACRDRLR;
+	volatile uint32_t DMACRDTPR;
+	volatile uint32_t DMACSR;
+	volatile uint32_t DMACTCR;
+	volatile uint32_t DMACTDLAR;
+	volatile uint32_t DMACTDRLR;
+	volatile uint32_t DMACTDTPR;
+	volatile uint32_t DMAMR;
+	volatile uint32_t DMASBMR;
+	volatile uint32_t MACA0HR;
+	volatile uint32_t MACA0LR;
+	volatile uint32_t MACCR;
+	volatile uint32_t MACIER;
+	volatile uint32_t MACISR;
+	volatile uint32_t MACMDIOAR;
+	volatile uint32_t MACMDIODR;
+	volatile uint32_t MACPFR;
+	volatile uint32_t MACRXTXSR;
+	volatile uint32_t MMCRIMR;
+	volatile uint32_t MMCTIMR;
+	volatile uint32_t MTLRQOMR;
+	volatile uint32_t MTLTQOMR;
 } FakeEth;
 extern FakeEth fake_eth;
 #define ETH (&fake_eth)
-typedef struct { volatile uint32_t AHB1RSTR; } FakeRcc;
+typedef struct
+{
+	volatile uint32_t AHB1RSTR;
+} FakeRcc;
 extern FakeRcc fake_rcc;
 #define RCC (&fake_rcc)
-typedef struct { volatile uint32_t PMCR; } FakeSyscfg;
+typedef struct
+{
+	volatile uint32_t PMCR;
+} FakeSyscfg;
 extern FakeSyscfg fake_syscfg;
 #define SYSCFG (&fake_syscfg)
 #define GPIOA ((void *)1)
@@ -113,12 +120,15 @@ extern FakeSyscfg fake_syscfg;
 #define RESET 0U
 #define GPIO_PIN_RESET 0U
 #define GPIO_PIN_SET 1U
-typedef struct { uint32_t Pin, Mode, Pull, Speed, Alternate; } GPIO_InitTypeDef;
+typedef struct
+{
+	uint32_t Pin, Mode, Pull, Speed, Alternate;
+} GPIO_InitTypeDef;
 uint32_t HAL_GetTick(void);
 uint32_t HAL_RCC_GetHCLKFreq(void);
 void HAL_Delay(uint32_t);
-void HAL_GPIO_WritePin(void *,uint32_t,uint32_t);
-void HAL_GPIO_Init(void *,GPIO_InitTypeDef *);
+void HAL_GPIO_WritePin(void *, uint32_t, uint32_t);
+void HAL_GPIO_Init(void *, GPIO_InitTypeDef *);
 void HAL_SYSCFG_ETHInterfaceSelect(uint32_t);
 void HAL_NVIC_DisableIRQ(int);
 void HAL_NVIC_EnableIRQ(int);

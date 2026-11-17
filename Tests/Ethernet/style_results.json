@@ -1,0 +1,120 @@
+{
+  "date": "2026-11-17",
+  "reference": "Tests/CameraStyleCalibration/鏍″噯鎶ュ憡.md",
+  "files": [
+    {
+      "file": "Platform/Ethernet/eth_dma.c",
+      "tokens_equal": true,
+      "token_sha256": "5430ef1233ae78059919a681c3863e6eaa51ec8be055f13b9ab929d902b00352",
+      "source_sha256": "368e5e02d03de9b6b7625ebe01c00f4b45010b28ff0591e5215b5d5b2e532d61"
+    },
+    {
+      "file": "Platform/Ethernet/eth_dma.h",
+      "tokens_equal": true,
+      "token_sha256": "be58535389f542afaf7c0cbb4a487b05746a5161f0a696ffe1c146106436bacb",
+      "source_sha256": "5f07d93456457288a99b78a4ced8dbe810c46d51863f39e44ad24acbca268650"
+    },
+    {
+      "file": "Platform/Ethernet/eth_mac.c",
+      "tokens_equal": true,
+      "token_sha256": "ac515401046f97ae88125de69d145581b46b35f5543eb8306fce8e3f5912c1b4",
+      "source_sha256": "693bb8fb79366f6bd1fdbb27bd047284e68a4d8d11d8672b759cc7afe05542d7"
+    },
+    {
+      "file": "Platform/Ethernet/eth_mac.h",
+      "tokens_equal": true,
+      "token_sha256": "fceb80bc740e43dfd18be94e60946727b36817b39ba17ebe402a52a5f98e861f",
+      "source_sha256": "692d9d1840f3df33232f9e3c6ce9f57acc777c6f0e08726620c55dac14471fa8"
+    },
+    {
+      "file": "Platform/Ethernet/eth_memory.c",
+      "tokens_equal": true,
+      "token_sha256": "ff8676ae93fcb09eeaf692445cff3d1e9b78020900d2139651dae03fffd99ae9",
+      "source_sha256": "f162190046224c42e115bde6d7d568399e2b2dcaace41eea46b8459a71ee6d2d"
+    },
+    {
+      "file": "Platform/Ethernet/eth_memory.h",
+      "tokens_equal": true,
+      "token_sha256": "eb80eeea08c794856f8bbd0ca9e8923957e3f14579cf846d17cdb22257eb4538",
+      "source_sha256": "74ecb1dc9359e6c100d4d7309854c74a566cca548e51fa2a926dd3700caea513"
+    },
+    {
+      "file": "Platform/Ethernet/eth_phy.c",
+      "tokens_equal": true,
+      "token_sha256": "d9997832825019c44e13b4cc34cb9422cc4c36c0516f0ce3c187698f82f17e3c",
+      "source_sha256": "1624ea957bf5edc05bb42304c247fdcdf106246bc407ec7d7ae887265323ae32"
+    },
+    {
+      "file": "Platform/Ethernet/eth_phy.h",
+      "tokens_equal": true,
+      "token_sha256": "ba42a850e79f2ad9758131e9f10da0b98bc241649f1285605a703d41f2284424",
+      "source_sha256": "7f7be9c26c6d891756536506d506384d21b1dd2bd52c3e480f8ee7ae9a194a4a"
+    },
+    {
+      "file": "Tests/Ethernet/fake_hal.h",
+      "tokens_equal": true,
+      "token_sha256": "efbada573864df4e6a97ddb54120351f37936f6d7c79ce859be23ee236db9bd9",
+      "source_sha256": "e8cb9b0f7ca7b4a8cb7184941b031157c629fa49467b91523bc75aaae615531d"
+    },
+    {
+      "file": "Tests/Ethernet/test_dma.c",
+      "tokens_equal": true,
+      "token_sha256": "ae65caa507c684189435df8b0279fe50c3411811ca85b2ee16603cfcd2a5d069",
+      "source_sha256": "5c6d5ab7247c48df8b8e50df55444bda578adfd605882c60787eaca78c672053"
+    },
+    {
+      "file": "Tests/Ethernet/test_engine.c",
+      "tokens_equal": true,
+      "token_sha256": "6423dd5ce01b5cafbc48976384f7e7ea3e52e0393b0c3fa5dc5f1d6c64340a51",
+      "source_sha256": "45a7b40ce9dd1a4c1d99a891c21850d16d586a2dff7b01277864d01420f68d57"
+    },
+    {
+      "file": "Tests/Ethernet/test_mac.c",
+      "tokens_equal": true,
+      "token_sha256": "6fe173aec62601bc0fa61c8f572093317ddf856dcc3b5cf1c5bb4d7e799576dc",
+      "source_sha256": "27e6eadb4a00404ecb0e221213cd1fc667099707b3588d83f1e386500715c75b"
+    },
+    {
+      "file": "Tests/Ethernet/test_main.c",
+      "tokens_equal": true,
+      "token_sha256": "67101f41f5dd641870e1adbd39fe66aed8973aef49a332e5a31f1493a83f07f8",
+      "source_sha256": "ebbcefee410827444dd0b77b7dd0c451247940ca57eeb025621aa88fcc3b4e1d"
+    },
+    {
+      "file": "Tests/Ethernet/test_phy.c",
+      "tokens_equal": true,
+      "token_sha256": "10ddfc7b0a031ad3fb16e7f8c27b5178c281f8d9608ad20cac8a02f9e6269fdb",
+      "source_sha256": "c8d37faa56a77843789fa1c8c9656c9779e05fcfd733dc3a464e2a2c655be9e6"
+    }
+  ],
+  "smoke_build": {
+    "variant": "smoke",
+    "exit": 0,
+    "errors": 0,
+    "warnings": 0,
+    "size": {
+      "code": 66682,
+      "ro": 2834,
+      "rw": 1220,
+      "zi": 82468
+    },
+    "source_hashes": {
+      "Platform/Ethernet/eth_dma.c": "368e5e02d03de9b6b7625ebe01c00f4b45010b28ff0591e5215b5d5b2e532d61",
+      "Platform/Ethernet/eth_dma.h": "5f07d93456457288a99b78a4ced8dbe810c46d51863f39e44ad24acbca268650",
+      "Platform/Ethernet/eth_mac.c": "693bb8fb79366f6bd1fdbb27bd047284e68a4d8d11d8672b759cc7afe05542d7",
+      "Platform/Ethernet/eth_mac.h": "692d9d1840f3df33232f9e3c6ce9f57acc777c6f0e08726620c55dac14471fa8",
+      "Platform/Ethernet/eth_memory.c": "f162190046224c42e115bde6d7d568399e2b2dcaace41eea46b8459a71ee6d2d",
+      "Platform/Ethernet/eth_memory.h": "74ecb1dc9359e6c100d4d7309854c74a566cca548e51fa2a926dd3700caea513",
+      "Platform/Ethernet/eth_phy.c": "1624ea957bf5edc05bb42304c247fdcdf106246bc407ec7d7ae887265323ae32",
+      "Platform/Ethernet/eth_phy.h": "7f7be9c26c6d891756536506d506384d21b1dd2bd52c3e480f8ee7ae9a194a4a",
+      "CM7/Core/Src/main.c": "e5ac578160fa83f55bf17519868554174195e2927acf4364d2f01d9f2e2928cf",
+      "Tests/Ethernet/test_main.c": "ebbcefee410827444dd0b77b7dd0c451247940ca57eeb025621aa88fcc3b4e1d",
+      "MDK-ARM/h7_mac.uvprojx": "4b8245f977d38a8affb8396084852cc4b9485ebc6ed33569a0f2e51387949e30",
+      "MDK-ARM/h7_mac_CM7_custom.sct": "8aa7908b6072f0b98440d96ebd6473af8b5a2d71393c5325f5263cac36e7bac8"
+    },
+    "source_stable": true,
+    "artifacts_fresh": true,
+    "dma_link_valid": true
+  },
+  "host_tests": "PASS: six runs, MSVC /utf-8 /W4 /WX"
+}

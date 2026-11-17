@@ -1,5 +1,6 @@
 @echo off
 setlocal
+set CL=/utf-8 %CL%
 if not defined VSCMD_VER (
   echo Run from an x64 Visual Studio Developer Command Prompt.
   exit /b 2
