@@ -49,7 +49,9 @@ if e35:
     scatter_text=scatter_text.replace('    RW_IRAM1', '    RW_E35_CACHE 0x24010000 0x00010000\n    {\n        *(.e35_cache)\n    }\n\n    RW_IRAM1')
     scatter.write_text(scatter_text)
     t.find('.//LDads/ScatterFile').text=str(scatter)
-project=ROOT/'MDK-ARM/h7_mac_ethernet_verify.uvprojx'
+# Give E3.5 its own uVision identity so an open smoke project cannot retain
+# the old output directory when the generated target changes on disk.
+project=ROOT/'MDK-ARM'/('h7_mac_ethernet_e35.uvprojx' if e35 else 'h7_mac_ethernet_verify.uvprojx')
 ET.ElementTree(root).write(project,encoding='utf-8',xml_declaration=True)
 if '--prepare-only' in sys.argv: print(project);sys.exit(0)
 log=OUT/(name+'_build.log')

@@ -1,5 +1,7 @@
 # E3.5 实板执行步骤
 
+Keil 请打开独立入口 `MDK-ARM/h7_mac_ethernet_e35.uvprojx`。生成命令为 `python Tests/Ethernet/build_firmware.py --e35 --prepare-only`（只生成配置，不编译、不下载）。不要继续使用已打开的旧 smoke 工程：Keil 可能保留先前的输出目录。该入口固定输出 `output/Ethernet/e35/eth_e35.axf`，不在 smoke 目录复制同名固件。
+
 本轮固件与旧 `test_main.c` 命令不同。只下载 `output/Ethernet/e35/eth_e35.axf`；不要下载旧 smoke 文件。测试工程由 `python Tests/Ethernet/build_firmware.py --e35` 生成，入口 `e35_main.c`，不启动 Application、FreeRTOS 或 CM4。先保存实际下载文件 SHA256，与 E3_5_VALIDATION.md 核对。下面 PowerShell 命令均在 `D:\32\STM32H7\h7_mac_wk` 执行。
 
 ## 连接、启动和记录
