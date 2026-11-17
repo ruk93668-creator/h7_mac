@@ -4536,6 +4536,11 @@
               <FilePath>../CM7/Service/usb_msc_ram.c</FilePath>
             </File>
             <File>
+              <FileName>usb_msc_storage.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>../CM7/Service/usb_msc_storage.c</FilePath>
+            </File>
+            <File>
               <FileName>usb_msc_class.c</FileName>
               <FileType>1</FileType>
               <FilePath>../CM7/Service/usb_msc_class.c</FilePath>

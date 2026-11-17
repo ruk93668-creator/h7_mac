@@ -1,0 +1,55 @@
+from pathlib import Path
+import sys, subprocess, json, struct
+ROOT=Path(__file__).resolve().parents[2]; OUT=ROOT/'output/MSC24/adapter'; OUT.mkdir(parents=True,exist_ok=True)
+sys.path.insert(0,str(ROOT/'output/msc1-deps'))
+from unicorn import Uc,UC_ARCH_ARM,UC_MODE_THUMB,UC_MODE_MCLASS
+from unicorn import UC_HOOK_MEM_INVALID
+from unicorn.arm_const import UC_ARM_REG_PC, UC_ARM_REG_SP,UC_ARM_REG_LR,UC_ARM_REG_R0,UC_ARM_REG_IPSR
+from elftools.elf.elffile import ELFFile
+TOOL=Path('D:/32/ARM/ARMCC/Bin')
+args=[str(TOOL/'armcc.exe'),'--cpu','Cortex-M7','--c99','-O0','-DSTM32H747xx','-DCORE_CM7','-DUSE_HAL_DRIVER','--preinclude',str(ROOT/'CM7/BSP/bsp_usb_hal_config.h')]
+for inc in ['CM7/Core/Inc','CM7/BSP','Drivers/STM32H7xx_HAL_Driver/Inc','CM7/Service','CM7/Platform','CM7/Framework','Common/Inc','Drivers/CMSIS/Include','Drivers/CMSIS/Device/ST/STM32H7xx/Include','Middlewares/ST/STM32_USB_Device_Library/Core/Inc']:
+ args+=['-I',str(ROOT/inc)]
+commands=[]
+def run(cmd):
+ r=subprocess.run(list(map(str,cmd)),capture_output=True,cwd=ROOT); text=(r.stdout+r.stderr).decode(errors='replace'); commands.append(dict(command=list(map(str,cmd)),exit=r.returncode,output=text))
+ if r.returncode or 'warning' in text.lower(): raise RuntimeError(text)
+objects=[]
+for src in ['Tests/MscBlockAdapter/adapter_test.c']:
+ obj=OUT/(Path(src).stem+'.o');run(args+['-c',ROOT/src,'-o',obj]);objects.append(obj)
+sct=ROOT/'Tests/UsbDeviceStage1/test.sct'
+image=OUT/'test.axf';run([TOOL/'armlink.exe',*objects,'--entry','Adapter_Run','--keep=*(.framework_init)','--no_scanlib','--scatter',sct,'-o',image])
+cpu=Uc(UC_ARCH_ARM,UC_MODE_THUMB|UC_MODE_MCLASS)
+for addr,size in [(0x08000000,0x100000),(0x20000000,0x40000),(0x01000000,0x1000),(0xD0000000,0x20000),(0x58020000,0x10000),(0x40080000,0x40000),(0xe0000000,0x100000)]:cpu.mem_map(addr,size)
+with image.open('rb') as f:
+ elf=ELFFile(f);symbols={s.name:s['st_value'] for s in elf.get_section_by_name('.symtab').iter_symbols()}
+ for s in elf.iter_sections():
+  if s['sh_flags']&2 and s['sh_type']=='SHT_PROGBITS' and s['sh_size']:cpu.mem_write(s['sh_addr'],s.data())
+def invoke(name):
+ cpu.reg_write(UC_ARM_REG_SP,0x2003fff0);cpu.reg_write(UC_ARM_REG_LR,0x01000001);cpu.emu_start(symbols[name]|1,0x01000000,count=1000000);return cpu.reg_read(UC_ARM_REG_R0)
+
+def invalid(cpu,access,address,size,value,user):
+    print('MEMORY',scenario,hex(cpu.reg_read(UC_ARM_REG_PC)),hex(address),size,flush=True)
+    return False
+cpu.hook_add(UC_HOOK_MEM_INVALID,invalid)
+rows = []
+for scenario in range(18):
+    # 重建全部可写内存，避免上一场景的静态状态污染下一场景
+    cpu.mem_write(0x20000000, bytes(0x40000))
+    with image.open('rb') as source:
+        elf = ELFFile(source)
+        for section in elf.iter_sections():
+            if section['sh_flags'] & 2 and section['sh_type'] == 'SHT_PROGBITS' and section['sh_size']:
+                cpu.mem_write(section['sh_addr'], section.data())
+    cpu.reg_write(UC_ARM_REG_R0, scenario)
+    result = invoke('Adapter_Run')
+    failure, checks = struct.unpack('<2I', cpu.mem_read(symbols['g_result'], 8))
+    rows.append(dict(scenario=scenario, passed=result == 0 and failure == 0,
+                     failed_line=failure, assertions=checks))
+report = dict(source_commit='14f44ca678647421d3519f192d441724178a7882',
+              meaning='Real Core/Platform, mocked HAL, bounded mailbox / cancel / identities / partial IO mock',
+              cases=rows, commands=commands)
+(ROOT/'Tests/MscBlockAdapter/results.json').write_text(json.dumps(report, indent=2), encoding='utf-8')
+for row in rows:
+    print(row)
+assert all(row['passed'] for row in rows)
