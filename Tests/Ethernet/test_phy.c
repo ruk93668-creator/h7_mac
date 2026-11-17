@@ -2,9 +2,17 @@
 #include <assert.h>
 #include <stddef.h>
 #include <stdio.h>
-static uint16_t registers[32], first_bsr;
-static unsigned reads, fail_at, writes;
-static int read_reg(void *c, uint8_t a, uint8_t r, uint16_t *v)
+static uint16_t registers[32];
+static uint16_t first_bsr;
+static unsigned reads;
+static unsigned fail_at;
+static unsigned writes;
+static int read_reg(
+	void *c,
+	uint8_t a,
+	uint8_t r,
+	uint16_t *v
+)
 {
 	(void)c;
 	assert(a == 0U);
@@ -14,7 +22,12 @@ static int read_reg(void *c, uint8_t a, uint8_t r, uint16_t *v)
 	*v = r == 1U && reads == 1U ? first_bsr : registers[r];
 	return 0;
 }
-static int write_reg(void *c, uint8_t a, uint8_t r, uint16_t v)
+static int write_reg(
+	void *c,
+	uint8_t a,
+	uint8_t r,
+	uint16_t v
+)
 {
 	(void)c;
 	assert(a == 0U);
@@ -26,9 +39,10 @@ static int write_reg(void *c, uint8_t a, uint8_t r, uint16_t v)
 }
 int main(void)
 {
-	eth_phy p = {NULL, read_reg, write_reg, 0U};
-	eth_phy_link link;
+	EthPhy_t p = {NULL, read_reg, write_reg, 0U};
+	EthPhyLink_t link;
 	uint32_t id;
+
 	assert(eth_phy_probe(NULL, &id) == ETH_PHY_ARGUMENT);
 	p.address = 32U;
 	assert(eth_phy_reset_begin(&p) == ETH_PHY_ARGUMENT);

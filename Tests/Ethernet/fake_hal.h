@@ -122,13 +122,24 @@ extern FakeSyscfg fake_syscfg;
 #define GPIO_PIN_SET 1U
 typedef struct
 {
-	uint32_t Pin, Mode, Pull, Speed, Alternate;
+	uint32_t Pin;
+	uint32_t Mode;
+	uint32_t Pull;
+	uint32_t Speed;
+	uint32_t Alternate;
 } GPIO_InitTypeDef;
 uint32_t HAL_GetTick(void);
 uint32_t HAL_RCC_GetHCLKFreq(void);
 void HAL_Delay(uint32_t);
-void HAL_GPIO_WritePin(void *, uint32_t, uint32_t);
-void HAL_GPIO_Init(void *, GPIO_InitTypeDef *);
+void HAL_GPIO_WritePin(
+	void *,
+	uint32_t,
+	uint32_t
+);
+void HAL_GPIO_Init(
+	void *,
+	GPIO_InitTypeDef *
+);
 void HAL_SYSCFG_ETHInterfaceSelect(uint32_t);
 void HAL_NVIC_DisableIRQ(int);
 void HAL_NVIC_EnableIRQ(int);

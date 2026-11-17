@@ -4,13 +4,19 @@
 #include <assert.h>
 #include <stdio.h>
 #include <string.h>
+#include <stdlib.h>
 FakeEth fake_eth;
 FakeRcc fake_rcc;
 FakeSyscfg fake_syscfg;
-__declspec(align(32)) eth_dma_memory g_eth_dma_memory;
+__declspec(align(32)) EthDmaMemory_t g_eth_dma_memory;
 static uint16_t phy_regs[32];
-static uint32_t tick, hclk = 240000000U;
-static unsigned fail_reset, fail_mdio, fail_flush, valid_memory = 1U, irq_enabled;
+static uint32_t tick;
+static uint32_t hclk = 240000000U;
+static unsigned fail_reset;
+static unsigned fail_mdio;
+static unsigned fail_flush;
+static unsigned valid_memory = 1U;
+static unsigned irq_enabled;
 int eth_memory_valid(void)
 {
 	return (int)valid_memory;
@@ -49,13 +55,20 @@ void HAL_Delay(uint32_t n)
 {
 	tick += n;
 }
-void HAL_GPIO_WritePin(void *p, uint32_t pin, uint32_t v)
+void HAL_GPIO_WritePin(
+	void *p,
+	uint32_t pin,
+	uint32_t v
+)
 {
 	(void)p;
 	(void)v;
 	assert(pin == GPIO_PIN_9);
 }
-void HAL_GPIO_Init(void *p, GPIO_InitTypeDef *g)
+void HAL_GPIO_Init(
+	void *p,
+	GPIO_InitTypeDef *g
+)
 {
 	(void)p;
 	assert(g->Pull == GPIO_NOPULL);
@@ -78,13 +91,28 @@ void HAL_NVIC_ClearPendingIRQ(int n)
 {
 	assert(n == ETH_IRQn);
 }
-int main(int argc, char **argv)
+int main(
+	int argc,
+	char **argv
+)
 {
 	const uint8_t mac[6] = {2U, 0x47U, 0x47U, 0U, 0U, 1U};
-	uint8_t frame[60] = {0}, copy[6];
-	uint32_t ticket, done;
-	eth_statistics s;
-	eth_link_state link;
+	uint8_t frame[60] = {0};
+	uint8_t copy[6];
+	uint32_t ticket;
+	uint32_t done;
+	EthStatistics_t s;
+	EthLinkState_t link;
+
+	if (argc == 4 && strcmp(argv[1], "clock") == 0)
+	{
+		hclk = (uint32_t)strtoul(argv[2], NULL, 10);
+		phy_regs[2] = 7U;
+		phy_regs[3] = 0xC130U;
+		assert(eth_mac_init(mac) == ETH_OK);
+		assert((fake_eth.MACMDIOAR & 0xF00U) == (uint32_t)strtoul(argv[3], NULL, 10));
+		return 0;
+	}
 	if (argc > 1)
 	{
 		if (strcmp(argv[1], "init_reset") == 0)
@@ -98,7 +126,7 @@ int main(int argc, char **argv)
 			assert(eth_mac_init(mac) == ETH_PHY_MISSING);
 		}
 		assert(eth_mac_get_statistics(&s) == ETH_OK && s.state == ETH_MAC_FAULT &&
-			   s.init_errors == 1U);
+			s.init_errors == 1U);
 		puts("PASS: MAC initialization failure is reported and latched");
 		return 0;
 	}
@@ -119,7 +147,7 @@ int main(int argc, char **argv)
 	phy_regs[0] = 0x1000U;
 	phy_regs[31] = 0x1018U;
 	assert(eth_mac_get_link(&link) == ETH_OK && link.up && link.speed_mbps == 100U &&
-		   link.full_duplex);
+		link.full_duplex);
 	assert(eth_mac_start() == ETH_OK && irq_enabled);
 	assert(fake_eth.DMACCR == ETH_DMACCR_DSL_128BIT);
 	assert(fake_eth.DMACTDRLR == 3U && fake_eth.DMACRDRLR == 3U);
@@ -130,12 +158,12 @@ int main(int argc, char **argv)
 	ETH_IRQHandler();
 	assert(eth_mac_tx_reclaim(&done) == ETH_OK && done == ticket);
 	assert(eth_mac_get_statistics(&s) == ETH_OK && s.irq_tx == 1U && s.irq_rx == 1U &&
-		   s.irq_tbu == 1U && s.irq_rbu == 1U);
+		s.irq_tbu == 1U && s.irq_rbu == 1U);
 	fake_eth.DMACSR = ETH_DMACSR_FBE;
 	ETH_IRQHandler();
 	assert(fake_eth.DMACIER == 0U && eth_mac_tx_submit(frame, 60U, &ticket) == ETH_IO);
-	assert(eth_mac_get_statistics(&s) == ETH_OK && s.state == ETH_MAC_FAULT &&
-		   s.irq_dma_error == 1U);
+	assert(
+		eth_mac_get_statistics(&s) == ETH_OK && s.state == ETH_MAC_FAULT && s.irq_dma_error == 1U);
 	assert(eth_mac_service() == ETH_IO && !irq_enabled);
 	assert(eth_mac_stop() == ETH_OK && !irq_enabled);
 	assert(eth_mac_start() == ETH_OK);
@@ -143,7 +171,7 @@ int main(int argc, char **argv)
 	phy_regs[1] = 0U;
 	assert(eth_mac_service() == ETH_LINK_DOWN);
 	assert(eth_mac_get_statistics(&s) == ETH_OK && s.state == ETH_MAC_READY &&
-		   s.ring.tx_aborted == 1U);
+		s.ring.tx_aborted == 1U);
 	phy_regs[1] = 36U;
 	fail_flush = 1U;
 	assert(eth_mac_start() == ETH_TIMEOUT);
@@ -174,8 +202,8 @@ int main(int argc, char **argv)
 	fake_eth.MACRXTXSR = 0x100U;
 	fake_eth.DMACSR = 0U;
 	ETH_IRQHandler();
-	assert(eth_mac_get_statistics(&s) == ETH_OK && s.irq_mac_error == 1U &&
-		   s.state == ETH_MAC_FAULT);
+	assert(
+		eth_mac_get_statistics(&s) == ETH_OK && s.irq_mac_error == 1U && s.state == ETH_MAC_FAULT);
 	assert(eth_mac_stop() == ETH_OK);
 	puts("PASS: MAC init/link/mode/start/stop, MDIO/reset/flush faults, DMA IRQ and recovery");
 	return 0;

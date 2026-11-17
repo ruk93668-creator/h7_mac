@@ -3,31 +3,40 @@
 #include <string.h>
 #include <stdio.h>
 #if defined(_MSC_VER)
-__declspec(align(32)) static eth_dma_memory memory;
+__declspec(align(32)) static EthDmaMemory_t memory;
 #else
-static eth_dma_memory memory __attribute__((aligned(32)));
+static EthDmaMemory_t memory __attribute__((aligned(32)));
 #endif
-static eth_ring r;
-static unsigned barriers, tx_kicks, rx_kicks;
-static uint32_t tx_tail, rx_tail;
+static EthDmaRing_t r;
+static unsigned barriers;
+static unsigned tx_kicks;
+static unsigned rx_kicks;
+static uint32_t tx_tail;
+static uint32_t rx_tail;
 static void barrier(void *c)
 {
 	(void)c;
 	++barriers;
 }
-static void tx(void *c, uint32_t t)
+static void tx(
+	void *c,
+	uint32_t t
+)
 {
 	(void)c;
 	++tx_kicks;
 	tx_tail = t;
 }
-static void rx(void *c, uint32_t t)
+static void rx(
+	void *c,
+	uint32_t t
+)
 {
 	(void)c;
 	++rx_kicks;
 	rx_tail = t;
 }
-static const eth_dma_ops ops = {NULL, barrier, tx, rx};
+static const EthDmaOps_t ops = {NULL, barrier, tx, rx};
 static uint32_t addr(const void *p)
 {
 	return (uint32_t)(uintptr_t)p;
@@ -38,15 +47,22 @@ static void fresh(void)
 }
 int main(void)
 {
-	uint8_t frame[ETH_FRAME_MAX], out[ETH_BUFFER_SIZE];
-	uint32_t ticket, done, ids[ETH_RING_CAPACITY];
+	uint8_t frame[ETH_FRAME_MAX];
+	uint8_t out[ETH_BUFFER_SIZE];
+	uint32_t ticket;
+	uint32_t done;
+	uint32_t ids[ETH_RING_CAPACITY];
 	size_t n;
-	unsigned i, round;
+	unsigned i;
+	unsigned round;
+
 	memset(frame, 0xA5, sizeof(frame));
 	assert(eth_ring_reset(NULL, &memory, &ops) == ETH_ARGUMENT);
 	fresh();
-	assert(sizeof(eth_descriptor) == 32U);
-	for (i = 0; i < ETH_RING_SIZE; ++i)
+	assert(sizeof(EthDmaDescriptor_t) == 32U);
+	for (i = 0;
+		 i < ETH_RING_SIZE;
+		 ++i)
 	{
 		assert(memory.tx[i].w[3] == 0U);
 		assert(memory.rx[i].w[3] == (i < ETH_RING_CAPACITY ? ETH_RX_POST : 0U));
@@ -57,7 +73,9 @@ int main(void)
 	assert(eth_ring_tx(&r, memory.tx_buffer[0], 60U, &ticket) == ETH_ARGUMENT);
 	assert(eth_ring_rx(&r, memory.rx_buffer[1], 60U, &n) == ETH_ARGUMENT);
 	assert(eth_ring_tx(&r, frame, ETH_FRAME_MAX + 1U, &ticket) == ETH_ARGUMENT);
-	for (i = 0; i < ETH_RING_CAPACITY; ++i)
+	for (i = 0;
+		 i < ETH_RING_CAPACITY;
+		 ++i)
 	{
 		assert(eth_ring_tx(&r, frame, sizeof(frame), &ids[i]) == ETH_OK);
 		assert(memory.tx[i].w[3] & ETH_DESC_OWN);
@@ -76,7 +94,9 @@ int main(void)
 	memory.tx[2].w[3] = ETH_DESC_ES | ETH_DESC_FD | ETH_DESC_LD;
 	assert(eth_ring_reclaim(&r, &done) == ETH_FRAME_ERROR && done == ids[2]);
 	assert(eth_ring_reclaim(&r, &done) == ETH_EMPTY);
-	for (round = 0; round < 1000U; ++round)
+	for (round = 0;
+		 round < 1000U;
+		 ++round)
 	{
 		i = r.tx_head;
 		assert(eth_ring_tx(&r, frame, 60U, &ticket) == ETH_OK);
@@ -99,7 +119,9 @@ int main(void)
 	memory.tx[0].w[3] = 0U;
 	assert(eth_ring_reclaim(&r, &done) == ETH_FRAME_ERROR);
 	fresh();
-	for (round = 0; round < 1000U; ++round)
+	for (round = 0;
+		 round < 1000U;
+		 ++round)
 	{
 		unsigned guard = r.rx_guard;
 		i = r.rx_head;

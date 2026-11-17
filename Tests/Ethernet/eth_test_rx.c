@@ -9,18 +9,23 @@ static const uint8_t s_source[6] = {0xECU, 0x1AU, 0xC3U, 0x3EU, 0xDBU, 0xB2U};
 void EthTestRx_Reset(void)
 {
 	EthTestRxStatistics_t empty = {0};
+
 	g_eth_test_rx_check = empty;
 	memset(s_seen, 0, sizeof(s_seen));
 	g_eth_test_rx_check.missing = ETH_TEST_RX_LIMIT;
 	g_eth_test_rx_check.active = 1U;
 }
 //仅在任务已复制完有效帧后检查完整内容
-void EthTestRx_Inspect(const uint8_t *data, size_t length)
+void EthTestRx_Inspect(
+	const uint8_t *data,
+	size_t length
+)
 {
 	uint32_t sequence;
 	uint32_t index;
 	uint8_t mask;
 	size_t i;
+
 	if (!g_eth_test_rx_check.active)
 		return;
 	if (!data || length < 14U || memcmp(data, s_destination, 6U) != 0 ||
@@ -36,13 +41,15 @@ void EthTestRx_Inspect(const uint8_t *data, size_t length)
 		return;
 	}
 	sequence = ((uint32_t)data[14] << 24) | ((uint32_t)data[15] << 16) | ((uint32_t)data[16] << 8) |
-			   data[17];
+		data[17];
 	if (sequence == 0U || sequence > ETH_TEST_RX_LIMIT)
 	{
 		++g_eth_test_rx_check.bad;
 		return;
 	}
-	for (i = 18U; i < length; ++i)
+	for (i = 18U;
+		 i < length;
+		 ++i)
 	{
 		if (data[i] != (uint8_t)(i - 18U))
 		{
@@ -71,5 +78,5 @@ void EthTestRx_Finish(void)
 	g_eth_test_rx_check.active = 0U;
 	g_eth_test_rx_check.passed =
 		(g_eth_test_rx_check.unique == ETH_TEST_RX_LIMIT && g_eth_test_rx_check.bad == 0U &&
-		 g_eth_test_rx_check.duplicates == 0U && g_eth_test_rx_check.out_of_order == 0U);
+			g_eth_test_rx_check.duplicates == 0U && g_eth_test_rx_check.out_of_order == 0U);
 }

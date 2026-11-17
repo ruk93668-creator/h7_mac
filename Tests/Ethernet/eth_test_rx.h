@@ -1,6 +1,7 @@
 //固定内容测试帧校验，只用于实板验收固件
 #ifndef ETH_TEST_RX_H
 #define ETH_TEST_RX_H
+
 #include <stddef.h>
 #include <stdint.h>
 #define ETH_TEST_RX_LIMIT 1000U
@@ -19,6 +20,9 @@ typedef struct
 } EthTestRxStatistics_t;
 extern volatile EthTestRxStatistics_t g_eth_test_rx_check;
 void EthTestRx_Reset(void);
-void EthTestRx_Inspect(const uint8_t *data, size_t length);
+void EthTestRx_Inspect(
+	const uint8_t *data,
+	size_t length
+);
 void EthTestRx_Finish(void);
 #endif

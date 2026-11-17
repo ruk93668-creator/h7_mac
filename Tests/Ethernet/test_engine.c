@@ -3,28 +3,43 @@
 #include <assert.h>
 #include <stdio.h>
 #include <string.h>
-__declspec(align(32)) static eth_dma_memory memory;
-static eth_ring ring;
-static unsigned tc, rc, tb, rb;
+__declspec(align(32)) static EthDmaMemory_t memory;
+static EthDmaRing_t ring;
+static unsigned tc;
+static unsigned rc;
+static unsigned tb;
+static unsigned rb;
 static void fence(void *c)
 {
 	(void)c;
 }
-static unsigned index_for(uint32_t a, const eth_descriptor *base)
+static unsigned index_for(
+	uint32_t a,
+	const EthDmaDescriptor_t *base
+)
 {
 	unsigned i;
-	for (i = 0; i < ETH_RING_SIZE; ++i)
+
+	for (i = 0;
+		 i < ETH_RING_SIZE;
+		 ++i)
 		if ((uint32_t)(uintptr_t)&base[i] == a)
 			return i;
 	assert(0);
 	return 0;
 }
-static void tx_tail(void *c, uint32_t t)
+static void tx_tail(
+	void *c,
+	uint32_t t
+)
 {
 	(void)c;
 	tb = index_for(t, memory.tx);
 }
-static void rx_tail(void *c, uint32_t t)
+static void rx_tail(
+	void *c,
+	uint32_t t
+)
 {
 	(void)c;
 	rb = index_for(t, memory.rx);
@@ -32,6 +47,7 @@ static void rx_tail(void *c, uint32_t t)
 static unsigned transmit(void)
 {
 	unsigned n = 0;
+
 	while (tc != tb && (memory.tx[tc].w[3] & ETH_DESC_OWN) != 0U)
 	{
 		assert(memory.tx[tc].w[0] == (uint32_t)(uintptr_t)memory.tx_buffer[tc]);
@@ -53,26 +69,38 @@ static int receive(uint8_t v)
 }
 int main(void)
 {
-	const eth_dma_ops ops = {NULL, fence, tx_tail, rx_tail};
+	const EthDmaOps_t ops = {NULL, fence, tx_tail, rx_tail};
 	uint8_t frame[60] = {0}, out[60];
-	unsigned round, i;
+	unsigned round;
+	unsigned i;
 	uint32_t ticket;
 	size_t n;
+
 	assert(eth_ring_reset(&ring, &memory, &ops) == ETH_OK);
 	rb = ETH_RING_CAPACITY;
-	for (round = 0; round < 1000U; ++round)
+	for (round = 0;
+		 round < 1000U;
+		 ++round)
 	{
-		for (i = 0; i < ETH_RING_CAPACITY; ++i)
+		for (i = 0;
+			 i < ETH_RING_CAPACITY;
+			 ++i)
 			assert(eth_ring_tx(&ring, frame, sizeof(frame), &ticket) == ETH_OK);
 		assert(eth_ring_tx(&ring, frame, sizeof(frame), &ticket) == ETH_BUSY);
 		assert(transmit() == ETH_RING_CAPACITY && transmit() == 0U);
-		for (i = 0; i < ETH_RING_CAPACITY; ++i)
+		for (i = 0;
+			 i < ETH_RING_CAPACITY;
+			 ++i)
 			assert(eth_ring_reclaim(&ring, &ticket) == ETH_OK);
 		assert(eth_ring_reclaim(&ring, &ticket) == ETH_EMPTY);
-		for (i = 0; i < ETH_RING_CAPACITY; ++i)
+		for (i = 0;
+			 i < ETH_RING_CAPACITY;
+			 ++i)
 			assert(receive((uint8_t)i));
 		assert(!receive(0xFFU));
-		for (i = 0; i < ETH_RING_CAPACITY; ++i)
+		for (i = 0;
+			 i < ETH_RING_CAPACITY;
+			 ++i)
 		{
 			assert(eth_ring_rx(&ring, out, sizeof(out), &n) == ETH_OK && n == 60U);
 			assert(out[0] == (uint8_t)i);

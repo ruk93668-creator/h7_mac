@@ -13,3 +13,9 @@ AllowShortCaseLabelsOnASingleLine: false
 BreakBeforeBinaryOperators: None
 SortIncludes: Never
 ReflowComments: false
+
+AlignEscapedNewlines: DontAlign
+AlignAfterOpenBracket: DontAlign
+AlignOperands: DontAlign
+BinPackParameters: false
+ContinuationIndentWidth: 4

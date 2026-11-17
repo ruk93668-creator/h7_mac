@@ -8,9 +8,11 @@ volatile uint32_t
 	g_eth_test_command; //1 初始化，2 启动，3 停止，4 发送，5 开始 RX 校验，6 结束 RX 校验
 volatile uint32_t g_eth_test_continuous;
 volatile int32_t g_eth_test_result;
-volatile uint32_t g_eth_test_rx_count, g_eth_test_tx_done, g_eth_test_sequence;
+volatile uint32_t g_eth_test_rx_count;
+volatile uint32_t g_eth_test_tx_done;
+volatile uint32_t g_eth_test_sequence;
 volatile uint32_t g_eth_test_last_ticket;
-volatile eth_statistics g_eth_test_statistics;
+volatile EthStatistics_t g_eth_test_statistics;
 volatile uint32_t g_eth_test_last_rx_length;
 uint8_t g_eth_test_last_rx[ETH_BUFFER_SIZE];
 static const uint8_t test_mac[6] = {0x02U, 0x47U, 0x47U, 0U, 0U, 1U};
@@ -19,7 +21,9 @@ void Error_Handler(void);
 void SystemClock_Config(void);
 int main(void)
 {
-	uint32_t last = 0U, service_tick = 0U;
+	uint32_t last = 0U;
+	uint32_t service_tick = 0U;
+
 	HAL_MPU_Disable();
 	eth_memory_configure();
 	HAL_MPU_Enable(MPU_PRIVILEGED_DEFAULT);
@@ -32,12 +36,15 @@ int main(void)
 	memcpy(frame + 6, test_mac, 6U);
 	frame[12] = 0x88U;
 	frame[13] = 0xB5U;
-	for (;;)
+	for (;
+		 ;
+		 )
 	{
-		uint32_t command = g_eth_test_command, ticket;
-		eth_statistics snapshot;
+		uint32_t command = g_eth_test_command;
+		uint32_t ticket;
+		EthStatistics_t snapshot;
 		size_t length;
-		eth_result result;
+		EthResult_t result;
 		g_eth_test_command = 0U;
 		if (command == 1U)
 			g_eth_test_result = eth_mac_init(test_mac);
@@ -100,7 +107,9 @@ void Error_Handler(void)
 {
 	g_eth_test_result = -100;
 	__disable_irq();
-	for (;;)
+	for (;
+		 ;
+		 )
 	{
 	}
 }
@@ -146,8 +155,7 @@ void SystemClock_Config(void)
 	/** Initializes the CPU, AHB and APB buses clocks
   */
 	RCC_ClkInitStruct.ClockType = RCC_CLOCKTYPE_HCLK | RCC_CLOCKTYPE_SYSCLK | RCC_CLOCKTYPE_PCLK1 |
-								  RCC_CLOCKTYPE_PCLK2 | RCC_CLOCKTYPE_D3PCLK1 |
-								  RCC_CLOCKTYPE_D1PCLK1;
+		RCC_CLOCKTYPE_PCLK2 | RCC_CLOCKTYPE_D3PCLK1 | RCC_CLOCKTYPE_D1PCLK1;
 	RCC_ClkInitStruct.SYSCLKSource = RCC_SYSCLKSOURCE_PLLCLK;
 	RCC_ClkInitStruct.SYSCLKDivider = RCC_SYSCLK_DIV1;
 	RCC_ClkInitStruct.AHBCLKDivider = RCC_HCLK_DIV2;
