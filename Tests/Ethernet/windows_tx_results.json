@@ -1,0 +1,13 @@
+{
+  "date": "2026-11-17",
+  "vector_sequences": [
+    1,
+    255,
+    256,
+    1000
+  ],
+  "vector_check": "PASS",
+  "npcap_check": "PASS: correct wired GUID, Ethernet, zero packets sent",
+  "hardware_rx_verified": false,
+  "source_sha256": "c7a9a41ad2338bba2109f94cf1cc959f3d0ac5f5147dbb86cc3c7b9d5a4d35b7"
+}
