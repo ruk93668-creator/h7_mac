@@ -53,8 +53,12 @@ SysResult_t USB_Mode_SelectBootMode(UsbMode_t mode, SysResult_t (*register_class
 {
     uint16_t length = 0U;
 #if USB_MODE_BOOT_MSC
-    /* Enumeration build uses the existing TEST (no-video) application path. */
-    if (mode == USB_MODE_TEST) { mode = USB_MODE_MSC; register_class = USB_MSC_Register; }
+    //MSC枚举构建复用现有TEST无视频路径，只替换冷启动注册入口
+    if (mode == USB_MODE_TEST)
+    {
+        mode = USB_MODE_MSC;
+        register_class = USB_MSC_Register;
+    }
 #endif
 
     //模式只能在准备和Class注册之前选择一次

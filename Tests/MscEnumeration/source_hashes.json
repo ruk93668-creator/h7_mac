@@ -1,12 +1,12 @@
 {
   ".gitignore": "0dc4d2c6e9efb152e09cf576fac704c873b6b56f68598a9c6e38b14ad949f1a8",
   "CM7/Application/app_main.c": "2845ac6483babac5f4d9bded11d1d3c2d9948a63b37d0b1af2bff40af7a9ae19",
-  "CM7/Application/video_config.c": "6e28d89dc4eb7c5a219a9c84526e1b44e8b254c9137bae9d0e9862d8d4dfcf1b",
-  "CM7/Service/usb_mode.c": "123b04f04290d29e80370e671feec31fbff5007a00e4a8f344b365caf9e6c8ae",
-  "CM7/Service/usb_mode.h": "209d99ed3fe133c99f2056e242c0621378241895c65a4db473ff3c67218a48c1",
+  "CM7/Application/video_config.c": "f051381939027f59472cb2522ff90f864040627938d4a186a6434c5a25b94145",
+  "CM7/Service/usb_mode.c": "cd30b83881abd7ff14e11e2b354592e203d2126e2957b3394f48e439e4a32cc4",
+  "CM7/Service/usb_mode.h": "d581a891343c537053f4ee171364112284b4df7fbb306ce755a1e486dbe89118",
   "MDK-ARM/h7_mac.uvprojx": "becc4412970e8b3212dbc499a8138ddc5b3d641911bcef3a2c5db12dd902e8e4",
-  "CM7/Service/usb_msc_class.c": "fdc611ff36f29a5696c0f38bc534949c3d4fb5608fb224afa9cb4654caf8fa9c",
-  "CM7/Service/usb_msc_class.h": "e9a8530f9a4d60d5c64107dedf7aab5b4c9ae300125187c804a9903cb74cc7a3",
-  "CM7/Service/usb_msc_desc.c": "f8a3fd040a02b080479b5f46a3c87d474649f0d32089af926413646bcdb24fdb",
-  "CM7/Service/usb_msc_desc.h": "731c97a85fed5a668dca3c7b47b623d418a6158e88531b3f6854e4aa95b78d5e"
+  "CM7/Service/usb_msc_class.c": "1911d6f78a9eecb68aedbab3f69010405db7b69f3e6b7be9812e171d94518403",
+  "CM7/Service/usb_msc_class.h": "d88db913e36389bd4d94f2cf266a3ffe3627c6225c26bd84842855c9fa23f7e0",
+  "CM7/Service/usb_msc_desc.c": "12986c388ef118eda8beaaedec9b357d7db7f1f6620f7d0256336e4aa6b3864f",
+  "CM7/Service/usb_msc_desc.h": "185fbde747f6c447f69766f79ec09f6ea213cf869d792731cf248abd385e0ea2"
 }

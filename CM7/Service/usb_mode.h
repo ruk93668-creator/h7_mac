@@ -10,7 +10,6 @@
 #error USB_MODE_BOOT_MSC_must_be_0_or_1
 #endif
 
-
 //置1只选择UVC USB Class，默认保留TEST；不改变Application
 #ifndef USB_MODE_BOOT_UVC
 #define USB_MODE_BOOT_UVC 0
@@ -23,7 +22,7 @@
 #error USB_boot_modes_are_mutually_exclusive
 #endif
 
-//USB冷启动模式，MSC暂未接入
+//USB冷启动模式，MSC仅提供独立枚举
 typedef enum
 {
     USB_MODE_TEST = 0,

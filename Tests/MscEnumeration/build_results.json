@@ -4,16 +4,16 @@
     "exit": 0,
     "summary": "0 Error(s), 0 Warning(s)",
     "passed": true,
-    "axf_sha256": "60f8e4f40b3d6abaf9f7a264e2395c71b6e17b3226774530bee8b1acbd57d78a",
-    "map_sha256": "aeca577148f0fb41abf9ca551ec46576030d0969f9490d93e93075581f3026ab",
-    "hex_sha256": "750e4d6841a31b464fbaae19a2b74c8373d86d802948ce42ae8ee0250b96a6df"
+    "axf_sha256": "3677da20eb92a7ebf625df94342b1f4ce28a0cfe922e96da789b2793845c52be",
+    "map_sha256": "ef1b2060cc3061b1e58056e719523b12aadd8a437238361b307dab432e1d6ccd",
+    "hex_sha256": "030eb65f20b63c048d5e8e1a8698e94dc954c498e82fb9c1eb6b3aa7399cf55c"
   },
   {
     "mode": "default_uvc",
     "exit": 0,
     "summary": "0 Error(s), 0 Warning(s)",
     "passed": true,
-    "axf_sha256": "69e7702c61bb71c000ac1257c3660a557181d53de749755ab9029d099ef726ee",
-    "map_sha256": "e828ef2d261ea9c7d26d0de0a4943c003c1a6435cdc6778e5f46fe9c88c96f20"
+    "axf_sha256": "49fdd2565605f4e72b32e59851aa3abc7105bb35b0070f320223a5e90af91609",
+    "map_sha256": "1270b88b35b4acc8d2dcb9885f8e0d93834761358e5dd060a102b56a5d4c0331"
   }
 ]
