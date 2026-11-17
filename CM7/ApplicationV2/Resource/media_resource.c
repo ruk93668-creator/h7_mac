@@ -72,3 +72,62 @@ SysResult_t MR_CancelLocal(MRContext *c,const MRRequest *r) {
     e=record(c,r); if(!e||e->state!=MR_LOCAL) return leave(c,SYS_ERR_INVALID_STATE);
     memset(e,0,sizeof(*e)); return leave(c,SYS_OK);
 }
+
+static MRReceiptRecord *for_record(MRContext *c,const MRRecord *e) {
+    uint32_t i; for(i=0;i<MR_RECEIPT_MAX;i++) if(c->receipts[i].occupied &&
+       MRGrant_Equal(&c->receipts[i].value.g,&e->request.g) &&
+       !memcmp(&c->receipts[i].value.h,&e->request.h,sizeof(MRHandoff))) return &c->receipts[i];
+    return NULL;
+}
+static void terminal(MRRecord *e,MRReceiptRecord *t,SysResult_t result) {
+    e->state=MR_TERMINAL; t->value.m=e->media; t->value.result=result;
+}
+SysResult_t MR_Admit(MRContext *c,const MRRequest *r) {
+    MRRecord *e; MRAdmission *a; MRReceiptRecord *t=NULL; uint32_t i; SysResult_t z=enter(c); if(z) return z;
+    e=record(c,r); if(!e) return leave(c,SYS_ERR_INVALID_ARG);
+    if(e->state>=MR_ACCEPTED) return leave(c,e->state==MR_BLOCKED?SYS_ERR_INVALID_STATE:SYS_OK);
+    if(e->state!=MR_COMMITTED) return leave(c,SYS_ERR_INVALID_STATE);
+    if(c->receipt_issued==UINT32_MAX) return leave(c,SYS_ERR_NO_RESOURCE);
+    for(i=0;i<MR_RECEIPT_MAX;i++) if(!c->receipts[i].occupied) { t=&c->receipts[i]; break; }
+    if(!t) return leave(c,SYS_ERR_NO_RESOURCE);
+    memset(t,0,sizeof(*t)); t->occupied=1; t->value.g=r->g; t->value.h=r->h;
+    t->value.serial=++c->receipt_issued; e->state=MR_ACCEPTED;
+    a=admission(c,&r->g);
+    z=(!a||a->closed)?SYS_ERR_INVALID_STATE:c->source.ops->grant_valid(c->source.context,&r->g);
+    if(z) terminal(e,t,z);
+    return leave(c,SYS_OK);
+}
+SysResult_t MR_Close(MRContext *c,const MRRelease *r) {
+    MRAdmission *a; SysResult_t z;
+    if(!r||!r->request||!valid_g(&r->grant)) return SYS_ERR_INVALID_ARG;
+    z=enter(c); if(z) return z;
+    a=admission(c,&r->grant); if(!a) return leave(c,SYS_ERR_INVALID_STATE);
+    if(a->closed) return leave(c,!memcmp(&a->closing,r,sizeof(*r))?SYS_OK:SYS_ERR_BUSY);
+    a->closing=*r; a->closed=1; return leave(c,SYS_OK);
+}
+SysResult_t MR_Obtain(MRContext *c,const MRRequest *r,MRMedia *m,MRView *v) {
+    MRRecord *e; MRAdmission *a; MRReceiptRecord *t; uint32_t i,n=0; SysResult_t z;
+    if(!m||!v||!c || V2_Overlap(c,sizeof(*c),m,sizeof(*m)) || V2_Overlap(c,sizeof(*c),v,sizeof(*v)) || V2_Overlap(m,sizeof(*m),v,sizeof(*v))) return SYS_ERR_INVALID_ARG;
+    z=enter(c); if(z) return z; e=record(c,r);
+    if(!e) return leave(c,SYS_ERR_INVALID_ARG);
+    if(e->state==MR_BOUND) { *m=e->media; *v=e->view; return leave(c,SYS_OK); }
+    if(e->state!=MR_ACCEPTED) return leave(c,SYS_ERR_INVALID_STATE);
+    t=for_record(c,e); if(!t) return leave(c,SYS_ERR_INVALID_STATE);
+    a=admission(c,&r->g);
+    if(!a||a->closed) { terminal(e,t,SYS_ERR_INVALID_STATE); return leave(c,SYS_ERR_INVALID_STATE); }
+    z=c->source.ops->grant_valid(c->source.context,&r->g); if(z) { terminal(e,t,z); return leave(c,z); }
+    for(i=0;i<MR_HANDOFF_MAX;i++) if(c->records[i].state==MR_BOUND || c->records[i].state==MR_BLOCKED) n++;
+    if(n>=c->caps.concurrent) return leave(c,SYS_ERR_BUSY);
+    z=c->source.ops->obtain(c->source.context,&r->g,&r->h,&e->media,&e->view);
+    if(z) {
+        if(e->media.id) { e->state=MR_BLOCKED; e->last_release=z; }
+        else terminal(e,t,z);
+        return leave(c,z);
+    }
+    e->state=MR_BLOCKED; /* preserve any actual backend acquisition on bad output */
+    if(e->media.backend!=c->caps.backend || !e->media.session || !e->media.id || !e->media.generation ||
+       !e->view.data || !e->view.bytes || (c->caps.spans==1 && (e->view.data2||e->view.bytes2)) ||
+       ((e->view.bytes2!=0)!=(e->view.data2!=NULL))) return leave(c,SYS_ERR_INVALID_STATE);
+    z=c->source.ops->validate(c->source.context,&r->g,&e->media,&e->view); if(z) return leave(c,z);
+    e->state=MR_BOUND; *m=e->media; *v=e->view; return leave(c,SYS_OK);
+}
