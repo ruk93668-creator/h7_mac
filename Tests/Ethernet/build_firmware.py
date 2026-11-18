@@ -1,14 +1,16 @@
 """Generate isolated Keil validation targets; never flash automatically."""
 from pathlib import Path
 import subprocess,xml.etree.ElementTree as ET,copy,re,json,sys,hashlib,time
+from e4_sources import PORT, LWIP
 ROOT=Path(__file__).resolve().parents[2]
 OUT=ROOT/'output/Ethernet';OUT.mkdir(parents=True,exist_ok=True)
 baseline='--baseline' in sys.argv
 smoke='--smoke' in sys.argv
 e35='--e35' in sys.argv
-if sum((baseline, smoke, e35)) > 1:
+e4='--e4' in sys.argv
+if sum((baseline, smoke, e35, e4)) > 1:
     raise SystemExit('choose only one validation variant')
-name='baseline' if baseline else 'e35' if e35 else 'smoke' if smoke else 'integrated'
+name='baseline' if baseline else 'e35' if e35 else 'e4' if e4 else 'smoke' if smoke else 'integrated'
 git=['git','-c','safe.directory='+ROOT.as_posix()]
 project_bytes=subprocess.check_output(git+['show','b282c7c:MDK-ARM/h7_mac.uvprojx'],cwd=ROOT) if baseline else (ROOT/'MDK-ARM/h7_mac.uvprojx').read_bytes()
 root=ET.fromstring(project_bytes);targets=root.find('Targets')
@@ -49,9 +51,42 @@ if e35:
     scatter_text=scatter_text.replace('    RW_IRAM1', '    RW_E35_CACHE 0x24010000 0x00010000\n    {\n        *(.e35_cache)\n    }\n\n    RW_IRAM1')
     scatter.write_text(scatter_text)
     t.find('.//LDads/ScatterFile').text=str(scatter)
+if e4:
+    # Use only CM7 startup, the existing Ethernet driver and the required HAL files.
+    groups=t.find('Groups')
+    keep={'Application/MDK-ARM','Drivers/STM32H7xx_HAL_Driver','Drivers/CMSIS',
+          '::CMSIS','Ethernet independent driver'}
+    for group in list(groups):
+        if group.findtext('GroupName') not in keep:
+            groups.remove(group)
+        elif group.findtext('GroupName')=='Drivers/STM32H7xx_HAL_Driver':
+            hal={'hal','hal_cortex','hal_pwr','hal_pwr_ex','hal_rcc','hal_rcc_ex',
+                 'hal_flash','hal_flash_ex','hal_gpio'}
+            files=group.find('Files')
+            for file in list(files):
+                if file.findtext('FileName') not in {'stm32h7xx_'+stem+'.c' for stem in hal}:
+                    files.remove(file)
+    controls=t.find('./TargetOption/TargetArmAds/Cads/VariousControls')
+    controls.find('IncludePath').text=';'.join((
+        '../Platform/Ethernet','../ThirdParty/lwip/src/include','../CM7/Core/Inc',
+        '../Drivers/STM32H7xx_HAL_Driver/Inc','../Drivers/STM32H7xx_HAL_Driver/Inc/Legacy',
+        '../Drivers/CMSIS/Device/ST/STM32H7xx/Include','../Drivers/CMSIS/Include'))
+    controls.find('MiscControls').text=''
+    t.find('.//LDads/Misc').text='--keep=*(.ethernet_dma)'
+    t.find('.//LDads/ScatterFile').text=str(ROOT/'Tests/Ethernet/e4.sct')
+    for label, paths in [('E4.1 port and bench', PORT+['Tests/Ethernet/e4_main.c']),
+                         ('lwIP 2.2.1', LWIP)]:
+        group=ET.SubElement(groups,'Group')
+        ET.SubElement(group,'GroupName').text=label
+        files=ET.SubElement(group,'Files')
+        for path in paths:
+            file=ET.SubElement(files,'File')
+            ET.SubElement(file,'FileName').text=Path(path).name
+            ET.SubElement(file,'FileType').text='1'
+            ET.SubElement(file,'FilePath').text='../'+path
 # Give E3.5 its own uVision identity so an open smoke project cannot retain
 # the old output directory when the generated target changes on disk.
-project=ROOT/'MDK-ARM'/('h7_mac_ethernet_e35.uvprojx' if e35 else 'h7_mac_ethernet_verify.uvprojx')
+project=ROOT/'MDK-ARM'/('h7_mac_ethernet_e4.uvprojx' if e4 else 'h7_mac_ethernet_e35.uvprojx' if e35 else 'h7_mac_ethernet_verify.uvprojx')
 ET.ElementTree(root).write(project,encoding='utf-8',xml_declaration=True)
 if '--prepare-only' in sys.argv: print(project);sys.exit(0)
 log=OUT/(name+'_build.log')
@@ -59,6 +94,11 @@ cmd=['D:/32/UV4/UV4.exe','-j0','-r',str(project),'-t','h7_mac_CM7','-o',str(log)
 si=subprocess.STARTUPINFO();si.dwFlags|=subprocess.STARTF_USESHOWWINDOW;si.wShowWindow=0
 inputs=list((ROOT/'Platform/Ethernet').glob('*.[ch]'))+list((ROOT/'Tests/Ethernet').glob('*.[ch]'))+[ROOT/'CM7/Core/Src/main.c',ROOT/'Tests/Ethernet/test_main.c',ROOT/'MDK-ARM/h7_mac.uvprojx',ROOT/'MDK-ARM/h7_mac_CM7_custom.sct']
 inputs += list((ROOT/'Tests/Ethernet').glob('*.py'))
+if e4:
+    inputs += [ROOT/'Tests/Ethernet/e4.sct']
+    inputs += list((ROOT/'Platform/Ethernet/arch').glob('*.h'))
+    inputs += list((ROOT/'ThirdParty/lwip/src/include').rglob('*.h'))
+    inputs += [ROOT/path for path in LWIP]
 def hashes():
     return {p.relative_to(ROOT).as_posix():hashlib.sha256(p.read_bytes()).hexdigest() for p in inputs}
 before=hashes()
@@ -88,7 +128,19 @@ if not baseline:
     if e35:
         result['test_scatter_sha256']=hashlib.sha256(scatter.read_bytes()).hexdigest()
         result['test_cache_link_valid']=bool(fresh and re.search(r'Execution Region RW_E35_CACHE \(Exec base: 0x24010000.*Max: 0x00010000',map_text) and re.search(r's_tx\s+0x24010000\s+Data\s+1536',map_text) and re.search(r's_rx\s+0x24010600\s+Data\s+1536',map_text))
+    if e4:
+        symbols=('s_network','ram_heap','memp_memory_PBUF_POOL_base')
+        addresses={symbol:re.search(r'^\s*'+symbol+r'\s+(0x[\da-f]+)\s+Data\b',
+                                   map_text,re.M|re.I) for symbol in symbols}
+        result['e4_cpu_memory']={symbol:int(match[1],16) if match else None
+                                 for symbol,match in addresses.items()}
+        cache=re.search(r'Execution Region RW_E4_CACHE \(Exec base: 0x24010000.*Max: 0x00010000',
+                        map_text, re.I)
+        result['e4_cpu_link_valid']=bool(cache and
+            all(address is not None and 0x24010000 <= address < 0x24020000
+                for address in result['e4_cpu_memory'].values()) and
+            result['e4_cpu_memory']['s_network'] % 32 == 0)
 (OUT/(name+'_result.json')).write_text(json.dumps(result,indent=2),encoding='utf-8')
 print(json.dumps(result),flush=True)
-if not m or m.groups()!=('0','0') or r.returncode!=0 or not result['source_stable'] or (not baseline and not result['dma_link_valid']) or (e35 and not result['test_cache_link_valid']):
+if not m or m.groups()!=('0','0') or r.returncode!=0 or not result['source_stable'] or (not baseline and not result['dma_link_valid']) or (e35 and not result['test_cache_link_valid']) or (e4 and not result['e4_cpu_link_valid']):
  print(text[-6000:]);sys.exit(1)
