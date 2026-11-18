@@ -1,0 +1,907 @@
+{
+  "source_head": "6b1a8350191c85893f0929e8de1b4c29f721a7a2",
+  "cases": [
+    {
+      "id": 0,
+      "opt": "O0",
+      "pass": true,
+      "return": 0,
+      "failure_line": 0,
+      "error": null
+    },
+    {
+      "id": 1,
+      "opt": "O0",
+      "pass": true,
+      "return": 0,
+      "failure_line": 0,
+      "error": null
+    },
+    {
+      "id": 2,
+      "opt": "O0",
+      "pass": true,
+      "return": 0,
+      "failure_line": 0,
+      "error": null
+    },
+    {
+      "id": 3,
+      "opt": "O0",
+      "pass": true,
+      "return": 0,
+      "failure_line": 0,
+      "error": null
+    },
+    {
+      "id": 4,
+      "opt": "O0",
+      "pass": true,
+      "return": 0,
+      "failure_line": 0,
+      "error": null
+    },
+    {
+      "id": 5,
+      "opt": "O0",
+      "pass": true,
+      "return": 0,
+      "failure_line": 0,
+      "error": null
+    },
+    {
+      "id": 6,
+      "opt": "O0",
+      "pass": true,
+      "return": 0,
+      "failure_line": 0,
+      "error": null
+    },
+    {
+      "id": 7,
+      "opt": "O0",
+      "pass": true,
+      "return": 0,
+      "failure_line": 0,
+      "error": null
+    },
+    {
+      "id": 8,
+      "opt": "O0",
+      "pass": true,
+      "return": 0,
+      "failure_line": 0,
+      "error": null
+    },
+    {
+      "id": 9,
+      "opt": "O0",
+      "pass": true,
+      "return": 0,
+      "failure_line": 0,
+      "error": null
+    },
+    {
+      "id": 10,
+      "opt": "O0",
+      "pass": true,
+      "return": 0,
+      "failure_line": 0,
+      "error": null
+    },
+    {
+      "id": 11,
+      "opt": "O0",
+      "pass": true,
+      "return": 0,
+      "failure_line": 0,
+      "error": null
+    },
+    {
+      "id": 12,
+      "opt": "O0",
+      "pass": true,
+      "return": 0,
+      "failure_line": 0,
+      "error": null
+    },
+    {
+      "id": 13,
+      "opt": "O0",
+      "pass": true,
+      "return": 0,
+      "failure_line": 0,
+      "error": null
+    },
+    {
+      "id": 14,
+      "opt": "O0",
+      "pass": true,
+      "return": 0,
+      "failure_line": 0,
+      "error": null
+    },
+    {
+      "id": 15,
+      "opt": "O0",
+      "pass": true,
+      "return": 0,
+      "failure_line": 0,
+      "error": null
+    },
+    {
+      "id": 16,
+      "opt": "O0",
+      "pass": true,
+      "return": 0,
+      "failure_line": 0,
+      "error": null
+    },
+    {
+      "id": 17,
+      "opt": "O0",
+      "pass": true,
+      "return": 0,
+      "failure_line": 0,
+      "error": null
+    },
+    {
+      "id": 18,
+      "opt": "O0",
+      "pass": true,
+      "return": 0,
+      "failure_line": 0,
+      "error": null
+    },
+    {
+      "id": 19,
+      "opt": "O0",
+      "pass": true,
+      "return": 0,
+      "failure_line": 0,
+      "error": null
+    },
+    {
+      "id": 20,
+      "opt": "O0",
+      "pass": true,
+      "return": 0,
+      "failure_line": 0,
+      "error": null
+    },
+    {
+      "id": 21,
+      "opt": "O0",
+      "pass": true,
+      "return": 0,
+      "failure_line": 0,
+      "error": null
+    },
+    {
+      "id": 22,
+      "opt": "O0",
+      "pass": true,
+      "return": 0,
+      "failure_line": 0,
+      "error": null
+    },
+    {
+      "id": 23,
+      "opt": "O0",
+      "pass": false,
+      "return": 1,
+      "failure_line": 581,
+      "error": null
+    },
+    {
+      "id": 24,
+      "opt": "O0",
+      "pass": false,
+      "return": 1,
+      "failure_line": 575,
+      "error": null
+    },
+    {
+      "id": 25,
+      "opt": "O0",
+      "pass": true,
+      "return": 0,
+      "failure_line": 0,
+      "error": null
+    },
+    {
+      "id": 0,
+      "opt": "O2",
+      "pass": true,
+      "return": 0,
+      "failure_line": 0,
+      "error": null
+    },
+    {
+      "id": 1,
+      "opt": "O2",
+      "pass": true,
+      "return": 0,
+      "failure_line": 0,
+      "error": null
+    },
+    {
+      "id": 2,
+      "opt": "O2",
+      "pass": true,
+      "return": 0,
+      "failure_line": 0,
+      "error": null
+    },
+    {
+      "id": 3,
+      "opt": "O2",
+      "pass": true,
+      "return": 0,
+      "failure_line": 0,
+      "error": null
+    },
+    {
+      "id": 4,
+      "opt": "O2",
+      "pass": true,
+      "return": 0,
+      "failure_line": 0,
+      "error": null
+    },
+    {
+      "id": 5,
+      "opt": "O2",
+      "pass": true,
+      "return": 0,
+      "failure_line": 0,
+      "error": null
+    },
+    {
+      "id": 6,
+      "opt": "O2",
+      "pass": true,
+      "return": 0,
+      "failure_line": 0,
+      "error": null
+    },
+    {
+      "id": 7,
+      "opt": "O2",
+      "pass": true,
+      "return": 0,
+      "failure_line": 0,
+      "error": null
+    },
+    {
+      "id": 8,
+      "opt": "O2",
+      "pass": true,
+      "return": 0,
+      "failure_line": 0,
+      "error": null
+    },
+    {
+      "id": 9,
+      "opt": "O2",
+      "pass": true,
+      "return": 0,
+      "failure_line": 0,
+      "error": null
+    },
+    {
+      "id": 10,
+      "opt": "O2",
+      "pass": true,
+      "return": 0,
+      "failure_line": 0,
+      "error": null
+    },
+    {
+      "id": 11,
+      "opt": "O2",
+      "pass": true,
+      "return": 0,
+      "failure_line": 0,
+      "error": null
+    },
+    {
+      "id": 12,
+      "opt": "O2",
+      "pass": true,
+      "return": 0,
+      "failure_line": 0,
+      "error": null
+    },
+    {
+      "id": 13,
+      "opt": "O2",
+      "pass": true,
+      "return": 0,
+      "failure_line": 0,
+      "error": null
+    },
+    {
+      "id": 14,
+      "opt": "O2",
+      "pass": true,
+      "return": 0,
+      "failure_line": 0,
+      "error": null
+    },
+    {
+      "id": 15,
+      "opt": "O2",
+      "pass": true,
+      "return": 0,
+      "failure_line": 0,
+      "error": null
+    },
+    {
+      "id": 16,
+      "opt": "O2",
+      "pass": true,
+      "return": 0,
+      "failure_line": 0,
+      "error": null
+    },
+    {
+      "id": 17,
+      "opt": "O2",
+      "pass": true,
+      "return": 0,
+      "failure_line": 0,
+      "error": null
+    },
+    {
+      "id": 18,
+      "opt": "O2",
+      "pass": true,
+      "return": 0,
+      "failure_line": 0,
+      "error": null
+    },
+    {
+      "id": 19,
+      "opt": "O2",
+      "pass": true,
+      "return": 0,
+      "failure_line": 0,
+      "error": null
+    },
+    {
+      "id": 20,
+      "opt": "O2",
+      "pass": true,
+      "return": 0,
+      "failure_line": 0,
+      "error": null
+    },
+    {
+      "id": 21,
+      "opt": "O2",
+      "pass": true,
+      "return": 0,
+      "failure_line": 0,
+      "error": null
+    },
+    {
+      "id": 22,
+      "opt": "O2",
+      "pass": true,
+      "return": 0,
+      "failure_line": 0,
+      "error": null
+    },
+    {
+      "id": 23,
+      "opt": "O2",
+      "pass": false,
+      "return": 1,
+      "failure_line": 581,
+      "error": null
+    },
+    {
+      "id": 24,
+      "opt": "O2",
+      "pass": false,
+      "return": 1,
+      "failure_line": 575,
+      "error": null
+    },
+    {
+      "id": 25,
+      "opt": "O2",
+      "pass": true,
+      "return": 0,
+      "failure_line": 0,
+      "error": null
+    }
+  ],
+  "resources": {
+    "O0": {
+      "objects": {
+        "control_execution.c": {
+          "RO": 836,
+          "RW": 0,
+          "ZI": 0
+        },
+        "control_execution_link.c": {
+          "RO": 1086,
+          "RW": 0,
+          "ZI": 0
+        },
+        "control_service.c": {
+          "RO": 3284,
+          "RW": 0,
+          "ZI": 0
+        },
+        "control_transport.c": {
+          "RO": 414,
+          "RW": 0,
+          "ZI": 0
+        }
+      },
+      "layout_order": [
+        "CSService",
+        "CSExecutionEndpoint",
+        "CSAdapter",
+        "CSRequest",
+        "CSReply",
+        "CSIngress",
+        "CSEgress",
+        "CSService.scratch",
+        "IpcShared",
+        "CSExecution",
+        "CSExecClient",
+        "CSExecServer"
+      ],
+      "probes": [
+        {
+          "id": 0,
+          "stack_bytes": 1264,
+          "layout": [
+            2068,
+            560,
+            108,
+            40,
+            48,
+            68,
+            80,
+            1096,
+            320,
+            492,
+            68,
+            548
+          ]
+        },
+        {
+          "id": 3,
+          "stack_bytes": 828,
+          "layout": [
+            2068,
+            560,
+            108,
+            40,
+            48,
+            68,
+            80,
+            1096,
+            320,
+            492,
+            68,
+            548
+          ]
+        },
+        {
+          "id": 4,
+          "stack_bytes": 828,
+          "layout": [
+            2068,
+            560,
+            108,
+            40,
+            48,
+            68,
+            80,
+            1096,
+            320,
+            492,
+            68,
+            548
+          ]
+        },
+        {
+          "id": 5,
+          "stack_bytes": 828,
+          "layout": [
+            2068,
+            560,
+            108,
+            40,
+            48,
+            68,
+            80,
+            1096,
+            320,
+            492,
+            68,
+            548
+          ]
+        },
+        {
+          "id": 12,
+          "stack_bytes": 1264,
+          "layout": [
+            2068,
+            560,
+            108,
+            40,
+            48,
+            68,
+            80,
+            1096,
+            320,
+            492,
+            68,
+            548
+          ]
+        },
+        {
+          "id": 16,
+          "stack_bytes": 1264,
+          "layout": [
+            2068,
+            560,
+            108,
+            40,
+            48,
+            68,
+            80,
+            1096,
+            320,
+            492,
+            68,
+            548
+          ]
+        },
+        {
+          "id": 17,
+          "stack_bytes": 1264,
+          "layout": [
+            2068,
+            560,
+            108,
+            40,
+            48,
+            68,
+            80,
+            1096,
+            320,
+            492,
+            68,
+            548
+          ]
+        },
+        {
+          "id": 21,
+          "stack_bytes": 1264,
+          "layout": [
+            2068,
+            560,
+            108,
+            40,
+            48,
+            68,
+            80,
+            1096,
+            320,
+            492,
+            68,
+            548
+          ]
+        }
+      ]
+    },
+    "O2": {
+      "objects": {
+        "control_execution.c": {
+          "RO": 644,
+          "RW": 0,
+          "ZI": 0
+        },
+        "control_execution_link.c": {
+          "RO": 900,
+          "RW": 0,
+          "ZI": 0
+        },
+        "control_service.c": {
+          "RO": 2588,
+          "RW": 0,
+          "ZI": 0
+        },
+        "control_transport.c": {
+          "RO": 368,
+          "RW": 0,
+          "ZI": 0
+        }
+      },
+      "layout_order": [
+        "CSService",
+        "CSExecutionEndpoint",
+        "CSAdapter",
+        "CSRequest",
+        "CSReply",
+        "CSIngress",
+        "CSEgress",
+        "CSService.scratch",
+        "IpcShared",
+        "CSExecution",
+        "CSExecClient",
+        "CSExecServer"
+      ],
+      "probes": [
+        {
+          "id": 0,
+          "stack_bytes": 1248,
+          "layout": [
+            2068,
+            560,
+            108,
+            40,
+            48,
+            68,
+            80,
+            1096,
+            320,
+            492,
+            68,
+            548
+          ]
+        },
+        {
+          "id": 3,
+          "stack_bytes": 868,
+          "layout": [
+            2068,
+            560,
+            108,
+            40,
+            48,
+            68,
+            80,
+            1096,
+            320,
+            492,
+            68,
+            548
+          ]
+        },
+        {
+          "id": 4,
+          "stack_bytes": 868,
+          "layout": [
+            2068,
+            560,
+            108,
+            40,
+            48,
+            68,
+            80,
+            1096,
+            320,
+            492,
+            68,
+            548
+          ]
+        },
+        {
+          "id": 5,
+          "stack_bytes": 868,
+          "layout": [
+            2068,
+            560,
+            108,
+            40,
+            48,
+            68,
+            80,
+            1096,
+            320,
+            492,
+            68,
+            548
+          ]
+        },
+        {
+          "id": 12,
+          "stack_bytes": 1248,
+          "layout": [
+            2068,
+            560,
+            108,
+            40,
+            48,
+            68,
+            80,
+            1096,
+            320,
+            492,
+            68,
+            548
+          ]
+        },
+        {
+          "id": 16,
+          "stack_bytes": 1248,
+          "layout": [
+            2068,
+            560,
+            108,
+            40,
+            48,
+            68,
+            80,
+            1096,
+            320,
+            492,
+            68,
+            548
+          ]
+        },
+        {
+          "id": 17,
+          "stack_bytes": 1248,
+          "layout": [
+            2068,
+            560,
+            108,
+            40,
+            48,
+            68,
+            80,
+            1096,
+            320,
+            492,
+            68,
+            548
+          ]
+        },
+        {
+          "id": 21,
+          "stack_bytes": 1248,
+          "layout": [
+            2068,
+            560,
+            108,
+            40,
+            48,
+            68,
+            80,
+            1096,
+            320,
+            492,
+            68,
+            548
+          ]
+        }
+      ]
+    }
+  },
+  "negative_controls": [
+    {
+      "mutant": "wrong_peer_access",
+      "opt": "O0",
+      "id": 2,
+      "detected": true,
+      "raw": {
+        "pass": false,
+        "return": 1,
+        "failure_line": 476,
+        "error": null
+      }
+    },
+    {
+      "mutant": "timeout_discards_execution",
+      "opt": "O0",
+      "id": 12,
+      "detected": true,
+      "raw": {
+        "pass": false,
+        "return": 1,
+        "failure_line": 676,
+        "error": null
+      }
+    },
+    {
+      "mutant": "candidate_as_execution",
+      "opt": "O0",
+      "id": 3,
+      "detected": true,
+      "raw": {
+        "pass": false,
+        "return": 1,
+        "failure_line": 499,
+        "error": null
+      }
+    },
+    {
+      "mutant": "unconsumed_record_eviction",
+      "opt": "O0",
+      "id": 5,
+      "detected": true,
+      "raw": {
+        "pass": false,
+        "return": 1,
+        "failure_line": 549,
+        "error": null
+      }
+    },
+    {
+      "mutant": "wrong_peer_access",
+      "opt": "O2",
+      "id": 2,
+      "detected": true,
+      "raw": {
+        "pass": false,
+        "return": 1,
+        "failure_line": 476,
+        "error": null
+      }
+    },
+    {
+      "mutant": "timeout_discards_execution",
+      "opt": "O2",
+      "id": 12,
+      "detected": true,
+      "raw": {
+        "pass": false,
+        "return": 1,
+        "failure_line": 676,
+        "error": null
+      }
+    },
+    {
+      "mutant": "candidate_as_execution",
+      "opt": "O2",
+      "id": 3,
+      "detected": true,
+      "raw": {
+        "pass": false,
+        "return": 1,
+        "failure_line": 499,
+        "error": null
+      }
+    },
+    {
+      "mutant": "unconsumed_record_eviction",
+      "opt": "O2",
+      "id": 5,
+      "detected": true,
+      "raw": {
+        "pass": false,
+        "return": 1,
+        "failure_line": 549,
+        "error": null
+      }
+    }
+  ],
+  "source_sha256": {
+    "Tests/V2Phase7/control_test.c": "4706198443d34f6ba128064e9282c6dfeb5c444a1396181a7f9850c4888974b8",
+    "CM7/ApplicationV2/Core/Runtime/control_execution.c": "3f996a6fe6bd671fa39a97454f3d4b3f4d85cb559ef85f405b041a080da0745d",
+    "CM7/ApplicationV2/Core/Runtime/control_execution_link.c": "c91ef3f21ccf90cad23fd70b9b309145794b960b4324db04a66c785d13866c99",
+    "CM7/ApplicationV2/Core/Runtime/control_service.c": "60e0d603479a9ca2e9c4d6da9e37e871010e28cc6e906accc009eaefeba3d095",
+    "CM7/ApplicationV2/Core/Runtime/control_transport.c": "72aa5fa357d09b18a3f1237ad7ebac45d921a793f512c24d371e55cf732ce481",
+    "CM7/ApplicationV2/Core/media_format.c": "590207b34bca68d4b3c0df70f7478488665d7970e75049f195c7d0b5cf6f0f9a",
+    "CM7/ApplicationV2/Configuration/v2_registry.c": "86db515e3985af1334a605c4343ae3f710e7b67cf2e6684ea24d21fd977b9e26",
+    "CM7/ApplicationV2/Configuration/v2_composition.c": "3714e242237aee6ce3940cbfeb80690762f862744b3d5531a0d704a0d4fc4872",
+    "CM7/ApplicationV2/MediaGraph/media_graph.c": "6329ad333b973c583d2bd4a224dc7f30859a44a5415e545ed25a439e51238b40",
+    "CM7/ApplicationV2/Lifecycle/managed_lifecycle.c": "1c6d59a34cb299ffd1b274c63335f656e53f675937ac3d2e703705ea26aec903",
+    "CM7/ApplicationV2/Supervisor/execution_plan.c": "6f49ce7203e9e79ee2fc869eca2b771b7caae3f8da57c184cad0891bde6b3342",
+    "CM7/ApplicationV2/Supervisor/execution_manager.c": "c177f827965d33c13d9a661f29ae159fc86d72fcaa0b0339129f954938d095f3"
+  },
+  "summary": {
+    "total": 52,
+    "pass": 48
+  }
+}
