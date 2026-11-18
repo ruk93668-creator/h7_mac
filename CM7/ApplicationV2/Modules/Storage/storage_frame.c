@@ -21,7 +21,8 @@ static SysResult_t receive_offer(VStorageFrame *s, const VStorageFrameOps *ops, 
     if (!MRGrant_Equal(&o.request.g, &s->grant) || memcmp(&o.request.s, &s->slot, sizeof(s->slot)))
         return SYS_ERR_NOT_FOUND; /* 迟到槽位/代次，不改当前工作。 */
     if (o.kind == VSF_DELIVERY_WITHDRAWN && s->withdrawn && !o.request.h.session &&
-        !o.request.h.sequence)
+        !o.request.h.sequence && !o.request.b.epoch && !o.request.b.command &&
+        !o.request.b.lease && !o.media.id && !o.terminal.serial)
     {
         s->state = VSF_FREE;
         return SYS_OK;

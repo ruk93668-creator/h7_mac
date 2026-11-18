@@ -177,6 +177,17 @@ SysResult_t VStorage_BindCandidate(VStorage *s, const V2Registry *registry,
             break;
     if (i == v->modules.count)
         return leave(s, SYS_ERR_PROTOCOL);
+    if (!cfg || !cfg->sink_entity || !v->media.graph || !v->media.sink_count ||
+        v->media.sink_count > GRAPH_SINK_MAX)
+        return leave(s, SYS_ERR_INVALID_ARG);
+    for (i = 0; i < v->media.sink_count; ++i)
+        if (v->media.sinks[i].sink.value == cfg->sink_entity)
+            break;
+    if (i == v->media.sink_count)
+        return leave(s, SYS_ERR_NOT_FOUND);
+    if (cfg->mode == VST_AVI && (cfg->sampling.num != v->media.sinks[i].rate.num ||
+                                 cfg->sampling.den != v->media.sinks[i].rate.den))
+        return leave(s, SYS_ERR_INVALID_ARG);
     z = VStorage_ValidateFormat(&v->media.format, cfg, &s->caps, &interval);
     if (z)
         return leave(s, z);
@@ -407,7 +418,7 @@ static void recover(VStorage *s)
 SysResult_t VStorage_RunRound(VStorage *s, uint32_t now)
 {
     SysResult_t z = enter(s);
-    uint32_t op;
+    uint32_t op, before;
     int accepting;
     if (z)
         return z;
@@ -417,12 +428,15 @@ SysResult_t VStorage_RunRound(VStorage *s, uint32_t now)
     z = VStorageConsumer_Process(&s->consumer);
     if (s->consumer.phase == VSC_BLOCKED)
         remember(s, z, &s->cleanup_error);
-    accepting = !s->drain && s->lifecycle.state == LC_ACTIVE && s->consumer.phase == VSC_GRANTED &&
+    accepting = !s->drain && quiet(s) && !(s->facts.flags & VST_FS_FAULT) &&
+                s->lifecycle.state == LC_ACTIVE && s->consumer.phase == VSC_GRANTED &&
                 (s->facts.flags & VST_FILE_OPEN) &&
                 (!s->frames || now - s->sample_tick >= s->interval_ms);
+    before = s->frame.state;
     z = VStorageFrame_Process(&s->frame, s->ports.frame, s->ports.frame_port, &s->consumer.grant,
                               accepting, quiet(s));
-    if (s->frame.state == VSF_BLOCKED || (z && (!waiting(z) || s->frame.state == VSF_CONSUME)))
+    if (s->frame.state == VSF_BLOCKED ||
+        (z && (!waiting(z) || (before == VSF_ACK && s->frame.state == VSF_CONSUME))))
     {
         remember(s, z, &s->business_error);
         s->drain = 1U;

@@ -9,7 +9,7 @@
 
 typedef struct
 {
-    uint32_t mode, partition, file_limit;
+    uint32_t mode, partition, file_limit, sink_entity;
     CoreFrameRate sampling;
     char path[VST_PATH_SIZE]; /* 0:/NAME.AVI 或 0:/NAME.JPG，CREATE_NEW */
 } VStorageConfig;
