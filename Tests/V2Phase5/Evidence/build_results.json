@@ -1,0 +1,75 @@
+{
+  "source_head": "152637f092f042a6df804fa0ef7c4f7cdb134e16",
+  "snapshot": "D:\\32\\STM32H7\\h7_mac\\output\\V2Phase5\\build_20261118_135112\\workspace",
+  "external_project_hashes": {
+    "D:\\32\\STM32H7\\h7_mac\\MDK-ARM\\h7_mac.uvprojx": "cdcb4b53a43a3e7fdbcbea0a8167023cfd5b3af58a1a7a24a1cf4883299bd2ef",
+    "D:\\32\\STM32H7\\h7_mac\\MDK-ARM\\h7_mac.uvoptx": "1b11560819dda9214bc6d070078d0fd300a29973fb07953adaa60478fa744377"
+  },
+  "targets": [
+    {
+      "target": "h7_mac_CM7",
+      "exit": 0,
+      "zero_errors_warnings": true,
+      "program_size": [
+        "Program Size: Code=137690 RO-data=3114 RW-data=1340 ZI-data=100932  \r"
+      ],
+      "artifacts": [
+        {
+          "path": "D:\\32\\STM32H7\\h7_mac\\output\\V2Phase5\\build_20261118_135112\\workspace\\MDK-ARM\\h7_mac_CM7\\h7_mac_CM7.axf",
+          "sha256": "515434cff5e598888942e13b23837fa301e196d9dce699904301ecaa8cd186c1",
+          "bytes": 3163300
+        },
+        {
+          "path": "D:\\32\\STM32H7\\h7_mac\\output\\V2Phase5\\build_20261118_135112\\workspace\\MDK-ARM\\h7_mac_CM7\\h7_mac_CM7.build_log.htm",
+          "sha256": "d55ee0ad57122c97db58a73c6fd2314198f6083b5c6a9875248106cf680778ff",
+          "bytes": 6579
+        },
+        {
+          "path": "D:\\32\\STM32H7\\h7_mac\\output\\V2Phase5\\build_20261118_135112\\workspace\\MDK-ARM\\h7_mac_CM7\\h7_mac_CM7.htm",
+          "sha256": "6e840f733a4cef6812670a21fbd0489eaf3a008f8fc91f1b50bb254b88a3664c",
+          "bytes": 648070
+        },
+        {
+          "path": "D:\\32\\STM32H7\\h7_mac\\output\\V2Phase5\\build_20261118_135112\\workspace\\MDK-ARM\\h7_mac_CM7\\h7_mac_CM7.map",
+          "sha256": "e70892ca9147b57a20ffb118c4012b4311bc7f561ac4236f3554b7b143034592",
+          "bytes": 930002
+        }
+      ]
+    },
+    {
+      "target": "h7_mac_CM4",
+      "exit": 0,
+      "zero_errors_warnings": true,
+      "program_size": [
+        "Program Size: Code=26350 RO-data=1438 RW-data=936 ZI-data=3576  \r"
+      ],
+      "artifacts": [
+        {
+          "path": "D:\\32\\STM32H7\\h7_mac\\output\\V2Phase5\\build_20261118_135112\\workspace\\MDK-ARM\\h7_mac_CM4\\h7_mac_CM4.axf",
+          "sha256": "1769406b64d7e78d6f05b71113e48b8f8ea96afbd3e84c74ce3fefc0cf9e5ca1",
+          "bytes": 1594656
+        },
+        {
+          "path": "D:\\32\\STM32H7\\h7_mac\\output\\V2Phase5\\build_20261118_135112\\workspace\\MDK-ARM\\h7_mac_CM4\\h7_mac_CM4.build_log.htm",
+          "sha256": "0f8fd621135ad1e1ee852b3480ce4b12af9ef5f3526912694c5462e58f9bd38e",
+          "bytes": 3369
+        },
+        {
+          "path": "D:\\32\\STM32H7\\h7_mac\\output\\V2Phase5\\build_20261118_135112\\workspace\\MDK-ARM\\h7_mac_CM4\\h7_mac_CM4.hex",
+          "sha256": "7be9685cb70201486281dcc0a327ea485705f3c7ba271a5dc2e1feb7ccdbd301",
+          "bytes": 78335
+        },
+        {
+          "path": "D:\\32\\STM32H7\\h7_mac\\output\\V2Phase5\\build_20261118_135112\\workspace\\MDK-ARM\\h7_mac_CM4\\h7_mac_CM4.htm",
+          "sha256": "83b4b7aeee801017078aa4b8307e5560aab3ab5c8f08241bb3f3205887f5bd71",
+          "bytes": 157264
+        },
+        {
+          "path": "D:\\32\\STM32H7\\h7_mac\\output\\V2Phase5\\build_20261118_135112\\workspace\\MDK-ARM\\h7_mac_CM4\\h7_mac_CM4.map",
+          "sha256": "a14600026683141daaab953d6479802628286443aaf018fa30ac8ceb0ce08cdd",
+          "bytes": 263039
+        }
+      ]
+    }
+  ]
+}

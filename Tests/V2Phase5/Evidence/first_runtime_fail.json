@@ -1,0 +1,282 @@
+{
+  "source_head": "1627d13208de5ad8815ad63ca843206e9b9b833f",
+  "cases": [
+    {
+      "id": 0,
+      "opt": "O0",
+      "pass": false,
+      "return": 1,
+      "failure_line": 552,
+      "error": null
+    },
+    {
+      "id": 1,
+      "opt": "O0",
+      "pass": false,
+      "return": 1,
+      "failure_line": 552,
+      "error": null
+    },
+    {
+      "id": 2,
+      "opt": "O0",
+      "pass": false,
+      "return": 1,
+      "failure_line": 552,
+      "error": null
+    },
+    {
+      "id": 3,
+      "opt": "O0",
+      "pass": false,
+      "return": 1,
+      "failure_line": 552,
+      "error": null
+    },
+    {
+      "id": 4,
+      "opt": "O0",
+      "pass": false,
+      "return": 1,
+      "failure_line": 552,
+      "error": null
+    },
+    {
+      "id": 5,
+      "opt": "O0",
+      "pass": false,
+      "return": 1,
+      "failure_line": 552,
+      "error": null
+    },
+    {
+      "id": 6,
+      "opt": "O0",
+      "pass": false,
+      "return": 1,
+      "failure_line": 552,
+      "error": null
+    },
+    {
+      "id": 7,
+      "opt": "O0",
+      "pass": false,
+      "return": 1,
+      "failure_line": 552,
+      "error": null
+    },
+    {
+      "id": 8,
+      "opt": "O0",
+      "pass": false,
+      "return": 1,
+      "failure_line": 552,
+      "error": null
+    },
+    {
+      "id": 9,
+      "opt": "O0",
+      "pass": false,
+      "return": 1,
+      "failure_line": 552,
+      "error": null
+    },
+    {
+      "id": 10,
+      "opt": "O0",
+      "pass": false,
+      "return": 1,
+      "failure_line": 552,
+      "error": null
+    },
+    {
+      "id": 11,
+      "opt": "O0",
+      "pass": false,
+      "return": 1,
+      "failure_line": 552,
+      "error": null
+    },
+    {
+      "id": 0,
+      "opt": "O2",
+      "pass": false,
+      "return": 1,
+      "failure_line": 552,
+      "error": null
+    },
+    {
+      "id": 1,
+      "opt": "O2",
+      "pass": false,
+      "return": 1,
+      "failure_line": 552,
+      "error": null
+    },
+    {
+      "id": 2,
+      "opt": "O2",
+      "pass": false,
+      "return": 1,
+      "failure_line": 552,
+      "error": null
+    },
+    {
+      "id": 3,
+      "opt": "O2",
+      "pass": false,
+      "return": 1,
+      "failure_line": 552,
+      "error": null
+    },
+    {
+      "id": 4,
+      "opt": "O2",
+      "pass": false,
+      "return": 1,
+      "failure_line": 552,
+      "error": null
+    },
+    {
+      "id": 5,
+      "opt": "O2",
+      "pass": false,
+      "return": 1,
+      "failure_line": 552,
+      "error": null
+    },
+    {
+      "id": 6,
+      "opt": "O2",
+      "pass": false,
+      "return": 1,
+      "failure_line": 552,
+      "error": null
+    },
+    {
+      "id": 7,
+      "opt": "O2",
+      "pass": false,
+      "return": 1,
+      "failure_line": 552,
+      "error": null
+    },
+    {
+      "id": 8,
+      "opt": "O2",
+      "pass": false,
+      "return": 1,
+      "failure_line": 552,
+      "error": null
+    },
+    {
+      "id": 9,
+      "opt": "O2",
+      "pass": false,
+      "return": 1,
+      "failure_line": 552,
+      "error": null
+    },
+    {
+      "id": 10,
+      "opt": "O2",
+      "pass": false,
+      "return": 1,
+      "failure_line": 552,
+      "error": null
+    },
+    {
+      "id": 11,
+      "opt": "O2",
+      "pass": false,
+      "return": 1,
+      "failure_line": 552,
+      "error": null
+    }
+  ],
+  "resources": {
+    "O0": {
+      "objects": {
+        "usb_consumer.c": {
+          "RO": 1018,
+          "RW": 0,
+          "ZI": 0
+        },
+        "usb_endpoint.c": {
+          "RO": 1376,
+          "RW": 0,
+          "ZI": 0
+        },
+        "usb_format.c": {
+          "RO": 212,
+          "RW": 0,
+          "ZI": 0
+        },
+        "usb_frame.c": {
+          "RO": 1270,
+          "RW": 0,
+          "ZI": 0
+        },
+        "usb_module.c": {
+          "RO": 2432,
+          "RW": 0,
+          "ZI": 0
+        }
+      }
+    },
+    "O2": {
+      "objects": {
+        "usb_consumer.c": {
+          "RO": 804,
+          "RW": 0,
+          "ZI": 0
+        },
+        "usb_endpoint.c": {
+          "RO": 1178,
+          "RW": 0,
+          "ZI": 0
+        },
+        "usb_format.c": {
+          "RO": 178,
+          "RW": 0,
+          "ZI": 0
+        },
+        "usb_frame.c": {
+          "RO": 1048,
+          "RW": 0,
+          "ZI": 0
+        },
+        "usb_module.c": {
+          "RO": 2022,
+          "RW": 0,
+          "ZI": 0
+        }
+      }
+    }
+  },
+  "source_sha256": {
+    "Tests/V2Phase5/usb_joint.c": "a96183b5e2b5638cb8f267d3ed3e7b14106edfc616e0bc70e52810863a498913",
+    "CM7/ApplicationV2/Modules/USB/usb_consumer.c": "6cbf59d0ebe10041a40f4b2a3ea8779ed27cfb465b6a9ccf7b23025ee7b48fff",
+    "CM7/ApplicationV2/Modules/USB/usb_endpoint.c": "52c30f3fc1fc7bc865ad3fbdd240a8c893082ff57f4e01cced0981388bf9bfba",
+    "CM7/ApplicationV2/Modules/USB/usb_format.c": "f54eebcce50297bbe8ad7313d01d8771607dcf2864d10262d2c0ba9f9685a45f",
+    "CM7/ApplicationV2/Modules/USB/usb_frame.c": "5ec9f7becf9c2cc3873d9514ea01aa61b35f88488d65bd40fa3375496e83969b",
+    "CM7/ApplicationV2/Modules/USB/usb_module.c": "939005666afac3519175e32a29dd55cbfba41060fbcc001d90faddc524d8c6a7",
+    "CM7/ApplicationV2/Modules/Camera/camera_format.c": "48423fd4565114617ef04251f47856ebf63c292bcc72da7ddc7b045a3b3968c8",
+    "CM7/ApplicationV2/Configuration/v2_registry.c": "86db515e3985af1334a605c4343ae3f710e7b67cf2e6684ea24d21fd977b9e26",
+    "CM7/ApplicationV2/Core/media_format.c": "590207b34bca68d4b3c0df70f7478488665d7970e75049f195c7d0b5cf6f0f9a",
+    "CM7/ApplicationV2/Lifecycle/managed_lifecycle.c": "1c6d59a34cb299ffd1b274c63335f656e53f675937ac3d2e703705ea26aec903",
+    "CM7/ApplicationV2/Resource/media_source.c": "85bbdaed36a689ba12fc43af7e0243b1c3c89fa56cf56520907545a8dc225fac",
+    "CM7/ApplicationV2/Resource/media_resource.c": "61720623023ad83376490f51e245625810f1db6965fbe17254856c68c9b6246c",
+    "Tests/V2Phase4/native_dependencies.c": "a30eed2f8e8c679ce5142f7c1a6f81545bfa09a2cbfe2f369bcf8886717f95f7",
+    "CM7/Device/Src/ov5640_device.c": "446e59a5d2cb2706f2387878a78bbfc2d5f6f097e28b230131700278f613bdef",
+    "CM7/Media/Src/camera_capture.c": "616c4080411aefc6521f7ef173d6884598f066e8a3a8dfb83a2e45e564651c75",
+    "CM7/Service/usb_uvc_desc.c": "35bd71fb7611eb9031dfe79a504a65e687e52f5ff8f33385cdfd8eb496947178",
+    "CM7/Application/app_camera_lifecycle.c": "cd41f1fa9faa490371bcc2ae9639a56a777ff96b703ddc652fbce82e5ea97582",
+    "CM7/Application/app_camera_lifecycle_replay.c": "efc65a4690934a45649e2da9536498963b0e2fad2a26d2967b294e516e98eec8",
+    "CM7/Application/app_camera_qualification.c": "348b8a6d891993b27ecf707f78738279155fbcc33824080106f2138aa067a3bc"
+  },
+  "summary": {
+    "total": 24,
+    "pass": 0
+  }
+}

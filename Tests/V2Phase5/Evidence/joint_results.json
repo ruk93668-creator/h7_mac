@@ -1,0 +1,1113 @@
+{
+  "source_head": "152637f092f042a6df804fa0ef7c4f7cdb134e16",
+  "cases": [
+    {
+      "id": 0,
+      "opt": "O0",
+      "pass": true,
+      "return": 0,
+      "failure_line": 0,
+      "error": null,
+      "trace": [
+        [
+          12,
+          1,
+          1,
+          1,
+          1,
+          1,
+          0,
+          0
+        ]
+      ]
+    },
+    {
+      "id": 1,
+      "opt": "O0",
+      "pass": true,
+      "return": 0,
+      "failure_line": 0,
+      "error": null,
+      "trace": [
+        [
+          12,
+          1,
+          1,
+          1,
+          1,
+          1,
+          0,
+          0
+        ]
+      ]
+    },
+    {
+      "id": 2,
+      "opt": "O0",
+      "pass": true,
+      "return": 0,
+      "failure_line": 0,
+      "error": null,
+      "trace": [
+        [
+          12,
+          1,
+          1,
+          1,
+          1,
+          1,
+          0,
+          0
+        ]
+      ]
+    },
+    {
+      "id": 3,
+      "opt": "O0",
+      "pass": true,
+      "return": 0,
+      "failure_line": 0,
+      "error": null,
+      "trace": [
+        [
+          12,
+          1,
+          1,
+          1,
+          1,
+          1,
+          0,
+          0
+        ]
+      ]
+    },
+    {
+      "id": 4,
+      "opt": "O0",
+      "pass": true,
+      "return": 0,
+      "failure_line": 0,
+      "error": null,
+      "trace": [
+        [
+          12,
+          1,
+          1,
+          1,
+          1,
+          1,
+          0,
+          0
+        ]
+      ]
+    },
+    {
+      "id": 5,
+      "opt": "O0",
+      "pass": true,
+      "return": 0,
+      "failure_line": 0,
+      "error": null,
+      "trace": [
+        [
+          12,
+          1,
+          1,
+          1,
+          1,
+          1,
+          0,
+          0
+        ]
+      ]
+    },
+    {
+      "id": 6,
+      "opt": "O0",
+      "pass": true,
+      "return": 0,
+      "failure_line": 0,
+      "error": null,
+      "trace": [
+        [
+          12,
+          1,
+          1,
+          1,
+          1,
+          1,
+          0,
+          0
+        ]
+      ]
+    },
+    {
+      "id": 7,
+      "opt": "O0",
+      "pass": true,
+      "return": 0,
+      "failure_line": 0,
+      "error": null,
+      "trace": [
+        [
+          12,
+          1,
+          1,
+          2,
+          1,
+          1,
+          0,
+          0
+        ]
+      ]
+    },
+    {
+      "id": 8,
+      "opt": "O0",
+      "pass": true,
+      "return": 0,
+      "failure_line": 0,
+      "error": null,
+      "trace": []
+    },
+    {
+      "id": 9,
+      "opt": "O0",
+      "pass": true,
+      "return": 0,
+      "failure_line": 0,
+      "error": null,
+      "trace": [
+        [
+          12,
+          1,
+          2,
+          1,
+          1,
+          1,
+          0,
+          0
+        ]
+      ]
+    },
+    {
+      "id": 10,
+      "opt": "O0",
+      "pass": true,
+      "return": 0,
+      "failure_line": 0,
+      "error": null,
+      "trace": [
+        [
+          12,
+          1,
+          1,
+          1,
+          1,
+          1,
+          0,
+          0
+        ]
+      ]
+    },
+    {
+      "id": 11,
+      "opt": "O0",
+      "pass": true,
+      "return": 0,
+      "failure_line": 0,
+      "error": null,
+      "trace": [
+        [
+          12,
+          1,
+          1,
+          1,
+          1,
+          1,
+          0,
+          0
+        ]
+      ]
+    },
+    {
+      "id": 12,
+      "opt": "O0",
+      "pass": true,
+      "return": 0,
+      "failure_line": 0,
+      "error": null,
+      "trace": []
+    },
+    {
+      "id": 13,
+      "opt": "O0",
+      "pass": true,
+      "return": 0,
+      "failure_line": 0,
+      "error": null,
+      "trace": []
+    },
+    {
+      "id": 14,
+      "opt": "O0",
+      "pass": true,
+      "return": 0,
+      "failure_line": 0,
+      "error": null,
+      "trace": [
+        [
+          12,
+          1,
+          1,
+          1,
+          1,
+          1,
+          0,
+          0
+        ]
+      ]
+    },
+    {
+      "id": 15,
+      "opt": "O0",
+      "pass": true,
+      "return": 0,
+      "failure_line": 0,
+      "error": null,
+      "trace": [
+        [
+          12,
+          1,
+          1,
+          1,
+          1,
+          1,
+          0,
+          0
+        ]
+      ]
+    },
+    {
+      "id": 16,
+      "opt": "O0",
+      "pass": true,
+      "return": 0,
+      "failure_line": 0,
+      "error": null,
+      "trace": [
+        [
+          18,
+          2,
+          1,
+          1,
+          2,
+          1,
+          0,
+          0
+        ]
+      ]
+    },
+    {
+      "id": 17,
+      "opt": "O0",
+      "pass": true,
+      "return": 0,
+      "failure_line": 0,
+      "error": null,
+      "trace": [
+        [
+          12,
+          1,
+          1,
+          1,
+          1,
+          1,
+          0,
+          0
+        ]
+      ]
+    },
+    {
+      "id": 18,
+      "opt": "O0",
+      "pass": true,
+      "return": 0,
+      "failure_line": 0,
+      "error": null,
+      "trace": [
+        [
+          12,
+          1,
+          1,
+          1,
+          1,
+          1,
+          0,
+          0
+        ]
+      ]
+    },
+    {
+      "id": 0,
+      "opt": "O2",
+      "pass": true,
+      "return": 0,
+      "failure_line": 0,
+      "error": null,
+      "trace": [
+        [
+          12,
+          1,
+          1,
+          1,
+          1,
+          1,
+          0,
+          0
+        ]
+      ]
+    },
+    {
+      "id": 1,
+      "opt": "O2",
+      "pass": true,
+      "return": 0,
+      "failure_line": 0,
+      "error": null,
+      "trace": [
+        [
+          12,
+          1,
+          1,
+          1,
+          1,
+          1,
+          0,
+          0
+        ]
+      ]
+    },
+    {
+      "id": 2,
+      "opt": "O2",
+      "pass": true,
+      "return": 0,
+      "failure_line": 0,
+      "error": null,
+      "trace": [
+        [
+          12,
+          1,
+          1,
+          1,
+          1,
+          1,
+          0,
+          0
+        ]
+      ]
+    },
+    {
+      "id": 3,
+      "opt": "O2",
+      "pass": true,
+      "return": 0,
+      "failure_line": 0,
+      "error": null,
+      "trace": [
+        [
+          12,
+          1,
+          1,
+          1,
+          1,
+          1,
+          0,
+          0
+        ]
+      ]
+    },
+    {
+      "id": 4,
+      "opt": "O2",
+      "pass": true,
+      "return": 0,
+      "failure_line": 0,
+      "error": null,
+      "trace": [
+        [
+          12,
+          1,
+          1,
+          1,
+          1,
+          1,
+          0,
+          0
+        ]
+      ]
+    },
+    {
+      "id": 5,
+      "opt": "O2",
+      "pass": true,
+      "return": 0,
+      "failure_line": 0,
+      "error": null,
+      "trace": [
+        [
+          12,
+          1,
+          1,
+          1,
+          1,
+          1,
+          0,
+          0
+        ]
+      ]
+    },
+    {
+      "id": 6,
+      "opt": "O2",
+      "pass": true,
+      "return": 0,
+      "failure_line": 0,
+      "error": null,
+      "trace": [
+        [
+          12,
+          1,
+          1,
+          1,
+          1,
+          1,
+          0,
+          0
+        ]
+      ]
+    },
+    {
+      "id": 7,
+      "opt": "O2",
+      "pass": true,
+      "return": 0,
+      "failure_line": 0,
+      "error": null,
+      "trace": [
+        [
+          12,
+          1,
+          1,
+          2,
+          1,
+          1,
+          0,
+          0
+        ]
+      ]
+    },
+    {
+      "id": 8,
+      "opt": "O2",
+      "pass": true,
+      "return": 0,
+      "failure_line": 0,
+      "error": null,
+      "trace": []
+    },
+    {
+      "id": 9,
+      "opt": "O2",
+      "pass": true,
+      "return": 0,
+      "failure_line": 0,
+      "error": null,
+      "trace": [
+        [
+          12,
+          1,
+          2,
+          1,
+          1,
+          1,
+          0,
+          0
+        ]
+      ]
+    },
+    {
+      "id": 10,
+      "opt": "O2",
+      "pass": true,
+      "return": 0,
+      "failure_line": 0,
+      "error": null,
+      "trace": [
+        [
+          12,
+          1,
+          1,
+          1,
+          1,
+          1,
+          0,
+          0
+        ]
+      ]
+    },
+    {
+      "id": 11,
+      "opt": "O2",
+      "pass": true,
+      "return": 0,
+      "failure_line": 0,
+      "error": null,
+      "trace": [
+        [
+          12,
+          1,
+          1,
+          1,
+          1,
+          1,
+          0,
+          0
+        ]
+      ]
+    },
+    {
+      "id": 12,
+      "opt": "O2",
+      "pass": true,
+      "return": 0,
+      "failure_line": 0,
+      "error": null,
+      "trace": []
+    },
+    {
+      "id": 13,
+      "opt": "O2",
+      "pass": true,
+      "return": 0,
+      "failure_line": 0,
+      "error": null,
+      "trace": []
+    },
+    {
+      "id": 14,
+      "opt": "O2",
+      "pass": true,
+      "return": 0,
+      "failure_line": 0,
+      "error": null,
+      "trace": [
+        [
+          12,
+          1,
+          1,
+          1,
+          1,
+          1,
+          0,
+          0
+        ]
+      ]
+    },
+    {
+      "id": 15,
+      "opt": "O2",
+      "pass": true,
+      "return": 0,
+      "failure_line": 0,
+      "error": null,
+      "trace": [
+        [
+          12,
+          1,
+          1,
+          1,
+          1,
+          1,
+          0,
+          0
+        ]
+      ]
+    },
+    {
+      "id": 16,
+      "opt": "O2",
+      "pass": true,
+      "return": 0,
+      "failure_line": 0,
+      "error": null,
+      "trace": [
+        [
+          18,
+          2,
+          1,
+          1,
+          2,
+          1,
+          0,
+          0
+        ]
+      ]
+    },
+    {
+      "id": 17,
+      "opt": "O2",
+      "pass": true,
+      "return": 0,
+      "failure_line": 0,
+      "error": null,
+      "trace": [
+        [
+          12,
+          1,
+          1,
+          1,
+          1,
+          1,
+          0,
+          0
+        ]
+      ]
+    },
+    {
+      "id": 18,
+      "opt": "O2",
+      "pass": true,
+      "return": 0,
+      "failure_line": 0,
+      "error": null,
+      "trace": [
+        [
+          12,
+          1,
+          1,
+          1,
+          1,
+          1,
+          0,
+          0
+        ]
+      ]
+    }
+  ],
+  "resources": {
+    "O0": {
+      "objects": {
+        "usb_consumer.c": {
+          "RO": 1018,
+          "RW": 0,
+          "ZI": 0
+        },
+        "usb_endpoint.c": {
+          "RO": 1376,
+          "RW": 0,
+          "ZI": 0
+        },
+        "usb_format.c": {
+          "RO": 212,
+          "RW": 0,
+          "ZI": 0
+        },
+        "usb_frame.c": {
+          "RO": 1302,
+          "RW": 0,
+          "ZI": 0
+        },
+        "usb_module.c": {
+          "RO": 2580,
+          "RW": 0,
+          "ZI": 0
+        }
+      },
+      "layout_order": [
+        "VUSB",
+        "VUSBEndpoint",
+        "VUSBClient",
+        "AppLifecycleMessage",
+        "VUSBFrame",
+        "VUSBConsumer",
+        "VUSB.consumer",
+        "VUSB.frame"
+      ],
+      "probes": [
+        {
+          "id": 0,
+          "stack_bytes": 748,
+          "layout": [
+            732,
+            124,
+            88,
+            56,
+            200,
+            292,
+            224,
+            516
+          ]
+        },
+        {
+          "id": 1,
+          "stack_bytes": 748,
+          "layout": [
+            732,
+            124,
+            88,
+            56,
+            200,
+            292,
+            224,
+            516
+          ]
+        },
+        {
+          "id": 6,
+          "stack_bytes": 748,
+          "layout": [
+            732,
+            124,
+            88,
+            56,
+            200,
+            292,
+            224,
+            516
+          ]
+        },
+        {
+          "id": 8,
+          "stack_bytes": 748,
+          "layout": [
+            732,
+            124,
+            88,
+            56,
+            200,
+            292,
+            224,
+            516
+          ]
+        },
+        {
+          "id": 9,
+          "stack_bytes": 748,
+          "layout": [
+            732,
+            124,
+            88,
+            56,
+            200,
+            292,
+            224,
+            516
+          ]
+        },
+        {
+          "id": 14,
+          "stack_bytes": 748,
+          "layout": [
+            732,
+            124,
+            88,
+            56,
+            200,
+            292,
+            224,
+            516
+          ]
+        },
+        {
+          "id": 16,
+          "stack_bytes": 748,
+          "layout": [
+            732,
+            124,
+            88,
+            56,
+            200,
+            292,
+            224,
+            516
+          ]
+        },
+        {
+          "id": 18,
+          "stack_bytes": 748,
+          "layout": [
+            732,
+            124,
+            88,
+            56,
+            200,
+            292,
+            224,
+            516
+          ]
+        }
+      ]
+    },
+    "O2": {
+      "objects": {
+        "usb_consumer.c": {
+          "RO": 804,
+          "RW": 0,
+          "ZI": 0
+        },
+        "usb_endpoint.c": {
+          "RO": 1178,
+          "RW": 0,
+          "ZI": 0
+        },
+        "usb_format.c": {
+          "RO": 178,
+          "RW": 0,
+          "ZI": 0
+        },
+        "usb_frame.c": {
+          "RO": 1076,
+          "RW": 0,
+          "ZI": 0
+        },
+        "usb_module.c": {
+          "RO": 2116,
+          "RW": 0,
+          "ZI": 0
+        }
+      },
+      "layout_order": [
+        "VUSB",
+        "VUSBEndpoint",
+        "VUSBClient",
+        "AppLifecycleMessage",
+        "VUSBFrame",
+        "VUSBConsumer",
+        "VUSB.consumer",
+        "VUSB.frame"
+      ],
+      "probes": [
+        {
+          "id": 0,
+          "stack_bytes": 784,
+          "layout": [
+            732,
+            124,
+            88,
+            56,
+            200,
+            292,
+            224,
+            516
+          ]
+        },
+        {
+          "id": 1,
+          "stack_bytes": 784,
+          "layout": [
+            732,
+            124,
+            88,
+            56,
+            200,
+            292,
+            224,
+            516
+          ]
+        },
+        {
+          "id": 6,
+          "stack_bytes": 784,
+          "layout": [
+            732,
+            124,
+            88,
+            56,
+            200,
+            292,
+            224,
+            516
+          ]
+        },
+        {
+          "id": 8,
+          "stack_bytes": 784,
+          "layout": [
+            732,
+            124,
+            88,
+            56,
+            200,
+            292,
+            224,
+            516
+          ]
+        },
+        {
+          "id": 9,
+          "stack_bytes": 784,
+          "layout": [
+            732,
+            124,
+            88,
+            56,
+            200,
+            292,
+            224,
+            516
+          ]
+        },
+        {
+          "id": 14,
+          "stack_bytes": 784,
+          "layout": [
+            732,
+            124,
+            88,
+            56,
+            200,
+            292,
+            224,
+            516
+          ]
+        },
+        {
+          "id": 16,
+          "stack_bytes": 784,
+          "layout": [
+            732,
+            124,
+            88,
+            56,
+            200,
+            292,
+            224,
+            516
+          ]
+        },
+        {
+          "id": 18,
+          "stack_bytes": 784,
+          "layout": [
+            732,
+            124,
+            88,
+            56,
+            200,
+            292,
+            224,
+            516
+          ]
+        }
+      ]
+    }
+  },
+  "negative_controls": [
+    {
+      "mutant": "skip_dma_gate",
+      "opt": "O0",
+      "id": 0,
+      "detected": true,
+      "raw": {
+        "pass": false,
+        "return": 1,
+        "failure_line": 727,
+        "error": null,
+        "trace": []
+      }
+    },
+    {
+      "mutant": "false_release",
+      "opt": "O0",
+      "id": 8,
+      "detected": true,
+      "raw": {
+        "pass": false,
+        "return": 1,
+        "failure_line": 760,
+        "error": null,
+        "trace": []
+      }
+    },
+    {
+      "mutant": "overwrite_first_fault",
+      "opt": "O0",
+      "id": 6,
+      "detected": true,
+      "raw": {
+        "pass": false,
+        "return": 1,
+        "failure_line": 730,
+        "error": null,
+        "trace": []
+      }
+    },
+    {
+      "mutant": "skip_dma_gate",
+      "opt": "O2",
+      "id": 0,
+      "detected": true,
+      "raw": {
+        "pass": false,
+        "return": 1,
+        "failure_line": 727,
+        "error": null,
+        "trace": []
+      }
+    },
+    {
+      "mutant": "false_release",
+      "opt": "O2",
+      "id": 8,
+      "detected": true,
+      "raw": {
+        "pass": false,
+        "return": 1,
+        "failure_line": 760,
+        "error": null,
+        "trace": []
+      }
+    },
+    {
+      "mutant": "overwrite_first_fault",
+      "opt": "O2",
+      "id": 6,
+      "detected": true,
+      "raw": {
+        "pass": false,
+        "return": 1,
+        "failure_line": 730,
+        "error": null,
+        "trace": []
+      }
+    }
+  ],
+  "source_sha256": {
+    "Tests/V2Phase5/usb_joint.c": "76fa83508aa26dd5f65122c42e376a66a99d93f8844bf29eaec9cd00cfb93091",
+    "CM7/ApplicationV2/Modules/USB/usb_consumer.c": "f259dfa311a41ede3583a14b8e831d9f7024c252caf19d24a11c2a8d1b5e436d",
+    "CM7/ApplicationV2/Modules/USB/usb_endpoint.c": "b912999df793b3fa36ecbd2739ca1ce5cf38987d62ab40b5286514f49918111e",
+    "CM7/ApplicationV2/Modules/USB/usb_format.c": "d3a3bee91bba3f1530a8447f4b55752899e5f412e05da41694bffc5b3f0ffa28",
+    "CM7/ApplicationV2/Modules/USB/usb_frame.c": "5328e4c787f0dc985cd73bdbd25e2bd677a04ce3f5b1e98ad8f7c53dfd7724ca",
+    "CM7/ApplicationV2/Modules/USB/usb_module.c": "9e44c176746773ad33bdcd35d08d7c395a5635eaae8bb05b766cb5ed8c6ceadb",
+    "CM7/ApplicationV2/Modules/Camera/camera_format.c": "48423fd4565114617ef04251f47856ebf63c292bcc72da7ddc7b045a3b3968c8",
+    "CM7/ApplicationV2/Modules/Camera/camera_module.c": "662af278b7d32995077bd6f58860dd71a8b8beb1d63f39e9a89db29a4d78da22",
+    "CM7/ApplicationV2/Configuration/v2_registry.c": "86db515e3985af1334a605c4343ae3f710e7b67cf2e6684ea24d21fd977b9e26",
+    "CM7/ApplicationV2/Core/media_format.c": "590207b34bca68d4b3c0df70f7478488665d7970e75049f195c7d0b5cf6f0f9a",
+    "CM7/ApplicationV2/Lifecycle/managed_lifecycle.c": "1c6d59a34cb299ffd1b274c63335f656e53f675937ac3d2e703705ea26aec903",
+    "CM7/ApplicationV2/Resource/media_source.c": "85bbdaed36a689ba12fc43af7e0243b1c3c89fa56cf56520907545a8dc225fac",
+    "CM7/ApplicationV2/Resource/media_resource.c": "61720623023ad83376490f51e245625810f1db6965fbe17254856c68c9b6246c",
+    "Tests/V2Phase4/native_dependencies.c": "a30eed2f8e8c679ce5142f7c1a6f81545bfa09a2cbfe2f369bcf8886717f95f7",
+    "CM7/Device/Src/ov5640_device.c": "446e59a5d2cb2706f2387878a78bbfc2d5f6f097e28b230131700278f613bdef",
+    "CM7/Media/Src/camera_capture.c": "616c4080411aefc6521f7ef173d6884598f066e8a3a8dfb83a2e45e564651c75",
+    "CM7/Service/usb_uvc_desc.c": "35bd71fb7611eb9031dfe79a504a65e687e52f5ff8f33385cdfd8eb496947178",
+    "CM7/Application/app_camera_lifecycle.c": "cd41f1fa9faa490371bcc2ae9639a56a777ff96b703ddc652fbce82e5ea97582",
+    "CM7/Application/app_camera_lifecycle_replay.c": "efc65a4690934a45649e2da9536498963b0e2fad2a26d2967b294e516e98eec8",
+    "CM7/Application/app_camera_qualification.c": "348b8a6d891993b27ecf707f78738279155fbcc33824080106f2138aa067a3bc"
+  },
+  "summary": {
+    "total": 38,
+    "pass": 38
+  }
+}
