@@ -23,7 +23,7 @@ from unicorn.arm_const import UC_ARM_REG_SP, UC_ARM_REG_LR, UC_ARM_REG_R0
 V2 = ROOT / 'CM7/ApplicationV2'
 SOURCES = [
     HERE / 'usb_joint.c', *sorted((V2 / 'Modules/USB').glob('*.c')),
-    V2 / 'Modules/Camera/camera_format.c',
+    V2 / 'Modules/Camera/camera_format.c', V2 / 'Modules/Camera/camera_module.c',
     V2 / 'Configuration/v2_registry.c',
     V2 / 'Core/media_format.c',
     V2 / 'Lifecycle/managed_lifecycle.c',
@@ -84,7 +84,7 @@ for opt in ['O0', 'O2']:
     arm.cc = ['-' + opt if x in ['-O0', '-O2'] else x for x in arm.cc]
     name = 'joint_' + opt
     arm.build(name, SOURCES, 'USB_Run')
-    for case in range(18):
+    for case in range(19):
         result = arm.execute(name, 'USB_Run', case)
         row = {'id': case, 'opt': opt, **result}
         rows.append(row)
@@ -102,7 +102,7 @@ for opt in ['O0', 'O2']:
             objects[path.name] = sizes
     resources[opt] = {'objects': objects, 'layout_order': ['VUSB', 'VUSBEndpoint', 'VUSBClient',
                       'AppLifecycleMessage', 'VUSBFrame', 'VUSBConsumer', 'VUSB.consumer',
-                      'VUSB.frame'], 'probes': [measure(name, case) for case in [0, 1, 6, 8, 9, 14, 16]]}
+                      'VUSB.frame'], 'probes': [measure(name, case) for case in [0, 1, 6, 8, 9, 14, 16, 18]]}
 
     arm.cc += ['-I', V2 / 'Modules/USB']
     for mutant, filename, before, after, case in MUTANTS:

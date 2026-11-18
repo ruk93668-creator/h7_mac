@@ -1,4 +1,5 @@
 #include "../../CM7/ApplicationV2/Modules/USB/usb_endpoint.h"
+#include "../../CM7/ApplicationV2/Modules/Camera/camera_module.h"
 #include <string.h>
 
 uint32_t g_failure;
@@ -22,6 +23,9 @@ uint32_t g_trace_count;
     } while (0)
 
 static VUSB usb;
+static VCamera camera;
+static MRRelease authorized_release;
+static unsigned jpeg, sd_owned;
 static VUSBClient client;
 static VUSBEndpoint ep;
 static EMEndpoint iface;
@@ -44,8 +48,9 @@ static unsigned stop_if_idle_hold, release_ack_hold, work_return, offer_ready, r
     stopped_calls;
 static const CoreFrameRate rate = {10, 1};
 static const CoreMediaFormat format = {1, 3, 1, 160, 120, 320, 38400, 38400, 1, 1, 1, 32, 32, 0};
-static const V2ModuleDesc desc = {{2}, 1, 0};
-static const V2Registry registry = {&desc, 1, 0};
+static const CoreMediaFormat jpeg_format = {1, 4, 2, 320, 240, 0, 50000, 50000, 1, 2, 2, 4, 1, 0};
+static const V2ModuleDesc desc[] = {{{2}, 1, 0}, {{3}, 1, 0}};
+static const V2Registry registry = {desc, 2, 0};
 
 static int usb_owner(void *p)
 {
@@ -70,40 +75,52 @@ static SysResult_t get_caps(void *p, MRSourceCaps *out)
     (void)p;
     if (cap_fail)
         return SYS_ERR_IO;
-    *out = (MRSourceCaps){MR_RAW, MR_CAP_USB, 1, 1};
+    *out = jpeg ? (MRSourceCaps){MR_JPEG, MR_CAP_USB | MR_CAP_SD, 2, 2}
+                : (MRSourceCaps){MR_RAW, MR_CAP_USB, 1, 1};
     return SYS_OK;
 }
 
 static SysResult_t role(void *p, const MRGrant *g, uint32_t *out)
 {
     (void)p;
-    GUARD(g->consumer == APP_CONSUMER_USB);
-    *out = MR_USB;
+    GUARD(g->consumer == APP_CONSUMER_USB || (jpeg && MRGrant_Equal(g, &sd)));
+    *out = g->consumer == APP_CONSUMER_USB ? MR_USB : MR_SD;
     return SYS_OK;
 }
 
 static SysResult_t grant_valid(void *p, const MRGrant *g)
 {
     (void)p;
-    return g->consumer == APP_CONSUMER_USB ? SYS_OK : SYS_ERR_PROTOCOL;
+    return g->consumer == APP_CONSUMER_USB || (jpeg && MRGrant_Equal(g, &sd))
+               ? SYS_OK : SYS_ERR_PROTOCOL;
 }
 
 static SysResult_t obtain(void *p, const MRGrant *g, const MRHandoff *h, MRMedia *m, MRView *v)
 {
     (void)p;
-    GUARD(!owned && g->session == h->session);
-    physical_calls++;
-    owned = 1;
-    released = 0;
-    *m = (MRMedia){MR_RAW, g->session, h->sequence, g->generation};
-    *v = (MRView){data, sizeof(data), 0, 0};
+    GUARD(g->session == h->session);
+    if (g->consumer == APP_CONSUMER_STORAGE)
+    {
+        GUARD(jpeg && owned && !sd_owned);
+        sd_owned = 1;
+    }
+    else
+    {
+        GUARD(!owned);
+        physical_calls++;
+        owned = 1;
+        released = 0;
+    }
+    *m = (MRMedia){jpeg ? MR_JPEG : MR_RAW, g->session, h->sequence, g->generation};
+    *v = jpeg ? (MRView){data, 12, data + 12, 20} : (MRView){data, sizeof(data), 0, 0};
     return SYS_OK;
 }
 
 static SysResult_t validate(void *p, const MRGrant *g, const MRMedia *m, const MRView *v)
 {
     (void)p;
-    GUARD(owned && m->session == g->session && v->data == data);
+    GUARD((g->consumer == APP_CONSUMER_USB ? owned : sd_owned) &&
+          m->session == g->session && v->data == data);
     return SYS_OK;
 }
 
@@ -138,12 +155,70 @@ static SysResult_t release_proof(void *p, const MRGrant *g, const MRMedia *m)
 static SysResult_t exit_safe(void *p, const MRGrant *g)
 {
     (void)p;
-    (void)g;
-    return owned ? SYS_ERR_BUSY : SYS_OK;
+    return (g->consumer == APP_CONSUMER_USB ? owned : sd_owned) ? SYS_ERR_BUSY : SYS_OK;
 }
 
 static const MRSourceOps backend = {cam_owner, get_caps, role,    grant_valid,   obtain,
                                     validate,  quiet,    release, release_proof, exit_safe};
+
+static int camera_port_owner(void *p)
+{
+    return cam_owner(p);
+}
+
+static SysResult_t camera_layout(void *p, const CoreMediaFormat *f, const CameraConfig_t *c,
+                                 const MRSourceCaps *caps)
+{
+    (void)p;
+    GUARD(c->width == f->width && f->backend == caps->backend);
+    return SYS_OK;
+}
+
+static SysResult_t camera_gate(void *p, const LCRequest *r, uint32_t phase)
+{
+    (void)p; (void)r; (void)phase;
+    return SYS_ERR_NOT_SUPPORTED;
+}
+
+static SysResult_t camera_request(void *p, const LCRequest *r, const CameraConfig_t *c)
+{
+    (void)p; (void)r; (void)c;
+    return SYS_ERR_NOT_SUPPORTED;
+}
+
+static SysResult_t camera_read(void *p, const V2ExecId *id, VCameraResult *r)
+{
+    (void)p; (void)id; (void)r;
+    return SYS_ERR_NOT_SUPPORTED;
+}
+
+static SysResult_t camera_consume(void *p, const VCameraResult *r)
+{
+    (void)p; (void)r;
+    return SYS_ERR_NOT_SUPPORTED;
+}
+
+static SysResult_t camera_facts(void *p, VCameraObservation *o)
+{
+    (void)p; (void)o;
+    return SYS_ERR_NOT_SUPPORTED;
+}
+
+static SysResult_t camera_release_id(void *p, const MRRelease *r)
+{
+    (void)p;
+    return r->request == authorized_release.request &&
+           MRGrant_Equal(&r->grant, &authorized_release.grant) ? SYS_OK : SYS_ERR_PROTOCOL;
+}
+
+static void camera_unused(void *p)
+{
+    (void)p;
+}
+
+static const VCameraOps camera_ops = {camera_port_owner, camera_layout, camera_gate, camera_request,
+    camera_read, camera_consume, camera_facts, camera_release_id,
+    camera_unused, camera_unused, camera_unused, camera_unused};
 
 static SysResult_t lifecycle_send(void *p, const AppLifecycleMessage_t *m)
 {
@@ -158,6 +233,7 @@ static SysResult_t lifecycle_send(void *p, const AppLifecycleMessage_t *m)
 static SysResult_t lifecycle_recv(void *p, AppLifecycleMessage_t *out)
 {
     MRRelease r;
+    VCameraExitEvidence proof;
     SysResult_t z = SYS_OK;
     (void)p;
     if (!lifecycle_ready || (stop_if_idle_hold && life.operation == APP_LIFECYCLE_STOP_IF_IDLE))
@@ -167,9 +243,10 @@ static SysResult_t lifecycle_recv(void *p, AppLifecycleMessage_t *out)
         r.grant = staged.g.session ? staged.g : usb.consumer.grant;
         r.request = life.identity.request_id;
         actor = 3;
+        authorized_release = r;
         z = MR_Close(&mr, &r);
         if (!z)
-            z = MR_VerifyExit(&mr, &r);
+            z = VCamera_QueryExitEvidence(&camera, &r, &proof);
         actor = 1;
         GUARD(!z);
     }
@@ -504,21 +581,28 @@ int USB_Run(uint32_t id)
 {
     static V2CompositionCandidate candidate;
     MRSource source = {&backend, 0};
+    VCameraResources camera_resources = {source, source, &mr, &mr};
     VUSBTransport transport = {&transport_ops, 0};
     VUSBStatus status;
     CoreFrameRate invalid_rate = {25, 2};
     VideoStreamConfig_t config;
+    jpeg = id == 18;
     actor = 3;
     TEST(MR_Init(&mr, &source) == SYS_OK);
+    TEST(VCamera_Init(&camera, 3, 7, &camera_ops, 0, &camera_resources) == SYS_OK);
     actor = 1;
     TEST(VUSB_Init(&usb, 2, 7, &usb_ops, 0, &client_ops, 0, &frame_ops, 0) == SYS_OK);
     TEST(VUSBEndpoint_Init(&ep, &usb, &transport) == SYS_OK);
     TEST(VUSB_QueryCapabilities(&usb, &format, &invalid_rate, &config) == SYS_ERR_NOT_SUPPORTED);
     candidate.candidate_only = candidate.media.pipeline_mask = candidate.media.entity_mask = 1;
-    candidate.modules.selected_mask = 1;
-    candidate.modules.count = 1;
-    candidate.modules.order[0].value = 2;
-    candidate.media.format = format;
+    candidate.modules.selected_mask = 3;
+    candidate.modules.count = 2;
+    candidate.modules.order[0].value = 3;
+    candidate.modules.order[1].value = 2;
+    candidate.media.format = jpeg ? jpeg_format : format;
+    actor = 3;
+    TEST(VCamera_BindCandidate(&camera, &registry, &candidate) == SYS_OK);
+    actor = 1;
     TEST(VUSB_BindCandidate(&usb, &registry, &candidate, VU_MODE_UVC, &rate) == SYS_OK);
     actor = 2;
     TEST(VUSBClient_Init(&client, 2, 7, &transport) == SYS_OK);
@@ -619,8 +703,24 @@ int USB_Run(uint32_t id)
         release_fail = 1;
     if (id == 10)
         bad_ack = 1;
-    if (id == 11)
+    if (id == 11 || id == 18)
         sd = (MRGrant){9, APP_CONSUMER_STORAGE, 1, 24};
+    if (id == 18)
+    {
+        MRRequest request_sd;
+        MRMedia media_sd;
+        MRView view_sd;
+        MRBridge bridge_sd = {0};
+        MRSlot slot_sd = {9, 1, 1};
+        actor = 3;
+        TEST(MR_AssociateGrant(&mr, &sd) == SYS_OK);
+        TEST(MR_Stage(&mr, &sd, &bridge_sd, &slot_sd, &request_sd) == SYS_OK);
+        TEST(MR_Commit(&mr, &request_sd) == SYS_OK && MR_Admit(&mr, &request_sd) == SYS_OK);
+        TEST(MR_Obtain(&mr, &request_sd, &media_sd, &view_sd) == SYS_OK);
+        TEST(sd_owned && owned && view_sd.data == delivery.data.view.data &&
+             view_sd.bytes2 && media_sd.id != delivery.data.media.id);
+        actor = 2;
+    }
     hold_dma = 1;
     TEST(request(LC_DEACTIVATE, LC_ACTIVE) == SYS_OK);
     TEST(pump(5) == SYS_OK);
@@ -678,7 +778,7 @@ int USB_Run(uint32_t id)
                                                                    : SYS_OK));
     actor = 1;
     TEST(VUSB_QueryStatus(&usb, &status) == SYS_OK);
-    TEST(!status.drain && status.camera_stop_result == (id == 11 ? SYS_ERR_BUSY : SYS_OK));
+    TEST(!status.drain && status.camera_stop_result == (id == 11 || id == 18 ? SYS_ERR_BUSY : SYS_OK));
     TEST((id != 6 && id != 7 && id != 9 && id != 16) || status.first_fault == SYS_ERR_IO);
     actor = 2;
     TEST(request(id == 6 || id == 7 || id == 9 || id == 16 ? LC_ERROR_PROCESS : LC_CLEANUP,
@@ -705,6 +805,7 @@ int USB_Run(uint32_t id)
              status.active_fault == SYS_OK);
         TEST(VUSB_QueryExitEvidence(&usb, &old_g) == SYS_ERR_PROTOCOL);
     }
+    TEST(id != 18 || (sd_owned && !owned && physical_calls == 1));
     g_trace[0] = notification_count;
     g_trace[1] = physical_calls;
     g_trace[2] = release_attempts;
