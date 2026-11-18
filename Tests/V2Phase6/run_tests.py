@@ -73,7 +73,7 @@ def measure(name, case):
 
 # 模拟中映射原AVI索引SDRAM地址，保持mjpeg_avi.c原算法。
 scope = dict(arm.__dict__)
-src = inspect.getsource(arm.execute).replace('(0x01000000,0x1000)', '(0x01000000,0x1000),(0xD0590000,0x10000)')
+src = inspect.getsource(arm.execute).replace('(0x01000000,0x1000)', '(0x01000000,0x1000),(0xD0590000,0x10000),(0xD0000000,0x400000)')
 exec(src, scope)
 execute = scope['execute']
 negatives = []
@@ -85,6 +85,7 @@ MUTANTS = [
      'if (1)', 8),
 ]
 rows = []
+native_rows = []
 resources = {}
 for opt in ['O0', 'O2']:
     arm.cc = ['-' + opt if x in ['-O0', '-O2'] else x for x in arm.cc]
@@ -124,11 +125,23 @@ for opt in ['O0', 'O2']:
                           'detected': not verdict['pass'] and bool(verdict['failure_line']) and
                                       not verdict['error'], 'raw': verdict})
     del arm.cc[-2:]
+    arm.cc += ['-I', ROOT / 'Middlewares/Third_Party/FatFs']
+    native_sources = [HERE / 'native_backend_test.c', V2 / 'Modules/Storage/storage_backend.c',
+                      ROOT / 'CM7/Platform/storage_fs.c', ROOT / 'CM7/Platform/diskio.c',
+                      ROOT / 'Middlewares/Third_Party/FatFs/ff.c',
+                      ROOT / 'CM7/Service/mjpeg_avi.c', ROOT / 'CM7/Service/jpeg_frame.c']
+    image = 'backend_' + opt
+    arm.build(image, native_sources, 'Storage_Native')
+    for case in range(3):
+        row = {'id': case, 'opt': opt, **execute(image, 'Storage_Native', case)}
+        native_rows.append(row)
+        print('backend', row, flush=True)
+    del arm.cc[-2:]
 report = {'source_head': check_output(['git', 'rev-parse', 'HEAD'], cwd=ROOT).decode().strip(),
-          'cases': rows, 'resources': resources, 'negative_controls': negatives,
-          'source_sha256': {str(p.relative_to(ROOT)).replace(chr(92), '/'): hashlib.sha256(p.read_bytes()).hexdigest() for p in SOURCES},
+          'cases': rows, 'backend_cases': native_rows, 'resources': resources, 'negative_controls': negatives,
+          'source_sha256': {str(p.relative_to(ROOT)).replace(chr(92), '/'): hashlib.sha256(p.read_bytes()).hexdigest() for p in set(SOURCES + native_sources + [ROOT / 'CM7/Platform/sd_block.c'])},
           'summary': {'total': len(rows), 'pass': sum(bool(x['pass']) for x in rows)}}
 (OUT / 'results.json').write_text(json.dumps(report, indent=2), encoding='utf-8')
 print(report['summary'], flush=True)
 print('negative controls', sum(x['detected'] for x in negatives), '/', len(negatives))
-raise SystemExit(any(not x['pass'] for x in rows) or any(not x['detected'] for x in negatives))
+raise SystemExit(any(not x['pass'] for x in rows + native_rows) or any(not x['detected'] for x in negatives))
