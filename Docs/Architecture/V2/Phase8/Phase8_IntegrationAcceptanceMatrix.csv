@@ -1,0 +1,30 @@
+ID,Phase,类型,场景,关键证据,验收判据,状态
+P801,P8.1,双核构建,CM7 Target 登记及链接,ARMCC5 全量日志与 AXF MAP SHA256,仅 CM7 含 V2 且 Legacy 唯一活动及 0E 0W,NOT_RUN
+P802,P8.1,双核构建,CM4 完整 Rebuild,编译清单 Map 和镜像 SHA256,无 CM7 V2 且 OLED 延时和 IPC 布局保持及 0E 0W,NOT_RUN
+P803,P8.1,软件,消息及 Replay 回归,52B/56B 字段偏移和 C1/C1.1/C2.1.1,完整 ID 断言及高水位规则保留,NOT_RUN
+P804,P8.1,软件,板级格式候选与底层约束,Raw/JPEG 和 USB/Storage 验证日志,拒绝非法格式及不支持的 fan-out 且候选不提交 Applied,NOT_RUN
+P805,P8.1,资源,容量及链接布局,基线和候选 Map 与符号大小及栈预算,明确 Flash RW ZI AXI SDRAM 和队列 Context 占用,NOT_RUN
+P806,P8.2,软件,真实 RTOS owner 与 BOOT 屏障,任务身份消息和事件顺序,各 owner 唯一且非法上下文拒绝,NOT_RUN
+P807,P8.2,软件,队列满与合并通知,请求身份传输计数和结果,同一身份重试并最终消费,NOT_RUN
+P808,P8.2,软件,受理与真实完成独立,LC/Endpoint 请求回复消费记录,重复迟到无效且完成 ACK 匹配原事务,NOT_RUN
+P809,P8.2,软件,首错保留及部分补偿失败,首错与补偿日志,未知事实阻塞且不覆盖首错,NOT_RUN
+P810,P8.2,软件,IPC 状态与心跳回归,双核 IPC 布局与 100ms 采样,心跳只更新状态且不会触发执行计划,NOT_RUN
+P811,P8.3,资源,真实 G 到 M 关联,完整 G H B M S 与实际 Get/Retain 日志,两后端证据可定位正确消费者且无地址推断,NOT_PROVEN
+P812,P8.3,资源,稳定准入关闭,真实 Offer/Retain 与三个线性化点,关闭后的旧 G 不增资源且在途可排空,NOT_PROVEN
+P813,P8.3,DMA,DCMI M0/M1 Raw 采集与归还,槽代次和实际目标寄存器证据,任何已借槽不被重用且替换失败保留错误,NOT_RUN
+P814,P8.3,DMA,JPEG 双 Span 及两种 owner 归还顺序,loan owner bits 和块状态,最后真实归还后原引擎才能回收可用块,NOT_RUN
+P815,P8.3,DMA,SD-only 继续采集及 USB T 未消费,内部 Get 身份和 USB T 与录像证据,内部记录不冒充 USB Grant 且旧 T 不被覆盖,NOT_RUN
+P816,P8.3,DMA,UVC 完成和 Abort 失败,endpoint token 和 UVC view 生命周期,有原帧读者就不能提交 Return,NOT_RUN
+P817,P8.3,DMA,IDMA 和 CPU 双段复制,原帧访问 staging 地址和 idle 位,最后读取后才 Return 且 IDMA staging 受保护,NOT_RUN
+P818,P8.3,软件,Return ACK 队列满或入队未消费,T 与完整 B/H 轨迹,无匹配消费则 T 不退休且不阻止无关 SD 路径,NOT_RUN
+P819,P8.3,软件,重复错误 owner 或迟到 generation,G R B S 和实际 Release 计数,不重复释放或影响另一消费者,NOT_RUN
+P820,P8.3,软件,文件收尾失败与 STOP 及 pending START,文件结果及 SD S 状态,文件结果独立且旧授权无法重开,NOT_RUN
+P821,P8.4,启动流实板,USB/Storage/双消费者冷启动,BOOT 后控制执行采集与图像和文件,入口唯一且实际 Camera 只启动一次,NOT_RUN
+P822,P8.4,USB/Storage 实板,停止 USB 而 SD 继续及反向,两路 G/M 状态和录像或视频连续性,仅释放指定消费者且 Camera 继续,NOT_RUN
+P823,P8.4,启停实板,最后消费者退出后重启,Bridge Idle Media Device 与停止事实,真实排空后停机且新身份拒绝旧消息,NOT_RUN
+P824,P8.4,异常实板,STOP 失败和后台恢复或保护性停止,调用次数首错与 ACK/FAULT 轨迹,同轮无重复且错误未被恢复覆盖,NOT_RUN
+P825,P8.4,软件/实板,USB 拔插与 ACK 消费失联,断线重连及消息所有权轨迹,断线不会冒充消费 ACK 或归还,NOT_RUN
+P826,P8.4,资源实板,双消费者任务栈与速率,栈高水位与采集交付采样速率,达到审核后的资源和时延门限,NOT_RUN
+P827,P8.5,重配置实板,Raw/JPEG 切换和 Applied 提交,旧 G 排空 revision 和新底层结果,以实际成功更新 Applied 且拒绝旧身份,NOT_RUN
+P828,P8.5,异常实板,Drain 阻塞及重配置失败,首错与独立补偿结果,超时不强制释放且未知证据保留 BLOCKED,NOT_RUN
+P829,P8.5,软件/实板,安全固件回退及两核最终构建,镜像 SHA256 和 G/M 退休及全量日志,安全静止后才切 Legacy 固件且主线不变,NOT_RUN
