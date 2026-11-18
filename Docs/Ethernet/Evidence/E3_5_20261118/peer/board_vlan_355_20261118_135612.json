@@ -1,0 +1,50 @@
+{
+  "config": {
+    "session": 355,
+    "length": 1518,
+    "vlan": true,
+    "count": 1000,
+    "interval_ms": 10.0,
+    "delay_seconds": 38.0,
+    "capture_seconds": 70.0,
+    "output": "output\\Ethernet\\E3_5\\board_vlan_355_20261118_135612",
+    "dry_run": false
+  },
+  "sent": 1000,
+  "board_received": 1499,
+  "corrupt": 0,
+  "duplicates": 0,
+  "reordered": 0,
+  "highest": 1499,
+  "complete": true,
+  "board_receipt_verified": false,
+  "hardware_pass": false,
+  "adapter": {
+    "Name": "\u4ee5\u592a\u7f51 3",
+    "MacAddress": "EC-1A-C3-3E-DB-B2",
+    "InterfaceGuid": "{49A4CFA7-7C47-4688-B99F-FAFE3E0A79FC}",
+    "Status": "Up"
+  },
+  "npcap_stats": {
+    "received": 2499,
+    "dropped": 0,
+    "interface_dropped": 0
+  },
+  "elapsed_seconds": 70.0,
+  "board_unique": 1499,
+  "pc_captured_unique": 1000,
+  "capture_time_ranges": {
+    "board": [
+      1794981396.744682,
+      1794981411.713137
+    ],
+    "pc": [
+      1794981412.893667,
+      1794981428.502966
+    ]
+  },
+  "bidirectional_overlap_seconds": 0,
+  "internal_missing": 0,
+  "trailing_missing": "requires board tx_accepted snapshot",
+  "pcap_sha256": "cb28ae6db4edc1cd2ebb8fb32fb579f69b306e61fd2b3e97b469cce0af571829"
+}

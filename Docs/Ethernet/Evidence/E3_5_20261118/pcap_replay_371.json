@@ -1,0 +1,30 @@
+{
+  "session": 371,
+  "pcap": "output/Ethernet/E3_5/board_duplex_371_20261118_161049/capture.pcap",
+  "pcap_size_bytes": 65487344,
+  "pcap_sha256": "5f3b57470994353e7aa45461d5f1779e3ce15c345922bd451e63b857caa6bee3",
+  "records": 124075,
+  "complete_file": true,
+  "corrupt": 0,
+  "overlap_seconds": 619.5577759742737,
+  "board_to_pc": {
+    "valid_frames": 61999,
+    "highest_sequence": 61999,
+    "sequence_discontinuities": 0,
+    "first_timestamp_epoch_s": 1794989473.186589,
+    "last_timestamp_epoch_s": 1794990092.744365,
+    "frame_bytes": 512,
+    "average_fps": 100.06976331223454,
+    "average_mbps": 0.4098857505269127
+  },
+  "pc_to_board": {
+    "valid_frames": 62000,
+    "highest_sequence": 62000,
+    "sequence_discontinuities": 0,
+    "first_timestamp_epoch_s": 1794989461.190581,
+    "last_timestamp_epoch_s": 1794990430.095919,
+    "frame_bytes": 512,
+    "average_fps": 63.989739327997185,
+    "average_mbps": 0.26210197228747645
+  }
+}
