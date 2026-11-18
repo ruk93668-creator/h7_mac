@@ -147,6 +147,7 @@ def main():
                     item = header.contents
                     packet = C.string_at(data, item.caplen)
                     capture.write(struct.pack('<IIII', item.seconds, item.microseconds, item.caplen, item.length))
+                    capture.write(packet)
                     from_board = packet[6:12] == BOARD
                     try:
                         sequence = inspect(packet, args.session, args.length, args.vlan, from_board)
