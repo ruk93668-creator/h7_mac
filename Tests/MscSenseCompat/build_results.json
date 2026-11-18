@@ -1,0 +1,20 @@
+[
+  {
+    "mode": "msc",
+    "exit": 0,
+    "summary": "0 Error(s), 0 Warning(s)",
+    "passed": true
+  },
+  {
+    "mode": "uvc",
+    "exit": 0,
+    "summary": "0 Error(s), 0 Warning(s)",
+    "passed": true
+  },
+  {
+    "mode": "sd_readonly",
+    "exit": 0,
+    "summary": "0 Error(s), 0 Warning(s)",
+    "passed": true
+  }
+]

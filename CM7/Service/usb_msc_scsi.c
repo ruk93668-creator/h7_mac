@@ -20,7 +20,7 @@ void USB_MSC_ScsiSense(MscScsiContext_t *context, uint8_t key, uint8_t asc, uint
 bool USB_MSC_ScsiDecode(MscScsiContext_t *context, const MscScsiMedia_t *media,
     const uint8_t *cdb, uint8_t cdb_length, MscScsiCommand_t *command)
 {
-    uint32_t length;
+    uint32_t length, padding;
     uint8_t opcode;
     if (command == NULL)
         return false;
@@ -30,7 +30,15 @@ bool USB_MSC_ScsiDecode(MscScsiContext_t *context, const MscScsiMedia_t *media,
     opcode = cdb[0];
     switch (opcode)
     {
-        case 0x00U: case 0x03U: case 0x12U: case 0x1AU: case 0x1BU: case 0x1EU:
+        //仅REQUEST SENSE允许主机将6字节命令补零至BOT声明长度
+        case 0x03U:
+            if (cdb_length < 6U || cdb_length > 16U || cdb[5] != 0U)
+                return Scsi_Fail(context, command, 5U, 0x24U);
+            for (padding = 6U; padding < cdb_length; ++padding)
+                if (cdb[padding] != 0U)
+                    return Scsi_Fail(context, command, 5U, 0x24U);
+            break;
+        case 0x00U: case 0x12U: case 0x1AU: case 0x1BU: case 0x1EU:
             if (cdb_length != 6U || cdb[5] != 0U)
                 return Scsi_Fail(context, command, 5U, 0x24U);
             break;

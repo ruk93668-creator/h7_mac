@@ -1,0 +1,33 @@
+{
+  "builds": [
+    {
+      "mode": "msc",
+      "exit": 0,
+      "summary": "0 Error(s), 0 Warning(s)",
+      "passed": true,
+      "artifact": "D:\\32\\STM32H7\\h7_mac_sd\\output\\MSC24\\msc21\\build\\h7_mac_CM7_msc.axf",
+      "sha256": "f09953d2de0cf8022d16f4a997a9e95de6318429072261b8ad0f5b6433d73ec4"
+    },
+    {
+      "mode": "uvc",
+      "exit": 0,
+      "summary": "0 Error(s), 0 Warning(s)",
+      "passed": true,
+      "artifact": "D:\\32\\STM32H7\\h7_mac_sd\\output\\MSC24\\msc21\\build\\h7_mac_CM7_uvc.axf",
+      "sha256": "3870ace761d5dfa49de169516c8bda8a7486edcade7e51572695f43abfe6a04f"
+    },
+    {
+      "mode": "sd_readonly",
+      "exit": 0,
+      "summary": "0 Error(s), 0 Warning(s)",
+      "passed": true,
+      "artifact": "D:\\32\\STM32H7\\h7_mac_sd\\output\\MSC24\\msc21\\build\\h7_mac_CM7_sd_readonly.axf",
+      "sha256": "e264a5756455b874187f2f01f815b9752c57d3902f54f8c5fe2f513ea557452a"
+    }
+  ],
+  "user_keil_hashes_unchanged": {
+    "MDK-ARM/h7_mac.uvprojx": "c71be91fad635374233dad8e403544ad6e6b988ac52fd1aef076fd6012176b0a",
+    "MDK-ARM/h7_mac.uvoptx": "f5158ab882a8d82da9ecc268f700a3d18a5c87c4b445bcfbf0ed71c7e12c76bb"
+  },
+  "source_sha256": "2bbc9362c807bd26301db1cc01a0ddc2ee125d132ad0b31c65543bf2067a48bc"
+}

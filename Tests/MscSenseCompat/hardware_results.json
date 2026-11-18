@@ -1,0 +1,427 @@
+{
+  "source": "D:\\32\\STM32H7\\h7_mac_sd\\output\\MSC24\\msc21\\msc21-enum-01.pcapng",
+  "source_sha256": "767aa9f59116c14b0153eecd2847414b285baa1c1790d636a7b4c34e61d9963e",
+  "bus": 1,
+  "address": 53,
+  "target_packets": 8530,
+  "completed_commands": 1450,
+  "failed_commands": [
+    {
+      "cbw_frame": 551,
+      "tag": 2020880400,
+      "host_length": 252,
+      "cdb_length": 10,
+      "cdb": "2300000000000000fc00",
+      "opcode": 35,
+      "data_length": 0,
+      "data_prefix": "",
+      "data_frames": [],
+      "csw_frame": 559,
+      "csw_tag": 2020880400,
+      "residue": 252,
+      "status": 1
+    },
+    {
+      "cbw_frame": 566,
+      "tag": 1098354768,
+      "host_length": 252,
+      "cdb_length": 10,
+      "cdb": "2300000000000000fc00",
+      "opcode": 35,
+      "data_length": 0,
+      "data_prefix": "",
+      "data_frames": [],
+      "csw_frame": 573,
+      "csw_tag": 1098354768,
+      "residue": 252,
+      "status": 1
+    },
+    {
+      "cbw_frame": 580,
+      "tag": 1098354768,
+      "host_length": 252,
+      "cdb_length": 10,
+      "cdb": "2300000000000000fc00",
+      "opcode": 35,
+      "data_length": 0,
+      "data_prefix": "",
+      "data_frames": [],
+      "csw_frame": 587,
+      "csw_tag": 1098354768,
+      "residue": 252,
+      "status": 1
+    },
+    {
+      "cbw_frame": 594,
+      "tag": 1693814800,
+      "host_length": 255,
+      "cdb_length": 6,
+      "cdb": "12018000ff00",
+      "opcode": 18,
+      "data_length": 0,
+      "data_prefix": "",
+      "data_frames": [],
+      "csw_frame": 601,
+      "csw_tag": 1693814800,
+      "residue": 255,
+      "status": 1
+    },
+    {
+      "cbw_frame": 608,
+      "tag": 1624006672,
+      "host_length": 255,
+      "cdb_length": 6,
+      "cdb": "12018000ff00",
+      "opcode": 18,
+      "data_length": 0,
+      "data_prefix": "",
+      "data_frames": [],
+      "csw_frame": 615,
+      "csw_tag": 1624006672,
+      "residue": 255,
+      "status": 1
+    },
+    {
+      "cbw_frame": 624,
+      "tag": 1833174304,
+      "host_length": 255,
+      "cdb_length": 6,
+      "cdb": "12018000ff00",
+      "opcode": 18,
+      "data_length": 0,
+      "data_prefix": "",
+      "data_frames": [],
+      "csw_frame": 631,
+      "csw_tag": 1833174304,
+      "residue": 255,
+      "status": 1
+    },
+    {
+      "cbw_frame": 638,
+      "tag": 2026874192,
+      "host_length": 8,
+      "cdb_length": 10,
+      "cdb": "25000000000000000000",
+      "opcode": 37,
+      "data_length": 0,
+      "data_prefix": "",
+      "data_frames": [],
+      "csw_frame": 645,
+      "csw_tag": 2026874192,
+      "residue": 8,
+      "status": 1
+    },
+    {
+      "cbw_frame": 659,
+      "tag": 1833174304,
+      "host_length": 192,
+      "cdb_length": 6,
+      "cdb": "1a001c00c000",
+      "opcode": 26,
+      "data_length": 0,
+      "data_prefix": "",
+      "data_frames": [],
+      "csw_frame": 667,
+      "csw_tag": 1833174304,
+      "residue": 192,
+      "status": 1
+    }
+  ],
+  "sense_records": [
+    {
+      "cbw_frame": 560,
+      "tag": 2020880400,
+      "host_length": 18,
+      "cdb_length": 12,
+      "cdb": "030000001200000000000000",
+      "opcode": 3,
+      "data_length": 18,
+      "data_prefix": "700005000000000a00000000200000000000",
+      "data_frames": [
+        563
+      ],
+      "csw_frame": 565,
+      "csw_tag": 2020880400,
+      "residue": 0,
+      "status": 0
+    },
+    {
+      "cbw_frame": 574,
+      "tag": 1098354768,
+      "host_length": 18,
+      "cdb_length": 12,
+      "cdb": "030000001200000000000000",
+      "opcode": 3,
+      "data_length": 18,
+      "data_prefix": "700005000000000a00000000200000000000",
+      "data_frames": [
+        577
+      ],
+      "csw_frame": 579,
+      "csw_tag": 1098354768,
+      "residue": 0,
+      "status": 0
+    },
+    {
+      "cbw_frame": 588,
+      "tag": 1098354768,
+      "host_length": 18,
+      "cdb_length": 12,
+      "cdb": "030000001200000000000000",
+      "opcode": 3,
+      "data_length": 18,
+      "data_prefix": "700005000000000a00000000200000000000",
+      "data_frames": [
+        591
+      ],
+      "csw_frame": 593,
+      "csw_tag": 1098354768,
+      "residue": 0,
+      "status": 0
+    },
+    {
+      "cbw_frame": 602,
+      "tag": 1693814800,
+      "host_length": 18,
+      "cdb_length": 12,
+      "cdb": "030000001200000000000000",
+      "opcode": 3,
+      "data_length": 18,
+      "data_prefix": "700005000000000a00000000240000000000",
+      "data_frames": [
+        605
+      ],
+      "csw_frame": 607,
+      "csw_tag": 1693814800,
+      "residue": 0,
+      "status": 0
+    },
+    {
+      "cbw_frame": 616,
+      "tag": 1624006672,
+      "host_length": 18,
+      "cdb_length": 12,
+      "cdb": "030000001200000000000000",
+      "opcode": 3,
+      "data_length": 18,
+      "data_prefix": "700005000000000a00000000240000000000",
+      "data_frames": [
+        619
+      ],
+      "csw_frame": 623,
+      "csw_tag": 1624006672,
+      "residue": 0,
+      "status": 0
+    },
+    {
+      "cbw_frame": 632,
+      "tag": 1833174304,
+      "host_length": 18,
+      "cdb_length": 12,
+      "cdb": "030000001200000000000000",
+      "opcode": 3,
+      "data_length": 18,
+      "data_prefix": "700005000000000a00000000240000000000",
+      "data_frames": [
+        635
+      ],
+      "csw_frame": 637,
+      "csw_tag": 1833174304,
+      "residue": 0,
+      "status": 0
+    },
+    {
+      "cbw_frame": 646,
+      "tag": 2026874192,
+      "host_length": 18,
+      "cdb_length": 12,
+      "cdb": "030000001200000000000000",
+      "opcode": 3,
+      "data_length": 18,
+      "data_prefix": "700006000000000a00000000280000000000",
+      "data_frames": [
+        649
+      ],
+      "csw_frame": 651,
+      "csw_tag": 2026874192,
+      "residue": 0,
+      "status": 0
+    },
+    {
+      "cbw_frame": 668,
+      "tag": 1833174304,
+      "host_length": 18,
+      "cdb_length": 12,
+      "cdb": "030000001200000000000000",
+      "opcode": 3,
+      "data_length": 18,
+      "data_prefix": "700005000000000a00000000240000000000",
+      "data_frames": [
+        671
+      ],
+      "csw_frame": 673,
+      "csw_tag": 1833174304,
+      "residue": 0,
+      "status": 0
+    }
+  ],
+  "opcode_counts": {
+    "0x12": 6,
+    "0x23": 3,
+    "0x3": 8,
+    "0x25": 766,
+    "0x1a": 42,
+    "0x28": 444,
+    "0x0": 103,
+    "0x1e": 78
+  },
+  "status_counts": {
+    "0": 1442,
+    "1": 8
+  },
+  "all_tags_match": true,
+  "sense_after_unsupported": [
+    {
+      "unsupported": {
+        "cbw_frame": 551,
+        "tag": 2020880400,
+        "host_length": 252,
+        "cdb_length": 10,
+        "cdb": "2300000000000000fc00",
+        "opcode": 35,
+        "data_length": 0,
+        "data_prefix": "",
+        "data_frames": [],
+        "csw_frame": 559,
+        "csw_tag": 2020880400,
+        "residue": 252,
+        "status": 1
+      },
+      "sense": {
+        "cbw_frame": 560,
+        "tag": 2020880400,
+        "host_length": 18,
+        "cdb_length": 12,
+        "cdb": "030000001200000000000000",
+        "opcode": 3,
+        "data_length": 18,
+        "data_prefix": "700005000000000a00000000200000000000",
+        "data_frames": [
+          563
+        ],
+        "csw_frame": 565,
+        "csw_tag": 2020880400,
+        "residue": 0,
+        "status": 0
+      },
+      "passed": true
+    },
+    {
+      "unsupported": {
+        "cbw_frame": 566,
+        "tag": 1098354768,
+        "host_length": 252,
+        "cdb_length": 10,
+        "cdb": "2300000000000000fc00",
+        "opcode": 35,
+        "data_length": 0,
+        "data_prefix": "",
+        "data_frames": [],
+        "csw_frame": 573,
+        "csw_tag": 1098354768,
+        "residue": 252,
+        "status": 1
+      },
+      "sense": {
+        "cbw_frame": 574,
+        "tag": 1098354768,
+        "host_length": 18,
+        "cdb_length": 12,
+        "cdb": "030000001200000000000000",
+        "opcode": 3,
+        "data_length": 18,
+        "data_prefix": "700005000000000a00000000200000000000",
+        "data_frames": [
+          577
+        ],
+        "csw_frame": 579,
+        "csw_tag": 1098354768,
+        "residue": 0,
+        "status": 0
+      },
+      "passed": true
+    },
+    {
+      "unsupported": {
+        "cbw_frame": 580,
+        "tag": 1098354768,
+        "host_length": 252,
+        "cdb_length": 10,
+        "cdb": "2300000000000000fc00",
+        "opcode": 35,
+        "data_length": 0,
+        "data_prefix": "",
+        "data_frames": [],
+        "csw_frame": 587,
+        "csw_tag": 1098354768,
+        "residue": 252,
+        "status": 1
+      },
+      "sense": {
+        "cbw_frame": 588,
+        "tag": 1098354768,
+        "host_length": 18,
+        "cdb_length": 12,
+        "cdb": "030000001200000000000000",
+        "opcode": 3,
+        "data_length": 18,
+        "data_prefix": "700005000000000a00000000200000000000",
+        "data_frames": [
+          591
+        ],
+        "csw_frame": 593,
+        "csw_tag": 1098354768,
+        "residue": 0,
+        "status": 0
+      },
+      "passed": true
+    }
+  ],
+  "first_successful_capacity": {
+    "cbw_frame": 652,
+    "tag": 2026874192,
+    "host_length": 8,
+    "cdb_length": 10,
+    "cdb": "25000000000000000000",
+    "opcode": 37,
+    "data_length": 8,
+    "data_prefix": "0000000f00000200",
+    "data_frames": [
+      655
+    ],
+    "csw_frame": 658,
+    "csw_tag": 2026874192,
+    "residue": 0,
+    "status": 0
+  },
+  "successful_capacity_count": 765,
+  "first_successful_read": {
+    "cbw_frame": 714,
+    "tag": 1689522192,
+    "host_length": 512,
+    "cdb_length": 10,
+    "cdb": "28000000000000000100",
+    "opcode": 40,
+    "data_length": 512,
+    "data_prefix": "00000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000",
+    "data_frames": [
+      717
+    ],
+    "csw_frame": 719,
+    "csw_tag": 1689522192,
+    "residue": 0,
+    "status": 0
+  },
+  "successful_read_count": 444,
+  "incomplete_last_command": null
+}
