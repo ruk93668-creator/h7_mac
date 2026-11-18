@@ -155,3 +155,5 @@ CCR=0x00070200（DC=1）、memory_valid=1、cache_pressure_passes=108482、TX OW
 本轮只增加 Ethernet 测试工具、生成工程脚本、报告和证据。没有修改生产 OWN/Tail/错误判定、正式 Keil/scatter、FreeRTOS、USB、Storage、CM4 OLED 或 Application V2；未操作另外两个工程，未进入 lwIP，未合并 main。保留用户原有 RTE 文件变化。本报告提交后推送 `codex/ethernet-bringup` 并核对远端；最终回执记录实际 SHA。
 
 长测证据缺口已关闭。停止在 E3.5，等待人工审核历史 RX 0/1000、RBU、短测证据和硬件读回遗留项。当前 **E3.5 未关闭，E4 未开始**。
+
+补充审核见 [E3.5 最终审核](E3_5_FINAL_AUDIT.md)。RX/IRQ/OWN/Tail 源码审核及本轮主机回归已完成；历史 RX 0/1000 与 RBU 1→32 保持 OPEN，Flash Verify、MPU Region 4/5 原始寄存器读回和针对性短测均为 NOT_RUN。会话 371 不重跑，E4 保持 BLOCKED。
