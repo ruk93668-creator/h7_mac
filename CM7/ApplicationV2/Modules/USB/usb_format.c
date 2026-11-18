@@ -1,6 +1,6 @@
 #include "usb_format.h"
 #include "../Camera/camera_format.h"
-#include "usb_uvc.h"
+#include "usb_uvc_desc.h"
 #include <string.h>
 SysResult_t VUSB_Translate(const CoreMediaFormat *f, const CoreFrameRate *rate,
                            VideoStreamConfig_t *out)
@@ -22,7 +22,7 @@ SysResult_t VUSB_Translate(const CoreMediaFormat *f, const CoreFrameRate *rate,
         return z;
     n.fps = (uint16_t)rate->num;
     n.max_frame_bytes = f->max_payload;
-    z = USB_UVC_ValidateConfig(&n);
+    z = USB_UVC_ValidateFSConfig(&n);
     if (z)
         return z;
     *out = n;

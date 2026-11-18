@@ -130,7 +130,7 @@ SysResult_t VUSBConsumer_Process(VUSBConsumer *c)
     /* WAIT_REPLY超时不能清空Tx；队列满只重试原请求原编号。 */
     (void)App_LifecycleTxFlush(&c->tx, c->ops->send, c->port);
     z = c->ops->receive_reply(c->port, &reply);
-    if (!z)
+    if (!z && App_LifecycleMatchesReply(&c->request, &reply))
     {
         z = App_LifecycleTxAcceptReply(&c->tx, &reply);
         if (z)

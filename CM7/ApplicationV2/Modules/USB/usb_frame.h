@@ -38,10 +38,12 @@ typedef struct
     SysResult_t (*cancel)(void *, const MRRequest *);
     SysResult_t (*cancelled)(void *, const MRRequest *);
     SysResult_t (*offer)(void *, VUSBDelivery *);
+    /* 非OK不转移帧给UVC；部分操作已接管Frame时必须返回OK并继续追踪。 */
     SysResult_t (*submit_uvc)(void *, const MRRequest *, const VUSBFrameData *);
     SysResult_t (*readers_safe)(void *, const MRRequest *, const VUSBFrameData *);
     SysResult_t (*return_frame)(void *, const MRRequest *, const VUSBFrameData *);
     SysResult_t (*return_ack)(void *, MRReceipt *);
+    /* consumed提交完整T；retired查询Camera完成事实。ACK入队不足以退休。 */
     SysResult_t (*consumed)(void *, const MRReceipt *);
     SysResult_t (*retired)(void *, const MRReceipt *);
 } VUSBFrameOps;

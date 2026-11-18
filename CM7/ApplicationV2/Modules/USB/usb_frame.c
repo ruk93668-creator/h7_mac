@@ -47,9 +47,11 @@ static int terminal_matches(VUSBFrame *f, const MRReceipt *t, int physical)
 {
     return MRGrant_Equal(&f->request.g, &t->g) && !memcmp(&f->request.h, &t->h, sizeof(t->h)) &&
            t->serial && t->result <= 0 &&
-           (physical ? (t->physical_returned == 1 && MRMedia_Equal(&f->data.media, &t->m) &&
-                        !memcmp(&f->data.bridge, &t->bridge, sizeof(t->bridge)))
-                     : (!t->physical_returned && !t->m.id && !t->bridge.lease));
+           (physical
+                ? (t->physical_returned == 1 && MRMedia_Equal(&f->data.media, &t->m) &&
+                   !memcmp(&f->data.bridge, &t->bridge, sizeof(t->bridge)))
+                : (!t->physical_returned && !t->m.backend && !t->m.session && !t->m.id &&
+                   !t->m.generation && !t->bridge.epoch && !t->bridge.lease && !t->bridge.command));
 }
 static int view_valid(const MRView *v, const CoreMediaFormat *fmt)
 {
@@ -90,10 +92,11 @@ SysResult_t VUSBFrame_Process(VUSBFrame *f, const MRGrant *grant, const CoreMedi
         z = f->ops->prepared(f->port, &h);
         if (!z)
         {
-            if (!MRGrant_Equal(&h.g, &f->preparing))
+            if (!MRGrant_Equal(&h.g, &f->preparing) ||
+                (h.h.sequence && h.h.sequence <= f->highest_h))
                 return leave(f, SYS_ERR_NOT_FOUND);
-            if (!h.h.sequence || h.h.session != h.g.session || h.h.sequence <= f->highest_h ||
-                !h.b.epoch || !h.b.command || h.b.lease)
+            if (!h.h.sequence || h.h.session != h.g.session || !h.b.epoch || !h.b.command ||
+                h.b.lease)
             {
                 f->phase = VUF_BLOCKED;
                 z = SYS_ERR_PROTOCOL;
@@ -133,6 +136,7 @@ SysResult_t VUSBFrame_Process(VUSBFrame *f, const MRGrant *grant, const CoreMedi
             {
                 f->terminal = d.terminal;
                 fault(f, d.terminal.result);
+                z = d.terminal.result;
                 f->phase = VUF_CONSUMING;
                 break;
             }
@@ -183,6 +187,7 @@ SysResult_t VUSBFrame_Process(VUSBFrame *f, const MRGrant *grant, const CoreMedi
                 return leave(f, SYS_ERR_NOT_FOUND);
             f->terminal = t;
             fault(f, t.result);
+            z = t.result;
             f->phase = VUF_CONSUMING;
         }
         break;
