@@ -1,0 +1,18 @@
+Traceback (most recent call last):
+  File "D:\32\STM32H7\h7_mac\Tests\V2Phase5\run_checkpoint.py", line 11, in <module>
+    a.build('consumer'+opt,[HERE/'consumer_smoke.c',ROOT/'CM7/ApplicationV2/Modules/USB/usb_consumer.c',ROOT/'CM7/ApplicationV2/Resource/media_source.c',ROOT/'CM7/Application/app_camera_lifecycle.c',ROOT/'CM7/Application/app_camera_lifecycle_replay.c',ROOT/'CM7/Application/app_camera_qualification.c'],'USB_Smoke')
+  File "D:\32\STM32H7\h7_mac\Tests\CameraLifecycleC1\run_tests.py", line 33, in build
+    axf=OUT/(name+'.axf');run(['D:/32/ARM/ARMCC/Bin/armlink.exe',*objs,'--entry',entry,'--scatter',link_sc,'-o',axf])
+                          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "D:\32\STM32H7\h7_mac\Tests\CameraLifecycleC1\run_tests.py", line 17, in run
+    if p.returncode:raise RuntimeError(text)
+                    ^^^^^^^^^^^^^^^^^^^^^^^^
+RuntimeError: Error: L6218E: Undefined symbol App_CameraQualificationAccess (referred from consumerO05.o).
+
+Error: L6218E: Undefined symbol App_MessagesIsOwner (referred from consumerO05.o).
+
+Error: L6218E: Undefined symbol Platform_SyncGetException (referred from consumerO05.o).
+
+Finished: 0 information, 0 warning and 3 error messages.
+
+
