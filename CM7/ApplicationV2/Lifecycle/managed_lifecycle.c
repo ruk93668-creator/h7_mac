@@ -1,8 +1,13 @@
+// 校验模块状态转换并保留可靠异步完成。
+
 #include "managed_lifecycle.h"
 #include <string.h>
 #define MAGIC 0x4C435633U
-int LC_IdEqual(const V2ExecId *a, const V2ExecId *b) { return a && b && !memcmp(a, b, sizeof(*a)); }
-int LC_Stable(uint32_t s) { return s >= LC_UNCONFIGURED && s <= LC_ERROR; }
+// 比较完整事务身份，避免旧消息匹配当前操作。
+int LC_IdEqual(const V2ExecId *left_identity, const V2ExecId *right_identity) { return left_identity && right_identity && !memcmp(left_identity, right_identity, sizeof(*left_identity)); }
+// 判断状态是否属于可受理新操作的稳定阶段。
+int LC_Stable(uint32_t state) { return state >= LC_UNCONFIGURED && state <= LC_ERROR; }
+// 计算指定过渡成功后的目标状态。
 uint32_t LC_Target(uint32_t op)
 {
     switch (op)
@@ -19,200 +24,212 @@ uint32_t LC_Target(uint32_t op)
         return 0;
     }
 }
-static int legal(uint32_t s, uint32_t op)
+// 校验请求的操作是否允许从当前稳定状态发起。
+static int legal(uint32_t state, uint32_t op)
 {
-    return (op == LC_CONFIGURE && s == LC_UNCONFIGURED) ||
-           (op == LC_ACTIVATE && s == LC_INACTIVE) || (op == LC_DEACTIVATE && s == LC_ACTIVE) ||
-           (op == LC_CLEANUP && s == LC_INACTIVE) || (op == LC_ERROR_PROCESS && s == LC_ERROR);
+    return (op == LC_CONFIGURE && state == LC_UNCONFIGURED) ||
+           (op == LC_ACTIVATE && state == LC_INACTIVE) || (op == LC_DEACTIVATE && state == LC_ACTIVE) ||
+           (op == LC_CLEANUP && state == LC_INACTIVE) || (op == LC_ERROR_PROCESS && state == LC_ERROR);
 }
-static SysResult_t enter(LCContext *c)
+// 校验所有者调用并设置重入保护，调用方仍负责跨任务串行化。
+static SysResult_t enter(LCContext *lifecycle)
 {
-    if (!c || c->magic != MAGIC || !c->ops->is_owner(c->port))
+    if (!lifecycle || lifecycle->magic != MAGIC || !lifecycle->ops->is_owner(lifecycle->port))
         return SYS_ERR_INVALID_STATE;
-    if (c->busy)
+    if (lifecycle->busy)
         return SYS_ERR_BUSY;
-    c->busy = 1;
+    lifecycle->busy = 1;
     return SYS_OK;
 }
-static SysResult_t leave(LCContext *c, SysResult_t z)
+// 退出当前调用的重入保护。
+static SysResult_t leave(LCContext *lifecycle, SysResult_t result)
 {
-    c->busy = 0;
-    return z;
+    lifecycle->busy = 0;
+    return result;
 }
-static void error(LCContext *c, SysResult_t z)
+// 报告生命周期过渡的实际失败原因。
+static void error(LCContext *lifecycle, SysResult_t result)
 {
-    if (z && !c->first_error)
-        c->first_error = z;
+    if (result && !lifecycle->first_error)
+        lifecycle->first_error = result;
 }
-SysResult_t LC_Init(LCContext *c, uint32_t module, uint32_t session,
+// 绑定模块所有者和操作回调，初始化生命周期上下文。
+SysResult_t LC_Init(LCContext *lifecycle, uint32_t module, uint32_t session,
                     const struct V2LifecycleOps *ops, void *port)
 {
-    if (!c || c->magic || !module || !session || !ops || !ops->is_owner || !ops->can_begin ||
+    if (!lifecycle || lifecycle->magic || !module || !session || !ops || !ops->is_owner || !ops->can_begin ||
         !ops->begin || !ops->prove)
         return SYS_ERR_INVALID_ARG;
     if (!ops->is_owner(port))
         return SYS_ERR_INVALID_STATE;
-    memset(c, 0, sizeof(*c));
-    c->module = module;
-    c->session = session;
-    c->state = LC_UNCONFIGURED;
-    c->ops = ops;
-    c->port = port;
-    c->magic = MAGIC;
+    memset(lifecycle, 0, sizeof(*lifecycle));
+    lifecycle->module = module;
+    lifecycle->session = session;
+    lifecycle->state = LC_UNCONFIGURED;
+    lifecycle->ops = ops;
+    lifecycle->port = port;
+    lifecycle->magic = MAGIC;
     return SYS_OK;
 }
-SysResult_t LC_Request(LCContext *c, const LCRequest *r, uint32_t now)
+// 校验并登记过渡请求，受理不代表操作完成。
+SysResult_t LC_Request(LCContext *lifecycle, const LCRequest *request, uint32_t now)
 {
-    SysResult_t z;
-    if (!r || !r->id.request || !LC_Target(r->id.operation) || !r->timeout ||
-        r->timeout > 0x7FFFFFFFU)
+    SysResult_t result;
+    if (!request || !request->id.request || !LC_Target(request->id.operation) || !request->timeout ||
+        request->timeout > 0x7FFFFFFFU)
         return SYS_ERR_INVALID_ARG;
-    z = enter(c);
-    if (z)
-        return z;
-    if (r->id.module != c->module || r->id.session != c->session)
-        return leave(c, SYS_ERR_PROTOCOL);
-    if (r->id.request == c->request.id.request)
-        return leave(c, !memcmp(r, &c->request, sizeof(*r)) ? SYS_OK : SYS_ERR_PROTOCOL);
-    if (r->id.request < c->request.id.request)
-        return leave(c, SYS_ERR_PROTOCOL);
-    if (c->pending)
-        return leave(c, SYS_ERR_BUSY);
-    if ((c->sealed && (r->id.operation == LC_ACTIVATE || r->id.operation == LC_CONFIGURE)) ||
-        r->expected != c->state || !legal(c->state, r->id.operation))
-        return leave(c, SYS_ERR_INVALID_STATE);
-    c->request = *r;
-    c->started = now;
-    c->pending = 1;
-    c->dispatched = 0;
-    c->decided = 0;
-    c->terminal = 0;
-    c->first_error = 0;
-    c->guard_error = 0;
-    memset(&c->completion, 0, sizeof(c->completion));
-    c->completion.id = r->id;
-    c->state = LC_TRANSITION_BASE + r->id.operation;
-    return leave(c, SYS_OK);
+    result = enter(lifecycle);
+    if (result)
+        return result;
+    if (request->id.module != lifecycle->module || request->id.session != lifecycle->session)
+        return leave(lifecycle, SYS_ERR_PROTOCOL);
+    if (request->id.request == lifecycle->request.id.request)
+        return leave(lifecycle, !memcmp(request, &lifecycle->request, sizeof(*request)) ? SYS_OK : SYS_ERR_PROTOCOL);
+    if (request->id.request < lifecycle->request.id.request)
+        return leave(lifecycle, SYS_ERR_PROTOCOL);
+    if (lifecycle->pending)
+        return leave(lifecycle, SYS_ERR_BUSY);
+    if ((lifecycle->sealed && (request->id.operation == LC_ACTIVATE || request->id.operation == LC_CONFIGURE)) ||
+        request->expected != lifecycle->state || !legal(lifecycle->state, request->id.operation))
+        return leave(lifecycle, SYS_ERR_INVALID_STATE);
+    lifecycle->request = *request;
+    lifecycle->started = now;
+    lifecycle->pending = 1;
+    lifecycle->dispatched = 0;
+    lifecycle->decided = 0;
+    lifecycle->terminal = 0;
+    lifecycle->first_error = 0;
+    lifecycle->guard_error = 0;
+    memset(&lifecycle->completion, 0, sizeof(lifecycle->completion));
+    lifecycle->completion.id = request->id;
+    lifecycle->state = LC_TRANSITION_BASE + request->id.operation;
+    return leave(lifecycle, SYS_OK);
 }
-SysResult_t LC_Complete(LCContext *c, const V2ExecId *id, SysResult_t actual, uint32_t fact)
+// 接收匹配的实际操作完成结果。
+SysResult_t LC_Complete(LCContext *lifecycle, const V2ExecId *id, SysResult_t actual, uint32_t fact)
 {
-    SysResult_t z = enter(c);
-    if (z)
-        return z;
-    if (actual > 0 || !LC_Stable(fact) || !LC_IdEqual(id, &c->request.id))
-        return leave(c, SYS_ERR_PROTOCOL);
-    if (c->decided)
-        return leave(c, c->completion.actual_result == actual && c->completion.fact == fact
+    SysResult_t result = enter(lifecycle);
+    if (result)
+        return result;
+    if (actual > 0 || !LC_Stable(fact) || !LC_IdEqual(id, &lifecycle->request.id))
+        return leave(lifecycle, SYS_ERR_PROTOCOL);
+    if (lifecycle->decided)
+        return leave(lifecycle, lifecycle->completion.actual_result == actual && lifecycle->completion.fact == fact
                             ? SYS_OK
                             : SYS_ERR_PROTOCOL);
-    if (!c->pending || !c->dispatched)
-        return leave(c, SYS_ERR_INVALID_STATE);
+    if (!lifecycle->pending || !lifecycle->dispatched)
+        return leave(lifecycle, SYS_ERR_INVALID_STATE);
     if ((!actual && fact != LC_Target(id->operation)) ||
-        (actual && fact != c->request.expected && fact != LC_Target(id->operation) &&
+        (actual && fact != lifecycle->request.expected && fact != LC_Target(id->operation) &&
          fact != LC_ERROR))
-        return leave(c, SYS_ERR_PROTOCOL);
-    c->completion.actual_result = actual;
-    c->completion.fact = fact;
-    c->decided = 1;
-    error(c, actual);
-    return leave(c, SYS_OK);
+        return leave(lifecycle, SYS_ERR_PROTOCOL);
+    lifecycle->completion.actual_result = actual;
+    lifecycle->completion.fact = fact;
+    lifecycle->decided = 1;
+    error(lifecycle, actual);
+    return leave(lifecycle, SYS_OK);
 }
-SysResult_t LC_Process(LCContext *c, uint32_t now)
+// 在所有者上下文推进正在进行的生命周期过渡。
+SysResult_t LC_Process(LCContext *lifecycle, uint32_t now)
 {
-    SysResult_t z = enter(c);
-    if (z)
-        return z;
-    if (!c->pending || c->terminal)
-        return leave(c, SYS_OK);
-    if ((uint32_t)(now - c->started) >= c->request.timeout)
-        error(c, SYS_ERR_TIMEOUT);
-    if (!c->dispatched && !c->decided)
+    SysResult_t result = enter(lifecycle);
+    if (result)
+        return result;
+    if (!lifecycle->pending || lifecycle->terminal)
+        return leave(lifecycle, SYS_OK);
+    if ((uint32_t)(now - lifecycle->started) >= lifecycle->request.timeout)
+        error(lifecycle, SYS_ERR_TIMEOUT);
+    if (!lifecycle->dispatched && !lifecycle->decided)
     {
-        if (c->first_error == SYS_ERR_TIMEOUT)
+        if (lifecycle->first_error == SYS_ERR_TIMEOUT)
         {
-            c->completion.actual_result = SYS_ERR_TIMEOUT;
-            c->completion.fact = c->request.expected;
-            c->decided = 1;
+            lifecycle->completion.actual_result = SYS_ERR_TIMEOUT;
+            lifecycle->completion.fact = lifecycle->request.expected;
+            lifecycle->decided = 1;
         }
         else
         {
-            z = c->ops->can_begin(c->port, &c->request);
-            if (!z)
-                z = c->ops->begin(c->port, &c->request);
-            if (z == SYS_ERR_BUSY || z == SYS_ERR_NO_RESOURCE)
-                return leave(c, z);
-            if (!z)
+            result = lifecycle->ops->can_begin(lifecycle->port, &lifecycle->request);
+            if (!result)
+                result = lifecycle->ops->begin(lifecycle->port, &lifecycle->request);
+            if (result == SYS_ERR_BUSY || result == SYS_ERR_NO_RESOURCE)
+                return leave(lifecycle, result);
+            if (!result)
             {
-                c->dispatched = 1;
-                return leave(c, SYS_OK);
+                lifecycle->dispatched = 1;
+                return leave(lifecycle, SYS_OK);
             }
-            error(c, z);
-            c->completion.actual_result = z;
-            c->completion.fact = c->request.expected;
-            c->decided = 1;
+            error(lifecycle, result);
+            lifecycle->completion.actual_result = result;
+            lifecycle->completion.fact = lifecycle->request.expected;
+            lifecycle->decided = 1;
         }
     }
-    if (!c->decided)
-        return leave(c, c->first_error ? c->first_error : SYS_ERR_BUSY);
+    if (!lifecycle->decided)
+        return leave(lifecycle, lifecycle->first_error ? lifecycle->first_error : SYS_ERR_BUSY);
     /* A failed/unknown operation never invents a drain proof. ERROR remains ERROR.
      * Stable non-error facts require authoritative module/resource guards. */
-    if (c->completion.fact != LC_ERROR)
+    if (lifecycle->completion.fact != LC_ERROR)
     {
-        z = c->ops->prove(c->port, &c->request, c->completion.fact);
-        if (z)
+        result = lifecycle->ops->prove(lifecycle->port, &lifecycle->request, lifecycle->completion.fact);
+        if (result)
         {
-            c->guard_error = z;
-            if (z != SYS_ERR_BUSY && z != SYS_ERR_NO_RESOURCE)
-                error(c, z);
-            return leave(c, z);
+            lifecycle->guard_error = result;
+            if (result != SYS_ERR_BUSY && result != SYS_ERR_NO_RESOURCE)
+                error(lifecycle, result);
+            return leave(lifecycle, result);
         }
     }
-    c->state = c->completion.fact;
-    c->completion.result = c->first_error;
-    c->terminal = 1;
-    return leave(c, SYS_OK);
+    lifecycle->state = lifecycle->completion.fact;
+    lifecycle->completion.result = lifecycle->first_error;
+    lifecycle->terminal = 1;
+    return leave(lifecycle, SYS_OK);
 }
-SysResult_t LC_Read(LCContext *c, const V2ExecId *id, LCCompletion *out)
+// 读取已固定的完成消息。
+SysResult_t LC_Read(LCContext *lifecycle, const V2ExecId *id, LCCompletion *out)
 {
-    SysResult_t z;
-    if (!out || !c || V2_Overlap(c, sizeof(*c), out, sizeof(*out)))
+    SysResult_t result;
+    if (!out || !lifecycle || V2_Overlap(lifecycle, sizeof(*lifecycle), out, sizeof(*out)))
         return SYS_ERR_INVALID_ARG;
-    z = enter(c);
-    if (z)
-        return z;
-    if (!LC_IdEqual(id, &c->request.id) || !c->terminal)
-        return leave(c, SYS_ERR_NOT_FOUND);
-    *out = c->completion;
-    return leave(c, SYS_OK);
+    result = enter(lifecycle);
+    if (result)
+        return result;
+    if (!LC_IdEqual(id, &lifecycle->request.id) || !lifecycle->terminal)
+        return leave(lifecycle, SYS_ERR_NOT_FOUND);
+    *out = lifecycle->completion;
+    return leave(lifecycle, SYS_OK);
 }
-SysResult_t LC_Confirm(LCContext *c, const LCCompletion *v)
+// 确认匹配完成已消费并允许相应记录退休。
+SysResult_t LC_Confirm(LCContext *lifecycle, const LCCompletion *completion)
 {
-    SysResult_t z = enter(c);
-    if (z)
-        return z;
-    if (!v || !c->terminal || memcmp(v, &c->completion, sizeof(*v)))
-        return leave(c, SYS_ERR_PROTOCOL);
-    c->pending = 0;
-    return leave(c, SYS_OK);
+    SysResult_t result = enter(lifecycle);
+    if (result)
+        return result;
+    if (!completion || !lifecycle->terminal || memcmp(completion, &lifecycle->completion, sizeof(*completion)))
+        return leave(lifecycle, SYS_ERR_PROTOCOL);
+    lifecycle->pending = 0;
+    return leave(lifecycle, SYS_OK);
 }
-SysResult_t LC_Seal(LCContext *c)
+// 关闭新操作入口并保留既有事务状态。
+SysResult_t LC_Seal(LCContext *lifecycle)
 {
-    SysResult_t z = enter(c);
-    if (z)
-        return z;
-    c->sealed = 1;
-    return leave(c, SYS_OK);
+    SysResult_t result = enter(lifecycle);
+    if (result)
+        return result;
+    lifecycle->sealed = 1;
+    return leave(lifecycle, SYS_OK);
 }
-SysResult_t LC_Status(LCContext *c, uint32_t *state, SysResult_t *first)
+// 获取生命周期状态和过渡结果。
+SysResult_t LC_Status(LCContext *lifecycle, uint32_t *state, SysResult_t *first)
 {
-    SysResult_t z;
-    if (!state || !first || !c || V2_Overlap(c, sizeof(*c), state, sizeof(*state)) ||
-        V2_Overlap(c, sizeof(*c), first, sizeof(*first)))
+    SysResult_t result;
+    if (!state || !first || !lifecycle || V2_Overlap(lifecycle, sizeof(*lifecycle), state, sizeof(*state)) ||
+        V2_Overlap(lifecycle, sizeof(*lifecycle), first, sizeof(*first)))
         return SYS_ERR_INVALID_ARG;
-    z = enter(c);
-    if (z)
-        return z;
-    *state = c->state;
-    *first = c->first_error;
-    return leave(c, SYS_OK);
+    result = enter(lifecycle);
+    if (result)
+        return result;
+    *state = lifecycle->state;
+    *first = lifecycle->first_error;
+    return leave(lifecycle, SYS_OK);
 }

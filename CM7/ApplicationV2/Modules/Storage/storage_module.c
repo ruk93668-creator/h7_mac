@@ -1,3 +1,5 @@
+// 协调 Storage 生命周期、文件操作和实际退出证据。
+
 #include "storage_module.h"
 #include <string.h>
 
@@ -10,509 +12,539 @@
 #define FILE_UNMOUNT 5U
 #define FILE_DONE 6U
 
-static int owner(void *p)
+// 校验状态修改操作运行在约定的所有者上下文。
+static int owner(void *port_context)
 {
-    VStorage *s = p;
-    return s && s->ports.consumer->is_owner(s->ports.consumer_port);
+    VStorage *storage = port_context;
+    return storage && storage->ports.consumer->is_owner(storage->ports.consumer_port);
 }
 
-static SysResult_t enter(VStorage *s)
+// 校验所有者调用并设置重入保护，调用方仍负责跨任务串行化。
+static SysResult_t enter(VStorage *storage)
 {
-    if (!s || s->magic != MAGIC || !owner(s))
+    if (!storage || storage->magic != MAGIC || !owner(storage))
         return SYS_ERR_INVALID_STATE;
-    if (s->busy)
+    if (storage->busy)
         return SYS_ERR_BUSY;
-    s->busy = 1U;
+    storage->busy = 1U;
     return SYS_OK;
 }
 
-static SysResult_t leave(VStorage *s, SysResult_t z)
+// 退出当前调用的重入保护。
+static SysResult_t leave(VStorage *storage, SysResult_t result)
 {
-    s->busy = 0U;
-    return z;
+    storage->busy = 0U;
+    return result;
 }
 
-static int waiting(SysResult_t z)
+// 识别仍需等待端口或运输推进的结果。
+static int waiting(SysResult_t result)
 {
-    return z == SYS_ERR_BUSY || z == SYS_ERR_NO_RESOURCE || z == SYS_ERR_NOT_FOUND;
+    return result == SYS_ERR_BUSY || result == SYS_ERR_NO_RESOURCE || result == SYS_ERR_NOT_FOUND;
 }
 
-static int quiet(const VStorage *s)
+// 检查本地数据路径是否已完成排空。
+static int quiet(const VStorage *storage)
 {
-    return (s->facts.flags & VST_IO_QUIET) != 0U;
+    return (storage->facts.flags & VST_IO_QUIET) != 0U;
 }
 
-static int volume_clear(const VStorage *s)
+// 检查文件和卷操作是否已完成收尾。
+static int volume_clear(const VStorage *storage)
 {
-    return quiet(s) && (s->facts.flags & VST_VOLUME_RELEASED) &&
-           !(s->facts.flags & (VST_FILE_OPEN | VST_VOLUME_HELD));
+    return quiet(storage) && (storage->facts.flags & VST_VOLUME_RELEASED) &&
+           !(storage->facts.flags & (VST_FILE_OPEN | VST_VOLUME_HELD));
 }
 
-static int exited(const VStorage *s)
+// 独立核验模块退出所需的各项事实。
+static int exited(const VStorage *storage)
 {
-    return quiet(s) && s->frame.state == VSF_FREE && !s->consumer.grant.session &&
-           (s->consumer.phase == VSC_IDLE || s->consumer.phase == VSC_IDLE_REQUEST);
+    return quiet(storage) && storage->frame.state == VSF_FREE && !storage->consumer.grant.session &&
+           (storage->consumer.phase == VSC_IDLE || storage->consumer.phase == VSC_IDLE_REQUEST);
 }
 
-static int ready_to_configure(const VStorage *s)
+// 检查旧操作及资源清理结果是否允许接收配置。
+static int ready_to_configure(const VStorage *storage)
 {
-    return !s->drain && exited(s) && s->consumer.phase == VSC_IDLE && volume_clear(s);
+    return !storage->drain && exited(storage) && storage->consumer.phase == VSC_IDLE && volume_clear(storage);
 }
 
-static SysResult_t first_result(const VStorage *s)
+// 按发生顺序选择应保留的错误结果。
+static SysResult_t first_result(const VStorage *storage)
 {
-    return s->business_error ? s->business_error : s->cleanup_error;
+    return storage->business_error ? storage->business_error : storage->cleanup_error;
 }
 
-static void remember(VStorage *s, SysResult_t z, SysResult_t *slot)
+// 记录首个错误，后续恢复结果不能覆盖它。
+static void remember(VStorage *storage, SysResult_t result, SysResult_t *slot)
 {
-    if (!z)
+    if (!result)
         return;
     if (!*slot)
-        *slot = z;
-    if (!s->first_fault)
-        s->first_fault = z;
+        *slot = result;
+    if (!storage->first_fault)
+        storage->first_fault = result;
 }
 
-static SysResult_t can_begin(void *p, const LCRequest *r)
+// 检查当前模块事实是否允许受理指定生命周期过渡。
+static SysResult_t can_begin(void *port_context, const LCRequest *request)
 {
-    VStorage *s = p;
-    if (r->id.operation == LC_CONFIGURE && !s->bound)
+    VStorage *storage = port_context;
+    if (request->id.operation == LC_CONFIGURE && !storage->bound)
         return SYS_ERR_INVALID_STATE;
-    if (r->id.operation == LC_DEACTIVATE || r->id.operation == LC_ERROR_PROCESS)
+    if (request->id.operation == LC_DEACTIVATE || request->id.operation == LC_ERROR_PROCESS)
         return SYS_OK;
-    return ready_to_configure(s) ? SYS_OK : SYS_ERR_BUSY;
+    return ready_to_configure(storage) ? SYS_OK : SYS_ERR_BUSY;
 }
 
-static SysResult_t begin(void *p, const LCRequest *r)
+// 从生命周期过渡请求登记本模块操作，真实完成由事实检查决定。
+static SysResult_t begin(void *port_context, const LCRequest *request)
 {
-    VStorage *s = p;
-    SysResult_t z;
-    if (r->id.operation == LC_ACTIVATE)
+    VStorage *storage = port_context;
+    SysResult_t result;
+    if (request->id.operation == LC_ACTIVATE)
     {
-        z = VStorageConsumer_Begin(&s->consumer);
-        if (z)
-            return z;
-        s->file_step = FILE_NEW;
-        s->frames = 0U;
-        s->business_error = 0;
-        s->cleanup_error = 0;
-        s->recovery_result = 0;
+        result = VStorageConsumer_Begin(&storage->consumer);
+        if (result)
+            return result;
+        storage->file_step = FILE_NEW;
+        storage->frames = 0U;
+        storage->business_error = 0;
+        storage->cleanup_error = 0;
+        storage->recovery_result = 0;
     }
-    if (r->id.operation == LC_ERROR_PROCESS)
+    if (request->id.operation == LC_ERROR_PROCESS)
     {
-        s->recovery_issued = 0U;
-        s->recovery_result = 0;
+        storage->recovery_issued = 0U;
+        storage->recovery_result = 0;
     }
-    if (r->id.operation == LC_DEACTIVATE)
-        s->drain = 1U;
-    s->work = 1U;
+    if (request->id.operation == LC_DEACTIVATE)
+        storage->drain = 1U;
+    storage->work = 1U;
     return SYS_OK;
 }
 
-static SysResult_t prove(void *p, const LCRequest *r, uint32_t fact)
+// 检查端口和资源事实是否满足当前过渡的完成条件。
+static SysResult_t prove(void *port_context, const LCRequest *request, uint32_t fact)
 {
-    VStorage *s = p;
-    if (r->expected == fact)
+    VStorage *storage = port_context;
+    if (request->expected == fact)
         return SYS_OK;
     if (fact == LC_ACTIVE)
-        return s->consumer.phase == VSC_GRANTED && quiet(s) &&
-                       (s->facts.flags & (VST_VOLUME_HELD | VST_FILE_OPEN)) ==
+        return storage->consumer.phase == VSC_GRANTED && quiet(storage) &&
+                       (storage->facts.flags & (VST_VOLUME_HELD | VST_FILE_OPEN)) ==
                            (VST_VOLUME_HELD | VST_FILE_OPEN)
                    ? SYS_OK
                    : SYS_ERR_BUSY;
-    if (r->id.operation == LC_DEACTIVATE)
-        return exited(s) && volume_clear(s) ? SYS_OK : SYS_ERR_BUSY;
-    return ready_to_configure(s) ? SYS_OK : SYS_ERR_BUSY;
+    if (request->id.operation == LC_DEACTIVATE)
+        return exited(storage) && volume_clear(storage) ? SYS_OK : SYS_ERR_BUSY;
+    return ready_to_configure(storage) ? SYS_OK : SYS_ERR_BUSY;
 }
 
 const struct V2LifecycleOps VStorage_LifecycleOps = {owner, can_begin, begin, prove};
 
-SysResult_t VStorage_Init(VStorage *s, uint32_t module, uint32_t session, const VStorageCaps *caps,
+// Storage：绑定模块所有者及端口并初始化本地上下文。
+SysResult_t VStorage_Init(VStorage *storage, uint32_t module, uint32_t session, const VStorageCaps *caps,
                           const VStoragePorts *ports)
 {
-    const VStorageBackendOps *b;
-    const VStorageFrameOps *f;
-    SysResult_t z;
-    if (!s || s->magic || !module || !session || !caps || !caps->max_payload || !ports)
+    const VStorageBackendOps *backend_ops;
+    const VStorageFrameOps *frame_ops;
+    SysResult_t result;
+    if (!storage || storage->magic || !module || !session || !caps || !caps->max_payload || !ports)
         return SYS_ERR_INVALID_ARG;
-    b = ports->backend;
-    f = ports->frame;
-    if (!b || !b->mount || !b->open || !b->write || !b->finish || !b->close || !b->unmount ||
-        !b->recover || !b->observe || !f || !f->post || !f->withdraw || !f->offer ||
-        !f->return_frame || !f->receipt || !f->consume || !f->retired)
+    backend_ops = ports->backend;
+    frame_ops = ports->frame;
+    if (!backend_ops || !backend_ops->mount || !backend_ops->open || !backend_ops->write || !backend_ops->finish || !backend_ops->close || !backend_ops->unmount ||
+        !backend_ops->recover || !backend_ops->observe || !frame_ops || !frame_ops->post || !frame_ops->withdraw || !frame_ops->offer ||
+        !frame_ops->return_frame || !frame_ops->receipt || !frame_ops->consume || !frame_ops->retired)
         return SYS_ERR_INVALID_ARG;
-    z = VStorageConsumer_Init(&s->consumer, ports->consumer, ports->consumer_port);
-    if (z)
-        return z;
-    s->ports = *ports;
-    s->caps = *caps;
-    z = LC_Init(&s->lifecycle, module, session, &VStorage_LifecycleOps, s);
-    if (z)
+    result = VStorageConsumer_Init(&storage->consumer, ports->consumer, ports->consumer_port);
+    if (result)
+        return result;
+    storage->ports = *ports;
+    storage->caps = *caps;
+    result = LC_Init(&storage->lifecycle, module, session, &VStorage_LifecycleOps, storage);
+    if (result)
     {
-        memset(s, 0, sizeof(*s)); /* 初始化还未获取外部资源。 */
-        return z;
+        memset(storage, 0, sizeof(*storage)); /* 初始化还未获取外部资源。 */
+        return result;
     }
-    s->magic = MAGIC;
+    storage->magic = MAGIC;
     return SYS_OK;
 }
 
-SysResult_t VStorage_BindCandidate(VStorage *s, const V2Registry *registry,
-                                   const V2CompositionCandidate *v, const VStorageConfig *cfg)
+// Storage：校验并绑定已选配置候选，保留底层应用配置的独立结果。
+SysResult_t VStorage_BindCandidate(VStorage *storage, const V2Registry *registry,
+                                   const V2CompositionCandidate *candidate, const VStorageConfig *cfg)
 {
-    const V2ModuleDesc *d;
+    const V2ModuleDesc *module;
     uint32_t interval;
-    uint16_t i;
-    SysResult_t z = enter(s);
-    if (z)
-        return z;
-    if (!registry || !v || v->candidate_only != 1U || !v->media.pipeline_mask ||
-        !v->media.entity_mask || !v->modules.count || v->modules.count > V2_MODULE_MAX)
-        return leave(s, SYS_ERR_INVALID_ARG);
-    d = V2Registry_Get(registry, (V2ModuleId){s->lifecycle.module});
-    if (!d || !(v->modules.selected_mask & (1UL << (d - registry->modules))))
-        return leave(s, SYS_ERR_NOT_FOUND);
-    for (i = 0; i < v->modules.count; ++i)
-        if (v->modules.order[i].value == s->lifecycle.module)
+    uint16_t selection_index;
+    SysResult_t result = enter(storage);
+    if (result)
+        return result;
+    if (!registry || !candidate || candidate->candidate_only != 1U || !candidate->media.pipeline_mask ||
+        !candidate->media.entity_mask || !candidate->modules.count || candidate->modules.count > V2_MODULE_MAX)
+        return leave(storage, SYS_ERR_INVALID_ARG);
+    module = V2Registry_Get(registry, (V2ModuleId){storage->lifecycle.module});
+    if (!module || !(candidate->modules.selected_mask & (1UL << (module - registry->modules))))
+        return leave(storage, SYS_ERR_NOT_FOUND);
+    for (selection_index = 0; selection_index < candidate->modules.count; ++selection_index)
+        if (candidate->modules.order[selection_index].value == storage->lifecycle.module)
             break;
-    if (i == v->modules.count)
-        return leave(s, SYS_ERR_PROTOCOL);
-    if (!cfg || !cfg->sink_entity || !v->media.graph || !v->media.sink_count ||
-        v->media.sink_count > GRAPH_SINK_MAX)
-        return leave(s, SYS_ERR_INVALID_ARG);
-    for (i = 0; i < v->media.sink_count; ++i)
-        if (v->media.sinks[i].sink.value == cfg->sink_entity)
+    if (selection_index == candidate->modules.count)
+        return leave(storage, SYS_ERR_PROTOCOL);
+    if (!cfg || !cfg->sink_entity || !candidate->media.graph || !candidate->media.sink_count ||
+        candidate->media.sink_count > GRAPH_SINK_MAX)
+        return leave(storage, SYS_ERR_INVALID_ARG);
+    for (selection_index = 0; selection_index < candidate->media.sink_count; ++selection_index)
+        if (candidate->media.sinks[selection_index].sink.value == cfg->sink_entity)
             break;
-    if (i == v->media.sink_count)
-        return leave(s, SYS_ERR_NOT_FOUND);
-    if (cfg->mode == VST_AVI && (cfg->sampling.num != v->media.sinks[i].rate.num ||
-                                 cfg->sampling.den != v->media.sinks[i].rate.den))
-        return leave(s, SYS_ERR_INVALID_ARG);
-    z = VStorage_ValidateFormat(&v->media.format, cfg, &s->caps, &interval);
-    if (z)
-        return leave(s, z);
-    if (s->bound)
-        return leave(s, !memcmp(cfg, &s->config, sizeof(*cfg)) &&
-                                !memcmp(&v->media.format, &s->format, sizeof(s->format))
+    if (selection_index == candidate->media.sink_count)
+        return leave(storage, SYS_ERR_NOT_FOUND);
+    if (cfg->mode == VST_AVI && (cfg->sampling.num != candidate->media.sinks[selection_index].rate.num ||
+                                 cfg->sampling.den != candidate->media.sinks[selection_index].rate.den))
+        return leave(storage, SYS_ERR_INVALID_ARG);
+    result = VStorage_ValidateFormat(&candidate->media.format, cfg, &storage->caps, &interval);
+    if (result)
+        return leave(storage, result);
+    if (storage->bound)
+        return leave(storage, !memcmp(cfg, &storage->config, sizeof(*cfg)) &&
+                                !memcmp(&candidate->media.format, &storage->format, sizeof(storage->format))
                             ? SYS_OK
                             : SYS_ERR_NOT_SUPPORTED);
-    if (s->lifecycle.state != LC_UNCONFIGURED || s->lifecycle.pending || s->drain)
-        return leave(s, SYS_ERR_BUSY);
-    s->config = *cfg;
-    s->format = v->media.format;
-    s->interval_ms = interval;
-    s->bound = 1U;
-    return leave(s, SYS_OK);
+    if (storage->lifecycle.state != LC_UNCONFIGURED || storage->lifecycle.pending || storage->drain)
+        return leave(storage, SYS_ERR_BUSY);
+    storage->config = *cfg;
+    storage->format = candidate->media.format;
+    storage->interval_ms = interval;
+    storage->bound = 1U;
+    return leave(storage, SYS_OK);
 }
 
-SysResult_t VStorage_QueryCapabilities(VStorage *s, const CoreMediaFormat *f,
+// Storage：查询模块端口公开的格式及运行能力。
+SysResult_t VStorage_QueryCapabilities(VStorage *storage, const CoreMediaFormat *format,
                                        const VStorageConfig *cfg, uint32_t *ms)
 {
-    SysResult_t z = enter(s);
-    if (z)
-        return z;
-    if (!ms || V2_Overlap(s, sizeof(*s), ms, sizeof(*ms)))
-        return leave(s, SYS_ERR_INVALID_ARG);
-    return leave(s, VStorage_ValidateFormat(f, cfg, &s->caps, ms));
+    SysResult_t result = enter(storage);
+    if (result)
+        return result;
+    if (!ms || V2_Overlap(storage, sizeof(*storage), ms, sizeof(*ms)))
+        return leave(storage, SYS_ERR_INVALID_ARG);
+    return leave(storage, VStorage_ValidateFormat(format, cfg, &storage->caps, ms));
 }
 
-SysResult_t VStorage_Request(VStorage *s, const LCRequest *r, uint32_t now)
+// Storage：登记带执行身份的生命周期请求，实际完成由模块轮次推进。
+SysResult_t VStorage_Request(VStorage *storage, const LCRequest *request, uint32_t now)
 {
-    SysResult_t z = enter(s);
-    return z ? z : leave(s, LC_Request(&s->lifecycle, r, now));
+    SysResult_t result = enter(storage);
+    return result ? result : leave(storage, LC_Request(&storage->lifecycle, request, now));
 }
 
-static void complete(VStorage *s, SysResult_t z, uint32_t fact)
+// 提交模块的真实操作完成结果。
+static void complete(VStorage *storage, SysResult_t result, uint32_t fact)
 {
-    if (!LC_Complete(&s->lifecycle, &s->lifecycle.request.id, z, fact))
-        s->work = 0U;
+    if (!LC_Complete(&storage->lifecycle, &storage->lifecycle.request.id, result, fact))
+        storage->work = 0U;
 }
 
-static void poll_facts(VStorage *s)
+// 刷新本轮可观察的底层运行和退出事实。
+static void poll_facts(VStorage *storage)
 {
     VStorageFacts fresh = {0};
-    SysResult_t z = s->ports.backend->observe(s->ports.backend_port, &fresh);
-    s->facts.flags = z ? 0U : fresh.flags; /* 查询失败后禁止复用旧静止证据。 */
-    if (z && !waiting(z))
-        remember(s, z, &s->cleanup_error);
+    SysResult_t result = storage->ports.backend->observe(storage->ports.backend_port, &fresh);
+    storage->facts.flags = result ? 0U : fresh.flags; /* 查询失败后禁止复用旧静止证据。 */
+    if (result && !waiting(result))
+        remember(storage, result, &storage->cleanup_error);
 }
 
-static void start(VStorage *s)
+// 按已受理配置推进模块启动，每轮依据端口结果继续。
+static void start(VStorage *storage)
 {
-    const VStorageBackendOps *b = s->ports.backend;
-    void *p = s->ports.backend_port;
-    SysResult_t z = SYS_OK;
+    const VStorageBackendOps *backend_ops = storage->ports.backend;
+    void *port_context = storage->ports.backend_port;
+    SysResult_t result = SYS_OK;
 
-    if (s->consumer.phase == VSC_IDLE && s->consumer.result)
+    if (storage->consumer.phase == VSC_IDLE && storage->consumer.result)
     {
-        remember(s, s->consumer.result, &s->business_error);
-        complete(s, s->consumer.result, LC_INACTIVE);
+        remember(storage, storage->consumer.result, &storage->business_error);
+        complete(storage, storage->consumer.result, LC_INACTIVE);
         return;
     }
-    if (s->consumer.phase == VSC_BLOCKED)
+    if (storage->consumer.phase == VSC_BLOCKED)
     {
-        remember(s, s->consumer.result, &s->business_error);
-        complete(s, s->consumer.result, LC_ERROR);
+        remember(storage, storage->consumer.result, &storage->business_error);
+        complete(storage, storage->consumer.result, LC_ERROR);
         return;
     }
-    if (s->consumer.phase != VSC_GRANTED)
+    if (storage->consumer.phase != VSC_GRANTED)
         return;
-    if (s->lifecycle.first_error == SYS_ERR_TIMEOUT)
-        z = SYS_ERR_TIMEOUT;
-    else if (s->file_step == FILE_NEW)
+    if (storage->lifecycle.first_error == SYS_ERR_TIMEOUT)
+        result = SYS_ERR_TIMEOUT;
+    else if (storage->file_step == FILE_NEW)
     {
-        z = b->mount(p, &s->config);
-        if (!z)
-            s->file_step = FILE_MOUNTED;
+        result = backend_ops->mount(port_context, &storage->config);
+        if (!result)
+            storage->file_step = FILE_MOUNTED;
     }
-    else if (s->file_step == FILE_MOUNTED)
+    else if (storage->file_step == FILE_MOUNTED)
     {
-        z = b->open(p, &s->config, &s->format);
-        if (!z)
-            s->file_step = FILE_WRITING;
+        result = backend_ops->open(port_context, &storage->config, &storage->format);
+        if (!result)
+            storage->file_step = FILE_WRITING;
     }
-    else if (!prove(s, &s->lifecycle.request, LC_ACTIVE))
-        complete(s, SYS_OK, LC_ACTIVE);
+    else if (!prove(storage, &storage->lifecycle.request, LC_ACTIVE))
+        complete(storage, SYS_OK, LC_ACTIVE);
 
-    if (z)
+    if (result)
     {
-        remember(s, z, &s->business_error);
-        s->drain = 1U;
-        complete(s, z, LC_ERROR);
+        remember(storage, result, &storage->business_error);
+        storage->drain = 1U;
+        complete(storage, result, LC_ERROR);
     }
 }
 
-static void write_frame(VStorage *s, uint32_t now)
+// 写入当前帧的数据跨度，保留实际写入结果。
+static void write_frame(VStorage *storage, uint32_t now)
 {
-    const VStorageOffer *o = &s->frame.current;
-    SysResult_t z;
+    const VStorageOffer *offer = &storage->frame.current;
+    SysResult_t result;
 
     /* 已准入的录像帧可排空。发生文件错误后仍归还，但不再写。 */
-    if (!s->business_error && (s->facts.flags & VST_FILE_OPEN) &&
-        (!s->drain || s->config.mode == VST_AVI))
+    if (!storage->business_error && (storage->facts.flags & VST_FILE_OPEN) &&
+        (!storage->drain || storage->config.mode == VST_AVI))
     {
-        z = s->ports.backend->write(s->ports.backend_port, &s->config, &s->format, &o->view,
-                                    o->timestamp);
-        if (z)
+        result = storage->ports.backend->write(storage->ports.backend_port, &storage->config, &storage->format, &offer->view,
+                                    offer->timestamp);
+        if (result)
         {
-            remember(s, z, &s->business_error);
-            s->drain = 1U;
+            remember(storage, result, &storage->business_error);
+            storage->drain = 1U;
         }
         else
         {
-            s->frames++;
-            s->sample_tick = now;
-            if (s->config.mode == VST_SNAPSHOT)
-                s->drain = 1U;
+            storage->frames++;
+            storage->sample_tick = now;
+            if (storage->config.mode == VST_SNAPSHOT)
+                storage->drain = 1U;
         }
-        s->facts.flags &= ~VST_IO_QUIET; /* 写入后的归还需要重新观测。 */
+        storage->facts.flags &= ~VST_IO_QUIET; /* 写入后的归还需要重新观测。 */
     }
-    s->frame.state = VSF_RETURN;
+    storage->frame.state = VSF_RETURN;
 }
 
-static void finish_files(VStorage *s)
+// 推进文件封尾及关闭，文件完成不证明媒体租约已归还。
+static void finish_files(VStorage *storage)
 {
-    const VStorageBackendOps *b = s->ports.backend;
-    void *p = s->ports.backend_port;
-    SysResult_t z = SYS_OK;
-    if (s->file_step < FILE_FINISH)
-        s->file_step = FILE_FINISH;
-    switch (s->file_step)
+    const VStorageBackendOps *backend_ops = storage->ports.backend;
+    void *port_context = storage->ports.backend_port;
+    SysResult_t result = SYS_OK;
+    if (storage->file_step < FILE_FINISH)
+        storage->file_step = FILE_FINISH;
+    switch (storage->file_step)
     {
     case FILE_FINISH:
-        if ((s->facts.flags & VST_FILE_OPEN) && !s->business_error)
+        if ((storage->facts.flags & VST_FILE_OPEN) && !storage->business_error)
         {
-            if (s->frames)
-                z = b->finish(p);
-            else if (s->config.mode == VST_AVI)
-                z = SYS_ERR_NOT_FOUND; /* 空AVI不能宣称完整成片。 */
+            if (storage->frames)
+                result = backend_ops->finish(port_context);
+            else if (storage->config.mode == VST_AVI)
+                result = SYS_ERR_NOT_FOUND; /* 空AVI不能宣称完整成片。 */
         }
-        s->file_step = FILE_CLOSE;
+        storage->file_step = FILE_CLOSE;
         break;
     case FILE_CLOSE:
-        if (s->facts.flags & VST_FILE_OPEN)
-            z = b->close(p);
-        s->file_step = FILE_UNMOUNT;
+        if (storage->facts.flags & VST_FILE_OPEN)
+            result = backend_ops->close(port_context);
+        storage->file_step = FILE_UNMOUNT;
         break;
     case FILE_UNMOUNT:
-        if (s->facts.flags & VST_VOLUME_HELD)
-            z = (s->facts.flags & VST_FILE_OPEN) ? SYS_ERR_INVALID_STATE : b->unmount(p);
-        s->file_step = FILE_DONE;
+        if (storage->facts.flags & VST_VOLUME_HELD)
+            result = (storage->facts.flags & VST_FILE_OPEN) ? SYS_ERR_INVALID_STATE : backend_ops->unmount(port_context);
+        storage->file_step = FILE_DONE;
         break;
     default:
         break;
     }
-    remember(s, z, &s->cleanup_error);
+    remember(storage, result, &storage->cleanup_error);
 }
 
-static uint32_t release_flags(const VStorage *s)
+// 提取 Storage 端口已观测到的退出条件。
+static uint32_t release_flags(const VStorage *storage)
 {
     uint32_t flags =
         APP_LIFECYCLE_INPUT_CLOSED | APP_LIFECYCLE_WORK_QUIESCENT | APP_LIFECYCLE_FRAMES_DRAINED;
-    if (s->facts.flags & VST_FILE_FINISHED)
+    if (storage->facts.flags & VST_FILE_FINISHED)
         flags |= APP_LIFECYCLE_FILE_FINISHED;
-    if (s->facts.flags & VST_FILE_CLOSED)
+    if (storage->facts.flags & VST_FILE_CLOSED)
         flags |= APP_LIFECYCLE_FILE_CLOSED;
-    if (s->facts.flags & VST_VOLUME_RELEASED)
+    if (storage->facts.flags & VST_VOLUME_RELEASED)
         flags |= APP_LIFECYCLE_VOLUME_RELEASED;
     return flags;
 }
 
-static void stop(VStorage *s)
+// 推进模块停止，等待底层和资源证据齐备。
+static void stop(VStorage *storage)
 {
-    SysResult_t z;
-    if (s->frame.state != VSF_FREE || !quiet(s))
+    SysResult_t result;
+    if (storage->frame.state != VSF_FREE || !quiet(storage))
         return;
-    if (s->file_step != FILE_DONE)
+    if (storage->file_step != FILE_DONE)
     {
-        finish_files(s);
-        return;
-    }
-    if (s->consumer.phase == VSC_GRANTED)
-    {
-        z = VStorageConsumer_End(&s->consumer, s->business_error, s->cleanup_error,
-                                 release_flags(s));
-        remember(s, z, &s->cleanup_error);
+        finish_files(storage);
         return;
     }
-    if (exited(s))
+    if (storage->consumer.phase == VSC_GRANTED)
     {
-        s->drain = 0U;
-        if (s->work && s->lifecycle.request.id.operation == LC_DEACTIVATE)
+        result = VStorageConsumer_End(&storage->consumer, storage->business_error, storage->cleanup_error,
+                                 release_flags(storage));
+        remember(storage, result, &storage->cleanup_error);
+        return;
+    }
+    if (exited(storage))
+    {
+        storage->drain = 0U;
+        if (storage->work && storage->lifecycle.request.id.operation == LC_DEACTIVATE)
         {
-            z = first_result(s);
-            if (!z && (!volume_clear(s) ||
-                       (s->frames && (s->facts.flags & (VST_FILE_FINISHED | VST_FILE_CLOSED)) !=
+            result = first_result(storage);
+            if (!result && (!volume_clear(storage) ||
+                       (storage->frames && (storage->facts.flags & (VST_FILE_FINISHED | VST_FILE_CLOSED)) !=
                                          (VST_FILE_FINISHED | VST_FILE_CLOSED))))
             {
-                z = SYS_ERR_INVALID_STATE;
-                remember(s, z, &s->cleanup_error);
+                result = SYS_ERR_INVALID_STATE;
+                remember(storage, result, &storage->cleanup_error);
             }
-            complete(s, z, z ? LC_ERROR : LC_INACTIVE);
+            complete(storage, result, result ? LC_ERROR : LC_INACTIVE);
         }
     }
 }
 
-static void recover(VStorage *s)
+// 按端口契约尝试恢复底层资源，保留原始故障。
+static void recover(VStorage *storage)
 {
-    if (!s->recovery_issued && !volume_clear(s))
+    if (!storage->recovery_issued && !volume_clear(storage))
     {
         /* 显式恢复可使原来故障的IDMA停止，然后继续归还原Frame。
          * 完成的同步写入不会在此轮重新执行。 */
-        s->recovery_issued = 1U;
-        if (s->facts.flags & VST_FS_FAULT)
-            s->recovery_result = s->ports.backend->recover(s->ports.backend_port);
+        storage->recovery_issued = 1U;
+        if (storage->facts.flags & VST_FS_FAULT)
+            storage->recovery_result = storage->ports.backend->recover(storage->ports.backend_port);
         else
-            s->recovery_result = SYS_ERR_INVALID_STATE;
-        if (s->recovery_result)
-            complete(s, s->recovery_result, LC_ERROR);
+            storage->recovery_result = SYS_ERR_INVALID_STATE;
+        if (storage->recovery_result)
+            complete(storage, storage->recovery_result, LC_ERROR);
         return;
     }
-    if (ready_to_configure(s))
+    if (ready_to_configure(storage))
     {
-        s->bound = 0U;
-        complete(s, SYS_OK, LC_UNCONFIGURED);
+        storage->bound = 0U;
+        complete(storage, SYS_OK, LC_UNCONFIGURED);
     }
 }
 
-SysResult_t VStorage_RunRound(VStorage *s, uint32_t now)
+// 在 Storage 所有者上下文推进生命周期、文件收尾及归还。
+SysResult_t VStorage_RunRound(VStorage *storage, uint32_t now)
 {
-    SysResult_t z = enter(s);
+    SysResult_t result = enter(storage);
     uint32_t op, before;
     int accepting;
-    if (z)
-        return z;
-    poll_facts(s);
-    (void)LC_Process(&s->lifecycle, now);
-    op = s->lifecycle.request.id.operation;
-    z = VStorageConsumer_Process(&s->consumer);
-    if (s->consumer.phase == VSC_BLOCKED)
-        remember(s, z, &s->cleanup_error);
-    accepting = !s->drain && quiet(s) && !(s->facts.flags & VST_FS_FAULT) &&
-                s->lifecycle.state == LC_ACTIVE && s->consumer.phase == VSC_GRANTED &&
-                (s->facts.flags & VST_FILE_OPEN) &&
-                (!s->frames || now - s->sample_tick >= s->interval_ms);
-    before = s->frame.state;
-    z = VStorageFrame_Process(&s->frame, s->ports.frame, s->ports.frame_port, &s->consumer.grant,
-                              accepting, quiet(s));
-    if (s->frame.state == VSF_BLOCKED ||
-        (z && (!waiting(z) || (before == VSF_ACK && s->frame.state == VSF_CONSUME))))
+    if (result)
+        return result;
+    poll_facts(storage);
+    (void)LC_Process(&storage->lifecycle, now);
+    op = storage->lifecycle.request.id.operation;
+    result = VStorageConsumer_Process(&storage->consumer);
+    if (storage->consumer.phase == VSC_BLOCKED)
+        remember(storage, result, &storage->cleanup_error);
+    accepting = !storage->drain && quiet(storage) && !(storage->facts.flags & VST_FS_FAULT) &&
+                storage->lifecycle.state == LC_ACTIVE && storage->consumer.phase == VSC_GRANTED &&
+                (storage->facts.flags & VST_FILE_OPEN) &&
+                (!storage->frames || now - storage->sample_tick >= storage->interval_ms);
+    before = storage->frame.state;
+    result = VStorageFrame_Process(&storage->frame, storage->ports.frame, storage->ports.frame_port, &storage->consumer.grant,
+                              accepting, quiet(storage));
+    if (storage->frame.state == VSF_BLOCKED ||
+        (result && (!waiting(result) || (before == VSF_ACK && storage->frame.state == VSF_CONSUME))))
     {
-        remember(s, z, &s->business_error);
-        s->drain = 1U;
+        remember(storage, result, &storage->business_error);
+        storage->drain = 1U;
     }
-    if (s->file_step == FILE_WRITING && (s->facts.flags & VST_FS_FAULT))
+    if (storage->file_step == FILE_WRITING && (storage->facts.flags & VST_FS_FAULT))
     {
-        remember(s, SYS_ERR_IO, &s->business_error);
-        s->drain = 1U;
+        remember(storage, SYS_ERR_IO, &storage->business_error);
+        storage->drain = 1U;
     }
-    if (s->frame.state == VSF_READY && (quiet(s) || s->business_error))
-        write_frame(s, now);
-    if (s->drain)
-        stop(s);
-    if (s->work && op == LC_DEACTIVATE && first_result(s))
-        complete(s, first_result(s), LC_ERROR);
-    if (s->work && op == LC_ACTIVATE)
-        start(s);
-    if (s->work && op == LC_ERROR_PROCESS)
-        recover(s);
-    if (s->work && (op == LC_CONFIGURE || op == LC_CLEANUP) && ready_to_configure(s))
+    if (storage->frame.state == VSF_READY && (quiet(storage) || storage->business_error))
+        write_frame(storage, now);
+    if (storage->drain)
+        stop(storage);
+    if (storage->work && op == LC_DEACTIVATE && first_result(storage))
+        complete(storage, first_result(storage), LC_ERROR);
+    if (storage->work && op == LC_ACTIVATE)
+        start(storage);
+    if (storage->work && op == LC_ERROR_PROCESS)
+        recover(storage);
+    if (storage->work && (op == LC_CONFIGURE || op == LC_CLEANUP) && ready_to_configure(storage))
     {
         if (op == LC_CLEANUP)
-            s->bound = 0U;
-        complete(s, SYS_OK, LC_Target(op));
+            storage->bound = 0U;
+        complete(storage, SYS_OK, LC_Target(op));
     }
-    return leave(s, SYS_OK);
+    return leave(storage, SYS_OK);
 }
 
-SysResult_t VStorage_QueryStatus(VStorage *s, VStorageStatus *o)
+// Storage：读取模块的生命周期状态和观察到的业务事实。
+SysResult_t VStorage_QueryStatus(VStorage *storage, VStorageStatus *status)
 {
-    SysResult_t z = enter(s);
-    if (z)
-        return z;
-    if (!o || V2_Overlap(s, sizeof(*s), o, sizeof(*o)))
-        return leave(s, SYS_ERR_INVALID_ARG);
-    o->lifecycle = s->lifecycle.state;
-    o->drain = s->drain;
-    o->frame_state = s->frame.state;
-    o->frames = s->frames;
-    o->qualification = s->consumer.phase;
-    o->grant = s->consumer.grant;
-    o->files = s->facts;
-    o->first_fault = s->first_fault;
-    o->business_error = s->business_error;
-    o->cleanup_error = s->cleanup_error;
-    o->recovery_result = s->recovery_result;
-    o->camera_stop_result = s->consumer.camera_stop_result;
-    return leave(s, SYS_OK);
+    SysResult_t result = enter(storage);
+    if (result)
+        return result;
+    if (!status || V2_Overlap(storage, sizeof(*storage), status, sizeof(*status)))
+        return leave(storage, SYS_ERR_INVALID_ARG);
+    status->lifecycle = storage->lifecycle.state;
+    status->drain = storage->drain;
+    status->frame_state = storage->frame.state;
+    status->frames = storage->frames;
+    status->qualification = storage->consumer.phase;
+    status->grant = storage->consumer.grant;
+    status->files = storage->facts;
+    status->first_fault = storage->first_fault;
+    status->business_error = storage->business_error;
+    status->cleanup_error = storage->cleanup_error;
+    status->recovery_result = storage->recovery_result;
+    status->camera_stop_result = storage->consumer.camera_stop_result;
+    return leave(storage, SYS_OK);
 }
 
-SysResult_t VStorage_QueryExitEvidence(VStorage *s, const MRGrant *g, uint32_t *flags)
+// Storage：分别读取退出所需的硬件、业务和媒体资源证据。
+SysResult_t VStorage_QueryExitEvidence(VStorage *storage, const MRGrant *grant, uint32_t *flags)
 {
-    SysResult_t z = enter(s);
-    if (z)
-        return z;
-    if (!g || !g->session || !flags || V2_Overlap(s, sizeof(*s), flags, sizeof(*flags)) ||
-        V2_Overlap(g, sizeof(*g), flags, sizeof(*flags)) || !MRGrant_Equal(g, &s->consumer.grant))
-        return leave(s, SYS_ERR_PROTOCOL);
-    if (!s->drain || s->file_step != FILE_DONE || s->frame.state != VSF_FREE || !quiet(s))
-        return leave(s, SYS_ERR_BUSY);
-    *flags = release_flags(s);
-    return leave(s, SYS_OK);
+    SysResult_t result = enter(storage);
+    if (result)
+        return result;
+    if (!grant || !grant->session || !flags || V2_Overlap(storage, sizeof(*storage), flags, sizeof(*flags)) ||
+        V2_Overlap(grant, sizeof(*grant), flags, sizeof(*flags)) || !MRGrant_Equal(grant, &storage->consumer.grant))
+        return leave(storage, SYS_ERR_PROTOCOL);
+    if (!storage->drain || storage->file_step != FILE_DONE || storage->frame.state != VSF_FREE || !quiet(storage))
+        return leave(storage, SYS_ERR_BUSY);
+    *flags = release_flags(storage);
+    return leave(storage, SYS_OK);
 }
 
-SysResult_t VStorage_ReadCompletion(VStorage *s, const V2ExecId *id, LCCompletion *out)
+// Storage：按身份读取模块已固定的完成结果。
+SysResult_t VStorage_ReadCompletion(VStorage *storage, const V2ExecId *id, LCCompletion *out)
 {
-    SysResult_t z = enter(s);
-    if (z)
-        return z;
-    if (!out || V2_Overlap(s, sizeof(*s), out, sizeof(*out)))
-        return leave(s, SYS_ERR_INVALID_ARG);
-    return leave(s, LC_Read(&s->lifecycle, id, out));
+    SysResult_t result = enter(storage);
+    if (result)
+        return result;
+    if (!out || V2_Overlap(storage, sizeof(*storage), out, sizeof(*out)))
+        return leave(storage, SYS_ERR_INVALID_ARG);
+    return leave(storage, LC_Read(&storage->lifecycle, id, out));
 }
 
-SysResult_t VStorage_ConfirmCompletion(VStorage *s, const LCCompletion *c)
+// Storage：确认与请求身份匹配的完成已消费。
+SysResult_t VStorage_ConfirmCompletion(VStorage *storage, const LCCompletion *completion)
 {
-    SysResult_t z = enter(s);
-    return z ? z : leave(s, LC_Confirm(&s->lifecycle, c));
+    SysResult_t result = enter(storage);
+    return result ? result : leave(storage, LC_Confirm(&storage->lifecycle, completion));
 }

@@ -1,3 +1,5 @@
+// 关联授权、交接和真实媒体持有，协调归还、收据和退出核验。
+
 #ifndef V2_MEDIA_RESOURCE_H
 #define V2_MEDIA_RESOURCE_H
 #include "media_source.h"
@@ -68,19 +70,34 @@ typedef SysResult_t (*MRSendReceipt)(void *, const MRReceipt *);
  * No returned view is valid after its actual backend release.
  */
 SysResult_t MR_Init(MRContext *, const MRSource *);
+// 关联来自权威资格方的 Grant，建立准入上下文。
 SysResult_t MR_AssociateGrant(MRContext *, const MRGrant *);
+// 登记原交接身份和元数据，尚未提交队列时保持可本地取消。
 SysResult_t MR_Stage(MRContext *, const MRGrant *, const MRBridge *, const MRSlot *, MRRequest *);
+// 记录原请求已提交，后续按同一身份办理终结。
 SysResult_t MR_Commit(MRContext *, const MRRequest *);
+// 取消尚未提交的交接，不生成 Camera 终结收据。
 SysResult_t MR_CancelLocal(MRContext *, const MRRequest *);
+// 在 Camera 所有者上下文核验准入并预留终结所需空间。
 SysResult_t MR_Admit(MRContext *, const MRRequest *);
+// 关闭指定 Grant 的准入，保留已受理交接的归还路径。
 SysResult_t MR_Close(MRContext *, const MRRelease *);
+// 通过可信后端取得物理媒体持有并关联到交接。
 SysResult_t MR_Obtain(MRContext *, const MRRequest *, MRMedia *, MRView *);
+// 为已取得的媒体绑定 Bridge 身份。
 SysResult_t MR_BindBridge(MRContext *, const MRRequest *, const MRBridge *);
+// 按完整 Bridge 身份查找关联的交接信息。
 SysResult_t MR_LookupBridge(MRContext *, const MRBridge *, MRRequest *, MRMedia *);
+// 在读取者退场后调用后端真实归还，保留失败后的持有事实。
 SysResult_t MR_Return(MRContext *, const MRRequest *, const MRMedia *);
+// 按匹配身份读取终结收据。
 SysResult_t MR_ReadReceipt(MRContext *, const MRRequest *, MRReceipt *);
+// 运送冻结的终结收据，入队不证明消费。
 SysResult_t MR_FlushReceipt(MRContext *, const MRReceipt *, MRSendReceipt, void *);
+// 登记客户端实际消费了匹配的归还收据。
 SysResult_t MR_ConfirmConsumed(MRContext *, const MRReceipt *);
+// 在终结及消费门禁成立后退休交接身份。
 SysResult_t MR_Retire(MRContext *, const MRReceipt *);
+// 核验指定 Grant 已关闭准入、无未完成交接且无物理持有。
 SysResult_t MR_VerifyExit(MRContext *, const MRRelease *);
 #endif

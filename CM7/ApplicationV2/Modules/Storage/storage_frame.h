@@ -1,3 +1,5 @@
+// 推进 Storage 帧交付、写入、归还和收据确认。
+
 #ifndef V2_STORAGE_FRAME_H
 #define V2_STORAGE_FRAME_H
 
@@ -48,6 +50,7 @@ typedef struct
     MRReceipt terminal;
 } VStorageFrame;
 
+// 推进 Storage 的帧写入和真实归还流程。
 SysResult_t VStorageFrame_Process(VStorageFrame *, const VStorageFrameOps *, void *,
                                   const MRGrant *, int accepting, int readers_quiet);
 #endif

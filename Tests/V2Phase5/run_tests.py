@@ -72,11 +72,11 @@ def measure(name, case):
 negatives = []
 MUTANTS = [
     ('skip_dma_gate', 'usb_frame.c',
-     'z = f->ops->readers_safe(f->port, &f->request, &f->data);', 'z = SYS_OK;', 0),
+     'result = frame->ops->readers_safe(frame->port, &frame->request, &frame->data);', 'result = SYS_OK;', 0),
     ('false_release', 'usb_consumer.c', 'reply.completion_flags & APP_LIFECYCLE_QUALIFICATION_RELEASED',
      '1U', 8),
-    ('overwrite_first_fault', 'usb_module.c', 'complete(u, z, LC_ERROR);',
-     'complete(u, SYS_OK, LC_INACTIVE);', 6),
+    ('overwrite_first_fault', 'usb_module.c', 'complete(usb, result, LC_ERROR);',
+     'complete(usb, SYS_OK, LC_INACTIVE);', 6),
 ]
 rows = []
 resources = {}

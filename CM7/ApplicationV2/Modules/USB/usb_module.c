@@ -1,3 +1,5 @@
+// 协调 USB 生命周期、UVC 启停和真实退出证明。
+
 #include "usb_module.h"
 #include <string.h>
 
@@ -6,423 +8,449 @@
 #define START_PROOF (VUSB_MODE_STARTED | VUSB_CLASS_READY)
 #define SEND_PROOF (START_PROOF | VUSB_HOST_CONFIGURED | VUSB_CAN_SUBMIT)
 
-static int owner(void *p)
+// 校验状态修改操作运行在约定的所有者上下文。
+static int owner(void *port_context)
 {
-    VUSB *u = p;
-    return u && u->ops->is_owner(u->port);
+    VUSB *usb = port_context;
+    return usb && usb->ops->is_owner(usb->port);
 }
 
-static int waiting(SysResult_t z)
+// 识别仍需等待端口或运输推进的结果。
+static int waiting(SysResult_t result)
 {
-    return z == SYS_ERR_BUSY || z == SYS_ERR_NO_RESOURCE || z == SYS_ERR_NOT_FOUND;
+    return result == SYS_ERR_BUSY || result == SYS_ERR_NO_RESOURCE || result == SYS_ERR_NOT_FOUND;
 }
 
-static int proven(const VUSB *u, uint32_t mask)
+// 检查端口证据是否满足调用方要求的事实掩码。
+static int proven(const VUSB *usb, uint32_t mask)
 {
-    return (u->observation.flags & mask) == mask;
+    return (usb->observation.flags & mask) == mask;
 }
 
-static int local_drained(const VUSB *u)
+// 检查本地数据路径是否已完成排空。
+static int local_drained(const VUSB *usb)
 {
-    return !(u->observation.flags & VUSB_FRAME_OWNED) &&
-           proven(u, VUSB_READERS_QUIET | VUSB_BRIDGE_IDLE) && VUSBFrame_IsIdle(&u->frame);
+    return !(usb->observation.flags & VUSB_FRAME_OWNED) &&
+           proven(usb, VUSB_READERS_QUIET | VUSB_BRIDGE_IDLE) && VUSBFrame_IsIdle(&usb->frame);
 }
 
-static int stopped(const VUSB *u)
+// 检查底层停止事实，保持与本地帧排空独立。
+static int stopped(const VUSB *usb)
 {
-    return local_drained(u) && proven(u, STOP_PROOF) && !(u->observation.flags & VUSB_MODE_STARTED);
+    return local_drained(usb) && proven(usb, STOP_PROOF) && !(usb->observation.flags & VUSB_MODE_STARTED);
 }
 
-static int exit_confirmed(const VUSB *u)
+// 独立核验模块退出所需的各项事实。
+static int exit_confirmed(const VUSB *usb)
 {
-    return stopped(u) && !u->consumer.grant.session &&
-           (u->consumer.phase == VUC_IDLE || u->consumer.phase == VUC_IDLE_REQUEST);
+    return stopped(usb) && !usb->consumer.grant.session &&
+           (usb->consumer.phase == VUC_IDLE || usb->consumer.phase == VUC_IDLE_REQUEST);
 }
 
-static int retired(const VUSB *u)
+// 检查退出相关的身份及收据是否已退休。
+static int retired(const VUSB *usb)
 {
-    return exit_confirmed(u) && !u->drain && u->consumer.phase == VUC_IDLE;
+    return exit_confirmed(usb) && !usb->drain && usb->consumer.phase == VUC_IDLE;
 }
 
-static SysResult_t enter(VUSB *u)
+// 校验所有者调用并设置重入保护，调用方仍负责跨任务串行化。
+static SysResult_t enter(VUSB *usb)
 {
-    if (!u || u->magic != MAGIC || !owner(u))
+    if (!usb || usb->magic != MAGIC || !owner(usb))
         return SYS_ERR_INVALID_STATE;
-    if (u->busy)
+    if (usb->busy)
         return SYS_ERR_BUSY;
-    u->busy = 1;
+    usb->busy = 1;
     return SYS_OK;
 }
 
-static SysResult_t leave(VUSB *u, SysResult_t result)
+// 退出当前调用的重入保护。
+static SysResult_t leave(VUSB *usb, SysResult_t result)
 {
-    u->busy = 0;
+    usb->busy = 0;
     return result;
 }
 
-static void remember(VUSB *u, SysResult_t z)
+// 记录首个错误，后续恢复结果不能覆盖它。
+static void remember(VUSB *usb, SysResult_t result)
 {
-    if (!z || waiting(z))
+    if (!result || waiting(result))
         return;
-    if (!u->first_fault)
-        u->first_fault = z;
-    if (!u->active_fault)
-        u->active_fault = z;
+    if (!usb->first_fault)
+        usb->first_fault = result;
+    if (!usb->active_fault)
+        usb->active_fault = result;
 }
 
-static SysResult_t can_begin(void *p, const LCRequest *r)
+// 检查当前模块事实是否允许受理指定生命周期过渡。
+static SysResult_t can_begin(void *port_context, const LCRequest *request)
 {
-    VUSB *u = p;
-    if (r->id.operation == LC_CONFIGURE && !u->bound)
+    VUSB *usb = port_context;
+    if (request->id.operation == LC_CONFIGURE && !usb->bound)
         return SYS_ERR_INVALID_STATE;
-    if (r->id.operation != LC_DEACTIVATE && !retired(u))
+    if (request->id.operation != LC_DEACTIVATE && !retired(usb))
         return SYS_ERR_BUSY;
     return SYS_OK;
 }
 
-static SysResult_t begin(void *p, const LCRequest *r)
+// 从生命周期过渡请求登记本模块操作，真实完成由事实检查决定。
+static SysResult_t begin(void *port_context, const LCRequest *request)
 {
-    VUSB *u = p;
-    SysResult_t z;
-    if (r->id.operation == LC_ACTIVATE)
+    VUSB *usb = port_context;
+    SysResult_t result;
+    if (request->id.operation == LC_ACTIVATE)
     {
-        if (u->mode == VU_MODE_UVC)
+        if (usb->mode == VU_MODE_UVC)
         {
-            z = VUSBConsumer_Begin(&u->consumer);
-            if (z)
-                return z;
+            result = VUSBConsumer_Begin(&usb->consumer);
+            if (result)
+                return result;
         }
-        u->frame.first_error = 0; /* 前一交接已退休，可开始本次诊断。 */
-        u->start_issued = 0;
+        usb->frame.first_error = 0; /* 前一交接已退休，可开始本次诊断。 */
+        usb->start_issued = 0;
     }
-    if (r->id.operation == LC_DEACTIVATE)
+    if (request->id.operation == LC_DEACTIVATE)
     {
-        u->drain = 1;
-        u->mode_stop_done = 0;
-        u->stop_error = 0;
+        usb->drain = 1;
+        usb->mode_stop_done = 0;
+        usb->stop_error = 0;
     }
-    u->work = 1;
+    usb->work = 1;
     return SYS_OK;
 }
 
-static SysResult_t prove(void *p, const LCRequest *r, uint32_t fact)
+// 检查端口和资源事实是否满足当前过渡的完成条件。
+static SysResult_t prove(void *port_context, const LCRequest *request, uint32_t fact)
 {
-    VUSB *u = p;
-    if (fact == r->expected)
+    VUSB *usb = port_context;
+    if (fact == request->expected)
         return SYS_OK; /* 操作未提交，原稳定事实保持。 */
     if (fact == LC_ACTIVE)
     {
-        if (u->mode == VU_MODE_NONE)
+        if (usb->mode == VU_MODE_NONE)
             return SYS_OK;
-        if (u->mode == VU_MODE_TEST)
-            return proven(u, VUSB_MODE_STARTED) ? SYS_OK : SYS_ERR_BUSY;
-        return proven(u, START_PROOF) && u->consumer.phase == VUC_GRANTED ? SYS_OK : SYS_ERR_BUSY;
+        if (usb->mode == VU_MODE_TEST)
+            return proven(usb, VUSB_MODE_STARTED) ? SYS_OK : SYS_ERR_BUSY;
+        return proven(usb, START_PROOF) && usb->consumer.phase == VUC_GRANTED ? SYS_OK : SYS_ERR_BUSY;
     }
-    if (r->id.operation == LC_DEACTIVATE)
-        return exit_confirmed(u) ? SYS_OK : SYS_ERR_BUSY;
-    return retired(u) ? SYS_OK : SYS_ERR_BUSY;
+    if (request->id.operation == LC_DEACTIVATE)
+        return exit_confirmed(usb) ? SYS_OK : SYS_ERR_BUSY;
+    return retired(usb) ? SYS_OK : SYS_ERR_BUSY;
 }
 
 const struct V2LifecycleOps VUSB_LifecycleOps = {owner, can_begin, begin, prove};
 
-SysResult_t VUSB_Init(VUSB *u, uint32_t module, uint32_t session, const VUSBOps *o, void *p,
+// USB：绑定模块所有者及端口并初始化本地上下文。
+SysResult_t VUSB_Init(VUSB *usb, uint32_t module, uint32_t session, const VUSBOps *usb_ops, void *port_context,
                       const VUSBConsumerOps *consumer, void *cp, const VUSBFrameOps *frame,
                       void *fp)
 {
-    SysResult_t z;
-    if (!u || u->magic || !module || !session || !o || !o->is_owner || !o->start ||
-        !o->mode_process || !o->cancel || !o->uvc_process || !o->stop_mode || !o->observe)
+    SysResult_t result;
+    if (!usb || usb->magic || !module || !session || !usb_ops || !usb_ops->is_owner || !usb_ops->start ||
+        !usb_ops->mode_process || !usb_ops->cancel || !usb_ops->uvc_process || !usb_ops->stop_mode || !usb_ops->observe)
         return SYS_ERR_INVALID_ARG;
-    if (!o->is_owner(p))
+    if (!usb_ops->is_owner(port_context))
         return SYS_ERR_INVALID_STATE;
-    u->ops = o;
-    u->port = p;
-    z = VUSBConsumer_Init(&u->consumer, consumer, cp);
-    if (!z)
-        z = VUSBFrame_Init(&u->frame, frame, fp);
-    if (!z)
-        z = LC_Init(&u->lifecycle, module, session, &VUSB_LifecycleOps, u);
-    if (z)
+    usb->ops = usb_ops;
+    usb->port = port_context;
+    result = VUSBConsumer_Init(&usb->consumer, consumer, cp);
+    if (!result)
+        result = VUSBFrame_Init(&usb->frame, frame, fp);
+    if (!result)
+        result = LC_Init(&usb->lifecycle, module, session, &VUSB_LifecycleOps, usb);
+    if (result)
     {
         /* 这些初始化没有提交外部工作，允许修正端口后重试。 */
-        memset(u, 0, sizeof(*u));
-        return z;
+        memset(usb, 0, sizeof(*usb));
+        return result;
     }
-    u->magic = MAGIC;
+    usb->magic = MAGIC;
     return SYS_OK;
 }
 
-SysResult_t VUSB_QueryCapabilities(VUSB *u, const CoreMediaFormat *format,
+// USB：查询模块端口公开的格式及运行能力。
+SysResult_t VUSB_QueryCapabilities(VUSB *usb, const CoreMediaFormat *format,
                                    const CoreFrameRate *rate, VideoStreamConfig_t *out)
 {
-    SysResult_t z = enter(u);
-    if (z)
-        return z;
-    if (!out || V2_Overlap(u, sizeof(*u), out, sizeof(*out)))
-        return leave(u, SYS_ERR_INVALID_ARG);
-    return leave(u, VUSB_Translate(format, rate, out));
+    SysResult_t result = enter(usb);
+    if (result)
+        return result;
+    if (!out || V2_Overlap(usb, sizeof(*usb), out, sizeof(*out)))
+        return leave(usb, SYS_ERR_INVALID_ARG);
+    return leave(usb, VUSB_Translate(format, rate, out));
 }
 
-SysResult_t VUSB_BindCandidate(VUSB *u, const V2Registry *registry, const V2CompositionCandidate *v,
+// USB：校验并绑定已选配置候选，保留底层应用配置的独立结果。
+SysResult_t VUSB_BindCandidate(VUSB *usb, const V2Registry *registry, const V2CompositionCandidate *candidate,
                                uint32_t mode, const CoreFrameRate *rate)
 {
-    const V2ModuleDesc *m;
-    uint16_t i;
+    const V2ModuleDesc *module;
+    uint16_t module_index;
     VideoStreamConfig_t native = {0};
-    SysResult_t z = enter(u);
-    if (z)
-        return z;
-    if (!registry || !v || v->candidate_only != 1 || mode > VU_MODE_UVC)
-        return leave(u, SYS_ERR_INVALID_ARG);
-    m = V2Registry_Get(registry, (V2ModuleId){u->lifecycle.module});
-    if (!m || !(v->modules.selected_mask & (1UL << (m - registry->modules))))
-        return leave(u, SYS_ERR_NOT_FOUND);
-    if (!v->modules.count || v->modules.count > V2_MODULE_MAX)
-        return leave(u, SYS_ERR_PROTOCOL);
-    for (i = 0; i < v->modules.count; ++i)
-        if (v->modules.order[i].value == u->lifecycle.module)
+    SysResult_t result = enter(usb);
+    if (result)
+        return result;
+    if (!registry || !candidate || candidate->candidate_only != 1 || mode > VU_MODE_UVC)
+        return leave(usb, SYS_ERR_INVALID_ARG);
+    module = V2Registry_Get(registry, (V2ModuleId){usb->lifecycle.module});
+    if (!module || !(candidate->modules.selected_mask & (1UL << (module - registry->modules))))
+        return leave(usb, SYS_ERR_NOT_FOUND);
+    if (!candidate->modules.count || candidate->modules.count > V2_MODULE_MAX)
+        return leave(usb, SYS_ERR_PROTOCOL);
+    for (module_index = 0; module_index < candidate->modules.count; ++module_index)
+        if (candidate->modules.order[module_index].value == usb->lifecycle.module)
             break;
-    if (i == v->modules.count)
-        return leave(u, SYS_ERR_PROTOCOL);
+    if (module_index == candidate->modules.count)
+        return leave(usb, SYS_ERR_PROTOCOL);
     if (mode == VU_MODE_UVC)
     {
-        if (!v->media.pipeline_mask || !v->media.entity_mask)
-            return leave(u, SYS_ERR_INVALID_ARG);
-        z = VUSB_Translate(&v->media.format, rate, &native);
-        if (z)
-            return leave(u, z);
+        if (!candidate->media.pipeline_mask || !candidate->media.entity_mask)
+            return leave(usb, SYS_ERR_INVALID_ARG);
+        result = VUSB_Translate(&candidate->media.format, rate, &native);
+        if (result)
+            return leave(usb, result);
     }
-    if (u->bound)
-        return leave(u, u->mode == mode &&
-                                !memcmp(&u->format, &v->media.format, sizeof(u->format)) &&
-                                !memcmp(&u->native, &native, sizeof(native))
+    if (usb->bound)
+        return leave(usb, usb->mode == mode &&
+                                !memcmp(&usb->format, &candidate->media.format, sizeof(usb->format)) &&
+                                !memcmp(&usb->native, &native, sizeof(native))
                             ? SYS_OK
                             : SYS_ERR_NOT_SUPPORTED);
-    if (u->lifecycle.state != LC_UNCONFIGURED || u->lifecycle.pending || u->drain)
-        return leave(u, SYS_ERR_BUSY);
-    u->format = v->media.format;
-    u->native = native;
-    u->mode = mode;
-    u->bound = 1;
-    return leave(u, SYS_OK);
+    if (usb->lifecycle.state != LC_UNCONFIGURED || usb->lifecycle.pending || usb->drain)
+        return leave(usb, SYS_ERR_BUSY);
+    usb->format = candidate->media.format;
+    usb->native = native;
+    usb->mode = mode;
+    usb->bound = 1;
+    return leave(usb, SYS_OK);
 }
 
-SysResult_t VUSB_Request(VUSB *u, const LCRequest *request, uint32_t now)
+// USB：登记带执行身份的生命周期请求，实际完成由模块轮次推进。
+SysResult_t VUSB_Request(VUSB *usb, const LCRequest *request, uint32_t now)
 {
-    SysResult_t z = enter(u);
-    return z ? z : leave(u, LC_Request(&u->lifecycle, request, now));
+    SysResult_t result = enter(usb);
+    return result ? result : leave(usb, LC_Request(&usb->lifecycle, request, now));
 }
 
-static void complete(VUSB *u, SysResult_t z, uint32_t fact)
+// 提交模块的真实操作完成结果。
+static void complete(VUSB *usb, SysResult_t result, uint32_t fact)
 {
-    remember(u, z);
-    if (!LC_Complete(&u->lifecycle, &u->lifecycle.request.id, z, fact))
-        u->work = 0;
+    remember(usb, result);
+    if (!LC_Complete(&usb->lifecycle, &usb->lifecycle.request.id, result, fact))
+        usb->work = 0;
 }
 
 /* 失败后的排空独立于原操作回复生命周期。 */
-static void stop_fault(VUSB *u, SysResult_t z)
+static void stop_fault(VUSB *usb, SysResult_t result)
 {
-    if (!z || waiting(z))
+    if (!result || waiting(result))
         return;
-    remember(u, z);
-    if (!u->stop_error)
-        u->stop_error = z;
-    if (u->work && u->lifecycle.request.id.operation == LC_DEACTIVATE)
-        complete(u, z, LC_ERROR);
+    remember(usb, result);
+    if (!usb->stop_error)
+        usb->stop_error = result;
+    if (usb->work && usb->lifecycle.request.id.operation == LC_DEACTIVATE)
+        complete(usb, result, LC_ERROR);
 }
 
-static void activate(VUSB *u)
+// 按已受理配置推进模块启动，每轮依据端口结果继续。
+static void activate(VUSB *usb)
 {
-    SysResult_t z;
-    if (u->mode == VU_MODE_UVC && u->consumer.phase != VUC_GRANTED)
+    SysResult_t result;
+    if (usb->mode == VU_MODE_UVC && usb->consumer.phase != VUC_GRANTED)
     {
-        if (u->consumer.phase == VUC_IDLE && u->consumer.result)
-            complete(u, u->consumer.result, LC_INACTIVE);
+        if (usb->consumer.phase == VUC_IDLE && usb->consumer.result)
+            complete(usb, usb->consumer.result, LC_INACTIVE);
         return;
     }
-    if (u->mode != VU_MODE_NONE && !u->start_issued)
+    if (usb->mode != VU_MODE_NONE && !usb->start_issued)
     {
-        z = u->ops->start(u->port, u->mode, &u->native);
-        if (waiting(z))
+        result = usb->ops->start(usb->port, usb->mode, &usb->native);
+        if (waiting(result))
             return;
-        u->start_issued = 1;
-        if (z)
+        usb->start_issued = 1;
+        if (result)
         {
-            u->drain = 1;
-            u->mode_stop_done = 0;
-            u->stop_error = z;
-            complete(u, z, LC_ERROR);
+            usb->drain = 1;
+            usb->mode_stop_done = 0;
+            usb->stop_error = result;
+            complete(usb, result, LC_ERROR);
         }
         /* 下一轮观察启动事实，禁止用提交返回值宣告启动成功。 */
         return;
     }
-    if (u->mode != VU_MODE_NONE && u->observation.result)
+    if (usb->mode != VU_MODE_NONE && usb->observation.result)
     {
-        u->drain = 1;
-        u->mode_stop_done = 0;
-        u->stop_error = u->observation.result;
-        complete(u, u->stop_error, LC_ERROR);
+        usb->drain = 1;
+        usb->mode_stop_done = 0;
+        usb->stop_error = usb->observation.result;
+        complete(usb, usb->stop_error, LC_ERROR);
         return;
     }
-    if (!prove(u, &u->lifecycle.request, LC_ACTIVE))
+    if (!prove(usb, &usb->lifecycle.request, LC_ACTIVE))
     {
-        complete(u, SYS_OK, LC_ACTIVE);
-        if (!u->lifecycle.first_error)
-            u->active_fault = SYS_OK;
+        complete(usb, SYS_OK, LC_ACTIVE);
+        if (!usb->lifecycle.first_error)
+            usb->active_fault = SYS_OK;
     }
 }
 
-static SysResult_t observe(VUSB *u)
+// 刷新本轮可观察的底层运行和退出事实。
+static SysResult_t observe(VUSB *usb)
 {
     VUSBObservation latest = {0};
-    SysResult_t z = u->ops->observe(u->port, &latest);
+    SysResult_t result = usb->ops->observe(usb->port, &latest);
     /* 观测失败，本轮不能沿用旧的停止或DMA安全证明。 */
-    u->observation = latest;
-    if (z)
+    usb->observation = latest;
+    if (result)
     {
-        u->observation.flags = 0;
-        u->observation.result = z;
+        usb->observation.flags = 0;
+        usb->observation.result = result;
     }
-    return z;
+    return result;
 }
 
-static void finish_stop(VUSB *u)
+// 推进模块停止，等待底层和资源证据齐备。
+static void finish_stop(VUSB *usb)
 {
-    SysResult_t z;
-    if (!local_drained(u))
+    SysResult_t result;
+    if (!local_drained(usb))
         return;
-    if (!u->mode_stop_done)
+    if (!usb->mode_stop_done)
     {
         /* 从未提交过硬件启动，已有冷态证据时无需调用Stop。 */
-        z = u->mode == VU_MODE_NONE || (!u->start_issued && stopped(u))
+        result = usb->mode == VU_MODE_NONE || (!usb->start_issued && stopped(usb))
                 ? SYS_OK
-                : u->ops->stop_mode(u->port);
-        if (z)
+                : usb->ops->stop_mode(usb->port);
+        if (result)
         {
-            stop_fault(u, z);
+            stop_fault(usb, result);
             return;
         }
-        u->mode_stop_done = 1;
+        usb->mode_stop_done = 1;
         return; /* 等下一轮重新采样硬件事实。 */
     }
-    if (!stopped(u))
+    if (!stopped(usb))
         return;
-    if (u->consumer.phase == VUC_GRANTED)
+    if (usb->consumer.phase == VUC_GRANTED)
     {
-        stop_fault(u, VUSBConsumer_End(&u->consumer, u->stop_error));
+        stop_fault(usb, VUSBConsumer_End(&usb->consumer, usb->stop_error));
         return;
     }
-    if (u->consumer.phase == VUC_BLOCKED)
-        stop_fault(u, u->consumer.result);
+    if (usb->consumer.phase == VUC_BLOCKED)
+        stop_fault(usb, usb->consumer.result);
     /* USB可以先完成退出；全局STOP_IF_IDLE仍保留在Tx中，等待原回复。 */
-    if (!exit_confirmed(u))
+    if (!exit_confirmed(usb))
         return;
-    u->drain = 0;
-    u->start_issued = 0;
-    if (u->work && u->lifecycle.request.id.operation == LC_DEACTIVATE)
-        complete(u, SYS_OK, LC_INACTIVE);
+    usb->drain = 0;
+    usb->start_issued = 0;
+    if (usb->work && usb->lifecycle.request.id.operation == LC_DEACTIVATE)
+        complete(usb, SYS_OK, LC_INACTIVE);
 }
 
-SysResult_t VUSB_RunRound(VUSB *u, uint32_t now)
+// 在 USB 所有者上下文推进生命周期、传输及归还。
+SysResult_t VUSB_RunRound(VUSB *usb, uint32_t now)
 {
-    SysResult_t z = enter(u);
+    SysResult_t result = enter(usb);
     uint32_t op;
-    if (z)
-        return z;
-    (void)LC_Process(&u->lifecycle, now);
-    z = VUSBConsumer_Process(&u->consumer);
-    remember(u, z);
-    if (u->drain)
-        stop_fault(u, z);
-    if (u->mode != VU_MODE_NONE)
+    if (result)
+        return result;
+    (void)LC_Process(&usb->lifecycle, now);
+    result = VUSBConsumer_Process(&usb->consumer);
+    remember(usb, result);
+    if (usb->drain)
+        stop_fault(usb, result);
+    if (usb->mode != VU_MODE_NONE)
     {
-        u->ops->mode_process(u->port);
-        if (u->drain && u->mode == VU_MODE_UVC && !u->mode_stop_done)
-            stop_fault(u, u->ops->cancel(u->port));
-        u->ops->uvc_process(u->port);
+        usb->ops->mode_process(usb->port);
+        if (usb->drain && usb->mode == VU_MODE_UVC && !usb->mode_stop_done)
+            stop_fault(usb, usb->ops->cancel(usb->port));
+        usb->ops->uvc_process(usb->port);
     }
-    z = observe(u);
-    remember(u, z);
-    if (u->drain)
-        stop_fault(u, z);
-    if (u->mode == VU_MODE_UVC)
+    result = observe(usb);
+    remember(usb, result);
+    if (usb->drain)
+        stop_fault(usb, result);
+    if (usb->mode == VU_MODE_UVC)
     {
-        z = VUSBFrame_Process(&u->frame, &u->consumer.grant, &u->format,
-                              !u->drain && u->lifecycle.state == LC_ACTIVE &&
-                                  u->consumer.phase == VUC_GRANTED && proven(u, SEND_PROOF));
-        remember(u, z);
-        remember(u, u->frame.first_error);
-        if (u->drain)
+        result = VUSBFrame_Process(&usb->frame, &usb->consumer.grant, &usb->format,
+                              !usb->drain && usb->lifecycle.state == LC_ACTIVE &&
+                                  usb->consumer.phase == VUC_GRANTED && proven(usb, SEND_PROOF));
+        remember(usb, result);
+        remember(usb, usb->frame.first_error);
+        if (usb->drain)
         {
-            stop_fault(u, z);
-            u->ops->uvc_process(u->port);
-            stop_fault(u, observe(u));
-            stop_fault(u, u->observation.result);
+            stop_fault(usb, result);
+            usb->ops->uvc_process(usb->port);
+            stop_fault(usb, observe(usb));
+            stop_fault(usb, usb->observation.result);
         }
     }
-    if (u->drain)
-        finish_stop(u);
-    op = u->lifecycle.request.id.operation;
-    if (u->work && op == LC_ACTIVATE)
-        activate(u);
-    if (u->work && (op == LC_CONFIGURE || op == LC_CLEANUP || op == LC_ERROR_PROCESS))
+    if (usb->drain)
+        finish_stop(usb);
+    op = usb->lifecycle.request.id.operation;
+    if (usb->work && op == LC_ACTIVATE)
+        activate(usb);
+    if (usb->work && (op == LC_CONFIGURE || op == LC_CLEANUP || op == LC_ERROR_PROCESS))
     {
-        if (retired(u))
+        if (retired(usb))
         {
             if (op != LC_CONFIGURE)
-                u->bound = 0;
-            complete(u, SYS_OK, LC_Target(op));
+                usb->bound = 0;
+            complete(usb, SYS_OK, LC_Target(op));
         }
     }
     /* 下一轮发布决定，避免在本轮重复尝试 can_begin/begin。 */
-    return leave(u, SYS_OK);
+    return leave(usb, SYS_OK);
 }
 
-SysResult_t VUSB_QueryStatus(VUSB *u, VUSBStatus *out)
+// USB：读取模块的生命周期状态和观察到的业务事实。
+SysResult_t VUSB_QueryStatus(VUSB *usb, VUSBStatus *out)
 {
-    SysResult_t z = enter(u);
-    if (z)
-        return z;
-    if (!out || V2_Overlap(u, sizeof(*u), out, sizeof(*out)))
-        return leave(u, SYS_ERR_INVALID_ARG);
-    out->lifecycle = u->lifecycle.state;
-    out->drain = u->drain;
-    out->frame_phase = u->frame.phase;
-    out->consumer_phase = u->consumer.phase;
-    out->grant = u->consumer.grant;
-    out->native = u->observation;
-    out->operation_error = u->lifecycle.first_error;
-    out->first_fault = u->first_fault;
-    out->active_fault = u->active_fault;
-    out->stop_error = u->stop_error;
-    out->camera_stop_result = u->consumer.camera_stop_result;
-    return leave(u, SYS_OK);
+    SysResult_t result = enter(usb);
+    if (result)
+        return result;
+    if (!out || V2_Overlap(usb, sizeof(*usb), out, sizeof(*out)))
+        return leave(usb, SYS_ERR_INVALID_ARG);
+    out->lifecycle = usb->lifecycle.state;
+    out->drain = usb->drain;
+    out->frame_phase = usb->frame.phase;
+    out->consumer_phase = usb->consumer.phase;
+    out->grant = usb->consumer.grant;
+    out->native = usb->observation;
+    out->operation_error = usb->lifecycle.first_error;
+    out->first_fault = usb->first_fault;
+    out->active_fault = usb->active_fault;
+    out->stop_error = usb->stop_error;
+    out->camera_stop_result = usb->consumer.camera_stop_result;
+    return leave(usb, SYS_OK);
 }
 
-SysResult_t VUSB_QueryExitEvidence(VUSB *u, const MRGrant *g)
+// USB：分别读取退出所需的硬件、业务和媒体资源证据。
+SysResult_t VUSB_QueryExitEvidence(VUSB *usb, const MRGrant *grant)
 {
-    SysResult_t z = enter(u);
-    if (z)
-        return z;
-    if (!g || !g->session || !MRGrant_Equal(g, &u->consumer.grant))
-        return leave(u, SYS_ERR_PROTOCOL);
+    SysResult_t result = enter(usb);
+    if (result)
+        return result;
+    if (!grant || !grant->session || !MRGrant_Equal(grant, &usb->consumer.grant))
+        return leave(usb, SYS_ERR_PROTOCOL);
     /* 只是USB本地证据。最终Camera核验仍使用原 Grant + 独立 RELEASE。 */
-    return leave(u, u->drain && u->mode_stop_done && stopped(u) ? SYS_OK : SYS_ERR_BUSY);
+    return leave(usb, usb->drain && usb->mode_stop_done && stopped(usb) ? SYS_OK : SYS_ERR_BUSY);
 }
 
-SysResult_t VUSB_ReadCompletion(VUSB *u, const V2ExecId *id, LCCompletion *out)
+// USB：按身份读取模块已固定的完成结果。
+SysResult_t VUSB_ReadCompletion(VUSB *usb, const V2ExecId *id, LCCompletion *out)
 {
-    SysResult_t z = enter(u);
-    if (z)
-        return z;
-    if (!out || V2_Overlap(u, sizeof(*u), out, sizeof(*out)))
-        return leave(u, SYS_ERR_INVALID_ARG);
-    return leave(u, LC_Read(&u->lifecycle, id, out));
+    SysResult_t result = enter(usb);
+    if (result)
+        return result;
+    if (!out || V2_Overlap(usb, sizeof(*usb), out, sizeof(*out)))
+        return leave(usb, SYS_ERR_INVALID_ARG);
+    return leave(usb, LC_Read(&usb->lifecycle, id, out));
 }
 
-SysResult_t VUSB_ConfirmCompletion(VUSB *u, const LCCompletion *v)
+// USB：确认与请求身份匹配的完成已消费。
+SysResult_t VUSB_ConfirmCompletion(VUSB *usb, const LCCompletion *completion)
 {
-    SysResult_t z = enter(u);
-    return z ? z : leave(u, LC_Confirm(&u->lifecycle, v));
+    SysResult_t result = enter(usb);
+    return result ? result : leave(usb, LC_Confirm(&usb->lifecycle, completion));
 }

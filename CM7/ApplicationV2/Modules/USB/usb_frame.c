@@ -1,214 +1,225 @@
+// 推进 USB 帧交接、异步传输、归还与 ACK 消费。
+
 #include "usb_frame.h"
 #include <string.h>
 #define MAGIC 0x55465235U
-static SysResult_t enter(VUSBFrame *f)
+// 校验所有者调用并设置重入保护，调用方仍负责跨任务串行化。
+static SysResult_t enter(VUSBFrame *frame)
 {
-    if (!f || f->magic != MAGIC || !f->ops->is_owner(f->port))
+    if (!frame || frame->magic != MAGIC || !frame->ops->is_owner(frame->port))
         return SYS_ERR_INVALID_STATE;
-    if (f->busy)
+    if (frame->busy)
         return SYS_ERR_BUSY;
-    f->busy = 1;
+    frame->busy = 1;
     return 0;
 }
-static SysResult_t leave(VUSBFrame *f, SysResult_t z)
+// 退出当前调用的重入保护。
+static SysResult_t leave(VUSBFrame *frame, SysResult_t result)
 {
-    f->busy = 0;
-    return z;
+    frame->busy = 0;
+    return result;
 }
-static void fault(VUSBFrame *f, SysResult_t z)
+// 将本轮观察到的故障记录到模块上下文。
+static void fault(VUSBFrame *frame, SysResult_t result)
 {
-    if (z != SYS_ERR_BUSY && z != SYS_ERR_NO_RESOURCE && z != SYS_ERR_NOT_FOUND && z &&
-        !f->first_error)
-        f->first_error = z;
+    if (result != SYS_ERR_BUSY && result != SYS_ERR_NO_RESOURCE && result != SYS_ERR_NOT_FOUND && result &&
+        !frame->first_error)
+        frame->first_error = result;
 }
-int VUSBFrame_IsIdle(const VUSBFrame *f)
+// 检查 USB 交接是否仍有活动传输、Return 或 ACK。
+int VUSBFrame_IsIdle(const VUSBFrame *frame)
 {
-    return f && f->magic == MAGIC && f->ops->is_owner(f->port) && f->phase == VUF_IDLE;
+    return frame && frame->magic == MAGIC && frame->ops->is_owner(frame->port) && frame->phase == VUF_IDLE;
 }
-SysResult_t VUSBFrame_Init(VUSBFrame *f, const VUSBFrameOps *o, void *p)
+// 绑定 USB 帧交接所有者及数据面端口。
+SysResult_t VUSBFrame_Init(VUSBFrame *frame, const VUSBFrameOps *frame_ops, void *port_context)
 {
-    if (!f || f->magic || !o || !o->is_owner || !o->prepare || !o->prepared || !o->commit ||
-        !o->cancel || !o->cancelled || !o->offer || !o->submit_uvc || !o->readers_safe ||
-        !o->return_frame || !o->return_ack || !o->consumed || !o->retired)
+    if (!frame || frame->magic || !frame_ops || !frame_ops->is_owner || !frame_ops->prepare || !frame_ops->prepared || !frame_ops->commit ||
+        !frame_ops->cancel || !frame_ops->cancelled || !frame_ops->offer || !frame_ops->submit_uvc || !frame_ops->readers_safe ||
+        !frame_ops->return_frame || !frame_ops->return_ack || !frame_ops->consumed || !frame_ops->retired)
         return SYS_ERR_INVALID_ARG;
-    if (!o->is_owner(p))
+    if (!frame_ops->is_owner(port_context))
         return SYS_ERR_INVALID_STATE;
-    memset(f, 0, sizeof(*f));
-    f->ops = o;
-    f->port = p;
-    f->magic = MAGIC;
+    memset(frame, 0, sizeof(*frame));
+    frame->ops = frame_ops;
+    frame->port = port_context;
+    frame->magic = MAGIC;
     return 0;
 }
-static int request_equal(const MRRequest *a, const MRRequest *b)
+// 匹配完整的请求或收据身份，拒绝旧交接污染当前帧。
+static int request_equal(const MRRequest *left_request, const MRRequest *right_request)
 {
-    return !memcmp(a, b, sizeof(*a));
+    return !memcmp(left_request, right_request, sizeof(*left_request));
 }
-static int terminal_matches(VUSBFrame *f, const MRReceipt *t, int physical)
+// 匹配完整的请求或收据身份，拒绝旧交接污染当前帧。
+static int terminal_matches(VUSBFrame *frame, const MRReceipt *receipt, int physical)
 {
-    return MRGrant_Equal(&f->request.g, &t->g) && !memcmp(&f->request.h, &t->h, sizeof(t->h)) &&
-           t->serial && t->result <= 0 &&
+    return MRGrant_Equal(&frame->request.g, &receipt->g) && !memcmp(&frame->request.h, &receipt->h, sizeof(receipt->h)) &&
+           receipt->serial && receipt->result <= 0 &&
            (physical
-                ? (t->physical_returned == 1 && MRMedia_Equal(&f->data.media, &t->m) &&
-                   !memcmp(&f->data.bridge, &t->bridge, sizeof(t->bridge)))
-                : (!t->physical_returned && !t->m.backend && !t->m.session && !t->m.id &&
-                   !t->m.generation && !t->bridge.epoch && !t->bridge.lease && !t->bridge.command));
+                ? (receipt->physical_returned == 1 && MRMedia_Equal(&frame->data.media, &receipt->m) &&
+                   !memcmp(&frame->data.bridge, &receipt->bridge, sizeof(receipt->bridge)))
+                : (!receipt->physical_returned && !receipt->m.backend && !receipt->m.session && !receipt->m.id &&
+                   !receipt->m.generation && !receipt->bridge.epoch && !receipt->bridge.lease && !receipt->bridge.command));
 }
-static int view_valid(const MRView *v, const CoreMediaFormat *fmt)
+// 检查交付帧的身份和数据跨度。
+static int view_valid(const MRView *view, const CoreMediaFormat *fmt)
 {
     uint32_t total;
-    if (!v->data || !v->bytes || (v->bytes2 && !v->data2) || v->bytes > UINT32_MAX - v->bytes2)
+    if (!view->data || !view->bytes || (view->bytes2 && !view->data2) || view->bytes > UINT32_MAX - view->bytes2)
         return 0;
-    total = v->bytes + v->bytes2;
+    total = view->bytes + view->bytes2;
     return total <= fmt->max_payload &&
            (fmt->backend == CORE_BACKEND_JPEG ? total >= 4
-                                              : !v->bytes2 && total == fmt->size_image);
+                                              : !view->bytes2 && total == fmt->size_image);
 }
-SysResult_t VUSBFrame_Process(VUSBFrame *f, const MRGrant *grant, const CoreMediaFormat *fmt,
+// 推进传输与归还；匹配 ACK 被消费前保留交接身份。
+SysResult_t VUSBFrame_Process(VUSBFrame *frame, const MRGrant *grant, const CoreMediaFormat *fmt,
                               int accepting)
 {
-    SysResult_t z = enter(f);
-    VUSBDelivery d;
-    MRRequest h;
-    MRReceipt t;
-    if (z)
-        return z;
+    SysResult_t result = enter(frame);
+    VUSBDelivery delivery;
+    MRRequest request;
+    MRReceipt receipt;
+    if (result)
+        return result;
     if (!grant || !fmt)
-        return leave(f, SYS_ERR_INVALID_ARG);
-    if (f->phase == VUF_BLOCKED)
-        return leave(f, f->first_error ? f->first_error : SYS_ERR_PROTOCOL);
-    switch (f->phase)
+        return leave(frame, SYS_ERR_INVALID_ARG);
+    if (frame->phase == VUF_BLOCKED)
+        return leave(frame, frame->first_error ? frame->first_error : SYS_ERR_PROTOCOL);
+    switch (frame->phase)
     {
     case VUF_IDLE:
         if (!accepting || !grant->session)
-            return leave(f, 0);
-        z = f->ops->prepare(f->port, grant);
-        if (!z)
+            return leave(frame, 0);
+        result = frame->ops->prepare(frame->port, grant);
+        if (!result)
         {
-            f->preparing = *grant;
-            f->phase = VUF_PREPARING;
+            frame->preparing = *grant;
+            frame->phase = VUF_PREPARING;
         }
         break;
     case VUF_PREPARING:
-        z = f->ops->prepared(f->port, &h);
-        if (!z)
+        result = frame->ops->prepared(frame->port, &request);
+        if (!result)
         {
-            if (!MRGrant_Equal(&h.g, &f->preparing) ||
-                (h.h.sequence && h.h.sequence <= f->highest_h))
-                return leave(f, SYS_ERR_NOT_FOUND);
-            if (!h.h.sequence || h.h.session != h.g.session || !h.b.epoch || !h.b.command ||
-                h.b.lease)
+            if (!MRGrant_Equal(&request.g, &frame->preparing) ||
+                (request.h.sequence && request.h.sequence <= frame->highest_h))
+                return leave(frame, SYS_ERR_NOT_FOUND);
+            if (!request.h.sequence || request.h.session != request.g.session || !request.b.epoch || !request.b.command ||
+                request.b.lease)
             {
-                f->phase = VUF_BLOCKED;
-                z = SYS_ERR_PROTOCOL;
+                frame->phase = VUF_BLOCKED;
+                result = SYS_ERR_PROTOCOL;
                 break;
             }
-            f->request = h;
-            f->highest_h = h.h.sequence;
-            f->phase = VUF_PREPARED;
+            frame->request = request;
+            frame->highest_h = request.h.sequence;
+            frame->phase = VUF_PREPARED;
         }
         break;
     case VUF_PREPARED:
         if (!accepting)
         {
-            z = f->ops->cancel(f->port, &f->request);
-            if (!z)
-                f->phase = VUF_CANCELLING;
+            result = frame->ops->cancel(frame->port, &frame->request);
+            if (!result)
+                frame->phase = VUF_CANCELLING;
         }
         else
         {
-            z = f->ops->commit(f->port, &f->request);
-            if (!z)
-                f->phase = VUF_COMMITTED;
+            result = frame->ops->commit(frame->port, &frame->request);
+            if (!result)
+                frame->phase = VUF_COMMITTED;
         }
         break;
     case VUF_CANCELLING:
-        z = f->ops->cancelled(f->port, &f->request);
-        if (!z)
-            f->phase = VUF_IDLE;
+        result = frame->ops->cancelled(frame->port, &frame->request);
+        if (!result)
+            frame->phase = VUF_IDLE;
         break;
     case VUF_COMMITTED:
-        z = f->ops->offer(f->port, &d);
-        if (!z)
+        result = frame->ops->offer(frame->port, &delivery);
+        if (!result)
         {
-            if (!request_equal(&d.request, &f->request))
-                return leave(f, SYS_ERR_NOT_FOUND);
-            if (d.kind == VUF_TERMINAL && terminal_matches(f, &d.terminal, 0))
+            if (!request_equal(&delivery.request, &frame->request))
+                return leave(frame, SYS_ERR_NOT_FOUND);
+            if (delivery.kind == VUF_TERMINAL && terminal_matches(frame, &delivery.terminal, 0))
             {
-                f->terminal = d.terminal;
-                fault(f, d.terminal.result);
-                z = d.terminal.result;
-                f->phase = VUF_CONSUMING;
+                frame->terminal = delivery.terminal;
+                fault(frame, delivery.terminal.result);
+                result = delivery.terminal.result;
+                frame->phase = VUF_CONSUMING;
                 break;
             }
-            if (d.kind != VUF_FRAME || d.data.media.backend != fmt->backend ||
-                !d.data.media.session || !d.data.media.id || !d.data.media.generation ||
-                !d.data.bridge.lease || d.data.bridge.epoch != f->request.b.epoch ||
-                d.data.bridge.command != f->request.b.command || !view_valid(&d.data.view, fmt))
+            if (delivery.kind != VUF_FRAME || delivery.data.media.backend != fmt->backend ||
+                !delivery.data.media.session || !delivery.data.media.id || !delivery.data.media.generation ||
+                !delivery.data.bridge.lease || delivery.data.bridge.epoch != frame->request.b.epoch ||
+                delivery.data.bridge.command != frame->request.b.command || !view_valid(&delivery.data.view, fmt))
             {
-                f->phase = VUF_BLOCKED;
-                z = SYS_ERR_PROTOCOL;
+                frame->phase = VUF_BLOCKED;
+                result = SYS_ERR_PROTOCOL;
                 break;
             }
-            f->data = d.data;
-            f->phase = VUF_OFFERED;
+            frame->data = delivery.data;
+            frame->phase = VUF_OFFERED;
         }
         break;
     case VUF_OFFERED:
         if (!accepting)
         {
-            f->phase = VUF_RETURNING;
-            return leave(f, 0);
+            frame->phase = VUF_RETURNING;
+            return leave(frame, 0);
         }
-        z = f->ops->submit_uvc(f->port, &f->request, &f->data);
-        if (!z)
-            f->phase = VUF_IN_UVC;
-        else if (z != SYS_ERR_BUSY && z != SYS_ERR_NO_RESOURCE)
-            f->phase = VUF_RETURNING;
+        result = frame->ops->submit_uvc(frame->port, &frame->request, &frame->data);
+        if (!result)
+            frame->phase = VUF_IN_UVC;
+        else if (result != SYS_ERR_BUSY && result != SYS_ERR_NO_RESOURCE)
+            frame->phase = VUF_RETURNING;
         break;
     case VUF_IN_UVC:
-        z = f->ops->readers_safe(f->port, &f->request, &f->data);
-        if (!z)
-            f->phase = VUF_RETURNING;
+        result = frame->ops->readers_safe(frame->port, &frame->request, &frame->data);
+        if (!result)
+            frame->phase = VUF_RETURNING;
         break;
     case VUF_RETURNING:
         /* 第二次核验覆盖未提交UVC及多个异步CPU/DMA读取者。 */
-        z = f->ops->readers_safe(f->port, &f->request, &f->data);
-        if (z)
+        result = frame->ops->readers_safe(frame->port, &frame->request, &frame->data);
+        if (result)
             break;
-        z = f->ops->return_frame(f->port, &f->request, &f->data);
-        if (!z)
-            f->phase = VUF_WAIT_ACK;
+        result = frame->ops->return_frame(frame->port, &frame->request, &frame->data);
+        if (!result)
+            frame->phase = VUF_WAIT_ACK;
         break;
     case VUF_WAIT_ACK:
-        z = f->ops->return_ack(f->port, &t);
-        if (!z)
+        result = frame->ops->return_ack(frame->port, &receipt);
+        if (!result)
         {
-            if (!terminal_matches(f, &t, 1))
-                return leave(f, SYS_ERR_NOT_FOUND);
-            f->terminal = t;
-            fault(f, t.result);
-            z = t.result;
-            f->phase = VUF_CONSUMING;
+            if (!terminal_matches(frame, &receipt, 1))
+                return leave(frame, SYS_ERR_NOT_FOUND);
+            frame->terminal = receipt;
+            fault(frame, receipt.result);
+            result = receipt.result;
+            frame->phase = VUF_CONSUMING;
         }
         break;
     case VUF_CONSUMING:
-        z = f->ops->consumed(f->port, &f->terminal);
-        if (!z)
-            f->phase = VUF_RETIRING;
+        result = frame->ops->consumed(frame->port, &frame->terminal);
+        if (!result)
+            frame->phase = VUF_RETIRING;
         break;
     case VUF_RETIRING:
-        z = f->ops->retired(f->port, &f->terminal);
-        if (!z)
+        result = frame->ops->retired(frame->port, &frame->terminal);
+        if (!result)
         {
             /* 只退休本地元数据；不是Media Release，也不清相邻消费者。 */
-            f->phase = VUF_IDLE;
-            memset(&f->data, 0, sizeof(f->data));
+            frame->phase = VUF_IDLE;
+            memset(&frame->data, 0, sizeof(frame->data));
         }
         break;
     default:
-        z = SYS_ERR_INVALID_STATE;
+        result = SYS_ERR_INVALID_STATE;
         break;
     }
-    fault(f, z);
-    return leave(f, z);
+    fault(frame, result);
+    return leave(frame, result);
 }

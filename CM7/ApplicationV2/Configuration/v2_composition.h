@@ -1,3 +1,5 @@
+// 验证配置候选的模块绑定和媒体路径。
+
 /* Unified pure Core/Composition entry, no execution or Runtime Apply.
  * Caller zero-initializes scratch, keeps all referenced const catalogs alive,
  * and owns disjoint inputs/scratch/output/issues with one owner per scratch.
@@ -37,6 +39,7 @@ typedef struct
     GraphScratch graph;
     V2CompositionCandidate candidate;
 } V2CompositionScratch;
+// 校验组合候选，候选成立不代表运行配置已经切换。
 SysResult_t V2Composition_Validate(const V2Registry *, const GraphDesc *, const V2EntityBinding *,
                                    uint16_t, const V2Desired *, V2ResourceValidator,
                                    V2CompositionScratch *, V2CompositionCandidate *, V2Issue *,

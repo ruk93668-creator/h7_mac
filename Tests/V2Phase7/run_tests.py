@@ -63,13 +63,13 @@ def measure(name, case):
 
 negatives = []
 MUTANTS = [
-    ('wrong_peer_access', 'control_service.c', 'id && peer_equal(p, &s->sessions[i].peer)', 'id', 2),
+    ('wrong_peer_access', 'control_service.c', 'id && peer_equal(peer, &service->sessions[session_index].peer)', 'id', 2),
     ('timeout_discards_execution', 'control_service.c',
-     'if (v->reply.phase != CS_EXECUTING)\n        {', 'if (1)\n        {', 12),
+     'if (active_record->reply.phase != CS_EXECUTING)\n        {', 'if (1)\n        {', 12),
     ('candidate_as_execution', 'control_service.c',
-     'v->reply.effect = CS_EFFECT_CANDIDATE;', 'v->reply.effect = CS_EFFECT_EXECUTION;', 3),
-    ('unconsumed_record_eviction', 'control_service.c', 'if (v->delivered && v->reply.id.ticket < oldest)',
-     'if (v->reply.id.ticket < oldest)', 5),
+     'active_record->reply.effect = CS_EFFECT_CANDIDATE;', 'active_record->reply.effect = CS_EFFECT_EXECUTION;', 3),
+    ('unconsumed_record_eviction', 'control_service.c', 'if (active_record->delivered && active_record->reply.id.ticket < oldest)',
+     'if (active_record->reply.id.ticket < oldest)', 5),
 ]
 rows = []
 resources = {}

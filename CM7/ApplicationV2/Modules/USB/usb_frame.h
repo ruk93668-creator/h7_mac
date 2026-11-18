@@ -1,3 +1,5 @@
+// 推进 USB 帧交接、异步传输、归还与 ACK 消费。
+
 #ifndef V2_USB_FRAME_H
 #define V2_USB_FRAME_H
 #include "../../Resource/media_resource.h"
@@ -58,7 +60,10 @@ typedef struct
     const VUSBFrameOps *ops;
     void *port;
 } VUSBFrame;
+// 绑定 USB 帧交接所有者及数据面端口。
 SysResult_t VUSBFrame_Init(VUSBFrame *, const VUSBFrameOps *, void *);
+// 推进传输与归还；匹配 ACK 被消费前保留交接身份。
 SysResult_t VUSBFrame_Process(VUSBFrame *, const MRGrant *, const CoreMediaFormat *, int accepting);
+// 检查 USB 交接是否仍有活动传输、Return 或 ACK。
 int VUSBFrame_IsIdle(const VUSBFrame *);
 #endif

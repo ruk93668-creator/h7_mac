@@ -1,3 +1,5 @@
+// 校验中立格式的帧布局、容量和帧率。
+
 /* Neutral immutable media values. Layout validation proves no hardware support.
  * Rates describe sink targets; they do not configure or measure camera capture.
  * JPEG_FRAMES is the MJPEG frame representation, not a fifth sensor pixel code.
@@ -47,6 +49,8 @@ typedef struct
 {
     uint32_t num, den;
 } CoreFrameRate;
+// 验证中立媒体格式、帧布局和容量。
 SysResult_t CoreMedia_Validate(const CoreMediaFormat *format);
+// 检查帧率表示的分子、分母和取值范围。
 SysResult_t CoreRate_Validate(const CoreFrameRate *rate);
 #endif

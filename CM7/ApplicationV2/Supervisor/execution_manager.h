@@ -1,3 +1,5 @@
+// 按依赖计划协调模块操作、异步完成和失败补偿。
+
 #ifndef V2_EXECUTION_MANAGER_H
 #define V2_EXECUTION_MANAGER_H
 #include "../Configuration/v2_composition.h"
@@ -50,9 +52,13 @@ typedef struct
     int (*is_owner)(void *);
     void *owner;
 } EMContext;
+// 绑定执行所有者及模块端口，初始化计划执行状态。
 SysResult_t EM_Init(EMContext *, uint32_t session, const EMEndpoint *, uint32_t count,
                     int (*owner)(void *), void *);
+// 装载已校验计划，保留执行事务身份。
 SysResult_t EM_Load(EMContext *, const EMPlan *, uint32_t timeout);
+// 推进声明式计划并基于实际完成结果安排补偿。
 SysResult_t EM_Process(EMContext *, uint32_t now);
+// 读取计划进度、首错及补偿状态。
 SysResult_t EM_Status(EMContext *, uint32_t *state, SysResult_t *first, SysResult_t *recovery);
 #endif

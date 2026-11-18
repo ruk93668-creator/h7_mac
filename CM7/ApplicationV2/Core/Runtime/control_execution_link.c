@@ -1,3 +1,5 @@
+// 在控制服务和执行任务之间传送请求、回复与消费确认。
+
 #include "control_execution_link.h"
 #include <string.h>
 
@@ -8,185 +10,195 @@
 #define LINK_RESULT 3U
 #define LINK_SENT 4U
 
-static int valid(const CSExecLinkOps *o)
+// 校验异步执行请求的身份字段。
+static int valid(const CSExecLinkOps *link_ops)
 {
-    return o && o->control_owner && o->execution_owner && o->send_work && o->receive_work &&
-           o->send_result && o->receive_result && o->send_ack && o->receive_ack;
+    return link_ops && link_ops->control_owner && link_ops->execution_owner && link_ops->send_work && link_ops->receive_work &&
+           link_ops->send_result && link_ops->receive_result && link_ops->send_ack && link_ops->receive_ack;
 }
 
-SysResult_t CSExecClient_Init(CSExecClient *c, const CSExecLinkOps *o, void *p)
+// 初始化对应执行端点并绑定其所有者和端口。
+SysResult_t CSExecClient_Init(CSExecClient *client, const CSExecLinkOps *link_ops, void *port_context)
 {
-    if (!c || c->magic || !valid(o))
+    if (!client || client->magic || !valid(link_ops))
         return SYS_ERR_INVALID_ARG;
-    if (!o->control_owner(p))
+    if (!link_ops->control_owner(port_context))
         return SYS_ERR_INVALID_STATE;
-    memset(c, 0, sizeof(*c));
-    c->magic = CLIENT_MAGIC;
-    c->ops = o;
-    c->port = p;
+    memset(client, 0, sizeof(*client));
+    client->magic = CLIENT_MAGIC;
+    client->ops = link_ops;
+    client->port = port_context;
     return SYS_OK;
 }
 
-static SysResult_t enter(CSExecClient *c)
+// 校验所有者调用并设置重入保护，调用方仍负责跨任务串行化。
+static SysResult_t enter(CSExecClient *client)
 {
-    if (!c || c->magic != CLIENT_MAGIC || !c->ops->control_owner(c->port))
+    if (!client || client->magic != CLIENT_MAGIC || !client->ops->control_owner(client->port))
         return SYS_ERR_INVALID_STATE;
-    if (c->busy)
+    if (client->busy)
         return SYS_ERR_BUSY;
-    c->busy = 1U;
+    client->busy = 1U;
     return SYS_OK;
 }
 
-static SysResult_t leave(CSExecClient *c, SysResult_t z)
+// 退出当前调用的重入保护。
+static SysResult_t leave(CSExecClient *client, SysResult_t result)
 {
-    c->busy = 0U;
-    return z;
+    client->busy = 0U;
+    return result;
 }
 
-SysResult_t CSExecClient_Submit(CSExecClient *c, const CSExecution *w)
+// 提交带完整身份的异步执行请求。
+SysResult_t CSExecClient_Submit(CSExecClient *client, const CSExecution *work)
 {
-    SysResult_t z = enter(c);
-    if (z)
-        return z;
-    if (!w || !w->id.ticket || w->id.ticket <= c->id.ticket)
-        return leave(c, SYS_ERR_PROTOCOL);
-    if (c->active)
-        return leave(c, SYS_ERR_BUSY);
-    z = c->ops->send_work(c->port, w);
-    if (!z)
+    SysResult_t result = enter(client);
+    if (result)
+        return result;
+    if (!work || !work->id.ticket || work->id.ticket <= client->id.ticket)
+        return leave(client, SYS_ERR_PROTOCOL);
+    if (client->active)
+        return leave(client, SYS_ERR_BUSY);
+    result = client->ops->send_work(client->port, work);
+    if (!result)
     {
-        c->id = w->id;
-        c->active = 1U;
-        c->cached = 0U;
+        client->id = work->id;
+        client->active = 1U;
+        client->cached = 0U;
     }
-    return leave(c, z);
+    return leave(client, result);
 }
 
-SysResult_t CSExecClient_Read(CSExecClient *c, const CSIdentity *id, CSExecResult *out)
+// 按指定执行身份读取已冻结结果。
+SysResult_t CSExecClient_Read(CSExecClient *client, const CSIdentity *id, CSExecResult *out)
 {
-    CSExecResult r;
-    SysResult_t z = enter(c);
-    if (z)
-        return z;
-    if (!out || V2_Overlap(c, sizeof(*c), out, sizeof(*out)) || !CS_IdEqual(id, &c->id))
-        return leave(c, SYS_ERR_PROTOCOL);
-    if (!c->cached)
+    CSExecResult execution_result;
+    SysResult_t result = enter(client);
+    if (result)
+        return result;
+    if (!out || V2_Overlap(client, sizeof(*client), out, sizeof(*out)) || !CS_IdEqual(id, &client->id))
+        return leave(client, SYS_ERR_PROTOCOL);
+    if (!client->cached)
     {
-        z = c->ops->receive_result(c->port, &r);
-        if (z)
-            return leave(c, z);
-        if (!CS_IdEqual(id, &r.id))
-            return leave(c, SYS_ERR_NOT_FOUND);
-        if ((r.state != EM_DONE && r.state != EM_BLOCKED && r.state != CS_EXEC_REFUSED) ||
-            r.result > SYS_OK || r.recovery > SYS_OK ||
-            ((r.state == EM_BLOCKED || r.state == CS_EXEC_REFUSED) && !r.result))
-            return leave(c, SYS_ERR_PROTOCOL);
-        c->result = r;
-        c->cached = 1U;
+        result = client->ops->receive_result(client->port, &execution_result);
+        if (result)
+            return leave(client, result);
+        if (!CS_IdEqual(id, &execution_result.id))
+            return leave(client, SYS_ERR_NOT_FOUND);
+        if ((execution_result.state != EM_DONE && execution_result.state != EM_BLOCKED && execution_result.state != CS_EXEC_REFUSED) ||
+            execution_result.result > SYS_OK || execution_result.recovery > SYS_OK ||
+            ((execution_result.state == EM_BLOCKED || execution_result.state == CS_EXEC_REFUSED) && !execution_result.result))
+            return leave(client, SYS_ERR_PROTOCOL);
+        client->result = execution_result;
+        client->cached = 1U;
     }
-    *out = c->result;
-    return leave(c, SYS_OK);
+    *out = client->result;
+    return leave(client, SYS_OK);
 }
 
-SysResult_t CSExecClient_Consume(CSExecClient *c, const CSExecResult *r)
+// 确认执行结果已消费，允许相应运输记录退休。
+SysResult_t CSExecClient_Consume(CSExecClient *client, const CSExecResult *execution_result)
 {
-    SysResult_t z = enter(c);
-    if (z)
-        return z;
-    if (!r || !c->cached || memcmp(r, &c->result, sizeof(*r)))
-        return leave(c, SYS_ERR_PROTOCOL);
-    if (!c->active)
-        return leave(c, SYS_OK);
-    z = c->ops->send_ack(c->port, r);
-    if (!z)
-        c->active = 0U;
-    return leave(c, z);
+    SysResult_t result = enter(client);
+    if (result)
+        return result;
+    if (!execution_result || !client->cached || memcmp(execution_result, &client->result, sizeof(*execution_result)))
+        return leave(client, SYS_ERR_PROTOCOL);
+    if (!client->active)
+        return leave(client, SYS_OK);
+    result = client->ops->send_ack(client->port, execution_result);
+    if (!result)
+        client->active = 0U;
+    return leave(client, result);
 }
 
-SysResult_t CSExecServer_Init(CSExecServer *s, CSExecutionEndpoint *e, const CSExecLinkOps *o,
-                              void *p)
+// 初始化对应执行端点并绑定其所有者和端口。
+SysResult_t CSExecServer_Init(CSExecServer *server, CSExecutionEndpoint *endpoint, const CSExecLinkOps *link_ops,
+                              void *port_context)
 {
-    if (!s || s->magic || !e || !valid(o))
+    if (!server || server->magic || !endpoint || !valid(link_ops))
         return SYS_ERR_INVALID_ARG;
-    if (!o->execution_owner(p))
+    if (!link_ops->execution_owner(port_context))
         return SYS_ERR_INVALID_STATE;
-    memset(s, 0, sizeof(*s));
-    s->magic = SERVER_MAGIC;
-    s->endpoint = e;
-    s->ops = o;
-    s->port = p;
+    memset(server, 0, sizeof(*server));
+    server->magic = SERVER_MAGIC;
+    server->endpoint = endpoint;
+    server->ops = link_ops;
+    server->port = port_context;
     return SYS_OK;
 }
 
-static SysResult_t progress(CSExecServer *s, uint32_t now)
+// 推进执行端对已受理事务的回复和确认处理。
+static SysResult_t progress(CSExecServer *server, uint32_t now)
 {
-    SysResult_t z;
+    SysResult_t result;
     CSExecResult ack;
 
-    if (s->phase == LINK_SENT)
+    if (server->phase == LINK_SENT)
     {
-        z = s->ops->receive_ack(s->port, &ack);
-        if (z)
-            return z;
-        if (memcmp(&ack, &s->result, sizeof(ack)))
+        result = server->ops->receive_ack(server->port, &ack);
+        if (result)
+            return result;
+        if (memcmp(&ack, &server->result, sizeof(ack)))
             return SYS_ERR_NOT_FOUND;
-        if (s->result.state != CS_EXEC_REFUSED)
+        if (server->result.state != CS_EXEC_REFUSED)
         {
-            z = CSExec_Consume(s->endpoint, &ack);
-            if (z)
-                return z;
+            result = CSExec_Consume(server->endpoint, &ack);
+            if (result)
+                return result;
         }
-        s->phase = 0U;
+        server->phase = 0U;
     }
-    if (!s->phase)
+    if (!server->phase)
     {
-        z = s->ops->receive_work(s->port, &s->work);
-        if (z)
-            return z;
-        if (s->work.id.boot != s->endpoint->boot || s->work.id.ticket <= s->highest)
+        result = server->ops->receive_work(server->port, &server->work);
+        if (result)
+            return result;
+        if (server->work.id.boot != server->endpoint->boot || server->work.id.ticket <= server->highest)
             return SYS_ERR_NOT_FOUND;
-        s->highest = s->work.id.ticket;
-        s->phase = LINK_RECEIVED;
+        server->highest = server->work.id.ticket;
+        server->phase = LINK_RECEIVED;
     }
-    if (s->phase == LINK_RECEIVED)
+    if (server->phase == LINK_RECEIVED)
     {
-        z = CSExec_Submit(s->endpoint, &s->work);
-        if (z == SYS_ERR_BUSY || z == SYS_ERR_NO_RESOURCE)
-            return z;
-        if (z)
+        result = CSExec_Submit(server->endpoint, &server->work);
+        if (result == SYS_ERR_BUSY || result == SYS_ERR_NO_RESOURCE)
+            return result;
+        if (result)
         {
-            s->result = (CSExecResult){s->work.id, CS_EXEC_REFUSED, z, SYS_OK};
-            s->phase = LINK_RESULT;
+            server->result = (CSExecResult){server->work.id, CS_EXEC_REFUSED, result, SYS_OK};
+            server->phase = LINK_RESULT;
         }
         else
-            s->phase = LINK_RUNNING;
+            server->phase = LINK_RUNNING;
         return SYS_OK;
     }
-    if (s->phase == LINK_RUNNING)
+    if (server->phase == LINK_RUNNING)
     {
-        z = CSExec_Process(s->endpoint, now);
-        if (!z)
-            z = CSExec_Read(s->endpoint, &s->work.id, &s->result);
-        if (z)
-            return z;
-        s->phase = LINK_RESULT;
+        result = CSExec_Process(server->endpoint, now);
+        if (!result)
+            result = CSExec_Read(server->endpoint, &server->work.id, &server->result);
+        if (result)
+            return result;
+        server->phase = LINK_RESULT;
     }
     /* Reply满时只重试冻结的结果；消费确认前保留接收端状态。 */
-    z = s->ops->send_result(s->port, &s->result);
-    if (!z)
-        s->phase = LINK_SENT;
-    return z;
+    result = server->ops->send_result(server->port, &server->result);
+    if (!result)
+        server->phase = LINK_SENT;
+    return result;
 }
 
-SysResult_t CSExecServer_Process(CSExecServer *s, uint32_t now)
+// 在执行所有者上下文推进请求及结果运输。
+SysResult_t CSExecServer_Process(CSExecServer *server, uint32_t now)
 {
-    SysResult_t z;
-    if (!s || s->magic != SERVER_MAGIC || !s->ops->execution_owner(s->port))
+    SysResult_t result;
+    if (!server || server->magic != SERVER_MAGIC || !server->ops->execution_owner(server->port))
         return SYS_ERR_INVALID_STATE;
-    if (s->busy)
+    if (server->busy)
         return SYS_ERR_BUSY;
-    s->busy = 1U;
-    z = progress(s, now);
-    s->busy = 0U;
-    return z;
+    server->busy = 1U;
+    result = progress(server, now);
+    server->busy = 0U;
+    return result;
 }

@@ -1,3 +1,5 @@
+// 维护统一控制请求身份、权限、决策和可靠回复。
+
 #ifndef V2_CONTROL_SERVICE_H
 #define V2_CONTROL_SERVICE_H
 
@@ -122,12 +124,20 @@ typedef struct
 
 /* 服务单owner，跨任务通过复制消息与绑定的传输端口。boot来自可信启动会话。 */
 int CS_IdEqual(const CSIdentity *, const CSIdentity *);
+// 绑定控制策略、端口和所有者，初始化有界事务表。
 SysResult_t CS_Init(CSService *, uint32_t boot, const CSCatalog *, const CSPortOps *, void *);
+// 为受信控制对端建立会话。
 SysResult_t CS_Open(CSService *, const CSPeer *, uint32_t *session);
+// 关闭匹配的控制会话入口。
 SysResult_t CS_Close(CSService *, const CSPeer *, uint32_t boot, uint32_t session);
+// 验证权限及身份后受理控制命令。
 SysResult_t CS_Submit(CSService *, const CSPeer *, const CSRequest *, uint32_t now, CSReply *);
+// 按对端和请求身份查询进度或冻结结果。
 SysResult_t CS_Query(CSService *, const CSPeer *, const CSIdentity *, CSReply *);
+// 确认匹配的控制回复已被消费。
 SysResult_t CS_Confirm(CSService *, const CSPeer *, const CSReply *);
+// 请求取消控制事务，区分尚未执行和已经提交的操作。
 SysResult_t CS_Cancel(CSService *, const CSPeer *, const CSIdentity *);
+// 推进控制事务的候选构建、异步执行和最终回复。
 SysResult_t CS_Process(CSService *, uint32_t now);
 #endif

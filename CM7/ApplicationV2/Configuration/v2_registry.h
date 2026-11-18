@@ -1,3 +1,5 @@
+// 校验模块描述符，解析提供方和依赖关系。
+
 /* Compile-time catalog supplied by its caller; never mutated or owned here.
  * All referenced arrays must remain alive/immutable for each complete call.
  * Valid C storage and disjoint input/scratch/output/issue ranges are required.
@@ -68,9 +70,13 @@ typedef struct
     V2Resolution candidate;
     uint8_t selected[16], done[16];
 } V2ResolverScratch;
+// 校验静态注册表及模块描述符的完整性。
 SysResult_t V2Registry_Validate(const V2Registry *, V2Issue *);
+// 按模块身份查询静态描述符。
 const V2ModuleDesc *V2Registry_Get(const V2Registry *, V2ModuleId);
+// 枚举与指定依赖匹配的提供方。
 SysResult_t V2Registry_Providers(const V2Registry *, const V2Requirement *, uint16_t *mask);
+// 解析模块依赖和提供方，生成稳定执行顺序。
 SysResult_t V2Resolver_Resolve(const V2Registry *, const V2ModuleId *, uint16_t,
                                V2ResolverScratch *, V2Resolution *, V2Issue *);
 #endif

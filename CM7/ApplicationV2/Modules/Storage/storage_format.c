@@ -1,52 +1,57 @@
+// 校验 Storage 的录像及抓拍配置。
+
 #include "storage_format.h"
 #include "../Camera/camera_format.h"
 #include <string.h>
 
-static int name_char(char c)
+// 检查目标文件路径是否符合模块的输入约束。
+static int name_char(char character)
 {
-    return (c >= 'A' && c <= 'Z') || (c >= '0' && c <= '9') || c == '_';
+    return (character >= 'A' && character <= 'Z') || (character >= '0' && character <= '9') || character == '_';
 }
 
-static int path_valid(const VStorageConfig *c)
+// 检查目标文件路径是否符合模块的输入约束。
+static int path_valid(const VStorageConfig *config)
 {
-    uint32_t i = 3U;
-    const char *ext = c->mode == VST_AVI ? ".AVI" : ".JPG";
-    if (memcmp(c->path, "0:/", 3U))
+    uint32_t path_index = 3U;
+    const char *ext = config->mode == VST_AVI ? ".AVI" : ".JPG";
+    if (memcmp(config->path, "0:/", 3U))
         return 0;
-    while (i < 11U && name_char(c->path[i]))
-        ++i;
-    return i > 3U && !memcmp(c->path + i, ext, 5U);
+    while (path_index < 11U && name_char(config->path[path_index]))
+        ++path_index;
+    return path_index > 3U && !memcmp(config->path + path_index, ext, 5U);
 }
 
-SysResult_t VStorage_ValidateFormat(const CoreMediaFormat *f, const VStorageConfig *c,
+// 将中立格式交由模块端口验证，保留实际能力约束和错误结果。
+SysResult_t VStorage_ValidateFormat(const CoreMediaFormat *format, const VStorageConfig *config,
                                     const VStorageCaps *caps, uint32_t *ms)
 {
     CameraConfig_t native;
-    SysResult_t z;
-    if (!f || !c || !caps || !ms || !caps->max_payload ||
-        (c->mode != VST_AVI && c->mode != VST_SNAPSHOT) || c->partition > 4U ||
-        c->file_limit < f->max_payload || !path_valid(c) ||
-        V2_Overlap(ms, sizeof(*ms), c, sizeof(*c)) || V2_Overlap(ms, sizeof(*ms), f, sizeof(*f)) ||
+    SysResult_t result;
+    if (!format || !config || !caps || !ms || !caps->max_payload ||
+        (config->mode != VST_AVI && config->mode != VST_SNAPSHOT) || config->partition > 4U ||
+        config->file_limit < format->max_payload || !path_valid(config) ||
+        V2_Overlap(ms, sizeof(*ms), config, sizeof(*config)) || V2_Overlap(ms, sizeof(*ms), format, sizeof(*format)) ||
         V2_Overlap(ms, sizeof(*ms), caps, sizeof(*caps)))
         return SYS_ERR_INVALID_ARG;
-    if (f->backend != CORE_BACKEND_JPEG || f->pixel_format != CORE_PIXEL_JPEG ||
-        f->max_payload > caps->max_payload)
+    if (format->backend != CORE_BACKEND_JPEG || format->pixel_format != CORE_PIXEL_JPEG ||
+        format->max_payload > caps->max_payload)
         return SYS_ERR_NOT_SUPPORTED;
-    z = VCamera_Translate(f, &native);
-    if (z)
-        return z;
-    if (c->mode == VST_SNAPSHOT)
+    result = VCamera_Translate(format, &native);
+    if (result)
+        return result;
+    if (config->mode == VST_SNAPSHOT)
     {
         *ms = 0U;
         return SYS_OK;
     }
-    z = CoreRate_Validate(&c->sampling);
-    if (z)
-        return z;
+    result = CoreRate_Validate(&config->sampling);
+    if (result)
+        return result;
     /* AVI兼容接口接受整数FPS；不隐式舍入目标采样率。 */
-    if (c->sampling.den != 1U || c->sampling.num > caps->max_avi_fps ||
-        c->sampling.num > UINT16_MAX)
+    if (config->sampling.den != 1U || config->sampling.num > caps->max_avi_fps ||
+        config->sampling.num > UINT16_MAX)
         return SYS_ERR_NOT_SUPPORTED;
-    *ms = (1000U + c->sampling.num - 1U) / c->sampling.num;
+    *ms = (1000U + config->sampling.num - 1U) / config->sampling.num;
     return SYS_OK;
 }

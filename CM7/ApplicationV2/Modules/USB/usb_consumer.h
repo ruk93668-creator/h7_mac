@@ -1,3 +1,5 @@
+// 在 USB 所有者上下文推进 Camera 资格事务。
+
 #ifndef V2_USB_CONSUMER_H
 #define V2_USB_CONSUMER_H
 #include "../../Resource/media_source.h"
@@ -27,8 +29,12 @@ typedef struct
     const VUSBConsumerOps *ops;
     void *port;
 } VUSBConsumer;
+// USB：绑定资格事务的消费者身份和所有者。
 SysResult_t VUSBConsumer_Init(VUSBConsumer *, const VUSBConsumerOps *, void *);
+// USB：启动原资格申请流程，授权以匹配回复为准。
 SysResult_t VUSBConsumer_Begin(VUSBConsumer *);
+// USB：提交独立资格释放事务，等待真实释放确认。
 SysResult_t VUSBConsumer_End(VUSBConsumer *, SysResult_t business_error);
+// USB：推进资格事务和匹配回复，不绕过原 Tx/Rx。
 SysResult_t VUSBConsumer_Process(VUSBConsumer *);
 #endif

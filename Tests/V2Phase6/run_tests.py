@@ -81,7 +81,7 @@ MUTANTS = [
     ('skip_dma_gate', 'storage_frame.c', 'if (!quiet)', 'if (0)', 13),
     ('false_release', 'storage_consumer.c', 'reply.completion_flags & APP_LIFECYCLE_QUALIFICATION_RELEASED',
      '1U', 16),
-    ('false_file_finish', 'storage_module.c', 'if (s->facts.flags & VST_FILE_FINISHED)',
+    ('false_file_finish', 'storage_module.c', 'if (storage->facts.flags & VST_FILE_FINISHED)',
      'if (1)', 8),
 ]
 rows = []

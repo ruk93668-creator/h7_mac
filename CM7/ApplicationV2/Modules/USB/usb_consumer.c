@@ -1,196 +1,206 @@
+// 在 USB 所有者上下文推进 Camera 资格事务。
+
 #include "usb_consumer.h"
 #include "app_camera_qualification.h"
 #include <string.h>
 #define MAGIC 0x55514335U
-static SysResult_t enter(VUSBConsumer *c)
+// 校验所有者调用并设置重入保护，调用方仍负责跨任务串行化。
+static SysResult_t enter(VUSBConsumer *consumer)
 {
-    if (!c || c->magic != MAGIC || !c->ops->is_owner(c->port))
+    if (!consumer || consumer->magic != MAGIC || !consumer->ops->is_owner(consumer->port))
         return SYS_ERR_INVALID_STATE;
-    if (c->busy)
+    if (consumer->busy)
         return SYS_ERR_BUSY;
-    c->busy = 1;
+    consumer->busy = 1;
     return 0;
 }
-static SysResult_t leave(VUSBConsumer *c, SysResult_t z)
+// 退出当前调用的重入保护。
+static SysResult_t leave(VUSBConsumer *consumer, SysResult_t result)
 {
-    c->busy = 0;
-    return z;
+    consumer->busy = 0;
+    return result;
 }
-static void fault(VUSBConsumer *c, SysResult_t z)
+// 将本轮观察到的故障记录到模块上下文。
+static void fault(VUSBConsumer *consumer, SysResult_t result)
 {
-    if (z && !c->first_error)
-        c->first_error = z;
+    if (result && !consumer->first_error)
+        consumer->first_error = result;
 }
-SysResult_t VUSBConsumer_Init(VUSBConsumer *c, const VUSBConsumerOps *ops, void *p)
+// USB：绑定资格事务的消费者身份和所有者。
+SysResult_t VUSBConsumer_Init(VUSBConsumer *consumer, const VUSBConsumerOps *ops, void *port_context)
 {
-    SysResult_t z;
-    if (!c || c->magic || !ops || !ops->is_owner || !ops->send || !ops->receive_reply)
+    SysResult_t result;
+    if (!consumer || consumer->magic || !ops || !ops->is_owner || !ops->send || !ops->receive_reply)
         return SYS_ERR_INVALID_ARG;
-    if (!ops->is_owner(p))
+    if (!ops->is_owner(port_context))
         return SYS_ERR_INVALID_STATE;
-    memset(c, 0, sizeof(*c));
-    c->ops = ops;
-    c->port = p;
-    z = App_LifecycleTxInit(&c->tx, APP_LIFECYCLE_USB, APP_LIFECYCLE_CAMERA, APP_CONSUMER_USB);
-    if (z)
-        return z;
-    c->magic = MAGIC;
+    memset(consumer, 0, sizeof(*consumer));
+    consumer->ops = ops;
+    consumer->port = port_context;
+    result = App_LifecycleTxInit(&consumer->tx, APP_LIFECYCLE_USB, APP_LIFECYCLE_CAMERA, APP_CONSUMER_USB);
+    if (result)
+        return result;
+    consumer->magic = MAGIC;
     return 0;
 }
-SysResult_t VUSBConsumer_Begin(VUSBConsumer *c)
+// USB：启动原资格申请流程，授权以匹配回复为准。
+SysResult_t VUSBConsumer_Begin(VUSBConsumer *consumer)
 {
-    SysResult_t z = enter(c);
-    if (z)
-        return z;
-    if (c->phase != VUC_IDLE || c->grant.session)
-        return leave(c, SYS_ERR_BUSY);
-    z = App_QualificationNextGeneration(&c->generation_counter, &c->generation);
-    if (z)
-        return leave(c, z);
-    c->phase = VUC_QUERY;
-    c->reserved = c->staged = 0;
-    c->result = 0;
-    c->first_error = 0;
-    return leave(c, 0);
+    SysResult_t result = enter(consumer);
+    if (result)
+        return result;
+    if (consumer->phase != VUC_IDLE || consumer->grant.session)
+        return leave(consumer, SYS_ERR_BUSY);
+    result = App_QualificationNextGeneration(&consumer->generation_counter, &consumer->generation);
+    if (result)
+        return leave(consumer, result);
+    consumer->phase = VUC_QUERY;
+    consumer->reserved = consumer->staged = 0;
+    consumer->result = 0;
+    consumer->first_error = 0;
+    return leave(consumer, 0);
 }
-SysResult_t VUSBConsumer_End(VUSBConsumer *c, SysResult_t error)
+// USB：提交独立资格释放事务，等待真实释放确认。
+SysResult_t VUSBConsumer_End(VUSBConsumer *consumer, SysResult_t error)
 {
-    SysResult_t z = enter(c);
-    if (z)
-        return z;
-    if (c->phase == VUC_RELEASE || c->phase == VUC_IDLE_REQUEST)
-        return leave(c, 0);
-    if (c->phase != VUC_GRANTED || !c->grant.session)
-        return leave(c, SYS_ERR_INVALID_STATE);
-    c->business_error = error;
-    c->phase = VUC_RELEASE;
-    c->reserved = c->staged = 0;
-    c->result = 0;
-    return leave(c, 0);
+    SysResult_t result = enter(consumer);
+    if (result)
+        return result;
+    if (consumer->phase == VUC_RELEASE || consumer->phase == VUC_IDLE_REQUEST)
+        return leave(consumer, 0);
+    if (consumer->phase != VUC_GRANTED || !consumer->grant.session)
+        return leave(consumer, SYS_ERR_INVALID_STATE);
+    consumer->business_error = error;
+    consumer->phase = VUC_RELEASE;
+    consumer->reserved = consumer->staged = 0;
+    consumer->result = 0;
+    return leave(consumer, 0);
 }
-static SysResult_t stage(VUSBConsumer *c)
+// 按消费者当前阶段登记原资格事务，等待原 Tx/Rx 推进。
+static SysResult_t stage(VUSBConsumer *consumer)
 {
-    SysResult_t z;
+    SysResult_t result;
     uint32_t id;
-    if (!c->reserved)
+    if (!consumer->reserved)
     {
-        z = App_LifecycleTxReserveIds(&c->tx, 1, &id);
-        if (z)
-            return z;
-        memset(&c->request, 0, sizeof(c->request));
-        c->request.version = APP_LIFECYCLE_VERSION;
-        c->request.kind = APP_LIFECYCLE_REQUEST;
-        c->request.source = APP_LIFECYCLE_USB;
-        c->request.target = APP_LIFECYCLE_CAMERA;
-        c->request.identity.consumer_id = APP_CONSUMER_USB;
-        c->request.identity.consumer_generation = c->generation;
-        c->request.identity.request_id = id;
-        c->request.operation = c->phase == VUC_QUERY     ? APP_LIFECYCLE_SESSION_QUERY
-                               : c->phase == VUC_ACQUIRE ? APP_LIFECYCLE_ACQUIRE
-                               : c->phase == VUC_RELEASE ? APP_LIFECYCLE_RELEASE
+        result = App_LifecycleTxReserveIds(&consumer->tx, 1, &id);
+        if (result)
+            return result;
+        memset(&consumer->request, 0, sizeof(consumer->request));
+        consumer->request.version = APP_LIFECYCLE_VERSION;
+        consumer->request.kind = APP_LIFECYCLE_REQUEST;
+        consumer->request.source = APP_LIFECYCLE_USB;
+        consumer->request.target = APP_LIFECYCLE_CAMERA;
+        consumer->request.identity.consumer_id = APP_CONSUMER_USB;
+        consumer->request.identity.consumer_generation = consumer->generation;
+        consumer->request.identity.request_id = id;
+        consumer->request.operation = consumer->phase == VUC_QUERY     ? APP_LIFECYCLE_SESSION_QUERY
+                               : consumer->phase == VUC_ACQUIRE ? APP_LIFECYCLE_ACQUIRE
+                               : consumer->phase == VUC_RELEASE ? APP_LIFECYCLE_RELEASE
                                                          : APP_LIFECYCLE_STOP_IF_IDLE;
-        c->request.identity.session_id = c->phase == VUC_QUERY ? 0 : c->session;
-        if (c->phase == VUC_RELEASE)
+        consumer->request.identity.session_id = consumer->phase == VUC_QUERY ? 0 : consumer->session;
+        if (consumer->phase == VUC_RELEASE)
         {
-            c->release.grant = c->grant;
-            c->release.request = id;
-            c->request.identity.session_id = c->grant.session;
-            c->request.identity.consumer_generation = c->grant.generation;
-            c->request.completion_flags = APP_LIFECYCLE_INPUT_CLOSED |
+            consumer->release.grant = consumer->grant;
+            consumer->release.request = id;
+            consumer->request.identity.session_id = consumer->grant.session;
+            consumer->request.identity.consumer_generation = consumer->grant.generation;
+            consumer->request.completion_flags = APP_LIFECYCLE_INPUT_CLOSED |
                                           APP_LIFECYCLE_WORK_QUIESCENT |
                                           APP_LIFECYCLE_FRAMES_DRAINED;
-            c->request.business_result = c->business_error;
+            consumer->request.business_result = consumer->business_error;
         }
-        c->reserved = 1;
+        consumer->reserved = 1;
     }
-    z = App_LifecycleTxStage(&c->tx, &c->request);
-    if (!z)
-        c->staged = 1;
-    return z;
+    result = App_LifecycleTxStage(&consumer->tx, &consumer->request);
+    if (!result)
+        consumer->staged = 1;
+    return result;
 }
-SysResult_t VUSBConsumer_Process(VUSBConsumer *c)
+// USB：推进资格事务和匹配回复，不绕过原 Tx/Rx。
+SysResult_t VUSBConsumer_Process(VUSBConsumer *consumer)
 {
-    SysResult_t z = enter(c);
+    SysResult_t result = enter(consumer);
     AppLifecycleMessage_t reply;
-    if (z)
-        return z;
-    if (c->phase == VUC_IDLE || c->phase == VUC_GRANTED)
-        return leave(c, 0);
-    if (c->phase == VUC_BLOCKED)
-        return leave(c, c->result ? c->result : SYS_ERR_INVALID_STATE);
-    if (!c->staged)
+    if (result)
+        return result;
+    if (consumer->phase == VUC_IDLE || consumer->phase == VUC_GRANTED)
+        return leave(consumer, 0);
+    if (consumer->phase == VUC_BLOCKED)
+        return leave(consumer, consumer->result ? consumer->result : SYS_ERR_INVALID_STATE);
+    if (!consumer->staged)
     {
-        z = stage(c);
-        if (z)
+        result = stage(consumer);
+        if (result)
         {
-            fault(c, z);
-            return leave(c, z);
+            fault(consumer, result);
+            return leave(consumer, result);
         }
     }
     /* WAIT_REPLY超时不能清空Tx；队列满只重试原请求原编号。 */
-    (void)App_LifecycleTxFlush(&c->tx, c->ops->send, c->port);
-    z = c->ops->receive_reply(c->port, &reply);
-    if (!z && App_LifecycleMatchesReply(&c->request, &reply))
+    (void)App_LifecycleTxFlush(&consumer->tx, consumer->ops->send, consumer->port);
+    result = consumer->ops->receive_reply(consumer->port, &reply);
+    if (!result && App_LifecycleMatchesReply(&consumer->request, &reply))
     {
-        z = App_LifecycleTxAcceptReply(&c->tx, &reply);
-        if (z)
-            fault(c, z);
+        result = App_LifecycleTxAcceptReply(&consumer->tx, &reply);
+        if (result)
+            fault(consumer, result);
     }
-    z = App_LifecycleTxGetCompleted(&c->tx, &reply);
-    if (z)
-        return leave(c, z);
-    z = App_LifecycleTxConfirmConsumed(&c->tx, &c->request);
-    if (z)
+    result = App_LifecycleTxGetCompleted(&consumer->tx, &reply);
+    if (result)
+        return leave(consumer, result);
+    result = App_LifecycleTxConfirmConsumed(&consumer->tx, &consumer->request);
+    if (result)
     {
-        fault(c, z);
-        return leave(c, z);
+        fault(consumer, result);
+        return leave(consumer, result);
     }
-    c->result = reply.result;
-    c->reserved = c->staged = 0;
-    if (c->phase == VUC_QUERY)
-    {
-        if (!reply.result)
-        {
-            c->session = reply.identity.session_id;
-            c->phase = VUC_ACQUIRE;
-        }
-        else
-            c->phase = VUC_IDLE;
-    }
-    else if (c->phase == VUC_ACQUIRE)
+    consumer->result = reply.result;
+    consumer->reserved = consumer->staged = 0;
+    if (consumer->phase == VUC_QUERY)
     {
         if (!reply.result)
         {
-            c->grant.session = c->request.identity.session_id;
-            c->grant.consumer = APP_CONSUMER_USB;
-            c->grant.generation = c->request.identity.consumer_generation;
-            c->grant.acquire = c->request.identity.request_id;
-            c->phase = VUC_GRANTED;
+            consumer->session = reply.identity.session_id;
+            consumer->phase = VUC_ACQUIRE;
         }
         else
-            c->phase = VUC_IDLE;
+            consumer->phase = VUC_IDLE;
     }
-    else if (c->phase == VUC_RELEASE)
+    else if (consumer->phase == VUC_ACQUIRE)
+    {
+        if (!reply.result)
+        {
+            consumer->grant.session = consumer->request.identity.session_id;
+            consumer->grant.consumer = APP_CONSUMER_USB;
+            consumer->grant.generation = consumer->request.identity.consumer_generation;
+            consumer->grant.acquire = consumer->request.identity.request_id;
+            consumer->phase = VUC_GRANTED;
+        }
+        else
+            consumer->phase = VUC_IDLE;
+    }
+    else if (consumer->phase == VUC_RELEASE)
     {
         if (!reply.result && (reply.completion_flags & APP_LIFECYCLE_QUALIFICATION_RELEASED))
         {
-            memset(&c->grant, 0, sizeof(c->grant));
-            c->phase = VUC_IDLE_REQUEST;
+            memset(&consumer->grant, 0, sizeof(consumer->grant));
+            consumer->phase = VUC_IDLE_REQUEST;
         }
         else
         {
-            if (!c->result)
-                c->result = SYS_ERR_PROTOCOL;
-            c->phase = VUC_BLOCKED;
+            if (!consumer->result)
+                consumer->result = SYS_ERR_PROTOCOL;
+            consumer->phase = VUC_BLOCKED;
         }
     }
     else
     {
-        c->camera_stop_result = reply.result;
-        c->result = 0;
-        c->phase = VUC_IDLE;
+        consumer->camera_stop_result = reply.result;
+        consumer->result = 0;
+        consumer->phase = VUC_IDLE;
     }
-    if (c->result)
-        fault(c, c->result);
-    return leave(c, c->result);
+    if (consumer->result)
+        fault(consumer, consumer->result);
+    return leave(consumer, consumer->result);
 }

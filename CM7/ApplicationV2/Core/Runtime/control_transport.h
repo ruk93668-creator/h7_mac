@@ -1,3 +1,5 @@
+// 将可信传输端的请求交给统一控制服务。
+
 #ifndef V2_CONTROL_TRANSPORT_H
 #define V2_CONTROL_TRANSPORT_H
 
@@ -49,7 +51,9 @@ typedef struct
     CSEgress output;
 } CSAdapter;
 
+// 绑定传输适配器、控制服务及运输端口。
 SysResult_t CSAdapter_Init(CSAdapter *, CSService *, uint32_t channel, const CSAdapterOps *,
                            void *);
+// 处理传输入口并续送尚未交付的响应。
 SysResult_t CSAdapter_Process(CSAdapter *, uint32_t now);
 #endif

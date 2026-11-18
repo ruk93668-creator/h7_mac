@@ -1,30 +1,33 @@
+// 将中立媒体配置转换为 USB/UVC 端口配置。
+
 #include "usb_format.h"
 #include "../Camera/camera_format.h"
 #include "usb_uvc_desc.h"
 #include <string.h>
-SysResult_t VUSB_Translate(const CoreMediaFormat *f, const CoreFrameRate *rate,
+// 将中立格式交由模块端口验证，保留实际能力约束和错误结果。
+SysResult_t VUSB_Translate(const CoreMediaFormat *format, const CoreFrameRate *rate,
                            VideoStreamConfig_t *out)
 {
-    VideoStreamConfig_t n;
-    SysResult_t z;
-    if (!f || !rate || !out || V2_Overlap(f, sizeof(*f), out, sizeof(*out)) ||
+    VideoStreamConfig_t native_config;
+    SysResult_t result;
+    if (!format || !rate || !out || V2_Overlap(format, sizeof(*format), out, sizeof(*out)) ||
         V2_Overlap(rate, sizeof(*rate), out, sizeof(*out)))
         return SYS_ERR_INVALID_ARG;
-    z = CoreRate_Validate(rate);
-    if (z)
-        return z;
+    result = CoreRate_Validate(rate);
+    if (result)
+        return result;
     /* 旧UVC配置只有整数FPS，不能静默舍入用户请求。 */
     if (rate->den != 1 || rate->num > UINT16_MAX)
         return SYS_ERR_NOT_SUPPORTED;
-    memset(&n, 0, sizeof(n));
-    z = VCamera_Translate(f, &n.camera);
-    if (z)
-        return z;
-    n.fps = (uint16_t)rate->num;
-    n.max_frame_bytes = f->max_payload;
-    z = USB_UVC_ValidateFSConfig(&n);
-    if (z)
-        return z;
-    *out = n;
+    memset(&native_config, 0, sizeof(native_config));
+    result = VCamera_Translate(format, &native_config.camera);
+    if (result)
+        return result;
+    native_config.fps = (uint16_t)rate->num;
+    native_config.max_frame_bytes = format->max_payload;
+    result = USB_UVC_ValidateFSConfig(&native_config);
+    if (result)
+        return result;
+    *out = native_config;
     return 0;
 }

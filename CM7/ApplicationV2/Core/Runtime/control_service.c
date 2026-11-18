@@ -1,449 +1,475 @@
+// 维护统一控制请求身份、权限、决策和可靠回复。
+
 #include "control_service.h"
 #include <string.h>
 
 #define MAGIC 0x43535637U
 
-int CS_IdEqual(const CSIdentity *a, const CSIdentity *b)
+// 比较完整事务身份，避免旧消息匹配当前操作。
+int CS_IdEqual(const CSIdentity *left_identity, const CSIdentity *right_identity)
 {
-    return a && b && a->boot == b->boot && a->session == b->session && a->sequence == b->sequence &&
-           a->ticket == b->ticket;
+    return left_identity && right_identity && left_identity->boot == right_identity->boot && left_identity->session == right_identity->session && left_identity->sequence == right_identity->sequence &&
+           left_identity->ticket == right_identity->ticket;
 }
 
-static int peer_equal(const CSPeer *a, const CSPeer *b)
+// 核对对端绑定身份及可信传输来源。
+static int peer_equal(const CSPeer *left_peer, const CSPeer *right_peer)
 {
-    return a->transport == b->transport && a->principal == b->principal && a->client == b->client;
+    return left_peer->transport == right_peer->transport && left_peer->principal == right_peer->principal && left_peer->client == right_peer->client;
 }
 
-static int trusted_peer(const CSPeer *p)
+// 核对对端绑定身份及可信传输来源。
+static int trusted_peer(const CSPeer *peer)
 {
-    return p && p->transport >= CS_IPC && p->transport <= CS_ETHERNET && p->principal && p->client;
+    return peer && peer->transport >= CS_IPC && peer->transport <= CS_ETHERNET && peer->principal && peer->client;
 }
 
-static SysResult_t enter(CSService *s)
+// 校验所有者调用并设置重入保护，调用方仍负责跨任务串行化。
+static SysResult_t enter(CSService *service)
 {
-    if (!s || s->magic != MAGIC || !s->ops->owner(s->port))
+    if (!service || service->magic != MAGIC || !service->ops->owner(service->port))
         return SYS_ERR_INVALID_STATE;
-    if (s->busy)
+    if (service->busy)
         return SYS_ERR_BUSY;
-    s->busy = 1U;
+    service->busy = 1U;
     return SYS_OK;
 }
 
-static SysResult_t leave(CSService *s, SysResult_t z)
+// 退出当前调用的重入保护。
+static SysResult_t leave(CSService *service, SysResult_t result)
 {
-    s->busy = 0U;
-    return z;
+    service->busy = 0U;
+    return result;
 }
 
-static const CSProfile *profile(const CSService *s, uint32_t id)
+// 查找对端可以使用的权限配置或会话。
+static const CSProfile *profile(const CSService *service, uint32_t id)
 {
-    uint16_t i;
-    for (i = 0; i < s->catalog->profile_count; ++i)
-        if (s->catalog->profiles[i].id == id)
-            return &s->catalog->profiles[i];
+    uint16_t profile_index;
+    for (profile_index = 0; profile_index < service->catalog->profile_count; ++profile_index)
+        if (service->catalog->profiles[profile_index].id == id)
+            return &service->catalog->profiles[profile_index];
     return NULL;
 }
 
-static CSSession *session(CSService *s, const CSPeer *p, uint32_t boot, uint32_t id)
+// 查找对端可以使用的权限配置或会话。
+static CSSession *session(CSService *service, const CSPeer *peer, uint32_t boot, uint32_t id)
 {
-    uint32_t i;
-    if (boot != s->boot || !id || !trusted_peer(p))
+    uint32_t session_index;
+    if (boot != service->boot || !id || !trusted_peer(peer))
         return NULL;
-    for (i = 0; i < CS_SESSION_MAX; ++i)
-        if (s->sessions[i].id == id && peer_equal(p, &s->sessions[i].peer))
-            return &s->sessions[i];
+    for (session_index = 0; session_index < CS_SESSION_MAX; ++session_index)
+        if (service->sessions[session_index].id == id && peer_equal(peer, &service->sessions[session_index].peer))
+            return &service->sessions[session_index];
     return NULL;
 }
 
-static CSRecord *record(CSService *s, uint32_t id, uint32_t seq)
+// 按完整身份定位已有记录。
+static CSRecord *record(CSService *service, uint32_t id, uint32_t seq)
 {
-    uint32_t i;
-    for (i = 0; i < CS_RECORD_MAX; ++i)
-        if (s->records[i].reply.id.session == id && s->records[i].reply.id.sequence == seq)
-            return &s->records[i];
+    uint32_t record_index;
+    for (record_index = 0; record_index < CS_RECORD_MAX; ++record_index)
+        if (service->records[record_index].reply.id.session == id && service->records[record_index].reply.id.sequence == seq)
+            return &service->records[record_index];
     return NULL;
 }
 
-static int waiting(SysResult_t z)
+// 识别仍需等待端口或运输推进的结果。
+static int waiting(SysResult_t result)
 {
-    return z == SYS_ERR_BUSY || z == SYS_ERR_NO_RESOURCE || z == SYS_ERR_NOT_FOUND;
+    return result == SYS_ERR_BUSY || result == SYS_ERR_NO_RESOURCE || result == SYS_ERR_NOT_FOUND;
 }
 
-static int output_ok(const CSService *s, const void *p, size_t n)
+// 检查响应输出端口是否可用。
+static int output_ok(const CSService *service, const void *port_context, size_t bytes)
 {
-    return p && !V2_Overlap(s, sizeof(*s), p, n);
+    return port_context && !V2_Overlap(service, sizeof(*service), port_context, bytes);
 }
 
-SysResult_t CS_Init(CSService *s, uint32_t boot, const CSCatalog *c, const CSPortOps *o, void *p)
+// 绑定控制策略、端口和所有者，初始化有界事务表。
+SysResult_t CS_Init(CSService *service, uint32_t boot, const CSCatalog *catalog, const CSPortOps *port_ops, void *port_context)
 {
-    uint16_t i, j;
-    if (!s || s->magic || !boot || !c || !c->registry || !c->graph || !c->bindings ||
-        !c->binding_count || !c->profiles || !c->profile_count ||
-        c->profile_count > GRAPH_PIPELINE_MAX || !c->validate || !o || !o->owner || !o->authorize ||
-        !o->snapshot || !o->submit || !o->read || !o->consume)
+    uint16_t profile_index, previous_index;
+    if (!service || service->magic || !boot || !catalog || !catalog->registry || !catalog->graph || !catalog->bindings ||
+        !catalog->binding_count || !catalog->profiles || !catalog->profile_count ||
+        catalog->profile_count > GRAPH_PIPELINE_MAX || !catalog->validate || !port_ops || !port_ops->owner || !port_ops->authorize ||
+        !port_ops->snapshot || !port_ops->submit || !port_ops->read || !port_ops->consume)
         return SYS_ERR_INVALID_ARG;
-    if (!o->owner(p))
+    if (!port_ops->owner(port_context))
         return SYS_ERR_INVALID_STATE;
-    for (i = 0; i < c->profile_count; ++i)
+    for (profile_index = 0; profile_index < catalog->profile_count; ++profile_index)
     {
-        if (!c->profiles[i].id)
+        if (!catalog->profiles[profile_index].id)
             return SYS_ERR_INVALID_ARG;
-        for (j = 0; j < i; ++j)
-            if (c->profiles[i].id == c->profiles[j].id)
+        for (previous_index = 0; previous_index < profile_index; ++previous_index)
+            if (catalog->profiles[profile_index].id == catalog->profiles[previous_index].id)
                 return SYS_ERR_ALREADY_EXISTS;
     }
-    memset(s, 0, sizeof(*s));
-    s->boot = boot;
-    s->catalog = c;
-    s->ops = o;
-    s->port = p;
-    s->magic = MAGIC;
+    memset(service, 0, sizeof(*service));
+    service->boot = boot;
+    service->catalog = catalog;
+    service->ops = port_ops;
+    service->port = port_context;
+    service->magic = MAGIC;
     return SYS_OK;
 }
 
-SysResult_t CS_Open(CSService *s, const CSPeer *p, uint32_t *out)
+// 为受信控制对端建立会话。
+SysResult_t CS_Open(CSService *service, const CSPeer *peer, uint32_t *out)
 {
-    uint32_t i, free_index = CS_SESSION_MAX;
-    SysResult_t z = enter(s);
-    if (z)
-        return z;
-    if (!trusted_peer(p) || !output_ok(s, out, sizeof(*out)))
-        return leave(s, SYS_ERR_INVALID_ARG);
-    z = s->ops->authorize(s->port, p, 0U, 0U, 0U, 0U);
-    if (z)
-        return leave(s, z);
-    for (i = 0; i < CS_SESSION_MAX; ++i)
+    uint32_t session_index, free_index = CS_SESSION_MAX;
+    SysResult_t result = enter(service);
+    if (result)
+        return result;
+    if (!trusted_peer(peer) || !output_ok(service, out, sizeof(*out)))
+        return leave(service, SYS_ERR_INVALID_ARG);
+    result = service->ops->authorize(service->port, peer, 0U, 0U, 0U, 0U);
+    if (result)
+        return leave(service, result);
+    for (session_index = 0; session_index < CS_SESSION_MAX; ++session_index)
     {
-        if (s->sessions[i].id)
+        if (service->sessions[session_index].id)
         {
-            if (peer_equal(p, &s->sessions[i].peer))
+            if (peer_equal(peer, &service->sessions[session_index].peer))
             {
-                *out = s->sessions[i].id;
-                return leave(s, SYS_OK);
+                *out = service->sessions[session_index].id;
+                return leave(service, SYS_OK);
             }
         }
         else if (free_index == CS_SESSION_MAX)
-            free_index = i;
+            free_index = session_index;
     }
-    if (free_index == CS_SESSION_MAX || s->next_session == UINT32_MAX)
-        return leave(s, SYS_ERR_NO_RESOURCE);
-    s->sessions[free_index].peer = *p;
-    s->sessions[free_index].issued = 0U;
-    s->sessions[free_index].id = ++s->next_session;
-    *out = s->next_session;
-    return leave(s, SYS_OK);
+    if (free_index == CS_SESSION_MAX || service->next_session == UINT32_MAX)
+        return leave(service, SYS_ERR_NO_RESOURCE);
+    service->sessions[free_index].peer = *peer;
+    service->sessions[free_index].issued = 0U;
+    service->sessions[free_index].id = ++service->next_session;
+    *out = service->next_session;
+    return leave(service, SYS_OK);
 }
 
-SysResult_t CS_Close(CSService *s, const CSPeer *p, uint32_t boot, uint32_t id)
+// 关闭匹配的控制会话入口。
+SysResult_t CS_Close(CSService *service, const CSPeer *peer, uint32_t boot, uint32_t id)
 {
-    CSSession *c;
-    uint32_t i;
-    SysResult_t z = enter(s);
-    if (z)
-        return z;
-    c = session(s, p, boot, id);
-    if (!c)
-        return leave(s, SYS_ERR_PROTOCOL);
-    for (i = 0; i < CS_RECORD_MAX; ++i)
-        if (s->records[i].reply.id.session == id && !s->records[i].delivered)
-            return leave(s, SYS_ERR_BUSY);
-    for (i = 0; i < CS_RECORD_MAX; ++i)
-        if (s->records[i].reply.id.session == id)
-            memset(&s->records[i], 0, sizeof(s->records[i]));
-    memset(c, 0, sizeof(*c));
-    return leave(s, SYS_OK);
+    CSSession *session_entry;
+    uint32_t record_index;
+    SysResult_t result = enter(service);
+    if (result)
+        return result;
+    session_entry = session(service, peer, boot, id);
+    if (!session_entry)
+        return leave(service, SYS_ERR_PROTOCOL);
+    for (record_index = 0; record_index < CS_RECORD_MAX; ++record_index)
+        if (service->records[record_index].reply.id.session == id && !service->records[record_index].delivered)
+            return leave(service, SYS_ERR_BUSY);
+    for (record_index = 0; record_index < CS_RECORD_MAX; ++record_index)
+        if (service->records[record_index].reply.id.session == id)
+            memset(&service->records[record_index], 0, sizeof(service->records[record_index]));
+    memset(session_entry, 0, sizeof(*session_entry));
+    return leave(service, SYS_OK);
 }
 
-static int valid_request(const CSRequest *r)
+// 检查控制请求身份及命令字段是否合规。
+static int valid_request(const CSRequest *request)
 {
-    return r && r->version == CS_VERSION && r->sequence && r->profile && r->timeout &&
-           r->timeout <= 0x7fffffffU && r->operation >= CS_VALIDATE && r->operation <= CS_STOP &&
-           (r->operation == CS_VALIDATE || r->revision) &&
-           (r->operation == CS_STOP ? r->stop_mask && r->stop_mask <= UINT16_MAX && r->cleanup <= 1U
-                                    : !r->stop_mask && !r->cleanup);
+    return request && request->version == CS_VERSION && request->sequence && request->profile && request->timeout &&
+           request->timeout <= 0x7fffffffU && request->operation >= CS_VALIDATE && request->operation <= CS_STOP &&
+           (request->operation == CS_VALIDATE || request->revision) &&
+           (request->operation == CS_STOP ? request->stop_mask && request->stop_mask <= UINT16_MAX && request->cleanup <= 1U
+                                    : !request->stop_mask && !request->cleanup);
 }
 
-SysResult_t CS_Submit(CSService *s, const CSPeer *p, const CSRequest *r, uint32_t now, CSReply *out)
+// 验证权限及身份后受理控制命令。
+SysResult_t CS_Submit(CSService *service, const CSPeer *peer, const CSRequest *request, uint32_t now, CSReply *out)
 {
-    CSSession *c;
-    CSRecord *v;
-    uint32_t i, index = CS_RECORD_MAX, oldest = UINT32_MAX;
-    SysResult_t z = enter(s);
-    if (z)
-        return z;
-    if (!valid_request(r) || !output_ok(s, out, sizeof(*out)) ||
-        V2_Overlap(r, sizeof(*r), out, sizeof(*out)))
-        return leave(s, SYS_ERR_INVALID_ARG);
-    c = session(s, p, r->boot, r->session);
-    if (!c)
-        return leave(s, SYS_ERR_PROTOCOL);
-    z = s->ops->authorize(s->port, p, r->operation, r->profile, 0U, 0U);
-    if (z)
-        return leave(s, z);
-    v = record(s, r->session, r->sequence);
-    if (v)
+    CSSession *session_entry;
+    CSRecord *active_record;
+    uint32_t record_index, index = CS_RECORD_MAX, oldest = UINT32_MAX;
+    SysResult_t result = enter(service);
+    if (result)
+        return result;
+    if (!valid_request(request) || !output_ok(service, out, sizeof(*out)) ||
+        V2_Overlap(request, sizeof(*request), out, sizeof(*out)))
+        return leave(service, SYS_ERR_INVALID_ARG);
+    session_entry = session(service, peer, request->boot, request->session);
+    if (!session_entry)
+        return leave(service, SYS_ERR_PROTOCOL);
+    result = service->ops->authorize(service->port, peer, request->operation, request->profile, 0U, 0U);
+    if (result)
+        return leave(service, result);
+    active_record = record(service, request->session, request->sequence);
+    if (active_record)
     {
-        if (memcmp(&v->request, r, sizeof(*r)))
-            return leave(s, SYS_ERR_PROTOCOL);
-        *out = v->reply;
-        return leave(s, SYS_OK);
+        if (memcmp(&active_record->request, request, sizeof(*request)))
+            return leave(service, SYS_ERR_PROTOCOL);
+        *out = active_record->reply;
+        return leave(service, SYS_OK);
     }
-    if (r->sequence <= c->issued)
-        return leave(s, SYS_ERR_NOT_FOUND); /* 已退休或跳号，不重新执行。 */
-    if (!profile(s, r->profile))
-        return leave(s, SYS_ERR_NOT_FOUND);
-    if (s->active)
-        return leave(s, SYS_ERR_BUSY);
-    if (s->blocked && r->operation != CS_VALIDATE)
-        return leave(s, SYS_ERR_INVALID_STATE);
-    for (i = 0; i < CS_RECORD_MAX; ++i)
+    if (request->sequence <= session_entry->issued)
+        return leave(service, SYS_ERR_NOT_FOUND); /* 已退休或跳号，不重新执行。 */
+    if (!profile(service, request->profile))
+        return leave(service, SYS_ERR_NOT_FOUND);
+    if (service->active)
+        return leave(service, SYS_ERR_BUSY);
+    if (service->blocked && request->operation != CS_VALIDATE)
+        return leave(service, SYS_ERR_INVALID_STATE);
+    for (record_index = 0; record_index < CS_RECORD_MAX; ++record_index)
     {
-        v = &s->records[i];
-        if (!v->reply.id.ticket)
+        active_record = &service->records[record_index];
+        if (!active_record->reply.id.ticket)
         {
-            index = i;
+            index = record_index;
             break;
         }
-        if (v->delivered && v->reply.id.ticket < oldest)
+        if (active_record->delivered && active_record->reply.id.ticket < oldest)
         {
-            index = i;
-            oldest = v->reply.id.ticket;
+            index = record_index;
+            oldest = active_record->reply.id.ticket;
         }
     }
-    if (index == CS_RECORD_MAX || s->next_ticket == UINT32_MAX)
-        return leave(s, SYS_ERR_NO_RESOURCE);
-    v = &s->records[index];
-    memset(v, 0, sizeof(*v));
-    v->request = *r;
-    v->reply.id = (CSIdentity){s->boot, r->session, r->sequence, ++s->next_ticket};
-    v->reply.phase = CS_ACCEPTED;
-    v->reply.profile = r->profile;
-    v->reply.revision = r->revision;
-    c->issued = r->sequence;
-    s->active = index + 1U;
-    s->started = now;
-    s->exec_seen = 0U;
-    *out = v->reply;
-    return leave(s, SYS_OK);
+    if (index == CS_RECORD_MAX || service->next_ticket == UINT32_MAX)
+        return leave(service, SYS_ERR_NO_RESOURCE);
+    active_record = &service->records[index];
+    memset(active_record, 0, sizeof(*active_record));
+    active_record->request = *request;
+    active_record->reply.id = (CSIdentity){service->boot, request->session, request->sequence, ++service->next_ticket};
+    active_record->reply.phase = CS_ACCEPTED;
+    active_record->reply.profile = request->profile;
+    active_record->reply.revision = request->revision;
+    session_entry->issued = request->sequence;
+    service->active = index + 1U;
+    service->started = now;
+    service->exec_seen = 0U;
+    *out = active_record->reply;
+    return leave(service, SYS_OK);
 }
 
-static CSRecord *owned_record(CSService *s, const CSPeer *p, const CSIdentity *id)
+// 查找指定对端有权访问的控制请求记录。
+static CSRecord *owned_record(CSService *service, const CSPeer *peer, const CSIdentity *id)
 {
-    CSRecord *v;
-    if (!id || !session(s, p, id->boot, id->session))
+    CSRecord *active_record;
+    if (!id || !session(service, peer, id->boot, id->session))
         return NULL;
-    v = record(s, id->session, id->sequence);
-    return v && CS_IdEqual(id, &v->reply.id) ? v : NULL;
+    active_record = record(service, id->session, id->sequence);
+    return active_record && CS_IdEqual(id, &active_record->reply.id) ? active_record : NULL;
 }
 
-SysResult_t CS_Query(CSService *s, const CSPeer *p, const CSIdentity *id, CSReply *out)
+// 按对端和请求身份查询进度或冻结结果。
+SysResult_t CS_Query(CSService *service, const CSPeer *peer, const CSIdentity *id, CSReply *out)
 {
-    CSRecord *v;
-    SysResult_t z = enter(s);
-    if (z)
-        return z;
-    if (!output_ok(s, out, sizeof(*out)))
-        return leave(s, SYS_ERR_INVALID_ARG);
-    v = owned_record(s, p, id);
-    if (!v)
-        return leave(s, SYS_ERR_NOT_FOUND);
-    z = s->ops->authorize(s->port, p, v->request.operation, v->request.profile, 0U, 0U);
-    if (!z)
-        *out = v->reply;
-    return leave(s, z);
+    CSRecord *active_record;
+    SysResult_t result = enter(service);
+    if (result)
+        return result;
+    if (!output_ok(service, out, sizeof(*out)))
+        return leave(service, SYS_ERR_INVALID_ARG);
+    active_record = owned_record(service, peer, id);
+    if (!active_record)
+        return leave(service, SYS_ERR_NOT_FOUND);
+    result = service->ops->authorize(service->port, peer, active_record->request.operation, active_record->request.profile, 0U, 0U);
+    if (!result)
+        *out = active_record->reply;
+    return leave(service, result);
 }
 
-SysResult_t CS_Confirm(CSService *s, const CSPeer *p, const CSReply *r)
+// 确认匹配的控制回复已被消费。
+SysResult_t CS_Confirm(CSService *service, const CSPeer *peer, const CSReply *reply)
 {
-    CSRecord *v;
-    SysResult_t z = enter(s);
-    if (z)
-        return z;
-    v = owned_record(s, p, r ? &r->id : NULL);
-    if (!v || v->reply.phase != CS_FINAL || memcmp(r, &v->reply, sizeof(*r)))
-        return leave(s, SYS_ERR_PROTOCOL);
+    CSRecord *active_record;
+    SysResult_t result = enter(service);
+    if (result)
+        return result;
+    active_record = owned_record(service, peer, reply ? &reply->id : NULL);
+    if (!active_record || active_record->reply.phase != CS_FINAL || memcmp(reply, &active_record->reply, sizeof(*reply)))
+        return leave(service, SYS_ERR_PROTOCOL);
     /* 消费只退休交付凭证，同序号重传仍读旧结果。 */
-    v->delivered = 1U;
-    return leave(s, SYS_OK);
+    active_record->delivered = 1U;
+    return leave(service, SYS_OK);
 }
 
-static void first(CSRecord *v, SysResult_t z)
+// 记录首个错误，后续恢复结果不能覆盖它。
+static void first(CSRecord *active_record, SysResult_t result)
 {
-    if (z && !v->reply.first_error)
-        v->reply.first_error = z;
+    if (result && !active_record->reply.first_error)
+        active_record->reply.first_error = result;
 }
 
-static void finish(CSService *s, CSRecord *v, SysResult_t z)
+// 冻结当前操作结果，供下一阶段读取。
+static void finish(CSService *service, CSRecord *active_record, SysResult_t result)
 {
-    first(v, z);
-    v->reply.actual_result = z;
-    v->reply.phase = CS_FINAL;
-    s->active = 0U;
+    first(active_record, result);
+    active_record->reply.actual_result = result;
+    active_record->reply.phase = CS_FINAL;
+    service->active = 0U;
 }
 
-SysResult_t CS_Cancel(CSService *s, const CSPeer *p, const CSIdentity *id)
+// 请求取消控制事务，区分尚未执行和已经提交的操作。
+SysResult_t CS_Cancel(CSService *service, const CSPeer *peer, const CSIdentity *id)
 {
-    CSRecord *v;
-    SysResult_t z = enter(s);
-    if (z)
-        return z;
-    v = owned_record(s, p, id);
-    if (!v)
-        return leave(s, SYS_ERR_NOT_FOUND);
-    z = s->ops->authorize(s->port, p, v->request.operation, v->request.profile, 0U, 0U);
-    if (z)
-        return leave(s, z);
-    if (v->reply.phase == CS_FINAL)
-        return leave(s, SYS_OK);
-    if (v->reply.phase == CS_EXECUTING)
-        return leave(s, SYS_ERR_BUSY);
-    v->reply.effect = CS_EFFECT_CANCELLED;
-    finish(s, v, SYS_ERR_INVALID_STATE);
-    return leave(s, SYS_OK);
+    CSRecord *active_record;
+    SysResult_t result = enter(service);
+    if (result)
+        return result;
+    active_record = owned_record(service, peer, id);
+    if (!active_record)
+        return leave(service, SYS_ERR_NOT_FOUND);
+    result = service->ops->authorize(service->port, peer, active_record->request.operation, active_record->request.profile, 0U, 0U);
+    if (result)
+        return leave(service, result);
+    if (active_record->reply.phase == CS_FINAL)
+        return leave(service, SYS_OK);
+    if (active_record->reply.phase == CS_EXECUTING)
+        return leave(service, SYS_ERR_BUSY);
+    active_record->reply.effect = CS_EFFECT_CANCELLED;
+    finish(service, active_record, SYS_ERR_INVALID_STATE);
+    return leave(service, SYS_OK);
 }
 
-static SysResult_t check_plan(CSService *s, const CSPeer *p, const CSRecord *v)
+// 将请求命令转换成经过校验的组合候选及执行计划。
+static SysResult_t check_plan(CSService *service, const CSPeer *peer, const CSRecord *active_record)
 {
-    uint32_t i;
-    for (i = 0; i < s->execution.plan.count; ++i)
+    uint32_t step_index;
+    for (step_index = 0; step_index < service->execution.plan.count; ++step_index)
     {
-        const EMStep *step = &s->execution.plan.steps[i];
-        SysResult_t z = s->ops->authorize(s->port, p, v->request.operation, v->request.profile,
+        const EMStep *step = &service->execution.plan.steps[step_index];
+        SysResult_t result = service->ops->authorize(service->port, peer, active_record->request.operation, active_record->request.profile,
                                           step->module, step->operation);
-        if (!z && v->request.operation == CS_START)
-            z = s->ops->authorize(s->port, p, CS_START, v->request.profile, step->module,
+        if (!result && active_record->request.operation == CS_START)
+            result = service->ops->authorize(service->port, peer, CS_START, active_record->request.profile, step->module,
                                   step->operation == LC_CONFIGURE ? LC_CLEANUP : LC_DEACTIVATE);
-        if (z)
-            return z;
+        if (result)
+            return result;
     }
     return SYS_OK;
 }
 
-static SysResult_t build(CSService *s, CSRecord *v)
+// 将请求命令转换成经过校验的组合候选及执行计划。
+static SysResult_t build(CSService *service, CSRecord *active_record)
 {
-    const CSProfile *p = profile(s, v->request.profile);
-    const CSCatalog *c = s->catalog;
+    const CSProfile *profile_desc = profile(service, active_record->request.profile);
+    const CSCatalog *catalog = service->catalog;
     V2Issue issue = {0};
     GraphIssue graph_issue = {0};
-    SysResult_t z =
-        V2Composition_Validate(c->registry, c->graph, c->bindings, c->binding_count, &p->desired,
-                               c->validate, &s->scratch, &s->candidate, &issue, &graph_issue);
-    if (z || v->request.operation == CS_VALIDATE)
-        return z;
-    memset(&s->execution, 0, sizeof(s->execution));
-    z = s->ops->snapshot(s->port, &s->execution.expected);
-    if (z)
-        return z;
-    if (s->execution.expected.revision != v->request.revision ||
-        s->execution.expected.prepared_profile != p->id)
+    SysResult_t result =
+        V2Composition_Validate(catalog->registry, catalog->graph, catalog->bindings, catalog->binding_count, &profile_desc->desired,
+                               catalog->validate, &service->scratch, &service->candidate, &issue, &graph_issue);
+    if (result || active_record->request.operation == CS_VALIDATE)
+        return result;
+    memset(&service->execution, 0, sizeof(service->execution));
+    result = service->ops->snapshot(service->port, &service->execution.expected);
+    if (result)
+        return result;
+    if (service->execution.expected.revision != active_record->request.revision ||
+        service->execution.expected.prepared_profile != profile_desc->id)
         return SYS_ERR_INVALID_STATE; /* 仅执行已经绑定的配置；重配置属于后续阶段。 */
-    s->execution.id = v->reply.id;
-    s->execution.profile = p->id;
-    s->execution.revision = v->request.revision;
-    s->execution.step_timeout = v->request.timeout;
-    return EM_BuildPlan(c->registry, &s->candidate, s->execution.expected.states,
-                        (uint16_t)v->request.stop_mask,
-                        v->request.operation == CS_START ? EM_START : EM_STOP, v->request.cleanup,
-                        &s->execution.plan);
+    service->execution.id = active_record->reply.id;
+    service->execution.profile = profile_desc->id;
+    service->execution.revision = active_record->request.revision;
+    service->execution.step_timeout = active_record->request.timeout;
+    return EM_BuildPlan(catalog->registry, &service->candidate, service->execution.expected.states,
+                        (uint16_t)active_record->request.stop_mask,
+                        active_record->request.operation == CS_START ? EM_START : EM_STOP, active_record->request.cleanup,
+                        &service->execution.plan);
 }
 
-SysResult_t CS_Process(CSService *s, uint32_t now)
+// 推进控制事务的候选构建、异步执行和最终回复。
+SysResult_t CS_Process(CSService *service, uint32_t now)
 {
-    CSRecord *v;
-    CSSession *c = NULL;
-    CSExecResult r;
-    uint32_t i;
-    SysResult_t z = enter(s);
-    if (z)
-        return z;
-    if (!s->active)
-        return leave(s, SYS_OK);
-    v = &s->records[s->active - 1U];
-    if (!s->exec_seen && (uint32_t)(now - s->started) >= v->request.timeout)
+    CSRecord *active_record;
+    CSSession *session_entry = NULL;
+    CSExecResult execution_result;
+    uint32_t session_index;
+    SysResult_t result = enter(service);
+    if (result)
+        return result;
+    if (!service->active)
+        return leave(service, SYS_OK);
+    active_record = &service->records[service->active - 1U];
+    if (!service->exec_seen && (uint32_t)(now - service->started) >= active_record->request.timeout)
     {
-        if (v->reply.phase != CS_EXECUTING)
+        if (active_record->reply.phase != CS_EXECUTING)
         {
-            finish(s, v, SYS_ERR_TIMEOUT);
-            return leave(s, SYS_OK);
+            finish(service, active_record, SYS_ERR_TIMEOUT);
+            return leave(service, SYS_OK);
         }
-        first(v, SYS_ERR_TIMEOUT); /* 继续等待实际完成，不清理活动执行。 */
+        first(active_record, SYS_ERR_TIMEOUT); /* 继续等待实际完成，不清理活动执行。 */
     }
-    if (v->reply.phase != CS_EXECUTING)
+    if (active_record->reply.phase != CS_EXECUTING)
     {
-        for (i = 0; i < CS_SESSION_MAX; ++i)
-            if (s->sessions[i].id == v->reply.id.session)
-                c = &s->sessions[i];
-        if (!c)
-            z = SYS_ERR_PROTOCOL;
+        for (session_index = 0; session_index < CS_SESSION_MAX; ++session_index)
+            if (service->sessions[session_index].id == active_record->reply.id.session)
+                session_entry = &service->sessions[session_index];
+        if (!session_entry)
+            result = SYS_ERR_PROTOCOL;
         else
-            z = s->ops->authorize(s->port, &c->peer, v->request.operation, v->request.profile, 0U,
+            result = service->ops->authorize(service->port, &session_entry->peer, active_record->request.operation, active_record->request.profile, 0U,
                                   0U);
-        if (z)
+        if (result)
         {
-            finish(s, v, z);
-            return leave(s, SYS_OK);
+            finish(service, active_record, result);
+            return leave(service, SYS_OK);
         }
     }
-    if (v->reply.phase == CS_ACCEPTED)
+    if (active_record->reply.phase == CS_ACCEPTED)
     {
-        z = build(s, v);
-        if (z || v->request.operation == CS_VALIDATE)
+        result = build(service, active_record);
+        if (result || active_record->request.operation == CS_VALIDATE)
         {
-            if (!z)
-                v->reply.effect = CS_EFFECT_CANDIDATE;
-            finish(s, v, z);
+            if (!result)
+                active_record->reply.effect = CS_EFFECT_CANDIDATE;
+            finish(service, active_record, result);
         }
         else
-            v->reply.phase = CS_PLANNED;
-        return leave(s, SYS_OK);
+            active_record->reply.phase = CS_PLANNED;
+        return leave(service, SYS_OK);
     }
-    if (v->reply.phase == CS_PLANNED)
+    if (active_record->reply.phase == CS_PLANNED)
     {
-        z = check_plan(s, &c->peer, v);
-        if (z)
-            finish(s, v, z);
+        result = check_plan(service, &session_entry->peer, active_record);
+        if (result)
+            finish(service, active_record, result);
         else
         {
-            z = s->ops->submit(s->port, &s->execution);
-            if (!z)
-                v->reply.phase = CS_EXECUTING;
-            else if (z != SYS_ERR_BUSY && z != SYS_ERR_NO_RESOURCE)
-                finish(s, v, z);
+            result = service->ops->submit(service->port, &service->execution);
+            if (!result)
+                active_record->reply.phase = CS_EXECUTING;
+            else if (result != SYS_ERR_BUSY && result != SYS_ERR_NO_RESOURCE)
+                finish(service, active_record, result);
         }
-        return leave(s, SYS_OK);
+        return leave(service, SYS_OK);
     }
-    if (!s->exec_seen)
+    if (!service->exec_seen)
     {
-        z = s->ops->read(s->port, &v->reply.id, &r);
-        if (z)
+        result = service->ops->read(service->port, &active_record->reply.id, &execution_result);
+        if (result)
         {
-            if (!waiting(z))
-                first(v, z);
-            return leave(s, z);
+            if (!waiting(result))
+                first(active_record, result);
+            return leave(service, result);
         }
-        if (!CS_IdEqual(&r.id, &v->reply.id) ||
-            (r.state != EM_DONE && r.state != EM_BLOCKED && r.state != CS_EXEC_REFUSED) ||
-            r.result > 0 || r.recovery > 0 ||
-            ((r.state == EM_BLOCKED || r.state == CS_EXEC_REFUSED) && !r.result))
-            return leave(s, SYS_ERR_PROTOCOL); /* 丢弃错身份，保留当前事务。 */
-        s->exec_result = r;
-        s->exec_seen = 1U;
-        first(v, r.result); /* 先冻结首错，随后才重试消费。 */
+        if (!CS_IdEqual(&execution_result.id, &active_record->reply.id) ||
+            (execution_result.state != EM_DONE && execution_result.state != EM_BLOCKED && execution_result.state != CS_EXEC_REFUSED) ||
+            execution_result.result > 0 || execution_result.recovery > 0 ||
+            ((execution_result.state == EM_BLOCKED || execution_result.state == CS_EXEC_REFUSED) && !execution_result.result))
+            return leave(service, SYS_ERR_PROTOCOL); /* 丢弃错身份，保留当前事务。 */
+        service->exec_result = execution_result;
+        service->exec_seen = 1U;
+        first(active_record, execution_result.result); /* 先冻结首错，随后才重试消费。 */
     }
-    z = s->ops->consume(s->port, &s->exec_result);
-    if (z)
+    result = service->ops->consume(service->port, &service->exec_result);
+    if (result)
     {
-        if (!waiting(z))
-            first(v, z);
-        return leave(s, z);
+        if (!waiting(result))
+            first(active_record, result);
+        return leave(service, result);
     }
-    r = s->exec_result;
-    if (r.state == EM_BLOCKED)
-        s->blocked = 1U;
-    if (r.state != CS_EXEC_REFUSED)
-        v->reply.effect = CS_EFFECT_EXECUTION;
-    v->reply.execution_state = r.state;
-    v->reply.recovery_error = r.recovery;
-    finish(s, v, r.result);
-    return leave(s, SYS_OK);
+    execution_result = service->exec_result;
+    if (execution_result.state == EM_BLOCKED)
+        service->blocked = 1U;
+    if (execution_result.state != CS_EXEC_REFUSED)
+        active_record->reply.effect = CS_EFFECT_EXECUTION;
+    active_record->reply.execution_state = execution_result.state;
+    active_record->reply.recovery_error = execution_result.recovery;
+    finish(service, active_record, execution_result.result);
+    return leave(service, SYS_OK);
 }

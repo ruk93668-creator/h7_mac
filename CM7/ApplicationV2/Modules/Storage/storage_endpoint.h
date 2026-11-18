@@ -1,3 +1,5 @@
+// 在执行端与 Storage 任务间运输请求及完成确认。
+
 #ifndef V2_STORAGE_ENDPOINT_H
 #define V2_STORAGE_ENDPOINT_H
 #include "../../Supervisor/execution_manager.h"
@@ -49,7 +51,10 @@ typedef struct
 } VStorageEndpoint; /* Storage owner only. */
 SysResult_t VStorageClient_Init(VStorageClient *, uint32_t module, uint32_t session,
                                 const VStorageTransport *);
+// Storage：返回供 Execution Manager 使用的模块端口。
 SysResult_t VStorageClient_Endpoint(VStorageClient *, EMEndpoint *);
+// Storage：初始化模块任务端并绑定请求及回复运输端口。
 SysResult_t VStorageEndpoint_Init(VStorageEndpoint *, VStorage *, const VStorageTransport *);
+// Storage：推进模块轮次和可靠消息，区分回复入队与消费确认。
 SysResult_t VStorageEndpoint_RunRound(VStorageEndpoint *, uint32_t now);
 #endif

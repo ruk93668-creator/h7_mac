@@ -1,415 +1,441 @@
+// 协调 Camera 配置、启停、保护性停止和真实退出证明。
+
 #include "camera_module.h"
 #include <string.h>
 #define MAGIC 0x56434134U
-static SysResult_t enter(VCamera *c)
+// 校验所有者调用并设置重入保护，调用方仍负责跨任务串行化。
+static SysResult_t enter(VCamera *camera)
 {
-    if (!c || c->magic != MAGIC || !c->ops->is_owner(c->port))
+    if (!camera || camera->magic != MAGIC || !camera->ops->is_owner(camera->port))
         return SYS_ERR_INVALID_STATE;
-    if (c->busy)
+    if (camera->busy)
         return SYS_ERR_BUSY;
-    c->busy = 1;
+    camera->busy = 1;
     return 0;
 }
-static SysResult_t leave(VCamera *c, SysResult_t z)
+// 退出当前调用的重入保护。
+static SysResult_t leave(VCamera *camera, SysResult_t result)
 {
-    c->busy = 0;
-    return z;
+    camera->busy = 0;
+    return result;
 }
-static void fault(VCamera *c, SysResult_t z)
+// 将本轮观察到的故障记录到模块上下文。
+static void fault(VCamera *camera, SysResult_t result)
 {
-    if (z && z != SYS_ERR_BUSY && z != SYS_ERR_NO_RESOURCE && !c->first_fault)
-        c->first_fault = z;
+    if (result && result != SYS_ERR_BUSY && result != SYS_ERR_NO_RESOURCE && !camera->first_fault)
+        camera->first_fault = result;
 }
+// 将底层返回结果整理为 Camera 当前操作的本地结果。
 static int local(uint32_t op) { return op == LC_CONFIGURE || op == LC_CLEANUP; }
-static int safe(uint32_t f)
+// 查询后端可用于安全推进的资源事实。
+static int safe(uint32_t flags)
 {
-    return (f & VC_STOP_MASK) == VC_STOP_MASK || (f & VC_COLD_MASK) == VC_COLD_MASK;
+    return (flags & VC_STOP_MASK) == VC_STOP_MASK || (flags & VC_COLD_MASK) == VC_COLD_MASK;
 }
-static const MRSource *source(VCamera *c, uint32_t backend)
+// 查询后端可用于安全推进的资源事实。
+static const MRSource *source(VCamera *camera, uint32_t backend)
 {
-    return backend == CORE_BACKEND_RAW ? &c->resources.raw_source : &c->resources.jpeg_source;
+    return backend == CORE_BACKEND_RAW ? &camera->resources.raw_source : &camera->resources.jpeg_source;
 }
-static int lc_owner(void *p)
+// 校验状态修改操作运行在约定的所有者上下文。
+static int lc_owner(void *port_context)
 {
-    VCamera *c = p;
-    return c->ops->is_owner(c->port);
+    VCamera *camera = port_context;
+    return camera->ops->is_owner(camera->port);
 }
-static SysResult_t capabilities(VCamera *c, const CoreMediaFormat *f, VCameraCapabilities *out)
+// 从 Camera 端口读取真实格式和采集能力。
+static SysResult_t capabilities(VCamera *camera, const CoreMediaFormat *format, VCameraCapabilities *out)
 {
-    VCameraCapabilities v;
-    SysResult_t z;
-    memset(&v, 0, sizeof(v));
-    z = VCamera_Translate(f, &v.native);
-    if (z)
-        return z;
-    z = MRSource_Query(source(c, f->backend), &v.resource);
-    if (z)
-        return z;
-    if (v.resource.backend != f->backend || f->max_spans > v.resource.spans)
+    VCameraCapabilities requested_caps;
+    SysResult_t result;
+    memset(&requested_caps, 0, sizeof(requested_caps));
+    result = VCamera_Translate(format, &requested_caps.native);
+    if (result)
+        return result;
+    result = MRSource_Query(source(camera, format->backend), &requested_caps.resource);
+    if (result)
+        return result;
+    if (requested_caps.resource.backend != format->backend || format->max_spans > requested_caps.resource.spans)
         return SYS_ERR_NOT_SUPPORTED;
-    z = c->ops->validate_layout(c->port, f, &v.native, &v.resource);
-    if (z)
-        return z;
-    *out = v;
+    result = camera->ops->validate_layout(camera->port, format, &requested_caps.native, &requested_caps.resource);
+    if (result)
+        return result;
+    *out = requested_caps;
     return 0;
 }
-static SysResult_t can_begin(void *p, const LCRequest *r)
+// 检查当前模块事实是否允许受理指定生命周期过渡。
+static SysResult_t can_begin(void *port_context, const LCRequest *request)
 {
-    VCamera *c = p;
+    VCamera *camera = port_context;
     VCameraCapabilities cap;
-    SysResult_t z;
-    if (c->work)
+    SysResult_t result;
+    if (camera->work)
         return SYS_ERR_BUSY;
-    if (!c->bound)
+    if (!camera->bound)
         return SYS_ERR_INVALID_STATE;
-    if (r->id.operation == LC_ACTIVATE && !c->prepared)
+    if (request->id.operation == LC_ACTIVATE && !camera->prepared)
         return SYS_ERR_INVALID_STATE;
-    if (r->id.operation == LC_CONFIGURE || r->id.operation == LC_ACTIVATE)
+    if (request->id.operation == LC_CONFIGURE || request->id.operation == LC_ACTIVATE)
     {
-        z = capabilities(c, &c->format, &cap);
-        if (z)
-            return z;
+        result = capabilities(camera, &camera->format, &cap);
+        if (result)
+            return result;
     }
-    return c->ops->gate(c->port, r, VC_GATE_BEGIN);
+    return camera->ops->gate(camera->port, request, VC_GATE_BEGIN);
 }
-static SysResult_t begin(void *p, const LCRequest *r)
+// 从生命周期过渡请求登记本模块操作，真实完成由事实检查决定。
+static SysResult_t begin(void *port_context, const LCRequest *request)
 {
-    VCamera *c = p;
-    c->operation = *r;
-    c->work = 1;
-    c->submitted = 0;
-    c->decided = 0;
-    c->delivered = 0;
-    memset(&c->result, 0, sizeof(c->result));
-    c->result.id = r->id;
+    VCamera *camera = port_context;
+    camera->operation = *request;
+    camera->work = 1;
+    camera->submitted = 0;
+    camera->decided = 0;
+    camera->delivered = 0;
+    memset(&camera->result, 0, sizeof(camera->result));
+    camera->result.id = request->id;
     return 0;
 }
-static SysResult_t prove(void *p, const LCRequest *r, uint32_t fact)
+// 检查端口和资源事实是否满足当前过渡的完成条件。
+static SysResult_t prove(void *port_context, const LCRequest *request, uint32_t fact)
 {
-    VCamera *c = p;
-    VCameraObservation f;
-    SysResult_t z;
-    if (!c->work && fact == r->expected)
-        return c->ops->gate(c->port, r, VC_GATE_PROVE);
-    if (!LC_IdEqual(&r->id, &c->operation.id))
+    VCamera *camera = port_context;
+    VCameraObservation observation;
+    SysResult_t result;
+    if (!camera->work && fact == request->expected)
+        return camera->ops->gate(camera->port, request, VC_GATE_PROVE);
+    if (!LC_IdEqual(&request->id, &camera->operation.id))
         return SYS_ERR_PROTOCOL;
-    z = c->ops->gate(c->port, r, VC_GATE_PROVE);
-    if (z)
-        return z;
-    if (r->id.operation == LC_CONFIGURE)
+    result = camera->ops->gate(camera->port, request, VC_GATE_PROVE);
+    if (result)
+        return result;
+    if (request->id.operation == LC_CONFIGURE)
         return 0;
-    if (r->id.operation == LC_ACTIVATE)
+    if (request->id.operation == LC_ACTIVATE)
     {
-        z = c->ops->facts(c->port, &f);
-        if (z)
-            return z;
-        return ((c->result.observation.flags & f.flags) & (VC_DEVICE_RUNNING | VC_MEDIA_RUNNING)) ==
+        result = camera->ops->facts(camera->port, &observation);
+        if (result)
+            return result;
+        return ((camera->result.observation.flags & observation.flags) & (VC_DEVICE_RUNNING | VC_MEDIA_RUNNING)) ==
                        (VC_DEVICE_RUNNING | VC_MEDIA_RUNNING)
                    ? 0
                    : SYS_ERR_BUSY;
     }
-    if (r->id.operation == LC_CLEANUP)
+    if (request->id.operation == LC_CLEANUP)
     {
-        z = c->ops->facts(c->port, &f);
-        if (z)
-            return z;
-        return safe(f.flags) ? 0 : SYS_ERR_BUSY;
+        result = camera->ops->facts(camera->port, &observation);
+        if (result)
+            return result;
+        return safe(observation.flags) ? 0 : SYS_ERR_BUSY;
     }
-    z = c->ops->facts(c->port, &f);
-    if (z)
-        return z;
-    return safe(c->result.observation.flags) && safe(f.flags) ? 0 : SYS_ERR_BUSY;
+    result = camera->ops->facts(camera->port, &observation);
+    if (result)
+        return result;
+    return safe(camera->result.observation.flags) && safe(observation.flags) ? 0 : SYS_ERR_BUSY;
 }
 const struct V2LifecycleOps VCamera_LifecycleOps = {lc_owner, can_begin, begin, prove};
-SysResult_t VCamera_Init(VCamera *c, uint32_t module, uint32_t session, const VCameraOps *ops,
+// Camera：绑定模块所有者及端口并初始化本地上下文。
+SysResult_t VCamera_Init(VCamera *camera, uint32_t module, uint32_t session, const VCameraOps *ops,
                          void *port, const VCameraResources *resources)
 {
-    SysResult_t z;
-    if (!c || c->magic || !ops || !resources || !ops->is_owner || !ops->validate_layout ||
+    SysResult_t result;
+    if (!camera || camera->magic || !ops || !resources || !ops->is_owner || !ops->validate_layout ||
         !ops->gate || !ops->request || !ops->read_result || !ops->consume_result || !ops->facts ||
         !ops->release_identity || !ops->begin_round || !ops->process || !ops->returns ||
         !ops->finish_round)
         return SYS_ERR_INVALID_ARG;
     if (!ops->is_owner(port))
         return SYS_ERR_INVALID_STATE;
-    memset(c, 0, sizeof(*c));
-    c->ops = ops;
-    c->port = port;
-    c->resources = *resources;
-    z = LC_Init(&c->lifecycle, module, session, &VCamera_LifecycleOps, c);
-    if (z)
-        return z;
-    c->magic = MAGIC;
+    memset(camera, 0, sizeof(*camera));
+    camera->ops = ops;
+    camera->port = port;
+    camera->resources = *resources;
+    result = LC_Init(&camera->lifecycle, module, session, &VCamera_LifecycleOps, camera);
+    if (result)
+        return result;
+    camera->magic = MAGIC;
     return 0;
 }
-SysResult_t VCamera_QueryCapabilities(VCamera *c, const CoreMediaFormat *f,
+// Camera：查询模块端口公开的格式及运行能力。
+SysResult_t VCamera_QueryCapabilities(VCamera *camera, const CoreMediaFormat *format,
                                       VCameraCapabilities *out)
 {
-    SysResult_t z;
-    if (!f || !out || !c || V2_Overlap(c, sizeof(*c), out, sizeof(*out)))
+    SysResult_t result;
+    if (!format || !out || !camera || V2_Overlap(camera, sizeof(*camera), out, sizeof(*out)))
         return SYS_ERR_INVALID_ARG;
-    z = enter(c);
-    if (z)
-        return z;
-    z = capabilities(c, f, out);
-    return leave(c, z);
+    result = enter(camera);
+    if (result)
+        return result;
+    result = capabilities(camera, format, out);
+    return leave(camera, result);
 }
-SysResult_t VCamera_BindCandidate(VCamera *c, const V2Registry *r, const V2CompositionCandidate *v)
+// Camera：校验并绑定已选配置候选，保留底层应用配置的独立结果。
+SysResult_t VCamera_BindCandidate(VCamera *camera, const V2Registry *registry, const V2CompositionCandidate *candidate)
 {
-    const V2ModuleDesc *m;
-    uint32_t i;
+    const V2ModuleDesc *module;
+    uint32_t module_index;
     VCameraCapabilities cap;
-    SysResult_t z;
-    if (!r || !v || v->candidate_only != 1 || !v->media.pipeline_mask || !v->media.entity_mask)
+    SysResult_t result;
+    if (!registry || !candidate || candidate->candidate_only != 1 || !candidate->media.pipeline_mask || !candidate->media.entity_mask)
         return SYS_ERR_INVALID_ARG;
-    z = enter(c);
-    if (z)
-        return z;
-    m = V2Registry_Get(r, (V2ModuleId){c->lifecycle.module});
-    if (!m || !(v->modules.selected_mask & (1U << (m - r->modules))))
-        return leave(c, SYS_ERR_NOT_FOUND);
-    if (!v->modules.count || v->modules.count > V2_MODULE_MAX)
-        return leave(c, SYS_ERR_PROTOCOL);
-    for (i = 0; i < v->modules.count; i++)
-        if (v->modules.order[i].value == c->lifecycle.module)
+    result = enter(camera);
+    if (result)
+        return result;
+    module = V2Registry_Get(registry, (V2ModuleId){camera->lifecycle.module});
+    if (!module || !(candidate->modules.selected_mask & (1U << (module - registry->modules))))
+        return leave(camera, SYS_ERR_NOT_FOUND);
+    if (!candidate->modules.count || candidate->modules.count > V2_MODULE_MAX)
+        return leave(camera, SYS_ERR_PROTOCOL);
+    for (module_index = 0; module_index < candidate->modules.count; module_index++)
+        if (candidate->modules.order[module_index].value == camera->lifecycle.module)
             break;
-    if (i == v->modules.count)
-        return leave(c, SYS_ERR_PROTOCOL);
-    if (c->bound)
-        return leave(c, !memcmp(&c->format, &v->media.format, sizeof(c->format))
+    if (module_index == candidate->modules.count)
+        return leave(camera, SYS_ERR_PROTOCOL);
+    if (camera->bound)
+        return leave(camera, !memcmp(&camera->format, &candidate->media.format, sizeof(camera->format))
                             ? SYS_OK
                             : SYS_ERR_NOT_SUPPORTED);
-    if (c->lifecycle.state != LC_UNCONFIGURED || c->lifecycle.pending || c->work)
-        return leave(c, SYS_ERR_BUSY);
-    z = capabilities(c, &v->media.format, &cap);
-    if (z)
-        return leave(c, z);
-    c->format = v->media.format;
-    c->native = cap.native;
-    c->bound = 1;
-    return leave(c, 0);
+    if (camera->lifecycle.state != LC_UNCONFIGURED || camera->lifecycle.pending || camera->work)
+        return leave(camera, SYS_ERR_BUSY);
+    result = capabilities(camera, &candidate->media.format, &cap);
+    if (result)
+        return leave(camera, result);
+    camera->format = candidate->media.format;
+    camera->native = cap.native;
+    camera->bound = 1;
+    return leave(camera, 0);
 }
-SysResult_t VCamera_Request(VCamera *c, const LCRequest *r, uint32_t now)
+// Camera：登记带执行身份的生命周期请求，实际完成由模块轮次推进。
+SysResult_t VCamera_Request(VCamera *camera, const LCRequest *request, uint32_t now)
 {
-    SysResult_t z = enter(c);
-    if (z)
-        return z;
-    if (c->round != 1)
-        return leave(c, SYS_ERR_INVALID_STATE);
-    z = LC_Request(&c->lifecycle, r, now);
-    return leave(c, z);
+    SysResult_t result = enter(camera);
+    if (result)
+        return result;
+    if (camera->round != 1)
+        return leave(camera, SYS_ERR_INVALID_STATE);
+    result = LC_Request(&camera->lifecycle, request, now);
+    return leave(camera, result);
 }
-SysResult_t VCamera_BeginRound(VCamera *c)
+// 建立 Camera 本轮的停止推进和操作记账边界。
+SysResult_t VCamera_BeginRound(VCamera *camera)
 {
-    SysResult_t z = enter(c);
-    if (z)
-        return z;
-    if (c->round)
-        return leave(c, SYS_ERR_INVALID_STATE);
-    c->ops->begin_round(c->port);
-    c->round = 1;
-    return leave(c, 0);
+    SysResult_t result = enter(camera);
+    if (result)
+        return result;
+    if (camera->round)
+        return leave(camera, SYS_ERR_INVALID_STATE);
+    camera->ops->begin_round(camera->port);
+    camera->round = 1;
+    return leave(camera, 0);
 }
-SysResult_t VCamera_Process(VCamera *c, uint32_t now)
+// 推进本轮 Camera 配置、启动及采集端口操作。
+SysResult_t VCamera_Process(VCamera *camera, uint32_t now)
 {
-    SysResult_t z = enter(c);
-    if (z)
-        return z;
-    if (c->round != 1)
-        return leave(c, SYS_ERR_INVALID_STATE);
-    LC_Process(&c->lifecycle, now);
-    if (c->work && !local(c->operation.id.operation) && !c->submitted && !c->decided)
+    SysResult_t result = enter(camera);
+    if (result)
+        return result;
+    if (camera->round != 1)
+        return leave(camera, SYS_ERR_INVALID_STATE);
+    LC_Process(&camera->lifecycle, now);
+    if (camera->work && !local(camera->operation.id.operation) && !camera->submitted && !camera->decided)
     {
         {
             uint32_t state;
             SysResult_t observed;
-            LC_Status(&c->lifecycle, &state, &observed);
+            LC_Status(&camera->lifecycle, &state, &observed);
             if (observed == SYS_ERR_TIMEOUT)
-                z = SYS_ERR_TIMEOUT;
+                result = SYS_ERR_TIMEOUT;
             else
-                z = c->ops->request(c->port, &c->operation, &c->native);
+                result = camera->ops->request(camera->port, &camera->operation, &camera->native);
         }
-        if (!z)
-            c->submitted = 1;
-        else if (z != SYS_ERR_BUSY && z != SYS_ERR_NO_RESOURCE)
+        if (!result)
+            camera->submitted = 1;
+        else if (result != SYS_ERR_BUSY && result != SYS_ERR_NO_RESOURCE)
         {
-            c->result.result = z;
-            c->decided = 1;
-            fault(c, z);
+            camera->result.result = result;
+            camera->decided = 1;
+            fault(camera, result);
         }
     }
-    c->ops->process(c->port);
-    c->round = 2;
-    return leave(c, 0);
+    camera->ops->process(camera->port);
+    camera->round = 2;
+    return leave(camera, 0);
 }
-SysResult_t VCamera_Returns(VCamera *c)
+// 推进 Camera 所有者负责的帧归还。
+SysResult_t VCamera_Returns(VCamera *camera)
 {
-    SysResult_t z = enter(c);
-    if (z)
-        return z;
-    if (c->round != 2)
-        return leave(c, SYS_ERR_INVALID_STATE);
-    c->ops->returns(c->port);
-    c->round = 3;
-    return leave(c, 0);
+    SysResult_t result = enter(camera);
+    if (result)
+        return result;
+    if (camera->round != 2)
+        return leave(camera, SYS_ERR_INVALID_STATE);
+    camera->ops->returns(camera->port);
+    camera->round = 3;
+    return leave(camera, 0);
 }
-static void collect(VCamera *c, uint32_t now)
+// 汇集本轮观察到的 Camera 端口结果供后续完成判定使用。
+static void collect(VCamera *camera, uint32_t now)
 {
-    SysResult_t z;
-    VCameraResult v;
+    SysResult_t result;
+    VCameraResult native_result;
     LCCompletion done;
     uint32_t fact;
-    if (!c->work)
+    if (!camera->work)
         return;
-    if (local(c->operation.id.operation) && !c->decided)
-        c->decided = 1;
-    if (c->submitted && !c->decided)
+    if (local(camera->operation.id.operation) && !camera->decided)
+        camera->decided = 1;
+    if (camera->submitted && !camera->decided)
     {
-        z = c->ops->read_result(c->port, &c->operation.id, &v);
-        if (!z)
+        result = camera->ops->read_result(camera->port, &camera->operation.id, &native_result);
+        if (!result)
         {
-            if (!LC_IdEqual(&v.id, &c->operation.id) || v.result > 0)
+            if (!LC_IdEqual(&native_result.id, &camera->operation.id) || native_result.result > 0)
             {
-                c->port_error = SYS_ERR_PROTOCOL;
-                fault(c, c->port_error);
+                camera->port_error = SYS_ERR_PROTOCOL;
+                fault(camera, camera->port_error);
                 return;
             }
-            c->result = v;
-            c->decided = 1;
-            fault(c, v.result);
+            camera->result = native_result;
+            camera->decided = 1;
+            fault(camera, native_result.result);
         }
-        else if (z != SYS_ERR_NOT_FOUND && z != SYS_ERR_BUSY && z != SYS_ERR_NO_RESOURCE)
+        else if (result != SYS_ERR_NOT_FOUND && result != SYS_ERR_BUSY && result != SYS_ERR_NO_RESOURCE)
         {
-            c->port_error = z;
-            fault(c, z);
+            camera->port_error = result;
+            fault(camera, result);
             return;
         }
     }
-    if (c->decided && !c->delivered)
+    if (camera->decided && !camera->delivered)
     {
-        fact = c->result.result ? LC_ERROR : LC_Target(c->operation.id.operation);
-        z = LC_Complete(&c->lifecycle, &c->operation.id, c->result.result, fact);
-        if (!z)
-            c->delivered = 1;
+        fact = camera->result.result ? LC_ERROR : LC_Target(camera->operation.id.operation);
+        result = LC_Complete(&camera->lifecycle, &camera->operation.id, camera->result.result, fact);
+        if (!result)
+            camera->delivered = 1;
         else
         {
-            c->port_error = z;
-            fault(c, z);
+            camera->port_error = result;
+            fault(camera, result);
         }
     }
-    LC_Process(&c->lifecycle, now);
-    if (LC_Read(&c->lifecycle, &c->operation.id, &done))
+    LC_Process(&camera->lifecycle, now);
+    if (LC_Read(&camera->lifecycle, &camera->operation.id, &done))
         return;
-    fault(c, done.result);
-    if (c->submitted)
+    fault(camera, done.result);
+    if (camera->submitted)
     {
-        z = c->ops->consume_result(c->port, &c->result);
-        if (z)
+        result = camera->ops->consume_result(camera->port, &camera->result);
+        if (result)
         {
-            c->port_error = z;
-            fault(c, z);
+            camera->port_error = result;
+            fault(camera, result);
             return;
         }
     }
     if (done.actual_result == SYS_OK)
     {
-        if (done.fact == LC_INACTIVE && c->operation.id.operation == LC_CONFIGURE)
-            c->prepared = 1;
+        if (done.fact == LC_INACTIVE && camera->operation.id.operation == LC_CONFIGURE)
+            camera->prepared = 1;
         if (done.fact == LC_UNCONFIGURED)
-            c->prepared = 0;
+            camera->prepared = 0;
     }
-    c->work = 0;
+    camera->work = 0;
 }
-SysResult_t VCamera_FinishRound(VCamera *c, uint32_t now)
+// 在本轮归还推进后处理停止并核对完成事实。
+SysResult_t VCamera_FinishRound(VCamera *camera, uint32_t now)
 {
-    SysResult_t z = enter(c);
-    if (z)
-        return z;
-    if (c->round != 3)
-        return leave(c, SYS_ERR_INVALID_STATE);
-    c->ops->finish_round(c->port);
-    collect(c, now);
+    SysResult_t result = enter(camera);
+    if (result)
+        return result;
+    if (camera->round != 3)
+        return leave(camera, SYS_ERR_INVALID_STATE);
+    camera->ops->finish_round(camera->port);
+    collect(camera, now);
     {
-        VCameraObservation o;
-        if (c->ops->facts(c->port, &o) == 0)
+        VCameraObservation observation;
+        if (camera->ops->facts(camera->port, &observation) == 0)
         {
-            fault(c, o.media_result);
-            if (o.stop_result && !c->first_stop_failure.stop_result)
+            fault(camera, observation.media_result);
+            if (observation.stop_result && !camera->first_stop_failure.stop_result)
             {
-                c->first_stop_failure = o;
-                fault(c, o.stop_result);
+                camera->first_stop_failure = observation;
+                fault(camera, observation.stop_result);
             }
         }
     }
-    c->round = 0;
-    return leave(c, 0);
+    camera->round = 0;
+    return leave(camera, 0);
 }
-SysResult_t VCamera_ReadCompletion(VCamera *c, const V2ExecId *id, LCCompletion *out)
+// Camera：按身份读取模块已固定的完成结果。
+SysResult_t VCamera_ReadCompletion(VCamera *camera, const V2ExecId *id, LCCompletion *out)
 {
-    SysResult_t z;
-    if (!c || !out || V2_Overlap(c, sizeof(*c), out, sizeof(*out)))
+    SysResult_t result;
+    if (!camera || !out || V2_Overlap(camera, sizeof(*camera), out, sizeof(*out)))
         return SYS_ERR_INVALID_ARG;
-    z = enter(c);
-    if (z)
-        return z;
-    z = LC_Read(&c->lifecycle, id, out);
-    return leave(c, z);
+    result = enter(camera);
+    if (result)
+        return result;
+    result = LC_Read(&camera->lifecycle, id, out);
+    return leave(camera, result);
 }
-SysResult_t VCamera_ConfirmCompletion(VCamera *c, const LCCompletion *v)
+// Camera：确认与请求身份匹配的完成已消费。
+SysResult_t VCamera_ConfirmCompletion(VCamera *camera, const LCCompletion *completion)
 {
-    SysResult_t z = enter(c);
-    if (z)
-        return z;
-    if (c->work)
-        return leave(c, SYS_ERR_BUSY);
-    z = LC_Confirm(&c->lifecycle, v);
-    return leave(c, z);
+    SysResult_t result = enter(camera);
+    if (result)
+        return result;
+    if (camera->work)
+        return leave(camera, SYS_ERR_BUSY);
+    result = LC_Confirm(&camera->lifecycle, completion);
+    return leave(camera, result);
 }
-SysResult_t VCamera_QueryStatus(VCamera *c, VCameraStatus *out)
+// Camera：读取模块的生命周期状态和观察到的业务事实。
+SysResult_t VCamera_QueryStatus(VCamera *camera, VCameraStatus *out)
 {
-    VCameraStatus v;
-    SysResult_t z;
-    if (!c || !out || V2_Overlap(c, sizeof(*c), out, sizeof(*out)))
+    VCameraStatus status;
+    SysResult_t result;
+    if (!camera || !out || V2_Overlap(camera, sizeof(*camera), out, sizeof(*out)))
         return SYS_ERR_INVALID_ARG;
-    z = enter(c);
-    if (z)
-        return z;
-    z = LC_Status(&c->lifecycle, &v.lifecycle, &v.operation_error);
-    if (z)
-        return leave(c, z);
-    z = c->ops->facts(c->port, &v.current);
-    if (z)
-        return leave(c, z);
-    v.first_stop_failure = c->first_stop_failure;
-    v.bound = c->bound;
-    v.prepared = c->prepared;
-    v.first_fault = c->first_fault;
-    v.port_error = c->port_error;
-    *out = v;
-    return leave(c, 0);
+    result = enter(camera);
+    if (result)
+        return result;
+    result = LC_Status(&camera->lifecycle, &status.lifecycle, &status.operation_error);
+    if (result)
+        return leave(camera, result);
+    result = camera->ops->facts(camera->port, &status.current);
+    if (result)
+        return leave(camera, result);
+    status.first_stop_failure = camera->first_stop_failure;
+    status.bound = camera->bound;
+    status.prepared = camera->prepared;
+    status.first_fault = camera->first_fault;
+    status.port_error = camera->port_error;
+    *out = status;
+    return leave(camera, 0);
 }
-SysResult_t VCamera_QueryExitEvidence(VCamera *c, const MRRelease *r, VCameraExitEvidence *out)
+// Camera：分别读取退出所需的硬件、业务和媒体资源证据。
+SysResult_t VCamera_QueryExitEvidence(VCamera *camera, const MRRelease *release, VCameraExitEvidence *out)
 {
-    VCameraExitEvidence v;
+    VCameraExitEvidence evidence;
     MRContext *resource;
-    SysResult_t z;
-    if (!c || !r || !out || V2_Overlap(c, sizeof(*c), out, sizeof(*out)))
+    SysResult_t result;
+    if (!camera || !release || !out || V2_Overlap(camera, sizeof(*camera), out, sizeof(*out)))
         return SYS_ERR_INVALID_ARG;
-    z = enter(c);
-    if (z)
-        return z;
-    if (!c->bound)
-        return leave(c, SYS_ERR_INVALID_STATE);
-    memset(&v, 0, sizeof(v));
-    v.release = *r;
-    v.backend = c->format.backend;
-    v.identity_result = c->ops->release_identity(c->port, r);
-    resource = c->format.backend == CORE_BACKEND_RAW ? c->resources.raw_resource
-                                                     : c->resources.jpeg_resource;
-    v.resource_result = v.identity_result
-                            ? v.identity_result
-                            : (!resource ? SYS_ERR_NOT_SUPPORTED : MR_VerifyExit(resource, r));
-    *out = v;
-    z = v.resource_result;
-    return leave(c, z);
+    result = enter(camera);
+    if (result)
+        return result;
+    if (!camera->bound)
+        return leave(camera, SYS_ERR_INVALID_STATE);
+    memset(&evidence, 0, sizeof(evidence));
+    evidence.release = *release;
+    evidence.backend = camera->format.backend;
+    evidence.identity_result = camera->ops->release_identity(camera->port, release);
+    resource = camera->format.backend == CORE_BACKEND_RAW ? camera->resources.raw_resource
+                                                     : camera->resources.jpeg_resource;
+    evidence.resource_result = evidence.identity_result
+                            ? evidence.identity_result
+                            : (!resource ? SYS_ERR_NOT_SUPPORTED : MR_VerifyExit(resource, release));
+    *out = evidence;
+    result = evidence.resource_result;
+    return leave(camera, result);
 }

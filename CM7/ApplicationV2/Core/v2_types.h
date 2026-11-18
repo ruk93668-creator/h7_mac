@@ -1,3 +1,5 @@
+// 定义 V2 共用身份、状态和容量相关类型。
+
 /* Phase 1 value types only. No task, hardware, session allocator or resource owner.
  * Module/capability/consumer/request IDs: uint32, zero invalid. Graph global IDs:
  * uint16, 1..catalog count; Pad IDs: uint16, zero-based within their Entity.
@@ -65,21 +67,27 @@ enum
 #define V2_IO_ERROR SYS_ERR_IO
 #define V2_INTERNAL_ERROR (-11)
 #define V2_INTERFACE_VERSION 1U
+// 检查对应身份是否为有效值。
 static inline int V2_IdValid(uint32_t id) { return id != 0U; }
+// 检查对应身份是否为有效值。
 static inline int V2_ModuleIdValid(V2ModuleId id) { return V2_IdValid(id.value); }
+// 检查对应身份是否为有效值。
 static inline int V2_CapabilityIdValid(V2CapabilityId id) { return V2_IdValid(id.value); }
+// 检查对应身份是否为有效值。
 static inline int V2_ConsumerIdValid(V2ConsumerId id) { return V2_IdValid(id.value); }
+// 检查对应身份是否为有效值。
 static inline int V2_RequestIdValid(V2RequestId id) { return V2_IdValid(id.value); }
+// 检查状态码是否在 V2 公开定义范围内。
 static inline int V2_StatusValid(V2Status status)
 {
     return (uint32_t)status <= (uint32_t)V2_STATUS_FAILED;
 }
 /* Caller-owned disjoint storage. No operation owns its input descriptors. */
-static inline int V2_Overlap(const void *a, size_t na, const void *b, size_t nb)
+static inline int V2_Overlap(const void *first_buffer, size_t na, const void *second_buffer, size_t nb)
 {
-    uintptr_t x = (uintptr_t)a, y = (uintptr_t)b;
-    if (na > UINTPTR_MAX - x || nb > UINTPTR_MAX - y)
+    uintptr_t first_address = (uintptr_t)first_buffer, second_address = (uintptr_t)second_buffer;
+    if (na > UINTPTR_MAX - first_address || nb > UINTPTR_MAX - second_address)
         return 1;
-    return na && nb && x < y + nb && y < x + na;
+    return na && nb && first_address < second_address + nb && second_address < first_address + na;
 }
 #endif

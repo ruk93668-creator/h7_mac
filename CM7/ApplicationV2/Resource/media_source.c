@@ -1,42 +1,48 @@
+// 定义物理媒体后端能力及身份比较规则。
+
 #include "media_source.h"
 #include <string.h>
-int MRGrant_Equal(const MRGrant *a, const MRGrant *b)
+// 比较对应的完整 Grant 或物理媒体身份。
+int MRGrant_Equal(const MRGrant *left_grant, const MRGrant *right_grant)
 {
-    return a && b && !memcmp(a, b, sizeof(*a));
+    return left_grant && right_grant && !memcmp(left_grant, right_grant, sizeof(*left_grant));
 }
-int MRMedia_Equal(const MRMedia *a, const MRMedia *b)
+// 比较对应的完整 Grant 或物理媒体身份。
+int MRMedia_Equal(const MRMedia *left_media, const MRMedia *right_media)
 {
-    return a && b && !memcmp(a, b, sizeof(*a));
+    return left_media && right_media && !memcmp(left_media, right_media, sizeof(*left_media));
 }
-SysResult_t MRSource_Query(const MRSource *s, MRSourceCaps *out)
+// 只读查询后端能力和物理资源证据。
+SysResult_t MRSource_Query(const MRSource *source, MRSourceCaps *out)
 {
-    MRSourceCaps c;
-    SysResult_t r;
-    if (!s || !out || !s->ops || !s->ops->is_owner || !s->ops->caps || !s->ops->role ||
-        !s->ops->grant_valid || !s->ops->obtain || !s->ops->validate ||
-        !s->ops->readers_quiescent || !s->ops->release || !s->ops->released || !s->ops->exit_safe)
+    MRSourceCaps caps;
+    SysResult_t result;
+    if (!source || !out || !source->ops || !source->ops->is_owner || !source->ops->caps || !source->ops->role ||
+        !source->ops->grant_valid || !source->ops->obtain || !source->ops->validate ||
+        !source->ops->readers_quiescent || !source->ops->release || !source->ops->released || !source->ops->exit_safe)
         return SYS_ERR_INVALID_ARG;
-    if (!s->ops->is_owner(s->context))
+    if (!source->ops->is_owner(source->context))
         return SYS_ERR_INVALID_STATE;
-    memset(&c, 0, sizeof(c));
-    r = s->ops->caps(s->context, &c);
-    if (r)
-        return r;
-    if (!c.owners ||
-        (c.backend == MR_RAW && (c.concurrent != 1 || c.spans != 1)) ||
-        (c.backend == MR_JPEG && (c.concurrent > 7 || !c.concurrent || c.spans != 2)) ||
-        (c.backend != MR_RAW && c.backend != MR_JPEG))
+    memset(&caps, 0, sizeof(caps));
+    result = source->ops->caps(source->context, &caps);
+    if (result)
+        return result;
+    if (!caps.owners ||
+        (caps.backend == MR_RAW && (caps.concurrent != 1 || caps.spans != 1)) ||
+        (caps.backend == MR_JPEG && (caps.concurrent > 7 || !caps.concurrent || caps.spans != 2)) ||
+        (caps.backend != MR_RAW && caps.backend != MR_JPEG))
         return SYS_ERR_NOT_SUPPORTED;
-    *out = c;
+    *out = caps;
     return SYS_OK;
 }
 
-SysResult_t MRNumber_Advance(uint32_t *n)
+// 分配下一单调编号，耗尽时拒绝回绕。
+SysResult_t MRNumber_Advance(uint32_t *sequence)
 {
-    if (!n)
+    if (!sequence)
         return SYS_ERR_INVALID_ARG;
-    if (*n == UINT32_MAX)
+    if (*sequence == UINT32_MAX)
         return SYS_ERR_NO_RESOURCE;
-    ++*n;
+    ++*sequence;
     return SYS_OK;
 }

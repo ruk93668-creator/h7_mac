@@ -1,3 +1,5 @@
+// Camera 客户端与任务端的请求、完成和消费适配。
+
 #ifndef V2_CAMERA_ENDPOINT_H
 #define V2_CAMERA_ENDPOINT_H
 #include "../../Supervisor/execution_manager.h"
@@ -49,7 +51,10 @@ typedef struct
 } VCameraEndpoint; /* Camera owner only. */
 SysResult_t VCameraClient_Init(VCameraClient *, uint32_t module, uint32_t session,
                                const VCameraTransport *);
+// Camera：返回供 Execution Manager 使用的模块端口。
 SysResult_t VCameraClient_Endpoint(VCameraClient *, EMEndpoint *);
+// Camera：初始化模块任务端并绑定请求及回复运输端口。
 SysResult_t VCameraEndpoint_Init(VCameraEndpoint *, VCamera *, const VCameraTransport *);
+// Camera：推进模块轮次和可靠消息，区分回复入队与消费确认。
 SysResult_t VCameraEndpoint_RunRound(VCameraEndpoint *, uint32_t now);
 #endif

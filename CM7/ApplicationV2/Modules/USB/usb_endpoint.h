@@ -1,3 +1,5 @@
+// 在执行端与 USB 任务间运输请求及完成确认。
+
 #ifndef V2_USB_ENDPOINT_H
 #define V2_USB_ENDPOINT_H
 #include "../../Supervisor/execution_manager.h"
@@ -48,7 +50,10 @@ typedef struct
     VUSBTransport transport;
 } VUSBEndpoint; /* USB owner only. */
 SysResult_t VUSBClient_Init(VUSBClient *, uint32_t module, uint32_t session, const VUSBTransport *);
+// USB：返回供 Execution Manager 使用的模块端口。
 SysResult_t VUSBClient_Endpoint(VUSBClient *, EMEndpoint *);
+// USB：初始化模块任务端并绑定请求及回复运输端口。
 SysResult_t VUSBEndpoint_Init(VUSBEndpoint *, VUSB *, const VUSBTransport *);
+// USB：推进模块轮次和可靠消息，区分回复入队与消费确认。
 SysResult_t VUSBEndpoint_RunRound(VUSBEndpoint *, uint32_t now);
 #endif

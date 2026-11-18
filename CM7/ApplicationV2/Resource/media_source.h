@@ -1,3 +1,5 @@
+// 定义物理媒体后端能力及身份比较规则。
+
 #ifndef V2_MEDIA_SOURCE_H
 #define V2_MEDIA_SOURCE_H
 #include "../Core/media_format.h"
@@ -69,8 +71,12 @@ typedef struct
     const MRSourceOps *ops;
     void *context;
 } MRSource;
+// 分配下一单调编号，耗尽时拒绝回绕。
 SysResult_t MRNumber_Advance(uint32_t *);
+// 只读查询后端能力和物理资源证据。
 SysResult_t MRSource_Query(const MRSource *, MRSourceCaps *);
+// 比较对应的完整 Grant 或物理媒体身份。
 int MRGrant_Equal(const MRGrant *, const MRGrant *);
+// 比较对应的完整 Grant 或物理媒体身份。
 int MRMedia_Equal(const MRMedia *, const MRMedia *);
 #endif

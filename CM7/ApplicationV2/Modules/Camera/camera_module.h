@@ -1,3 +1,5 @@
+// 协调 Camera 配置、启停、保护性停止和真实退出证明。
+
 #ifndef V2_CAMERA_MODULE_H
 #define V2_CAMERA_MODULE_H
 #include "../../Configuration/v2_composition.h"
@@ -87,19 +89,30 @@ typedef struct
     SysResult_t identity_result, resource_result;
 } VCameraExitEvidence;
 extern const struct V2LifecycleOps VCamera_LifecycleOps;
+// Camera：绑定模块所有者及端口并初始化本地上下文。
 SysResult_t VCamera_Init(VCamera *, uint32_t module, uint32_t session, const VCameraOps *, void *,
                          const VCameraResources *);
+// Camera：校验并绑定已选配置候选，保留底层应用配置的独立结果。
 SysResult_t VCamera_BindCandidate(VCamera *, const V2Registry *, const V2CompositionCandidate *);
+// Camera：查询模块端口公开的格式及运行能力。
 SysResult_t VCamera_QueryCapabilities(VCamera *, const CoreMediaFormat *, VCameraCapabilities *);
+// Camera：读取模块的生命周期状态和观察到的业务事实。
 SysResult_t VCamera_QueryStatus(VCamera *, VCameraStatus *);
+// Camera：分别读取退出所需的硬件、业务和媒体资源证据。
 SysResult_t VCamera_QueryExitEvidence(VCamera *, const MRRelease *, VCameraExitEvidence *);
+// Camera：登记带执行身份的生命周期请求，实际完成由模块轮次推进。
 SysResult_t VCamera_Request(VCamera *, const LCRequest *, uint32_t now);
 /* Configure/Activate/Deactivate/Cleanup/ErrorProcessing use matching operation
  * in VCamera_Request. No direct native START/STOP alternative is provided. */
 SysResult_t VCamera_BeginRound(VCamera *);
+// 推进本轮 Camera 配置、启动及采集端口操作。
 SysResult_t VCamera_Process(VCamera *, uint32_t now);
+// 推进 Camera 所有者负责的帧归还。
 SysResult_t VCamera_Returns(VCamera *);
+// 在本轮归还推进后处理停止并核对完成事实。
 SysResult_t VCamera_FinishRound(VCamera *, uint32_t now);
+// Camera：按身份读取模块已固定的完成结果。
 SysResult_t VCamera_ReadCompletion(VCamera *, const V2ExecId *, LCCompletion *);
+// Camera：确认与请求身份匹配的完成已消费。
 SysResult_t VCamera_ConfirmCompletion(VCamera *, const LCCompletion *);
 #endif

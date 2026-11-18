@@ -1,3 +1,5 @@
+// 通过文件系统端口处理录像、抓拍、封尾和卷收尾。
+
 #ifndef V2_STORAGE_BACKEND_H
 #define V2_STORAGE_BACKEND_H
 
@@ -42,6 +44,7 @@ typedef struct
     uint32_t facts, mode, verified;
     uint8_t readback[256];
 } VStorageFS;
+// 绑定 Storage 卷与文件操作端口。
 SysResult_t VStorageFS_Init(VStorageFS *, int (*is_owner)(void *), void *);
 extern const VStorageBackendOps VStorageFS_Ops;
 #endif

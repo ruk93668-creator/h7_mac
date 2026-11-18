@@ -1,3 +1,5 @@
+// 在 Storage 所有者上下文推进 Camera 资格事务。
+
 #ifndef V2_STORAGE_CONSUMER_H
 #define V2_STORAGE_CONSUMER_H
 #include "../../Resource/media_source.h"
@@ -28,9 +30,13 @@ typedef struct
     const VStorageConsumerOps *ops;
     void *port;
 } VStorageConsumer;
+// Storage：绑定资格事务的消费者身份和所有者。
 SysResult_t VStorageConsumer_Init(VStorageConsumer *, const VStorageConsumerOps *, void *);
+// Storage：启动原资格申请流程，授权以匹配回复为准。
 SysResult_t VStorageConsumer_Begin(VStorageConsumer *);
+// Storage：提交独立资格释放事务，等待真实释放确认。
 SysResult_t VStorageConsumer_End(VStorageConsumer *, SysResult_t business_error,
                                  SysResult_t cleanup_error, uint32_t release_flags);
+// Storage：推进资格事务和匹配回复，不绕过原 Tx/Rx。
 SysResult_t VStorageConsumer_Process(VStorageConsumer *);
 #endif

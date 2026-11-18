@@ -1,13 +1,17 @@
+// 通过文件系统端口处理录像、抓拍、封尾和卷收尾。
+
 #include "storage_backend.h"
 #include "jpeg_frame.h"
 #include "sd_block.h"
 #include <string.h>
 
+// 校验状态修改操作运行在约定的所有者上下文。
 static int owner(const VStorageFS *fs)
 {
     return fs && fs->is_owner && fs->is_owner(fs->owner);
 }
 
+// 绑定 Storage 卷与文件操作端口。
 SysResult_t VStorageFS_Init(VStorageFS *fs, int (*check)(void *), void *port)
 {
     if (!fs || fs->is_owner || !check)
@@ -21,181 +25,191 @@ SysResult_t VStorageFS_Init(VStorageFS *fs, int (*check)(void *), void *port)
     return SYS_OK;
 }
 
-static SysResult_t mount_volume(void *p, const VStorageConfig *c)
+// 调用文件系统端口推进卷操作并保留真实结果。
+static SysResult_t mount_volume(void *port_context, const VStorageConfig *config)
 {
-    VStorageFS *fs = p;
-    SysResult_t z;
+    VStorageFS *fs = port_context;
+    SysResult_t result;
     if (!owner(fs) || fs->file || SD_Block_IsOwner(SD_BLOCK_CLIENT_FATFS))
         return SYS_ERR_INVALID_STATE;
     fs->verified = 0U;
-    fs->mode = c->mode;
+    fs->mode = config->mode;
     fs->facts = 0U;
-    z = StorageFS_Mount(true, (uint8_t)c->partition);
+    result = StorageFS_Mount(true, (uint8_t)config->partition);
     if (!SD_Block_IsOwner(SD_BLOCK_CLIENT_FATFS))
         fs->facts = VST_VOLUME_RELEASED;
-    return z;
+    return result;
 }
 
-static SysResult_t open_file(void *p, const VStorageConfig *c, const CoreMediaFormat *f)
+// 在持有的卷上推进目标文件的打开或关闭。
+static SysResult_t open_file(void *port_context, const VStorageConfig *config, const CoreMediaFormat *format)
 {
-    VStorageFS *fs = p;
-    SysResult_t z;
+    VStorageFS *fs = port_context;
+    SysResult_t result;
     if (!owner(fs) || fs->file)
         return SYS_ERR_INVALID_STATE;
-    z = StorageFS_Open(c->path, STORAGE_FS_OPEN_WRITE | STORAGE_FS_OPEN_CREATE_NEW, &fs->file);
-    if (!z && c->mode == VST_AVI)
-        z = MjpegAvi_Begin(&fs->avi, fs->file, (uint16_t)f->width, (uint16_t)f->height,
-                           (uint16_t)c->sampling.num);
-    return z;
+    result = StorageFS_Open(config->path, STORAGE_FS_OPEN_WRITE | STORAGE_FS_OPEN_CREATE_NEW, &fs->file);
+    if (!result && config->mode == VST_AVI)
+        result = MjpegAvi_Begin(&fs->avi, fs->file, (uint16_t)format->width, (uint16_t)format->height,
+                           (uint16_t)config->sampling.num);
+    return result;
 }
 
+// 向文件写入一段媒体数据并检查实际结果。
 static SysResult_t write_span(StorageFile_t file, const uint8_t *data, uint32_t bytes)
 {
     uint32_t written;
-    SysResult_t z;
+    SysResult_t result;
     if (!bytes)
         return SYS_OK;
-    z = StorageFS_Write(file, data, bytes, &written);
-    return z ? z : written == bytes ? SYS_OK : SYS_ERR_NO_RESOURCE;
+    result = StorageFS_Write(file, data, bytes, &written);
+    return result ? result : written == bytes ? SYS_OK : SYS_ERR_NO_RESOURCE;
 }
 
-static SysResult_t close_file(void *p)
+// 在持有的卷上推进目标文件的打开或关闭。
+static SysResult_t close_file(void *port_context)
 {
-    VStorageFS *fs = p;
-    SysResult_t z;
+    VStorageFS *fs = port_context;
+    SysResult_t result;
     if (!owner(fs) || !fs->file)
         return SYS_ERR_INVALID_STATE;
-    z = StorageFS_Close(fs->file);
-    if (!z)
+    result = StorageFS_Close(fs->file);
+    if (!result)
     {
         fs->file = 0U;
         fs->facts |= VST_FILE_CLOSED;
     }
-    return z;
+    return result;
 }
 
-static SysResult_t verify_snapshot(VStorageFS *fs, const VStorageConfig *c, const MRView *v)
+// 验证抓拍文件输出是否满足快照契约。
+static SysResult_t verify_snapshot(VStorageFS *fs, const VStorageConfig *config, const MRView *view)
 {
-    uint32_t expected = v->bytes + v->bytes2;
+    uint32_t expected = view->bytes + view->bytes2;
     uint32_t actual = 0U, cursor = 0U, read = 0U, crc = UINT32_MAX, original;
-    SysResult_t z;
-    original = JpegFrame_Crc32(v->data, v->bytes, UINT32_MAX);
-    if (v->bytes2)
-        original = JpegFrame_Crc32(v->data2, v->bytes2, original);
-    z = StorageFS_Open(c->path, STORAGE_FS_OPEN_READ, &fs->file);
-    if (!z)
+    SysResult_t result;
+    original = JpegFrame_Crc32(view->data, view->bytes, UINT32_MAX);
+    if (view->bytes2)
+        original = JpegFrame_Crc32(view->data2, view->bytes2, original);
+    result = StorageFS_Open(config->path, STORAGE_FS_OPEN_READ, &fs->file);
+    if (!result)
     {
         fs->facts &= ~VST_FILE_CLOSED;
-        z = StorageFS_GetSize(fs->file, &actual);
+        result = StorageFS_GetSize(fs->file, &actual);
     }
-    if (!z && actual != expected)
-        z = SYS_ERR_PROTOCOL;
-    while (!z && cursor < expected)
+    if (!result && actual != expected)
+        result = SYS_ERR_PROTOCOL;
+    while (!result && cursor < expected)
     {
-        uint32_t n = expected - cursor;
-        uint32_t first = cursor < v->bytes ? v->bytes - cursor : 0U;
-        if (n > sizeof(fs->readback))
-            n = sizeof(fs->readback);
-        if (first > n)
-            first = n;
-        z = StorageFS_Read(fs->file, fs->readback, n, &read);
-        if (!z && (read != n || (first && memcmp(fs->readback, v->data + cursor, first)) ||
-                   (n > first && memcmp(fs->readback + first,
-                                        v->data2 + (cursor + first - v->bytes), n - first))))
-            z = SYS_ERR_PROTOCOL;
-        if (!z)
-            crc = JpegFrame_Crc32(fs->readback, n, crc);
-        cursor += n;
+        uint32_t chunk_bytes = expected - cursor;
+        uint32_t first = cursor < view->bytes ? view->bytes - cursor : 0U;
+        if (chunk_bytes > sizeof(fs->readback))
+            chunk_bytes = sizeof(fs->readback);
+        if (first > chunk_bytes)
+            first = chunk_bytes;
+        result = StorageFS_Read(fs->file, fs->readback, chunk_bytes, &read);
+        if (!result && (read != chunk_bytes || (first && memcmp(fs->readback, view->data + cursor, first)) ||
+                   (chunk_bytes > first && memcmp(fs->readback + first,
+                                        view->data2 + (cursor + first - view->bytes), chunk_bytes - first))))
+            result = SYS_ERR_PROTOCOL;
+        if (!result)
+            crc = JpegFrame_Crc32(fs->readback, chunk_bytes, crc);
+        cursor += chunk_bytes;
     }
-    if (!z && original != crc)
-        z = SYS_ERR_PROTOCOL;
-    return z;
+    if (!result && original != crc)
+        result = SYS_ERR_PROTOCOL;
+    return result;
 }
 
-static SysResult_t write_frame(void *p, const VStorageConfig *c, const CoreMediaFormat *f,
-                               const MRView *v, uint32_t timestamp)
+// 写入当前帧的数据跨度，保留实际写入结果。
+static SysResult_t write_frame(void *port_context, const VStorageConfig *config, const CoreMediaFormat *format,
+                               const MRView *view, uint32_t timestamp)
 {
-    VStorageFS *fs = p;
+    VStorageFS *fs = port_context;
     CameraFrame_t frame;
-    SysResult_t z;
-    if (!owner(fs) || !fs->file || !v->data || !v->bytes || (v->bytes2 && !v->data2) ||
-        v->bytes > UINT32_MAX - v->bytes2)
+    SysResult_t result;
+    if (!owner(fs) || !fs->file || !view->data || !view->bytes || (view->bytes2 && !view->data2) ||
+        view->bytes > UINT32_MAX - view->bytes2)
         return SYS_ERR_INVALID_STATE;
-    frame.width = (uint16_t)f->width;
-    frame.height = (uint16_t)f->height;
+    frame.width = (uint16_t)format->width;
+    frame.height = (uint16_t)format->height;
     frame.format = CAMERA_PIXEL_FORMAT_JPEG;
-    frame.data = v->data;
-    frame.size_bytes = v->bytes + v->bytes2;
-    frame.data2 = v->data2;
-    frame.size_bytes2 = v->bytes2;
-    if (frame.size_bytes > f->max_payload || frame.size_bytes > c->file_limit)
+    frame.data = view->data;
+    frame.size_bytes = view->bytes + view->bytes2;
+    frame.data2 = view->data2;
+    frame.size_bytes2 = view->bytes2;
+    if (frame.size_bytes > format->max_payload || frame.size_bytes > config->file_limit)
         return SYS_ERR_INVALID_ARG;
-    z = JpegFrame_Validate(&frame);
-    if (z)
-        return z;
-    if (c->mode == VST_AVI)
-        return MjpegAvi_AppendFrame(&fs->avi, &frame, timestamp, c->file_limit);
-    z = write_span(fs->file, v->data, v->bytes);
-    if (!z)
-        z = write_span(fs->file, v->data2, v->bytes2);
-    if (!z)
-        z = StorageFS_Sync(fs->file);
-    if (!z)
-        z = close_file(fs);
-    if (!z)
-        z = verify_snapshot(fs, c, v);
-    if (!z)
+    result = JpegFrame_Validate(&frame);
+    if (result)
+        return result;
+    if (config->mode == VST_AVI)
+        return MjpegAvi_AppendFrame(&fs->avi, &frame, timestamp, config->file_limit);
+    result = write_span(fs->file, view->data, view->bytes);
+    if (!result)
+        result = write_span(fs->file, view->data2, view->bytes2);
+    if (!result)
+        result = StorageFS_Sync(fs->file);
+    if (!result)
+        result = close_file(fs);
+    if (!result)
+        result = verify_snapshot(fs, config, view);
+    if (!result)
         fs->verified = 1U;
-    return z;
+    return result;
 }
 
-static SysResult_t finish_file(void *p)
+// 推进文件封尾及关闭，文件完成不证明媒体租约已归还。
+static SysResult_t finish_file(void *port_context)
 {
-    VStorageFS *fs = p;
-    SysResult_t z;
+    VStorageFS *fs = port_context;
+    SysResult_t result;
     if (!owner(fs) || !fs->file)
         return SYS_ERR_INVALID_STATE;
-    z = fs->mode == VST_AVI ? MjpegAvi_Finish(&fs->avi)
+    result = fs->mode == VST_AVI ? MjpegAvi_Finish(&fs->avi)
                             : (fs->verified ? SYS_OK : SYS_ERR_INVALID_STATE);
-    if (!z)
+    if (!result)
         fs->facts |= VST_FILE_FINISHED;
-    return z;
+    return result;
 }
 
-static SysResult_t unmount_volume(void *p)
+// 调用文件系统端口推进卷操作并保留真实结果。
+static SysResult_t unmount_volume(void *port_context)
 {
-    VStorageFS *fs = p;
-    SysResult_t z;
+    VStorageFS *fs = port_context;
+    SysResult_t result;
     if (!owner(fs) || fs->file)
         return SYS_ERR_INVALID_STATE;
-    z = StorageFS_Unmount();
-    if (!z)
+    result = StorageFS_Unmount();
+    if (!result)
         fs->facts |= VST_VOLUME_RELEASED;
-    return z;
+    return result;
 }
 
-static SysResult_t recover_volume(void *p)
+// 按端口契约尝试恢复底层资源，保留原始故障。
+static SysResult_t recover_volume(void *port_context)
 {
-    VStorageFS *fs = p;
-    SysResult_t z;
+    VStorageFS *fs = port_context;
+    SysResult_t result;
     if (!owner(fs))
         return SYS_ERR_INVALID_STATE;
-    z = StorageFS_Recover();
-    if (!z)
+    result = StorageFS_Recover();
+    if (!result)
     {
         /* 凭据因恢复失效。没有成功Close/Finish的原记录仍保持失败。 */
         fs->file = 0U;
         fs->facts |= VST_VOLUME_RELEASED;
     }
-    return z;
+    return result;
 }
 
-static SysResult_t observe(void *p, VStorageFacts *out)
+// 刷新本轮可观察的底层运行和退出事实。
+static SysResult_t observe(void *port_context, VStorageFacts *out)
 {
-    VStorageFS *fs = p;
+    VStorageFS *fs = port_context;
     SdBlockStatus_t block;
     StorageFsDiagnostics_t diag;
-    SysResult_t z;
+    SysResult_t result;
     if (!owner(fs) || !out)
         return SYS_ERR_INVALID_STATE;
     out->flags = fs->facts | (fs->file ? VST_FILE_OPEN : 0U);
@@ -208,12 +222,12 @@ static SysResult_t observe(void *p, VStorageFacts *out)
     }
     out->flags |= VST_VOLUME_HELD;
     out->flags &= ~VST_VOLUME_RELEASED;
-    z = SD_Block_GetStatus(&block);
-    if (z)
-        return z;
-    z = StorageFS_GetDiagnostics(&diag);
-    if (z)
-        return z;
+    result = SD_Block_GetStatus(&block);
+    if (result)
+        return result;
+    result = StorageFS_GetDiagnostics(&diag);
+    if (result)
+        return result;
     /* FAULT可能仍持有传输。实际恢复前，保守地扣留媒体归还。 */
     if (!block.busy && !block.fault)
         out->flags |= VST_IO_QUIET;

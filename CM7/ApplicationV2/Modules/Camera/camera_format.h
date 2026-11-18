@@ -1,3 +1,5 @@
+// 将中立媒体配置转换成 Camera 端口配置。
+
 #ifndef V2_CAMERA_FORMAT_H
 #define V2_CAMERA_FORMAT_H
 #include "../../Core/media_format.h"

@@ -1,259 +1,271 @@
+// 按依赖计划协调模块操作、异步完成和失败补偿。
+
 #include "execution_manager.h"
 #include <string.h>
 #define MAGIC 0x454D5633U
-static SysResult_t enter(EMContext *c)
+// 校验所有者调用并设置重入保护，调用方仍负责跨任务串行化。
+static SysResult_t enter(EMContext *manager)
 {
-    if (!c || c->magic != MAGIC || !c->is_owner(c->owner))
+    if (!manager || manager->magic != MAGIC || !manager->is_owner(manager->owner))
         return SYS_ERR_INVALID_STATE;
-    if (c->busy)
+    if (manager->busy)
         return SYS_ERR_BUSY;
-    c->busy = 1;
+    manager->busy = 1;
     return SYS_OK;
 }
-static SysResult_t leave(EMContext *c, SysResult_t z)
+// 退出当前调用的重入保护。
+static SysResult_t leave(EMContext *manager, SysResult_t result)
 {
-    c->busy = 0;
-    return z;
+    manager->busy = 0;
+    return result;
 }
-static void first(EMContext *c, SysResult_t z)
+// 记录首个错误，后续恢复结果不能覆盖它。
+static void first(EMContext *manager, SysResult_t result)
 {
-    if (z && !c->first_error)
-        c->first_error = z;
+    if (result && !manager->first_error)
+        manager->first_error = result;
 }
-static EMEndpoint *port(EMContext *c, uint32_t m)
+// 在已注册的模块端口中查找指定执行目标。
+static EMEndpoint *port(EMContext *manager, uint32_t module_id)
 {
-    uint32_t i;
-    for (i = 0; i < c->endpoint_count; i++)
-        if (c->endpoints[i].module == m)
-            return &c->endpoints[i];
+    uint32_t endpoint_index;
+    for (endpoint_index = 0; endpoint_index < manager->endpoint_count; endpoint_index++)
+        if (manager->endpoints[endpoint_index].module == module_id)
+            return &manager->endpoints[endpoint_index];
     return NULL;
 }
-static void fail(EMContext *c, SysResult_t z)
+// 记录验证失败及其位置，便于定位错误配置。
+static void fail(EMContext *manager, SysResult_t result)
 {
-    first(c, z);
-    if (c->state == EM_COMPENSATING)
+    first(manager, result);
+    if (manager->state == EM_COMPENSATING)
     {
-        if (!c->recovery_error)
-            c->recovery_error = z;
-        c->state = EM_BLOCKED;
+        if (!manager->recovery_error)
+            manager->recovery_error = result;
+        manager->state = EM_BLOCKED;
     }
-    else if (c->plan.kind == EM_START && !c->blocked_unknown)
+    else if (manager->plan.kind == EM_START && !manager->blocked_unknown)
     {
-        c->state = EM_COMPENSATING;
-        c->stage = 0;
+        manager->state = EM_COMPENSATING;
+        manager->stage = 0;
     }
     else
-        c->state = EM_BLOCKED;
+        manager->state = EM_BLOCKED;
 }
-SysResult_t EM_Init(EMContext *c, uint32_t session, const EMEndpoint *e, uint32_t n,
+// 绑定执行所有者及模块端口，初始化计划执行状态。
+SysResult_t EM_Init(EMContext *manager, uint32_t session, const EMEndpoint *endpoint, uint32_t endpoint_count,
                     int (*owner)(void *), void *ctx)
 {
-    uint32_t i, j;
-    if (!c || c->magic || !session || !e || !n || n > V2_MODULE_MAX || !owner)
+    uint32_t endpoint_index, previous_index;
+    if (!manager || manager->magic || !session || !endpoint || !endpoint_count || endpoint_count > V2_MODULE_MAX || !owner)
         return SYS_ERR_INVALID_ARG;
-    if (V2_Overlap(c, sizeof(*c), e, sizeof(*e) * n))
+    if (V2_Overlap(manager, sizeof(*manager), endpoint, sizeof(*endpoint) * endpoint_count))
         return SYS_ERR_INVALID_ARG;
     if (!owner(ctx))
         return SYS_ERR_INVALID_STATE;
-    for (i = 0; i < n; i++)
+    for (endpoint_index = 0; endpoint_index < endpoint_count; endpoint_index++)
     {
-        if (!e[i].module || !e[i].submit || !e[i].read || !e[i].consume)
+        if (!endpoint[endpoint_index].module || !endpoint[endpoint_index].submit || !endpoint[endpoint_index].read || !endpoint[endpoint_index].consume)
             return SYS_ERR_INVALID_ARG;
-        for (j = 0; j < i; j++)
-            if (e[i].module == e[j].module)
+        for (previous_index = 0; previous_index < endpoint_index; previous_index++)
+            if (endpoint[endpoint_index].module == endpoint[previous_index].module)
                 return SYS_ERR_ALREADY_EXISTS;
     }
-    memset(c, 0, sizeof(*c));
-    c->session = session;
-    c->endpoint_count = n;
-    memcpy(c->endpoints, e, n * sizeof(*e));
-    c->is_owner = owner;
-    c->owner = ctx;
-    c->magic = MAGIC;
+    memset(manager, 0, sizeof(*manager));
+    manager->session = session;
+    manager->endpoint_count = endpoint_count;
+    memcpy(manager->endpoints, endpoint, endpoint_count * sizeof(*endpoint));
+    manager->is_owner = owner;
+    manager->owner = ctx;
+    manager->magic = MAGIC;
     return SYS_OK;
 }
-SysResult_t EM_Load(EMContext *c, const EMPlan *p, uint32_t timeout)
+// 装载已校验计划，保留执行事务身份。
+SysResult_t EM_Load(EMContext *manager, const EMPlan *plan, uint32_t timeout)
 {
-    uint32_t i;
-    SysResult_t z;
-    if (!p || p->count > EM_STEP_MAX || (p->kind != EM_START && p->kind != EM_STOP) || !timeout ||
-        timeout > 0x7FFFFFFFU || !c || V2_Overlap(c, sizeof(*c), p, sizeof(*p)))
+    uint32_t step_index;
+    SysResult_t result;
+    if (!plan || plan->count > EM_STEP_MAX || (plan->kind != EM_START && plan->kind != EM_STOP) || !timeout ||
+        timeout > 0x7FFFFFFFU || !manager || V2_Overlap(manager, sizeof(*manager), plan, sizeof(*plan)))
         return SYS_ERR_INVALID_ARG;
-    z = enter(c);
-    if (z)
-        return z;
-    if (c->state != EM_IDLE && c->state != EM_DONE)
-        return leave(c, SYS_ERR_BUSY);
-    for (i = 0; i < p->count; i++)
-        if (!port(c, p->steps[i].module) || !LC_Target(p->steps[i].operation) ||
-            !LC_Stable(p->steps[i].expected) ||
-            (p->kind == EM_START && p->steps[i].operation != LC_CONFIGURE &&
-             p->steps[i].operation != LC_ACTIVATE) ||
-            (p->kind == EM_STOP && p->steps[i].operation != LC_DEACTIVATE &&
-             p->steps[i].operation != LC_CLEANUP) ||
-            (p->steps[i].operation == LC_CONFIGURE && p->steps[i].expected != LC_UNCONFIGURED) ||
-            (p->steps[i].operation == LC_ACTIVATE && p->steps[i].expected != LC_INACTIVE) ||
-            (p->steps[i].operation == LC_DEACTIVATE && p->steps[i].expected != LC_ACTIVE) ||
-            (p->steps[i].operation == LC_CLEANUP && p->steps[i].expected != LC_INACTIVE))
-            return leave(c, SYS_ERR_INVALID_ARG);
-    c->plan = *p;
-    c->timeout = timeout;
-    c->index = 0;
-    c->stage = 0;
-    c->undo_count = 0;
-    c->first_error = 0;
-    c->recovery_error = 0;
-    c->blocked_unknown = 0;
-    c->state = EM_RUNNING;
-    return leave(c, SYS_OK);
+    result = enter(manager);
+    if (result)
+        return result;
+    if (manager->state != EM_IDLE && manager->state != EM_DONE)
+        return leave(manager, SYS_ERR_BUSY);
+    for (step_index = 0; step_index < plan->count; step_index++)
+        if (!port(manager, plan->steps[step_index].module) || !LC_Target(plan->steps[step_index].operation) ||
+            !LC_Stable(plan->steps[step_index].expected) ||
+            (plan->kind == EM_START && plan->steps[step_index].operation != LC_CONFIGURE &&
+             plan->steps[step_index].operation != LC_ACTIVATE) ||
+            (plan->kind == EM_STOP && plan->steps[step_index].operation != LC_DEACTIVATE &&
+             plan->steps[step_index].operation != LC_CLEANUP) ||
+            (plan->steps[step_index].operation == LC_CONFIGURE && plan->steps[step_index].expected != LC_UNCONFIGURED) ||
+            (plan->steps[step_index].operation == LC_ACTIVATE && plan->steps[step_index].expected != LC_INACTIVE) ||
+            (plan->steps[step_index].operation == LC_DEACTIVATE && plan->steps[step_index].expected != LC_ACTIVE) ||
+            (plan->steps[step_index].operation == LC_CLEANUP && plan->steps[step_index].expected != LC_INACTIVE))
+            return leave(manager, SYS_ERR_INVALID_ARG);
+    manager->plan = *plan;
+    manager->timeout = timeout;
+    manager->index = 0;
+    manager->stage = 0;
+    manager->undo_count = 0;
+    manager->first_error = 0;
+    manager->recovery_error = 0;
+    manager->blocked_unknown = 0;
+    manager->state = EM_RUNNING;
+    return leave(manager, SYS_OK);
 }
-static void finish(EMContext *c)
+// 冻结当前操作结果，供下一阶段读取。
+static void finish(EMContext *manager)
 {
-    EMStep *s =
-        c->state == EM_COMPENSATING ? &c->undo[c->undo_count - 1] : &c->plan.steps[c->index];
-    SysResult_t z = c->completion.result;
-    uint32_t fact = c->completion.fact;
-    if (c->state == EM_RUNNING && c->plan.kind == EM_START && fact == LC_Target(s->operation) &&
-        fact != s->expected)
+    EMStep *step =
+        manager->state == EM_COMPENSATING ? &manager->undo[manager->undo_count - 1] : &manager->plan.steps[manager->index];
+    SysResult_t result = manager->completion.result;
+    uint32_t fact = manager->completion.fact;
+    if (manager->state == EM_RUNNING && manager->plan.kind == EM_START && fact == LC_Target(step->operation) &&
+        fact != step->expected)
     {
-        EMStep *u = &c->undo[c->undo_count++];
-        u->module = s->module;
-        u->expected = fact;
-        u->operation = s->operation == LC_ACTIVATE ? LC_DEACTIVATE : LC_CLEANUP;
+        EMStep *undo_step = &manager->undo[manager->undo_count++];
+        undo_step->module = step->module;
+        undo_step->expected = fact;
+        undo_step->operation = step->operation == LC_ACTIVATE ? LC_DEACTIVATE : LC_CLEANUP;
     }
     if (fact == LC_ERROR)
-        c->blocked_unknown = 1;
-    if (z)
+        manager->blocked_unknown = 1;
+    if (result)
     {
-        fail(c, z);
+        fail(manager, result);
         return;
     }
-    if (fact != LC_Target(s->operation))
+    if (fact != LC_Target(step->operation))
     {
-        fail(c, SYS_ERR_PROTOCOL);
+        fail(manager, SYS_ERR_PROTOCOL);
         return;
     }
-    if (c->state == EM_COMPENSATING)
-        c->undo_count--;
+    if (manager->state == EM_COMPENSATING)
+        manager->undo_count--;
     else
-        c->index++;
-    c->stage = 0;
-    if (c->first_error && c->state == EM_RUNNING)
-        fail(c, c->first_error);
+        manager->index++;
+    manager->stage = 0;
+    if (manager->first_error && manager->state == EM_RUNNING)
+        fail(manager, manager->first_error);
 }
-SysResult_t EM_Process(EMContext *c, uint32_t now)
+// 推进声明式计划并基于实际完成结果安排补偿。
+SysResult_t EM_Process(EMContext *manager, uint32_t now)
 {
-    SysResult_t z = enter(c);
-    EMEndpoint *e;
-    EMStep *s;
-    if (z)
-        return z;
-    if (c->state == EM_IDLE || c->state == EM_DONE)
-        return leave(c, SYS_OK);
-    if (c->state == EM_BLOCKED)
-        return leave(c, c->first_error ? c->first_error : SYS_ERR_INVALID_STATE);
-    if (!c->stage)
+    SysResult_t result = enter(manager);
+    EMEndpoint *endpoint;
+    EMStep *step;
+    if (result)
+        return result;
+    if (manager->state == EM_IDLE || manager->state == EM_DONE)
+        return leave(manager, SYS_OK);
+    if (manager->state == EM_BLOCKED)
+        return leave(manager, manager->first_error ? manager->first_error : SYS_ERR_INVALID_STATE);
+    if (!manager->stage)
     {
-        if ((c->state == EM_RUNNING && c->index == c->plan.count) ||
-            (c->state == EM_COMPENSATING && !c->undo_count))
+        if ((manager->state == EM_RUNNING && manager->index == manager->plan.count) ||
+            (manager->state == EM_COMPENSATING && !manager->undo_count))
         {
-            c->state = EM_DONE;
-            return leave(c, SYS_OK);
+            manager->state = EM_DONE;
+            return leave(manager, SYS_OK);
         }
-        if (c->issued == UINT32_MAX)
+        if (manager->issued == UINT32_MAX)
         {
-            fail(c, SYS_ERR_NO_RESOURCE);
-            return leave(c, SYS_ERR_NO_RESOURCE);
+            fail(manager, SYS_ERR_NO_RESOURCE);
+            return leave(manager, SYS_ERR_NO_RESOURCE);
         }
-        s = c->state == EM_COMPENSATING ? &c->undo[c->undo_count - 1] : &c->plan.steps[c->index];
-        memset(&c->current, 0, sizeof(c->current));
-        c->current.id.session = c->session;
-        c->current.id.request = ++c->issued;
-        c->current.id.module = s->module;
-        c->current.id.operation = s->operation;
-        c->current.expected = s->expected;
-        c->current.timeout = c->timeout;
-        c->started = now;
-        c->stage = 1;
+        step = manager->state == EM_COMPENSATING ? &manager->undo[manager->undo_count - 1] : &manager->plan.steps[manager->index];
+        memset(&manager->current, 0, sizeof(manager->current));
+        manager->current.id.session = manager->session;
+        manager->current.id.request = ++manager->issued;
+        manager->current.id.module = step->module;
+        manager->current.id.operation = step->operation;
+        manager->current.expected = step->expected;
+        manager->current.timeout = manager->timeout;
+        manager->started = now;
+        manager->stage = 1;
     }
-    e = port(c, c->current.id.module);
-    if ((uint32_t)(now - c->started) >= c->timeout)
+    endpoint = port(manager, manager->current.id.module);
+    if ((uint32_t)(now - manager->started) >= manager->timeout)
     {
-        first(c, SYS_ERR_TIMEOUT);
-        if (c->stage == 1)
+        first(manager, SYS_ERR_TIMEOUT);
+        if (manager->stage == 1)
         {
-            c->stage = 0;
-            fail(c, SYS_ERR_TIMEOUT);
-            return leave(c, SYS_ERR_TIMEOUT);
+            manager->stage = 0;
+            fail(manager, SYS_ERR_TIMEOUT);
+            return leave(manager, SYS_ERR_TIMEOUT);
         }
     }
-    if (c->stage == 1)
+    if (manager->stage == 1)
     {
-        z = e->submit(e->port, &c->current);
-        if (z == SYS_ERR_BUSY || z == SYS_ERR_NO_RESOURCE)
-            return leave(c, z);
-        if (z)
+        result = endpoint->submit(endpoint->port, &manager->current);
+        if (result == SYS_ERR_BUSY || result == SYS_ERR_NO_RESOURCE)
+            return leave(manager, result);
+        if (result)
         {
-            c->stage = 0;
-            fail(c, z);
-            return leave(c, z);
+            manager->stage = 0;
+            fail(manager, result);
+            return leave(manager, result);
         }
-        c->stage = 2;
-        return leave(c, SYS_OK);
+        manager->stage = 2;
+        return leave(manager, SYS_OK);
     }
-    if (c->stage == 2)
+    if (manager->stage == 2)
     {
-        LCCompletion v;
-        z = e->read(e->port, &c->current.id, &v);
-        if (z == SYS_ERR_NOT_FOUND || z == SYS_ERR_BUSY || z == SYS_ERR_NO_RESOURCE)
-            return leave(c, z);
-        if (z)
+        LCCompletion completion;
+        result = endpoint->read(endpoint->port, &manager->current.id, &completion);
+        if (result == SYS_ERR_NOT_FOUND || result == SYS_ERR_BUSY || result == SYS_ERR_NO_RESOURCE)
+            return leave(manager, result);
+        if (result)
         {
-            first(c, z);
-            c->state = EM_BLOCKED;
-            return leave(c, z);
+            first(manager, result);
+            manager->state = EM_BLOCKED;
+            return leave(manager, result);
         }
-        if (!LC_IdEqual(&v.id, &c->current.id) || v.result > 0 || v.actual_result > 0 ||
-            !LC_Stable(v.fact) ||
-            (!v.actual_result && v.fact != LC_Target(c->current.id.operation)) ||
-            (v.actual_result && v.fact != c->current.expected &&
-             v.fact != LC_Target(c->current.id.operation) && v.fact != LC_ERROR))
+        if (!LC_IdEqual(&completion.id, &manager->current.id) || completion.result > 0 || completion.actual_result > 0 ||
+            !LC_Stable(completion.fact) ||
+            (!completion.actual_result && completion.fact != LC_Target(manager->current.id.operation)) ||
+            (completion.actual_result && completion.fact != manager->current.expected &&
+             completion.fact != LC_Target(manager->current.id.operation) && completion.fact != LC_ERROR))
         {
-            first(c, SYS_ERR_PROTOCOL);
-            c->state = EM_BLOCKED;
-            return leave(c, SYS_ERR_PROTOCOL);
+            first(manager, SYS_ERR_PROTOCOL);
+            manager->state = EM_BLOCKED;
+            return leave(manager, SYS_ERR_PROTOCOL);
         }
         /* Freeze an observed business failure before transport consumption retries. */
-        first(c, v.result);
-        c->completion = v;
-        c->stage = 3;
-        return leave(c, SYS_OK);
+        first(manager, completion.result);
+        manager->completion = completion;
+        manager->stage = 3;
+        return leave(manager, SYS_OK);
     }
-    z = e->consume(e->port, &c->completion);
-    if (z)
+    result = endpoint->consume(endpoint->port, &manager->completion);
+    if (result)
     {
-        if (z != SYS_ERR_BUSY && z != SYS_ERR_NO_RESOURCE)
+        if (result != SYS_ERR_BUSY && result != SYS_ERR_NO_RESOURCE)
         {
-            first(c, z);
-            c->state = EM_BLOCKED;
+            first(manager, result);
+            manager->state = EM_BLOCKED;
         }
-        return leave(c, z);
+        return leave(manager, result);
     }
-    finish(c);
-    return leave(c, SYS_OK);
+    finish(manager);
+    return leave(manager, SYS_OK);
 }
-SysResult_t EM_Status(EMContext *c, uint32_t *state, SysResult_t *err, SysResult_t *recovery)
+// 读取计划进度、首错及补偿状态。
+SysResult_t EM_Status(EMContext *manager, uint32_t *state, SysResult_t *err, SysResult_t *recovery)
 {
-    SysResult_t z;
-    if (!c || !state || !err || !recovery || V2_Overlap(c, sizeof(*c), state, sizeof(*state)) ||
-        V2_Overlap(c, sizeof(*c), err, sizeof(*err)) ||
-        V2_Overlap(c, sizeof(*c), recovery, sizeof(*recovery)))
+    SysResult_t result;
+    if (!manager || !state || !err || !recovery || V2_Overlap(manager, sizeof(*manager), state, sizeof(*state)) ||
+        V2_Overlap(manager, sizeof(*manager), err, sizeof(*err)) ||
+        V2_Overlap(manager, sizeof(*manager), recovery, sizeof(*recovery)))
         return SYS_ERR_INVALID_ARG;
-    z = enter(c);
-    if (z)
-        return z;
-    *state = c->state;
-    *err = c->first_error;
-    *recovery = c->recovery_error;
-    return leave(c, SYS_OK);
+    result = enter(manager);
+    if (result)
+        return result;
+    *state = manager->state;
+    *err = manager->first_error;
+    *recovery = manager->recovery_error;
+    return leave(manager, SYS_OK);
 }

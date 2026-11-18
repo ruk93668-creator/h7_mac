@@ -1,3 +1,5 @@
+// 校验静态媒体拓扑和候选路径的格式约束。
+
 /* Typed topology and pure candidate validation, never a Frame/Lease ledger.
  * Descriptors, Ops and names are trusted const C objects, not wire input.
  * Caller owns disjoint persistent scratch/output/issues and zero-initializes
@@ -229,12 +231,17 @@ typedef struct GraphScratch
     GraphValidatedView candidate;
 } GraphScratch;
 
+// 校验目录结构、端口方向、连接及 Pipeline 描述。
 SysResult_t Graph_ValidateCatalog(const GraphDesc *graph, GraphWorkspace *work, GraphIssue *issue);
+// 校验所选路径的合并、扇出和端口格式。
 SysResult_t Graph_ValidateSet(const GraphDesc *graph, const GraphSelection *selections,
                               uint16_t count, GraphScratch *scratch, GraphValidatedView *out,
                               GraphIssue *issue);
+// 按身份查询静态拓扑描述。
 const GraphEntityDesc *Graph_GetEntity(const GraphDesc *, GraphEntityId);
+// 按身份查询静态拓扑描述。
 const GraphLinkDesc *Graph_GetLink(const GraphDesc *, GraphLinkId);
+// 按身份查询静态拓扑描述。
 const GraphPipelineDesc *Graph_GetPipeline(const GraphDesc *, GraphPipelineId);
 
 enum

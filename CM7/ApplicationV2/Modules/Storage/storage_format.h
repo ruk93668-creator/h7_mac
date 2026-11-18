@@ -1,3 +1,5 @@
+// 校验 Storage 的录像及抓拍配置。
+
 #ifndef V2_STORAGE_FORMAT_H
 #define V2_STORAGE_FORMAT_H
 

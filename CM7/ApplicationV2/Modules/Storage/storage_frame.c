@@ -1,132 +1,137 @@
+// 推进 Storage 帧交付、写入、归还和收据确认。
+
 #include "storage_frame.h"
 #include <string.h>
 
-static int receipt_matches(const VStorageFrame *s, const MRReceipt *t, int physical)
+// 匹配完整的请求或收据身份，拒绝旧交接污染当前帧。
+static int receipt_matches(const VStorageFrame *frame, const MRReceipt *receipt, int physical)
 {
-    const MRRequest *r = &s->current.request;
+    const MRRequest *request = &frame->current.request;
     const MRMedia empty = {0};
-    return t->serial && t->result <= SYS_OK && MRGrant_Equal(&t->g, &r->g) &&
-           t->h.session == r->h.session && t->h.sequence == r->h.sequence && !t->bridge.epoch &&
-           !t->bridge.command && !t->bridge.lease &&
-           (physical ? t->physical_returned == 1U && MRMedia_Equal(&t->m, &s->current.media)
-                     : !t->physical_returned && MRMedia_Equal(&t->m, &empty));
+    return receipt->serial && receipt->result <= SYS_OK && MRGrant_Equal(&receipt->g, &request->g) &&
+           receipt->h.session == request->h.session && receipt->h.sequence == request->h.sequence && !receipt->bridge.epoch &&
+           !receipt->bridge.command && !receipt->bridge.lease &&
+           (physical ? receipt->physical_returned == 1U && MRMedia_Equal(&receipt->m, &frame->current.media)
+                     : !receipt->physical_returned && MRMedia_Equal(&receipt->m, &empty));
 }
 
-static SysResult_t receive_offer(VStorageFrame *s, const VStorageFrameOps *ops, void *p)
+// 接收 Storage 交付通知并核对槽位和媒体身份。
+static SysResult_t receive_offer(VStorageFrame *frame, const VStorageFrameOps *ops, void *port_context)
 {
-    VStorageOffer o;
-    SysResult_t z = ops->offer(p, &o);
-    if (z)
-        return z;
-    if (!MRGrant_Equal(&o.request.g, &s->grant) || memcmp(&o.request.s, &s->slot, sizeof(s->slot)))
+    VStorageOffer offer;
+    SysResult_t result = ops->offer(port_context, &offer);
+    if (result)
+        return result;
+    if (!MRGrant_Equal(&offer.request.g, &frame->grant) || memcmp(&offer.request.s, &frame->slot, sizeof(frame->slot)))
         return SYS_ERR_NOT_FOUND; /* 迟到槽位/代次，不改当前工作。 */
-    if (o.kind == VSF_DELIVERY_WITHDRAWN && s->withdrawn && !o.request.h.session &&
-        !o.request.h.sequence && !o.request.b.epoch && !o.request.b.command &&
-        !o.request.b.lease && !o.media.id && !o.terminal.serial)
+    if (offer.kind == VSF_DELIVERY_WITHDRAWN && frame->withdrawn && !offer.request.h.session &&
+        !offer.request.h.sequence && !offer.request.b.epoch && !offer.request.b.command &&
+        !offer.request.b.lease && !offer.media.id && !offer.terminal.serial)
     {
-        s->state = VSF_FREE;
+        frame->state = VSF_FREE;
         return SYS_OK;
     }
-    if (!o.request.h.sequence || o.request.h.sequence <= s->highest_h ||
-        o.request.h.session != s->grant.session || o.request.b.epoch || o.request.b.command ||
-        o.request.b.lease)
+    if (!offer.request.h.sequence || offer.request.h.sequence <= frame->highest_h ||
+        offer.request.h.session != frame->grant.session || offer.request.b.epoch || offer.request.b.command ||
+        offer.request.b.lease)
     {
-        s->state = VSF_BLOCKED;
+        frame->state = VSF_BLOCKED;
         return SYS_ERR_PROTOCOL;
     }
-    s->current = o;
-    s->highest_h = o.request.h.sequence;
-    if (o.kind == VSF_DELIVERY_TERMINAL && receipt_matches(s, &o.terminal, 0))
+    frame->current = offer;
+    frame->highest_h = offer.request.h.sequence;
+    if (offer.kind == VSF_DELIVERY_TERMINAL && receipt_matches(frame, &offer.terminal, 0))
     {
-        s->terminal = o.terminal;
-        s->state = VSF_CONSUME;
-        return o.terminal.result;
+        frame->terminal = offer.terminal;
+        frame->state = VSF_CONSUME;
+        return offer.terminal.result;
     }
-    if (o.kind != VSF_DELIVERY_FRAME || o.media.backend != MR_JPEG || !o.media.session ||
-        !o.media.id || !o.media.generation)
+    if (offer.kind != VSF_DELIVERY_FRAME || offer.media.backend != MR_JPEG || !offer.media.session ||
+        !offer.media.id || !offer.media.generation)
     {
-        s->state = VSF_BLOCKED;
+        frame->state = VSF_BLOCKED;
         return SYS_ERR_PROTOCOL;
     }
     /* 先保留真实M。JPEG结构或大小错误由写入端报告后走正常Return。 */
-    s->state = VSF_READY;
+    frame->state = VSF_READY;
     return SYS_OK;
 }
 
-SysResult_t VStorageFrame_Process(VStorageFrame *s, const VStorageFrameOps *ops, void *p,
-                                  const MRGrant *g, int accepting, int quiet)
+// 推进 Storage 的帧写入和真实归还流程。
+SysResult_t VStorageFrame_Process(VStorageFrame *frame, const VStorageFrameOps *ops, void *port_context,
+                                  const MRGrant *grant, int accepting, int quiet)
 {
-    MRReceipt t;
-    SysResult_t z;
-    switch (s->state)
+    MRReceipt receipt;
+    SysResult_t result;
+    switch (frame->state)
     {
     case VSF_FREE:
-        if (!accepting || !g->session)
+        if (!accepting || !grant->session)
             return SYS_OK;
-        z = MRNumber_Advance(&s->generation);
-        if (z)
-            return z;
-        s->grant = *g;
-        s->slot = (MRSlot){g->session, 1U, s->generation};
-        s->withdrawn = 0U;
-        s->state = VSF_POST;
+        result = MRNumber_Advance(&frame->generation);
+        if (result)
+            return result;
+        frame->grant = *grant;
+        frame->slot = (MRSlot){grant->session, 1U, frame->generation};
+        frame->withdrawn = 0U;
+        frame->state = VSF_POST;
         return SYS_OK;
     case VSF_POST:
         if (!accepting)
         {
-            s->state = VSF_FREE; /* 尚未入队。同一S永不复用。 */
+            frame->state = VSF_FREE; /* 尚未入队。同一S永不复用。 */
             return SYS_OK;
         }
-        z = ops->post(p, &s->grant, &s->slot);
-        if (!z)
-            s->state = VSF_WAIT;
-        return z;
+        result = ops->post(port_context, &frame->grant, &frame->slot);
+        if (!result)
+            frame->state = VSF_WAIT;
+        return result;
     case VSF_WAIT:
-        if (!accepting && !s->withdrawn)
+        if (!accepting && !frame->withdrawn)
         {
-            z = ops->withdraw(p, &s->grant, &s->slot);
-            if (!z)
-                s->withdrawn = 1U;
-            else if (z != SYS_ERR_BUSY && z != SYS_ERR_NO_RESOURCE)
-                return z;
+            result = ops->withdraw(port_context, &frame->grant, &frame->slot);
+            if (!result)
+                frame->withdrawn = 1U;
+            else if (result != SYS_ERR_BUSY && result != SYS_ERR_NO_RESOURCE)
+                return result;
             /* 撤回背压时仍消费已经送达的Offer，以免双向互等。 */
         }
-        return receive_offer(s, ops, p);
+        return receive_offer(frame, ops, port_context);
     case VSF_READY:
         return SYS_OK; /* Storage业务处理完成/拒绝后显式进入RETURN。 */
     case VSF_RETURN:
         if (!quiet)
             return SYS_ERR_BUSY;
-        z = ops->return_frame(p, &s->current.request, &s->current.media);
-        if (!z)
+        result = ops->return_frame(port_context, &frame->current.request, &frame->current.media);
+        if (!result)
         {
-            memset(&s->current.view, 0, sizeof(s->current.view));
-            s->state = VSF_ACK;
+            memset(&frame->current.view, 0, sizeof(frame->current.view));
+            frame->state = VSF_ACK;
         }
-        return z;
+        return result;
     case VSF_ACK:
-        z = ops->receipt(p, &t);
-        if (z)
-            return z;
-        if (!receipt_matches(s, &t, 1))
+        result = ops->receipt(port_context, &receipt);
+        if (result)
+            return result;
+        if (!receipt_matches(frame, &receipt, 1))
             return SYS_ERR_NOT_FOUND;
-        s->terminal = t;
-        s->state = VSF_CONSUME;
-        return t.result;
+        frame->terminal = receipt;
+        frame->state = VSF_CONSUME;
+        return receipt.result;
     case VSF_CONSUME:
-        z = ops->consume(p, &s->terminal);
-        if (!z)
-            s->state = VSF_RETIRE;
-        return z;
+        result = ops->consume(port_context, &frame->terminal);
+        if (!result)
+            frame->state = VSF_RETIRE;
+        return result;
     case VSF_RETIRE:
-        z = ops->retired(p, &s->terminal);
-        if (!z)
+        result = ops->retired(port_context, &frame->terminal);
+        if (!result)
         {
-            memset(&s->current, 0, sizeof(s->current));
-            memset(&s->terminal, 0, sizeof(s->terminal));
-            s->state = VSF_FREE;
+            memset(&frame->current, 0, sizeof(frame->current));
+            memset(&frame->terminal, 0, sizeof(frame->terminal));
+            frame->state = VSF_FREE;
         }
-        return z;
+        return result;
     default:
         return SYS_ERR_PROTOCOL;
     }

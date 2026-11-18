@@ -1,193 +1,202 @@
+// 在 Storage 所有者上下文推进 Camera 资格事务。
+
 #include "storage_consumer.h"
 #include "app_camera_qualification.h"
 #include <string.h>
 #define MAGIC 0x53544336U
-static SysResult_t enter(VStorageConsumer *c)
+// 校验所有者调用并设置重入保护，调用方仍负责跨任务串行化。
+static SysResult_t enter(VStorageConsumer *consumer)
 {
-    if (!c || c->magic != MAGIC || !c->ops->is_owner(c->port))
+    if (!consumer || consumer->magic != MAGIC || !consumer->ops->is_owner(consumer->port))
         return SYS_ERR_INVALID_STATE;
-    if (c->busy)
+    if (consumer->busy)
         return SYS_ERR_BUSY;
-    c->busy = 1;
+    consumer->busy = 1;
     return 0;
 }
-static SysResult_t leave(VStorageConsumer *c, SysResult_t z)
+// 退出当前调用的重入保护。
+static SysResult_t leave(VStorageConsumer *consumer, SysResult_t result)
 {
-    c->busy = 0;
-    return z;
+    consumer->busy = 0;
+    return result;
 }
-SysResult_t VStorageConsumer_Init(VStorageConsumer *c, const VStorageConsumerOps *ops, void *p)
+// Storage：绑定资格事务的消费者身份和所有者。
+SysResult_t VStorageConsumer_Init(VStorageConsumer *consumer, const VStorageConsumerOps *ops, void *port_context)
 {
-    SysResult_t z;
-    if (!c || c->magic || !ops || !ops->is_owner || !ops->send || !ops->receive_reply)
+    SysResult_t result;
+    if (!consumer || consumer->magic || !ops || !ops->is_owner || !ops->send || !ops->receive_reply)
         return SYS_ERR_INVALID_ARG;
-    if (!ops->is_owner(p))
+    if (!ops->is_owner(port_context))
         return SYS_ERR_INVALID_STATE;
-    memset(c, 0, sizeof(*c));
-    c->ops = ops;
-    c->port = p;
-    z = App_LifecycleTxInit(&c->tx, APP_LIFECYCLE_STORAGE, APP_LIFECYCLE_CAMERA,
+    memset(consumer, 0, sizeof(*consumer));
+    consumer->ops = ops;
+    consumer->port = port_context;
+    result = App_LifecycleTxInit(&consumer->tx, APP_LIFECYCLE_STORAGE, APP_LIFECYCLE_CAMERA,
                             APP_CONSUMER_STORAGE);
-    if (z)
-        return z;
-    c->magic = MAGIC;
+    if (result)
+        return result;
+    consumer->magic = MAGIC;
     return 0;
 }
-SysResult_t VStorageConsumer_Begin(VStorageConsumer *c)
+// Storage：启动原资格申请流程，授权以匹配回复为准。
+SysResult_t VStorageConsumer_Begin(VStorageConsumer *consumer)
 {
-    SysResult_t z = enter(c);
-    if (z)
-        return z;
-    if (c->phase != VSC_IDLE || c->grant.session)
-        return leave(c, SYS_ERR_BUSY);
-    z = App_QualificationNextGeneration(&c->generation_counter, &c->generation);
-    if (z)
-        return leave(c, z);
-    c->phase = VSC_QUERY;
-    c->reserved = c->staged = 0;
-    c->result = 0;
-    return leave(c, 0);
+    SysResult_t result = enter(consumer);
+    if (result)
+        return result;
+    if (consumer->phase != VSC_IDLE || consumer->grant.session)
+        return leave(consumer, SYS_ERR_BUSY);
+    result = App_QualificationNextGeneration(&consumer->generation_counter, &consumer->generation);
+    if (result)
+        return leave(consumer, result);
+    consumer->phase = VSC_QUERY;
+    consumer->reserved = consumer->staged = 0;
+    consumer->result = 0;
+    return leave(consumer, 0);
 }
-SysResult_t VStorageConsumer_End(VStorageConsumer *c, SysResult_t error, SysResult_t cleanup,
+// Storage：提交独立资格释放事务，等待真实释放确认。
+SysResult_t VStorageConsumer_End(VStorageConsumer *consumer, SysResult_t error, SysResult_t cleanup,
                                  uint32_t flags)
 {
-    SysResult_t z = enter(c);
+    SysResult_t result = enter(consumer);
     const uint32_t required =
         APP_LIFECYCLE_INPUT_CLOSED | APP_LIFECYCLE_WORK_QUIESCENT | APP_LIFECYCLE_FRAMES_DRAINED;
-    if (z)
-        return z;
+    if (result)
+        return result;
     if (error > SYS_OK || cleanup > SYS_OK || (flags & required) != required ||
         (flags & ~APP_LIFECYCLE_CONSUMER_FLAGS))
-        return leave(c, SYS_ERR_INVALID_ARG);
-    if (c->phase == VSC_RELEASE || c->phase == VSC_IDLE_REQUEST)
-        return leave(c, c->business_error == error && c->cleanup_error == cleanup &&
-                                c->release_flags == flags
+        return leave(consumer, SYS_ERR_INVALID_ARG);
+    if (consumer->phase == VSC_RELEASE || consumer->phase == VSC_IDLE_REQUEST)
+        return leave(consumer, consumer->business_error == error && consumer->cleanup_error == cleanup &&
+                                consumer->release_flags == flags
                             ? SYS_OK
                             : SYS_ERR_PROTOCOL);
-    if (c->phase != VSC_GRANTED || !c->grant.session)
-        return leave(c, SYS_ERR_INVALID_STATE);
-    c->business_error = error;
-    c->cleanup_error = cleanup;
-    c->release_flags = flags;
-    c->phase = VSC_RELEASE;
-    c->reserved = c->staged = 0;
-    c->result = 0;
-    return leave(c, 0);
+    if (consumer->phase != VSC_GRANTED || !consumer->grant.session)
+        return leave(consumer, SYS_ERR_INVALID_STATE);
+    consumer->business_error = error;
+    consumer->cleanup_error = cleanup;
+    consumer->release_flags = flags;
+    consumer->phase = VSC_RELEASE;
+    consumer->reserved = consumer->staged = 0;
+    consumer->result = 0;
+    return leave(consumer, 0);
 }
-static SysResult_t stage(VStorageConsumer *c)
+// 按消费者当前阶段登记原资格事务，等待原 Tx/Rx 推进。
+static SysResult_t stage(VStorageConsumer *consumer)
 {
-    SysResult_t z;
+    SysResult_t result;
     uint32_t id;
-    if (!c->reserved)
+    if (!consumer->reserved)
     {
-        z = App_LifecycleTxReserveIds(&c->tx, 1, &id);
-        if (z)
-            return z;
-        memset(&c->request, 0, sizeof(c->request));
-        c->request.version = APP_LIFECYCLE_VERSION;
-        c->request.kind = APP_LIFECYCLE_REQUEST;
-        c->request.source = APP_LIFECYCLE_STORAGE;
-        c->request.target = APP_LIFECYCLE_CAMERA;
-        c->request.identity.consumer_id = APP_CONSUMER_STORAGE;
-        c->request.identity.consumer_generation = c->generation;
-        c->request.identity.request_id = id;
-        c->request.operation = c->phase == VSC_QUERY     ? APP_LIFECYCLE_SESSION_QUERY
-                               : c->phase == VSC_ACQUIRE ? APP_LIFECYCLE_ACQUIRE
-                               : c->phase == VSC_RELEASE ? APP_LIFECYCLE_RELEASE
+        result = App_LifecycleTxReserveIds(&consumer->tx, 1, &id);
+        if (result)
+            return result;
+        memset(&consumer->request, 0, sizeof(consumer->request));
+        consumer->request.version = APP_LIFECYCLE_VERSION;
+        consumer->request.kind = APP_LIFECYCLE_REQUEST;
+        consumer->request.source = APP_LIFECYCLE_STORAGE;
+        consumer->request.target = APP_LIFECYCLE_CAMERA;
+        consumer->request.identity.consumer_id = APP_CONSUMER_STORAGE;
+        consumer->request.identity.consumer_generation = consumer->generation;
+        consumer->request.identity.request_id = id;
+        consumer->request.operation = consumer->phase == VSC_QUERY     ? APP_LIFECYCLE_SESSION_QUERY
+                               : consumer->phase == VSC_ACQUIRE ? APP_LIFECYCLE_ACQUIRE
+                               : consumer->phase == VSC_RELEASE ? APP_LIFECYCLE_RELEASE
                                                          : APP_LIFECYCLE_STOP_IF_IDLE;
-        c->request.identity.session_id = c->phase == VSC_QUERY ? 0 : c->session;
-        if (c->phase == VSC_RELEASE)
+        consumer->request.identity.session_id = consumer->phase == VSC_QUERY ? 0 : consumer->session;
+        if (consumer->phase == VSC_RELEASE)
         {
-            c->release.grant = c->grant;
-            c->release.request = id;
-            c->request.identity.session_id = c->grant.session;
-            c->request.identity.consumer_generation = c->grant.generation;
-            c->request.completion_flags = c->release_flags;
-            c->request.cleanup_result = c->cleanup_error;
-            c->request.business_result = c->business_error;
+            consumer->release.grant = consumer->grant;
+            consumer->release.request = id;
+            consumer->request.identity.session_id = consumer->grant.session;
+            consumer->request.identity.consumer_generation = consumer->grant.generation;
+            consumer->request.completion_flags = consumer->release_flags;
+            consumer->request.cleanup_result = consumer->cleanup_error;
+            consumer->request.business_result = consumer->business_error;
         }
-        c->reserved = 1;
+        consumer->reserved = 1;
     }
-    z = App_LifecycleTxStage(&c->tx, &c->request);
-    if (!z)
-        c->staged = 1;
-    return z;
+    result = App_LifecycleTxStage(&consumer->tx, &consumer->request);
+    if (!result)
+        consumer->staged = 1;
+    return result;
 }
-SysResult_t VStorageConsumer_Process(VStorageConsumer *c)
+// Storage：推进资格事务和匹配回复，不绕过原 Tx/Rx。
+SysResult_t VStorageConsumer_Process(VStorageConsumer *consumer)
 {
-    SysResult_t z = enter(c);
+    SysResult_t result = enter(consumer);
     AppLifecycleMessage_t reply;
-    if (z)
-        return z;
-    if (c->phase == VSC_IDLE || c->phase == VSC_GRANTED)
-        return leave(c, 0);
-    if (c->phase == VSC_BLOCKED)
-        return leave(c, c->result ? c->result : SYS_ERR_INVALID_STATE);
-    if (!c->staged)
+    if (result)
+        return result;
+    if (consumer->phase == VSC_IDLE || consumer->phase == VSC_GRANTED)
+        return leave(consumer, 0);
+    if (consumer->phase == VSC_BLOCKED)
+        return leave(consumer, consumer->result ? consumer->result : SYS_ERR_INVALID_STATE);
+    if (!consumer->staged)
     {
-        z = stage(c);
-        if (z)
+        result = stage(consumer);
+        if (result)
         {
-            c->result = z;
-            c->phase = VSC_BLOCKED;
-            return leave(c, z);
+            consumer->result = result;
+            consumer->phase = VSC_BLOCKED;
+            return leave(consumer, result);
         }
     }
     /* WAIT_REPLY超时不能清空Tx；队列满只重试原请求原编号。 */
-    (void)App_LifecycleTxFlush(&c->tx, c->ops->send, c->port);
-    z = c->ops->receive_reply(c->port, &reply);
-    if (!z && App_LifecycleMatchesReply(&c->request, &reply))
-        (void)App_LifecycleTxAcceptReply(&c->tx, &reply);
-    z = App_LifecycleTxGetCompleted(&c->tx, &reply);
-    if (z)
-        return leave(c, SYS_ERR_BUSY);
-    z = App_LifecycleTxConfirmConsumed(&c->tx, &c->request);
-    if (z)
-        return leave(c, z);
-    c->result = reply.result;
-    c->reserved = c->staged = 0;
-    if (c->phase == VSC_QUERY)
+    (void)App_LifecycleTxFlush(&consumer->tx, consumer->ops->send, consumer->port);
+    result = consumer->ops->receive_reply(consumer->port, &reply);
+    if (!result && App_LifecycleMatchesReply(&consumer->request, &reply))
+        (void)App_LifecycleTxAcceptReply(&consumer->tx, &reply);
+    result = App_LifecycleTxGetCompleted(&consumer->tx, &reply);
+    if (result)
+        return leave(consumer, SYS_ERR_BUSY);
+    result = App_LifecycleTxConfirmConsumed(&consumer->tx, &consumer->request);
+    if (result)
+        return leave(consumer, result);
+    consumer->result = reply.result;
+    consumer->reserved = consumer->staged = 0;
+    if (consumer->phase == VSC_QUERY)
     {
         if (!reply.result)
         {
-            c->session = reply.identity.session_id;
-            c->phase = VSC_ACQUIRE;
+            consumer->session = reply.identity.session_id;
+            consumer->phase = VSC_ACQUIRE;
         }
         else
-            c->phase = VSC_IDLE;
+            consumer->phase = VSC_IDLE;
     }
-    else if (c->phase == VSC_ACQUIRE)
+    else if (consumer->phase == VSC_ACQUIRE)
     {
         if (!reply.result)
         {
-            c->grant.session = c->request.identity.session_id;
-            c->grant.consumer = APP_CONSUMER_STORAGE;
-            c->grant.generation = c->request.identity.consumer_generation;
-            c->grant.acquire = c->request.identity.request_id;
-            c->phase = VSC_GRANTED;
+            consumer->grant.session = consumer->request.identity.session_id;
+            consumer->grant.consumer = APP_CONSUMER_STORAGE;
+            consumer->grant.generation = consumer->request.identity.consumer_generation;
+            consumer->grant.acquire = consumer->request.identity.request_id;
+            consumer->phase = VSC_GRANTED;
         }
         else
-            c->phase = VSC_IDLE;
+            consumer->phase = VSC_IDLE;
     }
-    else if (c->phase == VSC_RELEASE)
+    else if (consumer->phase == VSC_RELEASE)
     {
         if (!reply.result && (reply.completion_flags & APP_LIFECYCLE_QUALIFICATION_RELEASED))
         {
-            memset(&c->grant, 0, sizeof(c->grant));
-            c->phase = VSC_IDLE_REQUEST;
+            memset(&consumer->grant, 0, sizeof(consumer->grant));
+            consumer->phase = VSC_IDLE_REQUEST;
         }
         else
         {
-            if (!c->result)
-                c->result = SYS_ERR_PROTOCOL;
-            c->phase = VSC_BLOCKED;
+            if (!consumer->result)
+                consumer->result = SYS_ERR_PROTOCOL;
+            consumer->phase = VSC_BLOCKED;
         }
     }
     else
     {
-        c->camera_stop_result = reply.result;
-        c->result = 0;
-        c->phase = VSC_IDLE;
+        consumer->camera_stop_result = reply.result;
+        consumer->result = 0;
+        consumer->phase = VSC_IDLE;
     }
-    return leave(c, c->result);
+    return leave(consumer, consumer->result);
 }
