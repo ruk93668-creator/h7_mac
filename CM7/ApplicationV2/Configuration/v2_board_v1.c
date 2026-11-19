@@ -34,6 +34,7 @@ enum
     PIPE_JPEG_STORAGE
 };
 
+// 速率分别用于采集预算、USB 交付和 Storage 采样，均不代表实测速率。
 enum
 {
     PROFILE_JPEG_BYTES = 40000U,
@@ -61,27 +62,30 @@ static const V2ModuleDesc s_modules[] =
 };
 static const V2Registry s_registry = {s_modules, ARRAY_COUNT(s_modules), 0U};
 
+// 委托传感器和 Capture 的只读检查，保留底层否决权。
 static SysResult_t validate_capture(const GraphEntityDesc *entity, const GraphFormat *format,
                                     const GraphCheckContext *context, GraphIssue *issue)
 {
-    CameraConfig_t native;
+    CameraConfig_t camera_config;
     (void)entity;
     (void)context;
     (void)issue;
-    return VCamera_Translate(format, &native);
+    return VCamera_Translate(format, &camera_config);
 }
 
+// 使用选定的 USB 交付速率核对 UVC 能力。
 static SysResult_t validate_usb(const GraphEntityDesc *entity, const GraphFormat *format,
                                 const GraphFrameRate *rate, const GraphCheckContext *context,
                                 GraphIssue *issue)
 {
-    VideoStreamConfig_t native;
+    VideoStreamConfig_t stream_config;
     (void)entity;
     (void)context;
     (void)issue;
-    return VUSB_Translate(format, rate, &native);
+    return VUSB_Translate(format, rate, &stream_config);
 }
 
+// 先检查采样配置与板级容量，验证过程中不挂载卷或创建文件。
 static SysResult_t validate_storage(const GraphEntityDesc *entity, const GraphFormat *format,
                                     const GraphFrameRate *rate, const GraphCheckContext *context,
                                     GraphIssue *issue)
@@ -92,12 +96,12 @@ static SysResult_t validate_storage(const GraphEntityDesc *entity, const GraphFo
         .mode = VST_AVI, .partition = 3U, .file_limit = 4UL * 1024UL * 1024UL,
         .sink_entity = ENTITY_STORAGE, .path = "0:/REC.AVI"
     };
-    uint32_t interval;
+    uint32_t sampling_interval_ms;
     (void)entity;
     (void)context;
     (void)issue;
     config.sampling = *rate;
-    return VStorage_ValidateFormat(format, &config, &caps, &interval);
+    return VStorage_ValidateFormat(format, &config, &caps, &sampling_interval_ms);
 }
 
 static const GraphEntityOps s_capture_ops = {validate_capture, NULL};
@@ -132,6 +136,7 @@ enum
      .max_spans = (spans), .flags = GRAPH_CAP_COARSE | GRAPH_CAP_RATE_UNKNOWN,                       \
      .max_fps_den = 1U, .dma_alignment = 4U, .frame_alignment = 1U}
 
+// 这里描述拓扑允许的粗粒度范围，实际限制仍由对应的硬件验证器核对。
 static const GraphCaps s_caps[] =
 {
     BOARD_CAPS(PIXEL_BIT(CORE_PIXEL_YUY2) | PIXEL_BIT(CORE_PIXEL_JPEG),
@@ -153,6 +158,7 @@ static const GraphPadDesc s_pads[] =
     INPUT(ENTITY_RAW, GRAPH_PROTO_DMA_CHUNKS, CAPS_RAW),
     OUTPUT(1U, ENTITY_RAW, GRAPH_PROTO_FRAME_VIEW, CAPS_RAW, 1U, 0U),
     INPUT(ENTITY_JPEG, GRAPH_PROTO_DMA_CHUNKS, CAPS_JPEG),
+    // JPEG 允许两路交付，Raw 输出限制为一路。
     OUTPUT(1U, ENTITY_JPEG, GRAPH_PROTO_FRAME_VIEW, CAPS_JPEG, 2U, GRAPH_P_FANOUT),
     INPUT(ENTITY_USB, GRAPH_PROTO_FRAME_VIEW, CAPS_SHARED),
     INPUT(ENTITY_STORAGE, GRAPH_PROTO_FRAME_VIEW, CAPS_JPEG)
@@ -277,22 +283,23 @@ static const CSCatalog s_catalog =
     ARRAY_COUNT(s_bindings), ARRAY_COUNT(s_profiles)
 };
 
+// 返回可共享的只读目录，调用方不需要登记或初始化硬件。
 const CSCatalog *V2BoardV1_Catalog(void)
 {
     return &s_catalog;
 }
 
-SysResult_t V2BoardV1_Compose(uint32_t profile, V2CompositionScratch *scratch,
+SysResult_t V2BoardV1_Compose(uint32_t profile_id, V2CompositionScratch *scratch,
                              V2CompositionCandidate *candidate, V2Issue *issue,
                              GraphIssue *graph_issue)
 {
     uint16_t profile_index;
     for (profile_index = 0U; profile_index < s_catalog.profile_count; ++profile_index)
     {
-        const CSProfile *entry = &s_catalog.profiles[profile_index];
-        if (entry->id == profile)
+        const CSProfile *profile_entry = &s_catalog.profiles[profile_index];
+        if (profile_entry->id == profile_id)
             return V2Composition_Validate(s_catalog.registry, s_catalog.graph, s_catalog.bindings,
-                                          s_catalog.binding_count, &entry->desired, s_catalog.validate,
+                                          s_catalog.binding_count, &profile_entry->desired, s_catalog.validate,
                                           scratch, candidate, issue, graph_issue);
     }
     return SYS_ERR_NOT_FOUND;

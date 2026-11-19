@@ -4,12 +4,12 @@
 #include "camera_capture.h"
 #include "ov5640_device.h"
 #include <string.h>
-// 将中立格式交由模块端口验证，保留实际能力约束和错误结果。
-SysResult_t VCamera_Translate(const CoreMediaFormat *format, CameraConfig_t *out)
+// 传感器和 Capture 都通过后才写入输出，避免调用方使用部分转换的配置。
+SysResult_t VCamera_Translate(const CoreMediaFormat *format, CameraConfig_t *camera_config)
 {
     CameraConfig_t native_config;
     SysResult_t result;
-    if (!out || !format || V2_Overlap(format, sizeof(*format), out, sizeof(*out)))
+    if (!camera_config || !format || V2_Overlap(format, sizeof(*format), camera_config, sizeof(*camera_config)))
         return SYS_ERR_INVALID_ARG;
     result = CoreMedia_Validate(format);
     if (result)
@@ -40,6 +40,6 @@ SysResult_t VCamera_Translate(const CoreMediaFormat *format, CameraConfig_t *out
     result = CameraCapture_ValidateStreamConfig(&native_config);
     if (result)
         return result;
-    *out = native_config;
+    *camera_config = native_config;
     return SYS_OK;
 }

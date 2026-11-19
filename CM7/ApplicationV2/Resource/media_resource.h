@@ -17,16 +17,16 @@
 #define MR_RELEASED 8U
 typedef struct
 {
-    MRGrant g;
-    MRHandoff h;
-    MRBridge b;
-    MRSlot s;
+    MRGrant g;   // G 表示消费者这一代的授权。
+    MRHandoff h; // H 表示本次交接，独立于授权和释放事务。
+    MRBridge b;  // B 表示 USB Bridge 交接身份。
+    MRSlot s;    // S 表示 Storage 槽位身份。
 } MRRequest;
 typedef struct
 {
-    MRGrant g;
-    MRHandoff h;
-    MRMedia m;
+    MRGrant g;   // 关联原授权。
+    MRHandoff h; // 关联原交接。
+    MRMedia m;   // 后端实际媒体持有凭据，不能由帧地址推断。
     uint32_t serial;
     SysResult_t result;         // 冻结的操作结果，独立于旧协议 ACK 返回码。
     MRBridge bridge;            // 取得 M 后只绑定一次 B，没有 Bridge 持有时为零。
@@ -49,8 +49,8 @@ typedef struct
 // 只记录准入关联，资格和物理引用分别由各自权威维护。
 typedef struct
 {
-    MRGrant g;
-    MRRelease closing;
+    MRGrant g;         // 此条准入记录绑定的授权。
+    MRRelease closing; // 独立的 RELEASE 事务，用于核验本次关闭。
     uint32_t occupied, closed;
 } MRAdmission;
 typedef struct

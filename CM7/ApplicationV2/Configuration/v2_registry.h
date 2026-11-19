@@ -66,12 +66,14 @@ typedef struct
     uint8_t selected[16], done[16];
 } V2ResolverScratch;
 // 校验静态注册表及模块描述符的完整性。
-SysResult_t V2Registry_Validate(const V2Registry *, V2Issue *);
+SysResult_t V2Registry_Validate(const V2Registry *registry, V2Issue *diagnostic);
 // 按模块身份查询静态描述符。
-const V2ModuleDesc *V2Registry_Get(const V2Registry *, V2ModuleId);
+const V2ModuleDesc *V2Registry_Get(const V2Registry *registry, V2ModuleId module_id);
 // 枚举与指定依赖匹配的提供方。
-SysResult_t V2Registry_Providers(const V2Registry *, const V2Requirement *, uint16_t *mask);
+SysResult_t V2Registry_Providers(const V2Registry *registry, const V2Requirement *requirement,
+                                  uint16_t *provider_mask);
 // 解析模块依赖和提供方，生成稳定执行顺序。
-SysResult_t V2Resolver_Resolve(const V2Registry *, const V2ModuleId *, uint16_t,
-                               V2ResolverScratch *, V2Resolution *, V2Issue *);
+SysResult_t V2Resolver_Resolve(const V2Registry *registry, const V2ModuleId *roots, uint16_t root_count,
+                               V2ResolverScratch *scratch, V2Resolution *resolution,
+                               V2Issue *diagnostic);
 #endif

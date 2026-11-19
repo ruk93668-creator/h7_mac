@@ -7,6 +7,7 @@
 #define VU_MODE_NONE 0U
 #define VU_MODE_TEST 1U
 #define VU_MODE_UVC 2U
-// 将中立格式交由模块端口验证，保留实际能力约束和错误结果。
-SysResult_t VUSB_Translate(const CoreMediaFormat *, const CoreFrameRate *, VideoStreamConfig_t *);
+// 校验采集格式及 USB 交付速率，成功才写入端口配置。
+SysResult_t VUSB_Translate(const CoreMediaFormat *format, const CoreFrameRate *delivery_rate,
+                           VideoStreamConfig_t *stream_config);
 #endif

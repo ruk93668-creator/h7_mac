@@ -14,25 +14,25 @@ static int name_char(char character)
 static int path_valid(const VStorageConfig *config)
 {
     uint32_t path_index = 3U;
-    const char *ext = config->mode == VST_AVI ? ".AVI" : ".JPG";
+    const char *extension = config->mode == VST_AVI ? ".AVI" : ".JPG";
     if (memcmp(config->path, "0:/", 3U))
         return 0;
     while (path_index < 11U && name_char(config->path[path_index]))
         ++path_index;
-    return path_index > 3U && !memcmp(config->path + path_index, ext, 5U);
+    return path_index > 3U && !memcmp(config->path + path_index, extension, 5U);
 }
 
-// 将中立格式交由模块端口验证，保留实际能力约束和错误结果。
+// 存储格式验证只计算采样周期，不触发挂载、写入或帧交接。
 SysResult_t VStorage_ValidateFormat(const CoreMediaFormat *format, const VStorageConfig *config,
-                                    const VStorageCaps *caps, uint32_t *ms)
+                                    const VStorageCaps *caps, uint32_t *sampling_interval_ms)
 {
     CameraConfig_t native;
     SysResult_t result;
-    if (!format || !config || !caps || !ms || !caps->max_payload ||
+    if (!format || !config || !caps || !sampling_interval_ms || !caps->max_payload ||
         (config->mode != VST_AVI && config->mode != VST_SNAPSHOT) || config->partition > 4U ||
         config->file_limit < format->max_payload || !path_valid(config) ||
-        V2_Overlap(ms, sizeof(*ms), config, sizeof(*config)) || V2_Overlap(ms, sizeof(*ms), format, sizeof(*format)) ||
-        V2_Overlap(ms, sizeof(*ms), caps, sizeof(*caps)))
+        V2_Overlap(sampling_interval_ms, sizeof(*sampling_interval_ms), config, sizeof(*config)) || V2_Overlap(sampling_interval_ms, sizeof(*sampling_interval_ms), format, sizeof(*format)) ||
+        V2_Overlap(sampling_interval_ms, sizeof(*sampling_interval_ms), caps, sizeof(*caps)))
         return SYS_ERR_INVALID_ARG;
     if (format->backend != CORE_BACKEND_JPEG || format->pixel_format != CORE_PIXEL_JPEG ||
         format->max_payload > caps->max_payload)
@@ -42,7 +42,7 @@ SysResult_t VStorage_ValidateFormat(const CoreMediaFormat *format, const VStorag
         return result;
     if (config->mode == VST_SNAPSHOT)
     {
-        *ms = 0U;
+        *sampling_interval_ms = 0U;
         return SYS_OK;
     }
     result = CoreRate_Validate(&config->sampling);
@@ -52,6 +52,6 @@ SysResult_t VStorage_ValidateFormat(const CoreMediaFormat *format, const VStorag
     if (config->sampling.den != 1U || config->sampling.num > caps->max_avi_fps ||
         config->sampling.num > UINT16_MAX)
         return SYS_ERR_NOT_SUPPORTED;
-    *ms = (1000U + config->sampling.num - 1U) / config->sampling.num;
+    *sampling_interval_ms = (1000U + config->sampling.num - 1U) / config->sampling.num;
     return SYS_OK;
 }

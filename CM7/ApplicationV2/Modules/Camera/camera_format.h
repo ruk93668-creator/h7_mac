@@ -5,5 +5,5 @@
 #include "../../Core/media_format.h"
 #include "camera_config.h"
 // 无副作用能力校验，OV5640 和 CameraCapture 仍可否决。不初始化传感器、配置 DCMI、取帧或复制硬件限制。
-SysResult_t VCamera_Translate(const CoreMediaFormat *, CameraConfig_t *);
+SysResult_t VCamera_Translate(const CoreMediaFormat *format, CameraConfig_t *camera_config);
 #endif

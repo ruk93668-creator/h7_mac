@@ -19,8 +19,9 @@ typedef struct
     const GraphSelection *selections;
     uint16_t selection_count;
 } V2Desired;
-typedef SysResult_t (*V2ResourceValidator)(const GraphValidatedView *, const V2Resolution *,
-                                           V2Issue *);
+// 只读校验候选资源约束，失败时通过 diagnostic 返回原因。
+typedef SysResult_t (*V2ResourceValidator)(const GraphValidatedView *media,
+                                           const V2Resolution *modules, V2Issue *diagnostic);
 typedef struct
 {
     V2Resolution modules;
@@ -35,8 +36,9 @@ typedef struct
     V2CompositionCandidate candidate;
 } V2CompositionScratch;
 // 校验组合候选，候选成立不代表运行配置已经切换。
-SysResult_t V2Composition_Validate(const V2Registry *, const GraphDesc *, const V2EntityBinding *,
-                                   uint16_t, const V2Desired *, V2ResourceValidator,
-                                   V2CompositionScratch *, V2CompositionCandidate *, V2Issue *,
-                                   GraphIssue *);
+SysResult_t V2Composition_Validate(const V2Registry *registry, const GraphDesc *graph,
+                                   const V2EntityBinding *bindings, uint16_t binding_count,
+                                   const V2Desired *desired, V2ResourceValidator validate_resources,
+                                   V2CompositionScratch *scratch, V2CompositionCandidate *candidate,
+                                   V2Issue *issue, GraphIssue *graph_issue);
 #endif
