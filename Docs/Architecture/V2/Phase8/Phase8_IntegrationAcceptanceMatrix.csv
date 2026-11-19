@@ -4,11 +4,11 @@ P802,P8.1,双核构建,CM4 完整 Rebuild,编译清单 Map 和镜像 SHA256,无 
 P803,P8.1,软件,消息及 Replay 回归,52B/56B 字段偏移和 C1/C1.1/C2.1.1,完整 ID 断言及高水位规则保留,PASS,bdd999b1e8e25e08988a208197ef692b9ae56ff7,ARMCC5 Cortex-M7,52/56B; 419/24/648; C2 ABI 2,P8_1_TestReport.md
 P804,P8.1,软件,板级格式候选与底层约束,Raw/JPEG 和 USB/Storage 验证日志,拒绝非法格式及不支持的 fan-out 且候选不提交 Applied,PASS,bdd999b1e8e25e08988a208197ef692b9ae56ff7,ARMCC5 Cortex-M7 O0/O2,17/17 each,P8_1_StaticCompositionReport.md
 P805,P8.1,资源,容量及链接布局,基线和候选 Map 与符号大小及栈预算,明确 Flash RW ZI AXI SDRAM 和队列 Context 占用,PASS,bdd999b1e8e25e08988a208197ef692b9ae56ff7,h7_mac_CM7+h7_mac_CM4,Static Map budget PASS,P8_1_ResourceBudgetReport.md
-P806,P8.2,软件,真实 RTOS owner 与 BOOT 屏障,任务身份消息和事件顺序,各 owner 唯一且非法上下文拒绝,NOT_RUN,待该阶段构建,—,—,—
-P807,P8.2,软件,队列满与合并通知,请求身份传输计数和结果,同一身份重试并最终消费,NOT_RUN,待该阶段构建,—,—,—
-P808,P8.2,软件,受理与真实完成独立,LC/Endpoint 请求回复消费记录,重复迟到无效且完成 ACK 匹配原事务,NOT_RUN,待该阶段构建,—,—,—
-P809,P8.2,软件,首错保留及部分补偿失败,首错与补偿日志,未知事实阻塞且不覆盖首错,NOT_RUN,待该阶段构建,—,—,—
-P810,P8.2,软件,IPC 状态与心跳回归,双核 IPC 布局与 100ms 采样,心跳只更新状态且不会触发执行计划,NOT_RUN,待该阶段构建,—,—,—
+P806,P8.2,软件,真实 RTOS owner 与 BOOT 屏障,任务身份消息和事件顺序,各 owner 唯一且非法上下文拒绝,PASS,182dbb0ba4c06048e312077cbe57174e6e29baf4,ARMCC5 CM7 O0/O2 / h7_mac_CM7,O0/O2 PASS · BOOT/owner,P8_2_TestReport.md
+P807,P8.2,软件,队列满与合并通知,请求身份传输计数和结果,同一身份重试并最终消费,PASS,182dbb0ba4c06048e312077cbe57174e6e29baf4,ARMCC5 CM7 O0/O2 / h7_mac_CM7,O0/O2 PASS · 九队列满及合并通知,P8_2_TestReport.md
+P808,P8.2,软件,受理与真实完成独立,LC/Endpoint 请求回复消费记录,重复迟到无效且完成 ACK 匹配原事务,PASS,182dbb0ba4c06048e312077cbe57174e6e29baf4,ARMCC5 CM7 O0/O2 / h7_mac_CM7,O0/O2 2/2 · 迟到重复与实际 ACK 出队,P8_2_TestReport.md
+P809,P8.2,软件,首错保留及部分补偿失败,首错与补偿日志,未知事实阻塞且不覆盖首错,PASS,182dbb0ba4c06048e312077cbe57174e6e29baf4,ARMCC5 CM7 O0/O2 / h7_mac_CM7,O0/O2 PASS · 补偿失败首错冻结,P8_2_TestReport.md
+P810,P8.2,软件,IPC 状态与心跳回归,双核 IPC 布局与 100ms 采样,心跳只更新状态且不会触发执行计划,PASS,182dbb0ba4c06048e312077cbe57174e6e29baf4,ARMCC5 CM7 O0/O2 / h7_mac_CM7,O0/O2 任务专项 PASS；IPC 原始 212/260，48 FAIL 与基线相同,P8_2_TestReport.md
 P811,P8.3,资源,真实 G 到 M 关联,完整 G H B M S 与实际 Get/Retain 日志,两后端证据可定位正确消费者且无地址推断,NOT_PROVEN,待该阶段构建,—,—,—
 P812,P8.3,资源,稳定准入关闭,真实 Offer/Retain 与三个线性化点,关闭后的旧 G 不增资源且在途可排空,NOT_PROVEN,待该阶段构建,—,—,—
 P813,P8.3,DMA,DCMI M0/M1 Raw 采集与归还,槽代次和实际目标寄存器证据,任何已借槽不被重用且替换失败保留错误,NOT_RUN,待该阶段构建,—,—,—
