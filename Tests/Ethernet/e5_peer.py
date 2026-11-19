@@ -300,11 +300,11 @@ async def run(cfg):
         await asyncio.sleep(cfg.seconds)
     finally:
         server.close()
-        await server.wait_closed()
         tasks += list(accepted)
         for task in tasks:
             task.cancel()
         await asyncio.gather(*tasks, return_exceptions=True)
+        await server.wait_closed()
         if transport is not None:
             transport.close()
         udp.exchange.finish()

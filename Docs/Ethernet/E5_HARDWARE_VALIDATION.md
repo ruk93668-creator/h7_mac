@@ -1,6 +1,6 @@
 # E5 实板验证
 
-当前所有 E5 实板结果为 **NOT_RUN**。主机模拟 MAC、PC 本机回环和编译不能替代实板。不要自动烧录。先保留在板镜像，打开 `MDK-ARM/h7_mac_ethernet_e5.uvprojx`，人工下载 `output/Ethernet/e5/eth_e5.axf`。Watch 加 `g_e5_result`、`g_e5_status`；确认 heartbeat 增长、CCR.DC=1、memory_valid=1、MAC RUNNING。保留下载校验和固件 SHA。
+静态 IPv4 三通道短测 **PASS**。先保留在板镜像，打开 `MDK-ARM/h7_mac_ethernet_e5.uvprojx`，人工下载 `output/Ethernet/e5/eth_e5.axf`。Watch 加 `g_e5_result`、`g_e5_status`，确认 heartbeat 增长、CCR.DC=1、memory_valid=1、MAC RUNNING。保留下载校验和固件 SHA。
 
 默认 DHCP Only：PC 与板卡须在同一隔离网且有 DHCP（例如直连由 Windows ICS 提供），在 `main` 入口断点前设置 `g_e5_peer[0..3]` 为 PC 的实际地址。启动后用 Watch 的 current_ip 或租约表找板卡地址。若只测静态地址，WLAN 共享关闭、直连 PC 配 `192.168.50.1/24`，在 main 入口把 `g_e5_mode=0`，板端为 `192.168.50.2/24`；不要把这轮算作 DHCP 并发。TCP PC 监听端口默认 5004，可在 main 停住时同步配置 `g_e5_client_port` 与 PC 参数。设置后去掉断点并持续运行。
 
@@ -12,6 +12,7 @@ python -B Tests/Ethernet/e5_peer.py --local-ip 192.168.50.1 --board-ip 192.168.5
 
 | 验收 | 操作及证据 | 状态 |
 | --- | --- | --- |
+| 静态 IPv4 三通道短测 | 2026-11-19，PC `192.168.50.1/24` 直连板端 `192.168.50.2`。Ping 3/3，30 秒测试中三通道活动窗口重叠 29 秒。每通道 280/280 个应用 Echo 通过校验，丢失或未确认、重复、乱序、无效帧均为 0。PC 收到并回复板端主动请求 90 个。抓包确认两个方向的 TCP 握手。原始证据位于 `output/Ethernet/e5_board/static-three-channel-20261119-182154` 同名 `.json` 与 `.pcapng`。 | PASS |
 | DHCP 与并发 | 用已获的动态 IP 替换命令两端地址。保存租约状态、双 TCP OPEN、UDP 与 DHCP 的 2 个 PCB，以及 DORA／续租旁路证据。 | NOT_RUN |
 | UDP 单播／广播、两向数据 | 可选 `--broadcast <当前子网广播地址>`，核对 Echo、主动 TX、不同数据长度和 CRC32。下层最大数据报 1472 字节；测试协议其中 16 字节头、最多 1456 字节应用载荷。 | NOT_RUN |
 | 两 TCP 角色、分段／合并 | `--fragment --burst 4` 同时验证两个方向；检查 PC 每个连接的已验证 Echo、板端每角色 acked、拆头和多帧共存。 | NOT_RUN |
@@ -20,3 +21,5 @@ python -B Tests/Ethernet/e5_peer.py --local-ip 192.168.50.1 --board-ip 192.168.5
 | 拔线与恢复 | 保持 CPU 运行，记录 link down 时 ready 和连接数回落；插回等 DHCP/IP 后两条 TCP 重连并继续 UDP。若地址变了，按新 IP 重启 PC 工具，保留两份会话资料。 | NOT_RUN |
 
 每次使用全新输出文件、保存原 PCAP、JSON、Watch 和 Flash Verify。不要把强制压力场景的预期丢弃计入正常基线。等待连接收尾后取池快照；TCP TIME_WAIT 由上游定时清理。若连接丢失时出现未确认应用消息，PC JSON 如实记录，不把 TCP 会话中断当作已送达。E5 未进入 HTTP/MJPEG。
+
+本次首次短测中，PC 默认 Python 解释器受 Public 入站阻止规则影响。定向抓包 `static-5004-20261119-181715.pcapng` 记录板端重复 SYN、PC 无 SYN-ACK。切换到已有入站许可的 Python 3.12 后握手通过。PC 工具先结束已接受连接，再等待监听器完全关闭，修复了 Python 3.12 的收尾等待。防火墙规则保留。

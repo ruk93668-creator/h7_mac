@@ -22,7 +22,8 @@
 | 关闭、错误和重连 | PASS | FIN、RST、FIN 分配失败进入 CLOSEPEND 后重试、超过 PCB 容量的 TIME_WAIT 轮换、连接拒绝、连接超时、PCB/定时器回收、掉线后重新获得 DHCP 租约和重开服务。 |
 | PC 测试工具 | PASS | 3 项测试，含本机并行 TCP Server、TCP Client 和 UDP 三个真实 Socket 通道，每通道 20 个已验证 Echo；另测流帧拆分/合并、CRC 和序号统计。 |
 | 板端 Flash Verify、DCache/MPU 及池峰值 | NOT_RUN | 需人工确认实际板上镜像并保存调试器读回。 |
-| 实板双向通信、10 分钟并发及性能 | NOT_RUN | 待 PC 与板卡组网，保存 PCAP、JSON、吞吐、RTT、丢失及恢复证据。无 E5 实测带宽。 |
+| 实板静态 IPv4 三通道短测 | PASS | 30 秒，UDP 及两条 TCP 各 280/280 个应用 Echo，丢失或未确认均为 0。见实板验收报告及本地 PCAP、JSON。 |
+| 实板 DHCP 并发、10 分钟并发及性能上限 | NOT_RUN | 待采集对应 PCAP、JSON、运行峰值及恢复证据。 |
 
 主机故障注入峰值为 lwIP heap 12,240 B、Timeout 7、TCP PCB 6、TCP Listen PCB 1、TCP segment 24、UDP PCB 2、PBUF_POOL 24。上述峰值包含人为占满各池的用例。板端自然流量下的峰值应在人工验收时单独采集。
 
