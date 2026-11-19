@@ -1,0 +1,95 @@
+{
+  "records": 197,
+  "eof": true,
+  "sha256": "911931a9a2e68584457ddc572a1b2e378a43942f384a33fd4850c27f453e5769",
+  "events": [
+    {
+      "t": 1795077130.798056,
+      "xid": "abcd0001",
+      "msg": "DISCOVER",
+      "source": "0.0.0.0",
+      "dest": "255.255.255.255",
+      "ip": "0.0.0.0",
+      "server": null,
+      "mask": null,
+      "gateway": null,
+      "lease": null
+    },
+    {
+      "t": 1795077134.796153,
+      "xid": "abcd0001",
+      "msg": "DISCOVER",
+      "source": "0.0.0.0",
+      "dest": "255.255.255.255",
+      "ip": "0.0.0.0",
+      "server": null,
+      "mask": null,
+      "gateway": null,
+      "lease": null
+    },
+    {
+      "t": 1795077142.792645,
+      "xid": "abcd0001",
+      "msg": "DISCOVER",
+      "source": "0.0.0.0",
+      "dest": "255.255.255.255",
+      "ip": "0.0.0.0",
+      "server": null,
+      "mask": null,
+      "gateway": null,
+      "lease": null
+    },
+    {
+      "t": 1795077158.787369,
+      "xid": "abcd0001",
+      "msg": "DISCOVER",
+      "source": "0.0.0.0",
+      "dest": "255.255.255.255",
+      "ip": "0.0.0.0",
+      "server": null,
+      "mask": null,
+      "gateway": null,
+      "lease": null
+    }
+  ],
+  "board_arp": [
+    {
+      "t": 1795077194.365055,
+      "operation": 2
+    }
+  ],
+  "icmp": [
+    [
+      8,
+      "0001044e"
+    ],
+    [
+      0,
+      "0001044e"
+    ],
+    [
+      8,
+      "0001044f"
+    ],
+    [
+      0,
+      "0001044f"
+    ],
+    [
+      8,
+      "00010450"
+    ],
+    [
+      0,
+      "00010450"
+    ],
+    [
+      8,
+      "00010451"
+    ],
+    [
+      0,
+      "00010451"
+    ]
+  ]
+}
