@@ -1,5 +1,13 @@
 # UDLM 未决问题、证据缺口与审批门禁
 
+## 2026-11-19 RM0399正文门禁更新（最新）
+
+**VERIFIED（PDF/正文）**：RM0399 Rev5已完整取得，3535页/页脚校验通过，SHA256与路径见[正文核验报告](RM0399_Revision_and_EndpointTiming_Analysis.md)。2747～2924页已提取；USB2 OTG_FS实例映射、普通IN/OUT、ISO incomplete、EP0 OUT禁用限制、FIFO寄存器与Flush前置条件已有精确正文证据。因此O1中“缺RM正文”子项关闭，O1整体未关闭。
+
+**UNRESOLVED**：O1剩余为EP0专用策略、主动ISO停止选择、正常/取消竞争及硬件时间预算；O2/O3仍需真Flush结果与HAL消费前证据集成；O4仍需IRQ收尾安全，其他未决项保留。Reset型OUT流程与EP0 OUT不可禁用的组合不能直接all-EP照抄。USB停止与SD IDMA停止继续独立，RAW租约不变。
+
+**NOT_TESTED**：软件实现/故障注入/实板验收本轮均未执行；不宣称P1通过，不进入P1-B/P2。下方缺手册的文字仅作为历史记录保留。
+
 ## 2026-11-19 硬件证据专项更新（最新状态）
 
 **VERIFIED（用户截图+陈述）**：原值`0x20036450`，DEV_ID=`0x450`，REV_ID=`0x2003`，对应ES0445 Rev7第1页表2的U/V组；第二、三次相同是用户确认，非独立三份采集。DAPLink已确认；Keil数字版本、CPU状态、实物完整型号仍UNRESOLVED。用户已报告新会话自动Reset/Download，因此不能标记为无复位/下载过程。该记录替代下方历史“REV_ID未实读”的最新状态，不代表Endpoint停止验收。

@@ -1,5 +1,9 @@
 # STM32H747 Silicon Revision 身份核验
 
+## 2026-11-19 后续正文核验更新
+
+**VERIFIED（PDF/正文）**：RM0399 Rev5完整原件现已保存；2747页图794确认USB2 OTG_HS别名OTG_FS，2780页DMAEN定义与当前slave/PIO配置相符。此前本文“RM缺件/实例映射缺证据”状态已由[RM正文核验报告](RM0399_Revision_and_EndpointTiming_Analysis.md)更新。REV_ID仍为截图及两次用户确认的0x2003（U/V组）；精确工具版本/CPU状态/实物丝印与Reset/Download过程偏差未因手册取得而关闭。**NOT_TESTED**：实际勘误触发与Endpoint停止。
+
 > 基线：`3a765feeee8d4cb3c1cc553337caf8cf1b63f6b4`；研究分支：`codex/usb-device-lifecycle-manager`；记录日期：2026-11-19，Asia/Shanghai。
 > VERIFIED须区分用户截图、用户陈述、源码、官方手册；INFERRED为推断；UNRESOLVED为缺证据；NOT_TESTED为未验证。
 

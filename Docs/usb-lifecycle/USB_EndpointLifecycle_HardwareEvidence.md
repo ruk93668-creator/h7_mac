@@ -1,5 +1,15 @@
 # USB Endpoint Lifecycle 硬件证据与阻塞记录
 
+## 2026-11-19 RM0399正文补齐（最新状态）
+
+**VERIFIED（本机PDF）**：已取得用户浏览器下载的RM0399 Rev5 / October2026 /3535页；指定路径`D:/32/STM32H7/h7_mac_lifecycle/Docs/references/RM0399_Rev5.pdf`，72,029,379字节，SHA256=`61d07b67deb291aed8a5cf8019c94add0a1065318542e57b3287d2694b14bd60`。所有页可解析且页脚匹配，EOF存在，解析器未修复。浏览器来源为用户陈述，未独立核对ST服务器哈希。
+
+**VERIFIED（正文）**：2747页图794确认USB2 OTG_HS/OTG_HS2别名OTG_FS；普通Bulk IN的PIO停止、NAK生效与EPDISD在2917～2918页；普通Bulk OUT全局NAK/RX pop及禁用在2909～2910页；incomplete ISO IN在2923页；EP0 OUT禁止EPDIS在2846页；FIFO Flush前置条件及TXFNUM在2784页。手册正文缺失/实例映射已关闭，但不能把Reset型Transfer Stop与普通Endpoint Disable混用。
+
+具体章节、页码、短原文、位定义、六份源码差距和七行Stop Matrix见[RM0399正文核验](RM0399_Revision_and_EndpointTiming_Analysis.md)的A～I节；完整178页提取件及validation.json留在`D:/32/STM32H7/h7_mac_lifecycle/output/MSC24/udlm-rm0399/`。
+
+**UNRESOLVED**：IRQ/PIO串行化、共享RX/EP0隔离、HAL消费前事件证据、有界Flush、旧身份退休及主动ISO停止算法仍需设计/实现验证。**NOT_TESTED**：实板停止与重连。本轮只改文档，没有开始P1-B/P2。下面“缺RM正文”均为先前历史，不是当前结论。
+
 ## 2026-11-19 本轮证据补充（优先于下方历史记录）
 
 **VERIFIED（用户截图/陈述）**：DBGMCU_IDCODE完整值`0x20036450`，DEV_ID=`0x450`，REV_ID=`0x2003`；一次截图加两次刷新相同的用户确认。ES0445 Rev7第1页表2映射到U/V组，不能唯一确定U或V。探针为DAPLink；精确Keil版本、CPU状态、完整实物型号仍UNRESOLVED。用户报告曾自动Reset/Download，不能宣称本次满足全程无复位/无下载要求。代理没有操作目标。
