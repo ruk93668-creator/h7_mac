@@ -117,6 +117,7 @@ static void ControlTask_Run(void *argument)
     g_control_task_debug.result = result;
     configASSERT(result == SYS_OK);
     ControlTask_Process(RUNTIME_EVENT_BOOT_READY);
+    // 旧 BOOT 放行后，由 ControlTask 初始化隔离诊断。
     V2Runtime_Round(RUNTIME_TARGET_CONTROL, RUNTIME_EVENT_BOOT_READY, Platform_TimeGetMs());
     ControlTask_PublishStatus();
     for (;;)
@@ -133,6 +134,7 @@ static void ControlTask_Run(void *argument)
             continue;
         }
         ControlTask_Process(events);
+        // 原业务轮次结束后再推进 V2 诊断，保留原业务和硬件所有权。
         V2Runtime_Round(RUNTIME_TARGET_CONTROL, events, Platform_TimeGetMs());
         ControlTask_PublishStatus();
 

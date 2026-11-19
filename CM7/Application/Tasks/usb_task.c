@@ -102,6 +102,7 @@ static void UsbTask_Run(void *argument)
             continue;
         }
         UsbTask_Process(events);
+        // 原业务轮次结束后再推进 V2 诊断，保留原业务和硬件所有权。
         V2Runtime_Round(RUNTIME_TARGET_USB, events, Platform_TimeGetMs());
         UsbTask_PublishStatus();
 

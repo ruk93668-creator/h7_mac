@@ -1,6 +1,8 @@
+// 在仿真中选择任务身份，使用真实 FreeRTOS 队列、TCB 和通知验证 P8.2。
 #include "stm32h7xx.h"
 #include "bsp_dcmi.h"
 static uint32_t s_exception;
+// 只替换异常编号读数，保留内核任务和队列实现。
 #define __get_IPSR() s_exception
 #include "../../Middlewares/Third_Party/FreeRTOS/Source/tasks.c"
 #include "../../CM7/Platform/platform_rtos.c"
@@ -24,16 +26,48 @@ static StaticTask_t s_tcbs[RUNTIME_TARGET_COUNT];
 static StackType_t s_stacks[RUNTIME_TARGET_COUNT][128];
 static TaskHandle_t s_owners[RUNTIME_TARGET_COUNT];
 
-#define CHECK(value) do { if (!(value)) { g_failure = __LINE__; return g_failure; } } while (0)
+#define CHECK(condition)                                                                           \
+    do                                                                                             \
+    {                                                                                              \
+        if (!(condition))                                                                          \
+        {                                                                                          \
+            g_failure = __LINE__;                                                                  \
+            return g_failure;                                                                      \
+        }                                                                                          \
+    } while (0)
 
-uint32_t Platform_SyncGetException(void) { return s_exception; }
-uint32_t Platform_SyncGetPrimask(void) { return __get_PRIMASK(); }
-uint32_t Platform_SyncGetBasepri(void) { return __get_BASEPRI(); }
-void Platform_SyncDisableIrq(void) { __disable_irq(); }
-void Platform_SyncRestoreIrq(uint32_t mask) { __set_PRIMASK(mask); }
-void Platform_SyncMemoryBarrier(void) { __DMB(); }
-uint32_t Platform_SyncGetIrqPriority(uint32_t irq) { return NVIC_GetPriority((IRQn_Type)irq); }
-uint32_t Platform_TimeGetMs(void) { return s_now; }
+uint32_t Platform_SyncGetException(void)
+{
+    return s_exception;
+}
+uint32_t Platform_SyncGetPrimask(void)
+{
+    return __get_PRIMASK();
+}
+uint32_t Platform_SyncGetBasepri(void)
+{
+    return __get_BASEPRI();
+}
+void Platform_SyncDisableIrq(void)
+{
+    __disable_irq();
+}
+void Platform_SyncRestoreIrq(uint32_t mask)
+{
+    __set_PRIMASK(mask);
+}
+void Platform_SyncMemoryBarrier(void)
+{
+    __DMB();
+}
+uint32_t Platform_SyncGetIrqPriority(uint32_t irq)
+{
+    return NVIC_GetPriority((IRQn_Type)irq);
+}
+uint32_t Platform_TimeGetMs(void)
+{
+    return s_now;
+}
 
 SysResult_t USB_Device_SetEventCallback(UsbDeviceEventCallback_t callback, void *port)
 {
@@ -57,7 +91,10 @@ SysResult_t App_CameraQualificationAccess(AppCameraQualification_t **core,
     Native_UnboundTrap();
     return SYS_ERR_INVALID_STATE;
 }
-bool App_MessagesIsOwner(RuntimeEventTarget_t task) { return App_EventsIsOwner(task); }
+bool App_MessagesIsOwner(RuntimeEventTarget_t task)
+{
+    return App_EventsIsOwner(task);
+}
 
 SysResult_t IPC_Service_SetRuntimeOwner(bool (*check)(void *), void *port)
 {
@@ -102,14 +139,19 @@ SysResult_t IPC_Service_GetRuntimeStatus(IpcRuntimeStatus_t *status)
 static void idle(void *port)
 {
     (void)port;
-    for (;;) {}
+    // 调度夹具仅使用此任务的 TCB，测试不运行该入口。
+    for (;;)
+    {
+    }
 }
 
+// 由仿真夹具选择当前任务；队列操作仍由 FreeRTOS 执行。
 static void select_owner(RuntimeEventTarget_t role)
 {
     pxCurrentTCB = s_owners[role];
 }
 
+// 用零等待读取真实通知位，便于检查多次唤醒是否合并。
 static uint32_t wait_events(RuntimeEventTarget_t role)
 {
     uint32_t events = 0U;
@@ -118,6 +160,7 @@ static uint32_t wait_events(RuntimeEventTarget_t role)
     return events;
 }
 
+// 创建并登记真实 TCB，让测试控制任务选择和 BOOT 放行时机。
 static uint32_t initialize(void)
 {
     uint32_t index;
@@ -146,6 +189,7 @@ static uint32_t initialize(void)
     return 0U;
 }
 
+// 在指定任务身份下推进一次生产 Endpoint 或控制轮次。
 static void run_owner_round(RuntimeEventTarget_t role)
 {
     uint32_t events = wait_events(role);
@@ -223,6 +267,7 @@ static void run_owner_round(RuntimeEventTarget_t role)
         }                                                                                         \
     } while (0)
 
+// 按用例检查 BOOT、九队列、完成确认、补偿和 IPC 隔离。
 uint32_t P82_Run(uint32_t scenario)
 {
     uint32_t index;

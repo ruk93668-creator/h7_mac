@@ -1,3 +1,5 @@
+// P8.2 隔离诊断的任务推进入口及观察字段。
+
 #ifndef V2_RTOS_RUNTIME_H
 #define V2_RTOS_RUNTIME_H
 
@@ -13,8 +15,9 @@ typedef struct
     int32_t first_error;
     int32_t recovery_error;
     uint32_t execution_state;
-    uint32_t confirmed[3];
+    uint32_t confirmed[3];  // 按注册表顺序统计已提交消费确认的结果。
 } V2RuntimeDebug;
 
+// 仅供诊断观察。不承载 Legacy 硬件或物理资源事实。
 extern volatile V2RuntimeDebug g_v2_runtime_debug;
 #endif

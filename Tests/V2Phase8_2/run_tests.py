@@ -1,12 +1,12 @@
-"""P8.2 runs production transport/owners with actual ARMCC5 FreeRTOS queue, TCB and notifications."""
-from pathlib import Path
+"""使用 ARMCC5 和真实 FreeRTOS 队列、TCB、通知验证 P8.2 运输。"""
 import datetime
+import hashlib
 import json
 import os
+from pathlib import Path
 import struct
-import sys
-import hashlib
 import subprocess
+import sys
 
 ROOT = Path(__file__).resolve().parents[2]
 HERE = Path(__file__).resolve().parent
@@ -22,7 +22,9 @@ v2 = ROOT / 'CM7/ApplicationV2'
 kernel = ROOT / 'Middlewares/Third_Party/FreeRTOS/Source'
 native = OUT / 'unbound_native.c'
 lines = (ROOT / 'Tests/V2Phase4/native_dependencies.c').read_text().splitlines(keepends=True)
-native.write_text(''.join(line for line in lines if not line.startswith(('void Platform_TimeGetMs(', 'void BSP_DCMI_SetEventCallback('))))
+fixture_overrides = ('void Platform_TimeGetMs(', 'void BSP_DCMI_SetEventCallback(')
+# 两个端口由本专项夹具提供，其余硬件入口继续使用原陷阱。
+native.write_text(''.join(line for line in lines if not line.startswith(fixture_overrides)))
 file_backend = v2 / 'Modules/Storage/storage_backend.c'
 sources = [
     HERE / 'rtos_test.c', *sorted(path for path in v2.rglob('*.c') if path != file_backend), native,
@@ -36,6 +38,7 @@ arm.cc += ['--split_sections', '-I', ROOT / 'CM7/Device/Components/OV5640', '-I'
 
 
 def execute(image, case):
+    """按指定用例执行镜像，记录角色栈深和 IPC 等待证据。"""
     symbols, sections = arm.images[image]
     cpu = Uc(UC_ARCH_ARM, UC_MODE_THUMB | UC_MODE_MCLASS)
     for address, length in [(0x08000000, 0x100000), (0x20000000, 0x80000),
@@ -49,13 +52,14 @@ def execute(image, case):
     cpu.reg_write(UC_ARM_REG_LR, 0x01000001)
     cpu.reg_write(UC_ARM_REG_R0, case)
     cpu.mem_write(0xE000ED0C, struct.pack('<I', 3 << 8))
-    cpu.mem_write(symbols['uxCriticalNesting'], b'\0'*4)
+    cpu.mem_write(symbols['uxCriticalNesting'], b'\0' * 4)
     delay = None
     trapped = None
     active_round = None
     role_stack = {}
 
     def observe(emulator, address, _size, _context):
+        # 以原任务钩子的入口 SP 为基准，排除夹具外层栈帧。
         nonlocal lowest, delay, trapped, active_round
         stack = emulator.reg_read(UC_ARM_REG_SP)
         lowest = min(lowest, stack)
@@ -89,23 +93,26 @@ def execute(image, case):
         completed = delay == 100 and starts == steps == 1 and debug == (0,) * 8
     return {'pass': completed and not failure and error is None and trapped is None,
             'failure': failure, 'error': error, 'trap': trapped, 'debug': debug,
-            'stack': start_sp-lowest, 'role_stack': role_stack, 'ipc_delay': delay, 'ipc_starts': starts, 'ipc_steps': steps}
+            'stack': start_sp - lowest, 'role_stack': role_stack, 'ipc_delay': delay, 'ipc_starts': starts, 'ipc_steps': steps}
 
 
 if __name__ == '__main__':
     rows = []
-    for opt in ('O0', 'O2'):
-        arm.cc = ['-'+opt if arg in ('-O0', '-O2') else arg for arg in arm.cc]
-        image = 'p82_'+opt
-        arm.run(arm.cc + ['-c', file_backend, '-o', OUT / ('isolated_fs_'+opt+'.o')])
+    for optimization in ('O0', 'O2'):
+        arm.cc = ['-' + optimization if flag in ('-O0', '-O2') else flag for flag in arm.cc]
+        image = 'p82_' + optimization
+        arm.run(arm.cc + ['-c', file_backend, '-o', OUT / ('isolated_fs_' + optimization + '.o')])
         arm.build(image, sources, 'P82_Run')
         for case in range(6):
-            row = {'opt': opt, 'case': case, **execute(image, case)}
+            row = {'opt': optimization, 'case': case, **execute(image, case)}
             rows.append(row)
             print(row, flush=True)
-    (OUT/'results.json').write_text(json.dumps({
+    (OUT / 'results.json').write_text(json.dumps({
         'head': subprocess.check_output(['git','rev-parse','HEAD'], text=True).strip(),
-        'files': {str(p.relative_to(ROOT)): hashlib.sha256(p.read_bytes()).hexdigest() for p in [*sources, file_backend]},
+        'files': {
+            str(source_path.relative_to(ROOT)): hashlib.sha256(source_path.read_bytes()).hexdigest()
+            for source_path in [*sources, file_backend]
+        },
         'rows': rows,
     }, indent=2), encoding='utf-8')
     print(OUT)

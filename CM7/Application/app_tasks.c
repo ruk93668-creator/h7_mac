@@ -75,8 +75,9 @@ SysResult_t App_TasksCreate(void)
             g_app_tasks_debug.created_tasks++;
     }
 
+    // 诊断队列独立创建。创建失败只关闭 V2 入口，原 BOOT 继续。
     if (result == SYS_OK)
-        (void)V2Rtos_Init();  // An unavailable diagnostic must not stop Legacy BOOT.
+        (void)V2Rtos_Init();
 
     g_app_tasks_debug.result = result;
     return result;
