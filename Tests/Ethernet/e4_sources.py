@@ -1,4 +1,4 @@
-"""Shared source lists for the E4.1 Keil and host validation builds."""
+"""Shared source lists for the isolated E4 Keil and host builds."""
 
 PORT = ['Platform/Ethernet/eth_netif.c', 'Platform/Ethernet/eth_network.c']
 LWIP = ['ThirdParty/lwip/src/' + name for name in (
@@ -8,3 +8,5 @@ LWIP = ['ThirdParty/lwip/src/' + name for name in (
     'core/ipv4/etharp.c', 'core/ipv4/icmp.c', 'core/ipv4/ip4.c',
     'core/ipv4/ip4_addr.c', 'netif/ethernet.c',
 )]
+LWIP_DHCP = ['ThirdParty/lwip/src/' + name for name in
+             ('core/udp.c', 'core/ipv4/dhcp.c', 'core/ipv4/acd.c')]

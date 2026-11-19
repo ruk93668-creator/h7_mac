@@ -1,16 +1,18 @@
 """Generate isolated Keil validation targets; never flash automatically."""
 from pathlib import Path
 import subprocess,xml.etree.ElementTree as ET,copy,re,json,sys,hashlib,time
-from e4_sources import PORT, LWIP
+from e4_sources import PORT, LWIP, LWIP_DHCP
 ROOT=Path(__file__).resolve().parents[2]
 OUT=ROOT/'output/Ethernet';OUT.mkdir(parents=True,exist_ok=True)
 baseline='--baseline' in sys.argv
 smoke='--smoke' in sys.argv
 e35='--e35' in sys.argv
-e4='--e4' in sys.argv
-if sum((baseline, smoke, e35, e4)) > 1:
+e42='--e42' in sys.argv
+if sum((baseline, smoke, e35, '--e4' in sys.argv, e42)) > 1:
     raise SystemExit('choose only one validation variant')
-name='baseline' if baseline else 'e35' if e35 else 'e4' if e4 else 'smoke' if smoke else 'integrated'
+e4='--e4' in sys.argv or e42
+name='baseline' if baseline else 'e35' if e35 else 'e42' if e42 else 'e4' if e4 else 'smoke' if smoke else 'integrated'
+lwip_sources=LWIP + (LWIP_DHCP if e42 else [])
 git=['git','-c','safe.directory='+ROOT.as_posix()]
 project_bytes=subprocess.check_output(git+['show','b282c7c:MDK-ARM/h7_mac.uvprojx'],cwd=ROOT) if baseline else (ROOT/'MDK-ARM/h7_mac.uvprojx').read_bytes()
 root=ET.fromstring(project_bytes);targets=root.find('Targets')
@@ -72,10 +74,13 @@ if e4:
         '../Drivers/STM32H7xx_HAL_Driver/Inc','../Drivers/STM32H7xx_HAL_Driver/Inc/Legacy',
         '../Drivers/CMSIS/Device/ST/STM32H7xx/Include','../Drivers/CMSIS/Include'))
     controls.find('MiscControls').text=''
+    if e42:
+        define=controls.find('Define')
+        define.text=(define.text or '')+',ETH_LWIP_DHCP'
     t.find('.//LDads/Misc').text='--keep=*(.ethernet_dma)'
     t.find('.//LDads/ScatterFile').text=str(ROOT/'Tests/Ethernet/e4.sct')
-    for label, paths in [('E4.1 port and bench', PORT+['Tests/Ethernet/e4_main.c']),
-                         ('lwIP 2.2.1', LWIP)]:
+    for label, paths in [('E4 port and bench', PORT+['Tests/Ethernet/e4_main.c']),
+                         ('lwIP 2.2.1', lwip_sources)]:
         group=ET.SubElement(groups,'Group')
         ET.SubElement(group,'GroupName').text=label
         files=ET.SubElement(group,'Files')
@@ -86,7 +91,7 @@ if e4:
             ET.SubElement(file,'FilePath').text='../'+path
 # Give E3.5 its own uVision identity so an open smoke project cannot retain
 # the old output directory when the generated target changes on disk.
-project=ROOT/'MDK-ARM'/('h7_mac_ethernet_e4.uvprojx' if e4 else 'h7_mac_ethernet_e35.uvprojx' if e35 else 'h7_mac_ethernet_verify.uvprojx')
+project=ROOT/'MDK-ARM'/(('h7_mac_ethernet_'+name+'.uvprojx') if e4 else 'h7_mac_ethernet_e35.uvprojx' if e35 else 'h7_mac_ethernet_verify.uvprojx')
 ET.ElementTree(root).write(project,encoding='utf-8',xml_declaration=True)
 if '--prepare-only' in sys.argv: print(project);sys.exit(0)
 log=OUT/(name+'_build.log')
@@ -98,7 +103,7 @@ if e4:
     inputs += [ROOT/'Tests/Ethernet/e4.sct']
     inputs += list((ROOT/'Platform/Ethernet/arch').glob('*.h'))
     inputs += list((ROOT/'ThirdParty/lwip/src/include').rglob('*.h'))
-    inputs += [ROOT/path for path in LWIP]
+    inputs += [ROOT/path for path in lwip_sources]
 def hashes():
     return {p.relative_to(ROOT).as_posix():hashlib.sha256(p.read_bytes()).hexdigest() for p in inputs}
 before=hashes()
@@ -130,6 +135,8 @@ if not baseline:
         result['test_cache_link_valid']=bool(fresh and re.search(r'Execution Region RW_E35_CACHE \(Exec base: 0x24010000.*Max: 0x00010000',map_text) and re.search(r's_tx\s+0x24010000\s+Data\s+1536',map_text) and re.search(r's_rx\s+0x24010600\s+Data\s+1536',map_text))
     if e4:
         symbols=('s_network','ram_heap','memp_memory_PBUF_POOL_base')
+        if e42:
+            symbols+=('memp_memory_UDP_PCB_base','memp_memory_SYS_TIMEOUT_base')
         addresses={symbol:re.search(r'^\s*'+symbol+r'\s+(0x[\da-f]+)\s+Data\b',
                                    map_text,re.M|re.I) for symbol in symbols}
         result['e4_cpu_memory']={symbol:int(match[1],16) if match else None

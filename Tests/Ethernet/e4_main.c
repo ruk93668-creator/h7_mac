@@ -1,4 +1,4 @@
-//独立 E4.1 测试入口，不启动 RTOS 或 Application
+//独立 E4 测试入口，不启动 RTOS 或 Application
 #include "stm32h7xx_hal.h"
 #include "eth_memory.h"
 #include "eth_network.h"
@@ -23,6 +23,17 @@ typedef struct
 	EthLinkState_t phy;
 	EthStatistics_t driver;
 	EthNetifStatistics_t port;
+#if LWIP_DHCP
+	EthNetworkAddressStatus_t address;
+	uint32_t udp_used;
+	uint32_t udp_peak;
+	uint32_t udp_errors;
+	uint32_t timeout_used;
+	uint32_t timeout_errors;
+	uint32_t heap_used;
+	uint32_t heap_peak;
+	uint32_t heap_errors;
+#endif
 } EthBenchStatus_t;
 
 volatile EthBenchStatus_t g_e4_status;
@@ -30,6 +41,14 @@ volatile int32_t g_e4_result;
 const char * volatile g_e4_assert_message;
 const char * volatile g_e4_assert_file;
 volatile unsigned g_e4_assert_line;
+#if LWIP_DHCP
+//仅在初始化前读取一次；默认 DHCP Only，fallback 必须填写具体地址和掩码
+volatile uint32_t g_e42_mode = ETH_ADDRESS_DHCP;
+volatile uint32_t g_e42_timeout_ms = 30000U;
+volatile uint8_t g_e42_fallback_ip[4];
+volatile uint8_t g_e42_fallback_mask[4];
+volatile uint8_t g_e42_fallback_gateway[4];
+#endif
 
 static void EthBench_Clock(void);
 static void EthBench_Error(void);
@@ -92,6 +111,17 @@ static void EthBench_Snapshot(void)
 	g_e4_status.pool_used = lwip_stats.memp[MEMP_PBUF_POOL]->used;
 	g_e4_status.pool_peak = lwip_stats.memp[MEMP_PBUF_POOL]->max;
 	g_e4_status.pool_errors = lwip_stats.memp[MEMP_PBUF_POOL]->err;
+#if LWIP_DHCP
+	g_e4_status.address = s_network.address;
+	g_e4_status.udp_used = lwip_stats.memp[MEMP_UDP_PCB]->used;
+	g_e4_status.udp_peak = lwip_stats.memp[MEMP_UDP_PCB]->max;
+	g_e4_status.udp_errors = lwip_stats.memp[MEMP_UDP_PCB]->err;
+	g_e4_status.timeout_used = lwip_stats.memp[MEMP_SYS_TIMEOUT]->used;
+	g_e4_status.timeout_errors = lwip_stats.memp[MEMP_SYS_TIMEOUT]->err;
+	g_e4_status.heap_used = lwip_stats.mem.used;
+	g_e4_status.heap_peak = lwip_stats.mem.max;
+	g_e4_status.heap_errors = lwip_stats.mem.err;
+#endif
 	if (eth_mac_get_statistics(&driver) == ETH_OK)
 		g_e4_status.driver = driver;
 }
@@ -102,6 +132,9 @@ int main(void)
 	ip4_addr_t mask;
 	ip4_addr_t gateway;
 	uint32_t last;
+#if LWIP_DHCP
+	EthNetworkAddressConfig_t config = {.mode = ETH_ADDRESS_DHCP};
+#endif
 
 	if (HAL_Init() != HAL_OK)
 		EthBench_Error();
@@ -115,7 +148,35 @@ int main(void)
 	IP4_ADDR(&ip, 192, 168, 50, 2);
 	IP4_ADDR(&mask, 255, 255, 255, 0);
 	IP4_ADDR(&gateway, 0, 0, 0, 0);
+#if LWIP_DHCP
+	if (g_e42_mode > ETH_ADDRESS_DHCP_FALLBACK)
+	{
+		g_e4_result = ERR_ARG;
+		for (;;)
+		{
+		}
+	}
+	config.mode = (EthNetworkAddressMode_t)g_e42_mode;
+	config.timeout_ms = g_e42_timeout_ms;
+	if (g_e42_mode == ETH_ADDRESS_STATIC)
+	{
+		config.ip = ip;
+		config.mask = mask;
+		config.gateway = gateway;
+	}
+	else if (g_e42_mode == ETH_ADDRESS_DHCP_FALLBACK)
+	{
+		IP4_ADDR(&config.ip, g_e42_fallback_ip[0], g_e42_fallback_ip[1],
+			g_e42_fallback_ip[2], g_e42_fallback_ip[3]);
+		IP4_ADDR(&config.mask, g_e42_fallback_mask[0], g_e42_fallback_mask[1],
+			g_e42_fallback_mask[2], g_e42_fallback_mask[3]);
+		IP4_ADDR(&config.gateway, g_e42_fallback_gateway[0], g_e42_fallback_gateway[1],
+			g_e42_fallback_gateway[2], g_e42_fallback_gateway[3]);
+	}
+	g_e4_result = eth_network_init_address(&s_network, s_mac, &config);
+#else
 	g_e4_result = eth_network_init(&s_network, s_mac, &ip, &mask, &gateway);
+#endif
 	if (g_e4_result != ERR_OK)
 	{
 		g_e4_status.driver_result = s_network.last_driver_result;

@@ -1,4 +1,4 @@
-//E4.1 单循环协议栈配置
+//独立 Ethernet 单循环协议栈配置
 #ifndef ETH_LWIPOPTS_H
 #define ETH_LWIPOPTS_H
 
@@ -12,9 +12,15 @@
 #define LWIP_ARP 1
 #define LWIP_ICMP 1
 #define LWIP_RAW 1
+#ifdef ETH_LWIP_DHCP
+#define LWIP_UDP 1
+#define LWIP_DHCP 1
+#define MEMP_NUM_UDP_PCB 1
+#else
 #define LWIP_UDP 0
-#define LWIP_TCP 0
 #define LWIP_DHCP 0
+#endif
+#define LWIP_TCP 0
 #define LWIP_AUTOIP 0
 #define LWIP_DNS 0
 #define LWIP_IGMP 0

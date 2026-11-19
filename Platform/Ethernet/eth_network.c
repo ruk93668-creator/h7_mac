@@ -5,17 +5,135 @@
 #include "lwip/timeouts.h"
 #include "lwip/etharp.h"
 #include "netif/ethernet.h"
+#if LWIP_DHCP
+#include "lwip/dhcp.h"
+#include "lwip/prot/dhcp.h"
+#endif
 
 #define ETH_NETWORK_SERVICE_MS 10U
 
 static uint8_t s_lwip_initialized;
 static EthNetwork_t *s_owner;
 
+#if LWIP_DHCP
+#define ETH_DHCP_RETRY_MS 1000U
+
+static void EthNetwork_ClearAddress(EthNetwork_t *network)
+{
+	netif_set_addr(&network->interface, IP4_ADDR_ANY4, IP4_ADDR_ANY4, IP4_ADDR_ANY4);
+}
+
+static void EthNetwork_StopDhcp(EthNetwork_t *network)
+{
+	if (netif_dhcp_data(&network->interface) != NULL)
+	{
+		dhcp_release_and_stop(&network->interface);
+		dhcp_cleanup(&network->interface);
+	}
+	network->dhcp_running = 0U;
+}
+
+static EthNetworkDhcpState_t EthNetwork_DhcpState(uint8_t state)
+{
+	switch (state)
+	{
+	case DHCP_STATE_INIT:
+		return ETH_DHCP_STARTING;
+	case DHCP_STATE_SELECTING:
+	case DHCP_STATE_BACKING_OFF:
+		return ETH_DHCP_SELECTING;
+	case DHCP_STATE_REQUESTING:
+	case DHCP_STATE_CHECKING:
+	case DHCP_STATE_REBOOTING:
+		return ETH_DHCP_REQUESTING;
+	case DHCP_STATE_BOUND:
+		return ETH_DHCP_BOUND;
+	case DHCP_STATE_RENEWING:
+		return ETH_DHCP_RENEWING;
+	case DHCP_STATE_REBINDING:
+		return ETH_DHCP_REBINDING;
+	default:
+		return ETH_DHCP_ERROR;
+	}
+}
+
+static void EthNetwork_AddressPoll(EthNetwork_t *network, uint32_t now)
+{
+	struct netif *interface = &network->interface;
+	struct dhcp *dhcp = netif_dhcp_data(interface);
+	EthNetworkAddressStatus_t *status = &network->address;
+	const EthNetworkAddressConfig_t *config = &network->address_config;
+	uint8_t valid = (uint8_t)(netif_is_link_up(interface) && dhcp_supplied_address(interface));
+
+	if (config->mode != ETH_ADDRESS_STATIC && netif_is_link_up(interface) &&
+		status->state != ETH_DHCP_FALLBACK)
+	{
+		if (status->lease_valid && !valid)
+		{
+			//租约到期或 NAK 后，上游继续发现；开启新的等待窗口
+			network->acquisition_tick = now;
+			network->timeout_reported = 0U;
+		}
+		if (network->dhcp_running && (dhcp == NULL || dhcp->state == DHCP_STATE_OFF))
+			network->dhcp_running = 0U;
+		if (!valid && !network->timeout_reported &&
+			(uint32_t)(now - network->acquisition_tick) >= config->timeout_ms)
+		{
+			network->timeout_reported = 1U;
+			++status->timeouts;
+			if (config->mode == ETH_ADDRESS_DHCP_FALLBACK)
+			{
+				//此处尚无有效租约，不会尝试 Release
+				EthNetwork_StopDhcp(network);
+				etharp_cleanup_netif(interface);
+				netif_set_addr(interface, &config->ip, &config->mask, &config->gateway);
+				status->state = ETH_DHCP_FALLBACK;
+				++status->fallbacks;
+			}
+		}
+		if (status->state != ETH_DHCP_FALLBACK)
+		{
+			if (!network->dhcp_running && (!network->dhcp_attempted ||
+				(uint32_t)(now - network->last_start_tick) >= ETH_DHCP_RETRY_MS))
+			{
+				network->dhcp_attempted = 1U;
+				network->last_start_tick = now;
+				status->state = ETH_DHCP_STARTING;
+				++status->starts;
+				status->start_result = dhcp_start(interface);
+				network->dhcp_running = (uint8_t)(status->start_result == ERR_OK);
+				dhcp = netif_dhcp_data(interface);
+			}
+			status->state = network->dhcp_running ? EthNetwork_DhcpState(dhcp->state) : ETH_DHCP_ERROR;
+		}
+	}
+	dhcp = netif_dhcp_data(interface);
+	status->lease_valid = valid;
+	status->lwip_state = dhcp ? dhcp->state : DHCP_STATE_OFF;
+	status->ip = *netif_ip4_addr(interface);
+	status->mask = *netif_ip4_netmask(interface);
+	status->gateway = *netif_ip4_gw(interface);
+	status->server = valid && dhcp ? *ip_2_ip4(&dhcp->server_ip_addr) : *IP4_ADDR_ANY4;
+	status->lease_seconds = valid && dhcp ? dhcp->offered_t0_lease : 0U;
+	status->t1_seconds = valid && dhcp ? dhcp->offered_t1_renew : 0U;
+	status->t2_seconds = valid && dhcp ? dhcp->offered_t2_rebind : 0U;
+}
+#endif
+
 static void EthNetwork_LinkDown(EthNetwork_t *network)
 {
 	if (netif_is_link_up(&network->interface))
 	{
 		netif_set_link_down(&network->interface);
+#if LWIP_DHCP
+		if (network->address_config.mode != ETH_ADDRESS_STATIC)
+		{
+			//上游 stop 可能尝试 Release；先关闭 linkoutput，无报文能提交给 MAC
+			EthNetwork_StopDhcp(network);
+			EthNetwork_ClearAddress(network);
+			network->address.state = ETH_DHCP_WAIT_LINK;
+		}
+#endif
 		etharp_cleanup_netif(&network->interface);
 		++network->link_downs;
 	}
@@ -41,6 +159,15 @@ static void EthNetwork_Service(EthNetwork_t *network)
 			{
 				netif_set_link_up(&network->interface);
 				++network->link_ups;
+#if LWIP_DHCP
+				if (network->address_config.mode != ETH_ADDRESS_STATIC)
+				{
+					network->acquisition_tick = sys_now();
+					network->dhcp_attempted = 0U;
+					network->timeout_reported = 0U;
+					network->address.state = ETH_DHCP_STARTING;
+				}
+#endif
 			}
 		}
 		else if (result == ETH_OK)
@@ -56,7 +183,7 @@ static void EthNetwork_Service(EthNetwork_t *network)
 	network->last_driver_result = result;
 }
 
-err_t eth_network_init(EthNetwork_t *network, const uint8_t mac[6],
+static err_t EthNetwork_Init(EthNetwork_t *network, const uint8_t mac[6],
 	const ip4_addr_t *ip, const ip4_addr_t *mask, const ip4_addr_t *gateway)
 {
 	if (network == NULL || mac == NULL || ip == NULL || mask == NULL || gateway == NULL)
@@ -83,6 +210,59 @@ err_t eth_network_init(EthNetwork_t *network, const uint8_t mac[6],
 	return ERR_OK;
 }
 
+#if LWIP_DHCP
+static int EthNetwork_FallbackValid(const EthNetworkAddressConfig_t *config)
+{
+	uint32_t ip = lwip_ntohl(ip4_addr_get_u32(&config->ip));
+	uint32_t mask = lwip_ntohl(ip4_addr_get_u32(&config->mask));
+	uint32_t host = ip & ~mask;
+
+	return ip != 0U && ip != UINT32_MAX && mask != 0U &&
+		ip4_addr_netmask_valid(ip4_addr_get_u32(&config->mask)) &&
+		!ip4_addr_ismulticast(&config->ip) && !ip4_addr_isloopback(&config->ip) &&
+		(~mask < 3U || (host != 0U && host != ~mask));
+}
+
+err_t eth_network_init_address(EthNetwork_t *network, const uint8_t mac[6],
+	const EthNetworkAddressConfig_t *config)
+{
+	err_t result;
+	int use_static;
+
+	if (network == NULL || config == NULL || (config->mode != ETH_ADDRESS_STATIC &&
+		config->mode != ETH_ADDRESS_DHCP && config->mode != ETH_ADDRESS_DHCP_FALLBACK))
+		return ERR_ARG;
+	use_static = config->mode == ETH_ADDRESS_STATIC;
+	if ((!use_static && (!config->timeout_ms || config->timeout_ms > UINT32_C(0x7FFFFFFF))) ||
+		(config->mode == ETH_ADDRESS_DHCP_FALLBACK && !EthNetwork_FallbackValid(config)))
+		return ERR_ARG;
+	result = EthNetwork_Init(network, mac, use_static ? &config->ip : IP4_ADDR_ANY4,
+		use_static ? &config->mask : IP4_ADDR_ANY4, use_static ? &config->gateway : IP4_ADDR_ANY4);
+	if (result == ERR_OK)
+	{
+		network->address_config = *config;
+		network->address.state = use_static ? ETH_DHCP_DISABLED : ETH_DHCP_WAIT_LINK;
+	}
+	return result;
+}
+#endif
+
+err_t eth_network_init(EthNetwork_t *network, const uint8_t mac[6],
+	const ip4_addr_t *ip, const ip4_addr_t *mask, const ip4_addr_t *gateway)
+{
+#if LWIP_DHCP
+	EthNetworkAddressConfig_t config = {.mode = ETH_ADDRESS_STATIC};
+	if (ip == NULL || mask == NULL || gateway == NULL)
+		return ERR_ARG;
+	config.ip = *ip;
+	config.mask = *mask;
+	config.gateway = *gateway;
+	return eth_network_init_address(network, mac, &config);
+#else
+	return EthNetwork_Init(network, mac, ip, mask, gateway);
+#endif
+}
+
 void eth_network_poll(EthNetwork_t *network)
 {
 	uint32_t now;
@@ -97,4 +277,7 @@ void eth_network_poll(EthNetwork_t *network)
 	}
 	eth_netif_poll(&network->interface);
 	sys_check_timeouts();
+#if LWIP_DHCP
+	EthNetwork_AddressPoll(network, sys_now());
+#endif
 }
