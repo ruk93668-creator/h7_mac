@@ -1,0 +1,18 @@
+{
+  "mode": "phase_error",
+  "started": "2026-11-19T03:59:31.387985+00:00",
+  "error": "OSError(121, 'SCSI read IOCTL failed')",
+  "commands": [
+    {
+      "at": "2026-11-19T03:59:31.411227+00:00",
+      "cdb": "28000000000000000100",
+      "requested_bytes": 256,
+      "returned_bytes": 256,
+      "ioctl_ok": false,
+      "winerror": 121,
+      "scsi_status": 0,
+      "sense": "0000000000000000000000000000000000000000000000000000000000000000",
+      "sha256": "5341e6b2646979a70e57653007a1f310169421ec9bdd9f1a5648f75ade005af1"
+    }
+  ]
+}

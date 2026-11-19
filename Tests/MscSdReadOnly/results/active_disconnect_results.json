@@ -1,0 +1,55 @@
+{
+  "started": "2026-11-19T04:12:17.954109+00:00",
+  "completed_reads": 257,
+  "expected_operation": "disconnect USB data while READ is active",
+  "writes_sent": 0,
+  "ended_by": "read error/disconnect",
+  "error": "OSError(121, 'SCSI read IOCTL failed')",
+  "last_commands": [
+    {
+      "at": "2026-11-19T04:12:48.816249+00:00",
+      "cdb": "280000000f0000008000",
+      "requested_bytes": 65536,
+      "returned_bytes": 65536,
+      "ioctl_ok": true,
+      "winerror": 0,
+      "scsi_status": 0,
+      "sense": "0000000000000000000000000000000000000000000000000000000000000000",
+      "sha256": "9c313dadaa71f62770eec7ce308c4322e13090e14440e8abe3211c869ea2b667"
+    },
+    {
+      "at": "2026-11-19T04:12:48.935381+00:00",
+      "cdb": "280000000f8000008000",
+      "requested_bytes": 65536,
+      "returned_bytes": 65536,
+      "ioctl_ok": true,
+      "winerror": 0,
+      "scsi_status": 0,
+      "sense": "0000000000000000000000000000000000000000000000000000000000000000",
+      "sha256": "9faf42d03a8560ef2bb517bbb21a3fcb459d29d85b3a7a4f7cc4274b01b62da3"
+    },
+    {
+      "at": "2026-11-19T04:12:49.054674+00:00",
+      "cdb": "28000000080000008000",
+      "requested_bytes": 65536,
+      "returned_bytes": 65536,
+      "ioctl_ok": true,
+      "winerror": 0,
+      "scsi_status": 0,
+      "sense": "0000000000000000000000000000000000000000000000000000000000000000",
+      "sha256": "7e38f14fa3cbf8877b6f9325080e48c25ee22570155a9e638b8618fbaa3af98e"
+    },
+    {
+      "at": "2026-11-19T04:13:04.067420+00:00",
+      "cdb": "28000000088000008000",
+      "requested_bytes": 65536,
+      "returned_bytes": 65536,
+      "ioctl_ok": false,
+      "winerror": 121,
+      "scsi_status": 0,
+      "sense": "0000000000000000000000000000000000000000000000000000000000000000",
+      "sha256": "c9d2341109fb3f9205f3f9e1aa14d831e2a1eee910b24ea0f2cecddb2607cdef"
+    }
+  ],
+  "ended": "2026-11-19T04:13:04.067420+00:00"
+}

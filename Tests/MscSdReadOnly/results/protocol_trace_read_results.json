@@ -1,0 +1,30 @@
+{
+  "mode": "trace_read",
+  "started": "2026-11-19T04:00:37.674325+00:00",
+  "result": {
+    "at": "2026-11-19T04:00:37.757411+00:00",
+    "cdb": "28000000040000004000",
+    "requested_bytes": 32768,
+    "returned_bytes": 32768,
+    "ioctl_ok": true,
+    "winerror": 0,
+    "scsi_status": 0,
+    "sense": "0000000000000000000000000000000000000000000000000000000000000000",
+    "sha256": "a876e3f24d6addb71d9c41f9dd747db6246ee3744da5069451e9967f30aab877"
+  },
+  "expected_backend_requests": 32,
+  "completed": true,
+  "commands": [
+    {
+      "at": "2026-11-19T04:00:37.757411+00:00",
+      "cdb": "28000000040000004000",
+      "requested_bytes": 32768,
+      "returned_bytes": 32768,
+      "ioctl_ok": true,
+      "winerror": 0,
+      "scsi_status": 0,
+      "sense": "0000000000000000000000000000000000000000000000000000000000000000",
+      "sha256": "a876e3f24d6addb71d9c41f9dd747db6246ee3744da5069451e9967f30aab877"
+    }
+  ]
+}

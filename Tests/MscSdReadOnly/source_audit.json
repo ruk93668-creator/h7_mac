@@ -1,0 +1,30 @@
+{
+  "baseline": "57120051270dd18c5aed834f1c5857f0e4090725",
+  "misc_macro_overrides": [],
+  "sources_sha256": {
+    "CM7/Service/usb_msc_scsi.c": "2bbc9362c807bd26301db1cc01a0ddc2ee125d132ad0b31c65543bf2067a48bc",
+    "CM7/Service/usb_msc_storage.c": "d7fc331803dfb5943b1ef5c8274f50ba73e51c55cce02286740447e3ec1bbec2",
+    "CM7/Service/usb_msc_sd.c": "c3be756388a5fb54e41e80d3d7072193b8cc42c5cfff202e57860b4c23b769c9",
+    "CM7/Platform/sd_block.c": "602ecc862db01672ae63484c34751490fb11f1de586b0571ff925d7be54ae76f",
+    "CM7/Platform/storage_fs.c": "3a728ae731e901eeb811df3b2b8a5d60620ec9966a24697154afbfc205f34aa8",
+    "CM7/Application/Tasks/storage_task.c": "d33ed74361e3165b6d6927063efd8fac1dad2a1de95207ccfec3327936bdc60f",
+    "CM7/BSP/bsp_sdmmc.c": "dbf1e4d4711b2c79a10f1500fad83726d36cb2e23705f53f8315ae8eefd097b9",
+    "CM7/BSP/bsp_sdmmc_memory.c": "e1fc1d38cbfd154e4db4b8b62a085aa411c5ddccbfed618614c2e3c828a4aecf",
+    "MDK-ARM/h7_mac_CM7_custom.sct": "10518f65d2ec1571a33e9c24f399ab830ee483c9ae237696aaca8d806c13c668"
+  },
+  "gates": {
+    "raw_claim": "MscSd_Init -> SD_Block_Claim(RAW); task-bound owner",
+    "fatfs_claim": "SD_Block_Claim rejects FATFS in controlled mode",
+    "scsi_write": "ScsiDecode rejects WRITE with key07 ASC27 when media.write_protected",
+    "storage_submit": "MscStorage_Submit rejects protected WRITE",
+    "sd_adapter": "Preprocessed MscSd_Execute has no SD_Block_Write call",
+    "task_mode": "StorageTask does not call App_StoragePrepare/Process in SD test mode"
+  },
+  "all_target_preincludes_verified": true,
+  "actual_sd_adapter_write_call_present": false,
+  "final_elf_symbols": {
+    "SD_Block_Write": "NOT LINKED",
+    "BSP_SDMMC_WriteBlocks": "NOT LINKED",
+    "HAL_SD_WriteBlocks_DMA": "0x08010841; retained shared BSP transfer implementation"
+  }
+}

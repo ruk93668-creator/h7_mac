@@ -1,0 +1,220 @@
+{
+  "target": {
+    "number": 2,
+    "path": "\\\\.\\PHYSICALDRIVE2",
+    "model": "STM32 MSC Test LUN USB Device",
+    "size": 7789340160,
+    "pnp_id": "USBSTOR\\DISK&VEN_STM32&PROD_MSC_TEST_LUN&REV_0001\\9&1AA0253C&0",
+    "parent_chain": [
+      "USBSTOR\\DISK&VEN_STM32&PROD_MSC_TEST_LUN&REV_0001\\9&1AA0253C&0",
+      "USB\\VID_1209&PID_0001\\8&33147c3b&0&4"
+    ],
+    "volumes": [
+      {
+        "drive": "F:",
+        "filesystem": "FAT32",
+        "size": 7793147904,
+        "volume_name": ""
+      }
+    ]
+  },
+  "sd_blocks": 15224832,
+  "source": "actual Windows SCSI class-driver pass-through",
+  "writes_sent": 0,
+  "tests": [
+    {
+      "name": "lba0",
+      "lba": 0,
+      "blocks": 1,
+      "passed": true,
+      "expected_backend_requests": 1,
+      "sha256": "2b9c437fa04f1e59fdab37f50778fd2798c8b4552e2881010f79f69e996b8e16"
+    },
+    {
+      "name": "ordinary",
+      "lba": 1,
+      "blocks": 1,
+      "passed": true,
+      "expected_backend_requests": 1,
+      "sha256": "076a27c79e5ace2a3d47f9dd2e83e4ff6ea8872b3c2218f66c92b89b55f36560"
+    },
+    {
+      "name": "double",
+      "lba": 2,
+      "blocks": 2,
+      "passed": true,
+      "expected_backend_requests": 1,
+      "sha256": "5f70bf18a086007016e948b04aed3b82103a36bea41755b6cddfaf10ace3c6ef"
+    },
+    {
+      "name": "three_blocks",
+      "lba": 0,
+      "blocks": 3,
+      "passed": true,
+      "expected_backend_requests": 2,
+      "sha256": "1e8d3f91d707c8299abfb680a948ceb157beb28475fc9a5adb7e19c0286ebd65"
+    },
+    {
+      "name": "continuous_32KiB",
+      "lba": 0,
+      "blocks": 64,
+      "passed": true,
+      "expected_backend_requests": 32,
+      "sha256": "708a25e3e82d3adbaaf8870865e697943830a6ec4706233681a4b4e69d7f642a"
+    },
+    {
+      "name": "cross_32KiB",
+      "lba": 63,
+      "blocks": 4,
+      "passed": true,
+      "expected_backend_requests": 2,
+      "sha256": "48a198df40b9e1432ac20d05226b8358c262abfe55913102f9bd960cf091a051"
+    },
+    {
+      "name": "tail_pair",
+      "lba": 15224830,
+      "blocks": 2,
+      "passed": true,
+      "expected_backend_requests": 1,
+      "sha256": "977c6cc56a6c716f3ba1568f3d17411be5415cc65b241c9194e842f3b0064e63"
+    },
+    {
+      "name": "last_lba",
+      "lba": 15224831,
+      "blocks": 1,
+      "passed": true,
+      "expected_backend_requests": 1,
+      "sha256": "d15533fe8c89e708558ecef2a90413cbae27bff13f4916f55e640a3de0b72624"
+    },
+    {
+      "name": "out_of_bounds",
+      "lba": 15224832,
+      "passed": true,
+      "scsi_status": 2,
+      "sense": "700005000000000a000000002100000000000000000000000000000000000000"
+    }
+  ],
+  "commands": [
+    {
+      "at": "2026-11-19T03:56:31.791776+00:00",
+      "cdb": "25000000000000000000",
+      "requested_bytes": 8,
+      "returned_bytes": 8,
+      "ioctl_ok": true,
+      "winerror": 0,
+      "scsi_status": 0,
+      "sense": "0000000000000000000000000000000000000000000000000000000000000000",
+      "sha256": "d54239df60c8922cafa066688a34b90d5935bf94aaad59a16b2f2ea7bed0688b"
+    },
+    {
+      "at": "2026-11-19T03:56:31.794439+00:00",
+      "cdb": "1a083f00c000",
+      "requested_bytes": 192,
+      "returned_bytes": 24,
+      "ioctl_ok": true,
+      "winerror": 0,
+      "scsi_status": 0,
+      "sense": "0000000000000000000000000000000000000000000000000000000000000000",
+      "sha256": "6d15bee6fb6af9f76b1246ab6cb4c247a87fed47c7a14440d2149e9c15718e6b"
+    },
+    {
+      "at": "2026-11-19T03:56:31.797598+00:00",
+      "cdb": "28000000000000000100",
+      "requested_bytes": 512,
+      "returned_bytes": 512,
+      "ioctl_ok": true,
+      "winerror": 0,
+      "scsi_status": 0,
+      "sense": "0000000000000000000000000000000000000000000000000000000000000000",
+      "sha256": "2b9c437fa04f1e59fdab37f50778fd2798c8b4552e2881010f79f69e996b8e16"
+    },
+    {
+      "at": "2026-11-19T03:56:31.800282+00:00",
+      "cdb": "28000000000100000100",
+      "requested_bytes": 512,
+      "returned_bytes": 512,
+      "ioctl_ok": true,
+      "winerror": 0,
+      "scsi_status": 0,
+      "sense": "0000000000000000000000000000000000000000000000000000000000000000",
+      "sha256": "076a27c79e5ace2a3d47f9dd2e83e4ff6ea8872b3c2218f66c92b89b55f36560"
+    },
+    {
+      "at": "2026-11-19T03:56:31.803178+00:00",
+      "cdb": "28000000000200000200",
+      "requested_bytes": 1024,
+      "returned_bytes": 1024,
+      "ioctl_ok": true,
+      "winerror": 0,
+      "scsi_status": 0,
+      "sense": "0000000000000000000000000000000000000000000000000000000000000000",
+      "sha256": "5f70bf18a086007016e948b04aed3b82103a36bea41755b6cddfaf10ace3c6ef"
+    },
+    {
+      "at": "2026-11-19T03:56:31.807370+00:00",
+      "cdb": "28000000000000000300",
+      "requested_bytes": 1536,
+      "returned_bytes": 1536,
+      "ioctl_ok": true,
+      "winerror": 0,
+      "scsi_status": 0,
+      "sense": "0000000000000000000000000000000000000000000000000000000000000000",
+      "sha256": "1e8d3f91d707c8299abfb680a948ceb157beb28475fc9a5adb7e19c0286ebd65"
+    },
+    {
+      "at": "2026-11-19T03:56:31.866472+00:00",
+      "cdb": "28000000000000004000",
+      "requested_bytes": 32768,
+      "returned_bytes": 32768,
+      "ioctl_ok": true,
+      "winerror": 0,
+      "scsi_status": 0,
+      "sense": "0000000000000000000000000000000000000000000000000000000000000000",
+      "sha256": "708a25e3e82d3adbaaf8870865e697943830a6ec4706233681a4b4e69d7f642a"
+    },
+    {
+      "at": "2026-11-19T03:56:31.871653+00:00",
+      "cdb": "28000000003f00000400",
+      "requested_bytes": 2048,
+      "returned_bytes": 2048,
+      "ioctl_ok": true,
+      "winerror": 0,
+      "scsi_status": 0,
+      "sense": "0000000000000000000000000000000000000000000000000000000000000000",
+      "sha256": "48a198df40b9e1432ac20d05226b8358c262abfe55913102f9bd960cf091a051"
+    },
+    {
+      "at": "2026-11-19T03:56:31.874155+00:00",
+      "cdb": "280000e84ffe00000200",
+      "requested_bytes": 1024,
+      "returned_bytes": 1024,
+      "ioctl_ok": true,
+      "winerror": 0,
+      "scsi_status": 0,
+      "sense": "0000000000000000000000000000000000000000000000000000000000000000",
+      "sha256": "977c6cc56a6c716f3ba1568f3d17411be5415cc65b241c9194e842f3b0064e63"
+    },
+    {
+      "at": "2026-11-19T03:56:31.876158+00:00",
+      "cdb": "280000e84fff00000100",
+      "requested_bytes": 512,
+      "returned_bytes": 512,
+      "ioctl_ok": true,
+      "winerror": 0,
+      "scsi_status": 0,
+      "sense": "0000000000000000000000000000000000000000000000000000000000000000",
+      "sha256": "d15533fe8c89e708558ecef2a90413cbae27bff13f4916f55e640a3de0b72624"
+    },
+    {
+      "at": "2026-11-19T03:56:31.879160+00:00",
+      "cdb": "280000e8500000000100",
+      "requested_bytes": 512,
+      "returned_bytes": 0,
+      "ioctl_ok": true,
+      "winerror": 0,
+      "scsi_status": 2,
+      "sense": "700005000000000a000000002100000000000000000000000000000000000000",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    }
+  ]
+}

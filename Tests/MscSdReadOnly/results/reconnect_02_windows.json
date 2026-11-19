@@ -1,0 +1,12 @@
+{
+  "observed_at": "2026-11-19T12:16:30.3171245+08:00",
+  "devices": [
+    {
+      "Status": "Error",
+      "Class": "USB",
+      "FriendlyName": "未知 USB 设备(设备描述符请求失败)",
+      "InstanceId": "USB\\VID_0000&PID_0002\\8&33147C3B&0&4"
+    }
+  ],
+  "user_report": "F: did not recover after Run and reconnect without MCU reset"
+}

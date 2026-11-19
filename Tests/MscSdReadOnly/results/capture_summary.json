@@ -1,0 +1,154 @@
+{
+  "source": "output\\MSC4-readonly\\msc4-readonly-20261118.pcapng",
+  "tshark_exit": 0,
+  "completed_commands": 4245,
+  "opcode_counts": {
+    "0x12": 72,
+    "0x23": 36,
+    "0x3": 97,
+    "0x25": 274,
+    "0x1a": 50,
+    "0x28": 2815,
+    "0x0": 899,
+    "0x35": 1,
+    "0x1b": 1
+  },
+  "status_counts": {
+    "0": 4147,
+    "1": 98
+  },
+  "all_completed_tags_match": true,
+  "read_count": 2815,
+  "read_blocks": 299529,
+  "read_block_histogram": {
+    "1": 109,
+    "16": 71,
+    "128": 2097,
+    "96": 146,
+    "40": 7,
+    "8": 72,
+    "2": 2,
+    "3": 1,
+    "64": 153,
+    "4": 1,
+    "48": 1,
+    "78": 1,
+    "49": 1,
+    "32": 151,
+    "93": 2
+  },
+  "read_data_length_mismatches": [],
+  "expected_two_sector_requests": 149820,
+  "incomplete": [
+    {
+      "address": [
+        1,
+        12
+      ],
+      "cbw_frame": 957903,
+      "time": "2069.174598000",
+      "tag": 1620000784,
+      "host_bytes": 65536,
+      "cdb_length": 10,
+      "opcode": 40,
+      "lba": 223,
+      "blocks": 128,
+      "data_bytes": 34816,
+      "data_frames": [
+        980847
+      ]
+    },
+    {
+      "address": [
+        1,
+        14
+      ],
+      "cbw_frame": 997281,
+      "time": "2089.014585000",
+      "tag": 1633363296,
+      "host_bytes": 65536,
+      "cdb_length": 10,
+      "opcode": 40,
+      "lba": 95,
+      "blocks": 128,
+      "data_bytes": 15360,
+      "data_frames": [
+        1008657
+      ]
+    },
+    {
+      "address": [
+        1,
+        16
+      ],
+      "cbw_frame": 1058537,
+      "time": "2135.040633000",
+      "tag": 826881312,
+      "host_bytes": 65536,
+      "cdb_length": 10,
+      "opcode": 40,
+      "lba": 223,
+      "blocks": 128,
+      "data_bytes": 9216,
+      "data_frames": [
+        1063599
+      ]
+    },
+    {
+      "address": [
+        1,
+        18
+      ],
+      "cbw_frame": 1067238,
+      "time": "2147.594596000",
+      "tag": 1679357056,
+      "host_bytes": 65536,
+      "cdb_length": 10,
+      "opcode": 40,
+      "lba": 2495,
+      "blocks": 128,
+      "data_bytes": 3328,
+      "data_frames": [
+        1067250
+      ]
+    },
+    {
+      "address": [
+        1,
+        19
+      ],
+      "cbw_frame": 1069544,
+      "time": "2151.204656000",
+      "tag": 2487119888,
+      "host_bytes": 65536,
+      "cdb_length": 10,
+      "opcode": 40,
+      "lba": 959,
+      "blocks": 128,
+      "data_bytes": 31876,
+      "data_frames": [
+        1070097,
+        1114473,
+        1114475,
+        1114523,
+        1114527
+      ]
+    },
+    {
+      "address": [
+        1,
+        22
+      ],
+      "cbw_frame": 1114504,
+      "time": "2770.875167000",
+      "tag": 1735984480,
+      "host_bytes": 0,
+      "cdb_length": 6,
+      "opcode": 27,
+      "lba": null,
+      "blocks": null,
+      "data_bytes": 0,
+      "data_frames": []
+    }
+  ]
+}
