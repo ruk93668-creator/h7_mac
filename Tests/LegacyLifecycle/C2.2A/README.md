@@ -2,7 +2,7 @@
 
 纯核心67个场景及真实App_Camera适配14个场景，ARMCC5 O0/O2共162次。使用真实C1/C1.1/C2.1.1，不复制Replay。资源和归还证据均明确为桩，生产证据未绑定。
 
-- [实施报告](../../Docs/Design/C2.2A_ConsumerQualificationCore实施报告.md)
+- [实施报告](../../../Docs/Design/C2.2A_ConsumerQualificationCore实施报告.md)
 - [专项结果](results.json)、[Q映射](q_mapping.json)
 - [原协议回归](protocol_results.json)、[历史回归对照](regression_results.json)
 - [正式构建](build_results.json)、[ABI](layout_results.json)、[范围和Map审计](scope_memory_audit.json)

@@ -1,7 +1,8 @@
 """Scope and assertion integrity audit; no exception for failed historical trace comparisons."""
 from pathlib import Path
 import subprocess,json,hashlib
-ROOT=Path(__file__).resolve().parents[2];HERE=Path(__file__).resolve().parent
+ROOT=Path(__file__).resolve().parents[3];HERE=Path(__file__).resolve().parent
+OUT=ROOT/'output/LegacyLifecycleArchiveValidation/R2';OUT.mkdir(parents=True,exist_ok=True)
 G=['git','-c','safe.directory='+ROOT.as_posix()];BASE='fa9ce5d'
 def git(*args):return subprocess.check_output(G+list(args),cwd=ROOT)
 def original(path):return git('show',BASE+':'+path)
@@ -31,7 +32,7 @@ for rel in ['CM7/Application/app_camera_lifecycle.c','CM7/Application/app_camera
  protected.append(rel)
 assertions=[]
 for rel,macro in [('Tests/ConsumerQualificationC2_2A/qualification_test.c','CK'),('Tests/ConsumerQualificationC2_2A/adapter_test.c','VERIFY')]:
- old=original(rel).decode('utf-8');new=(ROOT/rel).read_text(encoding='utf-8')
+ old=original(rel).decode('utf-8');new=(ROOT/'Tests/LegacyLifecycle/C2.2A'/Path(rel).name).read_text(encoding='utf-8')
  # Only substitute the explicit asynchronous fixture round for the previous synchronous adapter call.
  new=new.replace('ProcessRound(&proven)','App_QualificationProcess(&s_camera.qualifications,&proven,NULL)')
  a,b=expressions(old,macro),expressions(new,macro)
@@ -43,5 +44,5 @@ assert old[a:]==new[b:],'B1 scenarios or assertions changed'
 main=git('rev-parse','main').decode().strip();assert main=='182c84e7334f0a62d96f1d3109b0d7fb8efb8158',main
 report={'baseline':git('rev-parse',BASE).decode().strip(),'branch':git('branch','--show-current').decode().strip(),'main':main,'production_files':production,'protected_sources_and_test_scripts':protected,'assertions':assertions,'b1_test_bodies_unchanged':True,'project_unchanged':(ROOT/'MDK-ARM/h7_mac.uvprojx').read_bytes()==original('MDK-ARM/h7_mac.uvprojx'),'production_sha256':{p:hashlib.sha256((ROOT/p).read_bytes()).hexdigest() for p in sorted(allowed)},'output_untracked':git('ls-files','output').decode()==''}
 assert report['project_unchanged'] and report['output_untracked']
-(HERE/'scope_results.json').write_text(json.dumps(report,indent=2),encoding='utf-8')
+(OUT/'scope_results.json').write_text(json.dumps(report,indent=2),encoding='utf-8')
 print(json.dumps({k:v for k,v in report.items() if k not in ['protected_sources_and_test_scripts','production_sha256']},indent=2))

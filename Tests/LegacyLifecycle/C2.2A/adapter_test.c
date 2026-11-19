@@ -1,5 +1,5 @@
 //复用原B1依赖桩，编译真实App_Camera、CameraTask及本次资格核心
-#include "../CameraModuleB1/behavior_test.c"
+#include "../../CameraModuleB1/behavior_test.c"
 #include "app_camera_qualification_internal.h"
 
 volatile uint32_t g_abi[8];

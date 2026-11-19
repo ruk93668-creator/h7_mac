@@ -1,8 +1,8 @@
 """Full rebuild of unchanged formal project; preserve project settings and prior output."""
 from pathlib import Path
 import subprocess, json, re, shutil, hashlib
-ROOT=Path(__file__).resolve().parents[2];HERE=Path(__file__).resolve().parent
-OUT=ROOT/'output/CameraStopOwnershipR2/build';OUT.mkdir(parents=True,exist_ok=True)
+ROOT=Path(__file__).resolve().parents[3];HERE=Path(__file__).resolve().parent
+OUT=ROOT/'output/LegacyLifecycleArchiveValidation/C2.2A/build';OUT.mkdir(parents=True,exist_ok=True)
 project=ROOT/'MDK-ARM/h7_mac.uvprojx'
 before=hashlib.sha256(project.read_bytes()).hexdigest()
 rows=[]
@@ -22,9 +22,9 @@ for target in ['h7_mac_CM7','h7_mac_CM4']:
  row['artifacts']={suffix:str(folder/(target+suffix)) for suffix in ['.axf','.hex','.map']}
  row['artifacts_exist']={suffix:Path(path).exists() for suffix,path in row['artifacts'].items()}
  row['log_sha256']=hashlib.sha256(raw).hexdigest()
- (HERE/(target+'_rebuild.log')).write_bytes(raw)
+ (OUT/(target+'_rebuild.log')).write_bytes(raw)
  rows.append(row)
- (HERE/'build_results.json').write_text(json.dumps({'targets':rows,'project_unchanged':hashlib.sha256(project.read_bytes()).hexdigest()==before},indent=2),encoding='utf-8')
+ (OUT/'build_results.json').write_text(json.dumps({'targets':rows,'project_unchanged':hashlib.sha256(project.read_bytes()).hexdigest()==before},indent=2),encoding='utf-8')
  print(target,row,flush=True)
  if not row['pass']:print(text[-3000:],flush=True)
 assert hashlib.sha256(project.read_bytes()).hexdigest()==before

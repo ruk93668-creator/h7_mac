@@ -1,8 +1,8 @@
 """Actual ARMCC5 ABI plus Map and static callgraph, not hardware stack validation."""
 from pathlib import Path
 import os,sys,subprocess,json,re,html,struct,inspect
-ROOT=Path(__file__).resolve().parents[2];HERE=Path(__file__).resolve().parent
-OUT=ROOT/'output/ConsumerQualificationC2_2A/layout';OUT.mkdir(parents=True,exist_ok=True)
+ROOT=Path(__file__).resolve().parents[3];HERE=Path(__file__).resolve().parent
+OUT=ROOT/'output/LegacyLifecycleArchiveValidation/C2.2A/layout';OUT.mkdir(parents=True,exist_ok=True)
 os.environ['C1_TEST_OUTPUT_ROOT']=str(OUT)
 sys.path.insert(0,str(ROOT/'Tests/CameraLifecycleC1'))
 import run_tests as c
@@ -38,5 +38,5 @@ for opt in ['O0','O2']:
    functions[fn]={'local':int(stack[1]) if stack else None,'known_depth':int(depth[1]) if depth else None}
   rows.append({'variant':name,'optimization':opt,'abi_words':r['abi_words'],'context_address':m[1] if m else None,'context_bytes':int(m[2]) if m else None,'stack':functions,'unit_assertions_pass':r['pass']})
 assert all(r['context_bytes'] is not None for r in rows)
-(HERE/'layout_results.json').write_text(json.dumps({'rows':rows,'core_bytes':824,'rx_pair_bytes':664,'qualification_semantics_bytes':160,'decision_bytes':32,'task_stack_bytes':6144,'hardware_stack_verified':False},indent=2),encoding='utf-8')
+(OUT/'layout_results.json').write_text(json.dumps({'rows':rows,'core_bytes':824,'rx_pair_bytes':664,'qualification_semantics_bytes':160,'decision_bytes':32,'task_stack_bytes':6144,'hardware_stack_verified':False},indent=2),encoding='utf-8')
 print(json.dumps(rows,indent=2))

@@ -1,5 +1,5 @@
 //使用真实ARMCC5布局与真实Camera私有上下文生成尺寸证据
-#include "../CameraModuleB1/behavior_test.c"
+#include "../../CameraModuleB1/behavior_test.c"
 #include <stddef.h>
 //编译期核对只读停止事实字段，避免工具链插入隐藏布局变化
 typedef char R2_StopSequenceOffset[(offsetof(CameraCaptureStopFacts_t,attempt_sequence)==0U)?1:-1];

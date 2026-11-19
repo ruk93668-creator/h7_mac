@@ -1,8 +1,8 @@
 """ARMCC5 O0/O2: real Camera/Task/Media stop paths and Qualification/Rx failures."""
 from pathlib import Path
 import os,sys,json,inspect,hashlib,subprocess
-ROOT=Path(__file__).resolve().parents[2];HERE=Path(__file__).resolve().parent
-OUT=ROOT/'output/CameraStopOwnershipR2/special';OUT.mkdir(parents=True,exist_ok=True)
+ROOT=Path(__file__).resolve().parents[3];HERE=Path(__file__).resolve().parent
+OUT=ROOT/'output/LegacyLifecycleArchiveValidation/R2/special';OUT.mkdir(parents=True,exist_ok=True)
 os.environ['C1_TEST_OUTPUT_ROOT']=str(OUT)
 sys.path.insert(0,str(ROOT/'Tests/CameraLifecycleC1'))
 import run_tests as c
@@ -33,5 +33,5 @@ for opt in ['O0','O2']:
    rows.append({'group':group,'optimization':opt,'id':id,**r})
    print(group,opt,id,'PASS' if r['pass'] else 'FAIL',r['return'],r['failure_line'],r['error'],flush=True)
 summary={'total':len(rows),'passed':sum(r['pass'] for r in rows),'failed':sum(not r['pass'] for r in rows)}
-(HERE/'results.json').write_text(json.dumps({'summary':summary,'cases':rows,'hardware_verified':False,'actual_sources':['camera_task.c','app_camera.c','camera_capture.c','app_camera_qualification.c','app_camera_lifecycle.c','app_camera_lifecycle_replay.c'],'mocked':['BSP hardware','Device callbacks','Bridge idle evidence','FIFO loan boundary','transport']},indent=2),encoding='utf-8')
+(OUT/'results.json').write_text(json.dumps({'summary':summary,'cases':rows,'hardware_verified':False,'actual_sources':['camera_task.c','app_camera.c','camera_capture.c','app_camera_qualification.c','app_camera_lifecycle.c','app_camera_lifecycle_replay.c'],'mocked':['BSP hardware','Device callbacks','Bridge idle evidence','FIFO loan boundary','transport']},indent=2),encoding='utf-8')
 print(summary);raise SystemExit(bool(summary['failed']))

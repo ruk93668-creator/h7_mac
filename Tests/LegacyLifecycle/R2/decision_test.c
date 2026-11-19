@@ -1,5 +1,5 @@
 //复用原资格专项桩，执行真实Qualification和原Rx/Replay
-#include "../ConsumerQualificationC2_2A/qualification_test.c"
+#include "../C2.2A/qualification_test.c"
 
 //验证停止完成之后的提交异常不重复硬件动作
 int R2_DecisionRun(uint32_t id)

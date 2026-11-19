@@ -45,7 +45,7 @@ ISR 仅发布原始硬件事实和唤醒提示；不可执行 Graph 验证、Lif
 
 ## 4. 运输与编号规则
 
-沿用现行 52B AppMessage 工程 ABI 与 56B Lifecycle ABI 的兼容目标；52B 依赖目标 ARMCC5/短枚举配置，不能按 host enum 大小推断。`app_camera_lifecycle.h`、`app_camera_lifecycle_replay.h` 已有协议/Tx/Rx 布局断言；`Tests/CameraStopOwnershipR2/layout_test.c` 是历史 ARM 布局检查入口。本轮未重新测量。
+沿用现行 52B AppMessage 工程 ABI 与 56B Lifecycle ABI 的兼容目标；52B 依赖目标 ARMCC5/短枚举配置，不能按 host enum 大小推断。`app_camera_lifecycle.h`、`app_camera_lifecycle_replay.h` 已有协议/Tx/Rx 布局断言；`Tests/LegacyLifecycle/R2/layout_test.c` 是历史 ARM 布局检查入口。本轮未重新测量。
 
 四个方向独立单调编号，Stage 成功推进 issued_through，READY 取消不回退；请求跨 session/generation 不回绕。不增加 Replay 配额；保留高水位、合法后继、HELD/QUARANTINED、原 ReplayRetire 禁止成功。RxComplete 的 api_busy 表示重入/所有权问题，不是普通队列背压；回调不得通过 Reset、改 api_busy 绕过。队列满在 Flush 重试同一身份。
 

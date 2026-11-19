@@ -1,8 +1,8 @@
 """Execute original prerequisite scripts unchanged in an isolated candidate snapshot."""
 from pathlib import Path
 import io,os,tarfile,subprocess,sys,json,time,hashlib
-ROOT=Path(__file__).resolve().parents[2];HERE=Path(__file__).resolve().parent
-OUT=ROOT/'output/ConsumerQualificationC2_2A'/('protocol_'+str(time.time_ns()));OUT.mkdir(parents=True)
+ROOT=Path(__file__).resolve().parents[3];HERE=Path(__file__).resolve().parent
+OUT=ROOT/'output/LegacyLifecycleArchiveValidation/C2.2A'/('protocol_'+str(time.time_ns()));OUT.mkdir(parents=True)
 g=['git','-c','safe.directory='+ROOT.as_posix()]
 raw=subprocess.check_output(g+['archive','--format=tar','HEAD'],cwd=ROOT)
 with tarfile.open(fileobj=io.BytesIO(raw)) as t:t.extractall(OUT,filter='data')
@@ -31,6 +31,6 @@ reports={}
 for name,f in report_paths.items():
  if f.exists():reports[name]=json.loads(f.read_text(encoding='utf-8'))
 result={'snapshot':str(OUT),'scripts':rows,'reports':reports,'original_protocol_sources_identical_to_c6d2bed':True,'original_test_assertions_modified':False,'hardware_verified':False}
-(HERE/'protocol_results.json').write_text(json.dumps(result,ensure_ascii=False,indent=2),encoding='utf-8')
+(OUT/'protocol_results.json').write_text(json.dumps(result,ensure_ascii=False,indent=2),encoding='utf-8')
 print({name:r.get('summary',r.get('all_pass',r.get('total'))) for name,r in reports.items()},flush=True)
 raise SystemExit(any(r['exit'] for r in rows) or len(reports)!=5)

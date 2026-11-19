@@ -1,8 +1,8 @@
 """ARMCC5 ABI, current and baseline maps; static stack estimates are not board evidence."""
 from pathlib import Path
 import os,sys,subprocess,json,re,html,struct,inspect,hashlib
-ROOT=Path(__file__).resolve().parents[2];HERE=Path(__file__).resolve().parent
-OUT=ROOT/'output/CameraStopOwnershipR2/layout';OUT.mkdir(parents=True,exist_ok=True)
+ROOT=Path(__file__).resolve().parents[3];HERE=Path(__file__).resolve().parent
+OUT=ROOT/'output/LegacyLifecycleArchiveValidation/R2/layout';OUT.mkdir(parents=True,exist_ok=True)
 os.environ['C1_TEST_OUTPUT_ROOT']=str(OUT)
 sys.path.insert(0,str(ROOT/'Tests/CameraLifecycleC1'))
 import run_tests as c
@@ -43,7 +43,7 @@ for opt in ['O0','O2']:
   assert r['abi']==expected,(r['abi'],expected)
   rows.append({'variant':variant,'optimization':opt,'abi':r['abi'],'stack':stacks(OUT/(name+'.htm'))})
 formal=[]
-for variant,folder in [('baseline_previous_output',ROOT/'output/CameraStopOwnershipR2/build/previous_output'),('current',ROOT/'MDK-ARM')]:
+for variant,folder in [('baseline_previous_output',ROOT/'output/LegacyLifecycleArchiveValidation/R2/build/previous_output'),('current',ROOT/'MDK-ARM')]:
  for target in ['h7_mac_CM7','h7_mac_CM4']:
   p=folder/target/(target+'.map');s=p.read_text(errors='replace')
   totals=re.search(r'^\s*(\d+)\s+(\d+)\s+(\d+)\s+(\d+)\s+(\d+)\s+(\d+)\s+Grand Totals',s,re.M)
@@ -53,5 +53,5 @@ for variant,folder in [('baseline_previous_output',ROOT/'output/CameraStopOwners
    if m:symbols[name]={'address':m[1],'bytes':int(m[2])}
   formal.append({'variant':variant,'target':target,'map_sha256':hashlib.sha256(p.read_bytes()).hexdigest(),'totals':list(map(int,totals.groups())) if totals else None,'symbols':symbols,'stack':stacks(p.with_suffix('.htm')) if p.with_suffix('.htm').exists() else {}})
 report={'abi_columns':['camera_context','qualification','entry','decision','lifecycle','old_message','camera_frame','camera_stack','priority','ops','rx_offset','stop_facts','identity_offset','session_offset','request_offset','consumer_offset','generation_offset','debug_size'],'rows':rows,'formal':formal,'hardware_stack_verified':False,'stack_limitations':'Static known-depth only; indirect calls, exception frames and library unknowns require hardware high-water verification.','baseline_artifact_provenance':'Preserved previous formal output; ABI baseline independently compiled from fa9ce5d source/headers.'}
-(HERE/'layout_results.json').write_text(json.dumps(report,indent=2),encoding='utf-8')
+(OUT/'layout_results.json').write_text(json.dumps(report,indent=2),encoding='utf-8')
 print(json.dumps({'rows':rows,'formal':formal},indent=2))

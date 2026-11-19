@@ -1,12 +1,12 @@
 """Run unchanged historical tests on isolated baseline/current source snapshots."""
 from pathlib import Path
 import subprocess,sys,os,json,io,tarfile,concurrent.futures,hashlib,time,re,argparse
-sys.path.insert(0,str(Path(__file__).resolve().parents[2]/'Tests/CameraLifecycleC1'))
+sys.path.insert(0,str(Path(__file__).resolve().parents[3]/'Tests/CameraLifecycleC1'))
 from regression_compare import normalize_report, compare_all
-ROOT=Path(__file__).resolve().parents[2];HERE=Path(__file__).resolve().parent
-OUT=ROOT/'output/CameraStopOwnershipR2/regression'/str(time.time_ns());OUT.mkdir(parents=True,exist_ok=True)
+ROOT=Path(__file__).resolve().parents[3];HERE=Path(__file__).resolve().parent
+OUT=ROOT/'output/LegacyLifecycleArchiveValidation/C2.2A/regression'/str(time.time_ns());OUT.mkdir(parents=True,exist_ok=True)
 parser=argparse.ArgumentParser()
-parser.add_argument('--baseline',default='fa9ce5d')
+parser.add_argument('--baseline',default='c6d2bedc28683883ffa433f802f8c06aaec3c542')
 args=parser.parse_args()
 BASE=args.baseline
 SUITES=[
@@ -47,7 +47,7 @@ for variant in ['baseline','current']:
  with tarfile.open(fileobj=io.BytesIO(archive)) as t:t.extractall(dest,filter='data')
  # Historical tests stay unchanged; overlay only the C1 protocol, message additions and CM7 source registration.
  if variant=='current':
-  for rel in ['CM7/Application/app_messages.c','CM7/Application/app_messages.h','CM7/Application/app_camera_lifecycle.c','CM7/Application/app_camera_lifecycle.h','CM7/Application/app_camera_lifecycle_replay.c','CM7/Application/app_camera_lifecycle_replay.h','MDK-ARM/h7_mac.uvprojx','CM7/Application/app_camera.c','CM7/Application/app_camera.h','CM7/Application/app_camera_qualification.c','CM7/Application/app_camera_qualification.h','CM7/Application/app_camera_qualification_internal.h','CM7/Application/Tasks/camera_task.c','CM7/Media/Inc/camera_capture.h','CM7/Media/Src/camera_capture.c','Tests/CameraModuleB1/behavior_test.c']:
+  for rel in ['CM7/Application/app_messages.c','CM7/Application/app_messages.h','CM7/Application/app_camera_lifecycle.c','CM7/Application/app_camera_lifecycle.h','CM7/Application/app_camera_lifecycle_replay.c','CM7/Application/app_camera_lifecycle_replay.h','MDK-ARM/h7_mac.uvprojx','CM7/Application/app_camera.c','CM7/Application/app_camera.h','CM7/Application/app_camera_qualification.c','CM7/Application/app_camera_qualification.h','CM7/Application/app_camera_qualification_internal.h']:
    (dest/rel).write_bytes((ROOT/rel).read_bytes())
 env=dict(os.environ,PYTHONIOENCODING='utf-8',PYTHONPATH=str(ROOT/'Tests/OledAsyncAcceptance/python_deps'))
 def run_variant(variant):
@@ -85,6 +85,6 @@ with concurrent.futures.ThreadPoolExecutor(max_workers=2) as pool:
  results={n:f.result() for n,f in fs.items()}
 comparison_result=compare_all(results['baseline'],results['current'])
 changed=[p for p,h in actual.items() if not (ROOT/p).exists() or hashlib.sha256((ROOT/p).read_bytes()).hexdigest()!=h]
-result={'baseline':BASE,**comparison_result,'artifact_root':str(OUT),'actual_workspace_changed_by_regression':changed,'historical_tests_modified':True,'historical_assertions_modified':False,'note':'Original assertions retained; B1 dependency fixture adds only the readonly facts stub. Unavailable fixtures and original trace failures remain visible.'}
-(HERE/'regression_results.json').write_text(json.dumps(result,ensure_ascii=False,indent=2),encoding='utf-8')
+result={'baseline':BASE,**comparison_result,'artifact_root':str(OUT),'actual_workspace_changed_by_regression':changed,'historical_tests_modified':False,'note':'Historical suites including B1/B2 run unchanged; unavailable fixtures and their first diagnostic remain visible.'}
+(OUT/'regression_results.json').write_text(json.dumps(result,ensure_ascii=False,indent=2),encoding='utf-8')
 raise SystemExit(bool(result['new_failures'] or changed))

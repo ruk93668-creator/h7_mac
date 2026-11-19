@@ -4,7 +4,7 @@
 //包装真实Complete进行错误注入，不复制或放宽Replay实现
 static SysResult_t Test_Complete(AppLifecycleRxContext_t *rx, const AppLifecycleMessage_t *reply);
 #define App_LifecycleRxComplete Test_Complete
-#include "../../CM7/Application/app_camera_qualification.c"
+#include "../../../CM7/Application/app_camera_qualification.c"
 #undef App_LifecycleRxComplete
 
 volatile uint32_t g_failure;
