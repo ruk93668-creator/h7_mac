@@ -63,3 +63,12 @@
 Control Service 唯一业务请求入口，Composition 生成候选，Supervisor 按 Resolver 实际依赖及批准的运行状态组织计划，Execution Manager 执行计划及基于事实的补偿。它们均不得操作 DCMI、USB、SDMMC 或替媒体记账。CameraTask 保留物理采集和媒体归还调度权，UsbTask 和 StorageTask 分别保留设备/文件权威。LC 状态只能由对应 Endpoint owner 用真实完成事实推进。选择 V2 后旧 BOOT 编排、Watch 直投及任何第二生命周期路径都必须被排除。IPC V3 原心跳/状态仍独立，M4 新控制路径需要另行授权。
 
 当前阻塞正式接管的是活跃 Keil 登记与 RTOS 端口、唯一 BOOT/STOP 权威、G/R/H/B/M/S/T 的真实贯通、完整 Offer/Retain 关闭屏障、USB 匹配 ACK 消费确认、按消费者核验及 DMA/文件读者证据。V2 合成测试和旧业务兼容构建只能分别支撑各自结果。
+
+## V1 板级基线补录
+
+上文记录原 Phase 8.0 的审计快照。后续工程集成以已核对远端的 `a3cc70cbd7e55253c076fbf5f9241155e53c7e01` 为 V1 输入。与原审计提交 `96868a0` 相比，生产差异仅为 `CM7/BSP/bsp_camera.c` 和 `CM7/BSP/bsp_camera.h`，与已评审的 `8b87a7a` 两个文件逐字节一致。没有变更 CM4、Keil 工程、V2、Legacy RTOS 调度、Media 或 USB。GitHub 核对时 main 为 `f0ce45f`。
+
+- `BSP_Camera_EarlyInit` 在 CM4 放行前配置 PA15 和 PB8/PB9。PA15 为 U10 的高有效 CAM_DVDD_EN，配置输出前预装低电平。PB8 / PB9 分别为 I2C1 SCL / SDA（AF4 开漏）。现有 PH13 PWDN、PH15 RESETB 和 PA8 XCLK 沿用。I2C1 初始化校验共享时钟源，不改 CM4 OLED 所用 I2C2 的时钟选择。
+- V1 电源软件专项 14/14，I2C1 软件专项 24/24。用户已确认编译通过。隔离 ARMCC5 完整构建 CM7、CM4 各为 0 Error、0 Warning，构建源 SHA 为 `a3cc70c`。CM7 Code/RO/RW/ZI 为 139702/3114/1344/100992 B，CM4 为 26350/1438/936/3576 B。与上一节原 Target 的差量，CM7 为 +2012/0/+4/+60 B，CM4 为 0/0/0/0 B。它们仍是运行 Legacy 的 Target 数据。
+- 本地证据在 `output/V1ArchitectureIntegration/build_20261118_184835/results.json` 及其两核日志，AXF/Map 哈希已复算。`.uvprojx` 构建前后哈希一致。构建脚本的外部文件总哈希检查报告 `.uvoptx` 在构建期间变化，XML 对照只有 9 个 `tvExp` 工程树展开值。
+- 这版固件的断电冷启动、PA15 及 U10 1.5 V、实际 I2C1 事务、OV5640 ID `0x5640`、Legacy USB UVC 出图仍待实板确认。既往其他提交的 V1 实板记录不能替代该镜像证据。两个资源证明保留 **NOT_PROVEN**，验收矩阵仍适用于未来集成 Target。

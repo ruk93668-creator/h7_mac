@@ -19,3 +19,10 @@
 5. 外部控制驱动、M4 新控制协议、Media/Bridge/Storage 生产适配和真正接管均需分开授权。没有真实证据时保持两个 NOT_PROVEN，不使用 Debug 快照填充退出凭据。
 
 配套矩阵的证据必须绑定源码 SHA、Target、固件 SHA256、板版本及优化级别。模拟、Legacy 兼容构建和新路径硬件结果分别记录。
+
+## P8.1 输入预检（V1）
+
+- 输入生产基线 `a3cc70c`。先以同一 V1 镜像取得 Legacy 冷启动、OV5640 ID `0x5640` 和 UVC 出图基准，再用相同主机/线缆及管线设置比较登记候选。客户机枚举与实际出图分别记证据。
+- CM7 预定登记的目录及 C 文件为 Core（`media_format`）；Core/Runtime（`control_execution`、`control_execution_link`、`control_service`、`control_transport`）；Configuration（`v2_registry`、`v2_composition`）；MediaGraph（`media_graph`）；Resource（`media_source`、`media_resource`）；Lifecycle（`managed_lifecycle`）；Supervisor（`execution_plan`、`execution_manager`）；Modules/Camera（`camera_endpoint`、`camera_format`、`camera_module`）；Modules/USB（`usb_consumer`、`usb_endpoint`、`usb_format`、`usb_frame`、`usb_module`）；Modules/Storage（`storage_backend`、`storage_consumer`、`storage_endpoint`、`storage_format`、`storage_frame`、`storage_module`）。共 27 个编译单元，头文件按依赖解析。
+- 对 54 个 C/H 的 85 次双引号 include 按源目录及当前 CM7 Target 搜索顺序静态核对，全部可解析且没有多义路径。V2 的 C 文件基本名在 V2 内及现有活动 CM7/CM4 C 条目中无冲突。该检查支持先保持现有 include path，实际交付仍需要 Keil 完整重编、Map 与对象去除核对。
+- 当前 CM7 和 CM4 均没有 V2 登记，也没有 V2 include path。预检只覆盖输入与登记清单，P8.1 的目标登记、V2 整体可链接性和新增运行内存尚未验收。
