@@ -24,11 +24,17 @@ for inc in ['CM7/Core/Inc','CM7/Device/Inc','Board','Board/Inc','Middlewares/Thi
 sc=OUT/'test.sct';sc.write_text('LR_TEST 0x08000000 0x100000 { ER_INIT 0x08000000 { *(.framework_init) } ER_TEST +0 { .ANY (+RO) } RW_TEST 0x20000000 0x80000 { .ANY (+RW +ZI) } }\n')
 images={}
 def build(name,sources,entry,defs=[]):
+ # Load the archived queues only for the current product-message source; historical snapshots use their original source.
+ archive_messages = ROOT/'Tests/LegacyLifecycle'
+ product_messages = '-DC1_MESSAGES_SOURCE="' + (ROOT/'CM7/Application/app_messages.c').as_posix() + '"'
+ using_archive = product_messages in defs and (archive_messages/'Source/legacy_lifecycle_messages.c').is_file()
+ if using_archive:
+  defs = [*defs, '-DC1_ARCHIVED_MESSAGES', '-I', archive_messages/'Include']
  objs=[]
  for i,src in enumerate(sources):
   obj=OUT/(name+str(i)+'.o');run(cc+defs+['-c',src,'-o',obj]);objs.append(obj)
  link_sc=sc
- if name!='legacy_current':
+ if name!='legacy_current' or using_archive:
   link_sc=OUT/(name+'.sct');link_sc.write_text(sc.read_text().replace('ER_INIT 0x08000000 { *(.framework_init) } ER_TEST +0','ER_TEST 0x08000000'))
  axf=OUT/(name+'.axf');run(['D:/32/ARM/ARMCC/Bin/armlink.exe',*objs,'--entry',entry,'--scatter',link_sc,'-o',axf])
  with axf.open('rb') as f:

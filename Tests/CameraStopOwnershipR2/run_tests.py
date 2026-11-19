@@ -25,7 +25,7 @@ rows=[]
 for opt in ['O0','O2']:
  c.cc=[('-'+opt if x in ['-O0','-O2'] else x) for x in c.cc]
  defs=['-DB1_APP_SOURCE="'+(ROOT/'CM7/Application/app_camera.c').as_posix()+'"','-DB1_TASK_SOURCE="'+(ROOT/'CM7/Application/Tasks/camera_task.c').as_posix()+'"','-DR2_MEDIA_FIXTURE="'+(OUT/'media_fixture.c').as_posix()+'"']
- c.build('stop_'+opt,[HERE/'stop_test.c'],'R2_StopRun',defs)
+ c.build('stop_'+opt,[HERE/'stop_test.c',ROOT/'Tests/LegacyLifecycle/Adapter/v2_round_unbound.c'],'R2_StopRun',defs)
  c.build('decision_'+opt,[HERE/'decision_test.c',ROOT/'CM7/Application/app_camera_lifecycle.c',ROOT/'CM7/Application/app_camera_lifecycle_replay.c'],'R2_DecisionRun')
  for group,entry,count in [('stop','R2_StopRun',25),('decision','R2_DecisionRun',12)]:
   for id in range(count):

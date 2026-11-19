@@ -13,6 +13,9 @@ static uint32_t creates,fail_create;
 QueueHandle_t xQueueGenericCreateStatic(const UBaseType_t length,const UBaseType_t size,uint8_t*storage,StaticQueue_t*control,const uint8_t type)
 {creates++;if(creates==fail_create)return NULL;return C1_RealCreateStatic(length,size,storage,control,type);}
 #include C1_MESSAGES_SOURCE
+#ifdef C1_ARCHIVED_MESSAGES
+#include "../LegacyLifecycle/Source/legacy_lifecycle_messages.c"
+#endif
 
 volatile uint32_t g_failure;
 volatile uint32_t g_trace[1024][8],g_trace_count;

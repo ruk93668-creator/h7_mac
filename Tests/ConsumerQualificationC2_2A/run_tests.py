@@ -26,7 +26,7 @@ for opt in ['O0','O2']:
 for opt in ['O0','O2']:
  c.cc=[('-'+opt if x in ['-O0','-O2'] else x) for x in c.cc]
  defs=['-DB1_APP_SOURCE="'+(ROOT/'CM7/Application/app_camera.c').as_posix()+'"','-DB1_TASK_SOURCE="'+(ROOT/'CM7/Application/Tasks/camera_task.c').as_posix()+'"']
- c.build('adapter_'+opt,[HERE/'adapter_test.c',ROOT/'CM7/Application/app_camera_qualification.c',ROOT/'CM7/Application/app_camera_lifecycle.c',ROOT/'CM7/Application/app_camera_lifecycle_replay.c'],'C2A_AdapterRun',defs)
+ c.build('adapter_'+opt,[HERE/'adapter_test.c',ROOT/'CM7/Application/app_camera_qualification.c',ROOT/'CM7/Application/app_camera_lifecycle.c',ROOT/'CM7/Application/app_camera_lifecycle_replay.c',ROOT/'Tests/LegacyLifecycle/Adapter/v2_round_unbound.c'],'C2A_AdapterRun',defs)
  for id in range(14):
   r=c.execute('adapter_'+opt,'C2A_AdapterRun',id);r.pop('trace',None)
   rows.append({'id':'adapter_'+str(id),'optimization':opt,**r})
