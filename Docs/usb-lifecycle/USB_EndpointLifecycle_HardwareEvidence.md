@@ -1,5 +1,13 @@
 # USB Endpoint Lifecycle 硬件证据与阻塞记录
 
+## 2026-11-19 本轮证据补充（优先于下方历史记录）
+
+**VERIFIED（用户截图/陈述）**：DBGMCU_IDCODE完整值`0x20036450`，DEV_ID=`0x450`，REV_ID=`0x2003`；一次截图加两次刷新相同的用户确认。ES0445 Rev7第1页表2映射到U/V组，不能唯一确定U或V。探针为DAPLink；精确Keil版本、CPU状态、完整实物型号仍UNRESOLVED。用户报告曾自动Reset/Download，不能宣称本次满足全程无复位/无下载要求。代理没有操作目标。
+
+**UNRESOLVED**：RM0399本机搜索0匹配，指定官方请求HTTP567/0字节，未得到PDF原件。没有PDF页数或SHA256，不提供未经正文核验的停止步骤；P1-A整体未完成，P1-B/P2未开始。
+
+详见[修订号证据及过程限制](STM32H747_SiliconRevision_Identification.md)、[RM0399搜索与停止时序矩阵](RM0399_Revision_and_EndpointTiming_Analysis.md)。下方“未实读REV_ID/未做实板读取”仅描述先前P1交付，不再代表本次用户提供证据后的最新状态。此前软件测试结论保留，不扩大为实板停止证明。
+
 > P1 起点：`9d38e56966f8ea5da9ee63285b037747613c47d5`，分支 `codex/usb-device-lifecycle-manager`，2026-11-19。
 > VERIFIED 分别注明手册/源码/软件测试；INFERRED 是设计推导；UNRESOLVED 是缺证据；NOT_TESTED 是未做实板验证。
 > **P1-A 尚未完成。不能据本文实施未核验的寄存器停止时序，也不能宣布 P1 完整通过。**

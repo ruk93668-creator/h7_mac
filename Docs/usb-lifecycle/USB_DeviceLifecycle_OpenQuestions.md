@@ -1,5 +1,15 @@
 # UDLM 未决问题、证据缺口与审批门禁
 
+## 2026-11-19 硬件证据专项更新（最新状态）
+
+**VERIFIED（用户截图+陈述）**：原值`0x20036450`，DEV_ID=`0x450`，REV_ID=`0x2003`，对应ES0445 Rev7第1页表2的U/V组；第二、三次相同是用户确认，非独立三份采集。DAPLink已确认；Keil数字版本、CPU状态、实物完整型号仍UNRESOLVED。用户已报告新会话自动Reset/Download，因此不能标记为无复位/下载过程。该记录替代下方历史“REV_ID未实读”的最新状态，不代表Endpoint停止验收。
+
+**UNRESOLVED（O1继续阻塞）**：RM0399指定位置及安装目录搜索0匹配；官方目标HTTP567、0字节，未取得正文。停止步骤、寄存器语义的具体章节/页码、四种Endpoint类型的接受谓词均未关闭。O2/O3的LL真返回入口不等于安全Flush集成证明；其他未决项维持原状态。
+
+**NOT_TESTED**：新Endpoint停止实现、重连回归及独立三次采集；本轮不写生产/测试代码，不烧录，不开始P1-B/P2。硬件证据闭环整体未通过。
+
+新增记录：[RM0399检索与停止时序差距](RM0399_Revision_and_EndpointTiming_Analysis.md)、[Silicon Revision身份及调试过程](STM32H747_SiliconRevision_Identification.md)。本轮仅这两份新文档和HardwareEvidence/OpenQuestions两份更新；原始记录留在忽略的output目录。
+
 > **P1进度（2026-11-19）**：本轮为未完成/受阻交付，生产代码未改；下面原有内容是Phase0历史设计。当前结果见本文末尾及三份EndpointLifecycle报告。
 
 > 基线：`35401119bef1d5a4594925478119e048f68c2c77`；研究分支：`codex/usb-device-lifecycle-manager`；审计日期：2026-11-19。
