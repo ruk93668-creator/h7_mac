@@ -1,5 +1,7 @@
 # UDLM 增量架构设计
 
+> **P1进度（2026-11-19）**：本轮为未完成/受阻交付，生产代码未改；下面原有内容是Phase0历史设计。当前结果见本文末尾及三份EndpointLifecycle报告。
+
 > 基线：`35401119bef1d5a4594925478119e048f68c2c77`；研究分支：`codex/usb-device-lifecycle-manager`；审计日期：2026-11-19。
 > 范围：Phase 0，仅文档；未修改生产/测试代码，未编译或烧录。
 > 标记：**VERIFIED**＝本基线源码确认；**INFERRED**＝推断或拟议设计，尚非已实现能力；**UNRESOLVED**＝证据/契约尚缺；**NOT_TESTED**＝本轮未运行验证。源码引用采用仓库相对路径和一基行号，均相对于上述 SHA。
@@ -127,3 +129,9 @@ flowchart TD
 | RequestStop / Process / GetTransaction / RegisterParticipant / GetProof | 新增概念 API | 固定容量、无 heap；具体 ABI 待 Phase1 审核 |
 
 **UNRESOLVED**：BSP/应用 bridge/Worker 新 port 是实现安全证明的必要边界。本轮没有这类修改授权，因此设计不能标记为“只改 Platform 即可落地”。这些阻塞与测试门禁列于 OpenQuestions/MigrationPlan。
+
+## P1 本轮证据与状态更新
+
+**INFERRED / 未实施**：同步有界Abort+Task分阶段协调方向不变。公开LL FIFO返回值可读取已由源码和刻画测试确认，但其时间预算、正确锁/scope和RX/EP0硬件条件未证明；不能因此把整体硬件门禁判为关闭。未新增生产coordinator/接口，未迁移MSC/UVC Class生命周期。
+
+详见 [P1实施/阻塞报告](USB_EndpointLifecycle_ImplementationReport.md)、[硬件证据](USB_EndpointLifecycle_HardwareEvidence.md)、[软件验证](USB_EndpointLifecycle_SoftwareVerification.md)。

@@ -1,5 +1,7 @@
 # UDLM 验收与故障注入矩阵
 
+> **P1进度（2026-11-19）**：本轮为未完成/受阻交付，生产代码未改；下面原有内容是Phase0历史设计。当前结果见本文末尾及三份EndpointLifecycle报告。
+
 > 基线：`35401119bef1d5a4594925478119e048f68c2c77`；研究分支：`codex/usb-device-lifecycle-manager`；审计日期：2026-11-19。
 > 范围：Phase 0，仅文档；未修改生产/测试代码，未编译或烧录。
 > 标记：**VERIFIED**＝本基线源码确认；**INFERRED**＝推断或拟议设计，尚非已实现能力；**UNRESOLVED**＝证据/契约尚缺；**NOT_TESTED**＝本轮未运行验证。源码引用采用仓库相对路径和一基行号，均相对于上述 SHA。
@@ -114,3 +116,9 @@
 **INFERRED**：先保存原测试输出/已知失败，再运行新增UDLM故障注入；完整CM7 RAM MSC、SD只读MSC、默认UVC构建记录编译器命令、Error/Warning、MAP静态内存/栈。生产成功路径/固有失败断言保持；任何历史失败原样报告，不调整断言造PASS。新增测试不能只镜像实现，必须验证独立所有权不变量与失败现场。
 
 **NOT_TESTED**：上述构建/软件测试/实板回归均留给获授权的实施阶段；本轮不存在可宣称的固件验证结果。
+
+## P1 本轮证据与状态更新
+
+**VERIFIED（软件）**：原17入口回归在独立快照实际执行，保留原失败；新增18项/108断言是HAL/LL缺口刻画。**NOT_TESTED**：本矩阵中需要新Endpoint Identity/Proof/Reconcile实现的竞争、重复释放、跨generation迟到事件及实板用例仍未验收。不能把单纯“重现缺陷成功”计为P1安全验收PASS。
+
+详见 [P1实施/阻塞报告](USB_EndpointLifecycle_ImplementationReport.md)、[硬件证据](USB_EndpointLifecycle_HardwareEvidence.md)、[软件验证](USB_EndpointLifecycle_SoftwareVerification.md)。

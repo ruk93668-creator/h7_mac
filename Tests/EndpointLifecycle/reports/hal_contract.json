@@ -1,0 +1,1446 @@
+{
+  "scope": "Unchanged HAL/LL characterization, not P1 implementation acceptance",
+  "cases": [
+    {
+      "id": 0,
+      "name": "HAL Tx Flush hides AHB-idle timeout",
+      "passed": true,
+      "assertions": [
+        {
+          "name": "returned to sentinel",
+          "actual": 16777216,
+          "expected": 16777216,
+          "passed": true
+        },
+        {
+          "name": "entry result",
+          "actual": 0,
+          "expected": 0,
+          "passed": true
+        },
+        {
+          "name": "case identity",
+          "actual": 0,
+          "expected": 0,
+          "passed": true
+        },
+        {
+          "name": "public status",
+          "actual": 0,
+          "expected": 0,
+          "passed": true
+        },
+        {
+          "name": "no unrelated stub called",
+          "actual": 0,
+          "expected": 0,
+          "passed": true
+        }
+      ],
+      "assertion_count": 5,
+      "input_state": {
+        "endpoint_type": "BULK",
+        "max_packet": 64,
+        "in_epena": false,
+        "out_epena": false,
+        "existing_xfrc_epdisd": false,
+        "pcd_locked": false
+      },
+      "injection": "MMIO model only: AHBIDL low / stuck flush / stuck EPENA / EPENA clear without EPDISD as named",
+      "expectation_kind": "characterize existing defects; not acceptance of a safe stop",
+      "register_reads": {
+        "in": 1,
+        "out": 1,
+        "grst": 5
+      },
+      "actual": 0,
+      "expected": 0,
+      "registers": {
+        "GRSTCTL": 0,
+        "IN2_CTL": 0,
+        "OUT2_CTL": 0,
+        "IN2_INT": 0,
+        "OUT2_INT": 0,
+        "GAHBCFG": 1,
+        "DCTL": 0
+      },
+      "error": null,
+      "resource_refs": "NOT_MODELED: no endpoint ledger exists in HAL",
+      "silicon": "NOT_TESTED"
+    },
+    {
+      "id": 1,
+      "name": "HAL Rx Flush hides AHB-idle timeout",
+      "passed": true,
+      "assertions": [
+        {
+          "name": "returned to sentinel",
+          "actual": 16777216,
+          "expected": 16777216,
+          "passed": true
+        },
+        {
+          "name": "entry result",
+          "actual": 0,
+          "expected": 0,
+          "passed": true
+        },
+        {
+          "name": "case identity",
+          "actual": 1,
+          "expected": 1,
+          "passed": true
+        },
+        {
+          "name": "public status",
+          "actual": 0,
+          "expected": 0,
+          "passed": true
+        },
+        {
+          "name": "no unrelated stub called",
+          "actual": 0,
+          "expected": 0,
+          "passed": true
+        }
+      ],
+      "assertion_count": 5,
+      "input_state": {
+        "endpoint_type": "BULK",
+        "max_packet": 64,
+        "in_epena": false,
+        "out_epena": false,
+        "existing_xfrc_epdisd": false,
+        "pcd_locked": false
+      },
+      "injection": "MMIO model only: AHBIDL low / stuck flush / stuck EPENA / EPENA clear without EPDISD as named",
+      "expectation_kind": "characterize existing defects; not acceptance of a safe stop",
+      "register_reads": {
+        "in": 1,
+        "out": 1,
+        "grst": 5
+      },
+      "actual": 0,
+      "expected": 0,
+      "registers": {
+        "GRSTCTL": 0,
+        "IN2_CTL": 0,
+        "OUT2_CTL": 0,
+        "IN2_INT": 0,
+        "OUT2_INT": 0,
+        "GAHBCFG": 1,
+        "DCTL": 0
+      },
+      "error": null,
+      "resource_refs": "NOT_MODELED: no endpoint ledger exists in HAL",
+      "silicon": "NOT_TESTED"
+    },
+    {
+      "id": 2,
+      "name": "LL Tx Flush returns true timeout",
+      "passed": true,
+      "assertions": [
+        {
+          "name": "returned to sentinel",
+          "actual": 16777216,
+          "expected": 16777216,
+          "passed": true
+        },
+        {
+          "name": "entry result",
+          "actual": 0,
+          "expected": 0,
+          "passed": true
+        },
+        {
+          "name": "case identity",
+          "actual": 2,
+          "expected": 2,
+          "passed": true
+        },
+        {
+          "name": "public status",
+          "actual": 3,
+          "expected": 3,
+          "passed": true
+        },
+        {
+          "name": "no unrelated stub called",
+          "actual": 0,
+          "expected": 0,
+          "passed": true
+        }
+      ],
+      "assertion_count": 5,
+      "input_state": {
+        "endpoint_type": "BULK",
+        "max_packet": 64,
+        "in_epena": false,
+        "out_epena": false,
+        "existing_xfrc_epdisd": false,
+        "pcd_locked": false
+      },
+      "injection": "MMIO model only: AHBIDL low / stuck flush / stuck EPENA / EPENA clear without EPDISD as named",
+      "expectation_kind": "characterize existing defects; not acceptance of a safe stop",
+      "register_reads": {
+        "in": 1,
+        "out": 1,
+        "grst": 5
+      },
+      "actual": 3,
+      "expected": 3,
+      "registers": {
+        "GRSTCTL": 0,
+        "IN2_CTL": 0,
+        "OUT2_CTL": 0,
+        "IN2_INT": 0,
+        "OUT2_INT": 0,
+        "GAHBCFG": 1,
+        "DCTL": 0
+      },
+      "error": null,
+      "resource_refs": "NOT_MODELED: no endpoint ledger exists in HAL",
+      "silicon": "NOT_TESTED"
+    },
+    {
+      "id": 3,
+      "name": "LL Rx Flush returns true timeout",
+      "passed": true,
+      "assertions": [
+        {
+          "name": "returned to sentinel",
+          "actual": 16777216,
+          "expected": 16777216,
+          "passed": true
+        },
+        {
+          "name": "entry result",
+          "actual": 0,
+          "expected": 0,
+          "passed": true
+        },
+        {
+          "name": "case identity",
+          "actual": 3,
+          "expected": 3,
+          "passed": true
+        },
+        {
+          "name": "public status",
+          "actual": 3,
+          "expected": 3,
+          "passed": true
+        },
+        {
+          "name": "no unrelated stub called",
+          "actual": 0,
+          "expected": 0,
+          "passed": true
+        }
+      ],
+      "assertion_count": 5,
+      "input_state": {
+        "endpoint_type": "BULK",
+        "max_packet": 64,
+        "in_epena": false,
+        "out_epena": false,
+        "existing_xfrc_epdisd": false,
+        "pcd_locked": false
+      },
+      "injection": "MMIO model only: AHBIDL low / stuck flush / stuck EPENA / EPENA clear without EPDISD as named",
+      "expectation_kind": "characterize existing defects; not acceptance of a safe stop",
+      "register_reads": {
+        "in": 1,
+        "out": 1,
+        "grst": 5
+      },
+      "actual": 3,
+      "expected": 3,
+      "registers": {
+        "GRSTCTL": 0,
+        "IN2_CTL": 0,
+        "OUT2_CTL": 0,
+        "IN2_INT": 0,
+        "OUT2_INT": 0,
+        "GAHBCFG": 1,
+        "DCTL": 0
+      },
+      "error": null,
+      "resource_refs": "NOT_MODELED: no endpoint ledger exists in HAL",
+      "silicon": "NOT_TESTED"
+    },
+    {
+      "id": 4,
+      "name": "HAL Stop hides Tx Flush timeout",
+      "passed": true,
+      "assertions": [
+        {
+          "name": "returned to sentinel",
+          "actual": 16777216,
+          "expected": 16777216,
+          "passed": true
+        },
+        {
+          "name": "entry result",
+          "actual": 0,
+          "expected": 0,
+          "passed": true
+        },
+        {
+          "name": "case identity",
+          "actual": 4,
+          "expected": 4,
+          "passed": true
+        },
+        {
+          "name": "public status",
+          "actual": 0,
+          "expected": 0,
+          "passed": true
+        },
+        {
+          "name": "no unrelated stub called",
+          "actual": 0,
+          "expected": 0,
+          "passed": true
+        },
+        {
+          "name": "global IRQ enable",
+          "actual": false,
+          "expected": false,
+          "passed": true
+        }
+      ],
+      "assertion_count": 6,
+      "input_state": {
+        "endpoint_type": "BULK",
+        "max_packet": 64,
+        "in_epena": false,
+        "out_epena": false,
+        "existing_xfrc_epdisd": false,
+        "pcd_locked": false
+      },
+      "injection": "MMIO model only: AHBIDL low / stuck flush / stuck EPENA / EPENA clear without EPDISD as named",
+      "expectation_kind": "characterize existing defects; not acceptance of a safe stop",
+      "register_reads": {
+        "in": 1,
+        "out": 1,
+        "grst": 5
+      },
+      "actual": 0,
+      "expected": 0,
+      "registers": {
+        "GRSTCTL": 0,
+        "IN2_CTL": 0,
+        "OUT2_CTL": 0,
+        "IN2_INT": 0,
+        "OUT2_INT": 0,
+        "GAHBCFG": 0,
+        "DCTL": 2
+      },
+      "error": null,
+      "resource_refs": "NOT_MODELED: no endpoint ledger exists in HAL",
+      "silicon": "NOT_TESTED"
+    },
+    {
+      "id": 5,
+      "name": "Active IN2 Abort times out as HAL_ERROR",
+      "passed": true,
+      "assertions": [
+        {
+          "name": "returned to sentinel",
+          "actual": 16777216,
+          "expected": 16777216,
+          "passed": true
+        },
+        {
+          "name": "entry result",
+          "actual": 0,
+          "expected": 0,
+          "passed": true
+        },
+        {
+          "name": "case identity",
+          "actual": 5,
+          "expected": 5,
+          "passed": true
+        },
+        {
+          "name": "public status",
+          "actual": 1,
+          "expected": 1,
+          "passed": true
+        },
+        {
+          "name": "no unrelated stub called",
+          "actual": 0,
+          "expected": 0,
+          "passed": true
+        },
+        {
+          "name": "EPENA still set",
+          "actual": true,
+          "expected": true,
+          "passed": true
+        },
+        {
+          "name": "bounded loop executed",
+          "actual": true,
+          "expected": true,
+          "passed": true
+        }
+      ],
+      "assertion_count": 7,
+      "input_state": {
+        "endpoint_type": "BULK",
+        "max_packet": 64,
+        "in_epena": true,
+        "out_epena": false,
+        "existing_xfrc_epdisd": false,
+        "pcd_locked": false
+      },
+      "injection": "MMIO model only: AHBIDL low / stuck flush / stuck EPENA / EPENA clear without EPDISD as named",
+      "expectation_kind": "characterize existing defects; not acceptance of a safe stop",
+      "register_reads": {
+        "in": 10004,
+        "out": 1,
+        "grst": 1
+      },
+      "actual": 1,
+      "expected": 1,
+      "registers": {
+        "GRSTCTL": 0,
+        "IN2_CTL": 3355443200,
+        "OUT2_CTL": 0,
+        "IN2_INT": 0,
+        "OUT2_INT": 0,
+        "GAHBCFG": 1,
+        "DCTL": 0
+      },
+      "error": null,
+      "resource_refs": "NOT_MODELED: no endpoint ledger exists in HAL",
+      "silicon": "NOT_TESTED"
+    },
+    {
+      "id": 6,
+      "name": "Active OUT2 Abort times out as HAL_ERROR",
+      "passed": true,
+      "assertions": [
+        {
+          "name": "returned to sentinel",
+          "actual": 16777216,
+          "expected": 16777216,
+          "passed": true
+        },
+        {
+          "name": "entry result",
+          "actual": 0,
+          "expected": 0,
+          "passed": true
+        },
+        {
+          "name": "case identity",
+          "actual": 6,
+          "expected": 6,
+          "passed": true
+        },
+        {
+          "name": "public status",
+          "actual": 1,
+          "expected": 1,
+          "passed": true
+        },
+        {
+          "name": "no unrelated stub called",
+          "actual": 0,
+          "expected": 0,
+          "passed": true
+        },
+        {
+          "name": "EPENA still set",
+          "actual": true,
+          "expected": true,
+          "passed": true
+        },
+        {
+          "name": "bounded loop executed",
+          "actual": true,
+          "expected": true,
+          "passed": true
+        }
+      ],
+      "assertion_count": 7,
+      "input_state": {
+        "endpoint_type": "BULK",
+        "max_packet": 64,
+        "in_epena": false,
+        "out_epena": true,
+        "existing_xfrc_epdisd": false,
+        "pcd_locked": false
+      },
+      "injection": "MMIO model only: AHBIDL low / stuck flush / stuck EPENA / EPENA clear without EPDISD as named",
+      "expectation_kind": "characterize existing defects; not acceptance of a safe stop",
+      "register_reads": {
+        "in": 1,
+        "out": 10004,
+        "grst": 1
+      },
+      "actual": 1,
+      "expected": 1,
+      "registers": {
+        "GRSTCTL": 0,
+        "IN2_CTL": 0,
+        "OUT2_CTL": 3355443200,
+        "IN2_INT": 0,
+        "OUT2_INT": 0,
+        "GAHBCFG": 1,
+        "DCTL": 0
+      },
+      "error": null,
+      "resource_refs": "NOT_MODELED: no endpoint ledger exists in HAL",
+      "silicon": "NOT_TESTED"
+    },
+    {
+      "id": 7,
+      "name": "IN2 EPENA zero without EPDISD is HAL_OK",
+      "passed": true,
+      "assertions": [
+        {
+          "name": "returned to sentinel",
+          "actual": 16777216,
+          "expected": 16777216,
+          "passed": true
+        },
+        {
+          "name": "entry result",
+          "actual": 0,
+          "expected": 0,
+          "passed": true
+        },
+        {
+          "name": "case identity",
+          "actual": 7,
+          "expected": 7,
+          "passed": true
+        },
+        {
+          "name": "public status",
+          "actual": 0,
+          "expected": 0,
+          "passed": true
+        },
+        {
+          "name": "no unrelated stub called",
+          "actual": 0,
+          "expected": 0,
+          "passed": true
+        },
+        {
+          "name": "EPENA clear",
+          "actual": false,
+          "expected": false,
+          "passed": true
+        },
+        {
+          "name": "EPDISD absent",
+          "actual": false,
+          "expected": false,
+          "passed": true
+        }
+      ],
+      "assertion_count": 7,
+      "input_state": {
+        "endpoint_type": "BULK",
+        "max_packet": 64,
+        "in_epena": false,
+        "out_epena": false,
+        "existing_xfrc_epdisd": false,
+        "pcd_locked": false
+      },
+      "injection": "MMIO model only: AHBIDL low / stuck flush / stuck EPENA / EPENA clear without EPDISD as named",
+      "expectation_kind": "characterize existing defects; not acceptance of a safe stop",
+      "register_reads": {
+        "in": 2,
+        "out": 1,
+        "grst": 1
+      },
+      "actual": 0,
+      "expected": 0,
+      "registers": {
+        "GRSTCTL": 0,
+        "IN2_CTL": 0,
+        "OUT2_CTL": 0,
+        "IN2_INT": 0,
+        "OUT2_INT": 0,
+        "GAHBCFG": 1,
+        "DCTL": 0
+      },
+      "error": null,
+      "resource_refs": "NOT_MODELED: no endpoint ledger exists in HAL",
+      "silicon": "NOT_TESTED"
+    },
+    {
+      "id": 8,
+      "name": "OUT2 EPENA zero without EPDISD is HAL_OK",
+      "passed": true,
+      "assertions": [
+        {
+          "name": "returned to sentinel",
+          "actual": 16777216,
+          "expected": 16777216,
+          "passed": true
+        },
+        {
+          "name": "entry result",
+          "actual": 0,
+          "expected": 0,
+          "passed": true
+        },
+        {
+          "name": "case identity",
+          "actual": 8,
+          "expected": 8,
+          "passed": true
+        },
+        {
+          "name": "public status",
+          "actual": 0,
+          "expected": 0,
+          "passed": true
+        },
+        {
+          "name": "no unrelated stub called",
+          "actual": 0,
+          "expected": 0,
+          "passed": true
+        },
+        {
+          "name": "EPENA clear",
+          "actual": false,
+          "expected": false,
+          "passed": true
+        },
+        {
+          "name": "EPDISD absent",
+          "actual": false,
+          "expected": false,
+          "passed": true
+        }
+      ],
+      "assertion_count": 7,
+      "input_state": {
+        "endpoint_type": "BULK",
+        "max_packet": 64,
+        "in_epena": false,
+        "out_epena": false,
+        "existing_xfrc_epdisd": false,
+        "pcd_locked": false
+      },
+      "injection": "MMIO model only: AHBIDL low / stuck flush / stuck EPENA / EPENA clear without EPDISD as named",
+      "expectation_kind": "characterize existing defects; not acceptance of a safe stop",
+      "register_reads": {
+        "in": 1,
+        "out": 2,
+        "grst": 1
+      },
+      "actual": 0,
+      "expected": 0,
+      "registers": {
+        "GRSTCTL": 0,
+        "IN2_CTL": 0,
+        "OUT2_CTL": 0,
+        "IN2_INT": 0,
+        "OUT2_INT": 0,
+        "GAHBCFG": 1,
+        "DCTL": 0
+      },
+      "error": null,
+      "resource_refs": "NOT_MODELED: no endpoint ledger exists in HAL",
+      "silicon": "NOT_TESTED"
+    },
+    {
+      "id": 9,
+      "name": "IN2 EPENA clears without EPDISD",
+      "passed": true,
+      "assertions": [
+        {
+          "name": "returned to sentinel",
+          "actual": 16777216,
+          "expected": 16777216,
+          "passed": true
+        },
+        {
+          "name": "entry result",
+          "actual": 0,
+          "expected": 0,
+          "passed": true
+        },
+        {
+          "name": "case identity",
+          "actual": 9,
+          "expected": 9,
+          "passed": true
+        },
+        {
+          "name": "public status",
+          "actual": 0,
+          "expected": 0,
+          "passed": true
+        },
+        {
+          "name": "no unrelated stub called",
+          "actual": 0,
+          "expected": 0,
+          "passed": true
+        },
+        {
+          "name": "EPENA clear",
+          "actual": false,
+          "expected": false,
+          "passed": true
+        },
+        {
+          "name": "EPDISD absent",
+          "actual": false,
+          "expected": false,
+          "passed": true
+        }
+      ],
+      "assertion_count": 7,
+      "input_state": {
+        "endpoint_type": "BULK",
+        "max_packet": 64,
+        "in_epena": true,
+        "out_epena": false,
+        "existing_xfrc_epdisd": false,
+        "pcd_locked": false
+      },
+      "injection": "MMIO model only: AHBIDL low / stuck flush / stuck EPENA / EPENA clear without EPDISD as named",
+      "expectation_kind": "characterize existing defects; not acceptance of a safe stop",
+      "register_reads": {
+        "in": 5,
+        "out": 1,
+        "grst": 1
+      },
+      "actual": 0,
+      "expected": 0,
+      "registers": {
+        "GRSTCTL": 0,
+        "IN2_CTL": 1207959552,
+        "OUT2_CTL": 0,
+        "IN2_INT": 0,
+        "OUT2_INT": 0,
+        "GAHBCFG": 1,
+        "DCTL": 0
+      },
+      "error": null,
+      "resource_refs": "NOT_MODELED: no endpoint ledger exists in HAL",
+      "silicon": "NOT_TESTED"
+    },
+    {
+      "id": 10,
+      "name": "OUT2 EPENA clears without EPDISD",
+      "passed": true,
+      "assertions": [
+        {
+          "name": "returned to sentinel",
+          "actual": 16777216,
+          "expected": 16777216,
+          "passed": true
+        },
+        {
+          "name": "entry result",
+          "actual": 0,
+          "expected": 0,
+          "passed": true
+        },
+        {
+          "name": "case identity",
+          "actual": 10,
+          "expected": 10,
+          "passed": true
+        },
+        {
+          "name": "public status",
+          "actual": 0,
+          "expected": 0,
+          "passed": true
+        },
+        {
+          "name": "no unrelated stub called",
+          "actual": 0,
+          "expected": 0,
+          "passed": true
+        },
+        {
+          "name": "EPENA clear",
+          "actual": false,
+          "expected": false,
+          "passed": true
+        },
+        {
+          "name": "EPDISD absent",
+          "actual": false,
+          "expected": false,
+          "passed": true
+        }
+      ],
+      "assertion_count": 7,
+      "input_state": {
+        "endpoint_type": "BULK",
+        "max_packet": 64,
+        "in_epena": false,
+        "out_epena": true,
+        "existing_xfrc_epdisd": false,
+        "pcd_locked": false
+      },
+      "injection": "MMIO model only: AHBIDL low / stuck flush / stuck EPENA / EPENA clear without EPDISD as named",
+      "expectation_kind": "characterize existing defects; not acceptance of a safe stop",
+      "register_reads": {
+        "in": 1,
+        "out": 5,
+        "grst": 1
+      },
+      "actual": 0,
+      "expected": 0,
+      "registers": {
+        "GRSTCTL": 0,
+        "IN2_CTL": 0,
+        "OUT2_CTL": 1207959552,
+        "IN2_INT": 0,
+        "OUT2_INT": 0,
+        "GAHBCFG": 1,
+        "DCTL": 0
+      },
+      "error": null,
+      "resource_refs": "NOT_MODELED: no endpoint ledger exists in HAL",
+      "silicon": "NOT_TESTED"
+    },
+    {
+      "id": 11,
+      "name": "HAL Flush lock contention is HAL_BUSY",
+      "passed": true,
+      "assertions": [
+        {
+          "name": "returned to sentinel",
+          "actual": 16777216,
+          "expected": 16777216,
+          "passed": true
+        },
+        {
+          "name": "entry result",
+          "actual": 0,
+          "expected": 0,
+          "passed": true
+        },
+        {
+          "name": "case identity",
+          "actual": 11,
+          "expected": 11,
+          "passed": true
+        },
+        {
+          "name": "public status",
+          "actual": 2,
+          "expected": 2,
+          "passed": true
+        },
+        {
+          "name": "no unrelated stub called",
+          "actual": 0,
+          "expected": 0,
+          "passed": true
+        }
+      ],
+      "assertion_count": 5,
+      "input_state": {
+        "endpoint_type": "BULK",
+        "max_packet": 64,
+        "in_epena": false,
+        "out_epena": false,
+        "existing_xfrc_epdisd": false,
+        "pcd_locked": true
+      },
+      "injection": "MMIO model only: AHBIDL low / stuck flush / stuck EPENA / EPENA clear without EPDISD as named",
+      "expectation_kind": "characterize existing defects; not acceptance of a safe stop",
+      "register_reads": {
+        "in": 1,
+        "out": 1,
+        "grst": 1
+      },
+      "actual": 2,
+      "expected": 2,
+      "registers": {
+        "GRSTCTL": 0,
+        "IN2_CTL": 0,
+        "OUT2_CTL": 0,
+        "IN2_INT": 0,
+        "OUT2_INT": 0,
+        "GAHBCFG": 1,
+        "DCTL": 0
+      },
+      "error": null,
+      "resource_refs": "NOT_MODELED: no endpoint ledger exists in HAL",
+      "silicon": "NOT_TESTED"
+    },
+    {
+      "id": 12,
+      "name": "HAL Stop lock contention is HAL_BUSY",
+      "passed": true,
+      "assertions": [
+        {
+          "name": "returned to sentinel",
+          "actual": 16777216,
+          "expected": 16777216,
+          "passed": true
+        },
+        {
+          "name": "entry result",
+          "actual": 0,
+          "expected": 0,
+          "passed": true
+        },
+        {
+          "name": "case identity",
+          "actual": 12,
+          "expected": 12,
+          "passed": true
+        },
+        {
+          "name": "public status",
+          "actual": 2,
+          "expected": 2,
+          "passed": true
+        },
+        {
+          "name": "no unrelated stub called",
+          "actual": 0,
+          "expected": 0,
+          "passed": true
+        },
+        {
+          "name": "global IRQ enable",
+          "actual": true,
+          "expected": true,
+          "passed": true
+        }
+      ],
+      "assertion_count": 6,
+      "input_state": {
+        "endpoint_type": "BULK",
+        "max_packet": 64,
+        "in_epena": false,
+        "out_epena": false,
+        "existing_xfrc_epdisd": false,
+        "pcd_locked": true
+      },
+      "injection": "MMIO model only: AHBIDL low / stuck flush / stuck EPENA / EPENA clear without EPDISD as named",
+      "expectation_kind": "characterize existing defects; not acceptance of a safe stop",
+      "register_reads": {
+        "in": 1,
+        "out": 1,
+        "grst": 1
+      },
+      "actual": 2,
+      "expected": 2,
+      "registers": {
+        "GRSTCTL": 0,
+        "IN2_CTL": 0,
+        "OUT2_CTL": 0,
+        "IN2_INT": 0,
+        "OUT2_INT": 0,
+        "GAHBCFG": 1,
+        "DCTL": 0
+      },
+      "error": null,
+      "resource_refs": "NOT_MODELED: no endpoint ledger exists in HAL",
+      "silicon": "NOT_TESTED"
+    },
+    {
+      "id": 13,
+      "name": "HAL Abort ignores HAL lock",
+      "passed": true,
+      "assertions": [
+        {
+          "name": "returned to sentinel",
+          "actual": 16777216,
+          "expected": 16777216,
+          "passed": true
+        },
+        {
+          "name": "entry result",
+          "actual": 0,
+          "expected": 0,
+          "passed": true
+        },
+        {
+          "name": "case identity",
+          "actual": 13,
+          "expected": 13,
+          "passed": true
+        },
+        {
+          "name": "public status",
+          "actual": 0,
+          "expected": 0,
+          "passed": true
+        },
+        {
+          "name": "no unrelated stub called",
+          "actual": 0,
+          "expected": 0,
+          "passed": true
+        }
+      ],
+      "assertion_count": 5,
+      "input_state": {
+        "endpoint_type": "BULK",
+        "max_packet": 64,
+        "in_epena": false,
+        "out_epena": false,
+        "existing_xfrc_epdisd": false,
+        "pcd_locked": true
+      },
+      "injection": "MMIO model only: AHBIDL low / stuck flush / stuck EPENA / EPENA clear without EPDISD as named",
+      "expectation_kind": "characterize existing defects; not acceptance of a safe stop",
+      "register_reads": {
+        "in": 2,
+        "out": 1,
+        "grst": 1
+      },
+      "actual": 0,
+      "expected": 0,
+      "registers": {
+        "GRSTCTL": 0,
+        "IN2_CTL": 0,
+        "OUT2_CTL": 0,
+        "IN2_INT": 0,
+        "OUT2_INT": 0,
+        "GAHBCFG": 1,
+        "DCTL": 0
+      },
+      "error": null,
+      "resource_refs": "NOT_MODELED: no endpoint ledger exists in HAL",
+      "silicon": "NOT_TESTED"
+    },
+    {
+      "id": 14,
+      "name": "HAL Tx Flush hides stuck flush-command timeout",
+      "passed": true,
+      "assertions": [
+        {
+          "name": "returned to sentinel",
+          "actual": 16777216,
+          "expected": 16777216,
+          "passed": true
+        },
+        {
+          "name": "entry result",
+          "actual": 0,
+          "expected": 0,
+          "passed": true
+        },
+        {
+          "name": "case identity",
+          "actual": 14,
+          "expected": 14,
+          "passed": true
+        },
+        {
+          "name": "public status",
+          "actual": 0,
+          "expected": 0,
+          "passed": true
+        },
+        {
+          "name": "no unrelated stub called",
+          "actual": 0,
+          "expected": 0,
+          "passed": true
+        }
+      ],
+      "assertion_count": 5,
+      "input_state": {
+        "endpoint_type": "BULK",
+        "max_packet": 64,
+        "in_epena": false,
+        "out_epena": false,
+        "existing_xfrc_epdisd": false,
+        "pcd_locked": false
+      },
+      "injection": "MMIO model only: AHBIDL low / stuck flush / stuck EPENA / EPENA clear without EPDISD as named",
+      "expectation_kind": "characterize existing defects; not acceptance of a safe stop",
+      "register_reads": {
+        "in": 1,
+        "out": 1,
+        "grst": 6
+      },
+      "actual": 0,
+      "expected": 0,
+      "registers": {
+        "GRSTCTL": 2147483808,
+        "IN2_CTL": 0,
+        "OUT2_CTL": 0,
+        "IN2_INT": 0,
+        "OUT2_INT": 0,
+        "GAHBCFG": 1,
+        "DCTL": 0
+      },
+      "error": null,
+      "resource_refs": "NOT_MODELED: no endpoint ledger exists in HAL",
+      "silicon": "NOT_TESTED"
+    },
+    {
+      "id": 15,
+      "name": "LL Tx Flush normal completion",
+      "passed": true,
+      "assertions": [
+        {
+          "name": "returned to sentinel",
+          "actual": 16777216,
+          "expected": 16777216,
+          "passed": true
+        },
+        {
+          "name": "entry result",
+          "actual": 0,
+          "expected": 0,
+          "passed": true
+        },
+        {
+          "name": "case identity",
+          "actual": 15,
+          "expected": 15,
+          "passed": true
+        },
+        {
+          "name": "public status",
+          "actual": 0,
+          "expected": 0,
+          "passed": true
+        },
+        {
+          "name": "no unrelated stub called",
+          "actual": 0,
+          "expected": 0,
+          "passed": true
+        },
+        {
+          "name": "FIFO flush command clear",
+          "actual": 0,
+          "expected": 0,
+          "passed": true
+        }
+      ],
+      "assertion_count": 6,
+      "input_state": {
+        "endpoint_type": "BULK",
+        "max_packet": 64,
+        "in_epena": false,
+        "out_epena": false,
+        "existing_xfrc_epdisd": false,
+        "pcd_locked": false
+      },
+      "injection": "MMIO model only: AHBIDL low / stuck flush / stuck EPENA / EPENA clear without EPDISD as named",
+      "expectation_kind": "characterize existing defects; not acceptance of a safe stop",
+      "register_reads": {
+        "in": 1,
+        "out": 1,
+        "grst": 3
+      },
+      "actual": 0,
+      "expected": 0,
+      "registers": {
+        "GRSTCTL": 2147483776,
+        "IN2_CTL": 0,
+        "OUT2_CTL": 0,
+        "IN2_INT": 0,
+        "OUT2_INT": 0,
+        "GAHBCFG": 1,
+        "DCTL": 0
+      },
+      "error": null,
+      "resource_refs": "NOT_MODELED: no endpoint ledger exists in HAL",
+      "silicon": "NOT_TESTED"
+    },
+    {
+      "id": 16,
+      "name": "LL Rx Flush normal completion",
+      "passed": true,
+      "assertions": [
+        {
+          "name": "returned to sentinel",
+          "actual": 16777216,
+          "expected": 16777216,
+          "passed": true
+        },
+        {
+          "name": "entry result",
+          "actual": 0,
+          "expected": 0,
+          "passed": true
+        },
+        {
+          "name": "case identity",
+          "actual": 16,
+          "expected": 16,
+          "passed": true
+        },
+        {
+          "name": "public status",
+          "actual": 0,
+          "expected": 0,
+          "passed": true
+        },
+        {
+          "name": "no unrelated stub called",
+          "actual": 0,
+          "expected": 0,
+          "passed": true
+        },
+        {
+          "name": "FIFO flush command clear",
+          "actual": 0,
+          "expected": 0,
+          "passed": true
+        }
+      ],
+      "assertion_count": 6,
+      "input_state": {
+        "endpoint_type": "BULK",
+        "max_packet": 64,
+        "in_epena": false,
+        "out_epena": false,
+        "existing_xfrc_epdisd": false,
+        "pcd_locked": false
+      },
+      "injection": "MMIO model only: AHBIDL low / stuck flush / stuck EPENA / EPENA clear without EPDISD as named",
+      "expectation_kind": "characterize existing defects; not acceptance of a safe stop",
+      "register_reads": {
+        "in": 1,
+        "out": 1,
+        "grst": 3
+      },
+      "actual": 0,
+      "expected": 0,
+      "registers": {
+        "GRSTCTL": 2147483648,
+        "IN2_CTL": 0,
+        "OUT2_CTL": 0,
+        "IN2_INT": 0,
+        "OUT2_INT": 0,
+        "GAHBCFG": 1,
+        "DCTL": 0
+      },
+      "error": null,
+      "resource_refs": "NOT_MODELED: no endpoint ledger exists in HAL",
+      "silicon": "NOT_TESTED"
+    },
+    {
+      "id": 17,
+      "name": "HAL Abort leaves preexisting XFRC/EPDISD unretired",
+      "passed": true,
+      "assertions": [
+        {
+          "name": "returned to sentinel",
+          "actual": 16777216,
+          "expected": 16777216,
+          "passed": true
+        },
+        {
+          "name": "entry result",
+          "actual": 0,
+          "expected": 0,
+          "passed": true
+        },
+        {
+          "name": "case identity",
+          "actual": 17,
+          "expected": 17,
+          "passed": true
+        },
+        {
+          "name": "public status",
+          "actual": 0,
+          "expected": 0,
+          "passed": true
+        },
+        {
+          "name": "no unrelated stub called",
+          "actual": 0,
+          "expected": 0,
+          "passed": true
+        },
+        {
+          "name": "old IN events remain",
+          "actual": 3,
+          "expected": 3,
+          "passed": true
+        },
+        {
+          "name": "old OUT events remain",
+          "actual": 3,
+          "expected": 3,
+          "passed": true
+        }
+      ],
+      "assertion_count": 7,
+      "input_state": {
+        "endpoint_type": "BULK",
+        "max_packet": 64,
+        "in_epena": false,
+        "out_epena": false,
+        "existing_xfrc_epdisd": true,
+        "pcd_locked": false
+      },
+      "injection": "MMIO model only: AHBIDL low / stuck flush / stuck EPENA / EPENA clear without EPDISD as named",
+      "expectation_kind": "characterize existing defects; not acceptance of a safe stop",
+      "register_reads": {
+        "in": 2,
+        "out": 1,
+        "grst": 1
+      },
+      "actual": 0,
+      "expected": 0,
+      "registers": {
+        "GRSTCTL": 0,
+        "IN2_CTL": 0,
+        "OUT2_CTL": 0,
+        "IN2_INT": 3,
+        "OUT2_INT": 3,
+        "GAHBCFG": 1,
+        "DCTL": 0
+      },
+      "error": null,
+      "resource_refs": "NOT_MODELED: no endpoint ledger exists in HAL",
+      "silicon": "NOT_TESTED"
+    }
+  ],
+  "summary": {
+    "total": 18,
+    "passed": 18,
+    "failed": 0,
+    "assertions": 108
+  },
+  "test_only_macro": "HAL_USB_TIMEOUT=4U; production timeout unchanged; no physical timing claim",
+  "sources": {
+    "Tests/EndpointLifecycle/hal_contract_test.c": "4b5082dc947728080dd4264374e0e9d3b502996add565f9e09b133a1e5912b81",
+    "Drivers/STM32H7xx_HAL_Driver/Src/stm32h7xx_hal_pcd.c": "f1c48624654428a73a196bcd83b7b8477a0b6cebb1a229088090982f957823fa",
+    "Drivers/STM32H7xx_HAL_Driver/Src/stm32h7xx_ll_usb.c": "e18900b0d91d79d8eea02d60eec865ea0eada440a053354c81b709c33f5e890a"
+  },
+  "commands": [
+    {
+      "argv": [
+        "D:\\32\\ARM\\ARMCC\\Bin\\armcc.exe",
+        "--cpu",
+        "Cortex-M7",
+        "--c99",
+        "--split_sections",
+        "-O0",
+        "-DSTM32H747xx",
+        "-DCORE_CM7",
+        "-DUSE_HAL_DRIVER",
+        "-DHAL_USB_TIMEOUT=4U",
+        "--preinclude",
+        "D:\\32\\STM32H7\\h7_mac_lifecycle\\CM7\\BSP\\bsp_usb_hal_config.h",
+        "-I",
+        "D:\\32\\STM32H7\\h7_mac_lifecycle\\CM7\\Core\\Inc",
+        "-I",
+        "D:\\32\\STM32H7\\h7_mac_lifecycle\\CM7\\BSP",
+        "-I",
+        "D:\\32\\STM32H7\\h7_mac_lifecycle\\Drivers\\STM32H7xx_HAL_Driver\\Inc",
+        "-I",
+        "D:\\32\\STM32H7\\h7_mac_lifecycle\\Drivers\\CMSIS\\Include",
+        "-I",
+        "D:\\32\\STM32H7\\h7_mac_lifecycle\\Drivers\\CMSIS\\Device\\ST\\STM32H7xx\\Include",
+        "-c",
+        "D:\\32\\STM32H7\\h7_mac_lifecycle\\Tests\\EndpointLifecycle\\hal_contract_test.c",
+        "-o",
+        "D:\\32\\STM32H7\\h7_mac_lifecycle\\output\\MSC24\\udlm-p1\\hal-contract\\hal_contract_test.o"
+      ],
+      "exit": 0,
+      "output": ""
+    },
+    {
+      "argv": [
+        "D:\\32\\ARM\\ARMCC\\Bin\\armcc.exe",
+        "--cpu",
+        "Cortex-M7",
+        "--c99",
+        "--split_sections",
+        "-O0",
+        "-DSTM32H747xx",
+        "-DCORE_CM7",
+        "-DUSE_HAL_DRIVER",
+        "-DHAL_USB_TIMEOUT=4U",
+        "--preinclude",
+        "D:\\32\\STM32H7\\h7_mac_lifecycle\\CM7\\BSP\\bsp_usb_hal_config.h",
+        "-I",
+        "D:\\32\\STM32H7\\h7_mac_lifecycle\\CM7\\Core\\Inc",
+        "-I",
+        "D:\\32\\STM32H7\\h7_mac_lifecycle\\CM7\\BSP",
+        "-I",
+        "D:\\32\\STM32H7\\h7_mac_lifecycle\\Drivers\\STM32H7xx_HAL_Driver\\Inc",
+        "-I",
+        "D:\\32\\STM32H7\\h7_mac_lifecycle\\Drivers\\CMSIS\\Include",
+        "-I",
+        "D:\\32\\STM32H7\\h7_mac_lifecycle\\Drivers\\CMSIS\\Device\\ST\\STM32H7xx\\Include",
+        "-c",
+        "D:\\32\\STM32H7\\h7_mac_lifecycle\\Drivers\\STM32H7xx_HAL_Driver\\Src\\stm32h7xx_hal_pcd.c",
+        "-o",
+        "D:\\32\\STM32H7\\h7_mac_lifecycle\\output\\MSC24\\udlm-p1\\hal-contract\\stm32h7xx_hal_pcd.o"
+      ],
+      "exit": 0,
+      "output": ""
+    },
+    {
+      "argv": [
+        "D:\\32\\ARM\\ARMCC\\Bin\\armcc.exe",
+        "--cpu",
+        "Cortex-M7",
+        "--c99",
+        "--split_sections",
+        "-O0",
+        "-DSTM32H747xx",
+        "-DCORE_CM7",
+        "-DUSE_HAL_DRIVER",
+        "-DHAL_USB_TIMEOUT=4U",
+        "--preinclude",
+        "D:\\32\\STM32H7\\h7_mac_lifecycle\\CM7\\BSP\\bsp_usb_hal_config.h",
+        "-I",
+        "D:\\32\\STM32H7\\h7_mac_lifecycle\\CM7\\Core\\Inc",
+        "-I",
+        "D:\\32\\STM32H7\\h7_mac_lifecycle\\CM7\\BSP",
+        "-I",
+        "D:\\32\\STM32H7\\h7_mac_lifecycle\\Drivers\\STM32H7xx_HAL_Driver\\Inc",
+        "-I",
+        "D:\\32\\STM32H7\\h7_mac_lifecycle\\Drivers\\CMSIS\\Include",
+        "-I",
+        "D:\\32\\STM32H7\\h7_mac_lifecycle\\Drivers\\CMSIS\\Device\\ST\\STM32H7xx\\Include",
+        "-c",
+        "D:\\32\\STM32H7\\h7_mac_lifecycle\\Drivers\\STM32H7xx_HAL_Driver\\Src\\stm32h7xx_ll_usb.c",
+        "-o",
+        "D:\\32\\STM32H7\\h7_mac_lifecycle\\output\\MSC24\\udlm-p1\\hal-contract\\stm32h7xx_ll_usb.o"
+      ],
+      "exit": 0,
+      "output": ""
+    },
+    {
+      "argv": [
+        "D:\\32\\ARM\\ARMCC\\Bin\\armlink.exe",
+        "D:\\32\\STM32H7\\h7_mac_lifecycle\\output\\MSC24\\udlm-p1\\hal-contract\\hal_contract_test.o",
+        "D:\\32\\STM32H7\\h7_mac_lifecycle\\output\\MSC24\\udlm-p1\\hal-contract\\stm32h7xx_hal_pcd.o",
+        "D:\\32\\STM32H7\\h7_mac_lifecycle\\output\\MSC24\\udlm-p1\\hal-contract\\stm32h7xx_ll_usb.o",
+        "--entry",
+        "EndpointContract_Run",
+        "--no_scanlib",
+        "--scatter",
+        "D:\\32\\STM32H7\\h7_mac_lifecycle\\Tests\\EndpointLifecycle\\test.sct",
+        "-o",
+        "D:\\32\\STM32H7\\h7_mac_lifecycle\\output\\MSC24\\udlm-p1\\hal-contract\\hal_contract.axf"
+      ],
+      "exit": 0,
+      "output": ""
+    }
+  ]
+}

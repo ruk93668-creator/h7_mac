@@ -1,5 +1,7 @@
 # UDLM 未决问题、证据缺口与审批门禁
 
+> **P1进度（2026-11-19）**：本轮为未完成/受阻交付，生产代码未改；下面原有内容是Phase0历史设计。当前结果见本文末尾及三份EndpointLifecycle报告。
+
 > 基线：`35401119bef1d5a4594925478119e048f68c2c77`；研究分支：`codex/usb-device-lifecycle-manager`；审计日期：2026-11-19。
 > 范围：Phase 0，仅文档；未修改生产/测试代码，未编译或烧录。
 > 标记：**VERIFIED**＝本基线源码确认；**INFERRED**＝推断或拟议设计，尚非已实现能力；**UNRESOLVED**＝证据/契约尚缺；**NOT_TESTED**＝本轮未运行验证。源码引用采用仓库相对路径和一基行号，均相对于上述 SHA。
@@ -68,3 +70,9 @@
 - [IRQ/PIO串行化、旧事件退休及共享FIFO](USB_DeviceLifecycle_Concurrency.md)
 - [实施依赖、验收门禁与回滚](USB_DeviceLifecycle_MigrationPlan.md)
 - [故障注入、BOT/UVC与三组实板矩阵](USB_DeviceLifecycle_TestMatrix.md)
+
+## P1 本轮证据与状态更新
+
+**VERIFIED**：ES0445官方正文已核对为Rev7，包含0x2003和0x2007修订组；公开LL FIFO真实返回亦已测试。**UNRESOLVED**：O1仍缺RM正文，O2/O3仅确认返回值缺口及公开入口、未证明安全集成，O4/O7/O9未关闭。新增关注项：ES0445 2.24.5的slave-mode ZLP勘误与当前控制器实例/实际修订的适用性，详HardwareEvidence。**NOT_TESTED**：实际REV_ID、所有板级测试。
+
+详见 [P1实施/阻塞报告](USB_EndpointLifecycle_ImplementationReport.md)、[硬件证据](USB_EndpointLifecycle_HardwareEvidence.md)、[软件验证](USB_EndpointLifecycle_SoftwareVerification.md)。

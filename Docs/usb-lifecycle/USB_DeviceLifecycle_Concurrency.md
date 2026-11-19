@@ -1,5 +1,7 @@
 # UDLM 并发、IRQ 与旧事件退休
 
+> **P1进度（2026-11-19）**：本轮为未完成/受阻交付，生产代码未改；下面原有内容是Phase0历史设计。当前结果见本文末尾及三份EndpointLifecycle报告。
+
 > 基线：`35401119bef1d5a4594925478119e048f68c2c77`；研究分支：`codex/usb-device-lifecycle-manager`；审计日期：2026-11-19。
 > 范围：Phase 0，仅文档；未修改生产/测试代码，未编译或烧录。
 > 标记：**VERIFIED**＝本基线源码确认；**INFERRED**＝推断或拟议设计，尚非已实现能力；**UNRESOLVED**＝证据/契约尚缺；**NOT_TESTED**＝本轮未运行验证。源码引用采用仓库相对路径和一基行号，均相对于上述 SHA。
@@ -91,3 +93,9 @@
 **INFERRED**：USB Task 每轮只做有界 Prepare/Poll 和协议工作，不持续忙轮询 Storage drained。高优先级 USB 不得饿死 StorageTask；记录等待对象并让出调度，下次事件或周期继续。测量 UVC 1 ms SOF 机会与20 ms Task 常规等待及 notify 合并的关系，不能以 priority4 保证每帧服务。
 
 **NOT_TESTED**：以上锁预算、HAL 前后事件观测、共享 RX FIFO/EP0 竞争、Worker 迟到完成和 UVC 活跃流在本轮均未运行。
+
+## P1 本轮证据与状态更新
+
+**VERIFIED（软件）**：原EP0 IRQ竞争回归已执行；HAL/LL刻画也验证了EPENA变化而无匹配事件仍返回OK的代码行为。**NOT_TESTED**：新generation之间的真实IRQ/PIO退休机制尚未实现/验收，不把简单MMIO注入当硅片竞争证明。保持短发布临界区及必要IRQ服务的设计要求。
+
+详见 [P1实施/阻塞报告](USB_EndpointLifecycle_ImplementationReport.md)、[硬件证据](USB_EndpointLifecycle_HardwareEvidence.md)、[软件验证](USB_EndpointLifecycle_SoftwareVerification.md)。

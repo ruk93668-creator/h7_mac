@@ -1,0 +1,20 @@
+{
+  "baseline": "9d38e56966f8ea5da9ee63285b037747613c47d5",
+  "production_modified": false,
+  "unchanged_assertions": true,
+  "scope": "software mocks/build only; no silicon proof or flashing",
+  "rows": [
+    {
+      "suite": "MscReconnect/build.py",
+      "exit": 1,
+      "elapsed_s": 128.766,
+      "log": "Tests\\EndpointLifecycle\\reports\\baseline-build_MscReconnect_build.log",
+      "log_sha256": "fea46d008aefd505fa3d2bfecd3973f4c234753dc9a862363b1c3823d4765d1f",
+      "produced_reports": [],
+      "tail": "lude \"board_config.h\"\r\n../CM7/Device/Src/ov5640_device.c: 0 warnings, 1 error\r\ncompiling stm32h7xx_hal_sd.c...\r\ncompiling ov5640_reg.c...\r\ncompiling ipc_platform.c...\r\ncompiling ov5640.c...\r\ncompiling diskio.c...\r\ncompiling stm32h7xx_ll_usb.c...\r\ncompiling stm32h7xx_hal_i2c.c...\r\ncompiling camera_capture.c...\r\ncompiling usb_device.c...\r\ncompiling usb_msc_class.c...\r\ncompiling platform_sync.c...\r\ncompiling platform_time.c...\r\ncompiling usb_msc_desc.c...\r\ncompiling camera_mjpeg_fifo.c...\r\ncompiling bsp_sdmmc_memory.c...\r\ncompiling usb_msc_bot.c...\r\ncompiling bsp_usb.c...\r\ncompiling bsp_camera.c...\r\ncompiling bsp_sdmmc.c...\r\ncompiling storage_fs.c...\r\ncompiling list.c...\r\ncompiling tasks.c...\r\ncompiling runtime_event.c...\r\ncompiling queue.c...\r\ncompiling bsp_sdram.c...\r\ncompiling app_messages.c...\r\ncompiling port.c...\r\ncompiling app_tasks.c...\r\ncompiling sd_block.c...\r\ncompiling camera_task.c...\r\ncompiling control_task.c...\r\ncompiling app_status.c...\r\ncompiling ipc_task.c...\r\ncompiling storage_task.c...\r\ncompiling app_camera_lifecycle.c...\r\ncompiling app_camera_lifecycle_replay.c...\r\ncompiling app_camera_qualification.c...\r\ncompiling app_usb.c...\r\ncompiling ff.c...\r\ncompiling bsp_dcmi.c...\r\ncompiling usbd_ioreq.c...\r\ncompiling usbd_ctlreq.c...\r\ncompiling platform_rtos.c...\r\ncompiling usbd_core.c...\r\ncompiling platform_hal_timebase.c...\r\ncompiling usb_task.c...\r\ncompiling app_events.c...\r\n\"D:/32/STM32H7/h7_mac_lifecycle/output/MSC24/udlm-p1/baseline-build/output/MSC41/diagnostic-build/ram/\\.axf\" - 3 Error(s), 0 Warning(s).\r\nTarget not created.\r\nBuild Time Elapsed:  00:02:01\r\n\r\n",
+      "raw_log_path": "output/MSC24/udlm-p1/raw-text-evidence/baseline-build_MscReconnect_build.log",
+      "raw_log_sha256": "13498dbe1d8edbe879866d183f63941cdb2f7574116d9e245a48da13c2472c9d"
+    }
+  ],
+  "original_changed": []
+}

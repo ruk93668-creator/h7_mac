@@ -1,5 +1,7 @@
 # USB Device Lifecycle 源码审计
 
+> **P1进度（2026-11-19）**：本轮为未完成/受阻交付，生产代码未改；下面原有内容是Phase0历史设计。当前结果见本文末尾及三份EndpointLifecycle报告。
+
 > 基线：`35401119bef1d5a4594925478119e048f68c2c77`；研究分支：`codex/usb-device-lifecycle-manager`；审计日期：2026-11-19。
 > 范围：Phase 0，仅文档；未修改生产/测试代码，未编译或烧录。
 > 标记：**VERIFIED**＝本基线源码确认；**INFERRED**＝推断或拟议设计，尚非已实现能力；**UNRESOLVED**＝证据/契约尚缺；**NOT_TESTED**＝本轮未运行验证。源码引用采用仓库相对路径和一基行号，均相对于上述 SHA。
@@ -215,3 +217,9 @@ Core `USBD_Stop`（Core `Middlewares/ST/STM32_USB_Device_Library/Core/Src/usbd_c
 | E7 活跃UVC停止 | Task多轮Cancel/Abort/Process；Camera ACK异步 | Abort EP1；设备Alt/Stop另决定Close | Cancel BUSY仍持packet/frame，Abort失败RECOVERY；Bridge等ACK | 已有Lease握手；INVALID_STATE推断需retired proof补强 |
 | E8 部分Init失败 | 启动/Task或Class Setup ISR；HAL Init可能Delay，Class分配不wait | 资源按阶段获得；BSP回收HAL DeInit；MSC部分Close | 回收失败可有硬件残留；Managed Class保持RELEASE_FAILED | 无完整acquisition ledger；HAL回收失败可能被隐藏 |
 | E9 PCD Stop/DeInit | Task；同步Abort/FIFO轮询；不等普通Cancel回调 | NVIC/global mask、soft disconnect、FIFO；DeInit最后关钟 | 失败保持ready/callbacks或部分mask，不能当STOPPED | 需要逐阶段proof/IRQ顺序，不能用HAL_OK或超时替代静止 |
+
+## P1 本轮证据与状态更新
+
+**VERIFIED（源码/软件）**：以9d38e56重新审读BSP Stop/Abort/Close/Flush/PIO与HAL/LL入口；生产内容未改变。新增真实HAL/LL刻画18项/108条断言，证实HAL Flush/Stop吞timeout、HAL Abort只看EPENA且不负责旧INT退休。证据：`Tests/EndpointLifecycle/reports/hal_contract.json`。**UNRESOLVED**：这些事实不证明正确的H747停止序列；RM正文和实物REV_ID仍缺。
+
+详见 [P1实施/阻塞报告](USB_EndpointLifecycle_ImplementationReport.md)、[硬件证据](USB_EndpointLifecycle_HardwareEvidence.md)、[软件验证](USB_EndpointLifecycle_SoftwareVerification.md)。

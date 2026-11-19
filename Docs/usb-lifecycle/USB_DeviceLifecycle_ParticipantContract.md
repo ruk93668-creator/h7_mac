@@ -1,5 +1,7 @@
 # UDLM Participant、Ticket 与所有权契约
 
+> **P1进度（2026-11-19）**：本轮为未完成/受阻交付，生产代码未改；下面原有内容是Phase0历史设计。当前结果见本文末尾及三份EndpointLifecycle报告。
+
 > 基线：`35401119bef1d5a4594925478119e048f68c2c77`；研究分支：`codex/usb-device-lifecycle-manager`；审计日期：2026-11-19。
 > 范围：Phase 0，仅文档；未修改生产/测试代码，未编译或烧录。
 > 标记：**VERIFIED**＝本基线源码确认；**INFERRED**＝推断或拟议设计，尚非已实现能力；**UNRESOLVED**＝证据/契约尚缺；**NOT_TESTED**＝本轮未运行验证。源码引用采用仓库相对路径和一基行号，均相对于上述 SHA。
@@ -104,3 +106,9 @@
 **INFERRED**：继续复用现有 Worker mailbox 和 Frame return 消息；如需新增 proof 回复，必须有版本/identity/幂等 replay，不能直接套用 Camera lifecycle 的 consumer flags 当 USB 端点证据。队列满保留原 message 待重试，ACK 丢失时重发原请求只返回缓存结果，不重复 Release。
 
 **VERIFIED**：既有消息发送并不代表执行完成（`CM7/Application/app_camera_lifecycle.c:184`），跨任务所有者校验在 `CM7/Application/app_messages.c:193`。**UNRESOLVED**：新增 BSP proof/应用 port 的具体 ABI、容量与授权需 Phase1 前确定；当前没有可用于实际 Commit 的 PreparedTicket 实现。
+
+## P1 本轮证据与状态更新
+
+**VERIFIED（软件）**：18项HAL/LL刻画显示“HAL_OK但无EPDISD/旧INT未退休”和“真实LL超时被wrapper隐藏”均可能出现。**INFERRED**：proof字段、owner/pio/fifo/event引用条件继续有效，候选接口细化见ImplementationReport。**UNRESOLVED**：当前没有实现可签发的proof API，不能由测试生成一个假READY票据。
+
+详见 [P1实施/阻塞报告](USB_EndpointLifecycle_ImplementationReport.md)、[硬件证据](USB_EndpointLifecycle_HardwareEvidence.md)、[软件验证](USB_EndpointLifecycle_SoftwareVerification.md)。

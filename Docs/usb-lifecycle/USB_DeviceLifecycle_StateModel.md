@@ -1,5 +1,7 @@
 # UDLM 七层状态模型
 
+> **P1进度（2026-11-19）**：本轮为未完成/受阻交付，生产代码未改；下面原有内容是Phase0历史设计。当前结果见本文末尾及三份EndpointLifecycle报告。
+
 > 基线：`35401119bef1d5a4594925478119e048f68c2c77`；研究分支：`codex/usb-device-lifecycle-manager`；审计日期：2026-11-19。
 > 范围：Phase 0，仅文档；未修改生产/测试代码，未编译或烧录。
 > 标记：**VERIFIED**＝本基线源码确认；**INFERRED**＝推断或拟议设计，尚非已实现能力；**UNRESOLVED**＝证据/契约尚缺；**NOT_TESTED**＝本轮未运行验证。源码引用采用仓库相对路径和一基行号，均相对于上述 SHA。
@@ -92,3 +94,9 @@ stateDiagram-v2
 7. 人工或明确策略请求新的 Start；故障排空并不自动等于主机卷安全归还，也不自动重启。
 
 **UNRESOLVED**：若硬件状态无法证明，唯一结论是保持锁定并上报；是否允许某种硬件复位作为最后恢复手段必须另行审批并证明引用边界。本设计不以重启 PCD 绕过未知所有权。
+
+## P1 本轮证据与状态更新
+
+**INFERRED / 未实施**：P1明确候选CLOSED/IDLE/ARMED/ACTIVE/QUIESCING/QUIESCENT/FAULTED和每方向身份。新生产状态机、transfer ledger、retired-event记录仍不存在；当前busy/HAL_OK不能被改名为QUIESCENT。**UNRESOLVED**：签发proof前的硬件接受谓词。
+
+详见 [P1实施/阻塞报告](USB_EndpointLifecycle_ImplementationReport.md)、[硬件证据](USB_EndpointLifecycle_HardwareEvidence.md)、[软件验证](USB_EndpointLifecycle_SoftwareVerification.md)。

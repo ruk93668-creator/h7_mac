@@ -1,5 +1,7 @@
 # UDLM 增量迁移计划
 
+> **P1进度（2026-11-19）**：本轮为未完成/受阻交付，生产代码未改；下面原有内容是Phase0历史设计。当前结果见本文末尾及三份EndpointLifecycle报告。
+
 > 基线：`35401119bef1d5a4594925478119e048f68c2c77`；研究分支：`codex/usb-device-lifecycle-manager`；审计日期：2026-11-19。
 > 范围：Phase 0，仅文档；未修改生产/测试代码，未编译或烧录。
 > 标记：**VERIFIED**＝本基线源码确认；**INFERRED**＝推断或拟议设计，尚非已实现能力；**UNRESOLVED**＝证据/契约尚缺；**NOT_TESTED**＝本轮未运行验证。源码引用采用仓库相对路径和一基行号，均相对于上述 SHA。
@@ -52,3 +54,9 @@
 **INFERRED（本轮交付程序）**：只在新worktree检查diff，验证每个引用文件/行号、八文件名称、Markdown表格/内部链接；逐个stage八文档，不用 `git add -A` 混入其他文件。提交后推送研究分支并 `ls-remote` 核对。网络失败保留本地提交，如实报未同步，不强推、不改远端、不动原工作区。
 
 **VERIFIED**：本轮范围不包含 Keil 修改，也不包含原工作区的任何操作。源码未改变时不运行无关构建来冒充设计验证。最终提交号以实际 Git 交付报告为准，文档内不自引用尚未产生的commit SHA。
+
+## P1 本轮证据与状态更新
+
+**UNRESOLVED / 阶段门禁**：P1-A缺RM正文与实物标识；P1生产实现未推进。已完成安全独立的源码/Errata核对、18项缺口刻画、17入口原测试执行及隔离构建（详细结果见SoftwareVerification）。未进入P2，未改变生产停止行为；备份提交需明确未完成状态。
+
+详见 [P1实施/阻塞报告](USB_EndpointLifecycle_ImplementationReport.md)、[硬件证据](USB_EndpointLifecycle_HardwareEvidence.md)、[软件验证](USB_EndpointLifecycle_SoftwareVerification.md)。

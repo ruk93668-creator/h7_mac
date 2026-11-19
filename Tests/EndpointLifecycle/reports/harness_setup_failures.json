@@ -1,0 +1,29 @@
+{
+  "kind": "Observed setup failures transcribed from tool output; not silicon or baseline production defects",
+  "attempts": [
+    {
+      "attempt": 1,
+      "issue": "Link undefined HAL_PCDEx_ActivateLPM, HAL_PCDEx_LPM_Callback, HAL_RCC_GetHCLKFreq, HAL_Delay",
+      "errors": 4,
+      "warnings": 0
+    },
+    {
+      "attempt": 2,
+      "issue": "split_sections alone did not resolve four unused link dependencies",
+      "errors": 4,
+      "warnings": 0
+    },
+    {
+      "attempt": 3,
+      "issue": "test reused framework scatter but had no .framework_init section",
+      "errors": 0,
+      "warnings": 1
+    },
+    {
+      "attempt": 4,
+      "issue": "Guarded link-only stubs and dedicated test scatter; final characterization passed",
+      "errors": 0,
+      "warnings": 0
+    }
+  ]
+}
