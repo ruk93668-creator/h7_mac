@@ -74,12 +74,30 @@ VERIFIED：10个历史UVC/Core测试入口在基线与当前诊断默认关闭�
 | 组别 | 首次枚举/抓包 | 断线重连/抓包 | PCD/EP0/事件快照 |
 | --- | --- | --- | --- |
 | A 默认UVC诊断 | NOT_TESTED | NOT_TESTED | NOT_TESTED |
-| B RAM MSC诊断 | NOT_TESTED | NOT_TESTED | NOT_TESTED |
+| B RAM MSC诊断 | VERIFIED：Windows OK，8KiB RAM，Configuration=1 | VERIFIED：未复位重连失败，Windows设备描述符请求失败 | VERIFIED：首次与重连SRAM/USB寄存器均已保存 |
 | C SD只读MSC诊断 | NOT_TESTED | NOT_TESTED | NOT_TESTED |
 
 同一电脑、端口、线缆。每次连接前启动捕获；固件运行后再接数据线，避免Keil暂停本身使Windows超时。初次稳定后保存快照，恢复运行再拔线/重接；先保存失败状态，不提前复位。若UVC因既有Camera初始化问题无法启动USB，应记为受阻，禁止改Camera路径来制造通过。
 
 2026-11-19，用户已确认关闭全部供电后取出SD卡，并烧录运行RAM诊断固件，正在准备B组首次枚举捕获。A/B组不插SD，避免默认本地Storage路径接触真实卡；C组切换固件与装回卡时再断电。RAM组出现容量很小或要求格式化时一律取消，不执行格式化。
+
+### B组首次实板对照（2026-11-19补充）
+
+VERIFIED：用户确认SD已取出、旧探针禁用；RAM镜像哈希与上表一致。首次枚举Windows设备/磁盘状态OK，物理盘容量8192字节；首次快照硬件DCFG地址=21、PCD USB_Address=21、Core dev_address=21，Core Configured/config1，BOT_CBW/epoch1/pending0。
+
+VERIFIED：首次快照后恢复Run，用户按要求只拔USB数据线、等待5秒、同口重接，不复位，等待后Break保存重连快照。Windows报告未知USB设备（设备描述符请求失败）。硬件DCFG地址=0，Core DEFAULT/config0/EP0_IDLE；PCD与Core软件地址仍21。硬件地址确实归零，不能把软件残留地址21直接当作失败根因。
+
+VERIFIED：重连现场 `stop_required=1`、`last_result=-9`、Class=RELEASE_FAILED，Platform与BSP started仍1。IN2已关闭；OUT2仍opened/busy，maxpacket64、last_result=-9，BSP rx_active[2]=1。补充寄存器 `DOEPCTL2=0xC00A0040`：EPENA=1、EPDIS=1、NAKSTS=1；USB IRQ101的NVIC ISER3 bit5=0。PCD READY/UNLOCKED/ErrorCode0不代表端点取消已完成。
+
+VERIFIED（源码与现场吻合）：数据OUT2经 `BSP_USB_AbortEp -> HAL_PCD_EP_Abort -> USB_EPStopXfer` 等待EPENA清零；LL在10000次轮询后返回HAL_ERROR，BSP映射SYS_ERR_IO(-9)。`BSP_USB_Stop:195`先关闭NVIC，在Abort失败分支直接返回，只有后续所有Abort/Flush成功才到HAL_PCD_Stop与状态归还。故障现场不能把s_started仍1解释为USB IRQ仍工作；IRQ关闭后无法继续软件处理主机SETUP。
+
+INFERRED：上述链说明持续不响应的直接阻塞位于BSP取消/停止契约；它不依赖SD读写。**UNRESOLVED：首次OUT取消未完成的具体原因、触发时刻及完整Reset/Disconnect回调先后**。128条事件日志被重复STOP覆盖，当前保留下来的128条全为STOP，不能伪造首次故障调用时序。Token始终0，无本轮Deferred Status请求参与证据；不能将此推广成所有Token竞态已经通过实板验证。
+
+VERIFIED：原始USBPcap `output/MSC41/ram-reconnect-01.pcapng`，16893188字节、123708包，时间13:10:32.556275～13:14:50.633099（Asia/Shanghai），SHA256 `ec7f8963ddcb346daec29d9dc237cd4b612a8d84cfa42c8ff089c6fa9c8b852a`。首次Device请求/响应frame6096/6097、配置frame6098～6101、SET_CONFIGURATION6104/6105、GET_MAX_LUN6108/6109成功。此捕获未解析出SET_ADDRESS事务，不能补写为抓包已验证；首次地址21由MCU快照与Windows设备身份佐证。原始整Hub流量留本地，不上传Git。
+
+补充证据：`Tests/MscReconnect/results/` 下的两份解码快照、Windows状态、额外端点/NVIC寄存器和捕获摘要。原始SAVE文件保留MDK目录，并复制到 `output/MSC41/snapshots/{ram_initial,ram_reconnect}/`。不移动、不删除现场文件。
+
+按用户“如果需要超出授权范围，停止并提交审批方案”的要求，已停止恢复修复与后续实板操作；未修改BSP/ST Core/HAL。待审方案见同目录 `MSC-4.1_BSP_Lifecycle_Change_Approval.md`。A/C对照、修复与10次回归尚未完成，不把B组取证当作整体验收。
 
 修复后的冷启动、正常重连、连续10次、USB Reset、BOT Reset/ClearHALT、读取中断线、迟到IRQ、重新读取SD与默认UVC实板回归均为NOT_TESTED。根因未确认前不预填修复结论；若需修改BSP或其他未授权模块，停止并单独提交审批方案。
 

@@ -1,0 +1,29 @@
+{
+  "file": "output\\MSC41\\ram-reconnect-01.pcapng",
+  "bytes": 16893188,
+  "packets": 123708,
+  "sha256": "ec7f8963ddcb346daec29d9dc237cd4b612a8d84cfa42c8ff089c6fa9c8b852a",
+  "first_packet": "2026-11-19T13:10:32.556275+08:00",
+  "last_packet": "2026-11-19T13:14:50.633099+08:00",
+  "scope": "Whole USBPcap1 hub, raw capture retained locally; metadata only in Git",
+  "initial_enumeration": {
+    "device_request": 6096,
+    "device_response": 6097,
+    "configuration_frames": [
+      6098,
+      6099,
+      6100,
+      6101
+    ],
+    "set_configuration": [
+      6104,
+      6105
+    ],
+    "get_max_lun": [
+      6108,
+      6109
+    ]
+  },
+  "set_address_transaction": "NOT_TESTED: no decoded SET_ADDRESS transaction in this USBPcap capture",
+  "reconnect": "VERIFIED: Windows Device Descriptor Request Failed; MCU snapshots show OUT2 cancellation failure and IRQ disabled"
+}

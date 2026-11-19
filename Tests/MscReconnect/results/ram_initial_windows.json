@@ -1,0 +1,37 @@
+{
+  "observed_at": "2026-11-19T13:11:58.6688980+08:00",
+  "pnp": [
+    {
+      "Status": "OK",
+      "Class": "DiskDrive",
+      "FriendlyName": "STM32 MSC Test LUN USB Device",
+      "InstanceId": "USBSTOR\\DISK&VEN_STM32&PROD_MSC_TEST_LUN&REV_0001\\9&1AA0253C&0"
+    },
+    {
+      "Status": "OK",
+      "Class": "USB",
+      "FriendlyName": "USB 大容量存储设备",
+      "InstanceId": "USB\\VID_1209&PID_0001\\8&33147C3B&0&4"
+    },
+    {
+      "Status": "OK",
+      "Class": "WPD",
+      "FriendlyName": "F:\\",
+      "InstanceId": "SWD\\WPDBUSENUM\\_??_USBSTOR#DISK&VEN_STM32&PROD_MSC_TEST_LUN&REV_0001#9&1AA0253C&0#{53F56307-B6BF-11D0-94F2-00A0C91EFB8B}"
+    },
+    {
+      "Status": "OK",
+      "Class": "Volume",
+      "FriendlyName": "卷",
+      "InstanceId": "STORAGE\\VOLUME\\_??_USBSTOR#DISK&VEN_STM32&PROD_MSC_TEST_LUN&REV_0001#9&1AA0253C&0#{53F56307-B6BF-11D0-94F2-00A0C91EFB8B}"
+    }
+  ],
+  "disk": [
+    {
+      "DeviceID": "\\\\.\\PHYSICALDRIVE2",
+      "Model": "STM32 MSC Test LUN USB Device",
+      "Size": 8192,
+      "PNPDeviceID": "USBSTOR\\DISK&VEN_STM32&PROD_MSC_TEST_LUN&REV_0001\\9&1AA0253C&0"
+    }
+  ]
+}
