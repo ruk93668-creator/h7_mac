@@ -1,5 +1,28 @@
 # UDLM 未决问题、证据缺口与审批门禁
 
+## P1-A Exit Review：当前未决与关闭清单（2026-11-19）
+
+**VERIFIED（基线）**：起始远端c60daae，本地仅领先已授权文档提交19b35ea；源码相同，未重置历史。最终审计矩阵见[HardwareEvidence](USB_EndpointLifecycle_HardwareEvidence.md)，九项操作/前置/完成/失败契约见[RM0399分析](RM0399_Revision_and_EndpointTiming_Analysis.md)，勘误条件见[SiliconRevision](STM32H747_SiliconRevision_Identification.md)。以下清单为最新，其后历次“缺手册/未知REV”不再作为当前阻塞理由。
+
+| 门禁 | 当前状态 | 关闭或待补证据 |
+| -- | -- | -- |
+| RM完整原件/实例身份 | VERIFIED：关闭缺件子项 | Rev5/3535页/指定SHA一致；2747页图794确认USB2 OTG_FS映射 |
+| REV_ID数值/修订组 | VERIFIED：组映射已确认 | 0x20036450→DEV450/REV2003→U/V；实物完整型号/工具精确版本及采集过程限制仍UNRESOLVED，不扩大读数结论 |
+| O1：非零Bulk基本硬件时序 | VERIFIED：普通IN/OUT手册序列已找到；UNRESOLVED：整体安全门禁未关 | 2918页INEPNE/EPDISD、2910页Global OUT NAK；还须解决竞争、可达性与真实期限 |
+| O1：EP0/Reset/主动ISO | UNRESOLVED，阻止无条件P1-A安全退出 | OUT0禁止EPDIS；Reset all-EP文本例外；主动ISO普通流程与incomplete选择、INEPNE可达性、Frame Lease |
+| O2/O3：Flush与HAL IRQ副作用 | UNRESOLVED | LL真返回入口已确认；HAL丢返回、IN EPDISD自动Flush、OUT EPDISD自动CGONAK，需BSP可实施的scope/证据/时间隔离方案；不擅改HAL |
+| O4：IRQ/PIO与Stop失败 | UNRESOLVED | 短临界区fence、单RX消费者、保留必要IRQ；Stop失败不切断收尾，不释放buffer/RAW |
+| Transfer/事件/资源证明 | UNRESOLVED | 无标签硬件事件不能事后套新generation；旧事件退休屏障、唯一终态、引用账本与SD IDMA独立Proof |
+| ES2.24.2 | VERIFIED：条件明确；INFERRED：当前PIO不满足DMA专用触发条件 | 未来USB DMA变更重新核验，不外推PIO安全 |
+| ES2.24.5 | VERIFIED：适用于slave条件；UNRESOLVED：当前完整规避覆盖 | 包含EP0/ZLP；20/15 AHB时序、HAL入口、编译与IRQ证明；若需禁改模块则单独审批 |
+| 软件与实板结果 | NOT_TESTED：本轮均未执行 | 不重用历史刻画测试宣布新停止方案通过 |
+
+**VERIFIED（完成范围）**：四份最终文档、九项矩阵、源码引用和差距已整理。**UNRESOLVED（审批判定）**：证据可供人工审核，但关键EP0/并发/时间/所有权条件未闭合，不能宣布P1-A无条件通过，更不代表P1完整通过。**NOT_TESTED**：没有本轮实现/编译/烧录/故障注入。完成后停止，未进入P1-B。
+
+---
+
+## 历史未决状态（以本页顶部清单为准）
+
 ## 2026-11-19 RM0399正文门禁更新（最新）
 
 **VERIFIED（PDF/正文）**：RM0399 Rev5已完整取得，3535页/页脚校验通过，SHA256与路径见[正文核验报告](RM0399_Revision_and_EndpointTiming_Analysis.md)。2747～2924页已提取；USB2 OTG_FS实例映射、普通IN/OUT、ISO incomplete、EP0 OUT禁用限制、FIFO寄存器与Flush前置条件已有精确正文证据。因此O1中“缺RM正文”子项关闭，O1整体未关闭。

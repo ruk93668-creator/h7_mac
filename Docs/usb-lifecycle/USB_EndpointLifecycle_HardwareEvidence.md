@@ -1,5 +1,41 @@
 # USB Endpoint Lifecycle 硬件证据与阻塞记录
 
+## P1-A Exit Review — 2026-11-19 最终审计
+
+> VERIFIED＝注明来源的手册/源码/现有用户证据事实；INFERRED＝拟议实现或推导；UNRESOLVED＝尚无充分证明；NOT_TESTED＝没有执行对应验证。本节为当前结论，后文各轮状态保留为历史，不据历史“缺RM/未知REV”判断现状。
+
+**VERIFIED（Git）**：本轮开始实时远端HEAD为`c60daae4067a2b0d414b7673d068c9b65500b062`；本地HEAD为`19b35eadef50284dc006a38f23c411c45cee9039`，仅领先上一轮四份文档提交，没有源码差异。保留该提交历史，在其上追加本次审计，最终正常fast-forward推送；没有reset/stash/clean。`Docs/references/RM0399_Rev5.pdf`为此前用户PDF，保留本机，不暂存。禁止工程目录未操作。
+
+**VERIFIED（PDF/用户证据）**：RM0399 Rev5 / October2026 /3535页，SHA256=`61d07b67deb291aed8a5cf8019c94add0a1065318542e57b3287d2694b14bd60`，本轮重算一致。实际IDCODE=`0x20036450`，DEV_ID=`0x450`，REV_ID=`0x2003`，只定位U/V组；一次截图、两次刷新一致为用户陈述。USB2_OTG_FS为OTG_HS2别名（RM2747页图794），配置为FS/embedded PHY/USB DMA关闭（`CM7/BSP/bsp_usb.c:99`、`:105`、`:108`、`:111`）。
+
+### 最终审核矩阵
+
+表中“P1实施方案”全部为**INFERRED**的后续候选，本轮没有实现；源码事实为**VERIFIED**，当前完整安全性除特别说明外为**UNRESOLVED**，新实现/板级验证均**NOT_TESTED**。
+
+| 功能 | 手册依据 | 当前实现 | 安全性结论 | P1实施方案 |
+| -- | -- | -- | -- | -- |
+| Bulk IN停止 | RM60.15.6，2917～2918；60.14.55/56，2840～2843 | LL `USB_EPStopXfer`只SNAK/EPDIS/EPENA轮询；BSP PIO续包 | VERIFIED：普通禁用需INEPNE、EPDISD及TX处理；UNRESOLVED：当前无完整Proof | fence写入→NAK有效→禁用→身份匹配终态→真实TX Flush；先处理正常完成竞争 |
+| Bulk OUT停止 | RM60.15.6，2905、2909～2912；60.14.65，2852 | 无Global OUT NAK准备；单EP Abort可能Flush共享RX | VERIFIED：GONAKEFF依赖RX消费；UNRESOLVED：共享RX/EP0保护 | Task分步准备、保留单一RX消费者；普通单EP禁用不默认Flush整个RX |
+| ISO IN停止 | RM60.15.6，2918、2921～2923 | PIO逐包/ISO incomplete回调，无身份Proof | VERIFIED：incomplete专用流程；UNRESOLVED：主动流停止/Frame Lease | 按原因选择普通IN或incomplete路径；fence帧提交/续包，禁用后定向Flush再归还引用 |
+| EP0取消 | RM60.14.61，2846～2847；60.15.6，2903～2908 | 新SETUP Close/Open；EP0 Close调用通用HAL Abort | VERIFIED：EP0 OUT不可EPDIS；UNRESOLVED：当前控制事务取消证明 | 独立EP0控制/SETUP策略；Token资格与硬件引用分离，失败否决状态包；不套普通OUT流程 |
+| TX FIFO Flush | RM60.14.5，2784；60.15.6，2918 | HAL wrapper与IRQ丢LL真实结果 | VERIFIED：HAL_OK不足；UNRESOLVED：时间/前置条件集成 | BSP保存LL真返回和NAK/AHB/PIO条件，定向TXFNUM，超时不发布成功Proof |
+| RX FIFO Flush | RM60.14.5，2784；60.15.6，2905、2910～2911 | 共用RX；guard未覆盖所有EP0状态 | VERIFIED：全局破坏性scope；UNRESOLVED：并发SETUP安全 | 单EP优先排空而非Flush；Reset特殊流程单独设计，限次重试，不丢他人包 |
+| EPDISD/XFRC退休 | RM60.14.45，2832；60.14.56/62，2842～2843、2848～2849 | HAL先清事件，普通Bulk无取消完成callback | VERIFIED：两种事件不同；UNRESOLVED：匹配身份与不重复释放 | HAL前/后保存必要证据，单终态裁决，旧Session只收尾旧资源 |
+| IRQ/PIO并发 | RM60.14.3，2780；60.15.6，2905、2909、2918 | Platform关IRQ包Abort；BSP Stop先关IRQ | VERIFIED：mask不冻结core；UNRESOLVED：等待RX消费时的串行化 | 短临界区发布fence；Task多轮准备，保留RX/必要IRQ；不在ISR长轮询 |
+| Buffer释放 | RM60.14.56/62，2843、2849；60.15.6，2918、2923 | busy/active布尔，HAL_OK后清引用 | VERIFIED：寄存器不能证明软件ledger；UNRESOLVED：完整所有权 | 硬件终态+PIO引用零+事件退休+FIFO条件+唯一身份；SD IDMA独立Proof |
+
+### 退出判定
+
+**VERIFIED（审计交付）**：九项均给出正文、寄存器/位、前置与顺序、完成/失败及真实源码差距，详[逐项停止契约](RM0399_Revision_and_EndpointTiming_Analysis.md)。RM原件、实例映射与数值修订组证据已齐备。
+
+**UNRESOLVED（安全退出）**：EP0专用取消与Reset范围、主动ISO停止选择、RX消费者和HAL自动NAK/Flush副作用、有界时间与事件身份尚未形成可实施且经验证的完整契约。不能将“证据审计已交付”写成“所有停止算法安全/P1-A无条件PASS”。留人工审核决策，不进入P1-B。
+
+**NOT_TESTED**：本轮不编译、不改测试、不做故障注入、不烧录；此前软件刻画测试不升级为硬件证明。无新板级重连/Stop/Buffer释放结果。
+
+---
+
+## 历史证据记录（以下非当前退出判定）
+
 ## 2026-11-19 RM0399正文补齐（最新状态）
 
 **VERIFIED（本机PDF）**：已取得用户浏览器下载的RM0399 Rev5 / October2026 /3535页；指定路径`D:/32/STM32H7/h7_mac_lifecycle/Docs/references/RM0399_Rev5.pdf`，72,029,379字节，SHA256=`61d07b67deb291aed8a5cf8019c94add0a1065318542e57b3287d2694b14bd60`。所有页可解析且页脚匹配，EOF存在，解析器未修复。浏览器来源为用户陈述，未独立核对ST服务器哈希。

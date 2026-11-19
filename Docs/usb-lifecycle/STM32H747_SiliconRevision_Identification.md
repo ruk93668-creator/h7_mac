@@ -1,5 +1,24 @@
 # STM32H747 Silicon Revision 身份核验
 
+## P1-A Exit Review：修订组与勘误最终结论（2026-11-19）
+
+**VERIFIED（用户截图/陈述）**：完整IDCODE=`0x20036450`，DEV_ID=`0x450`，REV_ID=`0x2003`。一次Memory截图加两次刷新相同的用户确认；只确定U/V修订组，不擅自区分U与V。旧记录中的精确Keil版本、CPU状态、DAPLink具体型号和自动Reset/Download过程限制维持原样，本轮未重新连接/烧录/读取目标。
+
+**VERIFIED（官方正文）**：[ES0445 Rev7 / October2026](https://www.st.com/resource/en/errata_sheet/es0445-stm32h745xig-stm32h755xi-stm32h747xig-stm32h757xi-device-errata-stmicroelectronics.pdf)第1页表2确认组映射，第5页表3把2.24.2与2.24.5列为适用且有workaround。RM0399 Rev5第2747页图794已确认USB2 OTG_FS为该OTG_HS实例，不能再以名称不同排除勘误。
+
+| 条目 | 手册条件（VERIFIED） | 对当前实现的结论 | P1门禁 |
+| -- | -- | -- | -- |
+| ES2.24.2，第43页 | Buffer DMA模式ISO IN禁用/重使能时，旧取包可能污染新传输 | VERIFIED（源码）：`CM7/BSP/bsp_usb.c:108`关闭USB DMA；INFERRED：当前不满足此DMA触发条件，不能把其DMA专用时序搬到PIO，也不能排除一般ISO/PIO竞态 | 若未来开启DMA须重新审查，不以本次PIO结论覆盖DMA |
+| ES2.24.5，第44页 | ZLP限制同时覆盖Buffer DMA和slave模式；device IN的XFRSIZ=0/PKTCNT=1路径需关注 | INFERRED：当前PIO受适用条件约束，含EP0 status IN；HAL/LL中未证明有完整规避步骤，不把PIO当免疫。NOT_TESTED：实际触发 | 设备slave规避要求NAK、20 AHB周期、EPENA、15 AHB周期、解除NAK；须证明时钟/编译/IRQ串行化和所有ZLP入口覆盖，不能用NOP数量猜测 |
+
+**VERIFIED（源码差距）**：`Drivers/STM32H7xx_HAL_Driver/Src/stm32h7xx_ll_usb.c:743`的`USB_EPStartXfer`在`:753`配置ZLP的PKTCNT/XFRSIZ，slave分支`:818`直接组合CNAK/EPENA，未在该函数中实施上述分隔等待。不能把这一源码缺口直接认定为本次重连故障的已证实根因；其他调用层是否提供足够序列覆盖仍**UNRESOLVED**。
+
+**UNRESOLVED（退出条件）**：ZLP正确启动属于取消后重使能/EP0状态阶段的必要关联审查项。若安全方案要求改HAL/LL或其他禁止模块，须记录阻塞和另行审批，不在本轮改代码。**NOT_TESTED**：硬件触发、workaround效果及后续Endpoint恢复。本轮仅对硬件证据作最终整理，不进入P1-B。
+
+---
+
+## 历史采集与核验记录
+
 ## 2026-11-19 后续正文核验更新
 
 **VERIFIED（PDF/正文）**：RM0399 Rev5完整原件现已保存；2747页图794确认USB2 OTG_HS别名OTG_FS，2780页DMAEN定义与当前slave/PIO配置相符。此前本文“RM缺件/实例映射缺证据”状态已由[RM正文核验报告](RM0399_Revision_and_EndpointTiming_Analysis.md)更新。REV_ID仍为截图及两次用户确认的0x2003（U/V组）；精确工具版本/CPU状态/实物丝印与Reset/Download过程偏差未因手册取得而关闭。**NOT_TESTED**：实际勘误触发与Endpoint停止。

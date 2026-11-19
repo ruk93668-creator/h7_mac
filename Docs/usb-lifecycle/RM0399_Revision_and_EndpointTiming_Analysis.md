@@ -1,5 +1,119 @@
 # RM0399 修订与 Endpoint 停止时序核验记录
 
+## P1-A Exit Review：九项操作与失败契约（2026-11-19）
+
+本轮Git边界及最终五列矩阵以[HardwareEvidence最终审计](USB_EndpointLifecycle_HardwareEvidence.md)为准。以下RM页码全部为Rev5印刷页码；操作序列是手册要求或明确标注的设计推导，未执行寄存器写入。普通单端点禁用、Reset型Transfer Stop、ISO incomplete及EP0严格分开。
+
+### 通用诊断与失败规则
+
+**VERIFIED（源码）**：`CM7/BSP/bsp_usb.c:758`的`Usb_HalResult`将HAL_BUSY映射SYS_ERR_BUSY，HAL_TIMEOUT映射SYS_ERR_TIMEOUT，HAL_ERROR映射SYS_ERR_IO；`BSP_USB_AbortEp`在`:346`的共享RX保护可不执行HAL直接返回SYS_ERR_BUSY。`Drivers/STM32H7xx_HAL_Driver/Src/stm32h7xx_hal_pcd.c:1992`的Abort直返LL；`Drivers/STM32H7xx_HAL_Driver/Src/stm32h7xx_ll_usb.c:915`的EPENA轮询耗尽返回HAL_ERROR，不返回“已提交异步取消”，也不承诺未来取消callback。
+
+**INFERRED（所有九项共用）**：每一等待阶段均需保存原因、阶段、原始HAL结果、Session/Transfer身份、寄存器证据和期限；SYS_ERR_BUSY区分软件前置拒绝与HAL锁竞争，不能等价Pending。状态已开始改变后失败/超时进入RECOVERY_REQUIRED并保留资源；未尝试的BUSY保持原有身份，Task可在原因消除后重试。超时不作硬件静止或Buffer归还证明。重复停止先Reconcile，不覆盖前次证据。没有RM规定数值的阶段不编造微秒上限；迭代计数不是墙钟预算，IRQ被饿死也不算硬件故障已证实。
+
+### 1. Bulk IN停止
+
+| 审核字段 | 最终记录 |
+| -- | -- |
+| 手册/寄存器 | VERIFIED：RM60.14.55/56，2840～2843；60.15.6，2917～2920。DIEPCTL.EPENA[31]/EPDIS[30]/SNAK[27]/CNAK[26]/NAKSTS[17]；DIEPINT.INEPNE[6]/EPDISD[1]/XFRC[0] |
+| 前置条件 | VERIFIED：非零已使能IN端点，EPDIS只能在EPENA已置位时写；先停止AHB写入。INFERRED：发布提交/续包fence，记录PIO source身份；先裁决已经发生的正常完成 |
+| 顺序 | VERIFIED：停止PIO写→SNAK→等INEPNE→EPDIS+SNAK→等EPDISD→定向TX Flush并等清零。普通流程不是Reset专用简化流程 |
+| 完成条件 | VERIFIED：禁用中断与EPENA/EPDIS清零；INFERRED：还须匹配事件与PIO/FIFO/ledger均退休。XFRC先完成则走正常完成分支，不人为等待从未发起的禁用事件 |
+| 超时/失败 | UNRESOLVED：RM未给普通取消的通用墙钟上界；应用有界期限待定。INFERRED：INEPNE/EPDISD/Flush任一失败均无可释放Proof，保留buffer |
+| 当前源码/差距 | VERIFIED：LL `USB_EPStopXfer`，`Drivers/STM32H7xx_HAL_Driver/Src/stm32h7xx_ll_usb.c:915`无INEPNE/EPDISD等待；BSP `HAL_PCD_DataInStageCallback`，`CM7/BSP/bsp_usb.c:633`仍可在`:655`续包；Platform `USB_Device_AbortEp`，`CM7/Platform/usb_device.c:426`只依赖BSP结果清busy。UNRESOLVED：无完整取消证明 |
+
+### 2. Bulk OUT停止
+
+| 审核字段 | 最终记录 |
+| -- | -- |
+| 手册/寄存器 | VERIFIED：RM60.15.6，2905、2909～2912；60.14.65，2852。DCTL.SGONAK[9]/CGONAK[10]；GINTSTS.GONAKEFF[7]/RXFLVL[4]；DOEPCTL.EPENA[31]/EPDIS[30]/SNAK[27]；DOEPINT.EPDISD[1]/XFRC[0] |
+| 前置条件 | VERIFIED：非零活跃OUT；共享RX须有空间容纳NAK状态项，正常消费者仍须工作，SETUP仍可接收。INFERRED：fence新接收提交，但保留旧buffer供RX排空 |
+| 顺序 | VERIFIED：SGONAK→正常RX状态/负载按EPNUM消费→等GONAKEFF→目标EPDIS+SNAK→等EPDISD→按CGONAK退出全局NAK。INFERRED：退出前确认没有别的停止参与者仍持有全局NAK需求 |
+| 完成条件 | VERIFIED：匹配禁用中断且EPENA/EPDIS清零；INFERRED：目标在途PIO写与旧状态均收尾。GONAKEFF只阻止后续普通OUT，并不等于EP0/RX全空 |
+| 超时/失败 | INFERRED：保留RX buffer、记录哪个阶段失败；不得为了完成而抛弃其他OUT或SETUP。UNRESOLVED：全局NAK拥有者与HAL自动CGONAK的协调，普通取消期限 |
+| 当前源码/差距 | VERIFIED：`BSP_USB_AbortEp`，`CM7/BSP/bsp_usb.c:337`缺全局NAK顺序；HAL RX消费`Drivers/STM32H7xx_HAL_Driver/Src/stm32h7xx_hal_pcd.c:1080`，OUT EPDISD路径`:1144`会自动CGONAK；Platform关IRQ覆盖整个调用。INFERRED：直接在原关IRQ区增加GONAKEFF等待可能自锁 |
+
+### 3. Isochronous IN停止
+
+| 审核字段 | 最终记录 |
+| -- | -- |
+| 手册/寄存器 | VERIFIED：RM60.15.6，2918、2921～2923；60.14.55/56，2840～2843。DIEPCTL.SNAK/EPDIS/EPENA/EONUM，DIEPINT.EPDISD/XFRC/ITTXFE，GINTSTS.IISOIXFR，DIEPTSIZ.XFRSIZ/PKTCNT/MCNT |
+| 前置条件 | VERIFIED：按单帧调度；先区分正常活跃停止或已发生incomplete，识别目标ISO端点。INFERRED：禁止新frame/PIO续包，保留frame lease；不是Buffer DMA取包流程 |
+| 顺序 | VERIFIED：incomplete特定序列为停AHB写→SNAK+EPDIS→等禁用事件→Flush或下一帧覆盖。INFERRED：主动停止候选采用2918页普通IN流程；incomplete用2923页特定流程；Stop选择Flush而不是新帧覆盖 |
+| 完成条件 | VERIFIED：NAK对ISO可发送ZLP，不证明有效payload发出；incomplete需EPDISD。INFERRED：完整身份/PIO/定向FIFO退休后才归还frame，不把取消记作成功帧 |
+| 超时/失败 | INFERRED：期限内缺事件/Flush失败保留frame；正常XFRC/帧边界先完成须Reconcile。UNRESOLVED：主动停止候选对全部帧时序、迟到ISO IRQ和普通流程INEPNE可达性的证明；无条件通过被否决 |
+| 当前源码/差距 | VERIFIED：`CM7/BSP/bsp_usb.c:633`的PIO完成回调与`:727`的ISO incomplete路径；HAL `Drivers/STM32H7xx_HAL_Driver/Src/stm32h7xx_hal_pcd.c:1234`的EPDISD会Flush并丢结果。UNRESOLVED：无Frame Lease/Transfer身份停止Proof；UVC未改 |
+
+### 4. EP0控制传输取消
+
+| 审核字段 | 最终记录 |
+| -- | -- |
+| 手册/寄存器 | VERIFIED：RM60.14.61，2846～2847；60.15.6，2903～2908。DOEPCTL0.EPDIS[30]不可用于禁用OUT0；NAK/STALL/全局NAK均不阻止SETUP；DOEPTSIZ0.STUPCNT、DOEPINT.STUP/XFRC，EP0 IN/OUT分立 |
+| 前置条件 | VERIFIED：保存最新SETUP，按控制状态解释事件，Reset按2903页重新初始化EP0/FIFO/中断。INFERRED：Token立即失效只取消控制资格，不释放旧PIO引用 |
+| 顺序 | VERIFIED：SETUP经RXFLVL读取payload/状态、STUP后处理最新请求；配置所需端点完成后才安排status IN。UNRESOLVED：任意主动EP0 IN/OUT取消没有一套已批准通用安全寄存器算法，不能以Close/Open或OUT EPDIS替代 |
+| 完成条件 | INFERRED：旧控制身份失效、源/目的PIO引用退休、旧完成不会驱动新事务，状态阶段必须属于当前Token；状态包提交也不是主机ACK证明。UNRESOLVED：当前实现完整证据 |
+| 超时/失败 | INFERRED：无法证明旧资源静止则保留，否决新成功status并进入受控恢复，不能无条件重启PCD或清busy |
+| 当前源码/差距 | VERIFIED：Platform `Usb_Setup`，`CM7/Platform/usb_device.c:1321`可能Close/Open忙EP0；BSP `BSP_USB_CloseEp`，`CM7/BSP/bsp_usb.c:276`的EP0分支`:296`仍调用通用HAL Abort→LL EPDIS。INFERRED：与OUT0限制存在直接不兼容风险；本轮没有修改 |
+
+### 5. TX FIFO Flush
+
+| 审核字段 | 最终记录 |
+| -- | -- |
+| 手册/寄存器 | VERIFIED：RM60.14.5，2784；60.15.6，2918。GRSTCTL.AHBIDL[31]、TXFNUM[10:6]、TXFFLSH[5] |
+| 前置条件/顺序 | VERIFIED：core不得正在FIFO读写；NAK effective保证读侧条件、AHBIDL保证master写侧；停CPU/PIO后选正确FIFO并置TXFFLSH，等待自清；期间不改变TXFNUM |
+| 完成条件 | VERIFIED：Flush位清零；INFERRED：必须保存本次真实结果与前置条件；不能把事后位0当成历史调用未超时。FIFO空也不证明软件source引用零 |
+| 超时/失败 | VERIFIED：手册标称8个较慢PHY/AHB时钟；未规定故障上界。INFERRED：期限与HAL锁失败分别记录，失败不归还资源；不先发布成功再检查用时 |
+| 当前源码/差距 | VERIFIED：LL `USB_FlushTxFifo`，`Drivers/STM32H7xx_HAL_Driver/Src/stm32h7xx_ll_usb.c:452`返回真结果但迭代长；HAL `HAL_PCD_EP_Flush`，`Drivers/STM32H7xx_HAL_Driver/Src/stm32h7xx_hal_pcd.c:2018`及IRQ`:1236`丢返回；BSP `CM7/BSP/bsp_usb.c:353`无法据wrapper证明成功。UNRESOLVED：不改HAL/LL的短有界封装及IRQ副作用处理 |
+
+### 6. RX FIFO Flush
+
+| 审核字段 | 最终记录 |
+| -- | -- |
+| 手册/寄存器 | VERIFIED：RM60.14.5，2784；60.15.6，2905、2909～2911。GRSTCTL.RXFFLSH[4]/AHBIDL[31]，GRXSTSP.EPNUM/PKTSTS/BCNT，RXFLVL/GONAKEFF |
+| 前置条件/顺序 | VERIFIED：整个共享RX无读写事务才可Flush；普通OUT Disable不是默认Flush流程。Reset型Transfer Stop另列使能OUT、AHB idle/RX Flush、全局NAK、禁用active OUT；其all-EP措辞与OUT0限制必须协调，不能照抄 |
+| 完成条件 | VERIFIED：RXFFLSH清零；INFERRED：全局scope内所有OUT/SETUP已被安全处理，才可作为Proof一部分。普通取消优先保持正常RX排空，禁止第二消费者随意pop |
+| 超时/失败 | VERIFIED：Reset型流程要求Flush超时小于10ms，因EP0新包未清时最多重试一次；不是普通单EP取消的任意重试许可。INFERRED：重试仍失败则锁定，不能抛包/清active模拟成功 |
+| 当前源码/差距 | VERIFIED：LL `USB_FlushRxFifo`，`Drivers/STM32H7xx_HAL_Driver/Src/stm32h7xx_ll_usb.c:489`；BSP `BSP_USB_FlushEp`，`CM7/BSP/bsp_usb.c:411`从EP1开始guard；HAL wrapper丢真结果。UNRESOLVED：共享RX与EP0新SETUP的隔离、真实期限与Reset重试集成 |
+
+### 7. EPDISD / XFRC事件退休
+
+| 审核字段 | 最终记录 |
+| -- | -- |
+| 手册/寄存器 | VERIFIED：RM60.14.45，2832；60.14.56/62，2842～2843、2848～2849；60.15.6，2918。DAINT为汇总；DIEPINT/DOEPINT中EPDISD[1]、XFRC[0]独立，EPENA在通知前可清零 |
+| 前置条件/顺序 | INFERRED：提交禁用前记录方向/Session/Generation及已有事件；HAL消费前保存必要原始事件；按正常完成或取消证据唯一裁决，再W1C已归属事件，保留软件退休记录 |
+| 完成条件 | INFERRED：最终结果只发布一次，处理器/队列/PIO引用均已释放，新transfer不得在旧无标签硬件事件仍可误归因时启动。硬件中断不携软件Generation，不能仅凭收到事件时的当前generation贴标签 |
+| 超时/失败 | INFERRED：丢失归因证据、EPDISD迟到或W1C后仍有来源不明事件，保持RECOVERY_REQUIRED；不能把Event Epoch变化当丢弃旧资源收尾的理由 |
+| 当前源码/差距 | VERIFIED：HAL `Drivers/STM32H7xx_HAL_Driver/Src/stm32h7xx_hal_pcd.c:1144`、`:1234`消费EPDISD，Bulk无普通取消callback；BSP `CM7/BSP/bsp_usb.c:362`会清XFRC/EPDISD/TOC，无旧身份账本。UNRESOLVED：完整事件退休协议 |
+
+### 8. IRQ与PIO并发
+
+| 审核字段 | 最终记录 |
+| -- | -- |
+| 手册/寄存器 | VERIFIED：RM60.14.3，2780：GAHBCFG.GINTMSK[0]不阻止core更新状态；60.14.50，2836：DIEPEMPMSK；60.15.6，2905/2909/2918：RX消费/NAK生效/先停PIO |
+| 前置条件/顺序 | INFERRED：Task短临界区发布fence/身份→退出临界区保留必要IRQ/RX服务→分阶段等待硬件证据→短临界区最终裁决。HAL TXFE写入、BSP回调续包、Task新提交均须受同一停止契约约束 |
+| 完成条件 | INFERRED：无执行中PIO访问、不会继续写旧buffer/FIFO、旧中断不再重新arm；不以NVIC disabled或TXFE mask代替硬件停止 |
+| 超时/失败 | INFERRED：恢复本次确实改变且允许恢复的mask状态，保留endpoint fence/资源；不得为避免超时永久关IRQ。UNRESOLVED：现有HAL EPDISD自动Flush可能长轮询的可安全隔离方式；不能声称短Task Abort已解决全部ISR时延 |
+| 当前源码/差距 | VERIFIED：Platform `USB_Device_AbortEp`，`CM7/Platform/usb_device.c:426`关IRQ覆盖HAL；BSP `BSP_USB_Stop`，`CM7/BSP/bsp_usb.c:188`先关NVIC；`OTG_FS_IRQHandler`在`:619`，PIO续包`:655`；HAL RX读取`:1080`。UNRESOLVED：短临界区+必要硬件服务的完整串行化 |
+
+### 9. Endpoint Buffer释放条件
+
+| 审核字段 | 最终记录 |
+| -- | -- |
+| 手册/寄存器 | VERIFIED：RM60.14.56/62，2843/2849：XFRC表示编程transfer的USB/AHB完成；60.15.6，2918/2923：禁用后FIFO处理与PIO停写。RM没有Session、worker、frame lease或C指针所有权定义 |
+| 前置条件/顺序 | INFERRED：禁止新提交→唯一正常完成/取消终态→所需硬件/FIFO证据→PIO/IRQ/队列引用归零→由持有者恰好一次归还buffer。IDMA/Storage Worker仍持有时USB Proof不得释放共用数据 |
+| 完成条件 | INFERRED：`USB_release_eligible = identity_matches && terminal_evidence && pio_refs_zero && irq_events_retired && fifo_scope_safe && usb_ledger_refs_zero`；整buffer可复用还须外部owner（例如SD IDMA）独立归还。单纯busy=false、EPENA=0、DMA关闭、Token失效均不足 |
+| 超时/失败 | INFERRED：保留Buffer与RAW租约；复核硬件/引用并完成旧资源收尾才可恢复。不强制清busy/maxpacket/xfer_buff或重启硬件掩盖未知引用 |
+| 当前源码/差距 | VERIFIED：BSP `CM7/BSP/bsp_usb.c:365`清TX元数据，`:368`清RX active，`:328`Close清buffer指针；Platform `CM7/Platform/usb_device.c:445`清busy；`CM7/Platform/usb_device.h:49`只有布尔快照。UNRESOLVED：不存在完整Proof/引用账本；USB DMA关闭不排除CPU PIO仍访问应用buffer |
+
+### P1-A边界与后续门禁
+
+**VERIFIED（证据交付）**：本轮只更新四份文档。普通IN/OUT、ISO incomplete、EP0禁止条件、FIFO/IRQ基本语义已有手册依据。**UNRESOLVED**：本节明确保留的EP0完整取消、Reset与OUT0例外、主动ISO流停止、HAL IRQ副作用隔离、有界预算/退休账本，需要独立设计和后续验证；不擅自补完未知时序。
+
+**NOT_TESTED**：没有编译或新故障注入/实板Stop操作；没有证明任何生产路径现已满足上列契约。不进入P1-B，等待人工审核。
+
+---
+
+## 前次正文取得与访问历史
+
 ## 2026-11-19 正文取得后的核验结论（替代下方缺件状态）
 
 **VERIFIED（本机PDF）**：用户报告浏览器保存成功；实际文件在`C:/Users/29062/Downloads/RM0399_Rev5.pdf`。保留下载原件并逐字节复制到指定的`D:/32/STM32H7/h7_mac_lifecycle/Docs/references/RM0399_Rev5.pdf`。代理未能控制浏览器，因此浏览器URL/下载会话属于用户提供的来源陈述，没有独立HTTP响应或ST发布哈希可比对。未使用curl重新下载。
