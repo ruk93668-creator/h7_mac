@@ -1,6 +1,6 @@
 //执行真实CameraTask、App_Camera和Media；硬件与帧引用边界使用原B1桩
 #include R2_MEDIA_FIXTURE
-#include "app_camera_qualification_internal.h"
+#include "../Source/app_camera_qualification_internal.h"
 
 //统计真实Media下发BSP停止的次数，独立于Stop状态检查
 static uint32_t hardware_stops;

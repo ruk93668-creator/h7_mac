@@ -6,6 +6,9 @@ OUT=ROOT/'output/LegacyLifecycleArchiveValidation/C2.2A';OUT.mkdir(parents=True,
 os.environ['C1_TEST_OUTPUT_ROOT']=str(OUT/'arm')
 sys.path.insert(0,str(ROOT/'Tests/CameraLifecycleC1'))
 import run_tests as c
+sys.path.insert(0, str(HERE.parent / 'Source'))
+from camera_fixture import build_camera_fixture
+fixture_camera = build_camera_fixture(ROOT, OUT / 'qualification_camera.c')
 original=c.run
 def mapped(cmd):
  cmd=list(cmd)
@@ -18,15 +21,16 @@ exec(inspect.getsource(c.execute).replace('count=3000000','count=150000000'),sco
 rows=[]
 for opt in ['O0','O2']:
  c.cc=[('-'+opt if x=='-O0' else x) for x in c.cc]
- c.build('core_'+opt,[HERE/'qualification_test.c',ROOT/'CM7/Application/app_camera_lifecycle.c',ROOT/'CM7/Application/app_camera_lifecycle_replay.c'],'C2A_Run')
+ c.build('core_'+opt,[HERE/'qualification_test.c',ROOT/'CM7/Application/app_camera_qualification.c',ROOT/'CM7/Application/app_camera_lifecycle.c',ROOT/'CM7/Application/app_camera_lifecycle_replay.c'],'C2A_Run')
  for id in range(67):
   r=scope['execute']('core_'+opt,'C2A_Run',id);r.pop('trace',None)
   rows.append({'id':id,'q':f'Q{id+1:02d}' if id<44 else None,'optimization':opt,**r})
   print(opt,id,'PASS' if r['pass'] else 'FAIL',r['failure_line'],r['error'],flush=True)
 for opt in ['O0','O2']:
  c.cc=[('-'+opt if x in ['-O0','-O2'] else x) for x in c.cc]
- defs=['-DB1_APP_SOURCE="'+(ROOT/'CM7/Application/app_camera.c').as_posix()+'"','-DB1_TASK_SOURCE="'+(ROOT/'CM7/Application/Tasks/camera_task.c').as_posix()+'"']
- c.build('adapter_'+opt,[HERE/'adapter_test.c',ROOT/'CM7/Application/app_camera_qualification.c',ROOT/'CM7/Application/app_camera_lifecycle.c',ROOT/'CM7/Application/app_camera_lifecycle_replay.c',ROOT/'Tests/LegacyLifecycle/Adapter/v2_round_unbound.c'],'C2A_AdapterRun',defs)
+ c.cc += ['-I', HERE.parent/'Source']
+ defs=['-DB1_APP_SOURCE="'+fixture_camera.as_posix()+'"','-DB1_TASK_SOURCE="'+(ROOT/'CM7/Application/Tasks/camera_task.c').as_posix()+'"']
+ c.build('adapter_'+opt,[HERE/'adapter_test.c',HERE.parent/'Source/app_camera_qualification.c',ROOT/'CM7/Application/app_camera_qualification.c',ROOT/'CM7/Application/app_camera_lifecycle.c',ROOT/'CM7/Application/app_camera_lifecycle_replay.c',ROOT/'Tests/LegacyLifecycle/Adapter/v2_round_unbound.c'],'C2A_AdapterRun',defs)
  for id in range(14):
   r=c.execute('adapter_'+opt,'C2A_AdapterRun',id);r.pop('trace',None)
   rows.append({'id':'adapter_'+str(id),'optimization':opt,**r})

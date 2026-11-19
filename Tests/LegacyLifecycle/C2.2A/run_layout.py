@@ -6,6 +6,10 @@ OUT=ROOT/'output/LegacyLifecycleArchiveValidation/C2.2A/layout';OUT.mkdir(parent
 os.environ['C1_TEST_OUTPUT_ROOT']=str(OUT)
 sys.path.insert(0,str(ROOT/'Tests/CameraLifecycleC1'))
 import run_tests as c
+sys.path.insert(0, str(HERE.parent / 'Source'))
+from camera_fixture import build_camera_fixture
+fixture_camera = build_camera_fixture(ROOT, OUT / 'qualification_camera.c')
+c.cc += ['-I', HERE.parent/'Source']
 original=c.run
 def mapped(cmd):
  cmd=list(cmd)
@@ -20,10 +24,10 @@ exec(inspect.getsource(c.execute).replace('return result',"result['abi_words']=l
 rows=[]
 for opt in ['O0','O2']:
  c.cc=[('-'+opt if x in ['-O0','-O2'] else x) for x in c.cc]
- for name,source in [('baseline',baseline),('current',ROOT/'CM7/Application/app_camera.c')]:
+ for name,source in [('baseline',baseline),('current',fixture_camera)]:
   image=name+'_'+opt
   defs=['-DB1_APP_SOURCE="'+source.as_posix()+'"','-DB1_TASK_SOURCE="'+(ROOT/'CM7/Application/Tasks/camera_task.c').as_posix()+'"']
-  c.build(image,[HERE/'layout_test.c'],'C2A_LayoutRun',defs)
+  c.build(image,[HERE/'layout_test.c',HERE.parent/'Adapter/v2_round_unbound.c'],'C2A_LayoutRun',defs)
   r=scope['execute'](image,'C2A_LayoutRun',0);assert r['pass'],r
   assert r['abi_words'][2:12]==[824,72,32,56,52,24,6144,3,20,144],r['abi_words']
   # ARMCC emitted literal structure sizes in the ABI probe; Map also retains exact s_camera allocation.

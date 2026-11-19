@@ -1,6 +1,6 @@
 #include "../../CM7/ApplicationV2/Configuration/v2_board_v1.h"
 #include "app_messages.h"
-#include "app_camera_qualification_internal.h"
+#include "../LegacyLifecycle/Source/app_camera_qualification_internal.h"
 #include "platform_sync.h"
 #include <stddef.h>
 #include <string.h>

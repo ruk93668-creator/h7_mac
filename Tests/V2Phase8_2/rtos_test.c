@@ -12,7 +12,7 @@ static uint32_t s_exception;
 #include "../../CM7/ApplicationV2/Core/Runtime/v2_rtos_runtime.h"
 #include "../../CM7/ApplicationV2/Core/Runtime/v2_rtos_transport.h"
 #include "../../CM7/ApplicationV2/Configuration/v2_board_v1.h"
-#include "app_camera_qualification_internal.h"
+#include "../LegacyLifecycle/Source/app_camera_qualification_internal.h"
 #include <string.h>
 
 volatile uint32_t g_failure;

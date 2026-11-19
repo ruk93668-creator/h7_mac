@@ -47,7 +47,7 @@ for variant in ['baseline','current']:
  with tarfile.open(fileobj=io.BytesIO(archive)) as t:t.extractall(dest,filter='data')
  # Historical tests stay unchanged; overlay only the C1 protocol, message additions and CM7 source registration.
  if variant=='current':
-  for rel in ['CM7/Application/app_messages.c','CM7/Application/app_messages.h','CM7/Application/app_camera_lifecycle.c','CM7/Application/app_camera_lifecycle.h','CM7/Application/app_camera_lifecycle_replay.c','CM7/Application/app_camera_lifecycle_replay.h','MDK-ARM/h7_mac.uvprojx','CM7/Application/app_camera.c','CM7/Application/app_camera.h','CM7/Application/app_camera_qualification.c','CM7/Application/app_camera_qualification.h','CM7/Application/app_camera_qualification_internal.h','CM7/Application/Tasks/camera_task.c','CM7/Media/Inc/camera_capture.h','CM7/Media/Src/camera_capture.c','Tests/CameraModuleB1/behavior_test.c']:
+  for rel in ['CM7/Application/app_messages.c','CM7/Application/app_messages.h','CM7/Application/app_camera_lifecycle.c','CM7/Application/app_camera_lifecycle.h','CM7/Application/app_camera_lifecycle_replay.c','CM7/Application/app_camera_lifecycle_replay.h','MDK-ARM/h7_mac.uvprojx','CM7/Application/app_camera.c','CM7/Application/app_camera.h','CM7/Application/app_camera_qualification.c','CM7/Application/Tasks/camera_task.c','CM7/Media/Inc/camera_capture.h','CM7/Media/Src/camera_capture.c','Tests/CameraModuleB1/behavior_test.c']:
    (dest/rel).write_bytes((ROOT/rel).read_bytes())
 env=dict(os.environ,PYTHONIOENCODING='utf-8',PYTHONPATH=str(ROOT/'Tests/OledAsyncAcceptance/python_deps'))
 def run_variant(variant):

@@ -6,7 +6,7 @@ OUT=ROOT/'output/LegacyLifecycleArchiveValidation/R2'/('protocol_'+str(time.time
 g=['git','-c','safe.directory='+ROOT.as_posix()]
 raw=subprocess.check_output(g+['archive','--format=tar','HEAD'],cwd=ROOT)
 with tarfile.open(fileobj=io.BytesIO(raw)) as t:t.extractall(OUT,filter='data')
-for rel in ['CM7/Application/app_camera.c','CM7/Application/app_camera.h','CM7/Application/app_camera_qualification.c','CM7/Application/app_camera_qualification.h','CM7/Application/app_camera_qualification_internal.h','MDK-ARM/h7_mac.uvprojx','CM7/Application/Tasks/camera_task.c','CM7/Media/Inc/camera_capture.h','CM7/Media/Src/camera_capture.c']:
+for rel in ['CM7/Application/app_camera.c','CM7/Application/app_camera.h','CM7/Application/app_camera_qualification.c','MDK-ARM/h7_mac.uvprojx','CM7/Application/Tasks/camera_task.c','CM7/Media/Inc/camera_capture.h','CM7/Media/Src/camera_capture.c']:
  (OUT/rel).write_bytes((ROOT/rel).read_bytes())
 protected=['CM7/Application/app_camera_lifecycle.c','CM7/Application/app_camera_lifecycle.h','CM7/Application/app_camera_lifecycle_replay.c','CM7/Application/app_camera_lifecycle_replay.h']
 for rel in protected:

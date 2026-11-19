@@ -6,6 +6,9 @@ OUT=ROOT/'output/LegacyLifecycleArchiveValidation/R2/layout';OUT.mkdir(parents=T
 os.environ['C1_TEST_OUTPUT_ROOT']=str(OUT)
 sys.path.insert(0,str(ROOT/'Tests/CameraLifecycleC1'))
 import run_tests as c
+sys.path.insert(0, str(HERE.parent / 'Source'))
+from camera_fixture import build_camera_fixture
+fixture_camera = build_camera_fixture(ROOT, OUT / 'qualification_camera.c')
 original=c.run
 def mapped(cmd):
  cmd=list(cmd)
@@ -34,10 +37,10 @@ for opt in ['O0','O2']:
  for variant in ['baseline','current']:
   cc=[('-'+opt if x in ['-O0','-O2'] else x) for x in c.cc]
   if variant=='baseline':cc=cc[:1]+['-I',base]+cc[1:]
-  old=c.cc;c.cc=cc
+  old=c.cc;c.cc=cc+['-I', HERE.parent/'Source']
   folder=base if variant=='baseline' else ROOT/'CM7/Application'
-  defs=['-DB1_APP_SOURCE="'+(folder/'app_camera.c').as_posix()+'"','-DB1_TASK_SOURCE="'+(folder/'Tasks/camera_task.c').as_posix()+'"']
-  name=variant+'_'+opt;c.build(name,[HERE/'layout_test.c'],'R2_LayoutRun',defs);c.cc=old
+  defs=['-DB1_APP_SOURCE="'+((folder/'app_camera.c') if variant=='baseline' else fixture_camera).as_posix()+'"','-DB1_TASK_SOURCE="'+(folder/'Tasks/camera_task.c').as_posix()+'"']
+  name=variant+'_'+opt;c.build(name,[HERE/'layout_test.c',HERE.parent/'Adapter/v2_round_unbound.c'],'R2_LayoutRun',defs);c.cc=old
   r=scope['execute'](name,'R2_LayoutRun',0);assert r['pass'],r
   expected=[948 if variant=='baseline' else 988,824,72,32,56,52,24,6144,3,20 if variant=='baseline' else 28,144,12,20,0,4,8,12,40]
   assert r['abi']==expected,(r['abi'],expected)

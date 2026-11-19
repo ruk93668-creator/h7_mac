@@ -6,6 +6,9 @@ OUT=ROOT/'output/LegacyLifecycleArchiveValidation/R2/special';OUT.mkdir(parents=
 os.environ['C1_TEST_OUTPUT_ROOT']=str(OUT)
 sys.path.insert(0,str(ROOT/'Tests/CameraLifecycleC1'))
 import run_tests as c
+sys.path.insert(0, str(HERE.parent / 'Source'))
+from camera_fixture import build_camera_fixture
+fixture_camera = build_camera_fixture(ROOT, OUT / 'qualification_camera.c')
 fixture=(ROOT/'Tests/CameraModuleB1/media_test.c').read_text(encoding='utf-8')
 fixture=fixture.replace('#include "behavior_test.c"','#include "'+(ROOT/'Tests/CameraModuleB1/behavior_test.c').as_posix()+'"')
 fixture=fixture.replace('#include "../../CM7/Media/Src/camera_capture.c"','#include "'+(ROOT/'CM7/Media/Src/camera_capture.c').as_posix()+'"')
@@ -24,14 +27,15 @@ exec(source,scope)
 rows=[]
 for opt in ['O0','O2']:
  c.cc=[('-'+opt if x in ['-O0','-O2'] else x) for x in c.cc]
- defs=['-DB1_APP_SOURCE="'+(ROOT/'CM7/Application/app_camera.c').as_posix()+'"','-DB1_TASK_SOURCE="'+(ROOT/'CM7/Application/Tasks/camera_task.c').as_posix()+'"','-DR2_MEDIA_FIXTURE="'+(OUT/'media_fixture.c').as_posix()+'"']
+ c.cc += ['-I', HERE.parent/'Source']
+ defs=['-DB1_APP_SOURCE="'+fixture_camera.as_posix()+'"','-DB1_TASK_SOURCE="'+(ROOT/'CM7/Application/Tasks/camera_task.c').as_posix()+'"','-DR2_MEDIA_FIXTURE="'+(OUT/'media_fixture.c').as_posix()+'"']
  c.build('stop_'+opt,[HERE/'stop_test.c',ROOT/'Tests/LegacyLifecycle/Adapter/v2_round_unbound.c'],'R2_StopRun',defs)
- c.build('decision_'+opt,[HERE/'decision_test.c',ROOT/'CM7/Application/app_camera_lifecycle.c',ROOT/'CM7/Application/app_camera_lifecycle_replay.c'],'R2_DecisionRun')
+ c.build('decision_'+opt,[HERE/'decision_test.c',ROOT/'CM7/Application/app_camera_qualification.c',ROOT/'CM7/Application/app_camera_lifecycle.c',ROOT/'CM7/Application/app_camera_lifecycle_replay.c'],'R2_DecisionRun')
  for group,entry,count in [('stop','R2_StopRun',25),('decision','R2_DecisionRun',12)]:
   for id in range(count):
    r=scope['execute'](group+'_'+opt,entry,id);r.pop('trace',None)
    rows.append({'group':group,'optimization':opt,'id':id,**r})
    print(group,opt,id,'PASS' if r['pass'] else 'FAIL',r['return'],r['failure_line'],r['error'],flush=True)
 summary={'total':len(rows),'passed':sum(r['pass'] for r in rows),'failed':sum(not r['pass'] for r in rows)}
-(OUT/'results.json').write_text(json.dumps({'summary':summary,'cases':rows,'hardware_verified':False,'actual_sources':['camera_task.c','app_camera.c','camera_capture.c','app_camera_qualification.c','app_camera_lifecycle.c','app_camera_lifecycle_replay.c'],'mocked':['BSP hardware','Device callbacks','Bridge idle evidence','FIFO loan boundary','transport']},indent=2),encoding='utf-8')
+(OUT/'results.json').write_text(json.dumps({'summary':summary,'cases':rows,'hardware_verified':False,'actual_sources':['camera_task.c','generated from product app_camera.c and archived qualification fragments','camera_capture.c','archived app_camera_qualification.c','shared generation implementation','app_camera_lifecycle.c','app_camera_lifecycle_replay.c'],'mocked':['BSP hardware','Device callbacks','Bridge idle evidence','FIFO loan boundary','transport']},indent=2),encoding='utf-8')
 print(summary);raise SystemExit(bool(summary['failed']))
