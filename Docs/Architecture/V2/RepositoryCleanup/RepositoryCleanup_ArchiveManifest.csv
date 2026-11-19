@@ -12,3 +12,4 @@ CM7/Application/app_camera_qualification_internal.h,,RETAINED,暂缓
 CM7/Application/app_camera.c,,RETAINED,保留
 CM7/Application/app_camera.h,,RETAINED,保留
 MDK-ARM/RTE/_qwe/RTE_Components.h,,RETAINED,未删除
+CM7/Application/app_camera_qualification.h（代次声明）,CM7/Application/app_camera_generation.h,SHARED_DECLARATION,共享产品接口，旧资格头仍兼容，符号与实现位置保持原样

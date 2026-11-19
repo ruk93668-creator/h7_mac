@@ -1,7 +1,7 @@
 // 在 Storage 所有者上下文推进 Camera 资格事务。
 
 #include "storage_consumer.h"
-#include "app_camera_qualification.h"
+#include "app_camera_generation.h"
 #include <string.h>
 #define MAGIC 0x53544336U
 // 校验所有者调用并设置重入保护，调用方仍负责跨任务串行化。

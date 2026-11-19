@@ -2,6 +2,7 @@
 #define CM7_APP_CAMERA_QUALIFICATION_H
 
 #include "app_camera_lifecycle_replay.h"
+#include "app_camera_generation.h"
 
 #define APP_QUAL_INACTIVE 0U
 #define APP_QUAL_ACQUIRING 1U
@@ -92,8 +93,6 @@ typedef struct
     SysResult_t submit_error;
 } AppQualificationStatus_t;
 
-//给未来消费者的新尝试分配代次，失败和取消均不得回退计数
-SysResult_t App_QualificationNextGeneration(uint32_t *counter, uint32_t *generation);
 //绑定两个固定接收方向，不能重置已运行的编号或会话
 SysResult_t App_QualificationInit(AppCameraQualification_t *core);
 //仅运输到现有Rx，重复和候选都不在此执行业务

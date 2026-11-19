@@ -8,3 +8,7 @@ ARMCC5 使用同一套用户 Keil 配置的隔离副本构建。原始 .uvprojx 
 - 保留编译器、Target、任务配置、链接脚本及用户 Include Path。归档目录仅由独立历史夹具读取。
 
 构建证据目录为 output/RepositoryCleanup/build_20261119_145222，results.json 绑定实施提交 519de5267cafefe3b5b28e9f9160002c57a7520c。
+
+## 共享代次声明续审构建
+
+`build_20261119_153450` 为 `db02062` 对照，`build_20261119_153635` 为本轮共享声明候选。均在 `output/RepositoryCleanup` 隔离目录用同一份用户 Keil 配置的复制件完整重编。CM7、CM4 均为 0 Error、0 Warning。CM7 AXF 可加载段与对照逐字节一致，CM4 HEX 与本轮对照及此前清理构建逐字节一致。两份原 Keil 配置的 SHA256 保持不变。

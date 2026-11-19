@@ -9,3 +9,15 @@
 5. **RTE 候选保留。** `MDK-ARM/RTE/_qwe/RTE_Components.h` 具有 Keil 生成头标记。当前两 Target 未见直接路径，但外部 RTE 生成关系未闭合，按 UNRESOLVED 保留。
 
 矩阵列出了全部已识别的归档候选、仍活动的混合文件和 RTE 候选。未对第三方和底层驱动安排删除。
+
+## 旧 Camera 资格服务的链接证据与拆分门禁
+
+ARMCC5 CM7 Map 显示，`App_CameraQualificationAccess`、`App_CameraQualificationPrepare` 和 `App_QualificationProcess` 在链接时已被移除。`App_QualificationNextGeneration` 仍由两个 V2 消费者链接，`App_CameraStartResource` 仍由 Legacy `App_CameraHandleCommand` 调用。不能据此删除整个 `app_camera_qualification.c` 或 `app_camera.c`。
+
+`app_camera.c` 的 `s_camera` 仍有 988 B，旧资格 Context 与 STOP 结果字段仍占结构空间。当前可审查的下一步限于以下三个独立差异。
+
+1. 将保持原语义的资格服务和历史 Camera 适配单独纳入 `Tests/LegacyLifecycle`，先证明原 C2.2A 与 R2 断言及用例 ID 全部保持。现有生产编译单元先保留。
+2. 单独移除仅旧资格调用的 Camera Context 字段与公开入口，保留 `App_CameraStartResource`、轮次停止事实、Bridge 和 Device 的现有推进。对比普通 B1 与归档 C2.2A/R2 两套路径，分别核对首错、ACK/FAULT、真实停止与 Bridge 排空。
+3. 共享代次实现需保留可编译的生产路径，再审查 CM7 工程登记。用户本地 CM4 额外引用旧文件路径，所以删除或改名会破坏这份配置。必须获得针对具体差异的单独批准，才能改动相关路径或配置。
+
+未来清理以实际 Map 确认旧服务不再编译、共享符号仍链接，并复验 CM4 HEX、历史用例和用户 Keil 哈希。保留依据未闭合的 RTE 候选。

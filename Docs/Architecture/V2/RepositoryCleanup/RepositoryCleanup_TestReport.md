@@ -27,3 +27,7 @@ B1 更早的历史 37/39 继续保存在原报告。表中 36/39 是以本轮 P8
 ARMCC5 对全部 30 个 V2 编译单元逐一比较 O0/O2 的分配节、重定位及导出符号，60/60 对一致。实板、真实 DMA 与两个 Resource 证明仍分别是 NOT_RUN 和 NOT_PROVEN。
 
 证据保存在本地 `output/RepositoryCleanup/retest_20261119_144440`、`output/RepositoryCleanup/build_20261119_145222` 和 `output/RepositoryCleanup/style`。完整 ID 对照为 `ordered_id_comparison.json`。未把构建产物或本机依赖纳入 Git。
+
+## 共享代次声明续审证据
+
+`output/RepositoryCleanup/gen_153635` 的隔离候选复跑 C1 419/419、C1.1 24/24、C2.1.1 648/648、ABI 2/2、BASEPRI 26/26、C2.2A 162/162、R2 74/74，完整 ID、执行顺序和结果与此前基线一致。Phase 1～7、P8.1（34/34）、P8.2（12/12）复跑成功。Phase 1、3、4 沿用隔离阶段源清单，其余使用原测试入口。本轮没有改动原始报告、历史 FAIL 或测试断言。
