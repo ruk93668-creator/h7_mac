@@ -42,6 +42,12 @@ class TestProtocol(unittest.IsolatedAsyncioTestCase):
         self.assertEqual(m.lost_or_unconfirmed, 1)
 
     async def test_concurrent_loopback_tool(self):
+        await self.check_concurrent_loopback_tool()
+
+    async def test_wait_for_both_tcp_roles_and_drain(self):
+        await self.check_concurrent_loopback_tool(wait_concurrent=3, drain_seconds=.1)
+
+    async def check_concurrent_loopback_tool(self, wait_concurrent=0, drain_seconds=0):
         asyncio.get_running_loop().set_debug(False)
         ip = '127.0.0.1'
         tasks = set()
@@ -103,6 +109,7 @@ class TestProtocol(unittest.IsolatedAsyncioTestCase):
             cfg = SimpleNamespace(local_ip=ip, board_ip=ip, seed=10, seconds=5, interval=.10,
                                   count=20, burst=1, reply_timeout=2, broadcast=None, fragment=True,
                                   reconnect_every=0, rst=False, stall_seconds=0,
+                                  wait_concurrent=wait_concurrent, drain_seconds=drain_seconds,
                                   board_udp_port=board_udp_port, local_udp_port=0,
                                   board_tcp_port=board_tcp_port, local_tcp_port=pc_tcp_port)
             result = await peer.run(cfg)
@@ -115,6 +122,8 @@ class TestProtocol(unittest.IsolatedAsyncioTestCase):
                 task.cancel()
             await asyncio.gather(*pending, return_exceptions=True)
         self.assertFalse(result['hardware_pass'])
+        self.assertIsNotNone(result['traffic_started_epoch'])
+        self.assertGreaterEqual(result['drain_started_epoch'] - result['traffic_started_epoch'], 4.9)
         for role, stats in result['channels'].items():
             self.assertEqual(stats['verified_replies'], 20, (role, stats))
             self.assertEqual(stats['board_requests'], 1)

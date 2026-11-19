@@ -21,10 +21,13 @@
 | TCP 数据及背压 | PASS | 两个角色均完成拆分/合并 Echo，链式 pbuf 和 2920 B 发送/接收，窗口收缩和重开，发送环满，延迟 ACK、重传及实际 TCP segment/heap/PBUF_POOL 资源耗尽后恢复。 |
 | 关闭、错误和重连 | PASS | FIN、RST、FIN 分配失败进入 CLOSEPEND 后重试、超过 PCB 容量的 TIME_WAIT 轮换、连接拒绝、连接超时、PCB/定时器回收、掉线后重新获得 DHCP 租约和重开服务。 |
 | PC 测试工具 | PASS | 3 项测试，含本机并行 TCP Server、TCP Client 和 UDP 三个真实 Socket 通道，每通道 20 个已验证 Echo；另测流帧拆分/合并、CRC 和序号统计。 |
-| 板端 Flash Verify、DCache/MPU 及池峰值 | NOT_RUN | 需人工确认实际板上镜像并保存调试器读回。 |
+| 板端 DCache 和池峰值 | PASS | Watch 读回 `CCR=0x00070200`、`memory_valid=1`。长测 PBUF_POOL 3、TCP PCB 2、TCP segment 5、heap 7536 B。 |
+| 板端 Flash Verify 和 MPU 寄存器逐区读回 | NOT_RUN | 本次沿用已烧录的 E5，保存了本机 AXF 哈希。 |
 | 实板静态 IPv4 三通道短测 | PASS | 30 秒，UDP 及两条 TCP 各 280/280 个应用 Echo，丢失或未确认均为 0。见实板验收报告及本地 PCAP、JSON。 |
-| 实板 DHCP 并发、10 分钟并发及性能上限 | NOT_RUN | 待采集对应 PCAP、JSON、运行峰值及恢复证据。 |
+| 实板 DHCP 与至少 600 秒三通道流量 | PASS | 619.836 秒六方向重叠，10 次测量内 T1 续租，三通道各 3971 个 PC 请求全部收到有效 Echo。关闭与资源回收详见实板验收报告。 |
+| 两条 TCP 有序关闭及资源回收 | PASS | 独立短复验两条 TCP 均完成双向 FIN/ACK、无 RST。等待至少 125 秒后活动 TCP PCB、segment、PBUF_POOL 均归零，DHCP 和监听仍在线。 |
+| 实板吞吐上限 | NOT_RUN | 联合长测使用低负载定速发送。 |
 
-主机故障注入峰值为 lwIP heap 12,240 B、Timeout 7、TCP PCB 6、TCP Listen PCB 1、TCP segment 24、UDP PCB 2、PBUF_POOL 24。上述峰值包含人为占满各池的用例。板端自然流量下的峰值应在人工验收时单独采集。
+主机故障注入峰值为 lwIP heap 12,240 B、Timeout 7、TCP PCB 6、TCP Listen PCB 1、TCP segment 24、UDP PCB 2、PBUF_POOL 24。上述峰值包含人为占满各池的用例。板端自然流量下的峰值见实板验收报告。
 
-生产入口、MAC/DMA、MPU 配置、RTOS、USB、Storage、CM4、Application V2 和 `main` 分支均保留。E5 实板验收仍是进入后续阶段前的待办项目。
+生产入口、MAC/DMA、MPU 配置、RTOS、USB、Storage、CM4、Application V2 和 `main` 分支均保留。本轮 E5 实板验收已完成，等待人工审核。

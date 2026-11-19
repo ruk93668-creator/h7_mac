@@ -183,8 +183,11 @@ class DatagramPeer(asyncio.DatagramProtocol):
     def error_received(self, exc):
         self.exchange.metrics.errors += 1
 
-    async def send(self):
+    async def send(self, traffic, stopping):
+        await traffic.wait()
         for count in range(self.config.count):
+            if stopping.is_set():
+                break
             packet = self.exchange.request(self.config.reply_timeout)
             if packet is not None:
                 dst = self.config.broadcast if self.config.broadcast and count % 2 else self.config.board_ip
@@ -198,7 +201,7 @@ def reset_socket(writer):
     writer.transport.abort()
 
 
-async def run_connection(reader, writer, cfg, metrics, role):
+async def run_connection(reader, writer, cfg, metrics, role, traffic, stopping):
     exchange = Exchange(metrics, cfg.seed)
     metrics.connections += 1
     write_lock = asyncio.Lock()
@@ -227,8 +230,9 @@ async def run_connection(reader, writer, cfg, metrics, role):
                 await write(response)
 
     async def send():
+        await traffic.wait()
         remaining = cfg.count
-        while remaining > 0:
+        while remaining > 0 and not stopping.is_set():
             n = min(remaining, cfg.burst)
             frames = [p for p in (exchange.request(cfg.reply_timeout) for _ in range(n)) if p]
             if frames:
@@ -265,6 +269,24 @@ async def run(cfg):
     stats = {key: Metrics() for key in ('pc_client', 'pc_server', 'udp')}
     accepted = set()
     started = time.monotonic()
+    traffic = asyncio.Event()
+    stopping = asyncio.Event()
+    connected = asyncio.Event()
+    roles = set()
+    setup_errors = 0
+    traffic_started_epoch = None
+    drain_started_epoch = None
+    wait_concurrent = getattr(cfg, 'wait_concurrent', 0)
+
+    async def service(reader, writer, role):
+        roles.add(role)
+        if len(roles) == 2:
+            connected.set()
+        try:
+            await run_connection(reader, writer, cfg, stats[role], role, traffic, stopping)
+        finally:
+            roles.discard(role)
+            connected.clear()
 
     async def incoming(reader, writer):
         if writer.get_extra_info('peername')[0] != cfg.board_ip or accepted:
@@ -274,18 +296,22 @@ async def run(cfg):
         task = asyncio.current_task()
         accepted.add(task)
         try:
-            await run_connection(reader, writer, cfg, stats['pc_server'], 'pc_server')
+            await service(reader, writer, 'pc_server')
         finally:
             accepted.discard(task)
 
     async def outgoing():
+        nonlocal setup_errors
         while True:
             try:
                 reader, writer = await asyncio.wait_for(asyncio.open_connection(
                     cfg.board_ip, cfg.board_tcp_port, local_addr=(cfg.local_ip, 0)), 3)
-                await run_connection(reader, writer, cfg, stats['pc_client'], 'pc_client')
+                await service(reader, writer, 'pc_client')
             except (OSError, asyncio.TimeoutError):
-                stats['pc_client'].errors += 1
+                if traffic.is_set():
+                    stats['pc_client'].errors += 1
+                else:
+                    setup_errors += 1
             await asyncio.sleep(0.5)
 
     server = await asyncio.start_server(incoming, cfg.local_ip, cfg.local_tcp_port)
@@ -295,9 +321,22 @@ async def run(cfg):
     try:
         transport, _ = await asyncio.get_running_loop().create_datagram_endpoint(
             lambda: udp, local_addr=(cfg.local_ip, cfg.local_udp_port), allow_broadcast=bool(cfg.broadcast))
-        tasks = [asyncio.create_task(outgoing()), asyncio.create_task(udp.send())]
+        tasks = [asyncio.create_task(outgoing()), asyncio.create_task(udp.send(traffic, stopping))]
         print('E5_PEER_READY', flush=True)
-        await asyncio.sleep(cfg.seconds)
+        try:
+            if wait_concurrent:
+                await asyncio.wait_for(connected.wait(), wait_concurrent)
+        except asyncio.TimeoutError:
+            print('E5_CONCURRENT_TIMEOUT', flush=True)
+        else:
+            traffic_started_epoch = time.time()
+            traffic.set()
+            print('E5_TRAFFIC_STARTED', flush=True)
+            await asyncio.sleep(cfg.seconds)
+            drain_started_epoch = time.time()
+            stopping.set()
+            print('E5_DRAINING', flush=True)
+            await asyncio.sleep(getattr(cfg, 'drain_seconds', 0))
     finally:
         server.close()
         tasks += list(accepted)
@@ -313,6 +352,8 @@ async def run(cfg):
     ends = [m.last_active for m in stats.values()]
     overlap = max(0, min(ends) - max(starts)) if all(t is not None for t in starts + ends) else 0
     return dict(elapsed_seconds=elapsed, concurrent_activity_seconds=overlap,
+                setup_errors=setup_errors, traffic_started_epoch=traffic_started_epoch,
+                drain_started_epoch=drain_started_epoch,
                 config={k: v for k, v in vars(cfg).items() if k != 'output'},
                 channels={k: m.summary(elapsed) for k, m in stats.items()},
                 hardware_pass=False)
@@ -338,10 +379,15 @@ def main():
     parser.add_argument('--reconnect-every', type=float, default=0)
     parser.add_argument('--rst', action='store_true', help='reset instead of FIN at reconnect interval')
     parser.add_argument('--stall-seconds', type=float, default=0)
+    parser.add_argument('--wait-concurrent', type=float, default=0,
+                        help='wait this many seconds for both TCP roles before generating requests')
+    parser.add_argument('--drain-seconds', type=float, default=0,
+                        help='stop generating requests and wait for replies before closing sockets')
     args = parser.parse_args()
     if (not 1 <= args.seconds <= 86400 or not .001 <= args.interval <= 30 or
             not 0 <= args.count <= 1000000 or not 0.1 <= args.reply_timeout <= 60 or
             not 0 <= args.reconnect_every <= 3600 or not 0 <= args.stall_seconds <= 60 or
+            not 0 <= args.wait_concurrent <= 300 or not 0 <= args.drain_seconds <= 60 or
             not all(1 <= p <= 65535 for p in
                     (args.board_udp_port, args.local_udp_port, args.board_tcp_port, args.local_tcp_port))):
         parser.error('invalid duration/count')
@@ -351,6 +397,8 @@ def main():
         result = asyncio.run(run(args))
         json.dump(result, output, indent=2)
     print(json.dumps(result))
+    if result['traffic_started_epoch'] is None:
+        raise SystemExit(1)
 
 
 if __name__ == '__main__':
