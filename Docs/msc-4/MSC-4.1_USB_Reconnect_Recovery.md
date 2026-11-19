@@ -4,6 +4,8 @@
 
 **当前为诊断进行中，根因 UNRESOLVED；尚未实现恢复修复，不宣称重连验收通过。** VERIFIED 指源码/已有快照/指定测试确认的事实；INFERRED 指推断；UNRESOLVED 指尚待定位；NOT_TESTED 指未执行。
 
+2026-11-19最新范围说明：用户在BSP有限扩展批准后，重新规定本轮禁止修改BSP，并要求新的安全停止状态机。此前未提交的BSP取证工作已完整归档并移出当前工作区，未烧录该版本。最新取消语义审计、调用栈与接口阻塞见 `MSC-4.1_StopLifecycle_Audit_and_Approval.md`；当前不依据旧批准继续修改BSP，也未实现新状态机。
+
 ## 1. 现有证据与边界
 
 VERIFIED：MSC-4 真实 SD 读取及文件复制成功。用户确认读取中拔线后，不复位重接未恢复 F:，Windows 报 Device Descriptor Request Failed；这轮操作没有抓包。既有 SRAM 快照保留，不重新标成完整 USB 时序证据。
