@@ -1,6 +1,6 @@
 # EndpointCancel与USB Stop测试计划
 
-日期：2026-11-19。设计审阅基线：`a0ec0eb72f5260d9602b32a996db5f0e76417c6a`。**本轮只交付计划，以下用例全部NOT_TESTED，不新增测试代码或实板操作。** 旧测试/快照仅作背景证据，不能计入新契约通过率。
+日期：2026-11-19。设计审阅基线：`30f4dd007b126bc2f90bdc7bb1818abeb65c3229`。**本轮只交付计划，以下用例全部NOT_TESTED，不新增测试代码或实板操作。** 旧测试/快照仅作背景证据，不能计入新契约通过率。
 
 依赖：[契约](EndpointCancel_Contract.md)、[硬件证据](EndpointCancel_HardwareEvidence.md)、[生命周期](UsbStop_Lifecycle.md)。UNRESOLVED项未解锁前，只能测试其保守失败规则，不能把假设写入模型后宣称真实硬件正确。
 
@@ -27,7 +27,7 @@
 
 ## 2. 软件取消与完成竞争矩阵
 
-每行均须运行IN2/OUT2适用方向，至少覆盖IRQ先、Task先及同批事件；记录事件顺序而不是依赖固定sleep。
+每行均须运行IN2/OUT2适用方向，至少覆盖IRQ先、Task先及同批事件；记录事件顺序而不是依赖固定sleep。主线按ADR-01的推荐A运行：Task协调、底层同步有界Abort；备选B如另行试验必须单独标记，不能混用通过率。
 
 | ID | 安排/注入 | 预期结果与关键断言 |
 | --- | --- | --- |
@@ -43,7 +43,7 @@
 | EC-10 | OUT2 CBW接收已arm但尚未收到数据时Stop | 保留64字节接收容量及记录直到取消/正常完成证明；不启动新命令 |
 | EC-11 | OUT2 Data OUT只收到前缀时Stop | 报告可证明前缀；剩余数据不得当作新CBW或产生新Worker Submit |
 | EC-12 | Cancel请求被底层拒绝/未登记 | 明确区分拒绝与Pending，目标引用不变，无虚假通知 |
-| EC-13 | 取消已登记、EPDISD被延迟 | 一直Pending；IRQ/收尾路径可用，Class/buffer不释放 |
+| EC-13 | 取消已登记、同步尝试的EPDISD/静止证明被延迟 | 预算内保留Pending/调用中所有权；同步预算耗尽后为Failed，不无限等待一条不存在的取消IRQ；未静止不释放 |
 | EC-14 | Request计时超时后EPDISD迟到 | Failed历史不改写；旧Token仍可完成旧Stop收尾，业务继续封锁 |
 | EC-15 | PIO driver idle但SD IDMA仍引用同一buffer | USB静止不能释放/重用SD引用，不转交FatFS |
 
@@ -145,8 +145,90 @@ USBPcap处于Windows栈层，可能包含注入描述符，且不一定暴露所
 | T-U1 | UNRESOLVED | RAM分阶段Data OUT/活跃IN取消的受控主机工具尚未选定；普通同步SPTD无法证明任意时刻命中 |
 | T-U2 | UNRESOLVED | 不伪造硬件位的板级延迟EPDISD/迟到IRQ方法，需要合法诊断机制及独立证明 |
 | T-U3 | UNRESOLVED | 寄存器模型取决于H-U1/H-U2手册与共享RX序列核验 |
-| T-U4 | UNRESOLVED | L-U1/L-U4 Core同步适配、最终PCD停止原子化的可执行测试接口 |
+| T-U4 | UNRESOLVED | Core Prepare/同步Commit方案已确定；其EP0门控、等待窗口及最终PCD停止原子化的可执行接口/预算待核验 |
 
 本轮文档审查通过标准：四份文档齐全且相互一致；每个关键硬件论断链接源码/手册或明确标未解决；没有把计划写成已运行测试；不修改生产代码。
 
 后续实现通过标准：全部必需软件矩阵、对应硬件证据、10次重连、三组回归分别通过，所有失败历史保留。仅四份文档完成不构成代码实现、实板验收或MSC-5批准。
+
+## 9. 推荐同步架构及诊断来源测试
+
+| ID | 注入 | 必须核对的区别 |
+| --- | --- | --- |
+| AR-01 | BSP共享RX guard返回BUSY | HAL调用次数=0、hardware_attempted=false，Pending依赖等待；不是硬件Cancel Pending |
+| AR-02 | 本地LL预算耗尽返回HAL_ERROR | 工程码-9、phase=ABORT、证据未知/失败；不能改记成-5或原始HAL_TIMEOUT |
+| AR-03 | HAL Abort成功、Flush失败 | 保留“停止阶段成功、收尾失败”两事实，不提前归还buffer |
+| AR-04 | Class释放汇总-9但前一方向曾BUSY | 首个guard来源记录仍存在，不由汇总码伪造原始HAL_ERROR |
+| AR-05 | Task单次同步Abort执行期间 | 无SD等待、无上层回调依赖、无等待被自身屏蔽IRQ的死锁；预算及进展来源可证明 |
+| AR-06 | 同步Abort已证明成功，但Task逻辑完成通知延迟 | 不等待HAL取消回调；保留通知引用，Task通知消费后旧Stop可继续 |
+| AR-07 | 当前正常数据回调与Task同步取消竞争 | 按Transfer唯一终结；不为等待一个已被取消取代的正常XFRC而永久卡住Drain |
+
+AR-05必须测量实际最坏时延和中断影响；10000次循环不是时间单位。不能因同步方案比异步方案简单，就省略硬件进展证明或承诺当前旧HAL能够可靠取消OUT2。
+
+## 10. Core Prepare / 同步Commit协调测试
+
+| ID | 场景 | 预期 |
+| --- | --- | --- |
+| CO-01 | Reset时旧OUT2活跃 | ISR只登记并封锁，尚无Ready Ticket时Core DeInit调用数=0；Task Prepare后同步Commit一次 |
+| CO-02 | Disconnect后Prepare等待Worker/回调 | 不在ISR/DeInit里等待，IRQ/收尾路径可用，Class引用保持 |
+| CO-03 | 没有Ticket或Ticket属于旧Class generation却调用Commit | 拒绝并锁定；不得返回假USBD_OK或释放新对象 |
+| CO-04 | SET_CONFIGURATION(0)在Configured中到达 | Core入口先门控；无Prepare证明不改配置、不提交成功状态包；Ready后只分发一次 |
+| CO-05 | Core忽略ClrClassConfig失败并尝试CtlSendStatus | Platform按失败cookie阻止真实成功提交，保留失败事实；不能用Core返回OK报通过 |
+| CO-06 | Prepare期间新Setup替换旧请求 | 旧回复资格作废但旧资源继续清理；不能把旧状态包交给新Setup |
+| CO-07 | Reset在Prepare或Commit边界再次到来 | 合并原因，按最新Reset边界重建；旧资源只Free一次、旧完成仍可归还 |
+| CO-08 | Core Reset把dev_config清0后传0给DeInit | 仍按PreparedTicket的Class实例清理，不能凭config0跳过旧资源 |
+| CO-09 | 正常重复SET_CONFIGURATION(1)且无停止事务 | 不触发无谓Stop/DeInit；现有Class工作保持 |
+| CO-10 | UVC活跃流SET_INTERFACE Alt0 | 仅Stream Prepare；同步Setup Commit后Alt0，Class不Free、PCD不Stop |
+| CO-11 | 标准请求误走现有Class Deferred Status API | bmRequest非0x21应拒绝；不得全局放宽BUSY匹配来让测试通过 |
+| CO-12 | Prepare超过主机/生命周期等待窗口 | 明确控制请求/恢复失败，资源不伪释放；不得无限NAK后仍宣称枚举成功 |
+| CO-13 | 直接Core Stop/DeInit/Unregister旁路、首次Init部分失败 | 仍验证独立Ready证明；不能在Core回调中开始等待，不借旧Ticket释放新对象 |
+| CO-14 | EP0旧回复仍引用即将释放的Class | 即使数据端点已Close也不得Free；当前新Setup仍保留独立cookie及准入 |
+
+观察Core调用栈、DeInit调用/Free次数、Ticket消费、8字节Setup副本/cookie、Reset generation、真实EP0提交及完成，不能只检查最终dev_config。
+
+## 11. BOT Reset Recovery专项
+
+VERIFIED（现状源码）：`usb_msc_class.c:133`严格匹配bmRequest0x21、bRequest0xFF、wValue0、wIndex0、wLength0，登记Deferred Status；`usb_msc_bot.c:263`进入BOT_RESET_DRAIN，Task排空后提交状态、等待真实完成、再等待双方向Clear HALT。现状BotReset仍直接尝试Abort，Task Drain也循环调用；新设计要求硬件同步Abort只在Task执行，ISR不得据此阻塞。
+
+BOT Class Reset不是USB Bus Reset：目标保持地址/配置和Class实例，不走全设备DeInit/PCD Stop。Reset控制请求以EP0状态阶段响应，不是生成CSW。各专项全部NOT_TESTED。
+
+| ID | 场景 | 预期及证据 |
+| --- | --- | --- |
+| BRR-01 | 合法Class Reset，端点/后端空闲 | 严格匹配的BUSY可延迟状态；Task证明排空后才提交EP0状态，不提前响应 |
+| BRR-02 | 无效方向/接口/Value/Length或未Configured | 合法拒绝/STALL；没有Token或取消副作用，不能因全局BUSY放宽而通过 |
+| BRR-03 | READ Data IN/WRITE Data OUT中Reset | 仅RAM允许受控WRITE；旧Transfer被终结、无新CBW，保留后端/PIO引用直到证明完整 |
+| BRR-04 | 同步Abort返回BUSY、HAL_ERROR、Flush失败 | 分阶段原因正确；BUSY等待依赖，HAL_ERROR不冒充Pending，失败不提交成功状态 |
+| BRR-05 | Storage Worker/IDMA仍未drained | EP0状态保持未完成；USB Token取消或Reset不代表SD sync/Buffer释放 |
+| BRR-06 | 状态包提交成功但IN完成尚未到 | 保持等待完成，不计Reset Recovery完成，不因CtlSendStatus的OK伪造主机确认 |
+| BRR-07 | 提交失败、确认丢失或超时 | 故障锁定，Token及资源状态真实；迟到事件不能自动重启数据链 |
+| BRR-08 | 新Setup/Bus Reset在状态ACK前替换请求 | 旧Token失效，不续接旧状态；原资源清理仍可完成 |
+| BRR-09 | 状态已真实完成，随后合法Clear HALT成为新Setup | 历史完成事实仍可用于恢复，不能因新Setup取消当前资格而抹掉既有ACK事实 |
+| BRR-10 | Clear HALT两方向按任意顺序到达 | 只在Reset状态完成后记录0x02/0x82各自证明；两者都满足才重新接收CBW |
+| BRR-11 | 缺少一方向、重复同方向或过早Clear HALT | 不提前进入BOT_CBW；取消/Abort本身不能代替主机Clear HALT |
+| BRR-12 | Class Reset后第一个新CBW及迟到旧数据 | 旧通知不成为新CBW/数据；Tag/CSW/Residue及INQUIRY/READ CAPACITY/READ(10)正确 |
+| BRR-13 | Class Reset与Bus Reset/Disconnect交错 | 旧控制请求失效与旧资源收尾分开；按最新会话边界处理，不假定原配置仍有效 |
+
+实板证据必须包括类请求、EP0状态完成、两个ClearFeature端点地址、恢复后的新CBW/CSW及内部状态。只见设备重新枚举、Clear HALT或下一次读成功，均不足以单独宣告BOT Reset Recovery完整通过。SD组禁止协议WRITE负向注入。
+
+## 12. UVC活跃流专项
+
+前置证据必须是真实Alt1、有效Commit、ISO EP1已打开，且有正在发送的帧/包及被持有的frame lease。只做UVC Alt0枚举不能算活跃流回归。保持原描述符、FS带宽及SOF节拍，不修改Camera/Media数据路径；A/B保护卡内容，UVC测试时断电取出真实SD。
+
+VERIFIED：当前 `usb_uvc_class.c:512 UVC_DeInit`经Alt0关闭EP1并释放帧后才Free context；`UVC_SetStreamAlt:1003`在Close失败时保留方向标记，`UVC_ReleaseFrame:1105`处理Payload取消。新设计的Prepare需先满足这些同步释放前提，不能仅凭“USB空闲”推断Bridge/帧租约已归还。
+
+| ID | 活跃流场景 | 必须保持的事实 |
+| --- | --- | --- |
+| UV-01 | 连续ISO发送中主动Stop | 先封锁SOF/新帧/续包，取消证明及租约排空后Class Release，再最终PCD Stop |
+| UV-02 | Alt1正在发包时SET_INTERFACE Alt0 | 两阶段Stream Prepare/同步Commit，无假成功状态；Class仍存在，PCD不重启 |
+| UV-03 | 帧构包/源数据访问中取消 | 已有CPU/source访问退出前不归还源buffer；不重用给下一帧 |
+| UV-04 | 最后一个ISO包正常完成与取消竞争 | 只按真实整帧发送事实统计EOF；取消不虚构完成帧，也不重复Return |
+| UV-05 | ISO incomplete与取消同时/先后出现 | 不把Incomplete当正常完成或Bulk取消确认；帧丢弃/归还各最多一次 |
+| UV-06 | Close/Abort/Flush失败 | Alt/ep1_opened/close_pending反映真实部分状态；保留帧和context所需引用 |
+| UV-07 | Class DeInit Commit意外失败 | 无Core假状态成功、无双Free，进入受控恢复；不为通过验收强清标记 |
+| UV-08 | 活跃流Bus Reset或Disconnect | 旧帧取消收尾可达，旧SOF/IN/Incomplete不得推进新会话统计或访问新context |
+| UV-09 | Bridge/上层帧归还确认被延迟 | 继续Drain，不先Free context或回收共享源buffer；延迟确认不因USB epoch变化被丢弃 |
+| UV-10 | Alt0→Alt1、重新Commit后开始新流 | 旧事件不会改变新FID/包序列/lease，旧帧不会被当新流EOF |
+| UV-11 | 重复Alt0、Stop、Disconnect及迟到回调 | 每帧归还一次、Class释放一次；不改变已完成事实 |
+| UV-12 | 10次活跃流断开重连 | 每次保存控制/ISO捕获及状态/帧引用记录；不能以空闲枚举10次替代 |
+
+ISO硬件发送完成与PC端应用成功解码是两种证据。需要真实PC视频接收/帧验证时单独记录，不能只凭MCU计数推导PC已收到完整帧。若摄像头初始化已有问题而不能启动Alt1，专项标阻塞/NOT_TESTED，不修改Camera或旧断言来制造通过。

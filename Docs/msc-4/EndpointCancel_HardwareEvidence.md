@@ -1,6 +1,6 @@
 # EndpointCancel 硬件证据与核验记录
 
-日期：2026-11-19。源码基线：`a0ec0eb72f5260d9602b32a996db5f0e76417c6a`。本轮只读源码、既有快照及公开资料，不操作板卡、不修改生产代码。
+日期：2026-11-19。源码基线：`30f4dd007b126bc2f90bdc7bb1818abeb65c3229`。本轮只读源码、既有快照及公开资料，不操作板卡、不修改生产代码。
 
 VERIFIED需注明“源码”“既有实测”或“手册”；三者不能相互冒充。INFERRED为推断；UNRESOLVED为无法确认；NOT_TESTED为未验证。与[取消契约](EndpointCancel_Contract.md)、[停止生命周期](UsbStop_Lifecycle.md)、[测试计划](EndpointCancel_TestPlan.md)共同审阅。
 
@@ -93,6 +93,8 @@ UNRESOLVED（H-U1）：RM0399对各端点类型的精确停用编程序列、EPD
 
 现状VERIFIED：BSP `OTG_FS_IRQHandler:619`直接调用HAL；普通Bulk没有取消事件记录。以下为拟议方案，不是已有功能。
 
+推荐A还必须在**同步Abort调用前后**记录目标身份、原始HAL结果、CTL/INT及FIFO/PIO结果：同步路径可能在IRQ分发之前就完成或应答旧事件，不能要求必须再来一次EPDISD IRQ。HAL IRQ前后取证主要补充正常完成、Reset交错和迟到事件；A的逻辑cancel_complete由Task基于同步证明发布，不等待HAL提供专用回调。
+
 1. **HAL前只观察。** 在调用HAL前，按本轮不可变arm映射，记录controller/session/endpoint incarnation、Transfer/Cancel身份、GINTSTS和mask、DAINT和mask、相关端点INT原始值与使能值、CTL、IRQ入口序号。原始置位与使能事件分开保存；未使能旧标志不能直接视为新完成。
 2. **不可事后套当前epoch。** HAL会同步调用Setup、Reset、数据回调，期间软件Session可能变化。记录必须沿用进入时的旧目标，收尾资格不受新Session过滤。
 3. **只调用一次原HAL IRQ。** 不为制造NAK生效而递归进入HAL IRQ。HAL前诊断不弹GRXSTSP、不读FIFO、不先清旧XFRC/EPDISD，不破坏HAL正常消费。
@@ -143,3 +145,22 @@ VERIFIED（E1/E2/E3）：RAM首次地址为21、config1；重连硬件地址0、
 | H-U5 | NOT_TESTED | 真正延迟EPDISD、XFRC竞争、停用确认丢失及迟到IRQ的板级验证 |
 
 本轮没有新增实测，也没有改变任何寄存器或生产代码。后续不得用以上设计性要求替代实际硬件验证。
+
+## 8. SYS_ERR_BUSY与HAL_ERROR的诊断区分
+
+VERIFIED：`Common/Inc/sys_result.h`定义BUSY=-5、TIMEOUT=-8、IO=-9。`bsp_usb.c:758 Usb_HalResult`映射HAL_OK→SYS_OK、HAL_BUSY→SYS_ERR_BUSY、HAL_TIMEOUT→SYS_ERR_TIMEOUT，其余HAL_ERROR等→SYS_ERR_IO。**诊断必须保留发生阶段和原始值，不能仅凭汇总错误码反推。**
+
+| ID | 来源/当前代码 | 返回及副作用 | Task协调的设计处理 |
+| --- | --- | --- | --- |
+| D-01 | BSP Abort:347，目标OUT仍rx_active且另有活动OUT | SYS_ERR_BUSY；此分支未调用HAL Abort，无取消MMIO副作用 | Pending(WAIT_SHARED_RX)，hardware_attempted=false；记录依赖方向，不清busy、不认定取消已提交 |
+| D-02 | 本地HAL Abort/LL:1992/915，EPENA轮询预算耗尽 | HAL_ERROR→SYS_ERR_IO(-9)；可能已写SNAK/EPDIS，静止未知 | Failed/RECOVERY_REQUIRED；保存取消前后状态，不能继续当普通BUSY无限重试 |
+| D-03 | HAL Abort已成功，后续FIFO处理失败 | BSP返回对应Flush错误；停止事实与FIFO/driver收尾事实不同 | 保存phase=FLUSH及HAL Abort先前成功证据；保留未归还引用，不把它记为Abort从未执行 |
+| D-04 | 通用映射中的HAL_BUSY | 可在其他带HAL锁的调用阶段产生；不能从映射存在推断Abort一定可达此值 | 按具体函数及锁/资源来源诊断，不统一命名“取消进行中” |
+| D-05 | HAL_TIMEOUT或Task等待依赖超时 | 前者才按现有映射为-8；后者是Task自己的deadline事实 | 保留origin和deadline，均不证明静止；不能把D-02擅改成原始HAL_TIMEOUT |
+| D-06 | Core/Class释放汇总USBD_FAIL或SYS_ERR_IO | 可掩盖先前BUSY或不同方向失败；后续清理又可能覆盖最近一次operation result | 从不可覆盖的首个阶段记录诊断，不由Class最终-9断言底层必定返回HAL_ERROR |
+
+VERIFIED（本地源码）：当前HAL_PCD_EP_Abort无HAL锁等待逻辑，调用的本地USB_EPStopXfer仅返回HAL_OK或HAL_ERROR。当前这条路径不存在用HAL_BUSY编码异步Pending的契约。10000次轮询是代码预算，不能在未校准时写成10000ms或某个已实测时间。
+
+拟议诊断记录至少包括：Stop/Session/端点/Transfer/尝试身份，阶段（GUARD/ABORT/FIFO/CLOSE/CLASS_RELEASE/PCD_STOP），`hal_called`，原始HAL返回或NOT_CALLED，工程返回码，调用前后CTL/INT/mask/IRQ状态，PIO引用，首个错误及重复次数。依赖忙与硬件尝试失败分别计数。
+
+证据措辞校正：E2/E3直接保存的是工程错误-9、OUT2仍活动及IRQ关闭等状态，没有首次raw HAL返回日志。它们与D-02路径一致，但不能写成“已直接抓到首次HAL_ERROR”；D-06也说明了仅看汇总值的局限。当前已确认持续锁定链，首次取消失败的完整来源仍需阶段化证据。

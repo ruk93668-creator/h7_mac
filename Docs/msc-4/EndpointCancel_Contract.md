@@ -1,6 +1,6 @@
 # EndpointCancel 契约设计
 
-日期：2026-11-19。源码基线：`a0ec0eb72f5260d9602b32a996db5f0e76417c6a`。范围：STM32H747 CM7、USB2 FS、当前USB PIO配置、MSC OUT2/IN2；不新增生产实现。
+日期：2026-11-19。源码基线：`30f4dd007b126bc2f90bdc7bb1818abeb65c3229`。范围：STM32H747 CM7、USB2 FS、当前USB PIO配置、MSC OUT2/IN2；不新增生产实现。
 
 本文的“必须”是拟议接口要求，不代表现有代码已经做到。VERIFIED为指定源码/既有证据确认，INFERRED为推断，UNRESOLVED为未确定，NOT_TESTED为未验证。配套：[硬件证据](EndpointCancel_HardwareEvidence.md)、[停止生命周期](UsbStop_Lifecycle.md)、[测试计划](EndpointCancel_TestPlan.md)。
 
@@ -8,7 +8,34 @@
 
 VERIFIED：当前 `CM7/BSP/bsp_usb.c:337 BSP_USB_AbortEp` 调用 `HAL_PCD_EP_Abort`；本地LL `USB_EPStopXfer:915`同步轮询EPENA，超时返回HAL_ERROR。BSP在后续FIFO处理成功后才返回SYS_OK并归还其PIO占用。当前SYS_OK不是“仅提交取消”。普通Bulk不存在专用取消完成回调，不能把Data IN/OUT完成当作它。
 
-下文是新的异步契约：**Request成功只表示登记；Cancelled才表示有对应取消完成证明；Class/Buffer能否释放还要检查事件引用和其他所有者。** 旧API语义不得被静默改成异步而保留原调用点。
+本文保留Task层Cancel事务模型：**Request成功只表示登记；Cancelled才表示有对应取消完成证明；Class/Buffer能否释放还要检查事件引用和其他所有者。** 底层采用下述推荐的同步Abort，不把当前BSP API静默改成“返回OK但仍在取消”。Task事务的异步推进与硬件取消原语的同步语义必须分开。
+
+### ADR-01：同步Abort与异步Cancel架构比较
+
+| 维度 | A：同步有界Abort + Task分阶段协调 | B：底层异步Cancel请求/IRQ完成 |
+| --- | --- | --- |
+| 底层返回语义 | 一次调用返回已确认停止、准入忙或失败 | Request仅登记，Pending后由另一个证据路径终结 |
+| 与当前HAL的匹配 | 直接匹配HAL_PCD_EP_Abort/USB_EPStopXfer的同步轮询形式 | 当前HAL没有普通Bulk专用取消完成回调，需要新事件/状态接口 |
+| ISR职责 | 只登记生命周期原因和封锁准入；Abort移至Task | 还要关联EPDISD与取消身份并产生取消完成通知 |
+| 时间与调度 | 每次同步调用必须有经过核验的最坏执行预算；阶段间返回Task调度 | 调用短，但Pending记录、通知可靠性与中断存活是核心依赖 |
+| 正常完成竞争 | 在同步尝试前后按Transfer身份作唯一判定 | 硬件与Task、正常完成与取消通知四者需共同线性化 |
+| HAL前后取证 | 仍需观察旧IRQ、FIFO及PIO边界，但不等待不存在的取消回调 | 必须保证HAL清EPDISD前已保留带身份的取消事实 |
+| Core同步DeInit | Task先Prepare，Core回调只做同步Commit | 也必须先Prepare，不能直接把Pending返回给Core |
+| 主要风险 | ISR中使用轮询、预算不可靠、同步原语内部依赖被屏蔽IRQ、旧OUT停用错误 | 事件丢失/错配、关闭IRQ后永不完成、重复通知/资源退役、更多接口及RAM状态 |
+| 当前适用结论 | **推荐的近期实现架构**，但须先修复/核实同步原语的完成证明和最终Stop契约 | 备选，只有证明A的时延预算不可接受或确有异步需求时再单独审查 |
+
+推荐依据是当前实际HAL形式及既有缺口，不是断言当前Abort实现正确。现有OUT2取消失败、共享RX序列和BSP Stop过早关IRQ仍是后续实现阻塞；增加Task状态机不能自动消除这些问题。本轮不改任何接口或代码。
+
+该选择针对当前单Class MSC/默认UVC。多个活动OUT之间可能互相触发共享RX guard，不能假设“轮流重试BUSY”一定会收敛；若形成依赖环，需受控失败并单独解决H-U2，不能清其他端点busy来强行推进。
+
+### 推荐方案中Request/Pending/完成通知的落点
+
+1. Task层Request登记Stop/目标并关闭提交准入；可返回accepted/Pending，表示排队或准备工作未完成。
+2. 只有资源前置条件满足后，Task执行一次同步Abort。不能在ISR内、Core同步DeInit回调内或持有会阻止必要进展的长临界区里执行。
+3. 同步Abort返回成功后，结合对应Transfer/PIO/事件屏障取得终结证明；Task发布逻辑cancel_complete。它是**Task确认后的通知**，不冒称HAL提供了硬件取消回调。
+4. SYS_ERR_BUSY按来源记录为未满足的前置条件，不默认表示硬件取消Pending；HAL_ERROR按失败记录。详见硬件证据文档的D-01～D-06。
+5. 不等待一条在当前HAL中不存在的取消完成IRQ来结束同步调用。同步原语的完成条件必须由硬件或原语自身受控的处理推进，不能依赖被它屏蔽的IRQ、其他Task或上层回调；无法证明这一点时A方案也不得实施。
+6. 同步调用耗尽预算后，取消尝试Failed；后续迟到硬件证据仍可帮助旧Stop收尾，但不把错误改写成成功。异步备选B的“长时间Pending等取消事件”不能套在A的HAL_ERROR上。
 
 ## 2. 参与者、身份与引用
 
@@ -86,7 +113,7 @@ IRQ位同时存在只说明观察到一组事实，不提供精确的先后时�
 
 ## 6. 通知、查询与重复操作
 
-拟议Request返回值只说明准入；异步状态通过查询和独立cancel_complete通知一致表达。这里不提供可被误编译的生产接口实现。
+拟议Task层Request返回值只说明准入；Task事务状态通过查询和独立cancel_complete通知一致表达。推荐A由Task在同步证明后发出该通知，备选B才由底层异步证据触发；两者不混用。这里不提供可被误编译的生产接口实现。
 
 - 每个接受的Cancel至多作出一次终结决定。通知传输允许重试，但通知身份固定，消费幂等；“通知重试”不等于再次取消或再次释放。
 - 通知必须携带完整目标及Stop身份、结果、完成前缀和证据索引，不能只传endpoint或当前epoch。
@@ -99,10 +126,10 @@ IRQ位同时存在只说明观察到一组事实，不提供精确的先后时�
 
 | ID | 状态 | 事项 |
 | --- | --- | --- |
-| C-U1 | UNRESOLVED | HAL处理前快照与回调期间的arm屏障如何在当前BSP实现，见H-U3 |
+| C-U1 | UNRESOLVED | 推荐同步原语的时间/进展证明与HAL前后arm屏障如何实现，见H-U3 |
 | C-U2 | UNRESOLVED | 事件队列、tombstone容量及消费确认接口，需要结合RAM预算定稿 |
 | C-U3 | UNRESOLVED | Failed之后的显式清理继续策略及结果查询形式，不能混淆错误历史与后来静止事实 |
-| C-U4 | UNRESOLVED | EP0 Setup替换、ST Core同步DeInit与异步取消之间的适配，见L-U1 |
+| C-U4 | NOT_TESTED | Core采用Prepare/同步Commit设计，见L-U1；EP0门控、调用预算及实现验证仍待完成 |
 | C-U5 | NOT_TESTED | 全部竞争、重复、延迟和跨Session验收；当前无新增实现可供执行 |
 
 设计冻结前必须证明同一Transfer不存在双终结/双释放，且每个释放动作都能追溯到硬件证据和消费者确认。上述未解决项是后续实现门槛，本轮不以空实现或假回调补齐。

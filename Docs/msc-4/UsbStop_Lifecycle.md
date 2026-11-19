@@ -1,6 +1,6 @@
 # USB停止与会话恢复生命周期设计
 
-日期：2026-11-19。审计基线：`a0ec0eb72f5260d9602b32a996db5f0e76417c6a`。本文件仅设计，不修改生产代码，不授予实现或MSC-5权限。VERIFIED为指定源码/既有证据，INFERRED为推断，UNRESOLVED为尚未解决，NOT_TESTED为尚未验证。
+日期：2026-11-19。审计基线：`30f4dd007b126bc2f90bdc7bb1818abeb65c3229`。本文件仅设计，不修改生产代码，不授予实现或MSC-5权限。VERIFIED为指定源码/既有证据，INFERRED为推断，UNRESOLVED为尚未解决，NOT_TESTED为尚未验证。
 
 依赖：[EndpointCancel契约](EndpointCancel_Contract.md)、[硬件证据](EndpointCancel_HardwareEvidence.md)、[测试计划](EndpointCancel_TestPlan.md)。本文的状态机为目标行为，**不是对当前实现的描述**。
 
@@ -16,7 +16,7 @@ VERIFIED：Platform `Usb_DataOut:1410 / Usb_DataIn:1430`在非零端点Class非A
 
 ## 2. 事务、会话与共同准入点
 
-每个Stop事务保留：`stop_id`、旧Session、受影响端点incarnation/Transfer、各Cancel身份、原因集合、首个错误、Class释放进度、PCD停止进度、IRQ提交状态、通知引用及后端排空状态。
+每个Stop事务保留：`stop_id`、旧Session、受影响端点incarnation/Transfer、各Cancel身份、原因集合、首个错误、Class释放进度、PCD停止进度、IRQ提交状态、通知引用及后端排空状态。采用[ADR-01](EndpointCancel_Contract.md)推荐A：底层同步有界Abort，Task分阶段协调；逻辑cancel_complete由Task在取得证明后发布，不新增对不存在的HAL取消回调的等待。
 
 单一Task串行推进；ISR只记录事实、关闭新提交准入并通知Task。StopRequested的线性化点必须覆盖：
 
@@ -103,7 +103,7 @@ VERIFIED：当前VBUS sensing关闭，SOF/Suspend/Disconnect是不同入口。�
 
 缓冲引用计入硬件、BSP PIO分包、排队事件、正在执行的回调、Class和后端。对SD LUN，SDMMC IDMA及Worker可能仍持有同一MSC数据缓冲；必须等待其自己的完成证明。RAW租约在本生命周期里保持原所有者，任何Stop、Disconnect、Reset、取消或PCD停止结果都不自动授权FatFS。
 
-## 7. Class Release、PCD Stop与Core适配
+## 7. Core同步DeInit与Task协调：Prepare / 同步Commit
 
 拟议完整停止的顺序为：取消证明 → 旧通知/后端排空 → Class/端点释放 → PCD Stop → 提交STOPPED。Class Release前必须有零旧context消费者；不能为了通过Core DeInit而强制清端点标记、释放内存或返回假成功。
 
@@ -111,9 +111,63 @@ Class部分释放失败时记录每个方向/步骤。下一次只能重试尚�
 
 PCD Stop失败时可能出现“Class已经真实释放、PCD尚未停止”。必须分别报告两个事实，不重新伪造Class仍ACTIVE，也不声称PCD已停止。不得把这些状态压成一个成功bool。取消/回调尚未排空时禁止进入PCD_STOP；失败保留真实控制器状态和错误，后续只能继续安全收尾或显式恢复。
 
-**L-U1：ST Core同步回调与异步停止的适配尚未解决。** VERIFIED：当前Core Reset/Disconnect同步调用Class DeInit，Platform又在IRQ链内调用Core。目标设计需在Platform先登记会话边界，延后会调用DeInit的Core阶段，直到Task完成安全收尾；新Setup/EP0同时需要一个明确、合法的受控准入策略。
+### 7.1 设计决定：延后Core入口，不延长DeInit回调
 
-不能在异步清理未完成时向Core返回USBD_OK来谎称Class已释放；也不能把USBD_BUSY直接塞进旧同步路径假设Core会替我们等待。若标准控制请求必须暂缓，应核对EP0硬件与主机时序；没有这些证明时保持RECOVERY_REQUIRED并报告可用性失败，不擅自修改ST Core。
+VERIFIED：Core `USBD_LL_Reset:771`、`USBD_LL_DevDisconnected:995`、`USBD_ClrClassConfig:505`都按同步方式调用DeInit，没有Pending续接接口。`usbd_ctlreq.c`的Configured→SET_CONFIGURATION(0)路径忽略ClrClassConfig失败并尝试发送状态包。故不能让DeInit返回BUSY后期望Core自行等待，更不能提前返回OK。
+
+**设计采用Task两阶段协调，Core的DeInit保持同步完成语义。** 等待发生在进入Core之前，硬件Abort及后端等待不发生在Core回调中：
+
+1. Platform生命周期入口创建事务并封锁提交，保留旧Core/Class对象；会触发DeInit的Core入口尚不调用。
+2. Task Prepare：分别完成Class数据端点OUT/IN同步Abort、旧通知排空、Worker/IDMA或UVC帧租约归还，以及数据端点实际Close。还须退役可能引用旧Class对象的EP0回复/数据；EP0本身由独立控制门控管理，不能为清Class数据端点而无条件把当前Setup/控制端点一起关闭。SYS_ERR_BUSY按依赖原因等待；HAL_ERROR进入受控失败，不假装Pending。Prepare不得调用Class Free或宣告DeInit成功。
+3. 达到所有Ready谓词后生成一次性`PreparedTicket`，绑定stop/session/Class实例及内存generation、端点Close证明、零外部消费者引用和提交封锁generation。协调者自己的保留引用在同步Commit中原子消费，不在Class释放后继续解引用旧对象。若是控制请求，还绑定本次Setup cookie。
+4. Task在有界Core串行化窗口执行相应Core入口。ManagedDeInit验证Ticket，实际调用Class同步DeInit/Free并记录完成；已经Close的端点不再开始硬件取消，已经归还的帧不再重复Return。回调不得等待硬件、Task或回调队列。
+5. Core返回后分别检查DeInit提交结果、端点/EP0实际结果及Control/Reset generation；仅检查Core返回OK不足以提交成功。Ticket单次消费；后续重复DeInit只能返回已完成事实，不再次Free。
+
+PreparedTicket不是“准备请求已登记”，而是所有前置证明已完成。没有有效Ticket的破坏性Core调用属于准入错误：拒绝/锁定，不在该回调里临时启动长清理。
+
+所有会触发DeInit的入口都需经过此协调，包括直接USBD_Stop/DeInit/UnRegisterClass/ClrClassConfig调用，不能只拦Reset而留下旁路。已证明没有Class实例、端点和旧引用的空清理可用显式No-Class Ready证明；首次Init失败的部分清理须独立验证，不能借用旧Session Ticket或因为没有正常枚举就假定没有资源。
+
+### 7.2 入口协调矩阵
+
+| 入口 | Prepare之前 | Ready后的同步Commit | 后继 |
+| --- | --- | --- | --- |
+| 主动Stop | Task封锁新提交，固定旧目标 | 受控Class清配置/DeInit入口；不先调用会停止PCD的完整USBD_DeInit | Class Release成功后进入最终PCD_STOP |
+| Disconnect回调 | ISR只登记断线及旧Session；暂不调用USBD_LL_DevDisconnected | Task调用原Core DevDisconnected，Ticket使DeInit同步完成 | 按既定监听/停止策略，不强制Start |
+| Reset回调 | ISR记录新Reset generation，失效旧EP0资格；保留旧资源账本，不立即让Core DeInit进入等待 | Task调用原Core Reset；核验EP0两方向Open，按已确认Reset边界同步软件/硬件地址0并检查结果 | 新会话等待主机配置，不强制PCD重启 |
+| SET_CONFIGURATION(0)或合法更换配置 | Platform在USBD_LL_SetupStage之前拦住本条破坏性标准请求，保留8字节副本/cookie；不让Core先改dev_config并调用DeInit | Prepare成功且cookie仍当前时，Task向原Core分发这条Setup一次 | 真实DeInit成功才允许当前请求的状态阶段 |
+| UVC VS SET_INTERFACE Alt0 | 只Prepare视频端点与旧帧归还，禁止新SOF触发提交；不是全设备Stop | Task向原Core/Class分发该条Setup；Alt0真实关闭后提交状态 | Class仍保留，PCD不停止；后续Alt1单独准入 |
+
+当前只有一个配置；合法重复SET_CONFIGURATION(1)不应平白触发DeInit。清理未完成时的新配置请求不能仅凭旧Core仍显示Configured就走“重复配置成功”分支；应受生命周期准入门控。
+
+### 7.3 EP0生命周期门控与Setup替换
+
+门控是拟议Platform/BSP边界契约，**当前尚未实现/验证，不使用固定延迟伪装等待**：
+
+- Prepare期间不把新的SET_ADDRESS/SET_CONFIGURATION交给仍带旧配置的Core；旧EP0数据/状态也必须先取得自己的停止证明，不能泄漏给地址0的新请求。
+- 控制器保持能记录新的Setup及Reset的路径，IN响应维持受控未就绪/NAK状态；不得发送假状态成功、任意旧描述符片段或把Suspend当Disconnect。EP0门控需要硬件证明，不能仅设一个软件bool就声称已实现NAK。
+- 8字节Setup副本拥有独立cookie和Reset generation，不引用会被HAL覆盖的Setup缓冲。尚未分发的旧请求可被更新Setup取代，但其资格作废不释放已在途EP0/其他资源。
+- 新Setup、Reset、Disconnect或主动Stop撤销旧cookie的响应资格；资源清理继续服务原Stop。不能因为原SET_CONFIGURATION(0)被主机放弃就自动恢复已部分关闭的旧流。
+- 只重放当前、合法且未经分发的请求一次；绝不向当前新请求补交旧状态包。Reset再次到来时合并清理，按最新Reset边界重建，旧Transfer收尾身份仍保留。
+- 主机等待上限与Task调度/Abort最坏预算必须验收；超过窗口时如实进入恢复失败，不能无期限保留请求或宣称Windows必会重试成功。
+
+VERIFIED：现有 `USB_Device_DeferControlStatus:1025`仅接受bmRequest=0x21、Configured、wLength=0的匹配Class请求；**不能直接拿它给标准SET_CONFIGURATION(0)或UVC标准SET_INTERFACE登记**。新标准请求门控是在调用Core前的排队/准入，不全局放宽Class BUSY规则，也不把Core标准请求返回BUSY当作已支持延迟。
+
+### 7.4 同步Commit异常与Core忽略返回值
+
+Prepare必须把可能等待/失败的取消与后端收尾提前完成，Commit只做已准备好的方向标记提交和Class释放。UVC当前DeInit会调用Alt0释放帧，因此其Ticket必须先证明EP1不持有PIO包、Payload/Bridge旧租约可归还且零外部context消费者；不能假设USB端点空闲就等于帧归还完成。
+
+如果Commit仍失败：
+
+1. 保存实际部分释放状态与首个错误，禁止第二次Free，进入RECOVERY_REQUIRED。
+2. 对Setup入口，失败的cookie在Platform状态包提交路径被否决；即使Core因忽略ClrClassConfig返回值而继续CtlSendStatus，也不得实际发出成功状态包。需要定向STALL/失败处理，不能仅看Core函数返回值。
+3. 该否决只作用于绑定的旧cookie；新的Setup不能继承它，也不能让新Setup“复活”旧回复。
+4. 对Reset/Disconnect入口，Core已经更改Default/config等逻辑字段也不代表Class已释放。没有Release证据就不开放新Class Init/新CBW；保留旧引用而非回滚成一个假的ACTIVE对象。
+
+Core串行化窗口只在Ready且无需等待收尾后进入；可使用短临界区保护一次有界提交，不能持有IRQ屏蔽等待后端。最终HAL/PCD Stop另在Task阶段执行，其串行化和IRQ提交仍需L-U4核验。
+
+Reset还有一个身份细节：Core Reset先把dev_config清零再调用DeInit，所以回调收到config=0并不代表没有旧Class。PreparedTicket绑定实际旧Class实例/内存generation及旧Session，不能把配置参数当作Class身份或凭config=0跳过释放。
+
+该方案在设计上解决同步Core回调与Task等待的职责冲突：**Core只看到一次已准备好的同步释放，Task承担所有等待；门控和失败否决位于Platform，不改ST Core。** EP0硬件门控与调度预算是实现验证项，不在本轮冒充已验证事实。
 
 ## 8. RECOVERY_REQUIRED恢复条件
 
@@ -135,10 +189,11 @@ PCD Stop失败时可能出现“Class已经真实释放、PCD尚未停止”。�
 
 | ID | 状态 | 待核验内容 |
 | --- | --- | --- |
-| L-U1 | UNRESOLVED | 同步Core DeInit与异步清理的Platform适配、恢复期间EP0合法准入和主机等待窗口 |
+| L-U1 | NOT_TESTED | 两阶段Prepare/同步Commit方案已确定；需执行Core协调测试，证明不存在假DeInit成功、双Free或旧回复 |
 | L-U2 | UNRESOLVED | VBUS sensing关闭时Disconnect后的可靠监听/重连来源，不能依赖SOF缺失或关闭PCD后的假Connect |
 | L-U3 | UNRESOLVED | 各Class部分释放重试的幂等性及零消费者证明，特别是默认UVC |
 | L-U4 | UNRESOLVED | 最终HAL/PCD停止的有界串行化、临时IRQ保护与失败恢复，使其不妨碍必要收尾 |
 | L-U5 | NOT_TESTED | 所有故障注入、RAM/SD只读/UVC实板矩阵和10次重连 |
+| L-U6 | UNRESOLVED | EP0门控的真实NAK/旧传输隔离机制，以及Task Prepare/重放满足主机等待窗口的实测预算 |
 
 本轮交付的是可审查的事务与条件设计。所有未解决项保留为实现门槛；没有编译、烧录或运行新的状态机。
