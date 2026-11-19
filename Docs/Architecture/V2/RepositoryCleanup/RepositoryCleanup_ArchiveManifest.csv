@@ -1,0 +1,14 @@
+﻿Original,Destination,Kind,ProductStatus
+CM7/Application/app_messages.c（C1 队列段）,Tests/LegacyLifecycle/Source/legacy_lifecycle_messages.c,ARCHIVED,旧队列及自动 Initcall 已退出产品
+CM7/Application/app_messages.h（C1 通道与函数声明）,Tests/LegacyLifecycle/Include/legacy_lifecycle_messages.h,ARCHIVED,产品头只公开 Legacy 五条队列
+历史 C2.2A/R2 夹具轮次依赖,Tests/LegacyLifecycle/Adapter/v2_round_unbound.c,TEST_ADAPTER,未登记产品 Target
+CM7/Application/app_camera_lifecycle.c,,RETAINED,保留
+CM7/Application/app_camera_lifecycle.h,,RETAINED,保留
+CM7/Application/app_camera_lifecycle_replay.c,,RETAINED,保留
+CM7/Application/app_camera_lifecycle_replay.h,,RETAINED,保留
+CM7/Application/app_camera_qualification.c,,RETAINED,保留
+CM7/Application/app_camera_qualification.h,,RETAINED,保留
+CM7/Application/app_camera_qualification_internal.h,,RETAINED,暂缓
+CM7/Application/app_camera.c,,RETAINED,保留
+CM7/Application/app_camera.h,,RETAINED,保留
+MDK-ARM/RTE/_qwe/RTE_Components.h,,RETAINED,未删除
