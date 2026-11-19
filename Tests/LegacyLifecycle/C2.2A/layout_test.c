@@ -1,5 +1,6 @@
 //ARMCC5实际编译原App_Camera和候选App_Camera，比较同一ABI下的私有尺寸
 #include "../../CameraModuleB1/behavior_test.c"
+#include "../Source/app_camera_qualification.h"
 volatile uint32_t g_layout[12];
 int C2A_LayoutRun(uint32_t id)
 {

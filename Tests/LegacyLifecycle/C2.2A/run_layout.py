@@ -19,6 +19,8 @@ def mapped(cmd):
 c.run=mapped
 baseline=OUT/'baseline_app_camera.c'
 baseline.write_bytes(subprocess.check_output(['git','-c','safe.directory='+ROOT.as_posix(),'show','c6d2bed:CM7/Application/app_camera.c'],cwd=ROOT))
+baseline_task=OUT/'baseline_camera_task.c'
+baseline_task.write_bytes(subprocess.check_output(['git','-c','safe.directory='+ROOT.as_posix(),'show','c6d2bed:CM7/Application/Tasks/camera_task.c'],cwd=ROOT))
 scope=dict(c.__dict__)
 exec(inspect.getsource(c.execute).replace('return result',"result['abi_words']=list(struct.unpack('<12I',u.mem_read(syms['g_layout'],48))); return result"),scope)
 rows=[]
@@ -26,7 +28,7 @@ for opt in ['O0','O2']:
  c.cc=[('-'+opt if x in ['-O0','-O2'] else x) for x in c.cc]
  for name,source in [('baseline',baseline),('current',fixture_camera)]:
   image=name+'_'+opt
-  defs=['-DB1_APP_SOURCE="'+source.as_posix()+'"','-DB1_TASK_SOURCE="'+(ROOT/'CM7/Application/Tasks/camera_task.c').as_posix()+'"']
+  defs=['-DB1_APP_SOURCE="'+source.as_posix()+'"','-DB1_TASK_SOURCE="'+(baseline_task if name=='baseline' else ROOT/'CM7/Application/Tasks/camera_task.c').as_posix()+'"']
   c.build(image,[HERE/'layout_test.c',HERE.parent/'Adapter/v2_round_unbound.c'],'C2A_LayoutRun',defs)
   r=scope['execute'](image,'C2A_LayoutRun',0);assert r['pass'],r
   assert r['abi_words'][2:12]==[824,72,32,56,52,24,6144,3,20,144],r['abi_words']

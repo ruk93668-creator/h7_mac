@@ -1,0 +1,38 @@
+﻿Check,Status,ExitCode,Observed,EvidenceUnderOutputQ124
+C2.2A O0/O2,PASS,0,162/162，ID、顺序及结果与基线相同,retest_C2A.log
+R2 STOP / Decision O0/O2,PASS,0,74/74，ID、顺序及结果与基线相同,retest_R2.log
+R2 原 C2.2A 入口,PASS,0,162/162，旧入口失败日志 b_R2_original.log 保留,retest_Original.log
+C1,PASS,0,419/419,c_C1.log
+C1.1,PASS,0,新增 24/24,c_C1.1.log
+C2.1.1 Replay,PASS,0,648/648，压力事务 40960,c_C2.1.1.log
+BASEPRI,PASS,0,26/26,c_BASEPRI.log
+52B / 56B ABI,PASS,0,O0/O2 通过,c/Tests/CameraLifecycleC2_1_1/abi_results.json
+B1 原入口,BLOCKED,1,基线与候选均缺 V2Runtime_Round，另见 b_B1.log,c_B1.log
+B1 隔离轮次适配,FAIL,1,"36/39，失败 ID [9, 10, 28]",with_adapter_c_B1.log
+B1 Media 原入口,BLOCKED,1,基线与候选均缺 V2Runtime_Round，另见 b_B1_Media.log,c_B1_Media.log
+B1 Media 隔离轮次适配,PASS,0,6/6，失败 ID [],with_adapter_c_B1_Media.log
+B1 Integration 原入口,BLOCKED,1,基线与候选均缺 V2Runtime_Round，另见 b_B1_Integration.log,c_B1_Integration.log
+B1 Integration 隔离轮次适配,PASS,0,11/11，失败 ID [],with_adapter_c_B1_Integration.log
+B2 原入口,BLOCKED,1,基线与候选均缺 V2Runtime_Round，另见 b_B2.log,c_B2.log
+B2 隔离轮次适配,FAIL,1,"99/102，失败 ID [27, 59, 91]",linked_c_B2.log
+B3 原入口,BLOCKED,1,基线与候选均缺 V2Runtime_Round，另见 b_B3.log,c_B3.log
+B3 隔离轮次适配,FAIL,1,"49/51，失败 ID [45, 46]",linked_c_B3.log
+V2 Phase 1 完整入口,BLOCKED,1,基线与候选递归拉入后续阶段源文件，缺少端口,c_V2_1.log
+V2 Phase 1 原阶段文件范围,PASS,0,250/250,scoped_c_V2_1.log
+V2 Phase 3 完整入口,BLOCKED,1,基线与候选递归拉入后续阶段源文件，缺少端口,c_V2_3.log
+V2 Phase 3 原阶段文件范围,PASS,0,158/158,scoped_c_V2_3.log
+V2 Phase 4 完整入口,BLOCKED,1,基线与候选递归拉入后续阶段源文件，缺少端口,c_V2_4.log
+V2 Phase 4 原阶段文件范围,PASS,0,154/154,scoped_c_V2_4.log
+V2 Phase 2,PASS,0,112/112,c_V2_2.log
+V2 Phase 5,PASS,0,38/38，负对照 6/6,c_V2_5.log
+V2 Phase 6,PASS,0,48/48，负对照 6/6,c_V2_6.log
+V2 Phase 7,PASS,0,52/52，负对照 8/8,c_V2_7.log
+V2 Phase 8.1,PASS,0,O0/O2 静态装配,c_V2_8_1.log
+V2 Phase 8.2,PASS,0,O0/O2 三模块和九条队列,c_V2_8_2.log
+CM7 / CM4 用户工程 Rebuild,PASS,0,清理前后均 0 Error / 0 Warning,bu_Keil.log / c_Keil.log
+CM4 HEX,PASS,0,逐字节相同,resource_comparison.json
+实板、DMA 和退出闭环,NOT_RUN,,两个 NOT_PROVEN 保留,
+C2.2A 历史布局,PASS,0,O0/O2，基线 Camera 与 CameraTask 来自同一历史提交,C2A_layout_paired.log
+R2 历史布局,PASS,0,O0/O2，原 18 项布局字保持,R2_layout.log
+协议门禁比较器,PASS,0,原门禁 29 项,protocol_gate.log
+CM7/CM4 仓库 Target 完整构建,PASS,0,双核清理前后 0 Error / 0 Warning，CM4 HEX 一致,b_Keil.log / ct_Keil.log
