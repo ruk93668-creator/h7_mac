@@ -18,7 +18,7 @@ E4.2 实现静态、DHCP Only 和显式 Static Fallback。使用同一 lwIP 2.2.
 | UDP PCB、PBUF、超时池 | PASS；强制 PCB 不足得到 ERR_MEM，限速重试并恢复；超时池耗尽可计数，释放后真实定时器回调正常；PBUF_POOL 回到 0、原静态池耗尽和失败释放回归通过。 |
 | 实板 DHCP、Ping、拔插后重新获取 | PASS（2026-11-19）；Windows ICS 提供租约，抓到完整 DORA，新地址 Ping 4/4。 |
 | 实板 Static Fallback | PASS（2026-11-19）；无 DHCP 回复，状态进入 FALLBACK，备用静态地址 ARP 和 Ping 通过。 |
-| 实板 T1/T2、Lease Expiry | NOT_RUN；当前 ICS 租约七天，未用于短租约验收。 |
+| 实板 T1/T2、Lease Expiry | PASS（2026-11-19）；隔离直连短租约，单播与广播 Request 均取得 ACK；随后停答，到期后重新 Discover 且旧地址不通。 |
 
 ## 实板 DHCP 和重连结果（2026-11-19）
 
@@ -33,6 +33,19 @@ E4.2 实现静态、DHCP Only 和显式 Static Fallback。使用同一 lwIP 2.2.
 Windows 关闭 WLAN 连接共享，直连的以太网 3 配置为 `192.168.50.1/24`。首次排查时实际为 DHCP Only（用户确认未设置 mode=2），未计作 Fallback 验收。正式复测在 main 入口设置 mode=2、timeout=30000 ms、fallback `192.168.50.2/24`、网关 0，随后运行。板端截图确认 FALLBACK、lease_valid=0、lwip_state=OFF、starts=1、timeouts=1、fallbacks=1，当前 IP 为 `192.168.50.2`。截图没有 UDP PCB 池字段，不把此次观察当成实板池归还读数。
 
 原始抓包中同一事务的 4 次 Discover 均无回复，间隔约 0、4、12、28 秒；随后板端以备用地址回应 ARP 和 4 次 ICMP。PC 明确绑定 `192.168.50.1` 从直连网口 Ping，4/4、0% 丢包、往返小于 1 ms。Npcap 报告丢弃 0。[回放摘要](Evidence/E4_2_20261119/dhcp_fallback_replay.json)已记录 SHA256；原始 PCAP 留在 `output/Ethernet/E4_2/dhcp_fallback_mode2_20261119_163138/capture.pcap`。Fallback 状态下再拔插触发重试已在主机测试通过，本轮未在板上单独执行。
+
+## 实板短租约：T1、T2 和到期（2026-11-19）
+
+固件保持 DHCP Only。PC 只在直连网口运行短租约服务，关闭 Windows ICS；服务地址为 `192.168.50.1`，板端租约 `192.168.50.2/24`、租期 180 秒、T1 60 秒、T2 120 秒。用户确认最初 BOUND 与参数，以及到期后 SELECTING、lease_valid=0、IP 清零且链路仍 Up；两处为用户现场确认，未取得独立 Watch 截图。
+
+| 阶段 | 实板证据 |
+| --- | --- |
+| 初次绑定 | PCAP 完整 DORA，首 ACK 发放 180 秒。 |
+| T1 单播续租 | 首 ACK 后 56.962 秒，板卡向 `192.168.50.1` 单播 Request，服务发回单播 ACK。板端成功进入下一租约周期；第一次约 57 秒与上游全局 60 秒粗定时相位一致。 |
+| T2 广播重绑 | T1 ACK 后下一次单播不应答；119.934 秒时板卡向 `255.255.255.255` 广播 Request，服务回 ACK。随后 Ping 4/4、丢包 0%，MAC 与板端一致。 |
+| 租约到期 | 最后 ACK 后约 60 秒单播续租、120 秒广播重绑均无回复。179.914 秒后出现发自 `0.0.0.0` 的新 Discover，前面紧接一个在线到期路径的 RELEASE（与掉线场景不同）。服务不发新 Offer，旧地址 Ping 0/4。 |
+
+[回放摘要](Evidence/E4_2_20261119/dhcp_short_lease_replay.json)、服务原始统计、T2 后和到期后 Ping 日志已归档。原始 PCAP 留在本机 `output/Ethernet/E4_2/dhcp_short_lease_20261119_164543/capture.pcap`；229 条记录完整重放，Npcap 丢弃 0，SHA256 与工具输出一致。
 
 ## 编译和内存
 

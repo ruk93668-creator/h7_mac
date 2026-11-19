@@ -1,0 +1,86 @@
+{
+  "adapter": {
+    "Name": "\u4ee5\u592a\u7f51 3",
+    "MacAddress": "EC-1A-C3-3E-DB-B2",
+    "InterfaceGuid": "{49A4CFA7-7C47-4688-B99F-FAFE3E0A79FC}",
+    "Status": "Up"
+  },
+  "lease": 180,
+  "t1": 60,
+  "t2": 120,
+  "phase": "expired",
+  "events": [
+    {
+      "action": "discover",
+      "xid": "abcd0001",
+      "epoch": 1795078027.279071,
+      "replied": true
+    },
+    {
+      "action": "initial_ack",
+      "xid": "abcd0001",
+      "epoch": 1795078027.291685,
+      "replied": true
+    },
+    {
+      "action": "t1_ack",
+      "xid": "abcd0001",
+      "epoch": 1795078084.255337,
+      "replied": true
+    },
+    {
+      "action": "renew_no_reply",
+      "xid": "abcd0001",
+      "epoch": 1795078144.222245,
+      "replied": false
+    },
+    {
+      "action": "t2_ack",
+      "xid": "abcd0001",
+      "epoch": 1795078204.189847,
+      "replied": true
+    },
+    {
+      "action": "renew_no_reply",
+      "xid": "abcd0001",
+      "epoch": 1795078264.163995,
+      "replied": false
+    },
+    {
+      "action": "rebind_no_reply",
+      "xid": "abcd0001",
+      "epoch": 1795078324.131064,
+      "replied": false
+    },
+    {
+      "action": "release_seen",
+      "xid": "abcd0002",
+      "epoch": 1795078384.105751,
+      "replied": false
+    },
+    {
+      "action": "discover_after_expiry",
+      "xid": "abcd0003",
+      "epoch": 1795078384.105817,
+      "replied": false
+    },
+    {
+      "action": "discover_no_reply",
+      "xid": "abcd0003",
+      "epoch": 1795078385.605175,
+      "replied": false
+    },
+    {
+      "action": "discover_no_reply",
+      "xid": "abcd0003",
+      "epoch": 1795078389.603591,
+      "replied": false
+    }
+  ],
+  "npcap_stats": {
+    "received": 229,
+    "dropped": 0,
+    "interface_dropped": 0
+  },
+  "pcap_sha256": "0b1ba7b602e894ac35473ed3aa09f4897ebbcb1ad0aae467e050d667cc143261"
+}
