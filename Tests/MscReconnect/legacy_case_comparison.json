@@ -1,0 +1,92 @@
+[
+  {
+    "file": "UvcStreaming/results.json",
+    "baseline_cases": 36,
+    "current_cases": 36,
+    "baseline_failed": 35,
+    "current_failed": 35,
+    "new_failures": [],
+    "missing_cases": [],
+    "added_cases": []
+  },
+  {
+    "file": "UvcPayload/results.json",
+    "baseline_cases": 124,
+    "current_cases": 124,
+    "baseline_failed": 6,
+    "current_failed": 2,
+    "new_failures": [],
+    "missing_cases": [],
+    "added_cases": []
+  },
+  {
+    "file": "UvcEp1Lifecycle/results.json",
+    "baseline_cases": 45,
+    "current_cases": 45,
+    "baseline_failed": 45,
+    "current_failed": 45,
+    "new_failures": [],
+    "missing_cases": [],
+    "added_cases": []
+  },
+  {
+    "file": "UvcProbeCommit/results.json",
+    "baseline_cases": 89,
+    "current_cases": 89,
+    "baseline_failed": 89,
+    "current_failed": 89,
+    "new_failures": [],
+    "missing_cases": [],
+    "added_cases": []
+  },
+  {
+    "file": "UvcProbeCommit/cancellation_results.json",
+    "baseline_cases": 39,
+    "current_cases": 39,
+    "baseline_failed": 39,
+    "current_failed": 39,
+    "new_failures": [],
+    "missing_cases": [],
+    "added_cases": []
+  },
+  {
+    "file": "UsbCoreDecoupling/results.json",
+    "baseline_cases": 204,
+    "current_cases": 204,
+    "baseline_failed": 3,
+    "current_failed": 3,
+    "new_failures": [],
+    "missing_cases": [],
+    "added_cases": []
+  },
+  {
+    "file": "UvcLifecycle/results.json",
+    "baseline_cases": 40,
+    "current_cases": 40,
+    "baseline_failed": 6,
+    "current_failed": 6,
+    "new_failures": [],
+    "missing_cases": [],
+    "added_cases": []
+  },
+  {
+    "file": "UsbUvcDescriptors/string_results.json",
+    "baseline_cases": 8,
+    "current_cases": 8,
+    "baseline_failed": 0,
+    "current_failed": 0,
+    "new_failures": [],
+    "missing_cases": [],
+    "added_cases": []
+  },
+  {
+    "file": "UvcUsbCleanup/results.json",
+    "baseline_cases": 14,
+    "current_cases": 14,
+    "baseline_failed": 14,
+    "current_failed": 14,
+    "new_failures": [],
+    "missing_cases": [],
+    "added_cases": []
+  }
+]

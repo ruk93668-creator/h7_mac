@@ -105,6 +105,14 @@ static volatile UsbControlStatus_t s_deferred_status;
 static USBD_SetupReqTypedef s_deferred_request;
 static bool s_control_setup_active;
 
+#if USB_DEVICE_LIFECYCLE_DIAGNOSTICS
+//仅记录事件，不改变协议或资源所有权
+static volatile UsbDeviceLifecycleDiagnostics_t s_lifecycle_diag;
+static void Usb_TraceLifecycle(UsbDeviceLifecycleEvent_t event, uint32_t detail);
+#else
+#define Usb_TraceLifecycle(event, detail) ((void)0)
+#endif
+
 //取消控制事务资格，不取消或释放任何外部DMA缓冲
 static void Usb_InvalidateControl(void);
 
@@ -566,6 +574,7 @@ USBD_StatusTypeDef USBD_LL_DeInit(USBD_HandleTypeDef *device)
 {
     SysResult_t result = SYS_ERR_IO;
 
+    Usb_TraceLifecycle(USB_TRACE_DEINIT, 0U);
     Usb_InvalidateControl();
 
     //官方Core传入的设备必须属于当前通用管理实例
@@ -688,6 +697,8 @@ USBD_StatusTypeDef USBD_LL_OpenEP(USBD_HandleTypeDef *device, uint8_t ep, uint8_
         }
     }
     Usb_Unlock(enabled);
+    if ((ep & 0x0FU) == 0U)
+        Usb_TraceLifecycle(USB_TRACE_EP0_OPEN, (uint32_t)ep | ((uint32_t)result << 8));
     return Usb_LlResult(result);
 }
 
@@ -733,6 +744,8 @@ USBD_StatusTypeDef USBD_LL_CloseEP(USBD_HandleTypeDef *device, uint8_t ep)
             memset(&s_device.ep_out[ep & 0x0FU], 0, sizeof(s_device.ep_out[0]));
     }
     Usb_Unlock(enabled);
+    if ((ep & 0x0FU) == 0U)
+        Usb_TraceLifecycle(USB_TRACE_EP0_CLOSE, (uint32_t)ep | ((uint32_t)result << 8));
     return Usb_LlResult(result);
 }
 
@@ -838,6 +851,7 @@ USBD_StatusTypeDef USBD_LL_SetUSBAddress(USBD_HandleTypeDef *device, uint8_t add
     //官方Core传入的设备必须属于当前通用管理实例
     if (device != &s_device)
         return USBD_FAIL;
+    Usb_TraceLifecycle(USB_TRACE_ADDRESS, address);
     return Usb_LlResult(BSP_USB_SetAddress(address));
 }
 
@@ -1313,6 +1327,8 @@ static void Usb_Setup(uint8_t *data)
     //没有Class或没有SETUP数据时不进行分发
     if (!s_registered || data == NULL)
         return;
+    Usb_TraceLifecycle(USB_TRACE_SETUP_BEGIN, (uint32_t)data[0] | ((uint32_t)data[1] << 8) |
+        ((uint32_t)data[6] << 16) | ((uint32_t)data[7] << 24));
     Usb_InvalidateControl();
     recipient = data[0] & 0x1FU;
 
@@ -1374,6 +1390,7 @@ static void Usb_Setup(uint8_t *data)
     s_control_setup_active = true;
     status = USBD_LL_SetupStage(&s_device, data);
     s_control_setup_active = false;
+    Usb_TraceLifecycle(USB_TRACE_SETUP_END, (uint32_t)status);
     if (s_deferred_status == USB_CONTROL_WAITING)
     {
         if (status != USBD_BUSY || !Usb_ControlRequestMatches(&s_device.request))
@@ -1397,6 +1414,7 @@ static void Usb_DataOut(uint8_t ep, uint8_t *data)
         return;
 
     //BSP已经交付真实完成，先归还端点占用，再进入官方Core回调
+    if (ep == 0U) Usb_TraceLifecycle(USB_TRACE_EP0_OUT, 0U);
     s_endpoints[0][ep].busy = false;
     if (USBD_LL_DataOutStage(&s_device, ep, data) != USBD_OK)
     {
@@ -1421,6 +1439,7 @@ static void Usb_DataIn(uint8_t ep, uint8_t *data)
     }
 
     //只有当前Token实际提交的EP0状态包才可确认，软件提交不等于完成
+    if (ep == 0U) Usb_TraceLifecycle(USB_TRACE_EP0_IN, 0U);
     if (ep == 0U && s_endpoints[1][0].busy &&
         s_deferred_status == USB_CONTROL_SUBMITTED &&
         s_device.ep0_state == USBD_EP0_STATUS_IN)
@@ -1446,6 +1465,7 @@ static void Usb_DataInError(uint8_t ep, SysResult_t result)
 {
     if (ep >= USB_DEVICE_EP_COUNT || !s_endpoints[1][ep].opened) return;
 
+    if (ep == 0U) Usb_TraceLifecycle(USB_TRACE_EP0_ERROR, (uint32_t)result);
     if (ep == 0U && s_deferred_status == USB_CONTROL_SUBMITTED)
         s_deferred_status = USB_CONTROL_FAILED;
 
@@ -1463,6 +1483,7 @@ static void Usb_Reset(void)
     USBD_StatusTypeDef reset_result;
     SysResult_t release_result;
 
+    Usb_TraceLifecycle(USB_TRACE_RESET_BEGIN, 0U);
     Usb_InvalidateControl();
     if (!s_registered)
         return;
@@ -1486,6 +1507,7 @@ static void Usb_Reset(void)
             s_last_result = release_result != SYS_OK ? release_result : SYS_ERR_IO;
         s_stop_required = true;
     }
+    Usb_TraceLifecycle(USB_TRACE_RESET_END, 0U);
     Usb_Notify(USB_DEVICE_EVENT_STATE);
 }
 
@@ -1512,6 +1534,7 @@ static void Usb_Connect(void)
 {
 
     //将连接事件交给Core，连接本身不代表枚举完成
+    Usb_TraceLifecycle(USB_TRACE_CONNECT, 0U);
     (void)USBD_LL_DevConnected(&s_device);
     Usb_Notify(USB_DEVICE_EVENT_STATE);
 }
@@ -1519,6 +1542,7 @@ static void Usb_Connect(void)
 //处理断线并回收Class资源
 static void Usb_Disconnect(void)
 {
+    Usb_TraceLifecycle(USB_TRACE_DISCONNECT_BEGIN, 0U);
     Usb_InvalidateControl();
     if (!s_registered)
         return;
@@ -1533,6 +1557,7 @@ static void Usb_Disconnect(void)
     //继续清理遗留数据端点，未全部释放时禁止直接重新启动
     if (Usb_ReleaseEndpoints() != SYS_OK)
         s_stop_required = true;
+    Usb_TraceLifecycle(USB_TRACE_DISCONNECT_END, 0U);
     Usb_Notify(USB_DEVICE_EVENT_STATE);
 }
 
@@ -1679,6 +1704,7 @@ SysResult_t Usb_StartDevice(void)
         return SYS_ERR_INVALID_STATE;
 
     //重复连接请求直接返回BUSY，不再次启动PCD
+    Usb_TraceLifecycle(USB_TRACE_START, 0U);
     if (s_started)
         return SYS_ERR_BUSY;
     s_last_result = SYS_OK;
@@ -1705,6 +1731,7 @@ SysResult_t Usb_StopDevice(void)
     SysResult_t result;
     SysResult_t release_result;
 
+    Usb_TraceLifecycle(USB_TRACE_STOP, 0U);
     Usb_InvalidateControl();
 
     //停止只允许从普通上下文进入，不能在USB ISR中释放生命周期资源
@@ -1920,3 +1947,36 @@ static void Usb_Notify(uint32_t events)
     if (s_event_callback != NULL)
         s_event_callback(events, s_event_context);
 }
+
+#if USB_DEVICE_LIFECYCLE_DIAGNOSTICS
+//固定环形日志只用于取证，不释放外部资源
+static void Usb_TraceLifecycle(UsbDeviceLifecycleEvent_t event, uint32_t detail)
+{
+    uint32_t saved = Usb_Lock();
+    uint32_t sequence = s_lifecycle_diag.sequence;
+    volatile UsbDeviceLifecycleEntry_t *entry;
+    if (sequence == UINT32_MAX)
+    {
+        s_lifecycle_diag.exhausted = true;
+        Usb_Unlock(saved);
+        return;
+    }
+    entry = &s_lifecycle_diag.entries[sequence % USB_DEVICE_LIFECYCLE_TRACE_COUNT];
+    entry->sequence = sequence + 1U;
+    entry->event = (uint32_t)event;
+    entry->detail = detail;
+    entry->control_token = s_control_token;
+    entry->control_status = (uint32_t)s_deferred_status;
+    entry->device_state = s_device.dev_state;
+    entry->ep0_state = s_device.ep0_state;
+    entry->device_address = s_device.dev_address;
+    entry->ep0_flags = (s_endpoints[0][0].opened ? 1U : 0U) |
+        (s_endpoints[0][0].busy ? 2U : 0U) | (s_endpoints[0][0].stalled ? 4U : 0U) |
+        (s_endpoints[1][0].opened ? 8U : 0U) | (s_endpoints[1][0].busy ? 16U : 0U) |
+        (s_endpoints[1][0].stalled ? 32U : 0U);
+    entry->result = s_last_result;
+    __DMB();
+    s_lifecycle_diag.sequence = sequence + 1U;
+    Usb_Unlock(saved);
+}
+#endif

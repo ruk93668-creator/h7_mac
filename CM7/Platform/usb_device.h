@@ -5,6 +5,46 @@
 #include "usbd_def.h"
 #include <stdbool.h>
 
+//生命周期取证默认关闭；只读记录不改变协议恢复决策
+#ifndef USB_DEVICE_LIFECYCLE_DIAGNOSTICS
+#define USB_DEVICE_LIFECYCLE_DIAGNOSTICS 0
+#endif
+
+#if USB_DEVICE_LIFECYCLE_DIAGNOSTICS
+#define USB_DEVICE_LIFECYCLE_TRACE_COUNT 128U
+
+typedef enum
+{
+    USB_TRACE_START = 1, USB_TRACE_STOP, USB_TRACE_DEINIT,
+    USB_TRACE_RESET_BEGIN, USB_TRACE_RESET_END,
+    USB_TRACE_CONNECT, USB_TRACE_DISCONNECT_BEGIN, USB_TRACE_DISCONNECT_END,
+    USB_TRACE_SETUP_BEGIN, USB_TRACE_SETUP_END,
+    USB_TRACE_EP0_IN, USB_TRACE_EP0_OUT, USB_TRACE_EP0_ERROR,
+    USB_TRACE_ADDRESS, USB_TRACE_EP0_OPEN, USB_TRACE_EP0_CLOSE
+} UsbDeviceLifecycleEvent_t;
+
+typedef struct
+{
+    uint32_t sequence;
+    uint32_t event;
+    uint32_t detail;
+    uint32_t control_token;
+    uint32_t control_status;
+    uint32_t device_state;
+    uint32_t ep0_state;
+    uint32_t device_address;
+    uint32_t ep0_flags;
+    SysResult_t result;
+} UsbDeviceLifecycleEntry_t;
+
+typedef struct
+{
+    uint32_t sequence;
+    bool exhausted;
+    UsbDeviceLifecycleEntry_t entries[USB_DEVICE_LIFECYCLE_TRACE_COUNT];
+} UsbDeviceLifecycleDiagnostics_t;
+#endif
+
 //端点资源快照，busy期间缓冲区仍由底层持有
 typedef struct
 {

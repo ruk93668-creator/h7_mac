@@ -1,0 +1,2362 @@
+{
+  "read_disconnect_02": {
+    "bsp_usb.c:s_tx_transfer": [
+      {
+        "source": 0,
+        "total": 0,
+        "offset": 0,
+        "packet_length": 0,
+        "active": 0,
+        "failed": 0
+      },
+      {
+        "source": 0,
+        "total": 0,
+        "offset": 0,
+        "packet_length": 0,
+        "active": 0,
+        "failed": 0
+      },
+      {
+        "source": 536876480,
+        "total": 1024,
+        "offset": 448,
+        "packet_length": 64,
+        "active": 1,
+        "failed": 0
+      },
+      {
+        "source": 0,
+        "total": 0,
+        "offset": 0,
+        "packet_length": 0,
+        "active": 0,
+        "failed": 0
+      },
+      {
+        "source": 0,
+        "total": 0,
+        "offset": 0,
+        "packet_length": 0,
+        "active": 0,
+        "failed": 0
+      },
+      {
+        "source": 0,
+        "total": 0,
+        "offset": 0,
+        "packet_length": 0,
+        "active": 0,
+        "failed": 0
+      },
+      {
+        "source": 0,
+        "total": 0,
+        "offset": 0,
+        "packet_length": 0,
+        "active": 0,
+        "failed": 0
+      },
+      {
+        "source": 0,
+        "total": 0,
+        "offset": 0,
+        "packet_length": 0,
+        "active": 0,
+        "failed": 0
+      },
+      {
+        "source": 0,
+        "total": 0,
+        "offset": 0,
+        "packet_length": 0,
+        "active": 0,
+        "failed": 0
+      }
+    ],
+    "bsp_usb.c:s_rx_active": [
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0
+    ],
+    "bsp_usb.c:s_pcd": {
+      "Init": {
+        "dev_endpoints": 9,
+        "Host_channels": 0,
+        "dma_enable": 0,
+        "speed": 2,
+        "ep0_mps": 0,
+        "phy_itface": 2,
+        "Sof_enable": 1,
+        "low_power_enable": 0,
+        "lpm_enable": 0,
+        "battery_charging_enable": 0,
+        "vbus_sensing_enable": 0,
+        "use_dedicated_ep1": 0,
+        "use_external_vbus": 0
+      },
+      "USB_Address": 11,
+      "IN_ep": [
+        {
+          "num": 0,
+          "is_in": 1,
+          "is_stall": 1,
+          "is_iso_incomplete": 0,
+          "type": 0,
+          "data_pid_start": 0,
+          "maxpacket": 64,
+          "xfer_buff": 536893600,
+          "xfer_len": 0,
+          "xfer_count": 0,
+          "even_odd_frame": 0,
+          "tx_fifo_num": 0,
+          "dma_addr": 0,
+          "xfer_size": 0
+        },
+        {
+          "num": 1,
+          "is_in": 1,
+          "is_stall": 0,
+          "is_iso_incomplete": 0,
+          "type": 0,
+          "data_pid_start": 0,
+          "maxpacket": 0,
+          "xfer_buff": 0,
+          "xfer_len": 0,
+          "xfer_count": 0,
+          "even_odd_frame": 0,
+          "tx_fifo_num": 1,
+          "dma_addr": 0,
+          "xfer_size": 0
+        },
+        {
+          "num": 2,
+          "is_in": 1,
+          "is_stall": 0,
+          "is_iso_incomplete": 0,
+          "type": 2,
+          "data_pid_start": 0,
+          "maxpacket": 64,
+          "xfer_buff": 536895776,
+          "xfer_len": 64,
+          "xfer_count": 64,
+          "even_odd_frame": 0,
+          "tx_fifo_num": 2,
+          "dma_addr": 0,
+          "xfer_size": 0
+        },
+        {
+          "num": 3,
+          "is_in": 1,
+          "is_stall": 0,
+          "is_iso_incomplete": 0,
+          "type": 0,
+          "data_pid_start": 0,
+          "maxpacket": 0,
+          "xfer_buff": 0,
+          "xfer_len": 0,
+          "xfer_count": 0,
+          "even_odd_frame": 0,
+          "tx_fifo_num": 3,
+          "dma_addr": 0,
+          "xfer_size": 0
+        },
+        {
+          "num": 4,
+          "is_in": 1,
+          "is_stall": 0,
+          "is_iso_incomplete": 0,
+          "type": 0,
+          "data_pid_start": 0,
+          "maxpacket": 0,
+          "xfer_buff": 0,
+          "xfer_len": 0,
+          "xfer_count": 0,
+          "even_odd_frame": 0,
+          "tx_fifo_num": 4,
+          "dma_addr": 0,
+          "xfer_size": 0
+        },
+        {
+          "num": 5,
+          "is_in": 1,
+          "is_stall": 0,
+          "is_iso_incomplete": 0,
+          "type": 0,
+          "data_pid_start": 0,
+          "maxpacket": 0,
+          "xfer_buff": 0,
+          "xfer_len": 0,
+          "xfer_count": 0,
+          "even_odd_frame": 0,
+          "tx_fifo_num": 5,
+          "dma_addr": 0,
+          "xfer_size": 0
+        },
+        {
+          "num": 6,
+          "is_in": 1,
+          "is_stall": 0,
+          "is_iso_incomplete": 0,
+          "type": 0,
+          "data_pid_start": 0,
+          "maxpacket": 0,
+          "xfer_buff": 0,
+          "xfer_len": 0,
+          "xfer_count": 0,
+          "even_odd_frame": 0,
+          "tx_fifo_num": 6,
+          "dma_addr": 0,
+          "xfer_size": 0
+        },
+        {
+          "num": 7,
+          "is_in": 1,
+          "is_stall": 0,
+          "is_iso_incomplete": 0,
+          "type": 0,
+          "data_pid_start": 0,
+          "maxpacket": 0,
+          "xfer_buff": 0,
+          "xfer_len": 0,
+          "xfer_count": 0,
+          "even_odd_frame": 0,
+          "tx_fifo_num": 7,
+          "dma_addr": 0,
+          "xfer_size": 0
+        },
+        {
+          "num": 8,
+          "is_in": 1,
+          "is_stall": 0,
+          "is_iso_incomplete": 0,
+          "type": 0,
+          "data_pid_start": 0,
+          "maxpacket": 0,
+          "xfer_buff": 0,
+          "xfer_len": 0,
+          "xfer_count": 0,
+          "even_odd_frame": 0,
+          "tx_fifo_num": 8,
+          "dma_addr": 0,
+          "xfer_size": 0
+        },
+        {
+          "num": 0,
+          "is_in": 0,
+          "is_stall": 0,
+          "is_iso_incomplete": 0,
+          "type": 0,
+          "data_pid_start": 0,
+          "maxpacket": 0,
+          "xfer_buff": 0,
+          "xfer_len": 0,
+          "xfer_count": 0,
+          "even_odd_frame": 0,
+          "tx_fifo_num": 0,
+          "dma_addr": 0,
+          "xfer_size": 0
+        },
+        {
+          "num": 0,
+          "is_in": 0,
+          "is_stall": 0,
+          "is_iso_incomplete": 0,
+          "type": 0,
+          "data_pid_start": 0,
+          "maxpacket": 0,
+          "xfer_buff": 0,
+          "xfer_len": 0,
+          "xfer_count": 0,
+          "even_odd_frame": 0,
+          "tx_fifo_num": 0,
+          "dma_addr": 0,
+          "xfer_size": 0
+        },
+        {
+          "num": 0,
+          "is_in": 0,
+          "is_stall": 0,
+          "is_iso_incomplete": 0,
+          "type": 0,
+          "data_pid_start": 0,
+          "maxpacket": 0,
+          "xfer_buff": 0,
+          "xfer_len": 0,
+          "xfer_count": 0,
+          "even_odd_frame": 0,
+          "tx_fifo_num": 0,
+          "dma_addr": 0,
+          "xfer_size": 0
+        },
+        {
+          "num": 0,
+          "is_in": 0,
+          "is_stall": 0,
+          "is_iso_incomplete": 0,
+          "type": 0,
+          "data_pid_start": 0,
+          "maxpacket": 0,
+          "xfer_buff": 0,
+          "xfer_len": 0,
+          "xfer_count": 0,
+          "even_odd_frame": 0,
+          "tx_fifo_num": 0,
+          "dma_addr": 0,
+          "xfer_size": 0
+        },
+        {
+          "num": 0,
+          "is_in": 0,
+          "is_stall": 0,
+          "is_iso_incomplete": 0,
+          "type": 0,
+          "data_pid_start": 0,
+          "maxpacket": 0,
+          "xfer_buff": 0,
+          "xfer_len": 0,
+          "xfer_count": 0,
+          "even_odd_frame": 0,
+          "tx_fifo_num": 0,
+          "dma_addr": 0,
+          "xfer_size": 0
+        },
+        {
+          "num": 0,
+          "is_in": 0,
+          "is_stall": 0,
+          "is_iso_incomplete": 0,
+          "type": 0,
+          "data_pid_start": 0,
+          "maxpacket": 0,
+          "xfer_buff": 0,
+          "xfer_len": 0,
+          "xfer_count": 0,
+          "even_odd_frame": 0,
+          "tx_fifo_num": 0,
+          "dma_addr": 0,
+          "xfer_size": 0
+        },
+        {
+          "num": 0,
+          "is_in": 0,
+          "is_stall": 0,
+          "is_iso_incomplete": 0,
+          "type": 0,
+          "data_pid_start": 0,
+          "maxpacket": 0,
+          "xfer_buff": 0,
+          "xfer_len": 0,
+          "xfer_count": 0,
+          "even_odd_frame": 0,
+          "tx_fifo_num": 0,
+          "dma_addr": 0,
+          "xfer_size": 0
+        }
+      ],
+      "OUT_ep": [
+        {
+          "num": 0,
+          "is_in": 0,
+          "is_stall": 1,
+          "is_iso_incomplete": 0,
+          "type": 0,
+          "data_pid_start": 0,
+          "maxpacket": 64,
+          "xfer_buff": 0,
+          "xfer_len": 0,
+          "xfer_count": 8,
+          "even_odd_frame": 0,
+          "tx_fifo_num": 0,
+          "dma_addr": 0,
+          "xfer_size": 64
+        },
+        {
+          "num": 1,
+          "is_in": 0,
+          "is_stall": 0,
+          "is_iso_incomplete": 0,
+          "type": 0,
+          "data_pid_start": 0,
+          "maxpacket": 0,
+          "xfer_buff": 0,
+          "xfer_len": 0,
+          "xfer_count": 0,
+          "even_odd_frame": 0,
+          "tx_fifo_num": 0,
+          "dma_addr": 0,
+          "xfer_size": 0
+        },
+        {
+          "num": 2,
+          "is_in": 0,
+          "is_stall": 0,
+          "is_iso_incomplete": 0,
+          "type": 2,
+          "data_pid_start": 0,
+          "maxpacket": 64,
+          "xfer_buff": 536876415,
+          "xfer_len": 64,
+          "xfer_count": 31,
+          "even_odd_frame": 0,
+          "tx_fifo_num": 0,
+          "dma_addr": 0,
+          "xfer_size": 64
+        },
+        {
+          "num": 3,
+          "is_in": 0,
+          "is_stall": 0,
+          "is_iso_incomplete": 0,
+          "type": 0,
+          "data_pid_start": 0,
+          "maxpacket": 0,
+          "xfer_buff": 0,
+          "xfer_len": 0,
+          "xfer_count": 0,
+          "even_odd_frame": 0,
+          "tx_fifo_num": 0,
+          "dma_addr": 0,
+          "xfer_size": 0
+        },
+        {
+          "num": 4,
+          "is_in": 0,
+          "is_stall": 0,
+          "is_iso_incomplete": 0,
+          "type": 0,
+          "data_pid_start": 0,
+          "maxpacket": 0,
+          "xfer_buff": 0,
+          "xfer_len": 0,
+          "xfer_count": 0,
+          "even_odd_frame": 0,
+          "tx_fifo_num": 0,
+          "dma_addr": 0,
+          "xfer_size": 0
+        },
+        {
+          "num": 5,
+          "is_in": 0,
+          "is_stall": 0,
+          "is_iso_incomplete": 0,
+          "type": 0,
+          "data_pid_start": 0,
+          "maxpacket": 0,
+          "xfer_buff": 0,
+          "xfer_len": 0,
+          "xfer_count": 0,
+          "even_odd_frame": 0,
+          "tx_fifo_num": 0,
+          "dma_addr": 0,
+          "xfer_size": 0
+        },
+        {
+          "num": 6,
+          "is_in": 0,
+          "is_stall": 0,
+          "is_iso_incomplete": 0,
+          "type": 0,
+          "data_pid_start": 0,
+          "maxpacket": 0,
+          "xfer_buff": 0,
+          "xfer_len": 0,
+          "xfer_count": 0,
+          "even_odd_frame": 0,
+          "tx_fifo_num": 0,
+          "dma_addr": 0,
+          "xfer_size": 0
+        },
+        {
+          "num": 7,
+          "is_in": 0,
+          "is_stall": 0,
+          "is_iso_incomplete": 0,
+          "type": 0,
+          "data_pid_start": 0,
+          "maxpacket": 0,
+          "xfer_buff": 0,
+          "xfer_len": 0,
+          "xfer_count": 0,
+          "even_odd_frame": 0,
+          "tx_fifo_num": 0,
+          "dma_addr": 0,
+          "xfer_size": 0
+        },
+        {
+          "num": 8,
+          "is_in": 0,
+          "is_stall": 0,
+          "is_iso_incomplete": 0,
+          "type": 0,
+          "data_pid_start": 0,
+          "maxpacket": 0,
+          "xfer_buff": 0,
+          "xfer_len": 0,
+          "xfer_count": 0,
+          "even_odd_frame": 0,
+          "tx_fifo_num": 0,
+          "dma_addr": 0,
+          "xfer_size": 0
+        },
+        {
+          "num": 0,
+          "is_in": 0,
+          "is_stall": 0,
+          "is_iso_incomplete": 0,
+          "type": 0,
+          "data_pid_start": 0,
+          "maxpacket": 0,
+          "xfer_buff": 0,
+          "xfer_len": 0,
+          "xfer_count": 0,
+          "even_odd_frame": 0,
+          "tx_fifo_num": 0,
+          "dma_addr": 0,
+          "xfer_size": 0
+        },
+        {
+          "num": 0,
+          "is_in": 0,
+          "is_stall": 0,
+          "is_iso_incomplete": 0,
+          "type": 0,
+          "data_pid_start": 0,
+          "maxpacket": 0,
+          "xfer_buff": 0,
+          "xfer_len": 0,
+          "xfer_count": 0,
+          "even_odd_frame": 0,
+          "tx_fifo_num": 0,
+          "dma_addr": 0,
+          "xfer_size": 0
+        },
+        {
+          "num": 0,
+          "is_in": 0,
+          "is_stall": 0,
+          "is_iso_incomplete": 0,
+          "type": 0,
+          "data_pid_start": 0,
+          "maxpacket": 0,
+          "xfer_buff": 0,
+          "xfer_len": 0,
+          "xfer_count": 0,
+          "even_odd_frame": 0,
+          "tx_fifo_num": 0,
+          "dma_addr": 0,
+          "xfer_size": 0
+        },
+        {
+          "num": 0,
+          "is_in": 0,
+          "is_stall": 0,
+          "is_iso_incomplete": 0,
+          "type": 0,
+          "data_pid_start": 0,
+          "maxpacket": 0,
+          "xfer_buff": 0,
+          "xfer_len": 0,
+          "xfer_count": 0,
+          "even_odd_frame": 0,
+          "tx_fifo_num": 0,
+          "dma_addr": 0,
+          "xfer_size": 0
+        },
+        {
+          "num": 0,
+          "is_in": 0,
+          "is_stall": 0,
+          "is_iso_incomplete": 0,
+          "type": 0,
+          "data_pid_start": 0,
+          "maxpacket": 0,
+          "xfer_buff": 0,
+          "xfer_len": 0,
+          "xfer_count": 0,
+          "even_odd_frame": 0,
+          "tx_fifo_num": 0,
+          "dma_addr": 0,
+          "xfer_size": 0
+        },
+        {
+          "num": 0,
+          "is_in": 0,
+          "is_stall": 0,
+          "is_iso_incomplete": 0,
+          "type": 0,
+          "data_pid_start": 0,
+          "maxpacket": 0,
+          "xfer_buff": 0,
+          "xfer_len": 0,
+          "xfer_count": 0,
+          "even_odd_frame": 0,
+          "tx_fifo_num": 0,
+          "dma_addr": 0,
+          "xfer_size": 0
+        },
+        {
+          "num": 0,
+          "is_in": 0,
+          "is_stall": 0,
+          "is_iso_incomplete": 0,
+          "type": 0,
+          "data_pid_start": 0,
+          "maxpacket": 0,
+          "xfer_buff": 0,
+          "xfer_len": 0,
+          "xfer_count": 0,
+          "even_odd_frame": 0,
+          "tx_fifo_num": 0,
+          "dma_addr": 0,
+          "xfer_size": 0
+        }
+      ],
+      "Lock": 0,
+      "State": 1,
+      "ErrorCode": 0,
+      "Setup": [
+        258,
+        130,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0
+      ]
+    },
+    "bsp_usb.c:s_ready": 1,
+    "bsp_usb.c:s_started": 1,
+    "usb_device.c:s_control_token_seed": 0,
+    "usb_device.c:s_control_token": 0,
+    "usb_device.c:s_deferred_status": 0,
+    "usb_device.c:s_device": {
+      "dev_config": 1,
+      "ep_in": [
+        {
+          "status": 0,
+          "total_length": 36,
+          "rem_length": 36,
+          "maxpacket": 64,
+          "is_used": 1,
+          "bInterval": 0
+        },
+        {
+          "status": 0,
+          "total_length": 0,
+          "rem_length": 0,
+          "maxpacket": 0,
+          "is_used": 0,
+          "bInterval": 0
+        },
+        {
+          "status": 0,
+          "total_length": 0,
+          "rem_length": 0,
+          "maxpacket": 64,
+          "is_used": 1,
+          "bInterval": 0
+        },
+        {
+          "status": 0,
+          "total_length": 0,
+          "rem_length": 0,
+          "maxpacket": 0,
+          "is_used": 0,
+          "bInterval": 0
+        },
+        {
+          "status": 0,
+          "total_length": 0,
+          "rem_length": 0,
+          "maxpacket": 0,
+          "is_used": 0,
+          "bInterval": 0
+        },
+        {
+          "status": 0,
+          "total_length": 0,
+          "rem_length": 0,
+          "maxpacket": 0,
+          "is_used": 0,
+          "bInterval": 0
+        },
+        {
+          "status": 0,
+          "total_length": 0,
+          "rem_length": 0,
+          "maxpacket": 0,
+          "is_used": 0,
+          "bInterval": 0
+        },
+        {
+          "status": 0,
+          "total_length": 0,
+          "rem_length": 0,
+          "maxpacket": 0,
+          "is_used": 0,
+          "bInterval": 0
+        },
+        {
+          "status": 0,
+          "total_length": 0,
+          "rem_length": 0,
+          "maxpacket": 0,
+          "is_used": 0,
+          "bInterval": 0
+        },
+        {
+          "status": 0,
+          "total_length": 0,
+          "rem_length": 0,
+          "maxpacket": 0,
+          "is_used": 0,
+          "bInterval": 0
+        },
+        {
+          "status": 0,
+          "total_length": 0,
+          "rem_length": 0,
+          "maxpacket": 0,
+          "is_used": 0,
+          "bInterval": 0
+        },
+        {
+          "status": 0,
+          "total_length": 0,
+          "rem_length": 0,
+          "maxpacket": 0,
+          "is_used": 0,
+          "bInterval": 0
+        },
+        {
+          "status": 0,
+          "total_length": 0,
+          "rem_length": 0,
+          "maxpacket": 0,
+          "is_used": 0,
+          "bInterval": 0
+        },
+        {
+          "status": 0,
+          "total_length": 0,
+          "rem_length": 0,
+          "maxpacket": 0,
+          "is_used": 0,
+          "bInterval": 0
+        },
+        {
+          "status": 0,
+          "total_length": 0,
+          "rem_length": 0,
+          "maxpacket": 0,
+          "is_used": 0,
+          "bInterval": 0
+        },
+        {
+          "status": 0,
+          "total_length": 0,
+          "rem_length": 0,
+          "maxpacket": 0,
+          "is_used": 0,
+          "bInterval": 0
+        }
+      ],
+      "ep_out": [
+        {
+          "status": 0,
+          "total_length": 0,
+          "rem_length": 0,
+          "maxpacket": 64,
+          "is_used": 1,
+          "bInterval": 0
+        },
+        {
+          "status": 0,
+          "total_length": 0,
+          "rem_length": 0,
+          "maxpacket": 0,
+          "is_used": 0,
+          "bInterval": 0
+        },
+        {
+          "status": 0,
+          "total_length": 0,
+          "rem_length": 0,
+          "maxpacket": 64,
+          "is_used": 1,
+          "bInterval": 0
+        },
+        {
+          "status": 0,
+          "total_length": 0,
+          "rem_length": 0,
+          "maxpacket": 0,
+          "is_used": 0,
+          "bInterval": 0
+        },
+        {
+          "status": 0,
+          "total_length": 0,
+          "rem_length": 0,
+          "maxpacket": 0,
+          "is_used": 0,
+          "bInterval": 0
+        },
+        {
+          "status": 0,
+          "total_length": 0,
+          "rem_length": 0,
+          "maxpacket": 0,
+          "is_used": 0,
+          "bInterval": 0
+        },
+        {
+          "status": 0,
+          "total_length": 0,
+          "rem_length": 0,
+          "maxpacket": 0,
+          "is_used": 0,
+          "bInterval": 0
+        },
+        {
+          "status": 0,
+          "total_length": 0,
+          "rem_length": 0,
+          "maxpacket": 0,
+          "is_used": 0,
+          "bInterval": 0
+        },
+        {
+          "status": 0,
+          "total_length": 0,
+          "rem_length": 0,
+          "maxpacket": 0,
+          "is_used": 0,
+          "bInterval": 0
+        },
+        {
+          "status": 0,
+          "total_length": 0,
+          "rem_length": 0,
+          "maxpacket": 0,
+          "is_used": 0,
+          "bInterval": 0
+        },
+        {
+          "status": 0,
+          "total_length": 0,
+          "rem_length": 0,
+          "maxpacket": 0,
+          "is_used": 0,
+          "bInterval": 0
+        },
+        {
+          "status": 0,
+          "total_length": 0,
+          "rem_length": 0,
+          "maxpacket": 0,
+          "is_used": 0,
+          "bInterval": 0
+        },
+        {
+          "status": 0,
+          "total_length": 0,
+          "rem_length": 0,
+          "maxpacket": 0,
+          "is_used": 0,
+          "bInterval": 0
+        },
+        {
+          "status": 0,
+          "total_length": 0,
+          "rem_length": 0,
+          "maxpacket": 0,
+          "is_used": 0,
+          "bInterval": 0
+        },
+        {
+          "status": 0,
+          "total_length": 0,
+          "rem_length": 0,
+          "maxpacket": 0,
+          "is_used": 0,
+          "bInterval": 0
+        },
+        {
+          "status": 0,
+          "total_length": 0,
+          "rem_length": 0,
+          "maxpacket": 0,
+          "is_used": 0,
+          "bInterval": 0
+        }
+      ],
+      "ep0_state": 4,
+      "ep0_data_len": 0,
+      "dev_state": 3,
+      "dev_old_state": 1,
+      "dev_address": 11,
+      "request": {
+        "bmRequest": 2,
+        "bRequest": 1,
+        "wValue": 0,
+        "wIndex": 130,
+        "wLength": 0
+      }
+    },
+    "usb_device.c:s_endpoints": [
+      [
+        {
+          "opened": 1,
+          "busy": 0,
+          "stalled": 0,
+          "type": 0,
+          "max_packet": 64,
+          "last_result": 0
+        },
+        {
+          "opened": 0,
+          "busy": 0,
+          "stalled": 0,
+          "type": 0,
+          "max_packet": 0,
+          "last_result": 0
+        },
+        {
+          "opened": 1,
+          "busy": 0,
+          "stalled": 0,
+          "type": 2,
+          "max_packet": 64,
+          "last_result": 0
+        },
+        {
+          "opened": 0,
+          "busy": 0,
+          "stalled": 0,
+          "type": 0,
+          "max_packet": 0,
+          "last_result": 0
+        },
+        {
+          "opened": 0,
+          "busy": 0,
+          "stalled": 0,
+          "type": 0,
+          "max_packet": 0,
+          "last_result": 0
+        },
+        {
+          "opened": 0,
+          "busy": 0,
+          "stalled": 0,
+          "type": 0,
+          "max_packet": 0,
+          "last_result": 0
+        },
+        {
+          "opened": 0,
+          "busy": 0,
+          "stalled": 0,
+          "type": 0,
+          "max_packet": 0,
+          "last_result": 0
+        },
+        {
+          "opened": 0,
+          "busy": 0,
+          "stalled": 0,
+          "type": 0,
+          "max_packet": 0,
+          "last_result": 0
+        },
+        {
+          "opened": 0,
+          "busy": 0,
+          "stalled": 0,
+          "type": 0,
+          "max_packet": 0,
+          "last_result": 0
+        },
+        {
+          "opened": 0,
+          "busy": 0,
+          "stalled": 0,
+          "type": 0,
+          "max_packet": 0,
+          "last_result": 0
+        },
+        {
+          "opened": 0,
+          "busy": 0,
+          "stalled": 0,
+          "type": 0,
+          "max_packet": 0,
+          "last_result": 0
+        },
+        {
+          "opened": 0,
+          "busy": 0,
+          "stalled": 0,
+          "type": 0,
+          "max_packet": 0,
+          "last_result": 0
+        },
+        {
+          "opened": 0,
+          "busy": 0,
+          "stalled": 0,
+          "type": 0,
+          "max_packet": 0,
+          "last_result": 0
+        },
+        {
+          "opened": 0,
+          "busy": 0,
+          "stalled": 0,
+          "type": 0,
+          "max_packet": 0,
+          "last_result": 0
+        },
+        {
+          "opened": 0,
+          "busy": 0,
+          "stalled": 0,
+          "type": 0,
+          "max_packet": 0,
+          "last_result": 0
+        },
+        {
+          "opened": 0,
+          "busy": 0,
+          "stalled": 0,
+          "type": 0,
+          "max_packet": 0,
+          "last_result": 0
+        }
+      ],
+      [
+        {
+          "opened": 1,
+          "busy": 0,
+          "stalled": 0,
+          "type": 0,
+          "max_packet": 64,
+          "last_result": 0
+        },
+        {
+          "opened": 0,
+          "busy": 0,
+          "stalled": 0,
+          "type": 0,
+          "max_packet": 0,
+          "last_result": 0
+        },
+        {
+          "opened": 1,
+          "busy": 1,
+          "stalled": 0,
+          "type": 2,
+          "max_packet": 64,
+          "last_result": 0
+        },
+        {
+          "opened": 0,
+          "busy": 0,
+          "stalled": 0,
+          "type": 0,
+          "max_packet": 0,
+          "last_result": 0
+        },
+        {
+          "opened": 0,
+          "busy": 0,
+          "stalled": 0,
+          "type": 0,
+          "max_packet": 0,
+          "last_result": 0
+        },
+        {
+          "opened": 0,
+          "busy": 0,
+          "stalled": 0,
+          "type": 0,
+          "max_packet": 0,
+          "last_result": 0
+        },
+        {
+          "opened": 0,
+          "busy": 0,
+          "stalled": 0,
+          "type": 0,
+          "max_packet": 0,
+          "last_result": 0
+        },
+        {
+          "opened": 0,
+          "busy": 0,
+          "stalled": 0,
+          "type": 0,
+          "max_packet": 0,
+          "last_result": 0
+        },
+        {
+          "opened": 0,
+          "busy": 0,
+          "stalled": 0,
+          "type": 0,
+          "max_packet": 0,
+          "last_result": 0
+        },
+        {
+          "opened": 0,
+          "busy": 0,
+          "stalled": 0,
+          "type": 0,
+          "max_packet": 0,
+          "last_result": 0
+        },
+        {
+          "opened": 0,
+          "busy": 0,
+          "stalled": 0,
+          "type": 0,
+          "max_packet": 0,
+          "last_result": 0
+        },
+        {
+          "opened": 0,
+          "busy": 0,
+          "stalled": 0,
+          "type": 0,
+          "max_packet": 0,
+          "last_result": 0
+        },
+        {
+          "opened": 0,
+          "busy": 0,
+          "stalled": 0,
+          "type": 0,
+          "max_packet": 0,
+          "last_result": 0
+        },
+        {
+          "opened": 0,
+          "busy": 0,
+          "stalled": 0,
+          "type": 0,
+          "max_packet": 0,
+          "last_result": 0
+        },
+        {
+          "opened": 0,
+          "busy": 0,
+          "stalled": 0,
+          "type": 0,
+          "max_packet": 0,
+          "last_result": 0
+        },
+        {
+          "opened": 0,
+          "busy": 0,
+          "stalled": 0,
+          "type": 0,
+          "max_packet": 0,
+          "last_result": 0
+        }
+      ]
+    ]
+  },
+  "reconnect_02": {
+    "bsp_usb.c:s_tx_transfer": [
+      {
+        "source": 536871616,
+        "total": 18,
+        "offset": 18,
+        "packet_length": 18,
+        "active": 1,
+        "failed": 0
+      },
+      {
+        "source": 0,
+        "total": 0,
+        "offset": 0,
+        "packet_length": 0,
+        "active": 0,
+        "failed": 0
+      },
+      {
+        "source": 0,
+        "total": 0,
+        "offset": 0,
+        "packet_length": 0,
+        "active": 0,
+        "failed": 0
+      },
+      {
+        "source": 0,
+        "total": 0,
+        "offset": 0,
+        "packet_length": 0,
+        "active": 0,
+        "failed": 0
+      },
+      {
+        "source": 0,
+        "total": 0,
+        "offset": 0,
+        "packet_length": 0,
+        "active": 0,
+        "failed": 0
+      },
+      {
+        "source": 0,
+        "total": 0,
+        "offset": 0,
+        "packet_length": 0,
+        "active": 0,
+        "failed": 0
+      },
+      {
+        "source": 0,
+        "total": 0,
+        "offset": 0,
+        "packet_length": 0,
+        "active": 0,
+        "failed": 0
+      },
+      {
+        "source": 0,
+        "total": 0,
+        "offset": 0,
+        "packet_length": 0,
+        "active": 0,
+        "failed": 0
+      },
+      {
+        "source": 0,
+        "total": 0,
+        "offset": 0,
+        "packet_length": 0,
+        "active": 0,
+        "failed": 0
+      }
+    ],
+    "bsp_usb.c:s_rx_active": [
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0
+    ],
+    "bsp_usb.c:s_pcd": {
+      "Init": {
+        "dev_endpoints": 9,
+        "Host_channels": 0,
+        "dma_enable": 0,
+        "speed": 2,
+        "ep0_mps": 0,
+        "phy_itface": 2,
+        "Sof_enable": 1,
+        "low_power_enable": 0,
+        "lpm_enable": 0,
+        "battery_charging_enable": 0,
+        "vbus_sensing_enable": 0,
+        "use_dedicated_ep1": 0,
+        "use_external_vbus": 0
+      },
+      "USB_Address": 11,
+      "IN_ep": [
+        {
+          "num": 0,
+          "is_in": 1,
+          "is_stall": 0,
+          "is_iso_incomplete": 0,
+          "type": 0,
+          "data_pid_start": 0,
+          "maxpacket": 64,
+          "xfer_buff": 536893618,
+          "xfer_len": 18,
+          "xfer_count": 18,
+          "even_odd_frame": 0,
+          "tx_fifo_num": 0,
+          "dma_addr": 0,
+          "xfer_size": 0
+        },
+        {
+          "num": 1,
+          "is_in": 1,
+          "is_stall": 0,
+          "is_iso_incomplete": 0,
+          "type": 0,
+          "data_pid_start": 0,
+          "maxpacket": 0,
+          "xfer_buff": 0,
+          "xfer_len": 0,
+          "xfer_count": 0,
+          "even_odd_frame": 0,
+          "tx_fifo_num": 1,
+          "dma_addr": 0,
+          "xfer_size": 0
+        },
+        {
+          "num": 2,
+          "is_in": 1,
+          "is_stall": 0,
+          "is_iso_incomplete": 0,
+          "type": 2,
+          "data_pid_start": 0,
+          "maxpacket": 0,
+          "xfer_buff": 0,
+          "xfer_len": 64,
+          "xfer_count": 0,
+          "even_odd_frame": 0,
+          "tx_fifo_num": 2,
+          "dma_addr": 0,
+          "xfer_size": 0
+        },
+        {
+          "num": 3,
+          "is_in": 1,
+          "is_stall": 0,
+          "is_iso_incomplete": 0,
+          "type": 0,
+          "data_pid_start": 0,
+          "maxpacket": 0,
+          "xfer_buff": 0,
+          "xfer_len": 0,
+          "xfer_count": 0,
+          "even_odd_frame": 0,
+          "tx_fifo_num": 3,
+          "dma_addr": 0,
+          "xfer_size": 0
+        },
+        {
+          "num": 4,
+          "is_in": 1,
+          "is_stall": 0,
+          "is_iso_incomplete": 0,
+          "type": 0,
+          "data_pid_start": 0,
+          "maxpacket": 0,
+          "xfer_buff": 0,
+          "xfer_len": 0,
+          "xfer_count": 0,
+          "even_odd_frame": 0,
+          "tx_fifo_num": 4,
+          "dma_addr": 0,
+          "xfer_size": 0
+        },
+        {
+          "num": 5,
+          "is_in": 1,
+          "is_stall": 0,
+          "is_iso_incomplete": 0,
+          "type": 0,
+          "data_pid_start": 0,
+          "maxpacket": 0,
+          "xfer_buff": 0,
+          "xfer_len": 0,
+          "xfer_count": 0,
+          "even_odd_frame": 0,
+          "tx_fifo_num": 5,
+          "dma_addr": 0,
+          "xfer_size": 0
+        },
+        {
+          "num": 6,
+          "is_in": 1,
+          "is_stall": 0,
+          "is_iso_incomplete": 0,
+          "type": 0,
+          "data_pid_start": 0,
+          "maxpacket": 0,
+          "xfer_buff": 0,
+          "xfer_len": 0,
+          "xfer_count": 0,
+          "even_odd_frame": 0,
+          "tx_fifo_num": 6,
+          "dma_addr": 0,
+          "xfer_size": 0
+        },
+        {
+          "num": 7,
+          "is_in": 1,
+          "is_stall": 0,
+          "is_iso_incomplete": 0,
+          "type": 0,
+          "data_pid_start": 0,
+          "maxpacket": 0,
+          "xfer_buff": 0,
+          "xfer_len": 0,
+          "xfer_count": 0,
+          "even_odd_frame": 0,
+          "tx_fifo_num": 7,
+          "dma_addr": 0,
+          "xfer_size": 0
+        },
+        {
+          "num": 8,
+          "is_in": 1,
+          "is_stall": 0,
+          "is_iso_incomplete": 0,
+          "type": 0,
+          "data_pid_start": 0,
+          "maxpacket": 0,
+          "xfer_buff": 0,
+          "xfer_len": 0,
+          "xfer_count": 0,
+          "even_odd_frame": 0,
+          "tx_fifo_num": 8,
+          "dma_addr": 0,
+          "xfer_size": 0
+        },
+        {
+          "num": 0,
+          "is_in": 0,
+          "is_stall": 0,
+          "is_iso_incomplete": 0,
+          "type": 0,
+          "data_pid_start": 0,
+          "maxpacket": 0,
+          "xfer_buff": 0,
+          "xfer_len": 0,
+          "xfer_count": 0,
+          "even_odd_frame": 0,
+          "tx_fifo_num": 0,
+          "dma_addr": 0,
+          "xfer_size": 0
+        },
+        {
+          "num": 0,
+          "is_in": 0,
+          "is_stall": 0,
+          "is_iso_incomplete": 0,
+          "type": 0,
+          "data_pid_start": 0,
+          "maxpacket": 0,
+          "xfer_buff": 0,
+          "xfer_len": 0,
+          "xfer_count": 0,
+          "even_odd_frame": 0,
+          "tx_fifo_num": 0,
+          "dma_addr": 0,
+          "xfer_size": 0
+        },
+        {
+          "num": 0,
+          "is_in": 0,
+          "is_stall": 0,
+          "is_iso_incomplete": 0,
+          "type": 0,
+          "data_pid_start": 0,
+          "maxpacket": 0,
+          "xfer_buff": 0,
+          "xfer_len": 0,
+          "xfer_count": 0,
+          "even_odd_frame": 0,
+          "tx_fifo_num": 0,
+          "dma_addr": 0,
+          "xfer_size": 0
+        },
+        {
+          "num": 0,
+          "is_in": 0,
+          "is_stall": 0,
+          "is_iso_incomplete": 0,
+          "type": 0,
+          "data_pid_start": 0,
+          "maxpacket": 0,
+          "xfer_buff": 0,
+          "xfer_len": 0,
+          "xfer_count": 0,
+          "even_odd_frame": 0,
+          "tx_fifo_num": 0,
+          "dma_addr": 0,
+          "xfer_size": 0
+        },
+        {
+          "num": 0,
+          "is_in": 0,
+          "is_stall": 0,
+          "is_iso_incomplete": 0,
+          "type": 0,
+          "data_pid_start": 0,
+          "maxpacket": 0,
+          "xfer_buff": 0,
+          "xfer_len": 0,
+          "xfer_count": 0,
+          "even_odd_frame": 0,
+          "tx_fifo_num": 0,
+          "dma_addr": 0,
+          "xfer_size": 0
+        },
+        {
+          "num": 0,
+          "is_in": 0,
+          "is_stall": 0,
+          "is_iso_incomplete": 0,
+          "type": 0,
+          "data_pid_start": 0,
+          "maxpacket": 0,
+          "xfer_buff": 0,
+          "xfer_len": 0,
+          "xfer_count": 0,
+          "even_odd_frame": 0,
+          "tx_fifo_num": 0,
+          "dma_addr": 0,
+          "xfer_size": 0
+        },
+        {
+          "num": 0,
+          "is_in": 0,
+          "is_stall": 0,
+          "is_iso_incomplete": 0,
+          "type": 0,
+          "data_pid_start": 0,
+          "maxpacket": 0,
+          "xfer_buff": 0,
+          "xfer_len": 0,
+          "xfer_count": 0,
+          "even_odd_frame": 0,
+          "tx_fifo_num": 0,
+          "dma_addr": 0,
+          "xfer_size": 0
+        }
+      ],
+      "OUT_ep": [
+        {
+          "num": 0,
+          "is_in": 0,
+          "is_stall": 1,
+          "is_iso_incomplete": 0,
+          "type": 0,
+          "data_pid_start": 0,
+          "maxpacket": 64,
+          "xfer_buff": 0,
+          "xfer_len": 0,
+          "xfer_count": 72,
+          "even_odd_frame": 0,
+          "tx_fifo_num": 0,
+          "dma_addr": 0,
+          "xfer_size": 64
+        },
+        {
+          "num": 1,
+          "is_in": 0,
+          "is_stall": 0,
+          "is_iso_incomplete": 0,
+          "type": 0,
+          "data_pid_start": 0,
+          "maxpacket": 0,
+          "xfer_buff": 0,
+          "xfer_len": 0,
+          "xfer_count": 0,
+          "even_odd_frame": 0,
+          "tx_fifo_num": 0,
+          "dma_addr": 0,
+          "xfer_size": 0
+        },
+        {
+          "num": 2,
+          "is_in": 0,
+          "is_stall": 0,
+          "is_iso_incomplete": 0,
+          "type": 2,
+          "data_pid_start": 0,
+          "maxpacket": 0,
+          "xfer_buff": 0,
+          "xfer_len": 64,
+          "xfer_count": 31,
+          "even_odd_frame": 0,
+          "tx_fifo_num": 0,
+          "dma_addr": 0,
+          "xfer_size": 64
+        },
+        {
+          "num": 3,
+          "is_in": 0,
+          "is_stall": 0,
+          "is_iso_incomplete": 0,
+          "type": 0,
+          "data_pid_start": 0,
+          "maxpacket": 0,
+          "xfer_buff": 0,
+          "xfer_len": 0,
+          "xfer_count": 0,
+          "even_odd_frame": 0,
+          "tx_fifo_num": 0,
+          "dma_addr": 0,
+          "xfer_size": 0
+        },
+        {
+          "num": 4,
+          "is_in": 0,
+          "is_stall": 0,
+          "is_iso_incomplete": 0,
+          "type": 0,
+          "data_pid_start": 0,
+          "maxpacket": 0,
+          "xfer_buff": 0,
+          "xfer_len": 0,
+          "xfer_count": 0,
+          "even_odd_frame": 0,
+          "tx_fifo_num": 0,
+          "dma_addr": 0,
+          "xfer_size": 0
+        },
+        {
+          "num": 5,
+          "is_in": 0,
+          "is_stall": 0,
+          "is_iso_incomplete": 0,
+          "type": 0,
+          "data_pid_start": 0,
+          "maxpacket": 0,
+          "xfer_buff": 0,
+          "xfer_len": 0,
+          "xfer_count": 0,
+          "even_odd_frame": 0,
+          "tx_fifo_num": 0,
+          "dma_addr": 0,
+          "xfer_size": 0
+        },
+        {
+          "num": 6,
+          "is_in": 0,
+          "is_stall": 0,
+          "is_iso_incomplete": 0,
+          "type": 0,
+          "data_pid_start": 0,
+          "maxpacket": 0,
+          "xfer_buff": 0,
+          "xfer_len": 0,
+          "xfer_count": 0,
+          "even_odd_frame": 0,
+          "tx_fifo_num": 0,
+          "dma_addr": 0,
+          "xfer_size": 0
+        },
+        {
+          "num": 7,
+          "is_in": 0,
+          "is_stall": 0,
+          "is_iso_incomplete": 0,
+          "type": 0,
+          "data_pid_start": 0,
+          "maxpacket": 0,
+          "xfer_buff": 0,
+          "xfer_len": 0,
+          "xfer_count": 0,
+          "even_odd_frame": 0,
+          "tx_fifo_num": 0,
+          "dma_addr": 0,
+          "xfer_size": 0
+        },
+        {
+          "num": 8,
+          "is_in": 0,
+          "is_stall": 0,
+          "is_iso_incomplete": 0,
+          "type": 0,
+          "data_pid_start": 0,
+          "maxpacket": 0,
+          "xfer_buff": 0,
+          "xfer_len": 0,
+          "xfer_count": 0,
+          "even_odd_frame": 0,
+          "tx_fifo_num": 0,
+          "dma_addr": 0,
+          "xfer_size": 0
+        },
+        {
+          "num": 0,
+          "is_in": 0,
+          "is_stall": 0,
+          "is_iso_incomplete": 0,
+          "type": 0,
+          "data_pid_start": 0,
+          "maxpacket": 0,
+          "xfer_buff": 0,
+          "xfer_len": 0,
+          "xfer_count": 0,
+          "even_odd_frame": 0,
+          "tx_fifo_num": 0,
+          "dma_addr": 0,
+          "xfer_size": 0
+        },
+        {
+          "num": 0,
+          "is_in": 0,
+          "is_stall": 0,
+          "is_iso_incomplete": 0,
+          "type": 0,
+          "data_pid_start": 0,
+          "maxpacket": 0,
+          "xfer_buff": 0,
+          "xfer_len": 0,
+          "xfer_count": 0,
+          "even_odd_frame": 0,
+          "tx_fifo_num": 0,
+          "dma_addr": 0,
+          "xfer_size": 0
+        },
+        {
+          "num": 0,
+          "is_in": 0,
+          "is_stall": 0,
+          "is_iso_incomplete": 0,
+          "type": 0,
+          "data_pid_start": 0,
+          "maxpacket": 0,
+          "xfer_buff": 0,
+          "xfer_len": 0,
+          "xfer_count": 0,
+          "even_odd_frame": 0,
+          "tx_fifo_num": 0,
+          "dma_addr": 0,
+          "xfer_size": 0
+        },
+        {
+          "num": 0,
+          "is_in": 0,
+          "is_stall": 0,
+          "is_iso_incomplete": 0,
+          "type": 0,
+          "data_pid_start": 0,
+          "maxpacket": 0,
+          "xfer_buff": 0,
+          "xfer_len": 0,
+          "xfer_count": 0,
+          "even_odd_frame": 0,
+          "tx_fifo_num": 0,
+          "dma_addr": 0,
+          "xfer_size": 0
+        },
+        {
+          "num": 0,
+          "is_in": 0,
+          "is_stall": 0,
+          "is_iso_incomplete": 0,
+          "type": 0,
+          "data_pid_start": 0,
+          "maxpacket": 0,
+          "xfer_buff": 0,
+          "xfer_len": 0,
+          "xfer_count": 0,
+          "even_odd_frame": 0,
+          "tx_fifo_num": 0,
+          "dma_addr": 0,
+          "xfer_size": 0
+        },
+        {
+          "num": 0,
+          "is_in": 0,
+          "is_stall": 0,
+          "is_iso_incomplete": 0,
+          "type": 0,
+          "data_pid_start": 0,
+          "maxpacket": 0,
+          "xfer_buff": 0,
+          "xfer_len": 0,
+          "xfer_count": 0,
+          "even_odd_frame": 0,
+          "tx_fifo_num": 0,
+          "dma_addr": 0,
+          "xfer_size": 0
+        },
+        {
+          "num": 0,
+          "is_in": 0,
+          "is_stall": 0,
+          "is_iso_incomplete": 0,
+          "type": 0,
+          "data_pid_start": 0,
+          "maxpacket": 0,
+          "xfer_buff": 0,
+          "xfer_len": 0,
+          "xfer_count": 0,
+          "even_odd_frame": 0,
+          "tx_fifo_num": 0,
+          "dma_addr": 0,
+          "xfer_size": 0
+        }
+      ],
+      "Lock": 0,
+      "State": 1,
+      "ErrorCode": 0,
+      "Setup": [
+        16778880,
+        4194304,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0
+      ]
+    },
+    "bsp_usb.c:s_ready": 1,
+    "bsp_usb.c:s_started": 1,
+    "usb_device.c:s_control_token_seed": 0,
+    "usb_device.c:s_control_token": 0,
+    "usb_device.c:s_deferred_status": 0,
+    "usb_device.c:s_device": {
+      "dev_config": 0,
+      "ep_in": [
+        {
+          "status": 0,
+          "total_length": 18,
+          "rem_length": 18,
+          "maxpacket": 64,
+          "is_used": 1,
+          "bInterval": 0
+        },
+        {
+          "status": 0,
+          "total_length": 0,
+          "rem_length": 0,
+          "maxpacket": 0,
+          "is_used": 0,
+          "bInterval": 0
+        },
+        {
+          "status": 0,
+          "total_length": 0,
+          "rem_length": 0,
+          "maxpacket": 0,
+          "is_used": 0,
+          "bInterval": 0
+        },
+        {
+          "status": 0,
+          "total_length": 0,
+          "rem_length": 0,
+          "maxpacket": 0,
+          "is_used": 0,
+          "bInterval": 0
+        },
+        {
+          "status": 0,
+          "total_length": 0,
+          "rem_length": 0,
+          "maxpacket": 0,
+          "is_used": 0,
+          "bInterval": 0
+        },
+        {
+          "status": 0,
+          "total_length": 0,
+          "rem_length": 0,
+          "maxpacket": 0,
+          "is_used": 0,
+          "bInterval": 0
+        },
+        {
+          "status": 0,
+          "total_length": 0,
+          "rem_length": 0,
+          "maxpacket": 0,
+          "is_used": 0,
+          "bInterval": 0
+        },
+        {
+          "status": 0,
+          "total_length": 0,
+          "rem_length": 0,
+          "maxpacket": 0,
+          "is_used": 0,
+          "bInterval": 0
+        },
+        {
+          "status": 0,
+          "total_length": 0,
+          "rem_length": 0,
+          "maxpacket": 0,
+          "is_used": 0,
+          "bInterval": 0
+        },
+        {
+          "status": 0,
+          "total_length": 0,
+          "rem_length": 0,
+          "maxpacket": 0,
+          "is_used": 0,
+          "bInterval": 0
+        },
+        {
+          "status": 0,
+          "total_length": 0,
+          "rem_length": 0,
+          "maxpacket": 0,
+          "is_used": 0,
+          "bInterval": 0
+        },
+        {
+          "status": 0,
+          "total_length": 0,
+          "rem_length": 0,
+          "maxpacket": 0,
+          "is_used": 0,
+          "bInterval": 0
+        },
+        {
+          "status": 0,
+          "total_length": 0,
+          "rem_length": 0,
+          "maxpacket": 0,
+          "is_used": 0,
+          "bInterval": 0
+        },
+        {
+          "status": 0,
+          "total_length": 0,
+          "rem_length": 0,
+          "maxpacket": 0,
+          "is_used": 0,
+          "bInterval": 0
+        },
+        {
+          "status": 0,
+          "total_length": 0,
+          "rem_length": 0,
+          "maxpacket": 0,
+          "is_used": 0,
+          "bInterval": 0
+        },
+        {
+          "status": 0,
+          "total_length": 0,
+          "rem_length": 0,
+          "maxpacket": 0,
+          "is_used": 0,
+          "bInterval": 0
+        }
+      ],
+      "ep_out": [
+        {
+          "status": 0,
+          "total_length": 0,
+          "rem_length": 0,
+          "maxpacket": 64,
+          "is_used": 1,
+          "bInterval": 0
+        },
+        {
+          "status": 0,
+          "total_length": 0,
+          "rem_length": 0,
+          "maxpacket": 0,
+          "is_used": 0,
+          "bInterval": 0
+        },
+        {
+          "status": 0,
+          "total_length": 0,
+          "rem_length": 0,
+          "maxpacket": 0,
+          "is_used": 0,
+          "bInterval": 0
+        },
+        {
+          "status": 0,
+          "total_length": 0,
+          "rem_length": 0,
+          "maxpacket": 0,
+          "is_used": 0,
+          "bInterval": 0
+        },
+        {
+          "status": 0,
+          "total_length": 0,
+          "rem_length": 0,
+          "maxpacket": 0,
+          "is_used": 0,
+          "bInterval": 0
+        },
+        {
+          "status": 0,
+          "total_length": 0,
+          "rem_length": 0,
+          "maxpacket": 0,
+          "is_used": 0,
+          "bInterval": 0
+        },
+        {
+          "status": 0,
+          "total_length": 0,
+          "rem_length": 0,
+          "maxpacket": 0,
+          "is_used": 0,
+          "bInterval": 0
+        },
+        {
+          "status": 0,
+          "total_length": 0,
+          "rem_length": 0,
+          "maxpacket": 0,
+          "is_used": 0,
+          "bInterval": 0
+        },
+        {
+          "status": 0,
+          "total_length": 0,
+          "rem_length": 0,
+          "maxpacket": 0,
+          "is_used": 0,
+          "bInterval": 0
+        },
+        {
+          "status": 0,
+          "total_length": 0,
+          "rem_length": 0,
+          "maxpacket": 0,
+          "is_used": 0,
+          "bInterval": 0
+        },
+        {
+          "status": 0,
+          "total_length": 0,
+          "rem_length": 0,
+          "maxpacket": 0,
+          "is_used": 0,
+          "bInterval": 0
+        },
+        {
+          "status": 0,
+          "total_length": 0,
+          "rem_length": 0,
+          "maxpacket": 0,
+          "is_used": 0,
+          "bInterval": 0
+        },
+        {
+          "status": 0,
+          "total_length": 0,
+          "rem_length": 0,
+          "maxpacket": 0,
+          "is_used": 0,
+          "bInterval": 0
+        },
+        {
+          "status": 0,
+          "total_length": 0,
+          "rem_length": 0,
+          "maxpacket": 0,
+          "is_used": 0,
+          "bInterval": 0
+        },
+        {
+          "status": 0,
+          "total_length": 0,
+          "rem_length": 0,
+          "maxpacket": 0,
+          "is_used": 0,
+          "bInterval": 0
+        },
+        {
+          "status": 0,
+          "total_length": 0,
+          "rem_length": 0,
+          "maxpacket": 0,
+          "is_used": 0,
+          "bInterval": 0
+        }
+      ],
+      "ep0_state": 2,
+      "ep0_data_len": 64,
+      "dev_state": 1,
+      "dev_old_state": 3,
+      "dev_address": 11,
+      "request": {
+        "bmRequest": 128,
+        "bRequest": 6,
+        "wValue": 256,
+        "wIndex": 0,
+        "wLength": 64
+      }
+    },
+    "usb_device.c:s_endpoints": [
+      [
+        {
+          "opened": 1,
+          "busy": 0,
+          "stalled": 0,
+          "type": 0,
+          "max_packet": 64,
+          "last_result": 0
+        },
+        {
+          "opened": 0,
+          "busy": 0,
+          "stalled": 0,
+          "type": 0,
+          "max_packet": 0,
+          "last_result": 0
+        },
+        {
+          "opened": 0,
+          "busy": 0,
+          "stalled": 0,
+          "type": 2,
+          "max_packet": 64,
+          "last_result": 0
+        },
+        {
+          "opened": 0,
+          "busy": 0,
+          "stalled": 0,
+          "type": 0,
+          "max_packet": 0,
+          "last_result": 0
+        },
+        {
+          "opened": 0,
+          "busy": 0,
+          "stalled": 0,
+          "type": 0,
+          "max_packet": 0,
+          "last_result": 0
+        },
+        {
+          "opened": 0,
+          "busy": 0,
+          "stalled": 0,
+          "type": 0,
+          "max_packet": 0,
+          "last_result": 0
+        },
+        {
+          "opened": 0,
+          "busy": 0,
+          "stalled": 0,
+          "type": 0,
+          "max_packet": 0,
+          "last_result": 0
+        },
+        {
+          "opened": 0,
+          "busy": 0,
+          "stalled": 0,
+          "type": 0,
+          "max_packet": 0,
+          "last_result": 0
+        },
+        {
+          "opened": 0,
+          "busy": 0,
+          "stalled": 0,
+          "type": 0,
+          "max_packet": 0,
+          "last_result": 0
+        },
+        {
+          "opened": 0,
+          "busy": 0,
+          "stalled": 0,
+          "type": 0,
+          "max_packet": 0,
+          "last_result": 0
+        },
+        {
+          "opened": 0,
+          "busy": 0,
+          "stalled": 0,
+          "type": 0,
+          "max_packet": 0,
+          "last_result": 0
+        },
+        {
+          "opened": 0,
+          "busy": 0,
+          "stalled": 0,
+          "type": 0,
+          "max_packet": 0,
+          "last_result": 0
+        },
+        {
+          "opened": 0,
+          "busy": 0,
+          "stalled": 0,
+          "type": 0,
+          "max_packet": 0,
+          "last_result": 0
+        },
+        {
+          "opened": 0,
+          "busy": 0,
+          "stalled": 0,
+          "type": 0,
+          "max_packet": 0,
+          "last_result": 0
+        },
+        {
+          "opened": 0,
+          "busy": 0,
+          "stalled": 0,
+          "type": 0,
+          "max_packet": 0,
+          "last_result": 0
+        },
+        {
+          "opened": 0,
+          "busy": 0,
+          "stalled": 0,
+          "type": 0,
+          "max_packet": 0,
+          "last_result": 0
+        }
+      ],
+      [
+        {
+          "opened": 1,
+          "busy": 1,
+          "stalled": 0,
+          "type": 0,
+          "max_packet": 64,
+          "last_result": 0
+        },
+        {
+          "opened": 0,
+          "busy": 0,
+          "stalled": 0,
+          "type": 0,
+          "max_packet": 0,
+          "last_result": 0
+        },
+        {
+          "opened": 0,
+          "busy": 0,
+          "stalled": 0,
+          "type": 2,
+          "max_packet": 64,
+          "last_result": 0
+        },
+        {
+          "opened": 0,
+          "busy": 0,
+          "stalled": 0,
+          "type": 0,
+          "max_packet": 0,
+          "last_result": 0
+        },
+        {
+          "opened": 0,
+          "busy": 0,
+          "stalled": 0,
+          "type": 0,
+          "max_packet": 0,
+          "last_result": 0
+        },
+        {
+          "opened": 0,
+          "busy": 0,
+          "stalled": 0,
+          "type": 0,
+          "max_packet": 0,
+          "last_result": 0
+        },
+        {
+          "opened": 0,
+          "busy": 0,
+          "stalled": 0,
+          "type": 0,
+          "max_packet": 0,
+          "last_result": 0
+        },
+        {
+          "opened": 0,
+          "busy": 0,
+          "stalled": 0,
+          "type": 0,
+          "max_packet": 0,
+          "last_result": 0
+        },
+        {
+          "opened": 0,
+          "busy": 0,
+          "stalled": 0,
+          "type": 0,
+          "max_packet": 0,
+          "last_result": 0
+        },
+        {
+          "opened": 0,
+          "busy": 0,
+          "stalled": 0,
+          "type": 0,
+          "max_packet": 0,
+          "last_result": 0
+        },
+        {
+          "opened": 0,
+          "busy": 0,
+          "stalled": 0,
+          "type": 0,
+          "max_packet": 0,
+          "last_result": 0
+        },
+        {
+          "opened": 0,
+          "busy": 0,
+          "stalled": 0,
+          "type": 0,
+          "max_packet": 0,
+          "last_result": 0
+        },
+        {
+          "opened": 0,
+          "busy": 0,
+          "stalled": 0,
+          "type": 0,
+          "max_packet": 0,
+          "last_result": 0
+        },
+        {
+          "opened": 0,
+          "busy": 0,
+          "stalled": 0,
+          "type": 0,
+          "max_packet": 0,
+          "last_result": 0
+        },
+        {
+          "opened": 0,
+          "busy": 0,
+          "stalled": 0,
+          "type": 0,
+          "max_packet": 0,
+          "last_result": 0
+        },
+        {
+          "opened": 0,
+          "busy": 0,
+          "stalled": 0,
+          "type": 0,
+          "max_packet": 0,
+          "last_result": 0
+        }
+      ]
+    ]
+  }
+}
