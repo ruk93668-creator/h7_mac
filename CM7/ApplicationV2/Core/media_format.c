@@ -17,6 +17,7 @@ SysResult_t CoreMedia_Validate(const CoreMediaFormat *format)
         (format->dma_alignment & (format->dma_alignment - 1U)) || !format->frame_alignment ||
         (format->frame_alignment & (format->frame_alignment - 1U)))
         return SYS_ERR_INVALID_ARG;
+    //JPEG 使用两段容量约束，没有固定行跨度。
     if (format->pixel_format == CORE_PIXEL_JPEG)
     {
         return format->backend == CORE_BACKEND_JPEG && format->stream_kind == CORE_STREAM_JPEG_FRAMES &&
@@ -27,10 +28,12 @@ SysResult_t CoreMedia_Validate(const CoreMediaFormat *format)
     }
     if (format->pixel_format < CORE_PIXEL_Y8 || format->pixel_format > CORE_PIXEL_YUY2)
         return SYS_ERR_NOT_SUPPORTED;
+    //YUY2 每组两个像素，宽度必须成对。
     if (format->pixel_format == CORE_PIXEL_YUY2 && (format->width & 1U))
         return SYS_ERR_INVALID_ARG;
     bpp = format->pixel_format == CORE_PIXEL_Y8 ? 1U : 2U;
     row = format->width * bpp;
+    //先防止整帧字节数乘法溢出，再验证布局。
     if (format->height > UINT32_MAX / row)
         return SYS_ERR_INVALID_ARG;
     return format->backend == CORE_BACKEND_RAW && format->stream_kind == CORE_STREAM_RAW_FRAMES &&

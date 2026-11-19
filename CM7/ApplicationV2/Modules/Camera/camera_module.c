@@ -6,8 +6,10 @@
 // 校验所有者调用并设置重入保护，调用方仍负责跨任务串行化。
 static SysResult_t enter(VCamera *camera)
 {
+    //核对 Camera 任务所有权，拒绝跨任务直接修改私有上下文。
     if (!camera || camera->magic != MAGIC || !camera->ops->is_owner(camera->port))
         return SYS_ERR_INVALID_STATE;
+    //拒绝端口回调重入。
     if (camera->busy)
         return SYS_ERR_BUSY;
     camera->busy = 1;
@@ -90,6 +92,7 @@ static SysResult_t can_begin(void *port_context, const LCRequest *request)
 static SysResult_t begin(void *port_context, const LCRequest *request)
 {
     VCamera *camera = port_context;
+    //只登记本次操作身份，物理推进由任务轮次完成。
     camera->operation = *request;
     camera->work = 1;
     camera->submitted = 0;
@@ -107,6 +110,7 @@ static SysResult_t prove(void *port_context, const LCRequest *request, uint32_t 
     SysResult_t result;
     if (!camera->work && fact == request->expected)
         return camera->ops->gate(camera->port, request, VC_GATE_PROVE);
+    //完成事实必须对应当前生命周期操作。
     if (!LC_IdEqual(&request->id, &camera->operation.id))
         return SYS_ERR_PROTOCOL;
     result = camera->ops->gate(camera->port, request, VC_GATE_PROVE);
@@ -114,6 +118,7 @@ static SysResult_t prove(void *port_context, const LCRequest *request, uint32_t 
         return result;
     if (request->id.operation == LC_CONFIGURE)
         return 0;
+    //激活需要设备和采集都达到目标事实。
     if (request->id.operation == LC_ACTIVATE)
     {
         result = camera->ops->facts(camera->port, &observation);
@@ -142,6 +147,7 @@ SysResult_t VCamera_Init(VCamera *camera, uint32_t module, uint32_t session, con
                          void *port, const VCameraResources *resources)
 {
     SysResult_t result;
+    //核对 Camera 任务所有权，拒绝跨任务直接修改私有上下文。
     if (!camera || camera->magic || !ops || !resources || !ops->is_owner || !ops->validate_layout ||
         !ops->gate || !ops->request || !ops->read_result || !ops->consume_result || !ops->facts ||
         !ops->release_identity || !ops->begin_round || !ops->process || !ops->returns ||
@@ -203,6 +209,7 @@ SysResult_t VCamera_BindCandidate(VCamera *camera, const V2Registry *registry, c
     result = capabilities(camera, &candidate->media.format, &cap);
     if (result)
         return leave(camera, result);
+    //确认当前配置可绑定后才保存候选格式。
     camera->format = candidate->media.format;
     camera->native = cap.native;
     camera->bound = 1;
@@ -240,6 +247,7 @@ SysResult_t VCamera_Process(VCamera *camera, uint32_t now)
     if (camera->round != 1)
         return leave(camera, SYS_ERR_INVALID_STATE);
     LC_Process(&camera->lifecycle, now);
+    //仅向底层提交尚未提交且未决定的操作。
     if (camera->work && !local(camera->operation.id.operation) && !camera->submitted && !camera->decided)
     {
         {
@@ -287,6 +295,7 @@ static void collect(VCamera *camera, uint32_t now)
         return;
     if (local(camera->operation.id.operation) && !camera->decided)
         camera->decided = 1;
+    //已提交后只等待真实结果，核对完整操作身份。
     if (camera->submitted && !camera->decided)
     {
         result = camera->ops->read_result(camera->port, &camera->operation.id, &native_result);
@@ -309,6 +318,7 @@ static void collect(VCamera *camera, uint32_t now)
             return;
         }
     }
+    //冻结的结果允许重复投递，不能再次执行硬件。
     if (camera->decided && !camera->delivered)
     {
         fact = camera->result.result ? LC_ERROR : LC_Target(camera->operation.id.operation);
@@ -322,6 +332,7 @@ static void collect(VCamera *camera, uint32_t now)
         }
     }
     LC_Process(&camera->lifecycle, now);
+    //等生命周期接收实际完成，再处理底层结果消费。
     if (LC_Read(&camera->lifecycle, &camera->operation.id, &done))
         return;
     fault(camera, done.result);
@@ -335,6 +346,7 @@ static void collect(VCamera *camera, uint32_t now)
             return;
         }
     }
+    //只按真实成功更新配置准备事实。
     if (done.actual_result == SYS_OK)
     {
         if (done.fact == LC_INACTIVE && camera->operation.id.operation == LC_CONFIGURE)
@@ -366,6 +378,7 @@ SysResult_t VCamera_FinishRound(VCamera *camera, uint32_t now)
             }
         }
     }
+    //完成本轮普通停止协调和结果推进后再关闭轮次。
     camera->round = 0;
     return leave(camera, 0);
 }
@@ -433,6 +446,7 @@ SysResult_t VCamera_QueryExitEvidence(VCamera *camera, const MRRelease *release,
     evidence.release = *release;
     evidence.backend = camera->format.backend;
     evidence.identity_result = camera->ops->release_identity(camera->port, release);
+    //选择当前物理后端核验，Raw 与 JPEG 账本互不替代。
     resource = camera->format.backend == CORE_BACKEND_RAW ? camera->resources.raw_resource
                                                      : camera->resources.jpeg_resource;
     evidence.resource_result = evidence.identity_result

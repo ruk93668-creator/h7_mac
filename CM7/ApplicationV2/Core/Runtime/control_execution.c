@@ -62,12 +62,14 @@ SysResult_t CSExec_Submit(CSExecutionEndpoint *endpoint, const CSExecution *work
         return leave(endpoint, SYS_ERR_NOT_FOUND);
     if (endpoint->outstanding)
         return leave(endpoint, SYS_ERR_BUSY);
+    //装载计划前核对当前快照，拒绝过期计划。
     result = endpoint->snapshot(endpoint->port, &actual);
     if (result)
         return leave(endpoint, result);
     if (memcmp(&work->expected, &actual, sizeof(actual)))
         return leave(endpoint, SYS_ERR_INVALID_STATE);
-    /* 同一Execution owner核对一致快照并Load，中间不让出执行权限。 */
+    //同一Execution owner核对一致快照并Load，中间不让出执行权限。
+    //只有 Execution Manager 受理后才登记操作。
     result = EM_Load(endpoint->manager, &work->plan, work->step_timeout);
     if (result)
         return leave(endpoint, result);
@@ -88,12 +90,14 @@ SysResult_t CSExec_Process(CSExecutionEndpoint *endpoint, uint32_t now)
     if (!endpoint->outstanding || endpoint->ready)
         return leave(endpoint, SYS_OK);
     (void)EM_Process(endpoint->manager, now);
+    //根据管理器实际执行状态决定是否已有完成结果。
     status_result = EM_Status(endpoint->manager, &result.state, &result.result, &result.recovery);
     if (status_result)
         return leave(endpoint, status_result);
     if (result.state == EM_DONE || result.state == EM_BLOCKED)
     {
         result.id = endpoint->accepted.id;
+        //固定已终结结果，等匹配的消费确认再清理。
         endpoint->result = result;
         endpoint->ready = 1U;
     }

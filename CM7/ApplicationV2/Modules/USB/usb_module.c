@@ -102,11 +102,12 @@ static SysResult_t begin(void *port_context, const LCRequest *request)
     {
         if (usb->mode == VU_MODE_UVC)
         {
+            //通过资格事务启动 Camera 资源准备。
             result = VUSBConsumer_Begin(&usb->consumer);
             if (result)
                 return result;
         }
-        usb->frame.first_error = 0; /* 前一交接已退休，可开始本次诊断。 */
+        usb->frame.first_error = 0; //前一交接已退休，可开始本次诊断。
         usb->start_issued = 0;
     }
     if (request->id.operation == LC_DEACTIVATE)
@@ -124,7 +125,7 @@ static SysResult_t prove(void *port_context, const LCRequest *request, uint32_t 
 {
     VUSB *usb = port_context;
     if (fact == request->expected)
-        return SYS_OK; /* 操作未提交，原稳定事实保持。 */
+        return SYS_OK; //操作未提交，原稳定事实保持。
     if (fact == LC_ACTIVE)
     {
         if (usb->mode == VU_MODE_NONE)
@@ -160,7 +161,7 @@ SysResult_t VUSB_Init(VUSB *usb, uint32_t module, uint32_t session, const VUSBOp
         result = LC_Init(&usb->lifecycle, module, session, &VUSB_LifecycleOps, usb);
     if (result)
     {
-        /* 这些初始化没有提交外部工作，允许修正端口后重试。 */
+        //这些初始化没有提交外部工作，允许修正端口后重试。
         memset(usb, 0, sizeof(*usb));
         return result;
     }
@@ -240,7 +241,7 @@ static void complete(VUSB *usb, SysResult_t result, uint32_t fact)
         usb->work = 0;
 }
 
-/* 失败后的排空独立于原操作回复生命周期。 */
+//失败后的排空独立于原操作回复生命周期。
 static void stop_fault(VUSB *usb, SysResult_t result)
 {
     if (!result || waiting(result))
@@ -264,6 +265,7 @@ static void activate(VUSB *usb)
     }
     if (usb->mode != VU_MODE_NONE && !usb->start_issued)
     {
+        //只有具备前置条件才向 UVC 提交启动意图。
         result = usb->ops->start(usb->port, usb->mode, &usb->native);
         if (waiting(result))
             return;
@@ -275,7 +277,7 @@ static void activate(VUSB *usb)
             usb->stop_error = result;
             complete(usb, result, LC_ERROR);
         }
-        /* 下一轮观察启动事实，禁止用提交返回值宣告启动成功。 */
+        //下一轮观察启动事实，禁止用提交返回值宣告启动成功。
         return;
     }
     if (usb->mode != VU_MODE_NONE && usb->observation.result)
@@ -299,7 +301,7 @@ static SysResult_t observe(VUSB *usb)
 {
     VUSBObservation latest = {0};
     SysResult_t result = usb->ops->observe(usb->port, &latest);
-    /* 观测失败，本轮不能沿用旧的停止或DMA安全证明。 */
+    //观测失败，本轮不能沿用旧的停止或DMA安全证明。
     usb->observation = latest;
     if (result)
     {
@@ -317,7 +319,7 @@ static void finish_stop(VUSB *usb)
         return;
     if (!usb->mode_stop_done)
     {
-        /* 从未提交过硬件启动，已有冷态证据时无需调用Stop。 */
+        //从未提交过硬件启动，已有冷态证据时无需调用Stop。
         result = usb->mode == VU_MODE_NONE || (!usb->start_issued && stopped(usb))
                 ? SYS_OK
                 : usb->ops->stop_mode(usb->port);
@@ -327,10 +329,11 @@ static void finish_stop(VUSB *usb)
             return;
         }
         usb->mode_stop_done = 1;
-        return; /* 等下一轮重新采样硬件事实。 */
+        return; //等下一轮重新采样硬件事实。
     }
     if (!stopped(usb))
         return;
+    //本地模式和帧交接排空后才进入资格释放步骤。
     if (usb->consumer.phase == VUC_GRANTED)
     {
         stop_fault(usb, VUSBConsumer_End(&usb->consumer, usb->stop_error));
@@ -338,7 +341,7 @@ static void finish_stop(VUSB *usb)
     }
     if (usb->consumer.phase == VUC_BLOCKED)
         stop_fault(usb, usb->consumer.result);
-    /* USB可以先完成退出；全局STOP_IF_IDLE仍保留在Tx中，等待原回复。 */
+    //USB可以先完成退出；全局STOP_IF_IDLE仍保留在Tx中，等待原回复。
     if (!exit_confirmed(usb))
         return;
     usb->drain = 0;
@@ -355,6 +358,7 @@ SysResult_t VUSB_RunRound(VUSB *usb, uint32_t now)
     if (result)
         return result;
     (void)LC_Process(&usb->lifecycle, now);
+    //推进原资格事务，后端恢复期间不重开旧身份。
     result = VUSBConsumer_Process(&usb->consumer);
     remember(usb, result);
     if (usb->drain)
@@ -366,12 +370,14 @@ SysResult_t VUSB_RunRound(VUSB *usb, uint32_t now)
             stop_fault(usb, usb->ops->cancel(usb->port));
         usb->ops->uvc_process(usb->port);
     }
+    //观察 UVC 模式与读取状态，用真实事实推进生命周期。
     result = observe(usb);
     remember(usb, result);
     if (usb->drain)
         stop_fault(usb, result);
     if (usb->mode == VU_MODE_UVC)
     {
+        //在允许取帧时推进交付，停止时仍推进在途归还。
         result = VUSBFrame_Process(&usb->frame, &usb->consumer.grant, &usb->format,
                               !usb->drain && usb->lifecycle.state == LC_ACTIVE &&
                                   usb->consumer.phase == VUC_GRANTED && proven(usb, SEND_PROOF));
@@ -399,7 +405,7 @@ SysResult_t VUSB_RunRound(VUSB *usb, uint32_t now)
             complete(usb, SYS_OK, LC_Target(op));
         }
     }
-    /* 下一轮发布决定，避免在本轮重复尝试 can_begin/begin。 */
+    //下一轮发布决定，避免在本轮重复尝试 can_begin/begin。
     return leave(usb, SYS_OK);
 }
 
@@ -433,7 +439,7 @@ SysResult_t VUSB_QueryExitEvidence(VUSB *usb, const MRGrant *grant)
         return result;
     if (!grant || !grant->session || !MRGrant_Equal(grant, &usb->consumer.grant))
         return leave(usb, SYS_ERR_PROTOCOL);
-    /* 只是USB本地证据。最终Camera核验仍使用原 Grant + 独立 RELEASE。 */
+    //只是USB本地证据。最终Camera核验仍使用原 Grant + 独立 RELEASE。
     return leave(usb, usb->drain && usb->mode_stop_done && stopped(usb) ? SYS_OK : SYS_ERR_BUSY);
 }
 

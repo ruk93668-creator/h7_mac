@@ -49,16 +49,20 @@ static SysResult_t submit(void *port_context, const LCRequest *request)
     SysResult_t result = client_enter(client);
     if (result)
         return result;
+    //先核对模块、会话和操作，避免把旧指令交给当前端口。
     if (!request || request->id.module != client->module || request->id.session != client->session || !request->id.request ||
         !LC_Target(request->id.operation) || !LC_Stable(request->expected) || !request->timeout ||
         request->timeout > 0x7FFFFFFFU)
         return client_leave(client, SYS_ERR_PROTOCOL);
+    //同编号只允许重复完全相同的请求。
     if (request->id.request == client->request.id.request)
         return client_leave(client, !memcmp(request, &client->request, sizeof(*request)) ? 0 : SYS_ERR_PROTOCOL);
     if (request->id.request < client->request.id.request)
         return client_leave(client, SYS_ERR_PROTOCOL);
+    //未消费的旧事务继续占用窗口。
     if (client->active)
         return client_leave(client, SYS_ERR_BUSY);
+    //只有入队成功才登记提交，通知只用于唤醒。
     result = client->transport.ops->send_request(client->transport.port, request);
     if (!result)
     {
@@ -79,17 +83,20 @@ static SysResult_t read_reply(void *port_context, const V2ExecId *id, LCCompleti
         return result;
     if (!out || V2_Overlap(client, sizeof(*client), out, sizeof(*out)) || !LC_IdEqual(id, &client->request.id))
         return client_leave(client, SYS_ERR_PROTOCOL);
+    //没有缓存时才从队列取回复，失败可继续使用原请求重试。
     if (!client->has_reply)
     {
         result = client->transport.ops->receive_reply(client->transport.port, &reply);
         if (result)
             return client_leave(client, result);
+        //迟到或错身份的回复不得推进当前事务。
         if (!LC_IdEqual(&reply.completion.id, id))
             return client_leave(client, SYS_ERR_NOT_FOUND); // 取走迟到回复，避免进入当前事务。
         if (reply.delivery_error > 0 ||
             (!reply.delivery_error && (reply.completion.result > 0 || reply.completion.actual_result > 0 ||
                                    !LC_Stable(reply.completion.fact))))
             return client_leave(client, SYS_ERR_PROTOCOL);
+        //保存匹配结果，消费确认成功之前可重读。
         client->reply = reply;
         client->has_reply = 1;
     }
@@ -105,11 +112,13 @@ static SysResult_t consumed(void *port_context, const LCCompletion *completion)
     SysResult_t result = client_enter(client);
     if (result)
         return result;
+    //消费确认必须对应先前读取的完整完成记录。
     if (!completion || !client->has_reply || client->reply.delivery_error ||
         memcmp(completion, &client->reply.completion, sizeof(*completion)))
         return client_leave(client, SYS_ERR_PROTOCOL);
     if (!client->active)
         return client_leave(client, 0);
+    //确认队列满时保留活动事务，稍后重发同一确认。
     result = client->transport.ops->send_consumed(client->transport.port, completion);
     if (!result)
     {

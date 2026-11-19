@@ -157,9 +157,11 @@ static SysResult_t shape(const GraphDesc *graph, uint32_t lm, uint32_t em, uint1
         if (lm & (1UL << item_index))
         {
             const GraphLinkDesc *link = &graph->links[item_index];
+            //为每条选中的链路累计两端端口的连接数。
             degrees[graph->entities[link->source.entity.value - 1].pad_first + link->source.pad.value]++;
             degrees[graph->entities[link->sink.entity.value - 1].pad_first + link->sink.pad.value]++;
         }
+    //从指定源和终点建立双向可达标记。
     memset(workspace->forward, 0, 16);
     memset(workspace->reverse, 0, 16);
     workspace->forward[source - 1] = 1;
@@ -175,6 +177,7 @@ static SysResult_t shape(const GraphDesc *graph, uint32_t lm, uint32_t em, uint1
             if (lm & (1UL << link_index))
             {
                 const GraphLinkDesc *link = &graph->links[link_index];
+                //从源沿选中的链路传播可达标记。
                 if (workspace->forward[link->source.entity.value - 1])
                     workspace->forward[link->sink.entity.value - 1] = 1;
             }
@@ -183,18 +186,21 @@ static SysResult_t shape(const GraphDesc *graph, uint32_t lm, uint32_t em, uint1
             if (lm & (1UL << link_index))
             {
                 const GraphLinkDesc *link = &graph->links[link_index];
+                //从终点反向标记可排到终点的路径。
                 if (workspace->reverse[link->sink.entity.value - 1])
                     workspace->reverse[link->source.entity.value - 1] = 1;
             }
     for (item_index = 0; item_index < graph->entity_count; item_index++)
         if (em & (1UL << item_index))
         {
+            //所选实体既要由源可达，也必须能到达一个终点。
             if (!workspace->forward[item_index] || !workspace->reverse[item_index])
                 return fail(diagnostic, GRAPH_ISSUE_PATH, SYS_ERR_INVALID_ARG, item_index + 1, 0);
             for (link_index = 0; link_index < graph->entities[item_index].pad_count; link_index++)
             {
                 const GraphPadDesc *pad_desc = &graph->pads[graph->entities[item_index].pad_first + link_index];
                 degree = degrees[graph->entities[item_index].pad_first + link_index];
+                //核对扇出上限、必接入口和源节点不能有上游的约束。
                 if (degree > pad_desc->max_links ||
                     (pad_desc->direction == GRAPH_PAD_SINK && (pad_desc->flags & GRAPH_P_REQUIRED) && !degree) ||
                     (item_index + 1 == source && pad_desc->direction == GRAPH_PAD_SINK && degree))
@@ -204,11 +210,13 @@ static SysResult_t shape(const GraphDesc *graph, uint32_t lm, uint32_t em, uint1
                         if (sinks[pass_index].value == item_index + 1)
                             return fail(diagnostic, GRAPH_ISSUE_PATH, SYS_ERR_INVALID_ARG, item_index + 1, link_index);
             }
+            //只比较此前的已选实体，防止两个互斥后端同时入选。
             for (link_index = 0; link_index < item_index; link_index++)
                 if ((em & (1UL << link_index)) && graph->entities[item_index].exclusion_group &&
                     graph->entities[link_index].exclusion_group == graph->entities[item_index].exclusion_group)
                     return fail(diagnostic, GRAPH_ISSUE_BACKEND, V2_CONFLICT, item_index + 1, 0);
         }
+    //拓扑排序失败时拒绝环，不能发布部分路径。
     if (cycle(graph, em, lm, workspace, NULL, NULL))
         return fail(diagnostic, GRAPH_ISSUE_CYCLE, SYS_ERR_INVALID_STATE, 0, 0);
     return SYS_OK;
@@ -218,11 +226,14 @@ SysResult_t Graph_ValidateCatalog(const GraphDesc *graph, GraphWorkspace *worksp
 {
     uint32_t item_index, inner_index, dependency_index, covered = 0;
     uint8_t done[8] = {0};
+    //先检查目录容量和工作区，再访问数组。
     if (!bounds(graph) || !workspace || !diagnostic)
         return SYS_ERR_INVALID_ARG;
+    //目录不能和可写缓冲重叠，验证期间只读目录。
     if (alias(graph, workspace, sizeof(*workspace)) || alias(graph, diagnostic, sizeof(*diagnostic)) ||
         V2_Overlap(workspace, sizeof(*workspace), diagnostic, sizeof(*diagnostic)))
         return SYS_ERR_INVALID_ARG;
+    //先校验基础能力集合，后续端口只引用合法条目。
     for (item_index = 0; item_index < graph->caps_count; item_index++)
         if (!capvalid(&graph->caps[item_index]))
             return fail(diagnostic, GRAPH_ISSUE_FORMAT, SYS_ERR_INVALID_ARG, 0, item_index);
@@ -230,6 +241,7 @@ SysResult_t Graph_ValidateCatalog(const GraphDesc *graph, GraphWorkspace *worksp
     {
         const GraphEntityDesc *entity = &graph->entities[item_index];
         uint32_t ins = 0, outs = 0;
+        //编号连续且端口范围完整，便于有界索引。
         if (entity->id.value != item_index + 1 || entity->kind < 1 || entity->kind > 6 || !entity->name ||
             entity->pad_first != covered || !entity->pad_count || covered + entity->pad_count > graph->pad_count ||
             (entity->flags & ~7U) || ((entity->flags & 3U) != 1 && (entity->flags & 3U) != 2))
@@ -239,6 +251,7 @@ SysResult_t Graph_ValidateCatalog(const GraphDesc *graph, GraphWorkspace *worksp
         }
         if (inner_index == 32)
             return fail(diagnostic, GRAPH_ISSUE_BOUND, SYS_ERR_INVALID_ARG, item_index + 1, 0);
+        //已实现的实体必须登记对应的纯验证回调。
         if (entity->flags & GRAPH_E_IMPLEMENTED)
             if (!entity->ops ||
                 ((!(entity->flags & GRAPH_E_TERMINAL) || entity->kind == GRAPH_ENTITY_PROVIDER) &&
@@ -248,6 +261,7 @@ SysResult_t Graph_ValidateCatalog(const GraphDesc *graph, GraphWorkspace *worksp
         for (inner_index = 0; inner_index < entity->pad_count; inner_index++)
         {
             const GraphPadDesc *pad_desc = &graph->pads[covered + inner_index];
+            //端口方向、能力和父实体必须匹配，输入端只接受一条边。
             if (pad_desc->id.value != inner_index || pad_desc->parent.value != item_index + 1 || pad_desc->reserved || pad_desc->caps.value == 0 ||
                 pad_desc->caps.value > graph->caps_count || pad_desc->protocol < 1 || pad_desc->protocol > 5 ||
                 pad_desc->direction < 1 || pad_desc->direction > 2 || pad_desc->flags & ~3U || !pad_desc->max_links ||
@@ -291,11 +305,13 @@ SysResult_t Graph_ValidateCatalog(const GraphDesc *graph, GraphWorkspace *worksp
     {
         const GraphLinkDesc *link = &graph->links[item_index];
         const GraphPadDesc *source_pad = pad(graph, link->source), *sink_pad = pad(graph, link->sink);
+        //连接必须由输出指向输入，且两端协议相同。
         if (link->id.value != item_index + 1 || link->reserved[0] || link->reserved[1] ||
             (link->flags != GRAPH_L_AVAILABLE && link->flags != GRAPH_L_FUTURE) || !source_pad || !sink_pad ||
             source_pad->direction != GRAPH_PAD_SOURCE || sink_pad->direction != GRAPH_PAD_SINK ||
             source_pad->protocol != sink_pad->protocol || link->source.entity.value == link->sink.entity.value)
             return fail(diagnostic, GRAPH_ISSUE_LINK, SYS_ERR_INVALID_ARG, 0, item_index + 1);
+        //两端至少存在一个共同可用的媒体、像素格式和后端。
         if (!(graph->caps[source_pad->caps.value - 1].media_mask & graph->caps[sink_pad->caps.value - 1].media_mask) ||
             !(graph->caps[source_pad->caps.value - 1].pixel_mask & graph->caps[sink_pad->caps.value - 1].pixel_mask) ||
             !(graph->caps[source_pad->caps.value - 1].backend_mask & graph->caps[sink_pad->caps.value - 1].backend_mask))
@@ -312,6 +328,7 @@ SysResult_t Graph_ValidateCatalog(const GraphDesc *graph, GraphWorkspace *worksp
     {
         const GraphPipelineDesc *pipeline = &graph->pipelines[item_index];
         uint32_t lm = 0, em = 0;
+        //选路、依赖及默认媒体配置必须都在目录容量内。
         if (pipeline->id.value != item_index + 1 || pipeline->flags & ~1U || !pipeline->name || !pipeline->source.value ||
             pipeline->source.value > graph->entity_count || !pipeline->sink_count || pipeline->sink_count > 5 ||
             !pipeline->link_count || pipeline->link_count > 32 || pipeline->dependency_count > 4 || !pipeline->default_format ||
@@ -324,6 +341,7 @@ SysResult_t Graph_ValidateCatalog(const GraphDesc *graph, GraphWorkspace *worksp
         if (inner_index == 32)
             return fail(diagnostic, GRAPH_ISSUE_BOUND, SYS_ERR_INVALID_ARG, 0, item_index + 1);
         for (inner_index = 0; inner_index < 32; inner_index++)
+            //只读取有效链路前缀，未使用的槽位要求清零。
             if (inner_index < pipeline->link_count)
             {
                 uint16_t id = pipeline->links[inner_index].value;
@@ -338,6 +356,7 @@ SysResult_t Graph_ValidateCatalog(const GraphDesc *graph, GraphWorkspace *worksp
             else if (pipeline->links[inner_index].value)
                 return fail(diagnostic, GRAPH_ISSUE_BOUND, SYS_ERR_INVALID_ARG, 0, item_index + 1);
         for (inner_index = 0; inner_index < 5; inner_index++)
+            //逐一核对终点的默认速率及身份唯一性。
             if (inner_index < pipeline->sink_count)
             {
                 if (CoreRate_Validate((const CoreFrameRate *)&pipeline->default_sink_rates[inner_index]))
@@ -349,6 +368,7 @@ SysResult_t Graph_ValidateCatalog(const GraphDesc *graph, GraphWorkspace *worksp
             else if (pipeline->sinks[inner_index].value)
                 return fail(diagnostic, GRAPH_ISSUE_BOUND, SYS_ERR_INVALID_ARG, 0, item_index + 1);
         for (inner_index = 0; inner_index < 4; inner_index++)
+            //拒绝自依赖、越界编号和重复依赖。
             if (inner_index < pipeline->dependency_count)
             {
                 uint16_t id = pipeline->dependencies[inner_index].value;
@@ -364,6 +384,7 @@ SysResult_t Graph_ValidateCatalog(const GraphDesc *graph, GraphWorkspace *worksp
             if ((em & (1UL << inner_index)) && (graph->entities[inner_index].flags & GRAPH_E_FUTURE) &&
                 !(pipeline->flags & GRAPH_PIPE_TEMPLATE))
                 return fail(diagnostic, GRAPH_ISSUE_FUTURE, SYS_ERR_INVALID_ARG, inner_index + 1, item_index + 1);
+        //每条 Pipeline 独立验证可达性、连接数及互斥关系。
         if (shape(graph, lm, em, pipeline->source.value, pipeline->sinks, pipeline->sink_count, workspace, diagnostic))
             return diagnostic->backend_result;
         for (inner_index = 0; inner_index < pipeline->sink_count; inner_index++)
@@ -405,6 +426,7 @@ static SysResult_t validate_set(const GraphDesc *graph, const GraphSelection *se
     uint32_t item_index, inner_index, policy_index, source = 0, pm = 0;
     SysResult_t result;
     GraphValidatedView *candidate;
+    //核对目录和选择容量，禁止空选择。
     if (!bounds(graph) || !sel || !selection_count || selection_count > 8 || !scratch || !out || !diagnostic)
         return SYS_ERR_INVALID_ARG;
     if (alias(graph, scratch, sizeof(*scratch)) || alias(graph, out, sizeof(*out)) || alias(graph, diagnostic, sizeof(*diagnostic)) ||
@@ -414,6 +436,7 @@ static SysResult_t validate_set(const GraphDesc *graph, const GraphSelection *se
         V2_Overlap(sel, selection_count * sizeof(*sel), scratch, sizeof(*scratch)) ||
         V2_Overlap(sel, selection_count * sizeof(*sel), diagnostic, sizeof(*diagnostic)))
         return SYS_ERR_INVALID_ARG;
+    //目录本身通过后才计算选择组合。
     result = Graph_ValidateCatalog(graph, &scratch->work, diagnostic);
     if (result)
         return result;
@@ -430,8 +453,10 @@ static SysResult_t validate_set(const GraphDesc *graph, const GraphSelection *se
         if (pm & (1UL << (pipeline->id.value - 1)))
             return fail(diagnostic, GRAPH_ISSUE_ID, V2_CONFLICT, 0, item_index);
         pm |= 1UL << (pipeline->id.value - 1);
+        //未实现的模板仅用于静态登记，不能进入运行候选。
         if (pipeline->flags & GRAPH_PIPE_TEMPLATE)
             return fail(diagnostic, GRAPH_ISSUE_FUTURE, SYS_ERR_NOT_SUPPORTED, 0, item_index);
+        //合并多条 Pipeline 时，采集源和帧格式必须完全相同。
         if (item_index &&
             (source != pipeline->source.value || memcmp(&candidate->format, &sel[item_index].format, sizeof(candidate->format))))
             return fail(diagnostic, GRAPH_ISSUE_FORMAT, V2_CONFLICT, 0, item_index);
@@ -449,6 +474,7 @@ static SysResult_t validate_set(const GraphDesc *graph, const GraphSelection *se
         result = shape(graph, lm, em, (uint16_t)source, pipeline->sinks, pipeline->sink_count, &scratch->work, diagnostic);
         if (result)
             return result;
+        //合并经过校验的边和实体，同一条边只登记一次。
         candidate->link_mask |= lm;
         candidate->entity_mask |= em;
         for (inner_index = 0; inner_index < pipeline->sink_count; inner_index++)
@@ -466,12 +492,14 @@ static SysResult_t validate_set(const GraphDesc *graph, const GraphSelection *se
             if (!sink_policy || sink_policy->reserved || !sink_policy->rate.num || !sink_policy->rate.den)
                 return fail(diagnostic, GRAPH_ISSUE_POLICY, SYS_ERR_INVALID_ARG, 0, item_index);
             rate = sink_policy->rate;
+            //先约分再比较同一终点速率，等值分数视为同一配置。
             rate_divisor = gcd(rate.num, rate.den);
             rate.num /= rate_divisor;
             rate.den /= rate_divisor;
             for (policy_index = 0; policy_index < candidate->sink_count; policy_index++)
                 if (candidate->sinks[policy_index].sink.value == sink_policy->sink.value)
                     break;
+            //同一终点只能有一份有效策略，重复选择必须一致。
             if (policy_index < candidate->sink_count)
             {
                 if (candidate->sinks[policy_index].rate.num != rate.num || candidate->sinks[policy_index].rate.den != rate.den)
@@ -498,6 +526,7 @@ static SysResult_t validate_set(const GraphDesc *graph, const GraphSelection *se
         GraphEntityId sinks[5];
         for (item_index = 0; item_index < candidate->sink_count; item_index++)
             sinks[item_index] = candidate->sinks[item_index].sink;
+        //单条路径通过不代表合并有效，再校验组合的扇出和互斥。
         result = shape(graph, candidate->link_mask, candidate->entity_mask, (uint16_t)source, sinks, candidate->sink_count, &scratch->work,
                   diagnostic);
         if (result)
@@ -515,6 +544,7 @@ static SysResult_t validate_set(const GraphDesc *graph, const GraphSelection *se
             if (entity->ops->validate_format)
             {
                 memset(diagnostic, 0, sizeof(*diagnostic));
+                //最终格式仍由实体的实际能力回调否决。
                 result = entity->ops->validate_format(entity, &candidate->format, graph->check_context, diagnostic);
                 if (result)
                 {
@@ -543,6 +573,7 @@ static SysResult_t validate_set(const GraphDesc *graph, const GraphSelection *se
         if (caps->max_fps_num && (uint64_t)current_rate->num * caps->max_fps_den > (uint64_t)caps->max_fps_num * current_rate->den)
             return fail(diagnostic, GRAPH_ISSUE_POLICY, SYS_ERR_NOT_SUPPORTED, entity->id.value, 0);
         memset(diagnostic, 0, sizeof(*diagnostic));
+        //终点单独校验交付或采样目标，不改变采集格式。
         result = entity->ops->validate_sink_config(entity, &candidate->format, current_rate, graph->check_context, diagnostic);
         if (result)
         {
@@ -560,6 +591,7 @@ static SysResult_t validate_set(const GraphDesc *graph, const GraphSelection *se
     for (item_index = 0; item_index < candidate->topo_count; item_index++)
         candidate->topo[item_index].value = scratch->work.entity_order[item_index];
     candidate->pipeline_mask = pm;
+    //所有实体与终点通过后才提交完整候选。
     *out = *candidate;
     memset(diagnostic, 0, sizeof(*diagnostic));
     return SYS_OK;
@@ -570,16 +602,19 @@ SysResult_t Graph_ValidateSet(const GraphDesc *graph, const GraphSelection *sel,
                               GraphScratch *scratch, GraphValidatedView *out, GraphIssue *diagnostic)
 {
     SysResult_t result;
+    //核对目录和选择容量，禁止空选择。
     if (!bounds(graph) || !sel || !selection_count || selection_count > 8 || !scratch || !out || !diagnostic)
         return SYS_ERR_INVALID_ARG;
     if (alias(graph, scratch, sizeof(*scratch)) || V2_Overlap(scratch, sizeof(*scratch), out, sizeof(*out)) ||
         V2_Overlap(scratch, sizeof(*scratch), diagnostic, sizeof(*diagnostic)) ||
         V2_Overlap(sel, selection_count * sizeof(*sel), scratch, sizeof(*scratch)))
         return SYS_ERR_INVALID_ARG;
+    //拒绝同一工作区的重入，保护尚未发布的候选。
     if (scratch->work.reserved[15])
         return SYS_ERR_BUSY;
     scratch->work.reserved[15] = 1;
     result = validate_set(graph, sel, selection_count, scratch, out, diagnostic);
+    //每条返回路径都解除本次工作区占用。
     scratch->work.reserved[15] = 0;
     return result;
 }

@@ -61,6 +61,7 @@ SysResult_t CSAdapter_Process(CSAdapter *adapter, uint32_t now)
     adapter->busy = 1U;
     if (!adapter->pending)
     {
+        //没有待发送回复时才接收下一个输入。
         result = adapter->ops->receive(adapter->port, &message);
         if (result || message.route.peer.transport != adapter->channel || !message.route.exchange)
         {
@@ -71,10 +72,12 @@ SysResult_t CSAdapter_Process(CSAdapter *adapter, uint32_t now)
         adapter->output.route = message.route;
         adapter->output.type = message.type;
         adapter->output.boot = adapter->service->boot;
+        //使用运输端提供的身份进入统一控制服务。
         adapter->output.result = dispatch(adapter, &message, now);
         adapter->pending = 1U;
     }
-    /* 回复背压保留同一个exchange，不重新受理，不代表客户端消费。 */
+    //回复背压保留同一个exchange，不重新受理，不代表客户端消费。
+    //只发送已缓存的回复，背压不重新派发请求。
     result = adapter->ops->send(adapter->port, &adapter->output);
     if (!result)
         adapter->pending = 0U;

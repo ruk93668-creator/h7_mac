@@ -92,6 +92,7 @@ SysResult_t VUSBFrame_Process(VUSBFrame *frame, const MRGrant *grant, const Core
     case VUF_IDLE:
         if (!accepting || !grant->session)
             return leave(frame, 0);
+        //只有允许取新帧时才准备本地交接。
         result = frame->ops->prepare(frame->port, grant);
         if (!result)
         {
@@ -100,6 +101,7 @@ SysResult_t VUSBFrame_Process(VUSBFrame *frame, const MRGrant *grant, const Core
         }
         break;
     case VUF_PREPARING:
+        //取回 Camera 关联的原请求，并核对授权及交接身份。
         result = frame->ops->prepared(frame->port, &request);
         if (!result)
         {
@@ -121,12 +123,14 @@ SysResult_t VUSBFrame_Process(VUSBFrame *frame, const MRGrant *grant, const Core
     case VUF_PREPARED:
         if (!accepting)
         {
+            //未提交交接可以本地取消，保留原身份直到取消得到确认。
             result = frame->ops->cancel(frame->port, &frame->request);
             if (!result)
                 frame->phase = VUF_CANCELLING;
         }
         else
         {
+            //队列背压时重试同一请求，未入队不进入已提交状态。
             result = frame->ops->commit(frame->port, &frame->request);
             if (!result)
                 frame->phase = VUF_COMMITTED;
@@ -138,6 +142,7 @@ SysResult_t VUSBFrame_Process(VUSBFrame *frame, const MRGrant *grant, const Core
             frame->phase = VUF_IDLE;
         break;
     case VUF_COMMITTED:
+        //等待完整 Offer 或终结收据，错身份保留为协议错误。
         result = frame->ops->offer(frame->port, &delivery);
         if (!result)
         {
@@ -170,6 +175,7 @@ SysResult_t VUSBFrame_Process(VUSBFrame *frame, const MRGrant *grant, const Core
             frame->phase = VUF_RETURNING;
             return leave(frame, 0);
         }
+        //UVC 接管成功后追踪异步读取，仍由 Camera 持有物理帧。
         result = frame->ops->submit_uvc(frame->port, &frame->request, &frame->data);
         if (!result)
             frame->phase = VUF_IN_UVC;
@@ -177,20 +183,24 @@ SysResult_t VUSBFrame_Process(VUSBFrame *frame, const MRGrant *grant, const Core
             frame->phase = VUF_RETURNING;
         break;
     case VUF_IN_UVC:
+        //必须有真实的 DMA 和 CPU 读取退场证据才能走归还。
         result = frame->ops->readers_safe(frame->port, &frame->request, &frame->data);
         if (!result)
             frame->phase = VUF_RETURNING;
         break;
     case VUF_RETURNING:
-        /* 第二次核验覆盖未提交UVC及多个异步CPU/DMA读取者。 */
+        //第二次核验覆盖未提交UVC及多个异步CPU/DMA读取者。
+        //必须有真实的 DMA 和 CPU 读取退场证据才能走归还。
         result = frame->ops->readers_safe(frame->port, &frame->request, &frame->data);
         if (result)
             break;
+        //只发送归还请求，等待 Camera 实际归还并回复。
         result = frame->ops->return_frame(frame->port, &frame->request, &frame->data);
         if (!result)
             frame->phase = VUF_WAIT_ACK;
         break;
     case VUF_WAIT_ACK:
+        //按同一交接核对物理归还收据。
         result = frame->ops->return_ack(frame->port, &receipt);
         if (!result)
         {
@@ -203,15 +213,17 @@ SysResult_t VUSBFrame_Process(VUSBFrame *frame, const MRGrant *grant, const Core
         }
         break;
     case VUF_CONSUMING:
+        //消费确认入队前保留收据，背压时沿用原收据。
         result = frame->ops->consumed(frame->port, &frame->terminal);
         if (!result)
             frame->phase = VUF_RETIRING;
         break;
     case VUF_RETIRING:
+        //得到 Camera 退休证据后才清理本地交接。
         result = frame->ops->retired(frame->port, &frame->terminal);
         if (!result)
         {
-            /* 只退休本地元数据；不是Media Release，也不清相邻消费者。 */
+            //只退休本地元数据；不是Media Release，也不清相邻消费者。
             frame->phase = VUF_IDLE;
             memset(&frame->data, 0, sizeof(frame->data));
         }

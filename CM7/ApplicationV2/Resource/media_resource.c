@@ -6,6 +6,7 @@
 // 校验所有者调用并设置重入保护，调用方仍负责跨任务串行化。
 static SysResult_t enter(MRContext *resource)
 {
+    //核对调用对象和所有者条件，避免越权操作资源账本。
     if (!resource || resource->magic != MAGIC)
         return SYS_ERR_INVALID_STATE;
     if (!resource->source.ops->is_owner(resource->source.context))
@@ -30,6 +31,7 @@ static int valid_g(const MRGrant *grant)
 static MRAdmission *admission(MRContext *resource, const MRGrant *grant)
 {
     uint32_t admission_index;
+    //在固定容量准入表查找匹配授权或空闲槽。
     for (admission_index = 0; admission_index < MR_GRANT_MAX; admission_index++)
         if (resource->admission[admission_index].occupied && MRGrant_Equal(&resource->admission[admission_index].g, grant))
             return &resource->admission[admission_index];
@@ -62,8 +64,10 @@ SysResult_t MR_Init(MRContext *resource, const MRSource *source)
 {
     MRSourceCaps caps;
     SysResult_t result;
+    //核对调用对象和所有者条件，避免越权操作资源账本。
     if (!resource || resource->magic || V2_Overlap(resource, sizeof(*resource), source, sizeof(*source)))
         return SYS_ERR_INVALID_ARG;
+    //先取得物理后端能力，再建立唯一资源上下文。
     result = MRSource_Query(source, &caps);
     if (result)
         return result;
@@ -79,34 +83,41 @@ SysResult_t MR_AssociateGrant(MRContext *resource, const MRGrant *grant)
     uint32_t admission_index, handoff_index, role;
     MRAdmission *admission_entry = NULL;
     SysResult_t result;
+    //先核对授权代次和消费者身份，拒绝空凭据。
     if (!valid_g(grant))
         return SYS_ERR_INVALID_ARG;
     result = enter(resource);
     if (result)
         return result;
+    //由真实后端把消费者映射为物理所有者类型。
     result = resource->source.ops->role(resource->source.context, grant, &role);
     if (result)
         return leave(resource, result);
     if ((!role || (role & (role - 1U)) || role == MR_CAP_INTERNAL) || !(resource->caps.owners & role))
         return leave(resource, SYS_ERR_NOT_SUPPORTED);
+    //在固定容量准入表查找匹配授权或空闲槽。
     for (admission_index = 0; admission_index < MR_GRANT_MAX; admission_index++)
         if (resource->admission[admission_index].occupied && resource->admission[admission_index].g.consumer == grant->consumer)
         {
             admission_entry = &resource->admission[admission_index];
+            //同代授权只允许重复关联，已经关闭的授权不能重开。
             if (MRGrant_Equal(&admission_entry->g, grant))
                 return leave(resource, admission_entry->closed ? SYS_ERR_INVALID_STATE : SYS_OK);
+            //只有新一代能替换已关闭的授权。
             if (!admission_entry->closed || grant->session < admission_entry->g.session ||
                 (grant->session == admission_entry->g.session && grant->generation <= admission_entry->g.generation))
                 return leave(resource, SYS_ERR_INVALID_STATE);
             for (handoff_index = 0; handoff_index < MR_HANDOFF_MAX; handoff_index++)
                 if (resource->records[handoff_index].state && MRGrant_Equal(&resource->records[handoff_index].request.g, &admission_entry->g))
                     return leave(resource, SYS_ERR_BUSY);
+            //旧授权必须有真实后端退出证据后才能替换。
             result = resource->source.ops->exit_safe(resource->source.context, &admission_entry->g);
             if (result)
                 return leave(resource, result);
             break;
         }
     if (!admission_entry)
+        //在固定容量准入表查找匹配授权或空闲槽。
         for (admission_index = 0; admission_index < MR_GRANT_MAX; admission_index++)
             if (!resource->admission[admission_index].occupied)
             {
@@ -115,10 +126,12 @@ SysResult_t MR_AssociateGrant(MRContext *resource, const MRGrant *grant)
             }
     if (!admission_entry)
         return leave(resource, SYS_ERR_NO_RESOURCE);
+    //写入或获取之前重新核验授权，避免旧身份进入物理后端。
     result = resource->source.ops->grant_valid(resource->source.context, grant);
     if (result)
         return leave(resource, result);
     memset(admission_entry, 0, sizeof(*admission_entry));
+    //所有校验成功后再登记合法授权。
     admission_entry->g = *grant;
     admission_entry->occupied = 1;
     return leave(resource, SYS_OK);
@@ -136,6 +149,7 @@ SysResult_t MR_Stage(MRContext *resource, const MRGrant *grant, const MRBridge *
     result = enter(resource);
     if (result)
         return result;
+    //由真实后端把消费者映射为物理所有者类型。
     result = resource->source.ops->role(resource->source.context, grant, &role);
     if (result)
         return leave(resource, result);
@@ -173,6 +187,7 @@ SysResult_t MR_Commit(MRContext *resource, const MRRequest *request)
     SysResult_t result = enter(resource);
     if (result)
         return result;
+    //按完整交接身份查原记录，不通过帧地址推断身份。
     handoff_record = record(resource, request);
     if (!handoff_record)
         return leave(resource, SYS_ERR_INVALID_ARG);
@@ -190,6 +205,7 @@ SysResult_t MR_CancelLocal(MRContext *resource, const MRRequest *request)
     SysResult_t result = enter(resource);
     if (result)
         return result;
+    //按完整交接身份查原记录，不通过帧地址推断身份。
     handoff_record = record(resource, request);
     if (!handoff_record || handoff_record->state != MR_LOCAL)
         return leave(resource, SYS_ERR_INVALID_STATE);
@@ -226,6 +242,7 @@ SysResult_t MR_Admit(MRContext *resource, const MRRequest *request)
     SysResult_t result = enter(resource);
     if (result)
         return result;
+    //按完整交接身份查原记录，不通过帧地址推断身份。
     handoff_record = record(resource, request);
     if (!handoff_record)
         return leave(resource, SYS_ERR_INVALID_ARG);
@@ -284,6 +301,7 @@ static SysResult_t bind_bridge(MRContext *resource, MRRecord *handoff_record, co
     if (!bridge || !bridge->epoch || !bridge->lease || !bridge->command || bridge->epoch != handoff_record->request.b.epoch ||
         bridge->command != handoff_record->request.b.command)
         return SYS_ERR_INVALID_ARG;
+    //由真实后端把消费者映射为物理所有者类型。
     result = resource->source.ops->role(resource->source.context, &handoff_record->request.g, &role);
     if (result)
         return result;
@@ -305,6 +323,7 @@ SysResult_t MR_BindBridge(MRContext *resource, const MRRequest *request, const M
     SysResult_t result = enter(resource);
     if (result)
         return result;
+    //按完整交接身份查原记录，不通过帧地址推断身份。
     handoff_record = record(resource, request);
     if (!handoff_record)
         return leave(resource, SYS_ERR_INVALID_ARG);
@@ -346,6 +365,7 @@ SysResult_t MR_Obtain(MRContext *resource, const MRRequest *request, MRMedia *me
     status_result = enter(resource);
     if (status_result)
         return status_result;
+    //按完整交接身份查原记录，不通过帧地址推断身份。
     handoff_record = record(resource, request);
     if (!handoff_record)
         return leave(resource, SYS_ERR_INVALID_ARG);
@@ -437,9 +457,11 @@ SysResult_t MR_Return(MRContext *resource, const MRRequest *request, const MRMed
     SysResult_t result = enter(resource);
     if (result)
         return result;
+    //按完整交接身份查原记录，不通过帧地址推断身份。
     handoff_record = record(resource, request);
     if (!handoff_record || !MRMedia_Equal(&handoff_record->media, media))
         return leave(resource, SYS_ERR_INVALID_ARG);
+    //终结后的重复归还只读冻结结果，不再次释放后端。
     if (handoff_record->state == MR_TERMINAL)
         return leave(resource, for_record(resource, handoff_record)->value.result);
     if (handoff_record->state != MR_BOUND && handoff_record->state != MR_RETURN_PENDING && handoff_record->state != MR_RELEASED)
@@ -449,6 +471,7 @@ SysResult_t MR_Return(MRContext *resource, const MRRequest *request, const MRMed
         return leave(resource, SYS_ERR_INVALID_STATE);
     if (handoff_record->state != MR_RELEASED)
     {
+        //标记待归还并等待所有读取者退出，尚未确认物理归还。
         handoff_record->state = MR_RETURN_PENDING;
         result = resource->source.ops->readers_quiescent(resource->source.context, &request->g, media);
         if (result)
@@ -459,6 +482,7 @@ SysResult_t MR_Return(MRContext *resource, const MRRequest *request, const MRMed
         {
             if (!handoff_record->last_release)
                 return leave(resource, result);
+            //核对权威归还证据，不能凭归还调用返回推断已释放。
             result = resource->source.ops->released(resource->source.context, &request->g, media);
             if (result)
                 return leave(resource, result);
@@ -466,6 +490,7 @@ SysResult_t MR_Return(MRContext *resource, const MRRequest *request, const MRMed
         }
         else
         {
+            //只有后端确认凭据仍有效时才能执行实际释放。
             result = resource->source.ops->release(resource->source.context, &request->g, media);
             if (result)
             {
@@ -476,9 +501,11 @@ SysResult_t MR_Return(MRContext *resource, const MRRequest *request, const MRMed
             handoff_record->state = MR_RELEASED;
         }
     }
+    //核对权威归还证据，不能凭归还调用返回推断已释放。
     result = resource->source.ops->released(resource->source.context, &request->g, media);
     if (result)
         return leave(resource, result);
+    //物理归还得到证明后才冻结终结收据及首错。
     terminal(handoff_record, receipt_entry, handoff_record->last_release);
     return leave(resource, handoff_record->last_release);
 }
@@ -493,12 +520,14 @@ SysResult_t MR_ReadReceipt(MRContext *resource, const MRRequest *request, MRRece
     result = enter(resource);
     if (result)
         return result;
+    //按完整交接身份查原记录，不通过帧地址推断身份。
     handoff_record = record(resource, request);
     if (!handoff_record || handoff_record->state != MR_TERMINAL)
         return leave(resource, SYS_ERR_BUSY);
     receipt_entry = for_record(resource, handoff_record);
     if (!receipt_entry)
         return leave(resource, SYS_ERR_INVALID_STATE);
+    //输出已冻结的收据，后续运输不能改变其中事实。
     *out = receipt_entry->value;
     return leave(resource, SYS_OK);
 }
@@ -587,6 +616,7 @@ SysResult_t MR_VerifyExit(MRContext *resource, const MRRelease *release)
     for (entry_index = 0; entry_index < MR_RECEIPT_MAX; entry_index++)
         if (resource->receipts[entry_index].occupied && MRGrant_Equal(&resource->receipts[entry_index].value.g, &release->grant))
             return leave(resource, SYS_ERR_BUSY);
+    //旧授权必须有真实后端退出证据后才能替换。
     result = resource->source.ops->exit_safe(resource->source.context, &release->grant);
     return leave(resource, result);
 }

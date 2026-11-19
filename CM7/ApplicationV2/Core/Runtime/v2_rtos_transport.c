@@ -64,6 +64,7 @@ SysResult_t V2Rtos_Init(void)
     INIT_ROUTE(s_camera);
     INIT_ROUTE(s_usb);
     INIT_ROUTE(s_storage);
+    //三组运输端口都创建成功后才开放收发。
     s_ready = ready(&s_camera) && ready(&s_usb) && ready(&s_storage);
     return s_ready ? SYS_OK : SYS_ERR_NO_RESOURCE;
 }
@@ -81,6 +82,7 @@ bool V2Rtos_Enter(RuntimeEventTarget_t task, uint32_t events)
     if (!owner_context(task))
         return false;
     if (events & RUNTIME_EVENT_BOOT_READY)
+        //只有本任务消费 BOOT 提示后才开放它的运输入口。
         s_boot[task] = true;
     return s_boot[task];
 }
@@ -88,6 +90,7 @@ bool V2Rtos_Enter(RuntimeEventTarget_t task, uint32_t events)
 // 要求合法任务上下文以及该任务已收到 BOOT。
 bool V2Rtos_Owner(RuntimeEventTarget_t task)
 {
+    //运行期同时要求任务身份匹配和 BOOT 完成。
     return owner_context(task) && s_boot[task];
 }
 

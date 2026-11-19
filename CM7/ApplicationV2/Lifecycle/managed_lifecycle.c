@@ -40,10 +40,13 @@ static int legal(uint32_t state, uint32_t op)
 // 校验所有者调用并设置重入保护，调用方仍负责跨任务串行化。
 static SysResult_t enter(LCContext *lifecycle)
 {
+    //进入生命周期前检查对象有效性和任务所有权。
     if (!lifecycle || lifecycle->magic != MAGIC || !lifecycle->ops->is_owner(lifecycle->port))
         return SYS_ERR_INVALID_STATE;
+    //重入时保留正在执行的状态更新。
     if (lifecycle->busy)
         return SYS_ERR_BUSY;
+    //本轮只允许一个调用推进状态机。
     lifecycle->busy = 1;
     return SYS_OK;
 }
@@ -63,6 +66,7 @@ static void error(LCContext *lifecycle, SysResult_t result)
 SysResult_t LC_Init(LCContext *lifecycle, uint32_t module, uint32_t session,
                     const struct V2LifecycleOps *ops, void *port)
 {
+    //进入生命周期前检查对象有效性和任务所有权。
     if (!lifecycle || lifecycle->magic || !module || !session || !ops || !ops->is_owner || !ops->can_begin ||
         !ops->begin || !ops->prove)
         return SYS_ERR_INVALID_ARG;
@@ -81,23 +85,29 @@ SysResult_t LC_Init(LCContext *lifecycle, uint32_t module, uint32_t session,
 SysResult_t LC_Request(LCContext *lifecycle, const LCRequest *request, uint32_t now)
 {
     SysResult_t result;
+    //请求编号和超时必须有效，先拒绝非法请求再进入状态机。
     if (!request || !request->id.request || !LC_Target(request->id.operation) || !request->timeout ||
         request->timeout > 0x7FFFFFFFU)
         return SYS_ERR_INVALID_ARG;
     result = enter(lifecycle);
     if (result)
         return result;
+    //只允许当前模块及当前会话的请求。
     if (request->id.module != lifecycle->module || request->id.session != lifecycle->session)
         return leave(lifecycle, SYS_ERR_PROTOCOL);
+    //同编号只接受内容完全相同的重传。
     if (request->id.request == lifecycle->request.id.request)
         return leave(lifecycle, !memcmp(request, &lifecycle->request, sizeof(*request)) ? SYS_OK : SYS_ERR_PROTOCOL);
     if (request->id.request < lifecycle->request.id.request)
         return leave(lifecycle, SYS_ERR_PROTOCOL);
+    //旧事务仍占用时保持原身份和状态。
     if (lifecycle->pending)
         return leave(lifecycle, SYS_ERR_BUSY);
+    //入口关闭后拒绝启动类请求，排空操作仍按合法状态迁移。
     if ((lifecycle->sealed && (request->id.operation == LC_ACTIVATE || request->id.operation == LC_CONFIGURE)) ||
         request->expected != lifecycle->state || !legal(lifecycle->state, request->id.operation))
         return leave(lifecycle, SYS_ERR_INVALID_STATE);
+    //保存完整请求身份，后续异步推进不重发新身份。
     lifecycle->request = *request;
     lifecycle->started = now;
     lifecycle->pending = 1;
@@ -117,18 +127,22 @@ SysResult_t LC_Complete(LCContext *lifecycle, const V2ExecId *id, SysResult_t ac
     SysResult_t result = enter(lifecycle);
     if (result)
         return result;
+    //完成通知必须携带真实稳定事实及完整匹配身份。
     if (actual > 0 || !LC_Stable(fact) || !LC_IdEqual(id, &lifecycle->request.id))
         return leave(lifecycle, SYS_ERR_PROTOCOL);
+    //已决定的结果不允许改写，只接受完全相同的重复通知。
     if (lifecycle->decided)
         return leave(lifecycle, lifecycle->completion.actual_result == actual && lifecycle->completion.fact == fact
                             ? SYS_OK
                             : SYS_ERR_PROTOCOL);
+    //只有底层曾受理的操作才可提交完成。
     if (!lifecycle->pending || !lifecycle->dispatched)
         return leave(lifecycle, SYS_ERR_INVALID_STATE);
     if ((!actual && fact != LC_Target(id->operation)) ||
         (actual && fact != lifecycle->request.expected && fact != LC_Target(id->operation) &&
          fact != LC_ERROR))
         return leave(lifecycle, SYS_ERR_PROTOCOL);
+    //先保存真实结果，稍后再核验资源和完成事实。
     lifecycle->completion.actual_result = actual;
     lifecycle->completion.fact = fact;
     lifecycle->decided = 1;
@@ -143,10 +157,12 @@ SysResult_t LC_Process(LCContext *lifecycle, uint32_t now)
         return result;
     if (!lifecycle->pending || lifecycle->terminal)
         return leave(lifecycle, SYS_OK);
+    //超时只记录首错，已提交操作继续等待实际完成。
     if ((uint32_t)(now - lifecycle->started) >= lifecycle->request.timeout)
         error(lifecycle, SYS_ERR_TIMEOUT);
     if (!lifecycle->dispatched && !lifecycle->decided)
     {
+        //未提交前超时则保留原稳定状态，不调用底层。
         if (lifecycle->first_error == SYS_ERR_TIMEOUT)
         {
             lifecycle->completion.actual_result = SYS_ERR_TIMEOUT;
@@ -155,13 +171,16 @@ SysResult_t LC_Process(LCContext *lifecycle, uint32_t now)
         }
         else
         {
+            //底层先核验前置条件，通过后才尝试提交。
             result = lifecycle->ops->can_begin(lifecycle->port, &lifecycle->request);
             if (!result)
                 result = lifecycle->ops->begin(lifecycle->port, &lifecycle->request);
+            //背压保留原请求，后续继续尝试。
             if (result == SYS_ERR_BUSY || result == SYS_ERR_NO_RESOURCE)
                 return leave(lifecycle, result);
             if (!result)
             {
+                //底层已经受理，后续只等真实完成。
                 lifecycle->dispatched = 1;
                 return leave(lifecycle, SYS_OK);
             }
@@ -185,6 +204,7 @@ SysResult_t LC_Process(LCContext *lifecycle, uint32_t now)
             return leave(lifecycle, result);
         }
     }
+    //最终证据通过后才发布稳定状态并冻结首错。
     lifecycle->state = lifecycle->completion.fact;
     lifecycle->completion.result = lifecycle->first_error;
     lifecycle->terminal = 1;
@@ -199,6 +219,7 @@ SysResult_t LC_Read(LCContext *lifecycle, const V2ExecId *id, LCCompletion *out)
     result = enter(lifecycle);
     if (result)
         return result;
+    //只有匹配且已终结的请求才允许读完成消息。
     if (!LC_IdEqual(id, &lifecycle->request.id) || !lifecycle->terminal)
         return leave(lifecycle, SYS_ERR_NOT_FOUND);
     *out = lifecycle->completion;
@@ -212,6 +233,7 @@ SysResult_t LC_Confirm(LCContext *lifecycle, const LCCompletion *completion)
         return result;
     if (!completion || !lifecycle->terminal || memcmp(completion, &lifecycle->completion, sizeof(*completion)))
         return leave(lifecycle, SYS_ERR_PROTOCOL);
+    //匹配的完成被消费后，才允许后继请求获得窗口。
     lifecycle->pending = 0;
     return leave(lifecycle, SYS_OK);
 }
@@ -221,6 +243,7 @@ SysResult_t LC_Seal(LCContext *lifecycle)
     SysResult_t result = enter(lifecycle);
     if (result)
         return result;
+    //关闭启动入口，保留现有请求和排空路径。
     lifecycle->sealed = 1;
     return leave(lifecycle, SYS_OK);
 }

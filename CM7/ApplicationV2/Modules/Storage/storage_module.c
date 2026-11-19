@@ -104,6 +104,7 @@ static SysResult_t begin(void *port_context, const LCRequest *request)
     SysResult_t result;
     if (request->id.operation == LC_ACTIVATE)
     {
+        //先向 Camera 申请资格，后续按授权事实推进文件操作。
         result = VStorageConsumer_Begin(&storage->consumer);
         if (result)
             return result;
@@ -166,7 +167,7 @@ SysResult_t VStorage_Init(VStorage *storage, uint32_t module, uint32_t session, 
     result = LC_Init(&storage->lifecycle, module, session, &VStorage_LifecycleOps, storage);
     if (result)
     {
-        memset(storage, 0, sizeof(*storage)); /* 初始化还未获取外部资源。 */
+        memset(storage, 0, sizeof(*storage)); //初始化还未获取外部资源。
         return result;
     }
     storage->magic = MAGIC;
@@ -205,6 +206,7 @@ SysResult_t VStorage_BindCandidate(VStorage *storage, const V2Registry *registry
     if (cfg->mode == VST_AVI && (cfg->sampling.num != candidate->media.sinks[selection_index].rate.num ||
                                  cfg->sampling.den != candidate->media.sinks[selection_index].rate.den))
         return leave(storage, SYS_ERR_INVALID_ARG);
+    //配置候选仍须通过真实存储能力验证。
     result = VStorage_ValidateFormat(&candidate->media.format, cfg, &storage->caps, &interval);
     if (result)
         return leave(storage, result);
@@ -253,7 +255,7 @@ static void poll_facts(VStorage *storage)
 {
     VStorageFacts fresh = {0};
     SysResult_t result = storage->ports.backend->observe(storage->ports.backend_port, &fresh);
-    storage->facts.flags = result ? 0U : fresh.flags; /* 查询失败后禁止复用旧静止证据。 */
+    storage->facts.flags = result ? 0U : fresh.flags; //查询失败后禁止复用旧静止证据。
     if (result && !waiting(result))
         remember(storage, result, &storage->cleanup_error);
 }
@@ -283,12 +285,14 @@ static void start(VStorage *storage)
         result = SYS_ERR_TIMEOUT;
     else if (storage->file_step == FILE_NEW)
     {
+        //取得资格后再访问卷。
         result = backend_ops->mount(port_context, &storage->config);
         if (!result)
             storage->file_step = FILE_MOUNTED;
     }
     else if (storage->file_step == FILE_MOUNTED)
     {
+        //卷准备成功后创建文件，不提前开始录像。
         result = backend_ops->open(port_context, &storage->config, &storage->format);
         if (!result)
             storage->file_step = FILE_WRITING;
@@ -310,10 +314,11 @@ static void write_frame(VStorage *storage, uint32_t now)
     const VStorageOffer *offer = &storage->frame.current;
     SysResult_t result;
 
-    /* 已准入的录像帧可排空。发生文件错误后仍归还，但不再写。 */
+    //已准入的录像帧可排空。发生文件错误后仍归还，但不再写。
     if (!storage->business_error && (storage->facts.flags & VST_FILE_OPEN) &&
         (!storage->drain || storage->config.mode == VST_AVI))
     {
+        //用本次 Offer 的真实帧视图写入存储。
         result = storage->ports.backend->write(storage->ports.backend_port, &storage->config, &storage->format, &offer->view,
                                     offer->timestamp);
         if (result)
@@ -328,7 +333,7 @@ static void write_frame(VStorage *storage, uint32_t now)
             if (storage->config.mode == VST_SNAPSHOT)
                 storage->drain = 1U;
         }
-        storage->facts.flags &= ~VST_IO_QUIET; /* 写入后的归还需要重新观测。 */
+        storage->facts.flags &= ~VST_IO_QUIET; //写入后的归还需要重新观测。
     }
     storage->frame.state = VSF_RETURN;
 }
@@ -347,14 +352,16 @@ static void finish_files(VStorage *storage)
         if ((storage->facts.flags & VST_FILE_OPEN) && !storage->business_error)
         {
             if (storage->frames)
+                //先完成文件格式封尾，再继续关闭和卸载。
                 result = backend_ops->finish(port_context);
             else if (storage->config.mode == VST_AVI)
-                result = SYS_ERR_NOT_FOUND; /* 空AVI不能宣称完整成片。 */
+                result = SYS_ERR_NOT_FOUND; //空AVI不能宣称完整成片。
         }
         storage->file_step = FILE_CLOSE;
         break;
     case FILE_CLOSE:
         if (storage->facts.flags & VST_FILE_OPEN)
+            //等待真实关闭结果，不能用业务 STOP 代替文件关闭。
             result = backend_ops->close(port_context);
         storage->file_step = FILE_UNMOUNT;
         break;
@@ -396,6 +403,7 @@ static void stop(VStorage *storage)
     }
     if (storage->consumer.phase == VSC_GRANTED)
     {
+        //在满足排空门禁后请求资格释放，携带真实业务和收尾错误。
         result = VStorageConsumer_End(&storage->consumer, storage->business_error, storage->cleanup_error,
                                  release_flags(storage));
         remember(storage, result, &storage->cleanup_error);
@@ -424,8 +432,8 @@ static void recover(VStorage *storage)
 {
     if (!storage->recovery_issued && !volume_clear(storage))
     {
-        /* 显式恢复可使原来故障的IDMA停止，然后继续归还原Frame。
-         * 完成的同步写入不会在此轮重新执行。 */
+        //显式恢复可使原来故障的IDMA停止，然后继续归还原Frame。
+        //完成的同步写入不会在此轮重新执行。
         storage->recovery_issued = 1U;
         if (storage->facts.flags & VST_FS_FAULT)
             storage->recovery_result = storage->ports.backend->recover(storage->ports.backend_port);
@@ -453,6 +461,7 @@ SysResult_t VStorage_RunRound(VStorage *storage, uint32_t now)
     poll_facts(storage);
     (void)LC_Process(&storage->lifecycle, now);
     op = storage->lifecycle.request.id.operation;
+    //继续处理原资格事务，包括停止期间的回复。
     result = VStorageConsumer_Process(&storage->consumer);
     if (storage->consumer.phase == VSC_BLOCKED)
         remember(storage, result, &storage->cleanup_error);
@@ -461,6 +470,7 @@ SysResult_t VStorage_RunRound(VStorage *storage, uint32_t now)
                 (storage->facts.flags & VST_FILE_OPEN) &&
                 (!storage->frames || now - storage->sample_tick >= storage->interval_ms);
     before = storage->frame.state;
+    //本地入口关闭后仍要推进帧归还和收据退休。
     result = VStorageFrame_Process(&storage->frame, storage->ports.frame, storage->ports.frame_port, &storage->consumer.grant,
                               accepting, quiet(storage));
     if (storage->frame.state == VSF_BLOCKED ||

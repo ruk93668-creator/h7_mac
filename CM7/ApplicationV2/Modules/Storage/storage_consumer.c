@@ -31,6 +31,7 @@ SysResult_t VStorageConsumer_Init(VStorageConsumer *consumer, const VStorageCons
     memset(consumer, 0, sizeof(*consumer));
     consumer->ops = ops;
     consumer->port = port_context;
+    //复用生命周期 Tx 的身份及退休规则。
     result = App_LifecycleTxInit(&consumer->tx, APP_LIFECYCLE_STORAGE, APP_LIFECYCLE_CAMERA,
                             APP_CONSUMER_STORAGE);
     if (result)
@@ -46,6 +47,7 @@ SysResult_t VStorageConsumer_Begin(VStorageConsumer *consumer)
         return result;
     if (consumer->phase != VSC_IDLE || consumer->grant.session)
         return leave(consumer, SYS_ERR_BUSY);
+    //新一轮启用分配新代次，耗尽时拒绝而不回绕。
     result = App_QualificationNextGeneration(&consumer->generation_counter, &consumer->generation);
     if (result)
         return leave(consumer, result);
@@ -117,6 +119,7 @@ static SysResult_t stage(VStorageConsumer *consumer)
         }
         consumer->reserved = 1;
     }
+    //只准备原请求，真正入队由 Flush 决定。
     result = App_LifecycleTxStage(&consumer->tx, &consumer->request);
     if (!result)
         consumer->staged = 1;
@@ -143,14 +146,17 @@ SysResult_t VStorageConsumer_Process(VStorageConsumer *consumer)
             return leave(consumer, result);
         }
     }
-    /* WAIT_REPLY超时不能清空Tx；队列满只重试原请求原编号。 */
+    //WAIT_REPLY超时不能清空Tx；队列满只重试原请求原编号。
+    //队列背压时继续发送已登记的原请求。
     (void)App_LifecycleTxFlush(&consumer->tx, consumer->ops->send, consumer->port);
     result = consumer->ops->receive_reply(consumer->port, &reply);
     if (!result && App_LifecycleMatchesReply(&consumer->request, &reply))
+        //让 Tx 核对完整回复身份，迟到回复不能推进阶段。
         (void)App_LifecycleTxAcceptReply(&consumer->tx, &reply);
     result = App_LifecycleTxGetCompleted(&consumer->tx, &reply);
     if (result)
         return leave(consumer, SYS_ERR_BUSY);
+    //按原请求确认消费，然后才能准备下一事务。
     result = App_LifecycleTxConfirmConsumed(&consumer->tx, &consumer->request);
     if (result)
         return leave(consumer, result);

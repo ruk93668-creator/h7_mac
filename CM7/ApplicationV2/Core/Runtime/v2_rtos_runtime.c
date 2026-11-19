@@ -263,6 +263,7 @@ static SysResult_t initialize_module(RuntimeEventTarget_t task)
         if (!result)
             result = VCamera_BindCandidate(&s_camera, catalog->registry, &s_candidate);
         if (!result)
+            //CameraTask 只绑定自己的执行端点。
             result = VCameraEndpoint_Init(&s_camera_endpoint, &s_camera, &V2Rtos_Camera);
         return result;
     }
@@ -279,6 +280,7 @@ static SysResult_t initialize_module(RuntimeEventTarget_t task)
                 result = VUSB_BindCandidate(&s_usb, catalog->registry, &s_candidate,
                                             VU_MODE_UVC, &sink->rate);
             if (!result)
+                //UsbTask 只绑定自己的执行端点。
                 result = VUSBEndpoint_Init(&s_usb_endpoint, &s_usb, &V2Rtos_Usb);
             return result;
         }
@@ -293,6 +295,7 @@ static SysResult_t initialize_module(RuntimeEventTarget_t task)
             if (!result)
                 result = VStorage_BindCandidate(&s_storage, catalog->registry, &s_candidate, &config);
             if (!result)
+                //StorageTask 只绑定自己的执行端点。
                 result = VStorageEndpoint_Init(&s_storage_endpoint, &s_storage, &V2Rtos_Storage);
             return result;
         }
@@ -400,10 +403,12 @@ static SysResult_t initialize_control(void)
         s_snapshot.states[client_index] = LC_UNCONFIGURED;
         endpoints[client_index] = (EMEndpoint){s_clients[client_index].module, &s_clients[client_index], submit, read, consume};
     }
+    //由控制任务持有执行计划和三路客户端。
     result = EM_Init(&s_manager, DIAG_SESSION, endpoints, 3U, control_owner, NULL);
     if (!result)
         result = CSExec_Init(&s_execution, DIAG_SESSION, &s_manager, control_owner, snapshot, NULL);
     if (!result)
+        //统一控制服务通过 Execution 端口推进操作。
         result = CS_Init(&s_control, DIAG_SESSION, catalog, &s_control_ops, &s_execution);
     if (!result)
     {
@@ -473,6 +478,7 @@ void V2Runtime_Round(RuntimeEventTarget_t task, uint32_t events, uint32_t now)
                 return;
         }
         s_attempted[task] = true;
+        //本任务只尝试初始化一次，失败后不进入推进分支。
         s_initialized[task] = (task == RUNTIME_TARGET_CONTROL ? initialize_control()
                                                            : initialize_module(task)) == SYS_OK;
         if (task == RUNTIME_TARGET_CONTROL)

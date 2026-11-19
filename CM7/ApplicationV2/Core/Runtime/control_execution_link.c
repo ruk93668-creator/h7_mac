@@ -59,6 +59,7 @@ SysResult_t CSExecClient_Submit(CSExecClient *client, const CSExecution *work)
         return leave(client, SYS_ERR_PROTOCOL);
     if (client->active)
         return leave(client, SYS_ERR_BUSY);
+    //工作消息成功入队后才登记提交。
     result = client->ops->send_work(client->port, work);
     if (!result)
     {
@@ -80,6 +81,7 @@ SysResult_t CSExecClient_Read(CSExecClient *client, const CSIdentity *id, CSExec
         return leave(client, SYS_ERR_PROTOCOL);
     if (!client->cached)
     {
+        //收到匹配结果之前不交付业务完成。
         result = client->ops->receive_result(client->port, &execution_result);
         if (result)
             return leave(client, result);
@@ -106,6 +108,7 @@ SysResult_t CSExecClient_Consume(CSExecClient *client, const CSExecResult *execu
         return leave(client, SYS_ERR_PROTOCOL);
     if (!client->active)
         return leave(client, SYS_OK);
+    //消费确认背压时保留完整结果，用同一身份重试。
     result = client->ops->send_ack(client->port, execution_result);
     if (!result)
         client->active = 0U;
@@ -136,6 +139,7 @@ static SysResult_t progress(CSExecServer *server, uint32_t now)
 
     if (server->phase == LINK_SENT)
     {
+        //收到确认后核对原结果，入队本身不能释放接收窗口。
         result = server->ops->receive_ack(server->port, &ack);
         if (result)
             return result;
@@ -151,6 +155,7 @@ static SysResult_t progress(CSExecServer *server, uint32_t now)
     }
     if (!server->phase)
     {
+        //旧窗口空闲后才接收下一项。
         result = server->ops->receive_work(server->port, &server->work);
         if (result)
             return result;
@@ -161,6 +166,7 @@ static SysResult_t progress(CSExecServer *server, uint32_t now)
     }
     if (server->phase == LINK_RECEIVED)
     {
+        //首次装载计划，背压时保留原工作。
         result = CSExec_Submit(server->endpoint, &server->work);
         if (result == SYS_ERR_BUSY || result == SYS_ERR_NO_RESOURCE)
             return result;
@@ -175,6 +181,7 @@ static SysResult_t progress(CSExecServer *server, uint32_t now)
     }
     if (server->phase == LINK_RUNNING)
     {
+        //推进已经受理的执行，取回真实完成。
         result = CSExec_Process(server->endpoint, now);
         if (!result)
             result = CSExec_Read(server->endpoint, &server->work.id, &server->result);
@@ -182,7 +189,8 @@ static SysResult_t progress(CSExecServer *server, uint32_t now)
             return result;
         server->phase = LINK_RESULT;
     }
-    /* Reply满时只重试冻结的结果；消费确认前保留接收端状态。 */
+    //Reply满时只重试冻结的结果；消费确认前保留接收端状态。
+    //只重试冻结结果，不能再次装载计划。
     result = server->ops->send_result(server->port, &server->result);
     if (!result)
         server->phase = LINK_SENT;

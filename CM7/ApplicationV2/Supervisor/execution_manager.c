@@ -6,8 +6,10 @@
 // 校验所有者调用并设置重入保护，调用方仍负责跨任务串行化。
 static SysResult_t enter(EMContext *manager)
 {
+    //只有计划所有者可以推进执行状态。
     if (!manager || manager->magic != MAGIC || !manager->is_owner(manager->owner))
         return SYS_ERR_INVALID_STATE;
+    //拒绝回调重入，避免重复推进同一步骤。
     if (manager->busy)
         return SYS_ERR_BUSY;
     manager->busy = 1;
@@ -22,6 +24,7 @@ static SysResult_t leave(EMContext *manager, SysResult_t result)
 // 记录首个错误，后续恢复结果不能覆盖它。
 static void first(EMContext *manager, SysResult_t result)
 {
+    //冻结首个业务错误，后续恢复只记录恢复结果。
     if (result && !manager->first_error)
         manager->first_error = result;
 }
@@ -38,6 +41,7 @@ static EMEndpoint *port(EMContext *manager, uint32_t module_id)
 static void fail(EMContext *manager, SysResult_t result)
 {
     first(manager, result);
+    //区分正常执行与补偿，补偿结果不能覆盖初始故障。
     if (manager->state == EM_COMPENSATING)
     {
         if (!manager->recovery_error)
@@ -57,6 +61,7 @@ SysResult_t EM_Init(EMContext *manager, uint32_t session, const EMEndpoint *endp
                     int (*owner)(void *), void *ctx)
 {
     uint32_t endpoint_index, previous_index;
+    //只有计划所有者可以推进执行状态。
     if (!manager || manager->magic || !session || !endpoint || !endpoint_count || endpoint_count > V2_MODULE_MAX || !owner)
         return SYS_ERR_INVALID_ARG;
     if (V2_Overlap(manager, sizeof(*manager), endpoint, sizeof(*endpoint) * endpoint_count))
@@ -105,6 +110,7 @@ SysResult_t EM_Load(EMContext *manager, const EMPlan *plan, uint32_t timeout)
             (plan->steps[step_index].operation == LC_DEACTIVATE && plan->steps[step_index].expected != LC_ACTIVE) ||
             (plan->steps[step_index].operation == LC_CLEANUP && plan->steps[step_index].expected != LC_INACTIVE))
             return leave(manager, SYS_ERR_INVALID_ARG);
+    //先冻结通过校验的计划，再重置本次执行进度。
     manager->plan = *plan;
     manager->timeout = timeout;
     manager->index = 0;
@@ -123,6 +129,7 @@ static void finish(EMContext *manager)
         manager->state == EM_COMPENSATING ? &manager->undo[manager->undo_count - 1] : &manager->plan.steps[manager->index];
     SysResult_t result = manager->completion.result;
     uint32_t fact = manager->completion.fact;
+    //只给真实完成的启动步骤登记逆操作。
     if (manager->state == EM_RUNNING && manager->plan.kind == EM_START && fact == LC_Target(step->operation) &&
         fact != step->expected)
     {
@@ -131,6 +138,7 @@ static void finish(EMContext *manager)
         undo_step->expected = fact;
         undo_step->operation = step->operation == LC_ACTIVATE ? LC_DEACTIVATE : LC_CLEANUP;
     }
+    //底层状态不确定时阻止继续启动。
     if (fact == LC_ERROR)
         manager->blocked_unknown = 1;
     if (result)
@@ -143,6 +151,7 @@ static void finish(EMContext *manager)
         fail(manager, SYS_ERR_PROTOCOL);
         return;
     }
+    //区分正常执行与补偿，补偿结果不能覆盖初始故障。
     if (manager->state == EM_COMPENSATING)
         manager->undo_count--;
     else
@@ -171,6 +180,7 @@ SysResult_t EM_Process(EMContext *manager, uint32_t now)
             manager->state = EM_DONE;
             return leave(manager, SYS_OK);
         }
+        //请求编号耗尽后拒发新步骤，不能回绕。
         if (manager->issued == UINT32_MAX)
         {
             fail(manager, SYS_ERR_NO_RESOURCE);
@@ -178,6 +188,7 @@ SysResult_t EM_Process(EMContext *manager, uint32_t now)
         }
         step = manager->state == EM_COMPENSATING ? &manager->undo[manager->undo_count - 1] : &manager->plan.steps[manager->index];
         memset(&manager->current, 0, sizeof(manager->current));
+        //绑定会话、步骤请求和操作，所有运输重试沿用此身份。
         manager->current.id.session = manager->session;
         manager->current.id.request = ++manager->issued;
         manager->current.id.module = step->module;
@@ -188,9 +199,11 @@ SysResult_t EM_Process(EMContext *manager, uint32_t now)
         manager->stage = 1;
     }
     endpoint = port(manager, manager->current.id.module);
+    //区别尚未提交与已经受理的超时，受理后仍要等待真实结果。
     if ((uint32_t)(now - manager->started) >= manager->timeout)
     {
         first(manager, SYS_ERR_TIMEOUT);
+        //尚未提交时可结束本步骤。已受理时继续等待真实结果。
         if (manager->stage == 1)
         {
             manager->stage = 0;
@@ -198,6 +211,7 @@ SysResult_t EM_Process(EMContext *manager, uint32_t now)
             return leave(manager, SYS_ERR_TIMEOUT);
         }
     }
+    //阶段一只提交请求，背压时保留同一请求。
     if (manager->stage == 1)
     {
         result = endpoint->submit(endpoint->port, &manager->current);
@@ -212,6 +226,7 @@ SysResult_t EM_Process(EMContext *manager, uint32_t now)
         manager->stage = 2;
         return leave(manager, SYS_OK);
     }
+    //阶段二等待完整身份匹配的完成结果。
     if (manager->stage == 2)
     {
         LCCompletion completion;
@@ -236,6 +251,7 @@ SysResult_t EM_Process(EMContext *manager, uint32_t now)
         }
         // 先冻结业务首错，再重试运输消费确认。
         first(manager, completion.result);
+        //冻结真实完成结果，进入消费确认阶段。
         manager->completion = completion;
         manager->stage = 3;
         return leave(manager, SYS_OK);

@@ -123,6 +123,7 @@ SysResult_t CS_Open(CSService *service, const CSPeer *peer, uint32_t *out)
         return result;
     if (!trusted_peer(peer) || !output_ok(service, out, sizeof(*out)))
         return leave(service, SYS_ERR_INVALID_ARG);
+    //用可信传输身份授权会话，禁止客户端自行声明权限。
     result = service->ops->authorize(service->port, peer, 0U, 0U, 0U, 0U);
     if (result)
         return leave(service, result);
@@ -206,7 +207,7 @@ SysResult_t CS_Submit(CSService *service, const CSPeer *peer, const CSRequest *r
         return leave(service, SYS_OK);
     }
     if (request->sequence <= session_entry->issued)
-        return leave(service, SYS_ERR_NOT_FOUND); /* 已退休或跳号，不重新执行。 */
+        return leave(service, SYS_ERR_NOT_FOUND); //已退休或跳号，不重新执行。
     if (!profile(service, request->profile))
         return leave(service, SYS_ERR_NOT_FOUND);
     if (service->active)
@@ -233,6 +234,7 @@ SysResult_t CS_Submit(CSService *service, const CSPeer *peer, const CSRequest *r
     memset(active_record, 0, sizeof(*active_record));
     active_record->request = *request;
     active_record->reply.id = (CSIdentity){service->boot, request->session, request->sequence, ++service->next_ticket};
+    //装入完整身份后登记已受理，尚未提交执行。
     active_record->reply.phase = CS_ACCEPTED;
     active_record->reply.profile = request->profile;
     active_record->reply.revision = request->revision;
@@ -282,7 +284,7 @@ SysResult_t CS_Confirm(CSService *service, const CSPeer *peer, const CSReply *re
     active_record = owned_record(service, peer, reply ? &reply->id : NULL);
     if (!active_record || active_record->reply.phase != CS_FINAL || memcmp(reply, &active_record->reply, sizeof(*reply)))
         return leave(service, SYS_ERR_PROTOCOL);
-    /* 消费只退休交付凭证，同序号重传仍读旧结果。 */
+    //消费只退休交付凭证，同序号重传仍读旧结果。
     active_record->delivered = 1U;
     return leave(service, SYS_OK);
 }
@@ -299,6 +301,7 @@ static void finish(CSService *service, CSRecord *active_record, SysResult_t resu
 {
     first(active_record, result);
     active_record->reply.actual_result = result;
+    //冻结终结结果和首错，等待运输层消费确认。
     active_record->reply.phase = CS_FINAL;
     service->active = 0U;
 }
@@ -318,6 +321,7 @@ SysResult_t CS_Cancel(CSService *service, const CSPeer *peer, const CSIdentity *
         return leave(service, result);
     if (active_record->reply.phase == CS_FINAL)
         return leave(service, SYS_OK);
+    //进入执行阶段后不能将取消当作撤回已提交操作。
     if (active_record->reply.phase == CS_EXECUTING)
         return leave(service, SYS_ERR_BUSY);
     active_record->reply.effect = CS_EFFECT_CANCELLED;
@@ -356,12 +360,13 @@ static SysResult_t build(CSService *service, CSRecord *active_record)
     if (result || active_record->request.operation == CS_VALIDATE)
         return result;
     memset(&service->execution, 0, sizeof(service->execution));
+    //按当前模块快照生成计划，禁止直接调用硬件。
     result = service->ops->snapshot(service->port, &service->execution.expected);
     if (result)
         return result;
     if (service->execution.expected.revision != active_record->request.revision ||
         service->execution.expected.prepared_profile != profile_desc->id)
-        return SYS_ERR_INVALID_STATE; /* 仅执行已经绑定的配置；重配置属于后续阶段。 */
+        return SYS_ERR_INVALID_STATE; //仅执行已经绑定的配置；重配置属于后续阶段。
     service->execution.id = active_record->reply.id;
     service->execution.profile = profile_desc->id;
     service->execution.revision = active_record->request.revision;
@@ -392,7 +397,7 @@ SysResult_t CS_Process(CSService *service, uint32_t now)
             finish(service, active_record, SYS_ERR_TIMEOUT);
             return leave(service, SYS_OK);
         }
-        first(active_record, SYS_ERR_TIMEOUT); /* 继续等待实际完成，不清理活动执行。 */
+        first(active_record, SYS_ERR_TIMEOUT); //继续等待实际完成，不清理活动执行。
     }
     if (active_record->reply.phase != CS_EXECUTING)
     {
@@ -412,6 +417,7 @@ SysResult_t CS_Process(CSService *service, uint32_t now)
     }
     if (active_record->reply.phase == CS_ACCEPTED)
     {
+        //先通过 Composition 和依赖计划计算候选。
         result = build(service, active_record);
         if (result || active_record->request.operation == CS_VALIDATE)
         {
@@ -425,11 +431,13 @@ SysResult_t CS_Process(CSService *service, uint32_t now)
     }
     if (active_record->reply.phase == CS_PLANNED)
     {
+        //逐步骤确认执行及补偿权限。
         result = check_plan(service, &session_entry->peer, active_record);
         if (result)
             finish(service, active_record, result);
         else
         {
+            //运输背压时保留原计划和请求编号。
             result = service->ops->submit(service->port, &service->execution);
             if (!result)
                 active_record->reply.phase = CS_EXECUTING;
@@ -440,6 +448,7 @@ SysResult_t CS_Process(CSService *service, uint32_t now)
     }
     if (!service->exec_seen)
     {
+        //只读当前执行身份的冻结结果。
         result = service->ops->read(service->port, &active_record->reply.id, &execution_result);
         if (result)
         {
@@ -451,11 +460,12 @@ SysResult_t CS_Process(CSService *service, uint32_t now)
             (execution_result.state != EM_DONE && execution_result.state != EM_BLOCKED && execution_result.state != CS_EXEC_REFUSED) ||
             execution_result.result > 0 || execution_result.recovery > 0 ||
             ((execution_result.state == EM_BLOCKED || execution_result.state == CS_EXEC_REFUSED) && !execution_result.result))
-            return leave(service, SYS_ERR_PROTOCOL); /* 丢弃错身份，保留当前事务。 */
+            return leave(service, SYS_ERR_PROTOCOL); //丢弃错身份，保留当前事务。
         service->exec_result = execution_result;
         service->exec_seen = 1U;
-        first(active_record, execution_result.result); /* 先冻结首错，随后才重试消费。 */
+        first(active_record, execution_result.result); //先冻结首错，随后才重试消费。
     }
+    //先完成匹配的消费握手，再结束控制事务。
     result = service->ops->consume(service->port, &service->exec_result);
     if (result)
     {

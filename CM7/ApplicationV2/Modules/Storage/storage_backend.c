@@ -35,6 +35,7 @@ static SysResult_t mount_volume(void *port_context, const VStorageConfig *config
     fs->verified = 0U;
     fs->mode = config->mode;
     fs->facts = 0U;
+    //复用原 StorageFS 的挂载操作。
     result = StorageFS_Mount(true, (uint8_t)config->partition);
     if (!SD_Block_IsOwner(SD_BLOCK_CLIENT_FATFS))
         fs->facts = VST_VOLUME_RELEASED;
@@ -48,6 +49,7 @@ static SysResult_t open_file(void *port_context, const VStorageConfig *config, c
     SysResult_t result;
     if (!owner(fs) || fs->file)
         return SYS_ERR_INVALID_STATE;
+    //使用新建文件模式，避免覆盖已有录像或抓拍。
     result = StorageFS_Open(config->path, STORAGE_FS_OPEN_WRITE | STORAGE_FS_OPEN_CREATE_NEW, &fs->file);
     if (!result && config->mode == VST_AVI)
         result = MjpegAvi_Begin(&fs->avi, fs->file, (uint16_t)format->width, (uint16_t)format->height,
@@ -62,6 +64,7 @@ static SysResult_t write_span(StorageFile_t file, const uint8_t *data, uint32_t 
     SysResult_t result;
     if (!bytes)
         return SYS_OK;
+    //同时检查返回码和写入长度，短写不能视为成功。
     result = StorageFS_Write(file, data, bytes, &written);
     return result ? result : written == bytes ? SYS_OK : SYS_ERR_NO_RESOURCE;
 }
@@ -91,6 +94,7 @@ static SysResult_t verify_snapshot(VStorageFS *fs, const VStorageConfig *config,
     original = JpegFrame_Crc32(view->data, view->bytes, UINT32_MAX);
     if (view->bytes2)
         original = JpegFrame_Crc32(view->data2, view->bytes2, original);
+    //抓拍完成后重新打开并核对实际文件内容。
     result = StorageFS_Open(config->path, STORAGE_FS_OPEN_READ, &fs->file);
     if (!result)
     {
@@ -107,6 +111,7 @@ static SysResult_t verify_snapshot(VStorageFS *fs, const VStorageConfig *config,
             chunk_bytes = sizeof(fs->readback);
         if (first > chunk_bytes)
             first = chunk_bytes;
+        //分块回读以维持固定的验证缓冲。
         result = StorageFS_Read(fs->file, fs->readback, chunk_bytes, &read);
         if (!result && (read != chunk_bytes || (first && memcmp(fs->readback, view->data + cursor, first)) ||
                    (chunk_bytes > first && memcmp(fs->readback + first,
@@ -140,15 +145,18 @@ static SysResult_t write_frame(void *port_context, const VStorageConfig *config,
     frame.size_bytes2 = view->bytes2;
     if (frame.size_bytes > format->max_payload || frame.size_bytes > config->file_limit)
         return SYS_ERR_INVALID_ARG;
+    //向文件写入前先核对由两段组成的完整 JPEG。
     result = JpegFrame_Validate(&frame);
     if (result)
         return result;
     if (config->mode == VST_AVI)
         return MjpegAvi_AppendFrame(&fs->avi, &frame, timestamp, config->file_limit);
+    //保持两段的原顺序，只有首段成功才继续。
     result = write_span(fs->file, view->data, view->bytes);
     if (!result)
         result = write_span(fs->file, view->data2, view->bytes2);
     if (!result)
+        //抓拍须同步并关闭文件，再做回读验证。
         result = StorageFS_Sync(fs->file);
     if (!result)
         result = close_file(fs);
@@ -166,6 +174,7 @@ static SysResult_t finish_file(void *port_context)
     SysResult_t result;
     if (!owner(fs) || !fs->file)
         return SYS_ERR_INVALID_STATE;
+    //AVI 需要封尾，抓拍则沿用文件同步逻辑。
     result = fs->mode == VST_AVI ? MjpegAvi_Finish(&fs->avi)
                             : (fs->verified ? SYS_OK : SYS_ERR_INVALID_STATE);
     if (!result)
@@ -180,6 +189,7 @@ static SysResult_t unmount_volume(void *port_context)
     SysResult_t result;
     if (!owner(fs) || fs->file)
         return SYS_ERR_INVALID_STATE;
+    //只处理卷生命周期，与帧租约归还分别确认。
     result = StorageFS_Unmount();
     if (!result)
         fs->facts |= VST_VOLUME_RELEASED;
@@ -196,7 +206,7 @@ static SysResult_t recover_volume(void *port_context)
     result = StorageFS_Recover();
     if (!result)
     {
-        /* 凭据因恢复失效。没有成功Close/Finish的原记录仍保持失败。 */
+        //凭据因恢复失效。没有成功Close/Finish的原记录仍保持失败。
         fs->file = 0U;
         fs->facts |= VST_VOLUME_RELEASED;
     }
@@ -222,13 +232,14 @@ static SysResult_t observe(void *port_context, VStorageFacts *out)
     }
     out->flags |= VST_VOLUME_HELD;
     out->flags &= ~VST_VOLUME_RELEASED;
+    //读取权威块设备状态，确认是否仍有 IDMA 访问。
     result = SD_Block_GetStatus(&block);
     if (result)
         return result;
     result = StorageFS_GetDiagnostics(&diag);
     if (result)
         return result;
-    /* FAULT可能仍持有传输。实际恢复前，保守地扣留媒体归还。 */
+    //FAULT可能仍持有传输。实际恢复前，保守地扣留媒体归还。
     if (!block.busy && !block.fault)
         out->flags |= VST_IO_QUIET;
     if (block.fault || diag.state == 3U)

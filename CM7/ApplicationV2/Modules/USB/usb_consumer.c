@@ -37,6 +37,7 @@ SysResult_t VUSBConsumer_Init(VUSBConsumer *consumer, const VUSBConsumerOps *ops
     memset(consumer, 0, sizeof(*consumer));
     consumer->ops = ops;
     consumer->port = port_context;
+    //复用生命周期 Tx 的身份及退休规则。
     result = App_LifecycleTxInit(&consumer->tx, APP_LIFECYCLE_USB, APP_LIFECYCLE_CAMERA, APP_CONSUMER_USB);
     if (result)
         return result;
@@ -51,6 +52,7 @@ SysResult_t VUSBConsumer_Begin(VUSBConsumer *consumer)
         return result;
     if (consumer->phase != VUC_IDLE || consumer->grant.session)
         return leave(consumer, SYS_ERR_BUSY);
+    //新一轮启用分配新代次，耗尽时拒绝而不回绕。
     result = App_QualificationNextGeneration(&consumer->generation_counter, &consumer->generation);
     if (result)
         return leave(consumer, result);
@@ -113,6 +115,7 @@ static SysResult_t stage(VUSBConsumer *consumer)
         }
         consumer->reserved = 1;
     }
+    //只准备原请求，真正入队由 Flush 决定。
     result = App_LifecycleTxStage(&consumer->tx, &consumer->request);
     if (!result)
         consumer->staged = 1;
@@ -138,7 +141,8 @@ SysResult_t VUSBConsumer_Process(VUSBConsumer *consumer)
             return leave(consumer, result);
         }
     }
-    /* WAIT_REPLY超时不能清空Tx；队列满只重试原请求原编号。 */
+    //WAIT_REPLY超时不能清空Tx；队列满只重试原请求原编号。
+    //队列背压时继续发送已登记的原请求。
     (void)App_LifecycleTxFlush(&consumer->tx, consumer->ops->send, consumer->port);
     result = consumer->ops->receive_reply(consumer->port, &reply);
     if (!result && App_LifecycleMatchesReply(&consumer->request, &reply))
@@ -150,6 +154,7 @@ SysResult_t VUSBConsumer_Process(VUSBConsumer *consumer)
     result = App_LifecycleTxGetCompleted(&consumer->tx, &reply);
     if (result)
         return leave(consumer, result);
+    //按原请求确认消费，然后才能准备下一事务。
     result = App_LifecycleTxConfirmConsumed(&consumer->tx, &consumer->request);
     if (result)
     {

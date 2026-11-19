@@ -118,9 +118,11 @@ static SysResult_t validate_capture(const GraphEntityDesc *entity,
                                     GraphIssue *issue)
 {
     CameraConfig_t camera_config;
+    //回调只校验媒体配置，实体和诊断由 Graph 管理。
     (void)entity;
     (void)context;
     (void)issue;
+    //由传感器和 Capture 拒绝超出实际能力的配置。
     return VCamera_Translate(format, &camera_config);
 }
 
@@ -132,9 +134,11 @@ static SysResult_t validate_usb(const GraphEntityDesc *entity,
                                 GraphIssue *issue)
 {
     VideoStreamConfig_t stream_config;
+    //回调只校验媒体配置，实体和诊断由 Graph 管理。
     (void)entity;
     (void)context;
     (void)issue;
+    //用 USB 自己的交付速率校验描述符能力。
     return VUSB_Translate(format, rate, &stream_config);
 }
 
@@ -145,6 +149,7 @@ static SysResult_t validate_storage(const GraphEntityDesc *entity,
                                     const GraphCheckContext *context,
                                     GraphIssue *issue)
 {
+    //复用 Storage 的帧容量上限，局部配置只用于校验。
     const VStorageCaps caps = {APP_STORAGE_FRAME_LIMIT, JPEG_CAPTURE_TARGET};
     VStorageConfig config =
     {
@@ -155,9 +160,11 @@ static SysResult_t validate_storage(const GraphEntityDesc *entity,
         .path = "0:/REC.AVI"
     };
     uint32_t sampling_interval_ms;
+    //回调只校验媒体配置，实体和诊断由 Graph 管理。
     (void)entity;
     (void)context;
     (void)issue;
+    //使用 Storage 的采样率计算周期，不修改采集配置。
     config.sampling = *rate;
     return VStorage_ValidateFormat(format, &config, &caps, &sampling_interval_ms);
 }
@@ -519,14 +526,17 @@ static const CSProfile s_profiles[] =
 SysResult_t V2BoardV1_CaptureTarget(uint32_t backend,
                                     CoreFrameRate *target)
 {
+    //确认输出可写后再判断所选后端。
     if (!target)
     {
         return SYS_ERR_INVALID_ARG;
     }
+    //只为已实现的互斥后端提供配置目标。
     if (backend != CORE_BACKEND_RAW && backend != CORE_BACKEND_JPEG)
     {
         return SYS_ERR_NOT_SUPPORTED;
     }
+    //速率以有理数返回，此处配置目标为整数。
     target->num = backend == CORE_BACKEND_RAW ? RAW_CAPTURE_TARGET : JPEG_CAPTURE_TARGET;
     target->den = 1U;
     return SYS_OK;
@@ -540,25 +550,30 @@ static SysResult_t validate_resources(const GraphValidatedView *view,
     CoreFrameRate capture_target;
     uint16_t sink_index;
     (void)issue;
+    //候选须包含一个采集模块，并为每个媒体终点选中一个模块。
     if (V2BoardV1_CaptureTarget(view->format.backend, &capture_target) ||
         !view->sink_count || resolution->count != view->sink_count + 1U)
     {
         return SYS_ERR_NOT_SUPPORTED;
     }
+    //Raw 后端只允许一路终点。
     if (view->format.backend == CORE_BACKEND_RAW && view->sink_count != 1U)
     {
         return SYS_ERR_NOT_SUPPORTED;
     }
+    //JPEG 两路并行前先确认后端租约和 Storage 槽位可用。
     if (view->format.backend == CORE_BACKEND_JPEG &&
         (view->sink_count > 2U || !CAMERA_MJPEG_MAX_LOANS || !APP_STORAGE_SLOT_COUNT))
     {
         return SYS_ERR_NOT_SUPPORTED;
     }
+    //逐路检查终点类型和速率，任一路越界都拒绝候选。
     for (sink_index = 0U;
          sink_index < view->sink_count;
          ++sink_index)
     {
         const GraphSinkPolicy *sink = &view->sinks[sink_index];
+        //交叉相乘保留分数速率的精度，避免整数除法把超限舍掉。
         if ((sink->sink.value != ENTITY_USB && sink->sink.value != ENTITY_STORAGE) ||
             (view->format.backend == CORE_BACKEND_RAW && sink->sink.value != ENTITY_USB) ||
             (uint64_t)sink->rate.num * capture_target.den >
@@ -584,6 +599,7 @@ static const CSCatalog s_catalog =
 // 返回可共享的只读目录，调用方不需要登记或初始化硬件。
 const CSCatalog *V2BoardV1_Catalog(void)
 {
+    //只借出静态目录地址，不创建或启动模块。
     return &s_catalog;
 }
 
@@ -595,6 +611,7 @@ SysResult_t V2BoardV1_Compose(uint32_t profile_id,
                               GraphIssue *graph_issue)
 {
     uint16_t profile_index;
+    //按公开配置编号查目录，未找到时保持候选输出。
     for (profile_index = 0U;
          profile_index < s_catalog.profile_count;
          ++profile_index)
@@ -602,6 +619,7 @@ SysResult_t V2BoardV1_Compose(uint32_t profile_id,
         const CSProfile *profile_entry = &s_catalog.profiles[profile_index];
         if (profile_entry->id == profile_id)
         {
+            //找到配置后再校验拓扑、依赖和板级资源。
             return V2Composition_Validate(s_catalog.registry,
                                           s_catalog.graph,
                                           s_catalog.bindings,

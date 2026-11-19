@@ -19,11 +19,12 @@ static int receipt_matches(const VStorageFrame *frame, const MRReceipt *receipt,
 static SysResult_t receive_offer(VStorageFrame *frame, const VStorageFrameOps *ops, void *port_context)
 {
     VStorageOffer offer;
+    //等待与已提交槽位身份匹配的 Offer 或终结回复。
     SysResult_t result = ops->offer(port_context, &offer);
     if (result)
         return result;
     if (!MRGrant_Equal(&offer.request.g, &frame->grant) || memcmp(&offer.request.s, &frame->slot, sizeof(frame->slot)))
-        return SYS_ERR_NOT_FOUND; /* 迟到槽位/代次，不改当前工作。 */
+        return SYS_ERR_NOT_FOUND; //迟到槽位/代次，不改当前工作。
     if (offer.kind == VSF_DELIVERY_WITHDRAWN && frame->withdrawn && !offer.request.h.session &&
         !offer.request.h.sequence && !offer.request.b.epoch && !offer.request.b.command &&
         !offer.request.b.lease && !offer.media.id && !offer.terminal.serial)
@@ -52,7 +53,7 @@ static SysResult_t receive_offer(VStorageFrame *frame, const VStorageFrameOps *o
         frame->state = VSF_BLOCKED;
         return SYS_ERR_PROTOCOL;
     }
-    /* 先保留真实M。JPEG结构或大小错误由写入端报告后走正常Return。 */
+    //先保留真实M。JPEG结构或大小错误由写入端报告后走正常Return。
     frame->state = VSF_READY;
     return SYS_OK;
 }
@@ -68,6 +69,7 @@ SysResult_t VStorageFrame_Process(VStorageFrame *frame, const VStorageFrameOps *
     case VSF_FREE:
         if (!accepting || !grant->session)
             return SYS_OK;
+        //槽位每次使用分配新代次，耗尽后拒绝。
         result = MRNumber_Advance(&frame->generation);
         if (result)
             return result;
@@ -79,9 +81,10 @@ SysResult_t VStorageFrame_Process(VStorageFrame *frame, const VStorageFrameOps *
     case VSF_POST:
         if (!accepting)
         {
-            frame->state = VSF_FREE; /* 尚未入队。同一S永不复用。 */
+            frame->state = VSF_FREE; //尚未入队。同一S永不复用。
             return SYS_OK;
         }
+        //发送已有槽位身份，队列满保持本地待提交。
         result = ops->post(port_context, &frame->grant, &frame->slot);
         if (!result)
             frame->state = VSF_WAIT;
@@ -89,19 +92,21 @@ SysResult_t VStorageFrame_Process(VStorageFrame *frame, const VStorageFrameOps *
     case VSF_WAIT:
         if (!accepting && !frame->withdrawn)
         {
+            //退出时撤回已提交接收意图，仍等待终结。
             result = ops->withdraw(port_context, &frame->grant, &frame->slot);
             if (!result)
                 frame->withdrawn = 1U;
             else if (result != SYS_ERR_BUSY && result != SYS_ERR_NO_RESOURCE)
                 return result;
-            /* 撤回背压时仍消费已经送达的Offer，以免双向互等。 */
+            //撤回背压时仍消费已经送达的Offer，以免双向互等。
         }
         return receive_offer(frame, ops, port_context);
     case VSF_READY:
-        return SYS_OK; /* Storage业务处理完成/拒绝后显式进入RETURN。 */
+        return SYS_OK; //Storage业务处理完成/拒绝后显式进入RETURN。
     case VSF_RETURN:
         if (!quiet)
             return SYS_ERR_BUSY;
+        //向 Camera 交付归还请求，槽位仍需保留。
         result = ops->return_frame(port_context, &frame->current.request, &frame->current.media);
         if (!result)
         {
@@ -110,6 +115,7 @@ SysResult_t VStorageFrame_Process(VStorageFrame *frame, const VStorageFrameOps *
         }
         return result;
     case VSF_ACK:
+        //等待真实后端归还收据。
         result = ops->receipt(port_context, &receipt);
         if (result)
             return result;
@@ -119,11 +125,13 @@ SysResult_t VStorageFrame_Process(VStorageFrame *frame, const VStorageFrameOps *
         frame->state = VSF_CONSUME;
         return receipt.result;
     case VSF_CONSUME:
+        //提交消费确认，暂时不能复用槽位。
         result = ops->consume(port_context, &frame->terminal);
         if (!result)
             frame->state = VSF_RETIRE;
         return result;
     case VSF_RETIRE:
+        //等待原交接退休，再开放槽位给下一帧。
         result = ops->retired(port_context, &frame->terminal);
         if (!result)
         {
