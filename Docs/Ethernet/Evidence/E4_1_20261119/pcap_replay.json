@@ -1,0 +1,53 @@
+{
+  "mtu": {
+    "pcap": "output/Ethernet/E4_1/board_mtu_20261119_144937/capture.pcap",
+    "pcap_sha256": "11685d5859974bf64297dcf5d5f97e6a2432654f27ba879f3655439c514dc1b7",
+    "packet_records": 18,
+    "ipv4_total_length": 1500,
+    "icmp_requests": 5,
+    "icmp_replies": 5,
+    "icmp_matched": 5,
+    "duplicates": 0,
+    "payload_mismatches": 0,
+    "arp_requests": 1,
+    "arp_replies": 1,
+    "ipv4_fragment_fields": {
+      "0x4000": 10
+    },
+    "npcap_dropped": 0
+  },
+  "ping1000": {
+    "pcap": "output/Ethernet/E4_1/ping1000_20261119_145307/pcap/capture.pcap",
+    "pcap_sha256": "1ea77e0a03416325c833b9ab69be5d115a7fc5292eff3841499ea3b754cfe471",
+    "packet_records": 2126,
+    "ipv4_total_length": 60,
+    "icmp_requests": 1000,
+    "icmp_replies": 1000,
+    "icmp_matched": 1000,
+    "duplicates": 0,
+    "payload_mismatches": 0,
+    "arp_requests": 35,
+    "arp_replies": 35,
+    "ipv4_fragment_fields": {
+      "0x0": 2000
+    },
+    "npcap_dropped": 0
+  },
+  "link_recovery": {
+    "pcap": "output/Ethernet/E4_1/link_recovery_20261119_151341/pcap/capture.pcap",
+    "pcap_sha256": "6f113fb91f5102756cd9ee6e2cbff23769eb72dce34feedef8aae3448a506c36",
+    "packet_records": 12,
+    "ipv4_total_length": 60,
+    "icmp_requests": 4,
+    "icmp_replies": 4,
+    "icmp_matched": 4,
+    "duplicates": 0,
+    "payload_mismatches": 0,
+    "arp_requests": 1,
+    "arp_replies": 1,
+    "ipv4_fragment_fields": {
+      "0x0": 8
+    },
+    "npcap_dropped": 0
+  }
+}
