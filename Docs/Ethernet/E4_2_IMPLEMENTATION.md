@@ -16,7 +16,16 @@ E4.2 实现静态、DHCP Only 和显式 Static Fallback。使用同一 lwIP 2.2.
 | 无服务器、等待超时、Fallback | PASS；DHCP Only 超时一次后继续发送 Discover、IP 仍为 0；Fallback 拒绝空配置，超时只启用指定静态地址、释放 DHCP 资源，迟到 ACK 无效；再次 Link Up 后重新获取租约。 |
 | 掉线与重获 | PASS；保留 admin up、关闭 link 、清除旧地址并回收 PCB/heap；无掉线 Release 发到 MAC。重连只发起一次适配层 Start，再实际交换报文取租约。 |
 | UDP PCB、PBUF、超时池 | PASS；强制 PCB 不足得到 ERR_MEM，限速重试并恢复；超时池耗尽可计数，释放后真实定时器回调正常；PBUF_POOL 回到 0、原静态池耗尽和失败释放回归通过。 |
-| 实板 DHCP、Ping、掉线、Fallback、续租 | NOT_RUN；未自动烧录，无现场 DHCP 抓包。 |
+| 实板 DHCP、Ping、拔插后重新获取 | PASS（2026-11-19）；Windows ICS 提供租约，抓到完整 DORA，新地址 Ping 4/4。 |
+| 实板 Static Fallback、T1/T2、Lease Expiry | NOT_RUN；当前 ICS 租约七天，未用于短租约验收。 |
+
+## 实板 DHCP 和重连结果（2026-11-19）
+
+用户手动烧录；PC 连接手机热点，Windows Internet 连接共享给直连板卡的以太网 3，PC 端为 `192.168.137.1/24`。初始 Watch 显示 BOUND、lease_valid=1、starts=1，地址为 `192.168.137.254`；初次 Ping 4/4，MAC 对应 `02:47:47:00:00:01`。
+
+用户按步骤拔线再插回，恢复截图显示 BOUND、lease_valid=1、starts=2、timeouts=0、fallbacks=0。整盘回放确认同一事务（`abcd0003`）的 DISCOVER、OFFER、REQUEST、ACK；ACK 发放 `192.168.137.165/24`，网关及服务器为 `192.168.137.1`，租期 604800 秒；Watch 显示 T1 302400 秒、T2 453600 秒。新地址 Ping 4/4、丢包 0%、往返小于 1 ms，对应板卡 MAC。未取得拔线中间状态截图；此结果验证了重连实际重新取得租约和通信，不能代替掉线瞬间的地址/资源快照或实板续租。
+
+[完整回放摘要](Evidence/E4_2_20261119/dhcp_relink_replay.json)、Watch 截图和 Ping 日志已归档。原始 PCAP 保留在本机 `output/Ethernet/E4_2/dhcp_relink_20261119_161058/capture.pcap`，199 条记录，Npcap 报告丢弃 0，SHA256 与回放一致。
 
 ## 编译和内存
 
