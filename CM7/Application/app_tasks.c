@@ -1,4 +1,5 @@
 #include "app_tasks.h"
+#include "../ApplicationV2/Core/Runtime/v2_rtos_transport.h"
 #include "app_events.h"
 #include "app_messages.h"
 #include "Tasks/camera_task.h"
@@ -73,6 +74,9 @@ SysResult_t App_TasksCreate(void)
         if (result == SYS_OK)
             g_app_tasks_debug.created_tasks++;
     }
+
+    if (result == SYS_OK)
+        (void)V2Rtos_Init();  // An unavailable diagnostic must not stop Legacy BOOT.
 
     g_app_tasks_debug.result = result;
     return result;

@@ -5252,6 +5252,26 @@
               <FileType>1</FileType>
               <FilePath>../CM7/ApplicationV2/Supervisor/execution_plan.c</FilePath>
             </File>
+            <File>
+              <FileName>v2_rtos_runtime.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>../CM7/ApplicationV2/Core/Runtime/v2_rtos_runtime.c</FilePath>
+            </File>
+            <File>
+              <FileName>v2_rtos_runtime.h</FileName>
+              <FileType>5</FileType>
+              <FilePath>../CM7/ApplicationV2/Core/Runtime/v2_rtos_runtime.h</FilePath>
+            </File>
+            <File>
+              <FileName>v2_rtos_transport.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>../CM7/ApplicationV2/Core/Runtime/v2_rtos_transport.c</FilePath>
+            </File>
+            <File>
+              <FileName>v2_rtos_transport.h</FileName>
+              <FileType>5</FileType>
+              <FilePath>../CM7/ApplicationV2/Core/Runtime/v2_rtos_transport.h</FilePath>
+            </File>
           </Files>
         </Group>
         <Group>

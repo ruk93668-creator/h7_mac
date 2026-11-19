@@ -1,4 +1,5 @@
 #include "usb_task.h"
+#include "../../ApplicationV2/Core/Runtime/v2_rtos_runtime.h"
 
 #include "app_status.h"
 #include "app_events.h"
@@ -101,6 +102,7 @@ static void UsbTask_Run(void *argument)
             continue;
         }
         UsbTask_Process(events);
+        V2Runtime_Round(RUNTIME_TARGET_USB, events, Platform_TimeGetMs());
         UsbTask_PublishStatus();
 
         //栈扫描每秒最多一次，避免占用每包处理时隙

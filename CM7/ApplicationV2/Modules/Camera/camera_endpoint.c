@@ -151,6 +151,7 @@ SysResult_t VCameraEndpoint_Init(VCameraEndpoint *endpoint, VCamera *camera, con
 SysResult_t VCameraEndpoint_RunRound(VCameraEndpoint *endpoint, uint32_t now)
 {
     SysResult_t status_result;
+    LCRequest incoming;
     if (!endpoint || endpoint->magic != ENDPOINT_MAGIC || !endpoint->transport.ops->is_camera(endpoint->transport.port))
         return SYS_ERR_INVALID_STATE;
     if (endpoint->busy)
@@ -183,8 +184,13 @@ SysResult_t VCameraEndpoint_RunRound(VCameraEndpoint *endpoint, uint32_t now)
             }
         }
     }
-    if (!endpoint->active && endpoint->transport.ops->receive_request(endpoint->transport.port, &endpoint->request) == 0)
+    // 已消费的请求不得重新占用 Endpoint，否则旧 Completion 无法再获匹配 ACK。
+    if (!endpoint->active && endpoint->transport.ops->receive_request(endpoint->transport.port, &incoming) == SYS_OK &&
+        incoming.id.module == endpoint->camera->lifecycle.module &&
+        incoming.id.session == endpoint->camera->lifecycle.session &&
+        incoming.id.request > endpoint->request.id.request)
     {
+        endpoint->request = incoming;
         endpoint->active = 1;
         endpoint->accepted = 0;
         endpoint->ready = 0;

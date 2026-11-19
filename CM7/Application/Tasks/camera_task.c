@@ -1,4 +1,5 @@
 #include "camera_task.h"
+#include "../../ApplicationV2/Core/Runtime/v2_rtos_runtime.h"
 #include "app_status.h"
 #include "app_events.h"
 #include "app_messages.h"
@@ -96,6 +97,7 @@ static void CameraTask_Run(void *argument)
             continue;
         }
         CameraTask_Process(events);
+        V2Runtime_Round(RUNTIME_TARGET_CAMERA, events, Platform_TimeGetMs());
         CameraTask_PublishStatus();
 
         //栈余量按实际经过时间更新，不补做错过的扫描

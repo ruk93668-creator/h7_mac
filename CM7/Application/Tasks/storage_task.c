@@ -1,4 +1,5 @@
 #include "storage_task.h"
+#include "../../ApplicationV2/Core/Runtime/v2_rtos_runtime.h"
 #include "app_storage.h"
 #include "app_events.h"
 #include "video_config.h"
@@ -32,6 +33,7 @@ static void StorageTask_Run(void *argument)
 {
     uint32_t events, stack_tick = 0U, now;
     bool boot = false;
+    bool storage_ready;
     SysResult_t result;
     (void)argument;
     for (;;)
@@ -48,10 +50,12 @@ static void StorageTask_Run(void *argument)
             result = App_StoragePrepare(VideoConfig_GetStorage());
             g_storage_status.result = result;
         }
-        if (!boot || !App_StorageIsReady())
+        storage_ready = boot && App_StorageIsReady();
+        if (storage_ready)
+            App_StorageProcess();
+        V2Runtime_Round(RUNTIME_TARGET_STORAGE, events, Platform_TimeGetMs());
+        if (!storage_ready)
             continue;
-
-        App_StorageProcess();
 
         //最多每1000ms扫描一次栈，避免历史高频扫描引入视频降帧
         now = Platform_TimeGetMs();

@@ -1,4 +1,5 @@
 #include "control_task.h"
+#include "../../ApplicationV2/Core/Runtime/v2_rtos_runtime.h"
 #include "app_status.h"
 #include "app_tasks.h"
 #include "app_events.h"
@@ -116,6 +117,7 @@ static void ControlTask_Run(void *argument)
     g_control_task_debug.result = result;
     configASSERT(result == SYS_OK);
     ControlTask_Process(RUNTIME_EVENT_BOOT_READY);
+    V2Runtime_Round(RUNTIME_TARGET_CONTROL, RUNTIME_EVENT_BOOT_READY, Platform_TimeGetMs());
     ControlTask_PublishStatus();
     for (;;)
     {
@@ -131,6 +133,7 @@ static void ControlTask_Run(void *argument)
             continue;
         }
         ControlTask_Process(events);
+        V2Runtime_Round(RUNTIME_TARGET_CONTROL, events, Platform_TimeGetMs());
         ControlTask_PublishStatus();
 
         //栈余量按实际经过时间更新，不补做错过的扫描
