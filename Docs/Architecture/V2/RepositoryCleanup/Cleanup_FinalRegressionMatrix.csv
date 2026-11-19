@@ -1,0 +1,28 @@
+﻿Check,Scope,Status,BaselineExit,CandidateExit,Observed,OutputQ14Evidence
+B1,原入口,BASELINE_BLOCKED,1,1,链接缺 V2Runtime_Round,b_B1_original/stdout.log; c_B1_original/stdout.log
+B1,同一历史钩子隔离补链,FAIL,1,1,"36/39；失败 ID [9, 10, 28]；报告全字段相等",b_B1_linked/results.json; c_B1_linked/results.json
+B2,原入口,BASELINE_BLOCKED,1,1,链接缺 V2Runtime_Round,b_B2_original/stdout.log; c_B2_original/stdout.log
+B2,同一历史钩子隔离补链,FAIL,1,1,"99/102；失败 ID [27, 59, 91]；报告全字段相等",b_B2_linked/results.json; c_B2_linked/results.json
+B3,原入口,BASELINE_BLOCKED,1,1,链接缺 V2Runtime_Round,b_B3_original/stdout.log; c_B3_original/stdout.log
+B3,同一历史钩子隔离补链,FAIL,1,1,"49/51；失败 ID [45, 46]；报告全字段相等",b_B3_linked/results.json; c_B3_linked/results.json
+Phase 1,原全树入口,BASELINE_BLOCKED,1,1,相同的 40 个未解析符号，详见日志,b_V2_1_original/stdout.log; c_V2_1_original/stdout.log
+Phase 1,原阶段源码清单,PASS,0,0,250/250，逐项一致,b_V2_1_scoped/results.json; c_V2_1_scoped/results.json
+Phase 2,原入口,PASS,0,0,112/112,b_V2_2_original/stdout.log; c_V2_2_original/stdout.log
+Phase 3,原全树入口,BASELINE_BLOCKED,1,1,相同的 40 个未解析符号，详见日志,b_V2_3_original/stdout.log; c_V2_3_original/stdout.log
+Phase 3,原阶段源码清单,PASS,0,0,158/158，逐项一致,b_V2_3_scoped/results.json; c_V2_3_scoped/results.json
+Phase 4,原全树入口,BASELINE_BLOCKED,1,1,相同的 38 个未解析符号，详见日志,b_V2_4_original/stdout.log; c_V2_4_original/stdout.log
+Phase 4,原阶段源码清单,PASS,0,0,154/154，逐项一致,b_V2_4_scoped/results.json; c_V2_4_scoped/results.json
+Phase 5,原入口,PASS,0,0,38/38,b_V2_5_original/stdout.log; c_V2_5_original/stdout.log
+Phase 6,原入口,PASS,0,0,48/48,b_V2_6_original/stdout.log; c_V2_6_original/stdout.log
+Phase 7,原入口,PASS,0,0,52/52,b_V2_7_original/stdout.log; c_V2_7_original/stdout.log
+Phase 8.1,原入口,PASS,0,0,O0/O2 静态装配；结果记录 34 条,b_V2_8_1_original/stdout.log; c_V2_8_1_original/stdout.log
+Phase 8.2,原入口,PASS,0,0,O0/O2 RTOS 运输、模块角色和九条队列；结果记录 12 条,b_V2_8_2_original/stdout.log; c_V2_8_2_original/stdout.log
+52B / 56B 与 Replay,原 ARMCC5 ABI/Replay,PASS,0,0,O0/O2 布局探针通过，648/648 Replay,b_ABI_original/abi_results.json; c_ABI_original/abi_results.json
+CM7,ARMCC5 Rebuild,PASS,0,0,"0 Error, 0 Warning",b_Keil_original/stdout.log; c_Keil_original/stdout.log
+CM4,ARMCC5 Rebuild,PASS,0,0,"0 Error, 0 Warning",b_Keil_original/stdout.log; c_Keil_original/stdout.log
+CM4 HEX,镜像字节,PASS,0,0,清理前后字节完全一致,artifact_sha256.txt
+实板/硬件运行期,独立设备验证,NOT_RUN,,,本轮未测,
+Grant → Frame Lease,资源证明,NOT_PROVEN,,,缺真实 Backend 证据,
+Stable Admission Closure,资源证明,NOT_PROVEN,,,缺真实 Backend 证据,
+资格与代次符号,链接 Map + AXF,PASS,0,0,核查 28 个旧符号，CM7 代次函数 40 B，CM4 不登记,symbol_audit.json
+静态任务栈,Map + 源码比较,PASS,0,0,两个 Target 的静态栈 Map 记录均一致,resource_audit.json
