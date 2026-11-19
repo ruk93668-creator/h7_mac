@@ -68,4 +68,15 @@ Windows 关闭 WLAN 连接共享，直连的以太网 3 配置为 `192.168.50.1/
 5. **Fallback：**接无 DHCP 的隔离网络，记录超时前地址为零、DISCOVER 和超时后 FALLBACK；核对明确配置的静态地址、有效租约位为 0、PCB 已归还，并从对端 Ping。再次拔插应重新尝试 DHCP。
 6. **续租/重绑/到期：**测试服务器可配置 360 秒租约、120 秒 T1、240 秒 T2。用可控服务器回复或不回复续租，分别验证 T1 单播、T2 广播重绑和持续不回复时到期清 IP 后重新 Discover。保存服务器和板端证据，按上游 60 秒粗定时精度判读。
 
+### 直连 PC 的短租约专用工具
+
+没有可配置路由器时，保持板卡直接连测试网口 `以太网 3`，PC 端只配置 `192.168.50.1/24`，关闭 Windows ICS，不接交换机或桥接网络。板卡复位后在 `main` 暂停并确认 `g_e42_mode=1`，等工具输出 `LEASE_CAPTURE_READY` 再取消断点运行。工具只监听已固定的 PC 测试 MAC，只处理该板卡的 MAC；发现另一 DHCP 服务器的响应即停止。先运行离线检查：
+
+```powershell
+python -B -m unittest discover -s Tests/Ethernet -p test_e42_lease_peer.py
+python -B Tests/Ethernet/e42_lease_peer.py --direct-board-only --output output/Ethernet/E4_2/lease_board_run1
+```
+
+此方案使用 `192.168.50.2/24`、租期 180 秒、T1 60 秒、T2 120 秒。首次绑定后，工具回复一次 T1 单播，然后不回复下一次续租直到 T2，回复一次 T2 广播请求；接着不再回复续租、重绑及到期后的 Discover。每个阶段观察 `g_e4_status.address`，保存首次 BOUND、续租/重绑期间及到期后无 IP 的证据。首次 ACK 后还有 ACD，实际计时按板端状态与抓包对齐，不要求从 PC 点击按钮起整秒发生。工具保存原始 PCAP 和阶段记录，不能以工具自己的状态代替板端租约清零证明。通常约 6 分钟，期间保持连接、CPU 运行；无需下载新固件。
+
 当前停在 E4.2，等待人工审核与实板 DHCP 验收；未进入 E5。
