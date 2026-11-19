@@ -28,6 +28,7 @@ static SysResult_t validate_composition(const V2Registry *registry, const GraphD
         V2_Overlap(issue, sizeof(*issue), out, sizeof(*out)) ||
         V2_Overlap(ge, sizeof(*ge), out, sizeof(*out)))
         return SYS_ERR_INVALID_ARG;
+    // 先解析模块依赖，再验证媒体路由；两步任一失败都不写候选输出。
     result = V2Resolver_Resolve(registry, desired->roots, desired->root_count, &scratch->resolver, &scratch->candidate.modules, issue);
     if (result)
         return result;
@@ -72,6 +73,7 @@ static SysResult_t validate_composition(const V2Registry *registry, const GraphD
             issue->result = result;
         return result;
     }
+    // 仅在全部校验完成后发布候选，实际运行配置仍由执行流程提交。
     scratch->candidate.candidate_only = 1;
     *out = scratch->candidate;
     memset(issue, 0, sizeof(*issue));

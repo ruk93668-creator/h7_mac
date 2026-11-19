@@ -28,9 +28,9 @@ typedef struct
     MRHandoff h;
     MRMedia m;
     uint32_t serial;
-    SysResult_t result;         /* frozen operation error, not a legacy wire ACK result */
-    MRBridge bridge;            /* actual B, bound once after M; zero when no bridge loan */
-    uint32_t physical_returned; /* historical fact; only trusted backend proof sets it */
+    SysResult_t result;         // 冻结的操作结果，独立于旧协议 ACK 返回码。
+    MRBridge bridge;            // 取得 M 后只绑定一次 B，没有 Bridge 持有时为零。
+    uint32_t physical_returned; // 实际归还事实，仅可信后端证据可设置。
 } MRReceipt;
 typedef struct
 {
@@ -46,7 +46,7 @@ typedef struct
     MRReceipt value;
     uint32_t occupied, enqueued, consumed;
 } MRReceiptRecord;
-/* Admission association only, not qualification or physical reference counts. */
+// 只记录准入关联，资格和物理引用分别由各自权威维护。
 typedef struct
 {
     MRGrant g;
@@ -63,12 +63,9 @@ typedef struct
     MRReceiptRecord receipts[MR_RECEIPT_MAX];
 } MRContext;
 typedef SysResult_t (*MRSendReceipt)(void *, const MRReceipt *);
-/* Zero-init once; caller-owned disjoint storage; immutable ports lifetime.
- * Camera owner only; exactly one context per physical source (composition/port invariant).
- * No alternate context or direct backend entry may bypass closure.
- * Nonblocking callbacks; no thread mutex or reset API.
- * No returned view is valid after its actual backend release.
- */
+// 由调用方清零一次并保持端口有效。仅 Camera 所有者操作，每个物理源只用一个上下文。
+// 回调必须非阻塞，不得绕过准入直接调用后端。不提供线程互斥或重置接口。
+// 实际归还后，原媒体视图立即失效。
 SysResult_t MR_Init(MRContext *, const MRSource *);
 // 关联来自权威资格方的 Grant，建立准入上下文。
 SysResult_t MR_AssociateGrant(MRContext *, const MRGrant *);

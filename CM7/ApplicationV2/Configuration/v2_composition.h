@@ -1,12 +1,7 @@
 // 验证配置候选的模块绑定和媒体路径。
 
-/* Unified pure Core/Composition entry, no execution or Runtime Apply.
- * Caller zero-initializes scratch, keeps all referenced const catalogs alive,
- * and owns disjoint inputs/scratch/output/issues with one owner per scratch.
- * ResourceValidator is mandatory and pure: Phase 1 tests inject a MOCK only.
- * Missing/failed validation leaves out unchanged. candidate_only is always 1.
- * Module Ops/Lifecycle hooks are intentionally not executed or implemented.
- */
+// 只校验组合候选。调用方清零独占的 Scratch，保持目录有效，并保证各输入、输出和诊断对象互不重叠。
+// 必须提供无副作用的资源验证器。验证失败保留原输出，成功仅发布候选，不执行模块生命周期。
 #ifndef V2_COMPOSITION_H
 #define V2_COMPOSITION_H
 #include "../MediaGraph/media_graph.h"

@@ -3,7 +3,7 @@
 #ifndef V2_MANAGED_LIFECYCLE_H
 #define V2_MANAGED_LIFECYCLE_H
 #include "../Core/v2_types.h"
-/* Module owner only; no task/ISR synchronization provided by busy. */
+// 仅模块所有者调用。busy 只拒绝重入，不同步任务或中断。
 #define LC_UNCONFIGURED 1U
 #define LC_INACTIVE 2U
 #define LC_ACTIVE 3U
@@ -14,8 +14,7 @@
 #define LC_CLEANUP 4U
 #define LC_ERROR_PROCESS 5U
 #define LC_TRANSITION_BASE 16U
-/* Identity is independent from G/R/H and all legacy wire messages. One issuer
- * per module/session. request is monotonic across all plans, never wraps. */
+// 执行身份独立于 G/R/H 和 Legacy 消息。同一模块和会话只允许一个发号者，跨计划递增且禁止回绕。
 typedef struct
 {
     uint32_t session, request, module, operation;
@@ -28,20 +27,17 @@ typedef struct
 typedef struct
 {
     V2ExecId id;
-    SysResult_t result;        /* first observed error, immutable at terminal */
-    SysResult_t actual_result; /* module operation result, distinct from timeout */
-    uint32_t fact;             /* proven stable module fact, not resource ownership */
+    SysResult_t result;        // 首错在终结后保持不变。
+    SysResult_t actual_result; // 模块操作的实际结果，与超时记录独立。
+    uint32_t fact;             // 已证明的模块稳定状态，资源所有权由 Resource 管理。
 } LCCompletion;
-/* begin: OK means accepted ONLY; BUSY/NO_RESOURCE means not submitted with no
- * side effects. Other errors mean not submitted, also without side effects.
- * Actual completion arrives later through LC_Complete, outside callbacks.
- * prove is a pure owner-local completion guard: BUSY/IO retain pending facts;
- * it never releases resources and must not re-open new readers. */
+// begin 返回 OK 只表示受理，其余结果要求操作未提交且无副作用。真实完成在回调外通过 LC_Complete 提交。
+// prove 只读核验所有者的完成事实。BUSY 或 IO 保留待核验状态，不得释放资源或重新开放读取者。
 struct V2LifecycleOps
 {
     int (*is_owner)(void *);
     SysResult_t (*can_begin)(
-        void *, const LCRequest *); /* pure precondition incl. old resource retirement */
+        void *, const LCRequest *); // 只读前置检查，包含旧资源退休。
     SysResult_t (*begin)(void *, const LCRequest *);
     SysResult_t (*prove)(void *, const LCRequest *, uint32_t fact);
 };
@@ -75,6 +71,6 @@ SysResult_t LC_Read(LCContext *, const V2ExecId *, LCCompletion *);
 // 确认匹配完成已消费并允许相应记录退休。
 SysResult_t LC_Confirm(LCContext *, const LCCompletion *);
 // 关闭新操作入口并保留既有事务状态。
-SysResult_t LC_Seal(LCContext *); /* never clears resources or current request */
+SysResult_t LC_Seal(LCContext *); // 封闭接入，不清理资源或当前请求。
 SysResult_t LC_Status(LCContext *, uint32_t *state, SysResult_t *first_error);
 #endif

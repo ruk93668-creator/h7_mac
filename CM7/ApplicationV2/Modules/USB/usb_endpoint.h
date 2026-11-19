@@ -13,9 +13,8 @@ typedef struct
     LCCompletion completion;
     SysResult_t delivery_error;
 } VUSBReply;
-/* Existing queue adapters must provide reliable commit/copy and role checks.
- * NO_RESOURCE/BUSY means not committed. Notification is only a wakeup hint.
- * Buffers are owned by transport; no module Context is shared with Supervisor. */
+// 端口核验任务角色并完整复制消息。BUSY 或 NO_RESOURCE 表示未入队，通知只负责唤醒。
+// 队列存储由运输层持有，Supervisor 与模块各自维护私有 Context。
 typedef struct
 {
     int (*is_usb)(void *);
@@ -39,7 +38,7 @@ typedef struct
     LCRequest request;
     VUSBReply reply;
     VUSBTransport transport;
-} VUSBClient; /* Supervisor owner only. No pointer to USB/LCContext. */
+} VUSBClient; // 仅 Supervisor 所有者访问，不引用 USB 或 LCContext。
 typedef struct
 {
     uint32_t magic, busy, active, accepted, ready, sent, ack_pending;
@@ -48,7 +47,7 @@ typedef struct
     LCCompletion ack;
     VUSB *usb;
     VUSBTransport transport;
-} VUSBEndpoint; /* USB owner only. */
+} VUSBEndpoint; // 仅 USB 所有者访问。
 SysResult_t VUSBClient_Init(VUSBClient *, uint32_t module, uint32_t session, const VUSBTransport *);
 // USB：返回供 Execution Manager 使用的模块端口。
 SysResult_t VUSBClient_Endpoint(VUSBClient *, EMEndpoint *);

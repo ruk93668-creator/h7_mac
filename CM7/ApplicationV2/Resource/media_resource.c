@@ -276,8 +276,7 @@ SysResult_t MR_Close(MRContext *resource, const MRRelease *release)
     admission_entry->closed = 1;
     return leave(resource, SYS_OK);
 }
-/* B is allocated by the existing bridge only AFTER the real Get succeeds.
- * Never move that allocation to Stage or obtain a second physical frame. */
+// 真实 Get 成功后才由 Bridge 分配 B。Stage 不得提前分配 B 或再次取帧。
 static SysResult_t bind_bridge(MRContext *resource, MRRecord *handoff_record, const MRBridge *bridge)
 {
     uint32_t handoff_index, role;
@@ -384,8 +383,7 @@ SysResult_t MR_Obtain(MRContext *resource, const MRRequest *request, MRMedia *me
     status_result = resource->source.ops->obtain(resource->source.context, &request->g, &request->h, &handoff_record->media, &handoff_record->view);
     if (status_result)
     {
-        /* Only NOT_FOUND with no token is the port's explicit no-acquisition
-         * result. Other failures cannot prove absence of a physical loan. */
+        // 仅当返回 NOT_FOUND 且没有凭据时，端口才能明确证明未获取资源。
         if (!handoff_record->media.id && status_result == SYS_ERR_NOT_FOUND)
             terminal(handoff_record, receipt_entry, status_result);
         else
@@ -395,7 +393,7 @@ SysResult_t MR_Obtain(MRContext *resource, const MRRequest *request, MRMedia *me
         }
         return leave(resource, status_result);
     }
-    handoff_record->state = MR_BLOCKED; /* preserve any actual backend acquisition on bad output */
+    handoff_record->state = MR_BLOCKED; // 输出异常时保留后端可能已经取得的持有。
     if (handoff_record->media.backend != resource->caps.backend || !handoff_record->media.session || !handoff_record->media.id ||
         !handoff_record->media.generation || !handoff_record->view.data || !handoff_record->view.bytes ||
         handoff_record->view.bytes > UINT32_MAX - handoff_record->view.bytes2 ||
@@ -412,8 +410,7 @@ SysResult_t MR_Obtain(MRContext *resource, const MRRequest *request, MRMedia *me
         return leave(resource, status_result);
     }
     handoff_record->state = MR_BOUND;
-    /* Compatibility for a caller that already reserved B. Real legacy-style
-     * callers pass lease=0, then explicitly BindBridge before publishing. */
+    // 兼容已预留 B 的调用者。Legacy 顺序传入 lease 为 0，取得媒体后再绑定 B 并发布。
     if (request->b.lease)
     {
         uint32_t role;
@@ -456,8 +453,7 @@ SysResult_t MR_Return(MRContext *resource, const MRRequest *request, const MRMed
         result = resource->source.ops->readers_quiescent(resource->source.context, &request->g, media);
         if (result)
             return leave(resource, result);
-        /* An error may have followed a real backend change. Reconcile the
-         * authoritative token before retrying; never assume IO means held. */
+        // 报错前后端可能已经改变持有状态。重试前核对权威凭据。
         result = resource->source.ops->validate(resource->source.context, &request->g, media, &handoff_record->view);
         if (result)
         {

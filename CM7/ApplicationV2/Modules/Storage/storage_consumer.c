@@ -92,6 +92,7 @@ static SysResult_t stage(VStorageConsumer *consumer)
         if (result)
             return result;
         memset(&consumer->request, 0, sizeof(consumer->request));
+        // 新事务只在准备阶段构造一次。重试保留原请求、会话和代次。
         consumer->request.version = APP_LIFECYCLE_VERSION;
         consumer->request.kind = APP_LIFECYCLE_REQUEST;
         consumer->request.source = APP_LIFECYCLE_STORAGE;

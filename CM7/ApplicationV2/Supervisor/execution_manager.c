@@ -234,7 +234,7 @@ SysResult_t EM_Process(EMContext *manager, uint32_t now)
             manager->state = EM_BLOCKED;
             return leave(manager, SYS_ERR_PROTOCOL);
         }
-        /* Freeze an observed business failure before transport consumption retries. */
+        // 先冻结业务首错，再重试运输消费确认。
         first(manager, completion.result);
         manager->completion = completion;
         manager->stage = 3;

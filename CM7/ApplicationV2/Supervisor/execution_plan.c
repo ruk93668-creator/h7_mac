@@ -50,8 +50,7 @@ SysResult_t EM_BuildPlan(const V2Registry *registry, const V2CompositionCandidat
     }
     if (seen != current_candidate->modules.selected_mask)
         return SYS_ERR_PROTOCOL;
-    /* A target candidate cannot hide a live module from stop-dependency checks.
-     * Phase8 incremental live/target reconciliation is deliberately absent. */
+    // 停止计划必须检查仍运行的依赖者，目标候选不能隐藏它们。此处不进行运行时增量重配置。
     for (item_index = 0; item_index < registry->count; item_index++)
     {
         if (!LC_Stable(states[item_index]))
@@ -67,7 +66,7 @@ SysResult_t EM_BuildPlan(const V2Registry *registry, const V2CompositionCandidat
         return SYS_ERR_PROTOCOL;
     if (kind == EM_STOP && (!mask || (mask & ~seen)))
         return SYS_ERR_INVALID_ARG;
-    /* Stop dependency closure: a live dependent outside subset pins its provider. */
+    // 如果停止集合外仍有运行模块依赖 Provider，就保留该 Provider。
     if (kind == EM_STOP)
         for (item_index = 0; item_index < registry->count; item_index++)
             if ((seen & (1U << item_index)) && !(mask & (1U << item_index)) && states[item_index] != LC_UNCONFIGURED &&

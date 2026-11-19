@@ -4,9 +4,15 @@
 #include <string.h>
 #define MAGIC 0x4C435633U
 // 比较完整事务身份，避免旧消息匹配当前操作。
-int LC_IdEqual(const V2ExecId *left_identity, const V2ExecId *right_identity) { return left_identity && right_identity && !memcmp(left_identity, right_identity, sizeof(*left_identity)); }
+int LC_IdEqual(const V2ExecId *left_identity, const V2ExecId *right_identity)
+{
+    return left_identity && right_identity && !memcmp(left_identity, right_identity, sizeof(*left_identity));
+}
 // 判断状态是否属于可受理新操作的稳定阶段。
-int LC_Stable(uint32_t state) { return state >= LC_UNCONFIGURED && state <= LC_ERROR; }
+int LC_Stable(uint32_t state)
+{
+    return state >= LC_UNCONFIGURED && state <= LC_ERROR;
+}
 // 计算指定过渡成功后的目标状态。
 uint32_t LC_Target(uint32_t op)
 {
@@ -167,8 +173,7 @@ SysResult_t LC_Process(LCContext *lifecycle, uint32_t now)
     }
     if (!lifecycle->decided)
         return leave(lifecycle, lifecycle->first_error ? lifecycle->first_error : SYS_ERR_BUSY);
-    /* A failed/unknown operation never invents a drain proof. ERROR remains ERROR.
-     * Stable non-error facts require authoritative module/resource guards. */
+    // 失败或结果未知时保留 ERROR。只有模块和资源权威才能证明已恢复到稳定状态。
     if (lifecycle->completion.fact != LC_ERROR)
     {
         result = lifecycle->ops->prove(lifecycle->port, &lifecycle->request, lifecycle->completion.fact);

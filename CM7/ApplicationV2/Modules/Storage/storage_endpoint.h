@@ -13,9 +13,8 @@ typedef struct
     LCCompletion completion;
     SysResult_t delivery_error;
 } VStorageReply;
-/* Existing queue adapters must provide reliable commit/copy and role checks.
- * NO_RESOURCE/BUSY means not committed. Notification is only a wakeup hint.
- * Buffers are owned by transport; no module Context is shared with Supervisor. */
+// 端口核验任务角色并完整复制消息。BUSY 或 NO_RESOURCE 表示未入队，通知只负责唤醒。
+// 队列存储由运输层持有，Supervisor 与模块各自维护私有 Context。
 typedef struct
 {
     int (*is_storage)(void *);
@@ -39,7 +38,7 @@ typedef struct
     LCRequest request;
     VStorageReply reply;
     VStorageTransport transport;
-} VStorageClient; /* Supervisor owner only. No pointer to Storage/LCContext. */
+} VStorageClient; // 仅 Supervisor 所有者访问，不引用 Storage 或 LCContext。
 typedef struct
 {
     uint32_t magic, busy, active, accepted, ready, sent, ack_pending;
@@ -48,7 +47,7 @@ typedef struct
     LCCompletion ack;
     VStorage *storage;
     VStorageTransport transport;
-} VStorageEndpoint; /* Storage owner only. */
+} VStorageEndpoint; // 仅 Storage 所有者访问。
 SysResult_t VStorageClient_Init(VStorageClient *, uint32_t module, uint32_t session,
                                 const VStorageTransport *);
 // Storage：返回供 Execution Manager 使用的模块端口。

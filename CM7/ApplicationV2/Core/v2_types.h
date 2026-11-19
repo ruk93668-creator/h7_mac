@@ -1,11 +1,8 @@
 // 定义 V2 共用身份、状态和容量相关类型。
 
-/* Phase 1 value types only. No task, hardware, session allocator or resource owner.
- * Module/capability/consumer/request IDs: uint32, zero invalid. Graph global IDs:
- * uint16, 1..catalog count; Pad IDs: uint16, zero-based within their Entity.
- * IDs from different wrappers/namespaces are not interchangeable. Status is a
- * fixed-width operation projection, never a module lifecycle state machine.
- */
+// Core 类型只传递值。模块、能力、消费者及请求 ID 使用 32 位非零编号。
+// Graph 全局 ID 使用从 1 开始的 16 位编号，Pad 在所属 Entity 内从 0 编号。不同命名空间不可混用。
+// Status 是定宽操作事实，不是模块生命周期状态。
 #ifndef V2_TYPES_H
 #define V2_TYPES_H
 #include "sys_result.h"
@@ -68,21 +65,36 @@ enum
 #define V2_INTERNAL_ERROR (-11)
 #define V2_INTERFACE_VERSION 1U
 // 检查对应身份是否为有效值。
-static inline int V2_IdValid(uint32_t id) { return id != 0U; }
+static inline int V2_IdValid(uint32_t id)
+{
+    return id != 0U;
+}
 // 检查对应身份是否为有效值。
-static inline int V2_ModuleIdValid(V2ModuleId id) { return V2_IdValid(id.value); }
+static inline int V2_ModuleIdValid(V2ModuleId id)
+{
+    return V2_IdValid(id.value);
+}
 // 检查对应身份是否为有效值。
-static inline int V2_CapabilityIdValid(V2CapabilityId id) { return V2_IdValid(id.value); }
+static inline int V2_CapabilityIdValid(V2CapabilityId id)
+{
+    return V2_IdValid(id.value);
+}
 // 检查对应身份是否为有效值。
-static inline int V2_ConsumerIdValid(V2ConsumerId id) { return V2_IdValid(id.value); }
+static inline int V2_ConsumerIdValid(V2ConsumerId id)
+{
+    return V2_IdValid(id.value);
+}
 // 检查对应身份是否为有效值。
-static inline int V2_RequestIdValid(V2RequestId id) { return V2_IdValid(id.value); }
+static inline int V2_RequestIdValid(V2RequestId id)
+{
+    return V2_IdValid(id.value);
+}
 // 检查状态码是否在 V2 公开定义范围内。
 static inline int V2_StatusValid(V2Status status)
 {
     return (uint32_t)status <= (uint32_t)V2_STATUS_FAILED;
 }
-/* Caller-owned disjoint storage. No operation owns its input descriptors. */
+// 调用方持有互不重叠的存储，描述符的所有权不会转移。
 static inline int V2_Overlap(const void *first_buffer, size_t na, const void *second_buffer, size_t nb)
 {
     uintptr_t first_address = (uintptr_t)first_buffer, second_address = (uintptr_t)second_buffer;

@@ -6,16 +6,14 @@
 #include "camera_module.h"
 #define VC_ACTOR_CAMERA 1U
 #define VC_ACTOR_SUPERVISOR 2U
-/* Local transport value, NOT a new 52B/56B wire protocol. A transport error
- * preserves a rejected/unknown operation without inventing a stable fact. */
+// 任务间传输本地值，保持原 52B/56B 协议。运输错误不得伪造模块稳定状态。
 typedef struct
 {
     LCCompletion completion;
     SysResult_t delivery_error;
 } VCameraReply;
-/* Existing queue adapters must provide reliable commit/copy and role checks.
- * NO_RESOURCE/BUSY means not committed. Notification is only a wakeup hint.
- * Buffers are owned by transport; no module Context is shared with Supervisor. */
+// 端口核验任务角色并完整复制消息。BUSY 或 NO_RESOURCE 表示未入队，通知只负责唤醒。
+// 队列存储由运输层持有，Supervisor 与模块各自维护私有 Context。
 typedef struct
 {
     int (*is_camera)(void *);
@@ -39,7 +37,7 @@ typedef struct
     LCRequest request;
     VCameraReply reply;
     VCameraTransport transport;
-} VCameraClient; /* Supervisor owner only. No pointer to Camera/LCContext. */
+} VCameraClient; // 仅 Supervisor 所有者访问，不引用 Camera 或 LCContext。
 typedef struct
 {
     uint32_t magic, busy, active, accepted, ready, sent, ack_pending;
@@ -48,7 +46,7 @@ typedef struct
     LCCompletion ack;
     VCamera *camera;
     VCameraTransport transport;
-} VCameraEndpoint; /* Camera owner only. */
+} VCameraEndpoint; // 仅 Camera 所有者访问。
 SysResult_t VCameraClient_Init(VCameraClient *, uint32_t module, uint32_t session,
                                const VCameraTransport *);
 // Camera：返回供 Execution Manager 使用的模块端口。

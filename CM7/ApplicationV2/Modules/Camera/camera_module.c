@@ -26,7 +26,10 @@ static void fault(VCamera *camera, SysResult_t result)
         camera->first_fault = result;
 }
 // 将底层返回结果整理为 Camera 当前操作的本地结果。
-static int local(uint32_t op) { return op == LC_CONFIGURE || op == LC_CLEANUP; }
+static int local(uint32_t op)
+{
+    return op == LC_CONFIGURE || op == LC_CLEANUP;
+}
 // 查询后端可用于安全推进的资源事实。
 static int safe(uint32_t flags)
 {

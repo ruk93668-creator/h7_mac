@@ -4,13 +4,10 @@
 #define V2_MEDIA_SOURCE_H
 #include "../Core/media_format.h"
 #include <stdbool.h>
-/* Camera-owner synchronous ports. All callbacks are bounded, non-reentrant.
- * Ports borrow existing physical resources; never instantiate another pool.
- * Media tokens come from the backend, never from an address comparison.
- */
+// 由 Camera 所有者同步调用；回调有界且不可重入。复用现有物理池，媒体身份只能来自后端凭据。
 #define MR_RAW 1U
 #define MR_JPEG 2U
-/* Native role labels, not public Consumer IDs. Internal use is never a qualification. */
+// 后端所有者标签独立于公开消费者 ID，内部持有不代表授权。
 #define MR_USB 1U
 #define MR_SD 2U
 #define MR_INTERNAL 3U
@@ -51,7 +48,7 @@ typedef struct
 } MRView;
 typedef struct
 {
-    uint32_t backend, owners, concurrent, spans; /* concurrent = handoff budget, not refcount */
+    uint32_t backend, owners, concurrent, spans; // concurrent 表示并行交接上限，物理引用由后端维护。
 } MRSourceCaps;
 typedef struct
 {

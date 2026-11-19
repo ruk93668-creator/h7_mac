@@ -85,7 +85,7 @@ static SysResult_t read_reply(void *port_context, const V2ExecId *id, LCCompleti
         if (result)
             return client_leave(client, result);
         if (!LC_IdEqual(&reply.completion.id, id))
-            return client_leave(client, SYS_ERR_NOT_FOUND); /* stale is drained, never applied */
+            return client_leave(client, SYS_ERR_NOT_FOUND); // 取走迟到回复，避免进入当前事务。
         if (reply.delivery_error > 0 ||
             (!reply.delivery_error && (reply.completion.result > 0 || reply.completion.actual_result > 0 ||
                                    !LC_Stable(reply.completion.fact))))
@@ -163,8 +163,7 @@ SysResult_t VCameraEndpoint_RunRound(VCameraEndpoint *endpoint, uint32_t now)
         endpoint->busy = 0;
         return status_result;
     }
-    /* ACK consumption is handled before the next command, but does not clear a
-     * native control result still awaiting its owner-local consume. */
+    // 先处理消费确认。仍等待模块本地消费的结果必须保留。
     if (endpoint->active && endpoint->sent)
     {
         if (!endpoint->ack_pending && endpoint->transport.ops->receive_consumed(endpoint->transport.port, &endpoint->ack) == 0)

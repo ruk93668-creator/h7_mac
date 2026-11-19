@@ -1,9 +1,7 @@
 // 校验中立格式的帧布局、容量和帧率。
 
-/* Neutral immutable media values. Layout validation proves no hardware support.
- * Rates describe sink targets; they do not configure or measure camera capture.
- * JPEG_FRAMES is the MJPEG frame representation, not a fifth sensor pixel code.
- */
+// 校验中立媒体布局，具体硬件仍保留能力否决权。Sink 速率描述交付目标。
+// JPEG_FRAMES 表示 MJPEG 的单帧表示，不增加传感器像素码。
 #ifndef V2_MEDIA_FORMAT_H
 #define V2_MEDIA_FORMAT_H
 #include "v2_types.h"

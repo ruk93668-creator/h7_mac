@@ -1,12 +1,7 @@
 // 校验模块描述符，解析提供方和依赖关系。
 
-/* Compile-time catalog supplied by its caller; never mutated or owned here.
- * All referenced arrays must remain alive/immutable for each complete call.
- * Valid C storage and disjoint input/scratch/output/issue ranges are required.
- * Resolve is bounded and synchronous. It has no callbacks or activation side
- * effects, commits out only on success, and returns original SysResult errors.
- * No implicit provider fallback; ambiguous candidates require an explicit pin.
- */
+// 注册表借用不可变目录，调用期间各描述数组必须有效，各输入、Scratch、输出及诊断对象不得重叠。
+// 解析有界且无回调，只在成功时写入候选。Provider 有歧义时必须明确绑定。
 #ifndef V2_REGISTRY_H
 #define V2_REGISTRY_H
 #include "../Core/media_format.h"

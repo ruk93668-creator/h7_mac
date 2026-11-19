@@ -37,31 +37,31 @@ typedef struct
 typedef struct
 {
     MRSource raw_source, jpeg_source;
-    MRContext *raw_resource, *jpeg_resource; /* existing one-per-physical-source contexts */
+    MRContext *raw_resource, *jpeg_resource; // 每个物理源复用其唯一资源上下文。
 } VCameraResources;
 typedef struct
 {
     int (*is_owner)(void *);
     SysResult_t (*validate_layout)(void *, const CoreMediaFormat *, const CameraConfig_t *,
                                    const MRSourceCaps *);
-    /* Pure authoritative precondition/completion proof. Missing proof must fail. */
+    // 只读核验权威前置条件和完成事实，证据缺失时拒绝。
     SysResult_t (*gate)(void *, const LCRequest *, uint32_t stage);
     SysResult_t (*request)(void *, const LCRequest *,
-                           const CameraConfig_t *); /* intent only for STOP */
+                           const CameraConfig_t *); // STOP 仅登记意图。
     SysResult_t (*read_result)(void *, const V2ExecId *, VCameraResult *);
     SysResult_t (*consume_result)(void *, const VCameraResult *);
     SysResult_t (*facts)(void *, VCameraObservation *);
-    SysResult_t (*release_identity)(void *, const MRRelease *); /* R -> original G; never revokes */
+    SysResult_t (*release_identity)(void *, const MRRelease *); // 将释放事务 R 对应到原授权 G，查询不撤销资格。
     void (*begin_round)(void *);
-    void (*process)(void *);      /* necessary protective STOP remains inside existing owner */
-    void (*returns)(void *);      /* Bridge / Storage Return */
-    void (*finish_round)(void *); /* sole ordinary STOP coordinator */
+    void (*process)(void *);      // 保护性停止由原硬件所有者推进。
+    void (*returns)(void *);      // 推进 Bridge 和 Storage 的帧归还。
+    void (*finish_round)(void *); // 普通 STOP 唯一推进入口。
 } VCameraOps;
 typedef struct
 {
     uint32_t magic, busy, round, bound, prepared, work, submitted, decided, delivered;
     SysResult_t first_fault, port_error;
-    LCContext lifecycle; /* only lifecycle authority, no running/stopping replica */
+    LCContext lifecycle; // 唯一模块生命周期状态，不复制运行或停止标志。
     CoreMediaFormat format;
     CameraConfig_t native;
     LCRequest operation;
@@ -102,8 +102,7 @@ SysResult_t VCamera_QueryStatus(VCamera *, VCameraStatus *);
 SysResult_t VCamera_QueryExitEvidence(VCamera *, const MRRelease *, VCameraExitEvidence *);
 // Camera：登记带执行身份的生命周期请求，实际完成由模块轮次推进。
 SysResult_t VCamera_Request(VCamera *, const LCRequest *, uint32_t now);
-/* Configure/Activate/Deactivate/Cleanup/ErrorProcessing use matching operation
- * in VCamera_Request. No direct native START/STOP alternative is provided. */
+// 所有生命周期操作经 VCamera_Request 提交，保持唯一硬件控制路径。
 SysResult_t VCamera_BeginRound(VCamera *);
 // 推进本轮 Camera 配置、启动及采集端口操作。
 SysResult_t VCamera_Process(VCamera *, uint32_t now);

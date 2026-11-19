@@ -85,7 +85,7 @@ static SysResult_t read_reply(void *port_context, const V2ExecId *id, LCCompleti
         if (result)
             return client_leave(client, result);
         if (!LC_IdEqual(&reply.completion.id, id))
-            return client_leave(client, SYS_ERR_NOT_FOUND); /* stale is drained, never applied */
+            return client_leave(client, SYS_ERR_NOT_FOUND); // 取走迟到回复，避免进入当前事务。
         if (reply.delivery_error > 0 ||
             (!reply.delivery_error && (reply.completion.result > 0 || reply.completion.actual_result > 0 ||
                                    !LC_Stable(reply.completion.fact))))

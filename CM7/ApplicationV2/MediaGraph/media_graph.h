@@ -1,15 +1,9 @@
 // 校验静态媒体拓扑和候选路径的格式约束。
 
-/* Typed topology and pure candidate validation, never a Frame/Lease ledger.
- * Descriptors, Ops and names are trusted const C objects, not wire input.
- * Caller owns disjoint persistent scratch/output/issues and zero-initializes
- * GraphScratch before first use. One owner per scratch; same-scratch recursion
- * returns BUSY. Distinct scratch can validate one immutable catalog separately.
- * Validator callbacks are pure and must not mutate descriptors, run hardware,
- * acquire resources, schedule work, or recursively reuse the scratch.
- * Success copies a candidate logically; it is not an inter-task atomic publish.
- * Catalog queries return borrowed pointers; no startup registration is implicit.
- */
+// Graph 只校验类型拓扑及候选。目录、Ops 和名称必须是可信的只读对象。
+// 调用方清零独占 Scratch 并持有互不重叠的输出及诊断对象。同一 Scratch 重入返回 BUSY。
+// 不同 Scratch 可分别读取同一不可变目录。验证回调不得访问硬件、取得资源、调度操作或重用 Scratch。
+// 成功仅复制本地候选，跨任务发布由调用方负责。查询返回借用指针，目录不隐式注册。
 #ifndef V2_MEDIA_GRAPH_H
 #define V2_MEDIA_GRAPH_H
 #include "../Core/media_format.h"

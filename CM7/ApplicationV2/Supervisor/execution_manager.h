@@ -21,15 +21,12 @@ typedef struct
     uint32_t kind, count;
     EMStep steps[EM_STEP_MAX];
 } EMPlan;
-/* No module-state cache here: snapshot is supplied by module owners at planning.
- * Indexed like registry.modules; stable states only. Plan is not applied config. */
+// 规划时使用模块所有者提供的稳定快照。下标对应 registry.modules，计划本身不改变已应用配置。
 SysResult_t EM_BuildPlan(const V2Registry *, const V2CompositionCandidate *,
                          const uint32_t *snapshot, uint16_t stop_mask, uint32_t kind,
                          uint32_t cleanup, EMPlan *);
-/* Message adapters: submit OK=durably accepted, BUSY/NO_RESOURCE=not accepted.
- * read only returns frozen matched results; consume acknowledges delivery only.
- * Caller must serialize one issuer per module/session. Ports never release frames.
- * All callbacks bounded, nonblocking, no reentry. No cross-task raw LC access. */
+// submit 返回 OK 表示可靠受理，BUSY 或 NO_RESOURCE 表示未提交。read 只读匹配结果，consume 只确认交付。
+// 每个模块和会话由单一发号者串行推进。端口回调有界、非阻塞且禁止重入，不直接访问其他任务上下文或归还帧。
 typedef struct
 {
     uint32_t module;

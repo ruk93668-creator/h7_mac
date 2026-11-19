@@ -14,7 +14,10 @@ static SysResult_t fail(GraphIssue *diagnostic, uint32_t code, SysResult_t resul
     return result;
 }
 // 计算格式布局或帧率验证所需的约束值。
-static int power(uint32_t value) { return value && !(value & (value - 1U)); }
+static int power(uint32_t value)
+{
+    return value && !(value & (value - 1U));
+}
 // 计算格式布局或帧率验证所需的约束值。
 static uint32_t gcd(uint32_t dividend, uint32_t divisor)
 {
@@ -253,7 +256,7 @@ SysResult_t Graph_ValidateCatalog(const GraphDesc *graph, GraphWorkspace *worksp
                  ((pad_desc->flags & GRAPH_P_FANOUT) || pad_desc->max_links != 1)) ||
                 (!(pad_desc->flags & GRAPH_P_FANOUT) && pad_desc->max_links != 1))
                 return fail(diagnostic, GRAPH_ISSUE_DIRECTION, SYS_ERR_INVALID_ARG, item_index + 1, inner_index);
-            /* Typed internal routes: no implicit image/protocol conversion. */
+            // 内部路线按类型验证，禁止隐式转换图像格式或传输协议。
             if (!(entity->flags & GRAPH_E_FUTURE))
             {
                 uint16_t expected = pad_desc->protocol;
@@ -523,7 +526,7 @@ static SysResult_t validate_set(const GraphDesc *graph, const GraphSelection *se
                 }
             }
         }
-    /* Sink order is stable regardless of request order. */
+    // Sink 保持固定顺序，避免候选结果随请求排列变化。
     for (item_index = 0; item_index < candidate->sink_count; item_index++)
         for (inner_index = item_index + 1; inner_index < candidate->sink_count; inner_index++)
             if (candidate->sinks[inner_index].sink.value < candidate->sinks[item_index].sink.value)
@@ -550,8 +553,7 @@ static SysResult_t validate_set(const GraphDesc *graph, const GraphSelection *se
             return result;
         }
     }
-    /* shape already performed the merged Kahn traversal. Reuse its order;
-     * do not add a nineteenth traversal beyond the reviewed helper budget. */
+    // 复用已校验的 Kahn 拓扑顺序，避免额外遍历突破有界预算。
     for (item_index = 0; item_index < graph->entity_count; item_index++)
         if (candidate->entity_mask & (1UL << item_index))
             candidate->topo_count++;

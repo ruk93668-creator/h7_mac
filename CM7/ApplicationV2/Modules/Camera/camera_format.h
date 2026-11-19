@@ -4,7 +4,6 @@
 #define V2_CAMERA_FORMAT_H
 #include "../../Core/media_format.h"
 #include "camera_config.h"
-/* Pure: actual OV5640 and CameraCapture validators retain veto authority.
- * No sensor init, DCMI config, Buffer acquire or default-limit copy. */
+// 无副作用能力校验，OV5640 和 CameraCapture 仍可否决。不初始化传感器、配置 DCMI、取帧或复制硬件限制。
 SysResult_t VCamera_Translate(const CoreMediaFormat *, CameraConfig_t *);
 #endif

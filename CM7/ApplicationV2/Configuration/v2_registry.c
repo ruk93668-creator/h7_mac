@@ -16,7 +16,10 @@ static SysResult_t issue(V2Issue *diagnostic, SysResult_t result, uint32_t modul
     return result;
 }
 // 校验能力版本是否满足依赖约束。
-static uint32_t version(uint16_t major, uint16_t minor) { return ((uint32_t)major << 16) | minor; }
+static uint32_t version(uint16_t major, uint16_t minor)
+{
+    return ((uint32_t)major << 16) | minor;
+}
 // 校验单条模块依赖描述。
 static int requirement(const V2Requirement *requirement_desc, int optional)
 {
