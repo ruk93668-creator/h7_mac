@@ -1,3 +1,7 @@
+#if defined(APP_V3_BUILD) && APP_V3_BUILD == 1
+// Legacy business and its initcalls are unavailable when V3 is selected.
+typedef char AppLegacyExcluded_app_frame_dispatcher_c;
+#else
 #include "app_frame_dispatcher.h"
 #include "app_events.h"
 #include "platform_time.h"
@@ -106,3 +110,5 @@ static bool Dispatcher_StorageWants(void *context, uint32_t now)
     (void)context;
     return App_StorageWantsFrame(now);
 }
+
+#endif

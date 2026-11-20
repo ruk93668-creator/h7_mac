@@ -1,3 +1,7 @@
+#if defined(APP_V3_BUILD) && APP_V3_BUILD == 1
+// Legacy business and its initcalls are unavailable when V3 is selected.
+typedef char AppLegacyExcluded_Tasks_usb_task_c;
+#else
 #include "usb_task.h"
 
 #include "app_status.h"
@@ -218,3 +222,5 @@ static void UsbTask_Observe(AppUsbDiagnosticField_t field,
             break;
     }
 }
+
+#endif

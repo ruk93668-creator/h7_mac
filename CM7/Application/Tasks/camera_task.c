@@ -1,3 +1,7 @@
+#if defined(APP_V3_BUILD) && APP_V3_BUILD == 1
+// Preserve the existing Keil task and initcall source slots for both modes.
+#include "../../ApplicationV3/Tasks/service_tasks.c"
+#else
 #include "camera_task.h"
 #include "app_status.h"
 #include "app_events.h"
@@ -202,3 +206,5 @@ static void CameraTask_Observe(AppCameraDiagnosticField_t field,
             break;
     }
 }
+
+#endif

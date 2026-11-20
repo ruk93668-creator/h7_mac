@@ -1,5 +1,7 @@
 # STM32H747 ApplicationV3 第一阶段
 
+后续已接入原 h7_mac_CM7。当前工程用法见 [Keil 接入报告](KeilIntegration.md)。下面的独立工程仅记录第一阶段历史证据。
+
 ## 基线
 
 V3 独立分支为 `codex/application-v3-flipper`，基线为 `f0ce45fd9ab7250b1e22260e087d606ee5ed9ecb`。创建前直接查询 GitHub，远端 main 与本地 main 一致，远端尚无同名分支。原清理工作树已有 `v2_types.h`、`.uvprojx`、`.uvoptx` 修改及历史 output，V2 审计工作树为 `11b025327c57c35ccf03eb477251d23bfa256be5`。本阶段在另一个 worktree 内完成。
@@ -63,7 +65,7 @@ Tests/ApplicationV3/
 
 ARMCC5 5.06 update 7。最终专项 O0 和 O2 各 7/7，退出 0，52B / 56B 布局断言同时通过。V3 Map 包含 V3 Initcall、四个任务绑定的服务入口与真实采集验证器、FreeRTOS 队列，未发现旧 Camera 或 UVC Bridge 初始化和 V2 Runtime 符号。默认双核 Map 无 AppV3 符号。V3 体积较小是因为阶段一尚无完整业务，不能当作等功能优化。初次 V3 Rebuild 的枚举初始化警告已在最终源码修正。
 
-[构建结果](D:/32/STM32H7/application-v3-phase1-evidence/build_results.json) · [V3 Map](D:/32/STM32H7/application-v3-phase1-evidence/h7_mac_CM7_V3/h7_mac_CM7_V3.map) · [逐项专项结果](D:/32/STM32H7/application-v3-phase1-evidence/startup_results.json) · [SHA256](D:/32/STM32H7/application-v3-phase1-evidence/SHA256.json)
+[构建结果](D:/32/STM32H7/h7_mac/output/ApplicationV3/Phase1/build_results.json) · [V3 Map](D:/32/STM32H7/h7_mac/output/ApplicationV3/Phase1/h7_mac_CM7_V3/h7_mac_CM7_V3.map) · [逐项专项结果](D:/32/STM32H7/h7_mac/output/ApplicationV3/Phase1/startup_results.json) · [SHA256](D:/32/STM32H7/h7_mac/output/ApplicationV3/Phase1/SHA256.json)
 
 本阶段 Camera 采集、真实 UVC 传输、SD/AVI 写入、硬件异常恢复和实板启动均为 NOT_RUN。未开发数据管线，未复用 V2 迁移或运行期切换逻辑。
 

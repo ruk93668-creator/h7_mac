@@ -1,3 +1,7 @@
+#if defined(APP_V3_BUILD) && APP_V3_BUILD == 1
+// Legacy business and its initcalls are unavailable when V3 is selected.
+typedef char AppLegacyExcluded_app_storage_c;
+#else
 #include "app_storage.h"
 #include "app_events.h"
 #include "video_config.h"
@@ -1024,3 +1028,5 @@ static void Storage_PublishStatus(void)
     Platform_SyncMemoryBarrier();
     Platform_SyncRestoreIrq(mask);
 }
+
+#endif

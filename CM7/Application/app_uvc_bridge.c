@@ -1,3 +1,7 @@
+#if defined(APP_V3_BUILD) && APP_V3_BUILD == 1
+// Legacy business and its initcalls are unavailable when V3 is selected.
+typedef char AppLegacyExcluded_app_uvc_bridge_c;
+#else
 #include "app_uvc_bridge.h"
 #include "app_frame_dispatcher.h"
 #include "platform_time.h"
@@ -544,3 +548,5 @@ static SysResult_t App_UvcBridgePrepareOutput(void)
     s_bridge_output_prepared = true;
     return SYS_OK;
 }
+
+#endif

@@ -1,3 +1,7 @@
+#if defined(APP_V3_BUILD) && APP_V3_BUILD == 1
+// Legacy business and its initcalls are unavailable when V3 is selected.
+typedef char AppLegacyExcluded_app_camera_lifecycle_replay_c;
+#else
 #include "app_camera_lifecycle_replay.h"
 #include <string.h>
 
@@ -417,3 +421,5 @@ SysResult_t App_LifecycleRxGetStatus(const AppLifecycleRxContext_t *rx, AppLifec
     *status = value;
     return SYS_OK;
 }
+
+#endif

@@ -1,3 +1,7 @@
+#if defined(APP_V3_BUILD) && APP_V3_BUILD == 1
+// Legacy business and its initcalls are unavailable when V3 is selected.
+typedef char AppLegacyExcluded_Tasks_storage_task_c;
+#else
 #include "storage_task.h"
 #include "app_storage.h"
 #include "app_events.h"
@@ -62,3 +66,5 @@ static void StorageTask_Run(void *argument)
         }
     }
 }
+
+#endif

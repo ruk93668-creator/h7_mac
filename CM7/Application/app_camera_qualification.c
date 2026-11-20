@@ -1,3 +1,7 @@
+#if defined(APP_V3_BUILD) && APP_V3_BUILD == 1
+// Legacy business and its initcalls are unavailable when V3 is selected.
+typedef char AppLegacyExcluded_app_camera_qualification_c;
+#else
 #include "app_camera_qualification.h"
 #include <string.h>
 #include "app_camera.h"
@@ -577,3 +581,5 @@ SysResult_t App_CameraQualificationGetStatus(uint32_t consumer, AppQualification
     SysResult_t result = Qual_AppAccess(&core, &ops, false);
     return result == SYS_OK ? App_QualificationGetStatus(core, consumer, status) : result;
 }
+
+#endif

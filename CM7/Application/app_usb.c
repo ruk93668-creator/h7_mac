@@ -1,3 +1,7 @@
+#if defined(APP_V3_BUILD) && APP_V3_BUILD == 1
+// Legacy business and its initcalls are unavailable when V3 is selected.
+typedef char AppLegacyExcluded_app_usb_c;
+#else
 #include "app_usb.h"
 #include "usb_mode.h"
 #include "usb_uvc.h"
@@ -235,3 +239,5 @@ static void App_USBObserve(AppUsbDiagnosticField_t field)
         s_usb.observer(field, &status);
     }
 }
+
+#endif

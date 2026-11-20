@@ -1,3 +1,7 @@
+#if defined(APP_V3_BUILD) && APP_V3_BUILD == 1
+// Legacy business and its initcalls are unavailable when V3 is selected.
+typedef char AppLegacyExcluded_Tasks_control_task_c;
+#else
 #include "control_task.h"
 #include "app_status.h"
 #include "app_tasks.h"
@@ -310,3 +314,5 @@ static void ControlTask_RecordFault(SysResult_t result)
     if (result < SYS_OK)
         s_control_status_fault = result;
 }
+
+#endif
