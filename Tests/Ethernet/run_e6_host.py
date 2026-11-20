@@ -9,7 +9,11 @@ from e4_sources import HTTP, LWIP, LWIP_DHCP, LWIP_TCP, PORT, TRANSPORT
 def main():
     root = Path(__file__).resolve().parents[2]
     dynamic = '--dynamic' in sys.argv
-    out = root / ('output/Ethernet/e7_host' if dynamic else 'output/Ethernet/e6_host')
+    qvga = '--qvga' in sys.argv
+    if qvga and not dynamic:
+        raise SystemExit('--qvga requires --dynamic')
+    variant = 'e7_qvga_host' if qvga else 'e7_host' if dynamic else 'e6_host'
+    out = root / 'output/Ethernet' / variant
     out.mkdir(parents=True, exist_ok=True)
     binary = out / 'test_e6_network.exe'
     port = PORT + TRANSPORT + HTTP + ['Tests/Ethernet/test_e6_network.c']
@@ -27,7 +31,9 @@ def main():
         test = out / 'test_e7_camera_provider.exe'
         sources = ['Tests/Ethernet/e7_camera_provider.c', 'Tests/Ethernet/test_e7_camera_provider.c']
         # Existing Camera headers contain legacy-encoded comments.
-        subprocess.run(['cl', *flags, '/wd4828', '/ICM7/Media/Inc', '/ICommon/Inc', '/W4', '/WX', '/c', *sources],
+        camera_flags = ['/DETH_E7_CAMERA_QVGA'] if qvga else []
+        subprocess.run(['cl', *flags, *camera_flags, '/wd4828', '/ICM7/Media/Inc', '/ICommon/Inc',
+                        '/W4', '/WX', '/c', *sources],
                        cwd=root, check=True)
         subprocess.run(['link', '/nologo', '/OUT:' + str(test),
                         *(str(out / (Path(source).stem + '.obj')) for source in [*sources, HTTP[-1]])],

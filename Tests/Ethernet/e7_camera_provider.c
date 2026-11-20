@@ -28,7 +28,7 @@ static bool E7Camera_Copy(E7CameraProvider_t *provider, const CameraFrame_t *fra
 		++provider->oversize;
 		return false;
 	}
-	if (frame->format != CAMERA_PIXEL_FORMAT_JPEG || frame->width != 160U || frame->height != 120U ||
+	if (frame->format != CAMERA_PIXEL_FORMAT_JPEG || frame->width != E7_CAMERA_WIDTH || frame->height != E7_CAMERA_HEIGHT ||
 		total < 4U || tail >= total || start < base || start - base >= provider->fifo_size)
 		return false;
 	first = total - tail;

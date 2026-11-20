@@ -6,6 +6,15 @@
 
 #define E7_JPEG_CAPACITY (60U * 1024U)
 
+//统一传感器与帧提供器使用的JPEG尺寸
+#ifdef ETH_E7_CAMERA_QVGA
+#define E7_CAMERA_WIDTH 320U
+#define E7_CAMERA_HEIGHT 240U
+#else
+#define E7_CAMERA_WIDTH 160U
+#define E7_CAMERA_HEIGHT 120U
+#endif
+
 typedef struct
 {
 	uint8_t *buffer;

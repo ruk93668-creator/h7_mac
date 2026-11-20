@@ -11,15 +11,16 @@ e42='--e42' in sys.argv
 e5='--e5' in sys.argv
 e6='--e6' in sys.argv
 e7_v0='--e7' in sys.argv
-e7_v1_axi='--e7-v1-axi' in sys.argv
+e7_v1_qvga='--e7-v1-qvga' in sys.argv
+e7_v1_axi='--e7-v1-axi' in sys.argv or e7_v1_qvga
 e7_v1='--e7-v1' in sys.argv or e7_v1_axi
 e7=e7_v0 or e7_v1
 tcp=e5 or e6 or e7
 dhcp=e42 or tcp
-if sum((baseline, smoke, e35, '--e4' in sys.argv, e42, e5, e6, e7_v0, '--e7-v1' in sys.argv, e7_v1_axi)) > 1:
+if sum((baseline, smoke, e35, '--e4' in sys.argv, e42, e5, e6, e7_v0, '--e7-v1' in sys.argv, '--e7-v1-axi' in sys.argv, e7_v1_qvga)) > 1:
     raise SystemExit('choose only one validation variant')
 e4='--e4' in sys.argv or dhcp
-name='baseline' if baseline else 'e35' if e35 else 'e7_v1_axi' if e7_v1_axi else 'e7_v1' if e7_v1 else 'e7' if e7_v0 else 'e6' if e6 else 'e5' if e5 else 'e42' if e42 else 'e4' if e4 else 'smoke' if smoke else 'integrated'
+name='baseline' if baseline else 'e35' if e35 else 'e7_v1_qvga' if e7_v1_qvga else 'e7_v1_axi' if e7_v1_axi else 'e7_v1' if e7_v1 else 'e7' if e7_v0 else 'e6' if e6 else 'e5' if e5 else 'e42' if e42 else 'e4' if e4 else 'smoke' if smoke else 'integrated'
 lwip_sources=LWIP + (LWIP_DHCP if dhcp else []) + (LWIP_TCP if tcp else [])
 entry='e7' if e7 else name if tcp else 'e4'
 bench_sources=PORT+['Tests/Ethernet/'+entry+'_main.c']
@@ -115,6 +116,8 @@ if e4:
     if e7_v1_axi:
         define=controls.find('Define')
         define.text+=',ETH_E7_JPEG_AXI'
+        if e7_v1_qvga:
+            define.text+=',ETH_E7_CAMERA_QVGA'
     t.find('.//LDads/Misc').text='--keep=*(.ethernet_dma)'
     if e7:
         t.find('.//LDads/Misc').text+=' --keep=*(.device_export) --keep=*(.e7_jpeg)'
@@ -124,7 +127,7 @@ if e4:
         sdram=b'RW_E7_JPEG 0xD07F0000'
         if layout.count(sdram) != 1:
             raise SystemExit('unexpected E7 JPEG region layout')
-        scatter=build_dir/'e7_v1_axi.sct'
+        scatter=build_dir/(name+'.sct')
         scatter.write_bytes(layout.replace(sdram,b'RW_E7_JPEG 0x24020000'))
     t.find('.//LDads/ScatterFile').text=str(scatter)
     for label, paths in [('Ethernet port and bench', bench_sources),
@@ -223,6 +226,7 @@ if not baseline:
                 re.search(r'Execution Region ER_DEVICE_EXPORT .*Size: 0x00000004',map_text,re.I))
             result['e4_cpu_link_valid'] &= result[jpeg_check]
             result['camera_board_revision']='V1' if e7_v1 else 'V0'
+            result['camera_resolution']=[320,240] if e7_v1_qvga else [160,120]
             if e7_v1:
                 result['e7_v1_i2c_link_valid']=all(re.search(
                     r'^\s*'+symbol+r'\s+0x[\da-f]+\s+Thumb Code[^\n]*stm32h7xx_hal_i2c\.o',

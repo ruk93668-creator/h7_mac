@@ -59,8 +59,8 @@ SysResult_t CameraCapture_GetStats(CameraCaptureStats_t *stats)
 
 static void Ready(const EthMjpegFrame_t *jpeg, bool wrap)
 {
-	s_ready.width = 160U;
-	s_ready.height = 120U;
+	s_ready.width = E7_CAMERA_WIDTH;
+	s_ready.height = E7_CAMERA_HEIGHT;
 	s_ready.format = CAMERA_PIXEL_FORMAT_JPEG;
 	s_ready.data = wrap ? s_fifo + sizeof(s_fifo) - 1U : s_fifo;
 	s_ready.data2 = wrap ? s_fifo : NULL;
@@ -104,6 +104,9 @@ int main(void)
 	assert(E7Camera_Start(&provider) == SYS_ERR_BUSY);
 	E7Camera_Release(&provider, lease);
 	assert(E7Camera_Start(&provider) == SYS_OK);
+	Ready(&e6_jpeg_frames[2], false);
+	s_ready.width++;
+	assert(E7Camera_Acquire(&provider, &frame, &lease) == ETH_MJPEG_INVALID && !s_loan);
 	Ready(&e6_jpeg_frames[2], false);
 	s_ready.size_bytes = UINT16_MAX + 1U;
 	assert(E7Camera_Acquire(&provider, &frame, &lease) == ETH_MJPEG_INVALID && provider.oversize == 1U && !s_loan);

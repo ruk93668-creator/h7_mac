@@ -22,6 +22,13 @@
 #endif
 #endif
 
+//帧间隔单位为ms，QVGA版调试时可在初始化前修改
+#ifdef ETH_E7_CAMERA_QVGA
+#define E7_FRAME_PERIOD_MS 66U
+#else
+#define E7_FRAME_PERIOD_MS 200U
+#endif
+
 static uint8_t g_e7_jpeg[E7_JPEG_CAPACITY] __attribute__((section(".e7_jpeg"), zero_init, aligned(32), used));
 static EthNetwork_t s_network;
 static Device_t *s_sensor;
@@ -32,6 +39,7 @@ static const uint8_t s_mac[6] = {2U, 0x47U, 0x47U, 0U, 0U, 1U};
 volatile SysResult_t g_e7_sdram_result, g_e7_camera_init, g_e7_command_result;
 volatile int32_t g_e7_result;
 volatile uint32_t g_e7_mode = ETH_ADDRESS_DHCP;
+volatile uint16_t g_e7_period_ms = E7_FRAME_PERIOD_MS;
 volatile uint32_t g_e7_command; /* 1 Stop, 2 Restart */
 volatile uint16_t g_e7_sensor_id;
 volatile uint32_t g_e7_heartbeat, g_e7_ccr, g_e7_dcmi_cr, g_e7_dma_cr;
@@ -67,7 +75,7 @@ static void E7Mpu(void)
 	region.IsBufferable = MPU_ACCESS_NOT_BUFFERABLE;
 	HAL_MPU_ConfigRegion(&region);
 #ifdef ETH_E7_JPEG_AXI
-	/* CPU-only JPEG copy. Camera and Ethernet DMA retain their own regions. */
+	//仅CPU访问JPEG副本，相机和网口DMA继续使用各自的缓冲区
 	region.Number = MPU_REGION_NUMBER6;
 	region.BaseAddress = E7_NETWORK_START;
 	region.Size = MPU_REGION_SIZE_64KB;
@@ -107,7 +115,11 @@ static SysResult_t E7Start(void)
 
 static SysResult_t E7CameraInit(void)
 {
-	const CameraConfig_t config = {.width = 160U, .height = 120U, .format = CAMERA_PIXEL_FORMAT_JPEG};
+	const CameraConfig_t config = {
+		.width = E7_CAMERA_WIDTH,
+		.height = E7_CAMERA_HEIGHT,
+		.format = CAMERA_PIXEL_FORMAT_JPEG
+	};
 	Ov5640Device_t *camera;
 	SysResult_t result;
 	uint16_t id = 0U;
@@ -117,7 +129,7 @@ static SysResult_t E7CameraInit(void)
 	result = BSP_DCMI_Init();
 	if (result != SYS_OK)
 		return result;
-	/* This execution region contains exactly the OV5640 device export. */
+	//设备导出区只注册OV5640
 	result = Device_RegisterAll();
 	if (result != SYS_OK)
 		return result;
@@ -161,7 +173,7 @@ int main(void)
 	g_e7_camera_init = E7CameraInit();
 	g_e7_result = eth_network_init_address(&s_network, s_mac, &config);
 	if (g_e7_result == ERR_OK)
-		g_e7_result = eth_http_init_source(&s_network, &source, 200U);
+		g_e7_result = eth_http_init_source(&s_network, &source, g_e7_period_ms);
 	if (g_e7_result != ERR_OK)
 	{
 		if (s_camera_initialized)
