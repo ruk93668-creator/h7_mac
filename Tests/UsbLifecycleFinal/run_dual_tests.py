@@ -34,7 +34,7 @@ sys.path.insert(0,str(ROOT/'Tests/UsbBulkOutLifecycle'))
 from harness import VM,BASE,GINT,MASK,DCTL
 from unicorn import UC_HOOK_CODE
 from unicorn.arm_const import UC_ARM_REG_PRIMASK
-fields='result intent state endpoints pending registered proven blocked first_error out_owned in_owned class_memory started irq out_attempt in_attempt forbidden_release_calls out1_owned'.split()
+fields='result intent state endpoints pending registered proven blocked first_error out_owned in_owned class_memory started irq out_attempt in_attempt forbidden_release_calls out1_owned in_stage'.split()
 class DualVM(VM):
  def read(self,cpu,access,a,size,value,ctx):
   # Explicit MMIO evidence; not software proof writes.
@@ -45,9 +45,9 @@ class DualVM(VM):
   super().read(cpu,access,a,size,value,ctx)
  def event_in(self,ep,bits):self.wr(BASE+0x908+32*ep,self.rd(BASE+0x908+32*ep)|bits)
 rows=[]
-names=['both directions Pending same Controller identity','completion and Commit without unsafe Controller handoff','OUT timeout retains buffer while IN drains','IN disable timeout retains source while OUT drains','Reset keeps old resources','Disconnect keeps old resources','submission fence blocks both directions','ordinary reentrant Busy is not Pending','Controller identity exhaustion','foreign endpoint Attempt is not silently adopted','repeat blocked Stop preserves identity','Core DeInit cannot bypass Controller fence','Reset after endpoint proof keeps Class','Disconnect after proof keeps Class','legacy release APIs cannot bypass consumer gate','never armed IN still has real stop proof','three active endpoint transfers share one intent','enabled contract cannot fall back when EP0 not open','Controller ID precedes every endpoint Begin after stale metadata']
+names=['both directions Pending same Controller identity','completion and Commit without unsafe Controller handoff','OUT timeout retains buffer while IN drains','IN disable timeout retains source while OUT drains','Reset keeps old resources','Disconnect keeps old resources','submission fence blocks both directions','ordinary reentrant Busy is not Pending','Controller identity exhaustion','foreign endpoint Attempt is not silently adopted','repeat blocked Stop preserves identity','Core DeInit cannot bypass Controller fence','Reset after endpoint proof keeps Class','Disconnect after proof keeps Class','legacy release APIs cannot bypass consumer gate','never armed IN still has real stop proof','three active endpoint transfers share one intent','enabled contract cannot fall back when EP0 not open','Controller ID precedes every endpoint Begin after stale metadata','SOF plus owned masked Global NAK during IN flush','Reset remains conflicting with SOF and masked NAK']
 for case,name in enumerate(names,1):
- vm=DualVM(symbols,sections,'Final_Step',{'g_final':fields});checks=[];error=None;begin_ids=[]
+ vm=DualVM(symbols,sections,'Final_Step',{'g_final':fields});checks=[];error=None;begin_ids=[];injected_sof=False
  def observe_begin(cpu,address,size,ctx):begin_ids.append(vm.rd(symbols['s_stop_progress']))
  for name_of_begin in ['BSP_USB_BeginBulkInStop','BSP_USB_BeginBulkOutStop']:
   addr=symbols[name_of_begin]&~1;vm.cpu.hook_add(UC_HOOK_CODE,observe_begin,begin=addr,end=addr)
@@ -68,6 +68,7 @@ for case,name in enumerate(names,1):
    if case==19:step(16)
    if case==3:vm.auto_nak=False
    if case==4:vm.hold_in=True
+   if case in (20,21):vm.hold_disable.add(2)
    v=step(3);identity=v['intent'];eq('Controller identity exists',identity!=0,True)
    if case==10:
     eq('foreign Attempt is not own Pending',v['registered'],0);eq('foreign source retained',v['out_owned'],1)
@@ -80,9 +81,15 @@ for case,name in enumerate(names,1):
      vm.levels()
      if vm.rd(GINT)&vm.rd(MASK):step(4)
      v=step(3);eq('same intent across rounds',v['intent'],identity)
+     if case in (20,21) and v['in_stage']==4 and vm.rd(GINT)&128 and not injected_sof:
+      injected_sof=True;start_write=len(vm.writes);vm.wr(GINT,vm.rd(GINT)|8|((1<<12) if case==21 else 0));vm.wr(MASK,vm.rd(MASK)|8);v=step(4)
+      if case==20:
+       eq('restricted SOF never writes GRSTCTL',any(int(x['address'],16)==BASE+0x10 for x in vm.writes[start_write:]),False)
+       eq('legitimate NAK remains owned',bool(vm.rd(GINT)&128),True)
+     if case==20 and not v['in_owned']:vm.hold_disable.discard(2)
      if v['blocked']:break
     if case in (3,4):step(7,1001);v=step(3)
-    if case in (1,2,7,11,12,13,14,15,16,17,18,19):
+    if case in (1,2,7,11,12,13,14,15,16,17,18,19,20):
      eq('endpoint proofs collected',v['proven'],1);eq('EP0/consumer gate enforced',v['blocked'],1)
      eq('no false Controller success',v['result'],0xfffffff9);eq('OUT owner retired by real Commit',v['out_owned'],0);eq('IN owner retired by real Commit',v['in_owned'],0)
      if case==11:v=step(3);eq('repeat keeps intent',v['intent'],identity)
@@ -93,14 +100,16 @@ for case,name in enumerate(names,1):
      if case==16:eq('unarmed IN used real attempt',v['in_attempt']!=0,True)
      if case==17:eq('second OUT retired only by proof',v['out1_owned'],0)
      if case==19:eq('all Begin observers saw registered Controller identity',bool(begin_ids) and all(x==identity and x!=0 for x in begin_ids),True)
+     if case==20:eq('joint SOF/NAK path actually exercised',injected_sof,True)
     elif case==3:eq('OUT timeout retains old buffer',v['out_owned'],1);eq('independent IN drained',v['in_owned'],0)
+    elif case==21:eq('Reset combination exercised',injected_sof,True);eq('Reset not excluded as harmless',v['in_owned'],1);eq('OUT reference retained on Reset',v['out_owned'],1)
     elif case==4:eq('IN timeout retains source',v['in_owned'],1);eq('independent OUT drained',v['out_owned'],0)
     else:eq('lifecycle boundary retains OUT',v['out_owned'],1)
    eq('Class memory not released without consumer proof',v['class_memory'],1);eq('controller not stopped past gate',v['started'],1)
   eq('USB IRQ remains enabled',step(99)['irq'],1);eq('short critical section restored',vm.trace[-1]['primask'],0);eq('no shared RX flush',vm.rx_flushes,0)
  except Exception as e:error=str(e)
  passed=error is None and all(c['passed'] for c in checks);rows.append(dict(id=case,name=name,passed=passed,error=error,assertions=checks,trace=vm.trace,writes=vm.writes,reads=vm.reads));print(case,'PASS' if passed else 'FAIL',error,[x for x in checks if not x['passed']],flush=True)
-report=dict(sources={n:hashlib.sha256((ROOT/n).read_bytes()).hexdigest() for n in ['CM7/Platform/usb_device.c','CM7/Platform/usb_device.h','Tests/UsbLifecycleFinal/dual_stop_test.c','Tests/UsbLifecycleFinal/run_dual_tests.py']},commands=commands,baseline='9d51d0c5d5b62d04af3be968ec452dae8835c0c1',cases=rows,summary=dict(cases=len(rows),passed=sum(x['passed'] for x in rows),assertions=sum(len(x['assertions']) for x in rows)),hardware='NOT_TESTED',scope='bounded opt-in endpoint proof aggregation; no EP0 or consumer ticket fabricated')
+report=dict(sources={n:hashlib.sha256((ROOT/n).read_bytes()).hexdigest() for n in ['CM7/BSP/bsp_usb.c','CM7/Platform/usb_device.c','CM7/Platform/usb_device.h','Tests/UsbLifecycleFinal/dual_stop_test.c','Tests/UsbLifecycleFinal/run_dual_tests.py']},commands=commands,baseline='9d51d0c5d5b62d04af3be968ec452dae8835c0c1',cases=rows,summary=dict(cases=len(rows),passed=sum(x['passed'] for x in rows),assertions=sum(len(x['assertions']) for x in rows)),hardware='NOT_TESTED',scope='bounded opt-in endpoint proof aggregation; no EP0 or consumer ticket fabricated')
 p=REPORT/'dual.json'
 if p.exists():(REPORT/('dual-history-'+hashlib.sha256(p.read_bytes()).hexdigest()[:12]+'.json')).write_bytes(p.read_bytes())
 p.write_text(json.dumps(report,ensure_ascii=False,indent=2),encoding='utf-8')

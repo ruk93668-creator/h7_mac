@@ -1648,7 +1648,12 @@ void OTG_FS_IRQHandler(void)
             uint32_t USBx_BASE = (uint32_t)s_pcd.Instance;
             //HAL逐分支重读GINTSTS，不能仅凭入口SOF后仍调用其完整处理器。
             //此受限分支只派发SOF；之后到达的Reset/EP事件保留给下一次IRQ。
-            if (raw == USB_OTG_GINTSTS_SOF &&
+            //成套OUT自有NAK的已屏蔽只读level不新增GRSTCTL写者。
+            //仍只派发SOF，不进入HAL完整分发；其他raw事件一律不排除。
+            bool owned_masked_nak = Usb_OutEnabled() && Usb_OutEffective() && !s_out_lease.releasing &&
+                (s_pcd.Instance->GINTMSK & USB_OTG_GINTMSK_GONAKEFFM) == 0U;
+            if ((raw == USB_OTG_GINTSTS_SOF ||
+                 (owned_masked_nak && raw == (USB_OTG_GINTSTS_SOF | USB_OTG_GINTSTS_BOUTNAKEFF))) &&
                 (s_pcd.Instance->GINTMSK & USB_OTG_GINTMSK_SOFM) != 0U)
             {
                 s_pcd.FrameNumber = (USBx_DEVICE->DSTS & USB_OTG_DSTS_FNSOF_Msk) >> USB_OTG_DSTS_FNSOF_Pos;

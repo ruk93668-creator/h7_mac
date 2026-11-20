@@ -4,7 +4,7 @@
 #undef Stop_Step
 static uint32_t denied_deinit_calls;
 static uint8_t DeniedDeInit(USBD_HandleTypeDef *d,uint8_t c){(void)d;(void)c;++denied_deinit_calls;return USBD_FAIL;}
-volatile uint32_t g_final[18];
+volatile uint32_t g_final[19];
 int Final_Step(uint32_t op,uint32_t arg)
 {
  SysResult_t r=SYS_OK;UsbStopProgress_t p;
@@ -31,6 +31,6 @@ int Final_Step(uint32_t op,uint32_t arg)
  g_final[7]=p.controller_gate_blocked;g_final[8]=p.first_error;g_final[9]=s_out_slot[2].proof.buffer_owned;
  g_final[10]=s_bulk_in[1].proof.source_owned;g_final[11]=s_class_memory_used;g_final[12]=s_platform_started;
  g_final[13]=NVIC_GetEnableIRQ(OTG_FS_IRQn);g_final[14]=p.endpoints[1].attempt;g_final[15]=p.endpoints[8].attempt;
- g_final[16]=denied_deinit_calls+g_bulk_unexpected;g_final[17]=s_out_slot[1].proof.buffer_owned;
+ g_final[16]=denied_deinit_calls+g_bulk_unexpected;g_final[17]=s_out_slot[1].proof.buffer_owned;g_final[18]=s_bulk_in[1].proof.stage;
  return 0;
 }
