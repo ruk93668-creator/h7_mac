@@ -3,7 +3,7 @@
 #include "eth_test_board.h"
 #include "lwip/sys.h"
 
-static void EthBench_Mpu(void)
+static void EthBench_Mpu(void (*extra_mpu)(void))
 {
 	MPU_Region_InitTypeDef cache_region = {0};
 
@@ -21,6 +21,8 @@ static void EthBench_Mpu(void)
 	cache_region.IsCacheable = MPU_ACCESS_CACHEABLE;
 	cache_region.IsBufferable = MPU_ACCESS_BUFFERABLE;
 	HAL_MPU_ConfigRegion(&cache_region);
+	if (extra_mpu)
+		extra_mpu();
 	HAL_MPU_Enable(MPU_PRIVILEGED_DEFAULT);
 }
 
@@ -74,9 +76,14 @@ void SysTick_Handler(void)
 
 int eth_test_board_init(void)
 {
+	return eth_test_board_init_with_mpu(0);
+}
+
+int eth_test_board_init_with_mpu(void (*extra_mpu)(void))
+{
 	if (HAL_Init() != HAL_OK || !EthBench_Clock())
 		return 0;
-	EthBench_Mpu();
+	EthBench_Mpu(extra_mpu);
 	SCB_EnableICache();
 	SCB_EnableDCache();
 	return 1;

@@ -3,5 +3,6 @@
 
 /* E5/E6 independent CM7 bench setup. Returns nonzero on success. */
 int eth_test_board_init(void);
+int eth_test_board_init_with_mpu(void (*extra_mpu)(void));
 
 #endif

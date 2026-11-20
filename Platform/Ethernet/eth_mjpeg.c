@@ -12,6 +12,7 @@ void eth_mjpeg_start(EthMjpeg_t *stream, const EthMjpegFrame_t *frames, uint16_t
 	uint16_t period_ms, uint32_t now, uint32_t ack_base)
 {
 	EthMjpegStats_t stats = stream->stats;
+	eth_mjpeg_release_frame(stream);
 	memset(stream, 0, sizeof(*stream));
 	stream->stats = stats;
 	stream->stats.current_fps_milli = 0U;
@@ -23,6 +24,20 @@ void eth_mjpeg_start(EthMjpeg_t *stream, const EthMjpegFrame_t *frames, uint16_t
 	stream->last_progress = now;
 	stream->retry_due = now;
 	stream->fps_started = now;
+}
+
+void eth_mjpeg_set_source(EthMjpeg_t *stream, const EthMjpegSource_t *source)
+{
+	stream->source = source;
+}
+
+void eth_mjpeg_release_frame(EthMjpeg_t *stream)
+{
+	if (stream->borrowed)
+	{
+		stream->borrowed = 0U;
+		stream->source->release(stream->source->context, stream->lease);
+	}
 }
 
 void eth_mjpeg_ack(EthMjpeg_t *stream, uint32_t now, uint32_t total_acked)
@@ -54,11 +69,33 @@ void eth_mjpeg_ack(EthMjpeg_t *stream, uint32_t now, uint32_t total_acked)
 
 static void EthMjpeg_BeginFrame(EthMjpeg_t *stream, uint32_t now)
 {
-	const EthMjpegFrame_t *frame = &stream->frames[stream->sequence % stream->count];
+	const EthMjpegFrame_t *frame = &stream->current;
 	uint32_t skipped = (now - stream->next_frame) / stream->period_ms;
 	int length;
 	stream->stats.frame_skipped += skipped;
 	stream->next_frame += (skipped + 1U) * stream->period_ms;
+	if (stream->source)
+	{
+		EthMjpegAcquire_t result = stream->source->acquire(stream->source->context, &stream->current, &stream->lease);
+		if (result != ETH_MJPEG_ACQUIRED)
+		{
+			++stream->stats.frame_skipped;
+			if (result == ETH_MJPEG_INVALID)
+				++stream->stats.send_errors;
+			return;
+		}
+		stream->borrowed = 1U;
+		if (!frame->data || frame->length < 4U)
+		{
+			eth_mjpeg_release_frame(stream);
+			++stream->stats.send_errors;
+			++stream->stats.frame_skipped;
+			return;
+		}
+	}
+	else
+		stream->current = stream->frames[stream->sequence % stream->count];
+	stream->last_progress = now;
 	stream->frame_started = now;
 	length = snprintf(stream->header, sizeof(stream->header),
 		"--h7frame\r\nContent-Type: image/jpeg\r\nContent-Length: %u\r\n"
@@ -97,8 +134,8 @@ void eth_mjpeg_poll(EthMjpeg_t *stream, EthTcpHandle_t handle, uint32_t now)
 		length = stream->header_length;
 		break;
 	case ETH_MJPEG_FRAME_DATA:
-		data = stream->frames[stream->sequence % stream->count].data;
-		length = stream->frames[stream->sequence % stream->count].length;
+		data = stream->current.data;
+		length = stream->current.length;
 		break;
 	case ETH_MJPEG_FRAME_TRAILER:
 		data = "\r\n";
@@ -153,5 +190,8 @@ void eth_mjpeg_poll(EthMjpeg_t *stream, EthTcpHandle_t handle, uint32_t now)
 	else if (stream->state == ETH_MJPEG_FRAME_HEADER)
 		stream->state = ETH_MJPEG_FRAME_DATA;
 	else
+	{
+		eth_mjpeg_release_frame(stream);
 		stream->state = ETH_MJPEG_FRAME_TRAILER;
+	}
 }

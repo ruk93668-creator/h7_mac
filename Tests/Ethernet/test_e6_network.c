@@ -4,6 +4,7 @@
 #include "eth_host_wire.h"
 #include "e6_jpeg_fixtures/e6_jpeg_fixtures.h"
 #include "lwip/priv/tcp_priv.h"
+#include <stdbool.h>
 
 static char s_body[100000];
 static size_t s_length;
@@ -112,7 +113,37 @@ static void CheckParts(unsigned count)
 	}
 }
 
-int main(void)
+static struct
+{
+	uint32_t generation, index, acquisitions, releases;
+	bool pinned;
+} s_dynamic;
+
+static EthMjpegAcquire_t Acquire(void *context, EthMjpegFrame_t *frame, uint32_t *lease)
+{
+	uint32_t generation = eth_tcp_handle(ETH_TCP_SERVER).generation;
+	(void)context;
+	assert(!s_dynamic.pinned);
+	if (generation != s_dynamic.generation)
+	{
+		s_dynamic.generation = generation;
+		s_dynamic.index = 0U;
+	}
+	*frame = e6_jpeg_frames[s_dynamic.index++ % E6_FRAME_COUNT];
+	*lease = ++s_dynamic.acquisitions;
+	s_dynamic.pinned = true;
+	return ETH_MJPEG_ACQUIRED;
+}
+
+static void Release(void *context, uint32_t lease)
+{
+	(void)context;
+	assert(s_dynamic.pinned && lease == s_dynamic.acquisitions);
+	++s_dynamic.releases;
+	s_dynamic.pinned = false;
+}
+
+int main(int argc, char **argv)
 {
 	static const char stream[] = "GET /stream.mjpg HTTP/1.1\r\nHost: test\r\n\r\n";
 	static const struct { const char *request, *status, *body; } cases[] = {
@@ -132,11 +163,16 @@ int main(void)
 	Peer_t peer, old;
 	char oversized[540];
 	unsigned i;
+	const EthMjpegSource_t source = {NULL, Acquire, Release};
+	bool dynamic = argc == 2 && strcmp(argv[1], "dynamic") == 0;
 	(void)setvbuf(stdout, NULL, _IONBF, 0);
 	assert(eth_network_init_address(&s_network, s_mac, &address) == ERR_OK);
 	invalid.udp_port = 5001U;
 	assert(eth_transport_init(&s_network, &invalid) == ERR_ARG);
-	assert(eth_http_init(&s_network, e6_jpeg_frames, E6_FRAME_COUNT, 200U) == ERR_OK);
+	if (dynamic)
+		assert(eth_http_init_source(&s_network, &source, 200U) == ERR_OK);
+	else
+		assert(eth_http_init(&s_network, e6_jpeg_frames, E6_FRAME_COUNT, 200U) == ERR_OK);
 	s_link = 1U;
 	Advance(100U);
 	Bind();
@@ -291,5 +327,10 @@ int main(void)
 	assert(lwip_stats.memp[MEMP_PBUF_POOL]->used == 0U &&
 		lwip_stats.memp[MEMP_TCP_PCB]->used == 0U && lwip_stats.memp[MEMP_UDP_PCB]->used == 0U);
 	puts("PASS: physical link transitions, DHCP reacquisition, address change, 50 repeated pages and resource recovery");
+	if (dynamic)
+	{
+		assert(s_dynamic.acquisitions >= 3025U && s_dynamic.releases == s_dynamic.acquisitions && !s_dynamic.pinned);
+		puts("PASS: dynamic source lease balance across backpressure, FIN/RST, DHCP and link recovery");
+	}
 	return 0;
 }

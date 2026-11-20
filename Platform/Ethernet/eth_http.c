@@ -10,6 +10,7 @@ static struct
 {
 	EthNetwork_t *network;
 	const EthMjpegFrame_t *frames;
+	EthMjpegSource_t source;
 	EthTcpHandle_t handle;
 	EthMjpeg_t mjpeg;
 	EthHttpStats_t stats;
@@ -104,6 +105,7 @@ static void EthHttp_Event(EthTcpHandle_t handle, unsigned events, void *arg)
 		return;
 	if (events & ETH_TCP_EVENT_OPEN)
 	{
+		eth_mjpeg_release_frame(&s_http.mjpeg);
 		s_http.handle = handle;
 		s_http.events = 0U;
 		s_http.used = 0U;
@@ -116,31 +118,56 @@ static void EthHttp_Event(EthTcpHandle_t handle, unsigned events, void *arg)
 		s_http.events |= events;
 }
 
-err_t eth_http_init(EthNetwork_t *network, const EthMjpegFrame_t *frames,
-	uint16_t frame_count, uint16_t frame_period_ms)
+static err_t EthHttp_Init(EthNetwork_t *network, uint16_t frame_period_ms)
 {
 	EthTransportConfig_t config = {0};
-	uint16_t i;
 	err_t result;
-	if (!frames || !frame_count || frame_period_ms < 50U || frame_period_ms > 5000U)
+	if (frame_period_ms < 50U || frame_period_ms > 5000U)
 		return ERR_ARG;
-	for (i = 0U; i < frame_count; ++i)
-		if (!frames[i].data || frames[i].length < 4U)
-			return ERR_ARG;
 	config.listen_port = 80U;
 	config.tcp_event = EthHttp_Event;
 	result = eth_transport_init(network, &config);
 	if (result != ERR_OK)
 		return result;
 	s_http.network = network;
-	s_http.frames = frames;
-	s_http.count = frame_count;
 	s_http.period = frame_period_ms;
 	return ERR_OK;
 }
 
+err_t eth_http_init(EthNetwork_t *network, const EthMjpegFrame_t *frames,
+	uint16_t frame_count, uint16_t frame_period_ms)
+{
+	uint16_t i;
+	err_t result;
+	if (!frames || !frame_count)
+		return ERR_ARG;
+	for (i = 0U; i < frame_count; ++i)
+		if (!frames[i].data || frames[i].length < 4U)
+			return ERR_ARG;
+	result = EthHttp_Init(network, frame_period_ms);
+	if (result == ERR_OK)
+	{
+		s_http.frames = frames;
+		s_http.count = frame_count;
+	}
+	return result;
+}
+
+err_t eth_http_init_source(EthNetwork_t *network, const EthMjpegSource_t *source,
+	uint16_t frame_period_ms)
+{
+	err_t result;
+	if (!source || !source->acquire || !source->release)
+		return ERR_ARG;
+	result = EthHttp_Init(network, frame_period_ms);
+	if (result == ERR_OK)
+		s_http.source = *source;
+	return result;
+}
+
 static void EthHttp_Abort(void)
 {
+	eth_mjpeg_release_frame(&s_http.mjpeg);
 	eth_tcp_abort(s_http.handle);
 	s_http.state = HTTP_DRAIN;
 }
@@ -210,6 +237,8 @@ static void EthHttp_Request(uint32_t now, uint32_t acked)
 		{
 			++s_http.stats.streams;
 			eth_mjpeg_start(&s_http.mjpeg, s_http.frames, s_http.count, s_http.period, now, acked);
+			if (s_http.source.acquire)
+				eth_mjpeg_set_source(&s_http.mjpeg, &s_http.source);
 			s_http.state = HTTP_STREAM;
 		}
 		else
@@ -237,6 +266,7 @@ void eth_http_poll(void)
 		eth_mjpeg_ack(&s_http.mjpeg, now, tcp.acked);
 	if (events & ETH_TCP_EVENT_FIN)
 	{
+		eth_mjpeg_release_frame(&s_http.mjpeg);
 		++s_http.stats.peer_fin;
 		if (s_http.state == HTTP_STREAM)
 			s_http.mjpeg.state = ETH_MJPEG_STOPPING;
@@ -244,6 +274,7 @@ void eth_http_poll(void)
 	}
 	if ((events & ETH_TCP_EVENT_CLOSED) || eth_tcp_get_state(s_http.handle) == ETH_TCP_IDLE)
 	{
+		eth_mjpeg_release_frame(&s_http.mjpeg);
 		++s_http.stats.closed;
 		if (tcp.last_error != ERR_OK)
 			++s_http.stats.connection_errors;

@@ -1,0 +1,36 @@
+; E7 independent bench: only one Device export; SDRAM initialized after C startup.
+LR_IROM1 0x08000000 0x00100000
+{
+    ER_IROM1 0x08000000 0x00100000
+    {
+        *.o (RESET, +First)
+        *(InRoot$$Sections)
+        .ANY (+RO)
+    }
+    ER_DEVICE_EXPORT +0
+    {
+        *(.device_export)
+    }
+    RW_ETHERNET_DMA 0x24078000 UNINIT 0x00008000
+    {
+        *(.ethernet_dma)
+    }
+    RW_E4_CACHE 0x24010000 0x00010000
+    {
+        e7_main.o (+RW +ZI)
+        eth_http.o (+RW +ZI)
+        eth_tcp.o (+RW +ZI)
+        eth_udp.o (+RW +ZI)
+        eth_transport.o (+RW +ZI)
+        mem.o (+RW +ZI)
+        memp.o (+RW +ZI)
+    }
+    RW_E7_JPEG 0xD07F0000 UNINIT 0x00010000
+    {
+        *(.e7_jpeg)
+    }
+    RW_IRAM1 0x20000000 0x00020000
+    {
+        .ANY (+RW +ZI)
+    }
+}

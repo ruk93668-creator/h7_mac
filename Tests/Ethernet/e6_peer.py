@@ -109,6 +109,7 @@ def measure(args):
     count = bytes_received = 0
     first = last = None
     checksums = set()
+    min_size = max_size = None
     with connect(args) as sock:
         with request(sock, args.board_ip, b'/stream.mjpg') as response:
             require(response.status == 200 and response.headers.get('Content-Type') ==
@@ -121,6 +122,8 @@ def measure(args):
                     first = last
                 count += 1
                 bytes_received += length
+                min_size = length if min_size is None else min(min_size, length)
+                max_size = length if max_size is None else max(max_size, length)
                 checksums.add(crc)
                 if args.slow_ms:
                     time.sleep(args.slow_ms / 1000)
@@ -144,10 +147,11 @@ def measure(args):
     elapsed = last - first
     fps = (count - 1) / elapsed if elapsed else 0.0
     require(fps >= args.min_fps, f'FPS below {args.min_fps}: {fps:.3f}')
-    require(count < 8 or len(checksums) >= 8, 'stream did not show all eight different fixtures')
+    require(getattr(args, 'camera', False) or count < 8 or len(checksums) >= 8,
+            'stream did not show all eight different fixtures')
     return dict(frames=count, jpeg_bytes=bytes_received, seconds=elapsed, fps=fps,
                 jpeg_mbps=8 * bytes_received / elapsed / 1e6 if elapsed else 0,
-                unique_frames=len(checksums), shutdown=shutdown)
+                unique_frames=len(checksums), jpeg_min_bytes=min_size, jpeg_max_bytes=max_size, shutdown=shutdown)
 
 
 def main():
@@ -165,6 +169,7 @@ def main():
     parser.add_argument('--receive-buffer', type=int, default=0)
     parser.add_argument('--rst', action='store_true')
     parser.add_argument('--stream-only', action='store_true')
+    parser.add_argument('--camera', action='store_true', help='validate a live source without requiring the eight fixture CRCs')
     parser.add_argument('--output', type=Path, required=True)
     args = parser.parse_args()
     if (args.frames < 1 or args.reconnect < 1 or not 1 <= args.port <= 65535 or args.timeout <= 0 or

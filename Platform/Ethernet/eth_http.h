@@ -18,6 +18,8 @@ typedef struct
 err_t eth_http_init(EthNetwork_t *network, const EthMjpegFrame_t *frames,
 	uint16_t frame_count, uint16_t frame_period_ms);
 void eth_http_poll(void);
+err_t eth_http_init_source(EthNetwork_t *network, const EthMjpegSource_t *source,
+	uint16_t frame_period_ms);
 void eth_http_get_statistics(EthHttpStats_t *stats);
 
 #endif

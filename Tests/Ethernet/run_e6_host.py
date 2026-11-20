@@ -1,13 +1,15 @@
 """Run E6 with upstream lwIP and a simulated Ethernet peer on an x64 VS prompt."""
 from pathlib import Path
 import subprocess
+import sys
 
 from e4_sources import HTTP, LWIP, LWIP_DHCP, LWIP_TCP, PORT, TRANSPORT
 
 
 def main():
     root = Path(__file__).resolve().parents[2]
-    out = root / 'output/Ethernet/e6_host'
+    dynamic = '--dynamic' in sys.argv
+    out = root / ('output/Ethernet/e7_host' if dynamic else 'output/Ethernet/e6_host')
     out.mkdir(parents=True, exist_ok=True)
     binary = out / 'test_e6_network.exe'
     port = PORT + TRANSPORT + HTTP + ['Tests/Ethernet/test_e6_network.c']
@@ -20,6 +22,17 @@ def main():
     objects = [str(out / (Path(source).stem + '.obj')) for source in port + lwip]
     subprocess.run(['link', '/nologo', '/OUT:' + str(binary), *objects], cwd=root, check=True)
     subprocess.run([str(binary)], cwd=root, check=True)
+    if dynamic:
+        subprocess.run([str(binary), 'dynamic'], cwd=root, check=True)
+        test = out / 'test_e7_camera_provider.exe'
+        sources = ['Tests/Ethernet/e7_camera_provider.c', 'Tests/Ethernet/test_e7_camera_provider.c']
+        # Existing Camera headers contain legacy-encoded comments.
+        subprocess.run(['cl', *flags, '/wd4828', '/ICM7/Media/Inc', '/ICommon/Inc', '/W4', '/WX', '/c', *sources],
+                       cwd=root, check=True)
+        subprocess.run(['link', '/nologo', '/OUT:' + str(test),
+                        *(str(out / (Path(source).stem + '.obj')) for source in [*sources, HTTP[-1]])],
+                       cwd=root, check=True)
+        subprocess.run([str(test)], cwd=root, check=True)
 
 
 if __name__ == '__main__':
