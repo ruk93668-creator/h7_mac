@@ -10,18 +10,22 @@ e35='--e35' in sys.argv
 e42='--e42' in sys.argv
 e5='--e5' in sys.argv
 e6='--e6' in sys.argv
-e7='--e7' in sys.argv
+e7_v0='--e7' in sys.argv
+e7_v1='--e7-v1' in sys.argv
+e7=e7_v0 or e7_v1
 tcp=e5 or e6 or e7
 dhcp=e42 or tcp
-if sum((baseline, smoke, e35, '--e4' in sys.argv, e42, e5, e6, e7)) > 1:
+if sum((baseline, smoke, e35, '--e4' in sys.argv, e42, e5, e6, e7_v0, e7_v1)) > 1:
     raise SystemExit('choose only one validation variant')
 e4='--e4' in sys.argv or dhcp
-name='baseline' if baseline else 'e35' if e35 else 'e7' if e7 else 'e6' if e6 else 'e5' if e5 else 'e42' if e42 else 'e4' if e4 else 'smoke' if smoke else 'integrated'
+name='baseline' if baseline else 'e35' if e35 else 'e7_v1' if e7_v1 else 'e7' if e7_v0 else 'e6' if e6 else 'e5' if e5 else 'e42' if e42 else 'e4' if e4 else 'smoke' if smoke else 'integrated'
 lwip_sources=LWIP + (LWIP_DHCP if dhcp else []) + (LWIP_TCP if tcp else [])
-bench_sources=PORT+['Tests/Ethernet/'+(name if tcp else 'e4')+'_main.c']
+entry='e7' if e7 else name if tcp else 'e4'
+bench_sources=PORT+['Tests/Ethernet/'+entry+'_main.c']
 if tcp:
     bench_sources+=TRANSPORT+BOARD+(HTTP if e6 else HTTP[:2] if e7 else BENCH)
-camera_sources = ['CM7/BSP/bsp_camera.c','CM7/BSP/bsp_dcmi.c','CM7/BSP/bsp_sdram.c',
+camera_bsp = 'Tests/Ethernet/board_v1' if e7_v1 else 'CM7/BSP'
+camera_sources = [f'{camera_bsp}/bsp_camera.c','CM7/BSP/bsp_dcmi.c','CM7/BSP/bsp_sdram.c',
                   'CM7/Device/Src/device.c','CM7/Device/Src/ov5640_device.c',
                   'CM7/Device/Components/OV5640/ov5640.c','CM7/Device/Components/OV5640/ov5640_reg.c',
                   'CM7/Platform/platform_time.c',
@@ -83,6 +87,8 @@ if e4:
             if e7:
                 allowed.update('stm32h7xx_'+stem+'.c' for stem in
                                ('hal_dcmi','hal_dma','hal_dma_ex','hal_sdram','hal_mdma','ll_fmc'))
+            if e7_v1:
+                allowed.update(('stm32h7xx_hal_i2c.c', 'stm32h7xx_hal_i2c_ex.c'))
             files=group.find('Files')
             for file in list(files):
                 if file.findtext('FileName') not in allowed:
@@ -98,13 +104,17 @@ if e4:
             'CM7/BSP','CM7/Device/Inc','CM7/Device/Components/OV5640','CM7/Framework',
             'CM7/Media/Inc','CM7/Platform','Common/Inc','Board/Inc'))
         controls.find('MiscControls').text='--preinclude ../CM7/BSP/bsp_sdram_hal_config.h --preinclude ../CM7/BSP/bsp_dcmi_hal_config.h'
+    if e7_v1:
+        # Device-layer includes must resolve the same V1 header as its BSP source.
+        include=controls.find('IncludePath')
+        include.text='../'+camera_bsp+';'+include.text
     if dhcp:
         define=controls.find('Define')
         define.text=(define.text or '')+',ETH_LWIP_DHCP'+(',ETH_LWIP_E5' if tcp else '')
     t.find('.//LDads/Misc').text='--keep=*(.ethernet_dma)'
     if e7:
         t.find('.//LDads/Misc').text+=' --keep=*(.device_export) --keep=*(.e7_jpeg)'
-    scatter=ROOT/'Tests/Ethernet'/((name if tcp else 'e4')+'.sct')
+    scatter=ROOT/'Tests/Ethernet'/(entry+'.sct')
     t.find('.//LDads/ScatterFile').text=str(scatter)
     for label, paths in [('Ethernet port and bench', bench_sources),
                          ('lwIP 2.2.1', lwip_sources)]:
@@ -135,6 +145,7 @@ if e6:
     inputs += sorted((ROOT/'Tests/Ethernet/e6_jpeg_fixtures').glob('*'))
 if e7:
     inputs += [ROOT/path for path in camera_sources]
+    inputs += [ROOT/camera_bsp/'bsp_camera.h']
 def hashes():
     return {p.relative_to(ROOT).as_posix():hashlib.sha256(p.read_bytes()).hexdigest() for p in inputs}
 before=hashes()
@@ -173,7 +184,7 @@ if not baseline:
                       'memp_memory_TCP_SEG_base','s_connections','s_receive_data')
             symbols+=('s_http',) if e6 or e7 else ('s_channels',)
         addresses={symbol:re.search(r'^\s*'+symbol+r'\s+(0x[\da-f]+)\s+Data\b'+
-                    (r'[^\n]*\s'+(name if tcp else 'e4')+r'_main\.o\(' if symbol == 's_network' else ''),
+                    (r'[^\n]*\s'+entry+r'_main\.o\(' if symbol == 's_network' else ''),
                     map_text,re.M|re.I) for symbol in symbols}
         result['e4_cpu_memory']={symbol:int(match[1],16) if match else None
                                  for symbol,match in addresses.items()}
@@ -198,6 +209,13 @@ if not baseline:
                 re.search(r'0xd07f0000\s+-\s+0x0000f000\s+Zero\s+RW[^\n]*\.e7_jpeg',map_text,re.I) and
                 re.search(r'Execution Region ER_DEVICE_EXPORT .*Size: 0x00000004',map_text,re.I))
             result['e4_cpu_link_valid'] &= result['e7_sdram_valid']
+            result['camera_board_revision']='V1' if e7_v1 else 'V0'
+            if e7_v1:
+                result['e7_v1_i2c_link_valid']=all(re.search(
+                    r'^\s*'+symbol+r'\s+0x[\da-f]+\s+Thumb Code[^\n]*stm32h7xx_hal_i2c\.o',
+                    map_text, re.M|re.I)
+                    for symbol in ('HAL_I2C_Init', 'HAL_I2C_Master_Transmit', 'HAL_I2C_Master_Receive'))
+                result['e4_cpu_link_valid'] &= result['e7_v1_i2c_link_valid']
 (OUT/(name+'_result.json')).write_text(json.dumps(result,indent=2),encoding='utf-8')
 print(json.dumps(result),flush=True)
 if not m or m.groups()!=('0','0') or r.returncode!=0 or not result['source_stable'] or (not baseline and not result['dma_link_valid']) or (e35 and not result['test_cache_link_valid']) or (e4 and not result['e4_cpu_link_valid']):

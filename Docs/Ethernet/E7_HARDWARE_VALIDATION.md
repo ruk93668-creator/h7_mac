@@ -1,5 +1,7 @@
 # E7 实板验收
 
+**V1 主控板**请使用 [E7 V1 独立工程和固件](E7_V1_ADAPTATION.md)；以下原始构建命令对应 V0。两版使用相同的 Watch 变量。
+
 所有实板项目当前 **NOT_RUN**。执行 `python -B Tests/Ethernet/build_firmware.py --e7`，打开 `MDK-ARM/h7_mac_ethernet_e7.uvprojx` 并人工下载 `output/Ethernet/e7/eth_e7.axf`。保存 Flash Verify、AXF、MAP 和 PCAPNG。默认 DHCP Only。静态预检时在 main 读取配置前设 `g_e7_mode=0`，PC 用 192.168.50.1/24，板端用 192.168.50.2/24。
 
 1. 确认 `g_e7_sdram_result=0`、`g_e7_sensor_id=0x5640`、`g_e7_camera_init=0`、`g_e7_result=0`、`g_e7_camera.running=1`。确认地址和 `g_e7_transport.listening=1`，DCache 保持开启。复核 Region 2、4、5 硬件读回。
