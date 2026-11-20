@@ -1,0 +1,1830 @@
+{
+  "baseline": "9d51d0c5d5b62d04af3be968ec452dae8835c0c1",
+  "files": [
+    {
+      "path": "CM7/Platform/usb_device.c",
+      "sha256": "ff639aca0620d652be2f7bcb277b9a5204a6ac3bbaffe6ce540dfab663ee2158",
+      "encoding": "utf-8",
+      "lines": 2262,
+      "definitions": [
+        {
+          "function": "USB_Device_Lock",
+          "line": 202
+        },
+        {
+          "function": "USB_Device_Unlock",
+          "line": 210
+        },
+        {
+          "function": "USB_Device_GetInSequence",
+          "line": 224
+        },
+        {
+          "function": "USB_Device_GetInCompleteSequence",
+          "line": 232
+        },
+        {
+          "function": "USB_Device_GetBulkInTransfer",
+          "line": 240
+        },
+        {
+          "function": "USB_Device_BeginBulkInStop",
+          "line": 261
+        },
+        {
+          "function": "USB_Device_PollBulkInStop",
+          "line": 275
+        },
+        {
+          "function": "USB_Device_CommitBulkInRetirement",
+          "line": 282
+        },
+        {
+          "function": "USB_Device_GetSofSequence",
+          "line": 322
+        },
+        {
+          "function": "USB_Device_SetEventCallback",
+          "line": 349
+        },
+        {
+          "function": "USB_Device_Init",
+          "line": 371
+        },
+        {
+          "function": "USB_Device_RegisterClass",
+          "line": 391
+        },
+        {
+          "function": "USB_Device_Start",
+          "line": 422
+        },
+        {
+          "function": "USB_Device_GetStopProgress",
+          "line": 446
+        },
+        {
+          "function": "USB_Device_ReconcileBulkInStop",
+          "line": 457
+        },
+        {
+          "function": "USB_Device_Stop",
+          "line": 470
+        },
+        {
+          "function": "USB_Device_IsConfigured",
+          "line": 502
+        },
+        {
+          "function": "USB_Device_GetLastResult",
+          "line": 510
+        },
+        {
+          "function": "USB_Device_GetLastOperationResult",
+          "line": 518
+        },
+        {
+          "function": "USB_Device_OpenEp",
+          "line": 526
+        },
+        {
+          "function": "USB_Device_AbortEp",
+          "line": 538
+        },
+        {
+          "function": "USB_Device_CloseEp",
+          "line": 571
+        },
+        {
+          "function": "USB_Device_FlushEp",
+          "line": 583
+        },
+        {
+          "function": "USB_Device_Transmit",
+          "line": 595
+        },
+        {
+          "function": "USB_Device_Receive",
+          "line": 607
+        },
+        {
+          "function": "USB_Device_StallEp",
+          "line": 619
+        },
+        {
+          "function": "USB_Device_ClearStallEp",
+          "line": 631
+        },
+        {
+          "function": "USB_Device_GetEpState",
+          "line": 643
+        },
+        {
+          "function": "USB_Device_GetRxSize",
+          "line": 660
+        },
+        {
+          "function": "USBD_LL_Init",
+          "line": 670
+        },
+        {
+          "function": "USBD_LL_DeInit",
+          "line": 685
+        },
+        {
+          "function": "USBD_LL_Start",
+          "line": 725
+        },
+        {
+          "function": "USBD_LL_Stop",
+          "line": 735
+        },
+        {
+          "function": "USBD_LL_OpenEP",
+          "line": 753
+        },
+        {
+          "function": "USBD_LL_CloseEP",
+          "line": 818
+        },
+        {
+          "function": "USBD_LL_FlushEP",
+          "line": 865
+        },
+        {
+          "function": "USBD_LL_StallEP",
+          "line": 900
+        },
+        {
+          "function": "USBD_LL_ClearStallEP",
+          "line": 926
+        },
+        {
+          "function": "USBD_LL_IsStallEP",
+          "line": 952
+        },
+        {
+          "function": "USBD_LL_SetUSBAddress",
+          "line": 960
+        },
+        {
+          "function": "USBD_LL_Transmit",
+          "line": 971
+        },
+        {
+          "function": "USBD_LL_PrepareReceive",
+          "line": 1033
+        },
+        {
+          "function": "USBD_LL_GetRxDataSize",
+          "line": 1076
+        },
+        {
+          "function": "USBD_LL_Delay",
+          "line": 1087
+        },
+        {
+          "function": "USB_Device_Free",
+          "line": 1112
+        },
+        {
+          "function": "Usb_InvalidateControl",
+          "line": 1130
+        },
+        {
+          "function": "Usb_ControlRequestMatches",
+          "line": 1138
+        },
+        {
+          "function": "USB_Device_DeferControlStatus",
+          "line": 1148
+        },
+        {
+          "function": "USB_Device_CompleteControlStatus",
+          "line": 1170
+        },
+        {
+          "function": "USB_Device_FailControlStatus",
+          "line": 1203
+        },
+        {
+          "function": "USB_Device_WasControlStatusComplete",
+          "line": 1224
+        },
+        {
+          "function": "USB_Device_GetControlStatus",
+          "line": 1232
+        },
+        {
+          "function": "Usb_LlResult",
+          "line": 1254
+        },
+        {
+          "function": "Usb_PublicResult",
+          "line": 1267
+        },
+        {
+          "function": "Usb_ClassEndpoint",
+          "line": 1286
+        },
+        {
+          "function": "Usb_Lock",
+          "line": 1294
+        },
+        {
+          "function": "Usb_Unlock",
+          "line": 1304
+        },
+        {
+          "function": "Usb_ReleaseEndpoints",
+          "line": 1313
+        },
+        {
+          "function": "Usb_ValidateConfig",
+          "line": 1336
+        },
+        {
+          "function": "Usb_Setup",
+          "line": 1444
+        },
+        {
+          "function": "Usb_DataOut",
+          "line": 1533
+        },
+        {
+          "function": "Usb_DataIn",
+          "line": 1553
+        },
+        {
+          "function": "Usb_DataInError",
+          "line": 1587
+        },
+        {
+          "function": "Usb_Reset",
+          "line": 1618
+        },
+        {
+          "function": "Usb_Suspend",
+          "line": 1659
+        },
+        {
+          "function": "Usb_Resume",
+          "line": 1668
+        },
+        {
+          "function": "Usb_Connect",
+          "line": 1677
+        },
+        {
+          "function": "Usb_Disconnect",
+          "line": 1687
+        },
+        {
+          "function": "Usb_IsoInIncomplete",
+          "line": 1716
+        },
+        {
+          "function": "Usb_IsoOutIncomplete",
+          "line": 1737
+        },
+        {
+          "function": "Usb_InitDevice",
+          "line": 1757
+        },
+        {
+          "function": "Usb_RegisterClass",
+          "line": 1778
+        },
+        {
+          "function": "Usb_StartDevice",
+          "line": 1849
+        },
+        {
+          "function": "Usb_DrainBulkInStops",
+          "line": 1882
+        },
+        {
+          "function": "Usb_StopDevice",
+          "line": 1930
+        },
+        {
+          "function": "Usb_PlanEndpoints",
+          "line": 2003
+        },
+        {
+          "function": "Usb_ManagedClassInit",
+          "line": 2041
+        },
+        {
+          "function": "Usb_ManagedClassDeInit",
+          "line": 2069
+        },
+        {
+          "function": "Usb_Sof",
+          "line": 2148
+        },
+        {
+          "function": "Usb_Notify",
+          "line": 2165
+        },
+        {
+          "function": "Usb_TraceLifecycle",
+          "line": 2175
+        },
+        {
+          "function": "USB_Device_EnableBulkOutLifecycle",
+          "line": 2207
+        },
+        {
+          "function": "USB_Device_GetBulkOutTransfer",
+          "line": 2213
+        },
+        {
+          "function": "USB_Device_BeginBulkOutStop",
+          "line": 2222
+        },
+        {
+          "function": "USB_Device_PollBulkOutStop",
+          "line": 2231
+        },
+        {
+          "function": "USB_Device_CommitBulkOutRetirement",
+          "line": 2236
+        },
+        {
+          "function": "USB_Device_ReconcileBulkOutStop",
+          "line": 2249
+        },
+        {
+          "function": "Usb_OutLifecycleFault",
+          "line": 2256
+        }
+      ]
+    },
+    {
+      "path": "CM7/BSP/bsp_usb.c",
+      "sha256": "3c60df1a37798355c3e4963ff3f85d65ed0ae487d4734898f7328f1dd7245f12",
+      "encoding": "utf-8",
+      "lines": 1989,
+      "definitions": [
+        {
+          "function": "Usb_BulkPublishLock",
+          "line": 108
+        },
+        {
+          "function": "Usb_BulkPublishUnlock",
+          "line": 116
+        },
+        {
+          "function": "Usb_BulkIdentityMatches",
+          "line": 122
+        },
+        {
+          "function": "Usb_BulkEndpoint",
+          "line": 131
+        },
+        {
+          "function": "Usb_BulkFault",
+          "line": 138
+        },
+        {
+          "function": "BSP_USB_BulkInHasReferences",
+          "line": 158
+        },
+        {
+          "function": "Usb_BulkInvalidateSession",
+          "line": 168
+        },
+        {
+          "function": "Usb_BulkCapture",
+          "line": 182
+        },
+        {
+          "function": "BSP_USB_GetBulkInProof",
+          "line": 199
+        },
+        {
+          "function": "BSP_USB_BeginBulkInStop",
+          "line": 209
+        },
+        {
+          "function": "BSP_USB_PollBulkInStop",
+          "line": 277
+        },
+        {
+          "function": "BSP_USB_ReconcileBulkInStop",
+          "line": 373
+        },
+        {
+          "function": "BSP_USB_CommitBulkInRetirement",
+          "line": 429
+        },
+        {
+          "function": "Usb_OutEnabled",
+          "line": 516
+        },
+        {
+          "function": "Usb_OutTarget",
+          "line": 517
+        },
+        {
+          "function": "Usb_OutMemory",
+          "line": 522
+        },
+        {
+          "function": "Usb_OutFault",
+          "line": 533
+        },
+        {
+          "function": "BSP_USB_BulkOutHasReferences",
+          "line": 544
+        },
+        {
+          "function": "Usb_OutInvalidate",
+          "line": 553
+        },
+        {
+          "function": "Usb_OutBoundary",
+          "line": 564
+        },
+        {
+          "function": "Usb_OutCanDetach",
+          "line": 584
+        },
+        {
+          "function": "BSP_USB_EnableBulkOutLifecycle",
+          "line": 594
+        },
+        {
+          "function": "Usb_OutClaim",
+          "line": 622
+        },
+        {
+          "function": "Usb_OutEffective",
+          "line": 643
+        },
+        {
+          "function": "Usb_OutReleaseIfEmpty",
+          "line": 652
+        },
+        {
+          "function": "Usb_OutNak",
+          "line": 673
+        },
+        {
+          "function": "Usb_OutRxBegin",
+          "line": 696
+        },
+        {
+          "function": "Usb_OutRxEnd",
+          "line": 738
+        },
+        {
+          "function": "Usb_OutEventBegin",
+          "line": 760
+        },
+        {
+          "function": "Usb_OutEventEnd",
+          "line": 801
+        },
+        {
+          "function": "Usb_OutDrainDeferred",
+          "line": 831
+        },
+        {
+          "function": "Usb_OutArm",
+          "line": 856
+        },
+        {
+          "function": "BSP_USB_GetBulkOutProof",
+          "line": 877
+        },
+        {
+          "function": "BSP_USB_BeginBulkOutStop",
+          "line": 884
+        },
+        {
+          "function": "Usb_OutIdentity",
+          "line": 905
+        },
+        {
+          "function": "BSP_USB_PollBulkOutStop",
+          "line": 910
+        },
+        {
+          "function": "BSP_USB_CommitBulkOutRetirement",
+          "line": 973
+        },
+        {
+          "function": "BSP_USB_ReconcileBulkOutStop",
+          "line": 994
+        },
+        {
+          "function": "BSP_USB_Init",
+          "line": 1016
+        },
+        {
+          "function": "BSP_USB_ConfigureEndpoints",
+          "line": 1077
+        },
+        {
+          "function": "BSP_USB_SetCallbacks",
+          "line": 1091
+        },
+        {
+          "function": "BSP_USB_Start",
+          "line": 1105
+        },
+        {
+          "function": "BSP_USB_Stop",
+          "line": 1125
+        },
+        {
+          "function": "BSP_USB_DeInit",
+          "line": 1170
+        },
+        {
+          "function": "BSP_USB_OpenEp",
+          "line": 1189
+        },
+        {
+          "function": "BSP_USB_CloseEp",
+          "line": 1242
+        },
+        {
+          "function": "BSP_USB_AbortEp",
+          "line": 1306
+        },
+        {
+          "function": "BSP_USB_AbortAll",
+          "line": 1348
+        },
+        {
+          "function": "BSP_USB_FlushEp",
+          "line": 1387
+        },
+        {
+          "function": "BSP_USB_StallEp",
+          "line": 1411
+        },
+        {
+          "function": "BSP_USB_ClearStallEp",
+          "line": 1427
+        },
+        {
+          "function": "Usb_PrepareTxPacket",
+          "line": 1443
+        },
+        {
+          "function": "Usb_OtherRxActive",
+          "line": 1454
+        },
+        {
+          "function": "BSP_USB_IsStallEp",
+          "line": 1463
+        },
+        {
+          "function": "BSP_USB_SetAddress",
+          "line": 1475
+        },
+        {
+          "function": "BSP_USB_Transmit",
+          "line": 1483
+        },
+        {
+          "function": "BSP_USB_Receive",
+          "line": 1551
+        },
+        {
+          "function": "BSP_USB_GetRxSize",
+          "line": 1586
+        },
+        {
+          "function": "HAL_PCD_MspInit",
+          "line": 1595
+        },
+        {
+          "function": "HAL_PCD_MspDeInit",
+          "line": 1629
+        },
+        {
+          "function": "OTG_FS_IRQHandler",
+          "line": 1639
+        },
+        {
+          "function": "HAL_PCD_SetupStageCallback",
+          "line": 1668
+        },
+        {
+          "function": "HAL_PCD_DataInStageCallback",
+          "line": 1675
+        },
+        {
+          "function": "HAL_PCD_DataOutStageCallback",
+          "line": 1751
+        },
+        {
+          "function": "HAL_PCD_ResetCallback",
+          "line": 1771
+        },
+        {
+          "function": "HAL_PCD_SuspendCallback",
+          "line": 1779
+        },
+        {
+          "function": "HAL_PCD_ResumeCallback",
+          "line": 1786
+        },
+        {
+          "function": "HAL_PCD_ConnectCallback",
+          "line": 1793
+        },
+        {
+          "function": "HAL_PCD_DisconnectCallback",
+          "line": 1800
+        },
+        {
+          "function": "HAL_PCD_SOFCallback",
+          "line": 1809
+        },
+        {
+          "function": "HAL_PCD_ISOINIncompleteCallback",
+          "line": 1821
+        },
+        {
+          "function": "HAL_PCD_ISOOUTIncompleteCallback",
+          "line": 1831
+        },
+        {
+          "function": "Usb_ValidEp",
+          "line": 1846
+        },
+        {
+          "function": "Usb_HalResult",
+          "line": 1852
+        },
+        {
+          "function": "Usb_ClockInit",
+          "line": 1864
+        },
+        {
+          "function": "Usb_ValidateEp",
+          "line": 1932
+        },
+        {
+          "function": "Usb_ConfigureFifos",
+          "line": 1948
+        }
+      ]
+    },
+    {
+      "path": "CM7/Service/usb_mode.c",
+      "sha256": "e00459595f47d56319adc11076fce4e347f67bab6964a081fcbe156c59f3caa6",
+      "encoding": "utf-8",
+      "lines": 406,
+      "definitions": [
+        {
+          "function": "USB_Mode_SelectBootMode",
+          "line": 57
+        },
+        {
+          "function": "USB_Mode_Init",
+          "line": 88
+        },
+        {
+          "function": "USB_Mode_Start",
+          "line": 125
+        },
+        {
+          "function": "USB_Mode_RequestReconnect",
+          "line": 172
+        },
+        {
+          "function": "USB_Mode_Process",
+          "line": 223
+        },
+        {
+          "function": "UsbMode_RegisterClass",
+          "line": 323
+        },
+        {
+          "function": "UsbMode_AppStart",
+          "line": 341
+        },
+        {
+          "function": "USB_Mode_GetLastResult",
+          "line": 349
+        },
+        {
+          "function": "UsbMode_AdvanceStop",
+          "line": 357
+        },
+        {
+          "function": "USB_Mode_Stop",
+          "line": 392
+        }
+      ]
+    },
+    {
+      "path": "CM7/Service/usb_msc_bot.c",
+      "sha256": "59cf0aaeaf0dd2360178d30546baab761b5fe25e67387caba15d9592f06b1f48",
+      "encoding": "utf-8",
+      "lines": 397,
+      "definitions": [
+        {
+          "function": "MscBot_Read32",
+          "line": 38
+        },
+        {
+          "function": "MscBot_Write32",
+          "line": 42
+        },
+        {
+          "function": "MscBot_Fault",
+          "line": 83
+        },
+        {
+          "function": "MscBot_Idle",
+          "line": 91
+        },
+        {
+          "function": "MscBot_Transmit",
+          "line": 96
+        },
+        {
+          "function": "MscBot_Receive",
+          "line": 104
+        },
+        {
+          "function": "MscBot_InDone",
+          "line": 111
+        },
+        {
+          "function": "MscBot_Submit",
+          "line": 118
+        },
+        {
+          "function": "MscBot_Poll",
+          "line": 136
+        },
+        {
+          "function": "MscBot_Next",
+          "line": 163
+        },
+        {
+          "function": "MscBot_Plan",
+          "line": 182
+        },
+        {
+          "function": "USB_MSC_BotStart",
+          "line": 221
+        },
+        {
+          "function": "USB_MSC_BotStop",
+          "line": 232
+        },
+        {
+          "function": "USB_MSC_BotDataIn",
+          "line": 240
+        },
+        {
+          "function": "USB_MSC_BotDataOut",
+          "line": 244
+        },
+        {
+          "function": "USB_MSC_BotClearHalt",
+          "line": 249
+        },
+        {
+          "function": "USB_MSC_BotReset",
+          "line": 262
+        },
+        {
+          "function": "USB_MSC_BotProcess",
+          "line": 276
+        }
+      ]
+    },
+    {
+      "path": "CM7/Service/usb_msc_class.c",
+      "sha256": "b7fa3dea9bf8333857ca07f55494453af191110944fb1e4776369dc34c72abec",
+      "encoding": "utf-8",
+      "lines": 186,
+      "definitions": [
+        {
+          "function": "USB_MSC_Register",
+          "line": 51
+        },
+        {
+          "function": "Msc_Init",
+          "line": 59
+        },
+        {
+          "function": "Msc_DeInit",
+          "line": 84
+        },
+        {
+          "function": "Msc_Setup",
+          "line": 111
+        },
+        {
+          "function": "Msc_DataIn",
+          "line": 169
+        },
+        {
+          "function": "Msc_DataOut",
+          "line": 176
+        },
+        {
+          "function": "USB_MSC_Process",
+          "line": 183
+        }
+      ]
+    },
+    {
+      "path": "CM7/Service/usb_msc_storage.c",
+      "sha256": "d7fc331803dfb5943b1ef5c8274f50ba73e51c55cce02286740447e3ec1bbec2",
+      "encoding": "utf-8",
+      "lines": 167,
+      "definitions": [
+        {
+          "function": "MscStorage_Lock",
+          "line": 20
+        },
+        {
+          "function": "MscStorage_Unlock",
+          "line": 27
+        },
+        {
+          "function": "MscStorage_Notify",
+          "line": 32
+        },
+        {
+          "function": "MscStorage_Match",
+          "line": 38
+        },
+        {
+          "function": "MscStorage_Media",
+          "line": 43
+        },
+        {
+          "function": "MscStorage_Submit",
+          "line": 49
+        },
+        {
+          "function": "MscStorage_Poll",
+          "line": 75
+        },
+        {
+          "function": "MscStorage_Cancel",
+          "line": 86
+        },
+        {
+          "function": "MscStorage_Drained",
+          "line": 99
+        },
+        {
+          "function": "USB_MSC_StorageInit",
+          "line": 111
+        },
+        {
+          "function": "USB_MSC_StorageProcess",
+          "line": 125
+        }
+      ]
+    },
+    {
+      "path": "CM7/Service/usb_msc_sd.c",
+      "sha256": "c3be756388a5fb54e41e80d3d7072193b8cc42c5cfff202e57860b4c23b769c9",
+      "encoding": "utf-8",
+      "lines": 119,
+      "definitions": [
+        {
+          "function": "MscSd_Init",
+          "line": 14
+        },
+        {
+          "function": "MscSd_Media",
+          "line": 34
+        },
+        {
+          "function": "MscSd_Execute",
+          "line": 59
+        },
+        {
+          "function": "MscSd_Quiescent",
+          "line": 105
+        }
+      ]
+    },
+    {
+      "path": "CM7/Service/usb_uvc_class.c",
+      "sha256": "a3bd3d84b6a4bfa5234bd71aaafdef2e58b0bcc1f711a9620a51a7848823ade3",
+      "encoding": "gbk",
+      "lines": 1126,
+      "definitions": [
+        {
+          "function": "USB_UVC_ValidateConfig",
+          "line": 216
+        },
+        {
+          "function": "USB_UVC_Configure",
+          "line": 221
+        },
+        {
+          "function": "USB_UVC_Register",
+          "line": 245
+        },
+        {
+          "function": "USB_UVC_SubmitFrame",
+          "line": 256
+        },
+        {
+          "function": "USB_UVC_SubmitFrameView",
+          "line": 269
+        },
+        {
+          "function": "USB_UVC_CancelFrame",
+          "line": 315
+        },
+        {
+          "function": "USB_UVC_GetStreamStatus",
+          "line": 335
+        },
+        {
+          "function": "USB_UVC_Process",
+          "line": 366
+        },
+        {
+          "function": "UVC_Init",
+          "line": 478
+        },
+        {
+          "function": "UVC_DeInit",
+          "line": 512
+        },
+        {
+          "function": "UVC_Setup",
+          "line": 553
+        },
+        {
+          "function": "UVC_ControlSetup",
+          "line": 645
+        },
+        {
+          "function": "UVC_EP0_RxReady",
+          "line": 749
+        },
+        {
+          "function": "UVC_EP0_TxSent",
+          "line": 793
+        },
+        {
+          "function": "UVC_ProbeSet",
+          "line": 818
+        },
+        {
+          "function": "UVC_CommitSet",
+          "line": 855
+        },
+        {
+          "function": "UVC_DefaultControl",
+          "line": 869
+        },
+        {
+          "function": "UVC_ValidateControl",
+          "line": 893
+        },
+        {
+          "function": "UVC_DecodeControl",
+          "line": 910
+        },
+        {
+          "function": "UVC_EncodeControl",
+          "line": 934
+        },
+        {
+          "function": "UVC_Read16",
+          "line": 957
+        },
+        {
+          "function": "UVC_Read32",
+          "line": 962
+        },
+        {
+          "function": "UVC_Write16",
+          "line": 968
+        },
+        {
+          "function": "UVC_Write32",
+          "line": 974
+        },
+        {
+          "function": "UVC_IsControlRequest",
+          "line": 983
+        },
+        {
+          "function": "UVC_SetStreamAlt",
+          "line": 1003
+        },
+        {
+          "function": "UVC_DataIn",
+          "line": 1063
+        },
+        {
+          "function": "UVC_Sof",
+          "line": 1078
+        },
+        {
+          "function": "UVC_Incomplete",
+          "line": 1090
+        },
+        {
+          "function": "UVC_ReleaseFrame",
+          "line": 1105
+        },
+        {
+          "function": "USB_UVC_GetCompletedFrameCount",
+          "line": 1121
+        }
+      ]
+    },
+    {
+      "path": "CM7/Service/usb_uvc_payload.c",
+      "sha256": "05ac143e5b61c662007efc3565d840080bbf26c991eff4650bf199a78c08aab6",
+      "encoding": "gbk",
+      "lines": 334,
+      "definitions": [
+        {
+          "function": "USB_UVC_PayloadInit",
+          "line": 26
+        },
+        {
+          "function": "USB_UVC_PayloadReset",
+          "line": 40
+        },
+        {
+          "function": "USB_UVC_PayloadStartFrame",
+          "line": 56
+        },
+        {
+          "function": "USB_UVC_PayloadStartView",
+          "line": 69
+        },
+        {
+          "function": "USB_UVC_PayloadBuildPacket",
+          "line": 107
+        },
+        {
+          "function": "USB_UVC_PayloadCompletePacket",
+          "line": 204
+        },
+        {
+          "function": "USB_UVC_PayloadCancel",
+          "line": 236
+        },
+        {
+          "function": "USB_UVC_PayloadAbortPacket",
+          "line": 261
+        },
+        {
+          "function": "Payload_Initialized",
+          "line": 278
+        },
+        {
+          "function": "Payload_FrameValid",
+          "line": 285
+        },
+        {
+          "function": "Payload_PendingValid",
+          "line": 303
+        },
+        {
+          "function": "Payload_Overlap",
+          "line": 313
+        },
+        {
+          "function": "Payload_FinishFrame",
+          "line": 319
+        }
+      ]
+    },
+    {
+      "path": "CM7/Application/Tasks/usb_task.c",
+      "sha256": "c88133b93188fd3a8ef096d8df9dafd632e5a2fe85719fb5944f9fb4fec3bdf3",
+      "encoding": "gbk",
+      "lines": 223,
+      "definitions": [
+        {
+          "function": "UsbTask_Create",
+          "line": 52
+        },
+        {
+          "function": "UsbTask_Run",
+          "line": 76
+        },
+        {
+          "function": "UsbTask_Process",
+          "line": 119
+        },
+        {
+          "function": "UsbTask_Reply",
+          "line": 172
+        },
+        {
+          "function": "UsbTask_PublishStatus",
+          "line": 188
+        },
+        {
+          "function": "UsbTask_Observe",
+          "line": 200
+        }
+      ]
+    },
+    {
+      "path": "CM7/Application/app_usb.c",
+      "sha256": "9650f9c4451d48998a87ca82eec4c91ea9a3a834f76d8d60d0236d992b60329c",
+      "encoding": "gbk",
+      "lines": 237,
+      "definitions": [
+        {
+          "function": "App_USBSetDiagnosticObserver",
+          "line": 34
+        },
+        {
+          "function": "App_USBCanAcceptCommand",
+          "line": 40
+        },
+        {
+          "function": "App_USBHandleCommand",
+          "line": 46
+        },
+        {
+          "function": "App_USBCanTransfer",
+          "line": 93
+        },
+        {
+          "function": "App_USBIsStopping",
+          "line": 99
+        },
+        {
+          "function": "App_USBProcess",
+          "line": 105
+        },
+        {
+          "function": "App_USBFinishRound",
+          "line": 124
+        },
+        {
+          "function": "App_USBGetPendingAck",
+          "line": 176
+        },
+        {
+          "function": "App_USBConfirmAckEnqueued",
+          "line": 185
+        },
+        {
+          "function": "App_USBGetPendingFault",
+          "line": 191
+        },
+        {
+          "function": "App_USBConfirmFaultEnqueued",
+          "line": 204
+        },
+        {
+          "function": "App_USBGetStatus",
+          "line": 210
+        },
+        {
+          "function": "App_USBGetLastResult",
+          "line": 222
+        },
+        {
+          "function": "App_USBObserve",
+          "line": 228
+        }
+      ]
+    },
+    {
+      "path": "CM7/Application/app_uvc_bridge.c",
+      "sha256": "363856a288d9ec9ee57f6f4aa5b200ec655358c77fa843f93aa0727ecd097e90",
+      "encoding": "gbk",
+      "lines": 546,
+      "definitions": [
+        {
+          "function": "App_UvcBridgeConfigure",
+          "line": 89
+        },
+        {
+          "function": "App_UvcBridgeCameraBegin",
+          "line": 111
+        },
+        {
+          "function": "App_UvcBridgeCameraIsIdle",
+          "line": 129
+        },
+        {
+          "function": "App_UvcBridgeCameraProcess",
+          "line": 137
+        },
+        {
+          "function": "App_UvcBridgeUsbProcess",
+          "line": 268
+        },
+        {
+          "function": "App_UvcBridgeUsbIsIdle",
+          "line": 419
+        },
+        {
+          "function": "Bridge_SameLease",
+          "line": 425
+        },
+        {
+          "function": "Bridge_CameraFlush",
+          "line": 432
+        },
+        {
+          "function": "Bridge_CameraRelease",
+          "line": 456
+        },
+        {
+          "function": "Bridge_UsbReturn",
+          "line": 484
+        },
+        {
+          "function": "App_UvcBridgePrepareOutput",
+          "line": 500
+        }
+      ]
+    },
+    {
+      "path": "Drivers/STM32H7xx_HAL_Driver/Src/stm32h7xx_hal_pcd.c",
+      "sha256": "67becca7aa38463887bfb70de65e2cc6e762bfd0fa7f600bc8c6e966a36a5574",
+      "encoding": "utf-8",
+      "lines": 2416,
+      "definitions": [
+        {
+          "function": "HAL_PCD_Init",
+          "line": 123
+        },
+        {
+          "function": "HAL_PCD_DeInit",
+          "line": 240
+        },
+        {
+          "function": "HAL_PCD_RegisterCallback",
+          "line": 323
+        },
+        {
+          "function": "HAL_PCD_UnRegisterCallback",
+          "line": 436
+        },
+        {
+          "function": "HAL_PCD_RegisterDataOutStageCallback",
+          "line": 535
+        },
+        {
+          "function": "HAL_PCD_UnRegisterDataOutStageCallback",
+          "line": 576
+        },
+        {
+          "function": "HAL_PCD_RegisterDataInStageCallback",
+          "line": 609
+        },
+        {
+          "function": "HAL_PCD_UnRegisterDataInStageCallback",
+          "line": 650
+        },
+        {
+          "function": "HAL_PCD_RegisterIsoOutIncpltCallback",
+          "line": 683
+        },
+        {
+          "function": "HAL_PCD_UnRegisterIsoOutIncpltCallback",
+          "line": 725
+        },
+        {
+          "function": "HAL_PCD_RegisterIsoInIncpltCallback",
+          "line": 758
+        },
+        {
+          "function": "HAL_PCD_UnRegisterIsoInIncpltCallback",
+          "line": 800
+        },
+        {
+          "function": "HAL_PCD_RegisterBcdCallback",
+          "line": 833
+        },
+        {
+          "function": "HAL_PCD_UnRegisterBcdCallback",
+          "line": 873
+        },
+        {
+          "function": "HAL_PCD_RegisterLpmCallback",
+          "line": 906
+        },
+        {
+          "function": "HAL_PCD_UnRegisterLpmCallback",
+          "line": 946
+        },
+        {
+          "function": "HAL_PCD_Start",
+          "line": 997
+        },
+        {
+          "function": "HAL_PCD_Stop",
+          "line": 1022
+        },
+        {
+          "function": "HAL_PCD_IRQHandler",
+          "line": 1050
+        },
+        {
+          "function": "HAL_PCD_DevConnect",
+          "line": 1771
+        },
+        {
+          "function": "HAL_PCD_DevDisconnect",
+          "line": 1794
+        },
+        {
+          "function": "HAL_PCD_SetAddress",
+          "line": 1819
+        },
+        {
+          "function": "HAL_PCD_EP_Open",
+          "line": 1836
+        },
+        {
+          "function": "HAL_PCD_EP_Close",
+          "line": 1882
+        },
+        {
+          "function": "HAL_PCD_EP_Receive",
+          "line": 1913
+        },
+        {
+          "function": "HAL_PCD_EP_GetRxCount",
+          "line": 1942
+        },
+        {
+          "function": "HAL_PCD_EP_Transmit",
+          "line": 1954
+        },
+        {
+          "function": "HAL_PCD_EP_SetStall",
+          "line": 1983
+        },
+        {
+          "function": "HAL_PCD_EP_ClrStall",
+          "line": 2026
+        },
+        {
+          "function": "HAL_PCD_EP_Abort",
+          "line": 2062
+        },
+        {
+          "function": "HAL_PCD_EP_Flush",
+          "line": 2088
+        },
+        {
+          "function": "HAL_PCD_ActivateRemoteWakeup",
+          "line": 2111
+        },
+        {
+          "function": "HAL_PCD_DeActivateRemoteWakeup",
+          "line": 2121
+        },
+        {
+          "function": "HAL_PCD_SetTestMode",
+          "line": 2162
+        },
+        {
+          "function": "PCD_WriteEmptyTxFifo",
+          "line": 2204
+        },
+        {
+          "function": "PCD_EP_OutXfrComplete_int",
+          "line": 2264
+        },
+        {
+          "function": "PCD_EP_OutSetupPacket_int",
+          "line": 2376
+        }
+      ]
+    },
+    {
+      "path": "Drivers/STM32H7xx_HAL_Driver/Src/stm32h7xx_ll_usb.c",
+      "sha256": "e18900b0d91d79d8eea02d60eec865ea0eada440a053354c81b709c33f5e890a",
+      "encoding": "utf-8",
+      "lines": 2257,
+      "definitions": [
+        {
+          "function": "USB_CoreInit",
+          "line": 83
+        },
+        {
+          "function": "USB_SetTurnaroundTime",
+          "line": 143
+        },
+        {
+          "function": "USB_EnableGlobalInt",
+          "line": 226
+        },
+        {
+          "function": "USB_DisableGlobalInt",
+          "line": 238
+        },
+        {
+          "function": "USB_SetCurrentMode",
+          "line": 253
+        },
+        {
+          "function": "USB_DevInit",
+          "line": 300
+        },
+        {
+          "function": "USB_FlushTxFifo",
+          "line": 452
+        },
+        {
+          "function": "USB_FlushRxFifo",
+          "line": 489
+        },
+        {
+          "function": "USB_SetDevSpeed",
+          "line": 532
+        },
+        {
+          "function": "USB_GetDevSpeed",
+          "line": 548
+        },
+        {
+          "function": "USB_ActivateEndpoint",
+          "line": 577
+        },
+        {
+          "function": "USB_ActivateDedicatedEndpoint",
+          "line": 615
+        },
+        {
+          "function": "USB_DeactivateEndpoint",
+          "line": 654
+        },
+        {
+          "function": "USB_DeactivateDedicatedEndpoint",
+          "line": 701
+        },
+        {
+          "function": "USB_EPStartXfer",
+          "line": 743
+        },
+        {
+          "function": "USB_EPStopXfer",
+          "line": 915
+        },
+        {
+          "function": "USB_WritePacket",
+          "line": 979
+        },
+        {
+          "function": "USB_EPSetStall",
+          "line": 1052
+        },
+        {
+          "function": "USB_EPClearStall",
+          "line": 1083
+        },
+        {
+          "function": "USB_StopDevice",
+          "line": 1112
+        },
+        {
+          "function": "USB_SetDevAddress",
+          "line": 1153
+        },
+        {
+          "function": "USB_DevConnect",
+          "line": 1168
+        },
+        {
+          "function": "USB_DevDisconnect",
+          "line": 1185
+        },
+        {
+          "function": "USB_ReadInterrupts",
+          "line": 1202
+        },
+        {
+          "function": "USB_ReadChInterrupts",
+          "line": 1218
+        },
+        {
+          "function": "USB_ReadDevAllOutEpInterrupt",
+          "line": 1234
+        },
+        {
+          "function": "USB_ReadDevAllInEpInterrupt",
+          "line": 1250
+        },
+        {
+          "function": "USB_ReadDevOutEPInterrupt",
+          "line": 1268
+        },
+        {
+          "function": "USB_ReadDevInEPInterrupt",
+          "line": 1286
+        },
+        {
+          "function": "USB_ClearInterrupts",
+          "line": 1307
+        },
+        {
+          "function": "USB_GetMode",
+          "line": 1320
+        },
+        {
+          "function": "USB_ActivateSetup",
+          "line": 1330
+        },
+        {
+          "function": "USB_EP0_OutStart",
+          "line": 1352
+        },
+        {
+          "function": "USB_CoreReset",
+          "line": 1385
+        },
+        {
+          "function": "USB_HostInit",
+          "line": 1425
+        },
+        {
+          "function": "USB_InitFSLSPClkSel",
+          "line": 1512
+        },
+        {
+          "function": "USB_ResetPort",
+          "line": 1542
+        },
+        {
+          "function": "USB_DriveVbus",
+          "line": 1569
+        },
+        {
+          "function": "USB_GetHostSpeed",
+          "line": 1599
+        },
+        {
+          "function": "USB_GetCurrentFrame",
+          "line": 1613
+        },
+        {
+          "function": "USB_HC_Init",
+          "line": 1644
+        },
+        {
+          "function": "USB_HC_StartXfer",
+          "line": 1771
+        },
+        {
+          "function": "USB_HC_ReadInterrupt",
+          "line": 2029
+        },
+        {
+          "function": "USB_HC_Halt",
+          "line": 2043
+        },
+        {
+          "function": "USB_DoPing",
+          "line": 2127
+        },
+        {
+          "function": "USB_StopHost",
+          "line": 2151
+        },
+        {
+          "function": "USB_ActivateRemoteWakeup",
+          "line": 2216
+        },
+        {
+          "function": "USB_DeActivateRemoteWakeup",
+          "line": 2234
+        }
+      ]
+    },
+    {
+      "path": "Middlewares/ST/STM32_USB_Device_Library/Core/Src/usbd_core.c",
+      "sha256": "4cb3e3487e2cb6b474ea632fc5d4b1da6e58b5e4d8f6302495d87c5bd17f8c1a",
+      "encoding": "utf-8",
+      "lines": 1215,
+      "definitions": [
+        {
+          "function": "USBD_Init",
+          "line": 92
+        },
+        {
+          "function": "USBD_DeInit",
+          "line": 149
+        },
+        {
+          "function": "USBD_RegisterClass",
+          "line": 202
+        },
+        {
+          "function": "USBD_RegisterClassComposite",
+          "line": 246
+        },
+        {
+          "function": "USBD_UnRegisterClassComposite",
+          "line": 297
+        },
+        {
+          "function": "USBD_RegisterDevStateCallback",
+          "line": 370
+        },
+        {
+          "function": "USBD_Start",
+          "line": 384
+        },
+        {
+          "function": "USBD_Stop",
+          "line": 400
+        },
+        {
+          "function": "USBD_RunTestMode",
+          "line": 440
+        },
+        {
+          "function": "USBD_SetClassConfig",
+          "line": 465
+        },
+        {
+          "function": "USBD_ClrClassConfig",
+          "line": 505
+        },
+        {
+          "function": "USBD_LL_SetupStage",
+          "line": 546
+        },
+        {
+          "function": "USBD_LL_DataOutStage",
+          "line": 586
+        },
+        {
+          "function": "USBD_LL_DataInStage",
+          "line": 681
+        },
+        {
+          "function": "USBD_LL_Reset",
+          "line": 771
+        },
+        {
+          "function": "USBD_LL_SetSpeed",
+          "line": 839
+        },
+        {
+          "function": "USBD_LL_Suspend",
+          "line": 853
+        },
+        {
+          "function": "USBD_LL_Resume",
+          "line": 871
+        },
+        {
+          "function": "USBD_LL_SOF",
+          "line": 887
+        },
+        {
+          "function": "USBD_LL_IsoINIncomplete",
+          "line": 930
+        },
+        {
+          "function": "USBD_LL_IsoOUTIncomplete",
+          "line": 956
+        },
+        {
+          "function": "USBD_LL_DevConnected",
+          "line": 981
+        },
+        {
+          "function": "USBD_LL_DevDisconnected",
+          "line": 995
+        },
+        {
+          "function": "USBD_CoreFindIF",
+          "line": 1040
+        },
+        {
+          "function": "USBD_CoreFindEP",
+          "line": 1080
+        },
+        {
+          "function": "USBD_CoreGetEPAdd",
+          "line": 1123
+        }
+      ]
+    },
+    {
+      "path": "Middlewares/ST/STM32_USB_Device_Library/Core/Src/usbd_ctlreq.c",
+      "sha256": "5f1c211ed991e074589c82bc52571357a268f36776111d99a85539df53fd80f0",
+      "encoding": "utf-8",
+      "lines": 1058,
+      "definitions": [
+        {
+          "function": "USBD_StdDevReq",
+          "line": 104
+        },
+        {
+          "function": "USBD_StdItfReq",
+          "line": 167
+        },
+        {
+          "function": "USBD_StdEPReq",
+          "line": 239
+        },
+        {
+          "function": "USBD_GetDescriptor",
+          "line": 428
+        },
+        {
+          "function": "USBD_SetAddress",
+          "line": 682
+        },
+        {
+          "function": "USBD_SetConfig",
+          "line": 723
+        },
+        {
+          "function": "USBD_GetConfig",
+          "line": 821
+        },
+        {
+          "function": "USBD_GetStatus",
+          "line": 855
+        },
+        {
+          "function": "USBD_SetFeature",
+          "line": 896
+        },
+        {
+          "function": "USBD_ClrFeature",
+          "line": 922
+        },
+        {
+          "function": "USBD_ParseSetupRequest",
+          "line": 950
+        },
+        {
+          "function": "USBD_CtlError",
+          "line": 979
+        },
+        {
+          "function": "USBD_GetString",
+          "line": 996
+        },
+        {
+          "function": "USBD_GetLen",
+          "line": 1032
+        }
+      ]
+    },
+    {
+      "path": "Middlewares/ST/STM32_USB_Device_Library/Core/Src/usbd_ioreq.c",
+      "sha256": "26fab50d3392b6a2b05acf1e08b8c809e0bd98c010cbf32690f158c95f715760",
+      "encoding": "utf-8",
+      "lines": 224,
+      "definitions": [
+        {
+          "function": "USBD_CtlSendData",
+          "line": 86
+        },
+        {
+          "function": "USBD_CtlContinueSendData",
+          "line": 113
+        },
+        {
+          "function": "USBD_CtlPrepareRx",
+          "line": 130
+        },
+        {
+          "function": "USBD_CtlContinueRx",
+          "line": 157
+        },
+        {
+          "function": "USBD_CtlSendStatus",
+          "line": 171
+        },
+        {
+          "function": "USBD_CtlReceiveStatus",
+          "line": 188
+        },
+        {
+          "function": "USBD_GetRxCount",
+          "line": 206
+        }
+      ]
+    }
+  ],
+  "remote_preflight": "UNRESOLVED: connection reset; last prior verified remote matched baseline"
+}
