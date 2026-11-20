@@ -75,3 +75,15 @@ Keil 工程为 `MDK-ARM/h7_mac_ethernet_e7_v1_qvga.uvprojx`，AXF 为 `output/Et
 如果只复制也再现 `dma_error=0x02`，本轮能证明 HTTP/TCP 发送不是触发的必要条件。如果未复现，只能说明该次复制对照窗口稳定，需要按相同帧数和时长复比。实板复制对照为 NOT_RUN，生产 Camera 和 Ethernet 驱动保持原样。
 
 编译 0 错误、0 警告，既有动态 MJPEG 与相机取帧归还 Host 回归通过。新版 AXF SHA-256 为 `73d52c6f6b27ead8e2353c0b44cd83d51bfb5937553b50bee8163098b91a87ee`，原 20 fps 板测固件和 MAP 归档于 `output/Ethernet/e7_v1_qvga_before_copy_probe/`。
+
+### 拔线复验结果
+
+| 320×240 对照条件 | 实板观察 |
+| --- | --- |
+| 网页关闭、未主动复制 | 连续采集 60 秒，采集计数增长，未命中错误断点 |
+| 打开网页、50 ms | 打开后命中，`dma_error=0x02`、`dcmi_error=0` |
+| 只复制、50 ms | 复制尝试 28 次，Watch 显示已复制 24 帧，随后命中同一错误 |
+| 只复制、200 ms，网线连接 | DHCP 和静态地址轮次均命中同一错误 |
+| 只复制、200 ms、静态模式、网线拔出 | 命中同一错误，`events.flags=0x02`、`result=-9`、`dma_error=0x02`、`dcmi_error=0` |
+
+已在没有有线链路和 DHCP 交互的条件下复现。排查转向相机 DMA 写 SDRAM 与 CPU 读取并复制原始帧的并发路径。当前连续 JPEG 配置使用 FIFO FULL、内存 INC4、外设 SINGLE。已有 [DMA FIFO 排查记录](../Debug/DCMI_DMA_FIFO错误排查记录.md) 描述过相似负载触发条件，但当前故障的实际触发环节仍为 OPEN。下一轮在 `Dcmi_RecordError()` 首次命中时记录调用栈、`s_dcmi_dma.ErrorCode` 及 Stream0 的 `CR`、`FCR`、`NDTR`。保留生产驱动设置和错误检测。
