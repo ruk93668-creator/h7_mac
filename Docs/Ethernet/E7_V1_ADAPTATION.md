@@ -87,3 +87,11 @@ Keil 工程为 `MDK-ARM/h7_mac_ethernet_e7_v1_qvga.uvprojx`，AXF 为 `output/Et
 | 只复制、200 ms、静态模式、网线拔出 | 命中同一错误，`events.flags=0x02`、`result=-9`、`dma_error=0x02`、`dcmi_error=0` |
 
 已在没有有线链路和 DHCP 交互的条件下复现。排查转向相机 DMA 写 SDRAM 与 CPU 读取并复制原始帧的并发路径。当前连续 JPEG 配置使用 FIFO FULL、内存 INC4、外设 SINGLE。已有 [DMA FIFO 排查记录](../Debug/DCMI_DMA_FIFO错误排查记录.md) 描述过相似负载触发条件，但当前故障的实际触发环节仍为 OPEN。下一轮在 `Dcmi_RecordError()` 首次命中时记录调用栈、`s_dcmi_dma.ErrorCode` 及 Stream0 的 `CR`、`FCR`、`NDTR`。保留生产驱动设置和错误检测。
+
+### 分段读取诊断
+
+底层断点记录显示 DMA1 Stream0 中断进入 `Dcmi_CheckErrors()` 时，`DMA1_LISR=0x11` 同时包含 FE 与 HT 标志。异常打断了地址 `0x08000898` 处的 `__rt_memcpy_w`，该处为四字加载指令。CPU 停止后读回 `CR=0x008E5517`、`FCR=0xA7`、`NDTR=0x060C`，确认配置为 FIFO FULL、内存 INC4、外设 SINGLE，并启用双缓冲。读回时 FIFO 为空，读回值和中断锁存值属于两个时点。
+
+新增独立 E7 对照开关 `g_e7_copy_segmented`。与 `g_e7_copy_only=1` 一起在初始化前设为 1 后，每次 CPU 从 SDRAM 最多复制 8 字节，每段后执行 DSB，再读取下一段。沿用原 JPEG 缓冲租约、CRC、相机 DMA 参数和复制周期。保持静态模式、网线拔出、200 ms、网页关闭。先测分段 60 秒，再在同一固件上将开关设为 0，使用相同条件对照整段复制。记录首次错误与成功复制帧数；实板对照为 NOT_RUN。
+
+编译 0 错误、0 警告。Host 跨尾分段次数、逐字节一致性、CRC 与归还回归通过。新版 AXF SHA-256 为 `f67ca10df92a77d94b55685ee57736b3bfd5228aa39bca377c7b4b168aea52b2`，原只复制对照固件和 MAP 归档于 `output/Ethernet/e7_v1_qvga_before_segmented_probe/`。

@@ -42,6 +42,8 @@ volatile uint32_t g_e7_mode = ETH_ADDRESS_DHCP;
 volatile uint16_t g_e7_period_ms = E7_FRAME_PERIOD_MS;
 //初始化前设为1时，只复制校验JPEG并归还缓冲，不启动HTTP
 volatile uint32_t g_e7_copy_only;
+//只复制模式下启用8字节分段，每段完成后再读下一段
+volatile uint32_t g_e7_copy_segmented;
 volatile uint32_t g_e7_copy_attempts;
 volatile uint32_t g_e7_command; /* 1 Stop, 2 Restart */
 volatile uint16_t g_e7_sensor_id;
@@ -160,6 +162,12 @@ static SysResult_t E7CameraInit(void)
 	return E7Start();
 }
 
+//等待CPU完成本段访存，再发起下一段SDRAM读取
+static void E7CopyBarrier(void)
+{
+	__DSB();
+}
+
 //复用网页发送前的取帧、复制、校验及归还路径
 static void E7CopyOnce(void)
 {
@@ -185,6 +193,8 @@ int main(void)
 		eth_lwip_assert("E7 setup", __FILE__, __LINE__);
 	config.mode = (EthNetworkAddressMode_t)g_e7_mode;
 	copy_only = g_e7_copy_only != 0U;
+	if (copy_only && g_e7_copy_segmented != 0U)
+		s_provider.copy_barrier = E7CopyBarrier;
 	period_ms = g_e7_period_ms;
 	if (copy_only && period_ms == 0U)
 		eth_lwip_assert("E7 copy period", __FILE__, __LINE__);

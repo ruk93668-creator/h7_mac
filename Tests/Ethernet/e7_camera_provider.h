@@ -5,6 +5,7 @@
 #include "eth_mjpeg.h"
 
 #define E7_JPEG_CAPACITY (60U * 1024U)
+#define E7_JPEG_COPY_SEGMENT_BYTES 8U
 
 //统一传感器与帧提供器使用的JPEG尺寸
 #ifdef ETH_E7_CAMERA_QVGA
@@ -19,6 +20,8 @@ typedef struct
 {
 	uint8_t *buffer;
 	const uint8_t *fifo;
+	//分段对照时等待上一小段访存完成
+	void (*copy_barrier)(void);
 	uint32_t fifo_size, lease;
 	uint32_t copies, invalid, oversize, no_frame, release_errors, stale_releases;
 	uint32_t capture_errors;

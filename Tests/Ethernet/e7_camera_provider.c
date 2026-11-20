@@ -19,6 +19,28 @@ static uint32_t E7Camera_Crc(const uint8_t *data, uint32_t length)
 	return ~crc;
 }
 
+//对照模式限制单次SDRAM复制长度，原始帧的所有权贯穿整次复制
+static void E7Camera_CopySpan(uint8_t *dst, const uint8_t *src, uint32_t length,
+	void (*barrier)(void))
+{
+	if (barrier == NULL)
+	{
+		memcpy(dst, src, length);
+		return;
+	}
+	while (length != 0U)
+	{
+		uint32_t amount = length;
+		if (amount > E7_JPEG_COPY_SEGMENT_BYTES)
+			amount = E7_JPEG_COPY_SEGMENT_BYTES;
+		memcpy(dst, src, amount);
+		barrier();
+		dst += amount;
+		src += amount;
+		length -= amount;
+	}
+}
+
 static bool E7Camera_Copy(E7CameraProvider_t *provider, const CameraFrame_t *frame, uint32_t *crc)
 {
 	uint32_t first, tail = frame->size_bytes2, total = frame->size_bytes;
@@ -37,9 +59,9 @@ static bool E7Camera_Copy(E7CameraProvider_t *provider, const CameraFrame_t *fra
 		 frame->data2 != provider->fifo || tail > start - base)) ||
 		(!tail && frame->data2))
 		return false;
-	memcpy(provider->buffer, frame->data, first);
+	E7Camera_CopySpan(provider->buffer, frame->data, first, provider->copy_barrier);
 	if (tail)
-		memcpy(provider->buffer + first, frame->data2, tail);
+		E7Camera_CopySpan(provider->buffer + first, frame->data2, tail, provider->copy_barrier);
 	if (provider->buffer[0] != 0xffU || provider->buffer[1] != 0xd8U ||
 		provider->buffer[total - 2U] != 0xffU || provider->buffer[total - 1U] != 0xd9U)
 		return false;

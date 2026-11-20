@@ -8,7 +8,9 @@ static uint8_t s_fifo[100000], s_network_copy[E7_JPEG_CAPACITY];
 static CameraFrame_t s_ready;
 static SysResult_t s_release_result, s_stop_result, s_capture_result;
 static bool s_available, s_stopped = true, s_loan;
-static unsigned s_releases, s_stops, s_process;
+static unsigned s_releases, s_stops, s_process, s_copy_barriers;
+
+static void CopyBarrier(void) { ++s_copy_barriers; }
 
 bool CameraCapture_StreamGetFrame(CameraFrame_t *frame)
 {
@@ -84,10 +86,14 @@ int main(void)
 	unsigned i;
 	assert(E7Camera_Start(&provider) == SYS_OK);
 	assert(E7Camera_Acquire(&provider, &frame, &lease) == ETH_MJPEG_UNAVAILABLE);
+	provider.copy_barrier = CopyBarrier;
 	Ready(&e6_jpeg_frames[0], true);
 	assert(E7Camera_Acquire(&provider, &frame, &lease) == ETH_MJPEG_ACQUIRED && !s_loan && s_releases == 1U);
 	assert(frame.crc32 == e6_jpeg_frames[0].crc32 && frame.length == e6_jpeg_frames[0].length);
 	assert(!memcmp(frame.data, e6_jpeg_frames[0].data, frame.length));
+	assert(s_copy_barriers == 1U + (frame.length - 1U + E7_JPEG_COPY_SEGMENT_BYTES - 1U) /
+		E7_JPEG_COPY_SEGMENT_BYTES);
+	provider.copy_barrier = NULL;
 	Ready(&e6_jpeg_frames[1], false);
 	for (i = 0; i < 10000U; ++i)
 		E7Camera_Poll(&provider, i);
