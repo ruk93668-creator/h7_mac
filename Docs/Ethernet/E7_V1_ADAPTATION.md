@@ -103,3 +103,13 @@ Keil 工程为 `MDK-ARM/h7_mac_ethernet_e7_v1_qvga.uvprojx`，AXF 为 `output/Et
 E7 新版允许网页模式使用同一个分段开关。下载后在读取地址模式前设置 `g_e7_mode=1`、`g_e7_copy_only=0`、`g_e7_copy_segmented=1`、`g_e7_period_ms=200`，连接网线后按 F5，待获租打开一个网页观察 60 秒。记录首帧、帧完成计数和错误断点。若通过，再从相同设置开始只把帧间隔改为 50 ms，验证 20 fps 调度档。网页分段实板结果为 NOT_RUN。
 
 编译 0 错误、0 警告，既有 Host 回归和 MAP 检查通过。新版 AXF SHA-256 为 `16056c4747a0a0e0f56d0f8b3027c3e4b475c0a21c4b76da26d223a62897ad5c`。上一版诊断 AXF 和 MAP 保存在 `output/Ethernet/e7_v1_qvga_before_segmented_http/`。
+
+### 50 ms 网页实测及 TCP 调度对照
+
+V1 板使用 320×240、8 字节分段与 50 ms 调度运行。用户 Watch 报告相机采集约 31 fps、TCP 确认 5–6 fps。电脑直连口被动采样 8 秒得到 43 帧完整且已获 TCP 确认的 JPEG，CRC32 全部匹配，帧起点间距计算约 5.55 fps。JPEG 大小中位数 9533 B，帧起点到整帧确认中位 163 ms，最后一段发出到整帧确认中位 46.1 ms。
+
+原 TCP 每次轮询最多向 lwIP 提交一个 MSS，随后设置 20 ms 重试间隔。ACK 或接收事件可以提前唤醒。新增逐连接可选调度，仅 E7 测试入口启用，且只用于 MJPEG 路由。提交或输出成功后，下一轮可继续发送。窗口、发送队列或输出资源受限时保留 20 ms 重试间隔。E5、E6 和普通 HTTP 页面默认沿用原调度，MJPEG 仍等待整帧 TCP 确认。Host 覆盖默认和可选调度的 CRC、FIN/RST、零窗口、恢复和长测。快速模式的零窗口测试使用大于两级发送队列总容量的 JPEG，保持原背压断言。
+
+实板对照为 NOT_RUN。使用同一版 AXF，启动前保持 `g_e7_mode=1`、`g_e7_copy_only=0`、`g_e7_copy_segmented=1`、`g_e7_period_ms=50`，以 `g_e7_tcp_fast_send=0` 和 `1` 分别测量。只开一个网页标签页，记录稳定期确认帧率、CRC 和 DMA FIFO 错误。
+
+编译 0 错误、0 警告，Host 三套网络回归和 QVGA Provider 回归通过。AXF SHA-256 为 `113864161c5ed2a956cfda7ed70b98e146e16a660f7fd6b2fd4ae5a7569bdc04`。之前的实板 AXF 和 MAP 归档在 `output/Ethernet/e7_v1_qvga_before_fast_tcp/`。

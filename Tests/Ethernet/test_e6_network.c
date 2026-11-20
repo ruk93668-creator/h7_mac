@@ -10,6 +10,7 @@ static char s_body[100000];
 static size_t s_length;
 static unsigned s_cursor;
 static unsigned s_fin;
+static unsigned s_fixture_start;
 
 static Peer_t Open(unsigned port)
 {
@@ -87,7 +88,7 @@ static uint32_t Crc(const uint8_t *data, uint16_t length)
 	return ~crc;
 }
 
-static void CheckParts(unsigned count)
+static void CheckParts(unsigned count, unsigned first)
 {
 	const char *part = strstr(s_body, "\r\n\r\n");
 	unsigned i;
@@ -96,7 +97,7 @@ static void CheckParts(unsigned count)
 	part += 4;
 	for (i = 0; i < count; ++i)
 	{
-		const EthMjpegFrame_t *image = &e6_jpeg_frames[i % E6_FRAME_COUNT];
+		const EthMjpegFrame_t *image = &e6_jpeg_frames[(first + i) % E6_FRAME_COUNT];
 		char expected[128];
 		int header_size = snprintf(expected, sizeof(expected), "--h7frame\r\nContent-Type: image/jpeg\r\n"
 			"Content-Length: %u\r\nX-Frame-Sequence: %u\r\nX-Frame-CRC32: %08lX\r\n\r\n",
@@ -127,7 +128,7 @@ static EthMjpegAcquire_t Acquire(void *context, EthMjpegFrame_t *frame, uint32_t
 	if (generation != s_dynamic.generation)
 	{
 		s_dynamic.generation = generation;
-		s_dynamic.index = 0U;
+		s_dynamic.index = s_fixture_start;
 	}
 	*frame = e6_jpeg_frames[s_dynamic.index++ % E6_FRAME_COUNT];
 	*lease = ++s_dynamic.acquisitions;
@@ -164,7 +165,8 @@ int main(int argc, char **argv)
 	char oversized[540];
 	unsigned i;
 	const EthMjpegSource_t source = {NULL, Acquire, Release};
-	bool dynamic = argc == 2 && strcmp(argv[1], "dynamic") == 0;
+	bool fast_send = argc == 2 && strcmp(argv[1], "dynamic-fast") == 0;
+	bool dynamic = fast_send || (argc == 2 && strcmp(argv[1], "dynamic") == 0);
 	(void)setvbuf(stdout, NULL, _IONBF, 0);
 	assert(eth_network_init_address(&s_network, s_mac, &address) == ERR_OK);
 	invalid.udp_port = 5001U;
@@ -173,6 +175,7 @@ int main(int argc, char **argv)
 		assert(eth_http_init_source(&s_network, &source, 200U) == ERR_OK);
 	else
 		assert(eth_http_init(&s_network, e6_jpeg_frames, E6_FRAME_COUNT, 200U) == ERR_OK);
+	eth_http_set_stream_fast_send(fast_send);
 	s_link = 1U;
 	Advance(100U);
 	Bind();
@@ -208,7 +211,7 @@ int main(int argc, char **argv)
 	peer = Open(51014U);
 	Send(&peer, 4096U, stream);
 	Collect(&peer, 2100U);
-	CheckParts(8U);
+	CheckParts(8U, 0U);
 	eth_http_get_statistics(&result);
 	printf("ACKed frames=%lu; FPS(milli)=%lu\n", (unsigned long)result.stream.frames_completed,
 		(unsigned long)result.stream.current_fps_milli);
@@ -223,7 +226,14 @@ int main(int argc, char **argv)
 	old = peer;
 	peer = Open(51015U);
 	assert(eth_tcp_send(stale, "x", 1U) == ERR_CONN);
+	assert(eth_tcp_enable_fast_send(stale) == ERR_CONN);
 	Tcp(&old, RST, 4096U, NULL, 0U);
+	//快路径可在归零窗口时填满两级队列，使用超过总容量的JPEG验证背压
+	if (fast_send)
+	{
+		s_fixture_start = 2U;
+		assert(e6_jpeg_frames[s_fixture_start].length > ETH_TCP_QUEUE_BYTES + TCP_SND_BUF);
+	}
 	Send(&peer, 4096U, "GET ");
 	Send(&peer, 0U, stream + 4U);
 	Pump(2000U);
@@ -233,7 +243,8 @@ int main(int argc, char **argv)
 	s_cursor = s_wire_count;
 	Tcp(&peer, ACK, 4096U, NULL, 0U);
 	Collect(&peer, 640U);
-	CheckParts(2U);
+	CheckParts(2U, s_fixture_start);
+	s_fixture_start = 0U;
 	eth_http_get_statistics(&result);
 	assert(result.stream.frame_skipped > before.stream.frame_skipped);
 	Tcp(&peer, RST | ACK, 4096U, NULL, 0U);

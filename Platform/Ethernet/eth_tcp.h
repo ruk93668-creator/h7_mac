@@ -29,6 +29,7 @@ void eth_tcp_stop(void);
 void eth_tcp_poll(void);
 EthTcpHandle_t eth_tcp_handle(EthTcpRole_t role);
 EthTcpState_t eth_tcp_get_state(EthTcpHandle_t handle);
+err_t eth_tcp_enable_fast_send(EthTcpHandle_t handle);
 err_t eth_tcp_send(EthTcpHandle_t handle, const void *data, uint16_t length);
 uint16_t eth_tcp_read(EthTcpHandle_t handle, void *data, uint16_t capacity);
 err_t eth_tcp_close(EthTcpHandle_t handle);

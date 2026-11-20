@@ -44,6 +44,8 @@ volatile uint16_t g_e7_period_ms = E7_FRAME_PERIOD_MS;
 volatile uint32_t g_e7_copy_only;
 //初始化前设为1时启用8字节分段，每段完成后再读下一段
 volatile uint32_t g_e7_copy_segmented;
+//初始化前设为1时，MJPEG连接启用连续提交
+volatile uint32_t g_e7_tcp_fast_send;
 volatile uint32_t g_e7_copy_attempts;
 volatile uint32_t g_e7_command; /* 1 Stop, 2 Restart */
 volatile uint16_t g_e7_sensor_id;
@@ -183,6 +185,7 @@ int main(void)
 {
 	EthNetworkAddressConfig_t config = {.mode = ETH_ADDRESS_DHCP};
 	const EthMjpegSource_t source = {&s_provider, E7Camera_Acquire, E7Camera_Release};
+	bool tcp_fast_send;
 	uint32_t last = 0U;
 	uint32_t fps_tick = 0U, prior_submitted = 0U;
 	uint32_t last_copy_tick = 0U;
@@ -193,6 +196,7 @@ int main(void)
 		eth_lwip_assert("E7 setup", __FILE__, __LINE__);
 	config.mode = (EthNetworkAddressMode_t)g_e7_mode;
 	copy_only = g_e7_copy_only != 0U;
+	tcp_fast_send = g_e7_tcp_fast_send != 0U;
 	if (g_e7_copy_segmented != 0U)
 		s_provider.copy_barrier = E7CopyBarrier;
 	period_ms = g_e7_period_ms;
@@ -204,7 +208,11 @@ int main(void)
 	g_e7_camera_init = E7CameraInit();
 	g_e7_result = eth_network_init_address(&s_network, s_mac, &config);
 	if (g_e7_result == ERR_OK && !copy_only)
+	{
 		g_e7_result = eth_http_init_source(&s_network, &source, period_ms);
+		if (g_e7_result == ERR_OK)
+			eth_http_set_stream_fast_send(tcp_fast_send);
+	}
 	if (g_e7_result != ERR_OK)
 	{
 		if (s_camera_initialized)

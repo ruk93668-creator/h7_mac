@@ -28,6 +28,7 @@ def main():
     subprocess.run([str(binary)], cwd=root, check=True)
     if dynamic:
         subprocess.run([str(binary), 'dynamic'], cwd=root, check=True)
+        subprocess.run([str(binary), 'dynamic-fast'], cwd=root, check=True)
         test = out / 'test_e7_camera_provider.exe'
         sources = ['Tests/Ethernet/e7_camera_provider.c', 'Tests/Ethernet/test_e7_camera_provider.c']
         # Existing Camera headers contain legacy-encoded comments.

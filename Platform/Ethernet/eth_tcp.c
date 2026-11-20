@@ -17,6 +17,7 @@ typedef struct
 	uint32_t generation, activity, deadline, attempt;
 	unsigned events;
 	uint8_t peer_fin, output_pending;
+	uint8_t fast_send;
 	EthTcpStats_t stats;
 } EthTcpConnection_t;
 
@@ -148,6 +149,7 @@ static void EthTcp_Abort(EthTcpConnection_t *connection, err_t error)
 static void EthTcp_Assign(EthTcpConnection_t *connection, struct tcp_pcb *pcb, EthTcpState_t state)
 {
 	connection->pcb = pcb;
+	connection->fast_send = 0U;
 	++connection->generation;
 	if (!connection->generation)
 		++connection->generation;
@@ -271,6 +273,7 @@ static void EthTcp_PollConnection(EthTcpConnection_t *connection, uint32_t now)
 	struct tcp_pcb *pcb = connection->pcb;
 	err_t result;
 	uint16_t count;
+	int retry = 0;
 
 	if (!pcb)
 		return;
@@ -332,21 +335,32 @@ static void EthTcp_PollConnection(EthTcpConnection_t *connection, uint32_t now)
 			connection->output_pending = 1U;
 		}
 		else if (result == ERR_MEM)
+		{
 			++stats->write_mem;
+			retry = 1;
+		}
 		else
 		{
 			EthTcp_Abort(connection, result);
 			return;
 		}
 	}
+	else if (stats->tx_pending)
+		retry = 1;
 	if (connection->output_pending)
 	{
 		result = tcp_output(pcb);
 		if (result == ERR_OK)
 			connection->output_pending = 0U;
 		else
+		{
 			++stats->output_errors;
+			retry = 1;
+		}
 	}
+	//成功提交后允许下一轮继续，发送窗口或队列受限时保留重试间隔
+	if (connection->fast_send && !retry && stats->state == ETH_TCP_OPEN && !connection->peer_fin)
+		connection->attempt = now;
 }
 
 void eth_tcp_poll(void)
@@ -376,6 +390,16 @@ EthTcpState_t eth_tcp_get_state(EthTcpHandle_t handle)
 {
 	EthTcpConnection_t *connection = EthTcp_Connection(handle);
 	return connection ? connection->stats.state : ETH_TCP_IDLE;
+}
+
+err_t eth_tcp_enable_fast_send(EthTcpHandle_t handle)
+{
+	EthTcpConnection_t *connection = EthTcp_Connection(handle);
+	if (!connection || !connection->pcb || connection->stats.state != ETH_TCP_OPEN)
+		return ERR_CONN;
+	connection->fast_send = 1U;
+	connection->attempt = sys_now();
+	return ERR_OK;
 }
 
 err_t eth_tcp_send(EthTcpHandle_t handle, const void *data, uint16_t length)

@@ -18,6 +18,7 @@ static struct
 	unsigned events;
 	uint32_t started;
 	uint16_t count, period, used, response_length;
+	uint8_t stream_fast_send;
 	char request[ETH_HTTP_REQUEST_MAX];
 	char response[1024];
 } s_http;
@@ -131,6 +132,7 @@ static err_t EthHttp_Init(EthNetwork_t *network, uint16_t frame_period_ms)
 		return result;
 	s_http.network = network;
 	s_http.period = frame_period_ms;
+	s_http.stream_fast_send = 0U;
 	return ERR_OK;
 }
 
@@ -221,6 +223,12 @@ static void EthHttp_Respond(unsigned code)
 	s_http.state = HTTP_RESPONSE;
 }
 
+//在测试入口初始化后配置，仅用于后续MJPEG连接
+void eth_http_set_stream_fast_send(int enabled)
+{
+	s_http.stream_fast_send = enabled != 0;
+}
+
 static void EthHttp_Request(uint32_t now, uint32_t acked)
 {
 	uint16_t old = s_http.used, i;
@@ -236,6 +244,8 @@ static void EthHttp_Request(uint32_t now, uint32_t acked)
 		if (code == HTTP_ROUTE_STREAM)
 		{
 			++s_http.stats.streams;
+			if (s_http.stream_fast_send)
+				(void)eth_tcp_enable_fast_send(s_http.handle);
 			eth_mjpeg_start(&s_http.mjpeg, s_http.frames, s_http.count, s_http.period, now, acked);
 			if (s_http.source.acquire)
 				eth_mjpeg_set_source(&s_http.mjpeg, &s_http.source);
