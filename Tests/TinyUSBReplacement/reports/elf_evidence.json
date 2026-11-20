@@ -1,0 +1,93 @@
+[
+  {
+    "kind": "stack",
+    "path": "D:\\32\\STM32H7\\h7_mac_lifecycle\\output\\TinyUSBReplacement\\stack-1795183318020359000\\stack.axf",
+    "sha256": "637c4aebe883579c91c5b4e4633ebba11faadef4050cfd373d4e781d45599d30",
+    "symbols": {
+      "mscd_xfer_cb": {
+        "address": 134226609,
+        "size": 30
+      },
+      "mscd_reset": {
+        "address": 134225605,
+        "size": 14
+      },
+      "usbd_edpt_abort": {
+        "address": 134234245,
+        "size": 92
+      },
+      "tud_rhport_init": {
+        "address": 134232965,
+        "size": 266
+      },
+      "dcd_edpt_stall": {
+        "address": 134223045,
+        "size": 24
+      },
+      "s_ram": {
+        "address": 536872736,
+        "size": 8192
+      },
+      "_mscd_itf": {
+        "address": 536871584,
+        "size": 72
+      },
+      "_mscd_epbuf": {
+        "address": 536871680,
+        "size": 1024
+      },
+      "_usbd_dev": {
+        "address": 536871040,
+        "size": 80
+      },
+      "_usbd_qdef": {
+        "address": 536870936,
+        "size": 20
+      },
+      "HAL_PCD_IRQHandler": null,
+      "USBD_LL_Reset": null,
+      "USB_MSC_BotProcess": null,
+      "USB_UVC_Process": null
+    },
+    "static_allocated_sections": [
+      {
+        "name": "RW_TEST",
+        "address": 536870912,
+        "size": 100
+      },
+      {
+        "name": "RW_TEST",
+        "address": 536871012,
+        "size": 10192
+      }
+    ]
+  },
+  {
+    "kind": "dwc2",
+    "path": "D:\\32\\STM32H7\\h7_mac_lifecycle\\output\\TinyUSBReplacement\\dwc2-1795182964299247900\\dwc2.axf",
+    "sha256": "a45efcf53b7d8ca6b474fc52f3b666238cc59db2e320e475c2e7e1007ce0933a",
+    "symbols": {
+      "mscd_xfer_cb": null,
+      "mscd_reset": null,
+      "usbd_edpt_abort": null,
+      "tud_rhport_init": null,
+      "dcd_edpt_stall": null,
+      "s_ram": null,
+      "_mscd_itf": null,
+      "_mscd_epbuf": null,
+      "_usbd_dev": null,
+      "_usbd_qdef": null,
+      "HAL_PCD_IRQHandler": null,
+      "USBD_LL_Reset": null,
+      "USB_MSC_BotProcess": null,
+      "USB_UVC_Process": null
+    },
+    "static_allocated_sections": [
+      {
+        "name": "RW_TEST",
+        "address": 536870912,
+        "size": 432
+      }
+    ]
+  }
+]

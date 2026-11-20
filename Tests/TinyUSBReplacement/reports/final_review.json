@@ -1,0 +1,25 @@
+{
+  "baseline": "81e872f834efedc9f064dc5f45ec73d73350b8cc",
+  "original_research_branch_unchanged": true,
+  "existing_modified_paths": [
+    ".gitignore"
+  ],
+  "new_adapter_lines": 94,
+  "vendor_local_changes": [
+    "src/class/video/video.h"
+  ],
+  "dcd_local_changes": [],
+  "stack": {
+    "cases": 12,
+    "passed": 12,
+    "assertions": 1679
+  },
+  "compile": {
+    "error_count": 0,
+    "warning_count": 57,
+    "full_firmware": "BLOCKED / NOT_BUILT"
+  },
+  "hardware": "NOT_TESTED",
+  "overall": "PARTIAL / BLOCKED",
+  "pdf_unchanged_untracked": true
+}

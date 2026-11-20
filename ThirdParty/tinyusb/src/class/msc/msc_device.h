@@ -1,0 +1,173 @@
+/*
+ * SPDX-FileCopyrightText: Copyright (c) 2019 Ha Thach (tinyusb.org)
+ * SPDX-License-Identifier: MIT
+ *
+ * This file is part of the TinyUSB stack.
+ */
+
+#ifndef TUSB_MSC_DEVICE_H_
+#define TUSB_MSC_DEVICE_H_
+
+#include "common/tusb_common.h"
+#include "msc.h"
+
+#ifdef __cplusplus
+ extern "C" {
+#endif
+
+//--------------------------------------------------------------------+
+// Class Driver Configuration
+//--------------------------------------------------------------------+
+
+#if !defined(CFG_TUD_MSC_EP_BUFSIZE) & defined(CFG_TUD_MSC_BUFSIZE)
+  // TODO warn user to use new name later on
+  // #warning CFG_TUD_MSC_BUFSIZE is renamed to CFG_TUD_MSC_EP_BUFSIZE, please update to use the new name
+  #define CFG_TUD_MSC_EP_BUFSIZE  CFG_TUD_MSC_BUFSIZE
+#endif
+
+#ifndef CFG_TUD_MSC_EP_BUFSIZE
+  #error CFG_TUD_MSC_EP_BUFSIZE must be defined, value of a block size should work well, the more the better
+#endif
+
+// Pad a Data-In reply shorter than the host's length with fill data, instead of a STALL after it (BOT 6.7.2 case 5),
+// when the host's length fits CFG_TUD_MSC_EP_BUFSIZE; a READ10 ending in a partial chunk (tud_msc_read10_cb) is filled
+// up to the host's length whatever its size. Behind a high-speed hub, a full-speed device's STALL makes the host clear
+// the hub's TT buffer, which can cut off a token in progress on any of the hub's full-speed ports: an RP2040 device
+// controller there then stops responding until bus reset (docs/reference/device_issues.rst). On by default at full
+// speed, so the device neither locks up itself nor knocks out an RP2040 next to it; a high-speed STALL clears no TT.
+// The default follows the build's speed capability (TUD_OPT_HIGH_SPEED), not the negotiated speed: a high-speed
+// capable build that may run at full speed behind a hub should set it to 1 (padding is harmless at high speed).
+#ifndef CFG_TUD_MSC_PAD_SHORT_REPLY
+  #define CFG_TUD_MSC_PAD_SHORT_REPLY (!TUD_OPT_HIGH_SPEED)
+#endif
+
+// Return value of callback functions
+enum {
+  TUD_MSC_RET_BUSY = 0,   // Busy, e.g disk I/O is not ready
+  TUD_MSC_RET_ERROR = -1,
+  TUD_MSC_RET_ASYNC = -2, // Asynchronous IO
+};
+
+TU_VERIFY_STATIC(CFG_TUD_MSC_EP_BUFSIZE < UINT16_MAX, "Size is not correct");
+
+//--------------------------------------------------------------------+
+// Application API
+//--------------------------------------------------------------------+
+
+// Set SCSI sense response
+bool tud_msc_set_sense(uint8_t lun, uint8_t sense_key, uint8_t add_sense_code, uint8_t add_sense_qualifier);
+
+// Called by Application once asynchronous I/O operation is done
+// bytes_io is number of bytes in I/O op, typically the bufsize in read/write_cb() or
+// TUD_MSC_RET_ERROR (-1) for error. Note TUD_MSC_RET_BUSY (0) will be treated as error as well.
+// Returns false if no I/O is pending. The completion of an I/O abandoned by a reset is accepted and discarded.
+bool tud_msc_async_io_done(int32_t bytes_io, bool in_isr);
+
+//--------------------------------------------------------------------+
+// Application Callbacks (WEAK is optional)
+//--------------------------------------------------------------------+
+
+/*
+  Invoked when received SCSI READ10/WRITE10 command
+  - Address = lba * BLOCK_SIZE + offset
+    - offset is only needed if CFG_TUD_MSC_EP_BUFSIZE is smaller than BLOCK_SIZE.
+  - Application fill the buffer (up to bufsize) with address contents and return number of bytes read or status.
+    - 0 < ret < bufsize:
+      - READ10: These bytes are transferred first. If ret is a multiple of the Bulk-In max packet size, callback will
+        be invoked again for remaining data. Otherwise the chunk ends in a short packet, which ends the Data Stage:
+        Bulk-In is STALLed and the CSW reports the remaining data as residue. With CFG_TUD_MSC_PAD_SHORT_REPLY the
+        rest of the host's length is sent as zero fill data instead of the STALL, with the same residue.
+      - WRITE10: These bytes are consumed first and callback will be invoked again for remaining data.
+    - TUD_MSC_RET_BUSY
+        Application is buys e.g disk I/O not ready. Callback will be invoked again with the same parameters later on.
+    - TUD_MSC_RET_ERROR
+        error such as invalid address. This request will be STALLed and scsi command will be failed
+    - TUD_MSC_RET_ASYNC
+        Data I/O will be done asynchronously in a background task. Application should return immediately.
+        tud_msc_async_io_done() must be called once IO/ is done to signal completion.
+        A Bulk-Only Mass Storage Reset or a bus reset abandons a pending async I/O, but it must still be completed:
+        the I/O owns the buffer until its tud_msc_async_io_done(), with any result. That completion is discarded, and
+        only then is the next command received.
+*/
+int32_t tud_msc_read10_cb (uint8_t lun, uint32_t lba, uint32_t offset, void* buffer, uint32_t bufsize);
+int32_t tud_msc_write10_cb (uint8_t lun, uint32_t lba, uint32_t offset, uint8_t* buffer, uint32_t bufsize);
+
+// Invoked when received SCSI_CMD_INQUIRY, v1, application should use v2 if possible
+// Application fill vendor id, product id and revision with string up to 8, 16, 4 characters respectively
+void tud_msc_inquiry_cb(uint8_t lun, uint8_t vendor_id[8], uint8_t product_id[16], uint8_t product_rev[4]);
+
+// Invoked when received SCSI_CMD_INQUIRY, v2 with full inquiry response
+// Some inquiry_resp's fields are already filled with default values, application can update them
+// Return length of inquiry response, typically sizeof(scsi_inquiry_resp_t) (36 bytes), can be longer if included vendor data.
+uint32_t tud_msc_inquiry2_cb(uint8_t lun, scsi_inquiry_resp_t *inquiry_resp, uint32_t bufsize);
+
+// Invoked when received Test Unit Ready command.
+// return true allowing host to read/write this LUN e.g SD card inserted
+bool tud_msc_test_unit_ready_cb(uint8_t lun);
+
+// Invoked when received SCSI_CMD_READ_CAPACITY_10 and SCSI_CMD_READ_FORMAT_CAPACITY to determine the disk size,
+// and for each READ10/WRITE10 to check it against the disk before read10/write10 callbacks are invoked
+// Application update block count and block size
+void tud_msc_capacity_cb(uint8_t lun, uint32_t* block_count, uint16_t* block_size);
+
+/**
+ * Invoked when received an SCSI command not in built-in list below.
+ * - READ_CAPACITY10, READ_FORMAT_CAPACITY, INQUIRY, TEST_UNIT_READY, START_STOP_UNIT, MODE_SENSE6, REQUEST_SENSE
+ * - READ10 and WRITE10 has their own callbacks
+ *
+ * \param[in]   lun         Logical unit number
+ * \param[in]   scsi_cmd    SCSI command contents which application must examine to response accordingly
+ * \param[out]  buffer      Buffer for SCSI Data Stage.
+ *                            - For INPUT: application must fill this with response.
+ *                            - For OUTPUT it holds the Data from host
+ * \param[in]   bufsize     Buffer's length.
+ *
+ * \return      Actual bytes processed, can be zero for no-data command.
+ * \retval      negative    Indicate error e.g unsupported command, tinyusb will \b STALL the corresponding
+ *                          endpoint and return failed status in command status wrapper phase.
+ */
+int32_t tud_msc_scsi_cb (uint8_t lun, uint8_t const scsi_cmd[16], void* buffer, uint16_t bufsize);
+
+/*------------- Optional callbacks -------------*/
+
+// Invoked when received GET_MAX_LUN request, required for multiple LUNs implementation
+uint8_t tud_msc_get_maxlun_cb(void);
+
+// Invoked when received Start Stop Unit command
+// - Start = 0 : stopped power mode, if load_eject = 1 : unload disk storage
+// - Start = 1 : active mode, if load_eject = 1 : load disk storage
+bool tud_msc_start_stop_cb(uint8_t lun, uint8_t power_condition, bool start, bool load_eject);
+
+//Invoked when we receive the Prevent / Allow Medium Removal command
+bool tud_msc_prevent_allow_medium_removal_cb(uint8_t lun, uint8_t prohibit_removal, uint8_t control);
+
+// Invoked when received REQUEST_SENSE
+int32_t tud_msc_request_sense_cb(uint8_t lun, void* buffer, uint16_t bufsize);
+
+// Invoked when Read10 command is complete
+void tud_msc_read10_complete_cb(uint8_t lun);
+
+// Invoke when Write10 command is complete, can be used to flush flash caching
+void tud_msc_write10_complete_cb(uint8_t lun);
+
+// Invoked when command in tud_msc_scsi_cb is complete
+void tud_msc_scsi_complete_cb(uint8_t lun, uint8_t const scsi_cmd[16]);
+
+// Invoked to check if device is writable as part of SCSI WRITE10
+bool tud_msc_is_writable_cb(uint8_t lun);
+
+//--------------------------------------------------------------------+
+// Internal Class Driver API
+//--------------------------------------------------------------------+
+void     mscd_init            (void);
+bool     mscd_deinit          (void);
+void     mscd_reset           (uint8_t rhport);
+uint16_t mscd_open            (uint8_t rhport, tusb_desc_interface_t const * itf_desc, uint16_t max_len);
+bool     mscd_control_xfer_cb (uint8_t rhport, uint8_t stage, tusb_control_request_t const * p_request);
+bool     mscd_xfer_cb         (uint8_t rhport, uint8_t ep_addr, xfer_result_t event, uint32_t xferred_bytes);
+
+#ifdef __cplusplus
+ }
+#endif
+
+#endif /* TUSB_MSC_DEVICE_H_ */

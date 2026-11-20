@@ -1,0 +1,11 @@
+--- upstream/src/class/video/video.h
++++ local/src/class/video/video.h
+@@ -482,7 +482,7 @@
+ /* 4.3.1.1 */
+ typedef struct TU_ATTR_PACKED {
+   union {
+-    uint8_t bmHint;
++    uint16_t bmHint; /* UVC bmHint is 16 bits; preserve wire layout on ARMCC5. */
+     struct TU_ATTR_PACKED {
+       uint16_t dwFrameInterval: 1;
+       uint16_t wKeyFrameRatel : 1;

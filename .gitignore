@@ -59,3 +59,6 @@ Thumbs.db
 
 # MSC-2 to MSC-4 local firmware and regression workspaces
 /output/MSC24/
+
+# Isolated TinyUSB replacement experiments and upstream downloads
+/output/TinyUSBReplacement/
