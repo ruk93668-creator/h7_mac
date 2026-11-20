@@ -28,3 +28,25 @@ AXF SHA-256 为 `8e7af4bfe76dc64a08c222d192dffec4fca322d2d4d687aa24c0e3a80f3ede5
 用 V1 工程人工下载 `eth_e7_v1.axf`。在 Keil 使用现有 E7 Watch 变量，先核对 `g_e7_sdram_result=0`、`g_e7_sensor_id=0x5640`、`g_e7_camera_init=0`、`g_e7_camera.running=1`。如相机仍无法初始化，先检查 PA15/U10 TP2、PH13/PH15、PA8 XCLK 和 PB8/PB9 地址 ACK，并定位首次失败的调用。冷上电和复位阶段的实际电压时序仍需在 V1 实板上读取。
 
 WLAN 共享到 PC 的板卡直连网卡时保留 `g_e7_mode=1`。等 `g_e7_address.lease_valid=1` 后，按 `g_e7_address.ip.addr` 打开板卡网页，移动镜头前物体确认画面更新。后续见 [E7 实板验收](E7_HARDWARE_VALIDATION.md)。
+
+## V1 MJPEG 数据完整性对照
+
+在 V1 板的 SDRAM 版本上，HTTP 首页和 multipart 路由均返回 200。PC 用二进制 HTTP 读取 32 个完整分片，逐帧比较板端 `X-Frame-CRC32` 并用 Pillow 解码。11 帧 CRC 正确且解析为 160×120 RGB，21 帧 CRC 不符且 JPEG 头部无法解码。后续独立采样取得 18 个完整分片，其中 TCP 流内 JPEG 起点偏移模 4 为 0 或 3 的 11 帧均通过，模 4 为 1 或 2 的 7 帧均失败。错误有重复的字节模式，替换前 32 个字节仍不能恢复整帧 CRC。该结果支持排查 SDRAM 私有副本到 TCP 队列的复制路径，具体产生错误的指令或硬件环节尚未确定。此前单独观察到的采集停机仍为 OPEN。
+
+```powershell
+python -B Tests/Ethernet/build_firmware.py --e7-v1-axi
+```
+
+对照版仅移动 CPU 独占的 60 KiB JPEG 副本到 `0x24020000..0x2402F000`。Region 6 覆盖 `0x24020000..0x24030000`，配置为缓存、XN、非共享，DCache 保持开启。Region 2 的相机硬件 FIFO、Region 4 的 Ethernet DMA、Region 5 的 TCP 环及 lwIP 内存均沿用原地址和所有权。原 V1 SDRAM 工程和固件由 `--e7-v1` 保留。
+
+| 项目 | 结果 |
+| --- | --- |
+| AXI 对照版完整编译 | PASS，0 Error / 0 Warning |
+| MAP 检查 | PASS，CPU 私有 JPEG 为 61440 B、Zero RW、UNINIT。Ethernet DMA 及 Region 5 通过原检查，Region 5 剩余 18832 B |
+| AXI 对照版实板 | NOT_RUN，等待首次出图、CRC 和稳定性对照 |
+
+AXF SHA-256 为 `a26f81a2cfa0618e4579b0f828aeeb23befd9e5cc2b121461d8a7917b2ffdd75`。手动使用 `MDK-ARM/h7_mac_ethernet_e7_v1_axi.uvprojx` 下载 `output/Ethernet/e7_v1_axi/eth_e7_v1_axi.axf`。等 DHCP 获租后读取新 IP，仅打开一个 MJPEG 客户端。先确认网页画面随物体移动；关闭网页，再用既有工具执行 30 秒 CRC 对照，将命令中的 IP 换成当前板卡地址。
+
+```powershell
+python -B Tests/Ethernet/e6_peer.py --camera --stream-only --board-ip 192.168.137.190 --seconds 30 --output output/Ethernet/e7_v1_axi_board/stream.json
+```

@@ -8,11 +8,18 @@
 #include "camera_mjpeg_fifo.h"
 #include "ov5640_device.h"
 
+#ifdef ETH_E7_JPEG_AXI
+#define E7_NETWORK_START 0x24020000UL
+#if E7_NETWORK_START + E7_JPEG_CAPACITY > 0x24030000UL
+#error E7 private JPEG must fit in the 64 KiB AXI window
+#endif
+#else
 #define E7_NETWORK_START 0xD07F0000UL
 #define E7_AVI_END 0xD05A0000UL
 #if E7_NETWORK_START < CAMERA_MJPEG_REGION_END || E7_NETWORK_START < E7_AVI_END || \
 	E7_NETWORK_START + E7_JPEG_CAPACITY > BSP_SDRAM_END
 #error E7 network window must be outside all existing SDRAM users
+#endif
 #endif
 
 static uint8_t g_e7_jpeg[E7_JPEG_CAPACITY] __attribute__((section(".e7_jpeg"), zero_init, aligned(32), used));
@@ -59,6 +66,16 @@ static void E7Mpu(void)
 	region.IsCacheable = MPU_ACCESS_NOT_CACHEABLE;
 	region.IsBufferable = MPU_ACCESS_NOT_BUFFERABLE;
 	HAL_MPU_ConfigRegion(&region);
+#ifdef ETH_E7_JPEG_AXI
+	/* CPU-only JPEG copy. Camera and Ethernet DMA retain their own regions. */
+	region.Number = MPU_REGION_NUMBER6;
+	region.BaseAddress = E7_NETWORK_START;
+	region.Size = MPU_REGION_SIZE_64KB;
+	region.IsShareable = MPU_ACCESS_NOT_SHAREABLE;
+	region.IsCacheable = MPU_ACCESS_CACHEABLE;
+	region.IsBufferable = MPU_ACCESS_BUFFERABLE;
+	HAL_MPU_ConfigRegion(&region);
+#endif
 }
 
 static SysResult_t E7Stop(void)
