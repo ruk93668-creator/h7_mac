@@ -14,6 +14,8 @@ typedef struct
 MscBotCase_t USB_MSC_BotCase(uint32_t host_length, bool host_in, uint32_t device_length, bool device_in);
 SysResult_t USB_MSC_BotStart(const MscBackendOps_t *backend);
 void USB_MSC_BotStop(void);
+//只证明backend旧epoch已排空，不替代USB端点或RAW租约退休。
+bool USB_MSC_BotBackendDrained(void);
 void USB_MSC_BotProcess(uint32_t now_ms);
 void USB_MSC_BotDataIn(void);
 void USB_MSC_BotDataOut(uint32_t length);

@@ -1,0 +1,592 @@
+{
+  "cases": [
+    {
+      "id": 1,
+      "passed": false,
+      "assertions": [
+        {
+          "name": "real mailbox submit",
+          "actual": 0,
+          "expected": 0,
+          "passed": true
+        },
+        {
+          "name": "real mailbox DRAIN while device not quiescent",
+          "actual": 3,
+          "expected": 3,
+          "passed": true
+        },
+        {
+          "name": "not drained",
+          "actual": 0,
+          "expected": 0,
+          "passed": true
+        },
+        {
+          "name": "DeInit BUSY keeps worker",
+          "actual": 1,
+          "expected": 1,
+          "passed": true
+        },
+        {
+          "name": "no endpoint Close before consumer proof",
+          "actual": 0,
+          "expected": 0,
+          "passed": true
+        },
+        {
+          "name": "old request identity kept",
+          "actual": 1,
+          "expected": 1,
+          "passed": true
+        },
+        {
+          "name": "only device quiescence allows mailbox retirement",
+          "actual": 1,
+          "expected": 1,
+          "passed": true
+        },
+        {
+          "name": "both independent endpoints now attempted",
+          "actual": 2,
+          "expected": 2,
+          "passed": true
+        },
+        {
+          "name": "USB refusal not reported success",
+          "actual": 3,
+          "expected": 2,
+          "passed": false
+        },
+        {
+          "name": "IN resource retained",
+          "actual": 1,
+          "expected": 1,
+          "passed": true
+        },
+        {
+          "name": "OUT resource retained",
+          "actual": 1,
+          "expected": 1,
+          "passed": true
+        },
+        {
+          "name": "critical mask restored",
+          "actual": 0,
+          "expected": 0,
+          "passed": true
+        },
+        {
+          "name": "no unexpected protocol or USB proof stub",
+          "actual": 0,
+          "expected": 0,
+          "passed": true
+        }
+      ],
+      "trace": [
+        {
+          "op": 0,
+          "observations": {
+            "g_worker_guard": {
+              "result": 0,
+              "mail": 1,
+              "drained": 0,
+              "closes": 0,
+              "epoch": 1,
+              "in_open": 1,
+              "out_open": 1,
+              "mask": 0,
+              "unexpected": 0
+            }
+          },
+          "registers": {
+            "DCTL": 0,
+            "GINTSTS": 0,
+            "DOEPCTL2": 0,
+            "DOEPINT2": 0
+          },
+          "primask": 0
+        },
+        {
+          "op": 1,
+          "observations": {
+            "g_worker_guard": {
+              "result": 0,
+              "mail": 3,
+              "drained": 0,
+              "closes": 0,
+              "epoch": 1,
+              "in_open": 1,
+              "out_open": 1,
+              "mask": 0,
+              "unexpected": 0
+            }
+          },
+          "registers": {
+            "DCTL": 0,
+            "GINTSTS": 0,
+            "DOEPCTL2": 0,
+            "DOEPINT2": 0
+          },
+          "primask": 0
+        },
+        {
+          "op": 2,
+          "observations": {
+            "g_worker_guard": {
+              "result": 1,
+              "mail": 3,
+              "drained": 0,
+              "closes": 0,
+              "epoch": 1,
+              "in_open": 1,
+              "out_open": 1,
+              "mask": 0,
+              "unexpected": 0
+            }
+          },
+          "registers": {
+            "DCTL": 0,
+            "GINTSTS": 0,
+            "DOEPCTL2": 0,
+            "DOEPINT2": 0
+          },
+          "primask": 0
+        },
+        {
+          "op": 3,
+          "observations": {
+            "g_worker_guard": {
+              "result": 0,
+              "mail": 0,
+              "drained": 1,
+              "closes": 0,
+              "epoch": 1,
+              "in_open": 1,
+              "out_open": 1,
+              "mask": 0,
+              "unexpected": 0
+            }
+          },
+          "registers": {
+            "DCTL": 0,
+            "GINTSTS": 0,
+            "DOEPCTL2": 0,
+            "DOEPINT2": 0
+          },
+          "primask": 0
+        },
+        {
+          "op": 2,
+          "observations": {
+            "g_worker_guard": {
+              "result": 3,
+              "mail": 0,
+              "drained": 1,
+              "closes": 2,
+              "epoch": 1,
+              "in_open": 1,
+              "out_open": 1,
+              "mask": 0,
+              "unexpected": 0
+            }
+          },
+          "registers": {
+            "DCTL": 0,
+            "GINTSTS": 0,
+            "DOEPCTL2": 0,
+            "DOEPINT2": 0
+          },
+          "primask": 0
+        }
+      ]
+    },
+    {
+      "id": 2,
+      "passed": false,
+      "assertions": [
+        {
+          "name": "real mailbox submit",
+          "actual": 0,
+          "expected": 0,
+          "passed": true
+        },
+        {
+          "name": "real mailbox DRAIN while device not quiescent",
+          "actual": 3,
+          "expected": 3,
+          "passed": true
+        },
+        {
+          "name": "not drained",
+          "actual": 0,
+          "expected": 0,
+          "passed": true
+        },
+        {
+          "name": "DeInit BUSY keeps worker",
+          "actual": 1,
+          "expected": 1,
+          "passed": true
+        },
+        {
+          "name": "no endpoint Close before consumer proof",
+          "actual": 0,
+          "expected": 0,
+          "passed": true
+        },
+        {
+          "name": "old request identity kept",
+          "actual": 1,
+          "expected": 1,
+          "passed": true
+        },
+        {
+          "name": "only device quiescence allows mailbox retirement",
+          "actual": 1,
+          "expected": 1,
+          "passed": true
+        },
+        {
+          "name": "both independent endpoints now attempted",
+          "actual": 2,
+          "expected": 2,
+          "passed": true
+        },
+        {
+          "name": "USB refusal not reported success",
+          "actual": 3,
+          "expected": 2,
+          "passed": false
+        },
+        {
+          "name": "IN resource retained",
+          "actual": 1,
+          "expected": 1,
+          "passed": true
+        },
+        {
+          "name": "OUT resource retained",
+          "actual": 1,
+          "expected": 1,
+          "passed": true
+        },
+        {
+          "name": "critical mask restored",
+          "actual": 0,
+          "expected": 0,
+          "passed": true
+        },
+        {
+          "name": "no unexpected protocol or USB proof stub",
+          "actual": 0,
+          "expected": 0,
+          "passed": true
+        }
+      ],
+      "trace": [
+        {
+          "op": 0,
+          "observations": {
+            "g_worker_guard": {
+              "result": 0,
+              "mail": 1,
+              "drained": 0,
+              "closes": 0,
+              "epoch": 1,
+              "in_open": 1,
+              "out_open": 1,
+              "mask": 0,
+              "unexpected": 0
+            }
+          },
+          "registers": {
+            "DCTL": 0,
+            "GINTSTS": 0,
+            "DOEPCTL2": 0,
+            "DOEPINT2": 0
+          },
+          "primask": 0
+        },
+        {
+          "op": 1,
+          "observations": {
+            "g_worker_guard": {
+              "result": 0,
+              "mail": 3,
+              "drained": 0,
+              "closes": 0,
+              "epoch": 1,
+              "in_open": 1,
+              "out_open": 1,
+              "mask": 0,
+              "unexpected": 0
+            }
+          },
+          "registers": {
+            "DCTL": 0,
+            "GINTSTS": 0,
+            "DOEPCTL2": 0,
+            "DOEPINT2": 0
+          },
+          "primask": 0
+        },
+        {
+          "op": 4,
+          "observations": {
+            "g_worker_guard": {
+              "result": 1,
+              "mail": 3,
+              "drained": 0,
+              "closes": 0,
+              "epoch": 1,
+              "in_open": 1,
+              "out_open": 1,
+              "mask": 0,
+              "unexpected": 0
+            }
+          },
+          "registers": {
+            "DCTL": 0,
+            "GINTSTS": 0,
+            "DOEPCTL2": 0,
+            "DOEPINT2": 0
+          },
+          "primask": 0
+        },
+        {
+          "op": 3,
+          "observations": {
+            "g_worker_guard": {
+              "result": 0,
+              "mail": 0,
+              "drained": 1,
+              "closes": 0,
+              "epoch": 1,
+              "in_open": 1,
+              "out_open": 1,
+              "mask": 0,
+              "unexpected": 0
+            }
+          },
+          "registers": {
+            "DCTL": 0,
+            "GINTSTS": 0,
+            "DOEPCTL2": 0,
+            "DOEPINT2": 0
+          },
+          "primask": 0
+        },
+        {
+          "op": 2,
+          "observations": {
+            "g_worker_guard": {
+              "result": 3,
+              "mail": 0,
+              "drained": 1,
+              "closes": 2,
+              "epoch": 1,
+              "in_open": 1,
+              "out_open": 1,
+              "mask": 0,
+              "unexpected": 0
+            }
+          },
+          "registers": {
+            "DCTL": 0,
+            "GINTSTS": 0,
+            "DOEPCTL2": 0,
+            "DOEPINT2": 0
+          },
+          "primask": 0
+        }
+      ]
+    },
+    {
+      "id": 3,
+      "passed": false,
+      "assertions": [
+        {
+          "name": "real mailbox submit",
+          "actual": 0,
+          "expected": 0,
+          "passed": true
+        },
+        {
+          "name": "unstarted queue cancel has no DMA reference",
+          "actual": 1,
+          "expected": 1,
+          "passed": true
+        },
+        {
+          "name": "USB still refuses closure",
+          "actual": 3,
+          "expected": 2,
+          "passed": false
+        },
+        {
+          "name": "IN resource retained",
+          "actual": 1,
+          "expected": 1,
+          "passed": true
+        },
+        {
+          "name": "OUT resource retained",
+          "actual": 1,
+          "expected": 1,
+          "passed": true
+        },
+        {
+          "name": "critical mask restored",
+          "actual": 0,
+          "expected": 0,
+          "passed": true
+        },
+        {
+          "name": "no unexpected protocol or USB proof stub",
+          "actual": 0,
+          "expected": 0,
+          "passed": true
+        }
+      ],
+      "trace": [
+        {
+          "op": 0,
+          "observations": {
+            "g_worker_guard": {
+              "result": 0,
+              "mail": 1,
+              "drained": 0,
+              "closes": 0,
+              "epoch": 1,
+              "in_open": 1,
+              "out_open": 1,
+              "mask": 0,
+              "unexpected": 0
+            }
+          },
+          "registers": {
+            "DCTL": 0,
+            "GINTSTS": 0,
+            "DOEPCTL2": 0,
+            "DOEPINT2": 0
+          },
+          "primask": 0
+        },
+        {
+          "op": 2,
+          "observations": {
+            "g_worker_guard": {
+              "result": 3,
+              "mail": 0,
+              "drained": 1,
+              "closes": 2,
+              "epoch": 1,
+              "in_open": 1,
+              "out_open": 1,
+              "mask": 0,
+              "unexpected": 0
+            }
+          },
+          "registers": {
+            "DCTL": 0,
+            "GINTSTS": 0,
+            "DOEPCTL2": 0,
+            "DOEPINT2": 0
+          },
+          "primask": 0
+        }
+      ]
+    }
+  ],
+  "commands": [
+    {
+      "argv": [
+        "D:\\32\\ARM\\ARMCC\\Bin\\armcc.exe",
+        "--cpu",
+        "Cortex-M7",
+        "--c99",
+        "--split_sections",
+        "-O0",
+        "-DSTM32H747xx",
+        "-DCORE_CM7",
+        "-DUSE_HAL_DRIVER",
+        "--preinclude",
+        "D:\\32\\STM32H7\\h7_mac_lifecycle\\CM7\\BSP\\bsp_usb_hal_config.h",
+        "-I",
+        "D:\\32\\STM32H7\\h7_mac_lifecycle\\CM7\\Core\\Inc",
+        "-I",
+        "D:\\32\\STM32H7\\h7_mac_lifecycle\\Drivers\\STM32H7xx_HAL_Driver\\Inc",
+        "-I",
+        "D:\\32\\STM32H7\\h7_mac_lifecycle\\Drivers\\STM32H7xx_HAL_Driver\\Inc\\Legacy",
+        "-I",
+        "D:\\32\\STM32H7\\h7_mac_lifecycle\\Drivers\\CMSIS\\Device\\ST\\STM32H7xx\\Include",
+        "-I",
+        "D:\\32\\STM32H7\\h7_mac_lifecycle\\Drivers\\CMSIS\\Include",
+        "-I",
+        "D:\\32\\STM32H7\\h7_mac_lifecycle\\Common\\Inc",
+        "-I",
+        "D:\\32\\STM32H7\\h7_mac_lifecycle\\Board\\Inc",
+        "-I",
+        "D:\\32\\STM32H7\\h7_mac_lifecycle\\CM7\\Application",
+        "-I",
+        "D:\\32\\STM32H7\\h7_mac_lifecycle\\CM7\\Service",
+        "-I",
+        "D:\\32\\STM32H7\\h7_mac_lifecycle\\CM7\\Device\\Inc",
+        "-I",
+        "D:\\32\\STM32H7\\h7_mac_lifecycle\\CM7\\Media\\Inc",
+        "-I",
+        "D:\\32\\STM32H7\\h7_mac_lifecycle\\CM7\\Platform",
+        "-I",
+        "D:\\32\\STM32H7\\h7_mac_lifecycle\\CM7\\BSP",
+        "-I",
+        "D:\\32\\STM32H7\\h7_mac_lifecycle\\CM7\\Framework",
+        "-I",
+        "D:\\32\\STM32H7\\h7_mac_lifecycle\\CM7\\Device\\Components\\OV5640",
+        "-I",
+        "D:\\32\\STM32H7\\h7_mac_lifecycle\\Middlewares\\ST\\STM32_USB_Device_Library\\Core\\Inc",
+        "-I",
+        "D:\\32\\STM32H7\\h7_mac_lifecycle\\Middlewares\\Third_Party\\FreeRTOS\\Source\\include",
+        "-I",
+        "D:\\32\\STM32H7\\h7_mac_lifecycle\\Middlewares\\Third_Party\\FreeRTOS\\Source\\portable\\RVDS\\ARM_CM7\\r0p1",
+        "-I",
+        "D:\\32\\STM32H7\\h7_mac_lifecycle\\Middlewares\\Third_Party\\FatFs",
+        "-c",
+        "D:\\32\\STM32H7\\h7_mac_lifecycle\\Tests\\UsbLifecycleFinal\\worker_guard_test.c",
+        "-o",
+        "D:\\32\\STM32H7\\h7_mac_lifecycle\\output\\MSC24\\udlm-p1-final\\worker\\worker_guard_test.o"
+      ],
+      "exit": 0,
+      "output": ""
+    },
+    {
+      "argv": [
+        "D:\\32\\ARM\\ARMCC\\Bin\\armlink.exe",
+        "D:\\32\\STM32H7\\h7_mac_lifecycle\\output\\MSC24\\udlm-p1-final\\worker\\worker_guard_test.o",
+        "--entry",
+        "Worker_Step",
+        "--no_scanlib",
+        "--scatter",
+        "D:\\32\\STM32H7\\h7_mac_lifecycle\\Tests\\EndpointLifecycle\\test.sct",
+        "-o",
+        "D:\\32\\STM32H7\\h7_mac_lifecycle\\output\\MSC24\\udlm-p1-final\\worker\\hal_out_evidence.axf"
+      ],
+      "exit": 0,
+      "output": ""
+    }
+  ],
+  "summary": {
+    "cases": 3,
+    "passed": 0,
+    "assertions": 33
+  },
+  "scope": "consumer guard only; USB Close refuses, no USB/SD silicon proof fabricated",
+  "hardware": "NOT_TESTED",
+  "sources": {
+    "CM7/Service/usb_msc_class.c": "3d10691b38eb450314af49f48f8e698427ae9b791ee8483d0a0fe433b4afd10e",
+    "CM7/Service/usb_msc_bot.c": "e36978c5e945d72cb007b884853e894325349463fb700395002666d4a9966bf4",
+    "CM7/Service/usb_msc_bot.h": "7c99d6d3ccf82c0507f5af20660ce8830f71ab99f9232f9b8ea4c95cfa51afbe",
+    "Tests/UsbLifecycleFinal/worker_guard_test.c": "4f2f8a1cf5d01de7f3015236c686c064337e43fb0a3b0f4d1600d33a51717da5",
+    "Tests/UsbLifecycleFinal/run_worker_tests.py": "b3566990c563ee3b5e37c2dcb4134dc69fa2e0461d83e1dd3428e72b779b55b2"
+  }
+}

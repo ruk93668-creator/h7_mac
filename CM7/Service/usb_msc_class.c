@@ -90,6 +90,8 @@ static uint8_t Msc_DeInit(USBD_HandleTypeDef *device, uint8_t config)
     //先禁止接口请求，再分别尝试关闭两个方向，不因单方向失败而提前退出
     s_configured = false;
     USB_MSC_BotStop();
+    //取消请求不等于Storage/IDMA静止；ISR中只做有界查询，不同步等待。
+    if (!USB_MSC_BotBackendDrained()) return USBD_BUSY;
     if (s_out_open)
     {
         if (USB_Device_CloseEp(USB_MSC_OUT_EP) == SYS_OK)

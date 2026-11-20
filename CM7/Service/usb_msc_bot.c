@@ -237,6 +237,11 @@ void USB_MSC_BotStop(void)
     if (s_bot.backend != NULL) s_bot.backend->cancel(s_bot.epoch);
     s_bot.state = BOT_OFF;
 }
+bool USB_MSC_BotBackendDrained(void)
+{
+    return s_bot.backend == NULL || (s_bot.backend->drained != NULL &&
+        s_bot.backend->drained(s_bot.epoch));
+}
 void USB_MSC_BotDataIn(void)
 {
     //真实完成序号由Platform记录，迟到回调不能自行推动BOT
