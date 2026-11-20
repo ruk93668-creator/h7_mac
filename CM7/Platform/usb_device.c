@@ -35,6 +35,9 @@ static volatile bool s_registered;
 //锁存尚未恢复的设备故障，恢复前禁止重新启动
 static volatile bool s_stop_required;
 
+//只由原UsbTask的Controller Stop意图发布，失败不解除数据面Fence。
+static bool s_controller_endpoint_fence;
+
 //生命周期回调执行期间禁止重入Init、Register、Start和Stop
 static volatile bool s_control_busy;
 
@@ -442,6 +445,12 @@ static UsbStopProgress_t s_stop_progress;
 static uint32_t s_stop_progress_seed;
 static bool s_stop_pending_registered;
 static BspUsbInStopProof_t s_stop_pending_proof;
+static bool Usb_HasOutContract(void)
+{
+    BspUsbOutStopProof_t proof;
+    //绑定身份由真实BSP查询验证，不从普通BUSY推断；EP0已由Core打开才可进入本路径。
+    return BSP_USB_GetBulkOutProof(0U, &proof) == SYS_OK;
+}
 
 SysResult_t USB_Device_GetStopProgress(UsbStopProgress_t *progress)
 {
@@ -479,6 +488,13 @@ SysResult_t USB_Device_Stop(void)
          s_stop_progress.state == USB_STOP_PROGRESS_COMPLETE || s_stop_progress.transaction_id == 0U) && s_stop_progress_seed == UINT32_MAX)
         return SYS_ERR_NO_RESOURCE;
     s_control_busy = true;
+    if (Usb_HasOutContract() &&
+        (s_stop_progress.state == USB_STOP_PROGRESS_NONE || s_stop_progress.state == USB_STOP_PROGRESS_COMPLETE))
+    {
+        memset(&s_stop_progress, 0, sizeof(s_stop_progress));
+        s_stop_progress.transaction_id = ++s_stop_progress_seed;
+        s_stop_progress.state = USB_STOP_PROGRESS_PENDING;
+    }
     s_stop_pending_registered = false;
     result = Usb_StopDevice();
     if (result == SYS_ERR_BUSY && s_stop_pending_registered)
@@ -494,6 +510,8 @@ SysResult_t USB_Device_Stop(void)
     else
         s_stop_progress.state = result == SYS_OK ? USB_STOP_PROGRESS_COMPLETE : USB_STOP_PROGRESS_FAILED;
     s_stop_progress.result = result;
+    if (s_stop_progress.controller_gate_blocked)
+        s_stop_progress.state = USB_STOP_PROGRESS_RECOVERY_REQUIRED;
     s_control_busy = false;
     return result;
 }
@@ -762,7 +780,7 @@ USBD_StatusTypeDef USBD_LL_OpenEP(USBD_HandleTypeDef *device, uint8_t ep, uint8_
 
     //在USB IRQ保护下检查并提交端点状态，退出时恢复原使能状态
     enabled = Usb_Lock();
-    if (!s_initialized || ((ep & 0x0FU) != 0U && (!s_started || s_stop_required)))
+    if (!s_initialized || ((ep & 0x0FU) != 0U && (!s_started || s_stop_required || s_controller_endpoint_fence)))
     {
         Usb_Unlock(enabled);
         return Usb_LlResult(SYS_ERR_INVALID_STATE);
@@ -988,7 +1006,8 @@ USBD_StatusTypeDef USBD_LL_Transmit(USBD_HandleTypeDef *device, uint8_t ep, uint
 
     //串行检查设备和端点状态，防止IRQ提前完成当前提交
     enabled = Usb_Lock();
-    if (!s_initialized || !s_started || s_stop_required || !entry->opened)
+    if (!s_initialized || !s_started || s_stop_required || !entry->opened ||
+        ((ep & 0x0FU) != 0U && s_controller_endpoint_fence))
     {
         Usb_Unlock(enabled);
         return Usb_LlResult(SYS_ERR_INVALID_STATE);
@@ -1044,7 +1063,8 @@ USBD_StatusTypeDef USBD_LL_PrepareReceive(USBD_HandleTypeDef *device, uint8_t ep
 
     //屏蔽USB IRQ，保护接收状态检查与提交
     enabled = Usb_Lock();
-    if (!s_initialized || !s_started || s_stop_required || !entry->opened)
+    if (!s_initialized || !s_started || s_stop_required || !entry->opened ||
+        ((ep & 0x0FU) != 0U && s_controller_endpoint_fence))
     {
         Usb_Unlock(enabled);
         return Usb_LlResult(SYS_ERR_INVALID_STATE);
@@ -1926,6 +1946,145 @@ static SysResult_t Usb_DrainBulkInStops(void)
     return pending ? SYS_ERR_BUSY : SYS_OK;
 }
 
+//C2：同一Controller意图推进全部Bulk方向，不把USB proof等同消费者/EP0 proof。
+static UsbBulkOutStopTransaction_t s_group_out[BSP_USB_ENDPOINT_COUNT];
+static bool s_group_registered[2][BSP_USB_ENDPOINT_COUNT];
+static SysResult_t Usb_DrainBulkEndpointStops(void)
+{
+    uint8_t direction, index;
+    SysResult_t first = SYS_OK;
+    bool pending = false;
+    s_controller_endpoint_fence = true;
+    s_stop_progress.submission_fenced = true;
+    s_stop_progress.endpoint_count = 0U;
+    s_stop_progress.pending_count = 0U;
+    //先核对全组，已有外部Attempt不可被本Controller事务静默接管。
+    for (direction = 0U; direction < 2U; ++direction)
+    {
+        for (index = 1U; index < BSP_USB_ENDPOINT_COUNT; ++index)
+        {
+            if (!s_endpoints[direction][index].opened || s_group_registered[direction][index] ||
+                s_endpoints[direction][index].type != USBD_EP_TYPE_BULK) continue;
+            if (direction != 0U)
+            {
+                BspUsbInStopProof_t proof;
+                if (BSP_USB_GetBulkInProof((uint8_t)(0x80U | index), &proof) == SYS_OK &&
+                    proof.stage != BSP_USB_STOP_NONE) return SYS_ERR_BUSY;
+            }
+            else
+            {
+                BspUsbOutStopProof_t proof;
+                if (BSP_USB_GetBulkOutProof(index, &proof) == SYS_OK &&
+                    proof.stage != BSP_USB_OUT_NONE) return SYS_ERR_BUSY;
+            }
+        }
+    }
+    for (direction = 0U; direction < 2U; ++direction)
+    {
+        for (index = 1U; index < BSP_USB_ENDPOINT_COUNT; ++index)
+        {
+            uint8_t ep = (uint8_t)(index | (direction != 0U ? 0x80U : 0U));
+            uint32_t slot = direction * (BSP_USB_ENDPOINT_COUNT - 1U) + index - 1U;
+            UsbStopEndpointProgress_t *entry = &s_stop_progress.endpoints[slot];
+            SysResult_t result = SYS_OK;
+            bool committed = false, registered = false;
+            if (!s_endpoints[direction][index].opened) continue;
+            ++s_stop_progress.endpoint_count;
+            entry->address = ep;
+            if (s_endpoints[direction][index].type != USBD_EP_TYPE_BULK)
+                result = SYS_ERR_NOT_SUPPORTED;
+            else if (direction != 0U)
+            {
+                BspUsbInStopProof_t proof;
+                result = BSP_USB_GetBulkInProof(ep, &proof);
+                if (result == SYS_OK && !s_group_registered[direction][index])
+                {
+                    if (proof.stage != BSP_USB_STOP_NONE) result = SYS_ERR_BUSY;
+                    else
+                    {
+                        result = USB_Device_GetBulkInTransfer(ep, &s_bulk_stop_transaction[index]);
+                        if (result == SYS_OK)
+                            result = USB_Device_BeginBulkInStop(&s_bulk_stop_transaction[index], 1000U, &proof);
+                        if (result == SYS_OK && proof.stop_attempt != 0U)
+                            s_group_registered[direction][index] = true;
+                    }
+                }
+                else if (result == SYS_OK)
+                    result = USB_Device_PollBulkInStop(&s_bulk_stop_transaction[index], &proof);
+                if (result == SYS_OK && proof.stage == BSP_USB_STOP_PROVEN)
+                    result = USB_Device_CommitBulkInRetirement(&s_bulk_stop_transaction[index], &proof);
+                registered = s_group_registered[direction][index];
+                if (result == SYS_OK)
+                {
+                    if (proof.stage == BSP_USB_STOP_FAULT)
+                        result = proof.error == SYS_OK || proof.error == SYS_ERR_BUSY ? SYS_ERR_IO : proof.error;
+                    committed = committed || proof.stage == BSP_USB_STOP_COMMITTED;
+                    entry->transfer = proof.transfer; entry->attempt = proof.stop_attempt;
+                    entry->stage = proof.stage; entry->source_owned = proof.source_owned || proof.pool_owned;
+                }
+            }
+            else
+            {
+                BspUsbOutStopProof_t proof;
+                result = BSP_USB_GetBulkOutProof(ep, &proof);
+                if (result == SYS_OK && !s_group_registered[direction][index])
+                {
+                    if (proof.stage != BSP_USB_OUT_NONE) result = SYS_ERR_BUSY;
+                    else
+                    {
+                        result = USB_Device_GetBulkOutTransfer(ep, &s_group_out[index]);
+                        if (result == SYS_OK)
+                            result = USB_Device_BeginBulkOutStop(&s_group_out[index], 1000U, &proof);
+                        if (result == SYS_OK && proof.stop_attempt != 0U)
+                            s_group_registered[direction][index] = true;
+                    }
+                }
+                else if (result == SYS_OK)
+                    result = USB_Device_PollBulkOutStop(&s_group_out[index], &proof);
+                if (result == SYS_OK && proof.stage == BSP_USB_OUT_PROVEN)
+                    result = USB_Device_CommitBulkOutRetirement(&s_group_out[index], &proof);
+                registered = s_group_registered[direction][index];
+                if (result == SYS_OK)
+                {
+                    if (proof.stage == BSP_USB_OUT_FAULT)
+                        result = proof.error == SYS_OK || proof.error == SYS_ERR_BUSY ? SYS_ERR_IO : proof.error;
+                    committed = proof.stage == BSP_USB_OUT_COMMITTED;
+                    entry->transfer = proof.transfer; entry->attempt = proof.stop_attempt;
+                    entry->stage = proof.stage; entry->source_owned = proof.buffer_owned;
+                }
+            }
+            entry->registered = registered; entry->committed = committed; entry->result = result;
+            if (result != SYS_OK)
+            {
+                if (first == SYS_OK) first = result;
+            }
+            else if (!committed)
+            {
+                if (!registered || entry->attempt == 0U)
+                { if (first == SYS_OK) first = SYS_ERR_INVALID_STATE; }
+                else
+                {
+                    pending = true; ++s_stop_progress.pending_count;
+                    s_stop_pending_proof.stop_attempt = entry->attempt;
+                    s_stop_pending_proof.transfer = entry->transfer;
+                }
+            }
+        }
+    }
+    s_stop_pending_registered = pending && first == SYS_OK;
+    if (first != SYS_OK)
+    {
+        if (s_stop_progress.first_error == SYS_OK) s_stop_progress.first_error = first;
+        return first;
+    }
+    if (pending) return SYS_ERR_BUSY;
+    s_stop_progress.endpoint_group_proven = true;
+    s_stop_progress.controller_gate_blocked = true;
+    if (s_stop_progress.first_error == SYS_OK) s_stop_progress.first_error = SYS_ERR_NOT_SUPPORTED;
+    //缺少EP0/Class/消费者票据，禁止继续BSP Stop。LL扩展申请批准前保持资源及会话。
+    return SYS_ERR_NOT_SUPPORTED;
+}
+
 //停止硬件并释放USB资源
 SysResult_t Usb_StopDevice(void)
 {
@@ -1942,7 +2101,7 @@ SysResult_t Usb_StopDevice(void)
         return SYS_OK;
 
     //任务每次推进一阶段；BUSY不表示已取消，也不进入同步Class释放
-    result = Usb_DrainBulkInStops();
+    result = Usb_HasOutContract() ? Usb_DrainBulkEndpointStops() : Usb_DrainBulkInStops();
     if (result != SYS_OK)
     {
         s_operation_result = result;

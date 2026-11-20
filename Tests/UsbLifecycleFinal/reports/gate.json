@@ -1,0 +1,621 @@
+{
+  "cases": [
+    {
+      "id": 1,
+      "name": "EP0 ZLP combined start ordering",
+      "expectation_met": true,
+      "implementation_status": "BLOCKED",
+      "error": null,
+      "assertions": [
+        {
+          "name": "actual HAL submission reports OK",
+          "actual": 0,
+          "expected": 0,
+          "passed": true
+        },
+        {
+          "name": "combined CNAK EPENA witnessed",
+          "actual": true,
+          "expected": true,
+          "passed": true
+        },
+        {
+          "name": "no earlier isolated SNAK phase",
+          "actual": false,
+          "expected": false,
+          "passed": true
+        }
+      ],
+      "writes": [
+        {
+          "address": "0x40080910",
+          "value": "0x0",
+          "pc": "0x8001042"
+        },
+        {
+          "address": "0x40080910",
+          "value": "0x80000",
+          "pc": "0x800105a"
+        },
+        {
+          "address": "0x40080910",
+          "value": "0x80000",
+          "pc": "0x8001072"
+        },
+        {
+          "address": "0x40080900",
+          "value": "0x84000000",
+          "pc": "0x80011e0"
+        }
+      ],
+      "trace": [
+        {
+          "op": 0,
+          "observations": {
+            "g_gate": {
+              "result": 0,
+              "pointer": 536872196,
+              "outctl": 0,
+              "inctl": 0
+            }
+          },
+          "registers": {
+            "DCTL": 0,
+            "GINTSTS": 0,
+            "DOEPCTL2": 0,
+            "DOEPINT2": 0
+          },
+          "primask": 0
+        },
+        {
+          "op": 1,
+          "observations": {
+            "g_gate": {
+              "result": 0,
+              "pointer": 536872196,
+              "outctl": 0,
+              "inctl": 2214592512
+            }
+          },
+          "registers": {
+            "DCTL": 0,
+            "GINTSTS": 0,
+            "DOEPCTL2": 0,
+            "DOEPINT2": 0
+          },
+          "primask": 0
+        }
+      ]
+    },
+    {
+      "id": 2,
+      "name": "Bulk IN ZLP combined start ordering",
+      "expectation_met": true,
+      "implementation_status": "BLOCKED",
+      "error": null,
+      "assertions": [
+        {
+          "name": "actual HAL submission reports OK",
+          "actual": 0,
+          "expected": 0,
+          "passed": true
+        },
+        {
+          "name": "combined CNAK EPENA witnessed",
+          "actual": true,
+          "expected": true,
+          "passed": true
+        },
+        {
+          "name": "no earlier isolated SNAK phase",
+          "actual": false,
+          "expected": false,
+          "passed": true
+        }
+      ],
+      "writes": [
+        {
+          "address": "0x40080930",
+          "value": "0x0",
+          "pc": "0x8001042"
+        },
+        {
+          "address": "0x40080930",
+          "value": "0x80000",
+          "pc": "0x800105a"
+        },
+        {
+          "address": "0x40080930",
+          "value": "0x80000",
+          "pc": "0x8001072"
+        },
+        {
+          "address": "0x40080920",
+          "value": "0x84000000",
+          "pc": "0x80011e0"
+        }
+      ],
+      "trace": [
+        {
+          "op": 0,
+          "observations": {
+            "g_gate": {
+              "result": 0,
+              "pointer": 536872196,
+              "outctl": 0,
+              "inctl": 0
+            }
+          },
+          "registers": {
+            "DCTL": 0,
+            "GINTSTS": 0,
+            "DOEPCTL2": 0,
+            "DOEPINT2": 0
+          },
+          "primask": 0
+        },
+        {
+          "op": 2,
+          "observations": {
+            "g_gate": {
+              "result": 0,
+              "pointer": 536872196,
+              "outctl": 0,
+              "inctl": 0
+            }
+          },
+          "registers": {
+            "DCTL": 0,
+            "GINTSTS": 0,
+            "DOEPCTL2": 0,
+            "DOEPINT2": 0
+          },
+          "primask": 0
+        }
+      ]
+    },
+    {
+      "id": 3,
+      "name": "active EP0 OUT uses generic EPDIS",
+      "expectation_met": true,
+      "implementation_status": "BLOCKED",
+      "error": null,
+      "assertions": [
+        {
+          "name": "EPDIS attempt follows actual active state",
+          "actual": true,
+          "expected": true,
+          "passed": true
+        },
+        {
+          "name": "Buffer pointer retained",
+          "actual": 536872196,
+          "expected": 536872196,
+          "passed": true
+        },
+        {
+          "name": "actual HAL error vs idle success",
+          "actual": 1,
+          "expected": 1,
+          "passed": true
+        }
+      ],
+      "writes": [
+        {
+          "address": "0x40080b00",
+          "value": "0x88000000",
+          "pc": "0x800147a"
+        },
+        {
+          "address": "0x40080b00",
+          "value": "0xc8000000",
+          "pc": "0x800148e"
+        }
+      ],
+      "trace": [
+        {
+          "op": 0,
+          "observations": {
+            "g_gate": {
+              "result": 0,
+              "pointer": 536872196,
+              "outctl": 0,
+              "inctl": 0
+            }
+          },
+          "registers": {
+            "DCTL": 0,
+            "GINTSTS": 0,
+            "DOEPCTL2": 0,
+            "DOEPINT2": 0
+          },
+          "primask": 0
+        },
+        {
+          "op": 3,
+          "observations": {
+            "g_gate": {
+              "result": 1,
+              "pointer": 536872196,
+              "outctl": 3355443200,
+              "inctl": 0
+            }
+          },
+          "registers": {
+            "DCTL": 0,
+            "GINTSTS": 0,
+            "DOEPCTL2": 0,
+            "DOEPINT2": 0
+          },
+          "primask": 0
+        }
+      ]
+    },
+    {
+      "id": 4,
+      "name": "inactive EP0 OUT no disable write",
+      "expectation_met": true,
+      "implementation_status": "CONTROL_OBSERVATION",
+      "error": null,
+      "assertions": [
+        {
+          "name": "EPDIS attempt follows actual active state",
+          "actual": false,
+          "expected": false,
+          "passed": true
+        },
+        {
+          "name": "Buffer pointer retained",
+          "actual": 536872196,
+          "expected": 536872196,
+          "passed": true
+        },
+        {
+          "name": "actual HAL error vs idle success",
+          "actual": 0,
+          "expected": 0,
+          "passed": true
+        }
+      ],
+      "writes": [],
+      "trace": [
+        {
+          "op": 0,
+          "observations": {
+            "g_gate": {
+              "result": 0,
+              "pointer": 536872196,
+              "outctl": 0,
+              "inctl": 0
+            }
+          },
+          "registers": {
+            "DCTL": 0,
+            "GINTSTS": 0,
+            "DOEPCTL2": 0,
+            "DOEPINT2": 0
+          },
+          "primask": 0
+        },
+        {
+          "op": 3,
+          "observations": {
+            "g_gate": {
+              "result": 0,
+              "pointer": 536872196,
+              "outctl": 0,
+              "inctl": 0
+            }
+          },
+          "registers": {
+            "DCTL": 0,
+            "GINTSTS": 0,
+            "DOEPCTL2": 0,
+            "DOEPINT2": 0
+          },
+          "primask": 0
+        }
+      ]
+    },
+    {
+      "id": 5,
+      "name": "nonzero IN is not ZLP workaround witness",
+      "expectation_met": true,
+      "implementation_status": "CONTROL_OBSERVATION",
+      "error": null,
+      "assertions": [
+        {
+          "name": "actual HAL submission reports OK",
+          "actual": 0,
+          "expected": 0,
+          "passed": true
+        },
+        {
+          "name": "combined CNAK EPENA witnessed",
+          "actual": true,
+          "expected": true,
+          "passed": true
+        }
+      ],
+      "writes": [
+        {
+          "address": "0x40080930",
+          "value": "0x0",
+          "pc": "0x800108c"
+        },
+        {
+          "address": "0x40080930",
+          "value": "0x0",
+          "pc": "0x80010a4"
+        },
+        {
+          "address": "0x40080930",
+          "value": "0x80000",
+          "pc": "0x80010f8"
+        },
+        {
+          "address": "0x40080930",
+          "value": "0x80004",
+          "pc": "0x8001154"
+        },
+        {
+          "address": "0x40080920",
+          "value": "0x84000000",
+          "pc": "0x80011e0"
+        },
+        {
+          "address": "0x40080834",
+          "value": "0x2",
+          "pc": "0x8001204"
+        }
+      ],
+      "trace": [
+        {
+          "op": 0,
+          "observations": {
+            "g_gate": {
+              "result": 0,
+              "pointer": 536872196,
+              "outctl": 0,
+              "inctl": 0
+            }
+          },
+          "registers": {
+            "DCTL": 0,
+            "GINTSTS": 0,
+            "DOEPCTL2": 0,
+            "DOEPINT2": 0
+          },
+          "primask": 0
+        },
+        {
+          "op": 4,
+          "observations": {
+            "g_gate": {
+              "result": 0,
+              "pointer": 536872196,
+              "outctl": 0,
+              "inctl": 0
+            }
+          },
+          "registers": {
+            "DCTL": 0,
+            "GINTSTS": 0,
+            "DOEPCTL2": 0,
+            "DOEPINT2": 0
+          },
+          "primask": 0
+        }
+      ]
+    }
+  ],
+  "commands": [
+    {
+      "argv": [
+        "D:\\32\\ARM\\ARMCC\\Bin\\armcc.exe",
+        "--cpu",
+        "Cortex-M7",
+        "--c99",
+        "--split_sections",
+        "-O0",
+        "-DSTM32H747xx",
+        "-DCORE_CM7",
+        "-DUSE_HAL_DRIVER",
+        "--preinclude",
+        "D:\\32\\STM32H7\\h7_mac_lifecycle\\CM7\\BSP\\bsp_usb_hal_config.h",
+        "-I",
+        "D:\\32\\STM32H7\\h7_mac_lifecycle\\CM7\\Core\\Inc",
+        "-I",
+        "D:\\32\\STM32H7\\h7_mac_lifecycle\\Drivers\\STM32H7xx_HAL_Driver\\Inc",
+        "-I",
+        "D:\\32\\STM32H7\\h7_mac_lifecycle\\Drivers\\STM32H7xx_HAL_Driver\\Inc\\Legacy",
+        "-I",
+        "D:\\32\\STM32H7\\h7_mac_lifecycle\\Drivers\\CMSIS\\Device\\ST\\STM32H7xx\\Include",
+        "-I",
+        "D:\\32\\STM32H7\\h7_mac_lifecycle\\Drivers\\CMSIS\\Include",
+        "-I",
+        "D:\\32\\STM32H7\\h7_mac_lifecycle\\Common\\Inc",
+        "-I",
+        "D:\\32\\STM32H7\\h7_mac_lifecycle\\Board\\Inc",
+        "-I",
+        "D:\\32\\STM32H7\\h7_mac_lifecycle\\CM7\\Application",
+        "-I",
+        "D:\\32\\STM32H7\\h7_mac_lifecycle\\CM7\\Service",
+        "-I",
+        "D:\\32\\STM32H7\\h7_mac_lifecycle\\CM7\\Device\\Inc",
+        "-I",
+        "D:\\32\\STM32H7\\h7_mac_lifecycle\\CM7\\Media\\Inc",
+        "-I",
+        "D:\\32\\STM32H7\\h7_mac_lifecycle\\CM7\\Platform",
+        "-I",
+        "D:\\32\\STM32H7\\h7_mac_lifecycle\\CM7\\BSP",
+        "-I",
+        "D:\\32\\STM32H7\\h7_mac_lifecycle\\CM7\\Framework",
+        "-I",
+        "D:\\32\\STM32H7\\h7_mac_lifecycle\\CM7\\Device\\Components\\OV5640",
+        "-I",
+        "D:\\32\\STM32H7\\h7_mac_lifecycle\\Middlewares\\ST\\STM32_USB_Device_Library\\Core\\Inc",
+        "-I",
+        "D:\\32\\STM32H7\\h7_mac_lifecycle\\Middlewares\\Third_Party\\FreeRTOS\\Source\\include",
+        "-I",
+        "D:\\32\\STM32H7\\h7_mac_lifecycle\\Middlewares\\Third_Party\\FreeRTOS\\Source\\portable\\RVDS\\ARM_CM7\\r0p1",
+        "-I",
+        "D:\\32\\STM32H7\\h7_mac_lifecycle\\Middlewares\\Third_Party\\FatFs",
+        "-c",
+        "D:\\32\\STM32H7\\h7_mac_lifecycle\\Tests\\UsbLifecycleFinal\\gate_test.c",
+        "-o",
+        "D:\\32\\STM32H7\\h7_mac_lifecycle\\output\\MSC24\\udlm-p1-final\\gate\\gate_test.o"
+      ],
+      "exit": 0,
+      "output": ""
+    },
+    {
+      "argv": [
+        "D:\\32\\ARM\\ARMCC\\Bin\\armcc.exe",
+        "--cpu",
+        "Cortex-M7",
+        "--c99",
+        "--split_sections",
+        "-O0",
+        "-DSTM32H747xx",
+        "-DCORE_CM7",
+        "-DUSE_HAL_DRIVER",
+        "--preinclude",
+        "D:\\32\\STM32H7\\h7_mac_lifecycle\\CM7\\BSP\\bsp_usb_hal_config.h",
+        "-I",
+        "D:\\32\\STM32H7\\h7_mac_lifecycle\\CM7\\Core\\Inc",
+        "-I",
+        "D:\\32\\STM32H7\\h7_mac_lifecycle\\Drivers\\STM32H7xx_HAL_Driver\\Inc",
+        "-I",
+        "D:\\32\\STM32H7\\h7_mac_lifecycle\\Drivers\\STM32H7xx_HAL_Driver\\Inc\\Legacy",
+        "-I",
+        "D:\\32\\STM32H7\\h7_mac_lifecycle\\Drivers\\CMSIS\\Device\\ST\\STM32H7xx\\Include",
+        "-I",
+        "D:\\32\\STM32H7\\h7_mac_lifecycle\\Drivers\\CMSIS\\Include",
+        "-I",
+        "D:\\32\\STM32H7\\h7_mac_lifecycle\\Common\\Inc",
+        "-I",
+        "D:\\32\\STM32H7\\h7_mac_lifecycle\\Board\\Inc",
+        "-I",
+        "D:\\32\\STM32H7\\h7_mac_lifecycle\\CM7\\Application",
+        "-I",
+        "D:\\32\\STM32H7\\h7_mac_lifecycle\\CM7\\Service",
+        "-I",
+        "D:\\32\\STM32H7\\h7_mac_lifecycle\\CM7\\Device\\Inc",
+        "-I",
+        "D:\\32\\STM32H7\\h7_mac_lifecycle\\CM7\\Media\\Inc",
+        "-I",
+        "D:\\32\\STM32H7\\h7_mac_lifecycle\\CM7\\Platform",
+        "-I",
+        "D:\\32\\STM32H7\\h7_mac_lifecycle\\CM7\\BSP",
+        "-I",
+        "D:\\32\\STM32H7\\h7_mac_lifecycle\\CM7\\Framework",
+        "-I",
+        "D:\\32\\STM32H7\\h7_mac_lifecycle\\CM7\\Device\\Components\\OV5640",
+        "-I",
+        "D:\\32\\STM32H7\\h7_mac_lifecycle\\Middlewares\\ST\\STM32_USB_Device_Library\\Core\\Inc",
+        "-I",
+        "D:\\32\\STM32H7\\h7_mac_lifecycle\\Middlewares\\Third_Party\\FreeRTOS\\Source\\include",
+        "-I",
+        "D:\\32\\STM32H7\\h7_mac_lifecycle\\Middlewares\\Third_Party\\FreeRTOS\\Source\\portable\\RVDS\\ARM_CM7\\r0p1",
+        "-I",
+        "D:\\32\\STM32H7\\h7_mac_lifecycle\\Middlewares\\Third_Party\\FatFs",
+        "-c",
+        "D:\\32\\STM32H7\\h7_mac_lifecycle\\Drivers\\STM32H7xx_HAL_Driver\\Src\\stm32h7xx_hal_pcd.c",
+        "-o",
+        "D:\\32\\STM32H7\\h7_mac_lifecycle\\output\\MSC24\\udlm-p1-final\\gate\\stm32h7xx_hal_pcd.o"
+      ],
+      "exit": 0,
+      "output": ""
+    },
+    {
+      "argv": [
+        "D:\\32\\ARM\\ARMCC\\Bin\\armcc.exe",
+        "--cpu",
+        "Cortex-M7",
+        "--c99",
+        "--split_sections",
+        "-O0",
+        "-DSTM32H747xx",
+        "-DCORE_CM7",
+        "-DUSE_HAL_DRIVER",
+        "--preinclude",
+        "D:\\32\\STM32H7\\h7_mac_lifecycle\\CM7\\BSP\\bsp_usb_hal_config.h",
+        "-I",
+        "D:\\32\\STM32H7\\h7_mac_lifecycle\\CM7\\Core\\Inc",
+        "-I",
+        "D:\\32\\STM32H7\\h7_mac_lifecycle\\Drivers\\STM32H7xx_HAL_Driver\\Inc",
+        "-I",
+        "D:\\32\\STM32H7\\h7_mac_lifecycle\\Drivers\\STM32H7xx_HAL_Driver\\Inc\\Legacy",
+        "-I",
+        "D:\\32\\STM32H7\\h7_mac_lifecycle\\Drivers\\CMSIS\\Device\\ST\\STM32H7xx\\Include",
+        "-I",
+        "D:\\32\\STM32H7\\h7_mac_lifecycle\\Drivers\\CMSIS\\Include",
+        "-I",
+        "D:\\32\\STM32H7\\h7_mac_lifecycle\\Common\\Inc",
+        "-I",
+        "D:\\32\\STM32H7\\h7_mac_lifecycle\\Board\\Inc",
+        "-I",
+        "D:\\32\\STM32H7\\h7_mac_lifecycle\\CM7\\Application",
+        "-I",
+        "D:\\32\\STM32H7\\h7_mac_lifecycle\\CM7\\Service",
+        "-I",
+        "D:\\32\\STM32H7\\h7_mac_lifecycle\\CM7\\Device\\Inc",
+        "-I",
+        "D:\\32\\STM32H7\\h7_mac_lifecycle\\CM7\\Media\\Inc",
+        "-I",
+        "D:\\32\\STM32H7\\h7_mac_lifecycle\\CM7\\Platform",
+        "-I",
+        "D:\\32\\STM32H7\\h7_mac_lifecycle\\CM7\\BSP",
+        "-I",
+        "D:\\32\\STM32H7\\h7_mac_lifecycle\\CM7\\Framework",
+        "-I",
+        "D:\\32\\STM32H7\\h7_mac_lifecycle\\CM7\\Device\\Components\\OV5640",
+        "-I",
+        "D:\\32\\STM32H7\\h7_mac_lifecycle\\Middlewares\\ST\\STM32_USB_Device_Library\\Core\\Inc",
+        "-I",
+        "D:\\32\\STM32H7\\h7_mac_lifecycle\\Middlewares\\Third_Party\\FreeRTOS\\Source\\include",
+        "-I",
+        "D:\\32\\STM32H7\\h7_mac_lifecycle\\Middlewares\\Third_Party\\FreeRTOS\\Source\\portable\\RVDS\\ARM_CM7\\r0p1",
+        "-I",
+        "D:\\32\\STM32H7\\h7_mac_lifecycle\\Middlewares\\Third_Party\\FatFs",
+        "-c",
+        "D:\\32\\STM32H7\\h7_mac_lifecycle\\Drivers\\STM32H7xx_HAL_Driver\\Src\\stm32h7xx_ll_usb.c",
+        "-o",
+        "D:\\32\\STM32H7\\h7_mac_lifecycle\\output\\MSC24\\udlm-p1-final\\gate\\stm32h7xx_ll_usb.o"
+      ],
+      "exit": 0,
+      "output": ""
+    },
+    {
+      "argv": [
+        "D:\\32\\ARM\\ARMCC\\Bin\\armlink.exe",
+        "D:\\32\\STM32H7\\h7_mac_lifecycle\\output\\MSC24\\udlm-p1-final\\gate\\gate_test.o",
+        "D:\\32\\STM32H7\\h7_mac_lifecycle\\output\\MSC24\\udlm-p1-final\\gate\\stm32h7xx_hal_pcd.o",
+        "D:\\32\\STM32H7\\h7_mac_lifecycle\\output\\MSC24\\udlm-p1-final\\gate\\stm32h7xx_ll_usb.o",
+        "--entry",
+        "Gate_Step",
+        "--no_scanlib",
+        "--scatter",
+        "D:\\32\\STM32H7\\h7_mac_lifecycle\\Tests\\EndpointLifecycle\\test.sct",
+        "-o",
+        "D:\\32\\STM32H7\\h7_mac_lifecycle\\output\\MSC24\\udlm-p1-final\\gate\\hal_out_evidence.axf"
+      ],
+      "exit": 0,
+      "output": ""
+    }
+  ],
+  "sources": {
+    "Drivers/STM32H7xx_HAL_Driver/Src/stm32h7xx_hal_pcd.c": "67becca7aa38463887bfb70de65e2cc6e762bfd0fa7f600bc8c6e966a36a5574",
+    "Drivers/STM32H7xx_HAL_Driver/Src/stm32h7xx_ll_usb.c": "e18900b0d91d79d8eea02d60eec865ea0eada440a053354c81b709c33f5e890a",
+    "Tests/UsbLifecycleFinal/gate_test.c": "7a647f98f282700efd870c9db2ee705043634ff8b660edd14b5da922f83e6496",
+    "Tests/UsbLifecycleFinal/run_gate_tests.py": "bc34ec7c42d1b08607c983a822bb7171687a5503b12327e850a2c7f4afe05972"
+  },
+  "summary": {
+    "witness_checks": 5,
+    "expectations_met": 5,
+    "assertions": 14
+  },
+  "hardware": "NOT_TESTED",
+  "meaning": "confirmed current register behavior; not a silicon packet failure or verified AHB workaround"
+}

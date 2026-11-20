@@ -158,8 +158,19 @@ SysResult_t USB_Device_CommitBulkInRetirement(const UsbBulkInStopTransaction_t *
 typedef enum
 {
     USB_STOP_PROGRESS_NONE = 0, USB_STOP_PROGRESS_PENDING,
-    USB_STOP_PROGRESS_COMPLETE, USB_STOP_PROGRESS_FAILED
+    USB_STOP_PROGRESS_COMPLETE, USB_STOP_PROGRESS_FAILED, USB_STOP_PROGRESS_RECOVERY_REQUIRED
 } UsbStopProgressState_t;
+
+//方向由address区分，stage必须按对应IN/OUT停止枚举解释；只读，不是释放授权。
+#define USB_STOP_ENDPOINT_SLOTS (2U * (BSP_USB_ENDPOINT_COUNT - 1U))
+typedef struct
+{
+    uint8_t address;
+    uint32_t attempt, stage;
+    BspUsbInIdentity_t transfer;
+    SysResult_t result;
+    bool registered, committed, source_owned;
+} UsbStopEndpointProgress_t;
 
 typedef struct
 {
@@ -169,6 +180,11 @@ typedef struct
     bool registered_pending;
     uint32_t endpoint_attempt;
     BspUsbInIdentity_t endpoint_transfer;
+    //Controller意图与全部端点分别持有身份；没有EP0/消费者ticket绝不完成Controller停止。
+    SysResult_t first_error;
+    uint32_t endpoint_count, pending_count;
+    bool submission_fenced, endpoint_group_proven, controller_gate_blocked;
+    UsbStopEndpointProgress_t endpoints[USB_STOP_ENDPOINT_SLOTS];
 } UsbStopProgress_t;
 
 SysResult_t USB_Device_GetStopProgress(UsbStopProgress_t *progress);
