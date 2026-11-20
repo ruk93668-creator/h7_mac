@@ -1,0 +1,44 @@
+setUpClass (__main__.DescriptorTests) ... ERROR
+
+======================================================================
+ERROR: setUpClass (__main__.DescriptorTests)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "D:\32\STM32H7\h7_mac_lifecycle\output\MSC24\udlm-p1b\regression-p1b01\Tests\UsbUvcDescriptors\run_tests.py", line 68, in setUpClass
+    cls.symbols, cls.sizes, sections = compile_module()
+                                       ^^^^^^^^^^^^^^^^
+  File "D:\32\STM32H7\h7_mac_lifecycle\output\MSC24\udlm-p1b\regression-p1b01\Tests\UsbUvcDescriptors\run_tests.py", line 50, in compile_module
+    run(args + ['-c', helper, '-o', temp / 'config.o'])
+  File "D:\32\STM32H7\h7_mac_lifecycle\output\MSC24\udlm-p1b\regression-p1b01\Tests\UsbUvcDescriptors\run_tests.py", line 32, in run
+    raise RuntimeError(output)
+RuntimeError: "D:\32\STM32H7\h7_mac_lifecycle\output\MSC24\udlm-p1b\regression-p1b01\CM7\Application\app_storage.h", line 5: Error:  #5: cannot open source input file "camera_mjpeg_fifo.h": No such file or directory
+  #include "camera_mjpeg_fifo.h"
+                                ^
+C:\Users\29062\AppData\Local\Temp\UsbUvcDescriptors_nv1w2g8u\config.c: 0 warnings, 1 error
+
+
+----------------------------------------------------------------------
+Ran 0 tests in 0.303s
+
+FAILED (errors=1)
+
+Traceback (most recent call last):
+  File "D:\32\STM32H7\h7_mac_lifecycle\output\MSC24\udlm-p1b\regression-p1b01\Tests\UsbUvcDescriptors\run_string_tests.py", line 44, in <module>
+    run(args + ["-c", source, "-o", obj])
+  File "D:\32\STM32H7\h7_mac_lifecycle\output\MSC24\udlm-p1b\regression-p1b01\Tests\UsbUvcDescriptors\run_string_tests.py", line 30, in run
+    raise RuntimeError(output)
+RuntimeError: "D:\32\STM32H7\h7_mac_lifecycle\output\MSC24\udlm-p1b\regression-p1b01\Tests\UsbUvcDescriptors\../UsbCoreDecoupling/core_test.c", line 388: Error:  #136: struct "<unnamed>"  has no field "offset"
+    EQ(s_tx_transfer[1].active,false);EQ(s_tx_transfer[1].source,NULL);EQ(s_tx_transfer[1].offset,0);EQ(s_tx_transfer[1].total,0);
+                                                                       ^
+"D:\32\STM32H7\h7_mac_lifecycle\output\MSC24\udlm-p1b\regression-p1b01\Tests\UsbUvcDescriptors\../UsbCoreDecoupling/endpoint_lifecycle_test.c", line 360: Error:  #136: struct "<unnamed>"  has no field "offset"
+              EQ(USB_Device_Transmit(0x83,stage2_data,128),SYS_OK);EQ(tx_size,64);EQ(s_tx_transfer[3].offset,64);
+                                                                                  ^
+"D:\32\STM32H7\h7_mac_lifecycle\output\MSC24\udlm-p1b\regression-p1b01\Tests\UsbUvcDescriptors\../UsbCoreDecoupling/endpoint_lifecycle_test.c", line 363: Error:  #136: struct "<unnamed>"  has no field "offset"
+              EQ(s_tx_transfer[3].offset,128);EQ(s_tx_transfer[3].total,128);EQ(s_tx_transfer[3].active,true);
+              ^
+"D:\32\STM32H7\h7_mac_lifecycle\output\MSC24\udlm-p1b\regression-p1b01\Tests\UsbUvcDescriptors\../UsbCoreDecoupling/endpoint_lifecycle_test.c", line 796: Error:  #136: struct "<unnamed>"  has no field "offset"
+          EQ(s_tx_transfer[0].offset,18);EQ(s_tx_transfer[0].total,18);EQ(s_tx_transfer[0].active,true);
+          ^
+D:\32\STM32H7\h7_mac_lifecycle\output\MSC24\udlm-p1b\regression-p1b01\Tests\UsbUvcDescriptors\string_control_test.c: 0 warnings, 4 errors
+
+

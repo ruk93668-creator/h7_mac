@@ -61,3 +61,6 @@ static void Request(uint8_t bm,uint8_t req,uint16_t val,uint16_t idx,uint16_t le
  HAL_PCD_SetupStageCallback(&s_pcd);
 }
 static void Configured(void){Request(0,USB_REQ_SET_ADDRESS,7,0,0);Request(0,USB_REQ_SET_CONFIGURATION,1,0,0);}
+
+//P1-B stop APIs are not driven by legacy scenarios; specialist tests provide a controllable clock.
+uint32_t HAL_GetTick(void) { return 0U; }

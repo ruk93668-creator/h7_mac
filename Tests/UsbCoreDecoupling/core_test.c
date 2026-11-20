@@ -385,7 +385,7 @@ static int Core_RunCase(uint32_t id)
   EQ(closed,true);EQ(g_result.deferred,0);
   EQ(USB_Device_GetEpState(0x81,&state),SYS_OK);EQ(state.opened,false);EQ(state.busy,false);
   EQ(s_device.ep_in[1].is_used,0);EQ(s_pcd.IN_ep[1].maxpacket,0);EQ(s_pcd.IN_ep[1].xfer_buff,NULL);
-  EQ(s_tx_transfer[1].active,false);EQ(s_tx_transfer[1].source,NULL);EQ(s_tx_transfer[1].offset,0);EQ(s_tx_transfer[1].total,0);
+  EQ(s_tx_transfer[1].active,false);EQ(s_tx_transfer[1].source,NULL);EQ(s_tx_transfer[1].queued_bytes,0);EQ(s_tx_transfer[1].total,0);
   //IN关闭和空闲Flush都不能影响同编号OUT的接收所有权
   EQ(USB_Device_GetEpState(1,&state),SYS_OK);EQ(state.opened,true);EQ(state.busy,true);
   EQ(s_rx_active[1],true);EQ(s_pcd.OUT_ep[1].xfer_buff,out_buffer);EQ(flush_by_ep[0][1],0);

@@ -236,6 +236,76 @@ uint32_t USB_Device_GetInCompleteSequence(uint8_t ep)
     return (ep & 0x80U) && (ep & 0x7FU) < USB_DEVICE_EP_COUNT ? s_in_completed[ep & 0x7FU] : 0U;
 }
 
+//Bulk IN停止只能由任务驱动，不借用会跨硬件等待的全USB IRQ锁
+SysResult_t USB_Device_GetBulkInTransfer(uint8_t ep, UsbBulkInStopTransaction_t *transaction)
+{
+    BspUsbInStopProof_t proof;
+    SysResult_t result;
+    uint32_t saved;
+    if (__get_IPSR() != 0U) return SYS_ERR_INVALID_STATE;
+    if (transaction == NULL || !Usb_ClassEndpoint(ep) || (ep & 0x80U) == 0U)
+        return SYS_ERR_INVALID_ARG;
+    saved = __get_PRIMASK();
+    __disable_irq();
+    result = BSP_USB_GetBulkInProof(ep, &proof);
+    if (result == SYS_OK)
+    {
+        transaction->transfer = proof.transfer;
+        transaction->platform_sequence = s_in_sequence[ep & 0x0FU];
+        transaction->stop_attempt = proof.stop_attempt;
+    }
+    __set_PRIMASK(saved);
+    return result;
+}
+
+SysResult_t USB_Device_BeginBulkInStop(UsbBulkInStopTransaction_t *transaction,
+                                     uint32_t timeout_ms, BspUsbInStopProof_t *proof)
+{
+    SysResult_t result;
+    uint8_t ep;
+    if (transaction == NULL || proof == NULL) return SYS_ERR_INVALID_ARG;
+    ep = transaction->transfer.endpoint_address;
+    if (!Usb_ClassEndpoint(ep) || (ep & 0x80U) == 0U ||
+        transaction->platform_sequence != s_in_sequence[ep & 0x0FU]) return SYS_ERR_INVALID_STATE;
+    result = BSP_USB_BeginBulkInStop(&transaction->transfer, timeout_ms, proof);
+    if (result == SYS_OK) transaction->stop_attempt = proof->stop_attempt;
+    return result;
+}
+
+SysResult_t USB_Device_PollBulkInStop(const UsbBulkInStopTransaction_t *transaction,
+                                    BspUsbInStopProof_t *proof)
+{
+    if (transaction == NULL) return SYS_ERR_INVALID_ARG;
+    return BSP_USB_PollBulkInStop(&transaction->transfer, transaction->stop_attempt, proof);
+}
+
+SysResult_t USB_Device_CommitBulkInRetirement(const UsbBulkInStopTransaction_t *transaction,
+                                            BspUsbInStopProof_t *proof)
+{
+    uint32_t saved;
+    uint8_t ep;
+    SysResult_t result;
+    if (__get_IPSR() != 0U) return SYS_ERR_INVALID_STATE;
+    if (transaction == NULL || proof == NULL) return SYS_ERR_INVALID_ARG;
+    ep = transaction->transfer.endpoint_address;
+    if (!Usb_ClassEndpoint(ep) || (ep & 0x80U) == 0U) return SYS_ERR_INVALID_ARG;
+    saved = __get_PRIMASK();
+    __disable_irq();
+    if (transaction->platform_sequence != s_in_sequence[ep & 0x0FU])
+    { __set_PRIMASK(saved); return SYS_ERR_INVALID_STATE; }
+    result = BSP_USB_CommitBulkInRetirement(&transaction->transfer, transaction->stop_attempt, proof);
+    if (result == SYS_OK)
+    {
+        s_endpoints[1][ep & 0x0FU].busy = false;
+        s_endpoints[1][ep & 0x0FU].last_result = SYS_OK;
+        //未交付的完整传输只更新事实序号，不重复进入普通Class完成回调
+        if (proof->completed_undelivered)
+            s_in_completed[ep & 0x0FU] = transaction->platform_sequence;
+    }
+    __set_PRIMASK(saved);
+    return result;
+}
+
 //记录去重后的SOF计数，不保存无限发送额度
 static volatile uint32_t s_sof_sequence;
 
@@ -905,7 +975,14 @@ USBD_StatusTypeDef USBD_LL_Transmit(USBD_HandleTypeDef *device, uint8_t ep, uint
     result = BSP_USB_Transmit(ep, buffer, size);
     entry->last_result = result;
     if (result != SYS_OK)
+    {
+        BspUsbInStopProof_t proof;
         entry->busy = false;
+        //未知提交失败不能伪造所有权归还；原始错误码仍照常返回
+        if ((ep & 0x0FU) != 0U && entry->type == USBD_EP_TYPE_BULK &&
+            BSP_USB_GetBulkInProof(ep, &proof) == SYS_OK && (proof.source_owned || proof.pool_owned))
+            entry->busy = true;
+    }
     Usb_Unlock(enabled);
     return Usb_LlResult(result);
 }
@@ -1469,6 +1546,20 @@ static void Usb_DataInError(uint8_t ep, SysResult_t result)
     if (ep == 0U && s_deferred_status == USB_CONTROL_SUBMITTED)
         s_deferred_status = USB_CONTROL_FAILED;
 
+    if (ep != 0U && s_endpoints[1][ep].type == USBD_EP_TYPE_BULK)
+    {
+        BspUsbInStopProof_t proof;
+        if (BSP_USB_GetBulkInProof((uint8_t)(0x80U | ep), &proof) == SYS_OK &&
+            (proof.source_owned || proof.pool_owned))
+        {
+            s_endpoints[1][ep].busy = true;
+            s_endpoints[1][ep].last_result = result;
+            s_last_result = result;
+            Usb_Notify(USB_DEVICE_EVENT_IO);
+            return;
+        }
+    }
+
     //BSP已交付失败结束，清除本次占用并保留原失败码，不上报成功完成
     s_endpoints[1][ep].busy = false;
     s_endpoints[1][ep].last_result = result;
@@ -1485,6 +1576,13 @@ static void Usb_Reset(void)
 
     Usb_TraceLifecycle(USB_TRACE_RESET_BEGIN, 0U);
     Usb_InvalidateControl();
+    if (BSP_USB_BulkInHasReferences())
+    {
+        s_stop_required = true;
+        s_last_result = SYS_ERR_BUSY;
+        Usb_Notify(USB_DEVICE_EVENT_STATE);
+        return;
+    }
     if (!s_registered)
         return;
 
@@ -1544,6 +1642,13 @@ static void Usb_Disconnect(void)
 {
     Usb_TraceLifecycle(USB_TRACE_DISCONNECT_BEGIN, 0U);
     Usb_InvalidateControl();
+    if (BSP_USB_BulkInHasReferences())
+    {
+        s_stop_required = true;
+        s_last_result = SYS_ERR_BUSY;
+        Usb_Notify(USB_DEVICE_EVENT_STATE);
+        return;
+    }
     if (!s_registered)
         return;
 
@@ -1725,6 +1830,44 @@ SysResult_t Usb_StartDevice(void)
     return s_last_result;
 }
 
+//主动Task Stop只协调本阶段的Bulk IN；其他类型仍沿用原路径
+static UsbBulkInStopTransaction_t s_bulk_stop_transaction[BSP_USB_ENDPOINT_COUNT];
+
+static SysResult_t Usb_DrainBulkInStops(void)
+{
+    uint8_t index;
+    bool pending = false;
+    for (index = 1U; index < BSP_USB_ENDPOINT_COUNT; ++index)
+    {
+        uint8_t ep = (uint8_t)(0x80U | index);
+        BspUsbInStopProof_t proof;
+        SysResult_t result = BSP_USB_GetBulkInProof(ep, &proof);
+        if (result != SYS_OK) continue;
+        if (!proof.source_owned && !proof.pool_owned && proof.state == BSP_USB_IN_IDLE)
+            continue;
+        if (proof.result == BSP_USB_STOP_RECOVERY_REQUIRED)
+            return proof.error == SYS_ERR_BUSY || proof.error == SYS_OK ? SYS_ERR_IO : proof.error;
+        if (proof.stage == BSP_USB_STOP_NONE)
+        {
+            result = USB_Device_GetBulkInTransfer(ep, &s_bulk_stop_transaction[index]);
+            if (result == SYS_OK)
+                result = USB_Device_BeginBulkInStop(&s_bulk_stop_transaction[index], 1000U, &proof);
+        }
+        else
+            result = USB_Device_PollBulkInStop(&s_bulk_stop_transaction[index], &proof);
+        if (result != SYS_OK) return result;
+        if (proof.result == BSP_USB_STOP_RECOVERY_REQUIRED)
+            return proof.error == SYS_ERR_BUSY || proof.error == SYS_OK ? SYS_ERR_IO : proof.error;
+        if (proof.stage == BSP_USB_STOP_PROVEN)
+        {
+            result = USB_Device_CommitBulkInRetirement(&s_bulk_stop_transaction[index], &proof);
+            if (result != SYS_OK) return result;
+        }
+        if (proof.stage != BSP_USB_STOP_COMMITTED) pending = true;
+    }
+    return pending ? SYS_ERR_BUSY : SYS_OK;
+}
+
 //停止硬件并释放USB资源
 SysResult_t Usb_StopDevice(void)
 {
@@ -1739,6 +1882,19 @@ SysResult_t Usb_StopDevice(void)
         return SYS_ERR_INVALID_STATE;
     if (!s_started && !s_stop_required)
         return SYS_OK;
+
+    //任务每次推进一阶段；BUSY不表示已取消，也不进入同步Class释放
+    result = Usb_DrainBulkInStops();
+    if (result != SYS_OK)
+    {
+        s_operation_result = result;
+        if (result != SYS_ERR_BUSY)
+        {
+            s_stop_required = true;
+            s_last_result = result;
+        }
+        return result;
+    }
 
     //官方Stop忽略LL结果，先确认硬件停止再释放Class
     s_last_result = SYS_OK;
@@ -1858,6 +2014,14 @@ static uint8_t Usb_ManagedClassDeInit(USBD_HandleTypeDef *device, uint8_t config
     bool control_busy;
 
     Usb_InvalidateControl();
+
+    //Core同步DeInit不能代替Task分阶段停止；失败锁定并保留Class与缓冲区
+    if (BSP_USB_BulkInHasReferences())
+    {
+        s_stop_required = true;
+        s_last_result = SYS_ERR_BUSY;
+        return USBD_BUSY;
+    }
 
     //硬件未安全停止或生命周期正在重入时禁止释放上下文
     if (device != &s_device || s_hardware_stop_failed ||

@@ -1,0 +1,19 @@
+Traceback (most recent call last):
+  File "D:\32\STM32H7\h7_mac_lifecycle\output\MSC24\udlm-p1b\regression-p1b01\Tests\UvcLifecycle\run_tests.py", line 44, in <module>
+    run(args + ["-c", source, "-o", obj])
+  File "D:\32\STM32H7\h7_mac_lifecycle\output\MSC24\udlm-p1b\regression-p1b01\Tests\UvcLifecycle\run_tests.py", line 30, in run
+    raise RuntimeError(output)
+RuntimeError: "D:\32\STM32H7\h7_mac_lifecycle\output\MSC24\udlm-p1b\regression-p1b01\Tests\UvcLifecycle\../UsbCoreDecoupling/core_test.c", line 388: Error:  #136: struct "<unnamed>"  has no field "offset"
+    EQ(s_tx_transfer[1].active,false);EQ(s_tx_transfer[1].source,NULL);EQ(s_tx_transfer[1].offset,0);EQ(s_tx_transfer[1].total,0);
+                                                                       ^
+"D:\32\STM32H7\h7_mac_lifecycle\output\MSC24\udlm-p1b\regression-p1b01\Tests\UvcLifecycle\../UsbCoreDecoupling/endpoint_lifecycle_test.c", line 360: Error:  #136: struct "<unnamed>"  has no field "offset"
+              EQ(USB_Device_Transmit(0x83,stage2_data,128),SYS_OK);EQ(tx_size,64);EQ(s_tx_transfer[3].offset,64);
+                                                                                  ^
+"D:\32\STM32H7\h7_mac_lifecycle\output\MSC24\udlm-p1b\regression-p1b01\Tests\UvcLifecycle\../UsbCoreDecoupling/endpoint_lifecycle_test.c", line 363: Error:  #136: struct "<unnamed>"  has no field "offset"
+              EQ(s_tx_transfer[3].offset,128);EQ(s_tx_transfer[3].total,128);EQ(s_tx_transfer[3].active,true);
+              ^
+"D:\32\STM32H7\h7_mac_lifecycle\output\MSC24\udlm-p1b\regression-p1b01\Tests\UvcLifecycle\../UsbCoreDecoupling/endpoint_lifecycle_test.c", line 796: Error:  #136: struct "<unnamed>"  has no field "offset"
+          EQ(s_tx_transfer[0].offset,18);EQ(s_tx_transfer[0].total,18);EQ(s_tx_transfer[0].active,true);
+          ^
+D:\32\STM32H7\h7_mac_lifecycle\output\MSC24\udlm-p1b\regression-p1b01\Tests\UvcLifecycle\lifecycle_test.c: 0 warnings, 4 errors
+

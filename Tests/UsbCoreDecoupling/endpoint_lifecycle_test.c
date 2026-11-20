@@ -357,10 +357,10 @@ static int Stage2_Case(uint32_t id)
         EQ(USB_Device_Receive(3,stage2_data+256,128),SYS_OK);
         if(id==322){
             for(i=0;i<128;i++)stage2_data[i]=(uint8_t)(i^0xA5U);
-            EQ(USB_Device_Transmit(0x83,stage2_data,128),SYS_OK);EQ(tx_size,64);EQ(s_tx_transfer[3].offset,64);
+            EQ(USB_Device_Transmit(0x83,stage2_data,128),SYS_OK);EQ(tx_size,64);EQ(s_tx_transfer[3].queued_bytes,64);
             for(i=0;i<64;i++)EQ(s_tx_pio_pool[3][i],stage2_data[i]);
             HAL_PCD_DataInStageCallback(&s_pcd,3);EQ(stage2_in_calls,0);EQ(tx_size,64);
-            EQ(s_tx_transfer[3].offset,128);EQ(s_tx_transfer[3].total,128);EQ(s_tx_transfer[3].active,true);
+            EQ(s_tx_transfer[3].queued_bytes,128);EQ(s_tx_transfer[3].total,128);EQ(s_tx_transfer[3].active,true);
             for(i=0;i<64;i++)EQ(s_tx_pio_pool[3][i],stage2_data[64+i]);
             EQ(USB_Device_GetEpState(0x83,&state),SYS_OK);EQ(state.busy,true);
             HAL_PCD_DataInStageCallback(&s_pcd,3);EQ(stage2_in_calls,1);EQ(s_tx_transfer[3].active,false);
@@ -793,7 +793,7 @@ static int Stage2_Case(uint32_t id)
         //不触发旧事务完成，直接新SETUP，中止旧DATA IN
         calls=abort_count;Request(0x80,USB_REQ_GET_DESCRIPTOR,0x100,0,18);
         EQ(abort_count,calls+1);EQ(tx_size,18);EQ(s_tx_transfer[0].source,Core_Device(USBD_SPEED_FULL,&length));
-        EQ(s_tx_transfer[0].offset,18);EQ(s_tx_transfer[0].total,18);EQ(s_tx_transfer[0].active,true);
+        EQ(s_tx_transfer[0].queued_bytes,18);EQ(s_tx_transfer[0].total,18);EQ(s_tx_transfer[0].active,true);
         HAL_PCD_DataInStageCallback(&s_pcd,0);EQ(s_device.ep0_state,USBD_EP0_STATUS_OUT);
         //不完成旧STATUS OUT，新的SETUP也能取消旧接收
         calls=abort_count;Request(0x80,USB_REQ_GET_DESCRIPTOR,0x100,0,18);

@@ -2,6 +2,7 @@
 #define CM7_USB_DEVICE_H
 
 #include "sys_result.h"
+#include "../BSP/bsp_usb.h"
 #include "usbd_def.h"
 #include <stdbool.h>
 
@@ -135,6 +136,23 @@ uint32_t USB_Device_Lock(void);
 
 //恢复USB中断使能状态
 void USB_Device_Unlock(uint32_t saved);
+
+
+//Platform提交序号与BSP硬件身份在同一次快照中绑定，不把Epoch变化当作退休
+typedef struct
+{
+    BspUsbInIdentity_t transfer;
+    uint32_t platform_sequence;
+    uint32_t stop_attempt;
+} UsbBulkInStopTransaction_t;
+
+SysResult_t USB_Device_GetBulkInTransfer(uint8_t ep, UsbBulkInStopTransaction_t *transaction);
+SysResult_t USB_Device_BeginBulkInStop(UsbBulkInStopTransaction_t *transaction,
+                                     uint32_t timeout_ms, BspUsbInStopProof_t *proof);
+SysResult_t USB_Device_PollBulkInStop(const UsbBulkInStopTransaction_t *transaction,
+                                    BspUsbInStopProof_t *proof);
+SysResult_t USB_Device_CommitBulkInRetirement(const UsbBulkInStopTransaction_t *transaction,
+                                            BspUsbInStopProof_t *proof);
 
 //延迟状态只保留当前控制事务身份，不代表任何块设备或DMA所有权
 //SUBMITTED仅表示硬件提交成功，COMPLETE必须由EP0 IN完成回调确认

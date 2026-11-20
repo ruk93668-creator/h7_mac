@@ -101,4 +101,76 @@ SysResult_t BSP_USB_Receive(uint8_t ep, uint8_t *data, uint32_t size);
 
 //取得指定OUT端点实际接收字节数
 uint32_t BSP_USB_GetRxSize(uint8_t ep);
+
+//Bulk IN停止身份在整个启动周期不回绕；不表示SDMMC或Class已释放
+typedef struct
+{
+    uint32_t controller_generation;
+    uint32_t session_generation;
+    uint32_t endpoint_generation;
+    uint32_t transfer_sequence;
+    uint8_t endpoint_address;
+} BspUsbInIdentity_t;
+
+typedef enum
+{
+    BSP_USB_IN_CLOSED = 0, BSP_USB_IN_IDLE, BSP_USB_IN_ACTIVE,
+    BSP_USB_IN_QUIESCING, BSP_USB_IN_QUIESCENT, BSP_USB_IN_FAULTED
+} BspUsbInState_t;
+
+typedef enum
+{
+    BSP_USB_STOP_NONE = 0, BSP_USB_STOP_NAK, BSP_USB_STOP_DISABLE,
+    BSP_USB_STOP_AHB, BSP_USB_STOP_FIFO, BSP_USB_STOP_RETIRE,
+    BSP_USB_STOP_PROVEN, BSP_USB_STOP_COMMITTED, BSP_USB_STOP_FAULT
+} BspUsbInStopStage_t;
+
+typedef enum
+{
+    BSP_USB_STOP_PENDING = 0, BSP_USB_STOP_COMPLETED, BSP_USB_STOP_FAILED,
+    BSP_USB_STOP_RECOVERY_REQUIRED, BSP_USB_STOP_ALREADY_COMPLETED
+} BspUsbInStopResult_t;
+
+typedef struct
+{
+    BspUsbInIdentity_t transfer;
+    uint32_t stop_attempt;
+    BspUsbInState_t state;
+    BspUsbInStopStage_t stage;
+    BspUsbInStopResult_t result;
+    SysResult_t error;
+    uint32_t queued_bytes;
+    uint32_t completed_bytes;
+    uint32_t current_packet_length;
+    uint32_t initial_ctl;
+    uint32_t initial_events;
+    uint32_t saved_daint_mask;
+    uint32_t saved_empty_mask;
+    uint32_t events;
+    uint32_t packet_completions;
+    uint32_t source_returns;
+    uint32_t pool_returns;
+    uint32_t pio_users;
+    bool source_owned;
+    bool pool_owned;
+    bool nak_effective;
+    bool disable_observed;
+    bool xfrc_claimed;
+    bool completed_undelivered;
+    bool fifo_complete;
+    bool events_retired;
+    SysResult_t fifo_result;
+} BspUsbInStopProof_t;
+
+//三个接口仅由同一USB任务串行推进；ISR、错误身份及耗尽均拒绝
+SysResult_t BSP_USB_GetBulkInProof(uint8_t ep, BspUsbInStopProof_t *proof);
+SysResult_t BSP_USB_BeginBulkInStop(const BspUsbInIdentity_t *identity,
+                                  uint32_t timeout_ms, BspUsbInStopProof_t *proof);
+SysResult_t BSP_USB_PollBulkInStop(const BspUsbInIdentity_t *identity,
+                                 uint32_t attempt, BspUsbInStopProof_t *proof);
+SysResult_t BSP_USB_CommitBulkInRetirement(const BspUsbInIdentity_t *identity,
+                                         uint32_t attempt, BspUsbInStopProof_t *proof);
+//只查询资源引用，不能据此替代USB或外部DMA停止证明
+bool BSP_USB_BulkInHasReferences(void);
+
 #endif

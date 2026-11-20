@@ -48,7 +48,7 @@ int Ep0Race_Run(uint32_t scenario)
     if(scenario==1)USBx_INEP(0)->DIEPCTL|=USB_OTG_DIEPCTL_EPENA;
     Race_Irq((scenario==0||scenario==2)?USB_OTG_DIEPINT_XFRC:0,USB_OTG_DOEPINT_STUP);
     g_race[0]=s_tx_transfer[0].active;g_race[1]=s_tx_transfer[0].total;
-    g_race[2]=s_tx_transfer[0].offset;g_race[3]=s_endpoints[1][0].busy;
+    g_race[2]=s_tx_transfer[0].queued_bytes;g_race[3]=s_endpoints[1][0].busy;
     g_race[4]=s_device.ep0_state;g_race[5]=s_stop_required;
     g_race[6]=abort_count-abort_before;g_race[7]=stage2_in_calls;
     g_race[8]=USBx_DEVICE->DAINTMSK;g_race[9]=USBx_INEP(0)->DIEPINT;
@@ -62,7 +62,7 @@ int Ep0Race_Run(uint32_t scenario)
         EQ(USBx_DEVICE->DAINTMSK&1U,0);EQ(USBx_INEP(0)->DIEPINT&USB_OTG_DIEPINT_XFRC,USB_OTG_DIEPINT_XFRC);return 0;
     }
     EQ(s_stop_required,false);EQ(s_tx_transfer[0].active,true);
-    EQ(s_tx_transfer[0].total,stage2_config_length);EQ(s_tx_transfer[0].offset,stage2_config_length);
+    EQ(s_tx_transfer[0].total,stage2_config_length);EQ(s_tx_transfer[0].queued_bytes,stage2_config_length);
     EQ(s_tx_transfer[0].source,stage2_config);EQ(s_endpoints[1][0].busy,true);EQ(s_device.ep0_state,USBD_EP0_DATA_IN);
     //紧接着注入新事务真正的XFRC，不能丢失或“跳过下一次完成”
     g_race_phase=0;

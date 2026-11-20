@@ -1,0 +1,10 @@
+Traceback (most recent call last):
+  File "D:\32\STM32H7\h7_mac_lifecycle\output\MSC24\udlm-p1b\regression-p1b01\Tests\MscProtocol\run_tests.py", line 21, in <module>
+    image=OUT/'test.axf';run([TOOL/'armlink.exe',*objects,'--entry','Protocol_Run','--no_scanlib','--scatter',sct,'-o',image])
+                         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "D:\32\STM32H7\h7_mac_lifecycle\output\MSC24\udlm-p1b\regression-p1b01\Tests\MscProtocol\run_tests.py", line 16, in run
+    if r.returncode or 'warning' in text.lower(): raise RuntimeError(text)
+                                                  ^^^^^^^^^^^^^^^^^^^^^^^^
+RuntimeError: Error: L6218E: Undefined symbol HAL_GetTick (referred from protocol_test.o).
+Finished: 0 information, 0 warning and 1 error messages.
+

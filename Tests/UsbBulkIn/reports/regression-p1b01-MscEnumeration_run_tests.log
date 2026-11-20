@@ -1,0 +1,12 @@
+Traceback (most recent call last):
+  File "D:\32\STM32H7\h7_mac_lifecycle\output\MSC24\udlm-p1b\regression-p1b01\Tests\MscEnumeration\run_tests.py", line 18, in <module>
+    obj=OUT/(Path(src).stem+'.o');run(args+['-c',ROOT/src,'-o',obj]);objects.append(obj)
+                                  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "D:\32\STM32H7\h7_mac_lifecycle\output\MSC24\udlm-p1b\regression-p1b01\Tests\MscEnumeration\run_tests.py", line 15, in run
+    if r.returncode or 'warning' in text.lower(): raise RuntimeError(text)
+                                                  ^^^^^^^^^^^^^^^^^^^^^^^^
+RuntimeError: "D:\32\STM32H7\h7_mac_lifecycle\output\MSC24\udlm-p1b\regression-p1b01\CM7\Platform\usb_device.h", line 5: Error:  #5: cannot open source input file "bsp_usb.h": No such file or directory
+  #include "bsp_usb.h"
+                      ^
+D:\32\STM32H7\h7_mac_lifecycle\output\MSC24\udlm-p1b\regression-p1b01\Tests\MscEnumeration\class_test.c: 0 warnings, 1 error
+
