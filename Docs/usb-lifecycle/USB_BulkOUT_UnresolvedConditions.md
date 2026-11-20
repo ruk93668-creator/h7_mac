@@ -1,3 +1,5 @@
+> VERIFIED：2026-11-20 P1-C1 修订补充见 [C1实施报告](USB_BulkOUT_C1_ImplementationReport.md)、[当前HAL与硬件映射](USB_BulkOUT_C1_HALHook_Contract.md)、[当前停止/NAK/RX契约](USB_BulkOUT_C1_StopProof_Contract.md)、[最终软件验证](USB_BulkOUT_C1_SoftwareVerification.md)。以下 C0 正文保留原基线、行号和当时阻塞结论，不代表已实施 C1 后的现状；尚未证明条件以 [C1清单](USB_BulkOUT_C1_RemainingRisks.md) 为准。
+
 # P1-C — 尚未证明的硬件及软件条件
 
 VERIFIED：本清单为C0门禁结果，不是可以忽略的测试备注。硬件基本位定义及停止顺序已由RM0399核验；以下尚不能仅用当前公开HAL接口形成C1安全证明。

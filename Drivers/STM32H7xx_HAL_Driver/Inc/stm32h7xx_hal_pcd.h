@@ -135,7 +135,48 @@ typedef struct
   void (* MspInitCallback)(struct __PCD_HandleTypeDef *hpcd);                          /*!< USB OTG PCD Msp Init callback           */
   void (* MspDeInitCallback)(struct __PCD_HandleTypeDef *hpcd);                        /*!< USB OTG PCD Msp DeInit callback         */
 #endif /* USE_HAL_PCD_REGISTER_CALLBACKS */
+  /* Optional immutable, all-or-none Slave/PIO lifecycle extension. */
+  const struct PCD_LifecycleHooks *Lifecycle;
 } PCD_HandleTypeDef;
+
+#define PCD_LIFECYCLE_VERSION       1U
+#define PCD_LC_NAK_ISO_REQUEST      1U
+#define PCD_LC_NAK_EFFECTIVE        2U
+#define PCD_LC_FORWARD_XFRC         1U
+
+typedef struct PCD_LifecycleHooks
+{
+  uint32_t Version;
+  uint32_t (*RxBegin)(PCD_HandleTypeDef *, uint32_t, uint8_t *, uint16_t, uint32_t *);
+  void (*RxEnd)(PCD_HandleTypeDef *, uint32_t, uint32_t, uint16_t, uint32_t);
+  uint32_t (*OutBegin)(PCD_HandleTypeDef *, uint8_t, uint32_t, uint32_t *);
+  void (*OutEnd)(PCD_HandleTypeDef *, uint8_t, uint32_t, uint32_t);
+  void (*Nak)(PCD_HandleTypeDef *, uint32_t, uint8_t);
+  void (*Boundary)(PCD_HandleTypeDef *, uint32_t);
+  uint32_t (*CanDetach)(PCD_HandleTypeDef *);
+} PCD_LifecycleHooks;
+
+/* Bind only while the controller's global interrupt is disabled, in Task context.
+ * Callbacks are immutable, bounded, non-blocking, and live until safe detach.
+ * Return zero from RxBegin to drain an invalid packet without writing its Buffer.
+ */
+__STATIC_INLINE HAL_StatusTypeDef HAL_PCD_SetLifecycleHooks(PCD_HandleTypeDef *hpcd,
+                                                           const PCD_LifecycleHooks *hooks)
+{
+  if (hpcd == NULL || hpcd->Instance == NULL || __get_IPSR() != 0U || hpcd->State != HAL_PCD_STATE_READY ||
+      (hpcd->Instance->GAHBCFG & USB_OTG_GAHBCFG_GINT) != 0U)
+    return HAL_ERROR;
+  if (hpcd->Lifecycle != NULL && hpcd->Lifecycle->CanDetach(hpcd) == 0U)
+    return HAL_BUSY;
+  if (hooks != NULL && (hooks->Version != PCD_LIFECYCLE_VERSION || hpcd->Init.dma_enable != 0U ||
+      hooks->RxBegin == NULL || hooks->RxEnd == NULL || hooks->OutBegin == NULL ||
+      hooks->OutEnd == NULL || hooks->Nak == NULL || hooks->Boundary == NULL || hooks->CanDetach == NULL))
+    return HAL_ERROR;
+  __DMB();
+  hpcd->Lifecycle = hooks;
+  __DMB();
+  return HAL_OK;
+}
 
 /**
   * @}

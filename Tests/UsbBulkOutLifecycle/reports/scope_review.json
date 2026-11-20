@@ -1,0 +1,39 @@
+{
+  "baseline": "3305d4a729e965247b33c95e5558eac576f1c6ef",
+  "production_files": [
+    "CM7/BSP/bsp_usb.c",
+    "CM7/BSP/bsp_usb.h",
+    "CM7/Platform/usb_device.c",
+    "CM7/Platform/usb_device.h",
+    "Drivers/STM32H7xx_HAL_Driver/Src/stm32h7xx_hal_pcd.c",
+    "Drivers/STM32H7xx_HAL_Driver/Inc/stm32h7xx_hal_pcd.h"
+  ],
+  "documentation_files": [
+    "Docs/usb-lifecycle/USB_BulkOUT_HardwareEvidence.md",
+    "Docs/usb-lifecycle/USB_GlobalOUTNAK_Ownership_Contract.md",
+    "Docs/usb-lifecycle/USB_SharedRXFIFO_Retirement_Contract.md",
+    "Docs/usb-lifecycle/USB_BulkOUT_ImplementationReport.md",
+    "Docs/usb-lifecycle/USB_BulkOUT_SoftwareVerification.md",
+    "Docs/usb-lifecycle/USB_BulkOUT_UnresolvedConditions.md",
+    "Docs/usb-lifecycle/USB_BulkOUT_C1_HALHook_Contract.md",
+    "Docs/usb-lifecycle/USB_BulkOUT_C1_StopProof_Contract.md",
+    "Docs/usb-lifecycle/USB_BulkOUT_C1_ImplementationReport.md",
+    "Docs/usb-lifecycle/USB_BulkOUT_C1_SoftwareVerification.md",
+    "Docs/usb-lifecycle/USB_BulkOUT_C1_RemainingRisks.md"
+  ],
+  "forbidden_production_changes": [],
+  "original_test_files_changed": [],
+  "source_location_checks": 24,
+  "historical_document_bodies_preserved": true,
+  "pdf_readonly_sha256": "61d07b67deb291aed8a5cf8019c94add0a1065318542e57b3287d2694b14bd60",
+  "production_sources_match_built_snapshot": true,
+  "checks": {
+    "copy_before_write": "VERIFIED: HOOK-04..10 / C1-26,27,28",
+    "nak_all_current_writers": "VERIFIED: HAL guards + HOOK-12,13 / C1-13..17,41,42,47,48",
+    "buffer_retirement": "VERIFIED: C1-01..08,18..23,33..37,53,54",
+    "ep0_preservation": "VERIFIED: C1-10,40,50,51,55,56,57; universal cancellation success UNRESOLVED",
+    "irq_pio": "VERIFIED: real ARM hooks + C1-02,25,28,38,49",
+    "silicon_timing": "NOT_TESTED",
+    "automatic_class_migration": "NOT_TESTED / not implemented"
+  }
+}

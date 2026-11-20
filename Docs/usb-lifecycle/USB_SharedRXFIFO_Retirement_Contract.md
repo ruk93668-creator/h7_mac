@@ -1,3 +1,5 @@
+> VERIFIED：2026-11-20 P1-C1 修订补充见 [C1实施报告](USB_BulkOUT_C1_ImplementationReport.md)、[当前HAL与硬件映射](USB_BulkOUT_C1_HALHook_Contract.md)、[当前停止/NAK/RX契约](USB_BulkOUT_C1_StopProof_Contract.md)、[最终软件验证](USB_BulkOUT_C1_SoftwareVerification.md)。以下 C0 正文保留原基线、行号和当时阻塞结论，不代表已实施 C1 后的现状；尚未证明条件以 [C1清单](USB_BulkOUT_C1_RemainingRisks.md) 为准。
+
 # P1-C — Shared RX FIFO Retirement Contract
 
 ## 共享消费者与当前实现

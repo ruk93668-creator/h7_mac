@@ -135,6 +135,7 @@ HAL_StatusTypeDef HAL_PCD_Init(PCD_HandleTypeDef *hpcd)
 
   if (hpcd->State == HAL_PCD_STATE_RESET)
   {
+    hpcd->Lifecycle = NULL;
     /* Allocate lock resource and initialize it */
     hpcd->Lock = HAL_UNLOCKED;
 
@@ -1061,6 +1062,11 @@ void HAL_PCD_IRQHandler(PCD_HandleTypeDef *hpcd)
   /* ensure that we are in device mode */
   if (USB_GetMode(hpcd->Instance) == USB_OTG_MODE_DEVICE)
   {
+    if (hpcd->Lifecycle != NULL)
+    {
+      hpcd->Lifecycle->Boundary(hpcd, USBx->GINTSTS);
+    }
+
     /* avoid spurious interrupt */
     if (__HAL_PCD_IS_INVALID_INTERRUPT(hpcd))
     {
@@ -1083,27 +1089,70 @@ void HAL_PCD_IRQHandler(PCD_HandleTypeDef *hpcd)
 
       RegVal = USBx->GRXSTSP;
 
-      ep = &hpcd->OUT_ep[RegVal & USB_OTG_GRXSTSP_EPNUM];
-
-      if (((RegVal & USB_OTG_GRXSTSP_PKTSTS) >> 17) ==  STS_DATA_UPDT)
+      if (hpcd->Lifecycle != NULL)
       {
-        if ((RegVal & USB_OTG_GRXSTSP_BCNT) != 0U)
+        uint32_t cookie = 0U;
+        uint32_t copied = 0U;
+        uint32_t kind = (RegVal & USB_OTG_GRXSTSP_PKTSTS) >> 17;
+        uint16_t count = (uint16_t)((RegVal & USB_OTG_GRXSTSP_BCNT) >> 4);
+        uint8_t *destination;
+        ep = &hpcd->OUT_ep[RegVal & USB_OTG_GRXSTSP_EPNUM];
+        destination = kind == STS_SETUP_UPDT ? (uint8_t *)hpcd->Setup : ep->xfer_buff;
+        hpcd->Lifecycle->Boundary(hpcd, USBx->GINTSTS);
+        uint32_t permit = hpcd->Lifecycle->RxBegin(hpcd, RegVal, destination, count, &cookie);
+        if (permit != 0U &&
+            ((kind == STS_DATA_UPDT && (count == 0U || destination != NULL)) ||
+             (kind == STS_SETUP_UPDT && count == 8U && (RegVal & USB_OTG_GRXSTSP_EPNUM) == 0U) ||
+             (count == 0U && (kind == 1U || kind == 3U || kind == 4U))))
         {
-          (void)USB_ReadPacket(USBx, ep->xfer_buff,
-                               (uint16_t)((RegVal & USB_OTG_GRXSTSP_BCNT) >> 4));
-
-          ep->xfer_buff += (RegVal & USB_OTG_GRXSTSP_BCNT) >> 4;
-          ep->xfer_count += (RegVal & USB_OTG_GRXSTSP_BCNT) >> 4;
+          if (count != 0U && (kind == STS_DATA_UPDT || kind == STS_SETUP_UPDT))
+          {
+            (void)USB_ReadPacket(USBx, destination, count);
+            if (kind == STS_DATA_UPDT) ep->xfer_buff += count;
+            ep->xfer_count += count;
+          }
+          copied = 1U;
         }
-      }
-      else if (((RegVal & USB_OTG_GRXSTSP_PKTSTS) >> 17) == STS_SETUP_UPDT)
-      {
-        (void)USB_ReadPacket(USBx, (uint8_t *)hpcd->Setup, 8U);
-        ep->xfer_count += (RegVal & USB_OTG_GRXSTSP_BCNT) >> 4;
+        else
+        {
+          /* Preserve the shared FIFO stream without writing an invalid destination.
+           * BCNT is 11 bits: at most 512 bounded word reads, never a FIFO flush. */
+          uint16_t remaining = count;
+          uint32_t discard;
+          while (remaining != 0U)
+          {
+            uint16_t part = remaining > 4U ? 4U : remaining;
+            (void)USB_ReadPacket(USBx, (uint8_t *)&discard, part);
+            remaining -= part;
+          }
+        }
+        hpcd->Lifecycle->RxEnd(hpcd, RegVal, cookie, count, copied);
       }
       else
       {
-        /* ... */
+        ep = &hpcd->OUT_ep[RegVal & USB_OTG_GRXSTSP_EPNUM];
+
+        if (((RegVal & USB_OTG_GRXSTSP_PKTSTS) >> 17) ==  STS_DATA_UPDT)
+        {
+          if ((RegVal & USB_OTG_GRXSTSP_BCNT) != 0U)
+          {
+            (void)USB_ReadPacket(USBx, ep->xfer_buff,
+                                 (uint16_t)((RegVal & USB_OTG_GRXSTSP_BCNT) >> 4));
+
+            ep->xfer_buff += (RegVal & USB_OTG_GRXSTSP_BCNT) >> 4;
+            ep->xfer_count += (RegVal & USB_OTG_GRXSTSP_BCNT) >> 4;
+          }
+        }
+        else if (((RegVal & USB_OTG_GRXSTSP_PKTSTS) >> 17) == STS_SETUP_UPDT)
+        {
+          (void)USB_ReadPacket(USBx, (uint8_t *)hpcd->Setup, 8U);
+          ep->xfer_count += (RegVal & USB_OTG_GRXSTSP_BCNT) >> 4;
+        }
+        else
+        {
+          /* ... */
+        }
+
       }
 
       USB_UNMASK_INTERRUPT(hpcd->Instance, USB_OTG_GINTSTS_RXFLVL);
@@ -1120,12 +1169,17 @@ void HAL_PCD_IRQHandler(PCD_HandleTypeDef *hpcd)
       {
         if ((ep_intr & 0x1U) != 0U)
         {
+          uint32_t lifecycle_cookie = 0U;
+          uint32_t lifecycle_forward = PCD_LC_FORWARD_XFRC;
           epint = USB_ReadDevOutEPInterrupt(hpcd->Instance, (uint8_t)epnum);
+          if (hpcd->Lifecycle != NULL)
+            lifecycle_forward = hpcd->Lifecycle->OutBegin(hpcd, (uint8_t)epnum, epint, &lifecycle_cookie);
 
           if ((epint & USB_OTG_DOEPINT_XFRC) == USB_OTG_DOEPINT_XFRC)
           {
             CLEAR_OUT_EP_INTR(epnum, USB_OTG_DOEPINT_XFRC);
-            (void)PCD_EP_OutXfrComplete_int(hpcd, epnum);
+            if ((lifecycle_forward & PCD_LC_FORWARD_XFRC) != 0U)
+              (void)PCD_EP_OutXfrComplete_int(hpcd, epnum);
           }
 
           if ((epint & USB_OTG_DOEPINT_STUP) == USB_OTG_DOEPINT_STUP)
@@ -1143,24 +1197,27 @@ void HAL_PCD_IRQHandler(PCD_HandleTypeDef *hpcd)
           /* Clear OUT Endpoint disable interrupt */
           if ((epint & USB_OTG_DOEPINT_EPDISD) == USB_OTG_DOEPINT_EPDISD)
           {
-            if ((USBx->GINTSTS & USB_OTG_GINTSTS_BOUTNAKEFF) == USB_OTG_GINTSTS_BOUTNAKEFF)
+            if (hpcd->Lifecycle == NULL)
             {
-              USBx_DEVICE->DCTL |= USB_OTG_DCTL_CGONAK;
+              if ((USBx->GINTSTS & USB_OTG_GINTSTS_BOUTNAKEFF) == USB_OTG_GINTSTS_BOUTNAKEFF)
+              {
+                USBx_DEVICE->DCTL |= USB_OTG_DCTL_CGONAK;
+              }
+
+              ep = &hpcd->OUT_ep[epnum];
+
+              if (ep->is_iso_incomplete == 1U)
+              {
+                ep->is_iso_incomplete = 0U;
+
+  #if (USE_HAL_PCD_REGISTER_CALLBACKS == 1U)
+                hpcd->ISOOUTIncompleteCallback(hpcd, (uint8_t)epnum);
+  #else
+                HAL_PCD_ISOOUTIncompleteCallback(hpcd, (uint8_t)epnum);
+  #endif /* USE_HAL_PCD_REGISTER_CALLBACKS */
+              }
+
             }
-
-            ep = &hpcd->OUT_ep[epnum];
-
-            if (ep->is_iso_incomplete == 1U)
-            {
-              ep->is_iso_incomplete = 0U;
-
-#if (USE_HAL_PCD_REGISTER_CALLBACKS == 1U)
-              hpcd->ISOOUTIncompleteCallback(hpcd, (uint8_t)epnum);
-#else
-              HAL_PCD_ISOOUTIncompleteCallback(hpcd, (uint8_t)epnum);
-#endif /* USE_HAL_PCD_REGISTER_CALLBACKS */
-            }
-
             CLEAR_OUT_EP_INTR(epnum, USB_OTG_DOEPINT_EPDISD);
           }
 
@@ -1175,6 +1232,8 @@ void HAL_PCD_IRQHandler(PCD_HandleTypeDef *hpcd)
           {
             CLEAR_OUT_EP_INTR(epnum, USB_OTG_DOEPINT_NAK);
           }
+          if (hpcd->Lifecycle != NULL)
+            hpcd->Lifecycle->OutEnd(hpcd, (uint8_t)epnum, epint, lifecycle_cookie);
         }
         epnum++;
         ep_intr >>= 1U;
@@ -1412,14 +1471,19 @@ void HAL_PCD_IRQHandler(PCD_HandleTypeDef *hpcd)
     /* Handle Global OUT NAK effective Interrupt */
     if (__HAL_PCD_GET_FLAG(hpcd, USB_OTG_GINTSTS_BOUTNAKEFF))
     {
-      USBx->GINTMSK &= ~USB_OTG_GINTMSK_GONAKEFFM;
-
-      for (epnum = 1U; epnum < hpcd->Init.dev_endpoints; epnum++)
+      if (hpcd->Lifecycle != NULL)
+        hpcd->Lifecycle->Nak(hpcd, PCD_LC_NAK_EFFECTIVE, 0U);
+      else
       {
-        if (hpcd->OUT_ep[epnum].is_iso_incomplete == 1U)
+        USBx->GINTMSK &= ~USB_OTG_GINTMSK_GONAKEFFM;
+
+        for (epnum = 1U; epnum < hpcd->Init.dev_endpoints; epnum++)
         {
-          /* Abort current transaction and disable the EP */
-          (void)HAL_PCD_EP_Abort(hpcd, (uint8_t)epnum);
+          if (hpcd->OUT_ep[epnum].is_iso_incomplete == 1U)
+          {
+            /* Abort current transaction and disable the EP */
+            (void)HAL_PCD_EP_Abort(hpcd, (uint8_t)epnum);
+          }
         }
       }
     }
@@ -1457,13 +1521,19 @@ void HAL_PCD_IRQHandler(PCD_HandleTypeDef *hpcd)
         {
           hpcd->OUT_ep[epnum].is_iso_incomplete = 1U;
 
-          USBx->GINTMSK |= USB_OTG_GINTMSK_GONAKEFFM;
-
-          if ((USBx->GINTSTS & USB_OTG_GINTSTS_BOUTNAKEFF) == 0U)
+          if (hpcd->Lifecycle != NULL)
+            hpcd->Lifecycle->Nak(hpcd, PCD_LC_NAK_ISO_REQUEST, (uint8_t)epnum);
+          else
           {
-            USBx_DEVICE->DCTL |= USB_OTG_DCTL_SGONAK;
-            break;
+            USBx->GINTMSK |= USB_OTG_GINTMSK_GONAKEFFM;
+
+            if ((USBx->GINTSTS & USB_OTG_GINTSTS_BOUTNAKEFF) == 0U)
+            {
+              USBx_DEVICE->DCTL |= USB_OTG_DCTL_SGONAK;
+              break;
+            }
           }
+
         }
       }
 

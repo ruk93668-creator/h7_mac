@@ -327,6 +327,7 @@ uint32_t USB_Device_GetSofSequence(void)
 }
 
 //将BSP事件绑定到通用Core适配函数
+static void Usb_OutLifecycleFault(SysResult_t result);
 static const BspUsbCallbacks_t s_callbacks =
 {
     Usb_Setup,
@@ -340,7 +341,8 @@ static const BspUsbCallbacks_t s_callbacks =
     Usb_IsoInIncomplete,
     Usb_IsoOutIncomplete,
     Usb_DataInError,
-    Usb_Sof
+    Usb_Sof,
+    Usb_OutLifecycleFault
 };
 
 //绑定USB状态通知接收端
@@ -1061,7 +1063,11 @@ USBD_StatusTypeDef USBD_LL_PrepareReceive(USBD_HandleTypeDef *device, uint8_t ep
     result = BSP_USB_Receive(ep, buffer, size);
     entry->last_result = result;
     if (result != SYS_OK)
-        entry->busy = false;
+    {
+        BspUsbOutStopProof_t proof;
+        if (BSP_USB_GetBulkOutProof(ep, &proof) != SYS_OK || !proof.buffer_owned)
+            entry->busy = false;
+    }
     Usb_Unlock(enabled);
     return Usb_LlResult(result);
 }
@@ -1616,7 +1622,7 @@ static void Usb_Reset(void)
 
     Usb_TraceLifecycle(USB_TRACE_RESET_BEGIN, 0U);
     Usb_InvalidateControl();
-    if (BSP_USB_BulkInHasReferences())
+    if (BSP_USB_BulkInHasReferences() || BSP_USB_BulkOutHasReferences())
     {
         s_stop_required = true;
         s_last_result = SYS_ERR_BUSY;
@@ -1682,7 +1688,7 @@ static void Usb_Disconnect(void)
 {
     Usb_TraceLifecycle(USB_TRACE_DISCONNECT_BEGIN, 0U);
     Usb_InvalidateControl();
-    if (BSP_USB_BulkInHasReferences())
+    if (BSP_USB_BulkInHasReferences() || BSP_USB_BulkOutHasReferences())
     {
         s_stop_required = true;
         s_last_result = SYS_ERR_BUSY;
@@ -2068,7 +2074,7 @@ static uint8_t Usb_ManagedClassDeInit(USBD_HandleTypeDef *device, uint8_t config
     Usb_InvalidateControl();
 
     //Core同步DeInit不能代替Task分阶段停止；失败锁定并保留Class与缓冲区
-    if (BSP_USB_BulkInHasReferences())
+    if (BSP_USB_BulkInHasReferences() || BSP_USB_BulkOutHasReferences())
     {
         s_stop_required = true;
         s_last_result = SYS_ERR_BUSY;
@@ -2196,3 +2202,61 @@ static void Usb_TraceLifecycle(UsbDeviceLifecycleEvent_t event, uint32_t detail)
     Usb_Unlock(saved);
 }
 #endif
+
+//OUT接口只提供机制，不在这里迁移MSC BOT/USB Mode的生命周期。
+SysResult_t USB_Device_EnableBulkOutLifecycle(void)
+{
+    if (__get_IPSR() != 0U || !s_initialized || s_started || s_control_busy || s_stop_required ||
+        s_class_state != USB_CLASS_INACTIVE || s_class_memory_used) return SYS_ERR_INVALID_STATE;
+    return BSP_USB_EnableBulkOutLifecycle();
+}
+SysResult_t USB_Device_GetBulkOutTransfer(uint8_t ep, UsbBulkOutStopTransaction_t *transaction)
+{
+    BspUsbOutStopProof_t proof; SysResult_t result;
+    if (__get_IPSR() != 0U) return SYS_ERR_INVALID_STATE;
+    if (transaction == NULL || !Usb_ClassEndpoint(ep) || (ep & 0x80U) != 0U) return SYS_ERR_INVALID_ARG;
+    result = BSP_USB_GetBulkOutProof(ep, &proof);
+    if (result == SYS_OK) { transaction->transfer = proof.transfer; transaction->stop_attempt = proof.stop_attempt; }
+    return result;
+}
+SysResult_t USB_Device_BeginBulkOutStop(UsbBulkOutStopTransaction_t *transaction, uint32_t timeout,
+                                     BspUsbOutStopProof_t *proof)
+{
+    SysResult_t result;
+    if (transaction == NULL || proof == NULL) return SYS_ERR_INVALID_ARG;
+    result = BSP_USB_BeginBulkOutStop(&transaction->transfer, timeout, proof);
+    if (result == SYS_OK) transaction->stop_attempt = proof->stop_attempt;
+    return result;
+}
+SysResult_t USB_Device_PollBulkOutStop(const UsbBulkOutStopTransaction_t *transaction, BspUsbOutStopProof_t *proof)
+{
+    if (transaction == NULL) return SYS_ERR_INVALID_ARG;
+    return BSP_USB_PollBulkOutStop(&transaction->transfer, transaction->stop_attempt, proof);
+}
+SysResult_t USB_Device_CommitBulkOutRetirement(const UsbBulkOutStopTransaction_t *transaction, BspUsbOutStopProof_t *proof)
+{
+    SysResult_t result; uint32_t saved; uint8_t ep;
+    if (__get_IPSR() != 0U) return SYS_ERR_INVALID_STATE;
+    if (transaction == NULL || proof == NULL || !Usb_ClassEndpoint(transaction->transfer.endpoint_address) ||
+        (transaction->transfer.endpoint_address & 0x80U) != 0U) return SYS_ERR_INVALID_ARG;
+    ep = transaction->transfer.endpoint_address;
+    saved = __get_PRIMASK(); __disable_irq();
+    result = BSP_USB_CommitBulkOutRetirement(&transaction->transfer, transaction->stop_attempt, proof);
+    if (result == SYS_OK && proof->stage == BSP_USB_OUT_COMMITTED)
+    { s_endpoints[0][ep].busy = false; s_endpoints[0][ep].last_result = SYS_OK; }
+    __set_PRIMASK(saved); return result;
+}
+SysResult_t USB_Device_ReconcileBulkOutStop(const UsbBulkOutStopTransaction_t *transaction, BspUsbOutStopProof_t *proof)
+{
+    if (transaction == NULL) return SYS_ERR_INVALID_ARG;
+    return BSP_USB_ReconcileBulkOutStop(&transaction->transfer, transaction->stop_attempt, proof);
+}
+
+//OUT故障只撤销控制事务资格并门控后续Class请求；所有Buffer引用仍归BSP证明。
+static void Usb_OutLifecycleFault(SysResult_t result)
+{
+    Usb_InvalidateControl();
+    s_stop_required = true;
+    s_last_result = result == SYS_OK || result == SYS_ERR_BUSY ? SYS_ERR_IO : result;
+    Usb_Notify(USB_DEVICE_EVENT_STATE);
+}

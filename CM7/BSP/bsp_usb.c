@@ -475,6 +475,544 @@ SysResult_t BSP_USB_CommitBulkInRetirement(const BspUsbInIdentity_t *identity,
     return SYS_OK;
 }
 
+//OUT使用独立身份、引用及全局NAK lease；不复用IN完成标志。
+#define USB_OUT_TERMINAL (USB_OTG_DOEPINT_XFRC | USB_OTG_DOEPINT_EPDISD)
+typedef struct
+{
+    BspUsbOutStopProof_t proof;
+    uint32_t began_at, budget, polls;
+} UsbOutSlot_t;
+typedef struct
+{
+    uint32_t cookie, sequence, events;
+    bool active, forward, deferred;
+} UsbOutEvent_t;
+typedef struct
+{
+    uint32_t id, bulk_mask, iso_mask, marker, saved_nak_mask, saved_disable_mask;
+    bool effective, fault, releasing;
+} UsbOutLease_t;
+static UsbOutSlot_t s_out_slot[BSP_USB_ENDPOINT_COUNT];
+static UsbOutEvent_t s_out_event[BSP_USB_ENDPOINT_COUNT];
+static UsbOutLease_t s_out_lease;
+static uint32_t s_out_controller, s_out_session = 1U;
+static uint32_t s_out_endpoint_seed[BSP_USB_ENDPOINT_COUNT], s_out_transfer_seed[BSP_USB_ENDPOINT_COUNT];
+static uint32_t s_out_attempt_seed, s_out_lease_seed, s_out_rx_seed, s_out_event_seed;
+static uint32_t s_out_boundary_latch, s_out_copy_cookie, s_out_copy_ep, s_out_rx_pending;
+static bool s_out_copy_active, s_out_session_tainted, s_out_bind_window;
+static uint32_t Usb_OutRxBegin(PCD_HandleTypeDef *, uint32_t, uint8_t *, uint16_t, uint32_t *);
+static void Usb_OutRxEnd(PCD_HandleTypeDef *, uint32_t, uint32_t, uint16_t, uint32_t);
+static void Usb_OutDrainDeferred(PCD_HandleTypeDef *);
+static uint32_t Usb_OutEventBegin(PCD_HandleTypeDef *, uint8_t, uint32_t, uint32_t *);
+static void Usb_OutEventEnd(PCD_HandleTypeDef *, uint8_t, uint32_t, uint32_t);
+static void Usb_OutNak(PCD_HandleTypeDef *, uint32_t, uint8_t);
+static void Usb_OutBoundary(PCD_HandleTypeDef *, uint32_t);
+static uint32_t Usb_OutCanDetach(PCD_HandleTypeDef *);
+static const PCD_LifecycleHooks s_out_hooks =
+{
+    PCD_LIFECYCLE_VERSION, Usb_OutRxBegin, Usb_OutRxEnd,
+    Usb_OutEventBegin, Usb_OutEventEnd, Usb_OutNak, Usb_OutBoundary, Usb_OutCanDetach
+};
+static bool Usb_OutEnabled(void) { return s_pcd.Lifecycle == &s_out_hooks; }
+static bool Usb_OutTarget(uint8_t ep)
+{
+    return Usb_ValidEp(ep) && ep != 0U && (ep & 0x80U) == 0U &&
+           s_pcd.OUT_ep[ep].maxpacket != 0U && s_pcd.OUT_ep[ep].type == EP_TYPE_BULK;
+}
+static bool Usb_OutMemory(uint8_t *buffer, uint32_t count)
+{
+    uint32_t first = (uint32_t)buffer;
+    const uint32_t base[] = {0x20000000U, 0x24000000U, 0x30000000U, 0x38000000U};
+    const uint32_t end[]  = {0x20020000U, 0x24080000U, 0x30048000U, 0x38010000U};
+    uint32_t i;
+    if (buffer == NULL) return count == 0U;
+    for (i = 0U; i < 4U; ++i)
+        if (first >= base[i] && first < end[i] && count <= end[i] - first) return true;
+    return false;
+}
+static void Usb_OutFault(uint8_t ep, SysResult_t error)
+{
+    BspUsbOutStopProof_t *p = &s_out_slot[ep].proof;
+    if (p->first_error == SYS_OK) { p->first_error = error; p->failed_stage = p->stage; }
+    {
+        bool changed = p->stage != BSP_USB_OUT_FAULT || p->error != error;
+        p->error = error; p->stage = BSP_USB_OUT_FAULT; p->fenced = true;
+        if (changed && s_callbacks != NULL && s_callbacks->out_fault != NULL)
+            s_callbacks->out_fault(error);
+    }
+}
+bool BSP_USB_BulkOutHasReferences(void)
+{
+    uint32_t ep;
+    if (s_out_lease.id != 0U || s_out_lease.fault || s_out_copy_active || s_out_rx_pending != 0U) return true;
+    for (ep = 0U; ep < BSP_USB_ENDPOINT_COUNT; ++ep)
+        if (s_out_slot[ep].proof.buffer_owned || s_out_slot[ep].proof.fenced ||
+            s_out_slot[ep].proof.pio_references != 0U || s_out_event[ep].active) return true;
+    return false;
+}
+static void Usb_OutInvalidate(void)
+{
+    uint8_t ep;
+    bool owned = BSP_USB_BulkOutHasReferences();
+    if (s_out_session != UINT32_MAX) ++s_out_session;
+    if (s_out_lease.id != 0U) s_out_lease.fault = true;
+    if (owned) s_out_session_tainted = true;
+    for (ep = 0U; ep < BSP_USB_ENDPOINT_COUNT; ++ep)
+        if (s_out_slot[ep].proof.buffer_owned || s_out_slot[ep].proof.fenced)
+            Usb_OutFault(ep, SYS_ERR_INVALID_STATE);
+}
+static void Usb_OutBoundary(PCD_HandleTypeDef *pcd, uint32_t raw)
+{
+    uint32_t boundary = (raw & USB_OTG_GINTSTS_USBRST) != 0U ? 1U : 0U;
+    if ((raw & USB_OTG_GINTSTS_OTGINT) != 0U &&
+        (pcd->Instance->GOTGINT & USB_OTG_GOTGINT_SEDET) != 0U) boundary |= 2U;
+    if ((boundary & ~s_out_boundary_latch) != 0U) Usb_OutInvalidate();
+    s_out_boundary_latch = boundary;
+    //生效后、合法解除前，任何已观测的屏障丢失都不可复活为同一lease。
+    if (s_out_lease.id != 0U && s_out_lease.effective && !s_out_lease.releasing && !s_out_lease.fault)
+    {
+        uint32_t ep; uint32_t USBx_BASE = (uint32_t)pcd->Instance;
+        if ((raw & USB_OTG_GINTSTS_BOUTNAKEFF) == 0U || (USBx_DEVICE->DCTL & USB_OTG_DCTL_GONSTS) == 0U)
+        {
+            s_out_lease.fault = true;
+            for (ep = 1U; ep < BSP_USB_ENDPOINT_COUNT; ++ep)
+                if (((s_out_lease.bulk_mask | s_out_lease.iso_mask) & (1UL << ep)) != 0U)
+                    Usb_OutFault((uint8_t)ep, SYS_ERR_INVALID_STATE);
+        }
+    }
+}
+static uint32_t Usb_OutCanDetach(PCD_HandleTypeDef *pcd)
+{
+    uint32_t ep; uint32_t USBx_BASE = (uint32_t)pcd->Instance;
+    if (BSP_USB_BulkOutHasReferences() ||
+        (pcd->Instance->GINTSTS & USB_OTG_GINTSTS_RXFLVL) != 0U) return 0U;
+    for (ep = 1U; ep < BSP_USB_ENDPOINT_COUNT; ++ep)
+        if ((USBx_OUTEP(ep)->DOEPCTL & USB_OTG_DOEPCTL_EPENA) != 0U ||
+            (USBx_OUTEP(ep)->DOEPINT & USB_OUT_TERMINAL) != 0U) return 0U;
+    return 1U;
+}
+SysResult_t BSP_USB_EnableBulkOutLifecycle(void)
+{
+    uint32_t ep, saved; HAL_StatusTypeDef status;
+    uint32_t USBx_BASE = (uint32_t)s_pcd.Instance;
+    if (__get_IPSR() != 0U || !s_ready || s_started) return SYS_ERR_INVALID_STATE;
+    if (Usb_OutEnabled()) return SYS_OK;
+    if (!s_out_bind_window) return SYS_ERR_INVALID_STATE;
+    if (s_pcd.Init.dma_enable != DISABLE) return SYS_ERR_NOT_SUPPORTED;
+    if (s_out_controller == UINT32_MAX || s_out_session == UINT32_MAX) return SYS_ERR_NO_RESOURCE;
+    saved = Usb_BulkPublishLock();
+    if (BSP_USB_BulkOutHasReferences() ||
+        (s_pcd.Instance->GINTSTS & (USB_OTG_GINTSTS_RXFLVL | USB_OTG_GINTSTS_BOUTNAKEFF)) != 0U ||
+        (USBx_DEVICE->DCTL & USB_OTG_DCTL_GONSTS) != 0U ||
+        (USBx_DEVICE->DCTL & USB_OTG_DCTL_SDIS) == 0U)
+    { Usb_BulkPublishUnlock(saved); return SYS_ERR_BUSY; }
+    for (ep = 1U; ep < BSP_USB_ENDPOINT_COUNT; ++ep)
+        if (s_pcd.OUT_ep[ep].maxpacket != 0U)
+        { Usb_BulkPublishUnlock(saved); return SYS_ERR_BUSY; }
+    status = HAL_PCD_SetLifecycleHooks(&s_pcd, &s_out_hooks);
+    if (status == HAL_OK)
+    {
+        ++s_out_controller; s_out_session_tainted = false;
+        memset(s_out_slot, 0, sizeof(s_out_slot)); memset(s_out_event, 0, sizeof(s_out_event));
+    }
+    Usb_BulkPublishUnlock(saved);
+    return Usb_HalResult(status);
+}
+//调用者先持有短发布锁；不改变已有lease的身份，也不偷取未知硬件NAK。
+static SysResult_t Usb_OutClaim(uint8_t ep, bool iso)
+{
+    uint32_t USBx_BASE = (uint32_t)s_pcd.Instance;
+    if (s_out_lease.id == 0U)
+    {
+        if (s_out_lease_seed == UINT32_MAX) return SYS_ERR_NO_RESOURCE;
+        if ((s_pcd.Instance->GINTSTS & USB_OTG_GINTSTS_BOUTNAKEFF) != 0U ||
+            (USBx_DEVICE->DCTL & USB_OTG_DCTL_GONSTS) != 0U) return SYS_ERR_BUSY;
+        memset(&s_out_lease, 0, sizeof(s_out_lease));
+        s_out_lease.id = ++s_out_lease_seed;
+        s_out_lease.saved_nak_mask = s_pcd.Instance->GINTMSK & USB_OTG_GINTMSK_GONAKEFFM;
+        s_out_lease.saved_disable_mask = USBx_DEVICE->DOEPMSK & USB_OTG_DOEPMSK_EPDM;
+        s_pcd.Instance->GINTMSK |= USB_OTG_GINTMSK_GONAKEFFM;
+        USBx_DEVICE->DOEPMSK |= USB_OTG_DOEPMSK_EPDM;
+        USBx_DEVICE->DCTL |= USB_OTG_DCTL_SGONAK;
+    }
+    if (s_out_lease.fault || s_out_lease.releasing) return SYS_ERR_INVALID_STATE;
+    if (iso) s_out_lease.iso_mask |= 1UL << ep;
+    else s_out_lease.bulk_mask |= 1UL << ep;
+    return SYS_OK;
+}
+static bool Usb_OutEffective(void)
+{
+    uint32_t USBx_BASE = (uint32_t)s_pcd.Instance;
+    return s_out_lease.id != 0U && !s_out_lease.fault && s_out_lease.effective &&
+           s_out_lease.marker != 0U &&
+           (s_pcd.Instance->GINTSTS & USB_OTG_GINTSTS_BOUTNAKEFF) != 0U &&
+           (USBx_DEVICE->DCTL & USB_OTG_DCTL_GONSTS) != 0U;
+}
+//解除命令与硬件完成分开：一次检查，不在ISR/Task中轮询等待。
+static void Usb_OutReleaseIfEmpty(void)
+{
+    uint32_t ep; uint32_t USBx_BASE = (uint32_t)s_pcd.Instance;
+    if (s_out_lease.id == 0U || s_out_lease.fault || s_out_lease.bulk_mask != 0U || s_out_lease.iso_mask != 0U) return;
+    if (!s_out_lease.releasing)
+    {
+        if (!Usb_OutEffective()) return;
+        s_out_lease.releasing = true;
+        USBx_DEVICE->DCTL |= USB_OTG_DCTL_CGONAK;
+        __DSB();
+    }
+    if ((s_pcd.Instance->GINTSTS & USB_OTG_GINTSTS_BOUTNAKEFF) != 0U ||
+        (USBx_DEVICE->DCTL & USB_OTG_DCTL_GONSTS) != 0U) return;
+    for (ep = 1U; ep < BSP_USB_ENDPOINT_COUNT; ++ep)
+        if (s_out_slot[ep].proof.lease_id == s_out_lease.id && s_out_slot[ep].proof.lease_drop_requested &&
+            s_out_slot[ep].proof.transfer.session_generation == s_out_session)
+            s_out_slot[ep].proof.lease_done = true;
+    s_pcd.Instance->GINTMSK = (s_pcd.Instance->GINTMSK & ~USB_OTG_GINTMSK_GONAKEFFM) | s_out_lease.saved_nak_mask;
+    USBx_DEVICE->DOEPMSK = (USBx_DEVICE->DOEPMSK & ~USB_OTG_DOEPMSK_EPDM) | s_out_lease.saved_disable_mask;
+    memset(&s_out_lease, 0, sizeof(s_out_lease));
+}
+static void Usb_OutNak(PCD_HandleTypeDef *pcd, uint32_t action, uint8_t ep)
+{
+    uint32_t i; uint32_t USBx_BASE = (uint32_t)pcd->Instance;
+    if (action == PCD_LC_NAK_EFFECTIVE)
+        pcd->Instance->GINTMSK &= ~USB_OTG_GINTMSK_GONAKEFFM;
+    if (action == PCD_LC_NAK_ISO_REQUEST)
+    {
+        if (ep == 0U || ep >= BSP_USB_ENDPOINT_COUNT) { s_out_lease.fault = true; return; }
+        s_out_slot[ep].proof.fenced = true;
+        if (Usb_OutClaim(ep, true) != SYS_OK) { Usb_OutFault(ep, SYS_ERR_BUSY); return; }
+        s_out_slot[ep].proof.lease_id = s_out_lease.id;
+    }
+    if (!Usb_OutEffective()) return;
+    pcd->Instance->GINTMSK &= ~USB_OTG_GINTMSK_GONAKEFFM;
+    for (i = 1U; i < BSP_USB_ENDPOINT_COUNT; ++i)
+        if ((s_out_lease.iso_mask & (1UL << i)) != 0U && !s_out_slot[i].proof.disable_requested)
+        {
+            if ((USBx_OUTEP(i)->DOEPCTL & USB_OTG_DOEPCTL_EPENA) == 0U)
+            { Usb_OutFault((uint8_t)i, SYS_ERR_INVALID_STATE); s_out_lease.fault = true; continue; }
+            s_out_slot[i].proof.disable_requested = true;
+            USBx_OUTEP(i)->DOEPCTL |= USB_OTG_DOEPCTL_EPDIS | USB_OTG_DOEPCTL_SNAK;
+        }
+}
+static uint32_t Usb_OutRxBegin(PCD_HandleTypeDef *pcd, uint32_t status, uint8_t *destination,
+                               uint16_t count, uint32_t *cookie)
+{
+    uint32_t ep = status & USB_OTG_GRXSTSP_EPNUM, kind = (status & USB_OTG_GRXSTSP_PKTSTS) >> 17;
+    BspUsbOutStopProof_t *p;
+    *cookie = 0U;
+    if (ep >= BSP_USB_ENDPOINT_COUNT || s_out_rx_seed == UINT32_MAX || s_out_copy_active || s_out_rx_pending != 0U)
+    { s_out_lease.fault = true; return 0U; }
+    *cookie = ++s_out_rx_seed; s_out_rx_pending = *cookie;
+    p = &s_out_slot[ep].proof;
+    if (kind == 1U && count == 0U)
+    {
+        if (s_out_lease.id == 0U || s_out_lease.fault) { s_out_lease.fault = true; return 0U; }
+        return 1U;
+    }
+    if (kind == STS_SETUP_UPDT)
+    {
+        if (ep == 0U && p->buffer_owned) Usb_OutFault(0U, SYS_ERR_INVALID_STATE);
+        if (ep != 0U || count != 8U || destination != (uint8_t *)pcd->Setup)
+        { Usb_OutFault((uint8_t)ep, SYS_ERR_PROTOCOL); return 0U; }
+    }
+    else if (kind == STS_DATA_UPDT)
+    {
+        //EP0零长度状态没有内存写入，也可能由HAL专用Setup重装路径接收。
+        if (ep == 0U && count == 0U) return 1U;
+        if (!p->buffer_owned || p->transfer.session_generation != s_out_session ||
+            p->received > p->capacity || count > p->capacity - p->received ||
+            count > pcd->OUT_ep[ep].maxpacket ||
+            destination != (uint8_t *)((uint32_t)p->buffer + p->received) || pcd->OUT_ep[ep].xfer_count != p->received ||
+            !Usb_OutMemory(destination, count))
+        { Usb_OutFault((uint8_t)ep, SYS_ERR_IO); return 0U; }
+    }
+    else
+    {
+        if (count != 0U || (kind != 3U && kind != 4U))
+        { Usb_OutFault((uint8_t)ep, SYS_ERR_PROTOCOL); return 0U; }
+        return 1U;
+    }
+    s_out_copy_active = true; s_out_copy_cookie = *cookie; s_out_copy_ep = ep;
+    ++p->pio_references;
+    return 1U;
+}
+static void Usb_OutRxEnd(PCD_HandleTypeDef *pcd, uint32_t status, uint32_t cookie,
+                         uint16_t count, uint32_t copied)
+{
+    uint32_t ep = status & USB_OTG_GRXSTSP_EPNUM, kind = (status & USB_OTG_GRXSTSP_PKTSTS) >> 17;
+    BspUsbOutStopProof_t *p;
+    if (ep >= BSP_USB_ENDPOINT_COUNT) return;
+    p = &s_out_slot[ep].proof;
+    if (cookie == 0U || cookie != s_out_rx_pending)
+    { Usb_OutFault((uint8_t)ep, SYS_ERR_INVALID_STATE); return; }
+    s_out_rx_pending = 0U;
+    if (s_out_copy_active && cookie == s_out_copy_cookie && ep == s_out_copy_ep)
+    {
+        if (p->pio_references != 0U) --p->pio_references;
+        s_out_copy_active = false;
+        if (copied != 0U && kind == STS_DATA_UPDT) p->received += count;
+    }
+    if (copied == 0U) { Usb_OutFault((uint8_t)ep, SYS_ERR_IO); return; }
+    if (kind == 1U && s_out_lease.id != 0U && !s_out_lease.fault)
+    { s_out_lease.marker = cookie; s_out_lease.effective = true; }
+    Usb_OutBoundary(pcd, pcd->Instance->GINTSTS);
+    Usb_OutDrainDeferred(pcd);
+}
+static uint32_t Usb_OutEventBegin(PCD_HandleTypeDef *pcd, uint8_t ep, uint32_t events, uint32_t *cookie)
+{
+    uint32_t USBx_BASE = (uint32_t)pcd->Instance;
+    BspUsbOutStopProof_t *p;
+    UsbOutEvent_t *e;
+    *cookie = 0U;
+    Usb_OutBoundary(pcd, pcd->Instance->GINTSTS);
+    if (ep >= BSP_USB_ENDPOINT_COUNT) return 0U;
+    p = &s_out_slot[ep].proof; e = &s_out_event[ep];
+    if ((events & USB_OUT_TERMINAL) == 0U) return PCD_LC_FORWARD_XFRC;
+    if (e->active || s_out_event_seed == UINT32_MAX)
+    { Usb_OutFault(ep, SYS_ERR_NO_RESOURCE); return 0U; }
+    e->cookie = ++s_out_event_seed; e->sequence = p->transfer.transfer_sequence;
+    e->events = events; e->active = true; e->forward = false; e->deferred = false; *cookie = e->cookie;
+    p->events |= events & USB_OUT_TERMINAL;
+    if ((events & USB_OTG_DOEPINT_EPDISD) != 0U)
+    {
+        if (!p->disable_requested || p->lease_id != s_out_lease.id || !Usb_OutEffective())
+            Usb_OutFault(ep, SYS_ERR_INVALID_STATE);
+        else p->disable_observed = true;
+    }
+    if ((events & USB_OTG_DOEPINT_XFRC) != 0U && p->fenced &&
+        p->transfer.session_generation == s_out_session && p->pio_references == 0U &&
+        (USBx_OUTEP(ep)->DOEPCTL & USB_OTG_DOEPCTL_EPENA) == 0U)
+        p->normal_complete = true;
+    if ((events & USB_OTG_DOEPINT_XFRC) != 0U && !p->fenced)
+    {
+        if (ep == 0U || (p->buffer_owned && p->transfer.session_generation == s_out_session &&
+            pcd->OUT_ep[ep].xfer_count == p->received &&
+            pcd->OUT_ep[ep].xfer_buff == (uint8_t *)((uint32_t)p->buffer + p->received) &&
+            p->pio_references == 0U && (events & USB_OTG_DOEPINT_EPDISD) == 0U &&
+            (USBx_OUTEP(ep)->DOEPCTL & USB_OTG_DOEPCTL_EPENA) == 0U))
+        {
+            p->normal_complete = true;
+            e->deferred = (pcd->Instance->GINTSTS & USB_OTG_GINTSTS_RXFLVL) != 0U;
+            e->forward = !e->deferred;
+        }
+        else Usb_OutFault(ep, SYS_ERR_INVALID_STATE);
+    }
+    return e->forward ? PCD_LC_FORWARD_XFRC : 0U;
+}
+static void Usb_OutEventEnd(PCD_HandleTypeDef *pcd, uint8_t ep, uint32_t events, uint32_t cookie)
+{
+    uint32_t USBx_BASE = (uint32_t)pcd->Instance;
+    UsbOutEvent_t *e;
+    BspUsbOutStopProof_t *p;
+    bool iso_done = false;
+    if (ep >= BSP_USB_ENDPOINT_COUNT || cookie == 0U) return;
+    Usb_OutBoundary(pcd, pcd->Instance->GINTSTS);
+    e = &s_out_event[ep]; p = &s_out_slot[ep].proof;
+    if (!e->active || e->cookie != cookie) { Usb_OutFault(ep, SYS_ERR_INVALID_STATE); return; }
+    if (!e->deferred) e->active = false;
+    if (e->sequence != p->transfer.transfer_sequence) { e->active = false; return; } //普通回调已安全rearm，不改新Transfer
+    if ((USBx_OUTEP(ep)->DOEPINT & (events & USB_OUT_TERMINAL)) != 0U)
+    { Usb_OutFault(ep, SYS_ERR_IO); return; }
+    p->events_retired = true;
+    if (e->deferred) { Usb_OutDrainDeferred(pcd); return; }
+    if ((s_out_lease.iso_mask & (1UL << ep)) != 0U && p->disable_observed &&
+        p->transfer.session_generation == s_out_session && p->error == SYS_OK && p->pio_references == 0U && Usb_OutEffective() &&
+        (USBx_OUTEP(ep)->DOEPCTL & (USB_OTG_DOEPCTL_EPENA | USB_OTG_DOEPCTL_EPDIS)) == 0U)
+    {
+        if (p->buffer_owned) ++p->source_returns;
+        p->buffer_owned = false; p->fenced = false;
+        s_out_lease.iso_mask &= ~(1UL << ep);
+        pcd->OUT_ep[ep].is_iso_incomplete = 0U;
+        iso_done = true;
+        Usb_OutReleaseIfEmpty();
+    }
+    if (iso_done) HAL_PCD_ISOOUTIncompleteCallback(pcd, ep);
+}
+//真实终止事件已W1C但RX状态尚未消费时，保留其身份和Buffer，不提前回调rearm。
+static void Usb_OutDrainDeferred(PCD_HandleTypeDef *pcd)
+{
+    uint8_t ep;
+    uint32_t USBx_BASE = (uint32_t)pcd->Instance;
+    if (s_out_rx_pending != 0U || s_out_copy_active ||
+        (pcd->Instance->GINTSTS & USB_OTG_GINTSTS_RXFLVL) != 0U) return;
+    for (ep = 0U; ep < BSP_USB_ENDPOINT_COUNT; ++ep)
+    {
+        UsbOutEvent_t *e = &s_out_event[ep];
+        BspUsbOutStopProof_t *p = &s_out_slot[ep].proof;
+        if (!e->active || !e->deferred || !p->events_retired) continue;
+        if (e->sequence != p->transfer.transfer_sequence || p->error != SYS_OK ||
+            p->transfer.session_generation != s_out_session || p->pio_references != 0U ||
+            (USBx_OUTEP(ep)->DOEPCTL & (USB_OTG_DOEPCTL_EPENA | USB_OTG_DOEPCTL_EPDIS)) != 0U ||
+            (USBx_OUTEP(ep)->DOEPINT & USB_OUT_TERMINAL) != 0U)
+        { Usb_OutFault(ep, SYS_ERR_INVALID_STATE); continue; }
+        if (!p->fenced)
+        {
+            e->forward = true; e->deferred = false;
+            HAL_PCD_DataOutStageCallback(pcd, ep);
+        }
+        //回调可重装新Transfer；这里只退休旧事件容器，不改变新Transfer记录。
+        e->active = false; e->deferred = false;
+    }
+}
+static SysResult_t Usb_OutArm(uint8_t ep, uint8_t *buffer, uint32_t capacity)
+{
+    BspUsbOutStopProof_t *p = &s_out_slot[ep].proof;
+    uint32_t USBx_BASE = (uint32_t)s_pcd.Instance;
+    Usb_OutBoundary(&s_pcd, s_pcd.Instance->GINTSTS);
+    if ((s_pcd.Instance->GINTSTS & USB_OTG_GINTSTS_USBRST) != 0U ||
+        (s_pcd.Instance->GOTGINT & USB_OTG_GOTGINT_SEDET) != 0U) return SYS_ERR_INVALID_STATE;
+    Usb_OutReleaseIfEmpty();
+    if (s_out_session_tainted || s_out_lease.fault || p->fenced || p->pio_references != 0U || p->buffer_owned)
+        return SYS_ERR_BUSY;
+    if (!Usb_OutMemory(buffer, capacity)) return SYS_ERR_INVALID_ARG;
+    if (s_out_transfer_seed[ep] == UINT32_MAX || s_out_session == UINT32_MAX) return SYS_ERR_NO_RESOURCE;
+    if (ep != 0U && (USBx_OUTEP(ep)->DOEPINT & USB_OUT_TERMINAL) != 0U)
+    { Usb_OutFault(ep, SYS_ERR_INVALID_STATE); return SYS_ERR_INVALID_STATE; }
+    memset(p, 0, sizeof(*p));
+    p->transfer.controller_generation = s_out_controller; p->transfer.session_generation = s_out_session;
+    p->transfer.endpoint_generation = s_out_endpoint_seed[ep];
+    p->transfer.transfer_sequence = ++s_out_transfer_seed[ep]; p->transfer.endpoint_address = ep;
+    p->buffer = buffer; p->capacity = capacity; p->buffer_owned = true;
+    return SYS_OK;
+}
+SysResult_t BSP_USB_GetBulkOutProof(uint8_t ep, BspUsbOutStopProof_t *output)
+{
+    uint32_t saved;
+    if (output == NULL || !s_ready || !Usb_OutEnabled() || !Usb_ValidEp(ep) ||
+        (ep & 0x80U) != 0U || s_pcd.OUT_ep[ep].maxpacket == 0U) return SYS_ERR_INVALID_ARG;
+    saved = Usb_BulkPublishLock(); *output = s_out_slot[ep].proof; Usb_BulkPublishUnlock(saved); return SYS_OK;
+}
+SysResult_t BSP_USB_BeginBulkOutStop(const BspUsbOutIdentity_t *id, uint32_t timeout, BspUsbOutStopProof_t *output)
+{
+    uint32_t saved; uint8_t ep; SysResult_t result;
+    uint32_t USBx_BASE = (uint32_t)s_pcd.Instance;
+    BspUsbOutStopProof_t *p;
+    if (__get_IPSR() != 0U) return SYS_ERR_INVALID_STATE;
+    if (id == NULL || output == NULL || !s_ready || !Usb_OutEnabled() || !Usb_OutTarget(id->endpoint_address) ||
+        timeout == 0U || timeout > 1000U) return SYS_ERR_INVALID_ARG;
+    ep = id->endpoint_address; p = &s_out_slot[ep].proof; saved = Usb_BulkPublishLock();
+    if (!Usb_BulkIdentityMatches(id, &p->transfer)) { Usb_BulkPublishUnlock(saved); return SYS_ERR_INVALID_STATE; }
+    if (p->stage != BSP_USB_OUT_NONE) { *output = *p; Usb_BulkPublishUnlock(saved); return SYS_OK; }
+    if (s_out_attempt_seed == UINT32_MAX)
+    { Usb_OutFault(ep, SYS_ERR_NO_RESOURCE); *output = *p; Usb_BulkPublishUnlock(saved); return SYS_ERR_NO_RESOURCE; }
+    p->stop_attempt = ++s_out_attempt_seed; p->fenced = true; p->stage = BSP_USB_OUT_WAIT_NAK;
+    s_out_slot[ep].began_at = HAL_GetTick(); s_out_slot[ep].budget = timeout; s_out_slot[ep].polls = 0U;
+    result = Usb_OutClaim(ep, false);
+    if (result != SYS_OK) Usb_OutFault(ep, result);
+    else p->lease_id = s_out_lease.id;
+    if ((USBx_OUTEP(ep)->DOEPINT & USB_OTG_DOEPINT_EPDISD) != 0U) Usb_OutFault(ep, SYS_ERR_INVALID_STATE);
+    *output = *p; Usb_BulkPublishUnlock(saved); return SYS_OK;
+}
+static bool Usb_OutIdentity(uint8_t ep, const BspUsbOutIdentity_t *id, uint32_t attempt)
+{
+    return attempt != 0U && attempt == s_out_slot[ep].proof.stop_attempt &&
+           Usb_BulkIdentityMatches(id, &s_out_slot[ep].proof.transfer);
+}
+SysResult_t BSP_USB_PollBulkOutStop(const BspUsbOutIdentity_t *id, uint32_t attempt, BspUsbOutStopProof_t *output)
+{
+    uint32_t saved, ctl; uint8_t ep;
+    uint32_t USBx_BASE = (uint32_t)s_pcd.Instance;
+    UsbOutSlot_t *slot; BspUsbOutStopProof_t *p;
+    if (__get_IPSR() != 0U) return SYS_ERR_INVALID_STATE;
+    if (id == NULL || output == NULL || !s_ready || !Usb_OutEnabled() || !Usb_OutTarget(id->endpoint_address)) return SYS_ERR_INVALID_ARG;
+    ep = id->endpoint_address; slot = &s_out_slot[ep]; p = &slot->proof; saved = Usb_BulkPublishLock();
+    if (!Usb_OutIdentity(ep, id, attempt)) { Usb_BulkPublishUnlock(saved); return SYS_ERR_INVALID_STATE; }
+    if (p->stage == BSP_USB_OUT_FAULT || p->stage == BSP_USB_OUT_COMMITTED)
+    { *output = *p; Usb_BulkPublishUnlock(saved); return SYS_OK; }
+    Usb_OutBoundary(&s_pcd, s_pcd.Instance->GINTSTS);
+    ctl = USBx_OUTEP(ep)->DOEPCTL;
+    if (p->stage != BSP_USB_OUT_FAULT)
+    {
+        if (id->session_generation != s_out_session || s_out_lease.fault)
+            Usb_OutFault(ep, SYS_ERR_INVALID_STATE);
+        else if (++slot->polls >= 4096U || (uint32_t)(HAL_GetTick() - slot->began_at) >= slot->budget)
+            Usb_OutFault(ep, SYS_ERR_TIMEOUT);
+        else if (!p->lease_done && (p->lease_id != s_out_lease.id ||
+                 (!p->lease_drop_requested && (s_out_lease.bulk_mask & (1UL << ep)) == 0U))) Usb_OutFault(ep, SYS_ERR_INVALID_STATE);
+        else if (p->stage == BSP_USB_OUT_WAIT_NAK && Usb_OutEffective())
+        {
+            p->barrier_sequence = s_out_lease.marker;
+            if ((ctl & USB_OTG_DOEPCTL_EPENA) != 0U)
+            {
+                p->disable_requested = true;
+                USBx_OUTEP(ep)->DOEPCTL |= USB_OTG_DOEPCTL_EPDIS | USB_OTG_DOEPCTL_SNAK;
+                p->stage = BSP_USB_OUT_DISABLE;
+            }
+            else if ((p->normal_complete && p->events_retired) || id->transfer_sequence == 0U)
+                p->stage = BSP_USB_OUT_DRAIN;
+            else Usb_OutFault(ep, SYS_ERR_INVALID_STATE);
+        }
+        else if (p->stage == BSP_USB_OUT_DISABLE && p->disable_observed && p->events_retired &&
+                 (ctl & (USB_OTG_DOEPCTL_EPENA | USB_OTG_DOEPCTL_EPDIS)) == 0U)
+            p->stage = BSP_USB_OUT_DRAIN;
+        else if (p->stage == BSP_USB_OUT_DRAIN && p->pio_references == 0U && !s_out_copy_active &&
+                 !s_out_event[ep].active &&
+                 (ctl & (USB_OTG_DOEPCTL_EPENA | USB_OTG_DOEPCTL_EPDIS)) == 0U &&
+                 (USBx_OUTEP(ep)->DOEPINT & USB_OUT_TERMINAL) == 0U)
+        {
+            p->events_retired = true;
+            if (!p->lease_drop_requested)
+            {
+                if (!Usb_OutEffective()) Usb_OutFault(ep, SYS_ERR_INVALID_STATE);
+                else
+                {
+                    p->lease_drop_requested = true;
+                    s_out_lease.bulk_mask &= ~(1UL << ep);
+                    if (s_out_lease.bulk_mask != 0U || s_out_lease.iso_mask != 0U) p->lease_done = true;
+                }
+            }
+            if (p->stage != BSP_USB_OUT_FAULT)
+            {
+                Usb_OutReleaseIfEmpty();
+                if (s_out_lease.fault) Usb_OutFault(ep, SYS_ERR_IO);
+                else if (p->lease_done) p->stage = BSP_USB_OUT_PROVEN;
+            }
+        }
+    }
+    *output = *p; Usb_BulkPublishUnlock(saved); return SYS_OK;
+}
+SysResult_t BSP_USB_CommitBulkOutRetirement(const BspUsbOutIdentity_t *id, uint32_t attempt, BspUsbOutStopProof_t *output)
+{
+    uint32_t saved; uint8_t ep; uint32_t USBx_BASE = (uint32_t)s_pcd.Instance;
+    BspUsbOutStopProof_t *p;
+    if (__get_IPSR() != 0U) return SYS_ERR_INVALID_STATE;
+    if (id == NULL || output == NULL || !s_ready || !Usb_OutEnabled() || !Usb_OutTarget(id->endpoint_address)) return SYS_ERR_INVALID_ARG;
+    ep = id->endpoint_address; p = &s_out_slot[ep].proof; saved = Usb_BulkPublishLock();
+    if (!Usb_OutIdentity(ep, id, attempt)) { Usb_BulkPublishUnlock(saved); return SYS_ERR_INVALID_STATE; }
+    if (p->stage == BSP_USB_OUT_COMMITTED) { *output = *p; Usb_BulkPublishUnlock(saved); return SYS_OK; }
+    Usb_OutBoundary(&s_pcd, s_pcd.Instance->GINTSTS);
+    if (p->stage != BSP_USB_OUT_PROVEN || !p->lease_done || p->pio_references != 0U ||
+        s_out_copy_active || s_out_event[ep].active || id->session_generation != s_out_session ||
+        (USBx_OUTEP(ep)->DOEPCTL & (USB_OTG_DOEPCTL_EPENA | USB_OTG_DOEPCTL_EPDIS)) != 0U ||
+        (USBx_OUTEP(ep)->DOEPINT & USB_OUT_TERMINAL) != 0U)
+    { Usb_OutFault(ep, SYS_ERR_INVALID_STATE); *output = *p; Usb_BulkPublishUnlock(saved); return SYS_ERR_INVALID_STATE; }
+    if (p->buffer_owned) ++p->source_returns;
+    p->buffer_owned = false; p->fenced = false; p->stage = BSP_USB_OUT_COMMITTED;
+    s_rx_active[ep] = false; s_pcd.OUT_ep[ep].xfer_buff = NULL;
+    s_pcd.OUT_ep[ep].xfer_len = 0U; s_pcd.OUT_ep[ep].xfer_count = 0U;
+    *output = *p; Usb_BulkPublishUnlock(saved); return SYS_OK;
+}
+SysResult_t BSP_USB_ReconcileBulkOutStop(const BspUsbOutIdentity_t *id, uint32_t attempt, BspUsbOutStopProof_t *output)
+{
+    uint8_t ep; uint32_t saved;
+    BspUsbOutStopProof_t *p;
+    if (__get_IPSR() != 0U) return SYS_ERR_INVALID_STATE;
+    if (id == NULL || output == NULL || !s_ready || !Usb_OutEnabled() || !Usb_OutTarget(id->endpoint_address)) return SYS_ERR_INVALID_ARG;
+    ep = id->endpoint_address; p = &s_out_slot[ep].proof; saved = Usb_BulkPublishLock();
+    if (!Usb_OutIdentity(ep, id, attempt)) { Usb_BulkPublishUnlock(saved); return SYS_ERR_INVALID_STATE; }
+    Usb_OutBoundary(&s_pcd, s_pcd.Instance->GINTSTS);
+    Usb_OutReleaseIfEmpty();
+    if (p->stage != BSP_USB_OUT_FAULT || p->first_error != SYS_ERR_TIMEOUT || p->error != SYS_ERR_TIMEOUT ||
+        p->reconcile_count != 0U || id->session_generation != s_out_session || p->pio_references != 0U ||
+        s_out_lease.fault ||
+        !((p->failed_stage == BSP_USB_OUT_DRAIN && p->lease_done && p->lease_drop_requested) ||
+          ((p->failed_stage == BSP_USB_OUT_WAIT_NAK || p->failed_stage == BSP_USB_OUT_DISABLE) &&
+           p->lease_id == s_out_lease.id && Usb_OutEffective())))
+    { *output = *p; Usb_BulkPublishUnlock(saved); return SYS_ERR_INVALID_STATE; }
+    ++p->reconcile_count; p->error = SYS_OK; p->stage = p->failed_stage;
+    s_out_slot[ep].began_at = HAL_GetTick(); s_out_slot[ep].polls = 0U;
+    *output = *p; Usb_BulkPublishUnlock(saved); return SYS_OK;
+}
+
 SysResult_t BSP_USB_Init(void)
 {
     HAL_StatusTypeDef status;
@@ -530,6 +1068,7 @@ SysResult_t BSP_USB_Init(void)
     }
     HAL_NVIC_ClearPendingIRQ(OTG_FS_IRQn);
     ++s_bulk_controller;
+    s_out_bind_window = true;
     s_ready = true;
     return SYS_OK;
 }
@@ -570,6 +1109,7 @@ SysResult_t BSP_USB_Start(void)
         return SYS_ERR_INVALID_STATE;
     if (s_started)
         return SYS_ERR_BUSY;
+    s_out_bind_window = false;
     HAL_NVIC_ClearPendingIRQ(OTG_FS_IRQn);
     status = HAL_PCD_Start(&s_pcd);
     if (status != HAL_OK)
@@ -589,7 +1129,7 @@ SysResult_t BSP_USB_Stop(void)
     bool have_out = false;
     if (!s_ready)
         return SYS_ERR_INVALID_STATE;
-    if (BSP_USB_BulkInHasReferences() || s_bulk_fifo_owner != 0U) return SYS_ERR_BUSY;
+    if (BSP_USB_BulkInHasReferences() || BSP_USB_BulkOutHasReferences() || s_bulk_fifo_owner != 0U) return SYS_ERR_BUSY;
     HAL_NVIC_DisableIRQ(OTG_FS_IRQn);
 
     //先停止所有已打开方向，不能在硬件仍引用缓冲区时释放所有权
@@ -665,6 +1205,12 @@ SysResult_t BSP_USB_OpenEp(uint8_t ep, uint8_t type, uint16_t size)
         return result;
     if ((ep & 0x80U) != 0U && (size + 3U) / 4U > s_tx_fifo_words[ep & 0x0FU])
         return SYS_ERR_NO_RESOURCE;
+    if (Usb_OutEnabled() && (ep & 0x80U) == 0U)
+    {
+        if (s_out_slot[ep].proof.buffer_owned || s_out_slot[ep].proof.fenced || s_out_event[ep].active)
+            return SYS_ERR_BUSY;
+        if (s_out_endpoint_seed[ep] == UINT32_MAX) return SYS_ERR_NO_RESOURCE;
+    }
     entry = Usb_PcdEp(ep);
     previous = *entry;
     status = HAL_PCD_EP_Open(&s_pcd, ep, size, type);
@@ -682,6 +1228,13 @@ SysResult_t BSP_USB_OpenEp(uint8_t ep, uint8_t type, uint16_t size)
         s_bulk_in[index].proof.transfer.endpoint_address = ep;
         s_bulk_in[index].proof.state = BSP_USB_IN_IDLE;
     }
+    if (status == HAL_OK && Usb_OutEnabled() && (ep & 0x80U) == 0U)
+    {
+        BspUsbOutStopProof_t *p = &s_out_slot[ep].proof;
+        memset(p, 0, sizeof(*p));
+        p->transfer.controller_generation = s_out_controller; p->transfer.session_generation = s_out_session;
+        p->transfer.endpoint_generation = ++s_out_endpoint_seed[ep]; p->transfer.endpoint_address = ep;
+    }
     return Usb_HalResult(status);
 }
 
@@ -694,6 +1247,8 @@ SysResult_t BSP_USB_CloseEp(uint8_t ep)
     if (!s_ready || !Usb_ValidEp(ep))
         return SYS_ERR_INVALID_ARG;
     if (s_bulk_fifo_owner != 0U) return SYS_ERR_BUSY;
+    if (Usb_OutEnabled() && (ep & 0x80U) == 0U &&
+        (s_out_slot[ep].proof.buffer_owned || s_out_slot[ep].proof.fenced || s_out_event[ep].active)) return SYS_ERR_BUSY;
     entry = Usb_PcdEp(ep);
     if (entry->maxpacket == 0U)
         return SYS_ERR_INVALID_STATE;
@@ -755,6 +1310,8 @@ SysResult_t BSP_USB_AbortEp(uint8_t ep)
     if (!s_ready || !Usb_ValidEp(ep) || (ep & 0x0FU) == 0U)
         return SYS_ERR_INVALID_ARG;
     index = ep & 0x0FU;
+    if (Usb_OutEnabled() && (ep & 0x80U) == 0U &&
+        (s_out_slot[index].proof.buffer_owned || s_out_slot[index].proof.fenced || s_out_event[index].active)) return SYS_ERR_BUSY;
     if (Usb_BulkEndpoint(ep))
         return s_bulk_in[index].fenced || s_bulk_in[index].proof.source_owned ||
                s_bulk_in[index].proof.pool_owned ? SYS_ERR_BUSY : SYS_OK;
@@ -793,7 +1350,7 @@ SysResult_t BSP_USB_AbortAll(void)
     HAL_StatusTypeDef status;
     uint8_t ep;
     bool have_out = false;
-    if (BSP_USB_BulkInHasReferences() || s_bulk_fifo_owner != 0U) return SYS_ERR_BUSY;
+    if (BSP_USB_BulkInHasReferences() || BSP_USB_BulkOutHasReferences() || s_bulk_fifo_owner != 0U) return SYS_ERR_BUSY;
     for (ep = 1U; ep < BSP_USB_ENDPOINT_COUNT; ++ep)
     {
         if (s_pcd.IN_ep[ep].maxpacket != 0U)
@@ -830,7 +1387,9 @@ SysResult_t BSP_USB_AbortAll(void)
 SysResult_t BSP_USB_FlushEp(uint8_t ep)
 {
     uint8_t i;
-    if (s_bulk_fifo_owner != 0U) return SYS_ERR_BUSY;
+    if (s_bulk_fifo_owner != 0U || (Usb_OutEnabled() && BSP_USB_BulkOutHasReferences())) return SYS_ERR_BUSY;
+    //成套OUT模式不提供单端点RX Flush；HAL专用Setup接收不一定持有普通Buffer记录。
+    if (Usb_OutEnabled() && (ep & 0x80U) == 0U) return SYS_ERR_NOT_SUPPORTED;
     if (!s_ready || !Usb_ValidEp(ep))
         return SYS_ERR_INVALID_ARG;
     if ((ep & 0x80U) != 0U && s_bulk_in[ep & 0x0FU].fenced) return SYS_ERR_BUSY;
@@ -1008,8 +1567,17 @@ SysResult_t BSP_USB_Receive(uint8_t ep, uint8_t *data, uint32_t size)
             return SYS_ERR_INVALID_ARG;
     }
     {
-        HAL_StatusTypeDef status = HAL_PCD_EP_Receive(&s_pcd, ep, data, size);
+        HAL_StatusTypeDef status;
+        uint32_t saved = Usb_BulkPublishLock();
+        if (Usb_OutEnabled())
+        {
+            SysResult_t result = Usb_OutArm(ep, data, size);
+            if (result != SYS_OK) { Usb_BulkPublishUnlock(saved); return result; }
+        }
+        status = HAL_PCD_EP_Receive(&s_pcd, ep, data, size);
         if (status == HAL_OK && (ep & 0x0FU) != 0U) s_rx_active[ep & 0x0FU] = true;
+        if (status != HAL_OK && Usb_OutEnabled()) Usb_OutFault(ep, Usb_HalResult(status));
+        Usb_BulkPublishUnlock(saved);
         return Usb_HalResult(status);
     }
 }
@@ -1184,6 +1752,16 @@ void HAL_PCD_DataOutStageCallback(PCD_HandleTypeDef *pcd, uint8_t ep)
 {
     if (pcd == &s_pcd && s_callbacks != NULL)
     {
+        if (Usb_OutEnabled())
+        {
+            BspUsbOutStopProof_t *p;
+            Usb_OutBoundary(pcd, pcd->Instance->GINTSTS);
+            if (ep >= BSP_USB_ENDPOINT_COUNT || !s_out_event[ep].active || !s_out_event[ep].forward) return;
+            p = &s_out_slot[ep].proof;
+            if (s_out_event[ep].sequence != p->transfer.transfer_sequence || p->fenced || p->pio_references != 0U) return;
+            if (p->buffer_owned) ++p->source_returns;
+            p->buffer_owned = false;
+        }
         if (ep < BSP_USB_ENDPOINT_COUNT) s_rx_active[ep] = false;
         s_callbacks->data_out(ep, pcd->OUT_ep[ep].xfer_buff);
     }
@@ -1192,6 +1770,7 @@ void HAL_PCD_DataOutStageCallback(PCD_HandleTypeDef *pcd, uint8_t ep)
 //USB总线复位，通知Platform重建EP0和枚举状态
 void HAL_PCD_ResetCallback(PCD_HandleTypeDef *pcd)
 {
+    if (pcd == &s_pcd && Usb_OutEnabled() && !s_out_session_tainted) Usb_OutInvalidate();
     if (pcd == &s_pcd && s_callbacks != NULL)
         s_callbacks->reset();
 }
@@ -1221,6 +1800,7 @@ void HAL_PCD_ConnectCallback(PCD_HandleTypeDef *pcd)
 void HAL_PCD_DisconnectCallback(PCD_HandleTypeDef *pcd)
 {
     if (pcd == &s_pcd) Usb_BulkInvalidateSession();
+    if (pcd == &s_pcd && Usb_OutEnabled() && !s_out_session_tainted) Usb_OutInvalidate();
     if (pcd == &s_pcd && s_callbacks != NULL && s_callbacks->disconnect != NULL)
         s_callbacks->disconnect();
 }
@@ -1228,6 +1808,11 @@ void HAL_PCD_DisconnectCallback(PCD_HandleTypeDef *pcd)
 //SOF仅通知上层，不构包、不提交数据
 void HAL_PCD_SOFCallback(PCD_HandleTypeDef *pcd)
 {
+    if (pcd == &s_pcd && Usb_OutEnabled() && s_out_lease.releasing)
+    {
+        Usb_OutBoundary(pcd, pcd->Instance->GINTSTS);
+        Usb_OutReleaseIfEmpty();
+    }
     if (pcd == &s_pcd && s_callbacks != NULL && s_callbacks->sof != NULL)
         s_callbacks->sof((uint16_t)pcd->FrameNumber);
 }

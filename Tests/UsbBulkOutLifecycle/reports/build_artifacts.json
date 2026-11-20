@@ -1,0 +1,177 @@
+{
+  "tag": "c1-final05",
+  "baseline": "3305d4a729e965247b33c95e5558eac576f1c6ef",
+  "compiler_version": "Product: MDK Plus 5.32\r\nComponent: ARM Compiler 5.06 update 7 (build 960)\r\nTool: armcc [4d365d]\r\nFor support see http://www.arm.com/support\r\nSoftware supplied by: ARM Limited\r\n",
+  "builds": [
+    {
+      "mode": "ram",
+      "added_sources": [],
+      "defines": [
+        "CORE_CM7",
+        "USE_HAL_DRIVER",
+        "STM32H747xx",
+        "USE_PWR_LDO_SUPPLY",
+        "APP_VIDEO_MJPEG_MODE=1",
+        "USB_MODE_BOOT_MSC=1",
+        "USB_MSC_SD_TEST=0",
+        "USB_MSC_SD_WRITE_ENABLE=0",
+        "USB_DEVICE_LIFECYCLE_DIAGNOSTICS=1"
+      ],
+      "preprocessed_values": {
+        "BOOT": "1",
+        "SD": "0",
+        "WRITE": "0"
+      },
+      "adapter_write_call_present": false,
+      "summary": "0 Error(s), 0 Warning(s)",
+      "artifact": "D:\\32\\STM32H7\\h7_mac_lifecycle\\output\\MSC24\\udlm-p1c1\\build-c1-final05\\output\\MSC41\\diagnostic-build\\ram\\h7_mac_CM7_ram.axf",
+      "sha256": "87f4c7cca36a89da87763544a4a3152b21eba6e9a4ce6276f5cd52e8b78ba30b",
+      "artifacts": {
+        ".axf": {
+          "path": "output\\MSC24\\udlm-p1c1\\build-c1-final05\\output\\MSC41\\diagnostic-build\\ram\\h7_mac_CM7_ram.axf",
+          "bytes": 3343152,
+          "sha256": "87f4c7cca36a89da87763544a4a3152b21eba6e9a4ce6276f5cd52e8b78ba30b"
+        },
+        ".hex": {
+          "path": "output\\MSC24\\udlm-p1c1\\build-c1-final05\\output\\MSC41\\diagnostic-build\\ram\\h7_mac_CM7_ram.hex",
+          "bytes": 444595,
+          "sha256": "d94c572668d6f7ead3e62ee83c996ac49a381b573ff72c819903506be4fb0785"
+        },
+        ".map": {
+          "path": "output\\MSC24\\udlm-p1c1\\build-c1-final05\\output\\MSC41\\diagnostic-build\\ram\\h7_mac_CM7_ram.map",
+          "bytes": 1029451,
+          "sha256": "43376df91998f6a62a9b98d90e70c7b84b125980672f1a90f6acdbcb563c3fbc"
+        }
+      },
+      "log": "Tests\\UsbBulkOutLifecycle\\reports\\firmware-c1-final05-ram.log",
+      "log_sha256": "e4fe4b019533813e654cc00c696d5c4e91c4dc3f3f74ce6941b18f163b00ef22",
+      "elf_symbols": {
+        "HAL_PCD_IRQHandler": 1,
+        "Usb_OutRxBegin": 1,
+        "Usb_OutEventBegin": 1,
+        "Usb_OutNak": 1,
+        "USB_Device_EnableBulkOutLifecycle": null,
+        "USB_Device_BeginBulkOutStop": null,
+        "BSP_USB_BeginBulkOutStop": null
+      },
+      "enabled_in_application": false
+    },
+    {
+      "mode": "sd_readonly",
+      "added_sources": [],
+      "defines": [
+        "CORE_CM7",
+        "USE_HAL_DRIVER",
+        "STM32H747xx",
+        "USE_PWR_LDO_SUPPLY",
+        "APP_VIDEO_MJPEG_MODE=1",
+        "USB_MODE_BOOT_MSC=1",
+        "USB_MSC_SD_TEST=1",
+        "USB_MSC_SD_WRITE_ENABLE=0",
+        "USB_DEVICE_LIFECYCLE_DIAGNOSTICS=1"
+      ],
+      "preprocessed_values": {
+        "BOOT": "1",
+        "SD": "1",
+        "WRITE": "0"
+      },
+      "adapter_write_call_present": false,
+      "summary": "0 Error(s), 0 Warning(s)",
+      "artifact": "D:\\32\\STM32H7\\h7_mac_lifecycle\\output\\MSC24\\udlm-p1c1\\build-c1-final05\\output\\MSC41\\diagnostic-build\\sd_readonly\\h7_mac_CM7_sd_readonly.axf",
+      "sha256": "1fe2afc28bf0eb6eb25b14f708fdb1a970bf0644716a1ee7c786dbaf7d5689cf",
+      "artifacts": {
+        ".axf": {
+          "path": "output\\MSC24\\udlm-p1c1\\build-c1-final05\\output\\MSC41\\diagnostic-build\\sd_readonly\\h7_mac_CM7_sd_readonly.axf",
+          "bytes": 3230504,
+          "sha256": "1fe2afc28bf0eb6eb25b14f708fdb1a970bf0644716a1ee7c786dbaf7d5689cf"
+        },
+        ".hex": {
+          "path": "output\\MSC24\\udlm-p1c1\\build-c1-final05\\output\\MSC41\\diagnostic-build\\sd_readonly\\h7_mac_CM7_sd_readonly.hex",
+          "bytes": 396707,
+          "sha256": "557da36b8855260f37e002de171bade9a84caaef428fabaefeeb6c480498a031"
+        },
+        ".map": {
+          "path": "output\\MSC24\\udlm-p1c1\\build-c1-final05\\output\\MSC41\\diagnostic-build\\sd_readonly\\h7_mac_CM7_sd_readonly.map",
+          "bytes": 1003361,
+          "sha256": "ca7fbe016e2c364211213aeb3cd7fbdbf68824b27f4d45dfbf25fb06e189f258"
+        }
+      },
+      "log": "Tests\\UsbBulkOutLifecycle\\reports\\firmware-c1-final05-sd_readonly.log",
+      "log_sha256": "01303fa614c91cdf594b4c6fe2d401923df2b2663327af9ca65e84c52191b8f5",
+      "elf_symbols": {
+        "HAL_PCD_IRQHandler": 1,
+        "Usb_OutRxBegin": 1,
+        "Usb_OutEventBegin": 1,
+        "Usb_OutNak": 1,
+        "USB_Device_EnableBulkOutLifecycle": null,
+        "USB_Device_BeginBulkOutStop": null,
+        "BSP_USB_BeginBulkOutStop": null
+      },
+      "enabled_in_application": false
+    },
+    {
+      "mode": "uvc",
+      "added_sources": [],
+      "defines": [
+        "CORE_CM7",
+        "USE_HAL_DRIVER",
+        "STM32H747xx",
+        "USE_PWR_LDO_SUPPLY",
+        "APP_VIDEO_MJPEG_MODE=1",
+        "USB_MODE_BOOT_MSC=0",
+        "USB_MSC_SD_TEST=0",
+        "USB_MSC_SD_WRITE_ENABLE=0",
+        "USB_DEVICE_LIFECYCLE_DIAGNOSTICS=1"
+      ],
+      "preprocessed_values": {
+        "BOOT": "0",
+        "SD": "0",
+        "WRITE": "0"
+      },
+      "adapter_write_call_present": false,
+      "summary": "0 Error(s), 0 Warning(s)",
+      "artifact": "D:\\32\\STM32H7\\h7_mac_lifecycle\\output\\MSC24\\udlm-p1c1\\build-c1-final05\\output\\MSC41\\diagnostic-build\\uvc\\h7_mac_CM7_uvc.axf",
+      "sha256": "9cfc669fbdb2f6ec2fa9af4c0a60e8870f2761d3bcde9e95240a8c1649ca5ed1",
+      "artifacts": {
+        ".axf": {
+          "path": "output\\MSC24\\udlm-p1c1\\build-c1-final05\\output\\MSC41\\diagnostic-build\\uvc\\h7_mac_CM7_uvc.axf",
+          "bytes": 3320776,
+          "sha256": "9cfc669fbdb2f6ec2fa9af4c0a60e8870f2761d3bcde9e95240a8c1649ca5ed1"
+        },
+        ".hex": {
+          "path": "output\\MSC24\\udlm-p1c1\\build-c1-final05\\output\\MSC41\\diagnostic-build\\uvc\\h7_mac_CM7_uvc.hex",
+          "bytes": 439502,
+          "sha256": "6b0817826db06c70e303793607603bdbc6e748889dc4a500600e2afdbd19fb5b"
+        },
+        ".map": {
+          "path": "output\\MSC24\\udlm-p1c1\\build-c1-final05\\output\\MSC41\\diagnostic-build\\uvc\\h7_mac_CM7_uvc.map",
+          "bytes": 1019493,
+          "sha256": "4e37010523ee06e253b68e52e7559bba79d8116c3d70429f232ad082fabb516e"
+        }
+      },
+      "log": "Tests\\UsbBulkOutLifecycle\\reports\\firmware-c1-final05-uvc.log",
+      "log_sha256": "0a77684df9c2b4e259ef8f68e12f8a97d4acc4dbe56037b2a7423c6ed7301254",
+      "elf_symbols": {
+        "HAL_PCD_IRQHandler": 1,
+        "Usb_OutRxBegin": 1,
+        "Usb_OutEventBegin": 1,
+        "Usb_OutNak": 1,
+        "USB_Device_EnableBulkOutLifecycle": null,
+        "USB_Device_BeginBulkOutStop": null,
+        "BSP_USB_BeginBulkOutStop": null
+      },
+      "enabled_in_application": false
+    }
+  ],
+  "sources": {
+    "CM7/BSP/bsp_usb.c": "3c60df1a37798355c3e4963ff3f85d65ed0ae487d4734898f7328f1dd7245f12",
+    "CM7/BSP/bsp_usb.h": "b30b0f95221a61b307bfe03af5273c85acaa62073b0a8a46937770e3e0b8fb30",
+    "CM7/Platform/usb_device.c": "ff639aca0620d652be2f7bcb277b9a5204a6ac3bbaffe6ce540dfab663ee2158",
+    "CM7/Platform/usb_device.h": "11a97a86b9e0a99f20a153f7e692a3c3e8e564d2d8c1a3f3c3ea0ba8629b851f",
+    "Drivers/STM32H7xx_HAL_Driver/Src/stm32h7xx_hal_pcd.c": "67becca7aa38463887bfb70de65e2cc6e762bfd0fa7f600bc8c6e966a36a5574",
+    "Drivers/STM32H7xx_HAL_Driver/Inc/stm32h7xx_hal_pcd.h": "03eccd63bf4c030705c5b8a680e73a6cd8b52fe81ef79aab941862832013b374"
+  },
+  "source_matches_snapshot": true,
+  "interpretation": "HAL hook branch compiled; application Enable is deliberately not connected; symbols alone do not prove runtime binding",
+  "hardware": "NOT_TESTED"
+}

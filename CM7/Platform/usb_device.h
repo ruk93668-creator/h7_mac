@@ -202,4 +202,18 @@ bool USB_Device_WasControlStatusComplete(uint32_t token);
 //按Token读取提交与完成状态；新事务覆盖旧槽后返回INVALID_STATE
 SysResult_t USB_Device_GetControlStatus(uint32_t token, UsbControlStatus_t *status);
 
+//显式选择完整OUT契约；只在初始化完成、启动前且无在途OUT时可调用
+SysResult_t USB_Device_EnableBulkOutLifecycle(void);
+typedef struct
+{
+    BspUsbOutIdentity_t transfer;
+    uint32_t stop_attempt;
+} UsbBulkOutStopTransaction_t;
+SysResult_t USB_Device_GetBulkOutTransfer(uint8_t ep, UsbBulkOutStopTransaction_t *transaction);
+SysResult_t USB_Device_BeginBulkOutStop(UsbBulkOutStopTransaction_t *transaction, uint32_t timeout_ms,
+                                     BspUsbOutStopProof_t *proof);
+SysResult_t USB_Device_PollBulkOutStop(const UsbBulkOutStopTransaction_t *transaction, BspUsbOutStopProof_t *proof);
+SysResult_t USB_Device_CommitBulkOutRetirement(const UsbBulkOutStopTransaction_t *transaction, BspUsbOutStopProof_t *proof);
+SysResult_t USB_Device_ReconcileBulkOutStop(const UsbBulkOutStopTransaction_t *transaction, BspUsbOutStopProof_t *proof);
+
 #endif

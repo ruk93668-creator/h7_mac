@@ -47,6 +47,9 @@ typedef struct
     //通用1ms总线事件，不解释Class协议
     void (*sof)(uint16_t frame);
 
+    //可选成套OUT契约的受控故障通知：只门控，不释放或停止硬件
+    void (*out_fault)(SysResult_t result);
+
 } BspUsbCallbacks_t;
 
 //初始化USB2 FS内部PHY、时钟和PCD，不连接主机
@@ -180,5 +183,37 @@ SysResult_t BSP_USB_ReconcileBulkInStop(const BspUsbInIdentity_t *identity,
                                       uint32_t attempt, BspUsbInStopProof_t *proof);
 //只查询资源引用，不能据此替代USB或外部DMA停止证明
 bool BSP_USB_BulkInHasReferences(void);
+
+//成套OUT生命周期只在成功的全新Init与首次Start之间显式启用，不追认旧会话或在途传输
+//当前只允许内部CPU可写SRAM Buffer；独立于SDMMC IDMA/文件系统所有权
+SysResult_t BSP_USB_EnableBulkOutLifecycle(void);
+typedef BspUsbInIdentity_t BspUsbOutIdentity_t;
+typedef enum
+{
+    BSP_USB_OUT_NONE = 0, BSP_USB_OUT_WAIT_NAK, BSP_USB_OUT_DISABLE,
+    BSP_USB_OUT_DRAIN, BSP_USB_OUT_PROVEN, BSP_USB_OUT_COMMITTED, BSP_USB_OUT_FAULT
+} BspUsbOutStopStage_t;
+typedef struct
+{
+    BspUsbOutIdentity_t transfer;
+    uint32_t stop_attempt, lease_id, barrier_sequence;
+    uint8_t *buffer;
+    uint32_t capacity, received, pio_references, events, source_returns;
+    BspUsbOutStopStage_t stage, failed_stage;
+    SysResult_t error, first_error;
+    uint32_t reconcile_count;
+    bool buffer_owned, fenced, normal_complete, disable_requested, disable_observed;
+    bool events_retired, lease_done, lease_drop_requested;
+} BspUsbOutStopProof_t;
+SysResult_t BSP_USB_GetBulkOutProof(uint8_t ep, BspUsbOutStopProof_t *proof);
+SysResult_t BSP_USB_BeginBulkOutStop(const BspUsbOutIdentity_t *identity, uint32_t timeout_ms,
+                                   BspUsbOutStopProof_t *proof);
+SysResult_t BSP_USB_PollBulkOutStop(const BspUsbOutIdentity_t *identity, uint32_t attempt,
+                                  BspUsbOutStopProof_t *proof);
+SysResult_t BSP_USB_CommitBulkOutRetirement(const BspUsbOutIdentity_t *identity, uint32_t attempt,
+                                          BspUsbOutStopProof_t *proof);
+SysResult_t BSP_USB_ReconcileBulkOutStop(const BspUsbOutIdentity_t *identity, uint32_t attempt,
+                                       BspUsbOutStopProof_t *proof);
+bool BSP_USB_BulkOutHasReferences(void);
 
 #endif
