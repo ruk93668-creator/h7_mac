@@ -38,6 +38,9 @@ static volatile bool s_stop_required;
 //只由原UsbTask的Controller Stop意图发布，失败不解除数据面Fence。
 static bool s_controller_endpoint_fence;
 
+//只缓存真实Enable成功的路由能力，绝不作为任何端点静止证明。
+static bool s_out_contract_enabled;
+
 //生命周期回调执行期间禁止重入Init、Register、Start和Stop
 static volatile bool s_control_busy;
 
@@ -448,8 +451,8 @@ static BspUsbInStopProof_t s_stop_pending_proof;
 static bool Usb_HasOutContract(void)
 {
     BspUsbOutStopProof_t proof;
-    //绑定身份由真实BSP查询验证，不从普通BUSY推断；EP0已由Core打开才可进入本路径。
-    return BSP_USB_GetBulkOutProof(0U, &proof) == SYS_OK;
+    //即使EP0尚未Open或刚被关闭，真实Enable能力也不能退回旧同步路径。
+    return s_out_contract_enabled || BSP_USB_GetBulkOutProof(0U, &proof) == SYS_OK;
 }
 
 SysResult_t USB_Device_GetStopProgress(UsbStopProgress_t *progress)
@@ -722,6 +725,7 @@ USBD_StatusTypeDef USBD_LL_DeInit(USBD_HandleTypeDef *device)
     s_initialized = false;
     s_started = false;
     s_registered = false;
+    s_out_contract_enabled = false;
     s_stop_required = false;
     s_configuration = NULL;
     s_configuration_length = 0U;
@@ -2375,9 +2379,12 @@ static void Usb_TraceLifecycle(UsbDeviceLifecycleEvent_t event, uint32_t detail)
 //OUT接口只提供机制，不在这里迁移MSC BOT/USB Mode的生命周期。
 SysResult_t USB_Device_EnableBulkOutLifecycle(void)
 {
+    SysResult_t result;
     if (__get_IPSR() != 0U || !s_initialized || s_started || s_control_busy || s_stop_required ||
         s_class_state != USB_CLASS_INACTIVE || s_class_memory_used) return SYS_ERR_INVALID_STATE;
-    return BSP_USB_EnableBulkOutLifecycle();
+    result = BSP_USB_EnableBulkOutLifecycle();
+    if (result == SYS_OK) s_out_contract_enabled = true;
+    return result;
 }
 SysResult_t USB_Device_GetBulkOutTransfer(uint8_t ep, UsbBulkOutStopTransaction_t *transaction)
 {

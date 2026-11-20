@@ -1,6 +1,6 @@
 # P1-C2：双向Endpoint协调契约（局部实现）
 
-VERIFIED（源码/软件）：Platform保留旧IN路径；只有真实BSP的EP0 OUT快照确认C1成套绑定后，Usb_StopDevice才进入Usb_DrainBulkEndpointStops。没有基于普通Busy猜测绑定，也没有自动Enable。默认固件仍未启用C1，此处不是完整P1闭环。
+VERIFIED（源码/软件）：Platform保留旧IN路径；只有实际Enable成功记录或真实BSP成套绑定查询确认后，Usb_StopDevice才进入Usb_DrainBulkEndpointStops。没有基于普通Busy猜测绑定，也没有自动Enable。默认固件仍未启用C1，此处不是完整P1闭环。
 
 ## 当前实现
 
@@ -11,10 +11,12 @@ VERIFIED（源码/软件）：Platform保留旧IN路径；只有真实BSP的EP0 
 - GetStopProgress保留原字段布局并追加全组快照、first_error、pending_count、submission_fenced、endpoint_group_proven、controller_gate_blocked。每条stage按方向解释；快照仅诊断，不是外部释放授权。
 - 全组USB proof闭合后，**仍返回NOT_SUPPORTED/RECOVERY_REQUIRED**：尚无已批准EP0和消费者PreparedTicket。保持Class、Controller和全局Fence，不调用BSP Stop，不声称完整Stop成功。
 
-VERIFIED：独立测试17项实际执行HAL/LL、BSP、Platform；模型只推进真实MMIO事件，未向软件proof写PROVEN。覆盖双向Pending、Timeout独立收尾、Reset/Disconnect、提交Fence、普通Busy、ID耗尽、外部Attempt以及重复Stop。报告Tests/UsbLifecycleFinal/reports/dual.json含每一步实际/预期、MMIO写入、源哈希和断言；初轮夹具失败另存dual-history，不删除。
+VERIFIED：独立测试18项实际执行HAL/LL、BSP、Platform；模型只推进真实MMIO事件，未向软件proof写PROVEN。覆盖双向Pending、Timeout独立收尾、Reset/Disconnect、提交Fence、普通Busy、ID耗尽、外部Attempt以及重复Stop。报告Tests/UsbLifecycleFinal/reports/dual.json含每一步实际/预期、MMIO写入、源哈希和断言；初轮夹具失败另存dual-history，不删除。
 
 VERIFIED：第一轮出现错误的无中断源强制进入IRQ及Busy常数夹具错误；修正为只有实际GINTSTS&GINTMSK为真才触发IRQ，保留真实OUT与Reset组合，未修改BSP对未证明GRSTCTL竞争的保守故障处理。初轮证据保留。单纯手动调用空IRQ不是正常外设中断源。
 
 BLOCKED：EP0合法停止、AHB定时ZLP接口、Class/Worker/Frame ticket整合、整机Resume与自动C1启用。新组件只形成端点票据，不把它当Class或IDMA静止证明；不新建Task/动态内存。不具备main合并资格。
 
 VERIFIED：Controller Fence还门控Core DeInit、Reset、Disconnect和旧Abort/Close/Flush/STALL等资源操作；即使端点proof已闭合，也不允许这些入口越过消费者/EP0票据。新增用例覆盖proof之后的三个生命周期旁路、旧资源API、未Arm IN真实Attempt和三个活动Transfer。
+
+VERIFIED：Enable成功的能力记录仅作路由，安全DeInit成功后才清除；EP0尚未Open/缓存状态被关闭时不能退回旧同步停止路径。任何端点退休仍必须取得真实BSP proof。新增反例测试确认该边界，不能把能力记录本身当quiescence。
