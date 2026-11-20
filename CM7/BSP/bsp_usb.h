@@ -160,6 +160,11 @@ typedef struct
     bool fifo_complete;
     bool events_retired;
     SysResult_t fifo_result;
+    SysResult_t first_error;
+    BspUsbInStopStage_t failed_stage;
+    uint32_t failure_count;
+    uint32_t reconcile_count;
+    bool fifo_conflicted;
 } BspUsbInStopProof_t;
 
 //三个接口仅由同一USB任务串行推进；ISR、错误身份及耗尽均拒绝
@@ -170,6 +175,9 @@ SysResult_t BSP_USB_PollBulkInStop(const BspUsbInIdentity_t *identity,
                                  uint32_t attempt, BspUsbInStopProof_t *proof);
 SysResult_t BSP_USB_CommitBulkInRetirement(const BspUsbInIdentity_t *identity,
                                          uint32_t attempt, BspUsbInStopProof_t *proof);
+//显式同Attempt复核；仅允许已取得独立硬件完成证据的超时收尾
+SysResult_t BSP_USB_ReconcileBulkInStop(const BspUsbInIdentity_t *identity,
+                                      uint32_t attempt, BspUsbInStopProof_t *proof);
 //只查询资源引用，不能据此替代USB或外部DMA停止证明
 bool BSP_USB_BulkInHasReferences(void);
 

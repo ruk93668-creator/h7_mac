@@ -92,6 +92,7 @@ typedef struct
     BspUsbInStopProof_t proof;
     uint32_t began_at;
     uint32_t budget_ms;
+    uint32_t poll_count;
     volatile bool fenced;
 } UsbBulkInStop_t;
 
@@ -141,6 +142,12 @@ static void Usb_BulkFault(uint8_t ep, SysResult_t error)
     s_bulk_in[ep].fenced = true;
     USBx_DEVICE->DAINTMSK &= ~(1UL << ep);
     USBx_DEVICE->DIEPEMPMSK &= ~(1UL << ep);
+    if (proof->failure_count == 0U)
+    {
+        proof->first_error = error;
+        proof->failed_stage = proof->stage;
+    }
+    if (proof->failure_count != UINT32_MAX) ++proof->failure_count;
     proof->state = BSP_USB_IN_FAULTED;
     proof->stage = BSP_USB_STOP_FAULT;
     proof->result = BSP_USB_STOP_RECOVERY_REQUIRED;
@@ -294,7 +301,8 @@ SysResult_t BSP_USB_PollBulkInStop(const BspUsbInIdentity_t *identity,
     events = USBx_INEP(ep)->DIEPINT;
     reset = s_pcd.Instance->GRSTCTL;
     Usb_BulkCapture(ep, events);
-    if ((uint32_t)(HAL_GetTick() - stop->began_at) >= stop->budget_ms)
+    if (++stop->poll_count >= 4096U ||
+        (uint32_t)(HAL_GetTick() - stop->began_at) >= stop->budget_ms)
         Usb_BulkFault(ep, SYS_ERR_TIMEOUT);
     else if (identity->session_generation != s_bulk_session ||
              (s_pcd.Instance->GINTSTS & USB_OTG_GINTSTS_USBRST) != 0U)
@@ -356,6 +364,63 @@ SysResult_t BSP_USB_PollBulkInStop(const BspUsbInIdentity_t *identity,
             proof->result = BSP_USB_STOP_COMPLETED;
         }
     }
+    *output = *proof;
+    Usb_BulkPublishUnlock(saved);
+    return SYS_OK;
+}
+
+//只接受同Session同Attempt下迟到的硬件完成；本接口不归还任何引用或掩码
+SysResult_t BSP_USB_ReconcileBulkInStop(const BspUsbInIdentity_t *identity,
+                                      uint32_t attempt, BspUsbInStopProof_t *output)
+{
+    uint8_t ep;
+    uint32_t saved, ctl, events, reset;
+    uint32_t USBx_BASE = (uint32_t)s_pcd.Instance;
+    UsbBulkInStop_t *stop;
+    BspUsbInStopProof_t *proof;
+    if (__get_IPSR() != 0U) return SYS_ERR_INVALID_STATE;
+    if (identity == NULL || output == NULL || !s_ready || !Usb_BulkEndpoint(identity->endpoint_address))
+        return SYS_ERR_INVALID_ARG;
+    ep = identity->endpoint_address & 15U;
+    stop = &s_bulk_in[ep]; proof = &stop->proof;
+    saved = Usb_BulkPublishLock();
+    if (attempt == 0U || attempt != proof->stop_attempt || !Usb_BulkIdentityMatches(identity, &proof->transfer))
+    { Usb_BulkPublishUnlock(saved); return SYS_ERR_INVALID_STATE; }
+    *output = *proof;
+    if (proof->stage != BSP_USB_STOP_FAULT || proof->first_error != SYS_ERR_TIMEOUT ||
+        proof->error != SYS_ERR_TIMEOUT || proof->fifo_conflicted || proof->reconcile_count != 0U ||
+        identity->session_generation != s_bulk_session || proof->pio_users != 0U ||
+        (s_pcd.Instance->GINTSTS & (USB_OTG_GINTSTS_USBRST | USB_OTG_GINTSTS_OTGINT)) != 0U)
+    { Usb_BulkPublishUnlock(saved); return SYS_ERR_INVALID_STATE; }
+    ctl = USBx_INEP(ep)->DIEPCTL; events = USBx_INEP(ep)->DIEPINT;
+    reset = s_pcd.Instance->GRSTCTL;
+    if ((ctl & (USB_OTG_DIEPCTL_EPENA | USB_OTG_DIEPCTL_EPDIS)) != 0U ||
+        (reset & USB_OTG_GRSTCTL_AHBIDL) == 0U ||
+        (reset & (USB_OTG_GRSTCTL_TXFFLSH | USB_OTG_GRSTCTL_RXFFLSH)) != 0U)
+    { Usb_BulkPublishUnlock(saved); return SYS_ERR_BUSY; }
+    if (proof->failed_stage == BSP_USB_STOP_DISABLE && s_bulk_fifo_owner == 0U &&
+        (events & USB_OTG_DIEPINT_EPDISD) != 0U)
+    {
+        Usb_BulkCapture(ep, events);
+        proof->stage = BSP_USB_STOP_AHB;
+    }
+    else if (proof->failed_stage == BSP_USB_STOP_FIFO && s_bulk_fifo_owner == ep &&
+             ((reset & USB_OTG_GRSTCTL_TXFNUM) >> USB_OTG_GRSTCTL_TXFNUM_Pos) == ep)
+    {
+        Usb_BulkCapture(ep, events);
+        proof->fifo_complete = true;
+        proof->fifo_result = SYS_OK;
+        proof->stage = BSP_USB_STOP_RETIRE;
+        s_bulk_fifo_owner = 0U;
+    }
+    else
+    { Usb_BulkPublishUnlock(saved); return SYS_ERR_INVALID_STATE; }
+    ++proof->reconcile_count;
+    proof->state = BSP_USB_IN_QUIESCING;
+    proof->result = BSP_USB_STOP_PENDING;
+    //保留first_error/failed_stage/failure_count；仅给已证明可继续的收尾一个新预算
+    proof->error = SYS_OK;
+    stop->began_at = HAL_GetTick(); stop->poll_count = 0U;
     *output = *proof;
     Usb_BulkPublishUnlock(saved);
     return SYS_OK;
@@ -1009,8 +1074,24 @@ void OTG_FS_IRQHandler(void)
     {
         if ((s_pcd.Instance->GINTSTS & USB_OTG_GINTSTS_USBRST) != 0U)
             Usb_BulkInvalidateSession();
-        //HAL可自动Flush其他端点，不能跨此IRQ假定共享GRSTCTL仍由Task独占
-        if (s_bulk_fifo_owner != 0U) Usb_BulkFault(s_bulk_fifo_owner, SYS_ERR_BUSY);
+        if (s_bulk_fifo_owner != 0U)
+        {
+            uint32_t raw = s_pcd.Instance->GINTSTS;
+            uint32_t USBx_BASE = (uint32_t)s_pcd.Instance;
+            //HAL逐分支重读GINTSTS，不能仅凭入口SOF后仍调用其完整处理器。
+            //此受限分支只派发SOF；之后到达的Reset/EP事件保留给下一次IRQ。
+            if (raw == USB_OTG_GINTSTS_SOF &&
+                (s_pcd.Instance->GINTMSK & USB_OTG_GINTMSK_SOFM) != 0U)
+            {
+                s_pcd.FrameNumber = (USBx_DEVICE->DSTS & USB_OTG_DSTS_FNSOF_Msk) >> USB_OTG_DSTS_FNSOF_Pos;
+                HAL_PCD_SOFCallback(&s_pcd);
+                s_pcd.Instance->GINTSTS = USB_OTG_GINTSTS_SOF;
+                return;
+            }
+            //所有未证明无共享写命令的组合保留失败，HAL仍处理Reset/Disconnect。
+            s_bulk_in[s_bulk_fifo_owner].proof.fifo_conflicted = true;
+            Usb_BulkFault(s_bulk_fifo_owner, SYS_ERR_BUSY);
+        }
         HAL_PCD_IRQHandler(&s_pcd);
     }
 }

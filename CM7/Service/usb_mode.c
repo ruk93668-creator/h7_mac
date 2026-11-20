@@ -28,6 +28,10 @@ typedef struct
 	
     //最近一次启动结果，供调试观察
     SysResult_t last_result;
+    bool stop_reconnect;
+    uint32_t stop_transaction;
+    uint32_t stop_started_ms;
+    uint32_t stop_polls;
 } UsbModeContext_t;
 
 //静态模式管理对象，复位后状态为UNINITIALIZED
@@ -47,6 +51,7 @@ static SysResult_t UsbMode_AppStart(void);
 
 //按冷启动模式登记Class
 static SysResult_t UsbMode_RegisterClass(UsbMode_t mode);
+static SysResult_t UsbMode_AdvanceStop(void);
 
 //保存冷启动USB模式选择
 SysResult_t USB_Mode_SelectBootMode(UsbMode_t mode, SysResult_t (*register_class)(void))
@@ -194,6 +199,10 @@ SysResult_t USB_Mode_RequestReconnect(UsbMode_t target_mode)
         return SYS_ERR_BUSY;
 
     s_usb_mode.target_mode = target_mode;
+    s_usb_mode.stop_reconnect = true;
+    s_usb_mode.stop_transaction = 0U;
+    s_usb_mode.stop_started_ms = Platform_TimeGetMs();
+    s_usb_mode.stop_polls = 0U;
     s_usb_mode.state = USB_MODE_STATE_STOPPING;
 	
     return SYS_OK;
@@ -268,24 +277,10 @@ void USB_Mode_Process(void)
             break;
         }
         case USB_MODE_STATE_STOPPING:
-		{
-
-			//停止USB驱动
-			usb_result = USB_Device_Stop();
-			
-			if ( usb_result != SYS_OK)
-			{
-				s_usb_mode.last_result = usb_result;
-				s_usb_mode.state = USB_MODE_STATE_ERROR;
-				return;
-			}
-			
-			//记录停止时间
-			s_usb_mode.state_enter_ms = Platform_TimeGetMs();
-			
-			s_usb_mode.state = USB_MODE_STATE_WAIT_RECONNECT;
-			break;
-		}
+        {
+            (void)UsbMode_AdvanceStop();
+            break;
+        }
 		case USB_MODE_STATE_WAIT_RECONNECT:
 		{
 
@@ -358,17 +353,54 @@ SysResult_t USB_Mode_GetLastResult(void)
     return s_usb_mode.initialized ? s_usb_mode.last_result : SYS_ERR_INVALID_STATE;
 }
 
+//一个执行器推进同一停止意图；Pending不投影为业务FAULT
+static SysResult_t UsbMode_AdvanceStop(void)
+{
+    UsbStopProgress_t progress;
+    SysResult_t result = USB_Device_Stop();
+    if (result == SYS_ERR_BUSY && USB_Device_GetStopProgress(&progress) == SYS_OK &&
+        progress.registered_pending && progress.transaction_id != 0U &&
+        progress.endpoint_attempt != 0U && progress.state == USB_STOP_PROGRESS_PENDING)
+    {
+        if (s_usb_mode.stop_transaction == 0U)
+            s_usb_mode.stop_transaction = progress.transaction_id;
+        if (s_usb_mode.stop_transaction != progress.transaction_id)
+            result = SYS_ERR_INVALID_STATE;
+        else if ((uint32_t)(Platform_TimeGetMs() - s_usb_mode.stop_started_ms) >= 1000U ||
+                 ++s_usb_mode.stop_polls >= 4096U)
+            result = SYS_ERR_TIMEOUT;
+        else
+        {
+            s_usb_mode.last_result = SYS_OK;
+            return SYS_ERR_BUSY;
+        }
+    }
+    //未登记的BUSY是执行失败，不得被Application当作等待事务
+    if (result == SYS_ERR_BUSY) result = SYS_ERR_IO;
+    if (result == SYS_OK)
+    {
+        s_usb_mode.state_enter_ms = Platform_TimeGetMs();
+        s_usb_mode.state = s_usb_mode.stop_reconnect ? USB_MODE_STATE_WAIT_RECONNECT : USB_MODE_STATE_IDLE;
+    }
+    else
+        s_usb_mode.state = USB_MODE_STATE_ERROR;
+    s_usb_mode.last_result = result;
+    return result;
+}
+
 //停止当前模式并保留冷启动Class选择
 SysResult_t USB_Mode_Stop(void)
 {
-    SysResult_t result;
-
-    if (!s_usb_mode.initialized)
-        return SYS_ERR_INVALID_STATE;
-
-    //Core确认硬件和Class均已释放后，才允许回到可启动状态
-    result = USB_Device_Stop();
-    s_usb_mode.last_result = result;
-    s_usb_mode.state = result == SYS_OK ? USB_MODE_STATE_IDLE : USB_MODE_STATE_ERROR;
-    return result;
+    if (!s_usb_mode.initialized) return SYS_ERR_INVALID_STATE;
+    if (s_usb_mode.state == USB_MODE_STATE_IDLE) return SYS_OK;
+    if (s_usb_mode.state != USB_MODE_STATE_STOPPING)
+    {
+        if (s_usb_mode.state == USB_MODE_STATE_ERROR) return s_usb_mode.last_result;
+        s_usb_mode.stop_transaction = 0U;
+        s_usb_mode.stop_started_ms = Platform_TimeGetMs();
+        s_usb_mode.stop_polls = 0U;
+        s_usb_mode.state = USB_MODE_STATE_STOPPING;
+    }
+    s_usb_mode.stop_reconnect = false;
+    return UsbMode_AdvanceStop();
 }

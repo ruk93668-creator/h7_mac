@@ -436,22 +436,62 @@ SysResult_t USB_Device_Start(void)
     return result;
 }
 
+static UsbStopProgress_t s_stop_progress;
+static uint32_t s_stop_progress_seed;
+static bool s_stop_pending_registered;
+static BspUsbInStopProof_t s_stop_pending_proof;
+
+SysResult_t USB_Device_GetStopProgress(UsbStopProgress_t *progress)
+{
+    uint32_t saved;
+    if (progress == NULL) return SYS_ERR_INVALID_ARG;
+    saved = __get_PRIMASK();
+    __disable_irq();
+    *progress = s_stop_progress;
+    __set_PRIMASK(saved);
+    return SYS_OK;
+}
+
+SysResult_t USB_Device_ReconcileBulkInStop(const UsbBulkInStopTransaction_t *transaction,
+                                         BspUsbInStopProof_t *proof)
+{
+    if (transaction == NULL || proof == NULL ||
+        !Usb_ClassEndpoint(transaction->transfer.endpoint_address) ||
+        (transaction->transfer.endpoint_address & 15U) >= BSP_USB_ENDPOINT_COUNT ||
+        (transaction->transfer.endpoint_address & 0x80U) == 0U) return SYS_ERR_INVALID_ARG;
+    if (transaction->platform_sequence != s_in_sequence[transaction->transfer.endpoint_address & 15U])
+        return SYS_ERR_INVALID_STATE;
+    return BSP_USB_ReconcileBulkInStop(&transaction->transfer, transaction->stop_attempt, proof);
+}
+
 //停止USB并清理Class资源
 SysResult_t USB_Device_Stop(void)
 {
     SysResult_t result;
 
-    //生命周期操作不能重入，回调内再次调用时直接返回BUSY
-    if (s_control_busy)
-        return SYS_ERR_BUSY;
-
-    //只允许普通执行上下文调用，不能在ISR中执行生命周期操作
-    if (__get_IPSR() != 0U)
-        return SYS_ERR_INVALID_STATE;
-
-    //保护内部操作执行过程，返回前恢复入口可用状态
+    //普通BUSY不登记事务，不能借用历史Pending资格
+    s_stop_progress.registered_pending = false;
+    if (s_control_busy) return SYS_ERR_BUSY;
+    if (__get_IPSR() != 0U) return SYS_ERR_INVALID_STATE;
+    if ((s_stop_progress.state == USB_STOP_PROGRESS_NONE ||
+         s_stop_progress.state == USB_STOP_PROGRESS_COMPLETE || s_stop_progress.transaction_id == 0U) && s_stop_progress_seed == UINT32_MAX)
+        return SYS_ERR_NO_RESOURCE;
     s_control_busy = true;
+    s_stop_pending_registered = false;
     result = Usb_StopDevice();
+    if (result == SYS_ERR_BUSY && s_stop_pending_registered)
+    {
+        if (s_stop_progress.state == USB_STOP_PROGRESS_NONE ||
+            s_stop_progress.state == USB_STOP_PROGRESS_COMPLETE || s_stop_progress.transaction_id == 0U)
+            s_stop_progress.transaction_id = ++s_stop_progress_seed;
+        s_stop_progress.state = USB_STOP_PROGRESS_PENDING;
+        s_stop_progress.endpoint_attempt = s_stop_pending_proof.stop_attempt;
+        s_stop_progress.endpoint_transfer = s_stop_pending_proof.transfer;
+        s_stop_progress.registered_pending = true;
+    }
+    else
+        s_stop_progress.state = result == SYS_OK ? USB_STOP_PROGRESS_COMPLETE : USB_STOP_PROGRESS_FAILED;
+    s_stop_progress.result = result;
     s_control_busy = false;
     return result;
 }
@@ -1846,7 +1886,12 @@ static SysResult_t Usb_DrainBulkInStops(void)
         if (!proof.source_owned && !proof.pool_owned && proof.state == BSP_USB_IN_IDLE)
             continue;
         if (proof.result == BSP_USB_STOP_RECOVERY_REQUIRED)
-            return proof.error == SYS_ERR_BUSY || proof.error == SYS_OK ? SYS_ERR_IO : proof.error;
+        {
+            //同一保存身份的显式后续Stop可复核迟到证据，拒绝新建Attempt绕过失败
+            result = USB_Device_ReconcileBulkInStop(&s_bulk_stop_transaction[index], &proof);
+            if (result != SYS_OK)
+                return proof.error == SYS_ERR_BUSY || proof.error == SYS_OK ? SYS_ERR_IO : proof.error;
+        }
         if (proof.stage == BSP_USB_STOP_NONE)
         {
             result = USB_Device_GetBulkInTransfer(ep, &s_bulk_stop_transaction[index]);
@@ -1863,8 +1908,15 @@ static SysResult_t Usb_DrainBulkInStops(void)
             result = USB_Device_CommitBulkInRetirement(&s_bulk_stop_transaction[index], &proof);
             if (result != SYS_OK) return result;
         }
-        if (proof.stage != BSP_USB_STOP_COMMITTED) pending = true;
+        if (proof.stage != BSP_USB_STOP_COMMITTED)
+        {
+            pending = true;
+            if (proof.stop_attempt == 0U || proof.result != BSP_USB_STOP_PENDING)
+                return SYS_ERR_INVALID_STATE;
+            s_stop_pending_proof = proof;
+        }
     }
+    s_stop_pending_registered = pending;
     return pending ? SYS_ERR_BUSY : SYS_OK;
 }
 

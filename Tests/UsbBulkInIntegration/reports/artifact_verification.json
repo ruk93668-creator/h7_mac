@@ -1,0 +1,194 @@
+{
+  "baseline": "5113000227e8d3d3a9a460b4585993e28096d0cc",
+  "compiler": "Product: MDK Plus 5.32\r\nComponent: ARM Compiler 5.06 update 7 (build 960)\r\nTool: armcc [4d365d]\r\nFor support see http://www.arm.com/support\r\nSoftware supplied by: ARM Limited\r\n",
+  "source_hashes": {
+    "CM7/BSP/bsp_usb.c": "c30ccfa282373b41dfa59c4d574df7d432cb7430d9265efef2efad9faf37f091",
+    "CM7/BSP/bsp_usb.h": "fa065c53f5cc2121cca18ae751d45f257cfda91e1aabbdec051e4c2d93cd9dbf",
+    "CM7/Platform/usb_device.c": "58b950de49e8a3d2204396f2aa2edb2d520f36a3f20f82f2fdd30f301c42424f",
+    "CM7/Platform/usb_device.h": "a9144a93b3370e477f4df9f5d5ed07a33c04250eec2ecd7e53216a4d885898d2",
+    "CM7/Service/usb_mode.c": "e00459595f47d56319adc11076fce4e347f67bab6964a081fcbe156c59f3caa6"
+  },
+  "builds": [
+    {
+      "mode": "ram",
+      "summary": "0 Error(s), 0 Warning(s)",
+      "defines": [
+        "CORE_CM7",
+        "USE_HAL_DRIVER",
+        "STM32H747xx",
+        "USE_PWR_LDO_SUPPLY",
+        "APP_VIDEO_MJPEG_MODE=1",
+        "USB_MODE_BOOT_MSC=1",
+        "USB_MSC_SD_TEST=0",
+        "USB_MSC_SD_WRITE_ENABLE=0",
+        "USB_DEVICE_LIFECYCLE_DIAGNOSTICS=1"
+      ],
+      "preprocessed": {
+        "BOOT": "1",
+        "SD": "0",
+        "WRITE": "0"
+      },
+      "map_references": [
+        {
+          "line": 1460,
+          "text": "usb_mode.o(i.UsbMode_AdvanceStop) refers to usb_device.o(i.USB_Device_Stop) for USB_Device_Stop"
+        },
+        {
+          "line": 1461,
+          "text": "usb_mode.o(i.UsbMode_AdvanceStop) refers to usb_device.o(i.USB_Device_GetStopProgress) for USB_Device_GetStopProgress"
+        },
+        {
+          "line": 2291,
+          "text": "usb_device.o(i.Usb_StopDevice) refers to usb_device.o(i.Usb_DrainBulkInStops) for Usb_DrainBulkInStops"
+        },
+        {
+          "line": 2204,
+          "text": "usb_device.o(i.Usb_DrainBulkInStops) refers to usb_device.o(i.USB_Device_ReconcileBulkInStop) for USB_Device_ReconcileBulkInStop"
+        },
+        {
+          "line": 2147,
+          "text": "usb_device.o(i.USB_Device_ReconcileBulkInStop) refers to bsp_usb.o(i.BSP_USB_ReconcileBulkInStop) for BSP_USB_ReconcileBulkInStop"
+        },
+        {
+          "line": 2206,
+          "text": "usb_device.o(i.Usb_DrainBulkInStops) refers to usb_device.o(i.USB_Device_BeginBulkInStop) for USB_Device_BeginBulkInStop"
+        },
+        {
+          "line": 2207,
+          "text": "usb_device.o(i.Usb_DrainBulkInStops) refers to usb_device.o(i.USB_Device_PollBulkInStop) for USB_Device_PollBulkInStop"
+        },
+        {
+          "line": 2208,
+          "text": "usb_device.o(i.Usb_DrainBulkInStops) refers to usb_device.o(i.USB_Device_CommitBulkInRetirement) for USB_Device_CommitBulkInRetirement"
+        }
+      ],
+      "artifacts": {
+        "output\\MSC24\\udlm-p1b\\build-p1b1-final03\\output\\MSC41\\diagnostic-build\\ram\\h7_mac_CM7_ram.axf": "66d32c2bf9a6e972b1bdb5248063d04979f9c2e89ea4c5c53745e2167e2d36cb",
+        "output\\MSC24\\udlm-p1b\\build-p1b1-final03\\output\\MSC41\\diagnostic-build\\ram\\h7_mac_CM7_ram.hex": "7ad09b5c457cdd088aeaaf172fe7662aa85521100f50e9e3f1e568afe45862a0",
+        "output\\MSC24\\udlm-p1b\\build-p1b1-final03\\output\\MSC41\\diagnostic-build\\ram\\h7_mac_CM7_ram.map": "a3001b123072a7074c75eb9f3c8aae1699af8bc07775341c87ed361ee77fb19c"
+      }
+    },
+    {
+      "mode": "sd_readonly",
+      "summary": "0 Error(s), 0 Warning(s)",
+      "defines": [
+        "CORE_CM7",
+        "USE_HAL_DRIVER",
+        "STM32H747xx",
+        "USE_PWR_LDO_SUPPLY",
+        "APP_VIDEO_MJPEG_MODE=1",
+        "USB_MODE_BOOT_MSC=1",
+        "USB_MSC_SD_TEST=1",
+        "USB_MSC_SD_WRITE_ENABLE=0",
+        "USB_DEVICE_LIFECYCLE_DIAGNOSTICS=1"
+      ],
+      "preprocessed": {
+        "BOOT": "1",
+        "SD": "1",
+        "WRITE": "0"
+      },
+      "map_references": [
+        {
+          "line": 1460,
+          "text": "usb_mode.o(i.UsbMode_AdvanceStop) refers to usb_device.o(i.USB_Device_Stop) for USB_Device_Stop"
+        },
+        {
+          "line": 1461,
+          "text": "usb_mode.o(i.UsbMode_AdvanceStop) refers to usb_device.o(i.USB_Device_GetStopProgress) for USB_Device_GetStopProgress"
+        },
+        {
+          "line": 2297,
+          "text": "usb_device.o(i.Usb_StopDevice) refers to usb_device.o(i.Usb_DrainBulkInStops) for Usb_DrainBulkInStops"
+        },
+        {
+          "line": 2210,
+          "text": "usb_device.o(i.Usb_DrainBulkInStops) refers to usb_device.o(i.USB_Device_ReconcileBulkInStop) for USB_Device_ReconcileBulkInStop"
+        },
+        {
+          "line": 2153,
+          "text": "usb_device.o(i.USB_Device_ReconcileBulkInStop) refers to bsp_usb.o(i.BSP_USB_ReconcileBulkInStop) for BSP_USB_ReconcileBulkInStop"
+        },
+        {
+          "line": 2212,
+          "text": "usb_device.o(i.Usb_DrainBulkInStops) refers to usb_device.o(i.USB_Device_BeginBulkInStop) for USB_Device_BeginBulkInStop"
+        },
+        {
+          "line": 2213,
+          "text": "usb_device.o(i.Usb_DrainBulkInStops) refers to usb_device.o(i.USB_Device_PollBulkInStop) for USB_Device_PollBulkInStop"
+        },
+        {
+          "line": 2214,
+          "text": "usb_device.o(i.Usb_DrainBulkInStops) refers to usb_device.o(i.USB_Device_CommitBulkInRetirement) for USB_Device_CommitBulkInRetirement"
+        }
+      ],
+      "artifacts": {
+        "output\\MSC24\\udlm-p1b\\build-p1b1-final03\\output\\MSC41\\diagnostic-build\\sd_readonly\\h7_mac_CM7_sd_readonly.axf": "ae3cd1c91302e2fbde4840f6033ae58ae0f08c4a73435927527fd1d2b0ac27b7",
+        "output\\MSC24\\udlm-p1b\\build-p1b1-final03\\output\\MSC41\\diagnostic-build\\sd_readonly\\h7_mac_CM7_sd_readonly.hex": "ce897987b569bbfc5e7a156c446ce2323fee52319d40b6e7927f27ad52764834",
+        "output\\MSC24\\udlm-p1b\\build-p1b1-final03\\output\\MSC41\\diagnostic-build\\sd_readonly\\h7_mac_CM7_sd_readonly.map": "e160eb76ea2b5dfb79e844d52a970a9940340ea84292320e8176e877b72b0b4d"
+      }
+    },
+    {
+      "mode": "uvc",
+      "summary": "0 Error(s), 0 Warning(s)",
+      "defines": [
+        "CORE_CM7",
+        "USE_HAL_DRIVER",
+        "STM32H747xx",
+        "USE_PWR_LDO_SUPPLY",
+        "APP_VIDEO_MJPEG_MODE=1",
+        "USB_MODE_BOOT_MSC=0",
+        "USB_MSC_SD_TEST=0",
+        "USB_MSC_SD_WRITE_ENABLE=0",
+        "USB_DEVICE_LIFECYCLE_DIAGNOSTICS=1"
+      ],
+      "preprocessed": {
+        "BOOT": "0",
+        "SD": "0",
+        "WRITE": "0"
+      },
+      "map_references": [
+        {
+          "line": 1459,
+          "text": "usb_mode.o(i.UsbMode_AdvanceStop) refers to usb_device.o(i.USB_Device_Stop) for USB_Device_Stop"
+        },
+        {
+          "line": 1460,
+          "text": "usb_mode.o(i.UsbMode_AdvanceStop) refers to usb_device.o(i.USB_Device_GetStopProgress) for USB_Device_GetStopProgress"
+        },
+        {
+          "line": 2290,
+          "text": "usb_device.o(i.Usb_StopDevice) refers to usb_device.o(i.Usb_DrainBulkInStops) for Usb_DrainBulkInStops"
+        },
+        {
+          "line": 2203,
+          "text": "usb_device.o(i.Usb_DrainBulkInStops) refers to usb_device.o(i.USB_Device_ReconcileBulkInStop) for USB_Device_ReconcileBulkInStop"
+        },
+        {
+          "line": 2146,
+          "text": "usb_device.o(i.USB_Device_ReconcileBulkInStop) refers to bsp_usb.o(i.BSP_USB_ReconcileBulkInStop) for BSP_USB_ReconcileBulkInStop"
+        },
+        {
+          "line": 2205,
+          "text": "usb_device.o(i.Usb_DrainBulkInStops) refers to usb_device.o(i.USB_Device_BeginBulkInStop) for USB_Device_BeginBulkInStop"
+        },
+        {
+          "line": 2206,
+          "text": "usb_device.o(i.Usb_DrainBulkInStops) refers to usb_device.o(i.USB_Device_PollBulkInStop) for USB_Device_PollBulkInStop"
+        },
+        {
+          "line": 2207,
+          "text": "usb_device.o(i.Usb_DrainBulkInStops) refers to usb_device.o(i.USB_Device_CommitBulkInRetirement) for USB_Device_CommitBulkInRetirement"
+        }
+      ],
+      "artifacts": {
+        "output\\MSC24\\udlm-p1b\\build-p1b1-final03\\output\\MSC41\\diagnostic-build\\uvc\\h7_mac_CM7_uvc.axf": "b78e810efa052230a65063e235154e7c2cae383d6672fddca7a1b867bd7c0a55",
+        "output\\MSC24\\udlm-p1b\\build-p1b1-final03\\output\\MSC41\\diagnostic-build\\uvc\\h7_mac_CM7_uvc.hex": "a164c99333224fda5948536fd8fe69b9a70772079a6c776d8634f3929d6bb944",
+        "output\\MSC24\\udlm-p1b\\build-p1b1-final03\\output\\MSC41\\diagnostic-build\\uvc\\h7_mac_CM7_uvc.map": "2dc2f47116cc2763218bcf1000ac36f08dbc1ba426347546353b6ccb32c2e212"
+      }
+    }
+  ],
+  "pdf_readonly_hash": "61d07b67deb291aed8a5cf8019c94add0a1065318542e57b3287d2694b14bd60",
+  "pdf_tracked": false,
+  "tracked_scope_valid": true,
+  "hardware": "NOT_TESTED"
+}

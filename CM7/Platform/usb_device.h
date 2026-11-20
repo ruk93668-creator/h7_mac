@@ -154,6 +154,27 @@ SysResult_t USB_Device_PollBulkInStop(const UsbBulkInStopTransaction_t *transact
 SysResult_t USB_Device_CommitBulkInRetirement(const UsbBulkInStopTransaction_t *transaction,
                                             BspUsbInStopProof_t *proof);
 
+//只读停止事务快照；registered_pending仅对应最近一次Stop实际登记的推进结果
+typedef enum
+{
+    USB_STOP_PROGRESS_NONE = 0, USB_STOP_PROGRESS_PENDING,
+    USB_STOP_PROGRESS_COMPLETE, USB_STOP_PROGRESS_FAILED
+} UsbStopProgressState_t;
+
+typedef struct
+{
+    uint32_t transaction_id;
+    UsbStopProgressState_t state;
+    SysResult_t result;
+    bool registered_pending;
+    uint32_t endpoint_attempt;
+    BspUsbInIdentity_t endpoint_transfer;
+} UsbStopProgress_t;
+
+SysResult_t USB_Device_GetStopProgress(UsbStopProgress_t *progress);
+SysResult_t USB_Device_ReconcileBulkInStop(const UsbBulkInStopTransaction_t *transaction,
+                                         BspUsbInStopProof_t *proof);
+
 //延迟状态只保留当前控制事务身份，不代表任何块设备或DMA所有权
 //SUBMITTED仅表示硬件提交成功，COMPLETE必须由EP0 IN完成回调确认
 typedef enum

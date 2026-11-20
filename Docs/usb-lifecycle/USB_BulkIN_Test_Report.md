@@ -1,3 +1,5 @@
+> P1-B.1 更新：以下原 P1-B 内容保留为历史证据；Service Pending、纯 SOF 仲裁与受控 Reconcile 的当前结论以 [P1-B.1 最终验证](USB_P1B1_FinalVerification.md) 及其四份专题报告为准。五项旧同步断言未迁移，历史 FAIL 未删除，硬件验收仍 NOT_TESTED。
+
 # P1-B 软件验证与构建报告
 
 > 基线5a27af621c219ead2bc680858efd4aeb17e110a4。最终生产输入为p1b04快照；软件模型不是实板证明。VERIFIED注明来源；INFERRED为推断；UNRESOLVED为缺证据；NOT_TESTED为未执行。

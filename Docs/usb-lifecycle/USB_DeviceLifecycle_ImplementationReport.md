@@ -1,3 +1,5 @@
+> P1-B.1 更新：以下原 P1-B 内容保留为历史证据；Service Pending、纯 SOF 仲裁与受控 Reconcile 的当前结论以 [P1-B.1 最终验证](USB_P1B1_FinalVerification.md) 及其四份专题报告为准。五项旧同步断言未迁移，历史 FAIL 未删除，硬件验收仍 NOT_TESTED。
+
 # P1-B 实施报告与受阻项
 
 > P1-B基线：`5a27af621c219ead2bc680858efd4aeb17e110a4`；工作区：`D:/32/STM32H7/h7_mac_lifecycle`；分支：`codex/usb-device-lifecycle-manager`。

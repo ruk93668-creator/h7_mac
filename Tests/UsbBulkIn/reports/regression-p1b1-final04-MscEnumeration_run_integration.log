@@ -1,0 +1,17 @@
+Traceback (most recent call last):
+  File "D:\32\STM32H7\h7_mac_lifecycle\output\MSC24\udlm-p1b\regression-p1b1-final04\Tests\MscEnumeration\run_integration.py", line 20, in <module>
+    image=OUT/'test.axf';run([TOOL/'armlink.exe',*objects,'--entry','MSC1_Run','--keep=*(.framework_init)','--no_scanlib','--scatter',sct,'-o',image])
+                         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "D:\32\STM32H7\h7_mac_lifecycle\output\MSC24\udlm-p1b\regression-p1b1-final04\Tests\MscEnumeration\run_integration.py", line 15, in run
+    if r.returncode or 'warning' in text.lower(): raise RuntimeError(text)
+                                                  ^^^^^^^^^^^^^^^^^^^^^^^^
+RuntimeError: Error: L6218E: Undefined symbol USB_MSC_BotClearHalt (referred from usb_msc_class.o).
+Error: L6218E: Undefined symbol USB_MSC_BotDataIn (referred from usb_msc_class.o).
+Error: L6218E: Undefined symbol USB_MSC_BotDataOut (referred from usb_msc_class.o).
+Error: L6218E: Undefined symbol USB_MSC_BotProcess (referred from usb_msc_class.o).
+Error: L6218E: Undefined symbol USB_MSC_BotReset (referred from usb_msc_class.o).
+Error: L6218E: Undefined symbol USB_MSC_BotStart (referred from usb_msc_class.o).
+Error: L6218E: Undefined symbol USB_MSC_BotStop (referred from usb_msc_class.o).
+Error: L6218E: Undefined symbol USB_MSC_RamBackend (referred from usb_msc_class.o).
+Finished: 0 information, 0 warning and 8 error messages.
+
