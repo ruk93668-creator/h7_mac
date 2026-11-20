@@ -1,0 +1,16 @@
+{
+  "command": [
+    "git",
+    "-c",
+    "http.version=HTTP/1.1",
+    "-c",
+    "http.proxy=",
+    "ls-remote",
+    "--heads",
+    "origin",
+    "refs/heads/codex/usb-device-lifecycle-manager"
+  ],
+  "exit": 128,
+  "stdout": "",
+  "stderr": "fatal: unable to access 'https://github.com/ruk93668-creator/h7_mac.git/': Recv failure: Connection was reset\n"
+}

@@ -1,0 +1,114 @@
+{
+  "baseline": "03a5cb1793e35ec23728f3a6ebbdc132277ed597",
+  "production_modified": false,
+  "hal_modified": false,
+  "in_baseline": [
+    {
+      "suite": "UsbBulkIn/run_tests.py",
+      "summary": {
+        "total": 38,
+        "passed": 38,
+        "failed": 0,
+        "assertions": 796
+      },
+      "report_sha256": "cfc32916a3d6c4c98b8e8579faa4a18f5b65de81d87528c10eea42e029048133"
+    },
+    {
+      "suite": "UsbBulkInIntegration/run_tests.py",
+      "summary": {
+        "total": 38,
+        "passed": 38,
+        "assertions": 362
+      },
+      "report_sha256": "c3b71fc311de8843999ddb40bfdf7794aec0e5321fd9e8d9e6ba89b78b153a60"
+    }
+  ],
+  "c0": {
+    "total": 24,
+    "passed": 24,
+    "assertions": 99
+  },
+  "historical_entries": 17,
+  "historical_new_failures": [],
+  "builds": [
+    {
+      "mode": "ram",
+      "summary": "0 Error(s), 0 Warning(s)",
+      "defines": [
+        "CORE_CM7",
+        "USE_HAL_DRIVER",
+        "STM32H747xx",
+        "USE_PWR_LDO_SUPPLY",
+        "APP_VIDEO_MJPEG_MODE=1",
+        "USB_MODE_BOOT_MSC=1",
+        "USB_MSC_SD_TEST=0",
+        "USB_MSC_SD_WRITE_ENABLE=0",
+        "USB_DEVICE_LIFECYCLE_DIAGNOSTICS=1"
+      ],
+      "preprocessed": {
+        "BOOT": "1",
+        "SD": "0",
+        "WRITE": "0"
+      },
+      "files": {
+        "output\\MSC24\\udlm-p1c\\build-p1c-c0\\output\\MSC41\\diagnostic-build\\ram\\h7_mac_CM7_ram.axf": "d8a8e854a024407b18f682cda5e384dd1834f922e8cfa175cb0c67add8ac0e39",
+        "output\\MSC24\\udlm-p1c\\build-p1c-c0\\output\\MSC41\\diagnostic-build\\ram\\h7_mac_CM7_ram.hex": "7ad09b5c457cdd088aeaaf172fe7662aa85521100f50e9e3f1e568afe45862a0",
+        "output\\MSC24\\udlm-p1c\\build-p1c-c0\\output\\MSC41\\diagnostic-build\\ram\\h7_mac_CM7_ram.map": "09ea041fbed7362b57e2a01f7007705c7f06a00da1901712ed0cd07a607ae00a"
+      }
+    },
+    {
+      "mode": "sd_readonly",
+      "summary": "0 Error(s), 0 Warning(s)",
+      "defines": [
+        "CORE_CM7",
+        "USE_HAL_DRIVER",
+        "STM32H747xx",
+        "USE_PWR_LDO_SUPPLY",
+        "APP_VIDEO_MJPEG_MODE=1",
+        "USB_MODE_BOOT_MSC=1",
+        "USB_MSC_SD_TEST=1",
+        "USB_MSC_SD_WRITE_ENABLE=0",
+        "USB_DEVICE_LIFECYCLE_DIAGNOSTICS=1"
+      ],
+      "preprocessed": {
+        "BOOT": "1",
+        "SD": "1",
+        "WRITE": "0"
+      },
+      "files": {
+        "output\\MSC24\\udlm-p1c\\build-p1c-c0\\output\\MSC41\\diagnostic-build\\sd_readonly\\h7_mac_CM7_sd_readonly.axf": "45ddea3c36bedc67f2870bd9cb636d41a0b56cfdbde5f82cb99bcd59dc0ca399",
+        "output\\MSC24\\udlm-p1c\\build-p1c-c0\\output\\MSC41\\diagnostic-build\\sd_readonly\\h7_mac_CM7_sd_readonly.hex": "ce897987b569bbfc5e7a156c446ce2323fee52319d40b6e7927f27ad52764834",
+        "output\\MSC24\\udlm-p1c\\build-p1c-c0\\output\\MSC41\\diagnostic-build\\sd_readonly\\h7_mac_CM7_sd_readonly.map": "5f7a8dad284b2127dfb7fe5ac52a7559c37abccc212a3ffdd77b9c3daf82f0b9"
+      }
+    },
+    {
+      "mode": "uvc",
+      "summary": "0 Error(s), 0 Warning(s)",
+      "defines": [
+        "CORE_CM7",
+        "USE_HAL_DRIVER",
+        "STM32H747xx",
+        "USE_PWR_LDO_SUPPLY",
+        "APP_VIDEO_MJPEG_MODE=1",
+        "USB_MODE_BOOT_MSC=0",
+        "USB_MSC_SD_TEST=0",
+        "USB_MSC_SD_WRITE_ENABLE=0",
+        "USB_DEVICE_LIFECYCLE_DIAGNOSTICS=1"
+      ],
+      "preprocessed": {
+        "BOOT": "0",
+        "SD": "0",
+        "WRITE": "0"
+      },
+      "files": {
+        "output\\MSC24\\udlm-p1c\\build-p1c-c0\\output\\MSC41\\diagnostic-build\\uvc\\h7_mac_CM7_uvc.axf": "1711d81fb92409943e5a4a74fab503b294c1b90d77af3067b9f0c53fb4138892",
+        "output\\MSC24\\udlm-p1c\\build-p1c-c0\\output\\MSC41\\diagnostic-build\\uvc\\h7_mac_CM7_uvc.hex": "a164c99333224fda5948536fd8fe69b9a70772079a6c776d8634f3929d6bb944",
+        "output\\MSC24\\udlm-p1c\\build-p1c-c0\\output\\MSC41\\diagnostic-build\\uvc\\h7_mac_CM7_uvc.map": "8b4ebd95b631fb38806b00e6e44ea4b5ec5569456103fa3b3ead1b6b627d49f8"
+      }
+    }
+  ],
+  "pdf_sha256": "61d07b67deb291aed8a5cf8019c94add0a1065318542e57b3287d2694b14bd60",
+  "pdf_tracked": false,
+  "c1": "UNRESOLVED: gate blocked, no production implementation",
+  "hardware": "NOT_TESTED"
+}

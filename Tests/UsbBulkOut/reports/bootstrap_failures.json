@@ -1,0 +1,12 @@
+{
+  "evidence_origin": "Transcribed from actual tool output; not an automatically recovered compiler log",
+  "stage": "initial C0 harness link",
+  "undefined_symbols": [
+    "__aeabi_memset",
+    "HAL_PCDEx_ActivateLPM",
+    "HAL_PCDEx_LPM_Callback",
+    "HAL_RCC_GetHCLKFreq"
+  ],
+  "resolution": "Added only fixture runtime/boundary definitions; HAL/LL unchanged",
+  "runtime_first_report": "hal-evidence-history-* retains original 19 failing cases"
+}
