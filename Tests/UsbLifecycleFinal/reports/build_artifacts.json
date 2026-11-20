@@ -1,0 +1,290 @@
+{
+  "tag": "p1-final05",
+  "baseline": "9d51d0c5d5b62d04af3be968ec452dae8835c0c1",
+  "compiler_version": "Product: MDK Plus 5.32\r\nComponent: ARM Compiler 5.06 update 7 (build 960)\r\nTool: armcc [4d365d]\r\nFor support see http://www.arm.com/support\r\nSoftware supplied by: ARM Limited\r\n",
+  "builds": [
+    {
+      "mode": "ram",
+      "added_sources": [],
+      "defines": [
+        "CORE_CM7",
+        "USE_HAL_DRIVER",
+        "STM32H747xx",
+        "USE_PWR_LDO_SUPPLY",
+        "APP_VIDEO_MJPEG_MODE=1",
+        "USB_MODE_BOOT_MSC=1",
+        "USB_MSC_SD_TEST=0",
+        "USB_MSC_SD_WRITE_ENABLE=0",
+        "USB_DEVICE_LIFECYCLE_DIAGNOSTICS=1"
+      ],
+      "preprocessed_values": {
+        "BOOT": "1",
+        "SD": "0",
+        "WRITE": "0"
+      },
+      "adapter_write_call_present": false,
+      "summary": "0 Error(s), 0 Warning(s)",
+      "artifact": "D:\\32\\STM32H7\\h7_mac_lifecycle\\output\\MSC24\\udlm-p1-final\\build-p1-final05\\output\\MSC41\\diagnostic-build\\ram\\h7_mac_CM7_ram.axf",
+      "sha256": "6ee433df49c9378989df108ebfa0e508891d7fe52e17361f29ca687580f64936",
+      "artifacts": {
+        ".axf": {
+          "path": "output\\MSC24\\udlm-p1-final\\build-p1-final05\\output\\MSC41\\diagnostic-build\\ram\\h7_mac_CM7_ram.axf",
+          "bytes": 3366208,
+          "sha256": "6ee433df49c9378989df108ebfa0e508891d7fe52e17361f29ca687580f64936"
+        },
+        ".hex": {
+          "path": "output\\MSC24\\udlm-p1-final\\build-p1-final05\\output\\MSC41\\diagnostic-build\\ram\\h7_mac_CM7_ram.hex",
+          "bytes": 453775,
+          "sha256": "994d79b620873599b1c9d64b6f03323f2a01c257500f8183ada304fea5f952ec"
+        },
+        ".map": {
+          "path": "output\\MSC24\\udlm-p1-final\\build-p1-final05\\output\\MSC41\\diagnostic-build\\ram\\h7_mac_CM7_ram.map",
+          "bytes": 1036436,
+          "sha256": "9558c04e8d0a81d3a1f2247e7715aa352a1c574db5da1d950fb4cebf25213e10"
+        }
+      },
+      "log": "Tests\\UsbLifecycleFinal\\reports\\firmware-p1-final05-ram.log",
+      "log_sha256": "bdaea31ba7413d5d2d2f08bce1748a4ea383f6084a5a64273310a913ff13c791",
+      "elf_symbols": {
+        "HAL_PCD_IRQHandler": 1,
+        "Usb_OutRxBegin": 1,
+        "Usb_OutEventBegin": 1,
+        "Usb_OutNak": 1,
+        "USB_Device_EnableBulkOutLifecycle": null,
+        "USB_Device_BeginBulkOutStop": 1,
+        "BSP_USB_BeginBulkOutStop": 1,
+        "Usb_DrainBulkEndpointStops": 1,
+        "USB_MSC_BotBackendDrained": 1,
+        "Msc_DeInit": 1
+      },
+      "c1_enabled_in_application": false,
+      "msc_consumer_guard_included": true,
+      "map_references": [
+        "    usb_msc_bot.o(i.USB_MSC_BotBackendDrained) refers to usb_msc_bot.o(.bss) for s_bot",
+        "    usb_msc_class.o(i.Msc_DeInit) refers to usb_msc_bot.o(i.USB_MSC_BotStop) for USB_MSC_BotStop",
+        "    usb_msc_class.o(i.Msc_DeInit) refers to usb_msc_bot.o(i.USB_MSC_BotBackendDrained) for USB_MSC_BotBackendDrained",
+        "    usb_msc_class.o(i.Msc_DeInit) refers to usb_device.o(i.USB_Device_CloseEp) for USB_Device_CloseEp",
+        "    usb_msc_class.o(i.Msc_DeInit) refers to usb_msc_class.o(.data) for s_configured",
+        "    usb_msc_class.o(i.Msc_Init) refers to usb_msc_class.o(i.Msc_DeInit) for Msc_DeInit",
+        "    usb_msc_class.o(.data) refers to usb_msc_class.o(i.Msc_DeInit) for Msc_DeInit",
+        "    usb_device.o(i.Usb_DrainBulkEndpointStops) refers to usb_device.o(i.__get_PRIMASK) for __get_PRIMASK",
+        "    usb_device.o(i.Usb_DrainBulkEndpointStops) refers to usb_device.o(i.__set_PRIMASK) for __set_PRIMASK",
+        "    usb_device.o(i.Usb_DrainBulkEndpointStops) refers to bsp_usb.o(i.BSP_USB_GetBulkInProof) for BSP_USB_GetBulkInProof",
+        "    usb_device.o(i.Usb_DrainBulkEndpointStops) refers to bsp_usb.o(i.BSP_USB_GetBulkOutProof) for BSP_USB_GetBulkOutProof",
+        "    usb_device.o(i.Usb_DrainBulkEndpointStops) refers to usb_device.o(i.USB_Device_GetBulkInTransfer) for USB_Device_GetBulkInTransfer",
+        "    usb_device.o(i.Usb_DrainBulkEndpointStops) refers to usb_device.o(i.USB_Device_BeginBulkInStop) for USB_Device_BeginBulkInStop",
+        "    usb_device.o(i.Usb_DrainBulkEndpointStops) refers to usb_device.o(i.USB_Device_PollBulkInStop) for USB_Device_PollBulkInStop",
+        "    usb_device.o(i.Usb_DrainBulkEndpointStops) refers to usb_device.o(i.USB_Device_CommitBulkInRetirement) for USB_Device_CommitBulkInRetirement",
+        "    usb_device.o(i.Usb_DrainBulkEndpointStops) refers to rt_memcpy_w.o(.text) for __aeabi_memcpy4",
+        "    usb_device.o(i.Usb_DrainBulkEndpointStops) refers to usb_device.o(i.USB_Device_GetBulkOutTransfer) for USB_Device_GetBulkOutTransfer",
+        "    usb_device.o(i.Usb_DrainBulkEndpointStops) refers to usb_device.o(i.USB_Device_BeginBulkOutStop) for USB_Device_BeginBulkOutStop",
+        "    usb_device.o(i.Usb_DrainBulkEndpointStops) refers to usb_device.o(i.USB_Device_PollBulkOutStop) for USB_Device_PollBulkOutStop",
+        "    usb_device.o(i.Usb_DrainBulkEndpointStops) refers to usb_device.o(i.USB_Device_CommitBulkOutRetirement) for USB_Device_CommitBulkOutRetirement",
+        "    usb_device.o(i.Usb_DrainBulkEndpointStops) refers to usb_device.o(.data) for s_controller_endpoint_fence",
+        "    usb_device.o(i.Usb_DrainBulkEndpointStops) refers to usb_device.o(.bss) for s_stop_progress",
+        "    usb_device.o(i.Usb_StopDevice) refers to usb_device.o(i.Usb_DrainBulkEndpointStops) for Usb_DrainBulkEndpointStops",
+        "    i.Msc_DeInit                             0x08015334   Section        0  usb_msc_class.o(i.Msc_DeInit)",
+        "    Msc_DeInit                               0x08015335   Thumb Code    86  usb_msc_class.o(i.Msc_DeInit)",
+        "    i.USB_MSC_BotBackendDrained              0x0801d6d8   Section        0  usb_msc_bot.o(i.USB_MSC_BotBackendDrained)",
+        "    i.Usb_DrainBulkEndpointStops             0x080207b0   Section        0  usb_device.o(i.Usb_DrainBulkEndpointStops)",
+        "    Usb_DrainBulkEndpointStops               0x080207b1   Thumb Code  1004  usb_device.o(i.Usb_DrainBulkEndpointStops)",
+        "    USB_MSC_BotBackendDrained                0x0801d6d9   Thumb Code    38  usb_msc_bot.o(i.USB_MSC_BotBackendDrained)",
+        "    0x08015334   0x08015334   0x00000064   Code   RO         6795    i.Msc_DeInit        usb_msc_class.o",
+        "    0x0801d6d8   0x0801d6d8   0x0000002c   Code   RO         6458    i.USB_MSC_BotBackendDrained  usb_msc_bot.o",
+        "    0x080207b0   0x080207b0   0x0000040c   Code   RO         7811    i.Usb_DrainBulkEndpointStops  usb_device.o"
+      ]
+    },
+    {
+      "mode": "sd_readonly",
+      "added_sources": [],
+      "defines": [
+        "CORE_CM7",
+        "USE_HAL_DRIVER",
+        "STM32H747xx",
+        "USE_PWR_LDO_SUPPLY",
+        "APP_VIDEO_MJPEG_MODE=1",
+        "USB_MODE_BOOT_MSC=1",
+        "USB_MSC_SD_TEST=1",
+        "USB_MSC_SD_WRITE_ENABLE=0",
+        "USB_DEVICE_LIFECYCLE_DIAGNOSTICS=1"
+      ],
+      "preprocessed_values": {
+        "BOOT": "1",
+        "SD": "1",
+        "WRITE": "0"
+      },
+      "adapter_write_call_present": false,
+      "summary": "0 Error(s), 0 Warning(s)",
+      "artifact": "D:\\32\\STM32H7\\h7_mac_lifecycle\\output\\MSC24\\udlm-p1-final\\build-p1-final05\\output\\MSC41\\diagnostic-build\\sd_readonly\\h7_mac_CM7_sd_readonly.axf",
+      "sha256": "c52e86ceb9b09a20b5ad375775eb21ec0ab2899654f67bb4ea5a392a211949fe",
+      "artifacts": {
+        ".axf": {
+          "path": "output\\MSC24\\udlm-p1-final\\build-p1-final05\\output\\MSC41\\diagnostic-build\\sd_readonly\\h7_mac_CM7_sd_readonly.axf",
+          "bytes": 3253164,
+          "sha256": "c52e86ceb9b09a20b5ad375775eb21ec0ab2899654f67bb4ea5a392a211949fe"
+        },
+        ".hex": {
+          "path": "output\\MSC24\\udlm-p1-final\\build-p1-final05\\output\\MSC41\\diagnostic-build\\sd_readonly\\h7_mac_CM7_sd_readonly.hex",
+          "bytes": 405895,
+          "sha256": "e3ad57bdf0f857baf5ddba3ba737c94d8357ae9ac0e2e68c8b98fea47a75bd2e"
+        },
+        ".map": {
+          "path": "output\\MSC24\\udlm-p1-final\\build-p1-final05\\output\\MSC41\\diagnostic-build\\sd_readonly\\h7_mac_CM7_sd_readonly.map",
+          "bytes": 1010345,
+          "sha256": "53748d1db37a773557d046aa492baaea650018ca0b0a0f0debc8ee044f257279"
+        }
+      },
+      "log": "Tests\\UsbLifecycleFinal\\reports\\firmware-p1-final05-sd_readonly.log",
+      "log_sha256": "30dcd06319c7c05ecf1a48e7e8a0ec144076d23ba3fa633e0ee68f6612c284d9",
+      "elf_symbols": {
+        "HAL_PCD_IRQHandler": 1,
+        "Usb_OutRxBegin": 1,
+        "Usb_OutEventBegin": 1,
+        "Usb_OutNak": 1,
+        "USB_Device_EnableBulkOutLifecycle": null,
+        "USB_Device_BeginBulkOutStop": 1,
+        "BSP_USB_BeginBulkOutStop": 1,
+        "Usb_DrainBulkEndpointStops": 1,
+        "USB_MSC_BotBackendDrained": 1,
+        "Msc_DeInit": 1
+      },
+      "c1_enabled_in_application": false,
+      "msc_consumer_guard_included": true,
+      "map_references": [
+        "    usb_msc_bot.o(i.USB_MSC_BotBackendDrained) refers to usb_msc_bot.o(.bss) for s_bot",
+        "    usb_msc_class.o(i.Msc_DeInit) refers to usb_msc_bot.o(i.USB_MSC_BotStop) for USB_MSC_BotStop",
+        "    usb_msc_class.o(i.Msc_DeInit) refers to usb_msc_bot.o(i.USB_MSC_BotBackendDrained) for USB_MSC_BotBackendDrained",
+        "    usb_msc_class.o(i.Msc_DeInit) refers to usb_device.o(i.USB_Device_CloseEp) for USB_Device_CloseEp",
+        "    usb_msc_class.o(i.Msc_DeInit) refers to usb_msc_class.o(.data) for s_configured",
+        "    usb_msc_class.o(i.Msc_Init) refers to usb_msc_class.o(i.Msc_DeInit) for Msc_DeInit",
+        "    usb_msc_class.o(.data) refers to usb_msc_class.o(i.Msc_DeInit) for Msc_DeInit",
+        "    usb_device.o(i.Usb_DrainBulkEndpointStops) refers to usb_device.o(i.__get_PRIMASK) for __get_PRIMASK",
+        "    usb_device.o(i.Usb_DrainBulkEndpointStops) refers to usb_device.o(i.__set_PRIMASK) for __set_PRIMASK",
+        "    usb_device.o(i.Usb_DrainBulkEndpointStops) refers to bsp_usb.o(i.BSP_USB_GetBulkInProof) for BSP_USB_GetBulkInProof",
+        "    usb_device.o(i.Usb_DrainBulkEndpointStops) refers to bsp_usb.o(i.BSP_USB_GetBulkOutProof) for BSP_USB_GetBulkOutProof",
+        "    usb_device.o(i.Usb_DrainBulkEndpointStops) refers to usb_device.o(i.USB_Device_GetBulkInTransfer) for USB_Device_GetBulkInTransfer",
+        "    usb_device.o(i.Usb_DrainBulkEndpointStops) refers to usb_device.o(i.USB_Device_BeginBulkInStop) for USB_Device_BeginBulkInStop",
+        "    usb_device.o(i.Usb_DrainBulkEndpointStops) refers to usb_device.o(i.USB_Device_PollBulkInStop) for USB_Device_PollBulkInStop",
+        "    usb_device.o(i.Usb_DrainBulkEndpointStops) refers to usb_device.o(i.USB_Device_CommitBulkInRetirement) for USB_Device_CommitBulkInRetirement",
+        "    usb_device.o(i.Usb_DrainBulkEndpointStops) refers to rt_memcpy_w.o(.text) for __aeabi_memcpy4",
+        "    usb_device.o(i.Usb_DrainBulkEndpointStops) refers to usb_device.o(i.USB_Device_GetBulkOutTransfer) for USB_Device_GetBulkOutTransfer",
+        "    usb_device.o(i.Usb_DrainBulkEndpointStops) refers to usb_device.o(i.USB_Device_BeginBulkOutStop) for USB_Device_BeginBulkOutStop",
+        "    usb_device.o(i.Usb_DrainBulkEndpointStops) refers to usb_device.o(i.USB_Device_PollBulkOutStop) for USB_Device_PollBulkOutStop",
+        "    usb_device.o(i.Usb_DrainBulkEndpointStops) refers to usb_device.o(i.USB_Device_CommitBulkOutRetirement) for USB_Device_CommitBulkOutRetirement",
+        "    usb_device.o(i.Usb_DrainBulkEndpointStops) refers to usb_device.o(.data) for s_controller_endpoint_fence",
+        "    usb_device.o(i.Usb_DrainBulkEndpointStops) refers to usb_device.o(.bss) for s_stop_progress",
+        "    usb_device.o(i.Usb_StopDevice) refers to usb_device.o(i.Usb_DrainBulkEndpointStops) for Usb_DrainBulkEndpointStops",
+        "    i.Msc_DeInit                             0x080143f0   Section        0  usb_msc_class.o(i.Msc_DeInit)",
+        "    Msc_DeInit                               0x080143f1   Thumb Code    86  usb_msc_class.o(i.Msc_DeInit)",
+        "    i.USB_MSC_BotBackendDrained              0x0801af9c   Section        0  usb_msc_bot.o(i.USB_MSC_BotBackendDrained)",
+        "    i.Usb_DrainBulkEndpointStops             0x0801e1c4   Section        0  usb_device.o(i.Usb_DrainBulkEndpointStops)",
+        "    Usb_DrainBulkEndpointStops               0x0801e1c5   Thumb Code  1004  usb_device.o(i.Usb_DrainBulkEndpointStops)",
+        "    USB_MSC_BotBackendDrained                0x0801af9d   Thumb Code    38  usb_msc_bot.o(i.USB_MSC_BotBackendDrained)",
+        "    0x080143f0   0x080143f0   0x00000064   Code   RO         6795    i.Msc_DeInit        usb_msc_class.o",
+        "    0x0801af9c   0x0801af9c   0x0000002c   Code   RO         6458    i.USB_MSC_BotBackendDrained  usb_msc_bot.o",
+        "    0x0801e1c4   0x0801e1c4   0x0000040c   Code   RO         7811    i.Usb_DrainBulkEndpointStops  usb_device.o"
+      ]
+    },
+    {
+      "mode": "uvc",
+      "added_sources": [],
+      "defines": [
+        "CORE_CM7",
+        "USE_HAL_DRIVER",
+        "STM32H747xx",
+        "USE_PWR_LDO_SUPPLY",
+        "APP_VIDEO_MJPEG_MODE=1",
+        "USB_MODE_BOOT_MSC=0",
+        "USB_MSC_SD_TEST=0",
+        "USB_MSC_SD_WRITE_ENABLE=0",
+        "USB_DEVICE_LIFECYCLE_DIAGNOSTICS=1"
+      ],
+      "preprocessed_values": {
+        "BOOT": "0",
+        "SD": "0",
+        "WRITE": "0"
+      },
+      "adapter_write_call_present": false,
+      "summary": "0 Error(s), 0 Warning(s)",
+      "artifact": "D:\\32\\STM32H7\\h7_mac_lifecycle\\output\\MSC24\\udlm-p1-final\\build-p1-final05\\output\\MSC41\\diagnostic-build\\uvc\\h7_mac_CM7_uvc.axf",
+      "sha256": "3b805920499ac1f51092921c0452968522bce4329ded05792330aa61c53c2c7b",
+      "artifacts": {
+        ".axf": {
+          "path": "output\\MSC24\\udlm-p1-final\\build-p1-final05\\output\\MSC41\\diagnostic-build\\uvc\\h7_mac_CM7_uvc.axf",
+          "bytes": 3342984,
+          "sha256": "3b805920499ac1f51092921c0452968522bce4329ded05792330aa61c53c2c7b"
+        },
+        ".hex": {
+          "path": "output\\MSC24\\udlm-p1-final\\build-p1-final05\\output\\MSC41\\diagnostic-build\\uvc\\h7_mac_CM7_uvc.hex",
+          "bytes": 448531,
+          "sha256": "dc0dcd215624ab0e68e10c2872fdc99db3bbf467f69e4c7cb133705a151c4d8e"
+        },
+        ".map": {
+          "path": "output\\MSC24\\udlm-p1-final\\build-p1-final05\\output\\MSC41\\diagnostic-build\\uvc\\h7_mac_CM7_uvc.map",
+          "bytes": 1026100,
+          "sha256": "67c6cbb7508c8cf36cf072bb6ecc3b1befc2f10de8a0c6744ce0d1362db88166"
+        }
+      },
+      "log": "Tests\\UsbLifecycleFinal\\reports\\firmware-p1-final05-uvc.log",
+      "log_sha256": "297ebfe1f33825be28cec69c23c076a6654d0f3d3bdbe808abbf02413fb0ff7a",
+      "elf_symbols": {
+        "HAL_PCD_IRQHandler": 1,
+        "Usb_OutRxBegin": 1,
+        "Usb_OutEventBegin": 1,
+        "Usb_OutNak": 1,
+        "USB_Device_EnableBulkOutLifecycle": null,
+        "USB_Device_BeginBulkOutStop": 1,
+        "BSP_USB_BeginBulkOutStop": 1,
+        "Usb_DrainBulkEndpointStops": 1,
+        "USB_MSC_BotBackendDrained": null,
+        "Msc_DeInit": null
+      },
+      "c1_enabled_in_application": false,
+      "msc_consumer_guard_included": false,
+      "map_references": [
+        "    usb_msc_bot.o(i.USB_MSC_BotBackendDrained) refers to usb_msc_bot.o(.bss) for s_bot",
+        "    usb_msc_class.o(i.Msc_DeInit) refers to usb_msc_bot.o(i.USB_MSC_BotStop) for USB_MSC_BotStop",
+        "    usb_msc_class.o(i.Msc_DeInit) refers to usb_msc_bot.o(i.USB_MSC_BotBackendDrained) for USB_MSC_BotBackendDrained",
+        "    usb_msc_class.o(i.Msc_DeInit) refers to usb_device.o(i.USB_Device_CloseEp) for USB_Device_CloseEp",
+        "    usb_msc_class.o(i.Msc_DeInit) refers to usb_msc_class.o(.data) for s_configured",
+        "    usb_msc_class.o(i.Msc_Init) refers to usb_msc_class.o(i.Msc_DeInit) for Msc_DeInit",
+        "    usb_msc_class.o(.data) refers to usb_msc_class.o(i.Msc_DeInit) for Msc_DeInit",
+        "    usb_device.o(i.Usb_DrainBulkEndpointStops) refers to usb_device.o(i.__get_PRIMASK) for __get_PRIMASK",
+        "    usb_device.o(i.Usb_DrainBulkEndpointStops) refers to usb_device.o(i.__set_PRIMASK) for __set_PRIMASK",
+        "    usb_device.o(i.Usb_DrainBulkEndpointStops) refers to bsp_usb.o(i.BSP_USB_GetBulkInProof) for BSP_USB_GetBulkInProof",
+        "    usb_device.o(i.Usb_DrainBulkEndpointStops) refers to bsp_usb.o(i.BSP_USB_GetBulkOutProof) for BSP_USB_GetBulkOutProof",
+        "    usb_device.o(i.Usb_DrainBulkEndpointStops) refers to usb_device.o(i.USB_Device_GetBulkInTransfer) for USB_Device_GetBulkInTransfer",
+        "    usb_device.o(i.Usb_DrainBulkEndpointStops) refers to usb_device.o(i.USB_Device_BeginBulkInStop) for USB_Device_BeginBulkInStop",
+        "    usb_device.o(i.Usb_DrainBulkEndpointStops) refers to usb_device.o(i.USB_Device_PollBulkInStop) for USB_Device_PollBulkInStop",
+        "    usb_device.o(i.Usb_DrainBulkEndpointStops) refers to usb_device.o(i.USB_Device_CommitBulkInRetirement) for USB_Device_CommitBulkInRetirement",
+        "    usb_device.o(i.Usb_DrainBulkEndpointStops) refers to rt_memcpy_w.o(.text) for __aeabi_memcpy4",
+        "    usb_device.o(i.Usb_DrainBulkEndpointStops) refers to usb_device.o(i.USB_Device_GetBulkOutTransfer) for USB_Device_GetBulkOutTransfer",
+        "    usb_device.o(i.Usb_DrainBulkEndpointStops) refers to usb_device.o(i.USB_Device_BeginBulkOutStop) for USB_Device_BeginBulkOutStop",
+        "    usb_device.o(i.Usb_DrainBulkEndpointStops) refers to usb_device.o(i.USB_Device_PollBulkOutStop) for USB_Device_PollBulkOutStop",
+        "    usb_device.o(i.Usb_DrainBulkEndpointStops) refers to usb_device.o(i.USB_Device_CommitBulkOutRetirement) for USB_Device_CommitBulkOutRetirement",
+        "    usb_device.o(i.Usb_DrainBulkEndpointStops) refers to usb_device.o(.data) for s_controller_endpoint_fence",
+        "    usb_device.o(i.Usb_DrainBulkEndpointStops) refers to usb_device.o(.bss) for s_stop_progress",
+        "    usb_device.o(i.Usb_StopDevice) refers to usb_device.o(i.Usb_DrainBulkEndpointStops) for Usb_DrainBulkEndpointStops",
+        "    Removing usb_msc_bot.o(i.USB_MSC_BotBackendDrained), (44 bytes).",
+        "    Removing usb_msc_class.o(i.Msc_DeInit), (100 bytes).",
+        "    i.Usb_DrainBulkEndpointStops             0x080200bc   Section        0  usb_device.o(i.Usb_DrainBulkEndpointStops)",
+        "    Usb_DrainBulkEndpointStops               0x080200bd   Thumb Code  1004  usb_device.o(i.Usb_DrainBulkEndpointStops)",
+        "    0x080200bc   0x080200bc   0x0000040c   Code   RO         7811    i.Usb_DrainBulkEndpointStops  usb_device.o"
+      ]
+    }
+  ],
+  "sources": {
+    "CM7/BSP/bsp_usb.c": "5a5cd2d0b64b0992c313e233cb9b23bb6532952e7f945702c45abb251f2e5db2",
+    "CM7/BSP/bsp_usb.h": "b30b0f95221a61b307bfe03af5273c85acaa62073b0a8a46937770e3e0b8fb30",
+    "CM7/Platform/usb_device.c": "77cdcee9bba62e5d10dc886d861e56b021ad1f9abc20285798795eba0865c729",
+    "CM7/Platform/usb_device.h": "ba6d6d1a5e595b0953ec7dc4871af4f4e303a11e43eae9417eb38eedbfa34ed8",
+    "Drivers/STM32H7xx_HAL_Driver/Src/stm32h7xx_hal_pcd.c": "67becca7aa38463887bfb70de65e2cc6e762bfd0fa7f600bc8c6e966a36a5574",
+    "Drivers/STM32H7xx_HAL_Driver/Inc/stm32h7xx_hal_pcd.h": "03eccd63bf4c030705c5b8a680e73a6cd8b52fe81ef79aab941862832013b374",
+    "CM7/Service/usb_msc_class.c": "3d10691b38eb450314af49f48f8e698427ae9b791ee8483d0a0fe433b4afd10e",
+    "CM7/Service/usb_msc_bot.c": "e36978c5e945d72cb007b884853e894325349463fb700395002666d4a9966bf4",
+    "CM7/Service/usb_msc_bot.h": "7c99d6d3ccf82c0507f5af20660ce8830f71ab99f9232f9b8ea4c95cfa51afbe"
+  },
+  "source_matches_snapshot": true,
+  "interpretation": "C2 branch and MSC consumer guard compiled; automatic C1 Enable/complete Controller resume remains BLOCKED; symbols alone do not prove runtime binding",
+  "hardware": "NOT_TESTED"
+}

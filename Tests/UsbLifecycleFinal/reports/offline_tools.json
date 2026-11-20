@@ -1,0 +1,74 @@
+{
+  "cases": [
+    {
+      "name": "valid Intel HEX address and word",
+      "passed": true,
+      "error": null
+    },
+    {
+      "name": "checksum failure rejected",
+      "passed": true,
+      "error": null
+    },
+    {
+      "name": "missing EOF rejected",
+      "passed": true,
+      "error": null
+    },
+    {
+      "name": "conflicting overlap rejected",
+      "passed": true,
+      "error": null
+    },
+    {
+      "name": "pcapng section header validation only",
+      "passed": true,
+      "error": null
+    },
+    {
+      "name": "zero magic rejected",
+      "passed": true,
+      "error": null
+    },
+    {
+      "name": "truncated section rejected",
+      "passed": true,
+      "error": null
+    },
+    {
+      "name": "output cannot overwrite workspace docs",
+      "passed": true,
+      "error": null
+    },
+    {
+      "name": "unsafe Keil prefix rejected before ELF reading",
+      "passed": true,
+      "error": null
+    },
+    {
+      "name": "missing snapshot is NOT_TESTED",
+      "passed": true,
+      "error": null
+    },
+    {
+      "name": "wrong snapshot address rejected",
+      "passed": true,
+      "error": null
+    },
+    {
+      "name": "offline tshark empty capture never declares acceptance",
+      "passed": true,
+      "error": null
+    }
+  ],
+  "summary": {
+    "cases": 12,
+    "passed": 12
+  },
+  "hardware": "NOT_TESTED",
+  "sources": {
+    "hardware_tools.py": "b4058dfdceca85fb91a215703a7025c4460f07174a34d74b67380957e137c34a",
+    "run_hardware_tool_tests.py": "3540515baa6e9ee4742009ed607b71448f11307c3fc2e3136b9ad910a2f9bfaa"
+  },
+  "generated_inputs": "D:\\32\\STM32H7\\h7_mac_lifecycle\\output\\MSC24\\udlm-p1-final\\offline-tools-1795177137380785600"
+}

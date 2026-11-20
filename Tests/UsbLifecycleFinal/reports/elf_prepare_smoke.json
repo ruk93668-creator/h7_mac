@@ -1,0 +1,66 @@
+{
+  "rows": [
+    {
+      "mode": "ram",
+      "manifest": "D:\\32\\STM32H7\\h7_mac_lifecycle\\output\\MSC24\\udlm-p1-final\\prep-smoke-intermediate03-ram\\manifest.json",
+      "ini": "D:\\32\\STM32H7\\h7_mac_lifecycle\\output\\MSC24\\udlm-p1-final\\prep-smoke-intermediate03-ram\\snapshot.ini",
+      "blocks": 34,
+      "unresolved": [
+        {
+          "symbol": "s_storage",
+          "reason": "missing or ambiguous"
+        },
+        {
+          "symbol": "s_sd_info",
+          "reason": "missing or ambiguous"
+        },
+        {
+          "symbol": "s_sd_cid",
+          "reason": "missing or ambiguous"
+        },
+        {
+          "symbol": "s_sd_claimed",
+          "reason": "missing or ambiguous"
+        }
+      ],
+      "executed": false,
+      "scope": "offline ELF preparation smoke using superseded intermediate03 firmware, not approved hardware input"
+    },
+    {
+      "mode": "sd_readonly",
+      "manifest": "D:\\32\\STM32H7\\h7_mac_lifecycle\\output\\MSC24\\udlm-p1-final\\prep-smoke-intermediate03-sd_readonly\\manifest.json",
+      "ini": "D:\\32\\STM32H7\\h7_mac_lifecycle\\output\\MSC24\\udlm-p1-final\\prep-smoke-intermediate03-sd_readonly\\snapshot.ini",
+      "blocks": 38,
+      "unresolved": [],
+      "executed": false,
+      "scope": "offline ELF preparation smoke using superseded intermediate03 firmware, not approved hardware input"
+    },
+    {
+      "mode": "uvc",
+      "manifest": "D:\\32\\STM32H7\\h7_mac_lifecycle\\output\\MSC24\\udlm-p1-final\\prep-smoke-intermediate03-uvc\\manifest.json",
+      "ini": "D:\\32\\STM32H7\\h7_mac_lifecycle\\output\\MSC24\\udlm-p1-final\\prep-smoke-intermediate03-uvc\\snapshot.ini",
+      "blocks": 34,
+      "unresolved": [
+        {
+          "symbol": "s_storage",
+          "reason": "missing or ambiguous"
+        },
+        {
+          "symbol": "s_sd_info",
+          "reason": "missing or ambiguous"
+        },
+        {
+          "symbol": "s_sd_cid",
+          "reason": "missing or ambiguous"
+        },
+        {
+          "symbol": "s_sd_claimed",
+          "reason": "missing or ambiguous"
+        }
+      ],
+      "executed": false,
+      "scope": "offline ELF preparation smoke using superseded intermediate03 firmware, not approved hardware input"
+    }
+  ],
+  "hardware": "NOT_TESTED"
+}

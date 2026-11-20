@@ -23,3 +23,7 @@ INFERRED：顺序为Fence→Prepare consumers→并行有界推进端点→验�
 BLOCKED：完整EP0/ZLP安全原语未获LL边界扩展批准，见P1_LL_ZLP_InterfaceExtension_Request.md。不得为完成阶段数字而自动Enable C1、强制Class释放或自动重启PCD。允许先形成不越权的双向端点proof组件及测试；没有消费者/EP0票据不向破坏性BSP Stop提交。
 
 NOT_TESTED：实板全部项目；不合并main。
+
+## 本轮交付态补记
+
+VERIFIED：以上调用链表是9d51d0c审计时行号。当前C2真实入口为usb_device.c:482 USB_Device_Stop→:2126选择双向Drain→:1967 Usb_DrainBulkEndpointStops；ID在:494先分配，Fence在:1976短原子发布。Reset:1660、Disconnect:1726、ManagedClassDeInit:2258在Fence存在时否决破坏性回收；Msc_DeInit:94新增backend排空守卫（bot.c:240）。原路径和目标架构不可混读。最终验证p1-final05及全部未实施边界见P1_Final_ImplementationReport.md。

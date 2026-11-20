@@ -1,0 +1,99 @@
+[
+  {
+    "mode": "ram",
+    "manifest": "D:\\32\\STM32H7\\h7_mac_lifecycle\\output\\MSC24\\udlm-p1-final\\prep-final05-ram\\manifest.json",
+    "sha256": "28f1e412ba0f054648cdecb60e739c4d6a5ac9b0e21c5725ad22d6886d1251e0",
+    "firmware_sha256": "6ee433df49c9378989df108ebfa0e508891d7fe52e17361f29ca687580f64936",
+    "build_defines": [
+      "CORE_CM7",
+      "USE_HAL_DRIVER",
+      "STM32H747xx",
+      "USE_PWR_LDO_SUPPLY",
+      "APP_VIDEO_MJPEG_MODE=1",
+      "USB_MODE_BOOT_MSC=1",
+      "USB_MSC_SD_TEST=0",
+      "USB_MSC_SD_WRITE_ENABLE=0",
+      "USB_DEVICE_LIFECYCLE_DIAGNOSTICS=1"
+    ],
+    "mode_verified_against_build_receipt": true,
+    "blocks": 34,
+    "unresolved_symbols": [
+      {
+        "symbol": "s_storage",
+        "reason": "missing or ambiguous"
+      },
+      {
+        "symbol": "s_sd_info",
+        "reason": "missing or ambiguous"
+      },
+      {
+        "symbol": "s_sd_cid",
+        "reason": "missing or ambiguous"
+      },
+      {
+        "symbol": "s_sd_claimed",
+        "reason": "missing or ambiguous"
+      }
+    ],
+    "execution": "NOT_TESTED; no SAVE command executed"
+  },
+  {
+    "mode": "sd_readonly",
+    "manifest": "D:\\32\\STM32H7\\h7_mac_lifecycle\\output\\MSC24\\udlm-p1-final\\prep-final05-sd_readonly\\manifest.json",
+    "sha256": "1058478d2ab20176829f3a42ad4eada3c2087d4252ee2358b3f81acadf452b9e",
+    "firmware_sha256": "c52e86ceb9b09a20b5ad375775eb21ec0ab2899654f67bb4ea5a392a211949fe",
+    "build_defines": [
+      "CORE_CM7",
+      "USE_HAL_DRIVER",
+      "STM32H747xx",
+      "USE_PWR_LDO_SUPPLY",
+      "APP_VIDEO_MJPEG_MODE=1",
+      "USB_MODE_BOOT_MSC=1",
+      "USB_MSC_SD_TEST=1",
+      "USB_MSC_SD_WRITE_ENABLE=0",
+      "USB_DEVICE_LIFECYCLE_DIAGNOSTICS=1"
+    ],
+    "mode_verified_against_build_receipt": true,
+    "blocks": 38,
+    "unresolved_symbols": [],
+    "execution": "NOT_TESTED; no SAVE command executed"
+  },
+  {
+    "mode": "uvc",
+    "manifest": "D:\\32\\STM32H7\\h7_mac_lifecycle\\output\\MSC24\\udlm-p1-final\\prep-final05-uvc\\manifest.json",
+    "sha256": "e2b233cafd8a37134272bdd400e1d3fdb79cc759c745f372d11c6be5003ac346",
+    "firmware_sha256": "3b805920499ac1f51092921c0452968522bce4329ded05792330aa61c53c2c7b",
+    "build_defines": [
+      "CORE_CM7",
+      "USE_HAL_DRIVER",
+      "STM32H747xx",
+      "USE_PWR_LDO_SUPPLY",
+      "APP_VIDEO_MJPEG_MODE=1",
+      "USB_MODE_BOOT_MSC=0",
+      "USB_MSC_SD_TEST=0",
+      "USB_MSC_SD_WRITE_ENABLE=0",
+      "USB_DEVICE_LIFECYCLE_DIAGNOSTICS=1"
+    ],
+    "mode_verified_against_build_receipt": true,
+    "blocks": 34,
+    "unresolved_symbols": [
+      {
+        "symbol": "s_storage",
+        "reason": "missing or ambiguous"
+      },
+      {
+        "symbol": "s_sd_info",
+        "reason": "missing or ambiguous"
+      },
+      {
+        "symbol": "s_sd_cid",
+        "reason": "missing or ambiguous"
+      },
+      {
+        "symbol": "s_sd_claimed",
+        "reason": "missing or ambiguous"
+      }
+    ],
+    "execution": "NOT_TESTED; no SAVE command executed"
+  }
+]

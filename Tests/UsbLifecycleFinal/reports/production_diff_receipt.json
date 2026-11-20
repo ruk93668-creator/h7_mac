@@ -1,0 +1,15 @@
+{
+  "baseline": "9d51d0c5d5b62d04af3be968ec452dae8835c0c1",
+  "code_head": "8b5c6f42992ba708a2c7b48bd5bb05e1176eb545",
+  "patch": "D:\\32\\STM32H7\\h7_mac_lifecycle\\output\\MSC24\\udlm-p1-final\\P1_FINAL_production.patch",
+  "sha256": "67a3a2c1c4e6b01ce02951d8155d67472629c438cb0102ad41f344757d0762b5",
+  "bytes": 21558,
+  "paths": [
+    "CM7/BSP/bsp_usb.c",
+    "CM7/Platform/usb_device.c",
+    "CM7/Platform/usb_device.h",
+    "CM7/Service/usb_msc_bot.c",
+    "CM7/Service/usb_msc_bot.h",
+    "CM7/Service/usb_msc_class.c"
+  ]
+}

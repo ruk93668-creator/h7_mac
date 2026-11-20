@@ -19,3 +19,7 @@ VERIFIED（真实源码，起点行号）：资源不是一个全局busy；USB�
 VERIFIED：MSC Storage mailbox以epoch/token/generation匹配；Cancel不清RUNNING/DRAIN。MscSd_Quiescent调用既有诊断/有限Recover而非把超时当停止。SD只读配置不改，不释放RAW、不更改FatFS。
 
 UNRESOLVED：当前没有Controller统一ledger串联以上票据；现有正常路径不能直接宣称等于目标契约。UVC数据面及Camera/Media不改；仅USB侧提出停用和等待Return/ACK，不能新增旁路Frame释放。
+
+## 最终增量核对
+
+VERIFIED：当前C2只聚合端点proof，不建立完整Controller ownership ledger；多个端点退休也不授权Class、Worker、Frame或EP0释放。MSC DeInit新增backend守卫（usb_msc_class.c:94 / usb_msc_bot.c:240）避免取消未drained即Close。NOT_TESTED：实际SD IDMA/Frame引用及跨Session硬件迟到事件。所有缺少proof的域继续保留，最终状态BLOCKED，不把资源表设计当实现。

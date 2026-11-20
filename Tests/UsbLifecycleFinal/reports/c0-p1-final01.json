@@ -1,0 +1,3854 @@
+{
+  "baseline": "9d51d0c5d5b62d04af3be968ec452dae8835c0c1",
+  "snapshot": "D:\\32\\STM32H7\\h7_mac_lifecycle\\output\\MSC24\\udlm-p1-final\\c0-p1-final01",
+  "mode": "c0-p1-final01",
+  "unchanged_original_test_inputs": true,
+  "rows": [
+    {
+      "suite": "UsbBulkOut/run_hal_evidence.py",
+      "exit": 0,
+      "elapsed_s": 3.547,
+      "log": "Tests\\UsbLifecycleFinal\\reports\\c0-p1-final01-UsbBulkOut_run_hal_evidence.log",
+      "log_sha256": "45a79def8ba8fd91032dca8a41806cf59c2fb8292c259e5eea805019e9c0de75",
+      "produced_reports": [
+        {
+          "path": "Tests/UsbBulkOut/reports/hal_evidence.json",
+          "sha256": "0e62ea7b49a4c0f99bb55e294edc69e6f2ac9ca14bd70c30ca097a42ce8cebd8",
+          "content": {
+            "baseline": "03a5cb1793e35ec23728f3a6ebbdc132277ed597",
+            "production_modified": false,
+            "actual_hal_and_ll": true,
+            "cases": [
+              {
+                "id": "C0-01",
+                "name": "GRXSTSR peek is non-destructive",
+                "passed": true,
+                "error": null,
+                "assertions": [
+                  {
+                    "name": "same peek value",
+                    "actual": 131072,
+                    "expected": 131072,
+                    "passed": true
+                  },
+                  {
+                    "name": "no destructive reads",
+                    "actual": 0,
+                    "expected": 0,
+                    "passed": true
+                  },
+                  {
+                    "name": "both statuses retained",
+                    "actual": 2,
+                    "expected": 2,
+                    "passed": true
+                  },
+                  {
+                    "name": "no unmodelled LPM boundary used",
+                    "actual": 0,
+                    "expected": 0,
+                    "passed": true
+                  }
+                ],
+                "trace": [
+                  {
+                    "out_calls": 0,
+                    "in_calls": 0,
+                    "setup_calls": 0,
+                    "iso_calls": 0,
+                    "reset_calls": 0,
+                    "count2": 0,
+                    "ptr2": 536872324,
+                    "data2": 2863311530,
+                    "rearm_data": 3149642683,
+                    "dctl": 0,
+                    "gintmask": 0,
+                    "gintsts": 0,
+                    "ctl2": 0,
+                    "int2": 0,
+                    "last_read": 0,
+                    "data1": 2863311530,
+                    "count1": 0,
+                    "setup0": 0,
+                    "setup1": 0,
+                    "iso_pending": 0,
+                    "ctl1": 0,
+                    "data0": 2863311530,
+                    "callback_xfrc": 0,
+                    "unexpected": 0,
+                    "op": 0,
+                    "pops": 0,
+                    "queued": 0
+                  },
+                  {
+                    "out_calls": 0,
+                    "in_calls": 0,
+                    "setup_calls": 0,
+                    "iso_calls": 0,
+                    "reset_calls": 0,
+                    "count2": 0,
+                    "ptr2": 536872324,
+                    "data2": 2863311530,
+                    "rearm_data": 3149642683,
+                    "dctl": 0,
+                    "gintmask": 786576,
+                    "gintsts": 16,
+                    "ctl2": 0,
+                    "int2": 0,
+                    "last_read": 131072,
+                    "data1": 2863311530,
+                    "count1": 0,
+                    "setup0": 0,
+                    "setup1": 0,
+                    "iso_pending": 0,
+                    "ctl1": 0,
+                    "data0": 2863311530,
+                    "callback_xfrc": 0,
+                    "unexpected": 0,
+                    "op": 2,
+                    "pops": 0,
+                    "queued": 2
+                  },
+                  {
+                    "out_calls": 0,
+                    "in_calls": 0,
+                    "setup_calls": 0,
+                    "iso_calls": 0,
+                    "reset_calls": 0,
+                    "count2": 0,
+                    "ptr2": 536872324,
+                    "data2": 2863311530,
+                    "rearm_data": 3149642683,
+                    "dctl": 0,
+                    "gintmask": 786576,
+                    "gintsts": 16,
+                    "ctl2": 0,
+                    "int2": 0,
+                    "last_read": 131072,
+                    "data1": 2863311530,
+                    "count1": 0,
+                    "setup0": 0,
+                    "setup1": 0,
+                    "iso_pending": 0,
+                    "ctl1": 0,
+                    "data0": 2863311530,
+                    "callback_xfrc": 0,
+                    "unexpected": 0,
+                    "op": 2,
+                    "pops": 0,
+                    "queued": 2
+                  }
+                ],
+                "mmio_reads": [
+                  {
+                    "kind": "peek",
+                    "value": 131072
+                  },
+                  {
+                    "kind": "peek",
+                    "value": 131072
+                  }
+                ],
+                "mmio_writes": [],
+                "status": "VERIFIED software branch only; NOT_TESTED silicon; NOT an OUT Stop acceptance"
+              },
+              {
+                "id": "C0-02",
+                "name": "GRXSTSP reads pop distinct statuses",
+                "passed": true,
+                "error": null,
+                "assertions": [
+                  {
+                    "name": "different status values",
+                    "actual": true,
+                    "expected": true,
+                    "passed": true
+                  },
+                  {
+                    "name": "each status consumed exactly once",
+                    "actual": 2,
+                    "expected": 2,
+                    "passed": true
+                  },
+                  {
+                    "name": "no unmodelled LPM boundary used",
+                    "actual": 0,
+                    "expected": 0,
+                    "passed": true
+                  }
+                ],
+                "trace": [
+                  {
+                    "out_calls": 0,
+                    "in_calls": 0,
+                    "setup_calls": 0,
+                    "iso_calls": 0,
+                    "reset_calls": 0,
+                    "count2": 0,
+                    "ptr2": 536872324,
+                    "data2": 2863311530,
+                    "rearm_data": 3149642683,
+                    "dctl": 0,
+                    "gintmask": 0,
+                    "gintsts": 0,
+                    "ctl2": 0,
+                    "int2": 0,
+                    "last_read": 0,
+                    "data1": 2863311530,
+                    "count1": 0,
+                    "setup0": 0,
+                    "setup1": 0,
+                    "iso_pending": 0,
+                    "ctl1": 0,
+                    "data0": 2863311530,
+                    "callback_xfrc": 0,
+                    "unexpected": 0,
+                    "op": 0,
+                    "pops": 0,
+                    "queued": 0
+                  },
+                  {
+                    "out_calls": 0,
+                    "in_calls": 0,
+                    "setup_calls": 0,
+                    "iso_calls": 0,
+                    "reset_calls": 0,
+                    "count2": 0,
+                    "ptr2": 536872324,
+                    "data2": 2863311530,
+                    "rearm_data": 3149642683,
+                    "dctl": 8,
+                    "gintmask": 786576,
+                    "gintsts": 144,
+                    "ctl2": 0,
+                    "int2": 0,
+                    "last_read": 131072,
+                    "data1": 2863311530,
+                    "count1": 0,
+                    "setup0": 0,
+                    "setup1": 0,
+                    "iso_pending": 0,
+                    "ctl1": 0,
+                    "data0": 2863311530,
+                    "callback_xfrc": 0,
+                    "unexpected": 0,
+                    "op": 3,
+                    "pops": 1,
+                    "queued": 1
+                  },
+                  {
+                    "out_calls": 0,
+                    "in_calls": 0,
+                    "setup_calls": 0,
+                    "iso_calls": 0,
+                    "reset_calls": 0,
+                    "count2": 0,
+                    "ptr2": 536872324,
+                    "data2": 2863311530,
+                    "rearm_data": 3149642683,
+                    "dctl": 8,
+                    "gintmask": 786576,
+                    "gintsts": 128,
+                    "ctl2": 0,
+                    "int2": 0,
+                    "last_read": 393218,
+                    "data1": 2863311530,
+                    "count1": 0,
+                    "setup0": 0,
+                    "setup1": 0,
+                    "iso_pending": 0,
+                    "ctl1": 0,
+                    "data0": 2863311530,
+                    "callback_xfrc": 0,
+                    "unexpected": 0,
+                    "op": 3,
+                    "pops": 2,
+                    "queued": 0
+                  }
+                ],
+                "mmio_reads": [
+                  {
+                    "kind": "pop",
+                    "value": 131072
+                  },
+                  {
+                    "kind": "pop",
+                    "value": 393218
+                  }
+                ],
+                "mmio_writes": [],
+                "status": "VERIFIED software branch only; NOT_TESTED silicon; NOT an OUT Stop acceptance"
+              },
+              {
+                "id": "C0-03",
+                "name": "HAL RX copy after EPENA clear",
+                "passed": true,
+                "error": null,
+                "assertions": [
+                  {
+                    "name": "unchanged HAL writes queued data",
+                    "actual": 1144201745,
+                    "expected": 1144201745,
+                    "passed": true
+                  },
+                  {
+                    "name": "byte count updated",
+                    "actual": 4,
+                    "expected": 4,
+                    "passed": true
+                  },
+                  {
+                    "name": "EPENA did not authorize release",
+                    "actual": 0,
+                    "expected": 0,
+                    "passed": true
+                  },
+                  {
+                    "name": "no unmodelled LPM boundary used",
+                    "actual": 0,
+                    "expected": 0,
+                    "passed": true
+                  }
+                ],
+                "trace": [
+                  {
+                    "out_calls": 0,
+                    "in_calls": 0,
+                    "setup_calls": 0,
+                    "iso_calls": 0,
+                    "reset_calls": 0,
+                    "count2": 0,
+                    "ptr2": 536872324,
+                    "data2": 2863311530,
+                    "rearm_data": 3149642683,
+                    "dctl": 0,
+                    "gintmask": 0,
+                    "gintsts": 0,
+                    "ctl2": 0,
+                    "int2": 0,
+                    "last_read": 0,
+                    "data1": 2863311530,
+                    "count1": 0,
+                    "setup0": 0,
+                    "setup1": 0,
+                    "iso_pending": 0,
+                    "ctl1": 0,
+                    "data0": 2863311530,
+                    "callback_xfrc": 0,
+                    "unexpected": 0,
+                    "op": 0,
+                    "pops": 0,
+                    "queued": 0
+                  },
+                  {
+                    "out_calls": 0,
+                    "in_calls": 0,
+                    "setup_calls": 0,
+                    "iso_calls": 0,
+                    "reset_calls": 0,
+                    "count2": 4,
+                    "ptr2": 536872328,
+                    "data2": 1144201745,
+                    "rearm_data": 3149642683,
+                    "dctl": 0,
+                    "gintmask": 786576,
+                    "gintsts": 0,
+                    "ctl2": 0,
+                    "int2": 0,
+                    "last_read": 0,
+                    "data1": 2863311530,
+                    "count1": 0,
+                    "setup0": 0,
+                    "setup1": 0,
+                    "iso_pending": 0,
+                    "ctl1": 0,
+                    "data0": 2863311530,
+                    "callback_xfrc": 0,
+                    "unexpected": 0,
+                    "op": 1,
+                    "pops": 1,
+                    "queued": 0
+                  }
+                ],
+                "mmio_reads": [
+                  {
+                    "kind": "pop",
+                    "value": 262210
+                  },
+                  {
+                    "kind": "data",
+                    "value": 1144201745
+                  }
+                ],
+                "mmio_writes": [
+                  {
+                    "address": "0x40080018",
+                    "value": "0xc0080",
+                    "pc": "0x800038c"
+                  },
+                  {
+                    "address": "0x40080018",
+                    "value": "0xc0090",
+                    "pc": "0x800053a"
+                  }
+                ],
+                "status": "VERIFIED software branch only; NOT_TESTED silicon; NOT an OUT Stop acceptance"
+              },
+              {
+                "id": "C0-04",
+                "name": "masking target completion does not mask RX writes",
+                "passed": true,
+                "error": null,
+                "assertions": [
+                  {
+                    "name": "unchanged HAL writes queued data",
+                    "actual": 1144201745,
+                    "expected": 1144201745,
+                    "passed": true
+                  },
+                  {
+                    "name": "byte count updated",
+                    "actual": 4,
+                    "expected": 4,
+                    "passed": true
+                  },
+                  {
+                    "name": "EPENA did not authorize release",
+                    "actual": 0,
+                    "expected": 0,
+                    "passed": true
+                  },
+                  {
+                    "name": "no unmodelled LPM boundary used",
+                    "actual": 0,
+                    "expected": 0,
+                    "passed": true
+                  }
+                ],
+                "trace": [
+                  {
+                    "out_calls": 0,
+                    "in_calls": 0,
+                    "setup_calls": 0,
+                    "iso_calls": 0,
+                    "reset_calls": 0,
+                    "count2": 0,
+                    "ptr2": 536872324,
+                    "data2": 2863311530,
+                    "rearm_data": 3149642683,
+                    "dctl": 0,
+                    "gintmask": 0,
+                    "gintsts": 0,
+                    "ctl2": 0,
+                    "int2": 0,
+                    "last_read": 0,
+                    "data1": 2863311530,
+                    "count1": 0,
+                    "setup0": 0,
+                    "setup1": 0,
+                    "iso_pending": 0,
+                    "ctl1": 0,
+                    "data0": 2863311530,
+                    "callback_xfrc": 0,
+                    "unexpected": 0,
+                    "op": 0,
+                    "pops": 0,
+                    "queued": 0
+                  },
+                  {
+                    "out_calls": 0,
+                    "in_calls": 0,
+                    "setup_calls": 0,
+                    "iso_calls": 0,
+                    "reset_calls": 0,
+                    "count2": 4,
+                    "ptr2": 536872328,
+                    "data2": 1144201745,
+                    "rearm_data": 3149642683,
+                    "dctl": 0,
+                    "gintmask": 786576,
+                    "gintsts": 0,
+                    "ctl2": 0,
+                    "int2": 0,
+                    "last_read": 0,
+                    "data1": 2863311530,
+                    "count1": 0,
+                    "setup0": 0,
+                    "setup1": 0,
+                    "iso_pending": 0,
+                    "ctl1": 0,
+                    "data0": 2863311530,
+                    "callback_xfrc": 0,
+                    "unexpected": 0,
+                    "op": 1,
+                    "pops": 1,
+                    "queued": 0
+                  }
+                ],
+                "mmio_reads": [
+                  {
+                    "kind": "pop",
+                    "value": 262210
+                  },
+                  {
+                    "kind": "data",
+                    "value": 1144201745
+                  }
+                ],
+                "mmio_writes": [
+                  {
+                    "address": "0x40080018",
+                    "value": "0xc0080",
+                    "pc": "0x800038c"
+                  },
+                  {
+                    "address": "0x40080018",
+                    "value": "0xc0090",
+                    "pc": "0x800053a"
+                  }
+                ],
+                "status": "VERIFIED software branch only; NOT_TESTED silicon; NOT an OUT Stop acceptance"
+              },
+              {
+                "id": "C0-05",
+                "name": "EP0 SETUP data preserved and dispatched",
+                "passed": true,
+                "error": null,
+                "assertions": [
+                  {
+                    "name": "SETUP bytes retained",
+                    "actual": 305419896,
+                    "expected": 305419896,
+                    "passed": true
+                  },
+                  {
+                    "name": "second SETUP word",
+                    "actual": 2596069104,
+                    "expected": 2596069104,
+                    "passed": true
+                  },
+                  {
+                    "name": "SETUP callback invoked",
+                    "actual": 1,
+                    "expected": 1,
+                    "passed": true
+                  },
+                  {
+                    "name": "EP0 data buffer untouched",
+                    "actual": 2863311530,
+                    "expected": 2863311530,
+                    "passed": true
+                  },
+                  {
+                    "name": "no unmodelled LPM boundary used",
+                    "actual": 0,
+                    "expected": 0,
+                    "passed": true
+                  }
+                ],
+                "trace": [
+                  {
+                    "out_calls": 0,
+                    "in_calls": 0,
+                    "setup_calls": 0,
+                    "iso_calls": 0,
+                    "reset_calls": 0,
+                    "count2": 0,
+                    "ptr2": 536872324,
+                    "data2": 2863311530,
+                    "rearm_data": 3149642683,
+                    "dctl": 0,
+                    "gintmask": 0,
+                    "gintsts": 0,
+                    "ctl2": 0,
+                    "int2": 0,
+                    "last_read": 0,
+                    "data1": 2863311530,
+                    "count1": 0,
+                    "setup0": 0,
+                    "setup1": 0,
+                    "iso_pending": 0,
+                    "ctl1": 0,
+                    "data0": 2863311530,
+                    "callback_xfrc": 0,
+                    "unexpected": 0,
+                    "op": 0,
+                    "pops": 0,
+                    "queued": 0
+                  },
+                  {
+                    "out_calls": 0,
+                    "in_calls": 0,
+                    "setup_calls": 0,
+                    "iso_calls": 0,
+                    "reset_calls": 0,
+                    "count2": 0,
+                    "ptr2": 536872324,
+                    "data2": 2863311530,
+                    "rearm_data": 3149642683,
+                    "dctl": 0,
+                    "gintmask": 786576,
+                    "gintsts": 0,
+                    "ctl2": 0,
+                    "int2": 0,
+                    "last_read": 0,
+                    "data1": 2863311530,
+                    "count1": 0,
+                    "setup0": 305419896,
+                    "setup1": 2596069104,
+                    "iso_pending": 0,
+                    "ctl1": 0,
+                    "data0": 2863311530,
+                    "callback_xfrc": 0,
+                    "unexpected": 0,
+                    "op": 1,
+                    "pops": 1,
+                    "queued": 0
+                  },
+                  {
+                    "out_calls": 0,
+                    "in_calls": 0,
+                    "setup_calls": 1,
+                    "iso_calls": 0,
+                    "reset_calls": 0,
+                    "count2": 0,
+                    "ptr2": 536872324,
+                    "data2": 2863311530,
+                    "rearm_data": 3149642683,
+                    "dctl": 0,
+                    "gintmask": 786576,
+                    "gintsts": 0,
+                    "ctl2": 0,
+                    "int2": 0,
+                    "last_read": 0,
+                    "data1": 2863311530,
+                    "count1": 0,
+                    "setup0": 305419896,
+                    "setup1": 2596069104,
+                    "iso_pending": 0,
+                    "ctl1": 0,
+                    "data0": 2863311530,
+                    "callback_xfrc": 0,
+                    "unexpected": 0,
+                    "op": 1,
+                    "pops": 1,
+                    "queued": 0
+                  }
+                ],
+                "mmio_reads": [
+                  {
+                    "kind": "pop",
+                    "value": 786560
+                  },
+                  {
+                    "kind": "data",
+                    "value": 305419896
+                  },
+                  {
+                    "kind": "data",
+                    "value": 2596069104
+                  }
+                ],
+                "mmio_writes": [
+                  {
+                    "address": "0x40080018",
+                    "value": "0xc0080",
+                    "pc": "0x800038c"
+                  },
+                  {
+                    "address": "0x40080018",
+                    "value": "0xc0090",
+                    "pc": "0x800053a"
+                  },
+                  {
+                    "address": "0x40080b08",
+                    "value": "0x8",
+                    "pc": "0x80005c2"
+                  }
+                ],
+                "status": "VERIFIED software branch only; NOT_TESTED silicon; NOT an OUT Stop acceptance"
+              },
+              {
+                "id": "C0-06",
+                "name": "EP1 and EP2 RX entries share one consumer",
+                "passed": true,
+                "error": null,
+                "assertions": [
+                  {
+                    "name": "one pop per IRQ",
+                    "actual": 1,
+                    "expected": 1,
+                    "passed": true
+                  },
+                  {
+                    "name": "EP1 receives its data",
+                    "actual": 286331153,
+                    "expected": 286331153,
+                    "passed": true
+                  },
+                  {
+                    "name": "EP2 receives its data",
+                    "actual": 572662306,
+                    "expected": 572662306,
+                    "passed": true
+                  },
+                  {
+                    "name": "shared queue drained",
+                    "actual": 0,
+                    "expected": 0,
+                    "passed": true
+                  },
+                  {
+                    "name": "no unmodelled LPM boundary used",
+                    "actual": 0,
+                    "expected": 0,
+                    "passed": true
+                  }
+                ],
+                "trace": [
+                  {
+                    "out_calls": 0,
+                    "in_calls": 0,
+                    "setup_calls": 0,
+                    "iso_calls": 0,
+                    "reset_calls": 0,
+                    "count2": 0,
+                    "ptr2": 536872324,
+                    "data2": 2863311530,
+                    "rearm_data": 3149642683,
+                    "dctl": 0,
+                    "gintmask": 0,
+                    "gintsts": 0,
+                    "ctl2": 0,
+                    "int2": 0,
+                    "last_read": 0,
+                    "data1": 2863311530,
+                    "count1": 0,
+                    "setup0": 0,
+                    "setup1": 0,
+                    "iso_pending": 0,
+                    "ctl1": 0,
+                    "data0": 2863311530,
+                    "callback_xfrc": 0,
+                    "unexpected": 0,
+                    "op": 0,
+                    "pops": 0,
+                    "queued": 0
+                  },
+                  {
+                    "out_calls": 0,
+                    "in_calls": 0,
+                    "setup_calls": 0,
+                    "iso_calls": 0,
+                    "reset_calls": 0,
+                    "count2": 0,
+                    "ptr2": 536872324,
+                    "data2": 2863311530,
+                    "rearm_data": 3149642683,
+                    "dctl": 0,
+                    "gintmask": 786576,
+                    "gintsts": 16,
+                    "ctl2": 0,
+                    "int2": 0,
+                    "last_read": 0,
+                    "data1": 286331153,
+                    "count1": 4,
+                    "setup0": 0,
+                    "setup1": 0,
+                    "iso_pending": 0,
+                    "ctl1": 0,
+                    "data0": 2863311530,
+                    "callback_xfrc": 0,
+                    "unexpected": 0,
+                    "op": 1,
+                    "pops": 1,
+                    "queued": 1
+                  },
+                  {
+                    "out_calls": 0,
+                    "in_calls": 0,
+                    "setup_calls": 0,
+                    "iso_calls": 0,
+                    "reset_calls": 0,
+                    "count2": 4,
+                    "ptr2": 536872328,
+                    "data2": 572662306,
+                    "rearm_data": 3149642683,
+                    "dctl": 0,
+                    "gintmask": 786576,
+                    "gintsts": 0,
+                    "ctl2": 0,
+                    "int2": 0,
+                    "last_read": 0,
+                    "data1": 286331153,
+                    "count1": 4,
+                    "setup0": 0,
+                    "setup1": 0,
+                    "iso_pending": 0,
+                    "ctl1": 0,
+                    "data0": 2863311530,
+                    "callback_xfrc": 0,
+                    "unexpected": 0,
+                    "op": 1,
+                    "pops": 2,
+                    "queued": 0
+                  }
+                ],
+                "mmio_reads": [
+                  {
+                    "kind": "pop",
+                    "value": 262209
+                  },
+                  {
+                    "kind": "data",
+                    "value": 286331153
+                  },
+                  {
+                    "kind": "pop",
+                    "value": 262210
+                  },
+                  {
+                    "kind": "data",
+                    "value": 572662306
+                  }
+                ],
+                "mmio_writes": [
+                  {
+                    "address": "0x40080018",
+                    "value": "0xc0080",
+                    "pc": "0x800038c"
+                  },
+                  {
+                    "address": "0x40080018",
+                    "value": "0xc0090",
+                    "pc": "0x800053a"
+                  },
+                  {
+                    "address": "0x40080018",
+                    "value": "0xc0080",
+                    "pc": "0x800038c"
+                  },
+                  {
+                    "address": "0x40080018",
+                    "value": "0xc0090",
+                    "pc": "0x800053a"
+                  }
+                ],
+                "status": "VERIFIED software branch only; NOT_TESTED silicon; NOT an OUT Stop acceptance"
+              },
+              {
+                "id": "C0-07",
+                "name": "unrelated OUT EPDISD clears effective Global NAK",
+                "passed": true,
+                "error": null,
+                "assertions": [
+                  {
+                    "name": "HAL clears shared effective NAK",
+                    "actual": 0,
+                    "expected": 0,
+                    "passed": true
+                  },
+                  {
+                    "name": "clear command really issued",
+                    "actual": true,
+                    "expected": true,
+                    "passed": true
+                  },
+                  {
+                    "name": "no ordinary cancel callback",
+                    "actual": 0,
+                    "expected": 0,
+                    "passed": true
+                  },
+                  {
+                    "name": "no ISO callback for Bulk",
+                    "actual": 0,
+                    "expected": 0,
+                    "passed": true
+                  },
+                  {
+                    "name": "no unmodelled LPM boundary used",
+                    "actual": 0,
+                    "expected": 0,
+                    "passed": true
+                  }
+                ],
+                "trace": [
+                  {
+                    "out_calls": 0,
+                    "in_calls": 0,
+                    "setup_calls": 0,
+                    "iso_calls": 0,
+                    "reset_calls": 0,
+                    "count2": 0,
+                    "ptr2": 536872324,
+                    "data2": 2863311530,
+                    "rearm_data": 3149642683,
+                    "dctl": 0,
+                    "gintmask": 0,
+                    "gintsts": 0,
+                    "ctl2": 0,
+                    "int2": 0,
+                    "last_read": 0,
+                    "data1": 2863311530,
+                    "count1": 0,
+                    "setup0": 0,
+                    "setup1": 0,
+                    "iso_pending": 0,
+                    "ctl1": 0,
+                    "data0": 2863311530,
+                    "callback_xfrc": 0,
+                    "unexpected": 0,
+                    "op": 0,
+                    "pops": 0,
+                    "queued": 0
+                  },
+                  {
+                    "out_calls": 0,
+                    "in_calls": 0,
+                    "setup_calls": 0,
+                    "iso_calls": 0,
+                    "reset_calls": 0,
+                    "count2": 0,
+                    "ptr2": 536872324,
+                    "data2": 2863311530,
+                    "rearm_data": 3149642683,
+                    "dctl": 0,
+                    "gintmask": 786576,
+                    "gintsts": 0,
+                    "ctl2": 0,
+                    "int2": 0,
+                    "last_read": 0,
+                    "data1": 2863311530,
+                    "count1": 0,
+                    "setup0": 0,
+                    "setup1": 0,
+                    "iso_pending": 0,
+                    "ctl1": 0,
+                    "data0": 2863311530,
+                    "callback_xfrc": 0,
+                    "unexpected": 0,
+                    "op": 1,
+                    "pops": 0,
+                    "queued": 0
+                  }
+                ],
+                "mmio_reads": [],
+                "mmio_writes": [
+                  {
+                    "address": "0x40080804",
+                    "value": "0x408",
+                    "pc": "0x8000608"
+                  },
+                  {
+                    "address": "0x40080b28",
+                    "value": "0x2",
+                    "pc": "0x8000636"
+                  }
+                ],
+                "status": "VERIFIED software branch only; NOT_TESTED silicon; NOT an OUT Stop acceptance"
+              },
+              {
+                "id": "C0-08",
+                "name": "target EPDISD has no ordinary cancel callback",
+                "passed": true,
+                "error": null,
+                "assertions": [
+                  {
+                    "name": "HAL clears shared effective NAK",
+                    "actual": 0,
+                    "expected": 0,
+                    "passed": true
+                  },
+                  {
+                    "name": "clear command really issued",
+                    "actual": true,
+                    "expected": true,
+                    "passed": true
+                  },
+                  {
+                    "name": "no ordinary cancel callback",
+                    "actual": 0,
+                    "expected": 0,
+                    "passed": true
+                  },
+                  {
+                    "name": "no ISO callback for Bulk",
+                    "actual": 0,
+                    "expected": 0,
+                    "passed": true
+                  },
+                  {
+                    "name": "no unmodelled LPM boundary used",
+                    "actual": 0,
+                    "expected": 0,
+                    "passed": true
+                  }
+                ],
+                "trace": [
+                  {
+                    "out_calls": 0,
+                    "in_calls": 0,
+                    "setup_calls": 0,
+                    "iso_calls": 0,
+                    "reset_calls": 0,
+                    "count2": 0,
+                    "ptr2": 536872324,
+                    "data2": 2863311530,
+                    "rearm_data": 3149642683,
+                    "dctl": 0,
+                    "gintmask": 0,
+                    "gintsts": 0,
+                    "ctl2": 0,
+                    "int2": 0,
+                    "last_read": 0,
+                    "data1": 2863311530,
+                    "count1": 0,
+                    "setup0": 0,
+                    "setup1": 0,
+                    "iso_pending": 0,
+                    "ctl1": 0,
+                    "data0": 2863311530,
+                    "callback_xfrc": 0,
+                    "unexpected": 0,
+                    "op": 0,
+                    "pops": 0,
+                    "queued": 0
+                  },
+                  {
+                    "out_calls": 0,
+                    "in_calls": 0,
+                    "setup_calls": 0,
+                    "iso_calls": 0,
+                    "reset_calls": 0,
+                    "count2": 0,
+                    "ptr2": 536872324,
+                    "data2": 2863311530,
+                    "rearm_data": 3149642683,
+                    "dctl": 0,
+                    "gintmask": 786576,
+                    "gintsts": 0,
+                    "ctl2": 0,
+                    "int2": 0,
+                    "last_read": 0,
+                    "data1": 2863311530,
+                    "count1": 0,
+                    "setup0": 0,
+                    "setup1": 0,
+                    "iso_pending": 0,
+                    "ctl1": 0,
+                    "data0": 2863311530,
+                    "callback_xfrc": 0,
+                    "unexpected": 0,
+                    "op": 1,
+                    "pops": 0,
+                    "queued": 0
+                  }
+                ],
+                "mmio_reads": [],
+                "mmio_writes": [
+                  {
+                    "address": "0x40080804",
+                    "value": "0x408",
+                    "pc": "0x8000608"
+                  },
+                  {
+                    "address": "0x40080b48",
+                    "value": "0x2",
+                    "pc": "0x8000636"
+                  }
+                ],
+                "status": "VERIFIED software branch only; NOT_TESTED silicon; NOT an OUT Stop acceptance"
+              },
+              {
+                "id": "C0-09",
+                "name": "HAL GONAKEFF handler masks shared interrupt",
+                "passed": true,
+                "error": null,
+                "assertions": [
+                  {
+                    "name": "HAL masks GONAKEFFM",
+                    "actual": 0,
+                    "expected": 0,
+                    "passed": true
+                  },
+                  {
+                    "name": "no request identity delivered",
+                    "actual": 0,
+                    "expected": 0,
+                    "passed": true
+                  },
+                  {
+                    "name": "no unmodelled LPM boundary used",
+                    "actual": 0,
+                    "expected": 0,
+                    "passed": true
+                  }
+                ],
+                "trace": [
+                  {
+                    "out_calls": 0,
+                    "in_calls": 0,
+                    "setup_calls": 0,
+                    "iso_calls": 0,
+                    "reset_calls": 0,
+                    "count2": 0,
+                    "ptr2": 536872324,
+                    "data2": 2863311530,
+                    "rearm_data": 3149642683,
+                    "dctl": 0,
+                    "gintmask": 0,
+                    "gintsts": 0,
+                    "ctl2": 0,
+                    "int2": 0,
+                    "last_read": 0,
+                    "data1": 2863311530,
+                    "count1": 0,
+                    "setup0": 0,
+                    "setup1": 0,
+                    "iso_pending": 0,
+                    "ctl1": 0,
+                    "data0": 2863311530,
+                    "callback_xfrc": 0,
+                    "unexpected": 0,
+                    "op": 0,
+                    "pops": 0,
+                    "queued": 0
+                  },
+                  {
+                    "out_calls": 0,
+                    "in_calls": 0,
+                    "setup_calls": 0,
+                    "iso_calls": 0,
+                    "reset_calls": 0,
+                    "count2": 0,
+                    "ptr2": 536872324,
+                    "data2": 2863311530,
+                    "rearm_data": 3149642683,
+                    "dctl": 8,
+                    "gintmask": 786448,
+                    "gintsts": 128,
+                    "ctl2": 0,
+                    "int2": 0,
+                    "last_read": 0,
+                    "data1": 2863311530,
+                    "count1": 0,
+                    "setup0": 0,
+                    "setup1": 0,
+                    "iso_pending": 0,
+                    "ctl1": 0,
+                    "data0": 2863311530,
+                    "callback_xfrc": 0,
+                    "unexpected": 0,
+                    "op": 1,
+                    "pops": 0,
+                    "queued": 0
+                  }
+                ],
+                "mmio_reads": [],
+                "mmio_writes": [
+                  {
+                    "address": "0x40080018",
+                    "value": "0xc0010",
+                    "pc": "0x8000a48"
+                  }
+                ],
+                "status": "VERIFIED software branch only; NOT_TESTED silicon; NOT an OUT Stop acceptance"
+              },
+              {
+                "id": "C0-10",
+                "name": "ISO OUT requests shared Global NAK",
+                "passed": true,
+                "error": null,
+                "assertions": [
+                  {
+                    "name": "ISO has its own pending state",
+                    "actual": 1,
+                    "expected": 1,
+                    "passed": true
+                  },
+                  {
+                    "name": "ISO requests GONAKEFFM",
+                    "actual": 128,
+                    "expected": 128,
+                    "passed": true
+                  },
+                  {
+                    "name": "ISO issues shared SGONAK",
+                    "actual": true,
+                    "expected": true,
+                    "passed": true
+                  },
+                  {
+                    "name": "no unmodelled LPM boundary used",
+                    "actual": 0,
+                    "expected": 0,
+                    "passed": true
+                  }
+                ],
+                "trace": [
+                  {
+                    "out_calls": 0,
+                    "in_calls": 0,
+                    "setup_calls": 0,
+                    "iso_calls": 0,
+                    "reset_calls": 0,
+                    "count2": 0,
+                    "ptr2": 536872324,
+                    "data2": 2863311530,
+                    "rearm_data": 3149642683,
+                    "dctl": 0,
+                    "gintmask": 0,
+                    "gintsts": 0,
+                    "ctl2": 0,
+                    "int2": 0,
+                    "last_read": 0,
+                    "data1": 2863311530,
+                    "count1": 0,
+                    "setup0": 0,
+                    "setup1": 0,
+                    "iso_pending": 0,
+                    "ctl1": 0,
+                    "data0": 2863311530,
+                    "callback_xfrc": 0,
+                    "unexpected": 0,
+                    "op": 0,
+                    "pops": 0,
+                    "queued": 0
+                  },
+                  {
+                    "out_calls": 0,
+                    "in_calls": 0,
+                    "setup_calls": 0,
+                    "iso_calls": 0,
+                    "reset_calls": 0,
+                    "count2": 0,
+                    "ptr2": 536872324,
+                    "data2": 2863311530,
+                    "rearm_data": 3149642683,
+                    "dctl": 0,
+                    "gintmask": 786576,
+                    "gintsts": 0,
+                    "ctl2": 0,
+                    "int2": 0,
+                    "last_read": 0,
+                    "data1": 2863311530,
+                    "count1": 0,
+                    "setup0": 0,
+                    "setup1": 0,
+                    "iso_pending": 0,
+                    "ctl1": 2147483648,
+                    "data0": 2863311530,
+                    "callback_xfrc": 0,
+                    "unexpected": 0,
+                    "op": 6,
+                    "pops": 0,
+                    "queued": 0
+                  },
+                  {
+                    "out_calls": 0,
+                    "in_calls": 0,
+                    "setup_calls": 0,
+                    "iso_calls": 0,
+                    "reset_calls": 0,
+                    "count2": 0,
+                    "ptr2": 536872324,
+                    "data2": 2863311530,
+                    "rearm_data": 3149642683,
+                    "dctl": 0,
+                    "gintmask": 2883728,
+                    "gintsts": 0,
+                    "ctl2": 0,
+                    "int2": 0,
+                    "last_read": 0,
+                    "data1": 2863311530,
+                    "count1": 0,
+                    "setup0": 0,
+                    "setup1": 0,
+                    "iso_pending": 1,
+                    "ctl1": 2147483648,
+                    "data0": 2863311530,
+                    "callback_xfrc": 0,
+                    "unexpected": 0,
+                    "op": 1,
+                    "pops": 0,
+                    "queued": 0
+                  }
+                ],
+                "mmio_reads": [],
+                "mmio_writes": [
+                  {
+                    "address": "0x40080b20",
+                    "value": "0x80000000",
+                    "pc": "0x8000108"
+                  },
+                  {
+                    "address": "0x40080018",
+                    "value": "0x2c0090",
+                    "pc": "0x8000b56"
+                  },
+                  {
+                    "address": "0x40080804",
+                    "value": "0x200",
+                    "pc": "0x8000b72"
+                  },
+                  {
+                    "address": "0x40080014",
+                    "value": "0x200000",
+                    "pc": "0x8000b8a"
+                  }
+                ],
+                "status": "VERIFIED software branch only; NOT_TESTED silicon; NOT an OUT Stop acceptance"
+              },
+              {
+                "id": "C0-11",
+                "name": "GONAKEFF marker must be popped",
+                "passed": true,
+                "error": null,
+                "assertions": [
+                  {
+                    "name": "before marker no effective NAK",
+                    "actual": 0,
+                    "expected": 0,
+                    "passed": true
+                  },
+                  {
+                    "name": "marker pop sets effective NAK",
+                    "actual": 128,
+                    "expected": 128,
+                    "passed": true
+                  },
+                  {
+                    "name": "no unmodelled LPM boundary used",
+                    "actual": 0,
+                    "expected": 0,
+                    "passed": true
+                  }
+                ],
+                "trace": [
+                  {
+                    "out_calls": 0,
+                    "in_calls": 0,
+                    "setup_calls": 0,
+                    "iso_calls": 0,
+                    "reset_calls": 0,
+                    "count2": 0,
+                    "ptr2": 536872324,
+                    "data2": 2863311530,
+                    "rearm_data": 3149642683,
+                    "dctl": 0,
+                    "gintmask": 0,
+                    "gintsts": 0,
+                    "ctl2": 0,
+                    "int2": 0,
+                    "last_read": 0,
+                    "data1": 2863311530,
+                    "count1": 0,
+                    "setup0": 0,
+                    "setup1": 0,
+                    "iso_pending": 0,
+                    "ctl1": 0,
+                    "data0": 2863311530,
+                    "callback_xfrc": 0,
+                    "unexpected": 0,
+                    "op": 0,
+                    "pops": 0,
+                    "queued": 0
+                  },
+                  {
+                    "out_calls": 0,
+                    "in_calls": 0,
+                    "setup_calls": 0,
+                    "iso_calls": 0,
+                    "reset_calls": 0,
+                    "count2": 0,
+                    "ptr2": 536872324,
+                    "data2": 2863311530,
+                    "rearm_data": 3149642683,
+                    "dctl": 0,
+                    "gintmask": 786576,
+                    "gintsts": 0,
+                    "ctl2": 0,
+                    "int2": 0,
+                    "last_read": 0,
+                    "data1": 2863311530,
+                    "count1": 0,
+                    "setup0": 0,
+                    "setup1": 0,
+                    "iso_pending": 0,
+                    "ctl1": 0,
+                    "data0": 2863311530,
+                    "callback_xfrc": 0,
+                    "unexpected": 0,
+                    "op": 9,
+                    "pops": 0,
+                    "queued": 0
+                  },
+                  {
+                    "out_calls": 0,
+                    "in_calls": 0,
+                    "setup_calls": 0,
+                    "iso_calls": 0,
+                    "reset_calls": 0,
+                    "count2": 4,
+                    "ptr2": 536872328,
+                    "data2": 117901063,
+                    "rearm_data": 3149642683,
+                    "dctl": 0,
+                    "gintmask": 786576,
+                    "gintsts": 16,
+                    "ctl2": 0,
+                    "int2": 0,
+                    "last_read": 0,
+                    "data1": 2863311530,
+                    "count1": 0,
+                    "setup0": 0,
+                    "setup1": 0,
+                    "iso_pending": 0,
+                    "ctl1": 0,
+                    "data0": 2863311530,
+                    "callback_xfrc": 0,
+                    "unexpected": 0,
+                    "op": 1,
+                    "pops": 1,
+                    "queued": 1
+                  },
+                  {
+                    "out_calls": 0,
+                    "in_calls": 0,
+                    "setup_calls": 0,
+                    "iso_calls": 0,
+                    "reset_calls": 0,
+                    "count2": 4,
+                    "ptr2": 536872328,
+                    "data2": 117901063,
+                    "rearm_data": 3149642683,
+                    "dctl": 8,
+                    "gintmask": 786448,
+                    "gintsts": 128,
+                    "ctl2": 0,
+                    "int2": 0,
+                    "last_read": 0,
+                    "data1": 2863311530,
+                    "count1": 0,
+                    "setup0": 0,
+                    "setup1": 0,
+                    "iso_pending": 0,
+                    "ctl1": 0,
+                    "data0": 2863311530,
+                    "callback_xfrc": 0,
+                    "unexpected": 0,
+                    "op": 1,
+                    "pops": 2,
+                    "queued": 0
+                  }
+                ],
+                "mmio_reads": [
+                  {
+                    "kind": "pop",
+                    "value": 262210
+                  },
+                  {
+                    "kind": "data",
+                    "value": 117901063
+                  },
+                  {
+                    "kind": "pop",
+                    "value": 131072
+                  }
+                ],
+                "mmio_writes": [
+                  {
+                    "address": "0x40080804",
+                    "value": "0x200",
+                    "pc": "0x800013e"
+                  },
+                  {
+                    "address": "0x40080018",
+                    "value": "0xc0080",
+                    "pc": "0x800038c"
+                  },
+                  {
+                    "address": "0x40080018",
+                    "value": "0xc0090",
+                    "pc": "0x800053a"
+                  },
+                  {
+                    "address": "0x40080018",
+                    "value": "0xc0080",
+                    "pc": "0x800038c"
+                  },
+                  {
+                    "address": "0x40080018",
+                    "value": "0xc0090",
+                    "pc": "0x800053a"
+                  },
+                  {
+                    "address": "0x40080018",
+                    "value": "0xc0010",
+                    "pc": "0x8000a48"
+                  }
+                ],
+                "status": "VERIFIED software branch only; NOT_TESTED silicon; NOT an OUT Stop acceptance"
+              },
+              {
+                "id": "C0-12",
+                "name": "masked RXFLVL prevents NAK marker progress",
+                "passed": true,
+                "error": null,
+                "assertions": [
+                  {
+                    "name": "no pop while RX masked",
+                    "actual": 0,
+                    "expected": 0,
+                    "passed": true
+                  },
+                  {
+                    "name": "NAK effective is not request-only",
+                    "actual": 0,
+                    "expected": 0,
+                    "passed": true
+                  },
+                  {
+                    "name": "no unmodelled LPM boundary used",
+                    "actual": 0,
+                    "expected": 0,
+                    "passed": true
+                  }
+                ],
+                "trace": [
+                  {
+                    "out_calls": 0,
+                    "in_calls": 0,
+                    "setup_calls": 0,
+                    "iso_calls": 0,
+                    "reset_calls": 0,
+                    "count2": 0,
+                    "ptr2": 536872324,
+                    "data2": 2863311530,
+                    "rearm_data": 3149642683,
+                    "dctl": 0,
+                    "gintmask": 0,
+                    "gintsts": 0,
+                    "ctl2": 0,
+                    "int2": 0,
+                    "last_read": 0,
+                    "data1": 2863311530,
+                    "count1": 0,
+                    "setup0": 0,
+                    "setup1": 0,
+                    "iso_pending": 0,
+                    "ctl1": 0,
+                    "data0": 2863311530,
+                    "callback_xfrc": 0,
+                    "unexpected": 0,
+                    "op": 0,
+                    "pops": 0,
+                    "queued": 0
+                  },
+                  {
+                    "out_calls": 0,
+                    "in_calls": 0,
+                    "setup_calls": 0,
+                    "iso_calls": 0,
+                    "reset_calls": 0,
+                    "count2": 0,
+                    "ptr2": 536872324,
+                    "data2": 2863311530,
+                    "rearm_data": 3149642683,
+                    "dctl": 0,
+                    "gintmask": 786576,
+                    "gintsts": 0,
+                    "ctl2": 0,
+                    "int2": 0,
+                    "last_read": 0,
+                    "data1": 2863311530,
+                    "count1": 0,
+                    "setup0": 0,
+                    "setup1": 0,
+                    "iso_pending": 0,
+                    "ctl1": 0,
+                    "data0": 2863311530,
+                    "callback_xfrc": 0,
+                    "unexpected": 0,
+                    "op": 9,
+                    "pops": 0,
+                    "queued": 0
+                  },
+                  {
+                    "out_calls": 0,
+                    "in_calls": 0,
+                    "setup_calls": 0,
+                    "iso_calls": 0,
+                    "reset_calls": 0,
+                    "count2": 0,
+                    "ptr2": 536872324,
+                    "data2": 2863311530,
+                    "rearm_data": 3149642683,
+                    "dctl": 0,
+                    "gintmask": 786560,
+                    "gintsts": 16,
+                    "ctl2": 0,
+                    "int2": 0,
+                    "last_read": 0,
+                    "data1": 2863311530,
+                    "count1": 0,
+                    "setup0": 0,
+                    "setup1": 0,
+                    "iso_pending": 0,
+                    "ctl1": 0,
+                    "data0": 2863311530,
+                    "callback_xfrc": 0,
+                    "unexpected": 0,
+                    "op": 1,
+                    "pops": 0,
+                    "queued": 2
+                  }
+                ],
+                "mmio_reads": [],
+                "mmio_writes": [
+                  {
+                    "address": "0x40080804",
+                    "value": "0x200",
+                    "pc": "0x800013e"
+                  }
+                ],
+                "status": "VERIFIED software branch only; NOT_TESTED silicon; NOT an OUT Stop acceptance"
+              },
+              {
+                "id": "C0-13",
+                "name": "GONAKEFF does not exclude later EP0 SETUP",
+                "passed": true,
+                "error": null,
+                "assertions": [
+                  {
+                    "name": "before marker no effective NAK",
+                    "actual": 0,
+                    "expected": 0,
+                    "passed": true
+                  },
+                  {
+                    "name": "marker pop sets effective NAK",
+                    "actual": 128,
+                    "expected": 128,
+                    "passed": true
+                  },
+                  {
+                    "name": "SETUP still queued after barrier",
+                    "actual": 1,
+                    "expected": 1,
+                    "passed": true
+                  },
+                  {
+                    "name": "later SETUP not discarded",
+                    "actual": 2882395322,
+                    "expected": 2882395322,
+                    "passed": true
+                  },
+                  {
+                    "name": "no unmodelled LPM boundary used",
+                    "actual": 0,
+                    "expected": 0,
+                    "passed": true
+                  }
+                ],
+                "trace": [
+                  {
+                    "out_calls": 0,
+                    "in_calls": 0,
+                    "setup_calls": 0,
+                    "iso_calls": 0,
+                    "reset_calls": 0,
+                    "count2": 0,
+                    "ptr2": 536872324,
+                    "data2": 2863311530,
+                    "rearm_data": 3149642683,
+                    "dctl": 0,
+                    "gintmask": 0,
+                    "gintsts": 0,
+                    "ctl2": 0,
+                    "int2": 0,
+                    "last_read": 0,
+                    "data1": 2863311530,
+                    "count1": 0,
+                    "setup0": 0,
+                    "setup1": 0,
+                    "iso_pending": 0,
+                    "ctl1": 0,
+                    "data0": 2863311530,
+                    "callback_xfrc": 0,
+                    "unexpected": 0,
+                    "op": 0,
+                    "pops": 0,
+                    "queued": 0
+                  },
+                  {
+                    "out_calls": 0,
+                    "in_calls": 0,
+                    "setup_calls": 0,
+                    "iso_calls": 0,
+                    "reset_calls": 0,
+                    "count2": 0,
+                    "ptr2": 536872324,
+                    "data2": 2863311530,
+                    "rearm_data": 3149642683,
+                    "dctl": 0,
+                    "gintmask": 786576,
+                    "gintsts": 0,
+                    "ctl2": 0,
+                    "int2": 0,
+                    "last_read": 0,
+                    "data1": 2863311530,
+                    "count1": 0,
+                    "setup0": 0,
+                    "setup1": 0,
+                    "iso_pending": 0,
+                    "ctl1": 0,
+                    "data0": 2863311530,
+                    "callback_xfrc": 0,
+                    "unexpected": 0,
+                    "op": 9,
+                    "pops": 0,
+                    "queued": 0
+                  },
+                  {
+                    "out_calls": 0,
+                    "in_calls": 0,
+                    "setup_calls": 0,
+                    "iso_calls": 0,
+                    "reset_calls": 0,
+                    "count2": 4,
+                    "ptr2": 536872328,
+                    "data2": 117901063,
+                    "rearm_data": 3149642683,
+                    "dctl": 0,
+                    "gintmask": 786576,
+                    "gintsts": 16,
+                    "ctl2": 0,
+                    "int2": 0,
+                    "last_read": 0,
+                    "data1": 2863311530,
+                    "count1": 0,
+                    "setup0": 0,
+                    "setup1": 0,
+                    "iso_pending": 0,
+                    "ctl1": 0,
+                    "data0": 2863311530,
+                    "callback_xfrc": 0,
+                    "unexpected": 0,
+                    "op": 1,
+                    "pops": 1,
+                    "queued": 2
+                  },
+                  {
+                    "out_calls": 0,
+                    "in_calls": 0,
+                    "setup_calls": 0,
+                    "iso_calls": 0,
+                    "reset_calls": 0,
+                    "count2": 4,
+                    "ptr2": 536872328,
+                    "data2": 117901063,
+                    "rearm_data": 3149642683,
+                    "dctl": 8,
+                    "gintmask": 786448,
+                    "gintsts": 144,
+                    "ctl2": 0,
+                    "int2": 0,
+                    "last_read": 0,
+                    "data1": 2863311530,
+                    "count1": 0,
+                    "setup0": 0,
+                    "setup1": 0,
+                    "iso_pending": 0,
+                    "ctl1": 0,
+                    "data0": 2863311530,
+                    "callback_xfrc": 0,
+                    "unexpected": 0,
+                    "op": 1,
+                    "pops": 2,
+                    "queued": 1
+                  },
+                  {
+                    "out_calls": 0,
+                    "in_calls": 0,
+                    "setup_calls": 0,
+                    "iso_calls": 0,
+                    "reset_calls": 0,
+                    "count2": 4,
+                    "ptr2": 536872328,
+                    "data2": 117901063,
+                    "rearm_data": 3149642683,
+                    "dctl": 8,
+                    "gintmask": 786448,
+                    "gintsts": 128,
+                    "ctl2": 0,
+                    "int2": 0,
+                    "last_read": 0,
+                    "data1": 2863311530,
+                    "count1": 0,
+                    "setup0": 2882395322,
+                    "setup1": 270544960,
+                    "iso_pending": 0,
+                    "ctl1": 0,
+                    "data0": 2863311530,
+                    "callback_xfrc": 0,
+                    "unexpected": 0,
+                    "op": 1,
+                    "pops": 3,
+                    "queued": 0
+                  }
+                ],
+                "mmio_reads": [
+                  {
+                    "kind": "pop",
+                    "value": 262210
+                  },
+                  {
+                    "kind": "data",
+                    "value": 117901063
+                  },
+                  {
+                    "kind": "pop",
+                    "value": 131072
+                  },
+                  {
+                    "kind": "pop",
+                    "value": 786560
+                  },
+                  {
+                    "kind": "data",
+                    "value": 2882395322
+                  },
+                  {
+                    "kind": "data",
+                    "value": 270544960
+                  }
+                ],
+                "mmio_writes": [
+                  {
+                    "address": "0x40080804",
+                    "value": "0x200",
+                    "pc": "0x800013e"
+                  },
+                  {
+                    "address": "0x40080018",
+                    "value": "0xc0080",
+                    "pc": "0x800038c"
+                  },
+                  {
+                    "address": "0x40080018",
+                    "value": "0xc0090",
+                    "pc": "0x800053a"
+                  },
+                  {
+                    "address": "0x40080018",
+                    "value": "0xc0080",
+                    "pc": "0x800038c"
+                  },
+                  {
+                    "address": "0x40080018",
+                    "value": "0xc0090",
+                    "pc": "0x800053a"
+                  },
+                  {
+                    "address": "0x40080018",
+                    "value": "0xc0010",
+                    "pc": "0x8000a48"
+                  },
+                  {
+                    "address": "0x40080018",
+                    "value": "0xc0000",
+                    "pc": "0x800038c"
+                  },
+                  {
+                    "address": "0x40080018",
+                    "value": "0xc0010",
+                    "pc": "0x800053a"
+                  }
+                ],
+                "status": "VERIFIED software branch only; NOT_TESTED silicon; NOT an OUT Stop acceptance"
+              },
+              {
+                "id": "C0-14",
+                "name": "OUT XFRC callback sees current context",
+                "passed": true,
+                "error": null,
+                "assertions": [
+                  {
+                    "name": "OUT normal callback delivered",
+                    "actual": 1,
+                    "expected": 1,
+                    "passed": true
+                  },
+                  {
+                    "name": "old raw XFRC acknowledged",
+                    "actual": 0,
+                    "expected": 0,
+                    "passed": true
+                  },
+                  {
+                    "name": "no unmodelled LPM boundary used",
+                    "actual": 0,
+                    "expected": 0,
+                    "passed": true
+                  }
+                ],
+                "trace": [
+                  {
+                    "out_calls": 0,
+                    "in_calls": 0,
+                    "setup_calls": 0,
+                    "iso_calls": 0,
+                    "reset_calls": 0,
+                    "count2": 0,
+                    "ptr2": 536872324,
+                    "data2": 2863311530,
+                    "rearm_data": 3149642683,
+                    "dctl": 0,
+                    "gintmask": 0,
+                    "gintsts": 0,
+                    "ctl2": 0,
+                    "int2": 0,
+                    "last_read": 0,
+                    "data1": 2863311530,
+                    "count1": 0,
+                    "setup0": 0,
+                    "setup1": 0,
+                    "iso_pending": 0,
+                    "ctl1": 0,
+                    "data0": 2863311530,
+                    "callback_xfrc": 0,
+                    "unexpected": 0,
+                    "op": 0,
+                    "pops": 0,
+                    "queued": 0
+                  },
+                  {
+                    "out_calls": 1,
+                    "in_calls": 0,
+                    "setup_calls": 0,
+                    "iso_calls": 0,
+                    "reset_calls": 0,
+                    "count2": 0,
+                    "ptr2": 536872324,
+                    "data2": 2863311530,
+                    "rearm_data": 3149642683,
+                    "dctl": 0,
+                    "gintmask": 786576,
+                    "gintsts": 0,
+                    "ctl2": 0,
+                    "int2": 0,
+                    "last_read": 0,
+                    "data1": 2863311530,
+                    "count1": 0,
+                    "setup0": 0,
+                    "setup1": 0,
+                    "iso_pending": 0,
+                    "ctl1": 0,
+                    "data0": 2863311530,
+                    "callback_xfrc": 0,
+                    "unexpected": 0,
+                    "op": 1,
+                    "pops": 0,
+                    "queued": 0
+                  }
+                ],
+                "mmio_reads": [],
+                "mmio_writes": [
+                  {
+                    "address": "0x40080b48",
+                    "value": "0x1",
+                    "pc": "0x800059e"
+                  }
+                ],
+                "status": "VERIFIED software branch only; NOT_TESTED silicon; NOT an OUT Stop acceptance"
+              },
+              {
+                "id": "C0-15",
+                "name": "XFRC callback rearm precedes cached EPDISD clear",
+                "passed": true,
+                "error": null,
+                "assertions": [
+                  {
+                    "name": "OUT normal callback delivered",
+                    "actual": 1,
+                    "expected": 1,
+                    "passed": true
+                  },
+                  {
+                    "name": "old raw XFRC acknowledged",
+                    "actual": 0,
+                    "expected": 0,
+                    "passed": true
+                  },
+                  {
+                    "name": "callback rearm uses new buffer",
+                    "actual": 536872772,
+                    "expected": 536872772,
+                    "passed": true
+                  },
+                  {
+                    "name": "same cached EPDISD clears NAK",
+                    "actual": 0,
+                    "expected": 0,
+                    "passed": true
+                  },
+                  {
+                    "name": "no unmodelled LPM boundary used",
+                    "actual": 0,
+                    "expected": 0,
+                    "passed": true
+                  }
+                ],
+                "trace": [
+                  {
+                    "out_calls": 0,
+                    "in_calls": 0,
+                    "setup_calls": 0,
+                    "iso_calls": 0,
+                    "reset_calls": 0,
+                    "count2": 0,
+                    "ptr2": 536872324,
+                    "data2": 2863311530,
+                    "rearm_data": 3149642683,
+                    "dctl": 0,
+                    "gintmask": 0,
+                    "gintsts": 0,
+                    "ctl2": 0,
+                    "int2": 0,
+                    "last_read": 0,
+                    "data1": 2863311530,
+                    "count1": 0,
+                    "setup0": 0,
+                    "setup1": 0,
+                    "iso_pending": 0,
+                    "ctl1": 0,
+                    "data0": 2863311530,
+                    "callback_xfrc": 0,
+                    "unexpected": 0,
+                    "op": 0,
+                    "pops": 0,
+                    "queued": 0
+                  },
+                  {
+                    "out_calls": 0,
+                    "in_calls": 0,
+                    "setup_calls": 0,
+                    "iso_calls": 0,
+                    "reset_calls": 0,
+                    "count2": 0,
+                    "ptr2": 536872324,
+                    "data2": 2863311530,
+                    "rearm_data": 3149642683,
+                    "dctl": 0,
+                    "gintmask": 786576,
+                    "gintsts": 0,
+                    "ctl2": 0,
+                    "int2": 0,
+                    "last_read": 0,
+                    "data1": 2863311530,
+                    "count1": 0,
+                    "setup0": 0,
+                    "setup1": 0,
+                    "iso_pending": 0,
+                    "ctl1": 0,
+                    "data0": 2863311530,
+                    "callback_xfrc": 0,
+                    "unexpected": 0,
+                    "op": 5,
+                    "pops": 0,
+                    "queued": 0
+                  },
+                  {
+                    "out_calls": 1,
+                    "in_calls": 0,
+                    "setup_calls": 0,
+                    "iso_calls": 0,
+                    "reset_calls": 0,
+                    "count2": 0,
+                    "ptr2": 536872772,
+                    "data2": 2863311530,
+                    "rearm_data": 3149642683,
+                    "dctl": 0,
+                    "gintmask": 786576,
+                    "gintsts": 0,
+                    "ctl2": 2214592512,
+                    "int2": 0,
+                    "last_read": 0,
+                    "data1": 2863311530,
+                    "count1": 0,
+                    "setup0": 0,
+                    "setup1": 0,
+                    "iso_pending": 0,
+                    "ctl1": 0,
+                    "data0": 2863311530,
+                    "callback_xfrc": 0,
+                    "unexpected": 0,
+                    "op": 1,
+                    "pops": 0,
+                    "queued": 0
+                  }
+                ],
+                "mmio_reads": [],
+                "mmio_writes": [
+                  {
+                    "address": "0x40080b48",
+                    "value": "0x1",
+                    "pc": "0x800059e"
+                  },
+                  {
+                    "address": "0x40080b50",
+                    "value": "0x0",
+                    "pc": "0x8001178"
+                  },
+                  {
+                    "address": "0x40080b50",
+                    "value": "0x0",
+                    "pc": "0x8001190"
+                  },
+                  {
+                    "address": "0x40080b50",
+                    "value": "0x80000",
+                    "pc": "0x8001240"
+                  },
+                  {
+                    "address": "0x40080b50",
+                    "value": "0x80040",
+                    "pc": "0x800125c"
+                  },
+                  {
+                    "address": "0x40080b40",
+                    "value": "0x84000000",
+                    "pc": "0x80012ce"
+                  },
+                  {
+                    "address": "0x40080804",
+                    "value": "0x408",
+                    "pc": "0x8000608"
+                  },
+                  {
+                    "address": "0x40080b48",
+                    "value": "0x2",
+                    "pc": "0x8000636"
+                  }
+                ],
+                "status": "VERIFIED software branch only; NOT_TESTED silicon; NOT an OUT Stop acceptance"
+              },
+              {
+                "id": "C0-16",
+                "name": "IN completes while OUT status pending",
+                "passed": true,
+                "error": null,
+                "assertions": [
+                  {
+                    "name": "IN callback still delivered",
+                    "actual": 1,
+                    "expected": 1,
+                    "passed": true
+                  },
+                  {
+                    "name": "OUT copied independently",
+                    "actual": 4008636142,
+                    "expected": 4008636142,
+                    "passed": true
+                  },
+                  {
+                    "name": "no unmodelled LPM boundary used",
+                    "actual": 0,
+                    "expected": 0,
+                    "passed": true
+                  }
+                ],
+                "trace": [
+                  {
+                    "out_calls": 0,
+                    "in_calls": 0,
+                    "setup_calls": 0,
+                    "iso_calls": 0,
+                    "reset_calls": 0,
+                    "count2": 0,
+                    "ptr2": 536872324,
+                    "data2": 2863311530,
+                    "rearm_data": 3149642683,
+                    "dctl": 0,
+                    "gintmask": 0,
+                    "gintsts": 0,
+                    "ctl2": 0,
+                    "int2": 0,
+                    "last_read": 0,
+                    "data1": 2863311530,
+                    "count1": 0,
+                    "setup0": 0,
+                    "setup1": 0,
+                    "iso_pending": 0,
+                    "ctl1": 0,
+                    "data0": 2863311530,
+                    "callback_xfrc": 0,
+                    "unexpected": 0,
+                    "op": 0,
+                    "pops": 0,
+                    "queued": 0
+                  },
+                  {
+                    "out_calls": 0,
+                    "in_calls": 1,
+                    "setup_calls": 0,
+                    "iso_calls": 0,
+                    "reset_calls": 0,
+                    "count2": 4,
+                    "ptr2": 536872328,
+                    "data2": 4008636142,
+                    "rearm_data": 3149642683,
+                    "dctl": 0,
+                    "gintmask": 786576,
+                    "gintsts": 0,
+                    "ctl2": 0,
+                    "int2": 0,
+                    "last_read": 0,
+                    "data1": 2863311530,
+                    "count1": 0,
+                    "setup0": 0,
+                    "setup1": 0,
+                    "iso_pending": 0,
+                    "ctl1": 0,
+                    "data0": 2863311530,
+                    "callback_xfrc": 0,
+                    "unexpected": 0,
+                    "op": 1,
+                    "pops": 1,
+                    "queued": 0
+                  }
+                ],
+                "mmio_reads": [
+                  {
+                    "kind": "pop",
+                    "value": 262210
+                  },
+                  {
+                    "kind": "data",
+                    "value": 4008636142
+                  }
+                ],
+                "mmio_writes": [
+                  {
+                    "address": "0x40080018",
+                    "value": "0xc0080",
+                    "pc": "0x800038c"
+                  },
+                  {
+                    "address": "0x40080018",
+                    "value": "0xc0090",
+                    "pc": "0x800053a"
+                  },
+                  {
+                    "address": "0x40080834",
+                    "value": "0x0",
+                    "pc": "0x80006e4"
+                  },
+                  {
+                    "address": "0x40080928",
+                    "value": "0x1",
+                    "pc": "0x80006f0"
+                  }
+                ],
+                "status": "VERIFIED software branch only; NOT_TESTED silicon; NOT an OUT Stop acceptance"
+              },
+              {
+                "id": "C0-17",
+                "name": "pending raw XFRC is W1C before callback",
+                "passed": true,
+                "error": null,
+                "assertions": [
+                  {
+                    "name": "OUT normal callback delivered",
+                    "actual": 1,
+                    "expected": 1,
+                    "passed": true
+                  },
+                  {
+                    "name": "old raw XFRC acknowledged",
+                    "actual": 0,
+                    "expected": 0,
+                    "passed": true
+                  },
+                  {
+                    "name": "XFRC clear observed inside callback",
+                    "actual": 0,
+                    "expected": 0,
+                    "passed": true
+                  },
+                  {
+                    "name": "no unmodelled LPM boundary used",
+                    "actual": 0,
+                    "expected": 0,
+                    "passed": true
+                  }
+                ],
+                "trace": [
+                  {
+                    "out_calls": 0,
+                    "in_calls": 0,
+                    "setup_calls": 0,
+                    "iso_calls": 0,
+                    "reset_calls": 0,
+                    "count2": 0,
+                    "ptr2": 536872324,
+                    "data2": 2863311530,
+                    "rearm_data": 3149642683,
+                    "dctl": 0,
+                    "gintmask": 0,
+                    "gintsts": 0,
+                    "ctl2": 0,
+                    "int2": 0,
+                    "last_read": 0,
+                    "data1": 2863311530,
+                    "count1": 0,
+                    "setup0": 0,
+                    "setup1": 0,
+                    "iso_pending": 0,
+                    "ctl1": 0,
+                    "data0": 2863311530,
+                    "callback_xfrc": 0,
+                    "unexpected": 0,
+                    "op": 0,
+                    "pops": 0,
+                    "queued": 0
+                  },
+                  {
+                    "out_calls": 1,
+                    "in_calls": 0,
+                    "setup_calls": 0,
+                    "iso_calls": 0,
+                    "reset_calls": 0,
+                    "count2": 0,
+                    "ptr2": 536872324,
+                    "data2": 2863311530,
+                    "rearm_data": 3149642683,
+                    "dctl": 0,
+                    "gintmask": 786576,
+                    "gintsts": 0,
+                    "ctl2": 0,
+                    "int2": 0,
+                    "last_read": 0,
+                    "data1": 2863311530,
+                    "count1": 0,
+                    "setup0": 0,
+                    "setup1": 0,
+                    "iso_pending": 0,
+                    "ctl1": 0,
+                    "data0": 2863311530,
+                    "callback_xfrc": 0,
+                    "unexpected": 0,
+                    "op": 1,
+                    "pops": 0,
+                    "queued": 0
+                  }
+                ],
+                "mmio_reads": [],
+                "mmio_writes": [
+                  {
+                    "address": "0x40080b48",
+                    "value": "0x1",
+                    "pc": "0x800059e"
+                  }
+                ],
+                "status": "VERIFIED software branch only; NOT_TESTED silicon; NOT an OUT Stop acceptance"
+              },
+              {
+                "id": "C0-18",
+                "name": "old raw XFRC has no transfer generation",
+                "passed": true,
+                "error": null,
+                "assertions": [
+                  {
+                    "name": "OUT normal callback delivered",
+                    "actual": 1,
+                    "expected": 1,
+                    "passed": true
+                  },
+                  {
+                    "name": "old raw XFRC acknowledged",
+                    "actual": 0,
+                    "expected": 0,
+                    "passed": true
+                  },
+                  {
+                    "name": "late raw flag dispatched again without identity",
+                    "actual": 2,
+                    "expected": 2,
+                    "passed": true
+                  },
+                  {
+                    "name": "no unmodelled LPM boundary used",
+                    "actual": 0,
+                    "expected": 0,
+                    "passed": true
+                  }
+                ],
+                "trace": [
+                  {
+                    "out_calls": 0,
+                    "in_calls": 0,
+                    "setup_calls": 0,
+                    "iso_calls": 0,
+                    "reset_calls": 0,
+                    "count2": 0,
+                    "ptr2": 536872324,
+                    "data2": 2863311530,
+                    "rearm_data": 3149642683,
+                    "dctl": 0,
+                    "gintmask": 0,
+                    "gintsts": 0,
+                    "ctl2": 0,
+                    "int2": 0,
+                    "last_read": 0,
+                    "data1": 2863311530,
+                    "count1": 0,
+                    "setup0": 0,
+                    "setup1": 0,
+                    "iso_pending": 0,
+                    "ctl1": 0,
+                    "data0": 2863311530,
+                    "callback_xfrc": 0,
+                    "unexpected": 0,
+                    "op": 0,
+                    "pops": 0,
+                    "queued": 0
+                  },
+                  {
+                    "out_calls": 1,
+                    "in_calls": 0,
+                    "setup_calls": 0,
+                    "iso_calls": 0,
+                    "reset_calls": 0,
+                    "count2": 0,
+                    "ptr2": 536872324,
+                    "data2": 2863311530,
+                    "rearm_data": 3149642683,
+                    "dctl": 0,
+                    "gintmask": 786576,
+                    "gintsts": 0,
+                    "ctl2": 0,
+                    "int2": 0,
+                    "last_read": 0,
+                    "data1": 2863311530,
+                    "count1": 0,
+                    "setup0": 0,
+                    "setup1": 0,
+                    "iso_pending": 0,
+                    "ctl1": 0,
+                    "data0": 2863311530,
+                    "callback_xfrc": 0,
+                    "unexpected": 0,
+                    "op": 1,
+                    "pops": 0,
+                    "queued": 0
+                  },
+                  {
+                    "out_calls": 1,
+                    "in_calls": 0,
+                    "setup_calls": 0,
+                    "iso_calls": 0,
+                    "reset_calls": 0,
+                    "count2": 0,
+                    "ptr2": 536872772,
+                    "data2": 2863311530,
+                    "rearm_data": 3149642683,
+                    "dctl": 0,
+                    "gintmask": 786576,
+                    "gintsts": 0,
+                    "ctl2": 2214592512,
+                    "int2": 0,
+                    "last_read": 0,
+                    "data1": 2863311530,
+                    "count1": 0,
+                    "setup0": 0,
+                    "setup1": 0,
+                    "iso_pending": 0,
+                    "ctl1": 0,
+                    "data0": 2863311530,
+                    "callback_xfrc": 0,
+                    "unexpected": 0,
+                    "op": 4,
+                    "pops": 0,
+                    "queued": 0
+                  },
+                  {
+                    "out_calls": 2,
+                    "in_calls": 0,
+                    "setup_calls": 0,
+                    "iso_calls": 0,
+                    "reset_calls": 0,
+                    "count2": 0,
+                    "ptr2": 536872772,
+                    "data2": 2863311530,
+                    "rearm_data": 3149642683,
+                    "dctl": 0,
+                    "gintmask": 786576,
+                    "gintsts": 0,
+                    "ctl2": 2214592512,
+                    "int2": 0,
+                    "last_read": 0,
+                    "data1": 2863311530,
+                    "count1": 0,
+                    "setup0": 0,
+                    "setup1": 0,
+                    "iso_pending": 0,
+                    "ctl1": 0,
+                    "data0": 2863311530,
+                    "callback_xfrc": 0,
+                    "unexpected": 0,
+                    "op": 1,
+                    "pops": 0,
+                    "queued": 0
+                  }
+                ],
+                "mmio_reads": [],
+                "mmio_writes": [
+                  {
+                    "address": "0x40080b48",
+                    "value": "0x1",
+                    "pc": "0x800059e"
+                  },
+                  {
+                    "address": "0x40080b50",
+                    "value": "0x0",
+                    "pc": "0x8001178"
+                  },
+                  {
+                    "address": "0x40080b50",
+                    "value": "0x0",
+                    "pc": "0x8001190"
+                  },
+                  {
+                    "address": "0x40080b50",
+                    "value": "0x80000",
+                    "pc": "0x8001240"
+                  },
+                  {
+                    "address": "0x40080b50",
+                    "value": "0x80040",
+                    "pc": "0x800125c"
+                  },
+                  {
+                    "address": "0x40080b40",
+                    "value": "0x84000000",
+                    "pc": "0x80012ce"
+                  },
+                  {
+                    "address": "0x40080b48",
+                    "value": "0x1",
+                    "pc": "0x800059e"
+                  }
+                ],
+                "status": "VERIFIED software branch only; NOT_TESTED silicon; NOT an OUT Stop acceptance"
+              },
+              {
+                "id": "C0-19",
+                "name": "queued data is copied before simultaneous reset handling",
+                "passed": true,
+                "error": null,
+                "assertions": [
+                  {
+                    "name": "unchanged HAL writes queued data",
+                    "actual": 1144201745,
+                    "expected": 1144201745,
+                    "passed": true
+                  },
+                  {
+                    "name": "byte count updated",
+                    "actual": 4,
+                    "expected": 4,
+                    "passed": true
+                  },
+                  {
+                    "name": "EPENA did not authorize release",
+                    "actual": 0,
+                    "expected": 0,
+                    "passed": true
+                  },
+                  {
+                    "name": "RX branch precedes reset flush",
+                    "actual": true,
+                    "expected": true,
+                    "passed": true
+                  },
+                  {
+                    "name": "no unmodelled LPM boundary used",
+                    "actual": 0,
+                    "expected": 0,
+                    "passed": true
+                  }
+                ],
+                "trace": [
+                  {
+                    "out_calls": 0,
+                    "in_calls": 0,
+                    "setup_calls": 0,
+                    "iso_calls": 0,
+                    "reset_calls": 0,
+                    "count2": 0,
+                    "ptr2": 536872324,
+                    "data2": 2863311530,
+                    "rearm_data": 3149642683,
+                    "dctl": 0,
+                    "gintmask": 0,
+                    "gintsts": 0,
+                    "ctl2": 0,
+                    "int2": 0,
+                    "last_read": 0,
+                    "data1": 2863311530,
+                    "count1": 0,
+                    "setup0": 0,
+                    "setup1": 0,
+                    "iso_pending": 0,
+                    "ctl1": 0,
+                    "data0": 2863311530,
+                    "callback_xfrc": 0,
+                    "unexpected": 0,
+                    "op": 0,
+                    "pops": 0,
+                    "queued": 0
+                  },
+                  {
+                    "out_calls": 0,
+                    "in_calls": 0,
+                    "setup_calls": 0,
+                    "iso_calls": 0,
+                    "reset_calls": 0,
+                    "count2": 4,
+                    "ptr2": 536872328,
+                    "data2": 1144201745,
+                    "rearm_data": 3149642683,
+                    "dctl": 0,
+                    "gintmask": 790672,
+                    "gintsts": 0,
+                    "ctl2": 134217728,
+                    "int2": 0,
+                    "last_read": 0,
+                    "data1": 2863311530,
+                    "count1": 0,
+                    "setup0": 0,
+                    "setup1": 0,
+                    "iso_pending": 0,
+                    "ctl1": 134217728,
+                    "data0": 2863311530,
+                    "callback_xfrc": 0,
+                    "unexpected": 0,
+                    "op": 1,
+                    "pops": 1,
+                    "queued": 0
+                  }
+                ],
+                "mmio_reads": [
+                  {
+                    "kind": "pop",
+                    "value": 262210
+                  },
+                  {
+                    "kind": "data",
+                    "value": 1144201745
+                  }
+                ],
+                "mmio_writes": [
+                  {
+                    "address": "0x40080018",
+                    "value": "0xc1080",
+                    "pc": "0x800038c"
+                  },
+                  {
+                    "address": "0x40080018",
+                    "value": "0xc1090",
+                    "pc": "0x800053a"
+                  },
+                  {
+                    "address": "0x40080804",
+                    "value": "0x0",
+                    "pc": "0x80008c8"
+                  },
+                  {
+                    "address": "0x40080010",
+                    "value": "0x420",
+                    "pc": "0x80013f8"
+                  },
+                  {
+                    "address": "0x40080908",
+                    "value": "0xfb7f",
+                    "pc": "0x80008e2"
+                  },
+                  {
+                    "address": "0x40080900",
+                    "value": "0x0",
+                    "pc": "0x80008fa"
+                  },
+                  {
+                    "address": "0x40080b08",
+                    "value": "0xfb7f",
+                    "pc": "0x8000908"
+                  },
+                  {
+                    "address": "0x40080b00",
+                    "value": "0x0",
+                    "pc": "0x8000920"
+                  },
+                  {
+                    "address": "0x40080b00",
+                    "value": "0x8000000",
+                    "pc": "0x8000938"
+                  },
+                  {
+                    "address": "0x40080928",
+                    "value": "0xfb7f",
+                    "pc": "0x80008e2"
+                  },
+                  {
+                    "address": "0x40080920",
+                    "value": "0x0",
+                    "pc": "0x80008fa"
+                  },
+                  {
+                    "address": "0x40080b28",
+                    "value": "0xfb7f",
+                    "pc": "0x8000908"
+                  },
+                  {
+                    "address": "0x40080b20",
+                    "value": "0x0",
+                    "pc": "0x8000920"
+                  },
+                  {
+                    "address": "0x40080b20",
+                    "value": "0x8000000",
+                    "pc": "0x8000938"
+                  },
+                  {
+                    "address": "0x40080948",
+                    "value": "0xfb7f",
+                    "pc": "0x80008e2"
+                  },
+                  {
+                    "address": "0x40080940",
+                    "value": "0x0",
+                    "pc": "0x80008fa"
+                  },
+                  {
+                    "address": "0x40080b48",
+                    "value": "0xfb7f",
+                    "pc": "0x8000908"
+                  },
+                  {
+                    "address": "0x40080b40",
+                    "value": "0x0",
+                    "pc": "0x8000920"
+                  },
+                  {
+                    "address": "0x40080b40",
+                    "value": "0x8000000",
+                    "pc": "0x8000938"
+                  },
+                  {
+                    "address": "0x40080968",
+                    "value": "0xfb7f",
+                    "pc": "0x80008e2"
+                  },
+                  {
+                    "address": "0x40080960",
+                    "value": "0x0",
+                    "pc": "0x80008fa"
+                  },
+                  {
+                    "address": "0x40080b68",
+                    "value": "0xfb7f",
+                    "pc": "0x8000908"
+                  },
+                  {
+                    "address": "0x40080b60",
+                    "value": "0x0",
+                    "pc": "0x8000920"
+                  },
+                  {
+                    "address": "0x40080b60",
+                    "value": "0x8000000",
+                    "pc": "0x8000938"
+                  },
+                  {
+                    "address": "0x40080988",
+                    "value": "0xfb7f",
+                    "pc": "0x80008e2"
+                  },
+                  {
+                    "address": "0x40080980",
+                    "value": "0x0",
+                    "pc": "0x80008fa"
+                  },
+                  {
+                    "address": "0x40080b88",
+                    "value": "0xfb7f",
+                    "pc": "0x8000908"
+                  },
+                  {
+                    "address": "0x40080b80",
+                    "value": "0x0",
+                    "pc": "0x8000920"
+                  },
+                  {
+                    "address": "0x40080b80",
+                    "value": "0x8000000",
+                    "pc": "0x8000938"
+                  },
+                  {
+                    "address": "0x400809a8",
+                    "value": "0xfb7f",
+                    "pc": "0x80008e2"
+                  },
+                  {
+                    "address": "0x400809a0",
+                    "value": "0x0",
+                    "pc": "0x80008fa"
+                  },
+                  {
+                    "address": "0x40080ba8",
+                    "value": "0xfb7f",
+                    "pc": "0x8000908"
+                  },
+                  {
+                    "address": "0x40080ba0",
+                    "value": "0x0",
+                    "pc": "0x8000920"
+                  },
+                  {
+                    "address": "0x40080ba0",
+                    "value": "0x8000000",
+                    "pc": "0x8000938"
+                  },
+                  {
+                    "address": "0x400809c8",
+                    "value": "0xfb7f",
+                    "pc": "0x80008e2"
+                  },
+                  {
+                    "address": "0x400809c0",
+                    "value": "0x0",
+                    "pc": "0x80008fa"
+                  },
+                  {
+                    "address": "0x40080bc8",
+                    "value": "0xfb7f",
+                    "pc": "0x8000908"
+                  },
+                  {
+                    "address": "0x40080bc0",
+                    "value": "0x0",
+                    "pc": "0x8000920"
+                  },
+                  {
+                    "address": "0x40080bc0",
+                    "value": "0x8000000",
+                    "pc": "0x8000938"
+                  },
+                  {
+                    "address": "0x400809e8",
+                    "value": "0xfb7f",
+                    "pc": "0x80008e2"
+                  },
+                  {
+                    "address": "0x400809e0",
+                    "value": "0x0",
+                    "pc": "0x80008fa"
+                  },
+                  {
+                    "address": "0x40080be8",
+                    "value": "0xfb7f",
+                    "pc": "0x8000908"
+                  },
+                  {
+                    "address": "0x40080be0",
+                    "value": "0x0",
+                    "pc": "0x8000920"
+                  },
+                  {
+                    "address": "0x40080be0",
+                    "value": "0x8000000",
+                    "pc": "0x8000938"
+                  },
+                  {
+                    "address": "0x40080a08",
+                    "value": "0xfb7f",
+                    "pc": "0x80008e2"
+                  },
+                  {
+                    "address": "0x40080a00",
+                    "value": "0x0",
+                    "pc": "0x80008fa"
+                  },
+                  {
+                    "address": "0x40080c08",
+                    "value": "0xfb7f",
+                    "pc": "0x8000908"
+                  },
+                  {
+                    "address": "0x40080c00",
+                    "value": "0x0",
+                    "pc": "0x8000920"
+                  },
+                  {
+                    "address": "0x40080c00",
+                    "value": "0x8000000",
+                    "pc": "0x8000938"
+                  },
+                  {
+                    "address": "0x4008081c",
+                    "value": "0x1ff01ff",
+                    "pc": "0x8000950"
+                  },
+                  {
+                    "address": "0x40080814",
+                    "value": "0x202b",
+                    "pc": "0x8000984"
+                  },
+                  {
+                    "address": "0x40080810",
+                    "value": "0xb",
+                    "pc": "0x8000992"
+                  },
+                  {
+                    "address": "0x40080800",
+                    "value": "0x0",
+                    "pc": "0x800099c"
+                  },
+                  {
+                    "address": "0x40080b10",
+                    "value": "0x0",
+                    "pc": "0x8000ed2"
+                  },
+                  {
+                    "address": "0x40080b10",
+                    "value": "0x80000",
+                    "pc": "0x8000ede"
+                  },
+                  {
+                    "address": "0x40080b10",
+                    "value": "0x80018",
+                    "pc": "0x8000eea"
+                  },
+                  {
+                    "address": "0x40080b10",
+                    "value": "0x60080018",
+                    "pc": "0x8000ef6"
+                  },
+                  {
+                    "address": "0x40080014",
+                    "value": "0x1000",
+                    "pc": "0x80009ba"
+                  }
+                ],
+                "status": "VERIFIED software branch only; NOT_TESTED silicon; NOT an OUT Stop acceptance"
+              },
+              {
+                "id": "C0-20",
+                "name": "GONAKEFF independently aborts ISO then clears shared NAK",
+                "passed": true,
+                "error": null,
+                "assertions": [
+                  {
+                    "name": "ISO disable submitted independently",
+                    "actual": 0,
+                    "expected": 0,
+                    "passed": true
+                  },
+                  {
+                    "name": "ISO callback not cancellation request",
+                    "actual": 0,
+                    "expected": 0,
+                    "passed": true
+                  },
+                  {
+                    "name": "later EPDISD clears global lease",
+                    "actual": 0,
+                    "expected": 0,
+                    "passed": true
+                  },
+                  {
+                    "name": "ISO incomplete callback delivered later",
+                    "actual": 1,
+                    "expected": 1,
+                    "passed": true
+                  },
+                  {
+                    "name": "no unmodelled LPM boundary used",
+                    "actual": 0,
+                    "expected": 0,
+                    "passed": true
+                  }
+                ],
+                "trace": [
+                  {
+                    "out_calls": 0,
+                    "in_calls": 0,
+                    "setup_calls": 0,
+                    "iso_calls": 0,
+                    "reset_calls": 0,
+                    "count2": 0,
+                    "ptr2": 536872324,
+                    "data2": 2863311530,
+                    "rearm_data": 3149642683,
+                    "dctl": 0,
+                    "gintmask": 0,
+                    "gintsts": 0,
+                    "ctl2": 0,
+                    "int2": 0,
+                    "last_read": 0,
+                    "data1": 2863311530,
+                    "count1": 0,
+                    "setup0": 0,
+                    "setup1": 0,
+                    "iso_pending": 0,
+                    "ctl1": 0,
+                    "data0": 2863311530,
+                    "callback_xfrc": 0,
+                    "unexpected": 0,
+                    "op": 0,
+                    "pops": 0,
+                    "queued": 0
+                  },
+                  {
+                    "out_calls": 0,
+                    "in_calls": 0,
+                    "setup_calls": 0,
+                    "iso_calls": 0,
+                    "reset_calls": 0,
+                    "count2": 0,
+                    "ptr2": 536872324,
+                    "data2": 2863311530,
+                    "rearm_data": 3149642683,
+                    "dctl": 0,
+                    "gintmask": 786576,
+                    "gintsts": 0,
+                    "ctl2": 0,
+                    "int2": 0,
+                    "last_read": 0,
+                    "data1": 2863311530,
+                    "count1": 0,
+                    "setup0": 0,
+                    "setup1": 0,
+                    "iso_pending": 0,
+                    "ctl1": 2147483648,
+                    "data0": 2863311530,
+                    "callback_xfrc": 0,
+                    "unexpected": 0,
+                    "op": 6,
+                    "pops": 0,
+                    "queued": 0
+                  },
+                  {
+                    "out_calls": 0,
+                    "in_calls": 0,
+                    "setup_calls": 0,
+                    "iso_calls": 0,
+                    "reset_calls": 0,
+                    "count2": 0,
+                    "ptr2": 536872324,
+                    "data2": 2863311530,
+                    "rearm_data": 3149642683,
+                    "dctl": 0,
+                    "gintmask": 786576,
+                    "gintsts": 0,
+                    "ctl2": 0,
+                    "int2": 0,
+                    "last_read": 0,
+                    "data1": 2863311530,
+                    "count1": 0,
+                    "setup0": 0,
+                    "setup1": 0,
+                    "iso_pending": 1,
+                    "ctl1": 2147483648,
+                    "data0": 2863311530,
+                    "callback_xfrc": 0,
+                    "unexpected": 0,
+                    "op": 7,
+                    "pops": 0,
+                    "queued": 0
+                  },
+                  {
+                    "out_calls": 0,
+                    "in_calls": 0,
+                    "setup_calls": 0,
+                    "iso_calls": 0,
+                    "reset_calls": 0,
+                    "count2": 0,
+                    "ptr2": 536872324,
+                    "data2": 2863311530,
+                    "rearm_data": 3149642683,
+                    "dctl": 8,
+                    "gintmask": 786448,
+                    "gintsts": 524416,
+                    "ctl2": 0,
+                    "int2": 0,
+                    "last_read": 0,
+                    "data1": 2863311530,
+                    "count1": 0,
+                    "setup0": 0,
+                    "setup1": 0,
+                    "iso_pending": 1,
+                    "ctl1": 134217728,
+                    "data0": 2863311530,
+                    "callback_xfrc": 0,
+                    "unexpected": 0,
+                    "op": 1,
+                    "pops": 0,
+                    "queued": 0
+                  },
+                  {
+                    "out_calls": 0,
+                    "in_calls": 0,
+                    "setup_calls": 0,
+                    "iso_calls": 1,
+                    "reset_calls": 0,
+                    "count2": 0,
+                    "ptr2": 536872324,
+                    "data2": 2863311530,
+                    "rearm_data": 3149642683,
+                    "dctl": 0,
+                    "gintmask": 786448,
+                    "gintsts": 0,
+                    "ctl2": 0,
+                    "int2": 0,
+                    "last_read": 0,
+                    "data1": 2863311530,
+                    "count1": 0,
+                    "setup0": 0,
+                    "setup1": 0,
+                    "iso_pending": 0,
+                    "ctl1": 134217728,
+                    "data0": 2863311530,
+                    "callback_xfrc": 0,
+                    "unexpected": 0,
+                    "op": 1,
+                    "pops": 0,
+                    "queued": 0
+                  }
+                ],
+                "mmio_reads": [],
+                "mmio_writes": [
+                  {
+                    "address": "0x40080b20",
+                    "value": "0x80000000",
+                    "pc": "0x8000108"
+                  },
+                  {
+                    "address": "0x40080018",
+                    "value": "0xc0010",
+                    "pc": "0x8000a48"
+                  },
+                  {
+                    "address": "0x40080b20",
+                    "value": "0x88000000",
+                    "pc": "0x8001382"
+                  },
+                  {
+                    "address": "0x40080b20",
+                    "value": "0xc8000000",
+                    "pc": "0x8001396"
+                  },
+                  {
+                    "address": "0x40080804",
+                    "value": "0x408",
+                    "pc": "0x8000608"
+                  },
+                  {
+                    "address": "0x40080b28",
+                    "value": "0x2",
+                    "pc": "0x8000636"
+                  }
+                ],
+                "status": "VERIFIED software branch only; NOT_TESTED silicon; NOT an OUT Stop acceptance"
+              },
+              {
+                "id": "C0-21",
+                "name": "LL Abort failure retains active hardware and Buffer",
+                "passed": true,
+                "error": null,
+                "assertions": [
+                  {
+                    "name": "real LL reports HAL_ERROR after iteration limit",
+                    "actual": 1,
+                    "expected": 1,
+                    "passed": true
+                  },
+                  {
+                    "name": "EPENA remains active",
+                    "actual": 2147483648,
+                    "expected": 2147483648,
+                    "passed": true
+                  },
+                  {
+                    "name": "old buffer retained",
+                    "actual": 2863311530,
+                    "expected": 2863311530,
+                    "passed": true
+                  },
+                  {
+                    "name": "no completion callback",
+                    "actual": 0,
+                    "expected": 0,
+                    "passed": true
+                  },
+                  {
+                    "name": "no unmodelled LPM boundary used",
+                    "actual": 0,
+                    "expected": 0,
+                    "passed": true
+                  }
+                ],
+                "trace": [
+                  {
+                    "out_calls": 0,
+                    "in_calls": 0,
+                    "setup_calls": 0,
+                    "iso_calls": 0,
+                    "reset_calls": 0,
+                    "count2": 0,
+                    "ptr2": 536872324,
+                    "data2": 2863311530,
+                    "rearm_data": 3149642683,
+                    "dctl": 0,
+                    "gintmask": 0,
+                    "gintsts": 0,
+                    "ctl2": 0,
+                    "int2": 0,
+                    "last_read": 0,
+                    "data1": 2863311530,
+                    "count1": 0,
+                    "setup0": 0,
+                    "setup1": 0,
+                    "iso_pending": 0,
+                    "ctl1": 0,
+                    "data0": 2863311530,
+                    "callback_xfrc": 0,
+                    "unexpected": 0,
+                    "op": 0,
+                    "pops": 0,
+                    "queued": 0
+                  },
+                  {
+                    "out_calls": 0,
+                    "in_calls": 0,
+                    "setup_calls": 0,
+                    "iso_calls": 0,
+                    "reset_calls": 0,
+                    "count2": 0,
+                    "ptr2": 536872324,
+                    "data2": 2863311530,
+                    "rearm_data": 3149642683,
+                    "dctl": 0,
+                    "gintmask": 786576,
+                    "gintsts": 0,
+                    "ctl2": 3355443200,
+                    "int2": 0,
+                    "last_read": 1,
+                    "data1": 2863311530,
+                    "count1": 0,
+                    "setup0": 0,
+                    "setup1": 0,
+                    "iso_pending": 0,
+                    "ctl1": 0,
+                    "data0": 2863311530,
+                    "callback_xfrc": 0,
+                    "unexpected": 0,
+                    "op": 8,
+                    "pops": 0,
+                    "queued": 0
+                  }
+                ],
+                "mmio_reads": [],
+                "mmio_writes": [
+                  {
+                    "address": "0x40080b40",
+                    "value": "0x88000000",
+                    "pc": "0x8001382"
+                  },
+                  {
+                    "address": "0x40080b40",
+                    "value": "0xc8000000",
+                    "pc": "0x8001396"
+                  }
+                ],
+                "status": "VERIFIED software branch only; NOT_TESTED silicon; NOT an OUT Stop acceptance"
+              },
+              {
+                "id": "C0-22",
+                "name": "normal OUT completion with 300A core model",
+                "passed": true,
+                "error": null,
+                "assertions": [
+                  {
+                    "name": "300A non-DMA completion callback",
+                    "actual": 1,
+                    "expected": 1,
+                    "passed": true
+                  },
+                  {
+                    "name": "old XFRC acknowledged",
+                    "actual": 0,
+                    "expected": 0,
+                    "passed": true
+                  },
+                  {
+                    "name": "no unmodelled LPM boundary used",
+                    "actual": 0,
+                    "expected": 0,
+                    "passed": true
+                  }
+                ],
+                "trace": [
+                  {
+                    "out_calls": 0,
+                    "in_calls": 0,
+                    "setup_calls": 0,
+                    "iso_calls": 0,
+                    "reset_calls": 0,
+                    "count2": 0,
+                    "ptr2": 536872324,
+                    "data2": 2863311530,
+                    "rearm_data": 3149642683,
+                    "dctl": 0,
+                    "gintmask": 0,
+                    "gintsts": 0,
+                    "ctl2": 0,
+                    "int2": 0,
+                    "last_read": 0,
+                    "data1": 2863311530,
+                    "count1": 0,
+                    "setup0": 0,
+                    "setup1": 0,
+                    "iso_pending": 0,
+                    "ctl1": 0,
+                    "data0": 2863311530,
+                    "callback_xfrc": 0,
+                    "unexpected": 0,
+                    "op": 0,
+                    "pops": 0,
+                    "queued": 0
+                  },
+                  {
+                    "out_calls": 1,
+                    "in_calls": 0,
+                    "setup_calls": 0,
+                    "iso_calls": 0,
+                    "reset_calls": 0,
+                    "count2": 0,
+                    "ptr2": 536872324,
+                    "data2": 2863311530,
+                    "rearm_data": 3149642683,
+                    "dctl": 0,
+                    "gintmask": 786576,
+                    "gintsts": 0,
+                    "ctl2": 0,
+                    "int2": 0,
+                    "last_read": 0,
+                    "data1": 2863311530,
+                    "count1": 0,
+                    "setup0": 0,
+                    "setup1": 0,
+                    "iso_pending": 0,
+                    "ctl1": 0,
+                    "data0": 2863311530,
+                    "callback_xfrc": 0,
+                    "unexpected": 0,
+                    "op": 1,
+                    "pops": 0,
+                    "queued": 0
+                  }
+                ],
+                "mmio_reads": [],
+                "mmio_writes": [
+                  {
+                    "address": "0x40080b48",
+                    "value": "0x1",
+                    "pc": "0x800059e"
+                  }
+                ],
+                "status": "VERIFIED software branch only; NOT_TESTED silicon; NOT an OUT Stop acceptance"
+              },
+              {
+                "id": "C0-23",
+                "name": "one-byte RX tail preserves adjacent buffer bytes",
+                "passed": true,
+                "error": null,
+                "assertions": [
+                  {
+                    "name": "one byte copied, neighbours unchanged",
+                    "actual": 2863311377,
+                    "expected": 2863311377,
+                    "passed": true
+                  },
+                  {
+                    "name": "count is exact byte count",
+                    "actual": 1,
+                    "expected": 1,
+                    "passed": true
+                  },
+                  {
+                    "name": "one destructive payload word read",
+                    "actual": 1,
+                    "expected": 1,
+                    "passed": true
+                  },
+                  {
+                    "name": "no unmodelled LPM boundary used",
+                    "actual": 0,
+                    "expected": 0,
+                    "passed": true
+                  }
+                ],
+                "trace": [
+                  {
+                    "out_calls": 0,
+                    "in_calls": 0,
+                    "setup_calls": 0,
+                    "iso_calls": 0,
+                    "reset_calls": 0,
+                    "count2": 0,
+                    "ptr2": 536872324,
+                    "data2": 2863311530,
+                    "rearm_data": 3149642683,
+                    "dctl": 0,
+                    "gintmask": 0,
+                    "gintsts": 0,
+                    "ctl2": 0,
+                    "int2": 0,
+                    "last_read": 0,
+                    "data1": 2863311530,
+                    "count1": 0,
+                    "setup0": 0,
+                    "setup1": 0,
+                    "iso_pending": 0,
+                    "ctl1": 0,
+                    "data0": 2863311530,
+                    "callback_xfrc": 0,
+                    "unexpected": 0,
+                    "op": 0,
+                    "pops": 0,
+                    "queued": 0
+                  },
+                  {
+                    "out_calls": 0,
+                    "in_calls": 0,
+                    "setup_calls": 0,
+                    "iso_calls": 0,
+                    "reset_calls": 0,
+                    "count2": 1,
+                    "ptr2": 536872325,
+                    "data2": 2863311377,
+                    "rearm_data": 3149642683,
+                    "dctl": 0,
+                    "gintmask": 786576,
+                    "gintsts": 0,
+                    "ctl2": 0,
+                    "int2": 0,
+                    "last_read": 0,
+                    "data1": 2863311530,
+                    "count1": 0,
+                    "setup0": 0,
+                    "setup1": 0,
+                    "iso_pending": 0,
+                    "ctl1": 0,
+                    "data0": 2863311530,
+                    "callback_xfrc": 0,
+                    "unexpected": 0,
+                    "op": 1,
+                    "pops": 1,
+                    "queued": 0
+                  }
+                ],
+                "mmio_reads": [
+                  {
+                    "kind": "pop",
+                    "value": 262162
+                  },
+                  {
+                    "kind": "data",
+                    "value": 1144201745
+                  }
+                ],
+                "mmio_writes": [
+                  {
+                    "address": "0x40080018",
+                    "value": "0xc0080",
+                    "pc": "0x800038c"
+                  },
+                  {
+                    "address": "0x40080018",
+                    "value": "0xc0090",
+                    "pc": "0x800053a"
+                  }
+                ],
+                "status": "VERIFIED software branch only; NOT_TESTED silicon; NOT an OUT Stop acceptance"
+              },
+              {
+                "id": "C0-24",
+                "name": "31-byte RX packet consumes exactly eight FIFO words",
+                "passed": true,
+                "error": null,
+                "assertions": [
+                  {
+                    "name": "31-byte packet count exact",
+                    "actual": 31,
+                    "expected": 31,
+                    "passed": true
+                  },
+                  {
+                    "name": "byte after packet untouched",
+                    "actual": 170,
+                    "expected": 170,
+                    "passed": true
+                  },
+                  {
+                    "name": "last payload byte copied",
+                    "actual": 51,
+                    "expected": 51,
+                    "passed": true
+                  },
+                  {
+                    "name": "exactly eight destructive payload reads",
+                    "actual": 8,
+                    "expected": 8,
+                    "passed": true
+                  },
+                  {
+                    "name": "no unmodelled LPM boundary used",
+                    "actual": 0,
+                    "expected": 0,
+                    "passed": true
+                  }
+                ],
+                "trace": [
+                  {
+                    "out_calls": 0,
+                    "in_calls": 0,
+                    "setup_calls": 0,
+                    "iso_calls": 0,
+                    "reset_calls": 0,
+                    "count2": 0,
+                    "ptr2": 536872324,
+                    "data2": 2863311530,
+                    "rearm_data": 3149642683,
+                    "dctl": 0,
+                    "gintmask": 0,
+                    "gintsts": 0,
+                    "ctl2": 0,
+                    "int2": 0,
+                    "last_read": 0,
+                    "data1": 2863311530,
+                    "count1": 0,
+                    "setup0": 0,
+                    "setup1": 0,
+                    "iso_pending": 0,
+                    "ctl1": 0,
+                    "data0": 2863311530,
+                    "callback_xfrc": 0,
+                    "unexpected": 0,
+                    "op": 0,
+                    "pops": 0,
+                    "queued": 0
+                  },
+                  {
+                    "out_calls": 0,
+                    "in_calls": 0,
+                    "setup_calls": 0,
+                    "iso_calls": 0,
+                    "reset_calls": 0,
+                    "count2": 31,
+                    "ptr2": 536872355,
+                    "data2": 1144201745,
+                    "rearm_data": 3149642683,
+                    "dctl": 0,
+                    "gintmask": 786576,
+                    "gintsts": 0,
+                    "ctl2": 0,
+                    "int2": 0,
+                    "last_read": 0,
+                    "data1": 2863311530,
+                    "count1": 0,
+                    "setup0": 0,
+                    "setup1": 0,
+                    "iso_pending": 0,
+                    "ctl1": 0,
+                    "data0": 2863311530,
+                    "callback_xfrc": 0,
+                    "unexpected": 0,
+                    "op": 1,
+                    "pops": 1,
+                    "queued": 0
+                  }
+                ],
+                "mmio_reads": [
+                  {
+                    "kind": "pop",
+                    "value": 262642
+                  },
+                  {
+                    "kind": "data",
+                    "value": 1144201745
+                  },
+                  {
+                    "kind": "data",
+                    "value": 1144201745
+                  },
+                  {
+                    "kind": "data",
+                    "value": 1144201745
+                  },
+                  {
+                    "kind": "data",
+                    "value": 1144201745
+                  },
+                  {
+                    "kind": "data",
+                    "value": 1144201745
+                  },
+                  {
+                    "kind": "data",
+                    "value": 1144201745
+                  },
+                  {
+                    "kind": "data",
+                    "value": 1144201745
+                  },
+                  {
+                    "kind": "data",
+                    "value": 1144201745
+                  }
+                ],
+                "mmio_writes": [
+                  {
+                    "address": "0x40080018",
+                    "value": "0xc0080",
+                    "pc": "0x800038c"
+                  },
+                  {
+                    "address": "0x40080018",
+                    "value": "0xc0090",
+                    "pc": "0x800053a"
+                  }
+                ],
+                "status": "VERIFIED software branch only; NOT_TESTED silicon; NOT an OUT Stop acceptance"
+              }
+            ],
+            "commands": [
+              {
+                "argv": [
+                  "D:\\32\\ARM\\ARMCC\\Bin\\armcc.exe",
+                  "--cpu",
+                  "Cortex-M7",
+                  "--c99",
+                  "--split_sections",
+                  "-O0",
+                  "-DSTM32H747xx",
+                  "-DCORE_CM7",
+                  "-DUSE_HAL_DRIVER",
+                  "--preinclude",
+                  "D:\\32\\STM32H7\\h7_mac_lifecycle\\output\\MSC24\\udlm-p1-final\\c0-p1-final01\\CM7\\BSP\\bsp_usb_hal_config.h",
+                  "-I",
+                  "D:\\32\\STM32H7\\h7_mac_lifecycle\\output\\MSC24\\udlm-p1-final\\c0-p1-final01\\CM7\\Core\\Inc",
+                  "-I",
+                  "D:\\32\\STM32H7\\h7_mac_lifecycle\\output\\MSC24\\udlm-p1-final\\c0-p1-final01\\Drivers\\STM32H7xx_HAL_Driver\\Inc",
+                  "-I",
+                  "D:\\32\\STM32H7\\h7_mac_lifecycle\\output\\MSC24\\udlm-p1-final\\c0-p1-final01\\Drivers\\STM32H7xx_HAL_Driver\\Inc\\Legacy",
+                  "-I",
+                  "D:\\32\\STM32H7\\h7_mac_lifecycle\\output\\MSC24\\udlm-p1-final\\c0-p1-final01\\Drivers\\CMSIS\\Device\\ST\\STM32H7xx\\Include",
+                  "-I",
+                  "D:\\32\\STM32H7\\h7_mac_lifecycle\\output\\MSC24\\udlm-p1-final\\c0-p1-final01\\Drivers\\CMSIS\\Include",
+                  "-I",
+                  "D:\\32\\STM32H7\\h7_mac_lifecycle\\output\\MSC24\\udlm-p1-final\\c0-p1-final01\\Common\\Inc",
+                  "-I",
+                  "D:\\32\\STM32H7\\h7_mac_lifecycle\\output\\MSC24\\udlm-p1-final\\c0-p1-final01\\Board\\Inc",
+                  "-I",
+                  "D:\\32\\STM32H7\\h7_mac_lifecycle\\output\\MSC24\\udlm-p1-final\\c0-p1-final01\\CM7\\Application",
+                  "-I",
+                  "D:\\32\\STM32H7\\h7_mac_lifecycle\\output\\MSC24\\udlm-p1-final\\c0-p1-final01\\CM7\\Service",
+                  "-I",
+                  "D:\\32\\STM32H7\\h7_mac_lifecycle\\output\\MSC24\\udlm-p1-final\\c0-p1-final01\\CM7\\Device\\Inc",
+                  "-I",
+                  "D:\\32\\STM32H7\\h7_mac_lifecycle\\output\\MSC24\\udlm-p1-final\\c0-p1-final01\\CM7\\Media\\Inc",
+                  "-I",
+                  "D:\\32\\STM32H7\\h7_mac_lifecycle\\output\\MSC24\\udlm-p1-final\\c0-p1-final01\\CM7\\Platform",
+                  "-I",
+                  "D:\\32\\STM32H7\\h7_mac_lifecycle\\output\\MSC24\\udlm-p1-final\\c0-p1-final01\\CM7\\BSP",
+                  "-I",
+                  "D:\\32\\STM32H7\\h7_mac_lifecycle\\output\\MSC24\\udlm-p1-final\\c0-p1-final01\\CM7\\Framework",
+                  "-I",
+                  "D:\\32\\STM32H7\\h7_mac_lifecycle\\output\\MSC24\\udlm-p1-final\\c0-p1-final01\\CM7\\Device\\Components\\OV5640",
+                  "-I",
+                  "D:\\32\\STM32H7\\h7_mac_lifecycle\\output\\MSC24\\udlm-p1-final\\c0-p1-final01\\Middlewares\\ST\\STM32_USB_Device_Library\\Core\\Inc",
+                  "-I",
+                  "D:\\32\\STM32H7\\h7_mac_lifecycle\\output\\MSC24\\udlm-p1-final\\c0-p1-final01\\Middlewares\\Third_Party\\FreeRTOS\\Source\\include",
+                  "-I",
+                  "D:\\32\\STM32H7\\h7_mac_lifecycle\\output\\MSC24\\udlm-p1-final\\c0-p1-final01\\Middlewares\\Third_Party\\FreeRTOS\\Source\\portable\\RVDS\\ARM_CM7\\r0p1",
+                  "-I",
+                  "D:\\32\\STM32H7\\h7_mac_lifecycle\\output\\MSC24\\udlm-p1-final\\c0-p1-final01\\Middlewares\\Third_Party\\FatFs",
+                  "-c",
+                  "D:\\32\\STM32H7\\h7_mac_lifecycle\\output\\MSC24\\udlm-p1-final\\c0-p1-final01\\Tests\\UsbBulkOut\\hal_out_evidence.c",
+                  "-o",
+                  "D:\\32\\STM32H7\\h7_mac_lifecycle\\output\\MSC24\\udlm-p1-final\\c0-p1-final01\\output\\MSC24\\udlm-p1c\\hal-evidence\\hal_out_evidence.o"
+                ],
+                "exit": 0,
+                "output": ""
+              },
+              {
+                "argv": [
+                  "D:\\32\\ARM\\ARMCC\\Bin\\armcc.exe",
+                  "--cpu",
+                  "Cortex-M7",
+                  "--c99",
+                  "--split_sections",
+                  "-O0",
+                  "-DSTM32H747xx",
+                  "-DCORE_CM7",
+                  "-DUSE_HAL_DRIVER",
+                  "--preinclude",
+                  "D:\\32\\STM32H7\\h7_mac_lifecycle\\output\\MSC24\\udlm-p1-final\\c0-p1-final01\\CM7\\BSP\\bsp_usb_hal_config.h",
+                  "-I",
+                  "D:\\32\\STM32H7\\h7_mac_lifecycle\\output\\MSC24\\udlm-p1-final\\c0-p1-final01\\CM7\\Core\\Inc",
+                  "-I",
+                  "D:\\32\\STM32H7\\h7_mac_lifecycle\\output\\MSC24\\udlm-p1-final\\c0-p1-final01\\Drivers\\STM32H7xx_HAL_Driver\\Inc",
+                  "-I",
+                  "D:\\32\\STM32H7\\h7_mac_lifecycle\\output\\MSC24\\udlm-p1-final\\c0-p1-final01\\Drivers\\STM32H7xx_HAL_Driver\\Inc\\Legacy",
+                  "-I",
+                  "D:\\32\\STM32H7\\h7_mac_lifecycle\\output\\MSC24\\udlm-p1-final\\c0-p1-final01\\Drivers\\CMSIS\\Device\\ST\\STM32H7xx\\Include",
+                  "-I",
+                  "D:\\32\\STM32H7\\h7_mac_lifecycle\\output\\MSC24\\udlm-p1-final\\c0-p1-final01\\Drivers\\CMSIS\\Include",
+                  "-I",
+                  "D:\\32\\STM32H7\\h7_mac_lifecycle\\output\\MSC24\\udlm-p1-final\\c0-p1-final01\\Common\\Inc",
+                  "-I",
+                  "D:\\32\\STM32H7\\h7_mac_lifecycle\\output\\MSC24\\udlm-p1-final\\c0-p1-final01\\Board\\Inc",
+                  "-I",
+                  "D:\\32\\STM32H7\\h7_mac_lifecycle\\output\\MSC24\\udlm-p1-final\\c0-p1-final01\\CM7\\Application",
+                  "-I",
+                  "D:\\32\\STM32H7\\h7_mac_lifecycle\\output\\MSC24\\udlm-p1-final\\c0-p1-final01\\CM7\\Service",
+                  "-I",
+                  "D:\\32\\STM32H7\\h7_mac_lifecycle\\output\\MSC24\\udlm-p1-final\\c0-p1-final01\\CM7\\Device\\Inc",
+                  "-I",
+                  "D:\\32\\STM32H7\\h7_mac_lifecycle\\output\\MSC24\\udlm-p1-final\\c0-p1-final01\\CM7\\Media\\Inc",
+                  "-I",
+                  "D:\\32\\STM32H7\\h7_mac_lifecycle\\output\\MSC24\\udlm-p1-final\\c0-p1-final01\\CM7\\Platform",
+                  "-I",
+                  "D:\\32\\STM32H7\\h7_mac_lifecycle\\output\\MSC24\\udlm-p1-final\\c0-p1-final01\\CM7\\BSP",
+                  "-I",
+                  "D:\\32\\STM32H7\\h7_mac_lifecycle\\output\\MSC24\\udlm-p1-final\\c0-p1-final01\\CM7\\Framework",
+                  "-I",
+                  "D:\\32\\STM32H7\\h7_mac_lifecycle\\output\\MSC24\\udlm-p1-final\\c0-p1-final01\\CM7\\Device\\Components\\OV5640",
+                  "-I",
+                  "D:\\32\\STM32H7\\h7_mac_lifecycle\\output\\MSC24\\udlm-p1-final\\c0-p1-final01\\Middlewares\\ST\\STM32_USB_Device_Library\\Core\\Inc",
+                  "-I",
+                  "D:\\32\\STM32H7\\h7_mac_lifecycle\\output\\MSC24\\udlm-p1-final\\c0-p1-final01\\Middlewares\\Third_Party\\FreeRTOS\\Source\\include",
+                  "-I",
+                  "D:\\32\\STM32H7\\h7_mac_lifecycle\\output\\MSC24\\udlm-p1-final\\c0-p1-final01\\Middlewares\\Third_Party\\FreeRTOS\\Source\\portable\\RVDS\\ARM_CM7\\r0p1",
+                  "-I",
+                  "D:\\32\\STM32H7\\h7_mac_lifecycle\\output\\MSC24\\udlm-p1-final\\c0-p1-final01\\Middlewares\\Third_Party\\FatFs",
+                  "-c",
+                  "D:\\32\\STM32H7\\h7_mac_lifecycle\\output\\MSC24\\udlm-p1-final\\c0-p1-final01\\Drivers\\STM32H7xx_HAL_Driver\\Src\\stm32h7xx_hal_pcd.c",
+                  "-o",
+                  "D:\\32\\STM32H7\\h7_mac_lifecycle\\output\\MSC24\\udlm-p1-final\\c0-p1-final01\\output\\MSC24\\udlm-p1c\\hal-evidence\\stm32h7xx_hal_pcd.o"
+                ],
+                "exit": 0,
+                "output": ""
+              },
+              {
+                "argv": [
+                  "D:\\32\\ARM\\ARMCC\\Bin\\armcc.exe",
+                  "--cpu",
+                  "Cortex-M7",
+                  "--c99",
+                  "--split_sections",
+                  "-O0",
+                  "-DSTM32H747xx",
+                  "-DCORE_CM7",
+                  "-DUSE_HAL_DRIVER",
+                  "--preinclude",
+                  "D:\\32\\STM32H7\\h7_mac_lifecycle\\output\\MSC24\\udlm-p1-final\\c0-p1-final01\\CM7\\BSP\\bsp_usb_hal_config.h",
+                  "-I",
+                  "D:\\32\\STM32H7\\h7_mac_lifecycle\\output\\MSC24\\udlm-p1-final\\c0-p1-final01\\CM7\\Core\\Inc",
+                  "-I",
+                  "D:\\32\\STM32H7\\h7_mac_lifecycle\\output\\MSC24\\udlm-p1-final\\c0-p1-final01\\Drivers\\STM32H7xx_HAL_Driver\\Inc",
+                  "-I",
+                  "D:\\32\\STM32H7\\h7_mac_lifecycle\\output\\MSC24\\udlm-p1-final\\c0-p1-final01\\Drivers\\STM32H7xx_HAL_Driver\\Inc\\Legacy",
+                  "-I",
+                  "D:\\32\\STM32H7\\h7_mac_lifecycle\\output\\MSC24\\udlm-p1-final\\c0-p1-final01\\Drivers\\CMSIS\\Device\\ST\\STM32H7xx\\Include",
+                  "-I",
+                  "D:\\32\\STM32H7\\h7_mac_lifecycle\\output\\MSC24\\udlm-p1-final\\c0-p1-final01\\Drivers\\CMSIS\\Include",
+                  "-I",
+                  "D:\\32\\STM32H7\\h7_mac_lifecycle\\output\\MSC24\\udlm-p1-final\\c0-p1-final01\\Common\\Inc",
+                  "-I",
+                  "D:\\32\\STM32H7\\h7_mac_lifecycle\\output\\MSC24\\udlm-p1-final\\c0-p1-final01\\Board\\Inc",
+                  "-I",
+                  "D:\\32\\STM32H7\\h7_mac_lifecycle\\output\\MSC24\\udlm-p1-final\\c0-p1-final01\\CM7\\Application",
+                  "-I",
+                  "D:\\32\\STM32H7\\h7_mac_lifecycle\\output\\MSC24\\udlm-p1-final\\c0-p1-final01\\CM7\\Service",
+                  "-I",
+                  "D:\\32\\STM32H7\\h7_mac_lifecycle\\output\\MSC24\\udlm-p1-final\\c0-p1-final01\\CM7\\Device\\Inc",
+                  "-I",
+                  "D:\\32\\STM32H7\\h7_mac_lifecycle\\output\\MSC24\\udlm-p1-final\\c0-p1-final01\\CM7\\Media\\Inc",
+                  "-I",
+                  "D:\\32\\STM32H7\\h7_mac_lifecycle\\output\\MSC24\\udlm-p1-final\\c0-p1-final01\\CM7\\Platform",
+                  "-I",
+                  "D:\\32\\STM32H7\\h7_mac_lifecycle\\output\\MSC24\\udlm-p1-final\\c0-p1-final01\\CM7\\BSP",
+                  "-I",
+                  "D:\\32\\STM32H7\\h7_mac_lifecycle\\output\\MSC24\\udlm-p1-final\\c0-p1-final01\\CM7\\Framework",
+                  "-I",
+                  "D:\\32\\STM32H7\\h7_mac_lifecycle\\output\\MSC24\\udlm-p1-final\\c0-p1-final01\\CM7\\Device\\Components\\OV5640",
+                  "-I",
+                  "D:\\32\\STM32H7\\h7_mac_lifecycle\\output\\MSC24\\udlm-p1-final\\c0-p1-final01\\Middlewares\\ST\\STM32_USB_Device_Library\\Core\\Inc",
+                  "-I",
+                  "D:\\32\\STM32H7\\h7_mac_lifecycle\\output\\MSC24\\udlm-p1-final\\c0-p1-final01\\Middlewares\\Third_Party\\FreeRTOS\\Source\\include",
+                  "-I",
+                  "D:\\32\\STM32H7\\h7_mac_lifecycle\\output\\MSC24\\udlm-p1-final\\c0-p1-final01\\Middlewares\\Third_Party\\FreeRTOS\\Source\\portable\\RVDS\\ARM_CM7\\r0p1",
+                  "-I",
+                  "D:\\32\\STM32H7\\h7_mac_lifecycle\\output\\MSC24\\udlm-p1-final\\c0-p1-final01\\Middlewares\\Third_Party\\FatFs",
+                  "-c",
+                  "D:\\32\\STM32H7\\h7_mac_lifecycle\\output\\MSC24\\udlm-p1-final\\c0-p1-final01\\Drivers\\STM32H7xx_HAL_Driver\\Src\\stm32h7xx_ll_usb.c",
+                  "-o",
+                  "D:\\32\\STM32H7\\h7_mac_lifecycle\\output\\MSC24\\udlm-p1-final\\c0-p1-final01\\output\\MSC24\\udlm-p1c\\hal-evidence\\stm32h7xx_ll_usb.o"
+                ],
+                "exit": 0,
+                "output": ""
+              },
+              {
+                "argv": [
+                  "D:\\32\\ARM\\ARMCC\\Bin\\armlink.exe",
+                  "D:\\32\\STM32H7\\h7_mac_lifecycle\\output\\MSC24\\udlm-p1-final\\c0-p1-final01\\output\\MSC24\\udlm-p1c\\hal-evidence\\hal_out_evidence.o",
+                  "D:\\32\\STM32H7\\h7_mac_lifecycle\\output\\MSC24\\udlm-p1-final\\c0-p1-final01\\output\\MSC24\\udlm-p1c\\hal-evidence\\stm32h7xx_hal_pcd.o",
+                  "D:\\32\\STM32H7\\h7_mac_lifecycle\\output\\MSC24\\udlm-p1-final\\c0-p1-final01\\output\\MSC24\\udlm-p1c\\hal-evidence\\stm32h7xx_ll_usb.o",
+                  "--entry",
+                  "C0_Step",
+                  "--no_scanlib",
+                  "--scatter",
+                  "D:\\32\\STM32H7\\h7_mac_lifecycle\\output\\MSC24\\udlm-p1-final\\c0-p1-final01\\Tests\\EndpointLifecycle\\test.sct",
+                  "-o",
+                  "D:\\32\\STM32H7\\h7_mac_lifecycle\\output\\MSC24\\udlm-p1-final\\c0-p1-final01\\output\\MSC24\\udlm-p1c\\hal-evidence\\hal_out_evidence.axf"
+                ],
+                "exit": 0,
+                "output": ""
+              }
+            ],
+            "summary": {
+              "total": 24,
+              "passed": 24,
+              "assertions": 99
+            },
+            "model": "Slave/PIO, destructive status/data queues and W1C. NAK marker effect follows RM0399 p2909. Injected register combinations are software probes, not physical occurrence proofs.",
+            "sources": {
+              "Drivers/STM32H7xx_HAL_Driver/Src/stm32h7xx_hal_pcd.c": "67becca7aa38463887bfb70de65e2cc6e762bfd0fa7f600bc8c6e966a36a5574",
+              "Drivers/STM32H7xx_HAL_Driver/Src/stm32h7xx_ll_usb.c": "e18900b0d91d79d8eea02d60eec865ea0eada440a053354c81b709c33f5e890a",
+              "Tests/UsbBulkOut/hal_out_evidence.c": "ae290bfa3821adc0440c741ee1e648a5f0c9d476415ed54ec35f1ed9b7a3e66e",
+              "Tests/UsbBulkOut/run_hal_evidence.py": "b178427cc05c9c3b3d4eb6f434634d4d4ab15f73aa0797028293ef4366e2b61d"
+            }
+          }
+        }
+      ],
+      "tail": "\r\n\r\n\r\n\r\nC0-01 PASS None []\r\nC0-02 PASS None []\r\nC0-03 PASS None []\r\nC0-04 PASS None []\r\nC0-05 PASS None []\r\nC0-06 PASS None []\r\nC0-07 PASS None []\r\nC0-08 PASS None []\r\nC0-09 PASS None []\r\nC0-10 PASS None []\r\nC0-11 PASS None []\r\nC0-12 PASS None []\r\nC0-13 PASS None []\r\nC0-14 PASS None []\r\nC0-15 PASS None []\r\nC0-16 PASS None []\r\nC0-17 PASS None []\r\nC0-18 PASS None []\r\nC0-19 PASS None []\r\nC0-20 PASS None []\r\nC0-21 PASS None []\r\nC0-22 PASS None []\r\nC0-23 PASS None []\r\nC0-24 PASS None []\r\n"
+    }
+  ],
+  "original_changed": []
+}

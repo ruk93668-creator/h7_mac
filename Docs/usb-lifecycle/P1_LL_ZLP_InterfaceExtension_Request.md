@@ -11,3 +11,22 @@ INFERRED：EP0另需HAL PCD control-event身份边界和合法controller-wide静
 验收要求：真实ARM测试逐条记录寄存器写入顺序；不以模拟时钟数证明物理AHB间隔；旧Control Token迟到事件、双向历史状态、Reset/Disconnect、标准请求status否决和所有ZLP入口均有反例测试。任何失败保留Buffer。NOT_TESTED：目前无上述已批准原语或板级时序证明。
 
 受阻依赖：P1-E完整EP0；C1生产自动启用；BOT Deferred Reset最终成功；UVC Alt0同步请求的Task准备；全设备Reinitialize/Resume及板级执行。可继续独立双向端点票据、资源审计、现有基线回归和硬件准备工具。该申请不是批准，也不是已完成实现。
+
+## 供审批的具体接口边界（仅提案）
+
+INFERRED：拟修改文件仅 `Drivers/STM32H7xx_HAL_Driver/Inc/stm32h7xx_ll_usb.h`、对应 `.c`，以及已授权HAL PCD/BSP适配和测试。先新增原语而非替换整个LL启动函数；无证据的时钟屏障提供者不能注册为可用。
+
+```c
+/* Candidate API only; not compiled or implemented in this task. */
+typedef struct USB_AhbBarrierOps USB_AhbBarrierOps;
+typedef struct USB_ZlpStartEvidence USB_ZlpStartEvidence;
+HAL_StatusTypeDef USB_EPStartZlpSlaveQualified(
+    USB_OTG_GlobalTypeDef *usb, USB_OTG_EPTypeDef *ep,
+    const USB_AhbBarrierOps *barrier, USB_ZlpStartEvidence *evidence);
+```
+
+INFERRED：barrier必须在首次命令前证明适用于当前clock tree，提供“至少指定AHB周期”的合格屏障；证据带controller/session/control身份和最后实际提交阶段。未合格则零硬件副作用拒绝；部分命令后失败不得释放源，保留阶段和first_error。HAL所有Device Slave零长度IN入口统一路由，其他模式保留旧行为；管理器选择新契约时严禁失败后回退旧ZLP路径。
+
+INFERRED：EP0原始状态查询只可提供事实，不命名为“已静止”；必须结合唯一RX消费水位、旧事件和PIO引用。controller停止还需逐次保存真实Flush返回值；如果现有公开接口不能给出完整结果，另列最小接口补充，不能用HAL_OK补齐证据。Core若最终不可免改，需再次单独审批，不在这份候选原语里暗中包含Core修改。
+
+UNRESOLVED：AHB屏障的具体实现、资格证据及EP0完整控制协议退休契约尚未验证。此接口签名为可审核边界，不是已经获得安全性证明的代码。须人工批准后另阶段实现、反例测试和实物时序验收。
