@@ -95,3 +95,11 @@ Keil 工程为 `MDK-ARM/h7_mac_ethernet_e7_v1_qvga.uvprojx`，AXF 为 `output/Et
 新增独立 E7 对照开关 `g_e7_copy_segmented`。与 `g_e7_copy_only=1` 一起在初始化前设为 1 后，每次 CPU 从 SDRAM 最多复制 8 字节，每段后执行 DSB，再读取下一段。沿用原 JPEG 缓冲租约、CRC、相机 DMA 参数和复制周期。保持静态模式、网线拔出、200 ms、网页关闭。先测分段 60 秒，再在同一固件上将开关设为 0，使用相同条件对照整段复制。记录首次错误与成功复制帧数；实板对照为 NOT_RUN。
 
 编译 0 错误、0 警告。Host 跨尾分段次数、逐字节一致性、CRC 与归还回归通过。新版 AXF SHA-256 为 `f67ca10df92a77d94b55685ee57736b3bfd5228aa39bca377c7b4b168aea52b2`，原只复制对照固件和 MAP 归档于 `output/Ethernet/e7_v1_qvga_before_segmented_probe/`。
+
+### 分段与整段对照及网页验证准备
+
+实板反馈中，8 字节分段读取轮未命中断点，尚缺时长和复制计数。恢复整段模式，保持只复制、静态 IP、200 ms 和网线拔出后，在第 5 次复制尝试时命中 `Dcmi_RecordError()`，Watch 快照记录已复制 3 帧，`CR=0x00865517`、`FCR=0xA7`、`NDTR=0x0284`。该截图未显示本次错误位，历史多轮已经读到 DMA FIFO 错误 `0x02`。
+
+E7 新版允许网页模式使用同一个分段开关。下载后在读取地址模式前设置 `g_e7_mode=1`、`g_e7_copy_only=0`、`g_e7_copy_segmented=1`、`g_e7_period_ms=200`，连接网线后按 F5，待获租打开一个网页观察 60 秒。记录首帧、帧完成计数和错误断点。若通过，再从相同设置开始只把帧间隔改为 50 ms，验证 20 fps 调度档。网页分段实板结果为 NOT_RUN。
+
+编译 0 错误、0 警告，既有 Host 回归和 MAP 检查通过。新版 AXF SHA-256 为 `16056c4747a0a0e0f56d0f8b3027c3e4b475c0a21c4b76da26d223a62897ad5c`。上一版诊断 AXF 和 MAP 保存在 `output/Ethernet/e7_v1_qvga_before_segmented_http/`。
