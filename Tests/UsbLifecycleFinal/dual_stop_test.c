@@ -24,6 +24,7 @@ int Final_Step(uint32_t op,uint32_t arg)
  else if(op==13U)Usb_Disconnect();
  else if(op==14U)r=(USB_Device_AbortEp(2U)==SYS_ERR_BUSY && USB_Device_CloseEp(2U)==SYS_ERR_BUSY && USB_Device_FlushEp(2U)==SYS_ERR_BUSY)?SYS_OK:SYS_ERR_IO;
  else if(op==15U)s_pcd.OUT_ep[0].maxpacket=0U; //adversarial cached EP0 state, not a retirement proof
+ else if(op==16U){s_stop_progress.state=USB_STOP_PROGRESS_FAILED;s_stop_progress.transaction_id=0U;} //initial stale metadata, never a hardware proof
  (void)USB_Device_GetStopProgress(&p);
  g_final[0]=r;g_final[1]=p.transaction_id;g_final[2]=p.state;g_final[3]=p.endpoint_count;
  g_final[4]=p.pending_count;g_final[5]=p.registered_pending;g_final[6]=p.endpoint_group_proven;

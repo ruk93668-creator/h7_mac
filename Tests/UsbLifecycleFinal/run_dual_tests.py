@@ -32,6 +32,7 @@ with axf.open('rb') as f:
 
 sys.path.insert(0,str(ROOT/'Tests/UsbBulkOutLifecycle'))
 from harness import VM,BASE,GINT,MASK,DCTL
+from unicorn import UC_HOOK_CODE
 from unicorn.arm_const import UC_ARM_REG_PRIMASK
 fields='result intent state endpoints pending registered proven blocked first_error out_owned in_owned class_memory started irq out_attempt in_attempt forbidden_release_calls out1_owned'.split()
 class DualVM(VM):
@@ -44,9 +45,12 @@ class DualVM(VM):
   super().read(cpu,access,a,size,value,ctx)
  def event_in(self,ep,bits):self.wr(BASE+0x908+32*ep,self.rd(BASE+0x908+32*ep)|bits)
 rows=[]
-names=['both directions Pending same Controller identity','completion and Commit without unsafe Controller handoff','OUT timeout retains buffer while IN drains','IN disable timeout retains source while OUT drains','Reset keeps old resources','Disconnect keeps old resources','submission fence blocks both directions','ordinary reentrant Busy is not Pending','Controller identity exhaustion','foreign endpoint Attempt is not silently adopted','repeat blocked Stop preserves identity','Core DeInit cannot bypass Controller fence','Reset after endpoint proof keeps Class','Disconnect after proof keeps Class','legacy release APIs cannot bypass consumer gate','never armed IN still has real stop proof','three active endpoint transfers share one intent','enabled contract cannot fall back when EP0 not open']
+names=['both directions Pending same Controller identity','completion and Commit without unsafe Controller handoff','OUT timeout retains buffer while IN drains','IN disable timeout retains source while OUT drains','Reset keeps old resources','Disconnect keeps old resources','submission fence blocks both directions','ordinary reentrant Busy is not Pending','Controller identity exhaustion','foreign endpoint Attempt is not silently adopted','repeat blocked Stop preserves identity','Core DeInit cannot bypass Controller fence','Reset after endpoint proof keeps Class','Disconnect after proof keeps Class','legacy release APIs cannot bypass consumer gate','never armed IN still has real stop proof','three active endpoint transfers share one intent','enabled contract cannot fall back when EP0 not open','Controller ID precedes every endpoint Begin after stale metadata']
 for case,name in enumerate(names,1):
- vm=DualVM(symbols,sections,'Final_Step',{'g_final':fields});checks=[];error=None
+ vm=DualVM(symbols,sections,'Final_Step',{'g_final':fields});checks=[];error=None;begin_ids=[]
+ def observe_begin(cpu,address,size,ctx):begin_ids.append(vm.rd(symbols['s_stop_progress']))
+ for name_of_begin in ['BSP_USB_BeginBulkInStop','BSP_USB_BeginBulkOutStop']:
+  addr=symbols[name_of_begin]&~1;vm.cpu.hook_add(UC_HOOK_CODE,observe_begin,begin=addr,end=addr)
  def step(op,arg=0):return vm.step(op,arg)['g_final']
  def eq(n,a,b):checks.append(dict(name=n,actual=a,expected=b,passed=a==b))
  try:
@@ -61,6 +65,7 @@ for case,name in enumerate(names,1):
    if case==17:eq('second OUT active',step(5)['result'],0)
    if case==10:step(10)
    if case==18:step(15)
+   if case==19:step(16)
    if case==3:vm.auto_nak=False
    if case==4:vm.hold_in=True
    v=step(3);identity=v['intent'];eq('Controller identity exists',identity!=0,True)
@@ -77,7 +82,7 @@ for case,name in enumerate(names,1):
      v=step(3);eq('same intent across rounds',v['intent'],identity)
      if v['blocked']:break
     if case in (3,4):step(7,1001);v=step(3)
-    if case in (1,2,7,11,12,13,14,15,16,17,18):
+    if case in (1,2,7,11,12,13,14,15,16,17,18,19):
      eq('endpoint proofs collected',v['proven'],1);eq('EP0/consumer gate enforced',v['blocked'],1)
      eq('no false Controller success',v['result'],0xfffffff9);eq('OUT owner retired by real Commit',v['out_owned'],0);eq('IN owner retired by real Commit',v['in_owned'],0)
      if case==11:v=step(3);eq('repeat keeps intent',v['intent'],identity)
@@ -87,6 +92,7 @@ for case,name in enumerate(names,1):
      eq('no forbidden Core or Class release callback',v['forbidden_release_calls'],0)
      if case==16:eq('unarmed IN used real attempt',v['in_attempt']!=0,True)
      if case==17:eq('second OUT retired only by proof',v['out1_owned'],0)
+     if case==19:eq('all Begin observers saw registered Controller identity',bool(begin_ids) and all(x==identity and x!=0 for x in begin_ids),True)
     elif case==3:eq('OUT timeout retains old buffer',v['out_owned'],1);eq('independent IN drained',v['in_owned'],0)
     elif case==4:eq('IN timeout retains source',v['in_owned'],1);eq('independent OUT drained',v['out_owned'],0)
     else:eq('lifecycle boundary retains OUT',v['out_owned'],1)

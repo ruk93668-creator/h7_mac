@@ -36,7 +36,7 @@ static volatile bool s_registered;
 static volatile bool s_stop_required;
 
 //只由原UsbTask的Controller Stop意图发布，失败不解除数据面Fence。
-static bool s_controller_endpoint_fence;
+static volatile bool s_controller_endpoint_fence;
 
 //只缓存真实Enable成功的路由能力，绝不作为任何端点静止证明。
 static bool s_out_contract_enabled;
@@ -492,7 +492,8 @@ SysResult_t USB_Device_Stop(void)
         return SYS_ERR_NO_RESOURCE;
     s_control_busy = true;
     if (Usb_HasOutContract() &&
-        (s_stop_progress.state == USB_STOP_PROGRESS_NONE || s_stop_progress.state == USB_STOP_PROGRESS_COMPLETE))
+        (s_stop_progress.state == USB_STOP_PROGRESS_NONE || s_stop_progress.state == USB_STOP_PROGRESS_COMPLETE ||
+         s_stop_progress.transaction_id == 0U))
     {
         memset(&s_stop_progress, 0, sizeof(s_stop_progress));
         s_stop_progress.transaction_id = ++s_stop_progress_seed;
@@ -1968,8 +1969,15 @@ static SysResult_t Usb_DrainBulkEndpointStops(void)
     uint8_t direction, index;
     SysResult_t first = SYS_OK;
     bool pending = false;
-    s_controller_endpoint_fence = true;
-    s_stop_progress.submission_fenced = true;
+    //短原子发布，IRQ观察者先看到Fence；不跨Poll或硬件等待持有CPU屏蔽。
+    {
+        uint32_t saved = __get_PRIMASK();
+        __disable_irq();
+        s_controller_endpoint_fence = true;
+        __DMB();
+        s_stop_progress.submission_fenced = true;
+        __set_PRIMASK(saved);
+    }
     s_stop_progress.endpoint_count = 0U;
     s_stop_progress.pending_count = 0U;
     //先核对全组，已有外部Attempt不可被本Controller事务静默接管。
