@@ -55,13 +55,13 @@ python -B Tests/Ethernet/e6_peer.py --camera --stream-only --board-ip 192.168.13
 
 独立目标 `--e7-v1-qvga` 让 OV5640 和 CameraCapture 使用原有 320×240 JPEG 模式。帧提供器使用同一个尺寸常量并拒绝尺寸不匹配的帧。继续使用 CPU 私有 AXI SRAM 副本，网络和相机 DMA 地址均沿用 V1 AXI 对照版。原 160×120 的两个 V1 固件继续可用。
 
-本目标默认 `g_e7_period_ms=66`，名义发送上限约 15 fps。原 E7 的 200 ms 默认值对应 5 fps。E6 E7 共用的 HTTP 初始化接口目前接受 50–5000 ms，该范围来自软件参数门禁。50 ms 对应 20 fps 理论上限，25 fps 需要 40 ms 且需要重新评估软件门禁和 ACK 调度。当前发送状态机等待整帧数据的 TCP 确认，再调度下一帧。以上频率均为配置口径。
+本目标默认 `g_e7_period_ms=50`，名义发送上限 20 fps。原 E7 的 200 ms 默认值对应 5 fps。E6 E7 共用的 HTTP 初始化接口目前接受 50–5000 ms，该范围来自软件参数门禁。50 ms 对应 20 fps 理论上限，25 fps 需要 40 ms 且需要重新评估软件门禁和 ACK 调度。当前发送状态机等待整帧数据的 TCP 确认，再调度下一帧。以上频率均为配置口径。
 
 ```powershell
 python -B Tests/Ethernet/build_firmware.py --e7-v1-qvga
 python -B Tests/Ethernet/run_e6_host.py --dynamic --qvga
 ```
 
-Keil 工程为 `MDK-ARM/h7_mac_ethernet_e7_v1_qvga.uvprojx`，AXF 为 `output/Ethernet/e7_v1_qvga/eth_e7_v1_qvga.axf`。本轮完整编译 0 错误、0 警告，MAP 核对 DMA 区、I2C1 和 AXI JPEG 区均通过。Host 动态 MJPEG 回归和 QVGA 帧尺寸校验通过。AXF SHA-256 为 `0398b58d64d0a77517fc0ce668ee6e6074a65ae19bb71d489cd4d1d10ec3b960`。
+Keil 工程为 `MDK-ARM/h7_mac_ethernet_e7_v1_qvga.uvprojx`，AXF 为 `output/Ethernet/e7_v1_qvga/eth_e7_v1_qvga.axf`。本轮完整编译 0 错误、0 警告，MAP 核对 DMA 区、I2C1 和 AXI JPEG 区均通过。Host 动态 MJPEG 回归和 QVGA 帧尺寸校验通过。AXF SHA-256 为 `31338cdfd8f4edfc621c5abc53afe829f2a5c5a117b0b3b50ed21a6432db5b0f`。读取 AXF 初始化数据确认 `g_e7_period_ms=50`。原 66 ms 固件与构建证据归档在 `output/Ethernet/e7_v1_qvga_15fps/`，原 AXF SHA-256 为 `0398b58d64d0a77517fc0ce668ee6e6074a65ae19bb71d489cd4d1d10ec3b960`。
 
-实板项目为 NOT_RUN。人工下载后等 DHCP 获租，打开新 IP。以 PC 解码尺寸确认 320×240，逐帧校验 CRC32，并观察 `g_e7_camera.capture_fps_milli`、`g_e7_submission_fps_milli` 和 `g_e7_http.stream.current_fps_milli`。三个数值分别是采集、提交和 TCP 确认的帧率乘以 1000。测 50 ms 时，在相机初始化前停在读取地址模式的位置，修改 `g_e7_period_ms` 后继续运行，避免在启动采集后暂停 CPU。
+实板项目为 NOT_RUN。人工下载后等 DHCP 获租，打开新 IP。以 PC 解码尺寸确认 320×240，逐帧校验 CRC32，并观察 `g_e7_camera.capture_fps_milli`、`g_e7_submission_fps_milli` 和 `g_e7_http.stream.current_fps_milli`。三个数值分别是采集、提交和 TCP 确认的帧率乘以 1000。需要对比其他帧间隔时，在相机初始化前停在读取地址模式的位置，修改 `g_e7_period_ms` 后继续运行，避免在启动采集后暂停 CPU。

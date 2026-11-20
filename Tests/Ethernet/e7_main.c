@@ -24,7 +24,7 @@
 
 //帧间隔单位为ms，QVGA版调试时可在初始化前修改
 #ifdef ETH_E7_CAMERA_QVGA
-#define E7_FRAME_PERIOD_MS 66U
+#define E7_FRAME_PERIOD_MS 50U
 #else
 #define E7_FRAME_PERIOD_MS 200U
 #endif
