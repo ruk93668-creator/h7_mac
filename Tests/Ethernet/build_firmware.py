@@ -1,7 +1,7 @@
 """Generate isolated Keil validation targets; never flash automatically."""
 from pathlib import Path
 import subprocess,xml.etree.ElementTree as ET,copy,re,json,sys,hashlib,time
-from e4_sources import PORT, LWIP, LWIP_DHCP, LWIP_TCP, TRANSPORT, BENCH
+from e4_sources import PORT, LWIP, LWIP_DHCP, LWIP_TCP, TRANSPORT, BENCH, BOARD, HTTP
 ROOT=Path(__file__).resolve().parents[2]
 OUT=ROOT/'output/Ethernet';OUT.mkdir(parents=True,exist_ok=True)
 baseline='--baseline' in sys.argv
@@ -9,12 +9,17 @@ smoke='--smoke' in sys.argv
 e35='--e35' in sys.argv
 e42='--e42' in sys.argv
 e5='--e5' in sys.argv
-if sum((baseline, smoke, e35, '--e4' in sys.argv, e42, e5)) > 1:
+e6='--e6' in sys.argv
+tcp=e5 or e6
+dhcp=e42 or tcp
+if sum((baseline, smoke, e35, '--e4' in sys.argv, e42, e5, e6)) > 1:
     raise SystemExit('choose only one validation variant')
-e4='--e4' in sys.argv or e42 or e5
-name='baseline' if baseline else 'e35' if e35 else 'e5' if e5 else 'e42' if e42 else 'e4' if e4 else 'smoke' if smoke else 'integrated'
-lwip_sources=LWIP + (LWIP_DHCP if e42 or e5 else []) + (LWIP_TCP if e5 else [])
-bench_sources=PORT+(TRANSPORT+BENCH+['Tests/Ethernet/e5_main.c'] if e5 else ['Tests/Ethernet/e4_main.c'])
+e4='--e4' in sys.argv or dhcp
+name='baseline' if baseline else 'e35' if e35 else 'e6' if e6 else 'e5' if e5 else 'e42' if e42 else 'e4' if e4 else 'smoke' if smoke else 'integrated'
+lwip_sources=LWIP + (LWIP_DHCP if dhcp else []) + (LWIP_TCP if tcp else [])
+bench_sources=PORT+['Tests/Ethernet/'+(name if tcp else 'e4')+'_main.c']
+if tcp:
+    bench_sources+=TRANSPORT+BOARD+(HTTP if e6 else BENCH)
 git=['git','-c','safe.directory='+ROOT.as_posix()]
 project_bytes=subprocess.check_output(git+['show','b282c7c:MDK-ARM/h7_mac.uvprojx'],cwd=ROOT) if baseline else (ROOT/'MDK-ARM/h7_mac.uvprojx').read_bytes()
 root=ET.fromstring(project_bytes);targets=root.find('Targets')
@@ -76,11 +81,11 @@ if e4:
         '../Drivers/STM32H7xx_HAL_Driver/Inc','../Drivers/STM32H7xx_HAL_Driver/Inc/Legacy',
         '../Drivers/CMSIS/Device/ST/STM32H7xx/Include','../Drivers/CMSIS/Include'))
     controls.find('MiscControls').text=''
-    if e42 or e5:
+    if dhcp:
         define=controls.find('Define')
-        define.text=(define.text or '')+',ETH_LWIP_DHCP'+(',ETH_LWIP_E5' if e5 else '')
+        define.text=(define.text or '')+',ETH_LWIP_DHCP'+(',ETH_LWIP_E5' if tcp else '')
     t.find('.//LDads/Misc').text='--keep=*(.ethernet_dma)'
-    scatter=ROOT/'Tests/Ethernet'/('e5.sct' if e5 else 'e4.sct')
+    scatter=ROOT/'Tests/Ethernet'/((name if tcp else 'e4')+'.sct')
     t.find('.//LDads/ScatterFile').text=str(scatter)
     for label, paths in [('Ethernet port and bench', bench_sources),
                          ('lwIP 2.2.1', lwip_sources)]:
@@ -107,6 +112,8 @@ if e4:
     inputs += list((ROOT/'Platform/Ethernet/arch').glob('*.h'))
     inputs += list((ROOT/'ThirdParty/lwip/src/include').rglob('*.h'))
     inputs += [ROOT/path for path in lwip_sources]
+if e6:
+    inputs += sorted((ROOT/'Tests/Ethernet/e6_jpeg_fixtures').glob('*'))
 def hashes():
     return {p.relative_to(ROOT).as_posix():hashlib.sha256(p.read_bytes()).hexdigest() for p in inputs}
 before=hashes()
@@ -138,13 +145,15 @@ if not baseline:
         result['test_cache_link_valid']=bool(fresh and re.search(r'Execution Region RW_E35_CACHE \(Exec base: 0x24010000.*Max: 0x00010000',map_text) and re.search(r's_tx\s+0x24010000\s+Data\s+1536',map_text) and re.search(r's_rx\s+0x24010600\s+Data\s+1536',map_text))
     if e4:
         symbols=('s_network','ram_heap','memp_memory_PBUF_POOL_base')
-        if e42 or e5:
+        if dhcp:
             symbols+=('memp_memory_UDP_PCB_base','memp_memory_SYS_TIMEOUT_base')
-        if e5:
+        if tcp:
             symbols+=('memp_memory_TCP_PCB_base','memp_memory_TCP_PCB_LISTEN_base',
-                      'memp_memory_TCP_SEG_base','s_connections','s_receive_data','s_channels')
-        addresses={symbol:re.search(r'^\s*'+symbol+r'\s+(0x[\da-f]+)\s+Data\b',
-                                   map_text,re.M|re.I) for symbol in symbols}
+                      'memp_memory_TCP_SEG_base','s_connections','s_receive_data')
+            symbols+=('s_http',) if e6 else ('s_channels',)
+        addresses={symbol:re.search(r'^\s*'+symbol+r'\s+(0x[\da-f]+)\s+Data\b'+
+                    (r'[^\n]*\s'+(name if tcp else 'e4')+r'_main\.o\(' if symbol == 's_network' else ''),
+                    map_text,re.M|re.I) for symbol in symbols}
         result['e4_cpu_memory']={symbol:int(match[1],16) if match else None
                                  for symbol,match in addresses.items()}
         cache=re.search(r'Execution Region RW_E4_CACHE \(Exec base: 0x24010000.*Size: (0x[\da-f]+), Max: 0x00010000',
@@ -153,10 +162,15 @@ if not baseline:
             all(address is not None and 0x24010000 <= address < 0x24020000
                 for address in result['e4_cpu_memory'].values()) and
             result['e4_cpu_memory']['s_network'] % 32 == 0)
-        if e5:
-            result['e5_cache_used']=int(cache[1],16) if cache else None
-            result['e5_cache_free']=0x10000-int(cache[1],16) if cache else None
-            result['e4_cpu_link_valid'] &= bool(cache and result['e5_cache_free'] >= 8192)
+        if tcp:
+            result[name+'_cache_used']=int(cache[1],16) if cache else None
+            result[name+'_cache_free']=0x10000-int(cache[1],16) if cache else None
+            result['e4_cpu_link_valid'] &= bool(cache and result[name+'_cache_free'] >= 8192)
+        if e6:
+            jpeg=re.findall(r'^\s*(e6_jpeg_[0-7])\s+(0x[\da-f]+)\s+Data\s+(\d+)',map_text,re.M|re.I)
+            result['e6_jpeg_symbols']={symbol:{'address':addr,'bytes':int(size)} for symbol,addr,size in jpeg}
+            result['e4_cpu_link_valid'] &= len(result['e6_jpeg_symbols']) == 8 and all(
+                0x08000000 <= int(item['address'],16) < 0x08100000 for item in result['e6_jpeg_symbols'].values())
 (OUT/(name+'_result.json')).write_text(json.dumps(result,indent=2),encoding='utf-8')
 print(json.dumps(result),flush=True)
 if not m or m.groups()!=('0','0') or r.returncode!=0 or not result['source_stable'] or (not baseline and not result['dma_link_valid']) or (e35 and not result['test_cache_link_valid']) or (e4 and not result['e4_cpu_link_valid']):

@@ -216,6 +216,10 @@ err_t eth_tcp_server_start(struct netif *netif, uint16_t port)
 	pcb = tcp_new_ip_type(IPADDR_TYPE_V4);
 	if (!pcb)
 		return ERR_MEM;
+	//Link or address recovery must rebind the listener while old tuples remain in TIME_WAIT.
+#if SO_REUSE
+	ip_set_option(pcb, SOF_REUSEADDR);
+#endif
 	tcp_bind_netif(pcb, netif);
 	result = tcp_bind(pcb, netif_ip4_addr(netif), port);
 	if (result == ERR_OK)

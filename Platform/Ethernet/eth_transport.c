@@ -13,8 +13,9 @@ err_t eth_transport_init(EthNetwork_t *network, const EthTransportConfig_t *conf
 	err_t result;
 	if (s_network)
 		return ERR_USE;
-	if (!network || !network->initialized || !config || !config->udp_port ||
-		!config->udp_receive || (config->client_port && ip4_addr_isany(&config->client_ip)) ||
+	if (!network || !network->initialized || !config ||
+		(config->udp_port && !config->udp_receive) ||
+		(config->client_port && ip4_addr_isany(&config->client_ip)) ||
 		(config->reconnect_ms && (config->reconnect_ms < 100U || config->reconnect_ms > 3600000U)))
 		return ERR_ARG;
 	result = eth_tcp_configure(config->tcp_event, config->arg, config->idle_ms);
@@ -58,7 +59,7 @@ void eth_transport_poll(void)
 	if ((uint32_t)(now - s_service_tick) >= 1000U)
 	{
 		s_service_tick = now;
-		if (!s_udp)
+		if (s_config.udp_port && !s_udp)
 		{
 			s_stats.udp_start = eth_udp_start(interface, s_config.udp_port,
 				s_config.udp_receive, s_config.arg);

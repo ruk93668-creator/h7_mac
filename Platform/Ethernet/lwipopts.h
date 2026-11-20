@@ -26,6 +26,7 @@
 #endif
 #ifdef ETH_LWIP_E5
 #define LWIP_TCP 1
+#define SO_REUSE 1
 #define TCP_MSS 1460
 #define TCP_WND (2 * TCP_MSS)
 #define TCP_SND_BUF (2 * TCP_MSS)

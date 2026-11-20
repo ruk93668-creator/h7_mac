@@ -1,0 +1,31 @@
+; E6 independent bench; same DMA and CPU cache window addresses as E4.
+LR_IROM1 0x08000000 0x00100000
+{
+    ER_IROM1 0x08000000 0x00100000
+    {
+        *.o (RESET, +First)
+        *(InRoot$$Sections)
+        .ANY (+RO)
+    }
+
+    RW_ETHERNET_DMA 0x24078000 UNINIT 0x00008000
+    {
+        *(.ethernet_dma)
+    }
+
+    RW_E4_CACHE 0x24010000 0x00010000
+    {
+        e6_main.o (+RW +ZI)
+        eth_http.o (+RW +ZI)
+        eth_tcp.o (+RW +ZI)
+        eth_udp.o (+RW +ZI)
+        eth_transport.o (+RW +ZI)
+        mem.o (+RW +ZI)
+        memp.o (+RW +ZI)
+    }
+
+    RW_IRAM1 0x20000000 0x00020000
+    {
+        .ANY (+RW +ZI)
+    }
+}
