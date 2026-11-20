@@ -65,3 +65,13 @@ python -B Tests/Ethernet/run_e6_host.py --dynamic --qvga
 Keil 工程为 `MDK-ARM/h7_mac_ethernet_e7_v1_qvga.uvprojx`，AXF 为 `output/Ethernet/e7_v1_qvga/eth_e7_v1_qvga.axf`。本轮完整编译 0 错误、0 警告，MAP 核对 DMA 区、I2C1 和 AXI JPEG 区均通过。Host 动态 MJPEG 回归和 QVGA 帧尺寸校验通过。AXF SHA-256 为 `31338cdfd8f4edfc621c5abc53afe829f2a5c5a117b0b3b50ed21a6432db5b0f`。读取 AXF 初始化数据确认 `g_e7_period_ms=50`。原 66 ms 固件与构建证据归档在 `output/Ethernet/e7_v1_qvga_15fps/`，原 AXF SHA-256 为 `0398b58d64d0a77517fc0ce668ee6e6074a65ae19bb71d489cd4d1d10ec3b960`。
 
 实板项目为 NOT_RUN。人工下载后等 DHCP 获租，打开新 IP。以 PC 解码尺寸确认 320×240，逐帧校验 CRC32，并观察 `g_e7_camera.capture_fps_milli`、`g_e7_submission_fps_milli` 和 `g_e7_http.stream.current_fps_milli`。三个数值分别是采集、提交和 TCP 确认的帧率乘以 1000。需要对比其他帧间隔时，在相机初始化前停在读取地址模式的位置，修改 `g_e7_period_ms` 后继续运行，避免在启动采集后暂停 CPU。
+
+## V1 20 fps DMA FIFO 故障对照
+
+板上记录。在 320×240 / 50 ms 配置下，关闭网页空跑 60 秒期间采集帧数持续增长，断点未触发。保持同一轮运行，打开网页后立即命中 JPEG 连续采集的保护性停机前断点。Locals 记录 `events.flags=0x02`、`result=-9`、`dcmi_error=0`、`dma_error=0x02`，复现 DMA1 Stream0 的 `HAL_DMA_ERROR_FE`。打开页面同时触发 CPU 读取 SDRAM、JPEG 校验复制及 TCP 发送，现有结果不能再细分触发条件。
+
+加入 E7 独立诊断开关。人工下载新版后停在 `e7_main.c` 读取地址模式的行，设置 `g_e7_copy_only=1`，保持 `g_e7_period_ms=50`，继续运行。该模式保留 Ethernet 基础轮询和 DHCP，每个周期走与 MJPEG 相同的取帧、读 SDRAM、复制到私有 AXI 缓冲、计算 CRC 和归还流程。采样结束立即释放私有租约；HTTP/TCP 应用未启动。预期 `g_e7_copy_attempts` 和 `g_e7_camera.copies` 持续增长，`g_e7_transport.listening=0`。保持网页关闭，观察 60 秒并保留首次错误的 Locals。默认 `g_e7_copy_only=0`，运行原网页路径。
+
+如果只复制也再现 `dma_error=0x02`，本轮能证明 HTTP/TCP 发送不是触发的必要条件。如果未复现，只能说明该次复制对照窗口稳定，需要按相同帧数和时长复比。实板复制对照为 NOT_RUN，生产 Camera 和 Ethernet 驱动保持原样。
+
+编译 0 错误、0 警告，既有动态 MJPEG 与相机取帧归还 Host 回归通过。新版 AXF SHA-256 为 `73d52c6f6b27ead8e2353c0b44cd83d51bfb5937553b50bee8163098b91a87ee`，原 20 fps 板测固件和 MAP 归档于 `output/Ethernet/e7_v1_qvga_before_copy_probe/`。

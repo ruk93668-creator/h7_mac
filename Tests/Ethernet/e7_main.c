@@ -40,6 +40,9 @@ volatile SysResult_t g_e7_sdram_result, g_e7_camera_init, g_e7_command_result;
 volatile int32_t g_e7_result;
 volatile uint32_t g_e7_mode = ETH_ADDRESS_DHCP;
 volatile uint16_t g_e7_period_ms = E7_FRAME_PERIOD_MS;
+//初始化前设为1时，只复制校验JPEG并归还缓冲，不启动HTTP
+volatile uint32_t g_e7_copy_only;
+volatile uint32_t g_e7_copy_attempts;
 volatile uint32_t g_e7_command; /* 1 Stop, 2 Restart */
 volatile uint16_t g_e7_sensor_id;
 volatile uint32_t g_e7_heartbeat, g_e7_ccr, g_e7_dcmi_cr, g_e7_dma_cr;
@@ -157,23 +160,41 @@ static SysResult_t E7CameraInit(void)
 	return E7Start();
 }
 
+//复用网页发送前的取帧、复制、校验及归还路径
+static void E7CopyOnce(void)
+{
+	EthMjpegFrame_t frame;
+	uint32_t lease;
+
+	++g_e7_copy_attempts;
+	if (E7Camera_Acquire(&s_provider, &frame, &lease) == ETH_MJPEG_ACQUIRED)
+		E7Camera_Release(&s_provider, lease);
+}
+
 int main(void)
 {
 	EthNetworkAddressConfig_t config = {.mode = ETH_ADDRESS_DHCP};
 	const EthMjpegSource_t source = {&s_provider, E7Camera_Acquire, E7Camera_Release};
 	uint32_t last = 0U;
 	uint32_t fps_tick = 0U, prior_submitted = 0U;
+	uint32_t last_copy_tick = 0U;
+	uint16_t period_ms;
+	bool copy_only;
 	if (!eth_test_board_init_with_mpu(E7Mpu) || !eth_memory_valid() ||
 		(uintptr_t)g_e7_jpeg != E7_NETWORK_START || g_e7_mode > ETH_ADDRESS_DHCP)
 		eth_lwip_assert("E7 setup", __FILE__, __LINE__);
 	config.mode = (EthNetworkAddressMode_t)g_e7_mode;
+	copy_only = g_e7_copy_only != 0U;
+	period_ms = g_e7_period_ms;
+	if (copy_only && period_ms == 0U)
+		eth_lwip_assert("E7 copy period", __FILE__, __LINE__);
 	config.timeout_ms = 30000U;
 	IP4_ADDR(&config.ip, 192, 168, 50, 2);
 	IP4_ADDR(&config.mask, 255, 255, 255, 0);
 	g_e7_camera_init = E7CameraInit();
 	g_e7_result = eth_network_init_address(&s_network, s_mac, &config);
-	if (g_e7_result == ERR_OK)
-		g_e7_result = eth_http_init_source(&s_network, &source, g_e7_period_ms);
+	if (g_e7_result == ERR_OK && !copy_only)
+		g_e7_result = eth_http_init_source(&s_network, &source, period_ms);
 	if (g_e7_result != ERR_OK)
 	{
 		if (s_camera_initialized)
@@ -194,8 +215,16 @@ int main(void)
 		if (s_camera_initialized)
 			E7Camera_Poll(&s_provider, now);
 		eth_network_poll(&s_network);
-		eth_transport_poll();
-		eth_http_poll();
+		if (!copy_only)
+		{
+			eth_transport_poll();
+			eth_http_poll();
+		}
+		else if (s_provider.running && now - last_copy_tick >= period_ms)
+		{
+			last_copy_tick = now;
+			E7CopyOnce();
+		}
 		if (now - last >= 100U)
 		{
 			EthHttpStats_t http;
