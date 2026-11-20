@@ -2,7 +2,9 @@
 #define Stop_Step C1_PreviousStep
 #include "../UsbBulkOutLifecycle/stop_test.c"
 #undef Stop_Step
-volatile uint32_t g_final[16];
+static uint32_t denied_deinit_calls;
+static uint8_t DeniedDeInit(USBD_HandleTypeDef *d,uint8_t c){(void)d;(void)c;++denied_deinit_calls;return USBD_FAIL;}
+volatile uint32_t g_final[18];
 int Final_Step(uint32_t op,uint32_t arg)
 {
  SysResult_t r=SYS_OK;UsbStopProgress_t p;
@@ -17,11 +19,16 @@ int Final_Step(uint32_t op,uint32_t arg)
  else if(op==8U){s_control_busy=true;r=USB_Device_Stop();s_control_busy=false;}
  else if(op==9U)s_stop_progress_seed=UINT32_MAX;
  else if(op==10U){C1_PreviousStep(2U,0U);C1_PreviousStep(3U,0U);}
+ else if(op==11U){s_class_callbacks.DeInit=DeniedDeInit;r=(SysResult_t)Usb_ManagedClassDeInit(&s_device,1U);}
+ else if(op==12U)Usb_Reset();
+ else if(op==13U)Usb_Disconnect();
+ else if(op==14U)r=(USB_Device_AbortEp(2U)==SYS_ERR_BUSY && USB_Device_CloseEp(2U)==SYS_ERR_BUSY && USB_Device_FlushEp(2U)==SYS_ERR_BUSY)?SYS_OK:SYS_ERR_IO;
  (void)USB_Device_GetStopProgress(&p);
  g_final[0]=r;g_final[1]=p.transaction_id;g_final[2]=p.state;g_final[3]=p.endpoint_count;
  g_final[4]=p.pending_count;g_final[5]=p.registered_pending;g_final[6]=p.endpoint_group_proven;
  g_final[7]=p.controller_gate_blocked;g_final[8]=p.first_error;g_final[9]=s_out_slot[2].proof.buffer_owned;
  g_final[10]=s_bulk_in[1].proof.source_owned;g_final[11]=s_class_memory_used;g_final[12]=s_platform_started;
  g_final[13]=NVIC_GetEnableIRQ(OTG_FS_IRQn);g_final[14]=p.endpoints[1].attempt;g_final[15]=p.endpoints[8].attempt;
+ g_final[16]=denied_deinit_calls+g_bulk_unexpected;g_final[17]=s_out_slot[1].proof.buffer_owned;
  return 0;
 }

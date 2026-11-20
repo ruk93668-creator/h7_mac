@@ -563,6 +563,8 @@ SysResult_t USB_Device_AbortEp(uint8_t ep)
 
     //屏蔽USB IRQ，避免取消过程与传输完成同时修改占用状态
     enabled = Usb_Lock();
+    if (s_controller_endpoint_fence && (ep & 0x0FU) != 0U)
+    { Usb_Unlock(enabled); return SYS_ERR_BUSY; }
     if (!s_initialized || !entry->opened)
         result = SYS_ERR_INVALID_STATE;
     else
@@ -847,6 +849,8 @@ USBD_StatusTypeDef USBD_LL_CloseEP(USBD_HandleTypeDef *device, uint8_t ep)
 
     //在USB IRQ保护下检查并提交端点状态，退出时恢复原使能状态
     enabled = Usb_Lock();
+    if (s_controller_endpoint_fence && (ep & 0x0FU) != 0U)
+    { Usb_Unlock(enabled); return Usb_LlResult(SYS_ERR_BUSY); }
     if (entry->opened && entry->busy && (ep & 0x0FU) != 0U)
     {
 
@@ -893,6 +897,8 @@ USBD_StatusTypeDef USBD_LL_FlushEP(USBD_HandleTypeDef *device, uint8_t ep)
 
     //在USB IRQ保护下检查并提交端点状态，退出时恢复原使能状态
     enabled = Usb_Lock();
+    if (s_controller_endpoint_fence && (ep & 0x0FU) != 0U)
+    { Usb_Unlock(enabled); return Usb_LlResult(SYS_ERR_BUSY); }
     if (!s_initialized || !entry->opened)
     {
         Usb_Unlock(enabled);
@@ -927,6 +933,8 @@ USBD_StatusTypeDef USBD_LL_StallEP(USBD_HandleTypeDef *device, uint8_t ep)
 
     //在USB IRQ保护下检查并提交端点状态，退出时恢复原使能状态
     enabled = Usb_Lock();
+    if (s_controller_endpoint_fence && (ep & 0x0FU) != 0U)
+    { Usb_Unlock(enabled); return Usb_LlResult(SYS_ERR_BUSY); }
     if (!s_initialized || !entry->opened)
     {
         Usb_Unlock(enabled);
@@ -953,6 +961,8 @@ USBD_StatusTypeDef USBD_LL_ClearStallEP(USBD_HandleTypeDef *device, uint8_t ep)
 
     //在USB IRQ保护下检查并提交端点状态，退出时恢复原使能状态
     enabled = Usb_Lock();
+    if (s_controller_endpoint_fence && (ep & 0x0FU) != 0U)
+    { Usb_Unlock(enabled); return Usb_LlResult(SYS_ERR_BUSY); }
     if (!s_initialized || !entry->opened)
     {
         Usb_Unlock(enabled);
@@ -1642,10 +1652,10 @@ static void Usb_Reset(void)
 
     Usb_TraceLifecycle(USB_TRACE_RESET_BEGIN, 0U);
     Usb_InvalidateControl();
-    if (BSP_USB_BulkInHasReferences() || BSP_USB_BulkOutHasReferences())
+    if (s_controller_endpoint_fence || BSP_USB_BulkInHasReferences() || BSP_USB_BulkOutHasReferences())
     {
         s_stop_required = true;
-        s_last_result = SYS_ERR_BUSY;
+        s_last_result = s_controller_endpoint_fence ? SYS_ERR_NOT_SUPPORTED : SYS_ERR_BUSY;
         Usb_Notify(USB_DEVICE_EVENT_STATE);
         return;
     }
@@ -1708,10 +1718,10 @@ static void Usb_Disconnect(void)
 {
     Usb_TraceLifecycle(USB_TRACE_DISCONNECT_BEGIN, 0U);
     Usb_InvalidateControl();
-    if (BSP_USB_BulkInHasReferences() || BSP_USB_BulkOutHasReferences())
+    if (s_controller_endpoint_fence || BSP_USB_BulkInHasReferences() || BSP_USB_BulkOutHasReferences())
     {
         s_stop_required = true;
-        s_last_result = SYS_ERR_BUSY;
+        s_last_result = s_controller_endpoint_fence ? SYS_ERR_NOT_SUPPORTED : SYS_ERR_BUSY;
         Usb_Notify(USB_DEVICE_EVENT_STATE);
         return;
     }
@@ -2233,10 +2243,10 @@ static uint8_t Usb_ManagedClassDeInit(USBD_HandleTypeDef *device, uint8_t config
     Usb_InvalidateControl();
 
     //Core同步DeInit不能代替Task分阶段停止；失败锁定并保留Class与缓冲区
-    if (BSP_USB_BulkInHasReferences() || BSP_USB_BulkOutHasReferences())
+    if (s_controller_endpoint_fence || BSP_USB_BulkInHasReferences() || BSP_USB_BulkOutHasReferences())
     {
         s_stop_required = true;
-        s_last_result = SYS_ERR_BUSY;
+        s_last_result = s_controller_endpoint_fence ? SYS_ERR_NOT_SUPPORTED : SYS_ERR_BUSY;
         return USBD_BUSY;
     }
 

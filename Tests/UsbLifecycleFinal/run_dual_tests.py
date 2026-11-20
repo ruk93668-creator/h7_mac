@@ -33,7 +33,7 @@ with axf.open('rb') as f:
 sys.path.insert(0,str(ROOT/'Tests/UsbBulkOutLifecycle'))
 from harness import VM,BASE,GINT,MASK,DCTL
 from unicorn.arm_const import UC_ARM_REG_PRIMASK
-fields='result intent state endpoints pending registered proven blocked first_error out_owned in_owned class_memory started irq out_attempt in_attempt'.split()
+fields='result intent state endpoints pending registered proven blocked first_error out_owned in_owned class_memory started irq out_attempt in_attempt forbidden_release_calls out1_owned'.split()
 class DualVM(VM):
  def read(self,cpu,access,a,size,value,ctx):
   # Explicit MMIO evidence; not software proof writes.
@@ -44,7 +44,7 @@ class DualVM(VM):
   super().read(cpu,access,a,size,value,ctx)
  def event_in(self,ep,bits):self.wr(BASE+0x908+32*ep,self.rd(BASE+0x908+32*ep)|bits)
 rows=[]
-names=['both directions Pending same Controller identity','completion and Commit without unsafe Controller handoff','OUT timeout retains buffer while IN drains','IN disable timeout retains source while OUT drains','Reset keeps old resources','Disconnect keeps old resources','submission fence blocks both directions','ordinary reentrant Busy is not Pending','Controller identity exhaustion','foreign endpoint Attempt is not silently adopted','repeat blocked Stop preserves identity']
+names=['both directions Pending same Controller identity','completion and Commit without unsafe Controller handoff','OUT timeout retains buffer while IN drains','IN disable timeout retains source while OUT drains','Reset keeps old resources','Disconnect keeps old resources','submission fence blocks both directions','ordinary reentrant Busy is not Pending','Controller identity exhaustion','foreign endpoint Attempt is not silently adopted','repeat blocked Stop preserves identity','Core DeInit cannot bypass Controller fence','Reset after endpoint proof keeps Class','Disconnect after proof keeps Class','legacy release APIs cannot bypass consumer gate','never armed IN still has real stop proof','three active endpoint transfers share one intent']
 for case,name in enumerate(names,1):
  vm=DualVM(symbols,sections,'Final_Step',{'g_final':fields});checks=[];error=None
  def step(op,arg=0):return vm.step(op,arg)['g_final']
@@ -56,7 +56,9 @@ for case,name in enumerate(names,1):
   elif case==9:
    step(9);v=step(3);eq('exhaustion rejected',v['result'],0xfffffffa);eq('no identity reuse',v['intent'],0)
   else:
-   eq('OUT admitted',step(1)['result'],0);eq('IN admitted',step(2)['result'],0)
+   eq('OUT admitted',step(1)['result'],0)
+   if case!=16:eq('IN admitted',step(2)['result'],0)
+   if case==17:eq('second OUT active',step(5)['result'],0)
    if case==10:step(10)
    if case==3:vm.auto_nak=False
    if case==4:vm.hold_in=True
@@ -74,10 +76,16 @@ for case,name in enumerate(names,1):
      v=step(3);eq('same intent across rounds',v['intent'],identity)
      if v['blocked']:break
     if case in (3,4):step(7,1001);v=step(3)
-    if case in (1,2,7,11):
+    if case in (1,2,7,11,12,13,14,15,16,17):
      eq('endpoint proofs collected',v['proven'],1);eq('EP0/consumer gate enforced',v['blocked'],1)
      eq('no false Controller success',v['result'],0xfffffff9);eq('OUT owner retired by real Commit',v['out_owned'],0);eq('IN owner retired by real Commit',v['in_owned'],0)
      if case==11:v=step(3);eq('repeat keeps intent',v['intent'],identity)
+     if case==12:v=step(11);eq('synchronous Core DeInit vetoed',v['result'],1)
+     if case in (13,14):v=step(12 if case==13 else 13)
+     if case==15:v=step(14);eq('all legacy resource APIs refuse',v['result'],0)
+     eq('no forbidden Core or Class release callback',v['forbidden_release_calls'],0)
+     if case==16:eq('unarmed IN used real attempt',v['in_attempt']!=0,True)
+     if case==17:eq('second OUT retired only by proof',v['out1_owned'],0)
     elif case==3:eq('OUT timeout retains old buffer',v['out_owned'],1);eq('independent IN drained',v['in_owned'],0)
     elif case==4:eq('IN timeout retains source',v['in_owned'],1);eq('independent OUT drained',v['out_owned'],0)
     else:eq('lifecycle boundary retains OUT',v['out_owned'],1)
