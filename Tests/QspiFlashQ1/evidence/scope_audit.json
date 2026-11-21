@@ -1,0 +1,14 @@
+{
+  "cm4_target_unchanged": true,
+  "cm7_only_three_file_entries": true,
+  "hal_conf_only_switch": true,
+  "only_flash_opcode": "0x9F",
+  "private_hal_handle": true,
+  "static_allocation": true,
+  "sha256": {
+    "CM7/BSP/bsp_qspi.c": "b3746d7149abf9b54a860b92c39a648eb68bbd9f7d71a64ca5284165bce6c4cf",
+    "CM7/BSP/bsp_qspi.h": "ed7359f1c685289d46ba3442db0200b890a7f0b7693491d50fa82a995157d0d5",
+    "CM7/Core/Inc/stm32h7xx_hal_conf.h": "079a8b814bbbfdf026c830d38653d127b24dd1df56e2837e791bf55d6a6abab7",
+    "MDK-ARM/h7_mac.uvprojx": "396de308f8dfc3ecf62359f48e81b38f20b5b1d360c963110c26133c786425ae"
+  }
+}

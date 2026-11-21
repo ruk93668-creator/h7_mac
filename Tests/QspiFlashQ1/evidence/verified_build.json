@@ -1,0 +1,54 @@
+[
+  {
+    "target": "h7_mac_CM7",
+    "command": [
+      "D:/32/UV4/UV4.exe",
+      "-j0",
+      "-r",
+      "D:\\32\\STM32H7\\h7_mac_qflash\\output\\QspiFlashQ1\\verified\\MDK-ARM\\h7_mac.uvprojx",
+      "-t",
+      "h7_mac_CM7",
+      "-o",
+      "D:\\32\\STM32H7\\h7_mac_qflash\\output\\QspiFlashQ1\\verified\\h7_mac_CM7.log"
+    ],
+    "exit": 0,
+    "counts": [
+      0,
+      0
+    ],
+    "size": [
+      137690,
+      3114,
+      1340,
+      100932
+    ],
+    "log_sha256": "eb8a036ed82d589e9b00bdd5391012a43471217ac75425e7a6e42a0ffb04c904",
+    "pass": true
+  },
+  {
+    "target": "h7_mac_CM4",
+    "command": [
+      "D:/32/UV4/UV4.exe",
+      "-j0",
+      "-r",
+      "D:\\32\\STM32H7\\h7_mac_qflash\\output\\QspiFlashQ1\\verified\\MDK-ARM\\h7_mac.uvprojx",
+      "-t",
+      "h7_mac_CM4",
+      "-o",
+      "D:\\32\\STM32H7\\h7_mac_qflash\\output\\QspiFlashQ1\\verified\\h7_mac_CM4.log"
+    ],
+    "exit": 0,
+    "counts": [
+      0,
+      0
+    ],
+    "size": [
+      26302,
+      1438,
+      936,
+      3576
+    ],
+    "log_sha256": "46800a3169449545359ef92af1c4a50101139aadf5c98ef1b5767a315c1db908",
+    "pass": true
+  }
+]

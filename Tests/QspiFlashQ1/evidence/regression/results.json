@@ -1,0 +1,44 @@
+[
+  {
+    "variant": "baseline",
+    "suite": "Tests/SdramRange/run_tests.py",
+    "exit": 1,
+    "pass_": false,
+    "log": "output\\QspiFlashQ1\\regression\\baseline_SdramRange.log"
+  },
+  {
+    "variant": "baseline",
+    "suite": "Tests/DcmiReplaceTarget/run_tests.py",
+    "exit": 1,
+    "pass_": false,
+    "log": "output\\QspiFlashQ1\\regression\\baseline_DcmiReplaceTarget.log"
+  },
+  {
+    "variant": "baseline",
+    "suite": "Tests/UsbUvcDescriptors/run_tests.py",
+    "exit": 1,
+    "pass_": false,
+    "log": "output\\QspiFlashQ1\\regression\\baseline_UsbUvcDescriptors.log"
+  },
+  {
+    "variant": "verified",
+    "suite": "Tests/SdramRange/run_tests.py",
+    "exit": 1,
+    "pass_": false,
+    "log": "output\\QspiFlashQ1\\regression\\verified_SdramRange.log"
+  },
+  {
+    "variant": "verified",
+    "suite": "Tests/DcmiReplaceTarget/run_tests.py",
+    "exit": 1,
+    "pass_": false,
+    "log": "output\\QspiFlashQ1\\regression\\verified_DcmiReplaceTarget.log"
+  },
+  {
+    "variant": "verified",
+    "suite": "Tests/UsbUvcDescriptors/run_tests.py",
+    "exit": 1,
+    "pass_": false,
+    "log": "output\\QspiFlashQ1\\regression\\verified_UsbUvcDescriptors.log"
+  }
+]

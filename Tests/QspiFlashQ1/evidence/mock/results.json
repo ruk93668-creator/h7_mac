@@ -1,0 +1,518 @@
+{
+  "cases": 51,
+  "assertions": 981,
+  "passed": 51,
+  "rows": [
+    {
+      "case": 0,
+      "name": "normal",
+      "assertions": 25,
+      "failure_line": 0,
+      "commands": 1,
+      "hal_init_calls": 1,
+      "error": null,
+      "pass": true
+    },
+    {
+      "case": 1,
+      "name": "duplicate",
+      "assertions": 26,
+      "failure_line": 0,
+      "commands": 1,
+      "hal_init_calls": 1,
+      "error": null,
+      "pass": true
+    },
+    {
+      "case": 2,
+      "name": "deinit and reinit",
+      "assertions": 48,
+      "failure_line": 0,
+      "commands": 2,
+      "hal_init_calls": 2,
+      "error": null,
+      "pass": true
+    },
+    {
+      "case": 3,
+      "name": "GPIO prepare failure",
+      "assertions": 9,
+      "failure_line": 0,
+      "commands": 0,
+      "hal_init_calls": 0,
+      "error": null,
+      "pass": true
+    },
+    {
+      "case": 4,
+      "name": "MSP absent",
+      "assertions": 17,
+      "failure_line": 0,
+      "commands": 0,
+      "hal_init_calls": 1,
+      "error": null,
+      "pass": true
+    },
+    {
+      "case": 5,
+      "name": "MSP failure HAL_OK",
+      "assertions": 17,
+      "failure_line": 0,
+      "commands": 0,
+      "hal_init_calls": 1,
+      "error": null,
+      "pass": true
+    },
+    {
+      "case": 6,
+      "name": "HAL init error",
+      "assertions": 17,
+      "failure_line": 0,
+      "commands": 0,
+      "hal_init_calls": 1,
+      "error": null,
+      "pass": true
+    },
+    {
+      "case": 7,
+      "name": "config mismatch",
+      "assertions": 17,
+      "failure_line": 0,
+      "commands": 0,
+      "hal_init_calls": 1,
+      "error": null,
+      "pass": true
+    },
+    {
+      "case": 8,
+      "name": "ID zero",
+      "assertions": 24,
+      "failure_line": 0,
+      "commands": 1,
+      "hal_init_calls": 1,
+      "error": null,
+      "pass": true
+    },
+    {
+      "case": 9,
+      "name": "ID FF",
+      "assertions": 24,
+      "failure_line": 0,
+      "commands": 1,
+      "hal_init_calls": 1,
+      "error": null,
+      "pass": true
+    },
+    {
+      "case": 10,
+      "name": "ID wrong",
+      "assertions": 24,
+      "failure_line": 0,
+      "commands": 1,
+      "hal_init_calls": 1,
+      "error": null,
+      "pass": true
+    },
+    {
+      "case": 11,
+      "name": "command busy",
+      "assertions": 23,
+      "failure_line": 0,
+      "commands": 1,
+      "hal_init_calls": 1,
+      "error": null,
+      "pass": true
+    },
+    {
+      "case": 12,
+      "name": "command error",
+      "assertions": 22,
+      "failure_line": 0,
+      "commands": 1,
+      "hal_init_calls": 1,
+      "error": null,
+      "pass": true
+    },
+    {
+      "case": 13,
+      "name": "command timeout",
+      "assertions": 23,
+      "failure_line": 0,
+      "commands": 1,
+      "hal_init_calls": 1,
+      "error": null,
+      "pass": true
+    },
+    {
+      "case": 14,
+      "name": "receive busy",
+      "assertions": 25,
+      "failure_line": 0,
+      "commands": 1,
+      "hal_init_calls": 1,
+      "error": null,
+      "pass": true
+    },
+    {
+      "case": 15,
+      "name": "receive error",
+      "assertions": 24,
+      "failure_line": 0,
+      "commands": 1,
+      "hal_init_calls": 1,
+      "error": null,
+      "pass": true
+    },
+    {
+      "case": 16,
+      "name": "receive timeout",
+      "assertions": 25,
+      "failure_line": 0,
+      "commands": 1,
+      "hal_init_calls": 1,
+      "error": null,
+      "pass": true
+    },
+    {
+      "case": 17,
+      "name": "PRIMASK",
+      "assertions": 6,
+      "failure_line": 0,
+      "commands": 0,
+      "hal_init_calls": 0,
+      "error": null,
+      "pass": true
+    },
+    {
+      "case": 18,
+      "name": "BASEPRI",
+      "assertions": 6,
+      "failure_line": 0,
+      "commands": 0,
+      "hal_init_calls": 0,
+      "error": null,
+      "pass": true
+    },
+    {
+      "case": 19,
+      "name": "FAULTMASK",
+      "assertions": 6,
+      "failure_line": 0,
+      "commands": 0,
+      "hal_init_calls": 0,
+      "error": null,
+      "pass": true
+    },
+    {
+      "case": 20,
+      "name": "TIM stopped",
+      "assertions": 6,
+      "failure_line": 0,
+      "commands": 0,
+      "hal_init_calls": 0,
+      "error": null,
+      "pass": true
+    },
+    {
+      "case": 21,
+      "name": "TIM IRQ off",
+      "assertions": 6,
+      "failure_line": 0,
+      "commands": 0,
+      "hal_init_calls": 0,
+      "error": null,
+      "pass": true
+    },
+    {
+      "case": 22,
+      "name": "NVIC off",
+      "assertions": 6,
+      "failure_line": 0,
+      "commands": 0,
+      "hal_init_calls": 0,
+      "error": null,
+      "pass": true
+    },
+    {
+      "case": 23,
+      "name": "operation busy",
+      "assertions": 7,
+      "failure_line": 0,
+      "commands": 0,
+      "hal_init_calls": 0,
+      "error": null,
+      "pass": true
+    },
+    {
+      "case": 24,
+      "name": "HCLK zero",
+      "assertions": 6,
+      "failure_line": 0,
+      "commands": 0,
+      "hal_init_calls": 0,
+      "error": null,
+      "pass": true
+    },
+    {
+      "case": 25,
+      "name": "clock round up",
+      "assertions": 25,
+      "failure_line": 0,
+      "commands": 1,
+      "hal_init_calls": 1,
+      "error": null,
+      "pass": true
+    },
+    {
+      "case": 26,
+      "name": "reentry",
+      "assertions": 26,
+      "failure_line": 0,
+      "commands": 1,
+      "hal_init_calls": 1,
+      "error": null,
+      "pass": true
+    },
+    {
+      "case": 27,
+      "name": "tick wrap",
+      "assertions": 25,
+      "failure_line": 0,
+      "commands": 1,
+      "hal_init_calls": 1,
+      "error": null,
+      "pass": true
+    },
+    {
+      "case": 28,
+      "name": "short receive",
+      "assertions": 24,
+      "failure_line": 0,
+      "commands": 1,
+      "hal_init_calls": 1,
+      "error": null,
+      "pass": true
+    },
+    {
+      "case": 29,
+      "name": "wrong length",
+      "assertions": 24,
+      "failure_line": 0,
+      "commands": 1,
+      "hal_init_calls": 1,
+      "error": null,
+      "pass": true
+    },
+    {
+      "case": 30,
+      "name": "shared deadline",
+      "assertions": 26,
+      "failure_line": 0,
+      "commands": 1,
+      "hal_init_calls": 1,
+      "error": null,
+      "pass": true
+    },
+    {
+      "case": 31,
+      "name": "HAL default timeout",
+      "assertions": 18,
+      "failure_line": 0,
+      "commands": 0,
+      "hal_init_calls": 1,
+      "error": null,
+      "pass": true
+    },
+    {
+      "case": 32,
+      "name": "init over budget",
+      "assertions": 18,
+      "failure_line": 0,
+      "commands": 0,
+      "hal_init_calls": 1,
+      "error": null,
+      "pass": true
+    },
+    {
+      "case": 33,
+      "name": "cleanup failure",
+      "assertions": 24,
+      "failure_line": 0,
+      "commands": 1,
+      "hal_init_calls": 1,
+      "error": null,
+      "pass": true
+    },
+    {
+      "case": 34,
+      "name": "receive over budget",
+      "assertions": 25,
+      "failure_line": 0,
+      "commands": 1,
+      "hal_init_calls": 1,
+      "error": null,
+      "pass": true
+    },
+    {
+      "case": 35,
+      "name": "post receive config changed",
+      "assertions": 24,
+      "failure_line": 0,
+      "commands": 1,
+      "hal_init_calls": 1,
+      "error": null,
+      "pass": true
+    },
+    {
+      "case": 36,
+      "name": "context lost",
+      "assertions": 25,
+      "failure_line": 0,
+      "commands": 1,
+      "hal_init_calls": 1,
+      "error": null,
+      "pass": true
+    },
+    {
+      "case": 37,
+      "name": "HAL_OK with error",
+      "assertions": 24,
+      "failure_line": 0,
+      "commands": 1,
+      "hal_init_calls": 1,
+      "error": null,
+      "pass": true
+    },
+    {
+      "case": 38,
+      "name": "foreign clock owner",
+      "assertions": 7,
+      "failure_line": 0,
+      "commands": 0,
+      "hal_init_calls": 0,
+      "error": null,
+      "pass": true
+    },
+    {
+      "case": 39,
+      "name": "controller busy",
+      "assertions": 17,
+      "failure_line": 0,
+      "commands": 0,
+      "hal_init_calls": 1,
+      "error": null,
+      "pass": true
+    },
+    {
+      "case": 40,
+      "name": "ISR",
+      "assertions": 6,
+      "failure_line": 0,
+      "commands": 0,
+      "hal_init_calls": 0,
+      "error": null,
+      "pass": true
+    },
+    {
+      "case": 41,
+      "name": "occupied getters and deinit",
+      "assertions": 28,
+      "failure_line": 0,
+      "commands": 1,
+      "hal_init_calls": 1,
+      "error": null,
+      "pass": true
+    },
+    {
+      "case": 42,
+      "name": "cleanup deadline",
+      "assertions": 29,
+      "failure_line": 0,
+      "commands": 1,
+      "hal_init_calls": 1,
+      "error": null,
+      "pass": true
+    },
+    {
+      "case": 43,
+      "name": "deinit failure",
+      "assertions": 30,
+      "failure_line": 0,
+      "commands": 1,
+      "hal_init_calls": 1,
+      "error": null,
+      "pass": true
+    },
+    {
+      "case": 44,
+      "name": "HAL_ERROR with timeout bit",
+      "assertions": 17,
+      "failure_line": 0,
+      "commands": 0,
+      "hal_init_calls": 1,
+      "error": null,
+      "pass": true
+    },
+    {
+      "case": 45,
+      "name": "RCC mux mismatch",
+      "assertions": 9,
+      "failure_line": 0,
+      "commands": 0,
+      "hal_init_calls": 0,
+      "error": null,
+      "pass": true
+    },
+    {
+      "case": 46,
+      "name": "RCC gate failure",
+      "assertions": 11,
+      "failure_line": 0,
+      "commands": 0,
+      "hal_init_calls": 0,
+      "error": null,
+      "pass": true
+    },
+    {
+      "case": 47,
+      "name": "GPIO speed mismatch",
+      "assertions": 9,
+      "failure_line": 0,
+      "commands": 0,
+      "hal_init_calls": 0,
+      "error": null,
+      "pass": true
+    },
+    {
+      "case": 48,
+      "name": "BASEPRI allows HAL tick",
+      "assertions": 25,
+      "failure_line": 0,
+      "commands": 1,
+      "hal_init_calls": 1,
+      "error": null,
+      "pass": true
+    },
+    {
+      "case": 49,
+      "name": "unexpected DMA enable",
+      "assertions": 24,
+      "failure_line": 0,
+      "commands": 1,
+      "hal_init_calls": 1,
+      "error": null,
+      "pass": true
+    },
+    {
+      "case": 50,
+      "name": "DLR length corruption",
+      "assertions": 22,
+      "failure_line": 0,
+      "commands": 1,
+      "hal_init_calls": 1,
+      "error": null,
+      "pass": true
+    }
+  ],
+  "source_sha256": "b3746d7149abf9b54a860b92c39a648eb68bbd9f7d71a64ca5284165bce6c4cf"
+}

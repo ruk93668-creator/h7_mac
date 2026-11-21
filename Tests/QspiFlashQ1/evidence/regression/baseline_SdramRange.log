@@ -1,0 +1,30 @@
+FMC Bank2 base PASS
+Physical geometry capacity PASS
+Business window exactly 4MiB FAIL
+Media end derives from same window PASS
+Reserved first 1KiB PASS
+MPU base alignment PASS
+Five 600KiB stream buffers FAIL
+Buffer 0 aligned and in window PASS
+Buffer 1 aligned and in window PASS
+Buffer 2 aligned and in window PASS
+Buffer 3 aligned and in window PASS
+Buffer 4 aligned and in window PASS
+Buffer 5 aligned and in window PASS
+Buffer 6 aligned and in window PASS
+No stream buffer overlap PASS
+Exact stream end FAIL
+Buffer0 exact address PASS
+Buffer1 exact address PASS
+Buffer2 exact address PASS
+Window tail bounded FAIL
+Snapshot preserved and bounded PASS
+Window smaller than physical chip PASS
+64KiB window cannot fit stream FAIL
+zero window rejected FAIL
+non power-of-two window rejected FAIL
+window beyond chip rejected FAIL
+Traceback (most recent call last):
+  File "D:\32\STM32H7\h7_mac_qflash\output\QspiFlashQ1\baseline\Tests\SdramRange\run_tests.py", line 54, in <module>
+    assert not result['fail']
+AssertionError
