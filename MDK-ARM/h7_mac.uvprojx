@@ -3744,6 +3744,11 @@
               <FilePath>../Drivers/STM32H7xx_HAL_Driver/Src/stm32h7xx_hal_sd.c</FilePath>
             </File>
             <File>
+              <FileName>stm32h7xx_hal_qspi.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>../Drivers/STM32H7xx_HAL_Driver/Src/stm32h7xx_hal_qspi.c</FilePath>
+            </File>
+            <File>
               <FileName>stm32h7xx_ll_sdmmc.c</FileName>
               <FileType>1</FileType>
               <FilePath>../Drivers/STM32H7xx_HAL_Driver/Src/stm32h7xx_ll_sdmmc.c</FilePath>
@@ -4761,9 +4766,19 @@
               <FilePath>../CM7/BSP/bsp_sdmmc.c</FilePath>
             </File>
             <File>
+              <FileName>bsp_qspi.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>../CM7/BSP/bsp_qspi.c</FilePath>
+            </File>
+            <File>
               <FileName>bsp_sdmmc.h</FileName>
               <FileType>5</FileType>
               <FilePath>../CM7/BSP/bsp_sdmmc.h</FilePath>
+            </File>
+            <File>
+              <FileName>bsp_qspi.h</FileName>
+              <FileType>5</FileType>
+              <FilePath>../CM7/BSP/bsp_qspi.h</FilePath>
             </File>
             <File>
               <FileName>bsp_sdmmc_hal_config.h</FileName>
