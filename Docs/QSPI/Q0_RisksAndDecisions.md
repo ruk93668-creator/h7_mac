@@ -5,9 +5,11 @@
 
 ## 1. 事实、建议、假设的界线
 
-已核验事实：当前分支隔离且起点干净；远端 main/QSPI 同 SHA；QSPI HAL 存在但开关和工程接入未启用；当前 RTOS 为静态分配且禁用 Mutex；HAL Tick 使用 TIM6；当前软件候选 GPIO 无已发现直接冲突。
+已核验事实：初轮审计起点分支隔离且工作区干净，彼时远端 main/QSPI 同 SHA（f0ce45f）；随后文档提交 3b3c1d9 已单独推送 QSPI 分支，不能继续将两分支相同视为当前状态。QSPI HAL 存在但开关和工程接入未启用；当前 RTOS 为静态分配且禁用 Mutex；HAL Tick 使用 TIM6；当前软件候选 GPIO 无已发现直接冲突。
 
 设计建议：BSP→Platform→配置 Service 分层；Q1 只做 BSP 和最小编译接入；D1HCLK 分频、间接轮询、合法任务显式初始化；独立测试固件；默认禁写且只允许明确授权区间。
+
+本轮补充（仅文档，待审核）：HAL_QSPI_MspInit 为 void，不能向 HAL Init 直接返回失败。采用 BSP 显式硬件准备返回 SysResult_t、MSP 独立记录检查结果、HAL 返回后复核的契约；仅在时钟/GPIO 符合批准配置、HAL 初始化与只读 JEDEC 成功且无未处理故障时提交 BSP READY。依据与流程详见 ImplementationPlan §2.1–§2.2；尚无实现或测试证据，不能将契约补充等同为风险关闭。
 
 未验证假设：实装确为 W25Q128JVEIQ TR、六脚按候选连接、供电外围合规、30 MHz 可可靠工作、Flash 有可牺牲扇区、独立测试固件可启动。不能拿这些假设作为通过条件。
 
@@ -22,6 +24,8 @@
 | S2 | Tick 被屏蔽导致同步等待失界 / 高 | bsp_sdmmc.c:651，qspi.c:2483 | 上下文检查、禁止等待中暂停 Tick、时限注入测试 |
 | S3 | 单次 HAL 成功误作 Flash 完成 / 高 | qspi.c:973/1056 与设备 BUSY 不同 | WEL/WIP/SUS、读回和故障锁存全流程测试 |
 | S4 | Abort/复位后误报可重用 / 高 | ImplementationPlan §4 | 设备与控制器分别核验，保留未知状态；禁用通用复位恢复 |
+| S5 | void MSP 失败不能直接传播，HAL_OK 被误作初始化成功 / 高 | qspi.c:332–388、:438，qspi.h:564；ImplementationPlan §2.1–§2.2；契约已补充，待审核/实施验证 | 显式准备失败不调用 HAL；本轮 MSP 结果、配置读回、HAL 和 JEDEC 全部成功且无残留故障；完成失败注入证明 |
+| S6 | 首次 HAL Init 覆盖预设 Timeout / 中 | qspi.c:358–359；ImplementationPlan §4；已核实，预算待审核 | 将默认等待上限纳入批准预算并验证；不能靠 Init 前设置短 Timeout 宣称整体有界 |
 | C1 | 共享 PLL 或 GPIO 端口受扰 / 高 | HardwareAudit §4 | 不重配 PLL/整端口；集成与双核访问复查 |
 | C2 | QSPI 频率查询 API 误用 / 中 | rcc_ex.c:1881，无 QSPI 查询分支 | mux 读回、分支计算与配置回读 |
 | C3 | 轮询影响任务响应 / 中 | Q1 尚无测量 | 最坏耗时和共存量测，Q2 再定等待机制 |
@@ -45,6 +49,7 @@
 | --- | --- | --- |
 | Q0 结论 | 五份文档与板级缺口处理 | 待用户/GPT 审核，NOT_VERIFIED |
 | Q1.1 最小生产改动 | BSP 两文件、HAL 开关、CM7 工程源条目及独立测试入口 | 仅有计划，未批准 |
+| Q1.1 初始化成功契约 | ImplementationPlan §2.1–§2.2：硬件准备、MSP 独立状态、配置/HAL/JEDEC 核验、故障不提交 READY | 本轮补充，待审核；未实施、未测试 |
 | 只读实板执行 | 接线/供电证据、固件入口与下载范围 | 未具备完整证据 |
 | Q1.2 Quad 验证 | 普通/四线命令和可区分数据图案、波形 | 未实施 |
 | Q1.3 擦写 | 明确 offset 范围、身份、授权记录、备份及恢复、默认拒绝机制 | 未给地址，未批准 |
