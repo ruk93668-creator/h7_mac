@@ -40,7 +40,7 @@ Q1 不需要新增生产 Initcall。初始化由隔离测试固件的合法任�
 4. HAL 返回后同时检查硬件准备结果、MSP 已执行且成功、HAL 返回/状态/错误、控制器空闲，以及 RCC/GPIO/CR/DCR 的关键配置读回。Q1.1 的首次识别或经完整清理后的重新识别必须使用已确认 RESET 的私有句柄，保证本轮 MSP 确实执行；已经 BSP READY 的重复 Init 直接返回 SYS_ERR_ALREADY_EXISTS，故障态不靠再次调用 Init 绕过恢复。如果 HAL_OK 但 MSP 未执行、MSP 失败或配置不符，也必须返回失败，禁止继续 JEDEC 事务。
 5. 仅在上述核验通过后进行只读 JEDEC（以及本阶段批准的只读状态检查），最后再复核故障与配置并提交 BSP READY。任一阶段失败均保持 NOT_READY；原始结果、MSP 结果与 cleanup_result 分开保留，清理失败锁存 FAULT，不能通过 DeInit 或重新初始化清除未处理故障。清理只回收本模块已确认取得的资源；资源状态不确定时保留占用并要求显式恢复。
 
-GPIO/RCC 读回只证明 MCU 配置符合设计，不能证明 PCB 连通、供电、信号质量或实装型号。候选脚位、供电外围、Flash 实装仍为 NOT_VERIFIED（见 HardwareAudit §3）；没有原理图不得把硬件批准前提视为满足。
+GPIO/RCC 读回只证明 MCU 配置符合设计，不能证明 PCB 连通、供电、信号质量或实装型号。2026-11-21 补交原理图已核验图纸六脚和供电外围（见 HardwareAudit §6）；PCB/实板一致性、供电实测、Flash 实装仍为 NOT_VERIFIED，EP pin 9 不连接的适用性待核实。取得原理图不等于硬件批准前提自动满足，需审核剩余证据后再决定是否允许 Q1.1。
 
 ### 2.2 Q1.1 的 BSP READY 判据（必须全部满足，待批准）
 
