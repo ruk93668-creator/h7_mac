@@ -1,0 +1,3985 @@
+{
+  "artifact": "D:\\32\\STM32H7\\h7_mac_lifecycle\\output\\TinyUSBReplacement\\r2-firmware-1795249892583443500\\h7_mac_CM7_TinyUSB_RAM.axf",
+  "axf_sha256": "04ee0d5c26d37de3d9dea98c0a1ccf1eacc9ffdda7353b1b1fabda3204a4a0cf",
+  "cases": [
+    {
+      "name": "complete image unique owner",
+      "passed": true,
+      "checks": [
+        {
+          "name": "real full firmware init",
+          "actual": 1,
+          "expected": 1,
+          "passed": true
+        },
+        {
+          "name": "strong handler exists",
+          "actual": true,
+          "expected": true,
+          "passed": true
+        },
+        {
+          "name": "HAL_PCD_IRQHandler absent",
+          "actual": false,
+          "expected": false,
+          "passed": true
+        },
+        {
+          "name": "USB_Mode_Start absent",
+          "actual": false,
+          "expected": false,
+          "passed": true
+        },
+        {
+          "name": "USBD_Init absent",
+          "actual": false,
+          "expected": false,
+          "passed": true
+        },
+        {
+          "name": "BSP_USB_Start absent",
+          "actual": false,
+          "expected": false,
+          "passed": true
+        },
+        {
+          "name": "StorageTask_Run absent",
+          "actual": false,
+          "expected": false,
+          "passed": true
+        },
+        {
+          "name": "original static task linked",
+          "actual": true,
+          "expected": true,
+          "passed": true
+        }
+      ],
+      "error": null,
+      "calls": [
+        {
+          "function": "tud_rhport_init",
+          "args": [
+            0,
+            536989696
+          ],
+          "returned": true,
+          "basepri": 0
+        }
+      ],
+      "register_writes": [
+        {
+          "address": "0x40080008",
+          "value": "0x0",
+          "pc": "0x8005482"
+        },
+        {
+          "address": "0x4008000c",
+          "value": "0x40",
+          "pc": "0x8007048"
+        },
+        {
+          "address": "0x40080038",
+          "value": "0x10000",
+          "pc": "0x8005554"
+        },
+        {
+          "address": "0x40080010",
+          "value": "0x80000001",
+          "pc": "0x8008824"
+        },
+        {
+          "address": "0x4008000c",
+          "value": "0x1440",
+          "pc": "0x8007066"
+        },
+        {
+          "address": "0x4008000c",
+          "value": "0x1840",
+          "pc": "0x8005626"
+        },
+        {
+          "address": "0x4008000c",
+          "value": "0x1847",
+          "pc": "0x80054a4"
+        },
+        {
+          "address": "0x40080e00",
+          "value": "0x0",
+          "pc": "0x80054ae"
+        },
+        {
+          "address": "0x40080010",
+          "value": "0x420",
+          "pc": "0x80054bc"
+        },
+        {
+          "address": "0x40080010",
+          "value": "0x10",
+          "pc": "0x80054d4"
+        },
+        {
+          "address": "0x40080014",
+          "value": "0xffffffff",
+          "pc": "0x80054ec"
+        },
+        {
+          "address": "0x40080004",
+          "value": "0xffffffff",
+          "pc": "0x80054ee"
+        },
+        {
+          "address": "0x40080018",
+          "value": "0x0",
+          "pc": "0x80054f2"
+        },
+        {
+          "address": "0x40080018",
+          "value": "0x10",
+          "pc": "0x8005506"
+        },
+        {
+          "address": "0x40080800",
+          "value": "0x7",
+          "pc": "0x8004b9c"
+        },
+        {
+          "address": "0x40080804",
+          "value": "0x2",
+          "pc": "0x8003db0"
+        },
+        {
+          "address": "0x4008000c",
+          "value": "0x40001847",
+          "pc": "0x8004bb6"
+        },
+        {
+          "address": "0x40080000",
+          "value": "0xc0",
+          "pc": "0x8004bc8"
+        },
+        {
+          "address": "0x40080038",
+          "value": "0x210000",
+          "pc": "0x80056be"
+        },
+        {
+          "address": "0x40080018",
+          "value": "0x80003014",
+          "pc": "0x8004bde"
+        },
+        {
+          "address": "0x40080008",
+          "value": "0x1",
+          "pc": "0x8004be8"
+        },
+        {
+          "address": "0x40080804",
+          "value": "0x0",
+          "pc": "0x8003ce6"
+        }
+      ]
+    },
+    {
+      "name": "FreeRTOS static queue and mutex",
+      "passed": true,
+      "checks": [
+        {
+          "name": "real full firmware init",
+          "actual": 1,
+          "expected": 1,
+          "passed": true
+        },
+        {
+          "name": "static queue nonnull",
+          "actual": true,
+          "expected": true,
+          "passed": true
+        },
+        {
+          "name": "static mutex nonnull",
+          "actual": true,
+          "expected": true,
+          "passed": true
+        },
+        {
+          "name": "real kernel xQueueGenericCreateStatic",
+          "actual": true,
+          "expected": true,
+          "passed": true
+        },
+        {
+          "name": "real kernel xQueueCreateMutexStatic",
+          "actual": true,
+          "expected": true,
+          "passed": true
+        },
+        {
+          "name": "real kernel vPortEnterCritical",
+          "actual": true,
+          "expected": true,
+          "passed": true
+        }
+      ],
+      "error": null,
+      "calls": [
+        {
+          "function": "tud_rhport_init",
+          "args": [
+            0,
+            536989696
+          ],
+          "returned": true,
+          "basepri": 0
+        }
+      ],
+      "register_writes": [
+        {
+          "address": "0x40080008",
+          "value": "0x0",
+          "pc": "0x8005482"
+        },
+        {
+          "address": "0x4008000c",
+          "value": "0x40",
+          "pc": "0x8007048"
+        },
+        {
+          "address": "0x40080038",
+          "value": "0x10000",
+          "pc": "0x8005554"
+        },
+        {
+          "address": "0x40080010",
+          "value": "0x80000001",
+          "pc": "0x8008824"
+        },
+        {
+          "address": "0x4008000c",
+          "value": "0x1440",
+          "pc": "0x8007066"
+        },
+        {
+          "address": "0x4008000c",
+          "value": "0x1840",
+          "pc": "0x8005626"
+        },
+        {
+          "address": "0x4008000c",
+          "value": "0x1847",
+          "pc": "0x80054a4"
+        },
+        {
+          "address": "0x40080e00",
+          "value": "0x0",
+          "pc": "0x80054ae"
+        },
+        {
+          "address": "0x40080010",
+          "value": "0x420",
+          "pc": "0x80054bc"
+        },
+        {
+          "address": "0x40080010",
+          "value": "0x10",
+          "pc": "0x80054d4"
+        },
+        {
+          "address": "0x40080014",
+          "value": "0xffffffff",
+          "pc": "0x80054ec"
+        },
+        {
+          "address": "0x40080004",
+          "value": "0xffffffff",
+          "pc": "0x80054ee"
+        },
+        {
+          "address": "0x40080018",
+          "value": "0x0",
+          "pc": "0x80054f2"
+        },
+        {
+          "address": "0x40080018",
+          "value": "0x10",
+          "pc": "0x8005506"
+        },
+        {
+          "address": "0x40080800",
+          "value": "0x7",
+          "pc": "0x8004b9c"
+        },
+        {
+          "address": "0x40080804",
+          "value": "0x2",
+          "pc": "0x8003db0"
+        },
+        {
+          "address": "0x4008000c",
+          "value": "0x40001847",
+          "pc": "0x8004bb6"
+        },
+        {
+          "address": "0x40080000",
+          "value": "0xc0",
+          "pc": "0x8004bc8"
+        },
+        {
+          "address": "0x40080038",
+          "value": "0x210000",
+          "pc": "0x80056be"
+        },
+        {
+          "address": "0x40080018",
+          "value": "0x80003014",
+          "pc": "0x8004bde"
+        },
+        {
+          "address": "0x40080008",
+          "value": "0x1",
+          "pc": "0x8004be8"
+        },
+        {
+          "address": "0x40080804",
+          "value": "0x0",
+          "pc": "0x8003ce6"
+        }
+      ]
+    },
+    {
+      "name": "nested spin BASEPRI and IRQ admission",
+      "passed": true,
+      "checks": [
+        {
+          "name": "real full firmware init",
+          "actual": 1,
+          "expected": 1,
+          "passed": true
+        },
+        {
+          "name": "task BASEPRI",
+          "actual": 80,
+          "expected": 80,
+          "passed": true
+        },
+        {
+          "name": "nested BASEPRI",
+          "actual": 80,
+          "expected": 80,
+          "passed": true
+        },
+        {
+          "name": "pending USB IRQ blocked by actual BASEPRI",
+          "actual": true,
+          "expected": true,
+          "passed": true
+        },
+        {
+          "name": "inner exit preserves mask",
+          "actual": 80,
+          "expected": 80,
+          "passed": true
+        },
+        {
+          "name": "outer exit restores mask",
+          "actual": 0,
+          "expected": 0,
+          "passed": true
+        },
+        {
+          "name": "ISR spin is nonblocking",
+          "actual": 0,
+          "expected": 0,
+          "passed": true
+        }
+      ],
+      "error": null,
+      "calls": [
+        {
+          "function": "tud_rhport_init",
+          "args": [
+            0,
+            536989696
+          ],
+          "returned": true,
+          "basepri": 0
+        },
+        {
+          "function": "usbd_spin_lock",
+          "args": [
+            0
+          ],
+          "returned": true,
+          "basepri": 80
+        },
+        {
+          "function": "usbd_spin_lock",
+          "args": [
+            0
+          ],
+          "returned": true,
+          "basepri": 80
+        },
+        {
+          "function": "usbd_spin_unlock",
+          "args": [
+            0
+          ],
+          "returned": true,
+          "basepri": 80
+        },
+        {
+          "function": "usbd_spin_unlock",
+          "args": [
+            0
+          ],
+          "returned": true,
+          "basepri": 0
+        },
+        {
+          "function": "usbd_spin_lock",
+          "args": [
+            1
+          ],
+          "returned": true,
+          "basepri": 0
+        },
+        {
+          "function": "usbd_spin_unlock",
+          "args": [
+            1
+          ],
+          "returned": true,
+          "basepri": 0
+        }
+      ],
+      "register_writes": [
+        {
+          "address": "0x40080008",
+          "value": "0x0",
+          "pc": "0x8005482"
+        },
+        {
+          "address": "0x4008000c",
+          "value": "0x40",
+          "pc": "0x8007048"
+        },
+        {
+          "address": "0x40080038",
+          "value": "0x10000",
+          "pc": "0x8005554"
+        },
+        {
+          "address": "0x40080010",
+          "value": "0x80000001",
+          "pc": "0x8008824"
+        },
+        {
+          "address": "0x4008000c",
+          "value": "0x1440",
+          "pc": "0x8007066"
+        },
+        {
+          "address": "0x4008000c",
+          "value": "0x1840",
+          "pc": "0x8005626"
+        },
+        {
+          "address": "0x4008000c",
+          "value": "0x1847",
+          "pc": "0x80054a4"
+        },
+        {
+          "address": "0x40080e00",
+          "value": "0x0",
+          "pc": "0x80054ae"
+        },
+        {
+          "address": "0x40080010",
+          "value": "0x420",
+          "pc": "0x80054bc"
+        },
+        {
+          "address": "0x40080010",
+          "value": "0x10",
+          "pc": "0x80054d4"
+        },
+        {
+          "address": "0x40080014",
+          "value": "0xffffffff",
+          "pc": "0x80054ec"
+        },
+        {
+          "address": "0x40080004",
+          "value": "0xffffffff",
+          "pc": "0x80054ee"
+        },
+        {
+          "address": "0x40080018",
+          "value": "0x0",
+          "pc": "0x80054f2"
+        },
+        {
+          "address": "0x40080018",
+          "value": "0x10",
+          "pc": "0x8005506"
+        },
+        {
+          "address": "0x40080800",
+          "value": "0x7",
+          "pc": "0x8004b9c"
+        },
+        {
+          "address": "0x40080804",
+          "value": "0x2",
+          "pc": "0x8003db0"
+        },
+        {
+          "address": "0x4008000c",
+          "value": "0x40001847",
+          "pc": "0x8004bb6"
+        },
+        {
+          "address": "0x40080000",
+          "value": "0xc0",
+          "pc": "0x8004bc8"
+        },
+        {
+          "address": "0x40080038",
+          "value": "0x210000",
+          "pc": "0x80056be"
+        },
+        {
+          "address": "0x40080018",
+          "value": "0x80003014",
+          "pc": "0x8004bde"
+        },
+        {
+          "address": "0x40080008",
+          "value": "0x1",
+          "pc": "0x8004be8"
+        },
+        {
+          "address": "0x40080804",
+          "value": "0x0",
+          "pc": "0x8003ce6"
+        }
+      ]
+    },
+    {
+      "name": "empty reset EP0 then configuration",
+      "passed": false,
+      "checks": [
+        {
+          "name": "real full firmware init",
+          "actual": 1,
+          "expected": 1,
+          "passed": true
+        },
+        {
+          "name": "reset without fault",
+          "actual": 0,
+          "expected": 0,
+          "passed": true
+        }
+      ],
+      "error": "'tud_mounted'",
+      "calls": [
+        {
+          "function": "tud_rhport_init",
+          "args": [
+            0,
+            536989696
+          ],
+          "returned": true,
+          "basepri": 0
+        },
+        {
+          "function": "OTG_FS_IRQHandler",
+          "args": [],
+          "returned": true,
+          "basepri": 0
+        },
+        {
+          "function": "OTG_FS_IRQHandler",
+          "args": [],
+          "returned": true,
+          "basepri": 0
+        },
+        {
+          "function": "tud_task_ext",
+          "args": [
+            0,
+            0
+          ],
+          "returned": true,
+          "basepri": 0
+        },
+        {
+          "function": "usbd_device_failed",
+          "args": [],
+          "returned": true,
+          "basepri": 0
+        },
+        {
+          "function": "OTG_FS_IRQHandler",
+          "args": [],
+          "returned": true,
+          "basepri": 0
+        },
+        {
+          "function": "tud_task_ext",
+          "args": [
+            0,
+            0
+          ],
+          "returned": true,
+          "basepri": 0
+        }
+      ],
+      "register_writes": [
+        {
+          "address": "0x40080008",
+          "value": "0x0",
+          "pc": "0x8005482"
+        },
+        {
+          "address": "0x4008000c",
+          "value": "0x40",
+          "pc": "0x8007048"
+        },
+        {
+          "address": "0x40080038",
+          "value": "0x10000",
+          "pc": "0x8005554"
+        },
+        {
+          "address": "0x40080010",
+          "value": "0x80000001",
+          "pc": "0x8008824"
+        },
+        {
+          "address": "0x4008000c",
+          "value": "0x1440",
+          "pc": "0x8007066"
+        },
+        {
+          "address": "0x4008000c",
+          "value": "0x1840",
+          "pc": "0x8005626"
+        },
+        {
+          "address": "0x4008000c",
+          "value": "0x1847",
+          "pc": "0x80054a4"
+        },
+        {
+          "address": "0x40080e00",
+          "value": "0x0",
+          "pc": "0x80054ae"
+        },
+        {
+          "address": "0x40080010",
+          "value": "0x420",
+          "pc": "0x80054bc"
+        },
+        {
+          "address": "0x40080010",
+          "value": "0x10",
+          "pc": "0x80054d4"
+        },
+        {
+          "address": "0x40080014",
+          "value": "0xffffffff",
+          "pc": "0x80054ec"
+        },
+        {
+          "address": "0x40080004",
+          "value": "0xffffffff",
+          "pc": "0x80054ee"
+        },
+        {
+          "address": "0x40080018",
+          "value": "0x0",
+          "pc": "0x80054f2"
+        },
+        {
+          "address": "0x40080018",
+          "value": "0x10",
+          "pc": "0x8005506"
+        },
+        {
+          "address": "0x40080800",
+          "value": "0x7",
+          "pc": "0x8004b9c"
+        },
+        {
+          "address": "0x40080804",
+          "value": "0x2",
+          "pc": "0x8003db0"
+        },
+        {
+          "address": "0x4008000c",
+          "value": "0x40001847",
+          "pc": "0x8004bb6"
+        },
+        {
+          "address": "0x40080000",
+          "value": "0xc0",
+          "pc": "0x8004bc8"
+        },
+        {
+          "address": "0x40080038",
+          "value": "0x210000",
+          "pc": "0x80056be"
+        },
+        {
+          "address": "0x40080018",
+          "value": "0x80003014",
+          "pc": "0x8004bde"
+        },
+        {
+          "address": "0x40080008",
+          "value": "0x1",
+          "pc": "0x8004be8"
+        },
+        {
+          "address": "0x40080804",
+          "value": "0x0",
+          "pc": "0x8003ce6"
+        },
+        {
+          "address": "0x40080014",
+          "value": "0x1000",
+          "pc": "0x8004d56"
+        },
+        {
+          "address": "0x40080834",
+          "value": "0x0",
+          "pc": "0x8005dda"
+        },
+        {
+          "address": "0x40080b00",
+          "value": "0x8000000",
+          "pc": "0x8005e40"
+        },
+        {
+          "address": "0x40080b20",
+          "value": "0x8000000",
+          "pc": "0x8005e40"
+        },
+        {
+          "address": "0x40080b40",
+          "value": "0x8000000",
+          "pc": "0x8005e40"
+        },
+        {
+          "address": "0x40080b60",
+          "value": "0x8000000",
+          "pc": "0x8005e40"
+        },
+        {
+          "address": "0x40080b80",
+          "value": "0x8000000",
+          "pc": "0x8005e40"
+        },
+        {
+          "address": "0x40080ba0",
+          "value": "0x8000000",
+          "pc": "0x8005e40"
+        },
+        {
+          "address": "0x40080bc0",
+          "value": "0x8000000",
+          "pc": "0x8005e40"
+        },
+        {
+          "address": "0x40080be0",
+          "value": "0x8000000",
+          "pc": "0x8005e40"
+        },
+        {
+          "address": "0x40080c00",
+          "value": "0x8000000",
+          "pc": "0x8005e40"
+        },
+        {
+          "address": "0x4008081c",
+          "value": "0x10001",
+          "pc": "0x8005e72"
+        },
+        {
+          "address": "0x40080814",
+          "value": "0x9",
+          "pc": "0x8005e78"
+        },
+        {
+          "address": "0x40080810",
+          "value": "0x9",
+          "pc": "0x8005e7c"
+        },
+        {
+          "address": "0x40080010",
+          "value": "0x420",
+          "pc": "0x8005e88"
+        },
+        {
+          "address": "0x40080010",
+          "value": "0x10",
+          "pc": "0x8005e9c"
+        },
+        {
+          "address": "0x40080024",
+          "value": "0x31",
+          "pc": "0x80052fc"
+        },
+        {
+          "address": "0x4008005c",
+          "value": "0x4000400",
+          "pc": "0x800531e"
+        },
+        {
+          "address": "0x40080028",
+          "value": "0x1003f0",
+          "pc": "0x800528e"
+        },
+        {
+          "address": "0x40080800",
+          "value": "0x7",
+          "pc": "0x8005ed2"
+        },
+        {
+          "address": "0x40080900",
+          "value": "0x0",
+          "pc": "0x8005f1c"
+        },
+        {
+          "address": "0x40080b00",
+          "value": "0x8000000",
+          "pc": "0x8005f28"
+        },
+        {
+          "address": "0x40080900",
+          "value": "0x0",
+          "pc": "0x8005f34"
+        },
+        {
+          "address": "0x40080b00",
+          "value": "0x8000000",
+          "pc": "0x8005f40"
+        },
+        {
+          "address": "0x40080b10",
+          "value": "0x60000000",
+          "pc": "0x8005f7c"
+        },
+        {
+          "address": "0x40080018",
+          "value": "0x80143014",
+          "pc": "0x8005f84"
+        },
+        {
+          "address": "0x40080014",
+          "value": "0x2000",
+          "pc": "0x8004d9e"
+        },
+        {
+          "address": "0x40080014",
+          "value": "0x800",
+          "pc": "0x8004da2"
+        },
+        {
+          "address": "0x40080018",
+          "value": "0x80143814",
+          "pc": "0x8004db0"
+        },
+        {
+          "address": "0x40080018",
+          "value": "0x80143804",
+          "pc": "0x8004f08"
+        },
+        {
+          "address": "0x40080b10",
+          "value": "0x60000000",
+          "pc": "0x8006460"
+        },
+        {
+          "address": "0x40080b08",
+          "value": "0x8008",
+          "pc": "0x8006466"
+        },
+        {
+          "address": "0x40080018",
+          "value": "0x80143814",
+          "pc": "0x8004f38"
+        },
+        {
+          "address": "0x40080024",
+          "value": "0x42",
+          "pc": "0x8005190"
+        },
+        {
+          "address": "0x40080b40",
+          "value": "0x10088040",
+          "pc": "0x800586c"
+        },
+        {
+          "address": "0x4008081c",
+          "value": "0x50001",
+          "pc": "0x800588c"
+        },
+        {
+          "address": "0x40080108",
+          "value": "0x1003e0",
+          "pc": "0x800528e"
+        },
+        {
+          "address": "0x40080940",
+          "value": "0x10888040",
+          "pc": "0x800586c"
+        },
+        {
+          "address": "0x4008081c",
+          "value": "0x50005",
+          "pc": "0x800588c"
+        },
+        {
+          "address": "0x40080b50",
+          "value": "0x8001f",
+          "pc": "0x8005ada"
+        },
+        {
+          "address": "0x40080b40",
+          "value": "0x94088040",
+          "pc": "0x8005b3e"
+        },
+        {
+          "address": "0x40080910",
+          "value": "0x80000",
+          "pc": "0x8005ada"
+        },
+        {
+          "address": "0x40080900",
+          "value": "0x84000000",
+          "pc": "0x8005b3e"
+        }
+      ]
+    },
+    {
+      "name": "Bulk OUT cancel and Controller restart",
+      "passed": true,
+      "checks": [
+        {
+          "name": "real full firmware init",
+          "actual": 1,
+          "expected": 1,
+          "passed": true
+        },
+        {
+          "name": "EP2 open",
+          "actual": 1,
+          "expected": 1,
+          "passed": true
+        },
+        {
+          "name": "real RX arm",
+          "actual": 1,
+          "expected": 1,
+          "passed": true
+        },
+        {
+          "name": "PENDING retains busy",
+          "actual": 0,
+          "expected": 0,
+          "passed": true
+        },
+        {
+          "name": "PENDING DeInit refused",
+          "actual": 0,
+          "expected": 0,
+          "passed": true
+        },
+        {
+          "name": "actual cancel SUCCESS",
+          "actual": 1,
+          "expected": 1,
+          "passed": true
+        },
+        {
+          "name": "BUSY cleared",
+          "actual": 0,
+          "expected": 0,
+          "passed": true
+        },
+        {
+          "name": "actual Controller DeInit",
+          "actual": 1,
+          "expected": 1,
+          "passed": true
+        },
+        {
+          "name": "real restart",
+          "actual": 1,
+          "expected": 1,
+          "passed": true
+        }
+      ],
+      "error": null,
+      "calls": [
+        {
+          "function": "tud_rhport_init",
+          "args": [
+            0,
+            536989696
+          ],
+          "returned": true,
+          "basepri": 0
+        },
+        {
+          "function": "OTG_FS_IRQHandler",
+          "args": [],
+          "returned": true,
+          "basepri": 0
+        },
+        {
+          "function": "OTG_FS_IRQHandler",
+          "args": [],
+          "returned": true,
+          "basepri": 0
+        },
+        {
+          "function": "tud_task_ext",
+          "args": [
+            0,
+            0
+          ],
+          "returned": true,
+          "basepri": 0
+        },
+        {
+          "function": "usbd_edpt_open",
+          "args": [
+            0,
+            536989952
+          ],
+          "returned": true,
+          "basepri": 0
+        },
+        {
+          "function": "usbd_edpt_xfer",
+          "args": [
+            0,
+            2,
+            536993792,
+            64
+          ],
+          "returned": true,
+          "basepri": 0
+        },
+        {
+          "function": "usbd_edpt_abort",
+          "args": [
+            0,
+            2
+          ],
+          "returned": true,
+          "basepri": 0
+        },
+        {
+          "function": "tud_deinit",
+          "args": [
+            0
+          ],
+          "returned": true,
+          "basepri": 0
+        },
+        {
+          "function": "OTG_FS_IRQHandler",
+          "args": [],
+          "returned": true,
+          "basepri": 0
+        },
+        {
+          "function": "usbd_edpt_abort",
+          "args": [
+            0,
+            2
+          ],
+          "returned": true,
+          "basepri": 0
+        },
+        {
+          "function": "OTG_FS_IRQHandler",
+          "args": [],
+          "returned": true,
+          "basepri": 0
+        },
+        {
+          "function": "usbd_edpt_abort",
+          "args": [
+            0,
+            2
+          ],
+          "returned": true,
+          "basepri": 0
+        },
+        {
+          "function": "usbd_edpt_abort",
+          "args": [
+            0,
+            2
+          ],
+          "returned": true,
+          "basepri": 0
+        },
+        {
+          "function": "usbd_edpt_busy",
+          "args": [
+            0,
+            2
+          ],
+          "returned": true,
+          "basepri": 0
+        },
+        {
+          "function": "tud_deinit",
+          "args": [
+            0
+          ],
+          "returned": true,
+          "basepri": 0
+        },
+        {
+          "function": "tud_rhport_init",
+          "args": [
+            0,
+            536989696
+          ],
+          "returned": true,
+          "basepri": 0
+        }
+      ],
+      "register_writes": [
+        {
+          "address": "0x40080008",
+          "value": "0x0",
+          "pc": "0x8005482"
+        },
+        {
+          "address": "0x4008000c",
+          "value": "0x40",
+          "pc": "0x8007048"
+        },
+        {
+          "address": "0x40080038",
+          "value": "0x10000",
+          "pc": "0x8005554"
+        },
+        {
+          "address": "0x40080010",
+          "value": "0x80000001",
+          "pc": "0x8008824"
+        },
+        {
+          "address": "0x4008000c",
+          "value": "0x1440",
+          "pc": "0x8007066"
+        },
+        {
+          "address": "0x4008000c",
+          "value": "0x1840",
+          "pc": "0x8005626"
+        },
+        {
+          "address": "0x4008000c",
+          "value": "0x1847",
+          "pc": "0x80054a4"
+        },
+        {
+          "address": "0x40080e00",
+          "value": "0x0",
+          "pc": "0x80054ae"
+        },
+        {
+          "address": "0x40080010",
+          "value": "0x420",
+          "pc": "0x80054bc"
+        },
+        {
+          "address": "0x40080010",
+          "value": "0x10",
+          "pc": "0x80054d4"
+        },
+        {
+          "address": "0x40080014",
+          "value": "0xffffffff",
+          "pc": "0x80054ec"
+        },
+        {
+          "address": "0x40080004",
+          "value": "0xffffffff",
+          "pc": "0x80054ee"
+        },
+        {
+          "address": "0x40080018",
+          "value": "0x0",
+          "pc": "0x80054f2"
+        },
+        {
+          "address": "0x40080018",
+          "value": "0x10",
+          "pc": "0x8005506"
+        },
+        {
+          "address": "0x40080800",
+          "value": "0x7",
+          "pc": "0x8004b9c"
+        },
+        {
+          "address": "0x40080804",
+          "value": "0x2",
+          "pc": "0x8003db0"
+        },
+        {
+          "address": "0x4008000c",
+          "value": "0x40001847",
+          "pc": "0x8004bb6"
+        },
+        {
+          "address": "0x40080000",
+          "value": "0xc0",
+          "pc": "0x8004bc8"
+        },
+        {
+          "address": "0x40080038",
+          "value": "0x210000",
+          "pc": "0x80056be"
+        },
+        {
+          "address": "0x40080018",
+          "value": "0x80003014",
+          "pc": "0x8004bde"
+        },
+        {
+          "address": "0x40080008",
+          "value": "0x1",
+          "pc": "0x8004be8"
+        },
+        {
+          "address": "0x40080804",
+          "value": "0x0",
+          "pc": "0x8003ce6"
+        },
+        {
+          "address": "0x40080014",
+          "value": "0x1000",
+          "pc": "0x8004d56"
+        },
+        {
+          "address": "0x40080834",
+          "value": "0x0",
+          "pc": "0x8005dda"
+        },
+        {
+          "address": "0x40080b00",
+          "value": "0x8000000",
+          "pc": "0x8005e40"
+        },
+        {
+          "address": "0x40080b20",
+          "value": "0x8000000",
+          "pc": "0x8005e40"
+        },
+        {
+          "address": "0x40080b40",
+          "value": "0x8000000",
+          "pc": "0x8005e40"
+        },
+        {
+          "address": "0x40080b60",
+          "value": "0x8000000",
+          "pc": "0x8005e40"
+        },
+        {
+          "address": "0x40080b80",
+          "value": "0x8000000",
+          "pc": "0x8005e40"
+        },
+        {
+          "address": "0x40080ba0",
+          "value": "0x8000000",
+          "pc": "0x8005e40"
+        },
+        {
+          "address": "0x40080bc0",
+          "value": "0x8000000",
+          "pc": "0x8005e40"
+        },
+        {
+          "address": "0x40080be0",
+          "value": "0x8000000",
+          "pc": "0x8005e40"
+        },
+        {
+          "address": "0x40080c00",
+          "value": "0x8000000",
+          "pc": "0x8005e40"
+        },
+        {
+          "address": "0x4008081c",
+          "value": "0x10001",
+          "pc": "0x8005e72"
+        },
+        {
+          "address": "0x40080814",
+          "value": "0x9",
+          "pc": "0x8005e78"
+        },
+        {
+          "address": "0x40080810",
+          "value": "0x9",
+          "pc": "0x8005e7c"
+        },
+        {
+          "address": "0x40080010",
+          "value": "0x420",
+          "pc": "0x8005e88"
+        },
+        {
+          "address": "0x40080010",
+          "value": "0x10",
+          "pc": "0x8005e9c"
+        },
+        {
+          "address": "0x40080024",
+          "value": "0x31",
+          "pc": "0x80052fc"
+        },
+        {
+          "address": "0x4008005c",
+          "value": "0x4000400",
+          "pc": "0x800531e"
+        },
+        {
+          "address": "0x40080028",
+          "value": "0x1003f0",
+          "pc": "0x800528e"
+        },
+        {
+          "address": "0x40080800",
+          "value": "0x7",
+          "pc": "0x8005ed2"
+        },
+        {
+          "address": "0x40080900",
+          "value": "0x0",
+          "pc": "0x8005f1c"
+        },
+        {
+          "address": "0x40080b00",
+          "value": "0x8000000",
+          "pc": "0x8005f28"
+        },
+        {
+          "address": "0x40080900",
+          "value": "0x0",
+          "pc": "0x8005f34"
+        },
+        {
+          "address": "0x40080b00",
+          "value": "0x8000000",
+          "pc": "0x8005f40"
+        },
+        {
+          "address": "0x40080b10",
+          "value": "0x60000000",
+          "pc": "0x8005f7c"
+        },
+        {
+          "address": "0x40080018",
+          "value": "0x80143014",
+          "pc": "0x8005f84"
+        },
+        {
+          "address": "0x40080014",
+          "value": "0x2000",
+          "pc": "0x8004d9e"
+        },
+        {
+          "address": "0x40080014",
+          "value": "0x800",
+          "pc": "0x8004da2"
+        },
+        {
+          "address": "0x40080018",
+          "value": "0x80143814",
+          "pc": "0x8004db0"
+        },
+        {
+          "address": "0x40080024",
+          "value": "0x42",
+          "pc": "0x8005190"
+        },
+        {
+          "address": "0x40080b40",
+          "value": "0x10088040",
+          "pc": "0x800586c"
+        },
+        {
+          "address": "0x4008081c",
+          "value": "0x50001",
+          "pc": "0x800588c"
+        },
+        {
+          "address": "0x40080b50",
+          "value": "0x80040",
+          "pc": "0x8005ada"
+        },
+        {
+          "address": "0x40080b40",
+          "value": "0x94088040",
+          "pc": "0x8005b3e"
+        },
+        {
+          "address": "0x40080804",
+          "value": "0x200",
+          "pc": "0x80040b8"
+        },
+        {
+          "address": "0x40080018",
+          "value": "0x80143804",
+          "pc": "0x8004f08"
+        },
+        {
+          "address": "0x40080018",
+          "value": "0x80143814",
+          "pc": "0x8004f38"
+        },
+        {
+          "address": "0x40080018",
+          "value": "0x801c3814",
+          "pc": "0x80040e0"
+        },
+        {
+          "address": "0x40080814",
+          "value": "0xb",
+          "pc": "0x80040ea"
+        },
+        {
+          "address": "0x40080b40",
+          "value": "0xdc088040",
+          "pc": "0x80040fc"
+        },
+        {
+          "address": "0x40080b48",
+          "value": "0x2",
+          "pc": "0x80060d4"
+        },
+        {
+          "address": "0x40080b48",
+          "value": "0x0",
+          "pc": "0x800412e"
+        },
+        {
+          "address": "0x40080804",
+          "value": "0x408",
+          "pc": "0x8004138"
+        },
+        {
+          "address": "0x40080804",
+          "value": "0x2",
+          "pc": "0x8003db0"
+        },
+        {
+          "address": "0x40080804",
+          "value": "0x2",
+          "pc": "0x8003db0"
+        },
+        {
+          "address": "0x40080008",
+          "value": "0x0",
+          "pc": "0x80053fa"
+        },
+        {
+          "address": "0x40080010",
+          "value": "0x80000001",
+          "pc": "0x8008824"
+        },
+        {
+          "address": "0x40080e00",
+          "value": "0x3",
+          "pc": "0x8005410"
+        },
+        {
+          "address": "0x40080038",
+          "value": "0x200000",
+          "pc": "0x8005436"
+        },
+        {
+          "address": "0x40080008",
+          "value": "0x0",
+          "pc": "0x8005482"
+        },
+        {
+          "address": "0x4008000c",
+          "value": "0x40001847",
+          "pc": "0x8007048"
+        },
+        {
+          "address": "0x40080038",
+          "value": "0x210000",
+          "pc": "0x8005554"
+        },
+        {
+          "address": "0x40080010",
+          "value": "0x80000001",
+          "pc": "0x8008824"
+        },
+        {
+          "address": "0x4008000c",
+          "value": "0x40001447",
+          "pc": "0x8007066"
+        },
+        {
+          "address": "0x4008000c",
+          "value": "0x40001847",
+          "pc": "0x8005626"
+        },
+        {
+          "address": "0x4008000c",
+          "value": "0x40001847",
+          "pc": "0x80054a4"
+        },
+        {
+          "address": "0x40080e00",
+          "value": "0x0",
+          "pc": "0x80054ae"
+        },
+        {
+          "address": "0x40080010",
+          "value": "0x420",
+          "pc": "0x80054bc"
+        },
+        {
+          "address": "0x40080010",
+          "value": "0x10",
+          "pc": "0x80054d4"
+        },
+        {
+          "address": "0x40080014",
+          "value": "0xffffffff",
+          "pc": "0x80054ec"
+        },
+        {
+          "address": "0x40080004",
+          "value": "0xffffffff",
+          "pc": "0x80054ee"
+        },
+        {
+          "address": "0x40080018",
+          "value": "0x0",
+          "pc": "0x80054f2"
+        },
+        {
+          "address": "0x40080018",
+          "value": "0x10",
+          "pc": "0x8005506"
+        },
+        {
+          "address": "0x40080800",
+          "value": "0x7",
+          "pc": "0x8004b9c"
+        },
+        {
+          "address": "0x40080804",
+          "value": "0x2",
+          "pc": "0x8003db0"
+        },
+        {
+          "address": "0x4008000c",
+          "value": "0x40001847",
+          "pc": "0x8004bb6"
+        },
+        {
+          "address": "0x40080000",
+          "value": "0xc0",
+          "pc": "0x8004bc8"
+        },
+        {
+          "address": "0x40080038",
+          "value": "0x210000",
+          "pc": "0x80056be"
+        },
+        {
+          "address": "0x40080018",
+          "value": "0x80003014",
+          "pc": "0x8004bde"
+        },
+        {
+          "address": "0x40080008",
+          "value": "0x1",
+          "pc": "0x8004be8"
+        },
+        {
+          "address": "0x40080804",
+          "value": "0x0",
+          "pc": "0x8003ce6"
+        }
+      ]
+    },
+    {
+      "name": "active Bulk Bus Reset boundary",
+      "passed": true,
+      "checks": [
+        {
+          "name": "real full firmware init",
+          "actual": 1,
+          "expected": 1,
+          "passed": true
+        },
+        {
+          "name": "EP2 open",
+          "actual": 1,
+          "expected": 1,
+          "passed": true
+        },
+        {
+          "name": "real RX arm",
+          "actual": 1,
+          "expected": 1,
+          "passed": true
+        },
+        {
+          "name": "unproven active reset stays faulted",
+          "actual": 1,
+          "expected": 1,
+          "passed": true
+        },
+        {
+          "name": "source held",
+          "actual": 536993792,
+          "expected": 536993792,
+          "passed": true
+        }
+      ],
+      "error": null,
+      "calls": [
+        {
+          "function": "tud_rhport_init",
+          "args": [
+            0,
+            536989696
+          ],
+          "returned": true,
+          "basepri": 0
+        },
+        {
+          "function": "OTG_FS_IRQHandler",
+          "args": [],
+          "returned": true,
+          "basepri": 0
+        },
+        {
+          "function": "OTG_FS_IRQHandler",
+          "args": [],
+          "returned": true,
+          "basepri": 0
+        },
+        {
+          "function": "tud_task_ext",
+          "args": [
+            0,
+            0
+          ],
+          "returned": true,
+          "basepri": 0
+        },
+        {
+          "function": "usbd_edpt_open",
+          "args": [
+            0,
+            536989952
+          ],
+          "returned": true,
+          "basepri": 0
+        },
+        {
+          "function": "usbd_edpt_xfer",
+          "args": [
+            0,
+            2,
+            536993792,
+            64
+          ],
+          "returned": true,
+          "basepri": 0
+        },
+        {
+          "function": "OTG_FS_IRQHandler",
+          "args": [],
+          "returned": true,
+          "basepri": 0
+        },
+        {
+          "function": "usbd_device_failed",
+          "args": [],
+          "returned": true,
+          "basepri": 0
+        }
+      ],
+      "register_writes": [
+        {
+          "address": "0x40080008",
+          "value": "0x0",
+          "pc": "0x8005482"
+        },
+        {
+          "address": "0x4008000c",
+          "value": "0x40",
+          "pc": "0x8007048"
+        },
+        {
+          "address": "0x40080038",
+          "value": "0x10000",
+          "pc": "0x8005554"
+        },
+        {
+          "address": "0x40080010",
+          "value": "0x80000001",
+          "pc": "0x8008824"
+        },
+        {
+          "address": "0x4008000c",
+          "value": "0x1440",
+          "pc": "0x8007066"
+        },
+        {
+          "address": "0x4008000c",
+          "value": "0x1840",
+          "pc": "0x8005626"
+        },
+        {
+          "address": "0x4008000c",
+          "value": "0x1847",
+          "pc": "0x80054a4"
+        },
+        {
+          "address": "0x40080e00",
+          "value": "0x0",
+          "pc": "0x80054ae"
+        },
+        {
+          "address": "0x40080010",
+          "value": "0x420",
+          "pc": "0x80054bc"
+        },
+        {
+          "address": "0x40080010",
+          "value": "0x10",
+          "pc": "0x80054d4"
+        },
+        {
+          "address": "0x40080014",
+          "value": "0xffffffff",
+          "pc": "0x80054ec"
+        },
+        {
+          "address": "0x40080004",
+          "value": "0xffffffff",
+          "pc": "0x80054ee"
+        },
+        {
+          "address": "0x40080018",
+          "value": "0x0",
+          "pc": "0x80054f2"
+        },
+        {
+          "address": "0x40080018",
+          "value": "0x10",
+          "pc": "0x8005506"
+        },
+        {
+          "address": "0x40080800",
+          "value": "0x7",
+          "pc": "0x8004b9c"
+        },
+        {
+          "address": "0x40080804",
+          "value": "0x2",
+          "pc": "0x8003db0"
+        },
+        {
+          "address": "0x4008000c",
+          "value": "0x40001847",
+          "pc": "0x8004bb6"
+        },
+        {
+          "address": "0x40080000",
+          "value": "0xc0",
+          "pc": "0x8004bc8"
+        },
+        {
+          "address": "0x40080038",
+          "value": "0x210000",
+          "pc": "0x80056be"
+        },
+        {
+          "address": "0x40080018",
+          "value": "0x80003014",
+          "pc": "0x8004bde"
+        },
+        {
+          "address": "0x40080008",
+          "value": "0x1",
+          "pc": "0x8004be8"
+        },
+        {
+          "address": "0x40080804",
+          "value": "0x0",
+          "pc": "0x8003ce6"
+        },
+        {
+          "address": "0x40080014",
+          "value": "0x1000",
+          "pc": "0x8004d56"
+        },
+        {
+          "address": "0x40080834",
+          "value": "0x0",
+          "pc": "0x8005dda"
+        },
+        {
+          "address": "0x40080b00",
+          "value": "0x8000000",
+          "pc": "0x8005e40"
+        },
+        {
+          "address": "0x40080b20",
+          "value": "0x8000000",
+          "pc": "0x8005e40"
+        },
+        {
+          "address": "0x40080b40",
+          "value": "0x8000000",
+          "pc": "0x8005e40"
+        },
+        {
+          "address": "0x40080b60",
+          "value": "0x8000000",
+          "pc": "0x8005e40"
+        },
+        {
+          "address": "0x40080b80",
+          "value": "0x8000000",
+          "pc": "0x8005e40"
+        },
+        {
+          "address": "0x40080ba0",
+          "value": "0x8000000",
+          "pc": "0x8005e40"
+        },
+        {
+          "address": "0x40080bc0",
+          "value": "0x8000000",
+          "pc": "0x8005e40"
+        },
+        {
+          "address": "0x40080be0",
+          "value": "0x8000000",
+          "pc": "0x8005e40"
+        },
+        {
+          "address": "0x40080c00",
+          "value": "0x8000000",
+          "pc": "0x8005e40"
+        },
+        {
+          "address": "0x4008081c",
+          "value": "0x10001",
+          "pc": "0x8005e72"
+        },
+        {
+          "address": "0x40080814",
+          "value": "0x9",
+          "pc": "0x8005e78"
+        },
+        {
+          "address": "0x40080810",
+          "value": "0x9",
+          "pc": "0x8005e7c"
+        },
+        {
+          "address": "0x40080010",
+          "value": "0x420",
+          "pc": "0x8005e88"
+        },
+        {
+          "address": "0x40080010",
+          "value": "0x10",
+          "pc": "0x8005e9c"
+        },
+        {
+          "address": "0x40080024",
+          "value": "0x31",
+          "pc": "0x80052fc"
+        },
+        {
+          "address": "0x4008005c",
+          "value": "0x4000400",
+          "pc": "0x800531e"
+        },
+        {
+          "address": "0x40080028",
+          "value": "0x1003f0",
+          "pc": "0x800528e"
+        },
+        {
+          "address": "0x40080800",
+          "value": "0x7",
+          "pc": "0x8005ed2"
+        },
+        {
+          "address": "0x40080900",
+          "value": "0x0",
+          "pc": "0x8005f1c"
+        },
+        {
+          "address": "0x40080b00",
+          "value": "0x8000000",
+          "pc": "0x8005f28"
+        },
+        {
+          "address": "0x40080900",
+          "value": "0x0",
+          "pc": "0x8005f34"
+        },
+        {
+          "address": "0x40080b00",
+          "value": "0x8000000",
+          "pc": "0x8005f40"
+        },
+        {
+          "address": "0x40080b10",
+          "value": "0x60000000",
+          "pc": "0x8005f7c"
+        },
+        {
+          "address": "0x40080018",
+          "value": "0x80143014",
+          "pc": "0x8005f84"
+        },
+        {
+          "address": "0x40080014",
+          "value": "0x2000",
+          "pc": "0x8004d9e"
+        },
+        {
+          "address": "0x40080014",
+          "value": "0x800",
+          "pc": "0x8004da2"
+        },
+        {
+          "address": "0x40080018",
+          "value": "0x80143814",
+          "pc": "0x8004db0"
+        },
+        {
+          "address": "0x40080024",
+          "value": "0x42",
+          "pc": "0x8005190"
+        },
+        {
+          "address": "0x40080b40",
+          "value": "0x10088040",
+          "pc": "0x800586c"
+        },
+        {
+          "address": "0x4008081c",
+          "value": "0x50001",
+          "pc": "0x800588c"
+        },
+        {
+          "address": "0x40080b50",
+          "value": "0x80040",
+          "pc": "0x8005ada"
+        },
+        {
+          "address": "0x40080b40",
+          "value": "0x94088040",
+          "pc": "0x8005b3e"
+        },
+        {
+          "address": "0x40080014",
+          "value": "0x1000",
+          "pc": "0x8004d56"
+        },
+        {
+          "address": "0x40080834",
+          "value": "0x0",
+          "pc": "0x8005dda"
+        }
+      ]
+    },
+    {
+      "name": "DWT unavailable retains Buffer",
+      "passed": true,
+      "checks": [
+        {
+          "name": "real full firmware init",
+          "actual": 1,
+          "expected": 1,
+          "passed": true
+        },
+        {
+          "name": "EP2 open",
+          "actual": 1,
+          "expected": 1,
+          "passed": true
+        },
+        {
+          "name": "real RX arm",
+          "actual": 1,
+          "expected": 1,
+          "passed": true
+        },
+        {
+          "name": "failed abort",
+          "actual": 0,
+          "expected": 0,
+          "passed": true
+        },
+        {
+          "name": "fault",
+          "actual": 1,
+          "expected": 1,
+          "passed": true
+        },
+        {
+          "name": "BUSY retained",
+          "actual": 1,
+          "expected": 1,
+          "passed": true
+        }
+      ],
+      "error": null,
+      "calls": [
+        {
+          "function": "tud_rhport_init",
+          "args": [
+            0,
+            536989696
+          ],
+          "returned": true,
+          "basepri": 0
+        },
+        {
+          "function": "OTG_FS_IRQHandler",
+          "args": [],
+          "returned": true,
+          "basepri": 0
+        },
+        {
+          "function": "OTG_FS_IRQHandler",
+          "args": [],
+          "returned": true,
+          "basepri": 0
+        },
+        {
+          "function": "tud_task_ext",
+          "args": [
+            0,
+            0
+          ],
+          "returned": true,
+          "basepri": 0
+        },
+        {
+          "function": "usbd_edpt_open",
+          "args": [
+            0,
+            536989952
+          ],
+          "returned": true,
+          "basepri": 0
+        },
+        {
+          "function": "usbd_edpt_xfer",
+          "args": [
+            0,
+            2,
+            536993792,
+            64
+          ],
+          "returned": true,
+          "basepri": 0
+        },
+        {
+          "function": "usbd_edpt_abort",
+          "args": [
+            0,
+            2
+          ],
+          "returned": true,
+          "basepri": 0
+        },
+        {
+          "function": "usbd_device_failed",
+          "args": [],
+          "returned": true,
+          "basepri": 0
+        },
+        {
+          "function": "usbd_edpt_busy",
+          "args": [
+            0,
+            2
+          ],
+          "returned": true,
+          "basepri": 0
+        }
+      ],
+      "register_writes": [
+        {
+          "address": "0x40080008",
+          "value": "0x0",
+          "pc": "0x8005482"
+        },
+        {
+          "address": "0x4008000c",
+          "value": "0x40",
+          "pc": "0x8007048"
+        },
+        {
+          "address": "0x40080038",
+          "value": "0x10000",
+          "pc": "0x8005554"
+        },
+        {
+          "address": "0x40080010",
+          "value": "0x80000001",
+          "pc": "0x8008824"
+        },
+        {
+          "address": "0x4008000c",
+          "value": "0x1440",
+          "pc": "0x8007066"
+        },
+        {
+          "address": "0x4008000c",
+          "value": "0x1840",
+          "pc": "0x8005626"
+        },
+        {
+          "address": "0x4008000c",
+          "value": "0x1847",
+          "pc": "0x80054a4"
+        },
+        {
+          "address": "0x40080e00",
+          "value": "0x0",
+          "pc": "0x80054ae"
+        },
+        {
+          "address": "0x40080010",
+          "value": "0x420",
+          "pc": "0x80054bc"
+        },
+        {
+          "address": "0x40080010",
+          "value": "0x10",
+          "pc": "0x80054d4"
+        },
+        {
+          "address": "0x40080014",
+          "value": "0xffffffff",
+          "pc": "0x80054ec"
+        },
+        {
+          "address": "0x40080004",
+          "value": "0xffffffff",
+          "pc": "0x80054ee"
+        },
+        {
+          "address": "0x40080018",
+          "value": "0x0",
+          "pc": "0x80054f2"
+        },
+        {
+          "address": "0x40080018",
+          "value": "0x10",
+          "pc": "0x8005506"
+        },
+        {
+          "address": "0x40080800",
+          "value": "0x7",
+          "pc": "0x8004b9c"
+        },
+        {
+          "address": "0x40080804",
+          "value": "0x2",
+          "pc": "0x8003db0"
+        },
+        {
+          "address": "0x4008000c",
+          "value": "0x40001847",
+          "pc": "0x8004bb6"
+        },
+        {
+          "address": "0x40080000",
+          "value": "0xc0",
+          "pc": "0x8004bc8"
+        },
+        {
+          "address": "0x40080038",
+          "value": "0x210000",
+          "pc": "0x80056be"
+        },
+        {
+          "address": "0x40080018",
+          "value": "0x80003014",
+          "pc": "0x8004bde"
+        },
+        {
+          "address": "0x40080008",
+          "value": "0x1",
+          "pc": "0x8004be8"
+        },
+        {
+          "address": "0x40080804",
+          "value": "0x0",
+          "pc": "0x8003ce6"
+        },
+        {
+          "address": "0x40080014",
+          "value": "0x1000",
+          "pc": "0x8004d56"
+        },
+        {
+          "address": "0x40080834",
+          "value": "0x0",
+          "pc": "0x8005dda"
+        },
+        {
+          "address": "0x40080b00",
+          "value": "0x8000000",
+          "pc": "0x8005e40"
+        },
+        {
+          "address": "0x40080b20",
+          "value": "0x8000000",
+          "pc": "0x8005e40"
+        },
+        {
+          "address": "0x40080b40",
+          "value": "0x8000000",
+          "pc": "0x8005e40"
+        },
+        {
+          "address": "0x40080b60",
+          "value": "0x8000000",
+          "pc": "0x8005e40"
+        },
+        {
+          "address": "0x40080b80",
+          "value": "0x8000000",
+          "pc": "0x8005e40"
+        },
+        {
+          "address": "0x40080ba0",
+          "value": "0x8000000",
+          "pc": "0x8005e40"
+        },
+        {
+          "address": "0x40080bc0",
+          "value": "0x8000000",
+          "pc": "0x8005e40"
+        },
+        {
+          "address": "0x40080be0",
+          "value": "0x8000000",
+          "pc": "0x8005e40"
+        },
+        {
+          "address": "0x40080c00",
+          "value": "0x8000000",
+          "pc": "0x8005e40"
+        },
+        {
+          "address": "0x4008081c",
+          "value": "0x10001",
+          "pc": "0x8005e72"
+        },
+        {
+          "address": "0x40080814",
+          "value": "0x9",
+          "pc": "0x8005e78"
+        },
+        {
+          "address": "0x40080810",
+          "value": "0x9",
+          "pc": "0x8005e7c"
+        },
+        {
+          "address": "0x40080010",
+          "value": "0x420",
+          "pc": "0x8005e88"
+        },
+        {
+          "address": "0x40080010",
+          "value": "0x10",
+          "pc": "0x8005e9c"
+        },
+        {
+          "address": "0x40080024",
+          "value": "0x31",
+          "pc": "0x80052fc"
+        },
+        {
+          "address": "0x4008005c",
+          "value": "0x4000400",
+          "pc": "0x800531e"
+        },
+        {
+          "address": "0x40080028",
+          "value": "0x1003f0",
+          "pc": "0x800528e"
+        },
+        {
+          "address": "0x40080800",
+          "value": "0x7",
+          "pc": "0x8005ed2"
+        },
+        {
+          "address": "0x40080900",
+          "value": "0x0",
+          "pc": "0x8005f1c"
+        },
+        {
+          "address": "0x40080b00",
+          "value": "0x8000000",
+          "pc": "0x8005f28"
+        },
+        {
+          "address": "0x40080900",
+          "value": "0x0",
+          "pc": "0x8005f34"
+        },
+        {
+          "address": "0x40080b00",
+          "value": "0x8000000",
+          "pc": "0x8005f40"
+        },
+        {
+          "address": "0x40080b10",
+          "value": "0x60000000",
+          "pc": "0x8005f7c"
+        },
+        {
+          "address": "0x40080018",
+          "value": "0x80143014",
+          "pc": "0x8005f84"
+        },
+        {
+          "address": "0x40080014",
+          "value": "0x2000",
+          "pc": "0x8004d9e"
+        },
+        {
+          "address": "0x40080014",
+          "value": "0x800",
+          "pc": "0x8004da2"
+        },
+        {
+          "address": "0x40080018",
+          "value": "0x80143814",
+          "pc": "0x8004db0"
+        },
+        {
+          "address": "0x40080024",
+          "value": "0x42",
+          "pc": "0x8005190"
+        },
+        {
+          "address": "0x40080b40",
+          "value": "0x10088040",
+          "pc": "0x800586c"
+        },
+        {
+          "address": "0x4008081c",
+          "value": "0x50001",
+          "pc": "0x800588c"
+        },
+        {
+          "address": "0x40080b50",
+          "value": "0x80040",
+          "pc": "0x8005ada"
+        },
+        {
+          "address": "0x40080b40",
+          "value": "0x94088040",
+          "pc": "0x8005b3e"
+        }
+      ]
+    },
+    {
+      "name": "close already retired group",
+      "passed": true,
+      "checks": [
+        {
+          "name": "real full firmware init",
+          "actual": 1,
+          "expected": 1,
+          "passed": true
+        },
+        {
+          "name": "EP2 open",
+          "actual": 1,
+          "expected": 1,
+          "passed": true
+        },
+        {
+          "name": "real RX arm",
+          "actual": 1,
+          "expected": 1,
+          "passed": true
+        },
+        {
+          "name": "PENDING retains busy",
+          "actual": 0,
+          "expected": 0,
+          "passed": true
+        },
+        {
+          "name": "PENDING DeInit refused",
+          "actual": 0,
+          "expected": 0,
+          "passed": true
+        },
+        {
+          "name": "actual cancel SUCCESS",
+          "actual": 1,
+          "expected": 1,
+          "passed": true
+        },
+        {
+          "name": "BUSY cleared",
+          "actual": 0,
+          "expected": 0,
+          "passed": true
+        },
+        {
+          "name": "retired group close succeeds",
+          "actual": 0,
+          "expected": 0,
+          "passed": true
+        }
+      ],
+      "error": null,
+      "calls": [
+        {
+          "function": "tud_rhport_init",
+          "args": [
+            0,
+            536989696
+          ],
+          "returned": true,
+          "basepri": 0
+        },
+        {
+          "function": "OTG_FS_IRQHandler",
+          "args": [],
+          "returned": true,
+          "basepri": 0
+        },
+        {
+          "function": "OTG_FS_IRQHandler",
+          "args": [],
+          "returned": true,
+          "basepri": 0
+        },
+        {
+          "function": "tud_task_ext",
+          "args": [
+            0,
+            0
+          ],
+          "returned": true,
+          "basepri": 0
+        },
+        {
+          "function": "usbd_edpt_open",
+          "args": [
+            0,
+            536989952
+          ],
+          "returned": true,
+          "basepri": 0
+        },
+        {
+          "function": "usbd_edpt_xfer",
+          "args": [
+            0,
+            2,
+            536993792,
+            64
+          ],
+          "returned": true,
+          "basepri": 0
+        },
+        {
+          "function": "usbd_edpt_abort",
+          "args": [
+            0,
+            2
+          ],
+          "returned": true,
+          "basepri": 0
+        },
+        {
+          "function": "tud_deinit",
+          "args": [
+            0
+          ],
+          "returned": true,
+          "basepri": 0
+        },
+        {
+          "function": "OTG_FS_IRQHandler",
+          "args": [],
+          "returned": true,
+          "basepri": 0
+        },
+        {
+          "function": "usbd_edpt_abort",
+          "args": [
+            0,
+            2
+          ],
+          "returned": true,
+          "basepri": 0
+        },
+        {
+          "function": "OTG_FS_IRQHandler",
+          "args": [],
+          "returned": true,
+          "basepri": 0
+        },
+        {
+          "function": "usbd_edpt_abort",
+          "args": [
+            0,
+            2
+          ],
+          "returned": true,
+          "basepri": 0
+        },
+        {
+          "function": "usbd_edpt_abort",
+          "args": [
+            0,
+            2
+          ],
+          "returned": true,
+          "basepri": 0
+        },
+        {
+          "function": "usbd_edpt_busy",
+          "args": [
+            0,
+            2
+          ],
+          "returned": true,
+          "basepri": 0
+        },
+        {
+          "function": "dcd_edpt_close_all",
+          "args": [
+            0
+          ],
+          "returned": true,
+          "basepri": 0
+        },
+        {
+          "function": "usbd_device_failed",
+          "args": [],
+          "returned": true,
+          "basepri": 0
+        }
+      ],
+      "register_writes": [
+        {
+          "address": "0x40080008",
+          "value": "0x0",
+          "pc": "0x8005482"
+        },
+        {
+          "address": "0x4008000c",
+          "value": "0x40",
+          "pc": "0x8007048"
+        },
+        {
+          "address": "0x40080038",
+          "value": "0x10000",
+          "pc": "0x8005554"
+        },
+        {
+          "address": "0x40080010",
+          "value": "0x80000001",
+          "pc": "0x8008824"
+        },
+        {
+          "address": "0x4008000c",
+          "value": "0x1440",
+          "pc": "0x8007066"
+        },
+        {
+          "address": "0x4008000c",
+          "value": "0x1840",
+          "pc": "0x8005626"
+        },
+        {
+          "address": "0x4008000c",
+          "value": "0x1847",
+          "pc": "0x80054a4"
+        },
+        {
+          "address": "0x40080e00",
+          "value": "0x0",
+          "pc": "0x80054ae"
+        },
+        {
+          "address": "0x40080010",
+          "value": "0x420",
+          "pc": "0x80054bc"
+        },
+        {
+          "address": "0x40080010",
+          "value": "0x10",
+          "pc": "0x80054d4"
+        },
+        {
+          "address": "0x40080014",
+          "value": "0xffffffff",
+          "pc": "0x80054ec"
+        },
+        {
+          "address": "0x40080004",
+          "value": "0xffffffff",
+          "pc": "0x80054ee"
+        },
+        {
+          "address": "0x40080018",
+          "value": "0x0",
+          "pc": "0x80054f2"
+        },
+        {
+          "address": "0x40080018",
+          "value": "0x10",
+          "pc": "0x8005506"
+        },
+        {
+          "address": "0x40080800",
+          "value": "0x7",
+          "pc": "0x8004b9c"
+        },
+        {
+          "address": "0x40080804",
+          "value": "0x2",
+          "pc": "0x8003db0"
+        },
+        {
+          "address": "0x4008000c",
+          "value": "0x40001847",
+          "pc": "0x8004bb6"
+        },
+        {
+          "address": "0x40080000",
+          "value": "0xc0",
+          "pc": "0x8004bc8"
+        },
+        {
+          "address": "0x40080038",
+          "value": "0x210000",
+          "pc": "0x80056be"
+        },
+        {
+          "address": "0x40080018",
+          "value": "0x80003014",
+          "pc": "0x8004bde"
+        },
+        {
+          "address": "0x40080008",
+          "value": "0x1",
+          "pc": "0x8004be8"
+        },
+        {
+          "address": "0x40080804",
+          "value": "0x0",
+          "pc": "0x8003ce6"
+        },
+        {
+          "address": "0x40080014",
+          "value": "0x1000",
+          "pc": "0x8004d56"
+        },
+        {
+          "address": "0x40080834",
+          "value": "0x0",
+          "pc": "0x8005dda"
+        },
+        {
+          "address": "0x40080b00",
+          "value": "0x8000000",
+          "pc": "0x8005e40"
+        },
+        {
+          "address": "0x40080b20",
+          "value": "0x8000000",
+          "pc": "0x8005e40"
+        },
+        {
+          "address": "0x40080b40",
+          "value": "0x8000000",
+          "pc": "0x8005e40"
+        },
+        {
+          "address": "0x40080b60",
+          "value": "0x8000000",
+          "pc": "0x8005e40"
+        },
+        {
+          "address": "0x40080b80",
+          "value": "0x8000000",
+          "pc": "0x8005e40"
+        },
+        {
+          "address": "0x40080ba0",
+          "value": "0x8000000",
+          "pc": "0x8005e40"
+        },
+        {
+          "address": "0x40080bc0",
+          "value": "0x8000000",
+          "pc": "0x8005e40"
+        },
+        {
+          "address": "0x40080be0",
+          "value": "0x8000000",
+          "pc": "0x8005e40"
+        },
+        {
+          "address": "0x40080c00",
+          "value": "0x8000000",
+          "pc": "0x8005e40"
+        },
+        {
+          "address": "0x4008081c",
+          "value": "0x10001",
+          "pc": "0x8005e72"
+        },
+        {
+          "address": "0x40080814",
+          "value": "0x9",
+          "pc": "0x8005e78"
+        },
+        {
+          "address": "0x40080810",
+          "value": "0x9",
+          "pc": "0x8005e7c"
+        },
+        {
+          "address": "0x40080010",
+          "value": "0x420",
+          "pc": "0x8005e88"
+        },
+        {
+          "address": "0x40080010",
+          "value": "0x10",
+          "pc": "0x8005e9c"
+        },
+        {
+          "address": "0x40080024",
+          "value": "0x31",
+          "pc": "0x80052fc"
+        },
+        {
+          "address": "0x4008005c",
+          "value": "0x4000400",
+          "pc": "0x800531e"
+        },
+        {
+          "address": "0x40080028",
+          "value": "0x1003f0",
+          "pc": "0x800528e"
+        },
+        {
+          "address": "0x40080800",
+          "value": "0x7",
+          "pc": "0x8005ed2"
+        },
+        {
+          "address": "0x40080900",
+          "value": "0x0",
+          "pc": "0x8005f1c"
+        },
+        {
+          "address": "0x40080b00",
+          "value": "0x8000000",
+          "pc": "0x8005f28"
+        },
+        {
+          "address": "0x40080900",
+          "value": "0x0",
+          "pc": "0x8005f34"
+        },
+        {
+          "address": "0x40080b00",
+          "value": "0x8000000",
+          "pc": "0x8005f40"
+        },
+        {
+          "address": "0x40080b10",
+          "value": "0x60000000",
+          "pc": "0x8005f7c"
+        },
+        {
+          "address": "0x40080018",
+          "value": "0x80143014",
+          "pc": "0x8005f84"
+        },
+        {
+          "address": "0x40080014",
+          "value": "0x2000",
+          "pc": "0x8004d9e"
+        },
+        {
+          "address": "0x40080014",
+          "value": "0x800",
+          "pc": "0x8004da2"
+        },
+        {
+          "address": "0x40080018",
+          "value": "0x80143814",
+          "pc": "0x8004db0"
+        },
+        {
+          "address": "0x40080024",
+          "value": "0x42",
+          "pc": "0x8005190"
+        },
+        {
+          "address": "0x40080b40",
+          "value": "0x10088040",
+          "pc": "0x800586c"
+        },
+        {
+          "address": "0x4008081c",
+          "value": "0x50001",
+          "pc": "0x800588c"
+        },
+        {
+          "address": "0x40080b50",
+          "value": "0x80040",
+          "pc": "0x8005ada"
+        },
+        {
+          "address": "0x40080b40",
+          "value": "0x94088040",
+          "pc": "0x8005b3e"
+        },
+        {
+          "address": "0x40080804",
+          "value": "0x200",
+          "pc": "0x80040b8"
+        },
+        {
+          "address": "0x40080018",
+          "value": "0x80143804",
+          "pc": "0x8004f08"
+        },
+        {
+          "address": "0x40080018",
+          "value": "0x80143814",
+          "pc": "0x8004f38"
+        },
+        {
+          "address": "0x40080018",
+          "value": "0x801c3814",
+          "pc": "0x80040e0"
+        },
+        {
+          "address": "0x40080814",
+          "value": "0xb",
+          "pc": "0x80040ea"
+        },
+        {
+          "address": "0x40080b40",
+          "value": "0xdc088040",
+          "pc": "0x80040fc"
+        },
+        {
+          "address": "0x40080b48",
+          "value": "0x2",
+          "pc": "0x80060d4"
+        },
+        {
+          "address": "0x40080b48",
+          "value": "0x0",
+          "pc": "0x800412e"
+        },
+        {
+          "address": "0x40080804",
+          "value": "0x408",
+          "pc": "0x8004138"
+        },
+        {
+          "address": "0x40080920",
+          "value": "0x0",
+          "pc": "0x800436a"
+        },
+        {
+          "address": "0x40080b20",
+          "value": "0x8000000",
+          "pc": "0x8004382"
+        },
+        {
+          "address": "0x4008081c",
+          "value": "0x50001",
+          "pc": "0x8004398"
+        },
+        {
+          "address": "0x40080834",
+          "value": "0x0",
+          "pc": "0x80043a6"
+        },
+        {
+          "address": "0x40080940",
+          "value": "0x0",
+          "pc": "0x800436a"
+        },
+        {
+          "address": "0x40080b40",
+          "value": "0x1c080040",
+          "pc": "0x8004382"
+        },
+        {
+          "address": "0x4008081c",
+          "value": "0x10001",
+          "pc": "0x8004398"
+        },
+        {
+          "address": "0x40080834",
+          "value": "0x0",
+          "pc": "0x80043a6"
+        },
+        {
+          "address": "0x40080960",
+          "value": "0x0",
+          "pc": "0x800436a"
+        },
+        {
+          "address": "0x40080b60",
+          "value": "0x8000000",
+          "pc": "0x8004382"
+        },
+        {
+          "address": "0x4008081c",
+          "value": "0x10001",
+          "pc": "0x8004398"
+        },
+        {
+          "address": "0x40080834",
+          "value": "0x0",
+          "pc": "0x80043a6"
+        },
+        {
+          "address": "0x40080980",
+          "value": "0x0",
+          "pc": "0x800436a"
+        },
+        {
+          "address": "0x40080b80",
+          "value": "0x8000000",
+          "pc": "0x8004382"
+        },
+        {
+          "address": "0x4008081c",
+          "value": "0x10001",
+          "pc": "0x8004398"
+        },
+        {
+          "address": "0x40080834",
+          "value": "0x0",
+          "pc": "0x80043a6"
+        },
+        {
+          "address": "0x400809a0",
+          "value": "0x0",
+          "pc": "0x800436a"
+        },
+        {
+          "address": "0x40080ba0",
+          "value": "0x8000000",
+          "pc": "0x8004382"
+        },
+        {
+          "address": "0x4008081c",
+          "value": "0x10001",
+          "pc": "0x8004398"
+        },
+        {
+          "address": "0x40080834",
+          "value": "0x0",
+          "pc": "0x80043a6"
+        },
+        {
+          "address": "0x400809c0",
+          "value": "0x0",
+          "pc": "0x800436a"
+        },
+        {
+          "address": "0x40080bc0",
+          "value": "0x8000000",
+          "pc": "0x8004382"
+        },
+        {
+          "address": "0x4008081c",
+          "value": "0x10001",
+          "pc": "0x8004398"
+        },
+        {
+          "address": "0x40080834",
+          "value": "0x0",
+          "pc": "0x80043a6"
+        },
+        {
+          "address": "0x400809e0",
+          "value": "0x0",
+          "pc": "0x800436a"
+        },
+        {
+          "address": "0x40080be0",
+          "value": "0x8000000",
+          "pc": "0x8004382"
+        },
+        {
+          "address": "0x4008081c",
+          "value": "0x10001",
+          "pc": "0x8004398"
+        },
+        {
+          "address": "0x40080834",
+          "value": "0x0",
+          "pc": "0x80043a6"
+        },
+        {
+          "address": "0x40080a00",
+          "value": "0x0",
+          "pc": "0x800436a"
+        },
+        {
+          "address": "0x40080c00",
+          "value": "0x8000000",
+          "pc": "0x8004382"
+        },
+        {
+          "address": "0x4008081c",
+          "value": "0x10001",
+          "pc": "0x8004398"
+        },
+        {
+          "address": "0x40080834",
+          "value": "0x0",
+          "pc": "0x80043a6"
+        }
+      ]
+    },
+    {
+      "name": "close active group preserves fault",
+      "passed": true,
+      "checks": [
+        {
+          "name": "real full firmware init",
+          "actual": 1,
+          "expected": 1,
+          "passed": true
+        },
+        {
+          "name": "EP2 open",
+          "actual": 1,
+          "expected": 1,
+          "passed": true
+        },
+        {
+          "name": "real RX arm",
+          "actual": 1,
+          "expected": 1,
+          "passed": true
+        },
+        {
+          "name": "fault retained",
+          "actual": 1,
+          "expected": 1,
+          "passed": true
+        },
+        {
+          "name": "busy retained",
+          "actual": 1,
+          "expected": 1,
+          "passed": true
+        }
+      ],
+      "error": null,
+      "calls": [
+        {
+          "function": "tud_rhport_init",
+          "args": [
+            0,
+            536989696
+          ],
+          "returned": true,
+          "basepri": 0
+        },
+        {
+          "function": "OTG_FS_IRQHandler",
+          "args": [],
+          "returned": true,
+          "basepri": 0
+        },
+        {
+          "function": "OTG_FS_IRQHandler",
+          "args": [],
+          "returned": true,
+          "basepri": 0
+        },
+        {
+          "function": "tud_task_ext",
+          "args": [
+            0,
+            0
+          ],
+          "returned": true,
+          "basepri": 0
+        },
+        {
+          "function": "usbd_edpt_open",
+          "args": [
+            0,
+            536989952
+          ],
+          "returned": true,
+          "basepri": 0
+        },
+        {
+          "function": "usbd_edpt_xfer",
+          "args": [
+            0,
+            2,
+            536993792,
+            64
+          ],
+          "returned": true,
+          "basepri": 0
+        },
+        {
+          "function": "dcd_edpt_close_all",
+          "args": [
+            0
+          ],
+          "returned": true,
+          "basepri": 0
+        },
+        {
+          "function": "usbd_device_failed",
+          "args": [],
+          "returned": true,
+          "basepri": 0
+        },
+        {
+          "function": "usbd_edpt_busy",
+          "args": [
+            0,
+            2
+          ],
+          "returned": true,
+          "basepri": 0
+        }
+      ],
+      "register_writes": [
+        {
+          "address": "0x40080008",
+          "value": "0x0",
+          "pc": "0x8005482"
+        },
+        {
+          "address": "0x4008000c",
+          "value": "0x40",
+          "pc": "0x8007048"
+        },
+        {
+          "address": "0x40080038",
+          "value": "0x10000",
+          "pc": "0x8005554"
+        },
+        {
+          "address": "0x40080010",
+          "value": "0x80000001",
+          "pc": "0x8008824"
+        },
+        {
+          "address": "0x4008000c",
+          "value": "0x1440",
+          "pc": "0x8007066"
+        },
+        {
+          "address": "0x4008000c",
+          "value": "0x1840",
+          "pc": "0x8005626"
+        },
+        {
+          "address": "0x4008000c",
+          "value": "0x1847",
+          "pc": "0x80054a4"
+        },
+        {
+          "address": "0x40080e00",
+          "value": "0x0",
+          "pc": "0x80054ae"
+        },
+        {
+          "address": "0x40080010",
+          "value": "0x420",
+          "pc": "0x80054bc"
+        },
+        {
+          "address": "0x40080010",
+          "value": "0x10",
+          "pc": "0x80054d4"
+        },
+        {
+          "address": "0x40080014",
+          "value": "0xffffffff",
+          "pc": "0x80054ec"
+        },
+        {
+          "address": "0x40080004",
+          "value": "0xffffffff",
+          "pc": "0x80054ee"
+        },
+        {
+          "address": "0x40080018",
+          "value": "0x0",
+          "pc": "0x80054f2"
+        },
+        {
+          "address": "0x40080018",
+          "value": "0x10",
+          "pc": "0x8005506"
+        },
+        {
+          "address": "0x40080800",
+          "value": "0x7",
+          "pc": "0x8004b9c"
+        },
+        {
+          "address": "0x40080804",
+          "value": "0x2",
+          "pc": "0x8003db0"
+        },
+        {
+          "address": "0x4008000c",
+          "value": "0x40001847",
+          "pc": "0x8004bb6"
+        },
+        {
+          "address": "0x40080000",
+          "value": "0xc0",
+          "pc": "0x8004bc8"
+        },
+        {
+          "address": "0x40080038",
+          "value": "0x210000",
+          "pc": "0x80056be"
+        },
+        {
+          "address": "0x40080018",
+          "value": "0x80003014",
+          "pc": "0x8004bde"
+        },
+        {
+          "address": "0x40080008",
+          "value": "0x1",
+          "pc": "0x8004be8"
+        },
+        {
+          "address": "0x40080804",
+          "value": "0x0",
+          "pc": "0x8003ce6"
+        },
+        {
+          "address": "0x40080014",
+          "value": "0x1000",
+          "pc": "0x8004d56"
+        },
+        {
+          "address": "0x40080834",
+          "value": "0x0",
+          "pc": "0x8005dda"
+        },
+        {
+          "address": "0x40080b00",
+          "value": "0x8000000",
+          "pc": "0x8005e40"
+        },
+        {
+          "address": "0x40080b20",
+          "value": "0x8000000",
+          "pc": "0x8005e40"
+        },
+        {
+          "address": "0x40080b40",
+          "value": "0x8000000",
+          "pc": "0x8005e40"
+        },
+        {
+          "address": "0x40080b60",
+          "value": "0x8000000",
+          "pc": "0x8005e40"
+        },
+        {
+          "address": "0x40080b80",
+          "value": "0x8000000",
+          "pc": "0x8005e40"
+        },
+        {
+          "address": "0x40080ba0",
+          "value": "0x8000000",
+          "pc": "0x8005e40"
+        },
+        {
+          "address": "0x40080bc0",
+          "value": "0x8000000",
+          "pc": "0x8005e40"
+        },
+        {
+          "address": "0x40080be0",
+          "value": "0x8000000",
+          "pc": "0x8005e40"
+        },
+        {
+          "address": "0x40080c00",
+          "value": "0x8000000",
+          "pc": "0x8005e40"
+        },
+        {
+          "address": "0x4008081c",
+          "value": "0x10001",
+          "pc": "0x8005e72"
+        },
+        {
+          "address": "0x40080814",
+          "value": "0x9",
+          "pc": "0x8005e78"
+        },
+        {
+          "address": "0x40080810",
+          "value": "0x9",
+          "pc": "0x8005e7c"
+        },
+        {
+          "address": "0x40080010",
+          "value": "0x420",
+          "pc": "0x8005e88"
+        },
+        {
+          "address": "0x40080010",
+          "value": "0x10",
+          "pc": "0x8005e9c"
+        },
+        {
+          "address": "0x40080024",
+          "value": "0x31",
+          "pc": "0x80052fc"
+        },
+        {
+          "address": "0x4008005c",
+          "value": "0x4000400",
+          "pc": "0x800531e"
+        },
+        {
+          "address": "0x40080028",
+          "value": "0x1003f0",
+          "pc": "0x800528e"
+        },
+        {
+          "address": "0x40080800",
+          "value": "0x7",
+          "pc": "0x8005ed2"
+        },
+        {
+          "address": "0x40080900",
+          "value": "0x0",
+          "pc": "0x8005f1c"
+        },
+        {
+          "address": "0x40080b00",
+          "value": "0x8000000",
+          "pc": "0x8005f28"
+        },
+        {
+          "address": "0x40080900",
+          "value": "0x0",
+          "pc": "0x8005f34"
+        },
+        {
+          "address": "0x40080b00",
+          "value": "0x8000000",
+          "pc": "0x8005f40"
+        },
+        {
+          "address": "0x40080b10",
+          "value": "0x60000000",
+          "pc": "0x8005f7c"
+        },
+        {
+          "address": "0x40080018",
+          "value": "0x80143014",
+          "pc": "0x8005f84"
+        },
+        {
+          "address": "0x40080014",
+          "value": "0x2000",
+          "pc": "0x8004d9e"
+        },
+        {
+          "address": "0x40080014",
+          "value": "0x800",
+          "pc": "0x8004da2"
+        },
+        {
+          "address": "0x40080018",
+          "value": "0x80143814",
+          "pc": "0x8004db0"
+        },
+        {
+          "address": "0x40080024",
+          "value": "0x42",
+          "pc": "0x8005190"
+        },
+        {
+          "address": "0x40080b40",
+          "value": "0x10088040",
+          "pc": "0x800586c"
+        },
+        {
+          "address": "0x4008081c",
+          "value": "0x50001",
+          "pc": "0x800588c"
+        },
+        {
+          "address": "0x40080b50",
+          "value": "0x80040",
+          "pc": "0x8005ada"
+        },
+        {
+          "address": "0x40080b40",
+          "value": "0x94088040",
+          "pc": "0x8005b3e"
+        }
+      ]
+    },
+    {
+      "name": "RAM backend asynchronous completion",
+      "passed": true,
+      "checks": [
+        {
+          "name": "real full firmware init",
+          "actual": 1,
+          "expected": 1,
+          "passed": true
+        },
+        {
+          "name": "RAM source pending",
+          "actual": 0,
+          "expected": 0,
+          "passed": true
+        },
+        {
+          "name": "RAM completion drained",
+          "actual": 1,
+          "expected": 1,
+          "passed": true
+        },
+        {
+          "name": "Data IN armed",
+          "actual": 1,
+          "expected": 1,
+          "passed": true
+        }
+      ],
+      "error": null,
+      "calls": [
+        {
+          "function": "tud_rhport_init",
+          "args": [
+            0,
+            536989696
+          ],
+          "returned": true,
+          "basepri": 0
+        },
+        {
+          "function": "OTG_FS_IRQHandler",
+          "args": [],
+          "returned": true,
+          "basepri": 0
+        },
+        {
+          "function": "OTG_FS_IRQHandler",
+          "args": [],
+          "returned": true,
+          "basepri": 0
+        },
+        {
+          "function": "tud_task_ext",
+          "args": [
+            0,
+            0
+          ],
+          "returned": true,
+          "basepri": 0
+        },
+        {
+          "function": "OTG_FS_IRQHandler",
+          "args": [],
+          "returned": true,
+          "basepri": 0
+        },
+        {
+          "function": "tud_task_ext",
+          "args": [
+            0,
+            0
+          ],
+          "returned": true,
+          "basepri": 0
+        },
+        {
+          "function": "OTG_FS_IRQHandler",
+          "args": [],
+          "returned": true,
+          "basepri": 0
+        },
+        {
+          "function": "tud_task_ext",
+          "args": [
+            0,
+            0
+          ],
+          "returned": true,
+          "basepri": 0
+        },
+        {
+          "function": "TinyUSB_RamDrained",
+          "args": [],
+          "returned": true,
+          "basepri": 0
+        },
+        {
+          "function": "TinyUSB_RamPoll",
+          "args": [],
+          "returned": true,
+          "basepri": 0
+        },
+        {
+          "function": "TinyUSB_RamDrained",
+          "args": [],
+          "returned": true,
+          "basepri": 0
+        },
+        {
+          "function": "tud_task_ext",
+          "args": [
+            0,
+            0
+          ],
+          "returned": true,
+          "basepri": 0
+        },
+        {
+          "function": "usbd_edpt_busy",
+          "args": [
+            0,
+            130
+          ],
+          "returned": true,
+          "basepri": 0
+        }
+      ],
+      "register_writes": [
+        {
+          "address": "0x40080008",
+          "value": "0x0",
+          "pc": "0x8005482"
+        },
+        {
+          "address": "0x4008000c",
+          "value": "0x40",
+          "pc": "0x8007048"
+        },
+        {
+          "address": "0x40080038",
+          "value": "0x10000",
+          "pc": "0x8005554"
+        },
+        {
+          "address": "0x40080010",
+          "value": "0x80000001",
+          "pc": "0x8008824"
+        },
+        {
+          "address": "0x4008000c",
+          "value": "0x1440",
+          "pc": "0x8007066"
+        },
+        {
+          "address": "0x4008000c",
+          "value": "0x1840",
+          "pc": "0x8005626"
+        },
+        {
+          "address": "0x4008000c",
+          "value": "0x1847",
+          "pc": "0x80054a4"
+        },
+        {
+          "address": "0x40080e00",
+          "value": "0x0",
+          "pc": "0x80054ae"
+        },
+        {
+          "address": "0x40080010",
+          "value": "0x420",
+          "pc": "0x80054bc"
+        },
+        {
+          "address": "0x40080010",
+          "value": "0x10",
+          "pc": "0x80054d4"
+        },
+        {
+          "address": "0x40080014",
+          "value": "0xffffffff",
+          "pc": "0x80054ec"
+        },
+        {
+          "address": "0x40080004",
+          "value": "0xffffffff",
+          "pc": "0x80054ee"
+        },
+        {
+          "address": "0x40080018",
+          "value": "0x0",
+          "pc": "0x80054f2"
+        },
+        {
+          "address": "0x40080018",
+          "value": "0x10",
+          "pc": "0x8005506"
+        },
+        {
+          "address": "0x40080800",
+          "value": "0x7",
+          "pc": "0x8004b9c"
+        },
+        {
+          "address": "0x40080804",
+          "value": "0x2",
+          "pc": "0x8003db0"
+        },
+        {
+          "address": "0x4008000c",
+          "value": "0x40001847",
+          "pc": "0x8004bb6"
+        },
+        {
+          "address": "0x40080000",
+          "value": "0xc0",
+          "pc": "0x8004bc8"
+        },
+        {
+          "address": "0x40080038",
+          "value": "0x210000",
+          "pc": "0x80056be"
+        },
+        {
+          "address": "0x40080018",
+          "value": "0x80003014",
+          "pc": "0x8004bde"
+        },
+        {
+          "address": "0x40080008",
+          "value": "0x1",
+          "pc": "0x8004be8"
+        },
+        {
+          "address": "0x40080804",
+          "value": "0x0",
+          "pc": "0x8003ce6"
+        },
+        {
+          "address": "0x40080014",
+          "value": "0x1000",
+          "pc": "0x8004d56"
+        },
+        {
+          "address": "0x40080834",
+          "value": "0x0",
+          "pc": "0x8005dda"
+        },
+        {
+          "address": "0x40080b00",
+          "value": "0x8000000",
+          "pc": "0x8005e40"
+        },
+        {
+          "address": "0x40080b20",
+          "value": "0x8000000",
+          "pc": "0x8005e40"
+        },
+        {
+          "address": "0x40080b40",
+          "value": "0x8000000",
+          "pc": "0x8005e40"
+        },
+        {
+          "address": "0x40080b60",
+          "value": "0x8000000",
+          "pc": "0x8005e40"
+        },
+        {
+          "address": "0x40080b80",
+          "value": "0x8000000",
+          "pc": "0x8005e40"
+        },
+        {
+          "address": "0x40080ba0",
+          "value": "0x8000000",
+          "pc": "0x8005e40"
+        },
+        {
+          "address": "0x40080bc0",
+          "value": "0x8000000",
+          "pc": "0x8005e40"
+        },
+        {
+          "address": "0x40080be0",
+          "value": "0x8000000",
+          "pc": "0x8005e40"
+        },
+        {
+          "address": "0x40080c00",
+          "value": "0x8000000",
+          "pc": "0x8005e40"
+        },
+        {
+          "address": "0x4008081c",
+          "value": "0x10001",
+          "pc": "0x8005e72"
+        },
+        {
+          "address": "0x40080814",
+          "value": "0x9",
+          "pc": "0x8005e78"
+        },
+        {
+          "address": "0x40080810",
+          "value": "0x9",
+          "pc": "0x8005e7c"
+        },
+        {
+          "address": "0x40080010",
+          "value": "0x420",
+          "pc": "0x8005e88"
+        },
+        {
+          "address": "0x40080010",
+          "value": "0x10",
+          "pc": "0x8005e9c"
+        },
+        {
+          "address": "0x40080024",
+          "value": "0x31",
+          "pc": "0x80052fc"
+        },
+        {
+          "address": "0x4008005c",
+          "value": "0x4000400",
+          "pc": "0x800531e"
+        },
+        {
+          "address": "0x40080028",
+          "value": "0x1003f0",
+          "pc": "0x800528e"
+        },
+        {
+          "address": "0x40080800",
+          "value": "0x7",
+          "pc": "0x8005ed2"
+        },
+        {
+          "address": "0x40080900",
+          "value": "0x0",
+          "pc": "0x8005f1c"
+        },
+        {
+          "address": "0x40080b00",
+          "value": "0x8000000",
+          "pc": "0x8005f28"
+        },
+        {
+          "address": "0x40080900",
+          "value": "0x0",
+          "pc": "0x8005f34"
+        },
+        {
+          "address": "0x40080b00",
+          "value": "0x8000000",
+          "pc": "0x8005f40"
+        },
+        {
+          "address": "0x40080b10",
+          "value": "0x60000000",
+          "pc": "0x8005f7c"
+        },
+        {
+          "address": "0x40080018",
+          "value": "0x80143014",
+          "pc": "0x8005f84"
+        },
+        {
+          "address": "0x40080014",
+          "value": "0x2000",
+          "pc": "0x8004d9e"
+        },
+        {
+          "address": "0x40080014",
+          "value": "0x800",
+          "pc": "0x8004da2"
+        },
+        {
+          "address": "0x40080018",
+          "value": "0x80143814",
+          "pc": "0x8004db0"
+        },
+        {
+          "address": "0x40080018",
+          "value": "0x80143804",
+          "pc": "0x8004f08"
+        },
+        {
+          "address": "0x40080b10",
+          "value": "0x60000000",
+          "pc": "0x8006460"
+        },
+        {
+          "address": "0x40080b08",
+          "value": "0x8008",
+          "pc": "0x8006466"
+        },
+        {
+          "address": "0x40080018",
+          "value": "0x80143814",
+          "pc": "0x8004f38"
+        },
+        {
+          "address": "0x40080024",
+          "value": "0x42",
+          "pc": "0x8005190"
+        },
+        {
+          "address": "0x40080b40",
+          "value": "0x10088040",
+          "pc": "0x800586c"
+        },
+        {
+          "address": "0x4008081c",
+          "value": "0x50001",
+          "pc": "0x800588c"
+        },
+        {
+          "address": "0x40080108",
+          "value": "0x1003e0",
+          "pc": "0x800528e"
+        },
+        {
+          "address": "0x40080940",
+          "value": "0x10888040",
+          "pc": "0x800586c"
+        },
+        {
+          "address": "0x4008081c",
+          "value": "0x50005",
+          "pc": "0x800588c"
+        },
+        {
+          "address": "0x40080b50",
+          "value": "0x8001f",
+          "pc": "0x8005ada"
+        },
+        {
+          "address": "0x40080b40",
+          "value": "0x94088040",
+          "pc": "0x8005b3e"
+        },
+        {
+          "address": "0x40080910",
+          "value": "0x80000",
+          "pc": "0x8005ada"
+        },
+        {
+          "address": "0x40080900",
+          "value": "0x84000000",
+          "pc": "0x8005b3e"
+        },
+        {
+          "address": "0x40080018",
+          "value": "0x80143804",
+          "pc": "0x8004f08"
+        },
+        {
+          "address": "0x40080b48",
+          "value": "0x1",
+          "pc": "0x80065ce"
+        },
+        {
+          "address": "0x40080018",
+          "value": "0x80143814",
+          "pc": "0x8004f38"
+        },
+        {
+          "address": "0x40080950",
+          "value": "0x400200",
+          "pc": "0x8005ada"
+        },
+        {
+          "address": "0x40080940",
+          "value": "0x94888040",
+          "pc": "0x8005b3e"
+        },
+        {
+          "address": "0x40080834",
+          "value": "0x4",
+          "pc": "0x8005b76"
+        }
+      ]
+    }
+  ],
+  "summary": {
+    "cases": 10,
+    "passed": 9,
+    "assertions": 60
+  },
+  "hardware": "NOT_TESTED",
+  "boundary": "Complete Keil AXF real kernel/port/queue/MSC/DCD; explicit scheduler readiness and MMIO model, not RTOS runtime or silicon acceptance"
+}

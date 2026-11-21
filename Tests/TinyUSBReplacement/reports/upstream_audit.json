@@ -145,7 +145,7 @@
       "path": "src/osal/osal_freertos.h",
       "upstream_git_blob": "54bb6ab75cd5cc9f3be2c285f7f9a3b143fd0478",
       "pristine_sha256": "941f568e8ab0564eced8fa36ce19d8a7d29fe666f7074c63324ef6adeca32221",
-      "current_sha256": "941f568e8ab0564eced8fa36ce19d8a7d29fe666f7074c63324ef6adeca32221"
+      "current_sha256": "3fd30b2c7ea546688506b640d48ea96464008489423085c8a18c0f0f09ad9263"
     },
     {
       "path": "src/osal/osal_mynewt.h",
@@ -199,7 +199,7 @@
       "path": "src/portable/synopsys/dwc2/dcd_dwc2.c",
       "upstream_git_blob": "58221d5adda11bc52cee7fd10b3a947557b1751b",
       "pristine_sha256": "69e829f2474f0225a00ce430048131bb18eac05fd9d49c655496b5c8edc2c465",
-      "current_sha256": "7ece6b2ebde245991874419cdd4da7e11715b5d6526c77d771b5bc8dcf41079a"
+      "current_sha256": "c1e6fae518ce4b19093c629746e0fa9fb9c73e31123ec742a3e90f028bb82d4b"
     },
     {
       "path": "src/portable/synopsys/dwc2/dwc2_apm32.h",
@@ -223,7 +223,7 @@
       "path": "src/portable/synopsys/dwc2/dwc2_common.c",
       "upstream_git_blob": "0e38218e395b5d5b0aaa50f733fd5f5678e53cbc",
       "pristine_sha256": "86110d78f398aaaacfb5f1fd54fbe9855190f18ba099d6e23e0698dff28f0a5c",
-      "current_sha256": "be813218b66430ab92b64fe61e0ccc2b47451fc610633d64defadbae7c2144d5"
+      "current_sha256": "b0a4f19e61c7890edaf3042f00ba876d5b98281dcc735921dce26d45914065a5"
     },
     {
       "path": "src/portable/synopsys/dwc2/dwc2_common.h",
@@ -323,6 +323,7 @@
     "src/device/dcd.h",
     "src/device/usbd.c",
     "src/device/usbd_pvt.h",
+    "src/osal/osal_freertos.h",
     "src/portable/synopsys/dwc2/dcd_dwc2.c",
     "src/portable/synopsys/dwc2/dwc2_common.c",
     "src/portable/synopsys/dwc2/dwc2_common.h"

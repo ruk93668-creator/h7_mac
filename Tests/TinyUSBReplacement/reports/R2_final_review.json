@@ -1,0 +1,27 @@
+{
+  "all_final_test_hashes_match": true,
+  "old_test_sources_unchanged": [
+    "Tests/TinyUSBReplacement/compile_probe.py",
+    "Tests/TinyUSBReplacement/dwc2_test.c",
+    "Tests/TinyUSBReplacement/r1_dcd.c",
+    "Tests/TinyUSBReplacement/r1_msc.c",
+    "Tests/TinyUSBReplacement/r1_test.c",
+    "Tests/TinyUSBReplacement/r1b_core.c",
+    "Tests/TinyUSBReplacement/r1b_dcd.c",
+    "Tests/TinyUSBReplacement/r1b_wait_test.c",
+    "Tests/TinyUSBReplacement/run_dwc2_tests.py",
+    "Tests/TinyUSBReplacement/run_r1_tests.py",
+    "Tests/TinyUSBReplacement/run_r1b_tests.py",
+    "Tests/TinyUSBReplacement/run_r1b_wait_tests.py",
+    "Tests/TinyUSBReplacement/run_stack_tests.py",
+    "Tests/TinyUSBReplacement/run_video_tests.py",
+    "Tests/TinyUSBReplacement/stack_test.c",
+    "Tests/TinyUSBReplacement/video_boundary.c",
+    "Tests/TinyUSBReplacement/video_test.c"
+  ],
+  "default_project_options_scatter_RTE_unchanged": true,
+  "pdf_sha256": "61d07b67deb291aed8a5cf8019c94add0a1065318542e57b3287d2694b14bd60",
+  "acceptance": "BLOCKED",
+  "not_flashed": true,
+  "diff_check": "Production/test/docs PASS; exact .patch context and unmodified raw Keil .log trailing spaces excluded from whitespace lint"
+}

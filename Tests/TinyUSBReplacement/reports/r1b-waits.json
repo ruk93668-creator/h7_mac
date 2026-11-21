@@ -271,7 +271,7 @@
         "-c",
         "D:\\32\\STM32H7\\h7_mac_lifecycle\\Tests\\TinyUSBReplacement\\r1b_wait_test.c",
         "-o",
-        "D:\\32\\STM32H7\\h7_mac_lifecycle\\output\\TinyUSBReplacement\\r1b-waits-1795247226796926200\\r1b_wait_test.o"
+        "D:\\32\\STM32H7\\h7_mac_lifecycle\\output\\TinyUSBReplacement\\r1b-waits-1795250640036780800\\r1b_wait_test.o"
       ],
       "exit": 0,
       "output": ""
@@ -333,10 +333,10 @@
         "-c",
         "D:\\32\\STM32H7\\h7_mac_lifecycle\\ThirdParty\\tinyusb\\src\\portable\\synopsys\\dwc2\\dwc2_common.c",
         "-o",
-        "D:\\32\\STM32H7\\h7_mac_lifecycle\\output\\TinyUSBReplacement\\r1b-waits-1795247226796926200\\dwc2_common.o"
+        "D:\\32\\STM32H7\\h7_mac_lifecycle\\output\\TinyUSBReplacement\\r1b-waits-1795250640036780800\\dwc2_common.o"
       ],
       "exit": 0,
-      "output": "\"D:\\32\\STM32H7\\h7_mac_lifecycle\\ThirdParty\\tinyusb\\src\\portable\\synopsys\\dwc2\\dwc2_common.c\", line 197: Warning:  #66-D: enumeration value is out of \"int\" range\r\n    enum { GSNPSID_ID_MASK = TU_GENMASK(31, 16) };\r\n                             ^\r\nD:\\32\\STM32H7\\h7_mac_lifecycle\\ThirdParty\\tinyusb\\src\\portable\\synopsys\\dwc2\\dwc2_common.c: 1 warning, 0 errors\r\n"
+      "output": ""
     },
     {
       "argv": [
@@ -395,7 +395,7 @@
         "-c",
         "D:\\32\\STM32H7\\h7_mac_lifecycle\\ThirdParty\\tinyusb\\src\\common\\tusb_fifo.c",
         "-o",
-        "D:\\32\\STM32H7\\h7_mac_lifecycle\\output\\TinyUSBReplacement\\r1b-waits-1795247226796926200\\tusb_fifo.o"
+        "D:\\32\\STM32H7\\h7_mac_lifecycle\\output\\TinyUSBReplacement\\r1b-waits-1795250640036780800\\tusb_fifo.o"
       ],
       "exit": 0,
       "output": ""
@@ -403,30 +403,30 @@
     {
       "argv": [
         "D:\\32\\ARM\\ARMCC\\Bin\\armlink.exe",
-        "D:\\32\\STM32H7\\h7_mac_lifecycle\\output\\TinyUSBReplacement\\r1b-waits-1795247226796926200\\r1b_wait_test.o",
-        "D:\\32\\STM32H7\\h7_mac_lifecycle\\output\\TinyUSBReplacement\\r1b-waits-1795247226796926200\\dwc2_common.o",
-        "D:\\32\\STM32H7\\h7_mac_lifecycle\\output\\TinyUSBReplacement\\r1b-waits-1795247226796926200\\tusb_fifo.o",
+        "D:\\32\\STM32H7\\h7_mac_lifecycle\\output\\TinyUSBReplacement\\r1b-waits-1795250640036780800\\r1b_wait_test.o",
+        "D:\\32\\STM32H7\\h7_mac_lifecycle\\output\\TinyUSBReplacement\\r1b-waits-1795250640036780800\\dwc2_common.o",
+        "D:\\32\\STM32H7\\h7_mac_lifecycle\\output\\TinyUSBReplacement\\r1b-waits-1795250640036780800\\tusb_fifo.o",
         "--entry",
         "Dwc2_Run",
         "--scatter",
         "D:\\32\\STM32H7\\h7_mac_lifecycle\\Tests\\EndpointLifecycle\\test.sct",
         "--map",
         "--list",
-        "D:\\32\\STM32H7\\h7_mac_lifecycle\\output\\TinyUSBReplacement\\r1b-waits-1795247226796926200\\dwc2.map",
+        "D:\\32\\STM32H7\\h7_mac_lifecycle\\output\\TinyUSBReplacement\\r1b-waits-1795250640036780800\\dwc2.map",
         "-o",
-        "D:\\32\\STM32H7\\h7_mac_lifecycle\\output\\TinyUSBReplacement\\r1b-waits-1795247226796926200\\dwc2.axf"
+        "D:\\32\\STM32H7\\h7_mac_lifecycle\\output\\TinyUSBReplacement\\r1b-waits-1795250640036780800\\dwc2.axf"
       ],
       "exit": 0,
       "output": ""
     }
   ],
-  "artifact": "D:\\32\\STM32H7\\h7_mac_lifecycle\\output\\TinyUSBReplacement\\r1b-waits-1795247226796926200\\dwc2.axf",
+  "artifact": "D:\\32\\STM32H7\\h7_mac_lifecycle\\output\\TinyUSBReplacement\\r1b-waits-1795250640036780800\\dwc2.axf",
   "hardware": "NOT_TESTED",
   "meaning": "Each call must return; actual firmware DWT deadline/clock validity decides failure. Emulator instruction budget remains only a test harness watchdog.",
   "sources": {
     "Tests/TinyUSBReplacement/r1b_wait_test.c": "82650e275d9eb9658f351830f2924ad5dce5f2a6023a64f9168a7185a8a54342",
-    "ThirdParty/tinyusb/src/portable/synopsys/dwc2/dwc2_common.c": "be813218b66430ab92b64fe61e0ccc2b47451fc610633d64defadbae7c2144d5",
+    "ThirdParty/tinyusb/src/portable/synopsys/dwc2/dwc2_common.c": "b0a4f19e61c7890edaf3042f00ba876d5b98281dcc735921dce26d45914065a5",
     "ThirdParty/tinyusb/src/common/tusb_fifo.c": "61f3f43caf0d8c9caa27edf0daf65e307199161fd194344a9f510f443d1a26bb",
-    "ThirdParty/tinyusb/src/portable/synopsys/dwc2/dcd_dwc2.c": "7ece6b2ebde245991874419cdd4da7e11715b5d6526c77d771b5bc8dcf41079a"
+    "ThirdParty/tinyusb/src/portable/synopsys/dwc2/dcd_dwc2.c": "c1e6fae518ce4b19093c629746e0fa9fb9c73e31123ec742a3e90f028bb82d4b"
   }
 }

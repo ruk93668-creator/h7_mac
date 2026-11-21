@@ -1,0 +1,7 @@
+{
+  "reporting_failure": "build_r2.py variable p was shadowed by Path during preservation check, causing AttributeError on p.returncode after successful Keil build; fixed kept_path and rebuilt with per-source hash validation",
+  "earlier_fixture_failure": "tud_mounted is inline, absent from full AXF symbol table; original failed JSON retained; final checks real CBW/generation behavior",
+  "partial_acceptance": "BLOCKED",
+  "no_history_removed": true,
+  "git_checkpoint": "7ed2109 preserved source checkpoint; subsequent evidence commit includes final generated build project output paths and all reports; no history rewritten"
+}

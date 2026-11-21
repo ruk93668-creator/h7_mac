@@ -1,0 +1,19 @@
+{
+  "rows": [
+    {
+      "path": "CM7/Core/Src/main.c",
+      "default_tokens_except_assert_location_unchanged": true,
+      "sha256": "ce30290e8b5e8f42081eefef0245404c2ec06904c50c2c58a441675678cce72f"
+    },
+    {
+      "path": "CM7/Application/Tasks/usb_task.c",
+      "default_tokens_except_assert_location_unchanged": true,
+      "sha256": "5f51833436fc28c6b822bae4bb9febdc37b2c1b3dfbb4fa50122954d1e595938"
+    }
+  ],
+  "boundary": "Preprocessor equivalence except assertion file/line; no hardware test",
+  "fixture_history": [
+    "Initial baseline_usb_task probe missed source-local Tasks include",
+    "Raw comparison then differed only in Platform_RtosAssert file/line, examined before diagnostic-only normalization"
+  ]
+}

@@ -10,9 +10,9 @@ for name,sha in m['files'].items():
  if data!=orig:
   changes.append(name);patch=''.join(difflib.unified_diff(orig.decode().splitlines(True),data.decode().splitlines(True),fromfile='upstream/'+name,tofile='local/'+name));patches.append(patch)
  rows.append(dict(path=name,upstream_git_blob=blob,pristine_sha256=sha,current_sha256=hashlib.sha256(data).hexdigest()))
-expected=['src/class/video/video.h','src/class/msc/msc_device.c','src/class/msc/msc_device.h','src/device/dcd.h','src/device/usbd.c','src/device/usbd_pvt.h','src/portable/synopsys/dwc2/dcd_dwc2.c','src/portable/synopsys/dwc2/dwc2_common.c','src/portable/synopsys/dwc2/dwc2_common.h']
+expected=['src/osal/osal_freertos.h','src/class/video/video.h','src/class/msc/msc_device.c','src/class/msc/msc_device.h','src/device/dcd.h','src/device/usbd.c','src/device/usbd_pvt.h','src/portable/synopsys/dwc2/dcd_dwc2.c','src/portable/synopsys/dwc2/dwc2_common.c','src/portable/synopsys/dwc2/dwc2_common.h']
 assert set(changes)==set(expected),changes
-(HERE/'reports/R1B_upstream.patch').write_text(''.join(patches),encoding='utf-8')
+(HERE/'reports/R2_upstream.patch').write_text(''.join(patches),encoding='utf-8')
 facts=[]
 for f in sorted(U.iterdir()):
  if f.is_file() and f.suffix!='zip' and not f.name.startswith('tinyusb-'):

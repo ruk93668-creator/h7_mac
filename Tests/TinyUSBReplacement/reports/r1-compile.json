@@ -56,7 +56,7 @@
       "-c",
       "D:\\32\\STM32H7\\h7_mac_lifecycle\\ThirdParty\\tinyusb\\src\\tusb.c",
       "-o",
-      "D:\\32\\STM32H7\\h7_mac_lifecycle\\output\\TinyUSBReplacement\\r1-1795243693618354200\\tusb.o"
+      "D:\\32\\STM32H7\\h7_mac_lifecycle\\output\\TinyUSBReplacement\\r1-1795250113568709100\\tusb.o"
     ],
     "exit": 0,
     "output": ""
@@ -118,7 +118,7 @@
       "-c",
       "D:\\32\\STM32H7\\h7_mac_lifecycle\\ThirdParty\\tinyusb\\src\\common\\tusb_fifo.c",
       "-o",
-      "D:\\32\\STM32H7\\h7_mac_lifecycle\\output\\TinyUSBReplacement\\r1-1795243693618354200\\tusb_fifo.o"
+      "D:\\32\\STM32H7\\h7_mac_lifecycle\\output\\TinyUSBReplacement\\r1-1795250113568709100\\tusb_fifo.o"
     ],
     "exit": 0,
     "output": ""
@@ -180,7 +180,7 @@
       "-c",
       "D:\\32\\STM32H7\\h7_mac_lifecycle\\Tests\\TinyUSBReplacement\\r1_test.c",
       "-o",
-      "D:\\32\\STM32H7\\h7_mac_lifecycle\\output\\TinyUSBReplacement\\r1-1795243693618354200\\r1_test.o"
+      "D:\\32\\STM32H7\\h7_mac_lifecycle\\output\\TinyUSBReplacement\\r1-1795250113568709100\\r1_test.o"
     ],
     "exit": 0,
     "output": "\"D:\\32\\STM32H7\\h7_mac_lifecycle\\Tests\\TinyUSBReplacement\\r1_test.c\", line 8: Warning:  #144-D: a value of type \"volatile uint8_t *\" cannot be used to initialize an entity of type \"uint8_t *\"\r\n   uint8_t a=which==1?0x82:2; uint8_t *state=&_usbd_dev.ep_status[a&15][a>>7];\r\n                                             ^\r\nD:\\32\\STM32H7\\h7_mac_lifecycle\\Tests\\TinyUSBReplacement\\r1_test.c: 1 warning, 0 errors\r\n"
@@ -242,7 +242,7 @@
       "-c",
       "D:\\32\\STM32H7\\h7_mac_lifecycle\\Tests\\TinyUSBReplacement\\r1_dcd.c",
       "-o",
-      "D:\\32\\STM32H7\\h7_mac_lifecycle\\output\\TinyUSBReplacement\\r1-1795243693618354200\\r1_dcd.o"
+      "D:\\32\\STM32H7\\h7_mac_lifecycle\\output\\TinyUSBReplacement\\r1-1795250113568709100\\r1_dcd.o"
     ],
     "exit": 0,
     "output": ""
@@ -304,10 +304,10 @@
       "-c",
       "D:\\32\\STM32H7\\h7_mac_lifecycle\\ThirdParty\\tinyusb\\src\\portable\\synopsys\\dwc2\\dwc2_common.c",
       "-o",
-      "D:\\32\\STM32H7\\h7_mac_lifecycle\\output\\TinyUSBReplacement\\r1-1795243693618354200\\dwc2_common.o"
+      "D:\\32\\STM32H7\\h7_mac_lifecycle\\output\\TinyUSBReplacement\\r1-1795250113568709100\\dwc2_common.o"
     ],
     "exit": 0,
-    "output": "\"D:\\32\\STM32H7\\h7_mac_lifecycle\\ThirdParty\\tinyusb\\src\\portable\\synopsys\\dwc2\\dwc2_common.c\", line 181: Warning:  #66-D: enumeration value is out of \"int\" range\r\n    enum { GSNPSID_ID_MASK = TU_GENMASK(31, 16) };\r\n                             ^\r\nD:\\32\\STM32H7\\h7_mac_lifecycle\\ThirdParty\\tinyusb\\src\\portable\\synopsys\\dwc2\\dwc2_common.c: 1 warning, 0 errors\r\n"
+    "output": ""
   },
   {
     "argv": [
@@ -366,10 +366,10 @@
       "-c",
       "D:\\32\\STM32H7\\h7_mac_lifecycle\\Tests\\TinyUSBReplacement\\r1_msc.c",
       "-o",
-      "D:\\32\\STM32H7\\h7_mac_lifecycle\\output\\TinyUSBReplacement\\r1-1795243693618354200\\r1_msc.o"
+      "D:\\32\\STM32H7\\h7_mac_lifecycle\\output\\TinyUSBReplacement\\r1-1795250113568709100\\r1_msc.o"
     ],
     "exit": 0,
-    "output": "\"D:\\32\\STM32H7\\h7_mac_lifecycle\\Tests\\TinyUSBReplacement\\../../ThirdParty/tinyusb/src/class/msc/msc_device.c\", line 475: Warning:  #223-D: function \"dcd_device_faulted\" declared implicitly\r\n    if (!reset_pending || dcd_device_faulted(0)) return;\r\n                          ^\r\n\"D:\\32\\STM32H7\\h7_mac_lifecycle\\Tests\\TinyUSBReplacement\\../../ThirdParty/tinyusb/src/class/msc/msc_device.c\", line 532: Warning:  #223-D: function \"dcd_device_faulted\" declared implicitly\r\n          if (dcd_device_faulted(rhport)) return false;\r\n              ^\r\nD:\\32\\STM32H7\\h7_mac_lifecycle\\Tests\\TinyUSBReplacement\\r1_msc.c: 2 warnings, 0 errors\r\n"
+    "output": ""
   },
   {
     "argv": [
@@ -428,7 +428,7 @@
       "-c",
       "D:\\32\\STM32H7\\h7_mac_lifecycle\\CM7\\TinyUSB\\tinyusb_ram.c",
       "-o",
-      "D:\\32\\STM32H7\\h7_mac_lifecycle\\output\\TinyUSBReplacement\\r1-1795243693618354200\\tinyusb_ram.o"
+      "D:\\32\\STM32H7\\h7_mac_lifecycle\\output\\TinyUSBReplacement\\r1-1795250113568709100\\tinyusb_ram.o"
     ],
     "exit": 0,
     "output": ""
@@ -490,7 +490,7 @@
       "-c",
       "D:\\32\\STM32H7\\h7_mac_lifecycle\\CM7\\TinyUSB\\usb_descriptors.c",
       "-o",
-      "D:\\32\\STM32H7\\h7_mac_lifecycle\\output\\TinyUSBReplacement\\r1-1795243693618354200\\usb_descriptors.o"
+      "D:\\32\\STM32H7\\h7_mac_lifecycle\\output\\TinyUSBReplacement\\r1-1795250113568709100\\usb_descriptors.o"
     ],
     "exit": 0,
     "output": ""
@@ -552,7 +552,7 @@
       "-c",
       "D:\\32\\STM32H7\\h7_mac_lifecycle\\CM7\\Service\\usb_msc_ram.c",
       "-o",
-      "D:\\32\\STM32H7\\h7_mac_lifecycle\\output\\TinyUSBReplacement\\r1-1795243693618354200\\usb_msc_ram.o"
+      "D:\\32\\STM32H7\\h7_mac_lifecycle\\output\\TinyUSBReplacement\\r1-1795250113568709100\\usb_msc_ram.o"
     ],
     "exit": 0,
     "output": ""
@@ -560,24 +560,24 @@
   {
     "argv": [
       "D:\\32\\ARM\\ARMCC\\Bin\\armlink.exe",
-      "D:\\32\\STM32H7\\h7_mac_lifecycle\\output\\TinyUSBReplacement\\r1-1795243693618354200\\tusb.o",
-      "D:\\32\\STM32H7\\h7_mac_lifecycle\\output\\TinyUSBReplacement\\r1-1795243693618354200\\tusb_fifo.o",
-      "D:\\32\\STM32H7\\h7_mac_lifecycle\\output\\TinyUSBReplacement\\r1-1795243693618354200\\r1_test.o",
-      "D:\\32\\STM32H7\\h7_mac_lifecycle\\output\\TinyUSBReplacement\\r1-1795243693618354200\\r1_dcd.o",
-      "D:\\32\\STM32H7\\h7_mac_lifecycle\\output\\TinyUSBReplacement\\r1-1795243693618354200\\dwc2_common.o",
-      "D:\\32\\STM32H7\\h7_mac_lifecycle\\output\\TinyUSBReplacement\\r1-1795243693618354200\\r1_msc.o",
-      "D:\\32\\STM32H7\\h7_mac_lifecycle\\output\\TinyUSBReplacement\\r1-1795243693618354200\\tinyusb_ram.o",
-      "D:\\32\\STM32H7\\h7_mac_lifecycle\\output\\TinyUSBReplacement\\r1-1795243693618354200\\usb_descriptors.o",
-      "D:\\32\\STM32H7\\h7_mac_lifecycle\\output\\TinyUSBReplacement\\r1-1795243693618354200\\usb_msc_ram.o",
+      "D:\\32\\STM32H7\\h7_mac_lifecycle\\output\\TinyUSBReplacement\\r1-1795250113568709100\\tusb.o",
+      "D:\\32\\STM32H7\\h7_mac_lifecycle\\output\\TinyUSBReplacement\\r1-1795250113568709100\\tusb_fifo.o",
+      "D:\\32\\STM32H7\\h7_mac_lifecycle\\output\\TinyUSBReplacement\\r1-1795250113568709100\\r1_test.o",
+      "D:\\32\\STM32H7\\h7_mac_lifecycle\\output\\TinyUSBReplacement\\r1-1795250113568709100\\r1_dcd.o",
+      "D:\\32\\STM32H7\\h7_mac_lifecycle\\output\\TinyUSBReplacement\\r1-1795250113568709100\\dwc2_common.o",
+      "D:\\32\\STM32H7\\h7_mac_lifecycle\\output\\TinyUSBReplacement\\r1-1795250113568709100\\r1_msc.o",
+      "D:\\32\\STM32H7\\h7_mac_lifecycle\\output\\TinyUSBReplacement\\r1-1795250113568709100\\tinyusb_ram.o",
+      "D:\\32\\STM32H7\\h7_mac_lifecycle\\output\\TinyUSBReplacement\\r1-1795250113568709100\\usb_descriptors.o",
+      "D:\\32\\STM32H7\\h7_mac_lifecycle\\output\\TinyUSBReplacement\\r1-1795250113568709100\\usb_msc_ram.o",
       "--entry",
       "Test_Run",
       "--scatter",
       "D:\\32\\STM32H7\\h7_mac_lifecycle\\Tests\\EndpointLifecycle\\test.sct",
       "--map",
       "--list",
-      "D:\\32\\STM32H7\\h7_mac_lifecycle\\output\\TinyUSBReplacement\\r1-1795243693618354200\\stack.map",
+      "D:\\32\\STM32H7\\h7_mac_lifecycle\\output\\TinyUSBReplacement\\r1-1795250113568709100\\stack.map",
       "-o",
-      "D:\\32\\STM32H7\\h7_mac_lifecycle\\output\\TinyUSBReplacement\\r1-1795243693618354200\\stack.axf"
+      "D:\\32\\STM32H7\\h7_mac_lifecycle\\output\\TinyUSBReplacement\\r1-1795250113568709100\\stack.axf"
     ],
     "exit": 0,
     "output": ""
