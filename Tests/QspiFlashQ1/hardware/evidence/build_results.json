@@ -1,0 +1,24 @@
+{
+  "baseline": "d35c6464a9392d97f04f103bc828f59800d2c751",
+  "rows": [
+    {
+      "core": "CM7",
+      "exit": 0,
+      "counts": [
+        0,
+        0
+      ],
+      "pass": true
+    },
+    {
+      "core": "CM4",
+      "exit": 0,
+      "counts": [
+        0,
+        0
+      ],
+      "pass": true
+    }
+  ],
+  "production_clock_function_sha256": "d44a29894eaf5e01ea6eb063d7932c7b1c86526e4a9f0d33d7d2c78cd3de1ae4"
+}

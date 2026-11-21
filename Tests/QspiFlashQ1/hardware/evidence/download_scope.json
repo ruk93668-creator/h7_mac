@@ -1,0 +1,27 @@
+{
+  "execution_authorized": false,
+  "images": [
+    {
+      "core": "CM7",
+      "hex_path": "output\\QspiFlashQ1\\hardware_candidate_v4\\source\\MDK-ARM\\h7_mac_CM7\\h7_mac_CM7.hex",
+      "sha256": "9e2816605baec6fe044620c7d337ce912e0b70e45972f3701850c0d4373b9709",
+      "start": "0x8000000",
+      "end_exclusive": "0x8003de0",
+      "internal_flash_bank_start": "0x8000000",
+      "bytes": 15840,
+      "proposed_sector_start": "0x8000000",
+      "proposed_sector_end_exclusive": "0x8020000"
+    },
+    {
+      "core": "CM4",
+      "hex_path": "output\\QspiFlashQ1\\hardware_candidate_v4\\source\\MDK-ARM\\h7_mac_CM4\\h7_mac_CM4.hex",
+      "sha256": "f53d5b846ade56c706ec4fc0ea38da900b4dd7679dbdb2b7c0ca0609901487b7",
+      "start": "0x8100000",
+      "end_exclusive": "0x8100674",
+      "internal_flash_bank_start": "0x8100000",
+      "bytes": 1652,
+      "proposed_sector_start": "0x8100000",
+      "proposed_sector_end_exclusive": "0x8120000"
+    }
+  ]
+}
