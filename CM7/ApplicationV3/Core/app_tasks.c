@@ -3,6 +3,7 @@
 #include "app_messages.h"
 #include "../Tasks/service_tasks.h"
 #include "app_services.h"
+#include "usb_mode.h"
 #include "../Tasks/ipc_task.h"
 #include "platform_sync.h"
 
@@ -28,6 +29,9 @@ SysResult_t App_TasksCreate(void)
 
     //先准备普通C事件后端，再创建接收通知的任务
     result = App_EventsInit();
+    //Framework的USB Mode Initcall保留；禁止它抢先登记默认Test Class
+    if (result == SYS_OK)
+        result = USB_Mode_SelectBootMode(USB_MODE_NONE, NULL);
     if (result == SYS_OK)
         result = App_MessagesInit();
     if (result == SYS_OK)

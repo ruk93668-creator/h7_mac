@@ -1,0 +1,288 @@
+#include "hardware_fixture.h"
+#include "ov5640_device.h"
+#include "usb_mode.h"
+#include "usb_uvc.h"
+#include "sd_block.h"
+#include "platform_time.h"
+#include <string.h>
+
+//仅宿主夹具注入被测Service可观察的底层事实
+HardwareFixture_t g_hardware = {.card_present = true, .storage = {.state = 1U}};
+static bool s_camera_initialized, s_camera_running, s_camera_held;
+static CameraConfig_t s_camera_config;
+static CameraCaptureStopFacts_t s_camera_stop_facts;
+static uint8_t s_sample;
+
+uint32_t Platform_TimeGetMs(void)
+{
+    return g_hardware.now_ms;
+}
+
+static SysResult_t Fixture_Configure(Ov5640Device_t *camera, const CameraConfig_t *config)
+{
+    if (camera == NULL || config == NULL)
+        return SYS_ERR_INVALID_ARG;
+    ++g_hardware.sensor_configure_calls;
+    return SYS_OK;
+}
+
+static const Ov5640Ops_t s_sensor_ops = {.configure = Fixture_Configure};
+static Ov5640Device_t s_sensor = {.base = {.state = DEVICE_STATE_READY}, .ops = &s_sensor_ops};
+
+Device_t *Device_Find(const char *name)
+{
+    return strcmp(name, "ov5640") == 0 ? &s_sensor.base : NULL;
+}
+
+SysResult_t Device_Start(Device_t *device)
+{
+    if (device->state != DEVICE_STATE_READY)
+        return SYS_ERR_INVALID_STATE;
+    ++g_hardware.sensor_start_calls;
+    device->state = DEVICE_STATE_RUNNING;
+    return SYS_OK;
+}
+
+SysResult_t Device_Stop(Device_t *device)
+{
+    if (device->state != DEVICE_STATE_RUNNING)
+        return SYS_ERR_INVALID_STATE;
+    ++g_hardware.sensor_stop_calls;
+    device->state = g_hardware.sensor_stop_result == SYS_OK ? DEVICE_STATE_READY : DEVICE_STATE_ERROR;
+    return g_hardware.sensor_stop_result;
+}
+
+SysResult_t CameraCapture_Init(const CameraConfig_t *config)
+{
+    if (s_camera_initialized)
+        return SYS_ERR_INVALID_STATE;
+    ++g_hardware.capture_init_calls;
+    s_camera_initialized = true;
+    s_camera_config = *config;
+    return SYS_OK;
+}
+
+SysResult_t CameraCapture_StartStream(void)
+{
+    if (!s_camera_initialized || s_camera_running)
+        return SYS_ERR_INVALID_STATE;
+    ++g_hardware.capture_start_calls;
+    s_camera_running = true;
+    return g_hardware.camera_start_result;
+}
+
+void CameraCapture_Process(void)
+{
+}
+
+SysResult_t CameraCapture_GetLastResult(void)
+{
+    return SYS_OK;
+}
+
+SysResult_t CameraCapture_GetStats(CameraCaptureStats_t *stats)
+{
+    *stats = (CameraCaptureStats_t){g_hardware.camera_completed, g_hardware.camera_dropped};
+    return SYS_OK;
+}
+
+bool CameraCapture_StreamGetFrame(CameraFrame_t *frame)
+{
+    uint32_t bytes;
+    if (!s_camera_running || !g_hardware.frame_ready || s_camera_held ||
+        CameraConfig_GetFrameSize(&s_camera_config, &bytes) != SYS_OK)
+        return false;
+
+    g_hardware.frame_ready = false;
+    s_camera_held = true;
+    *frame = (CameraFrame_t)
+    {
+        .width = s_camera_config.width,
+        .height = s_camera_config.height,
+        .format = s_camera_config.format,
+        .data = &s_sample,
+        .size_bytes = bytes
+    };
+    return true;
+}
+
+SysResult_t CameraCapture_StreamReleaseFrame(void)
+{
+    if (!s_camera_held)
+        return SYS_ERR_INVALID_STATE;
+    ++g_hardware.frame_release_calls;
+    if (g_hardware.frame_release_result == SYS_OK)
+        s_camera_held = false;
+    return g_hardware.frame_release_result;
+}
+
+SysResult_t CameraCapture_Stop(void)
+{
+    ++g_hardware.capture_stop_calls;
+    if (g_hardware.camera_stop_result == SYS_ERR_BUSY || s_camera_held)
+        return SYS_ERR_BUSY;
+    if (!g_hardware.stale_camera_stop)
+        ++s_camera_stop_facts.attempt_sequence;
+    s_camera_stop_facts.hardware_result = g_hardware.camera_stop_result;
+    if (g_hardware.camera_stop_result == SYS_OK)
+        s_camera_running = false;
+    return g_hardware.camera_stop_result;
+}
+
+bool CameraCapture_IsStopped(void)
+{
+    return s_camera_initialized && !s_camera_running && !s_camera_held;
+}
+
+SysResult_t CameraCapture_GetStopFacts(CameraCaptureStopFacts_t *facts)
+{
+    *facts = s_camera_stop_facts;
+    facts->flags = s_camera_initialized ? CAMERA_STOP_INITIALIZED : 0U;
+    if (CameraCapture_IsStopped())
+        facts->flags |= CAMERA_STOP_COMPLETE;
+    return SYS_OK;
+}
+
+SysResult_t USB_Mode_SelectBootMode(UsbMode_t mode, SysResult_t (*register_class)(void))
+{
+    if (mode != USB_MODE_NONE || register_class != NULL || g_hardware.boot_mode_calls != 0U)
+        return SYS_ERR_INVALID_STATE;
+    ++g_hardware.boot_mode_calls;
+    return SYS_OK;
+}
+
+SysResult_t USB_UVC_Configure(const VideoStreamConfig_t *config)
+{
+    (void)config;
+    return ++g_hardware.uvc_configure_calls == 1U ? SYS_OK : SYS_ERR_INVALID_STATE;
+}
+
+SysResult_t USB_UVC_Register(void)
+{
+    return ++g_hardware.uvc_register_calls == 1U ? SYS_OK : SYS_ERR_INVALID_STATE;
+}
+
+SysResult_t USB_UVC_GetStreamStatus(UsbUvcStreamStatus_t *status)
+{
+    if (!g_hardware.uvc_present)
+        return SYS_ERR_INVALID_STATE;
+    *status = (UsbUvcStreamStatus_t){.state = USB_UVC_WAIT_FRAME,
+        .result = g_hardware.usb_stream_result, .frame_owned = g_hardware.usb_frame_owned};
+    return SYS_OK;
+}
+
+SysResult_t USB_UVC_CancelFrame(void)
+{
+    ++g_hardware.usb_cancel_calls;
+    return g_hardware.usb_cancel_result;
+}
+
+void USB_UVC_Process(void)
+{
+}
+
+SysResult_t USB_Device_Start(void)
+{
+    ++g_hardware.usb_start_calls;
+    return SYS_OK;
+}
+
+SysResult_t USB_Device_Stop(void)
+{
+    ++g_hardware.usb_stop_calls;
+    if (g_hardware.usb_stop_result == SYS_OK)
+    {
+        g_hardware.usb_configured = false;
+        g_hardware.uvc_present = false;
+    }
+    return g_hardware.usb_stop_result;
+}
+
+bool USB_Device_IsConfigured(void)
+{
+    return g_hardware.usb_configured;
+}
+
+SysResult_t USB_Device_GetLastResult(void)
+{
+    return g_hardware.usb_result;
+}
+
+SysResult_t USB_Device_GetEpState(uint8_t endpoint, UsbDeviceEndpointState_t *state)
+{
+    if (endpoint != 0x81U)
+        return SYS_ERR_INVALID_ARG;
+    *state = (UsbDeviceEndpointState_t){.busy = g_hardware.endpoint_busy};
+    return SYS_OK;
+}
+
+SysResult_t BSP_SDMMC_ReadDetect(uint32_t *raw, bool *present)
+{
+    *present = g_hardware.card_present;
+    *raw = *present ? 0U : 1U;
+    return SYS_OK;
+}
+
+bool SD_Block_IsOwner(SdBlockClient_t client)
+{
+    return client == SD_BLOCK_CLIENT_FATFS && g_hardware.storage_owner;
+}
+
+SysResult_t SD_Block_GetStatus(SdBlockStatus_t *status)
+{
+    *status = (SdBlockStatus_t){g_hardware.card_present, true, g_hardware.storage_busy, false};
+    return g_hardware.storage_owner ? SYS_OK : SYS_ERR_INVALID_STATE;
+}
+
+SysResult_t StorageFS_Mount(bool writable, uint8_t partition)
+{
+    ++g_hardware.mount_calls;
+    g_hardware.storage_writable = writable;
+    g_hardware.partition = partition;
+    if (g_hardware.mount_result != SYS_OK)
+        return g_hardware.mount_result;
+    g_hardware.storage.state = 2U;
+    g_hardware.storage.writable = writable ? 1U : 0U;
+    g_hardware.storage_owner = true;
+    return SYS_OK;
+}
+
+SysResult_t StorageFS_Unmount(void)
+{
+    ++g_hardware.unmount_calls;
+    if (g_hardware.unmount_result == SYS_ERR_BUSY)
+        return SYS_ERR_BUSY;
+    if (g_hardware.unmount_result != SYS_OK)
+    {
+        g_hardware.storage.state = 3U;
+        g_hardware.storage.cleanup_result = g_hardware.unmount_result;
+        return g_hardware.unmount_result;
+    }
+    g_hardware.storage.state = 1U;
+    g_hardware.storage_owner = false;
+    return SYS_OK;
+}
+
+SysResult_t StorageFS_Recover(void)
+{
+    ++g_hardware.recover_calls;
+    if (g_hardware.recover_result != SYS_OK)
+        return g_hardware.recover_result;
+    g_hardware.storage.state = 1U;
+    g_hardware.storage.cleanup_result = SYS_OK;
+    g_hardware.storage_owner = false;
+    return SYS_OK;
+}
+
+SysResult_t StorageFS_GetDiagnostics(StorageFsDiagnostics_t *diagnostics)
+{
+    *diagnostics = g_hardware.storage;
+    return SYS_OK;
+}
+
+SysResult_t StorageFS_GetSpace(uint64_t *total_bytes, uint64_t *free_bytes)
+{
+    *total_bytes = 1024ULL * 512U;
+    *free_bytes = 512ULL * 512U;
+    return g_hardware.storage_owner ? SYS_OK : SYS_ERR_INVALID_STATE;
+}

@@ -17,7 +17,7 @@ typedef struct
 } AppV3ThreadSpec_t;
 
 SysResult_t AppV3_CreateThread(const AppV3ThreadSpec_t *thread);
-void AppV3_ServiceRun(void *argument, AppV3ServiceMailbox_t *mailbox);
+void AppV3_ServiceRun(void *argument, AppV3ServiceMailbox_t *mailbox, uint32_t (*advance)(void));
 SysResult_t ControlTask_Create(void);
 
 #endif

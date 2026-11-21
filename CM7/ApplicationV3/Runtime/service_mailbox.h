@@ -2,10 +2,11 @@
 #define CM7_V3_SERVICE_MAILBOX_H
 
 #include "service_event_loop.h"
-#include "../Core/app_messages.h"
+#include "service_events.h"
 
 #define APP_V3_SERVICE_DEPTH 4U
 #define APP_V3_SERVICE_RESULT_TAG 0x56334231UL
+#define APP_V3_HARDWARE_RESULT_TAG 0x56334331UL
 
 typedef struct
 {
@@ -14,6 +15,14 @@ typedef struct
     uint32_t argument;
     RuntimeEventTarget_t requester;
 } AppV3ServiceCommand_t;
+
+//保存正在推进的单个命令；硬件状态仍由各Service拥有
+typedef struct
+{
+    AppV3ServiceCommand_t command;
+    uint32_t started_ms;
+    bool pending;
+} AppV3HardwareRequest_t;
 
 typedef struct
 {
@@ -35,5 +44,8 @@ SysResult_t AppV3Mailbox_Flush(AppV3ServiceMailbox_t *mailbox);
 SysResult_t AppV3Mailbox_Receive(AppV3ServiceMailbox_t *mailbox, AppV3ServiceCommand_t *command);
 SysResult_t AppV3Mailbox_Complete(AppV3ServiceMailbox_t *mailbox,
     const AppV3ServiceCommand_t *command, SysResult_t result, bool simulated_running, uint32_t parameter);
+
+SysResult_t AppV3Mailbox_CompleteHardware(AppV3ServiceMailbox_t *mailbox,
+    const AppV3ServiceCommand_t *command, SysResult_t result, const AppV3HardwareReport_t *report);
 
 #endif

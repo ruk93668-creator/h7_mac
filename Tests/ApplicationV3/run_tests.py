@@ -43,6 +43,7 @@ def main():
     harness.run = run_with_queue_fault_seam
     sources = [
         Path(__file__).with_name("startup_test.c"),
+        Path(__file__).with_name("hardware_fixture.c"),
         V3 / "Core/app_main.c",
         V3 / "Core/app_tasks.c",
         V3 / "Core/app_services.c",
@@ -60,7 +61,7 @@ def main():
         harness.cc = ["-" + optimization if flag in ("-O0", "-O2") else flag for flag in harness.cc]
         name = "app_v3_" + optimization
         harness.build(name, sources, "AppV3_TestRun")
-        for scenario in range(38):
+        for scenario in range(49):
             row = harness.execute(name, "AppV3_TestRun", scenario)
             row.pop("trace", None)
             results.append({"optimization": optimization, "id": scenario, **row})

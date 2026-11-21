@@ -196,12 +196,16 @@ SysResult_t AppV3Business_Unsubscribe(uint32_t ticket)
     return SYS_ERR_NOT_FOUND;
 }
 
-//兼容固定52B公共队列。仅识别明确标记的模拟结果，不解析真实帧字段
+//兼容固定52B业务队列，只有明确的值类型结果标记才能解码
 static bool Business_Decode(const AppMessage_t *message, AppV3ServiceEvent_t *event)
 {
+    bool hardware = message->frame.size_bytes == APP_V3_HARDWARE_RESULT_TAG;
+
     if (AppV3_FindService(message->source) == NULL || message->command_id == 0U ||
-        message->frame.size_bytes != APP_V3_SERVICE_RESULT_TAG || message->stream_epoch == 0U ||
-        message->frame_id > 1U || message->timestamp_ms >= RUNTIME_TARGET_COUNT ||
+        (!hardware && message->frame.size_bytes != APP_V3_SERVICE_RESULT_TAG) ||
+        message->stream_epoch == 0U || message->timestamp_ms >= RUNTIME_TARGET_COUNT ||
+        message->frame.data != NULL || message->frame.data2 != NULL ||
+        message->frame_id > (hardware ? (uint32_t)APP_V3_HW_FAULT : 1U) ||
         message->timestamp_ms == (uint32_t)message->source)
         return false;
     if (!((message->type == APP_MESSAGE_ACK && message->result == SYS_OK) ||
@@ -215,9 +219,19 @@ static bool Business_Decode(const AppMessage_t *message, AppV3ServiceEvent_t *ev
         message->command_id,
         message->stream_epoch,
         message->result,
-        message->lease_id,
-        message->frame_id != 0U
+        hardware ? 0U : message->lease_id,
+        !hardware && message->frame_id != 0U,
+        hardware,
+        { .state = APP_V3_HW_UNINITIALIZED }
     };
+    if (hardware)
+    {
+        event->hardware.state = (AppV3HardwareState_t)message->frame_id;
+        event->hardware.first_fault = -(SysResult_t)message->frame.height;
+        event->hardware.primary = message->lease_id;
+        event->hardware.detail = message->frame.size_bytes2;
+        event->hardware.flags = message->frame.width;
+    }
     return true;
 }
 

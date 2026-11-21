@@ -17,7 +17,7 @@ static StaticTask_t s_task_controls[RUNTIME_TARGET_COUNT];
 static uint32_t s_task_attempted;
 
 //在服务所属任务内等待BOOT、准备实例并提交结果
-void AppV3_ServiceRun(void *argument, AppV3ServiceMailbox_t *mailbox)
+void AppV3_ServiceRun(void *argument, AppV3ServiceMailbox_t *mailbox, uint32_t (*advance)(void))
 {
     const AppV3ThreadSpec_t *thread = argument;
     SysResult_t initialization = SYS_ERR_INVALID_STATE;
@@ -35,6 +35,9 @@ void AppV3_ServiceRun(void *argument, AppV3ServiceMailbox_t *mailbox)
         //仅在本服务发布成功后推进其私有队列，未发布时只等待BOOT或重试报告
         if (initialization == SYS_OK && !report_pending)
         {
+            //硬件推进发生在Service任务内，结果队列背压不会阻止必要的停止推进
+            if (AppV3_BusinessReady())
+                wait_ms = advance();
             result = AppV3Mailbox_Flush(mailbox);
             if (result == SYS_OK)
                 result = AppV3EventLoop_Step(&mailbox->loop, wait_ms, &events);

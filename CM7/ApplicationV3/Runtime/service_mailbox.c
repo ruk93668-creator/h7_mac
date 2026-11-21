@@ -146,9 +146,10 @@ SysResult_t AppV3Mailbox_Receive(AppV3ServiceMailbox_t *mailbox, AppV3ServiceCom
     return SYS_OK;
 }
 
-//把执行结果和模拟状态封装进现有业务结果通道，不写入硬件状态出口
-SysResult_t AppV3Mailbox_Complete(AppV3ServiceMailbox_t *mailbox,
-    const AppV3ServiceCommand_t *command, SysResult_t result, bool simulated_running, uint32_t parameter)
+//统一终结消息提交和背压，真实与模拟结果使用独立标记
+static SysResult_t Mailbox_Complete(AppV3ServiceMailbox_t *mailbox,
+    const AppV3ServiceCommand_t *command, SysResult_t result, bool simulated_running,
+    uint32_t parameter, const AppV3HardwareReport_t *hardware)
 {
     if (!App_MessagesIsOwner(mailbox->owner) || mailbox->pending_valid)
         return SYS_ERR_INVALID_STATE;
@@ -166,6 +167,31 @@ SysResult_t AppV3Mailbox_Complete(AppV3ServiceMailbox_t *mailbox,
         .timestamp_ms = command->requester,
         .frame = { .size_bytes = APP_V3_SERVICE_RESULT_TAG }
     };
+    if (hardware != NULL)
+    {
+        //保留52B运输布局，真实诊断只用原无指针字段
+        mailbox->pending.frame_id = hardware->state;
+        mailbox->pending.lease_id = hardware->primary;
+        mailbox->pending.frame.width = hardware->flags;
+        mailbox->pending.frame.height = hardware->first_fault < -65535 ? (uint16_t)(-SYS_ERR_IO) :
+            (uint16_t)(-hardware->first_fault);
+        mailbox->pending.frame.size_bytes = APP_V3_HARDWARE_RESULT_TAG;
+        mailbox->pending.frame.size_bytes2 = hardware->detail;
+    }
     mailbox->pending_valid = true;
     return AppV3Mailbox_Flush(mailbox);
+}
+
+//原模拟结果保持原标记和状态语义
+SysResult_t AppV3Mailbox_Complete(AppV3ServiceMailbox_t *mailbox,
+    const AppV3ServiceCommand_t *command, SysResult_t result, bool simulated_running, uint32_t parameter)
+{
+    return Mailbox_Complete(mailbox, command, result, simulated_running, parameter, NULL);
+}
+
+//真实命令返回独立硬件快照，不产生模拟运行位
+SysResult_t AppV3Mailbox_CompleteHardware(AppV3ServiceMailbox_t *mailbox,
+    const AppV3ServiceCommand_t *command, SysResult_t result, const AppV3HardwareReport_t *report)
+{
+    return Mailbox_Complete(mailbox, command, result, false, 0U, report);
 }

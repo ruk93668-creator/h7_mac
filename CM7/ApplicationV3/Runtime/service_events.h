@@ -3,6 +3,27 @@
 
 #include "../Core/app_messages.h"
 
+//真实结果状态独立于模拟运行位，常驻Service当前不开放动态退场
+typedef enum
+{
+    APP_V3_HW_UNINITIALIZED = 0,
+    APP_V3_HW_READY,
+    APP_V3_HW_STARTING,
+    APP_V3_HW_ACTIVE,
+    APP_V3_HW_QUIESCING,
+    APP_V3_HW_FAULT
+} AppV3HardwareState_t;
+
+typedef struct
+{
+    AppV3HardwareState_t state;
+    SysResult_t first_fault;
+    uint32_t primary;
+    uint32_t detail;
+    uint16_t flags;
+} AppV3HardwareReport_t;
+
+
 typedef struct
 {
     RuntimeEventTarget_t service;
@@ -12,6 +33,8 @@ typedef struct
     SysResult_t result;
     uint32_t parameter;
     bool simulated_running;
+    bool real_hardware;
+    AppV3HardwareReport_t hardware;
 } AppV3ServiceEvent_t;
 
 typedef struct
