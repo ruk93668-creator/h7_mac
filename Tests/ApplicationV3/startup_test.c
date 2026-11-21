@@ -8,6 +8,7 @@
 #include "queue.h"
 #include "queue_pool.h"
 #include "service_record.h"
+#include "service_event_loop.h"
 #include <setjmp.h>
 
 volatile uint32_t g_failure;
@@ -179,6 +180,8 @@ static AppControlStatus_t published;
 static unsigned int published_count, waited;
 static unsigned int scheduled_priority, created_threads, fail_thread;
 static uint32_t scheduled_stack_words;
+static bool event_test;
+static unsigned int event_count;
 static TaskFunction_t scheduled_entry;
 static void *scheduled_argument;
 static jmp_buf task_exit;
@@ -242,6 +245,12 @@ void vTaskDelay(TickType_t ticks)
 
 SysResult_t App_EventsWait(RuntimeEventTarget_t target, uint32_t timeout_ms, uint32_t *events)
 {
+    if (event_test)
+    {
+        ++waited;
+        return SYS_ERR_TIMEOUT;
+    }
+
     if (target == RUNTIME_TARGET_CONTROL)
     {
         if (timeout_ms == 100U && waited++ == 0U)
@@ -280,6 +289,16 @@ SysResult_t App_EventsWait(RuntimeEventTarget_t target, uint32_t timeout_ms, uin
     if (waited != 4U || timeout_ms != APP_EVENTS_WAIT_FOREVER)
         g_failure = __LINE__;
     longjmp(task_exit, 1);
+}
+
+static SysResult_t Test_QueueReadable(AppV3Queue_t queue, void *context)
+{
+    AppMessage_t message;
+    (void)context;
+    if (AppV3Queue_Get(queue, &message, 0U) != SYS_OK || message.command_id != event_count + 1U)
+        return SYS_ERR_IO;
+    ++event_count;
+    return SYS_OK;
 }
 
 uint32_t AppV3_TestRun(uint32_t scenario)
@@ -390,6 +409,35 @@ uint32_t AppV3_TestRun(uint32_t scenario)
         CHECK(AppV3Record_Destroy(camera) == SYS_OK);
         CHECK(AppV3Record_Open(camera, 0U, &references[0]) == SYS_ERR_BUSY);
         CHECK(g_failure == 0U);
+        return 0U;
+    }
+
+    if (scenario == 12U)
+    {
+        AppV3EventLoop_t loop = {0};
+        AppV3Queue_t queue;
+        AppMessage_t item = {0};
+        uint32_t events;
+        scheduler = taskSCHEDULER_RUNNING;
+        event_test = true;
+        notify_fails = true;
+        CHECK(AppV3Queue_Alloc(sizeof(item), 3U, &queue) == SYS_OK);
+        item.command_id = 1U;
+        CHECK(AppV3Queue_Put(queue, &item, 0U) == SYS_OK);
+        CHECK(AppV3EventLoop_Init(&loop, owner) == SYS_OK);
+        CHECK(AppV3EventLoop_Subscribe(&loop, queue, Test_QueueReadable, NULL) == SYS_OK);
+        item.command_id = 2U;
+        CHECK(AppV3Queue_Put(queue, &item, 0U) == SYS_OK);
+        CHECK(AppV3EventLoop_Step(&loop, 20U, &events) == SYS_OK && event_count == 2U && waited == 1U);
+        CHECK(AppV3EventLoop_Step(&loop, 20U, &events) == SYS_ERR_TIMEOUT && waited == 2U);
+        exception = 16U;
+        CHECK(AppV3EventLoop_Step(&loop, 20U, &events) == SYS_ERR_INVALID_STATE && waited == 2U);
+        exception = 0U;
+        owner = RUNTIME_TARGET_CAMERA;
+        CHECK(AppV3EventLoop_Unsubscribe(&loop) == SYS_ERR_INVALID_STATE);
+        owner = RUNTIME_TARGET_CONTROL;
+        CHECK(AppV3EventLoop_Unsubscribe(&loop) == SYS_OK);
+        CHECK(AppV3Queue_Free(queue) == SYS_OK);
         return 0U;
     }
 

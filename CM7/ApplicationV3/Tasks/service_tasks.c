@@ -3,6 +3,7 @@
 #include "app_events.h"
 #include "platform_sync.h"
 #include "service_tasks.h"
+#include "../Runtime/service_event_loop.h"
 #include <stddef.h>
 
 static StackType_t s_control_stack[768U] __attribute__((aligned(8)));
@@ -16,11 +17,18 @@ void AppV3_ServiceRun(void *argument)
     uint32_t events;
     bool report_pending = false;
     bool boot_seen = false;
+    AppV3EventLoop_t loop = {0};
+    SysResult_t loop_status = AppV3EventLoop_Init(&loop, thread->owner);
+
+    //服务在自己线程内建立循环，初始化失败时不进入任何业务分发。
+    configASSERT(loop_status == SYS_OK);
+    while (loop_status != SYS_OK)
+        vTaskDelay(portMAX_DELAY);
 
     for (;;)
     {
         //Storage 没有旧控制消费唤醒，待发期间定时检查队列空间。
-        SysResult_t result = App_EventsWait(thread->owner,
+        SysResult_t result = AppV3EventLoop_Step(&loop,
             report_pending ? 100U : APP_EVENTS_WAIT_FOREVER, &events);
         if (result != SYS_OK && result != SYS_ERR_TIMEOUT)
         {
