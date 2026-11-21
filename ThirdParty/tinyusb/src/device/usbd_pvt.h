@@ -93,9 +93,10 @@ void usbd_edpt_clear_stall(uint8_t rhport, uint8_t ep_addr);
 // Check if endpoint is stalled
 bool usbd_edpt_stalled(uint8_t rhport, uint8_t ep_addr);
 
-// Abort an in-flight transfer on a non-control endpoint and release its claim, so the endpoint
-// can be armed again. A stall is cleared. Without dcd_edpt_abort_xfer() in the DCD, or on a stalled
-// endpoint, it is a stall and clear-stall, which also resets the data toggle.
+// Abort a non-control transfer in task context. True means retirement completed.
+// False can mean PENDING (dcd_edpt_cancel_pending) or retained failure
+// (usbd_device_failed). Pending callers must retry without reusing the buffer.
+// Only UNSUPPORTED may use the legacy stall/clear compatibility path.
 bool usbd_edpt_abort(uint8_t rhport, uint8_t ep_addr);
 
 // Allocate packet buffer used by ISO endpoints
@@ -124,6 +125,9 @@ bool usbd_defer_func(osal_task_func_t func, void *param, bool in_isr);
 // queued before this call. Nothing is queued, so it neither blocks nor is lost on a full queue.
 // usbd task only. One call is held at a time: false if a different one is pending.
 bool usbd_defer_func_after_queue(osal_task_func_t func, void *param);
+
+uint32_t usbd_setup_sequence(void);
+bool usbd_device_failed(void);
 
 #ifdef __cplusplus
  }

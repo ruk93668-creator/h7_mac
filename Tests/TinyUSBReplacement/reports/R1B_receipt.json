@@ -1,0 +1,74 @@
+{
+  "baseline": "5ba9e0e6444bf6134e7fdb3d4cb89b3b2d69e129",
+  "production_files": {
+    "ThirdParty/tinyusb/src/class/msc/msc_device.c": "e5266552b1bbfe8fad59ae82b8f169c26974c67d76d9b9694c4e9f718fb8b071",
+    "ThirdParty/tinyusb/src/class/msc/msc_device.h": "8f107f176ab1c089e40e8de7a216c723704e306ae38b7d1269599e9cccf60136",
+    "ThirdParty/tinyusb/src/device/dcd.h": "4d2c24a6d79e35048983a2903c3483b296785c7840b497a56be2eee7ff012374",
+    "ThirdParty/tinyusb/src/device/usbd.c": "f9b5991a8d8028589b1b4728da6de6a83b650437bd2446f79ec6541188faa974",
+    "ThirdParty/tinyusb/src/device/usbd_pvt.h": "0127b81bc79d43809e43d1cbcc0ab0644d7e7249a52d8cbfd3dcdb52add9353b",
+    "ThirdParty/tinyusb/src/portable/synopsys/dwc2/dcd_dwc2.c": "7ece6b2ebde245991874419cdd4da7e11715b5d6526c77d771b5bc8dcf41079a",
+    "ThirdParty/tinyusb/src/portable/synopsys/dwc2/dwc2_common.c": "be813218b66430ab92b64fe61e0ccc2b47451fc610633d64defadbae7c2144d5",
+    "ThirdParty/tinyusb/src/portable/synopsys/dwc2/dwc2_common.h": "3dd6020f2ec675209279a348f67a58d3064f3ad67def5bea3cab0ca8cc87a46e"
+  },
+  "preserved_old_test_sources": [
+    {
+      "path": "Tests/TinyUSBReplacement/compile_probe.py",
+      "sha256": "96fcf399c509bf6b1b11def8c2065caeb77ab20b6e2e742ca0ae18451b3b45ed"
+    },
+    {
+      "path": "Tests/TinyUSBReplacement/dwc2_test.c",
+      "sha256": "ff73ac3ac2c99b24d7aa1315d9e31196f9f0783835b385a8fa0b44fa25faa309"
+    },
+    {
+      "path": "Tests/TinyUSBReplacement/r1_dcd.c",
+      "sha256": "77d18da8bb32d23a224b2526c7f5be4beefd72324aad1aa5ec5d9d5f30856595"
+    },
+    {
+      "path": "Tests/TinyUSBReplacement/r1_msc.c",
+      "sha256": "c6eeab60ebdcee62d21e886b55285680e35df2bc524b9b808ab67837d8c4d141"
+    },
+    {
+      "path": "Tests/TinyUSBReplacement/r1_test.c",
+      "sha256": "3a92dae4570de512fc83d65cbb2f260d97aadb5ab07adcdaf64e49195a84e87d"
+    },
+    {
+      "path": "Tests/TinyUSBReplacement/run_dwc2_tests.py",
+      "sha256": "18a3d2a30dbe921f9a04b56e85fc87d27579efe4a20398d127e62a531768987f"
+    },
+    {
+      "path": "Tests/TinyUSBReplacement/run_r1_tests.py",
+      "sha256": "2547f1a70543abc207e668f11c65f5c52857a0339d00619d3d70f45bf30aa265"
+    },
+    {
+      "path": "Tests/TinyUSBReplacement/run_stack_tests.py",
+      "sha256": "f4a136f3be92b9d1e2d1e19396c4747ca2c5cf3c83aac3ed19a415001d4285be"
+    },
+    {
+      "path": "Tests/TinyUSBReplacement/run_video_tests.py",
+      "sha256": "9eaa3605473fc2e90e3859fd03a9a7d216b0117dde35420291b06f90c4ea1b17"
+    },
+    {
+      "path": "Tests/TinyUSBReplacement/stack_test.c",
+      "sha256": "3ef9b08c499911be55db516563269ca85c9a0ca1118476e5fa440782eae33aa4"
+    },
+    {
+      "path": "Tests/TinyUSBReplacement/video_boundary.c",
+      "sha256": "7fa0c3902e86f6c7f7f829147584f228a8e7e9fe66bd525266c9ce8d235c6d65"
+    },
+    {
+      "path": "Tests/TinyUSBReplacement/video_test.c",
+      "sha256": "5fdcb7b3a62a6765b4a236c87dbc558e90810e99fc79ee740a61778b5d812344"
+    }
+  ],
+  "baseline_component_compile": {
+    "errors": 0,
+    "warnings": 57
+  },
+  "pdf": {
+    "path": "Docs/references/RM0399_Rev5.pdf",
+    "tracked": false,
+    "sha256": "61d07b67deb291aed8a5cf8019c94add0a1065318542e57b3287d2694b14bd60"
+  },
+  "hardware": "NOT_TESTED",
+  "full_firmware": "NOT_BUILT"
+}

@@ -19,13 +19,13 @@
       "path": "src/class/msc/msc_device.c",
       "upstream_git_blob": "c7520e79cdc777ba9af8b309ed9a4865ea8099cc",
       "pristine_sha256": "2050faeddb76478a96e94f4b8c67e1ffd1d4ebeeba016d86f7a99e04c5758bd8",
-      "current_sha256": "2050faeddb76478a96e94f4b8c67e1ffd1d4ebeeba016d86f7a99e04c5758bd8"
+      "current_sha256": "e5266552b1bbfe8fad59ae82b8f169c26974c67d76d9b9694c4e9f718fb8b071"
     },
     {
       "path": "src/class/msc/msc_device.h",
       "upstream_git_blob": "e893cf4cba589b5049ef81e794883891a1787f78",
       "pristine_sha256": "0788b93ceb5de374e50907f13efc4619488b8dafd9344dac2a354bbde4fa8c3b",
-      "current_sha256": "0788b93ceb5de374e50907f13efc4619488b8dafd9344dac2a354bbde4fa8c3b"
+      "current_sha256": "8f107f176ab1c089e40e8de7a216c723704e306ae38b7d1269599e9cccf60136"
     },
     {
       "path": "src/class/msc/msc_host.c",
@@ -115,13 +115,13 @@
       "path": "src/device/dcd.h",
       "upstream_git_blob": "424804c92deabc031d90f24cfe99aed5852be2dc",
       "pristine_sha256": "91a598c3e73423837a46f717afcd4fad5ca9511427957308c0116a0fee8ef5b4",
-      "current_sha256": "91a598c3e73423837a46f717afcd4fad5ca9511427957308c0116a0fee8ef5b4"
+      "current_sha256": "4d2c24a6d79e35048983a2903c3483b296785c7840b497a56be2eee7ff012374"
     },
     {
       "path": "src/device/usbd.c",
       "upstream_git_blob": "4704654c8693851e4310cb0ee665cebb74f350a2",
       "pristine_sha256": "fbdfc3e6bf183244d80ae4345a5ed444e3f07b498901790eda7444e5ce2efcfc",
-      "current_sha256": "fbdfc3e6bf183244d80ae4345a5ed444e3f07b498901790eda7444e5ce2efcfc"
+      "current_sha256": "f9b5991a8d8028589b1b4728da6de6a83b650437bd2446f79ec6541188faa974"
     },
     {
       "path": "src/device/usbd.h",
@@ -133,7 +133,7 @@
       "path": "src/device/usbd_pvt.h",
       "upstream_git_blob": "0bf6a13b21b1846000bab384b16bd25ff06cf08f",
       "pristine_sha256": "539c7f53b5522b345199f6e04ea229a71986c856d137a19cb97bbd3f14d6a6f4",
-      "current_sha256": "539c7f53b5522b345199f6e04ea229a71986c856d137a19cb97bbd3f14d6a6f4"
+      "current_sha256": "0127b81bc79d43809e43d1cbcc0ab0644d7e7249a52d8cbfd3dcdb52add9353b"
     },
     {
       "path": "src/osal/osal.h",
@@ -199,7 +199,7 @@
       "path": "src/portable/synopsys/dwc2/dcd_dwc2.c",
       "upstream_git_blob": "58221d5adda11bc52cee7fd10b3a947557b1751b",
       "pristine_sha256": "69e829f2474f0225a00ce430048131bb18eac05fd9d49c655496b5c8edc2c465",
-      "current_sha256": "69e829f2474f0225a00ce430048131bb18eac05fd9d49c655496b5c8edc2c465"
+      "current_sha256": "7ece6b2ebde245991874419cdd4da7e11715b5d6526c77d771b5bc8dcf41079a"
     },
     {
       "path": "src/portable/synopsys/dwc2/dwc2_apm32.h",
@@ -223,13 +223,13 @@
       "path": "src/portable/synopsys/dwc2/dwc2_common.c",
       "upstream_git_blob": "0e38218e395b5d5b0aaa50f733fd5f5678e53cbc",
       "pristine_sha256": "86110d78f398aaaacfb5f1fd54fbe9855190f18ba099d6e23e0698dff28f0a5c",
-      "current_sha256": "86110d78f398aaaacfb5f1fd54fbe9855190f18ba099d6e23e0698dff28f0a5c"
+      "current_sha256": "be813218b66430ab92b64fe61e0ccc2b47451fc610633d64defadbae7c2144d5"
     },
     {
       "path": "src/portable/synopsys/dwc2/dwc2_common.h",
       "upstream_git_blob": "bbe180ac9c28a1718c268890a44f812d280bb40c",
       "pristine_sha256": "eca7e5ff65d716e3f3e402125263db1044ce3e62462f1e27f22bb2c8c36a7d12",
-      "current_sha256": "eca7e5ff65d716e3f3e402125263db1044ce3e62462f1e27f22bb2c8c36a7d12"
+      "current_sha256": "3dd6020f2ec675209279a348f67a58d3064f3ad67def5bea3cab0ca8cc87a46e"
     },
     {
       "path": "src/portable/synopsys/dwc2/dwc2_efm32.h",
@@ -317,9 +317,21 @@
     }
   ],
   "local_changes": [
-    "src/class/video/video.h"
+    "src/class/msc/msc_device.c",
+    "src/class/msc/msc_device.h",
+    "src/class/video/video.h",
+    "src/device/dcd.h",
+    "src/device/usbd.c",
+    "src/device/usbd_pvt.h",
+    "src/portable/synopsys/dwc2/dcd_dwc2.c",
+    "src/portable/synopsys/dwc2/dwc2_common.c",
+    "src/portable/synopsys/dwc2/dwc2_common.h"
   ],
-  "dcd_changes": [],
+  "dcd_changes": [
+    "src/portable/synopsys/dwc2/dcd_dwc2.c",
+    "src/portable/synopsys/dwc2/dwc2_common.c",
+    "src/portable/synopsys/dwc2/dwc2_common.h"
+  ],
   "upstream_dwc2_history": [
     {
       "sha": "1371c586d731a3cedbcae4bfdf0e2110fc4d735a",

@@ -15,10 +15,35 @@
 //--------------------------------------------------------------------
 //
 //--------------------------------------------------------------------
-static void reset_core(dwc2_regs_t* dwc2) {
-  // The software must check that bit 31 in this register is set to 1 (AHB Master is Idle) before starting any operation
-  while (!(dwc2->grstctl & GRSTCTL_AHBIDL)) {
+// H747 task waits use the already-enabled, free-running CPU cycle counter.
+// No enable/clock-tree mutation. ISR or unavailable/stalled clock: immediate refusal.
+static bool wait_failed;
+bool dwc2_wait_faulted(void) { return wait_failed; }
+void dwc2_wait_fail(void) { wait_failed = true; }
+bool dwc2_wait_bits(volatile uint32_t *reg, uint32_t mask, uint32_t expected) {
+  if (wait_failed) return false;
+  if ((*reg & mask) == expected) return true;
+#if CFG_TUSB_MCU == OPT_MCU_STM32H7
+  if (__get_IPSR() == 0 && (DWT->CTRL & DWT_CTRL_CYCCNTENA_Msk) &&
+      (CoreDebug->DEMCR & CoreDebug_DEMCR_TRCENA_Msk) && SystemCoreClock >= 1000U) {
+    const uint32_t clock_hz = SystemCoreClock;
+    const uint32_t start = DWT->CYCCNT;
+    uint32_t previous = start;
+    const uint32_t limit = (clock_hz / 1000U) * 2U; // 2 ms, not instruction count
+    while ((*reg & mask) != expected) {
+      uint32_t now = DWT->CYCCNT;
+      if (SystemCoreClock != clock_hz) {wait_failed=true;return false;}
+      if (now == previous || (uint32_t)(now - start) >= limit) break;
+      previous = now;
+    }
+    if ((*reg & mask) == expected) return true;
   }
+#endif
+  wait_failed = true; return false;
+}
+static bool reset_core(dwc2_regs_t* dwc2) {
+  // The software must check that bit 31 in this register is set to 1 (AHB Master is Idle) before starting any operation
+  if (!dwc2_wait_bits(&dwc2->grstctl, GRSTCTL_AHBIDL, GRSTCTL_AHBIDL)) return false;
 
   const uint32_t gsnpsid = dwc2->gsnpsid; // preload gsnpsid which is not readable while resetting
   dwc2->grstctl |= GRSTCTL_CSRST; // reset core
@@ -27,19 +52,33 @@ static void reset_core(dwc2_regs_t* dwc2) {
     // prior v4.20a: CSRST is self-clearing, and the core clears this bit after all the necessary logic is reset in
     // the core, which can take several clocks, depending on the current state of the core. Once this bit has been
     // cleared, the software must wait at least 3 PHY clocks before accessing the PHY domain (synchronization delay).
-    while (dwc2->grstctl & GRSTCTL_CSRST) {}
+    if (!dwc2_wait_bits(&dwc2->grstctl, GRSTCTL_CSRST, 0)) return false;
   } else {
     // From v4.20a: CSRST bit is write only. The application must clear this bit after checking the bit 29 of this
     // register i.e Core Soft Reset Done CSRT_DONE (w1c)
-    while (!(dwc2->grstctl & GRSTCTL_CSRST_DONE)) {}
+    if (!dwc2_wait_bits(&dwc2->grstctl, GRSTCTL_CSRST_DONE, GRSTCTL_CSRST_DONE)) return false;
     dwc2->grstctl = (dwc2->grstctl & ~GRSTCTL_CSRST) | GRSTCTL_CSRST_DONE;
   }
 
-  while (!(dwc2->grstctl & GRSTCTL_AHBIDL)) {} // wait for AHB master IDLE
+  if (!dwc2_wait_bits(&dwc2->grstctl, GRSTCTL_AHBIDL, GRSTCTL_AHBIDL)) return false;
+#if CFG_TUSB_MCU == OPT_MCU_STM32H7
+  // At least three 48 MHz FS PHY clocks after CSRST self-clear.
+  if (SystemCoreClock<1000U || __get_IPSR()!=0 || !(DWT->CTRL & DWT_CTRL_CYCCNTENA_Msk) ||
+      !(CoreDebug->DEMCR & CoreDebug_DEMCR_TRCENA_Msk)) {wait_failed=true;return false;}
+  const uint32_t start=DWT->CYCCNT;
+  uint32_t previous=start;
+  const uint32_t cycles=(SystemCoreClock/48000000U+1U)*3U;
+  while ((uint32_t)(DWT->CYCCNT-start)<cycles) {
+    uint32_t now=DWT->CYCCNT;
+    if(now==previous){wait_failed=true;return false;}
+    previous=now;
+  }
+#endif
+  return true;
 }
 
 // Dedicated FS PHY is internal with a clock 48Mhz.
-static void phy_fs_init(dwc2_regs_t* dwc2) {
+static bool phy_fs_init(dwc2_regs_t* dwc2) {
   TU_LOG(DWC2_COMMON_DEBUG, "Fullspeed PHY init\r\n");
 
   uint32_t gusbcfg = dwc2->gusbcfg;
@@ -52,7 +91,7 @@ static void phy_fs_init(dwc2_regs_t* dwc2) {
   dwc2_phy_init(dwc2, GHWCFG2_HSPHY_NOT_SUPPORTED);
 
   // Reset core after selecting PHY
-  reset_core(dwc2);
+  if (!reset_core(dwc2)) return false;
 
   // USB turnaround time is critical for certification where long cables and 5-Hubs are used.
   // So if you need the AHB to run at less than 30 MHz, and if USB turnaround time is not critical,
@@ -63,6 +102,7 @@ static void phy_fs_init(dwc2_regs_t* dwc2) {
 
   // MCU specific PHY update post reset
   dwc2_phy_update(dwc2, GHWCFG2_HSPHY_NOT_SUPPORTED);
+  return true;
 }
 
 /* dwc2 has 2 highspeed PHYs options
@@ -71,7 +111,7 @@ static void phy_fs_init(dwc2_regs_t* dwc2) {
  *
  * In addition, UTMI+/ULPI can be shared to run at fullspeed mode with 48Mhz
  */
-static void phy_hs_init(dwc2_regs_t* dwc2) {
+static bool phy_hs_init(dwc2_regs_t* dwc2) {
   uint32_t gusbcfg = dwc2->gusbcfg;
   const dwc2_ghwcfg2_t ghwcfg2 = {.value = dwc2->ghwcfg2};
   const dwc2_ghwcfg4_t ghwcfg4 = {.value = dwc2->ghwcfg4};
@@ -125,7 +165,7 @@ static void phy_hs_init(dwc2_regs_t* dwc2) {
   dwc2_phy_init(dwc2, ghwcfg2.hs_phy_type);
 
   // Reset core after selecting PHY
-  reset_core(dwc2);
+  if (!reset_core(dwc2)) return false;
 
   // Set turn-around, must after core reset otherwise it will be clear
   // - 9 if using 8-bit PHY interface
@@ -136,6 +176,7 @@ static void phy_hs_init(dwc2_regs_t* dwc2) {
 
   // MCU specific PHY update post reset
   dwc2_phy_update(dwc2, ghwcfg2.hs_phy_type);
+  return true;
 }
 
 static bool check_dwc2(dwc2_regs_t* dwc2) {
@@ -187,9 +228,9 @@ bool dwc2_core_init(uint8_t rhport, bool is_hs_phy, bool is_dma) {
   dwc2->gahbcfg &= ~GAHBCFG_GINT;
 
   if (is_hs_phy) {
-    phy_hs_init(dwc2);
+    if (!phy_hs_init(dwc2)) return false;
   } else {
-    phy_fs_init(dwc2);
+    if (!phy_fs_init(dwc2)) return false;
   }
 
   /* Set HS/FS Timeout Calibration to 7 (max available value).
@@ -204,8 +245,8 @@ bool dwc2_core_init(uint8_t rhport, bool is_hs_phy, bool is_dma) {
   // Enable PHY clock TODO stop/gate clock when suspended mode
   dwc2->pcgcctl &= ~(PCGCCTL_STOPPCLK | PCGCCTL_GATEHCLK | PCGCCTL_PWRCLMP | PCGCCTL_RSTPDWNMODULE);
 
-  dfifo_flush_tx(dwc2, 0x10); // all tx fifo
-  dfifo_flush_rx(dwc2);
+  if (!dfifo_flush_tx(dwc2, 0x10)) return false;
+  if (!dfifo_flush_rx(dwc2)) return false;
 
   // Clear pending and disable all interrupts
   dwc2->gintsts = 0xFFFFFFFFU;
@@ -224,14 +265,14 @@ bool dwc2_core_init(uint8_t rhport, bool is_hs_phy, bool is_dma) {
   return true;
 }
 
-void dwc2_core_deinit(uint8_t rhport) {
+bool dwc2_core_deinit(uint8_t rhport) {
   dwc2_regs_t* dwc2 = DWC2_REG(rhport);
 
   // Disable global interrupt
   dwc2->gahbcfg &= ~GAHBCFG_GINT;
 
   // Reset core: this also flushes FIFOs and clears all interrupt registers
-  reset_core(dwc2);
+  if (!reset_core(dwc2)) return false;
 
   // Stop PHY clock and gate HCLK for power saving (per databook chapter 14)
   dwc2->pcgcctl |= PCGCCTL_STOPPCLK | PCGCCTL_GATEHCLK;
@@ -240,6 +281,7 @@ void dwc2_core_deinit(uint8_t rhport) {
   const dwc2_ghwcfg2_t ghwcfg2 = {.value = dwc2->ghwcfg2};
   const uint8_t hs_phy_type = (dwc2->gusbcfg & GUSBCFG_PHYSEL) ? GHWCFG2_HSPHY_NOT_SUPPORTED : ghwcfg2.hs_phy_type;
   dwc2_phy_deinit(dwc2, hs_phy_type);
+  return true;
 }
 
 // void dwc2_core_handle_common_irq(uint8_t rhport, bool in_isr) {

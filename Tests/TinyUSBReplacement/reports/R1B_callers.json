@@ -1,0 +1,462 @@
+{
+  "scope": "All vendored TinyUSB C/H text references, including definitions and disabled Host callers; qualification in R1B report",
+  "references": {
+    "dcd_edpt_abort_safe": [
+      {
+        "path": "ThirdParty/tinyusb/src/device/dcd.h",
+        "line": 184,
+        "text": "dcd_abort_result_t dcd_edpt_abort_safe(uint8_t rhport, uint8_t ep_addr);"
+      },
+      {
+        "path": "ThirdParty/tinyusb/src/device/usbd.c",
+        "line": 478,
+        "text": "TU_ATTR_WEAK dcd_abort_result_t dcd_edpt_abort_safe(uint8_t rhport, uint8_t ep_addr) {"
+      },
+      {
+        "path": "ThirdParty/tinyusb/src/device/usbd.c",
+        "line": 1960,
+        "text": "const dcd_abort_result_t outcome = dcd_edpt_abort_safe(rhport, ep_addr);"
+      },
+      {
+        "path": "ThirdParty/tinyusb/src/portable/synopsys/dwc2/dcd_dwc2.c",
+        "line": 511,
+        "text": "dcd_abort_result_t dcd_edpt_abort_safe(uint8_t rhport, uint8_t ep_addr) {"
+      }
+    ],
+    "dcd_edpt_abort_xfer": [
+      {
+        "path": "ThirdParty/tinyusb/src/class/msc/msc_device.c",
+        "line": 445,
+        "text": "// so stale data would reach the host's next IN. Where the DCD has no dcd_edpt_abort_xfer(), the abort is a stall and"
+      },
+      {
+        "path": "ThirdParty/tinyusb/src/device/dcd.h",
+        "line": 181,
+        "text": "bool dcd_edpt_abort_xfer      (uint8_t rhport, uint8_t ep_addr);"
+      },
+      {
+        "path": "ThirdParty/tinyusb/src/device/usbd.c",
+        "line": 479,
+        "text": "return dcd_edpt_abort_xfer(rhport, ep_addr) ? DCD_ABORT_SUCCESS : DCD_ABORT_UNSUPPORTED;"
+      },
+      {
+        "path": "ThirdParty/tinyusb/src/device/usbd.c",
+        "line": 481,
+        "text": "TU_ATTR_WEAK bool dcd_edpt_abort_xfer(uint8_t rhport, uint8_t ep_addr) {"
+      },
+      {
+        "path": "ThirdParty/tinyusb/src/device/usbd.c",
+        "line": 1976,
+        "text": "// A stalled endpoint, or a DCD without dcd_edpt_abort_xfer(): the stall drops the transfer and the clear leaves the"
+      }
+    ],
+    "dcd_device_faulted": [
+      {
+        "path": "ThirdParty/tinyusb/src/device/dcd.h",
+        "line": 185,
+        "text": "bool dcd_device_faulted(uint8_t rhport);"
+      },
+      {
+        "path": "ThirdParty/tinyusb/src/device/usbd.c",
+        "line": 473,
+        "text": "TU_ATTR_WEAK bool dcd_device_faulted(uint8_t p) { (void)p;return false; }"
+      },
+      {
+        "path": "ThirdParty/tinyusb/src/device/usbd.c",
+        "line": 475,
+        "text": "static bool usbd_failed(void) { return _usbd_abort_failed || dcd_device_faulted(0); }"
+      },
+      {
+        "path": "ThirdParty/tinyusb/src/portable/synopsys/dwc2/dcd_dwc2.c",
+        "line": 479,
+        "text": "bool dcd_device_faulted(uint8_t rhport) {"
+      },
+      {
+        "path": "ThirdParty/tinyusb/src/portable/synopsys/dwc2/dcd_dwc2.c",
+        "line": 515,
+        "text": "if (__get_IPSR()!=0 || rhport != 0 || dcd_device_faulted(rhport)) return DCD_ABORT_FAILED;"
+      },
+      {
+        "path": "ThirdParty/tinyusb/src/portable/synopsys/dwc2/dcd_dwc2.c",
+        "line": 750,
+        "text": "if (dcd_device_faulted(rhport)) return false;"
+      },
+      {
+        "path": "ThirdParty/tinyusb/src/portable/synopsys/dwc2/dcd_dwc2.c",
+        "line": 817,
+        "text": "if (dcd_device_faulted(rhport)) return false;"
+      },
+      {
+        "path": "ThirdParty/tinyusb/src/portable/synopsys/dwc2/dcd_dwc2.c",
+        "line": 914,
+        "text": "if (dcd_device_faulted(rhport)) return ;"
+      },
+      {
+        "path": "ThirdParty/tinyusb/src/portable/synopsys/dwc2/dcd_dwc2.c",
+        "line": 976,
+        "text": "if (dcd_device_faulted(rhport)) return false;"
+      },
+      {
+        "path": "ThirdParty/tinyusb/src/portable/synopsys/dwc2/dcd_dwc2.c",
+        "line": 992,
+        "text": "if (dcd_device_faulted(rhport)) return false;"
+      },
+      {
+        "path": "ThirdParty/tinyusb/src/portable/synopsys/dwc2/dcd_dwc2.c",
+        "line": 999,
+        "text": "if (dcd_device_faulted(rhport)) return false;"
+      },
+      {
+        "path": "ThirdParty/tinyusb/src/portable/synopsys/dwc2/dcd_dwc2.c",
+        "line": 1007,
+        "text": "if (dcd_device_faulted(rhport)) return false;"
+      },
+      {
+        "path": "ThirdParty/tinyusb/src/portable/synopsys/dwc2/dcd_dwc2.c",
+        "line": 1054,
+        "text": "if (dcd_device_faulted(rhport)) return false;"
+      },
+      {
+        "path": "ThirdParty/tinyusb/src/portable/synopsys/dwc2/dcd_dwc2.c",
+        "line": 1087,
+        "text": "if (dcd_device_faulted(rhport)) return ;"
+      },
+      {
+        "path": "ThirdParty/tinyusb/src/portable/synopsys/dwc2/dcd_dwc2.c",
+        "line": 1101,
+        "text": "if (dcd_device_faulted(rhport)) return ;"
+      },
+      {
+        "path": "ThirdParty/tinyusb/src/portable/synopsys/dwc2/dcd_dwc2.c",
+        "line": 1664,
+        "text": "if (!dcd_device_faulted(rhport) && !(gintsts & (GINTSTS_USBRST | GINTSTS_ENUMDNE | GINTSTS_OTGINT))) resume_deferred_tx(dwc2);"
+      }
+    ],
+    "dcd_device_pending": [
+      {
+        "path": "ThirdParty/tinyusb/src/device/dcd.h",
+        "line": 186,
+        "text": "bool dcd_device_pending(uint8_t rhport);"
+      },
+      {
+        "path": "ThirdParty/tinyusb/src/device/usbd.c",
+        "line": 472,
+        "text": "TU_ATTR_WEAK bool dcd_device_pending(uint8_t p) {(void)p;return false;}"
+      },
+      {
+        "path": "ThirdParty/tinyusb/src/device/usbd.c",
+        "line": 542,
+        "text": "if (usbd_failed() || dcd_device_pending(_usbd_rhport)) return false;"
+      },
+      {
+        "path": "ThirdParty/tinyusb/src/device/usbd.c",
+        "line": 560,
+        "text": "if (dcd_device_pending(rhport)) return false;"
+      },
+      {
+        "path": "ThirdParty/tinyusb/src/device/usbd.c",
+        "line": 630,
+        "text": "if (dcd_device_pending(rhport)) return false; // IRQ must stay available to finish pending cancellation"
+      },
+      {
+        "path": "ThirdParty/tinyusb/src/portable/synopsys/dwc2/dcd_dwc2.c",
+        "line": 505,
+        "text": "bool dcd_device_pending(uint8_t p) {return p==0 && any_cancel();}"
+      }
+    ],
+    "dcd_edpt_cancel_pending": [
+      {
+        "path": "ThirdParty/tinyusb/src/device/dcd.h",
+        "line": 187,
+        "text": "bool dcd_edpt_cancel_pending(uint8_t rhport,uint8_t ep_addr);"
+      },
+      {
+        "path": "ThirdParty/tinyusb/src/device/usbd.c",
+        "line": 471,
+        "text": "TU_ATTR_WEAK bool dcd_edpt_cancel_pending(uint8_t p,uint8_t ep) {(void)p;(void)ep;return false;}"
+      },
+      {
+        "path": "ThirdParty/tinyusb/src/device/usbd.c",
+        "line": 1382,
+        "text": "TU_VERIFY(!dcd_edpt_cancel_pending(rhport,ep_addr));"
+      },
+      {
+        "path": "ThirdParty/tinyusb/src/device/usbd.c",
+        "line": 1777,
+        "text": "if (dcd_edpt_cancel_pending(rhport,ep_addr)) return false;"
+      },
+      {
+        "path": "ThirdParty/tinyusb/src/device/usbd.c",
+        "line": 1925,
+        "text": "if (dcd_edpt_cancel_pending(rhport,ep_addr)) return;"
+      },
+      {
+        "path": "ThirdParty/tinyusb/src/portable/synopsys/dwc2/dcd_dwc2.c",
+        "line": 497,
+        "text": "bool dcd_edpt_cancel_pending(uint8_t p,uint8_t ep) {"
+      },
+      {
+        "path": "ThirdParty/tinyusb/src/portable/synopsys/dwc2/dcd_dwc2.c",
+        "line": 1100,
+        "text": "if (dcd_edpt_cancel_pending(rhport,ep_addr)) return;"
+      }
+    ],
+    "dcd_edpt_generation": [
+      {
+        "path": "ThirdParty/tinyusb/src/device/dcd.h",
+        "line": 188,
+        "text": "uint32_t dcd_edpt_generation(uint8_t rhport, uint8_t ep_addr);"
+      },
+      {
+        "path": "ThirdParty/tinyusb/src/device/dcd.h",
+        "line": 256,
+        "text": "event.xfer_complete.generation = dcd_edpt_generation(rhport, ep_addr);"
+      },
+      {
+        "path": "ThirdParty/tinyusb/src/device/usbd.c",
+        "line": 474,
+        "text": "TU_ATTR_WEAK uint32_t dcd_edpt_generation(uint8_t p,uint8_t ep) { (void)p;(void)ep;return 0; }"
+      },
+      {
+        "path": "ThirdParty/tinyusb/src/device/usbd.c",
+        "line": 1843,
+        "text": "if (ok) endpoint_generation[epnum][dir]=dcd_edpt_generation(rhport,ep_addr);"
+      },
+      {
+        "path": "ThirdParty/tinyusb/src/portable/synopsys/dwc2/dcd_dwc2.c",
+        "line": 482,
+        "text": "uint32_t dcd_edpt_generation(uint8_t rhport, uint8_t address) {"
+      }
+    ],
+    "usbd_edpt_abort": [
+      {
+        "path": "ThirdParty/tinyusb/src/class/msc/msc_device.c",
+        "line": 451,
+        "text": "if (!usbd_edpt_abort(rhport, p_msc->ep_in)) return false;"
+      },
+      {
+        "path": "ThirdParty/tinyusb/src/class/msc/msc_device.c",
+        "line": 457,
+        "text": "if (!usbd_edpt_abort(rhport, p_msc->ep_out)) return false;"
+      },
+      {
+        "path": "ThirdParty/tinyusb/src/device/dcd.h",
+        "line": 179,
+        "text": "// Return false if not supported: usbd_edpt_abort() then stalls and clears the endpoint instead."
+      },
+      {
+        "path": "ThirdParty/tinyusb/src/device/usbd.c",
+        "line": 1951,
+        "text": "bool usbd_edpt_abort(uint8_t rhport, uint8_t ep_addr) {"
+      },
+      {
+        "path": "ThirdParty/tinyusb/src/device/usbd_pvt.h",
+        "line": 100,
+        "text": "bool usbd_edpt_abort(uint8_t rhport, uint8_t ep_addr);"
+      }
+    ],
+    "dcd_edpt_stall": [
+      {
+        "path": "ThirdParty/tinyusb/src/device/dcd.h",
+        "line": 171,
+        "text": "void dcd_edpt_stall           (uint8_t rhport, uint8_t ep_addr);"
+      },
+      {
+        "path": "ThirdParty/tinyusb/src/device/usbd.c",
+        "line": 769,
+        "text": "dcd_edpt_stall(event->rhport, TU_EP0_OUT);"
+      },
+      {
+        "path": "ThirdParty/tinyusb/src/device/usbd.c",
+        "line": 770,
+        "text": "dcd_edpt_stall(event->rhport, TU_EP0_IN);"
+      },
+      {
+        "path": "ThirdParty/tinyusb/src/device/usbd.c",
+        "line": 1091,
+        "text": "dcd_edpt_stall(rhport, TU_EP0_OUT);"
+      },
+      {
+        "path": "ThirdParty/tinyusb/src/device/usbd.c",
+        "line": 1092,
+        "text": "dcd_edpt_stall(rhport, TU_EP0_IN);"
+      },
+      {
+        "path": "ThirdParty/tinyusb/src/device/usbd.c",
+        "line": 1919,
+        "text": "dcd_edpt_stall(rhport, ep_addr);"
+      },
+      {
+        "path": "ThirdParty/tinyusb/src/device/usbd.c",
+        "line": 1950,
+        "text": "// Not valid for EP0, where dcd_edpt_stall() means \"stall the control transfer\" rather than \"cancel\"."
+      },
+      {
+        "path": "ThirdParty/tinyusb/src/portable/synopsys/dwc2/dcd_dwc2.c",
+        "line": 1086,
+        "text": "void dcd_edpt_stall(uint8_t rhport, uint8_t ep_addr) {"
+      }
+    ],
+    "dcd_edpt_close_all": [
+      {
+        "path": "ThirdParty/tinyusb/src/device/dcd.h",
+        "line": 161,
+        "text": "void dcd_edpt_close_all       (uint8_t rhport);"
+      },
+      {
+        "path": "ThirdParty/tinyusb/src/device/usbd.c",
+        "line": 1141,
+        "text": "dcd_edpt_close_all(rhport);"
+      },
+      {
+        "path": "ThirdParty/tinyusb/src/portable/synopsys/dwc2/dcd_dwc2.c",
+        "line": 985,
+        "text": "void dcd_edpt_close_all(uint8_t rhport) {"
+      }
+    ],
+    "dcd_edpt_iso_activate": [
+      {
+        "path": "ThirdParty/tinyusb/src/device/dcd.h",
+        "line": 201,
+        "text": "bool dcd_edpt_iso_activate(uint8_t rhport, tusb_desc_endpoint_t const * desc_ep);"
+      },
+      {
+        "path": "ThirdParty/tinyusb/src/device/usbd.c",
+        "line": 2058,
+        "text": "return dcd_edpt_iso_activate(rhport, desc_ep);"
+      },
+      {
+        "path": "ThirdParty/tinyusb/src/portable/synopsys/dwc2/dcd_dwc2.c",
+        "line": 272,
+        "text": "preallocate their largest packet with dcd_edpt_iso_alloc() and are switched with dcd_edpt_iso_activate()."
+      },
+      {
+        "path": "ThirdParty/tinyusb/src/portable/synopsys/dwc2/dcd_dwc2.c",
+        "line": 997,
+        "text": "bool dcd_edpt_iso_activate(uint8_t rhport,  tusb_desc_endpoint_t const * p_endpoint_desc) {"
+      }
+    ],
+    "dcd_deinit": [
+      {
+        "path": "ThirdParty/tinyusb/src/device/dcd.h",
+        "line": 109,
+        "text": "bool dcd_deinit(uint8_t rhport);"
+      },
+      {
+        "path": "ThirdParty/tinyusb/src/device/usbd.c",
+        "line": 73,
+        "text": "TU_ATTR_WEAK bool dcd_deinit(uint8_t rhport) {"
+      },
+      {
+        "path": "ThirdParty/tinyusb/src/device/usbd.c",
+        "line": 646,
+        "text": "TU_ASSERT(dcd_deinit(rhport));"
+      },
+      {
+        "path": "ThirdParty/tinyusb/src/portable/synopsys/dwc2/dcd_dwc2.c",
+        "line": 815,
+        "text": "bool dcd_deinit(uint8_t rhport) {"
+      },
+      {
+        "path": "ThirdParty/tinyusb/src/portable/synopsys/dwc2/dcd_dwc2.c",
+        "line": 842,
+        "text": "if (!dcd_deinit(rhport) || !dcd_init(rhport, &rh_init)) {"
+      }
+    ],
+    "dwc2_core_deinit": [
+      {
+        "path": "ThirdParty/tinyusb/src/portable/synopsys/dwc2/dcd_dwc2.c",
+        "line": 819,
+        "text": "if (any_cancel() || !dwc2_core_deinit(rhport)) return false;"
+      },
+      {
+        "path": "ThirdParty/tinyusb/src/portable/synopsys/dwc2/dwc2_common.c",
+        "line": 268,
+        "text": "bool dwc2_core_deinit(uint8_t rhport) {"
+      },
+      {
+        "path": "ThirdParty/tinyusb/src/portable/synopsys/dwc2/dwc2_common.h",
+        "line": 78,
+        "text": "bool dwc2_core_deinit(uint8_t rhport);"
+      },
+      {
+        "path": "ThirdParty/tinyusb/src/portable/synopsys/dwc2/hcd_dwc2.c",
+        "line": 1591,
+        "text": "dwc2_core_deinit(rhport);"
+      }
+    ],
+    "dfifo_flush_tx": [
+      {
+        "path": "ThirdParty/tinyusb/src/portable/synopsys/dwc2/dcd_dwc2.c",
+        "line": 623,
+        "text": "bool flushed = dfifo_flush_tx(dwc2, epnum);"
+      },
+      {
+        "path": "ThirdParty/tinyusb/src/portable/synopsys/dwc2/dcd_dwc2.c",
+        "line": 1151,
+        "text": "if (!dfifo_flush_tx(dwc2, 0x10) || !dfifo_flush_rx(dwc2)) return;"
+      },
+      {
+        "path": "ThirdParty/tinyusb/src/portable/synopsys/dwc2/dwc2_common.c",
+        "line": 248,
+        "text": "if (!dfifo_flush_tx(dwc2, 0x10)) return false;"
+      },
+      {
+        "path": "ThirdParty/tinyusb/src/portable/synopsys/dwc2/dwc2_common.h",
+        "line": 87,
+        "text": "TU_ATTR_ALWAYS_INLINE static inline bool dfifo_flush_tx(dwc2_regs_t* dwc2, uint8_t fnum) {"
+      }
+    ],
+    "dfifo_flush_rx": [
+      {
+        "path": "ThirdParty/tinyusb/src/portable/synopsys/dwc2/dcd_dwc2.c",
+        "line": 1151,
+        "text": "if (!dfifo_flush_tx(dwc2, 0x10) || !dfifo_flush_rx(dwc2)) return;"
+      },
+      {
+        "path": "ThirdParty/tinyusb/src/portable/synopsys/dwc2/dwc2_common.c",
+        "line": 249,
+        "text": "if (!dfifo_flush_rx(dwc2)) return false;"
+      },
+      {
+        "path": "ThirdParty/tinyusb/src/portable/synopsys/dwc2/dwc2_common.h",
+        "line": 93,
+        "text": "TU_ATTR_ALWAYS_INLINE static inline bool dfifo_flush_rx(dwc2_regs_t* dwc2) {"
+      }
+    ],
+    "mscd_task": [
+      {
+        "path": "ThirdParty/tinyusb/src/class/msc/msc_device.c",
+        "line": 479,
+        "text": "void mscd_task(void) {"
+      },
+      {
+        "path": "ThirdParty/tinyusb/src/class/msc/msc_device.h",
+        "line": 169,
+        "text": "void mscd_task(void);"
+      },
+      {
+        "path": "ThirdParty/tinyusb/src/device/usbd.c",
+        "line": 879,
+        "text": "mscd_task(); // existing task context only, never ISR or an extra scheduler"
+      }
+    ],
+    "proc_bot_reset": [
+      {
+        "path": "ThirdParty/tinyusb/src/class/msc/msc_device.c",
+        "line": 440,
+        "text": "static bool proc_bot_reset(mscd_interface_t* p_msc) {"
+      },
+      {
+        "path": "ThirdParty/tinyusb/src/class/msc/msc_device.c",
+        "line": 481,
+        "text": "if (!proc_bot_reset(&_mscd_itf)) return;"
+      },
+      {
+        "path": "ThirdParty/tinyusb/src/class/msc/msc_device.c",
+        "line": 536,
+        "text": "if (!proc_bot_reset(p_msc)) {"
+      }
+    ]
+  }
+}

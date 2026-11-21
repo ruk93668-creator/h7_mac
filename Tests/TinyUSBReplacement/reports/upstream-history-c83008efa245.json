@@ -1,0 +1,573 @@
+{
+  "tinyusb_sha": "da5b55a5803a3b9ca788ccc82569db699c01aa74",
+  "tree_sha": "178a88099b63651e9fbfa2ee065ff7ad6923de68",
+  "latest_queried_head": "da5b55a5803a3b9ca788ccc82569db699c01aa74",
+  "selected_files": [
+    {
+      "path": "LICENSE",
+      "upstream_git_blob": "e57543ed019e848300f63251fedc4107890d2a2d",
+      "pristine_sha256": "b01185698f530f4f61b28f42d5a4d6bbe7834bde6a63f00773235628a7bdce22",
+      "current_sha256": "b01185698f530f4f61b28f42d5a4d6bbe7834bde6a63f00773235628a7bdce22"
+    },
+    {
+      "path": "src/class/msc/msc.h",
+      "upstream_git_blob": "09bda5852a22719b4387491e622039c73682cc03",
+      "pristine_sha256": "a013ae5c79c67a27b2cf4d8f9bf65bc07785bffc568681def300a5066b768640",
+      "current_sha256": "a013ae5c79c67a27b2cf4d8f9bf65bc07785bffc568681def300a5066b768640"
+    },
+    {
+      "path": "src/class/msc/msc_device.c",
+      "upstream_git_blob": "c7520e79cdc777ba9af8b309ed9a4865ea8099cc",
+      "pristine_sha256": "2050faeddb76478a96e94f4b8c67e1ffd1d4ebeeba016d86f7a99e04c5758bd8",
+      "current_sha256": "e5266552b1bbfe8fad59ae82b8f169c26974c67d76d9b9694c4e9f718fb8b071"
+    },
+    {
+      "path": "src/class/msc/msc_device.h",
+      "upstream_git_blob": "e893cf4cba589b5049ef81e794883891a1787f78",
+      "pristine_sha256": "0788b93ceb5de374e50907f13efc4619488b8dafd9344dac2a354bbde4fa8c3b",
+      "current_sha256": "8f107f176ab1c089e40e8de7a216c723704e306ae38b7d1269599e9cccf60136"
+    },
+    {
+      "path": "src/class/msc/msc_host.c",
+      "upstream_git_blob": "9b658d69948054027739ae41ada33784305b8788",
+      "pristine_sha256": "2b69f135e1ded2b6b195b8bf47b6656f6240bb30c60ec99f6ed8349e1ea8630e",
+      "current_sha256": "2b69f135e1ded2b6b195b8bf47b6656f6240bb30c60ec99f6ed8349e1ea8630e"
+    },
+    {
+      "path": "src/class/msc/msc_host.h",
+      "upstream_git_blob": "f9fbaeda3b04f4cf7ec63b3512c7e0e8b911c9f7",
+      "pristine_sha256": "3fc76aaefba96887ce93836160b73fccb660da973bdadb280d9db97ca1ee1e2e",
+      "current_sha256": "3fc76aaefba96887ce93836160b73fccb660da973bdadb280d9db97ca1ee1e2e"
+    },
+    {
+      "path": "src/class/video/video.h",
+      "upstream_git_blob": "0b73fcc38d9b36bd1a9fcc0549ba1ee5b90f333e",
+      "pristine_sha256": "fed7f7d546b0dc278e105b1376552d10ca1b9ac26c225b099239c3be7fe9fde6",
+      "current_sha256": "364156ffce63b724dfb260f6ca1a332aa0cc98e1122819927ff3a7c593365812"
+    },
+    {
+      "path": "src/class/video/video_device.c",
+      "upstream_git_blob": "4f2abe2ad44717213b6c2fe2492cead117fef208",
+      "pristine_sha256": "a2f1bcdb5dd8ef251b222e24033d408609c683c095bb4eaa117c49765d884cee",
+      "current_sha256": "a2f1bcdb5dd8ef251b222e24033d408609c683c095bb4eaa117c49765d884cee"
+    },
+    {
+      "path": "src/class/video/video_device.h",
+      "upstream_git_blob": "e95a4ac82ce7139a7f374a6734f4dce1720a4df1",
+      "pristine_sha256": "189746ad4648b2a3091ebce604f1a092b531e158f74dc744fa33c59156958218",
+      "current_sha256": "189746ad4648b2a3091ebce604f1a092b531e158f74dc744fa33c59156958218"
+    },
+    {
+      "path": "src/common/tusb_common.h",
+      "upstream_git_blob": "3576caa9ab00f37bcb3f94c76931615c2fc9fc32",
+      "pristine_sha256": "b4cc005bf7aa8956b5309744d883509be51012b1b8eb9fe4b93cbe24e8dd835d",
+      "current_sha256": "b4cc005bf7aa8956b5309744d883509be51012b1b8eb9fe4b93cbe24e8dd835d"
+    },
+    {
+      "path": "src/common/tusb_compiler.h",
+      "upstream_git_blob": "2cff8008d7552255cb8fb7822270c1cc536c3d2c",
+      "pristine_sha256": "25e98e374a5d3108aaf594d7ec431e9cb6428b297891ca0ac4b3c9655c16c34f",
+      "current_sha256": "25e98e374a5d3108aaf594d7ec431e9cb6428b297891ca0ac4b3c9655c16c34f"
+    },
+    {
+      "path": "src/common/tusb_debug.h",
+      "upstream_git_blob": "52d6c6e488593277edfb55cc72a2c0ca8b2693b3",
+      "pristine_sha256": "d19629bfb132455a196ea1d5b6a7c70dca3bee63841729202562c178354cbee6",
+      "current_sha256": "d19629bfb132455a196ea1d5b6a7c70dca3bee63841729202562c178354cbee6"
+    },
+    {
+      "path": "src/common/tusb_fifo.c",
+      "upstream_git_blob": "7f100d97b35bb18ea93e5e72e1b778f752887371",
+      "pristine_sha256": "61f3f43caf0d8c9caa27edf0daf65e307199161fd194344a9f510f443d1a26bb",
+      "current_sha256": "61f3f43caf0d8c9caa27edf0daf65e307199161fd194344a9f510f443d1a26bb"
+    },
+    {
+      "path": "src/common/tusb_fifo.h",
+      "upstream_git_blob": "9248f2ac3c3bc5dcf1ad24acdf034568707cc42d",
+      "pristine_sha256": "f470417ad7d36d6492e79648e12d1e147f7b09f7346a518445fabb640419168e",
+      "current_sha256": "f470417ad7d36d6492e79648e12d1e147f7b09f7346a518445fabb640419168e"
+    },
+    {
+      "path": "src/common/tusb_mcu.h",
+      "upstream_git_blob": "e91682373b17a2f7937dd57446cadd436534f2dd",
+      "pristine_sha256": "150c2fc69a766bf27c9fc2dac512752668a635e1d4064ad5f3753791dd32f41a",
+      "current_sha256": "150c2fc69a766bf27c9fc2dac512752668a635e1d4064ad5f3753791dd32f41a"
+    },
+    {
+      "path": "src/common/tusb_private.h",
+      "upstream_git_blob": "8671da940a1171f23249ce3c2ed15e3f8a72633c",
+      "pristine_sha256": "bdcf0ce2626ec05d233e7ee5ff1c31ae10dd1b33dbd0cfa9374340c9d451ede0",
+      "current_sha256": "bdcf0ce2626ec05d233e7ee5ff1c31ae10dd1b33dbd0cfa9374340c9d451ede0"
+    },
+    {
+      "path": "src/common/tusb_types.h",
+      "upstream_git_blob": "fa4d67df14688039be292f414a078b1a4073d828",
+      "pristine_sha256": "60debb8a21b42e32f8664ac53913e9711470293ab79f1c312000df9112aacf8c",
+      "current_sha256": "60debb8a21b42e32f8664ac53913e9711470293ab79f1c312000df9112aacf8c"
+    },
+    {
+      "path": "src/common/tusb_verify.h",
+      "upstream_git_blob": "a37de0c4d5c13e1b296f0b9881beb34dd5103ccf",
+      "pristine_sha256": "5a959f5a6b31650d2fd9942b2776ee65cad573b1ad61b51ce70e4738c0fa95db",
+      "current_sha256": "5a959f5a6b31650d2fd9942b2776ee65cad573b1ad61b51ce70e4738c0fa95db"
+    },
+    {
+      "path": "src/device/dcd.h",
+      "upstream_git_blob": "424804c92deabc031d90f24cfe99aed5852be2dc",
+      "pristine_sha256": "91a598c3e73423837a46f717afcd4fad5ca9511427957308c0116a0fee8ef5b4",
+      "current_sha256": "07d91019de04063f31c4ad8ecbd8449fd776f39f97fad5ca84244c4d8156140a"
+    },
+    {
+      "path": "src/device/usbd.c",
+      "upstream_git_blob": "4704654c8693851e4310cb0ee665cebb74f350a2",
+      "pristine_sha256": "fbdfc3e6bf183244d80ae4345a5ed444e3f07b498901790eda7444e5ce2efcfc",
+      "current_sha256": "67c34ba057db219199f37d175a60a593168eb125a5683b86a3a1f9b586a2c8a6"
+    },
+    {
+      "path": "src/device/usbd.h",
+      "upstream_git_blob": "1efa4d9cd00c845da36944f596f8725b72340902",
+      "pristine_sha256": "06aa1ac4c9b37612931f91b76245722a6a69131a4ae65498090b7304b8de1fe9",
+      "current_sha256": "06aa1ac4c9b37612931f91b76245722a6a69131a4ae65498090b7304b8de1fe9"
+    },
+    {
+      "path": "src/device/usbd_pvt.h",
+      "upstream_git_blob": "0bf6a13b21b1846000bab384b16bd25ff06cf08f",
+      "pristine_sha256": "539c7f53b5522b345199f6e04ea229a71986c856d137a19cb97bbd3f14d6a6f4",
+      "current_sha256": "bce5315740a72438de67af2b21715201e9b4a89f84b7de93ab380b4959e5ae05"
+    },
+    {
+      "path": "src/osal/osal.h",
+      "upstream_git_blob": "4732b3330a1d1f8d00edf8688425e540bce8ee8d",
+      "pristine_sha256": "2da3032d849c7af2bb73d1feb2b314df1fcd2bb25e519bfc88000c89445bc189",
+      "current_sha256": "2da3032d849c7af2bb73d1feb2b314df1fcd2bb25e519bfc88000c89445bc189"
+    },
+    {
+      "path": "src/osal/osal_freertos.h",
+      "upstream_git_blob": "54bb6ab75cd5cc9f3be2c285f7f9a3b143fd0478",
+      "pristine_sha256": "941f568e8ab0564eced8fa36ce19d8a7d29fe666f7074c63324ef6adeca32221",
+      "current_sha256": "941f568e8ab0564eced8fa36ce19d8a7d29fe666f7074c63324ef6adeca32221"
+    },
+    {
+      "path": "src/osal/osal_mynewt.h",
+      "upstream_git_blob": "faef74fc6791a34dd2efe71b7bd797a9a81255ed",
+      "pristine_sha256": "a41b95b5e97cedfb0b1f84e7ac51f439d4ebe469f6b2449d365e6bfea86ec1a1",
+      "current_sha256": "a41b95b5e97cedfb0b1f84e7ac51f439d4ebe469f6b2449d365e6bfea86ec1a1"
+    },
+    {
+      "path": "src/osal/osal_none.h",
+      "upstream_git_blob": "322dfeb9f42fe001375c011aa77210d370a090c9",
+      "pristine_sha256": "5751eca51b46fea4ac6d21afa4007a63c6fd0885c01c7011bf57136f7c6e31f7",
+      "current_sha256": "5751eca51b46fea4ac6d21afa4007a63c6fd0885c01c7011bf57136f7c6e31f7"
+    },
+    {
+      "path": "src/osal/osal_pico.h",
+      "upstream_git_blob": "f20da71c4e36d317d1c80f4fd565f5cc70e50cb9",
+      "pristine_sha256": "b64f63eea24e290fbf3fe8156a879dc754ab49dd334583867cac22799f6b3e63",
+      "current_sha256": "b64f63eea24e290fbf3fe8156a879dc754ab49dd334583867cac22799f6b3e63"
+    },
+    {
+      "path": "src/osal/osal_rtthread.h",
+      "upstream_git_blob": "a63db9c477fed0e80bf4d612d329060474c69741",
+      "pristine_sha256": "16c92710e39d42b2722fff48c63c81ee1e1b882cb3cce2978bad789784b47f05",
+      "current_sha256": "16c92710e39d42b2722fff48c63c81ee1e1b882cb3cce2978bad789784b47f05"
+    },
+    {
+      "path": "src/osal/osal_rtx4.h",
+      "upstream_git_blob": "5d4e3e05951a7b7a27590dd763ad5d7b6ef3d389",
+      "pristine_sha256": "d0eb4b32ab012267aebd4c6b577d08236f3265c8cc9be60e10cd5a802013ec19",
+      "current_sha256": "d0eb4b32ab012267aebd4c6b577d08236f3265c8cc9be60e10cd5a802013ec19"
+    },
+    {
+      "path": "src/osal/osal_stk.h",
+      "upstream_git_blob": "8aa2b84d3fede952c433b7ebbf69d6269d01e3de",
+      "pristine_sha256": "d365541066286402b11c42918178e622b0d063caedb7aa76d15b8dd3cc10f597",
+      "current_sha256": "d365541066286402b11c42918178e622b0d063caedb7aa76d15b8dd3cc10f597"
+    },
+    {
+      "path": "src/osal/osal_threadx.h",
+      "upstream_git_blob": "82f8e789db07d6bad62e4e924a090607e2a30d7c",
+      "pristine_sha256": "c7eae0cc7836d99e624cd620590bc3d7124aa1ccc4af1a2d4910cbeafb88bc91",
+      "current_sha256": "c7eae0cc7836d99e624cd620590bc3d7124aa1ccc4af1a2d4910cbeafb88bc91"
+    },
+    {
+      "path": "src/osal/osal_zephyr.h",
+      "upstream_git_blob": "0afa10eafc1cc0734afc168351d755dd8ee833b0",
+      "pristine_sha256": "6005efca69d66aa4a18494848f88fe205d66aa2b825c79630504a861fb495bc0",
+      "current_sha256": "6005efca69d66aa4a18494848f88fe205d66aa2b825c79630504a861fb495bc0"
+    },
+    {
+      "path": "src/portable/synopsys/dwc2/dcd_dwc2.c",
+      "upstream_git_blob": "58221d5adda11bc52cee7fd10b3a947557b1751b",
+      "pristine_sha256": "69e829f2474f0225a00ce430048131bb18eac05fd9d49c655496b5c8edc2c465",
+      "current_sha256": "d43e447e873ac35f19735a25b27848cf9064ff87600b97f85f7ef39464397b54"
+    },
+    {
+      "path": "src/portable/synopsys/dwc2/dwc2_apm32.h",
+      "upstream_git_blob": "a98fbd7435e33b12483dac5c9c05372cb1593a31",
+      "pristine_sha256": "95139d4f976bfad84a63cd5865e693caff0ae0203119be859e1ca3a1a779c8b2",
+      "current_sha256": "95139d4f976bfad84a63cd5865e693caff0ae0203119be859e1ca3a1a779c8b2"
+    },
+    {
+      "path": "src/portable/synopsys/dwc2/dwc2_at32.h",
+      "upstream_git_blob": "c0588548a5be662ef491548d2e0c1720c48a7070",
+      "pristine_sha256": "483634cef2cddf4251cbc2be10ad78dea9aaf3de81395da334777c3074bc6f96",
+      "current_sha256": "483634cef2cddf4251cbc2be10ad78dea9aaf3de81395da334777c3074bc6f96"
+    },
+    {
+      "path": "src/portable/synopsys/dwc2/dwc2_bcm.h",
+      "upstream_git_blob": "98cc332c35f4270f7623308f601cd79280e625b5",
+      "pristine_sha256": "2146133aacecf3aa9f59944c403e45f91a28bbfec3a0f7bd0b0f1d68ca10f734",
+      "current_sha256": "2146133aacecf3aa9f59944c403e45f91a28bbfec3a0f7bd0b0f1d68ca10f734"
+    },
+    {
+      "path": "src/portable/synopsys/dwc2/dwc2_common.c",
+      "upstream_git_blob": "0e38218e395b5d5b0aaa50f733fd5f5678e53cbc",
+      "pristine_sha256": "86110d78f398aaaacfb5f1fd54fbe9855190f18ba099d6e23e0698dff28f0a5c",
+      "current_sha256": "7d8667f8634440bccfa5440ef9d6e73831cb874ac61bf4f85e98250c0b7f8035"
+    },
+    {
+      "path": "src/portable/synopsys/dwc2/dwc2_common.h",
+      "upstream_git_blob": "bbe180ac9c28a1718c268890a44f812d280bb40c",
+      "pristine_sha256": "eca7e5ff65d716e3f3e402125263db1044ce3e62462f1e27f22bb2c8c36a7d12",
+      "current_sha256": "3dd6020f2ec675209279a348f67a58d3064f3ad67def5bea3cab0ca8cc87a46e"
+    },
+    {
+      "path": "src/portable/synopsys/dwc2/dwc2_efm32.h",
+      "upstream_git_blob": "746e7d5701042c9c483dd50b638ed62d65c4d301",
+      "pristine_sha256": "08dba6aaa31ac3c16593865182dd939a4f9781e4348eda69a614bd2e7f92d4ab",
+      "current_sha256": "08dba6aaa31ac3c16593865182dd939a4f9781e4348eda69a614bd2e7f92d4ab"
+    },
+    {
+      "path": "src/portable/synopsys/dwc2/dwc2_esp32.h",
+      "upstream_git_blob": "7a93a28dc3cda14cc0d8c55c095188f746f6166f",
+      "pristine_sha256": "e611b528cd3b825fe355b5a61b758cb6ab84ae746e9e1e33a61a0f132b0886bd",
+      "current_sha256": "e611b528cd3b825fe355b5a61b758cb6ab84ae746e9e1e33a61a0f132b0886bd"
+    },
+    {
+      "path": "src/portable/synopsys/dwc2/dwc2_gd32.h",
+      "upstream_git_blob": "4aa795a90270d4608fedbc89b0fd14dc895c3890",
+      "pristine_sha256": "a98bc98581849a46415ce69804937bd25120cc026ff353d2fac94f6478b29e3d",
+      "current_sha256": "a98bc98581849a46415ce69804937bd25120cc026ff353d2fac94f6478b29e3d"
+    },
+    {
+      "path": "src/portable/synopsys/dwc2/dwc2_ifx.h",
+      "upstream_git_blob": "2e3e2a43f009d3f3489b240779f22edb099a45cb",
+      "pristine_sha256": "cb31fb955f5036a19a60383fe9e9ed1591f813cd26df3243c6bfe2433f28059d",
+      "current_sha256": "cb31fb955f5036a19a60383fe9e9ed1591f813cd26df3243c6bfe2433f28059d"
+    },
+    {
+      "path": "src/portable/synopsys/dwc2/dwc2_info.md",
+      "upstream_git_blob": "31cc8906c388b72a050673275da022db4697a436",
+      "pristine_sha256": "814a3cbdc8b761c6d3cb495da924447651b6a2fe99b5570655f0f89d2270ecca",
+      "current_sha256": "814a3cbdc8b761c6d3cb495da924447651b6a2fe99b5570655f0f89d2270ecca"
+    },
+    {
+      "path": "src/portable/synopsys/dwc2/dwc2_info.py",
+      "upstream_git_blob": "4cb15fb7541c583fce04624d006cdb14f8f8c23d",
+      "pristine_sha256": "4f35b376b815bd15e06d5dd49c00b17861114f3fd0d033ce88f7971a623f4eb0",
+      "current_sha256": "4f35b376b815bd15e06d5dd49c00b17861114f3fd0d033ce88f7971a623f4eb0"
+    },
+    {
+      "path": "src/portable/synopsys/dwc2/dwc2_nrf.h",
+      "upstream_git_blob": "0ac2bebbb8c55af1b122297e0f30fc21ca21ce96",
+      "pristine_sha256": "a082134924c50686dbffb7bf9c071e66e71df1fb685cf4246f2a66bda7695c31",
+      "current_sha256": "a082134924c50686dbffb7bf9c071e66e71df1fb685cf4246f2a66bda7695c31"
+    },
+    {
+      "path": "src/portable/synopsys/dwc2/dwc2_stm32.h",
+      "upstream_git_blob": "ec0188885c7c5d87afd166aa47f528490fcf0215",
+      "pristine_sha256": "dff9eda230963c206c5943979221443fe9922e5e051f206dd7ad4b05ade5df54",
+      "current_sha256": "dff9eda230963c206c5943979221443fe9922e5e051f206dd7ad4b05ade5df54"
+    },
+    {
+      "path": "src/portable/synopsys/dwc2/dwc2_type.h",
+      "upstream_git_blob": "fb2caec029583e389b257d5ab4c6911e25ff6f19",
+      "pristine_sha256": "18ef1e8bd15f8c220cd3321220adf3bd15bcc739a23d47c5010088e7a6af2bcb",
+      "current_sha256": "18ef1e8bd15f8c220cd3321220adf3bd15bcc739a23d47c5010088e7a6af2bcb"
+    },
+    {
+      "path": "src/portable/synopsys/dwc2/dwc2_xmc.h",
+      "upstream_git_blob": "35edd7f0d75cc6fe4a1168ba3cf0b1c25de67d6a",
+      "pristine_sha256": "e1688312bd021ed9967baae9fcc32b5944ac2c93eb0fe9ef4efb1e730d995e05",
+      "current_sha256": "e1688312bd021ed9967baae9fcc32b5944ac2c93eb0fe9ef4efb1e730d995e05"
+    },
+    {
+      "path": "src/portable/synopsys/dwc2/hcd_dwc2.c",
+      "upstream_git_blob": "c1d98671e748d893b05a0829be3d06d5db699995",
+      "pristine_sha256": "7c91a4d6fdeda23a4f8fbccd7b1906c23d3c9f7572d778af1099221e6c952791",
+      "current_sha256": "7c91a4d6fdeda23a4f8fbccd7b1906c23d3c9f7572d778af1099221e6c952791"
+    },
+    {
+      "path": "src/tusb.c",
+      "upstream_git_blob": "810db163eaf1f5b7d58d8fde93da824f0fa2120f",
+      "pristine_sha256": "68c29870ba69070a1f0187f63dd42fed9407ddb4adabf1ae264874018d1120e9",
+      "current_sha256": "68c29870ba69070a1f0187f63dd42fed9407ddb4adabf1ae264874018d1120e9"
+    },
+    {
+      "path": "src/tusb.h",
+      "upstream_git_blob": "2e98dc1376391a683e84ab6c2a5127d8b3603f26",
+      "pristine_sha256": "b190536299c194c930f8d63d069e90642eb8ef408c47bfc0d2f0cb4d7c888ae6",
+      "current_sha256": "b190536299c194c930f8d63d069e90642eb8ef408c47bfc0d2f0cb4d7c888ae6"
+    },
+    {
+      "path": "src/tusb_option.h",
+      "upstream_git_blob": "4fa48253bbfecda71531a7fd95c0fee3ee9a0a92",
+      "pristine_sha256": "bafc8282cd5ff54d651505c7df8d60d086b3487a7cceafe8f68d9b547846da55",
+      "current_sha256": "bafc8282cd5ff54d651505c7df8d60d086b3487a7cceafe8f68d9b547846da55"
+    }
+  ],
+  "local_changes": [
+    "src/class/msc/msc_device.c",
+    "src/class/msc/msc_device.h",
+    "src/class/video/video.h",
+    "src/device/dcd.h",
+    "src/device/usbd.c",
+    "src/device/usbd_pvt.h",
+    "src/portable/synopsys/dwc2/dcd_dwc2.c",
+    "src/portable/synopsys/dwc2/dwc2_common.c",
+    "src/portable/synopsys/dwc2/dwc2_common.h"
+  ],
+  "dcd_changes": [
+    "src/portable/synopsys/dwc2/dcd_dwc2.c",
+    "src/portable/synopsys/dwc2/dwc2_common.c",
+    "src/portable/synopsys/dwc2/dwc2_common.h"
+  ],
+  "upstream_dwc2_history": [
+    {
+      "sha": "1371c586d731a3cedbcae4bfdf0e2110fc4d735a",
+      "message": "dwc2: keep class endpoint buffers when DMA may be selected at runtime\n\nWith both CFG_TUD_DWC2_DMA_ENABLE and CFG_TUD_DWC2_SLAVE_ENABLE set, the\ndriver picks Buffer DMA or Slave mode per controller at runtime (GHWCFG2),\nbut CFG_TUD_EDPT_DEDICATED_HWFIFO followed SLAVE_ENABLE alone. Classes then\ndropped their endpoint buffers and used usbd_edpt_xfer_fifo(), which leaves\nxfer->buffer NULL: on a DMA-capable core the endpoint DMA address became 0,\nthe core raised AHBERR and the endpoint NAKed forever (CDC write hang on\nSTM32H7S3 OTG_HS).\n\n- CFG_TUD/TUH_EDPT_DEDICATED_HWFIFO = SLAVE && !DMA: a fifo transfer is only\n  allowed when no runtime mode needs a linear buffer.\n- CFG_TUSB_FIFO_HWFIFO_API follows SLAVE_ENABLE directly, so the slave path\n  keeps its hwfifo helpers; tusb_fifo.h only defaults it.\n- dcd_edpt_xfer_fifo() asserts when the controller runs Buffer DMA."
+    },
+    {
+      "sha": "d0a5d0fed8714a17cd91c134b62c28b57487ff13",
+      "message": "dcd/dwc2: keep GAHBCFG.GINT masked while SETUP DMA recovery is pending\n\nosal_queue_receive() and spinlock operations re-enable the port interrupt,\nundoing dcd_int_disable() before the deferred recovery runs. Clear the\ncore's global interrupt mask too; dcd_init() sets it again."
+    },
+    {
+      "sha": "59b0bb0134a75685ccbdd3fda8dabf61e3b8533d",
+      "message": "fix(dcd/dwc2): opt-in SETUP DMA guard for back-to-back short SETUP erratum\n\nWork around the DWC2 Buffer-DMA erratum \"Device Controller does not drop\nshort SETUP packets\": more than three back-to-back SETUP packets, one of\nthem shorter than 5 bytes, can rewind DOEPDMA0 below the programmed\naddress and write SETUP data before the buffer.\n\nOpt in with CFG_TUD_DWC2_DMA_SETUP_GUARD_SIZE (bytes, multiple of 8,\ndefault 0 = disabled, no behavior change). When enabled, a guard is\nreserved before the 3-packet SETUP area, Back2BackSETup is unmasked, and\na DOEPDMA0 inside the guard disconnects the device in the ISR and defers\na core re-init to task context. tud_dwc2_setup_dma_error_cb() is invoked\nbefore the re-init.\n\nThe guard only covers the interrupt latency: guard ~= 12 + 4 * T_irq /\nT_setup bytes; rough sizes are listed with the option.\n\nBased on #4423 by Tomas Rezucha, rebased and reworked:\n- opt-in with a configurable guard size\n- detect only an address inside the guard (a SETUP during a control OUT\n  data stage advances from a data buffer that may sit lower)\n- EP0 OUT status stage also points DOEPDMA0 past the guard\n- the ISR queues only the deferred recovery, UNPLUGGED is sent from it\n- stop endpoint/ISO processing once recovery starts\n- declare the callback in usbd.h instead of dwc2_esp32.h\n\nCo-authored-by: Tomas Rezucha <tomas.rezucha@espressif.com>"
+    },
+    {
+      "sha": "9beae8daa59b67bcf401eea3310c21827cf2105d",
+      "message": "fix(dcd/dwc2): Fix reaction on back2back short SETUP packets"
+    },
+    {
+      "sha": "e26f9cf15d076195b1ba71d16285ccd713c0afad",
+      "message": "dwc2: re-opening an endpoint with a larger packet is not supported\n\nDrop the TX FIFO grow on re-open and the per-endpoint periodic RX size tracking from 3c16e7fed: an endpoint keeps the FIFO and periodic RX share it was first opened with, and a re-open asserts its packet fits. Isochronous endpoints reserve their largest packet with dcd_edpt_iso_alloc(). Saves the 32-byte size array.\n\nRefs #4454"
+    },
+    {
+      "sha": "3c16e7fed1210ba1e28bc13ae6f5972d994ae31d",
+      "message": "dwc2: address review of the follow-up sweep\n\ndcd: a TX FIFO grow that does not fit leaves dfifo_top and the endpoint's FIFO as they were; a periodic OUT endpoint re-opened with a larger packet adds the difference to the HS slave periodic RX sum.\n\nhcd: an overcurrent reported with a connect detect in the same port interrupt is not queued as an attach first, and hcd_port_connect_status() reports no device while the port is in overcurrent; the MDATA continuation of a slave interrupt split IN keeps the packet's starting toggle in the channel and continues inside a multi-packet transfer; a failed transfer drops the packet's tentative MDATA bytes.\n\nReview: Greptile and CodeRabbit on #4515"
+    },
+    {
+      "sha": "24f996e015627d8510b98e14dd2953bbd3d950d3",
+      "message": "dwc2: keep an IN endpoint's TX FIFO when it is re-opened without close\n\ndwc2 defines TUP_DCD_EDPT_ISO_ALLOC, so usbd_edpt_close() is a no-op and a class that re-opens an endpoint on SET_INTERFACE (video bulk VS) called dfifo_alloc() again: every re-open lowered dfifo_top until the space assert failed and the request stalled. Reuse the endpoint's FIFO, growing it only when it is the last one allocated. A re-opened periodic OUT endpoint likewise no longer adds to the HS Slave periodic RX sum again.\n\nRefs #4454"
+    },
+    {
+      "sha": "cc5660fded6b810187265dcd946f20cef24daf63",
+      "message": "dwc2: bound the TX FIFO number by GHWCFG4.INEps\n\nWith dedicated TX FIFOs the core implements DIEPTXFn only for n = 1..INEps (Databook v4.20a), but the bound came from the per-chip ep_in_count, which only ESP32 sets. nRF54H20 (16 endpoints, 8 IN) let IN endpoints 8..15 program an unimplemented FIFO. Derive the count from GHWCFG4 at FIFO init, keep ep_in_count as a lower override, and skip GD32VF103 and shared-FIFO cores.\n\nRefs #4283"
+    },
+    {
+      "sha": "a36960adcc51638ee4d049fa57d98e11501d9e2f",
+      "message": "fix(dcd/dwc2): ignore stale USB suspend interrupts\n\nAcknowledge latched suspend interrupts, then check DSTS.SUSPSTS before masking the interrupt or notifying the device stack. This keeps a stale interrupt from reporting a suspend after wakeup."
+    },
+    {
+      "sha": "d543126c5ca356f6ddc52646ee5a2dee84c65c31",
+      "message": "dwc2: open an IN endpoint beyond the TX FIFOs without one, refuse its transfers (#4448)\n\nInterrupt IN endpoints numbered at or above ep_in_count (e.g. arduino-esp32's CDC notification 0x85 on ESP32-S2/S3) open without a TX FIFO instead of failing SET_CONFIGURATION; transfers on them are refused and their STALL skips the TX FIFO flush. Fixes #4446."
+    },
+    {
+      "sha": "de48f2283e447a8ccad3ab33e0f9cf9198a140e3",
+      "message": "Merge pull request #4333 from hathach/fix/dwc2-ep0-status-doepdma\n\ndwc2: arm EP0 OUT status stage DMA at the setup buffer"
+    },
+    {
+      "sha": "492f3449efd1c5149f8513e5a660830b65cdbeca",
+      "message": "Merge pull request #4302 from hathach/dwc2-dev-fs-hsphy\n\ndwc2: allow forcing device full speed on HS PHY"
+    },
+    {
+      "sha": "5ee2d6f6c8e4558ff0b42a99fa83f883f5d692d2",
+      "message": "dwc2: reject an IN endpoint number beyond the implemented TX FIFOs (#4280)\n\nFixes #4007"
+    },
+    {
+      "sha": "f57a423960d2760d4add3c985eb8d129c5e5ef7d",
+      "message": "dwc2: test rh_init speed first to keep clang -Wunreachable-code quiet\n\nWith TUD_OPT_HIGH_SPEED = 0, !TUD_OPT_HIGH_SPEED is a constant true left\noperand, so clang flagged the rh_init->speed comparison as never executed."
+    },
+    {
+      "sha": "370559e9c05c7fcdb8754af71607e3ab45fbc0fa",
+      "message": "dwc2: arm EP0 OUT status stage DMA at the setup buffer\n\nIn buffer DMA mode the EP0 OUT status stage was armed with DOEPDMA0 =\nxfer->buffer, which usbd passes as NULL. A SETUP received while that\nstatus stage is armed (host aborting or retrying a control transfer) was\nDMA-written to address 0, and handle_epout_dma() then read the request\nfrom DOEPDMA0 - 8: BusFault at BFAR 0 on STM32U5A5 OTG_HS.\n\nPoint DOEPDMA0 at the setup buffer whenever EP0 OUT is armed with zero\nlength, and skip the DOEPDMA-derived cache invalidate for that case.\n\nFixes #4327"
+    },
+    {
+      "sha": "12677d4d9b8096cc30c5512f250f356b41409c4a",
+      "message": "Merge pull request #3984 from shinoryo1216/fix/dwc2-rxfifo-fallback\n\ndcd/dwc2: size the RX FIFO by the packets that can be pending"
+    },
+    {
+      "sha": "5c014fda03a7cbd26446f97f09ea6443fbf59b7c",
+      "message": "dcd_dwc2: reserve one packet per periodic OUT endpoint only at high speed\n\nAt full speed a packet takes much longer on the bus than to pop from the\nRX FIFO: with room for the 2 largest packets, the USB interrupt still has\n~50 us (STM32F407 OTG_FS, 3 x 64-byte interrupt OUT per frame) before a\nthird periodic packet would be refused, enough when its priority is right.\nKeep the per-periodic-endpoint reservation for high-speed Slave mode only,\nwhere popping a packet takes about as long as the bus delivers the next."
+    },
+    {
+      "sha": "f21f01f9dda5a88116c2033280f3bf0eb2d7d832",
+      "message": "dcd_dwc2: size the RX FIFO by the packets that can be pending\n\nThe RX FIFO was always sized at 2 x the largest OUT packet, asserted when\nthe endpoint opened. On small FIFOs that refused valid configurations, for\nexample a 776-byte FS isochronous OUT on ESP32-S2/S3 (256 words) (#3983).\n\nSize it by what the core can actually receive back to back, in words with\neach packet = max packet size / 4 rounded up:\n\n  GRXFSIZ = 13 + 1 + max(L + 1, (P1 + 1) + (P2 + 1), Slave ? S : 0)\n            + 2 x EPOUTnum\n\n  L       largest OUT packet of any endpoint, EP0 included: the core admits\n          an OUT only while the free space holds that endpoint's max\n          packet size\n  P1, P2  the 2 largest of {B, B, I1, I2}: B the largest bulk packet\n          (counted twice, it can arrive back to back), I1, I2 the 2\n          largest periodic (isochronous, interrupt) packets\n  S       sum of (packet + 1) over all periodic OUT endpoints. In Slave\n          mode the CPU pops the FIFO about as fast as the bus fills it, so\n          a further periodic packet in the same (micro)frame would be\n          refused: lost (isochronous) or retried one interval later\n          (interrupt). Buffer DMA drains fast enough for P1 + P2.\n  EPOUTnum  OUT endpoints of the hardware configuration (ep_count), not\n          only the active ones, as the core reserves them regardless\n\nThe state is kept as these aggregates. As for TX FIFOs, each endpoint is\nallocated once per configuration: isochronous endpoints with alternate\nsettings preallocate their largest packet with dcd_edpt_iso_alloc().\n\nRX only grows when an OUT endpoint opens, so whether a configuration fits\ndoes not depend on the order endpoints open in. A configuration that does\nnot fit now logs the words it needs, and suggests Buffer DMA where the core\nhas it."
+    },
+    {
+      "sha": "1ac9ced813711eacd4880f58a0787abf1fdcf47c",
+      "message": "dwc2: allow forcing device full speed on HS PHY\n\ndcd_init() only programmed DCFG.DSPD for full speed when it picked the\ndedicated FS PHY. A core with only an HS PHY (STM32U5A5/H7RS/N6 OTG_HS,\nUTMI+) therefore always enumerated at high speed, even when\nCFG_TUD_MAX_SPEED or rh_init->speed asked for full speed, serving the\nfull-speed descriptors on a high-speed link.\n\nUse DSPD = 01 (full speed on the HS PHY) when TUD_OPT_HIGH_SPEED is off\nor the port is initialized with TUSB_SPEED_FULL, matching what the host\nside already does with HCFG.FSLS_ONLY."
+    },
+    {
+      "sha": "ed8adb054344ebc17651f476074cbed3baa322c3",
+      "message": "Merge pull request #4196 from weidong-deng/master\n\nAdd APM32F103 and APM32F107 development board support"
+    },
+    {
+      "sha": "ec7be1ed1d74de8929782c5dfc1f358a2b088db8",
+      "message": "dwc2: serialize slave TX FIFO writes and flushes across cores (#4234)\n\nOn dual-core targets the slave-mode ISR TX FIFO write and the TX FIFO flush ran unlocked against the task on the other core, truncating packets (#4229). Take usbd_spin_lock around both."
+    },
+    {
+      "sha": "bb45cd4d4e678fdcf48b7d516a4008b3af63aa18",
+      "message": "Add APM32F103 and APM32F107 development board support\n\nAdd board support for APM32F103 and APM32F107 development boards\n\nThis commit adds initial BSP support for Geehy APM32F103 and APM32F107\nseries development boards in TinyUSB.\n\n- Add board definitions and pin mappings for apm32f103_dev_board and\n  apm32f107_dev_board\n- Configure USB peripheral clocking and basic board initialization\n  (LED, button, UART)\n- Update MCU family detection and related build system files to recognize\n  the new boards"
+    },
+    {
+      "sha": "e42fa93570a672d4779b7a3d0e14145a3ae919e6",
+      "message": "dcd_dwc2: serialize GINTMSK and DAINTMSK read-modify-write (#4115)\n\nTake usbd_spin_lock around the task and ISR RMWs of GINTMSK/DAINTMSK; on multi-core a stale write could leave RXFLVLM masked or lose SOFM.\n\nFixes #4105"
+    },
+    {
+      "sha": "840ffe3ac152394347d27a0d4841f4c3c49ac944",
+      "message": "Merge pull request #4106 from hathach/fix-issue-210\n\ndwc2: make dwc2_int_set the only port interrupt hook, build efm32 host examples"
+    },
+    {
+      "sha": "7a52b312a035efd78dbb63ad3f26a297e0fb66e1",
+      "message": "dcd_dwc2: replace diepempmsk comment block with per-site one-liners"
+    },
+    {
+      "sha": "d2b6142bc34b0e10ffd9f8a21634f1fa0c54139e",
+      "message": "dcd_dwc2: serialize diepempmsk read-modify-write with usbd_spin_lock\n\ndiepempmsk gates the TXFE (TxFIFO empty) interrupt of every IN endpoint in a\nsingle 32-bit register, and two places read-modify-write it:\n\n  edpt_schedule_packets()  sets the endpoint's bit\n  handle_epin_slave()      clears the endpoint's bit\n\nThey touch *different* endpoints' bits of the *same* word, so a write based on a\nstale snapshot wipes the other writer's bit.\n\nObserved interleaving (core0 = USB ISR, core1 = task submitting CDC data):\n\n  core0 (ISR)                                core1 (task)\n  set ep2: 0x00 -> 0x04\n                                             read 0x04, write 0x14\n  clear ep2: read 0x04 (stale)\n             write 0x00  ------------------> ep4's just-set bit is gone too\n\nThe victim is a bulk IN endpoint: its gate is now closed, so the already armed\ntransfer (DIEPTSIZ.XferSize > 0) never gets its TXFE interrupt, nothing is moved\ninto the TxFIFO, and the transfer never completes - a bulk endpoint is only\nre-armed on completion. Isochronous endpoints re-arm every frame and therefore\nself-heal, which is why the failure presents as \"audio keeps working, CDC\nsilently dies\".\n\nLatch snapshot: DIEPTSIZ.XferSize > 0, DTXFSTS = 0, the endpoint's diepempmsk\nbit cleared.\n\nThe set side is already serialized: it only runs for non-EP0 endpoints, and\ndcd_edpt_xfer()/dcd_edpt_xfer_fifo() hold usbd_spin_lock() across the whole\nscheduling (dcd_edpt_close_all() zeroes the same register under that lock as\nwell). The clear side runs in the endpoint ISR, which does not hold it, so take\nthe same lock there - around the epin->tsiz read as well as the update. The ISR\nqueues the transfer completion before reading tsiz, so the task can re-arm that\nendpoint in between, and a clear based on the pre-arm tsiz would wipe the bit of\nthe transfer that was just armed.\n\nThat is deliberately the existing lock and not a dedicated one: OSAL spinlocks\nmust not be nested. On OPT_OS_NONE each spinlock keeps its own nesting count, so\nreleasing an inner lock re-enables interrupts while the outer critical section\nis still running. Sharing it also keeps a single protection domain for the\nregister.\n\nValidated on ESP32-S3 with ESP-IDF 6.0 (composite UAC + CDC-ACM + DFU, host\nrecording audio and streaming CDC at the same time): putting a critical section\naround these two statements took the latch rate from 4 events / 6120 s to 0\nevents / 9600 s (~2.0e8 mask writes). That run serialized them with a separate\nOSAL spinlock in espressif/tinyusb 0.19.0~3; this patch gives the same mutual\nexclusion through the lock the writers already share."
+    },
+    {
+      "sha": "05fea71d2db9a1261a8a7424ce04cb041b9ab8c7",
+      "message": "dcd: dwc2: clear TX FIFO empty mask when closing endpoints"
+    },
+    {
+      "sha": "c37a04c8f645554b023e302be55955a953158d3b",
+      "message": "dcd: dwc2: clear TX FIFO empty mask on bus reset"
+    },
+    {
+      "sha": "1d73cd43ce76e65e5e044ae81fb0cf221f3c6acf",
+      "message": "feat(dcd/dwc2): Add Periodic Transfer Interrupt feature\n\nEnable DCTL.IgnrFrmNum in Buffer DMA so ISOC endpoints can be armed\nwithout even/odd frame matching. This is required to schedule ISOC OUT\non alternating 7/8 ms intervals (Bluetooth HCI 7.5 ms) while keeping\nbInterval = 1.\nGated by CFG_TUD_DWC2_PTI_ENABLE (default off, DMA only). When on,\nmask IncompISOCIN and report dropped ISOC OUT (PktDrpSts) as a failed\ntransfer."
+    },
+    {
+      "sha": "a20cf74e6a62f5b833baacfe1198648b237b3e7f",
+      "message": "portable/dwc2: rewind DMA on ISO IN retry"
+    }
+  ],
+  "issue3689": {
+    "state": "open",
+    "url": "https://github.com/hathach/tinyusb/issues/3689",
+    "scope": "ESP32-S2 supporting lead only, not H747 reproduction"
+  },
+  "openmv_sha": "da8dba466eb131691da776733e67b29021b12da6",
+  "openmv_micropython_submodule": "57a7b25003de432e3910707fe7df51dd4c1b1326",
+  "micropython_head_also_reviewed": "0fd6c573ea815774668bbb16b8e197c8822368b2",
+  "source_receipts": [
+    {
+      "file": "output\\TinyUSBReplacement\\upstream\\hathach-tinyusb-commit.json",
+      "sha256": "4a16111a90fe33bd67f0f300e00aba21f2afdb79ba8765eadff0b142b841ef02",
+      "bytes": 6184
+    },
+    {
+      "file": "output\\TinyUSBReplacement\\upstream\\latest_dcd.c",
+      "sha256": "69e829f2474f0225a00ce430048131bb18eac05fd9d49c655496b5c8edc2c465",
+      "bytes": 59436
+    },
+    {
+      "file": "output\\TinyUSBReplacement\\upstream\\micropython-tree.json",
+      "sha256": "bda39aeb1955a837962e6f85b797f0fe84b860ff4f6ddffad14e7178181bbce6",
+      "bytes": 1810789
+    },
+    {
+      "file": "output\\TinyUSBReplacement\\upstream\\mp-pinned-ports_stm32_Makefile",
+      "sha256": "f10f05ef519916ae43ab18fc8396252733c132a449846e1e1de70204f9b25971",
+      "bytes": 21344
+    },
+    {
+      "file": "output\\TinyUSBReplacement\\upstream\\mp-pinned-ports_stm32_usbd_conf.c",
+      "sha256": "d8436edf8ed123d51a364a86e69129cc39bd2ceac65f2800aed3f71f7229996d",
+      "bytes": 26979
+    },
+    {
+      "file": "output\\TinyUSBReplacement\\upstream\\openmv-boot_src_ports_stm32_stm32_port.c",
+      "sha256": "f57224205d1807648143d00c2fd6df73ee33a9d247d03476cbe24fa69be780eb",
+      "bytes": 9415
+    },
+    {
+      "file": "output\\TinyUSBReplacement\\upstream\\openmv-boot_src_ports_stm32_stm32_port.mk",
+      "sha256": "0531ad2177955189f7d56b95b3390e30285f3e54d9425c3a906430cc6c4a0175",
+      "bytes": 6458
+    },
+    {
+      "file": "output\\TinyUSBReplacement\\upstream\\openmv-boot_src_ports_stm32_stm32_usb.h",
+      "sha256": "b9172360f92bed1c729eac8c1029605fd2158d88fd04709e7619f5b5f6712cbe",
+      "bytes": 4428
+    },
+    {
+      "file": "output\\TinyUSBReplacement\\upstream\\openmv-micropython-.gitmodules",
+      "sha256": "39765d2512b8ad8fd11d7cd66480dbdef134db6e21eda5adfd6ae378e8bf7682",
+      "bytes": 3968
+    },
+    {
+      "file": "output\\TinyUSBReplacement\\upstream\\openmv-micropython-commit.json",
+      "sha256": "2b8521bf8a9a2bd7758e9c736d5361e3b276143e0d38c7f0bdd79050c61d1d35",
+      "bytes": 4206
+    },
+    {
+      "file": "output\\TinyUSBReplacement\\upstream\\openmv-micropython-ports_stm32_Makefile",
+      "sha256": "fa580e93768c2d7876985c25d3eecca3486ecbc2525a3676988473877ab51b4a",
+      "bytes": 21592
+    },
+    {
+      "file": "output\\TinyUSBReplacement\\upstream\\openmv-micropython-ports_stm32_mphalport.c",
+      "sha256": "daec7ede302e8956e5a2ebe175dbbcb7b8bd2fbb6d196d0efca7c2b3baa597cb",
+      "bytes": 8061
+    },
+    {
+      "file": "output\\TinyUSBReplacement\\upstream\\openmv-micropython-ports_stm32_tinyusb_port_tusb_config.h",
+      "sha256": "6b0300fb88ec079491555cf01833d60f46b4611bad6b4dfad425d0354f737ee2",
+      "bytes": 3481
+    },
+    {
+      "file": "output\\TinyUSBReplacement\\upstream\\openmv-micropython-ports_stm32_usbd_conf.c",
+      "sha256": "d8436edf8ed123d51a364a86e69129cc39bd2ceac65f2800aed3f71f7229996d",
+      "bytes": 26979
+    },
+    {
+      "file": "output\\TinyUSBReplacement\\upstream\\openmv-micropython-shared_tinyusb_mp_usbd.c",
+      "sha256": "b95dc69e8a156d56ca0e977810c1d0efa4308e127593f6ce73f2e4b9b5a9834d",
+      "bytes": 2375
+    },
+    {
+      "file": "output\\TinyUSBReplacement\\upstream\\openmv-openmv-.gitmodules",
+      "sha256": "6c36a890dc14075cc5079df8d01763954067caf2dc451cf6e24f3ca0fb6545ce",
+      "bytes": 969
+    },
+    {
+      "file": "output\\TinyUSBReplacement\\upstream\\openmv-openmv-boot_src_ports_stm32_tusb_config.h",
+      "sha256": "b4e2c5c010d41cde160964759f0914b73d74284b1fd78c29848d68f5f99db1a8",
+      "bytes": 2396
+    },
+    {
+      "file": "output\\TinyUSBReplacement\\upstream\\openmv-openmv-commit.json",
+      "sha256": "49fd58307dbd9b611dacb4d5328469cedbcafa7e469a34f0541a7d80c155ff85",
+      "bytes": 770499
+    },
+    {
+      "file": "output\\TinyUSBReplacement\\upstream\\openmv-openmv-protocol_omv_protocol_channel_tinyusb.c",
+      "sha256": "3b304ba5fbf6149ca9d0726fdd58804cb0d222f68a27e13930c9bf032ceed486",
+      "bytes": 5896
+    },
+    {
+      "file": "output\\TinyUSBReplacement\\upstream\\openmv-ports_stm32_port_config.mk",
+      "sha256": "41e733d53eee5f20ff196a957cab1e73a1edbc2bd2225ca3ca3a282cbe3c2b42",
+      "bytes": 7130
+    },
+    {
+      "file": "output\\TinyUSBReplacement\\upstream\\openmv-tree.json",
+      "sha256": "bed7a1967b9d56ed9b65509639bb3adf3fe51c1821fe4544620ac8fb6154e28d",
+      "bytes": 1200785
+    }
+  ],
+  "hardware": "NOT_TESTED"
+}

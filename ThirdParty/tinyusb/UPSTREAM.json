@@ -2,7 +2,7 @@
   "repository": "https://github.com/hathach/tinyusb",
   "sha": "da5b55a5803a3b9ca788ccc82569db699c01aa74",
   "archive_sha256": "40cefc21be15af18f0b9cc63c0d8f0a08c5b265ab8966a7bf271246be318c792",
-  "selection": "Device common/OSAL, MSC, Video and DWC2. files contains pristine upstream hashes; single bmHint ABI compatibility delta separately documented in Tests/TinyUSBReplacement/reports/vendor_compatibility.patch.",
+  "selection": "Pinned device common/OSAL, MSC, Video and DWC2. files are pristine upstream hashes. Local R1/R1B changes are independently listed in upstream_audit.json and R1B_upstream.patch; upstream version is unchanged.",
   "files": {
     "LICENSE": "b01185698f530f4f61b28f42d5a4d6bbe7834bde6a63f00773235628a7bdce22",
     "src/class/msc/msc.h": "a013ae5c79c67a27b2cf4d8f9bf65bc07785bffc568681def300a5066b768640",

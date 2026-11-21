@@ -1,0 +1,9 @@
+{
+  "staged_files": 85,
+  "production_sources": 8,
+  "forbidden_paths_changed": [],
+  "unstaged_tracked_changes": [],
+  "diff_check": "PASS excluding exact .patch evidence context whitespace",
+  "raw_patch_diff_check": "contains standard blank context lines; exact diff retained",
+  "hardware": "NOT_TESTED"
+}

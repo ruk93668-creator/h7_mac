@@ -45,7 +45,7 @@ typedef struct TU_ATTR_ALIGNED(4) {
   uint8_t rhport;
   uint8_t event_id;
   uint8_t setup_tagid; // SETUP_RECEIVED: the DCD's tag, handed back by dcd_edpt0_setup_begin()
-  uint8_t setup_seq;   // SETUP_RECEIVED: stamped by usbd when queued, the DCD leaves it alone
+  uint32_t setup_seq;   // SETUP_RECEIVED: stamped by usbd when queued, the DCD leaves it alone
 
   union {
     // BUS RESET
@@ -66,6 +66,7 @@ typedef struct TU_ATTR_ALIGNED(4) {
       uint8_t  ep_addr;
       uint8_t  result;
       uint32_t len;
+      uint32_t generation;
     }xfer_complete;
 
     // FUNC_CALL
@@ -179,8 +180,12 @@ void dcd_edpt_clear_stall     (uint8_t rhport, uint8_t ep_addr);
 // This API is optional, and never called with control endpoints.
 bool dcd_edpt_abort_xfer      (uint8_t rhport, uint8_t ep_addr);
 // R1: FAILED is terminal for this device instance, never a compatibility fallback.
-typedef enum { DCD_ABORT_UNSUPPORTED, DCD_ABORT_SUCCESS, DCD_ABORT_FAILED } dcd_abort_result_t;
+typedef enum { DCD_ABORT_UNSUPPORTED, DCD_ABORT_SUCCESS, DCD_ABORT_FAILED, DCD_ABORT_PENDING } dcd_abort_result_t;
 dcd_abort_result_t dcd_edpt_abort_safe(uint8_t rhport, uint8_t ep_addr);
+bool dcd_device_faulted(uint8_t rhport);
+bool dcd_device_pending(uint8_t rhport);
+bool dcd_edpt_cancel_pending(uint8_t rhport,uint8_t ep_addr);
+uint32_t dcd_edpt_generation(uint8_t rhport, uint8_t ep_addr);
 
 #ifdef TUP_DCD_EDPT_CLOSE_API
 // Close an endpoint.
@@ -248,6 +253,7 @@ TU_ATTR_ALWAYS_INLINE static inline void dcd_event_xfer_complete (uint8_t rhport
   event.event_id = DCD_EVENT_XFER_COMPLETE;
   event.xfer_complete.ep_addr = ep_addr;
   event.xfer_complete.len     = xferred_bytes;
+  event.xfer_complete.generation = dcd_edpt_generation(rhport, ep_addr);
   event.xfer_complete.result  = result;
   dcd_event_handler(&event, in_isr);
 }

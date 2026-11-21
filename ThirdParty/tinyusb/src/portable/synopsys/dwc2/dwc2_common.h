@@ -75,22 +75,25 @@ TU_ATTR_ALWAYS_INLINE static inline dwc2_regs_t* DWC2_REG(uint8_t rhport) {
 // check if highspeed phy should be used
 bool dwc2_core_is_highspeed_phy(dwc2_regs_t* dwc2, bool prefer_hs_phy);
 bool dwc2_core_init(uint8_t rhport, bool is_hs_phy, bool is_dma);
-void dwc2_core_deinit(uint8_t rhport);
+bool dwc2_core_deinit(uint8_t rhport);
+bool dwc2_wait_bits(volatile uint32_t *reg, uint32_t mask, uint32_t expected);
+bool dwc2_wait_faulted(void);
+void dwc2_wait_fail(void);
 void dwc2_core_handle_common_irq(uint8_t rhport, bool in_isr);
 
 //--------------------------------------------------------------------+
 // DFIFO
 //--------------------------------------------------------------------+
-TU_ATTR_ALWAYS_INLINE static inline void dfifo_flush_tx(dwc2_regs_t* dwc2, uint8_t fnum) {
+TU_ATTR_ALWAYS_INLINE static inline bool dfifo_flush_tx(dwc2_regs_t* dwc2, uint8_t fnum) {
   // flush TX fifo and wait for it cleared
   dwc2->grstctl = GRSTCTL_TXFFLSH | (fnum << GRSTCTL_TXFNUM_Pos);
-  while (0 != (dwc2->grstctl & GRSTCTL_TXFFLSH_Msk)) {}
+  return dwc2_wait_bits(&dwc2->grstctl, GRSTCTL_TXFFLSH_Msk, 0);
 }
 
-TU_ATTR_ALWAYS_INLINE static inline void dfifo_flush_rx(dwc2_regs_t* dwc2) {
+TU_ATTR_ALWAYS_INLINE static inline bool dfifo_flush_rx(dwc2_regs_t* dwc2) {
   // flush RX fifo and wait for it cleared
   dwc2->grstctl = GRSTCTL_RXFFLSH;
-  while (0 != (dwc2->grstctl & GRSTCTL_RXFFLSH_Msk)) {}
+  return dwc2_wait_bits(&dwc2->grstctl, GRSTCTL_RXFFLSH_Msk, 0);
 }
 
 void dfifo_read_packet(dwc2_regs_t* dwc2, uint8_t* dst, uint16_t len);

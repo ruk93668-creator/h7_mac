@@ -459,28 +459,140 @@ static void edpt_activate(uint8_t rhport, const tusb_desc_endpoint_t* p_endpoint
   usbd_spin_unlock(false);
 }
 
-// R1 partial: fail-closed initiation, not a quiescence implementation.
-// RX retirement / late IRQ qualification remains a blocking contract gap.
+// DCD-local cancellation phases, not an application lifecycle manager.
 static bool r1_abort_fault[2];
-dcd_abort_result_t dcd_edpt_abort_safe(uint8_t rhport, uint8_t ep_addr) {
-  if (rhport >= 2) return DCD_ABORT_FAILED;
-  if (r1_abort_fault[rhport]) return DCD_ABORT_FAILED;
-  const uint8_t epnum = tu_edpt_number(ep_addr);
-  if (epnum == 0 || epnum >= _dwc2_controller[rhport].ep_count) return DCD_ABORT_FAILED;
-  dwc2_regs_t* dwc2 = DWC2_REG(rhport);
-  dwc2_dep_t* dep = &dwc2->ep[tu_edpt_dir(ep_addr) == TUSB_DIR_IN ? 0 : 1][epnum];
-  // No unsupported fallback for a real DWC2 endpoint: disable proof is not yet available.
+static uint8_t abort_failure_reason[2]; // first: 1 clock, 2 clock-change, 3 stopped-clock, 4 deadline, 5 foreign NAK, 6 reset, 7 unplug, 8 enum
+typedef struct {
+  uint8_t phase; // 0 live, 1 NAK, 2 disable, 3 TX flush, 4 OUT release, 5 retired
+  uint32_t began, previous_cycle, clock_hz, generation;
+  uint8_t *source;
+  bool disabled, completed, nak_marker, nak_in;
+} bulk_cancel_t;
+static bulk_cancel_t bulk_cancel[DWC2_EP_MAX][2];
+static uint32_t transfer_generation[DWC2_EP_MAX][2];
+static bool hardware_completed[DWC2_EP_MAX][2];
+static uint16_t rx_left[DWC2_EP_MAX];
+static uint8_t pio_refs[DWC2_EP_MAX];
+static int8_t out_nak_owner = -1;
+static uint32_t deferred_tx_mask; // other IN producers paused during shared FIFO command
+extern uint32_t tusb_time_millis_api(void);
+bool dcd_device_faulted(uint8_t rhport) {
+  return rhport >= 2 || r1_abort_fault[rhport] || dwc2_wait_faulted();
+}
+uint32_t dcd_edpt_generation(uint8_t rhport, uint8_t address) {
+  (void)rhport; return (address & 15)<DWC2_EP_MAX ? transfer_generation[address & 15][address >> 7] : 0;
+}
+static bool cancel_active(uint8_t n, uint8_t dir) {
+  return bulk_cancel[n][dir].phase != 0 && bulk_cancel[n][dir].phase != 5;
+}
+static void resume_deferred_tx(dwc2_regs_t *d) {
+  if (d->grstctl & (GRSTCTL_TXFFLSH | GRSTCTL_RXFFLSH | GRSTCTL_CSRST)) return;
+  for (uint8_t n=0;n<DWC2_EP_MAX;n++) {
+    if ((deferred_tx_mask & TU_BIT(n)) && !cancel_active(n,1)) {
+      d->diepempmsk |= TU_BIT(n);
+      deferred_tx_mask &= ~TU_BIT(n);
+    }
+  }
+}
+bool dcd_edpt_cancel_pending(uint8_t p,uint8_t ep) {
+  return p==0 && (ep&15)<DWC2_EP_MAX && cancel_active(ep&15,ep>>7);
+}
+static bool any_cancel(void) {
+  for (uint8_t n=1;n<DWC2_EP_MAX;n++) for(uint8_t d=0;d<2;d++)
+    if (cancel_active(n,d)) return true;
+  return false;
+}
+bool dcd_device_pending(uint8_t p) {return p==0 && any_cancel();}
+static dcd_abort_result_t cancel_failed(uint8_t rhport,uint8_t reason) {
+  if (!abort_failure_reason[rhport]) abort_failure_reason[rhport]=reason;
   r1_abort_fault[rhport] = true;
-  if (tu_edpt_dir(ep_addr) == TUSB_DIR_IN) dep->ctl |= EPCTL_SNAK;
-  else dwc2->dctl |= DCTL_SGONAK;
-  // Controlled terminal fault; keep xfer_status pointers and all buffers held.
-  // Mask controller event sources, not a claim that endpoints have stopped.
-  dwc2->gintmsk = 0;
-  return DCD_ABORT_FAILED;
+  return DCD_ABORT_FAILED; // leave phases, hardware changes and pointers intact
+}
+dcd_abort_result_t dcd_edpt_abort_safe(uint8_t rhport, uint8_t ep_addr) {
+#if CFG_TUSB_MCU != OPT_MCU_STM32H7
+  (void)rhport;(void)ep_addr;return DCD_ABORT_UNSUPPORTED;
+#else
+  if (__get_IPSR()!=0 || rhport != 0 || dcd_device_faulted(rhport)) return DCD_ABORT_FAILED;
+  const uint8_t n=tu_edpt_number(ep_addr), dir=tu_edpt_dir(ep_addr);
+  if (!n || n >= _dwc2_controller[rhport].ep_count) return DCD_ABORT_FAILED;
+  dwc2_regs_t *d=DWC2_REG(rhport);
+  dwc2_dep_t *ep=&d->ep[dir ? 0 : 1][n];
+  if (((ep->ctl >> 18) & 3) != DEPCTL_EPTYPE_BULK || dma_device_enabled(d))
+    return DCD_ABORT_UNSUPPORTED; // no writes, unsupported mode/type
+  if (XFER_CTL_BASE(n,dir)->ff!=NULL) return cancel_failed(rhport,9); // FIFO-ring API not qualified
+  if ((d->gintsts & (GINTSTS_USBRST | GINTSTS_ENUMDNE)) || (d->gotgint & GOTGINT_SEDET)) return cancel_failed(rhport,6);
+  bulk_cancel_t *c=&bulk_cancel[n][dir];
+  if (c->phase==5) return DCD_ABORT_SUCCESS;
+  if (!(DWT->CTRL & DWT_CTRL_CYCCNTENA_Msk) ||
+      !(CoreDebug->DEMCR & CoreDebug_DEMCR_TRCENA_Msk) || SystemCoreClock < 1000U ||
+      (SystemCoreClock/1000U) > UINT32_MAX/50U) return cancel_failed(rhport,1);
+  usbd_spin_lock(false); // serialize all task changes against PIO IRQ, never wait under lock
+  if (!c->phase) {
+    c->phase=1;c->began=DWT->CYCCNT;c->previous_cycle=c->began;c->clock_hz=SystemCoreClock;c->completed=hardware_completed[n][dir];
+    c->generation=transfer_generation[n][dir];c->source=XFER_CTL_BASE(n,dir)->buffer;
+    if (dir) { ep->intr=DIEPINT_INEPNE; d->diepmsk |= 0x42U; d->diepempmsk &= ~TU_BIT(n); deferred_tx_mask &= ~TU_BIT(n); ep->ctl |= EPCTL_SNAK; }
+  }
+  if (c->generation!=transfer_generation[n][dir] || c->source!=XFER_CTL_BASE(n,dir)->buffer) {usbd_spin_unlock(false);return cancel_failed(rhport,10);}
+  uint32_t now=DWT->CYCCNT;
+  if (SystemCoreClock!=c->clock_hz || now==c->previous_cycle ||
+      (uint32_t)(now-c->began) >= (c->clock_hz/1000U)*50U) {
+    usbd_spin_unlock(false);return cancel_failed(rhport,SystemCoreClock!=c->clock_hz ? 2 : now==c->previous_cycle ? 3 : 4);
+  }
+  c->previous_cycle=now;
+  if (dir) {
+    if (c->phase==1 && (c->nak_in || (ep->intr & DIEPINT_INEPNE) ||
+        (c->completed && !(ep->ctl & EPCTL_EPENA)))) {
+      if (ep->ctl & EPCTL_EPENA) ep->ctl |= EPCTL_EPDIS;
+      else if (c->completed) c->disabled=true;
+      c->phase=2;
+    }
+    if (c->phase==2 && c->disabled && !(ep->ctl & EPCTL_EPENA)) {
+      if (!(d->grstctl & (GRSTCTL_TXFFLSH | GRSTCTL_RXFFLSH | GRSTCTL_CSRST))) {
+        d->grstctl=GRSTCTL_TXFFLSH | ((uint32_t)n<<GRSTCTL_TXFNUM_Pos);
+        c->phase=3;
+      }
+    } else if (c->phase==3 && !(d->grstctl & GRSTCTL_TXFFLSH)) {
+      resume_deferred_tx(d);
+      ep->intr=ep->intr; // retire already-owned raw facts before a new arm
+      c->phase=5;
+    }
+  } else {
+    if (c->phase==1 && out_nak_owner == -1) {
+      if ((d->dctl & 8U) || (d->gintsts & GINTSTS_BOUTNAKEFF)) {
+        usbd_spin_unlock(false);return cancel_failed(rhport,5); // foreign lease
+      }
+      out_nak_owner=(int8_t)n; d->dctl |= DCTL_SGONAK;
+    }
+    if (c->phase==1 && out_nak_owner==(int8_t)n && c->nak_marker &&
+        (d->gintsts & GINTSTS_BOUTNAKEFF)) {
+      d->gintmsk |= GINTMSK_OEPINT; d->doepmsk |= 2U;
+      if (ep->ctl & EPCTL_EPENA) ep->ctl |= EPCTL_SNAK | EPCTL_EPDIS;
+      else if(c->completed) c->disabled=true;
+      c->phase=2;
+    }
+    if (c->phase==2 && c->disabled && !(ep->ctl & EPCTL_EPENA) &&
+        !(d->gintsts & GINTSTS_RXFLVL) && pio_refs[n]==0) {
+      ep->intr=ep->intr;
+      d->dctl |= DCTL_CGONAK; c->phase=4;
+    } else if (c->phase==4 && !(d->dctl & 8U) && !(d->gintsts & GINTSTS_BOUTNAKEFF)) {
+      out_nak_owner=-1; c->phase=5;
+    }
+  }
+  bool done=c->phase==5;
+  if (done && ((d->gintsts & (GINTSTS_USBRST | GINTSTS_ENUMDNE)) || (d->gotgint & GOTGINT_SEDET))) {usbd_spin_unlock(false);return cancel_failed(rhport,6);}
+  if (done) {
+    XFER_CTL_BASE(n,dir)->buffer=NULL; XFER_CTL_BASE(n,dir)->ff=NULL;
+    XFER_CTL_BASE(n,dir)->total_len=0;
+  }
+  usbd_spin_unlock(false);
+  return done ? DCD_ABORT_SUCCESS : DCD_ABORT_PENDING;
+#endif
 }
 
-static void edpt_disable(uint8_t rhport, uint8_t ep_addr, bool stall, bool is_isr) {
-  (void) rhport;
+static bool edpt_disable(uint8_t rhport, uint8_t ep_addr, bool stall, bool is_isr) {
+  if (any_cancel()) { dwc2_wait_fail(); return false; }
+  // The legacy void OUT stall path has no RX retirement result; never fabricate it.
+  if (!(ep_addr & 0x80) && (ep_addr & 15)) {dwc2_wait_fail();return false;}
 
   dwc2_regs_t* dwc2 = DWC2_REG(rhport);
   const uint8_t epnum = tu_edpt_number(ep_addr);
@@ -495,11 +607,11 @@ static void edpt_disable(uint8_t rhport, uint8_t ep_addr, bool stall, bool is_is
     } else {
       // Stop transmitting packets and NAK IN xfers.
       dep->diepctl |= DIEPCTL_SNAK;
-      while ((dep->diepint & DIEPINT_INEPNE) == 0) {}
+      if (!dwc2_wait_bits(&dep->diepint, DIEPINT_INEPNE, DIEPINT_INEPNE)) return false;
 
       // Disable the endpoint.
       dep->diepctl |= DIEPCTL_EPDIS | stall_mask;
-      while ((dep->diepint & DIEPINT_EPDISD_Msk) == 0) {}
+      if (!dwc2_wait_bits(&dep->diepint, DIEPINT_EPDISD_Msk, DIEPINT_EPDISD_Msk)) return false;
 
       dep->diepint = DIEPINT_EPDISD;
     }
@@ -508,8 +620,9 @@ static void edpt_disable(uint8_t rhport, uint8_t ep_addr, bool stall, bool is_is
     // TxFFlsh must not overlap another core's TX FIFO write (Databook v4.20a GRSTCTL.TxFFlsh)
     if (dfifo_tx_exists(rhport, epnum)) {
       usbd_spin_lock(is_isr);
-      dfifo_flush_tx(dwc2, epnum);
+      bool flushed = dfifo_flush_tx(dwc2, epnum);
       usbd_spin_unlock(is_isr);
+      if (!flushed) return false;
     }
   } else {
     if (!edpt_is_enabled(dep) || epnum == 0) {
@@ -519,14 +632,13 @@ static void edpt_disable(uint8_t rhport, uint8_t ep_addr, bool stall, bool is_is
     } else {
       // Asserting GONAK is required to STALL an OUT endpoint.
       // Simpler to use polling here, we don't use the "B"OUTNAKEFF interrupt
-      // anyway, and it can't be cleared by user code. If this while loop never
-      // finishes, we have bigger problems than just the stack.
+      // anyway. Failure is retained; polling never fabricates completion.
       dwc2->dctl |= DCTL_SGONAK;
-      while ((dwc2->gintsts & GINTSTS_BOUTNAKEFF_Msk) == 0) {}
+      if (!dwc2_wait_bits(&dwc2->gintsts, GINTSTS_BOUTNAKEFF_Msk, GINTSTS_BOUTNAKEFF_Msk)) return false;
 
       // Ditto here disable the endpoint.
       dep->doepctl |= DOEPCTL_EPDIS | stall_mask;
-      while ((dep->doepint & DOEPINT_EPDISD_Msk) == 0) {}
+      if (!dwc2_wait_bits(&dep->doepint, DOEPINT_EPDISD_Msk, DOEPINT_EPDISD_Msk)) return false;
 
       dep->doepint = DOEPINT_EPDISD;
 
@@ -539,6 +651,7 @@ static void edpt_disable(uint8_t rhport, uint8_t ep_addr, bool stall, bool is_is
   if (!stall && epnum != 0) {
     dep->ctl &= ~EPCTL_USBAEP;
   }
+  return true;
 }
 
 // Since this function returns void, it is not possible to return a boolean success message
@@ -610,7 +723,7 @@ static void edpt_schedule_packets(uint8_t rhport, const uint8_t epnum, const uin
 
       // Enable TXFE interrupt if there are still data to be sent
       // EP0 only sends one packet at a time, so no need to check for EP0
-      if ((epnum != 0) && (xfer->total_len - xferred_bytes > 0)) {
+      if ((epnum != 0) && !(deferred_tx_mask & TU_BIT(epnum)) && (xfer->total_len - xferred_bytes > 0)) {
         // callers hold usbd_spin_lock, pairs with the clear in handle_epin_slave()
         dwc2->diepempmsk |= (1u << epnum);
       }
@@ -633,7 +746,8 @@ bool dcd_configure(uint8_t rhport, uint32_t cfg_id, const void* cfg_param) {
 }
 
 bool dcd_init(uint8_t rhport, const tusb_rhport_init_t* rh_init) {
-  if (rhport >= 2 || r1_abort_fault[rhport]) return false;
+  if (any_cancel()) return false;
+  if (dcd_device_faulted(rhport)) return false;
   dwc2_clock_init(rhport, rh_init->role);
 
   tu_memclr(&_dcd_data, sizeof(_dcd_data));
@@ -699,9 +813,14 @@ bool dcd_init(uint8_t rhport, const tusb_rhport_init_t* rh_init) {
 }
 
 bool dcd_deinit(uint8_t rhport) {
-  if (rhport >= 2 || r1_abort_fault[rhport]) return false;
+  if (any_cancel()) return false;
+  if (dcd_device_faulted(rhport)) return false;
   dcd_disconnect(rhport);
-  dwc2_core_deinit(rhport);
+  if (any_cancel() || !dwc2_core_deinit(rhport)) return false;
+  tu_memclr(xfer_status,sizeof(xfer_status));
+  tu_memclr(bulk_cancel,sizeof(bulk_cancel));
+  deferred_tx_mask=0;
+  out_nak_owner=-1; // only after actual controller reset proof
   return true;
 }
 
@@ -791,7 +910,8 @@ void dcd_remote_wakeup(uint8_t rhport) {
 }
 
 void dcd_connect(uint8_t rhport) {
-  if (rhport >= 2 || r1_abort_fault[rhport]) return ;
+  if (any_cancel()) return;
+  if (dcd_device_faulted(rhport)) return ;
   dwc2_regs_t* dwc2 = DWC2_REG(rhport);
 
 #if defined(TUP_USBIP_DWC2_ESP32) && !TU_CHECK_MCU(OPT_MCU_ESP32S31)
@@ -853,7 +973,8 @@ void dcd_sof_enable(uint8_t rhport, bool en) {
  *------------------------------------------------------------------*/
 
 bool dcd_edpt_open(uint8_t rhport, tusb_desc_endpoint_t const* desc_edpt) {
-  if (rhport >= 2 || r1_abort_fault[rhport]) return false;
+  if (dcd_device_faulted(rhport)) return false;
+  if (any_cancel()) return false;
   TU_ASSERT(dfifo_alloc(rhport, desc_edpt->bEndpointAddress, tu_edpt_packet_size(desc_edpt),
                        desc_edpt->bmAttributes.xfer));
   edpt_activate(rhport, desc_edpt);
@@ -862,56 +983,39 @@ bool dcd_edpt_open(uint8_t rhport, tusb_desc_endpoint_t const* desc_edpt) {
 
 // Close all non-control endpoints, cancel all pending transfers if any.
 void dcd_edpt_close_all(uint8_t rhport) {
-  if (rhport >= 2 || r1_abort_fault[rhport]) return ;
-  dwc2_regs_t* dwc2 = DWC2_REG(rhport);
-  uint8_t const ep_count = _dwc2_controller[rhport].ep_count;
-
-  usbd_spin_lock(false);
-
-  // Disable non-control interrupt
-  dwc2->daintmsk = (1 << DAINTMSK_OEPM_Pos) | (1 << DAINTMSK_IEPM_Pos);
-  dwc2->diepempmsk = 0;
-
-  for (uint8_t n = 1; n < ep_count; n++) {
-    for (uint8_t d = 0; d < 2; d++) {
-      dwc2_dep_t* dep = &dwc2->ep[d][n];
-      if (edpt_is_enabled(dep)) {
-        dep->ctl |= EPCTL_SNAK | EPCTL_EPDIS;
-      } else if (d == 0 && !dfifo_tx_exists(rhport, n)) {
-        // No TX FIFO, so never enabled and never disabled above; deactivate it as edpt_disable() does
-        dep->ctl &= ~EPCTL_USBAEP;
-      }
-      xfer_status[n][1-d].max_size = 0;
-    }
-  }
-
-  dfifo_flush_tx(dwc2, 0x10); // all tx fifo
-  dfifo_flush_rx(dwc2);
-  dfifo_device_init(rhport); // re-init dfifo
-
-  usbd_spin_unlock(false);
+  (void)rhport;
+  dwc2_wait_fail(); // shared RX/EP0 group proof is not supplied by this legacy void API
 }
 
 bool dcd_edpt_iso_alloc(uint8_t rhport, uint8_t ep_addr, uint16_t largest_packet_size) {
-  if (rhport >= 2 || r1_abort_fault[rhport]) return false;
+  if (any_cancel()) return false;
+  if (dcd_device_faulted(rhport)) return false;
   TU_ASSERT(dfifo_alloc(rhport, ep_addr, largest_packet_size, TUSB_XFER_ISOCHRONOUS));
   return true;
 }
 
 bool dcd_edpt_iso_activate(uint8_t rhport,  tusb_desc_endpoint_t const * p_endpoint_desc) {
-  if (rhport >= 2 || r1_abort_fault[rhport]) return false;
+  if (any_cancel()) return false;
+  if (dcd_device_faulted(rhport)) return false;
   // Disable EP to clear potential incomplete transfers
-  edpt_disable(rhport, p_endpoint_desc->bEndpointAddress, false, false);
+  if (!edpt_disable(rhport, p_endpoint_desc->bEndpointAddress, false, false)) return false;
   edpt_activate(rhport, p_endpoint_desc);
   return true;
 }
 
 bool dcd_edpt_xfer(uint8_t rhport, uint8_t ep_addr, uint8_t* buffer, uint16_t total_bytes, bool is_isr) {
-  if (rhport >= 2 || r1_abort_fault[rhport]) return false;
+  if (dcd_device_faulted(rhport)) return false;
   (void) is_isr;
   uint8_t const epnum = tu_edpt_number(ep_addr);
   uint8_t const dir = tu_edpt_dir(ep_addr);
   xfer_ctl_t* xfer = XFER_CTL_BASE(epnum, dir);
+  if (cancel_active(epnum,dir) || transfer_generation[epnum][dir]==UINT32_MAX) return false;
+  if (DWC2_REG(rhport)->gintsts & (GINTSTS_USBRST | GINTSTS_ENUMDNE)) return false;
+  if (DWC2_REG(rhport)->ep[dir ? 0 : 1][epnum].intr & 3U) return false;
+  if (bulk_cancel[epnum][dir].phase==5) {
+    if ((DWC2_REG(rhport)->ep[dir ? 0 : 1][epnum].intr & 3U) ||
+        (DWC2_REG(rhport)->gintsts & GINTSTS_RXFLVL)) return false;
+  }
   bool ret;
 
   usbd_spin_lock(is_isr);
@@ -919,6 +1023,9 @@ bool dcd_edpt_xfer(uint8_t rhport, uint8_t ep_addr, uint8_t* buffer, uint16_t to
   if (xfer->max_size == 0 || (dir == TUSB_DIR_IN && !dfifo_tx_exists(rhport, epnum))) {
     ret = false;  // Endpoint is closed or has no TX FIFO
   } else {
+    transfer_generation[epnum][dir]++;hardware_completed[epnum][dir]=false;
+    tu_memclr(&bulk_cancel[epnum][dir],sizeof(bulk_cancel[epnum][dir]));
+    if (!dir) rx_left[epnum]=total_bytes;
     xfer->buffer = buffer;
     xfer->ff = NULL;
     xfer->total_len = total_bytes;
@@ -944,7 +1051,7 @@ bool dcd_edpt_xfer(uint8_t rhport, uint8_t ep_addr, uint8_t* buffer, uint16_t to
 // success message. If total_bytes is too big, the FIFO will copy only what is available
 // into the USB buffer!
 bool dcd_edpt_xfer_fifo(uint8_t rhport, uint8_t ep_addr, tu_fifo_t* ff, uint16_t total_bytes, bool is_isr) {
-  if (rhport >= 2 || r1_abort_fault[rhport]) return false;
+  if (dcd_device_faulted(rhport)) return false;
   (void) is_isr;
   uint8_t const epnum = tu_edpt_number(ep_addr);
   uint8_t const dir = tu_edpt_dir(ep_addr);
@@ -977,9 +1084,9 @@ bool dcd_edpt_xfer_fifo(uint8_t rhport, uint8_t ep_addr, tu_fifo_t* ff, uint16_t
 }
 
 void dcd_edpt_stall(uint8_t rhport, uint8_t ep_addr) {
-  if (rhport >= 2 || r1_abort_fault[rhport]) return ;
+  if (dcd_device_faulted(rhport)) return ;
   dwc2_regs_t* dwc2 = DWC2_REG(rhport);
-  edpt_disable(rhport, ep_addr, true, false);
+  if (!edpt_disable(rhport, ep_addr, true, false)) return;
 
   // For control endpoint, prepare to receive SETUP packet
   if (tu_edpt_number(ep_addr) == 0) {
@@ -990,7 +1097,8 @@ void dcd_edpt_stall(uint8_t rhport, uint8_t ep_addr) {
 }
 
 void dcd_edpt_clear_stall(uint8_t rhport, uint8_t ep_addr) {
-  if (rhport >= 2 || r1_abort_fault[rhport]) return ;
+  if (dcd_edpt_cancel_pending(rhport,ep_addr)) return;
+  if (dcd_device_faulted(rhport)) return ;
   dwc2_regs_t* dwc2 = DWC2_REG(rhport);
   uint8_t const epnum = tu_edpt_number(ep_addr);
   uint8_t const dir = tu_edpt_dir(ep_addr);
@@ -1012,7 +1120,10 @@ static void handle_bus_reset(uint8_t rhport) {
   const uint8_t ep_count =  dwc2_ep_count(dwc2);
 
   dwc2->diepempmsk = 0;
-  tu_memclr(xfer_status, sizeof(xfer_status));
+  // Bus Reset is not permission to discard a still-enabled endpoint or pending RX.
+  for (uint8_t n=0;n<ep_count;n++)
+    if ((dwc2->epin[n].ctl | dwc2->epout[n].ctl) & EPCTL_EPENA) { dwc2_wait_fail();return; }
+  if (dwc2->gintsts & GINTSTS_RXFLVL) { dwc2_wait_fail();return; }
 
   _dcd_data.ep0_pending[TUSB_DIR_OUT] = 0;
   _dcd_data.ep0_pending[TUSB_DIR_IN] = 0;
@@ -1037,8 +1148,8 @@ static void handle_bus_reset(uint8_t rhport) {
   dwc2->diepmsk = DIEPMSK_TOM | DIEPMSK_XFRCM;
 
   // 4. Set up DFIFO
-  dfifo_flush_tx(dwc2, 0x10); // all tx fifo
-  dfifo_flush_rx(dwc2);
+  if (!dfifo_flush_tx(dwc2, 0x10) || !dfifo_flush_rx(dwc2)) return;
+  tu_memclr(xfer_status,sizeof(xfer_status));
   dfifo_device_init(rhport);
 
   // 5. Reset device address
@@ -1129,6 +1240,14 @@ TU_ATTR_ALWAYS_INLINE static inline void print_doepint(uint32_t doepint) {
 
 #if CFG_TUD_DWC2_SLAVE_ENABLE
 static uint16_t epin_write_tx_fifo(dwc2_regs_t *dwc2, uint8_t epnum) {
+  if (cancel_active(epnum,1)) return 0;
+  // Do not write any TX FIFO while GRSTCTL owns a shared FIFO/reset command.
+  // Preserve source and resume via TXFE only after observed command completion.
+  if (dwc2->grstctl & (GRSTCTL_TXFFLSH | GRSTCTL_RXFFLSH | GRSTCTL_CSRST)) {
+    deferred_tx_mask |= TU_BIT(epnum);
+    dwc2->diepempmsk &= ~TU_BIT(epnum);
+    return 0;
+  }
   dwc2_dep_t *const epin = &dwc2->ep[0][epnum];
   xfer_ctl_t *const xfer = XFER_CTL_BASE(epnum, TUSB_DIR_IN);
 
@@ -1185,7 +1304,7 @@ static void handle_rxflvl_irq(uint8_t rhport) {
 
   switch (packet_status) {
     case GRXSTS_PKTSTS_GLOBAL_OUT_NAK:
-      // Global OUT NAK: do nothing
+      if (out_nak_owner>=0) bulk_cancel[(uint8_t)out_nak_owner][0].nak_marker=true;
       break;
 
     case GRXSTS_PKTSTS_SETUP_RX: {
@@ -1202,7 +1321,7 @@ static void handle_rxflvl_irq(uint8_t rhport) {
       epout->doeptsiz |= (3 << DOEPTSIZ_STUPCNT_Pos);
       epout->doepint = DOEPINT_SETUP | DOEPINT_STPKTRX; // Clear SETUP interrupt, required for core to re-write this control word
       if (edpt_is_enabled(&dwc2->epin[0])) {
-        edpt_disable(rhport, 0x80, false, true);
+        if (!edpt_disable(rhport, 0x80, false, true)) return;
       }
       dcd_event_setup_received(rhport, setup_buffer_data, true);
       break;
@@ -1213,6 +1332,13 @@ static void handle_rxflvl_irq(uint8_t rhport) {
       const uint16_t byte_count = grxstsp.byte_count;
       xfer_ctl_t* xfer = XFER_CTL_BASE(epnum, TUSB_DIR_OUT);
 
+      if (cancel_active(epnum,0) || byte_count > rx_left[epnum]) {
+        if (byte_count > rx_left[epnum] && !cancel_active(epnum,0)) dwc2_wait_fail();
+        for (uint16_t i=0;i<(uint16_t)((byte_count+3U)/4U);i++) (void)*rx_fifo;
+        break;
+      }
+      rx_left[epnum]-=byte_count;
+      pio_refs[epnum]++;
       if (byte_count != 0) {
         // Read packet off RxFIFO
         if (xfer->ff != NULL) {
@@ -1223,6 +1349,7 @@ static void handle_rxflvl_irq(uint8_t rhport) {
         }
       }
 
+      pio_refs[epnum]--;
       // short packet (including ZLP when byte_count == 0), minus remaining bytes (xfer_size)
       if (byte_count < xfer->max_size) {
         const dwc2_ep_tsize_t tsiz = {.value = epout->tsiz};
@@ -1239,6 +1366,11 @@ static void handle_rxflvl_irq(uint8_t rhport) {
       const uint32_t doepint = epout->doepint;
       epout->doepint = DOEPINT_XFRC;
 
+      hardware_completed[epnum][0]=true;
+      if (cancel_active(epnum,0)) {
+        bulk_cancel[epnum][0].completed=true;
+        break;
+      }
       // v3.10a quirk (see top of function): the extra RX_COMPLETE flagged with Setup Packet Received (STPKTRX) or
       // Status Phase Received for control write (STSPHSRX) is not a real OUT completion. Drop it
       if (quirk_v310a) {
@@ -1267,6 +1399,7 @@ static void handle_epin_slave(uint8_t rhport, uint8_t epnum, dwc2_diepint_t diep
   dwc2_dep_t* epin = &dwc2->epin[epnum];
   xfer_ctl_t* xfer = XFER_CTL_BASE(epnum, TUSB_DIR_IN);
 
+  if (cancel_active(epnum,1)) return;
   if (diepint_bm.xfer_complete) {
     if ((epnum == 0) && (0 != _dcd_data.ep0_pending[TUSB_DIR_IN])) {
       // EP0 can only handle one packet. Schedule another packet to be transmitted.
@@ -1426,6 +1559,21 @@ static void handle_ep_irq(uint8_t rhport, uint8_t dir) {
       } intr;
       intr.value = epout->intr;
 
+      if (!is_dma && dir==TUSB_DIR_OUT) {
+        // PIO XFRC/SETUP belong exclusively to the RX status pop consumer.
+        // Do not erase a control-write quirk flag from a shared OUT IRQ snapshot.
+        if (cancel_active(epnum,dir) && (intr.value & 2U) && bulk_cancel[epnum][dir].phase==2)
+          bulk_cancel[epnum][dir].disabled=true;
+        epout->intr=intr.value & 2U;
+        continue;
+      }
+      if (intr.value & 1U) hardware_completed[epnum][dir]=true;
+      if (cancel_active(epnum,dir)) {
+        bulk_cancel_t *c=&bulk_cancel[epnum][dir];
+        if (dir && (intr.value & DIEPINT_INEPNE)) c->nak_in=true;
+        if ((intr.value & 2U) && c->phase==2) c->disabled=true;
+        if (intr.value & 1U) c->completed=true;
+      }
       epout->intr = intr.value; // Clear interrupt //-V::2584::{otg_int}
 
       if (is_dma) {
@@ -1489,7 +1637,7 @@ static void handle_incomplete_iso_in(uint8_t rhport) {
         epin->diepctl = depctl.value;
       } else {
         // too many retries, give up, but keep endpoint activated
-        edpt_disable(rhport, epnum | TUSB_DIR_IN_MASK, false, true);
+        if (!edpt_disable(rhport, epnum | TUSB_DIR_IN_MASK, false, true)) return;
         epin->diepctl |= DIEPCTL_USBAEP;
         dcd_event_xfer_complete(rhport, epnum | TUSB_DIR_IN_MASK, 0, XFER_RESULT_FAILED, true);
       }
@@ -1510,21 +1658,23 @@ static void handle_incomplete_iso_in(uint8_t rhport) {
   are combined to generate dedicated interrupt line for each endpoint.
  */
 void dcd_int_handler(uint8_t rhport) {
-  if (rhport >= 2 || r1_abort_fault[rhport]) return ;
   dwc2_regs_t* dwc2 = DWC2_REG(rhport);
   const uint32_t gintmask = dwc2->gintmsk;
   const uint32_t gintsts = dwc2->gintsts & gintmask;
+  if (!dcd_device_faulted(rhport) && !(gintsts & (GINTSTS_USBRST | GINTSTS_ENUMDNE | GINTSTS_OTGINT))) resume_deferred_tx(dwc2);
 
   if (gintsts & GINTSTS_USBRST) {
     // USBRST is start of reset.
     dwc2->gintsts = GINTSTS_USBRST;
 
+    if (any_cancel()) { (void)cancel_failed(rhport,6); return; }
     usbd_spin_lock(true);
     handle_bus_reset(rhport);
     usbd_spin_unlock(true);
   }
 
   if (gintsts & GINTSTS_ENUMDNE) {
+    if (any_cancel()) {(void)cancel_failed(rhport,8);dwc2->gintsts=GINTSTS_ENUMDNE;return;}
     // ENUMDNE is the end of reset where speed of the link is detected
     dwc2->gintsts = GINTSTS_ENUMDNE;
     // There may be a pending suspend event, so we clear it first
@@ -1562,6 +1712,7 @@ void dcd_int_handler(uint8_t rhport) {
     const uint32_t otg_int = dwc2->gotgint;
 
     if (otg_int & GOTGINT_SEDET) {
+      if (any_cancel()) {(void)cancel_failed(rhport,7);dwc2->gotgint=otg_int;return;}
       usbd_spin_lock(true);
       dwc2->gintmsk &= ~GINTMSK_OTGINT;
       usbd_spin_unlock(true);
@@ -1600,9 +1751,8 @@ void dcd_int_handler(uint8_t rhport) {
     dwc2->gintmsk &= ~GINTMSK_RXFLVLM; // disable RXFLVL interrupt while reading
     usbd_spin_unlock(true);
 
-    do {
-      handle_rxflvl_irq(rhport); // read all packets
-    } while(dwc2->gintsts & GINTSTS_RXFLVL);
+    for (uint8_t budget=0;budget<8 && (dwc2->gintsts & GINTSTS_RXFLVL);budget++)
+      handle_rxflvl_irq(rhport); // bounded ISR batch; level remains pending
 
     usbd_spin_lock(true);
     dwc2->gintmsk |= GINTMSK_RXFLVLM;
@@ -1610,6 +1760,7 @@ void dcd_int_handler(uint8_t rhport) {
   }
 #endif
 
+  if (!dma_device_enabled(dwc2) && (gintsts & GINTSTS_OEPINT)) handle_ep_irq(rhport,TUSB_DIR_OUT);
 #if CFG_TUD_DWC2_DMA_ENABLE
   // OUT endpoint interrupt handling.
   if (gintsts & GINTSTS_OEPINT) {

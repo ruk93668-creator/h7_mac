@@ -77,6 +77,9 @@ typedef struct {
 
 #define ITF_MEM_RESET_SIZE offsetof(mscd_interface_t, pending_io)
 
+static bool reset_pending;
+static uint32_t reset_seq;
+static tusb_control_request_t reset_request;
 static mscd_interface_t _mscd_itf;
 
 CFG_TUD_MEM_SECTION static struct {
@@ -379,15 +382,20 @@ bool tud_msc_async_io_done(int32_t bytes_io, bool in_isr) {
 // USBD Driver API
 //--------------------------------------------------------------------+
 void mscd_init(void) {
+  reset_pending=false;
   TU_LOG_INT(CFG_TUD_MSC_LOG_LEVEL, sizeof(mscd_interface_t));
   tu_memclr(&_mscd_itf, sizeof(mscd_interface_t));
 }
 
+bool mscd_io_quiescent(void) { return !_mscd_itf.pending_io && !reset_pending; }
+
 bool mscd_deinit(void) {
+  if (!mscd_io_quiescent()) return false;
   return true; // nothing to do
 }
 
 void mscd_reset(uint8_t rhport) {
+  reset_pending=false; // old control request cannot survive bus reset/unconfiguration
   (void) rhport;
   // A bus reset abandons a pending async I/O like a Bulk-Only Mass Storage Reset does (proc_bot_reset): the clear
   // leaves pending_io set, so its completion is still accepted and discarded
@@ -468,6 +476,13 @@ static bool proc_bot_reset(mscd_interface_t* p_msc) {
   return true;
 }
 
+void mscd_task(void) {
+  if (!reset_pending || usbd_device_failed()) return;
+  if (!proc_bot_reset(&_mscd_itf)) return;
+  reset_pending=false;
+  if (reset_seq==usbd_setup_sequence()) tud_control_status(0,&reset_request);
+}
+
 // Invoked when a control transfer occurred on an interface of this class
 // Driver response accordingly to the request and the transfer stage (setup/data/ack)
 // return false to stall control endpoint (e.g unsupported request)
@@ -518,7 +533,12 @@ bool mscd_control_xfer_cb(uint8_t rhport, uint8_t stage, tusb_control_request_t 
     case MSC_REQ_RESET:
       TU_LOG_DRV("  MSC BOT Reset\r\n");
       TU_VERIFY(request->wValue == 0 && request->wLength == 0);
-      TU_VERIFY(proc_bot_reset(p_msc)); // status only after successful retirement
+      if (!proc_bot_reset(p_msc)) {
+        if (usbd_device_failed()) return false;
+        reset_request=*request;reset_seq=usbd_setup_sequence();reset_pending=true;
+        return true; // no Status ZLP while hardware is pending
+      }
+      reset_pending=false;
       tud_control_status(rhport, request);
     break;
 
