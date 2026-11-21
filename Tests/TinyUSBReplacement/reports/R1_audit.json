@@ -1,0 +1,38 @@
+{
+  "baseline": "8a0a89cf49dfb86c9126d3c3193abc23e8c608e9",
+  "production_paths": [
+    "ThirdParty/tinyusb/src/class/msc/msc_device.c",
+    "ThirdParty/tinyusb/src/device/dcd.h",
+    "ThirdParty/tinyusb/src/device/usbd.c",
+    "ThirdParty/tinyusb/src/device/usbd_pvt.h",
+    "ThirdParty/tinyusb/src/portable/synopsys/dwc2/dcd_dwc2.c"
+  ],
+  "patch_sha256": "cdbe6386ab20f19f9e266714590c112e61266e4c8c3bb5a0a8b5db55617445dd",
+  "sources": {
+    "ThirdParty/tinyusb/src/class/msc/msc_device.c": "e483b279646c8fcbc6c29e279f2b4f1c43d1442a5cc9e2a4260af05a55eb3882",
+    "ThirdParty/tinyusb/src/device/dcd.h": "2c1ce4df6859a319332e2e9823f64961cac5e01a1606672b023e3d923318719e",
+    "ThirdParty/tinyusb/src/device/usbd.c": "3cc774dcf2777469f9c5bfa235f21e68222b24490676079a7a0625f11f6d769d",
+    "ThirdParty/tinyusb/src/device/usbd_pvt.h": "299305404af53d1d56a85c016d029c7efe34f1eefe6e75889eece3c938221431",
+    "ThirdParty/tinyusb/src/portable/synopsys/dwc2/dcd_dwc2.c": "599ec0e25c7fba6f3ebe5d63151c3c38a0e87ab14e8cc4707414d33519e73c09"
+  },
+  "callers": {
+    "dcd_edpt_abort_safe": [
+      "Core usbd_edpt_abort; weak adapter to original bool API",
+      "DWC2 strong fail-closed entry"
+    ],
+    "usbd_edpt_abort": [
+      "MSC proc_bot_reset IN",
+      "MSC proc_bot_reset OUT"
+    ],
+    "remaining_void_paths": [
+      "dcd_edpt_stall",
+      "dcd_edpt_close_all",
+      "EP0 IN edpt_disable ISR",
+      "dcd_edpt_iso_activate",
+      "FIFO flush",
+      "dwc2_core_deinit"
+    ]
+  },
+  "status": "PARTIAL/BLOCKED",
+  "hardware": "NOT_TESTED"
+}

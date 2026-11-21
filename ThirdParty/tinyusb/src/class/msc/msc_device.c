@@ -429,7 +429,7 @@ uint16_t mscd_open(uint8_t rhport, tusb_desc_interface_t const * itf_desc, uint1
   return drv_len;
 }
 
-static void proc_bot_reset(mscd_interface_t* p_msc) {
+static bool proc_bot_reset(mscd_interface_t* p_msc) {
   uint8_t const rhport = p_msc->rhport;
 
   // Drop only a transfer the abandoned command left armed: a Data Stage chunk or a CSW on Bulk-In, or a Data-Out
@@ -440,13 +440,13 @@ static void proc_bot_reset(mscd_interface_t* p_msc) {
   // reset readies the device for that next CBW. A stalled endpoint dropped its transfer when it stalled, and keeps the
   // stall (BOT 3.1).
   if (usbd_edpt_busy(rhport, p_msc->ep_in) && !usbd_edpt_stalled(rhport, p_msc->ep_in)) {
-    usbd_edpt_abort(rhport, p_msc->ep_in);
+    if (!usbd_edpt_abort(rhport, p_msc->ep_in)) return false;
   }
   bool const out_stalled = usbd_edpt_stalled(rhport, p_msc->ep_out);
   bool const out_armed   = !out_stalled && usbd_edpt_busy(rhport, p_msc->ep_out);
   bool const cbw_armed   = out_armed && (p_msc->stage == MSC_STAGE_CMD);
   if (out_armed && !cbw_armed) {
-    usbd_edpt_abort(rhport, p_msc->ep_out);
+    if (!usbd_edpt_abort(rhport, p_msc->ep_out)) return false;
   }
 
   // An async READ10/WRITE10 still pending is abandoned: pending_io stays set in the CMD stage, where no command
@@ -463,8 +463,9 @@ static void proc_bot_reset(mscd_interface_t* p_msc) {
   // Receive the next CBW, unless it is still armed, Bulk-Out is stalled (its clear-halt arms it) or an abandoned async
   // I/O owns the buffer
   if (!out_stalled && !cbw_armed && !p_msc->pending_io) {
-    TU_ASSERT(prepare_cbw(p_msc), );
+    TU_ASSERT(prepare_cbw(p_msc), false);
   }
+  return true;
 }
 
 // Invoked when a control transfer occurred on an interface of this class
@@ -517,7 +518,7 @@ bool mscd_control_xfer_cb(uint8_t rhport, uint8_t stage, tusb_control_request_t 
     case MSC_REQ_RESET:
       TU_LOG_DRV("  MSC BOT Reset\r\n");
       TU_VERIFY(request->wValue == 0 && request->wLength == 0);
-      proc_bot_reset(p_msc); // driver state reset
+      TU_VERIFY(proc_bot_reset(p_msc)); // status only after successful retirement
       tud_control_status(rhport, request);
     break;
 

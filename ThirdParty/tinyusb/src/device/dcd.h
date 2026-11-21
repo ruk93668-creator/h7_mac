@@ -178,6 +178,9 @@ void dcd_edpt_clear_stall     (uint8_t rhport, uint8_t ep_addr);
 // Return false if not supported: usbd_edpt_abort() then stalls and clears the endpoint instead.
 // This API is optional, and never called with control endpoints.
 bool dcd_edpt_abort_xfer      (uint8_t rhport, uint8_t ep_addr);
+// R1: FAILED is terminal for this device instance, never a compatibility fallback.
+typedef enum { DCD_ABORT_UNSUPPORTED, DCD_ABORT_SUCCESS, DCD_ABORT_FAILED } dcd_abort_result_t;
+dcd_abort_result_t dcd_edpt_abort_safe(uint8_t rhport, uint8_t ep_addr);
 
 #ifdef TUP_DCD_EDPT_CLOSE_API
 // Close an endpoint.

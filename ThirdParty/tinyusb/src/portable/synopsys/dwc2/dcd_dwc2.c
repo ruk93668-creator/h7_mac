@@ -459,6 +459,26 @@ static void edpt_activate(uint8_t rhport, const tusb_desc_endpoint_t* p_endpoint
   usbd_spin_unlock(false);
 }
 
+// R1 partial: fail-closed initiation, not a quiescence implementation.
+// RX retirement / late IRQ qualification remains a blocking contract gap.
+static bool r1_abort_fault[2];
+dcd_abort_result_t dcd_edpt_abort_safe(uint8_t rhport, uint8_t ep_addr) {
+  if (rhport >= 2) return DCD_ABORT_FAILED;
+  if (r1_abort_fault[rhport]) return DCD_ABORT_FAILED;
+  const uint8_t epnum = tu_edpt_number(ep_addr);
+  if (epnum == 0 || epnum >= _dwc2_controller[rhport].ep_count) return DCD_ABORT_FAILED;
+  dwc2_regs_t* dwc2 = DWC2_REG(rhport);
+  dwc2_dep_t* dep = &dwc2->ep[tu_edpt_dir(ep_addr) == TUSB_DIR_IN ? 0 : 1][epnum];
+  // No unsupported fallback for a real DWC2 endpoint: disable proof is not yet available.
+  r1_abort_fault[rhport] = true;
+  if (tu_edpt_dir(ep_addr) == TUSB_DIR_IN) dep->ctl |= EPCTL_SNAK;
+  else dwc2->dctl |= DCTL_SGONAK;
+  // Controlled terminal fault; keep xfer_status pointers and all buffers held.
+  // Mask controller event sources, not a claim that endpoints have stopped.
+  dwc2->gintmsk = 0;
+  return DCD_ABORT_FAILED;
+}
+
 static void edpt_disable(uint8_t rhport, uint8_t ep_addr, bool stall, bool is_isr) {
   (void) rhport;
 
@@ -613,6 +633,7 @@ bool dcd_configure(uint8_t rhport, uint32_t cfg_id, const void* cfg_param) {
 }
 
 bool dcd_init(uint8_t rhport, const tusb_rhport_init_t* rh_init) {
+  if (rhport >= 2 || r1_abort_fault[rhport]) return false;
   dwc2_clock_init(rhport, rh_init->role);
 
   tu_memclr(&_dcd_data, sizeof(_dcd_data));
@@ -678,6 +699,7 @@ bool dcd_init(uint8_t rhport, const tusb_rhport_init_t* rh_init) {
 }
 
 bool dcd_deinit(uint8_t rhport) {
+  if (rhport >= 2 || r1_abort_fault[rhport]) return false;
   dcd_disconnect(rhport);
   dwc2_core_deinit(rhport);
   return true;
@@ -769,6 +791,7 @@ void dcd_remote_wakeup(uint8_t rhport) {
 }
 
 void dcd_connect(uint8_t rhport) {
+  if (rhport >= 2 || r1_abort_fault[rhport]) return ;
   dwc2_regs_t* dwc2 = DWC2_REG(rhport);
 
 #if defined(TUP_USBIP_DWC2_ESP32) && !TU_CHECK_MCU(OPT_MCU_ESP32S31)
@@ -830,6 +853,7 @@ void dcd_sof_enable(uint8_t rhport, bool en) {
  *------------------------------------------------------------------*/
 
 bool dcd_edpt_open(uint8_t rhport, tusb_desc_endpoint_t const* desc_edpt) {
+  if (rhport >= 2 || r1_abort_fault[rhport]) return false;
   TU_ASSERT(dfifo_alloc(rhport, desc_edpt->bEndpointAddress, tu_edpt_packet_size(desc_edpt),
                        desc_edpt->bmAttributes.xfer));
   edpt_activate(rhport, desc_edpt);
@@ -838,6 +862,7 @@ bool dcd_edpt_open(uint8_t rhport, tusb_desc_endpoint_t const* desc_edpt) {
 
 // Close all non-control endpoints, cancel all pending transfers if any.
 void dcd_edpt_close_all(uint8_t rhport) {
+  if (rhport >= 2 || r1_abort_fault[rhport]) return ;
   dwc2_regs_t* dwc2 = DWC2_REG(rhport);
   uint8_t const ep_count = _dwc2_controller[rhport].ep_count;
 
@@ -868,11 +893,13 @@ void dcd_edpt_close_all(uint8_t rhport) {
 }
 
 bool dcd_edpt_iso_alloc(uint8_t rhport, uint8_t ep_addr, uint16_t largest_packet_size) {
+  if (rhport >= 2 || r1_abort_fault[rhport]) return false;
   TU_ASSERT(dfifo_alloc(rhport, ep_addr, largest_packet_size, TUSB_XFER_ISOCHRONOUS));
   return true;
 }
 
 bool dcd_edpt_iso_activate(uint8_t rhport,  tusb_desc_endpoint_t const * p_endpoint_desc) {
+  if (rhport >= 2 || r1_abort_fault[rhport]) return false;
   // Disable EP to clear potential incomplete transfers
   edpt_disable(rhport, p_endpoint_desc->bEndpointAddress, false, false);
   edpt_activate(rhport, p_endpoint_desc);
@@ -880,6 +907,7 @@ bool dcd_edpt_iso_activate(uint8_t rhport,  tusb_desc_endpoint_t const * p_endpo
 }
 
 bool dcd_edpt_xfer(uint8_t rhport, uint8_t ep_addr, uint8_t* buffer, uint16_t total_bytes, bool is_isr) {
+  if (rhport >= 2 || r1_abort_fault[rhport]) return false;
   (void) is_isr;
   uint8_t const epnum = tu_edpt_number(ep_addr);
   uint8_t const dir = tu_edpt_dir(ep_addr);
@@ -916,6 +944,7 @@ bool dcd_edpt_xfer(uint8_t rhport, uint8_t ep_addr, uint8_t* buffer, uint16_t to
 // success message. If total_bytes is too big, the FIFO will copy only what is available
 // into the USB buffer!
 bool dcd_edpt_xfer_fifo(uint8_t rhport, uint8_t ep_addr, tu_fifo_t* ff, uint16_t total_bytes, bool is_isr) {
+  if (rhport >= 2 || r1_abort_fault[rhport]) return false;
   (void) is_isr;
   uint8_t const epnum = tu_edpt_number(ep_addr);
   uint8_t const dir = tu_edpt_dir(ep_addr);
@@ -948,6 +977,7 @@ bool dcd_edpt_xfer_fifo(uint8_t rhport, uint8_t ep_addr, tu_fifo_t* ff, uint16_t
 }
 
 void dcd_edpt_stall(uint8_t rhport, uint8_t ep_addr) {
+  if (rhport >= 2 || r1_abort_fault[rhport]) return ;
   dwc2_regs_t* dwc2 = DWC2_REG(rhport);
   edpt_disable(rhport, ep_addr, true, false);
 
@@ -960,6 +990,7 @@ void dcd_edpt_stall(uint8_t rhport, uint8_t ep_addr) {
 }
 
 void dcd_edpt_clear_stall(uint8_t rhport, uint8_t ep_addr) {
+  if (rhport >= 2 || r1_abort_fault[rhport]) return ;
   dwc2_regs_t* dwc2 = DWC2_REG(rhport);
   uint8_t const epnum = tu_edpt_number(ep_addr);
   uint8_t const dir = tu_edpt_dir(ep_addr);
@@ -1479,6 +1510,7 @@ static void handle_incomplete_iso_in(uint8_t rhport) {
   are combined to generate dedicated interrupt line for each endpoint.
  */
 void dcd_int_handler(uint8_t rhport) {
+  if (rhport >= 2 || r1_abort_fault[rhport]) return ;
   dwc2_regs_t* dwc2 = DWC2_REG(rhport);
   const uint32_t gintmask = dwc2->gintmsk;
   const uint32_t gintsts = dwc2->gintsts & gintmask;

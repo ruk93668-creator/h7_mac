@@ -96,7 +96,7 @@ bool usbd_edpt_stalled(uint8_t rhport, uint8_t ep_addr);
 // Abort an in-flight transfer on a non-control endpoint and release its claim, so the endpoint
 // can be armed again. A stall is cleared. Without dcd_edpt_abort_xfer() in the DCD, or on a stalled
 // endpoint, it is a stall and clear-stall, which also resets the data toggle.
-void usbd_edpt_abort(uint8_t rhport, uint8_t ep_addr);
+bool usbd_edpt_abort(uint8_t rhport, uint8_t ep_addr);
 
 // Allocate packet buffer used by ISO endpoints
 bool usbd_edpt_iso_alloc(uint8_t rhport, uint8_t ep_addr, uint16_t largest_packet_size);

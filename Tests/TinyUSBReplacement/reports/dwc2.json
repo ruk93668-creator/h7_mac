@@ -24,7 +24,7 @@
         }
       ],
       "error": null,
-      "pc": "0x8000442"
+      "pc": "0x800046e"
     },
     {
       "case": 2,
@@ -54,7 +54,7 @@
         }
       ],
       "error": null,
-      "pc": "0x8000458"
+      "pc": "0x8000484"
     },
     {
       "case": 3,
@@ -78,7 +78,7 @@
         }
       ],
       "error": null,
-      "pc": "0x80003a6"
+      "pc": "0x80003d2"
     },
     {
       "case": 4,
@@ -106,7 +106,7 @@
         }
       ],
       "error": null,
-      "pc": "0x80003bc"
+      "pc": "0x80003e8"
     },
     {
       "case": 5,
@@ -195,7 +195,7 @@
       "reads": {
         "0x40080804": 1,
         "0x40080008": 1,
-        "0x40080010": 24986
+        "0x40080010": 24985
       },
       "writes": [
         {
@@ -208,7 +208,7 @@
         }
       ],
       "error": null,
-      "pc": "0x80007e2"
+      "pc": "0x800080a"
     }
   ],
   "commands": [
@@ -269,7 +269,7 @@
         "-c",
         "D:\\32\\STM32H7\\h7_mac_lifecycle\\Tests\\TinyUSBReplacement\\dwc2_test.c",
         "-o",
-        "D:\\32\\STM32H7\\h7_mac_lifecycle\\output\\TinyUSBReplacement\\dwc2-1795182964299247900\\dwc2_test.o"
+        "D:\\32\\STM32H7\\h7_mac_lifecycle\\output\\TinyUSBReplacement\\dwc2-1795241851401112800\\dwc2_test.o"
       ],
       "exit": 0,
       "output": ""
@@ -331,7 +331,7 @@
         "-c",
         "D:\\32\\STM32H7\\h7_mac_lifecycle\\ThirdParty\\tinyusb\\src\\portable\\synopsys\\dwc2\\dwc2_common.c",
         "-o",
-        "D:\\32\\STM32H7\\h7_mac_lifecycle\\output\\TinyUSBReplacement\\dwc2-1795182964299247900\\dwc2_common.o"
+        "D:\\32\\STM32H7\\h7_mac_lifecycle\\output\\TinyUSBReplacement\\dwc2-1795241851401112800\\dwc2_common.o"
       ],
       "exit": 0,
       "output": "\"D:\\32\\STM32H7\\h7_mac_lifecycle\\ThirdParty\\tinyusb\\src\\portable\\synopsys\\dwc2\\dwc2_common.c\", line 156: Warning:  #66-D: enumeration value is out of \"int\" range\r\n    enum { GSNPSID_ID_MASK = TU_GENMASK(31, 16) };\r\n                             ^\r\nD:\\32\\STM32H7\\h7_mac_lifecycle\\ThirdParty\\tinyusb\\src\\portable\\synopsys\\dwc2\\dwc2_common.c: 1 warning, 0 errors\r\n"
@@ -393,7 +393,7 @@
         "-c",
         "D:\\32\\STM32H7\\h7_mac_lifecycle\\ThirdParty\\tinyusb\\src\\common\\tusb_fifo.c",
         "-o",
-        "D:\\32\\STM32H7\\h7_mac_lifecycle\\output\\TinyUSBReplacement\\dwc2-1795182964299247900\\tusb_fifo.o"
+        "D:\\32\\STM32H7\\h7_mac_lifecycle\\output\\TinyUSBReplacement\\dwc2-1795241851401112800\\tusb_fifo.o"
       ],
       "exit": 0,
       "output": ""
@@ -401,30 +401,30 @@
     {
       "argv": [
         "D:\\32\\ARM\\ARMCC\\Bin\\armlink.exe",
-        "D:\\32\\STM32H7\\h7_mac_lifecycle\\output\\TinyUSBReplacement\\dwc2-1795182964299247900\\dwc2_test.o",
-        "D:\\32\\STM32H7\\h7_mac_lifecycle\\output\\TinyUSBReplacement\\dwc2-1795182964299247900\\dwc2_common.o",
-        "D:\\32\\STM32H7\\h7_mac_lifecycle\\output\\TinyUSBReplacement\\dwc2-1795182964299247900\\tusb_fifo.o",
+        "D:\\32\\STM32H7\\h7_mac_lifecycle\\output\\TinyUSBReplacement\\dwc2-1795241851401112800\\dwc2_test.o",
+        "D:\\32\\STM32H7\\h7_mac_lifecycle\\output\\TinyUSBReplacement\\dwc2-1795241851401112800\\dwc2_common.o",
+        "D:\\32\\STM32H7\\h7_mac_lifecycle\\output\\TinyUSBReplacement\\dwc2-1795241851401112800\\tusb_fifo.o",
         "--entry",
         "Dwc2_Run",
         "--scatter",
         "D:\\32\\STM32H7\\h7_mac_lifecycle\\Tests\\EndpointLifecycle\\test.sct",
         "--map",
         "--list",
-        "D:\\32\\STM32H7\\h7_mac_lifecycle\\output\\TinyUSBReplacement\\dwc2-1795182964299247900\\dwc2.map",
+        "D:\\32\\STM32H7\\h7_mac_lifecycle\\output\\TinyUSBReplacement\\dwc2-1795241851401112800\\dwc2.map",
         "-o",
-        "D:\\32\\STM32H7\\h7_mac_lifecycle\\output\\TinyUSBReplacement\\dwc2-1795182964299247900\\dwc2.axf"
+        "D:\\32\\STM32H7\\h7_mac_lifecycle\\output\\TinyUSBReplacement\\dwc2-1795241851401112800\\dwc2.axf"
       ],
       "exit": 0,
       "output": ""
     }
   ],
-  "artifact": "D:\\32\\STM32H7\\h7_mac_lifecycle\\output\\TinyUSBReplacement\\dwc2-1795182964299247900\\dwc2.axf",
+  "artifact": "D:\\32\\STM32H7\\h7_mac_lifecycle\\output\\TinyUSBReplacement\\dwc2-1795241851401112800\\dwc2.axf",
   "hardware": "NOT_TESTED",
   "meaning": "100000 ARM instruction budget witnesses unbounded polling in injected missing hardware conditions, not evidence physical hardware will always hang",
   "sources": {
     "Tests/TinyUSBReplacement/dwc2_test.c": "ff73ac3ac2c99b24d7aa1315d9e31196f9f0783835b385a8fa0b44fa25faa309",
     "ThirdParty/tinyusb/src/portable/synopsys/dwc2/dwc2_common.c": "86110d78f398aaaacfb5f1fd54fbe9855190f18ba099d6e23e0698dff28f0a5c",
     "ThirdParty/tinyusb/src/common/tusb_fifo.c": "61f3f43caf0d8c9caa27edf0daf65e307199161fd194344a9f510f443d1a26bb",
-    "ThirdParty/tinyusb/src/portable/synopsys/dwc2/dcd_dwc2.c": "69e829f2474f0225a00ce430048131bb18eac05fd9d49c655496b5c8edc2c465"
+    "ThirdParty/tinyusb/src/portable/synopsys/dwc2/dcd_dwc2.c": "599ec0e25c7fba6f3ebe5d63151c3c38a0e87ab14e8cc4707414d33519e73c09"
   }
 }

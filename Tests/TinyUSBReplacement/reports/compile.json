@@ -64,7 +64,7 @@
         "-c",
         "D:\\32\\STM32H7\\h7_mac_lifecycle\\ThirdParty\\tinyusb\\src\\tusb.c",
         "-o",
-        "D:\\32\\STM32H7\\h7_mac_lifecycle\\output\\TinyUSBReplacement\\compile-1795183822686616500\\ram\\tusb.o"
+        "D:\\32\\STM32H7\\h7_mac_lifecycle\\output\\TinyUSBReplacement\\compile-1795241852519265100\\ram\\tusb.o"
       ],
       "exit": 0,
       "output": "\"D:\\32\\STM32H7\\h7_mac_lifecycle\\ThirdParty\\tinyusb\\src\\osal/osal_freertos.h\", line 97: Warning:  #223-D: function \"pdTICKS_TO_MS\" declared implicitly\r\n    return pdTICKS_TO_MS(xTaskGetTickCount());\r\n           ^\r\n\"D:\\32\\STM32H7\\h7_mac_lifecycle\\ThirdParty\\tinyusb\\src\\osal/osal_freertos.h\", line 213: Warning:  #223-D: function \"xSemaphoreCreateMutexStatic\" declared implicitly\r\n    return xSemaphoreCreateMutexStatic(mdef);\r\n           ^\r\n\"D:\\32\\STM32H7\\h7_mac_lifecycle\\ThirdParty\\tinyusb\\src\\osal/osal_freertos.h\", line 213: Warning:  #120-D: return value type does not match the function type\r\n    return xSemaphoreCreateMutexStatic(mdef);\r\n           ^\r\nD:\\32\\STM32H7\\h7_mac_lifecycle\\ThirdParty\\tinyusb\\src\\tusb.c: 3 warnings, 0 errors\r\n",
@@ -130,7 +130,7 @@
         "-c",
         "D:\\32\\STM32H7\\h7_mac_lifecycle\\ThirdParty\\tinyusb\\src\\common\\tusb_fifo.c",
         "-o",
-        "D:\\32\\STM32H7\\h7_mac_lifecycle\\output\\TinyUSBReplacement\\compile-1795183822686616500\\ram\\tusb_fifo.o"
+        "D:\\32\\STM32H7\\h7_mac_lifecycle\\output\\TinyUSBReplacement\\compile-1795241852519265100\\ram\\tusb_fifo.o"
       ],
       "exit": 0,
       "output": "\"D:\\32\\STM32H7\\h7_mac_lifecycle\\ThirdParty\\tinyusb\\src\\osal/osal_freertos.h\", line 97: Warning:  #223-D: function \"pdTICKS_TO_MS\" declared implicitly\r\n    return pdTICKS_TO_MS(xTaskGetTickCount());\r\n           ^\r\n\"D:\\32\\STM32H7\\h7_mac_lifecycle\\ThirdParty\\tinyusb\\src\\osal/osal_freertos.h\", line 213: Warning:  #223-D: function \"xSemaphoreCreateMutexStatic\" declared implicitly\r\n    return xSemaphoreCreateMutexStatic(mdef);\r\n           ^\r\n\"D:\\32\\STM32H7\\h7_mac_lifecycle\\ThirdParty\\tinyusb\\src\\osal/osal_freertos.h\", line 213: Warning:  #120-D: return value type does not match the function type\r\n    return xSemaphoreCreateMutexStatic(mdef);\r\n           ^\r\nD:\\32\\STM32H7\\h7_mac_lifecycle\\ThirdParty\\tinyusb\\src\\common\\tusb_fifo.c: 3 warnings, 0 errors\r\n",
@@ -196,11 +196,11 @@
         "-c",
         "D:\\32\\STM32H7\\h7_mac_lifecycle\\ThirdParty\\tinyusb\\src\\device\\usbd.c",
         "-o",
-        "D:\\32\\STM32H7\\h7_mac_lifecycle\\output\\TinyUSBReplacement\\compile-1795183822686616500\\ram\\usbd.o"
+        "D:\\32\\STM32H7\\h7_mac_lifecycle\\output\\TinyUSBReplacement\\compile-1795241852519265100\\ram\\usbd.o"
       ],
       "exit": 0,
       "output": "\"D:\\32\\STM32H7\\h7_mac_lifecycle\\ThirdParty\\tinyusb\\src\\osal/osal_freertos.h\", line 97: Warning:  #223-D: function \"pdTICKS_TO_MS\" declared implicitly\r\n    return pdTICKS_TO_MS(xTaskGetTickCount());\r\n           ^\r\n\"D:\\32\\STM32H7\\h7_mac_lifecycle\\ThirdParty\\tinyusb\\src\\osal/osal_freertos.h\", line 213: Warning:  #223-D: function \"xSemaphoreCreateMutexStatic\" declared implicitly\r\n    return xSemaphoreCreateMutexStatic(mdef);\r\n           ^\r\n\"D:\\32\\STM32H7\\h7_mac_lifecycle\\ThirdParty\\tinyusb\\src\\osal/osal_freertos.h\", line 213: Warning:  #120-D: return value type does not match the function type\r\n    return xSemaphoreCreateMutexStatic(mdef);\r\n           ^\r\nD:\\32\\STM32H7\\h7_mac_lifecycle\\ThirdParty\\tinyusb\\src\\device\\usbd.c: 3 warnings, 0 errors\r\n",
-      "source_sha256": "fbdfc3e6bf183244d80ae4345a5ed444e3f07b498901790eda7444e5ce2efcfc"
+      "source_sha256": "3cc774dcf2777469f9c5bfa235f21e68222b24490676079a7a0625f11f6d769d"
     },
     {
       "mode": "ram",
@@ -262,7 +262,7 @@
         "-c",
         "D:\\32\\STM32H7\\h7_mac_lifecycle\\ThirdParty\\tinyusb\\src\\portable\\synopsys\\dwc2\\dwc2_common.c",
         "-o",
-        "D:\\32\\STM32H7\\h7_mac_lifecycle\\output\\TinyUSBReplacement\\compile-1795183822686616500\\ram\\dwc2_common.o"
+        "D:\\32\\STM32H7\\h7_mac_lifecycle\\output\\TinyUSBReplacement\\compile-1795241852519265100\\ram\\dwc2_common.o"
       ],
       "exit": 0,
       "output": "\"D:\\32\\STM32H7\\h7_mac_lifecycle\\ThirdParty\\tinyusb\\src\\osal/osal_freertos.h\", line 97: Warning:  #223-D: function \"pdTICKS_TO_MS\" declared implicitly\r\n    return pdTICKS_TO_MS(xTaskGetTickCount());\r\n           ^\r\n\"D:\\32\\STM32H7\\h7_mac_lifecycle\\ThirdParty\\tinyusb\\src\\osal/osal_freertos.h\", line 213: Warning:  #223-D: function \"xSemaphoreCreateMutexStatic\" declared implicitly\r\n    return xSemaphoreCreateMutexStatic(mdef);\r\n           ^\r\n\"D:\\32\\STM32H7\\h7_mac_lifecycle\\ThirdParty\\tinyusb\\src\\osal/osal_freertos.h\", line 213: Warning:  #120-D: return value type does not match the function type\r\n    return xSemaphoreCreateMutexStatic(mdef);\r\n           ^\r\n\"D:\\32\\STM32H7\\h7_mac_lifecycle\\ThirdParty\\tinyusb\\src\\portable\\synopsys\\dwc2\\dwc2_common.c\", line 156: Warning:  #66-D: enumeration value is out of \"int\" range\r\n    enum { GSNPSID_ID_MASK = TU_GENMASK(31, 16) };\r\n                             ^\r\nD:\\32\\STM32H7\\h7_mac_lifecycle\\ThirdParty\\tinyusb\\src\\portable\\synopsys\\dwc2\\dwc2_common.c: 4 warnings, 0 errors\r\n",
@@ -328,11 +328,11 @@
         "-c",
         "D:\\32\\STM32H7\\h7_mac_lifecycle\\ThirdParty\\tinyusb\\src\\portable\\synopsys\\dwc2\\dcd_dwc2.c",
         "-o",
-        "D:\\32\\STM32H7\\h7_mac_lifecycle\\output\\TinyUSBReplacement\\compile-1795183822686616500\\ram\\dcd_dwc2.o"
+        "D:\\32\\STM32H7\\h7_mac_lifecycle\\output\\TinyUSBReplacement\\compile-1795241852519265100\\ram\\dcd_dwc2.o"
       ],
       "exit": 0,
       "output": "\"D:\\32\\STM32H7\\h7_mac_lifecycle\\ThirdParty\\tinyusb\\src\\osal/osal_freertos.h\", line 97: Warning:  #223-D: function \"pdTICKS_TO_MS\" declared implicitly\r\n    return pdTICKS_TO_MS(xTaskGetTickCount());\r\n           ^\r\n\"D:\\32\\STM32H7\\h7_mac_lifecycle\\ThirdParty\\tinyusb\\src\\osal/osal_freertos.h\", line 213: Warning:  #223-D: function \"xSemaphoreCreateMutexStatic\" declared implicitly\r\n    return xSemaphoreCreateMutexStatic(mdef);\r\n           ^\r\n\"D:\\32\\STM32H7\\h7_mac_lifecycle\\ThirdParty\\tinyusb\\src\\osal/osal_freertos.h\", line 213: Warning:  #120-D: return value type does not match the function type\r\n    return xSemaphoreCreateMutexStatic(mdef);\r\n           ^\r\nD:\\32\\STM32H7\\h7_mac_lifecycle\\ThirdParty\\tinyusb\\src\\portable\\synopsys\\dwc2\\dcd_dwc2.c: 3 warnings, 0 errors\r\n",
-      "source_sha256": "69e829f2474f0225a00ce430048131bb18eac05fd9d49c655496b5c8edc2c465"
+      "source_sha256": "599ec0e25c7fba6f3ebe5d63151c3c38a0e87ab14e8cc4707414d33519e73c09"
     },
     {
       "mode": "ram",
@@ -394,11 +394,11 @@
         "-c",
         "D:\\32\\STM32H7\\h7_mac_lifecycle\\ThirdParty\\tinyusb\\src\\class\\msc\\msc_device.c",
         "-o",
-        "D:\\32\\STM32H7\\h7_mac_lifecycle\\output\\TinyUSBReplacement\\compile-1795183822686616500\\ram\\msc_device.o"
+        "D:\\32\\STM32H7\\h7_mac_lifecycle\\output\\TinyUSBReplacement\\compile-1795241852519265100\\ram\\msc_device.o"
       ],
       "exit": 0,
       "output": "\"D:\\32\\STM32H7\\h7_mac_lifecycle\\ThirdParty\\tinyusb\\src\\osal/osal_freertos.h\", line 97: Warning:  #223-D: function \"pdTICKS_TO_MS\" declared implicitly\r\n    return pdTICKS_TO_MS(xTaskGetTickCount());\r\n           ^\r\n\"D:\\32\\STM32H7\\h7_mac_lifecycle\\ThirdParty\\tinyusb\\src\\osal/osal_freertos.h\", line 213: Warning:  #223-D: function \"xSemaphoreCreateMutexStatic\" declared implicitly\r\n    return xSemaphoreCreateMutexStatic(mdef);\r\n           ^\r\n\"D:\\32\\STM32H7\\h7_mac_lifecycle\\ThirdParty\\tinyusb\\src\\osal/osal_freertos.h\", line 213: Warning:  #120-D: return value type does not match the function type\r\n    return xSemaphoreCreateMutexStatic(mdef);\r\n           ^\r\nD:\\32\\STM32H7\\h7_mac_lifecycle\\ThirdParty\\tinyusb\\src\\class\\msc\\msc_device.c: 3 warnings, 0 errors\r\n",
-      "source_sha256": "2050faeddb76478a96e94f4b8c67e1ffd1d4ebeeba016d86f7a99e04c5758bd8"
+      "source_sha256": "e483b279646c8fcbc6c29e279f2b4f1c43d1442a5cc9e2a4260af05a55eb3882"
     },
     {
       "mode": "sd_readonly",
@@ -460,7 +460,7 @@
         "-c",
         "D:\\32\\STM32H7\\h7_mac_lifecycle\\ThirdParty\\tinyusb\\src\\tusb.c",
         "-o",
-        "D:\\32\\STM32H7\\h7_mac_lifecycle\\output\\TinyUSBReplacement\\compile-1795183822686616500\\sd_readonly\\tusb.o"
+        "D:\\32\\STM32H7\\h7_mac_lifecycle\\output\\TinyUSBReplacement\\compile-1795241852519265100\\sd_readonly\\tusb.o"
       ],
       "exit": 0,
       "output": "\"D:\\32\\STM32H7\\h7_mac_lifecycle\\ThirdParty\\tinyusb\\src\\osal/osal_freertos.h\", line 97: Warning:  #223-D: function \"pdTICKS_TO_MS\" declared implicitly\r\n    return pdTICKS_TO_MS(xTaskGetTickCount());\r\n           ^\r\n\"D:\\32\\STM32H7\\h7_mac_lifecycle\\ThirdParty\\tinyusb\\src\\osal/osal_freertos.h\", line 213: Warning:  #223-D: function \"xSemaphoreCreateMutexStatic\" declared implicitly\r\n    return xSemaphoreCreateMutexStatic(mdef);\r\n           ^\r\n\"D:\\32\\STM32H7\\h7_mac_lifecycle\\ThirdParty\\tinyusb\\src\\osal/osal_freertos.h\", line 213: Warning:  #120-D: return value type does not match the function type\r\n    return xSemaphoreCreateMutexStatic(mdef);\r\n           ^\r\nD:\\32\\STM32H7\\h7_mac_lifecycle\\ThirdParty\\tinyusb\\src\\tusb.c: 3 warnings, 0 errors\r\n",
@@ -526,7 +526,7 @@
         "-c",
         "D:\\32\\STM32H7\\h7_mac_lifecycle\\ThirdParty\\tinyusb\\src\\common\\tusb_fifo.c",
         "-o",
-        "D:\\32\\STM32H7\\h7_mac_lifecycle\\output\\TinyUSBReplacement\\compile-1795183822686616500\\sd_readonly\\tusb_fifo.o"
+        "D:\\32\\STM32H7\\h7_mac_lifecycle\\output\\TinyUSBReplacement\\compile-1795241852519265100\\sd_readonly\\tusb_fifo.o"
       ],
       "exit": 0,
       "output": "\"D:\\32\\STM32H7\\h7_mac_lifecycle\\ThirdParty\\tinyusb\\src\\osal/osal_freertos.h\", line 97: Warning:  #223-D: function \"pdTICKS_TO_MS\" declared implicitly\r\n    return pdTICKS_TO_MS(xTaskGetTickCount());\r\n           ^\r\n\"D:\\32\\STM32H7\\h7_mac_lifecycle\\ThirdParty\\tinyusb\\src\\osal/osal_freertos.h\", line 213: Warning:  #223-D: function \"xSemaphoreCreateMutexStatic\" declared implicitly\r\n    return xSemaphoreCreateMutexStatic(mdef);\r\n           ^\r\n\"D:\\32\\STM32H7\\h7_mac_lifecycle\\ThirdParty\\tinyusb\\src\\osal/osal_freertos.h\", line 213: Warning:  #120-D: return value type does not match the function type\r\n    return xSemaphoreCreateMutexStatic(mdef);\r\n           ^\r\nD:\\32\\STM32H7\\h7_mac_lifecycle\\ThirdParty\\tinyusb\\src\\common\\tusb_fifo.c: 3 warnings, 0 errors\r\n",
@@ -592,11 +592,11 @@
         "-c",
         "D:\\32\\STM32H7\\h7_mac_lifecycle\\ThirdParty\\tinyusb\\src\\device\\usbd.c",
         "-o",
-        "D:\\32\\STM32H7\\h7_mac_lifecycle\\output\\TinyUSBReplacement\\compile-1795183822686616500\\sd_readonly\\usbd.o"
+        "D:\\32\\STM32H7\\h7_mac_lifecycle\\output\\TinyUSBReplacement\\compile-1795241852519265100\\sd_readonly\\usbd.o"
       ],
       "exit": 0,
       "output": "\"D:\\32\\STM32H7\\h7_mac_lifecycle\\ThirdParty\\tinyusb\\src\\osal/osal_freertos.h\", line 97: Warning:  #223-D: function \"pdTICKS_TO_MS\" declared implicitly\r\n    return pdTICKS_TO_MS(xTaskGetTickCount());\r\n           ^\r\n\"D:\\32\\STM32H7\\h7_mac_lifecycle\\ThirdParty\\tinyusb\\src\\osal/osal_freertos.h\", line 213: Warning:  #223-D: function \"xSemaphoreCreateMutexStatic\" declared implicitly\r\n    return xSemaphoreCreateMutexStatic(mdef);\r\n           ^\r\n\"D:\\32\\STM32H7\\h7_mac_lifecycle\\ThirdParty\\tinyusb\\src\\osal/osal_freertos.h\", line 213: Warning:  #120-D: return value type does not match the function type\r\n    return xSemaphoreCreateMutexStatic(mdef);\r\n           ^\r\nD:\\32\\STM32H7\\h7_mac_lifecycle\\ThirdParty\\tinyusb\\src\\device\\usbd.c: 3 warnings, 0 errors\r\n",
-      "source_sha256": "fbdfc3e6bf183244d80ae4345a5ed444e3f07b498901790eda7444e5ce2efcfc"
+      "source_sha256": "3cc774dcf2777469f9c5bfa235f21e68222b24490676079a7a0625f11f6d769d"
     },
     {
       "mode": "sd_readonly",
@@ -658,7 +658,7 @@
         "-c",
         "D:\\32\\STM32H7\\h7_mac_lifecycle\\ThirdParty\\tinyusb\\src\\portable\\synopsys\\dwc2\\dwc2_common.c",
         "-o",
-        "D:\\32\\STM32H7\\h7_mac_lifecycle\\output\\TinyUSBReplacement\\compile-1795183822686616500\\sd_readonly\\dwc2_common.o"
+        "D:\\32\\STM32H7\\h7_mac_lifecycle\\output\\TinyUSBReplacement\\compile-1795241852519265100\\sd_readonly\\dwc2_common.o"
       ],
       "exit": 0,
       "output": "\"D:\\32\\STM32H7\\h7_mac_lifecycle\\ThirdParty\\tinyusb\\src\\osal/osal_freertos.h\", line 97: Warning:  #223-D: function \"pdTICKS_TO_MS\" declared implicitly\r\n    return pdTICKS_TO_MS(xTaskGetTickCount());\r\n           ^\r\n\"D:\\32\\STM32H7\\h7_mac_lifecycle\\ThirdParty\\tinyusb\\src\\osal/osal_freertos.h\", line 213: Warning:  #223-D: function \"xSemaphoreCreateMutexStatic\" declared implicitly\r\n    return xSemaphoreCreateMutexStatic(mdef);\r\n           ^\r\n\"D:\\32\\STM32H7\\h7_mac_lifecycle\\ThirdParty\\tinyusb\\src\\osal/osal_freertos.h\", line 213: Warning:  #120-D: return value type does not match the function type\r\n    return xSemaphoreCreateMutexStatic(mdef);\r\n           ^\r\n\"D:\\32\\STM32H7\\h7_mac_lifecycle\\ThirdParty\\tinyusb\\src\\portable\\synopsys\\dwc2\\dwc2_common.c\", line 156: Warning:  #66-D: enumeration value is out of \"int\" range\r\n    enum { GSNPSID_ID_MASK = TU_GENMASK(31, 16) };\r\n                             ^\r\nD:\\32\\STM32H7\\h7_mac_lifecycle\\ThirdParty\\tinyusb\\src\\portable\\synopsys\\dwc2\\dwc2_common.c: 4 warnings, 0 errors\r\n",
@@ -724,11 +724,11 @@
         "-c",
         "D:\\32\\STM32H7\\h7_mac_lifecycle\\ThirdParty\\tinyusb\\src\\portable\\synopsys\\dwc2\\dcd_dwc2.c",
         "-o",
-        "D:\\32\\STM32H7\\h7_mac_lifecycle\\output\\TinyUSBReplacement\\compile-1795183822686616500\\sd_readonly\\dcd_dwc2.o"
+        "D:\\32\\STM32H7\\h7_mac_lifecycle\\output\\TinyUSBReplacement\\compile-1795241852519265100\\sd_readonly\\dcd_dwc2.o"
       ],
       "exit": 0,
       "output": "\"D:\\32\\STM32H7\\h7_mac_lifecycle\\ThirdParty\\tinyusb\\src\\osal/osal_freertos.h\", line 97: Warning:  #223-D: function \"pdTICKS_TO_MS\" declared implicitly\r\n    return pdTICKS_TO_MS(xTaskGetTickCount());\r\n           ^\r\n\"D:\\32\\STM32H7\\h7_mac_lifecycle\\ThirdParty\\tinyusb\\src\\osal/osal_freertos.h\", line 213: Warning:  #223-D: function \"xSemaphoreCreateMutexStatic\" declared implicitly\r\n    return xSemaphoreCreateMutexStatic(mdef);\r\n           ^\r\n\"D:\\32\\STM32H7\\h7_mac_lifecycle\\ThirdParty\\tinyusb\\src\\osal/osal_freertos.h\", line 213: Warning:  #120-D: return value type does not match the function type\r\n    return xSemaphoreCreateMutexStatic(mdef);\r\n           ^\r\nD:\\32\\STM32H7\\h7_mac_lifecycle\\ThirdParty\\tinyusb\\src\\portable\\synopsys\\dwc2\\dcd_dwc2.c: 3 warnings, 0 errors\r\n",
-      "source_sha256": "69e829f2474f0225a00ce430048131bb18eac05fd9d49c655496b5c8edc2c465"
+      "source_sha256": "599ec0e25c7fba6f3ebe5d63151c3c38a0e87ab14e8cc4707414d33519e73c09"
     },
     {
       "mode": "sd_readonly",
@@ -790,11 +790,11 @@
         "-c",
         "D:\\32\\STM32H7\\h7_mac_lifecycle\\ThirdParty\\tinyusb\\src\\class\\msc\\msc_device.c",
         "-o",
-        "D:\\32\\STM32H7\\h7_mac_lifecycle\\output\\TinyUSBReplacement\\compile-1795183822686616500\\sd_readonly\\msc_device.o"
+        "D:\\32\\STM32H7\\h7_mac_lifecycle\\output\\TinyUSBReplacement\\compile-1795241852519265100\\sd_readonly\\msc_device.o"
       ],
       "exit": 0,
       "output": "\"D:\\32\\STM32H7\\h7_mac_lifecycle\\ThirdParty\\tinyusb\\src\\osal/osal_freertos.h\", line 97: Warning:  #223-D: function \"pdTICKS_TO_MS\" declared implicitly\r\n    return pdTICKS_TO_MS(xTaskGetTickCount());\r\n           ^\r\n\"D:\\32\\STM32H7\\h7_mac_lifecycle\\ThirdParty\\tinyusb\\src\\osal/osal_freertos.h\", line 213: Warning:  #223-D: function \"xSemaphoreCreateMutexStatic\" declared implicitly\r\n    return xSemaphoreCreateMutexStatic(mdef);\r\n           ^\r\n\"D:\\32\\STM32H7\\h7_mac_lifecycle\\ThirdParty\\tinyusb\\src\\osal/osal_freertos.h\", line 213: Warning:  #120-D: return value type does not match the function type\r\n    return xSemaphoreCreateMutexStatic(mdef);\r\n           ^\r\nD:\\32\\STM32H7\\h7_mac_lifecycle\\ThirdParty\\tinyusb\\src\\class\\msc\\msc_device.c: 3 warnings, 0 errors\r\n",
-      "source_sha256": "2050faeddb76478a96e94f4b8c67e1ffd1d4ebeeba016d86f7a99e04c5758bd8"
+      "source_sha256": "e483b279646c8fcbc6c29e279f2b4f1c43d1442a5cc9e2a4260af05a55eb3882"
     },
     {
       "mode": "uvc",
@@ -856,7 +856,7 @@
         "-c",
         "D:\\32\\STM32H7\\h7_mac_lifecycle\\ThirdParty\\tinyusb\\src\\tusb.c",
         "-o",
-        "D:\\32\\STM32H7\\h7_mac_lifecycle\\output\\TinyUSBReplacement\\compile-1795183822686616500\\uvc\\tusb.o"
+        "D:\\32\\STM32H7\\h7_mac_lifecycle\\output\\TinyUSBReplacement\\compile-1795241852519265100\\uvc\\tusb.o"
       ],
       "exit": 0,
       "output": "\"D:\\32\\STM32H7\\h7_mac_lifecycle\\ThirdParty\\tinyusb\\src\\osal/osal_freertos.h\", line 97: Warning:  #223-D: function \"pdTICKS_TO_MS\" declared implicitly\r\n    return pdTICKS_TO_MS(xTaskGetTickCount());\r\n           ^\r\n\"D:\\32\\STM32H7\\h7_mac_lifecycle\\ThirdParty\\tinyusb\\src\\osal/osal_freertos.h\", line 213: Warning:  #223-D: function \"xSemaphoreCreateMutexStatic\" declared implicitly\r\n    return xSemaphoreCreateMutexStatic(mdef);\r\n           ^\r\n\"D:\\32\\STM32H7\\h7_mac_lifecycle\\ThirdParty\\tinyusb\\src\\osal/osal_freertos.h\", line 213: Warning:  #120-D: return value type does not match the function type\r\n    return xSemaphoreCreateMutexStatic(mdef);\r\n           ^\r\nD:\\32\\STM32H7\\h7_mac_lifecycle\\ThirdParty\\tinyusb\\src\\tusb.c: 3 warnings, 0 errors\r\n",
@@ -922,7 +922,7 @@
         "-c",
         "D:\\32\\STM32H7\\h7_mac_lifecycle\\ThirdParty\\tinyusb\\src\\common\\tusb_fifo.c",
         "-o",
-        "D:\\32\\STM32H7\\h7_mac_lifecycle\\output\\TinyUSBReplacement\\compile-1795183822686616500\\uvc\\tusb_fifo.o"
+        "D:\\32\\STM32H7\\h7_mac_lifecycle\\output\\TinyUSBReplacement\\compile-1795241852519265100\\uvc\\tusb_fifo.o"
       ],
       "exit": 0,
       "output": "\"D:\\32\\STM32H7\\h7_mac_lifecycle\\ThirdParty\\tinyusb\\src\\osal/osal_freertos.h\", line 97: Warning:  #223-D: function \"pdTICKS_TO_MS\" declared implicitly\r\n    return pdTICKS_TO_MS(xTaskGetTickCount());\r\n           ^\r\n\"D:\\32\\STM32H7\\h7_mac_lifecycle\\ThirdParty\\tinyusb\\src\\osal/osal_freertos.h\", line 213: Warning:  #223-D: function \"xSemaphoreCreateMutexStatic\" declared implicitly\r\n    return xSemaphoreCreateMutexStatic(mdef);\r\n           ^\r\n\"D:\\32\\STM32H7\\h7_mac_lifecycle\\ThirdParty\\tinyusb\\src\\osal/osal_freertos.h\", line 213: Warning:  #120-D: return value type does not match the function type\r\n    return xSemaphoreCreateMutexStatic(mdef);\r\n           ^\r\nD:\\32\\STM32H7\\h7_mac_lifecycle\\ThirdParty\\tinyusb\\src\\common\\tusb_fifo.c: 3 warnings, 0 errors\r\n",
@@ -988,11 +988,11 @@
         "-c",
         "D:\\32\\STM32H7\\h7_mac_lifecycle\\ThirdParty\\tinyusb\\src\\device\\usbd.c",
         "-o",
-        "D:\\32\\STM32H7\\h7_mac_lifecycle\\output\\TinyUSBReplacement\\compile-1795183822686616500\\uvc\\usbd.o"
+        "D:\\32\\STM32H7\\h7_mac_lifecycle\\output\\TinyUSBReplacement\\compile-1795241852519265100\\uvc\\usbd.o"
       ],
       "exit": 0,
       "output": "\"D:\\32\\STM32H7\\h7_mac_lifecycle\\ThirdParty\\tinyusb\\src\\osal/osal_freertos.h\", line 97: Warning:  #223-D: function \"pdTICKS_TO_MS\" declared implicitly\r\n    return pdTICKS_TO_MS(xTaskGetTickCount());\r\n           ^\r\n\"D:\\32\\STM32H7\\h7_mac_lifecycle\\ThirdParty\\tinyusb\\src\\osal/osal_freertos.h\", line 213: Warning:  #223-D: function \"xSemaphoreCreateMutexStatic\" declared implicitly\r\n    return xSemaphoreCreateMutexStatic(mdef);\r\n           ^\r\n\"D:\\32\\STM32H7\\h7_mac_lifecycle\\ThirdParty\\tinyusb\\src\\osal/osal_freertos.h\", line 213: Warning:  #120-D: return value type does not match the function type\r\n    return xSemaphoreCreateMutexStatic(mdef);\r\n           ^\r\nD:\\32\\STM32H7\\h7_mac_lifecycle\\ThirdParty\\tinyusb\\src\\device\\usbd.c: 3 warnings, 0 errors\r\n",
-      "source_sha256": "fbdfc3e6bf183244d80ae4345a5ed444e3f07b498901790eda7444e5ce2efcfc"
+      "source_sha256": "3cc774dcf2777469f9c5bfa235f21e68222b24490676079a7a0625f11f6d769d"
     },
     {
       "mode": "uvc",
@@ -1054,7 +1054,7 @@
         "-c",
         "D:\\32\\STM32H7\\h7_mac_lifecycle\\ThirdParty\\tinyusb\\src\\portable\\synopsys\\dwc2\\dwc2_common.c",
         "-o",
-        "D:\\32\\STM32H7\\h7_mac_lifecycle\\output\\TinyUSBReplacement\\compile-1795183822686616500\\uvc\\dwc2_common.o"
+        "D:\\32\\STM32H7\\h7_mac_lifecycle\\output\\TinyUSBReplacement\\compile-1795241852519265100\\uvc\\dwc2_common.o"
       ],
       "exit": 0,
       "output": "\"D:\\32\\STM32H7\\h7_mac_lifecycle\\ThirdParty\\tinyusb\\src\\osal/osal_freertos.h\", line 97: Warning:  #223-D: function \"pdTICKS_TO_MS\" declared implicitly\r\n    return pdTICKS_TO_MS(xTaskGetTickCount());\r\n           ^\r\n\"D:\\32\\STM32H7\\h7_mac_lifecycle\\ThirdParty\\tinyusb\\src\\osal/osal_freertos.h\", line 213: Warning:  #223-D: function \"xSemaphoreCreateMutexStatic\" declared implicitly\r\n    return xSemaphoreCreateMutexStatic(mdef);\r\n           ^\r\n\"D:\\32\\STM32H7\\h7_mac_lifecycle\\ThirdParty\\tinyusb\\src\\osal/osal_freertos.h\", line 213: Warning:  #120-D: return value type does not match the function type\r\n    return xSemaphoreCreateMutexStatic(mdef);\r\n           ^\r\n\"D:\\32\\STM32H7\\h7_mac_lifecycle\\ThirdParty\\tinyusb\\src\\portable\\synopsys\\dwc2\\dwc2_common.c\", line 156: Warning:  #66-D: enumeration value is out of \"int\" range\r\n    enum { GSNPSID_ID_MASK = TU_GENMASK(31, 16) };\r\n                             ^\r\nD:\\32\\STM32H7\\h7_mac_lifecycle\\ThirdParty\\tinyusb\\src\\portable\\synopsys\\dwc2\\dwc2_common.c: 4 warnings, 0 errors\r\n",
@@ -1120,11 +1120,11 @@
         "-c",
         "D:\\32\\STM32H7\\h7_mac_lifecycle\\ThirdParty\\tinyusb\\src\\portable\\synopsys\\dwc2\\dcd_dwc2.c",
         "-o",
-        "D:\\32\\STM32H7\\h7_mac_lifecycle\\output\\TinyUSBReplacement\\compile-1795183822686616500\\uvc\\dcd_dwc2.o"
+        "D:\\32\\STM32H7\\h7_mac_lifecycle\\output\\TinyUSBReplacement\\compile-1795241852519265100\\uvc\\dcd_dwc2.o"
       ],
       "exit": 0,
       "output": "\"D:\\32\\STM32H7\\h7_mac_lifecycle\\ThirdParty\\tinyusb\\src\\osal/osal_freertos.h\", line 97: Warning:  #223-D: function \"pdTICKS_TO_MS\" declared implicitly\r\n    return pdTICKS_TO_MS(xTaskGetTickCount());\r\n           ^\r\n\"D:\\32\\STM32H7\\h7_mac_lifecycle\\ThirdParty\\tinyusb\\src\\osal/osal_freertos.h\", line 213: Warning:  #223-D: function \"xSemaphoreCreateMutexStatic\" declared implicitly\r\n    return xSemaphoreCreateMutexStatic(mdef);\r\n           ^\r\n\"D:\\32\\STM32H7\\h7_mac_lifecycle\\ThirdParty\\tinyusb\\src\\osal/osal_freertos.h\", line 213: Warning:  #120-D: return value type does not match the function type\r\n    return xSemaphoreCreateMutexStatic(mdef);\r\n           ^\r\nD:\\32\\STM32H7\\h7_mac_lifecycle\\ThirdParty\\tinyusb\\src\\portable\\synopsys\\dwc2\\dcd_dwc2.c: 3 warnings, 0 errors\r\n",
-      "source_sha256": "69e829f2474f0225a00ce430048131bb18eac05fd9d49c655496b5c8edc2c465"
+      "source_sha256": "599ec0e25c7fba6f3ebe5d63151c3c38a0e87ab14e8cc4707414d33519e73c09"
     },
     {
       "mode": "uvc",
@@ -1186,13 +1186,13 @@
         "-c",
         "D:\\32\\STM32H7\\h7_mac_lifecycle\\ThirdParty\\tinyusb\\src\\class\\video\\video_device.c",
         "-o",
-        "D:\\32\\STM32H7\\h7_mac_lifecycle\\output\\TinyUSBReplacement\\compile-1795183822686616500\\uvc\\video_device.o"
+        "D:\\32\\STM32H7\\h7_mac_lifecycle\\output\\TinyUSBReplacement\\compile-1795241852519265100\\uvc\\video_device.o"
       ],
       "exit": 0,
       "output": "\"D:\\32\\STM32H7\\h7_mac_lifecycle\\ThirdParty\\tinyusb\\src\\osal/osal_freertos.h\", line 97: Warning:  #223-D: function \"pdTICKS_TO_MS\" declared implicitly\r\n    return pdTICKS_TO_MS(xTaskGetTickCount());\r\n           ^\r\n\"D:\\32\\STM32H7\\h7_mac_lifecycle\\ThirdParty\\tinyusb\\src\\osal/osal_freertos.h\", line 213: Warning:  #223-D: function \"xSemaphoreCreateMutexStatic\" declared implicitly\r\n    return xSemaphoreCreateMutexStatic(mdef);\r\n           ^\r\n\"D:\\32\\STM32H7\\h7_mac_lifecycle\\ThirdParty\\tinyusb\\src\\osal/osal_freertos.h\", line 213: Warning:  #120-D: return value type does not match the function type\r\n    return xSemaphoreCreateMutexStatic(mdef);\r\n           ^\r\nD:\\32\\STM32H7\\h7_mac_lifecycle\\ThirdParty\\tinyusb\\src\\class\\video\\video_device.c: 3 warnings, 0 errors\r\n",
       "source_sha256": "a2f1bcdb5dd8ef251b222e24033d408609c683c095bb4eaa117c49765d884cee"
     }
   ],
-  "output": "D:\\32\\STM32H7\\h7_mac_lifecycle\\output\\TinyUSBReplacement\\compile-1795183822686616500",
+  "output": "D:\\32\\STM32H7\\h7_mac_lifecycle\\output\\TinyUSBReplacement\\compile-1795241852519265100",
   "hardware": "NOT_TESTED"
 }
