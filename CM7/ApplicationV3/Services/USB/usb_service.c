@@ -111,6 +111,10 @@ static SysResult_t UsbService_BeginDevice(void)
             return result;
         s_usb.descriptor_ready = true;
     }
+    //Register和Start均可能留下待STOP的端点或FIFO配置，调用前由USB Service登记清理义务
+    s_usb.stop_required = true;
+    s_usb.stop_applied = false;
+
     if (!s_usb.class_registered)
     {
         result = USB_UVC_Register();
@@ -118,13 +122,7 @@ static SysResult_t UsbService_BeginDevice(void)
             return result;
         s_usb.class_registered = true;
     }
-    //Start失败仍可能留下待STOP的设备，不能用Configured=false确认资源释放
     result = USB_Device_Start();
-    if (result != SYS_ERR_BUSY)
-    {
-        s_usb.stop_required = true;
-        s_usb.stop_applied = false;
-    }
     if (result == SYS_OK)
         s_usb.waiting_configured = true;
     return result;
