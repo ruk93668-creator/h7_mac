@@ -49,7 +49,7 @@ typedef struct
 //准备静态消息队列
 SysResult_t App_MessagesInit(void);
 
-//非阻塞提交消息，队列满时由发送方保留状态并重试
+//非阻塞提交消息；未接入的四条历史通道明确返回SYS_ERR_NOT_SUPPORTED
 SysResult_t App_MessagesSend(AppChannel_t channel, const AppMessage_t *message);
 
 //取得当前任务所属通道的下一条消息

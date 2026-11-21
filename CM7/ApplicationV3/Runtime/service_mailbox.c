@@ -1,5 +1,6 @@
 #include "service_mailbox.h"
 #include "service_record.h"
+#include "service_events.h"
 #include "../Core/app_services.h"
 
 //私有消息不得超过R1宽槽负载，保持原AppMessage布局
@@ -84,7 +85,15 @@ SysResult_t AppV3Mailbox_Request(RuntimeEventTarget_t owner, const AppV3Queue_t 
     else
     {
         AppV3ServiceCommand_t command = {command_id, operation, argument, requester};
-        result = AppV3Queue_Put(*endpoint, &command, 0U);
+        //普通任务先预留唯一终结位置，成功入队后无需依赖通知或订阅者
+        if (requester != RUNTIME_TARGET_CONTROL)
+            result = AppV3Business_ReserveResult(requester, owner, command_id);
+        if (result == SYS_OK)
+        {
+            result = AppV3Queue_Put(*endpoint, &command, 0U);
+            if (result != SYS_OK && requester != RUNTIME_TARGET_CONTROL)
+                AppV3Business_CancelReservation(requester, owner, command_id);
+        }
     }
     //关闭的是刚由本任务打开的引用。入队结果独立于后续业务完成
     close_result = AppV3Record_Close(&reference);

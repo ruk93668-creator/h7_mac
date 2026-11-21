@@ -18,6 +18,133 @@ static AppV3BusinessSubscription_t s_subscriptions[BUSINESS_SUBSCRIPTIONS];
 static AppV3BusinessDiagnostics_t s_diagnostics;
 static uint32_t s_last_ticket;
 static bool s_draining;
+static uint32_t s_active_ticket;
+
+typedef enum
+{
+    BUSINESS_RESULT_EMPTY = 0,
+    BUSINESS_RESULT_PENDING,
+    BUSINESS_RESULT_READY
+} BusinessResultState_t;
+
+typedef struct
+{
+    AppV3ServiceEvent_t event;
+    BusinessResultState_t state;
+} BusinessResultSlot_t;
+
+//普通任务各有一个固定结果槽；Control继续使用同步订阅
+static BusinessResultSlot_t s_results[RUNTIME_TARGET_COUNT - 1U];
+
+//按实际任务身份取槽，数组不为Control分配结果存储
+static BusinessResultSlot_t *Business_ResultSlot(RuntimeEventTarget_t requester)
+{
+    uint32_t index = (uint32_t)requester;
+
+    if (index >= RUNTIME_TARGET_COUNT || requester == RUNTIME_TARGET_CONTROL)
+        return NULL;
+    if (index > RUNTIME_TARGET_CONTROL)
+        --index;
+    return &s_results[index];
+}
+
+//先预留结果再入队；上次结果未取走时不接受该任务的新请求
+SysResult_t AppV3Business_ReserveResult(RuntimeEventTarget_t requester, RuntimeEventTarget_t service,
+    uint32_t command_id)
+{
+    BusinessResultSlot_t *slot = Business_ResultSlot(requester);
+    SysResult_t result = SYS_ERR_BUSY;
+
+    if (slot == NULL || !App_MessagesIsOwner(requester))
+        return SYS_ERR_INVALID_STATE;
+    if (command_id == 0U || requester == service || AppV3_FindService(service) == NULL)
+        return SYS_ERR_INVALID_ARG;
+
+    //结果槽仅在任务之间共享，提交身份与阶段在同一个短临界区更新
+    taskENTER_CRITICAL();
+    if (slot->state == BUSINESS_RESULT_EMPTY)
+    {
+        slot->event.service = service;
+        slot->event.requester = requester;
+        slot->event.command_id = command_id;
+        slot->state = BUSINESS_RESULT_PENDING;
+        result = SYS_OK;
+    }
+    taskEXIT_CRITICAL();
+    return result;
+}
+
+//撤销只限原请求者和仍待完成的准确键，不覆盖已经收到的真实结果
+void AppV3Business_CancelReservation(RuntimeEventTarget_t requester, RuntimeEventTarget_t service,
+    uint32_t command_id)
+{
+    BusinessResultSlot_t *slot = Business_ResultSlot(requester);
+    if (slot == NULL || !App_MessagesIsOwner(requester))
+        return;
+
+    taskENTER_CRITICAL();
+    if (slot->state == BUSINESS_RESULT_PENDING && slot->event.service == service &&
+        slot->event.command_id == command_id)
+        slot->state = BUSINESS_RESULT_EMPTY;
+    taskEXIT_CRITICAL();
+}
+
+//只让调用任务取走自己的匹配结果；零等待，完整结果按值复制
+SysResult_t AppV3Business_TakeResult(RuntimeEventTarget_t service, uint32_t command_id,
+    AppV3ServiceEvent_t *result)
+{
+    RuntimeEventTarget_t requester;
+    BusinessResultSlot_t *slot;
+    SysResult_t status = SYS_ERR_NOT_FOUND;
+
+    if (result == NULL || command_id == 0U || AppV3_FindService(service) == NULL)
+        return SYS_ERR_INVALID_ARG;
+    for (requester = RUNTIME_TARGET_CAMERA; requester < RUNTIME_TARGET_COUNT; ++requester)
+    {
+        if (App_MessagesIsOwner(requester))
+            break;
+    }
+    slot = Business_ResultSlot(requester);
+    if (slot == NULL)
+        return SYS_ERR_INVALID_STATE;
+
+    taskENTER_CRITICAL();
+    if (slot->state != BUSINESS_RESULT_EMPTY && slot->event.service == service &&
+        slot->event.command_id == command_id)
+    {
+        status = SYS_ERR_BUSY;
+        if (slot->state == BUSINESS_RESULT_READY)
+        {
+            *result = slot->event;
+            slot->state = BUSINESS_RESULT_EMPTY;
+            status = SYS_OK;
+        }
+    }
+    taskEXIT_CRITICAL();
+    return status;
+}
+
+//Control先保存终结事实，再发通知；漏通知也不影响后续轮询取得结果
+static bool Business_RouteResult(const AppV3ServiceEvent_t *event)
+{
+    BusinessResultSlot_t *slot = Business_ResultSlot(event->requester);
+    bool delivered = false;
+
+    if (slot == NULL)
+        return event->requester == RUNTIME_TARGET_CONTROL;
+    taskENTER_CRITICAL();
+    if (slot->state == BUSINESS_RESULT_PENDING && slot->event.service == event->service &&
+        slot->event.command_id == event->command_id)
+    {
+        slot->event = *event;
+        slot->state = BUSINESS_RESULT_READY;
+        delivered = true;
+    }
+    taskEXIT_CRITICAL();
+    if (delivered)
+        (void)RuntimeEvent_Post(event->requester, RUNTIME_EVENT_WAKE);
+    return delivered;
+}
 
 //分配不可回绕的订阅票据，释放后旧票据不能撤销新订阅
 SysResult_t AppV3Business_Subscribe(RuntimeEventTarget_t service,
@@ -60,6 +187,9 @@ SysResult_t AppV3Business_Unsubscribe(uint32_t ticket)
     {
         if (s_subscriptions[slot_index].ticket != ticket)
             continue;
+        //活跃回调的Context仍在使用，撤销必须等本次同步调用退出
+        if (s_active_ticket == ticket)
+            return SYS_ERR_BUSY;
         s_subscriptions[slot_index] = (AppV3BusinessSubscription_t){0};
         return SYS_OK;
     }
@@ -108,7 +238,9 @@ static SysResult_t Business_Publish(const AppV3ServiceEvent_t *event)
             continue;
 
         //回调失败只记发布诊断，不改原Service的操作结果，其他订阅者仍有机会执行
+        s_active_ticket = slot->ticket;
         result = slot->callback(event, slot->context);
+        s_active_ticket = 0U;
         if (result != SYS_OK)
         {
             if (s_diagnostics.callback_failures != UINT32_MAX)
@@ -141,7 +273,7 @@ SysResult_t AppV3Business_Drain(uint32_t *consumed)
         SysResult_t result = SYS_ERR_PROTOCOL;
 
         //非法消息有明确的拒绝结果和完整诊断，不能伪造ACK
-        if (Business_Decode(&message, &event))
+        if (Business_Decode(&message, &event) && Business_RouteResult(&event))
         {
             if (s_diagnostics.accepted != UINT32_MAX)
                 ++s_diagnostics.accepted;

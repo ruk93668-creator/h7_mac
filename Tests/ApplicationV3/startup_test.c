@@ -467,7 +467,7 @@ static SysResult_t Test_QueueReadable(AppV3Queue_t queue, void *context)
     return SYS_OK;
 }
 
-//私有槽全部占用后，逐条验证原业务通道的收发身份和消息
+//保留原业务结果通道核验，并验证四条历史通道明确拒绝
 static uint32_t Test_ExistingMessageChannels(void)
 {
     static const struct
@@ -479,23 +479,28 @@ static uint32_t Test_ExistingMessageChannels(void)
     {
         {APP_CHANNEL_CAMERA_COMMAND, RUNTIME_TARGET_CONTROL, RUNTIME_TARGET_CAMERA},
         {APP_CHANNEL_USB_COMMAND, RUNTIME_TARGET_CONTROL, RUNTIME_TARGET_USB},
-        {APP_CHANNEL_CONTROL, RUNTIME_TARGET_CAMERA, RUNTIME_TARGET_CONTROL},
         {APP_CHANNEL_TO_CAMERA, RUNTIME_TARGET_USB, RUNTIME_TARGET_CAMERA},
         {APP_CHANNEL_TO_USB, RUNTIME_TARGET_CAMERA, RUNTIME_TARGET_USB}
     };
     AppMessage_t message = {.type = APP_MESSAGE_START};
     uint32_t route_index;
+
     for (route_index = 0U; route_index < sizeof(routes) / sizeof(routes[0]); ++route_index)
     {
         owner = routes[route_index].sender;
         message.source = owner;
         message.command_id = route_index + 1U;
-        CHECK(App_MessagesSend(routes[route_index].channel, &message) == SYS_OK);
+        CHECK(App_MessagesSend(routes[route_index].channel, &message) == SYS_ERR_NOT_SUPPORTED);
         owner = routes[route_index].receiver;
-        CHECK(App_MessagesReceive(routes[route_index].channel, &message) &&
-            message.source == routes[route_index].sender && message.command_id == route_index + 1U);
+        CHECK(!App_MessagesReceive(routes[route_index].channel, &message));
     }
+    owner = RUNTIME_TARGET_CAMERA;
+    message.source = owner;
+    message.command_id = 7U;
+    CHECK(App_MessagesSend(APP_CHANNEL_CONTROL, &message) == SYS_OK);
     owner = RUNTIME_TARGET_CONTROL;
+    CHECK(App_MessagesReceive(APP_CHANNEL_CONTROL, &message) &&
+        message.source == RUNTIME_TARGET_CAMERA && message.command_id == 7U);
     return 0U;
 }
 
@@ -867,6 +872,156 @@ static uint32_t Test_BusinessStartupFailure(const AppV3Context_t *context, bool 
     return 0U;
 }
 
+//IPC在没有订阅者且通知失败时，仍能取得自己的ACK与FAULT
+static uint32_t Test_IpcResult(const AppV3Context_t *context)
+{
+    AppV3ServiceEvent_t event;
+    uint32_t consumed;
+
+    CHECK(Test_StartBusiness(context) == 0U);
+    notify_fails = true;
+    owner = RUNTIME_TARGET_IPC;
+    CHECK(CameraService_Request(1U, CAMERA_SERVICE_MOCK_START, 0U) == SYS_OK);
+    CHECK(AppV3Business_TakeResult(RUNTIME_TARGET_CAMERA, 1U, &event) == SYS_ERR_BUSY);
+    CHECK(AppV3Business_TakeResult(RUNTIME_TARGET_CAMERA, 9U, &event) == SYS_ERR_NOT_FOUND);
+    CHECK(StorageService_Request(1U, STORAGE_SERVICE_QUERY, 0U) == SYS_ERR_BUSY);
+    CHECK(Test_ServiceStep(RUNTIME_TARGET_CAMERA) == SYS_OK);
+    CHECK(AppV3Business_Drain(&consumed) == SYS_OK && consumed == 1U);
+    owner = RUNTIME_TARGET_IPC;
+    CHECK(CameraService_Request(2U, CAMERA_SERVICE_MOCK_FAIL, 0U) == SYS_ERR_BUSY);
+    CHECK(AppV3Business_TakeResult(RUNTIME_TARGET_CAMERA, 1U, &event) == SYS_OK &&
+        event.requester == RUNTIME_TARGET_IPC && event.command_id == 1U &&
+        event.result == SYS_OK && event.simulated_running);
+    CHECK(AppV3Business_TakeResult(RUNTIME_TARGET_CAMERA, 1U, &event) == SYS_ERR_NOT_FOUND);
+
+    CHECK(CameraService_Request(2U, CAMERA_SERVICE_MOCK_FAIL, 0U) == SYS_OK);
+    CHECK(Test_ServiceStep(RUNTIME_TARGET_CAMERA) == SYS_OK);
+    CHECK(AppV3Business_Drain(&consumed) == SYS_OK && consumed == 1U);
+    owner = RUNTIME_TARGET_IPC;
+    CHECK(AppV3Business_TakeResult(RUNTIME_TARGET_CAMERA, 2U, &event) == SYS_OK &&
+        event.result == SYS_ERR_IO && event.command_id == 2U);
+    return 0U;
+}
+
+//同一个Service收到两个任务的相同编号，仅对应任务能取出各自结果
+static uint32_t Test_SharedCommandId(const AppV3Context_t *context)
+{
+    AppV3ServiceEvent_t event;
+    uint32_t consumed;
+
+    CHECK(Test_StartBusiness(context) == 0U);
+    owner = RUNTIME_TARGET_USB;
+    CHECK(CameraService_Request(5U, CAMERA_SERVICE_MOCK_FAIL, 0U) == SYS_OK);
+    owner = RUNTIME_TARGET_IPC;
+    CHECK(CameraService_Request(5U, CAMERA_SERVICE_QUERY, 0U) == SYS_OK);
+    CHECK(Test_ServiceStep(RUNTIME_TARGET_CAMERA) == SYS_OK);
+    CHECK(AppV3Business_Drain(&consumed) == SYS_OK && consumed == 2U);
+    owner = RUNTIME_TARGET_STORAGE;
+    CHECK(AppV3Business_TakeResult(RUNTIME_TARGET_CAMERA, 5U, &event) == SYS_ERR_NOT_FOUND);
+    owner = RUNTIME_TARGET_IPC;
+    CHECK(AppV3Business_TakeResult(RUNTIME_TARGET_CAMERA, 5U, &event) == SYS_OK &&
+        event.requester == RUNTIME_TARGET_IPC && event.result == SYS_OK && event.command_id == 5U);
+    owner = RUNTIME_TARGET_USB;
+    CHECK(AppV3Business_TakeResult(RUNTIME_TARGET_CAMERA, 5U, &event) == SYS_OK &&
+        event.requester == RUNTIME_TARGET_USB && event.result == SYS_ERR_IO && event.command_id == 5U);
+    return 0U;
+}
+
+typedef struct
+{
+    uint32_t ticket;
+    uint32_t calls;
+    bool context_live;
+} TestActiveSubscription_t;
+
+static SysResult_t Test_ActiveCallback(const AppV3ServiceEvent_t *event, void *context)
+{
+    TestActiveSubscription_t *active = context;
+    SysResult_t cross_task_result;
+    (void)event;
+
+    //模拟Control回调执行期间被IPC抢占，外任务不能撤销Control的Context
+    owner = RUNTIME_TARGET_IPC;
+    cross_task_result = AppV3Business_Unsubscribe(active->ticket);
+    owner = RUNTIME_TARGET_CONTROL;
+    if (cross_task_result != SYS_ERR_INVALID_STATE ||
+        AppV3Business_Unsubscribe(active->ticket) != SYS_ERR_BUSY || !active->context_live)
+        return SYS_ERR_PROTOCOL;
+    ++active->calls;
+    return SYS_OK;
+}
+
+static uint32_t Test_UnsubscribeDuringCallback(const AppV3Context_t *context)
+{
+    TestActiveSubscription_t active = {.context_live = true};
+    uint32_t consumed;
+
+    CHECK(Test_StartBusiness(context) == 0U);
+    CHECK(AppV3Business_Subscribe(RUNTIME_TARGET_CAMERA, Test_ActiveCallback, &active, &active.ticket) == SYS_OK);
+    CHECK(CameraService_Request(1U, CAMERA_SERVICE_QUERY, 0U) == SYS_OK);
+    CHECK(Test_ServiceStep(RUNTIME_TARGET_CAMERA) == SYS_OK);
+    CHECK(AppV3Business_Drain(&consumed) == SYS_OK && consumed == 1U && active.calls == 1U);
+    CHECK(AppV3Business_Unsubscribe(active.ticket) == SYS_OK);
+    active.context_live = false;
+    CHECK(CameraService_Request(2U, CAMERA_SERVICE_QUERY, 0U) == SYS_OK);
+    CHECK(Test_ServiceStep(RUNTIME_TARGET_CAMERA) == SYS_OK);
+    CHECK(AppV3Business_Drain(&consumed) == SYS_OK && consumed == 1U && active.calls == 1U);
+    return 0U;
+}
+
+//Control业务队列满时，Service保留原FAULT，结果槽一直处于待完成
+static uint32_t Test_ResultBackpressure(const AppV3Context_t *context)
+{
+    AppV3ServiceEvent_t event;
+    uint32_t consumed, command_id;
+
+    CHECK(Test_StartBusiness(context) == 0U);
+    notify_fails = true;
+    for (command_id = 1U; command_id <= 4U; ++command_id)
+        CHECK(UsbService_Request(command_id, USB_SERVICE_QUERY, 0U) == SYS_OK);
+    CHECK(Test_ServiceStep(RUNTIME_TARGET_USB) == SYS_OK);
+    owner = RUNTIME_TARGET_IPC;
+    CHECK(CameraService_Request(1U, CAMERA_SERVICE_MOCK_FAIL, 0U) == SYS_OK);
+    owner = RUNTIME_TARGET_CONTROL;
+    CHECK(CameraService_Request(1U, CAMERA_SERVICE_QUERY, 0U) == SYS_OK);
+    CHECK(Test_ServiceStep(RUNTIME_TARGET_CAMERA) == SYS_ERR_BUSY);
+    owner = RUNTIME_TARGET_IPC;
+    CHECK(AppV3Business_TakeResult(RUNTIME_TARGET_CAMERA, 1U, &event) == SYS_ERR_BUSY);
+    owner = RUNTIME_TARGET_CONTROL;
+    CHECK(AppV3Business_Drain(&consumed) == SYS_OK && consumed == 4U);
+    CHECK(Test_ServiceStep(RUNTIME_TARGET_CAMERA) == SYS_OK);
+    CHECK(AppV3Business_Drain(&consumed) == SYS_OK && consumed == 2U);
+    owner = RUNTIME_TARGET_IPC;
+    CHECK(AppV3Business_TakeResult(RUNTIME_TARGET_CAMERA, 1U, &event) == SYS_OK &&
+        event.requester == RUNTIME_TARGET_IPC && event.sequence == 1U && event.result == SYS_ERR_IO);
+    CHECK(AppV3Business_TakeResult(RUNTIME_TARGET_CAMERA, 1U, &event) == SYS_ERR_NOT_FOUND);
+    return 0U;
+}
+
+//请求未入私有队列时撤销预留，调用任务可原样重试编号
+static uint32_t Test_RequestReservationRollback(const AppV3Context_t *context)
+{
+    AppV3ServiceEvent_t event;
+    uint32_t consumed, command_id;
+
+    CHECK(Test_StartBusiness(context) == 0U);
+    for (command_id = 1U; command_id <= 4U; ++command_id)
+        CHECK(StorageService_Request(command_id, STORAGE_SERVICE_QUERY, 0U) == SYS_OK);
+    owner = RUNTIME_TARGET_IPC;
+    CHECK(StorageService_Request(1U, STORAGE_SERVICE_QUERY, 0U) == SYS_ERR_BUSY);
+    CHECK(AppV3Business_TakeResult(RUNTIME_TARGET_STORAGE, 1U, &event) == SYS_ERR_NOT_FOUND);
+    CHECK(Test_ServiceStep(RUNTIME_TARGET_STORAGE) == SYS_OK);
+    CHECK(AppV3Business_Drain(&consumed) == SYS_OK && consumed == 4U);
+    owner = RUNTIME_TARGET_IPC;
+    CHECK(StorageService_Request(1U, STORAGE_SERVICE_QUERY, 0U) == SYS_OK);
+    CHECK(Test_ServiceStep(RUNTIME_TARGET_STORAGE) == SYS_OK);
+    CHECK(AppV3Business_Drain(&consumed) == SYS_OK && consumed == 1U);
+    owner = RUNTIME_TARGET_IPC;
+    CHECK(AppV3Business_TakeResult(RUNTIME_TARGET_STORAGE, 1U, &event) == SYS_OK &&
+        event.result == SYS_OK && event.sequence == 5U);
+    return 0U;
+}
+
 uint32_t AppV3_TestRun(uint32_t scenario)
 {
     const AppV3Context_t *context;
@@ -969,6 +1124,14 @@ uint32_t AppV3_TestRun(uint32_t scenario)
             CHECK(!business_events[1].simulated_running && business_events[1].command_id == 2U);
             return 0U;
         }
+        case 32U: return Test_IpcResult(context);
+        case 33U: return Test_SharedCommandId(context);
+        case 34U: return Test_UnsubscribeDuringCallback(context);
+        case 35U:
+            scheduler = taskSCHEDULER_RUNNING;
+            return Test_ExistingMessageChannels();
+        case 36U: return Test_ResultBackpressure(context);
+        case 37U: return Test_RequestReservationRollback(context);
         default: break;
     }
     if (scenario >= 19U)

@@ -46,29 +46,26 @@ SysResult_t App_MessagesInit(void)
     return SYS_OK;
 }
 
+//历史通道保留编号和静态槽，只允许当前存在生产消费者的两条通道
+static bool AppMessages_IsActive(AppChannel_t channel)
+{
+    return channel == APP_CHANNEL_CONTROL || channel == APP_CHANNEL_STARTUP;
+}
+
 //非阻塞提交消息
 SysResult_t App_MessagesSend(AppChannel_t channel, const AppMessage_t *message)
 {
-    bool allowed;
-
     if ((uint32_t)channel >= APP_CHANNEL_COUNT || message == NULL)
         return SYS_ERR_INVALID_ARG;
+    if (!AppMessages_IsActive(channel))
+        return SYS_ERR_NOT_SUPPORTED;
     //未分配通道或中断调用不能进入任务消息接口
     if (s_message_handles[channel].generation == 0U || Platform_SyncGetException() != 0U)
         return SYS_ERR_INVALID_STATE;
 
-    //命令只由Control发送，帧消息只允许相应所有者发送
-    if (channel == APP_CHANNEL_CAMERA_COMMAND || channel == APP_CHANNEL_USB_COMMAND)
-        allowed = App_MessagesIsOwner(RUNTIME_TARGET_CONTROL);
-    else if (channel == APP_CHANNEL_TO_CAMERA)
-        allowed = App_MessagesIsOwner(RUNTIME_TARGET_USB);
-    else if (channel == APP_CHANNEL_TO_USB)
-        allowed = App_MessagesIsOwner(RUNTIME_TARGET_CAMERA);
-    else if (channel == APP_CHANNEL_STARTUP)
-        allowed = AppV3_FindService(message->source) != NULL && App_MessagesIsOwner(message->source);
-    else
-        allowed = App_MessagesIsOwner(message->source);
-    if (!allowed)
+    //启动报告只接受Registry服务的实际所有者，业务结果保持原来源校验
+    if (!App_MessagesIsOwner(message->source) ||
+        (channel == APP_CHANNEL_STARTUP && AppV3_FindService(message->source) == NULL))
         return SYS_ERR_INVALID_STATE;
 
     //成功入队就是消息已提交，通知位只负责唤醒，不作为交付凭据
@@ -82,7 +79,7 @@ SysResult_t App_MessagesSend(AppChannel_t channel, const AppMessage_t *message)
 //取得当前任务所属通道的下一条消息
 bool App_MessagesReceive(AppChannel_t channel, AppMessage_t *message)
 {
-    if ((uint32_t)channel >= APP_CHANNEL_COUNT || message == NULL ||
+    if (!AppMessages_IsActive(channel) || message == NULL ||
         s_message_handles[channel].generation == 0U || !App_MessagesIsOwner(s_message_receivers[channel]))
         return false;
     //只有当前任务成功取走队首时才通知发送者重试
@@ -90,18 +87,12 @@ bool App_MessagesReceive(AppChannel_t channel, AppMessage_t *message)
         return false;
 
     //腾出槽位后唤醒发送方，队列满时保存的消息才能继续提交
-    if (channel == APP_CHANNEL_TO_CAMERA)
-        (void)RuntimeEvent_Post(RUNTIME_TARGET_USB, RUNTIME_EVENT_WAKE);
-    else if (channel == APP_CHANNEL_TO_USB)
-        (void)RuntimeEvent_Post(RUNTIME_TARGET_CAMERA, RUNTIME_EVENT_WAKE);
-    else if (channel == APP_CHANNEL_CONTROL)
+    if (channel == APP_CHANNEL_CONTROL)
     {
         (void)RuntimeEvent_Post(RUNTIME_TARGET_CAMERA, RUNTIME_EVENT_WAKE);
         (void)RuntimeEvent_Post(RUNTIME_TARGET_USB, RUNTIME_EVENT_WAKE);
         (void)RuntimeEvent_Post(RUNTIME_TARGET_STORAGE, RUNTIME_EVENT_WAKE);
     }
-    else if (channel != APP_CHANNEL_STARTUP)
-        (void)RuntimeEvent_Post(RUNTIME_TARGET_CONTROL, RUNTIME_EVENT_WAKE);
     return true;
 }
 
