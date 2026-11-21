@@ -5,6 +5,7 @@
 #include "app_tasks.h"
 #include "app_status.h"
 #include "service_tasks.h"
+#include "board_smoke.h"
 #include "queue.h"
 #include "queue_pool.h"
 #include "service_record.h"
@@ -228,6 +229,10 @@ static bool reject_event_subscribe;
 static AppV3ServiceEvent_t business_events[20U];
 static uint32_t business_event_count;
 static bool run_control_business, run_storage_business;
+#if APP_V3_BOARD_SMOKE != APP_V3_BOARD_SMOKE_OFF
+static uint32_t board_scenario;
+static void Test_BoardWait(void);
+#endif
 static SysResult_t Test_StoreEvent(const AppV3ServiceEvent_t *event, void *context);
 static uint32_t Test_StartBusiness(const AppV3Context_t *context);
 static SysResult_t Test_ServiceStep(RuntimeEventTarget_t service);
@@ -336,6 +341,13 @@ void vTaskDelay(TickType_t ticks)
 
 SysResult_t App_EventsWait(RuntimeEventTarget_t target, uint32_t timeout_ms, uint32_t *events)
 {
+#if APP_V3_BOARD_SMOKE != APP_V3_BOARD_SMOKE_OFF
+    if (board_scenario != 0U && target == RUNTIME_TARGET_CONTROL)
+    {
+        Test_BoardWait();
+        return SYS_ERR_TIMEOUT;
+    }
+#endif
     if (run_storage_business)
     {
         uint32_t consumed;
@@ -1499,6 +1511,188 @@ static uint32_t Test_UsbRegisterResultBackpressure(const AppV3Context_t *context
     return 0U;
 }
 
+#if APP_V3_BOARD_SMOKE != APP_V3_BOARD_SMOKE_OFF
+//构造公共业务队列实际允许的结果，核验隔离和迟到过滤
+static SysResult_t Test_QueueBoardEvent(RuntimeEventTarget_t service, uint32_t command_id,
+    bool hardware, RuntimeEventTarget_t requester)
+{
+    AppMessage_t message =
+    {
+        .type = APP_MESSAGE_ACK,
+        .source = service,
+        .command_id = command_id,
+        .stream_epoch = 1U,
+        .timestamp_ms = requester,
+        .frame_id = hardware ? APP_V3_HW_ACTIVE : 0U,
+        .frame = {.size_bytes = hardware ? APP_V3_HARDWARE_RESULT_TAG : APP_V3_SERVICE_RESULT_TAG}
+    };
+    SysResult_t result;
+
+    owner = service;
+    result = App_MessagesSend(APP_CHANNEL_CONTROL, &message);
+    owner = RUNTIME_TARGET_CONTROL;
+    return result;
+}
+
+//完成选中服务的本次操作；Control只在返回后消费业务队列
+static uint32_t Test_CompleteBoardOperation(RuntimeEventTarget_t service, uint32_t step)
+{
+    if (step == 0U)
+    {
+        g_hardware.frame_ready = true;
+        g_hardware.camera_completed = 1U;
+        g_hardware.usb_configured = true;
+        g_hardware.uvc_present = true;
+    }
+    if (step == 2U && board_scenario == 56U)
+    {
+        g_hardware.sensor_stop_result = SYS_ERR_IO;
+        g_hardware.usb_stop_result = SYS_ERR_IO;
+        g_hardware.unmount_result = SYS_ERR_IO;
+    }
+    CHECK(Test_ServiceStep(service) == SYS_OK);
+    Test_PollHardware(service);
+    Test_PollHardware(service);
+    return 0U;
+}
+
+//在真实Control入口的等待点调度选中的Service，保留原BOOT与PubSub路径
+static void Test_BoardWait(void)
+{
+    RuntimeEventTarget_t service = g_app_v3_board_smoke.service;
+    AppV3BoardSmokeState_t state = g_app_v3_board_smoke.state;
+    uint32_t step = g_app_v3_board_smoke.step;
+
+    ++waited;
+    if (waited == 1U)
+    {
+        if (state != APP_V3_SMOKE_IDLE || AppV3_BusinessReady())
+            g_failure = __LINE__;
+        if (board_scenario == 57U)
+            test_tick += pdMS_TO_TICKS(1000U);
+        else if (Test_StartBusiness(AppV3_GetContext()) != 0U)
+            g_failure = __LINE__;
+        if (board_scenario == 54U)
+            reject_next_queue_send = true;
+        return;
+    }
+    if (state == APP_V3_SMOKE_COMPLETE || state == APP_V3_SMOKE_FAILED ||
+        board_scenario == 57U || waited > 12U)
+        longjmp(task_exit, 1);
+
+    //先越过测试截止时间，再让原START完成，迟到结果不得恢复脚本
+    if (board_scenario == 55U && waited == 2U)
+    {
+        if (state != APP_V3_SMOKE_WAIT || step != 0U)
+            g_failure = __LINE__;
+        test_tick += pdMS_TO_TICKS(APP_V3_BOARD_SMOKE_TIMEOUT_MS);
+        if (Test_CompleteBoardOperation(service, step) != 0U)
+            g_failure = __LINE__;
+        return;
+    }
+    if (state == APP_V3_SMOKE_TIMED_OUT)
+        longjmp(task_exit, 1);
+
+    if (board_scenario == 54U && waited == 2U)
+    {
+        //一次入队失败时保持同一步；下一轮才允许以原编号重试
+        if (state != APP_V3_SMOKE_SUBMIT || step != 0U || rejected_queue_sends != 1U)
+            g_failure = __LINE__;
+        return;
+    }
+    if (board_scenario == 54U && waited == 3U)
+    {
+        RuntimeEventTarget_t other = service == RUNTIME_TARGET_CAMERA ? RUNTIME_TARGET_USB : RUNTIME_TARGET_CAMERA;
+        uint32_t expected_id = APP_V3_BOARD_SMOKE_FIRST_ID;
+        if (state != APP_V3_SMOKE_WAIT ||
+            Test_QueueBoardEvent(other, expected_id, true, RUNTIME_TARGET_CONTROL) != SYS_OK ||
+            Test_QueueBoardEvent(service, expected_id, false, RUNTIME_TARGET_CONTROL) != SYS_OK ||
+            Test_QueueBoardEvent(service, expected_id + 1U, true, RUNTIME_TARGET_CONTROL) != SYS_OK)
+            g_failure = __LINE__;
+        return;
+    }
+    if (state != APP_V3_SMOKE_WAIT || g_app_v3_board_smoke.received != step ||
+        Test_CompleteBoardOperation(service, step) != 0U)
+    {
+        g_failure = __LINE__;
+        longjmp(task_exit, 1);
+    }
+}
+#endif
+
+#if APP_V3_BOARD_SMOKE != APP_V3_BOARD_SMOKE_OFF
+//用内核队列和真实Service完成测试入口的正反对照
+static uint32_t Test_BoardSmoke(uint32_t scenario)
+{
+#if APP_V3_BOARD_SMOKE == APP_V3_BOARD_SMOKE_CAMERA
+    const RuntimeEventTarget_t target = RUNTIME_TARGET_CAMERA;
+#elif APP_V3_BOARD_SMOKE == APP_V3_BOARD_SMOKE_USB
+    const RuntimeEventTarget_t target = RUNTIME_TARGET_USB;
+#else
+    const RuntimeEventTarget_t target = RUNTIME_TARGET_STORAGE;
+#endif
+    uint32_t step, expected_results = APP_V3_BOARD_SMOKE_STEPS;
+    CHECK(ControlTask_Create() == SYS_OK);
+    scheduler = taskSCHEDULER_RUNNING;
+    board_scenario = scenario;
+    notify_fails = true;
+    if (setjmp(task_exit) == 0)
+        scheduled_entry(scheduled_argument);
+    CHECK(g_failure == 0U);
+    if (scenario == 57U)
+    {
+        CHECK(g_app_v3_board_smoke.state == APP_V3_SMOKE_IDLE && published.result == SYS_ERR_TIMEOUT);
+        CHECK(g_hardware.capture_start_calls == 0U && g_hardware.usb_start_calls == 0U &&
+            g_hardware.mount_calls == 0U);
+        return 0U;
+    }
+    CHECK(g_app_v3_board_smoke.service == target);
+    CHECK(g_hardware.capture_start_calls == (target == RUNTIME_TARGET_CAMERA ? 1U : 0U));
+    CHECK(g_hardware.usb_start_calls == (target == RUNTIME_TARGET_USB ? 1U : 0U));
+    CHECK(g_hardware.mount_calls == (target == RUNTIME_TARGET_STORAGE ? 1U : 0U));
+    CHECK(!g_hardware.storage_writable);
+    if (scenario == 55U)
+    {
+        CHECK(g_app_v3_board_smoke.state == APP_V3_SMOKE_TIMED_OUT &&
+            g_app_v3_board_smoke.result == SYS_ERR_TIMEOUT && g_app_v3_board_smoke.received == 0U);
+        CHECK(g_hardware.capture_stop_calls == 0U && g_hardware.usb_stop_calls == 0U &&
+            g_hardware.unmount_calls == 0U);
+        return 0U;
+    }
+    if (scenario == 56U)
+    {
+        expected_results = 3U;
+        CHECK(g_app_v3_board_smoke.state == APP_V3_SMOKE_FAILED &&
+            g_app_v3_board_smoke.result == SYS_ERR_IO && g_app_v3_board_smoke.step == 2U);
+        CHECK(g_app_v3_board_smoke.events[2].hardware.state == APP_V3_HW_FAULT &&
+            g_app_v3_board_smoke.events[2].hardware.first_fault == SYS_ERR_IO);
+    }
+    else
+    {
+        CHECK(g_app_v3_board_smoke.state == APP_V3_SMOKE_COMPLETE &&
+            g_app_v3_board_smoke.result == SYS_OK && g_app_v3_board_smoke.step == APP_V3_BOARD_SMOKE_STEPS);
+        if (target == RUNTIME_TARGET_CAMERA)
+            CHECK(g_hardware.frame_release_calls == 1U && g_hardware.sensor_stop_calls == 1U);
+        if (target == RUNTIME_TARGET_USB)
+            CHECK(g_hardware.usb_stop_calls == 1U && !g_hardware.usb_configured);
+        if (target == RUNTIME_TARGET_STORAGE)
+            CHECK(g_hardware.unmount_calls == 1U && !g_hardware.storage_owner &&
+                g_app_v3_board_smoke.events[1].hardware.primary == 1024U);
+    }
+
+    //验证真实结果的身份、顺序和唯一交付，外部噪声不占用测试快照
+    CHECK(g_app_v3_board_smoke.received == expected_results);
+    for (step = 0U; step < expected_results; ++step)
+    {
+        const volatile AppV3ServiceEvent_t *event = &g_app_v3_board_smoke.events[step];
+        CHECK(event->service == target && event->requester == RUNTIME_TARGET_CONTROL &&
+            event->command_id == APP_V3_BOARD_SMOKE_FIRST_ID + step && event->sequence == step + 1U &&
+            event->real_hardware);
+    }
+    return 0U;
+}
+#endif
+
 uint32_t AppV3_TestRun(uint32_t scenario)
 {
     const AppV3Context_t *context;
@@ -1560,6 +1754,11 @@ uint32_t AppV3_TestRun(uint32_t scenario)
     context = AppV3_GetContext();
     CHECK(context->video == &fixture_video && context->storage == &fixture_storage);
     CHECK(App_MessagesInit() == SYS_OK);
+
+#if APP_V3_BOARD_SMOKE != APP_V3_BOARD_SMOKE_OFF
+    if (scenario >= 53U && scenario <= 57U)
+        return Test_BoardSmoke(scenario);
+#endif
 
     switch (scenario)
     {

@@ -3,6 +3,7 @@
 #include "app_events.h"
 #include "platform_sync.h"
 #include "service_tasks.h"
+#include "board_smoke.h"
 #include "../Runtime/service_event_loop.h"
 #include "../Runtime/service_events.h"
 #include <stddef.h>
@@ -94,6 +95,149 @@ static SysResult_t AppV3_StartupReadable(AppV3Queue_t queue, void *context)
     return AppV3_DrainInitialization();
 }
 
+#if APP_V3_BOARD_SMOKE != APP_V3_BOARD_SMOKE_OFF
+#if APP_V3_BOARD_SMOKE == APP_V3_BOARD_SMOKE_CAMERA
+#include "../Services/Camera/camera_service.h"
+#define BOARD_SMOKE_SERVICE RUNTIME_TARGET_CAMERA
+#elif APP_V3_BOARD_SMOKE == APP_V3_BOARD_SMOKE_USB
+#include "../Services/USB/usb_service.h"
+#define BOARD_SMOKE_SERVICE RUNTIME_TARGET_USB
+#else
+#include "../Services/Storage/storage_service.h"
+#define BOARD_SMOKE_SERVICE RUNTIME_TARGET_STORAGE
+#endif
+
+volatile AppV3BoardSmokeReport_t g_app_v3_board_smoke;
+static uint32_t s_smoke_ticket;
+static TickType_t s_smoke_started;
+
+//用无符号Tick差值限制每步的提交与等待总时间
+static bool BoardSmoke_Expired(void)
+{
+    return (TickType_t)(xTaskGetTickCount() - s_smoke_started) >=
+        pdMS_TO_TICKS(APP_V3_BOARD_SMOKE_TIMEOUT_MS);
+}
+
+//只保存当前步骤的真实终结；同步回调不提交命令
+static SysResult_t BoardSmoke_Record(const AppV3ServiceEvent_t *event, void *context)
+{
+    uint32_t step = g_app_v3_board_smoke.step;
+    (void)context;
+
+    //同一Service的模拟结果、其他请求者及迟到结果均不推进本测试
+    if (g_app_v3_board_smoke.state == APP_V3_SMOKE_WAIT &&
+        g_app_v3_board_smoke.received == step &&
+        event->service == BOARD_SMOKE_SERVICE && event->requester == RUNTIME_TARGET_CONTROL &&
+        event->real_hardware && event->command_id == APP_V3_BOARD_SMOKE_FIRST_ID + step &&
+        !BoardSmoke_Expired())
+    {
+        g_app_v3_board_smoke.events[step] = *event;
+        g_app_v3_board_smoke.received = step + 1U;
+    }
+    return SYS_OK;
+}
+
+//只在当前构建中引用一个服务；Storage使用原只读START
+static SysResult_t BoardSmoke_Request(uint32_t step)
+{
+    uint32_t command_id = APP_V3_BOARD_SMOKE_FIRST_ID + step;
+#if APP_V3_BOARD_SMOKE == APP_V3_BOARD_SMOKE_CAMERA
+    static const CameraServiceOperation_t operations[] =
+    {
+        CAMERA_SERVICE_START, CAMERA_SERVICE_HARDWARE_QUERY,
+        CAMERA_SERVICE_STOP, CAMERA_SERVICE_HARDWARE_QUERY
+    };
+    return CameraService_Request(command_id, operations[step], 0U);
+#elif APP_V3_BOARD_SMOKE == APP_V3_BOARD_SMOKE_USB
+    static const UsbServiceOperation_t operations[] =
+    {
+        USB_SERVICE_START, USB_SERVICE_HARDWARE_QUERY,
+        USB_SERVICE_STOP, USB_SERVICE_HARDWARE_QUERY
+    };
+    return UsbService_Request(command_id, operations[step], 0U);
+#else
+    static const StorageServiceOperation_t operations[] =
+    {
+        STORAGE_SERVICE_START, STORAGE_SERVICE_HARDWARE_QUERY,
+        STORAGE_SERVICE_STOP, STORAGE_SERVICE_HARDWARE_QUERY
+    };
+    return StorageService_Request(command_id, operations[step], 0U);
+#endif
+}
+
+//计算测试结果后撤销订阅；不清理或推断任何硬件所有权
+static void BoardSmoke_Finish(AppV3BoardSmokeState_t state, SysResult_t result)
+{
+    g_app_v3_board_smoke.result = result;
+    g_app_v3_board_smoke.state = state;
+    if (s_smoke_ticket != 0U)
+    {
+        SysResult_t unsubscribe = AppV3Business_Unsubscribe(s_smoke_ticket);
+        //本函数在Drain之外由订阅者Control调用，票据从未交给其他代码
+        configASSERT(unsubscribe == SYS_OK);
+        (void)unsubscribe;
+        s_smoke_ticket = 0U;
+    }
+}
+
+//只在Control完成本轮Drain后推进；每轮最多提交一个已有命令
+static void BoardSmoke_Poll(void)
+{
+    SysResult_t result;
+    uint32_t step = g_app_v3_board_smoke.step;
+
+    if (g_app_v3_board_smoke.state == APP_V3_SMOKE_IDLE)
+    {
+        g_app_v3_board_smoke.service = BOARD_SMOKE_SERVICE;
+        result = AppV3Business_Subscribe(BOARD_SMOKE_SERVICE, BoardSmoke_Record, NULL, &s_smoke_ticket);
+        if (result != SYS_OK)
+        {
+            BoardSmoke_Finish(APP_V3_SMOKE_FAILED, result);
+            return;
+        }
+        s_smoke_started = xTaskGetTickCount();
+        g_app_v3_board_smoke.state = APP_V3_SMOKE_SUBMIT;
+    }
+
+    //推进下一步前同时核对原操作结果与服务报告的运行状态
+    if (g_app_v3_board_smoke.state == APP_V3_SMOKE_WAIT && g_app_v3_board_smoke.received > step)
+    {
+        AppV3HardwareState_t expected = step < 2U ? APP_V3_HW_ACTIVE : APP_V3_HW_READY;
+        result = g_app_v3_board_smoke.events[step].result;
+        if (result != SYS_OK || g_app_v3_board_smoke.events[step].hardware.state != expected)
+        {
+            BoardSmoke_Finish(APP_V3_SMOKE_FAILED, result != SYS_OK ? result : SYS_ERR_PROTOCOL);
+            return;
+        }
+        g_app_v3_board_smoke.step = ++step;
+        if (step == APP_V3_BOARD_SMOKE_STEPS)
+        {
+            BoardSmoke_Finish(APP_V3_SMOKE_COMPLETE, SYS_OK);
+            return;
+        }
+        s_smoke_started = xTaskGetTickCount();
+        g_app_v3_board_smoke.state = APP_V3_SMOKE_SUBMIT;
+    }
+
+    //仅未成功入队的BUSY可以重试，重试沿用原命令编号
+    if (g_app_v3_board_smoke.state != APP_V3_SMOKE_SUBMIT &&
+        g_app_v3_board_smoke.state != APP_V3_SMOKE_WAIT)
+        return;
+    if (BoardSmoke_Expired())
+    {
+        BoardSmoke_Finish(APP_V3_SMOKE_TIMED_OUT, SYS_ERR_TIMEOUT);
+        return;
+    }
+    if (g_app_v3_board_smoke.state != APP_V3_SMOKE_SUBMIT)
+        return;
+    result = BoardSmoke_Request(step);
+    if (result == SYS_OK)
+        g_app_v3_board_smoke.state = APP_V3_SMOKE_WAIT;
+    else if (result != SYS_ERR_BUSY)
+        BoardSmoke_Finish(APP_V3_SMOKE_FAILED, result);
+}
+#endif
+
 //协调BOOT屏障、启动结果消费和超时处理
 static void AppV3_ControlRun(void *argument)
 {
@@ -122,7 +266,12 @@ static void AppV3_ControlRun(void *argument)
 
         //启动成功后单独推进业务结果。非法消息与回调错误保留在业务诊断中
         if (AppV3_BusinessReady())
+        {
             (void)AppV3Business_Drain(&business_consumed);
+#if APP_V3_BOARD_SMOKE != APP_V3_BOARD_SMOKE_OFF
+            BoardSmoke_Poll();
+#endif
+        }
         if (business_consumed >= 4U)
             vTaskDelay(1U);
 

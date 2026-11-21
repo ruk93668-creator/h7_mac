@@ -14,7 +14,9 @@ V3 = ROOT / "CM7/ApplicationV3"
 def main():
     parser = argparse.ArgumentParser()
     parser.add_argument("output", type=Path)
-    output = parser.parse_args().output.resolve()
+    parser.add_argument("--board-smoke", choices=("off", "camera", "usb", "storage"), default="off")
+    args = parser.parse_args()
+    output = args.output.resolve()
     output.mkdir(parents=True, exist_ok=False)
     os.environ["C1_TEST_OUTPUT_ROOT"] = str(output)
 
@@ -29,6 +31,8 @@ def main():
                   if flag not in legacy_includes and
                   not (flag == "-I" and harness.cc[index + 1] in legacy_includes)]
     harness.cc.extend(("-I", V3 / "Core", "-I", V3 / "Tasks", "-I", V3 / "Runtime", "--split_sections"))
+    smoke_selection = ("off", "camera", "usb", "storage").index(args.board_smoke)
+    harness.cc.append(f"-DAPP_V3_BOARD_SMOKE={smoke_selection}")
     kernel = ROOT / "Middlewares/Third_Party/FreeRTOS/Source"
     real_run = harness.run
 
@@ -61,7 +65,8 @@ def main():
         harness.cc = ["-" + optimization if flag in ("-O0", "-O2") else flag for flag in harness.cc]
         name = "app_v3_" + optimization
         harness.build(name, sources, "AppV3_TestRun")
-        for scenario in range(53):
+        scenarios = range(53, 58) if smoke_selection else range(53)
+        for scenario in scenarios:
             row = harness.execute(name, "AppV3_TestRun", scenario)
             if scenario < 49:
                 row.pop("trace", None)
