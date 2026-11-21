@@ -1403,6 +1403,26 @@
               <FileType>5</FileType>
               <FilePath>../CM7/ApplicationV3/Runtime/service_record.h</FilePath>
             </File>
+            <File>
+              <FileName>service_events.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>../CM7/ApplicationV3/Runtime/service_events.c</FilePath>
+            </File>
+            <File>
+              <FileName>service_events.h</FileName>
+              <FileType>5</FileType>
+              <FilePath>../CM7/ApplicationV3/Runtime/service_events.h</FilePath>
+            </File>
+            <File>
+              <FileName>service_mailbox.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>../CM7/ApplicationV3/Runtime/service_mailbox.c</FilePath>
+            </File>
+            <File>
+              <FileName>service_mailbox.h</FileName>
+              <FileType>5</FileType>
+              <FilePath>../CM7/ApplicationV3/Runtime/service_mailbox.h</FilePath>
+            </File>
           </Files>
         </Group>
         <Group>
@@ -1491,6 +1511,21 @@
               <FileName>usb_service.c</FileName>
               <FileType>1</FileType>
               <FilePath>../CM7/ApplicationV3/Services/USB/usb_service.c</FilePath>
+            </File>
+            <File>
+              <FileName>camera_service.h</FileName>
+              <FileType>5</FileType>
+              <FilePath>../CM7/ApplicationV3/Services/Camera/camera_service.h</FilePath>
+            </File>
+            <File>
+              <FileName>storage_service.h</FileName>
+              <FileType>5</FileType>
+              <FilePath>../CM7/ApplicationV3/Services/Storage/storage_service.h</FilePath>
+            </File>
+            <File>
+              <FileName>usb_service.h</FileName>
+              <FileType>5</FileType>
+              <FilePath>../CM7/ApplicationV3/Services/USB/usb_service.h</FilePath>
             </File>
           </Files>
         </Group>
@@ -4512,6 +4547,26 @@
               <FileType>5</FileType>
               <FilePath>../CM7/ApplicationV3/Runtime/service_record.h</FilePath>
             </File>
+            <File>
+              <FileName>service_events.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>../CM7/ApplicationV3/Runtime/service_events.c</FilePath>
+            </File>
+            <File>
+              <FileName>service_events.h</FileName>
+              <FileType>5</FileType>
+              <FilePath>../CM7/ApplicationV3/Runtime/service_events.h</FilePath>
+            </File>
+            <File>
+              <FileName>service_mailbox.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>../CM7/ApplicationV3/Runtime/service_mailbox.c</FilePath>
+            </File>
+            <File>
+              <FileName>service_mailbox.h</FileName>
+              <FileType>5</FileType>
+              <FilePath>../CM7/ApplicationV3/Runtime/service_mailbox.h</FilePath>
+            </File>
           </Files>
         </Group>
         <Group>
@@ -4531,6 +4586,21 @@
               <FileName>usb_service.c</FileName>
               <FileType>1</FileType>
               <FilePath>../CM7/ApplicationV3/Services/USB/usb_service.c</FilePath>
+            </File>
+            <File>
+              <FileName>camera_service.h</FileName>
+              <FileType>5</FileType>
+              <FilePath>../CM7/ApplicationV3/Services/Camera/camera_service.h</FilePath>
+            </File>
+            <File>
+              <FileName>storage_service.h</FileName>
+              <FileType>5</FileType>
+              <FilePath>../CM7/ApplicationV3/Services/Storage/storage_service.h</FilePath>
+            </File>
+            <File>
+              <FileName>usb_service.h</FileName>
+              <FileType>5</FileType>
+              <FilePath>../CM7/ApplicationV3/Services/USB/usb_service.h</FilePath>
             </File>
           </Files>
         </Group>

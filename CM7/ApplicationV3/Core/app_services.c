@@ -2,16 +2,17 @@
 #include "app_status.h"
 #include "../Runtime/service_record.h"
 #include "../Tasks/service_tasks.h"
+#include "platform_sync.h"
+#include "../Services/Camera/camera_service.h"
+#include "../Services/USB/usb_service.h"
+#include "../Services/Storage/storage_service.h"
 #include <stddef.h>
-
-SysResult_t AppV3_CameraInit(const AppV3Context_t *context);
-SysResult_t AppV3_UsbInit(const AppV3Context_t *context);
-SysResult_t AppV3_StorageInit(const AppV3Context_t *context);
 
 typedef struct
 {
     AppV3ThreadSpec_t thread;
     SysResult_t (*init)(const AppV3Context_t *context);
+    void (*discard)(void);
     AppV3ServiceInstance_t *instance;
 } AppV3ServiceRecord_t;
 
@@ -30,13 +31,14 @@ static const AppV3ServiceRecord_t s_services[] =
         {
             RUNTIME_TARGET_CAMERA,
             "Camera",
-            AppV3_ServiceRun,
+            AppV3_CameraRun,
             s_camera_stack,
             STACK_WORDS(s_camera_stack),
             3U,
             RUNTIME_EVENT_BOOT_READY
         },
         AppV3_CameraInit,
+        AppV3_CameraDiscard,
         &s_camera
     },
 
@@ -44,13 +46,14 @@ static const AppV3ServiceRecord_t s_services[] =
         {
             RUNTIME_TARGET_USB,
             "Usb",
-            AppV3_ServiceRun,
+            AppV3_UsbRun,
             s_usb_stack,
             STACK_WORDS(s_usb_stack),
             4U,
             RUNTIME_EVENT_BOOT_READY
         },
         AppV3_UsbInit,
+        AppV3_UsbDiscard,
         &s_usb
     },
 
@@ -58,13 +61,14 @@ static const AppV3ServiceRecord_t s_services[] =
         {
             RUNTIME_TARGET_STORAGE,
             "Storage",
-            AppV3_ServiceRun,
+            AppV3_StorageRun,
             s_storage_stack,
             STACK_WORDS(s_storage_stack),
             1U,
             RUNTIME_EVENT_BOOT_READY
         },
         AppV3_StorageInit,
+        AppV3_StorageDiscard,
         &s_storage
     }
 };
@@ -92,7 +96,7 @@ SysResult_t AppV3_StartServices(uint32_t *created)
 //Control 独占首个初始化错误，复用原 IPC 状态出口。
 static AppControlStatus_t s_startup_status;
 static uint32_t s_startup_completed;
-static bool s_startup_published;
+static volatile bool s_startup_published;
 
 //按任务身份查找编译期服务描述
 static const AppV3ServiceRecord_t *AppV3_FindRecord(RuntimeEventTarget_t owner)
@@ -138,7 +142,10 @@ SysResult_t AppV3_InitService(RuntimeEventTarget_t owner, const AppV3Context_t *
 
     //底层初始化完成以后才发布本次创建的只读服务对象。
     *service->instance = (AppV3ServiceInstance_t){owner, context};
-    return AppV3Record_Create(owner, service->instance);
+    result = AppV3Record_Create(owner, service->instance);
+    if (result != SYS_OK)
+        service->discard();
+    return result;
 }
 
 //将已发布的服务结果提交到专用启动通道
@@ -187,7 +194,11 @@ static SysResult_t AppV3_PublishStartup(void)
     s_startup_status.result = s_startup_status.last_fault;
     result = App_StatusPublishControl(&s_startup_status);
     if (result == SYS_OK)
+    {
+        //先写结果，再允许其他任务观察启动事实
+        Platform_SyncMemoryBarrier();
         s_startup_published = true;
+    }
     return result;
 }
 
@@ -236,4 +247,19 @@ SysResult_t AppV3_ExpireInitialization(void)
     if (s_startup_completed != AppV3_StartupRequired() && s_startup_status.last_fault == SYS_OK)
         s_startup_status.last_fault = SYS_ERR_TIMEOUT;
     return AppV3_PublishStartup();
+}
+
+//只验证Record身份，避免其他同名发布借用旧队列入口
+bool AppV3_IsServiceInstance(RuntimeEventTarget_t owner, const AppV3ServiceInstance_t *instance)
+{
+    const AppV3ServiceRecord_t *service = AppV3_FindRecord(owner);
+    return service != NULL && instance == service->instance;
+}
+
+//所有服务成功并由Control发布后才允许提交模拟命令
+bool AppV3_BusinessReady(void)
+{
+    bool published = s_startup_published;
+    Platform_SyncMemoryBarrier();
+    return published && s_startup_status.result == SYS_OK;
 }

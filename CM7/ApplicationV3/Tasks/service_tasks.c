@@ -4,6 +4,7 @@
 #include "platform_sync.h"
 #include "service_tasks.h"
 #include "../Runtime/service_event_loop.h"
+#include "../Runtime/service_events.h"
 #include <stddef.h>
 
 #define STARTUP_DEADLINE_MS 1000U
@@ -16,7 +17,7 @@ static StaticTask_t s_task_controls[RUNTIME_TARGET_COUNT];
 static uint32_t s_task_attempted;
 
 //在服务所属任务内等待BOOT、准备实例并提交结果
-void AppV3_ServiceRun(void *argument)
+void AppV3_ServiceRun(void *argument, AppV3ServiceMailbox_t *mailbox)
 {
     const AppV3ThreadSpec_t *thread = argument;
     SysResult_t initialization = SYS_ERR_INVALID_STATE;
@@ -24,19 +25,25 @@ void AppV3_ServiceRun(void *argument)
     uint32_t report_attempts = 0U;
     bool report_pending = false;
     bool boot_seen = false;
-    AppV3EventLoop_t loop = {.initialized = false};
-    SysResult_t loop_status = AppV3EventLoop_Init(&loop, thread->owner);
 
-    //服务在自己线程内建立循环，初始化失败时不进入任何业务分发。
-    configASSERT(loop_status == SYS_OK);
-    while (loop_status != SYS_OK)
-        vTaskDelay(portMAX_DELAY);
 
     for (;;)
     {
-        //Storage 没有旧控制消费唤醒，待发期间定时检查队列空间。
-        SysResult_t result = AppV3EventLoop_Step(&loop,
-            report_pending ? STARTUP_POLL_MS : APP_EVENTS_WAIT_FOREVER, &events);
+        uint32_t wait_ms = report_pending ? STARTUP_POLL_MS : APP_EVENTS_WAIT_FOREVER;
+        SysResult_t result;
+
+        //仅在本服务发布成功后推进其私有队列，未发布时只等待BOOT或重试报告
+        if (initialization == SYS_OK && !report_pending)
+        {
+            result = AppV3Mailbox_Flush(mailbox);
+            if (result == SYS_OK)
+                result = AppV3EventLoop_Step(&mailbox->loop, wait_ms, &events);
+            if (result != SYS_OK && result != SYS_ERR_TIMEOUT)
+                vTaskDelay(1U);
+            continue;
+        }
+
+        result = App_EventsWait(thread->owner, wait_ms, &events);
         //等待异常时让出CPU，服务保持原启动结果
         if (result != SYS_OK && result != SYS_ERR_TIMEOUT)
         {
@@ -108,8 +115,16 @@ static void AppV3_ControlRun(void *argument)
 
     for (;;)
     {
-        //保留原 Control 的 100 ms 周期。即使通知失败，已入队的报告仍会被取出。
-        result = AppV3EventLoop_Step(&loop, STARTUP_POLL_MS, &events);
+        uint32_t business_consumed = 0U;
+
+        //启动成功后单独推进业务结果。非法消息与回调错误保留在业务诊断中
+        if (AppV3_BusinessReady())
+            (void)AppV3Business_Drain(&business_consumed);
+        if (business_consumed >= 4U)
+            vTaskDelay(1U);
+
+        //漏通知时按原周期回查；业务仍有积压时先取通知再继续消费
+        result = AppV3EventLoop_Step(&loop, business_consumed != 0U ? 0U : STARTUP_POLL_MS, &events);
         if (result == SYS_OK || result == SYS_ERR_TIMEOUT)
         {
             result = AppV3_CheckStartupDeadline(&started);

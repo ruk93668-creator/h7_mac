@@ -9,6 +9,10 @@
 #include "queue_pool.h"
 #include "service_record.h"
 #include "service_event_loop.h"
+#include "service_events.h"
+#include "../../CM7/ApplicationV3/Services/Camera/camera_service.h"
+#include "../../CM7/ApplicationV3/Services/USB/usb_service.h"
+#include "../../CM7/ApplicationV3/Services/Storage/storage_service.h"
 #include <setjmp.h>
 
 volatile uint32_t g_failure;
@@ -216,6 +220,32 @@ static uint32_t scheduled_stack_words;
 static bool event_test;
 static unsigned int event_count;
 static uint32_t event_delays, event_wait_ms, event_callback_calls;
+static AppV3EventLoop_t *fixture_loops[RUNTIME_TARGET_COUNT];
+static bool reject_event_subscribe;
+static AppV3ServiceEvent_t business_events[20U];
+static uint32_t business_event_count;
+static bool run_control_business, run_storage_business;
+static SysResult_t Test_StoreEvent(const AppV3ServiceEvent_t *event, void *context);
+static uint32_t Test_StartBusiness(const AppV3Context_t *context);
+static SysResult_t Test_ServiceStep(RuntimeEventTarget_t service);
+
+
+SysResult_t Test_RealEventSubscribe(AppV3EventLoop_t *loop, AppV3Queue_t queue,
+    AppV3QueueReadable_t callback, void *context);
+
+//只在软测记录实际订阅入口；可注入订阅失败，其他测试走真实Event Loop
+SysResult_t AppV3EventLoop_Subscribe(AppV3EventLoop_t *loop, AppV3Queue_t queue,
+    AppV3QueueReadable_t callback, void *context)
+{
+    SysResult_t result;
+    if (reject_event_subscribe)
+        return SYS_ERR_IO;
+    result = Test_RealEventSubscribe(loop, queue, callback, context);
+    if (result == SYS_OK)
+        fixture_loops[owner] = loop;
+    return result;
+}
+
 static bool check_boot_order, framework_ready;
 static TaskFunction_t scheduled_entry;
 static void *scheduled_argument;
@@ -303,6 +333,72 @@ void vTaskDelay(TickType_t ticks)
 
 SysResult_t App_EventsWait(RuntimeEventTarget_t target, uint32_t timeout_ms, uint32_t *events)
 {
+    if (run_storage_business)
+    {
+        uint32_t consumed;
+        static uint32_t subscription;
+        if (target != RUNTIME_TARGET_STORAGE)
+            return SYS_ERR_INVALID_STATE;
+        ++waited;
+        if (waited == 1U && timeout_ms == APP_EVENTS_WAIT_FOREVER)
+        {
+            *events = RUNTIME_EVENT_BOOT_READY;
+            return SYS_OK;
+        }
+
+        //让Control在真实Storage线程两次等待之间提交命令，模拟调度但不调用硬件
+        owner = RUNTIME_TARGET_CONTROL;
+        if (waited == 2U && timeout_ms == 100U)
+        {
+            if (AppV3_DrainInitialization() != SYS_OK || !AppV3_BusinessReady() ||
+                AppV3Business_Subscribe(RUNTIME_TARGET_STORAGE, Test_StoreEvent, NULL, &subscription) != SYS_OK ||
+                StorageService_Request(1U, STORAGE_SERVICE_MOCK_START, 0U) != SYS_OK)
+                g_failure = __LINE__;
+        }
+        else if (waited == 3U && timeout_ms == 100U)
+        {
+            if (AppV3Business_Drain(&consumed) != SYS_OK || consumed != 1U ||
+                StorageService_Request(2U, STORAGE_SERVICE_MOCK_STOP, 0U) != SYS_OK)
+                g_failure = __LINE__;
+        }
+        else
+        {
+            if (waited != 4U || timeout_ms != 100U ||
+                AppV3Business_Drain(&consumed) != SYS_OK || consumed != 1U ||
+                AppV3Business_Unsubscribe(subscription) != SYS_OK)
+                g_failure = __LINE__;
+            longjmp(task_exit, 1);
+        }
+        owner = RUNTIME_TARGET_STORAGE;
+        return SYS_ERR_TIMEOUT;
+    }
+    if (run_control_business)
+    {
+        static uint32_t ticket;
+        if (target != RUNTIME_TARGET_CONTROL)
+            return SYS_ERR_TIMEOUT;
+        ++waited;
+        if (waited == 1U && timeout_ms == 100U && !AppV3_BusinessReady())
+        {
+            if (Test_StartBusiness(AppV3_GetContext()) != 0U ||
+                AppV3Business_Subscribe(RUNTIME_TARGET_STORAGE, Test_StoreEvent, NULL, &ticket) != SYS_OK)
+                g_failure = __LINE__;
+            return SYS_ERR_TIMEOUT;
+        }
+        if (waited == 2U && timeout_ms == 100U)
+        {
+            if (StorageService_Request(1U, STORAGE_SERVICE_MOCK_START, 0U) != SYS_OK ||
+                StorageService_Request(2U, STORAGE_SERVICE_QUERY, 0U) != SYS_OK ||
+                Test_ServiceStep(RUNTIME_TARGET_STORAGE) != SYS_OK)
+                g_failure = __LINE__;
+            return SYS_ERR_TIMEOUT;
+        }
+        if (waited != 3U || timeout_ms != 0U || business_event_count != 2U ||
+            AppV3Business_Unsubscribe(ticket) != SYS_OK)
+            g_failure = __LINE__;
+        longjmp(task_exit, 1);
+    }
+
     if (event_test)
     {
         ++waited;
@@ -356,7 +452,7 @@ SysResult_t App_EventsWait(RuntimeEventTarget_t target, uint32_t timeout_ms, uin
         return SYS_OK;
     }
 
-    if (waited != 4U || timeout_ms != APP_EVENTS_WAIT_FOREVER)
+    if (waited != 4U || timeout_ms != 100U)
         g_failure = __LINE__;
     longjmp(task_exit, 1);
 }
@@ -412,7 +508,6 @@ static uint32_t Test_PrivateQueuesAfterStartup(void)
     };
     AppV3Queue_t service_queues[3U], excess, startup;
     AppV3RecordRef_t references[3U] = {{0}};
-    AppMessage_t message = {.type = APP_MESSAGE_START};
     UBaseType_t capacity, remaining;
     uint32_t service_index;
 
@@ -434,24 +529,23 @@ static uint32_t Test_PrivateQueuesAfterStartup(void)
     CHECK(AppV3Queue_Query(startup, &capacity, &remaining) == SYS_OK && capacity == 4U && remaining == 4U);
     CHECK(AppV3Queue_Alloc(sizeof(uint32_t), 1U, &excess) == SYS_ERR_NO_RESOURCE);
 
-    //从各自真实任务身份申请队列，同时保留三个已发布Record
+    //V3.1B由各Service初始化时真实占用R1预留槽，测试不再重复申请
     for (service_index = 0U; service_index < 3U; ++service_index)
     {
+        const AppV3EventLoop_t *loop = fixture_loops[service_owners[service_index]];
+        CHECK(loop != NULL && loop->owner == service_owners[service_index]);
+        service_queues[service_index] = loop->queue;
+        CHECK(AppV3Queue_Query(loop->queue, &capacity, &remaining) == SYS_OK &&
+            capacity == 4U && remaining == 4U);
         CHECK(AppV3Record_Open(service_owners[service_index], 0U, &references[service_index]) == SYS_OK);
-        owner = service_owners[service_index];
-        CHECK(AppV3Queue_Alloc(sizeof(message), 4U, &service_queues[service_index]) == SYS_OK);
-        message.command_id = service_index + 1U;
-        CHECK(AppV3Queue_Put(service_queues[service_index], &message, 0U) == SYS_OK);
-        owner = RUNTIME_TARGET_CONTROL;
     }
-    CHECK(AppV3Queue_Alloc(sizeof(message), 4U, &excess) == SYS_ERR_NO_RESOURCE);
+    CHECK(service_queues[0].index != service_queues[1].index &&
+        service_queues[0].index != service_queues[2].index &&
+        service_queues[1].index != service_queues[2].index);
+    CHECK(AppV3Queue_Alloc(sizeof(AppMessage_t), 4U, &excess) == SYS_ERR_NO_RESOURCE);
     CHECK(Test_ExistingMessageChannels() == 0U);
     for (service_index = 0U; service_index < 3U; ++service_index)
-    {
-        CHECK(AppV3Queue_Get(service_queues[service_index], &message, 0U) == SYS_OK &&
-            message.command_id == service_index + 1U);
         CHECK(AppV3Record_Close(&references[service_index]) == SYS_OK);
-    }
     return 0U;
 }
 
@@ -548,12 +642,238 @@ static uint32_t Test_RecordSignalFailure(bool prior_failure, const AppV3Context_
     return 0U;
 }
 
+//按真实服务身份推进初始化，Control继续使用原启动通道
+static uint32_t Test_StartBusiness(const AppV3Context_t *context)
+{
+    static const RuntimeEventTarget_t services[] =
+    {
+        RUNTIME_TARGET_CAMERA, RUNTIME_TARGET_USB, RUNTIME_TARGET_STORAGE
+    };
+    uint32_t service_index;
+
+    scheduler = taskSCHEDULER_RUNNING;
+    for (service_index = 0U; service_index < sizeof(services) / sizeof(services[0]); ++service_index)
+    {
+        owner = services[service_index];
+        CHECK(AppV3_InitService(owner, context) == SYS_OK);
+        CHECK(AppV3_ReportInitialization(owner, SYS_OK) == SYS_OK);
+    }
+    owner = RUNTIME_TARGET_CONTROL;
+    CHECK(AppV3_DrainInitialization() == SYS_OK && published.result == SYS_OK);
+    CHECK(AppV3_BusinessReady());
+    event_test = true;
+    return 0U;
+}
+
+//通过真实订阅回调、队列和Event Loop处理一个Service批次
+static SysResult_t Test_ServiceStep(RuntimeEventTarget_t service)
+{
+    uint32_t events;
+    SysResult_t result;
+    owner = service;
+    result = AppV3EventLoop_Step(fixture_loops[service], 0U, &events);
+    owner = RUNTIME_TARGET_CONTROL;
+    return result;
+}
+
+static SysResult_t Test_StoreEvent(const AppV3ServiceEvent_t *event, void *context)
+{
+    if (business_event_count >= sizeof(business_events) / sizeof(business_events[0]) || context != NULL)
+        return SYS_ERR_NO_RESOURCE;
+    business_events[business_event_count++] = *event;
+    return SYS_OK;
+}
+
+static uint32_t Test_BusinessIsolation(const AppV3Context_t *context)
+{
+    uint32_t ticket, consumed, events;
+    CHECK(Test_StartBusiness(context) == 0U);
+    CHECK(AppV3Business_Subscribe(RUNTIME_TARGET_COUNT, Test_StoreEvent, NULL, &ticket) == SYS_OK);
+    CHECK(CameraService_Request(1U, CAMERA_SERVICE_MOCK_START, 0U) == SYS_OK);
+    CHECK(UsbService_Request(1U, USB_SERVICE_SET_PARAMETER, 720U) == SYS_OK);
+    CHECK(StorageService_Request(1U, STORAGE_SERVICE_QUERY, 0U) == SYS_OK);
+    CHECK(business_event_count == 0U);
+    owner = RUNTIME_TARGET_USB;
+    CHECK(AppV3EventLoop_Step(fixture_loops[RUNTIME_TARGET_CAMERA], 0U, &events) == SYS_ERR_INVALID_STATE);
+    CHECK(UsbService_Request(2U, USB_SERVICE_QUERY, 0U) == SYS_ERR_INVALID_STATE);
+    CHECK(AppV3Business_Drain(&consumed) == SYS_ERR_INVALID_STATE);
+    CHECK(Test_ServiceStep(RUNTIME_TARGET_USB) == SYS_OK);
+    CHECK(Test_ServiceStep(RUNTIME_TARGET_CAMERA) == SYS_OK);
+    CHECK(Test_ServiceStep(RUNTIME_TARGET_STORAGE) == SYS_OK);
+    CHECK(AppV3Business_Drain(&consumed) == SYS_OK && consumed == 3U && business_event_count == 3U);
+    CHECK(business_events[0].service == RUNTIME_TARGET_USB && business_events[0].parameter == 720U &&
+        !business_events[0].simulated_running);
+    CHECK(business_events[1].service == RUNTIME_TARGET_CAMERA && business_events[1].simulated_running &&
+        business_events[1].requester == RUNTIME_TARGET_CONTROL && business_events[1].sequence == 1U);
+    CHECK(business_events[2].service == RUNTIME_TARGET_STORAGE && !business_events[2].simulated_running);
+    CHECK(AppV3Business_Unsubscribe(ticket) == SYS_OK && published_count == 1U);
+    return 0U;
+}
+
+static uint32_t Test_BusinessBackpressure(const AppV3Context_t *context)
+{
+    uint32_t ticket, consumed, command_index;
+    CHECK(Test_StartBusiness(context) == 0U);
+    notify_fails = true;
+    CHECK(AppV3Business_Subscribe(RUNTIME_TARGET_COUNT, Test_StoreEvent, NULL, &ticket) == SYS_OK);
+
+    //先占满Control结果队列；Camera完成首项后必须保留结果并停止取后续命令
+    for (command_index = 1U; command_index <= 4U; ++command_index)
+        CHECK(UsbService_Request(command_index, USB_SERVICE_QUERY, 0U) == SYS_OK);
+    CHECK(Test_ServiceStep(RUNTIME_TARGET_USB) == SYS_OK);
+    for (command_index = 1U; command_index <= 4U; ++command_index)
+        CHECK(CameraService_Request(command_index, CAMERA_SERVICE_QUERY, 0U) == SYS_OK);
+    CHECK(CameraService_Request(5U, CAMERA_SERVICE_QUERY, 0U) == SYS_ERR_BUSY);
+    CHECK(Test_ServiceStep(RUNTIME_TARGET_CAMERA) == SYS_ERR_BUSY);
+    CHECK(AppV3Business_Drain(&consumed) == SYS_OK && consumed == 4U);
+    CHECK(Test_ServiceStep(RUNTIME_TARGET_CAMERA) == SYS_OK);
+    CHECK(AppV3Business_Drain(&consumed) == SYS_OK && consumed == 4U && business_event_count == 8U);
+    for (command_index = 0U; command_index < 4U; ++command_index)
+    {
+        const AppV3ServiceEvent_t *event = &business_events[4U + command_index];
+        CHECK(event->service == RUNTIME_TARGET_CAMERA && event->command_id == command_index + 1U &&
+            event->sequence == command_index + 1U);
+    }
+    CHECK(CameraService_Request(5U, CAMERA_SERVICE_QUERY, 0U) == SYS_OK);
+    CHECK(Test_ServiceStep(RUNTIME_TARGET_CAMERA) == SYS_OK);
+    CHECK(AppV3Business_Drain(&consumed) == SYS_OK && consumed == 1U && business_event_count == 9U);
+    CHECK(AppV3Business_Unsubscribe(ticket) == SYS_OK);
+    return 0U;
+}
+
+static uint32_t Test_BusinessCommandFaults(const AppV3Context_t *context)
+{
+    uint32_t ticket, consumed;
+    CHECK(Test_StartBusiness(context) == 0U);
+    CHECK(AppV3Business_Subscribe(RUNTIME_TARGET_STORAGE, Test_StoreEvent, NULL, &ticket) == SYS_OK);
+    CHECK(StorageService_Request(0U, STORAGE_SERVICE_QUERY, 0U) == SYS_ERR_INVALID_ARG);
+    CHECK(StorageService_Request(3U, STORAGE_SERVICE_MOCK_START, 0U) == SYS_OK);
+    CHECK(StorageService_Request(3U, STORAGE_SERVICE_MOCK_STOP, 0U) == SYS_OK);
+    CHECK(StorageService_Request(1U, STORAGE_SERVICE_MOCK_STOP, 0U) == SYS_OK);
+    CHECK(StorageService_Request(4U, (StorageServiceOperation_t)99U, 0U) == SYS_OK);
+    CHECK(Test_ServiceStep(RUNTIME_TARGET_STORAGE) == SYS_OK);
+    CHECK(AppV3Business_Drain(&consumed) == SYS_OK && consumed == 4U);
+    CHECK(business_events[0].result == SYS_OK && business_events[0].simulated_running);
+    CHECK(business_events[1].result == SYS_ERR_ALREADY_EXISTS && business_events[1].simulated_running);
+    CHECK(business_events[2].result == SYS_ERR_PROTOCOL && business_events[2].simulated_running);
+    CHECK(business_events[3].result == SYS_ERR_NOT_SUPPORTED && business_events[3].simulated_running);
+
+    CHECK(StorageService_Request(5U, STORAGE_SERVICE_MOCK_FAIL, 0U) == SYS_OK);
+    CHECK(StorageService_Request(6U, STORAGE_SERVICE_SET_PARAMETER, 65U) == SYS_OK);
+    CHECK(StorageService_Request(7U, STORAGE_SERVICE_MOCK_STOP, 0U) == SYS_OK);
+    CHECK(Test_ServiceStep(RUNTIME_TARGET_STORAGE) == SYS_OK);
+    CHECK(AppV3Business_Drain(&consumed) == SYS_OK && consumed == 3U);
+    CHECK(business_events[4].result == SYS_ERR_IO && business_events[4].simulated_running);
+    CHECK(business_events[5].result == SYS_ERR_INVALID_ARG && business_events[5].parameter == 0U);
+    CHECK(business_events[6].result == SYS_OK && !business_events[6].simulated_running);
+    CHECK(AppV3Business_Unsubscribe(ticket) == SYS_OK);
+    return 0U;
+}
+
+typedef struct
+{
+    uint32_t removed;
+    uint32_t added;
+} TestSubscriptionChange_t;
+
+//当前订阅可以撤销下一项；后来注册的回调从下一事件开始生效
+static SysResult_t Test_ChangeSubscription(const AppV3ServiceEvent_t *event, void *context)
+{
+    TestSubscriptionChange_t *change = context;
+    uint32_t recursive_count;
+    (void)event;
+    if (AppV3Business_Drain(&recursive_count) != SYS_ERR_BUSY)
+        return SYS_ERR_PROTOCOL;
+    if (change->added != 0U)
+        return SYS_OK;
+    if (AppV3Business_Unsubscribe(change->removed) != SYS_OK)
+        return SYS_ERR_PROTOCOL;
+    if (AppV3Business_Subscribe(RUNTIME_TARGET_CAMERA, Test_StoreEvent, NULL, &change->added) != SYS_OK)
+        return SYS_ERR_PROTOCOL;
+    return SYS_ERR_IO;
+}
+
+static uint32_t Test_BusinessSubscribers(const AppV3Context_t *context)
+{
+    TestSubscriptionChange_t change = {0};
+    AppV3ServiceInstance_t replacement = {RUNTIME_TARGET_CAMERA, context};
+    AppV3BusinessDiagnostics_t diagnostics;
+    AppMessage_t unknown = {.type = APP_MESSAGE_START, .source = RUNTIME_TARGET_CAMERA, .command_id = 99U};
+    uint32_t first, duplicate, consumed;
+
+    CHECK(Test_StartBusiness(context) == 0U);
+    CHECK(AppV3Business_Subscribe(RUNTIME_TARGET_CAMERA, Test_ChangeSubscription, &change, &first) == SYS_OK);
+    CHECK(AppV3Business_Subscribe(RUNTIME_TARGET_CAMERA, Test_StoreEvent, NULL, &change.removed) == SYS_OK);
+    CHECK(AppV3Business_Subscribe(RUNTIME_TARGET_CAMERA, Test_StoreEvent, NULL, &duplicate) == SYS_ERR_ALREADY_EXISTS);
+    owner = RUNTIME_TARGET_CAMERA;
+    CHECK(AppV3Business_Unsubscribe(first) == SYS_ERR_INVALID_STATE);
+    CHECK(App_MessagesSend(APP_CHANNEL_CONTROL, &unknown) == SYS_OK);
+    owner = RUNTIME_TARGET_CONTROL;
+    CHECK(AppV3Business_Drain(&consumed) == SYS_ERR_PROTOCOL && consumed == 1U);
+    CHECK(CameraService_Request(1U, CAMERA_SERVICE_QUERY, 0U) == SYS_OK);
+    CHECK(Test_ServiceStep(RUNTIME_TARGET_CAMERA) == SYS_OK);
+    CHECK(AppV3Business_Drain(&consumed) == SYS_ERR_IO && consumed == 1U && business_event_count == 0U);
+    CHECK(change.added != 0U && change.added != change.removed);
+    CHECK(AppV3Business_Unsubscribe(change.removed) == SYS_ERR_NOT_FOUND);
+    CHECK(CameraService_Request(2U, CAMERA_SERVICE_QUERY, 0U) == SYS_OK);
+    CHECK(Test_ServiceStep(RUNTIME_TARGET_CAMERA) == SYS_OK);
+    CHECK(AppV3Business_Drain(&consumed) == SYS_OK && consumed == 1U && business_event_count == 1U);
+    CHECK(business_events[0].result == SYS_OK && business_events[0].command_id == 2U);
+    CHECK(AppV3Business_GetDiagnostics(&diagnostics) == SYS_OK && diagnostics.accepted == 2U &&
+        diagnostics.rejected == 1U && diagnostics.callback_failures == 1U &&
+        diagnostics.rejected_command_id == 99U && diagnostics.rejected_type == APP_MESSAGE_START && diagnostics.first_error == SYS_ERR_PROTOCOL);
+    CHECK(AppV3Business_Unsubscribe(first) == SYS_OK && AppV3Business_Unsubscribe(change.added) == SYS_OK);
+    owner = RUNTIME_TARGET_CAMERA;
+    CHECK(AppV3Record_Destroy(owner) == SYS_OK);
+    owner = RUNTIME_TARGET_CONTROL;
+    CHECK(CameraService_Request(3U, CAMERA_SERVICE_QUERY, 0U) == SYS_ERR_BUSY);
+    owner = RUNTIME_TARGET_CAMERA;
+    CHECK(AppV3Record_Create(owner, &replacement) == SYS_OK);
+    owner = RUNTIME_TARGET_CONTROL;
+    CHECK(CameraService_Request(3U, CAMERA_SERVICE_QUERY, 0U) == SYS_ERR_INVALID_STATE);
+    owner = RUNTIME_TARGET_CAMERA;
+    CHECK(AppV3Record_Destroy(owner) == SYS_OK);
+    AppV3_CameraDiscard();
+    return 0U;
+}
+
+static uint32_t Test_BusinessStartupFailure(const AppV3Context_t *context, bool record_failure)
+{
+    AppV3Queue_t reclaimed;
+    AppV3RecordRef_t reference = {0};
+
+    scheduler = taskSCHEDULER_RUNNING;
+    CHECK(CameraService_Request(1U, CAMERA_SERVICE_QUERY, 0U) == SYS_ERR_BUSY);
+    owner = RUNTIME_TARGET_USB;
+    CHECK(AppV3_InitService(owner, context) == SYS_OK);
+    CHECK(AppV3_ReportInitialization(owner, SYS_OK) == SYS_OK);
+    owner = RUNTIME_TARGET_CONTROL;
+    CHECK(UsbService_Request(1U, USB_SERVICE_QUERY, 0U) == SYS_ERR_BUSY);
+
+    owner = RUNTIME_TARGET_CAMERA;
+    reject_event_subscribe = !record_failure;
+    reject_next_queue_send = record_failure;
+    CHECK(AppV3_InitService(owner, context) == (record_failure ? SYS_ERR_BUSY : SYS_ERR_IO));
+    reject_event_subscribe = false;
+    CHECK(AppV3_ReportInitialization(owner, record_failure ? SYS_ERR_BUSY : SYS_ERR_IO) == SYS_OK);
+    owner = RUNTIME_TARGET_CONTROL;
+    CHECK(AppV3_DrainInitialization() == SYS_OK && !AppV3_BusinessReady());
+    CHECK(AppV3Record_Open(RUNTIME_TARGET_CAMERA, 0U, &reference) == (record_failure ? SYS_ERR_BUSY : SYS_ERR_IO));
+    CHECK(reference.ticket == 0U);
+    CHECK(UsbService_Request(2U, USB_SERVICE_QUERY, 0U) == SYS_ERR_BUSY);
+    CHECK(AppV3Queue_Alloc(sizeof(AppMessage_t), 4U, &reclaimed) == SYS_OK);
+    CHECK(AppV3Queue_Free(reclaimed) == SYS_OK);
+    CHECK(g_failure == 0U);
+    return 0U;
+}
+
 uint32_t AppV3_TestRun(uint32_t scenario)
 {
     const AppV3Context_t *context;
     AppMessage_t startup_message = {.type = APP_MESSAGE_START};
     uint32_t filler_index;
 
+    CHECK(sizeof(AppV3ServiceCommand_t) == 16U);
     CHECK(sizeof(AppMessage_t) == 52U);
     CHECK(offsetof(AppMessage_t, frame) == 28U);
     CHECK(sizeof(IpcApplicationStatus_t) == 80U);
@@ -608,6 +928,49 @@ uint32_t AppV3_TestRun(uint32_t scenario)
     CHECK(context->video == &fixture_video && context->storage == &fixture_storage);
     CHECK(App_MessagesInit() == SYS_OK);
 
+    switch (scenario)
+    {
+        case 24U: return Test_BusinessIsolation(context);
+        case 25U: return Test_BusinessBackpressure(context);
+        case 26U: return Test_BusinessCommandFaults(context);
+        case 27U: return Test_BusinessSubscribers(context);
+        case 28U:
+        case 29U: return Test_BusinessStartupFailure(context, scenario == 29U);
+        case 30U:
+            CHECK(ControlTask_Create() == SYS_OK);
+            scheduler = taskSCHEDULER_RUNNING;
+            run_control_business = true;
+            notify_fails = true;
+            if (setjmp(task_exit) == 0)
+                scheduled_entry(scheduled_argument);
+            CHECK(waited == 3U && business_event_count == 2U && published_count == 1U);
+            CHECK(business_events[0].command_id == 1U && business_events[0].simulated_running);
+            CHECK(business_events[1].command_id == 2U && business_events[1].simulated_running);
+            CHECK(g_failure == 0U);
+            return 0U;
+        case 31U:
+        {
+            uint32_t created;
+            CHECK(AppV3_StartServices(&created) == SYS_OK && created == 3U);
+            CHECK(scheduled_entry == AppV3_StorageRun);
+            scheduler = taskSCHEDULER_RUNNING;
+            CHECK(App_TasksReleaseBoot() == SYS_OK);
+            owner = RUNTIME_TARGET_CAMERA;
+            CHECK(AppV3_InitService(owner, context) == SYS_OK && AppV3_ReportInitialization(owner, SYS_OK) == SYS_OK);
+            owner = RUNTIME_TARGET_USB;
+            CHECK(AppV3_InitService(owner, context) == SYS_OK && AppV3_ReportInitialization(owner, SYS_OK) == SYS_OK);
+            owner = RUNTIME_TARGET_STORAGE;
+            run_storage_business = true;
+            notify_fails = true;
+            if (setjmp(task_exit) == 0)
+                scheduled_entry(scheduled_argument);
+            CHECK(waited == 4U && business_event_count == 2U && g_failure == 0U);
+            CHECK(business_events[0].simulated_running && business_events[0].command_id == 1U);
+            CHECK(!business_events[1].simulated_running && business_events[1].command_id == 2U);
+            return 0U;
+        }
+        default: break;
+    }
     if (scenario >= 19U)
     {
         scheduler = taskSCHEDULER_RUNNING;

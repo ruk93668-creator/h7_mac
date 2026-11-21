@@ -36,6 +36,8 @@ def main():
         # Only the host-side kernel build exposes the original send symbol to the fixture.
         if kernel / "queue.c" in command:
             command = [*command, "-DxQueueGenericSend=Test_RealQueueSend"]
+        if V3 / "Runtime/service_event_loop.c" in command:
+            command = [*command, "-DAppV3EventLoop_Subscribe=Test_RealEventSubscribe"]
         return real_run(command)
 
     harness.run = run_with_queue_fault_seam
@@ -58,7 +60,7 @@ def main():
         harness.cc = ["-" + optimization if flag in ("-O0", "-O2") else flag for flag in harness.cc]
         name = "app_v3_" + optimization
         harness.build(name, sources, "AppV3_TestRun")
-        for scenario in range(24):
+        for scenario in range(32):
             row = harness.execute(name, "AppV3_TestRun", scenario)
             row.pop("trace", None)
             results.append({"optimization": optimization, "id": scenario, **row})
