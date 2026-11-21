@@ -15,7 +15,9 @@
       "reads": {},
       "writes": [],
       "error": null,
-      "pc": "0x10000000"
+      "pc": "0x10000000",
+      "new_adapter_calls": 0,
+      "adapter_linked": false
     },
     {
       "case": 2,
@@ -31,7 +33,9 @@
       "reads": {},
       "writes": [],
       "error": null,
-      "pc": "0x10000000"
+      "pc": "0x10000000",
+      "new_adapter_calls": 0,
+      "adapter_linked": false
     },
     {
       "case": 3,
@@ -55,7 +59,9 @@
         }
       ],
       "error": null,
-      "pc": "0x10000000"
+      "pc": "0x10000000",
+      "new_adapter_calls": 0,
+      "adapter_linked": false
     },
     {
       "case": 4,
@@ -83,7 +89,9 @@
         }
       ],
       "error": null,
-      "pc": "0x10000000"
+      "pc": "0x10000000",
+      "new_adapter_calls": 0,
+      "adapter_linked": false
     },
     {
       "case": 5,
@@ -106,7 +114,9 @@
         }
       ],
       "error": null,
-      "pc": "0x10000000"
+      "pc": "0x10000000",
+      "new_adapter_calls": 0,
+      "adapter_linked": false
     },
     {
       "case": 6,
@@ -135,7 +145,9 @@
         }
       ],
       "error": null,
-      "pc": "0x10000000"
+      "pc": "0x10000000",
+      "new_adapter_calls": 0,
+      "adapter_linked": false
     },
     {
       "case": 7,
@@ -158,7 +170,9 @@
         }
       ],
       "error": null,
-      "pc": "0x10000000"
+      "pc": "0x10000000",
+      "new_adapter_calls": 0,
+      "adapter_linked": false
     },
     {
       "case": 8,
@@ -223,7 +237,9 @@
         }
       ],
       "error": null,
-      "pc": "0x10000000"
+      "pc": "0x10000000",
+      "new_adapter_calls": 0,
+      "adapter_linked": false
     },
     {
       "case": 9,
@@ -246,7 +262,9 @@
         }
       ],
       "error": null,
-      "pc": "0x10000000"
+      "pc": "0x10000000",
+      "new_adapter_calls": 0,
+      "adapter_linked": false
     }
   ],
   "commands": [
@@ -305,9 +323,71 @@
         "-I",
         "D:\\32\\STM32H7\\h7_mac_lifecycle\\Middlewares\\Third_Party\\FatFs",
         "-c",
+        "D:\\32\\STM32H7\\h7_mac_lifecycle\\Tests\\TinyUSBReplacement\\r2_reset_r1_wait_adapter.c",
+        "-o",
+        "D:\\32\\STM32H7\\h7_mac_lifecycle\\output\\TinyUSBReplacement\\r1b-waits-1795266219992145700\\r2_reset_r1_wait_adapter.o"
+      ],
+      "exit": 0,
+      "output": ""
+    },
+    {
+      "argv": [
+        "D:\\32\\ARM\\ARMCC\\Bin\\armcc.exe",
+        "--cpu",
+        "Cortex-M7",
+        "--c99",
+        "--gnu",
+        "--split_sections",
+        "-O0",
+        "-DTINYUSB_MODEL=1",
+        "-DSTM32H747xx",
+        "-DCORE_CM7",
+        "-I",
+        "D:\\32\\STM32H7\\h7_mac_lifecycle\\CM7\\TinyUSB",
+        "-I",
+        "D:\\32\\STM32H7\\h7_mac_lifecycle\\ThirdParty\\tinyusb\\src",
+        "-I",
+        "D:\\32\\STM32H7\\h7_mac_lifecycle\\CM7\\Core\\Inc",
+        "-I",
+        "D:\\32\\STM32H7\\h7_mac_lifecycle\\Drivers\\STM32H7xx_HAL_Driver\\Inc",
+        "-I",
+        "D:\\32\\STM32H7\\h7_mac_lifecycle\\Drivers\\STM32H7xx_HAL_Driver\\Inc\\Legacy",
+        "-I",
+        "D:\\32\\STM32H7\\h7_mac_lifecycle\\Drivers\\CMSIS\\Device\\ST\\STM32H7xx\\Include",
+        "-I",
+        "D:\\32\\STM32H7\\h7_mac_lifecycle\\Drivers\\CMSIS\\Include",
+        "-I",
+        "D:\\32\\STM32H7\\h7_mac_lifecycle\\Common\\Inc",
+        "-I",
+        "D:\\32\\STM32H7\\h7_mac_lifecycle\\Board\\Inc",
+        "-I",
+        "D:\\32\\STM32H7\\h7_mac_lifecycle\\CM7\\Application",
+        "-I",
+        "D:\\32\\STM32H7\\h7_mac_lifecycle\\CM7\\Service",
+        "-I",
+        "D:\\32\\STM32H7\\h7_mac_lifecycle\\CM7\\Device\\Inc",
+        "-I",
+        "D:\\32\\STM32H7\\h7_mac_lifecycle\\CM7\\Media\\Inc",
+        "-I",
+        "D:\\32\\STM32H7\\h7_mac_lifecycle\\CM7\\Platform",
+        "-I",
+        "D:\\32\\STM32H7\\h7_mac_lifecycle\\CM7\\BSP",
+        "-I",
+        "D:\\32\\STM32H7\\h7_mac_lifecycle\\CM7\\Framework",
+        "-I",
+        "D:\\32\\STM32H7\\h7_mac_lifecycle\\CM7\\Device\\Components\\OV5640",
+        "-I",
+        "D:\\32\\STM32H7\\h7_mac_lifecycle\\Middlewares\\ST\\STM32_USB_Device_Library\\Core\\Inc",
+        "-I",
+        "D:\\32\\STM32H7\\h7_mac_lifecycle\\Middlewares\\Third_Party\\FreeRTOS\\Source\\include",
+        "-I",
+        "D:\\32\\STM32H7\\h7_mac_lifecycle\\Middlewares\\Third_Party\\FreeRTOS\\Source\\portable\\RVDS\\ARM_CM7\\r0p1",
+        "-I",
+        "D:\\32\\STM32H7\\h7_mac_lifecycle\\Middlewares\\Third_Party\\FatFs",
+        "-c",
         "D:\\32\\STM32H7\\h7_mac_lifecycle\\Tests\\TinyUSBReplacement\\r1b_wait_test.c",
         "-o",
-        "D:\\32\\STM32H7\\h7_mac_lifecycle\\output\\TinyUSBReplacement\\r1b-waits-1795261921441767600\\r1b_wait_test.o"
+        "D:\\32\\STM32H7\\h7_mac_lifecycle\\output\\TinyUSBReplacement\\r1b-waits-1795266219992145700\\r1b_wait_test.o"
       ],
       "exit": 0,
       "output": ""
@@ -369,7 +449,7 @@
         "-c",
         "D:\\32\\STM32H7\\h7_mac_lifecycle\\ThirdParty\\tinyusb\\src\\portable\\synopsys\\dwc2\\dwc2_common.c",
         "-o",
-        "D:\\32\\STM32H7\\h7_mac_lifecycle\\output\\TinyUSBReplacement\\r1b-waits-1795261921441767600\\dwc2_common.o"
+        "D:\\32\\STM32H7\\h7_mac_lifecycle\\output\\TinyUSBReplacement\\r1b-waits-1795266219992145700\\dwc2_common.o"
       ],
       "exit": 0,
       "output": ""
@@ -431,7 +511,7 @@
         "-c",
         "D:\\32\\STM32H7\\h7_mac_lifecycle\\ThirdParty\\tinyusb\\src\\common\\tusb_fifo.c",
         "-o",
-        "D:\\32\\STM32H7\\h7_mac_lifecycle\\output\\TinyUSBReplacement\\r1b-waits-1795261921441767600\\tusb_fifo.o"
+        "D:\\32\\STM32H7\\h7_mac_lifecycle\\output\\TinyUSBReplacement\\r1b-waits-1795266219992145700\\tusb_fifo.o"
       ],
       "exit": 0,
       "output": ""
@@ -439,30 +519,32 @@
     {
       "argv": [
         "D:\\32\\ARM\\ARMCC\\Bin\\armlink.exe",
-        "D:\\32\\STM32H7\\h7_mac_lifecycle\\output\\TinyUSBReplacement\\r1b-waits-1795261921441767600\\r1b_wait_test.o",
-        "D:\\32\\STM32H7\\h7_mac_lifecycle\\output\\TinyUSBReplacement\\r1b-waits-1795261921441767600\\dwc2_common.o",
-        "D:\\32\\STM32H7\\h7_mac_lifecycle\\output\\TinyUSBReplacement\\r1b-waits-1795261921441767600\\tusb_fifo.o",
+        "D:\\32\\STM32H7\\h7_mac_lifecycle\\output\\TinyUSBReplacement\\r1b-waits-1795266219992145700\\r2_reset_r1_wait_adapter.o",
+        "D:\\32\\STM32H7\\h7_mac_lifecycle\\output\\TinyUSBReplacement\\r1b-waits-1795266219992145700\\r1b_wait_test.o",
+        "D:\\32\\STM32H7\\h7_mac_lifecycle\\output\\TinyUSBReplacement\\r1b-waits-1795266219992145700\\dwc2_common.o",
+        "D:\\32\\STM32H7\\h7_mac_lifecycle\\output\\TinyUSBReplacement\\r1b-waits-1795266219992145700\\tusb_fifo.o",
         "--entry",
         "Dwc2_Run",
         "--scatter",
         "D:\\32\\STM32H7\\h7_mac_lifecycle\\Tests\\EndpointLifecycle\\test.sct",
         "--map",
         "--list",
-        "D:\\32\\STM32H7\\h7_mac_lifecycle\\output\\TinyUSBReplacement\\r1b-waits-1795261921441767600\\dwc2.map",
+        "D:\\32\\STM32H7\\h7_mac_lifecycle\\output\\TinyUSBReplacement\\r1b-waits-1795266219992145700\\dwc2.map",
         "-o",
-        "D:\\32\\STM32H7\\h7_mac_lifecycle\\output\\TinyUSBReplacement\\r1b-waits-1795261921441767600\\dwc2.axf"
+        "D:\\32\\STM32H7\\h7_mac_lifecycle\\output\\TinyUSBReplacement\\r1b-waits-1795266219992145700\\dwc2.axf"
       ],
       "exit": 0,
       "output": ""
     }
   ],
-  "artifact": "D:\\32\\STM32H7\\h7_mac_lifecycle\\output\\TinyUSBReplacement\\r1b-waits-1795261921441767600\\dwc2.axf",
+  "artifact": "D:\\32\\STM32H7\\h7_mac_lifecycle\\output\\TinyUSBReplacement\\r1b-waits-1795266219992145700\\dwc2.axf",
   "hardware": "NOT_TESTED",
   "meaning": "Each call must return; actual firmware DWT deadline/clock validity decides failure. Emulator instruction budget remains only a test harness watchdog.",
   "sources": {
+    "Tests/TinyUSBReplacement/r2_reset_r1_wait_adapter.c": "cd51ca1870a1edc7c90ce8d5f3ee454abf4d9baf8a97984c0c157b9e43052de8",
     "Tests/TinyUSBReplacement/r1b_wait_test.c": "82650e275d9eb9658f351830f2924ad5dce5f2a6023a64f9168a7185a8a54342",
     "ThirdParty/tinyusb/src/portable/synopsys/dwc2/dwc2_common.c": "655929ad5fe7dfbca0f3fb4cfed0f4ddf0ef5295c86ed6f7de23b3e65702658a",
     "ThirdParty/tinyusb/src/common/tusb_fifo.c": "61f3f43caf0d8c9caa27edf0daf65e307199161fd194344a9f510f443d1a26bb",
-    "ThirdParty/tinyusb/src/portable/synopsys/dwc2/dcd_dwc2.c": "c580a6ff6aadb657779f8d32969de9c0aa40111ffd592350bc3ad4e32ac9d7c9"
+    "ThirdParty/tinyusb/src/portable/synopsys/dwc2/dcd_dwc2.c": "9825f06c6d938706339fdaeb33cbb8c9355cce9628a5ac15a069859d7e306f94"
   }
 }

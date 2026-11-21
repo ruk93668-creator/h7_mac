@@ -1,0 +1,50 @@
+[
+  {
+    "stage": "first full build",
+    "observed": "0 Error, 1 Warning: reset_class_done_generation set but never used",
+    "evidence": "r2-build-history-*.json and r2-build-r2-firmware-*.log",
+    "resolution": "generation now participates in END idempotence check; final build 0/0"
+  },
+  {
+    "stage": "new test loader",
+    "observed": "SyntaxError: unterminated string literal; split matched an embedded rows=[] string",
+    "evidence": "tool output; failure happened before JSON case emission",
+    "resolution": "split only at the actual newline-prefixed global rows declaration"
+  },
+  {
+    "stage": "native queue observation",
+    "observed": "KeyError: uxQueueMessagesWaiting; query function removed by linker",
+    "evidence": "r2-reset-r1-history-*.json",
+    "resolution": "read-only QueueDefinition DWARF offsets from the same AXF; no forced linkage or count writes"
+  },
+  {
+    "stage": "Class callback observer",
+    "observed": "duplicate entry observation when resuming the same paused first instruction",
+    "evidence": "r2-reset-r1-history-*.json",
+    "resolution": "pause after the first actual instruction for in-callback preemption; callbacks still run actual ARM code"
+  },
+  {
+    "stage": "event processing budget",
+    "observed": "Class count0 while END still legitimately queued behind old events",
+    "evidence": "r2-reset-r1-history-*.json",
+    "resolution": "helper waits for native Core retirement as well as DCD progress; preserve queue FIFO and per-run budget"
+  },
+  {
+    "stage": "legacy wait-only link",
+    "observed": "Undefined symbols dcd_event_reset_try / dcd_event_setup_fence / dcd_event_setup_try",
+    "evidence": "r1b-waits-compile-history-*.json",
+    "resolution": "one build dependency; fail-only unused USBD adapters stripped from final wait image; original nine assertions unchanged"
+  },
+  {
+    "stage": "adapter observation",
+    "observed": "KeyError: g_reset_r1_unused_hook_calls; counter and adapters were linker-stripped",
+    "evidence": "tool output; first-case emission not reached",
+    "resolution": "verify absence of all three functions when counter absent; no claim that an absent counter was executed"
+  },
+  {
+    "stage": "optional unused API",
+    "observed": "tud_task_stop absent from final RAM AXF",
+    "evidence": "r2-reset-r1-history-*.json",
+    "resolution": "direct API execution NOT_TESTED; retain source-reviewed nonblocking behavior and test queue primitive through real Reset paths"
+  }
+]

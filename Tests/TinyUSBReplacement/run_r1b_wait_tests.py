@@ -18,7 +18,7 @@ def run(cmd):
  p=subprocess.run(list(map(str,cmd)),capture_output=True,cwd=ROOT);s=(p.stdout+p.stderr).decode(errors='replace');commands.append(dict(argv=list(map(str,cmd)),exit=p.returncode,output=s));(HERE/'reports/r1b-waits-compile.json').write_text(json.dumps(commands,indent=2),encoding='utf-8')
  if p.returncode:raise RuntimeError(s)
 
-files=['Tests/TinyUSBReplacement/r1b_wait_test.c','ThirdParty/tinyusb/src/portable/synopsys/dwc2/dwc2_common.c','ThirdParty/tinyusb/src/common/tusb_fifo.c']
+files=['Tests/TinyUSBReplacement/r2_reset_r1_wait_adapter.c','Tests/TinyUSBReplacement/r1b_wait_test.c','ThirdParty/tinyusb/src/portable/synopsys/dwc2/dwc2_common.c','ThirdParty/tinyusb/src/common/tusb_fifo.c']
 objects=[]
 for f in files:
  o=OUT/(Path(f).stem+'.o');run(args+['-c',ROOT/f,'-o',o]);objects.append(o)

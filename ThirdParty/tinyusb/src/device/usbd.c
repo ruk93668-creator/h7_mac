@@ -139,9 +139,12 @@ typedef struct {
 } usbd_device_t;
 
 static usbd_device_t    _usbd_dev;
-// stamp of the newest SETUP queued: written only by dcd_event_handler(), the task only compares against it
+// Native SETUP eligibility; DWC2 fence/publication helpers serialize Task/IRQ updates.
 static volatile uint32_t _usbd_setup_seq;
 static volatile bool reset_retiring;
+static volatile uint32_t reset_fence_generation, reset_end_generation;
+static uint32_t reset_class_started_generation, reset_class_done_generation;
+static void reset_discard_stale_events(void);
 static volatile bool config_close_pending;
 static volatile bool unplug_close_pending;
 static bool soft_unplug;
@@ -441,7 +444,11 @@ static bool _usbd_task_stop;
 #endif
 
 TU_ATTR_ALWAYS_INLINE static inline bool queue_event(dcd_event_t const * event, bool in_isr) {
-  TU_ASSERT(osal_queue_send(_usbd_q, event, in_isr));
+#if CFG_TUSB_OS == OPT_OS_FREERTOS || CFG_TUSB_OS == OPT_OS_NONE
+  TU_VERIFY(osal_queue_try_send(_usbd_q, event, in_isr));
+#else
+  TU_VERIFY(osal_queue_send(_usbd_q, event, in_isr));
+#endif
   tud_event_hook_cb(event->rhport, event->event_id, in_isr);
   return true;
 }
@@ -775,20 +782,33 @@ static bool usbd_process_event(dcd_event_t* event) {
   switch (event->event_id) {
     case DCD_EVENT_BUS_RESET_START:
       if(event->bus_reset.generation!=dcd_reset_generation(event->rhport)) break;
-      if(reset_retiring || dcd_reset_pending(event->rhport)) break;
+      if(event->bus_reset.generation || reset_retiring || dcd_reset_pending(event->rhport)) break;
       TU_LOG_USBD("\r\n");
       usbd_reset(event->rhport);
       break;
 
-    case DCD_EVENT_BUS_RESET_END:
-      if(event->bus_reset.generation!=dcd_reset_generation(event->rhport) || dcd_reset_pending(event->rhport)) break;
+    case DCD_EVENT_BUS_RESET_END: {
+      uint32_t const generation = event->bus_reset.generation;
+      usbd_spin_lock(false);
+      if(generation!=dcd_reset_generation(event->rhport) || dcd_reset_pending(event->rhport) || usbd_failed() ||
+         (generation && (generation==reset_class_done_generation || generation==reset_class_started_generation))) {usbd_spin_unlock(false);break;}
+      if(generation) reset_class_started_generation=generation;
+      usbd_spin_unlock(false);
+      // The old hardware scope was retired before publication. No Class callback
+      // runs under BASEPRI. A newer Reset may preempt this old callback, but its
+      // fence/state cannot be overwritten by the old callback's final commit.
+      class_reset_drivers(event->rhport);
+      usbd_spin_lock(false);
+      if(generation!=dcd_reset_generation(event->rhport) || dcd_reset_pending(event->rhport) || usbd_failed()) {
+        usbd_spin_unlock(false);break;
+      }
+      configuration_reset_state();
+      _usbd_dev.speed=event->bus_reset.speed;
       reset_retiring=false;
-      TU_LOG_USBD(": %s Speed\r\n", tu_str_speed[event->bus_reset.speed]);
-      // TODO a DCD that reports both edges pays for two teardowns: track a per-rhport
-      // "start seen" flag and skip this reset, keeping it for the single-event DCDs.
-      usbd_reset(event->rhport);
-      _usbd_dev.speed = event->bus_reset.speed;
+      if(generation) reset_class_done_generation=generation;
+      usbd_spin_unlock(false);
       break;
+    }
 
     case DCD_EVENT_UNPLUGGED:
       // ISR already revoked old SETUP/completion eligibility. Class reset is
@@ -931,7 +951,7 @@ bool tud_task_ext(uint32_t timeout_ms, bool in_isr) {
   if (!tud_inited()) return true;
   if (in_isr) return false;
   dcd_task(_usbd_rhport);
-  if(dcd_reset_pending(_usbd_rhport)) return false;
+  if(dcd_reset_pending(_usbd_rhport)) {reset_discard_stale_events();return false;}
   if(!reset_retiring) usbd_poll_closure();
   if(usbd_failed()) return false;
 #if CFG_TUD_MSC
@@ -956,6 +976,8 @@ bool tud_task_ext(uint32_t timeout_ms, bool in_isr) {
 
   // Loop until there are no more events in the queue or CFG_TUD_TASK_EVENTS_PER_RUN is reached
   for (unsigned epr = 0;; epr++) {
+    // A Reset IRQ can preempt closure/Class work after the entry check above.
+    if(dcd_reset_pending(_usbd_rhport)) {reset_discard_stale_events();return false;}
     if (_usbd_task_stop) {
       _usbd_task_stop = false;
       TU_LOG_USBD("USBD task stop\r\n");
@@ -1008,17 +1030,14 @@ static void task_stop_call(void* param) {
 bool tud_task_stop(void) {
   TU_VERIFY(tud_inited());
 
-  // The flag is set by the usbd task itself, after the events queued before it: the send below is done
-  // before tud_task() can return and tud_deinit() delete the queue, and a send waiting on a full queue is
-  // released by the task draining it.
+  // The original consumer task sets the flag after prior queued events. A full
+  // queue returns false; the caller may retry, including when it is that task.
   dcd_event_t const event = {
     .rhport    = _usbd_rhport,
     .event_id  = USBD_EVENT_FUNC_CALL,
     .func_call = { .func = task_stop_call, .param = NULL },
   };
-  TU_VERIFY(osal_queue_send(_usbd_q, &event, false));
-  tud_event_hook_cb(event.rhport, event.event_id, false);
-  return true;
+  return queue_event(&event,false);
 }
 
 //--------------------------------------------------------------------+
@@ -1305,12 +1324,12 @@ static void usbd_poll_closure(void) {
     // OUT0 is never disabled as a generic endpoint. An active EP0 transaction
     // without normal completion cannot be retired on mere physical unplug.
     usbd_spin_lock(false);
-    if(usbd_failed() || !unplug_close_pending) {usbd_spin_unlock(false);return;}
+    if(reset_retiring || dcd_reset_pending(_usbd_rhport) || usbd_failed() || !unplug_close_pending) {usbd_spin_unlock(false);return;}
     if(!dcd_deinit_ready(_usbd_rhport)) {_usbd_abort_failed=true;usbd_spin_unlock(false);return;}
     usbd_spin_unlock(false);
     class_reset_drivers(_usbd_rhport); // proven old scope; no callbacks under BASEPRI
     usbd_spin_lock(false);
-    if(reset_retiring || usbd_failed() || !unplug_close_pending) {usbd_spin_unlock(false);return;}
+    if(reset_retiring || dcd_reset_pending(_usbd_rhport) || usbd_failed() || !unplug_close_pending) {usbd_spin_unlock(false);return;}
     bool physical_soft=soft_unplug;
     soft_unplug=false;
     if(physical_soft) dcd_disconnect(_usbd_rhport);
@@ -1321,9 +1340,13 @@ static void usbd_poll_closure(void) {
   }
   if(config_close_pending) {
     if(usbd_close_group(_usbd_rhport)!=DCD_ABORT_SUCCESS) return;
+    usbd_spin_lock(false);
+    bool const eligible_class = !reset_retiring && !dcd_reset_pending(_usbd_rhport) && !usbd_failed() && config_close_pending;
+    usbd_spin_unlock(false);
+    if(!eligible_class) return;
     class_reset_drivers(_usbd_rhport); // old nonzero references already retired
     usbd_spin_lock(false);
-    if(reset_retiring || usbd_failed() || unplug_close_pending || !config_close_pending) {usbd_spin_unlock(false);return;}
+    if(reset_retiring || dcd_reset_pending(_usbd_rhport) || usbd_failed() || unplug_close_pending || !config_close_pending) {usbd_spin_unlock(false);return;}
     tusb_control_request_t request=config_close_request;
     bool eligible=config_close_seq==usbd_setup_sequence() && !_usbd_unplugged;
     // A newer control request can be active while old non-control endpoints
@@ -1667,10 +1690,95 @@ static bool process_get_descriptor(uint8_t rhport, tusb_control_request_t const 
   }
 }
 
+// Reset publication is separate from the legacy void event API: queue-full is
+// a retryable result, not quiescence and not a blocking wait under the spinlock.
+static bool queue_event_try(dcd_event_t const* event, bool in_isr) {
+#if CFG_TUSB_OS == OPT_OS_FREERTOS || CFG_TUSB_OS == OPT_OS_NONE
+  return osal_queue_try_send(_usbd_q,event,in_isr);
+#else
+  (void)event;(void)in_isr;
+  return false; // no nonblocking contract has been supplied for another OS
+#endif
+}
+bool dcd_event_reset_try(uint8_t rhport, bool end, tusb_speed_t speed, bool in_isr) {
+  bool accepted=false, notify=false;
+  usbd_spin_lock(in_isr);
+  uint32_t const generation=dcd_reset_generation(rhport);
+  if(generation && !usbd_failed()) {
+    if(reset_end_generation==generation) accepted=true; // duplicate END/START is metadata only
+    else {
+      if(reset_fence_generation!=generation) {
+        if(_usbd_setup_seq==UINT32_MAX) {_usbd_abort_failed=true;usbd_spin_unlock(in_isr);return false;}
+        reset_fence_generation=generation;
+        reset_retiring=true;
+        tu_memclr(endpoint_generation,sizeof(endpoint_generation));
+        _usbd_setup_seq++;
+        _usbd_unplugged=false;
+      }
+      dcd_event_t event={.rhport=rhport,.event_id=end?DCD_EVENT_BUS_RESET_END:DCD_EVENT_BUS_RESET_START};
+      event.bus_reset.generation=generation;event.bus_reset.speed=speed;
+      accepted=queue_event_try(&event,in_isr);
+      notify=accepted;
+      if(accepted && end) reset_end_generation=generation;
+    }
+  }
+  usbd_spin_unlock(in_isr);
+  if(notify) tud_event_hook_cb(rhport,end?DCD_EVENT_BUS_RESET_END:DCD_EVENT_BUS_RESET_START,in_isr);
+  return accepted;
+}
+// Revoke older queued controls at RX, even when publication must be retried.
+// The native 32-bit sequence, not the wrapping DCD tag alone, carries identity.
+bool dcd_event_setup_fence(uint8_t rhport, bool in_isr) {
+  bool valid=false;
+  usbd_spin_lock(in_isr);
+  if(!usbd_failed() && !_usbd_unplugged) {
+    if(_usbd_setup_seq==UINT32_MAX) _usbd_abort_failed=true;
+    else {_usbd_setup_seq++;valid=true;}
+  }
+  usbd_spin_unlock(in_isr);
+  (void)rhport;
+  return valid;
+}
+bool dcd_event_setup_try(uint8_t rhport, uint8_t const* setup, uint8_t tag, bool in_isr) {
+  bool accepted=false;
+  usbd_spin_lock(in_isr);
+  if(!usbd_failed() && !_usbd_unplugged && !dcd_reset_pending(rhport) &&
+     dcd_edpt0_setup_begin(rhport,tag)) {
+    dcd_event_t event={.rhport=rhport,.event_id=DCD_EVENT_SETUP_RECEIVED};
+    event.setup_tagid=tag;event.setup_seq=_usbd_setup_seq;
+    memcpy(&event.setup_received,setup,8);
+    accepted=queue_event_try(&event,in_isr);
+  }
+  usbd_spin_unlock(in_isr);
+  if(accepted) tud_event_hook_cb(rhport,DCD_EVENT_SETUP_RECEIVED,in_isr);
+  return accepted;
+}
+static void reset_discard_stale_events(void) {
+  if(usbd_failed()) return; // freeze fault evidence; no post-failure queue cleanup
+#if CFG_TUSB_OS == OPT_OS_FREERTOS || CFG_TUSB_OS == OPT_OS_NONE
+  // Only the USB Task consumes this queue. Preserve deferred functions, unplug
+  // and current END: they cannot be discarded or called before Reset retirement.
+  for(unsigned n=0;n<8;n++) {
+    dcd_event_t head;
+    if(!osal_queue_peek(_usbd_q,&head)) break;
+    bool const stale=head.event_id==DCD_EVENT_XFER_COMPLETE || head.event_id==DCD_EVENT_SETUP_RECEIVED ||
+      head.event_id==DCD_EVENT_BUS_RESET_START || head.event_id==DCD_EVENT_SOF ||
+      head.event_id==DCD_EVENT_SUSPEND || head.event_id==DCD_EVENT_RESUME ||
+      (head.event_id==DCD_EVENT_BUS_RESET_END && head.bus_reset.generation!=dcd_reset_generation(head.rhport));
+    if(!stale || !osal_queue_receive(_usbd_q,&head,0)) break;
+  }
+#endif
+}
+
 //--------------------------------------------------------------------+
 // DCD Event Handler
 //--------------------------------------------------------------------+
 TU_ATTR_FAST_FUNC void dcd_event_handler(dcd_event_t const* event, bool in_isr) {
+  if ((event->event_id==DCD_EVENT_BUS_RESET_START || event->event_id==DCD_EVENT_BUS_RESET_END) && event->bus_reset.generation) {
+    if(event->bus_reset.generation==dcd_reset_generation(event->rhport))
+      (void)dcd_event_reset_try(event->rhport,event->event_id==DCD_EVENT_BUS_RESET_END,event->bus_reset.speed,in_isr);
+    return;
+  }
   if (usbd_failed()) return;
   bool send = false;
   switch (event->event_id) {
@@ -1855,7 +1963,9 @@ bool usbd_defer_func(osal_task_func_t func, void* param, bool in_isr) {
   event.func_call.func  = func;
   event.func_call.param = param;
 
-  return queue_event(&event, in_isr);
+  bool const accepted=queue_event(&event,in_isr);
+  if(!accepted) _usbd_abort_failed=true; // retained IO/class state, never lost completion as success
+  return accepted;
 }
 
 bool usbd_defer_func_after_queue(osal_task_func_t func, void* param) {

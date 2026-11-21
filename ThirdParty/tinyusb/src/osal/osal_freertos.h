@@ -276,6 +276,15 @@ TU_ATTR_ALWAYS_INLINE static inline bool osal_queue_send(osal_queue_t qhdl, void
   }
 }
 
+// Lifecycle publication from the queue consumer must never wait for itself.
+TU_ATTR_ALWAYS_INLINE static inline bool osal_queue_try_send(osal_queue_t qhdl, void const* data, bool in_isr) {
+  if (in_isr) return osal_queue_send(qhdl, data, true);
+  return xQueueSendToBack(qhdl, data, 0) != 0;
+}
+TU_ATTR_ALWAYS_INLINE static inline bool osal_queue_peek(osal_queue_t qhdl, void* data) {
+  return xQueuePeek(qhdl, data, 0) != 0;
+}
+
 TU_ATTR_ALWAYS_INLINE static inline bool osal_queue_empty(osal_queue_t qhdl) {
   return uxQueueMessagesWaiting(qhdl) == 0;
 }

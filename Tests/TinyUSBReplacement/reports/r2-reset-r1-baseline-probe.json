@@ -1,0 +1,16 @@
+{
+  "baseline": "f4dada109a9302a5eab66bcad8e2d7ad82a16738",
+  "artifact": "D:\\32\\STM32H7\\h7_mac_lifecycle\\output\\TinyUSBReplacement\\R2ResetClosure-review-28b17dae3c26\\h7_mac_CM7_TinyUSB_RAM.axf",
+  "axf_sha256": "28b17dae3c265752db075c2c93b6648d33414c14e6694685cd1d5c6433132c9b",
+  "observation": {
+    "event": 2,
+    "queue_count": 32,
+    "timeout": 4294967295,
+    "basepri": 80,
+    "phase": 7,
+    "source_before_reset": 536890240,
+    "source_at_send": 0
+  },
+  "meaning": "VERIFIED unsafe blocking native queue call in locked consumer context; execution intentionally suspended before blocking, NOT a real scheduler/hardware deadlock run",
+  "hardware": "NOT_TESTED"
+}

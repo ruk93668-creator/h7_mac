@@ -1,0 +1,148 @@
+{
+  "baseline": "f4dada109a9302a5eab66bcad8e2d7ad82a16738",
+  "full_build": "0 Error(s), 0 Warning(s)",
+  "bundle": "D:\\32\\STM32H7\\h7_mac_lifecycle\\output\\TinyUSBReplacement\\R2ResetClosureR1-review-9e751116e2d8",
+  "axf_sha256": "9e751116e2d85bb5159b4d4ddc99fb950c8ff1977682ecf97f1625f49bd53e09",
+  "sizes": {
+    "code": 53558,
+    "ro": 1106,
+    "rw": 348,
+    "zi": 25852
+  },
+  "unique_irq": {
+    "index": 117,
+    "entry": "0x8002da9"
+  },
+  "final_functions": {
+    "tud_deinit": "0x800a63d",
+    "dcd_deinit": "0x8003e8d",
+    "dcd_task": "0x800598d",
+    "dcd_deinit_ready": "0x8003f09",
+    "dcd_edpt_close_all_safe": "0x8004719",
+    "tud_disconnect": "0x800a7d5",
+    "tud_connect": "0x800a53d",
+    "__scatterload": "0x80002a1",
+    "reset_begin": "0x8009489",
+    "reset_poll": "0x8009ad1",
+    "handle_bus_reset": "0x80067d5",
+    "dcd_reset_pending": "0x80058d9",
+    "dcd_reset_generation": "0x80058cd",
+    "dcd_event_reset_try": "0x80051e5",
+    "dcd_event_setup_fence": "0x80052d5",
+    "dcd_event_setup_try": "0x8005321",
+    "xQueueGenericSend": "0x800c3a5",
+    "xQueuePeek": "0x800c675"
+  },
+  "old_test_sources_unchanged": [
+    "Tests/TinyUSBReplacement/build_r2.py",
+    "Tests/TinyUSBReplacement/check_r2_default.py",
+    "Tests/TinyUSBReplacement/collect_r2_closure_evidence.py",
+    "Tests/TinyUSBReplacement/collect_r2_reset_evidence.py",
+    "Tests/TinyUSBReplacement/compile_probe.py",
+    "Tests/TinyUSBReplacement/dwc2_test.c",
+    "Tests/TinyUSBReplacement/r1_dcd.c",
+    "Tests/TinyUSBReplacement/r1_msc.c",
+    "Tests/TinyUSBReplacement/r1_test.c",
+    "Tests/TinyUSBReplacement/r1b_core.c",
+    "Tests/TinyUSBReplacement/r1b_dcd.c",
+    "Tests/TinyUSBReplacement/r1b_wait_test.c",
+    "Tests/TinyUSBReplacement/run_dwc2_tests.py",
+    "Tests/TinyUSBReplacement/run_r1_tests.py",
+    "Tests/TinyUSBReplacement/run_r1b_tests.py",
+    "Tests/TinyUSBReplacement/run_r2_closure_tests.py",
+    "Tests/TinyUSBReplacement/run_r2_reset_tests.py",
+    "Tests/TinyUSBReplacement/run_stack_tests.py",
+    "Tests/TinyUSBReplacement/run_video_tests.py",
+    "Tests/TinyUSBReplacement/stack_test.c",
+    "Tests/TinyUSBReplacement/video_boundary.c",
+    "Tests/TinyUSBReplacement/video_test.c"
+  ],
+  "old_19_assertion_body_unchanged": true,
+  "production": {
+    "MDK-ARM/h7_mac_TinyUSB_RAM.uvprojx": "19e1e2b525b0e36ad8865656ff0f8817a8afead4dbc7726085c375e55d122352",
+    "ThirdParty/tinyusb/UPSTREAM.json": "0a3c541f99afc8fe024313b83f626a71adfa2cc47bc9b56f30d9a5831505c582",
+    "ThirdParty/tinyusb/src/device/dcd.h": "1e394abc93b7316701f26ef11bae81d5b347f07424e44e788c1b05ae9d438229",
+    "ThirdParty/tinyusb/src/device/usbd.c": "7985412cbc05669ce643cb968ab94adf6d5a998e3c0917459ef9395bdf9ea9f8",
+    "ThirdParty/tinyusb/src/osal/osal_freertos.h": "54628b35b310b7798db1d53692ad2a0bade545db8b81035bffb40cbf6b75ad92",
+    "ThirdParty/tinyusb/src/osal/osal_none.h": "5a97cd8174655ddb41037ef645298cab72f579063fefc5f8b375715fb06d7596",
+    "ThirdParty/tinyusb/src/portable/synopsys/dwc2/dcd_dwc2.c": "9825f06c6d938706339fdaeb33cbb8c9355cce9628a5ac15a069859d7e306f94"
+  },
+  "summaries": {
+    "r2-reset-r1": {
+      "cases": 29,
+      "passed": 29,
+      "assertions": 261
+    },
+    "r2-reset": {
+      "cases": 31,
+      "passed": 30,
+      "assertions": 574
+    },
+    "r2-closure": {
+      "cases": 25,
+      "passed": 24,
+      "assertions": 185
+    },
+    "r2-firmware-tests": {
+      "cases": 19,
+      "passed": 17,
+      "assertions": 114
+    },
+    "r1b": {
+      "cases": 33,
+      "passed": 33,
+      "assertions": 313
+    },
+    "stack": {
+      "cases": 12,
+      "passed": 12,
+      "assertions": 1679
+    },
+    "r1": {
+      "cases": 2,
+      "passed": 0,
+      "assertions": 3
+    }
+  },
+  "historical_contract_change": {
+    "tests": [
+      "Reset31 new SETUP during pending discarded"
+    ],
+    "old": "drop post-ENUM request and expect source0",
+    "new": "preserve and process captured SET_CONFIGURATION; subsequent unacked IN preemption remains gated",
+    "classification": "CONTRACT_CHANGED_REQUESTED plus existing EP0 IN preemption gate exposed; original assertions retained"
+  },
+  "active_reset": "VERIFIED: full AXF nonblocking Reset events and post-ENUM single-SETUP handoff; silicon NOT_TESTED",
+  "hardware": "NOT_TESTED",
+  "pdf_sha256": "61d07b67deb291aed8a5cf8019c94add0a1065318542e57b3287d2694b14bd60",
+  "old_wait_assertions_unchanged": true,
+  "baseline_probe": {
+    "baseline": "f4dada109a9302a5eab66bcad8e2d7ad82a16738",
+    "artifact": "D:\\32\\STM32H7\\h7_mac_lifecycle\\output\\TinyUSBReplacement\\R2ResetClosure-review-28b17dae3c26\\h7_mac_CM7_TinyUSB_RAM.axf",
+    "axf_sha256": "28b17dae3c265752db075c2c93b6648d33414c14e6694685cd1d5c6433132c9b",
+    "observation": {
+      "event": 2,
+      "queue_count": 32,
+      "timeout": 4294967295,
+      "basepri": 80,
+      "phase": 7,
+      "source_before_reset": 536890240,
+      "source_at_send": 0
+    },
+    "meaning": "VERIFIED unsafe blocking native queue call in locked consumer context; execution intentionally suspended before blocking, NOT a real scheduler/hardware deadlock run",
+    "hardware": "NOT_TESTED"
+  },
+  "new_case_summary": {
+    "cases": 29,
+    "passed": 29,
+    "assertions": 261
+  },
+  "ep0_preemption": "BLOCKED: outside Reset active EP0 IN preemption preserves source/fault; no hardware proof fabricated",
+  "artifact_manifest": {
+    "build.log": "4985df16a0dc45339c3a66813ea87c40ba747a88d798f2b02943f79314a33de0",
+    "h7_mac_CM7_TinyUSB_RAM.axf": "9e751116e2d85bb5159b4d4ddc99fb950c8ff1977682ecf97f1625f49bd53e09",
+    "h7_mac_CM7_TinyUSB_RAM.hex": "388664575da7834efe72ba4f1e0a2676e9db0a408b2c230ea326532538b9cc07",
+    "h7_mac_CM7_TinyUSB_RAM.map": "c45ae272b019aa5db152551411602e472b3017b54de7d1e4b86f9f3225f6a89f"
+  },
+  "wait_boundary_cases": 9
+}

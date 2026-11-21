@@ -478,7 +478,7 @@ static int8_t out_nak_owner = -1;
 // No class/backend ownership is cleared until reset proof and ENUMDNE.
 typedef struct {
   uint8_t phase, failed_phase, failure, retries;
-  bool enum_seen, rx_flushed, nak_seen, flush_observed;
+  bool enum_seen, rx_flushed, nak_seen, flush_observed, start_published, hardware_prepared;
   uint16_t in_wait, in_done, out_wait, out_done;
   uint32_t began_ms, began_cycle, phase_ms, phase_cycle, previous_cycle, clock_hz;
   uint32_t fault_gint, fault_grst, fault_dctl, flush_cycle;
@@ -486,6 +486,7 @@ typedef struct {
 static volatile reset_progress_t reset_progress;
 static volatile uint32_t reset_generation;
 static bool setup_rx_eligible;
+static volatile bool reset_setup_seen, reset_setup_done;
 static bool ep0_out_armed;
 static volatile uint8_t setup_tag;
 static void reset_poll(uint8_t rhport);
@@ -1048,7 +1049,16 @@ dcd_abort_result_t dcd_edpt_close_all_safe(uint8_t rhport) {
   return DCD_ABORT_SUCCESS;
 }
 void dcd_task(uint8_t rhport) {
-  if(dcd_reset_pending(rhport)) {reset_poll(rhport);return;}
+  if(dcd_reset_pending(rhport)) {reset_poll(rhport);if(dcd_reset_pending(rhport)) return;}
+  // Latest qualified SETUP uses the same native queue, after accepted Reset END.
+  // On queue pressure keep its existing eight-byte DCD setup storage and tag.
+  if(reset_setup_seen && reset_setup_done && !dcd_device_faulted(rhport)) {
+    uint8_t const tag=setup_tag;
+    bool const sent=dcd_event_setup_try(rhport,setup_buffer_data,tag,false);
+    usbd_spin_lock(false);
+    if(sent && tag==setup_tag) reset_setup_seen=reset_setup_done=false;
+    usbd_spin_unlock(false);
+  }
   if(closing_noncontrol && !dcd_device_faulted(rhport)) (void)dcd_edpt_close_all_safe(rhport);
 }
 static uint32_t retirement_events(dwc2_dep_t *ep,uint8_t n,uint8_t dir) {
@@ -1245,7 +1255,7 @@ void dcd_edpt_clear_stall(uint8_t rhport, uint8_t ep_addr) {
 //--------------------------------------------------------------------
 
 enum { RESET_RX_BEGIN=1, RESET_RX_WAIT, RESET_NAK_WAIT, RESET_OUT_WAIT,
-       RESET_TX_WAIT, RESET_NAK_RELEASE, RESET_ENUM_WAIT, RESET_FAST_WAIT,
+       RESET_TX_WAIT, RESET_NAK_RELEASE, RESET_ENUM_WAIT, RESET_FAST_WAIT, RESET_PUBLISH,
        RESET_FAILED=255 };
 static void reset_fail(uint8_t rhport,uint8_t why) {
   volatile reset_progress_t *r=&reset_progress;
@@ -1298,6 +1308,15 @@ static void handle_bus_reset(uint8_t rhport,bool out0_proved) {
     if(n) {d->epin[n].ctl &= ~EPCTL_USBAEP;d->epout[n].ctl &= ~EPCTL_USBAEP;}
     d->epout[n].ctl |= EPCTL_SNAK;
   }
+  dwc2_dcfg_t cfg={.value=d->dcfg};cfg.address=0;d->dcfg=cfg.value;
+  d->epin[0].ctl &= ~DIEPCTL0_MPSIZ_Msk; // fixed full-speed EP0 64
+  d->epout[0].ctl &= ~DOEPCTL0_MPSIZ_Msk;
+  d->epout[0].doeptsiz=3U<<DOEPTSIZ_STUPCNT_Pos;
+  reset_progress.hardware_prepared=true;
+  d->gintmsk |= GINTMSK_OTGINT|GINTMSK_USBRST|GINTMSK_ENUMDNEM|GINTMSK_IEPINT|GINTMSK_RXFLVLM;
+}
+// Called only after native END was accepted and all hardware facts revalidated.
+static void reset_retire_sources(void) {
   tu_memclr(xfer_status,sizeof(xfer_status));
   tu_memclr(bulk_cancel,sizeof(bulk_cancel));
   tu_memclr(rx_left,sizeof(rx_left));
@@ -1305,14 +1324,9 @@ static void handle_bus_reset(uint8_t rhport,bool out0_proved) {
   deferred_tx_mask=0;
   _dcd_data.ep0_pending[0]=_dcd_data.ep0_pending[1]=0;
   _dcd_data.sof_en=false;
-  dwc2_dcfg_t cfg={.value=d->dcfg};cfg.address=0;d->dcfg=cfg.value;
-  d->epin[0].ctl &= ~DIEPCTL0_MPSIZ_Msk; // fixed full-speed EP0 64
-  d->epout[0].ctl &= ~DOEPCTL0_MPSIZ_Msk;
-  d->epout[0].doeptsiz=3U<<DOEPTSIZ_STUPCNT_Pos;
   xfer_status[0][0].max_size=xfer_status[0][1].max_size=64;
   ep0_out_armed=false;
-  setup_rx_eligible=false; // a DONE crossing this boundary cannot revive old RX
-  d->gintmsk |= GINTMSK_OTGINT|GINTMSK_USBRST|GINTMSK_ENUMDNEM|GINTMSK_IEPINT|GINTMSK_RXFLVLM;
+  setup_rx_eligible=false;
 }
 static void reset_issue_rx(uint8_t rhport) {
   volatile reset_progress_t *r=&reset_progress;dwc2_regs_t *d=DWC2_REG(rhport);
@@ -1345,6 +1359,7 @@ static void reset_begin(uint8_t rhport) {
   tu_memclr((void*)r,sizeof(*r));reset_generation++;
   r->clock_hz=SystemCoreClock;r->began_cycle=r->previous_cycle=DWT->CYCCNT;r->began_ms=tusb_time_millis_api();
   reset_phase(empty ? RESET_FAST_WAIT : RESET_RX_BEGIN);
+  reset_setup_seen=reset_setup_done=false;
   setup_rx_eligible=false;ep0_out_armed=false;setup_tag++; // native 32-bit SETUP sequence also invalidates
   d->diepempmsk=0;
   if(empty) {
@@ -1370,7 +1385,7 @@ static void reset_begin(uint8_t rhport) {
     }
     reset_issue_rx(rhport); // single check/write, never wait in this ISR
   }
-  if(!r->failure) dcd_event_bus_signal(rhport,DCD_EVENT_BUS_RESET_START,true);
+  if(!r->failure) r->start_published=dcd_event_reset_try(rhport,false,TUSB_SPEED_FULL,true);
 }
 static void handle_enum_done(uint8_t rhport) {
   volatile reset_progress_t *r=&reset_progress;
@@ -1385,6 +1400,7 @@ static void reset_poll(uint8_t rhport) {
   if(SystemCoreClock!=r->clock_hz || now==r->previous_cycle ||
       !(DWT->CTRL & DWT_CTRL_CYCCNTENA_Msk) || !(CoreDebug->DEMCR & CoreDebug_DEMCR_TRCENA_Msk)) {reset_fail(rhport,28);return;}
   r->previous_cycle=now;
+  if(!r->start_published) r->start_published=dcd_event_reset_try(rhport,false,TUSB_SPEED_FULL,false);
   if((uint32_t)(tusb_time_millis_api()-r->began_ms)>=1000U || (uint32_t)(now-r->began_cycle)>=(r->clock_hz/1000U)*1000U) {reset_fail(rhport,38);return;}
   if((d->gintsts & GINTSTS_USBRST) || (d->gotgint & GOTGINT_SEDET)) {reset_fail(rhport,29);return;}
   if(r->phase==RESET_RX_BEGIN) {
@@ -1433,15 +1449,28 @@ static void reset_poll(uint8_t rhport) {
     const dwc2_dsts_t sts={.value=d->dsts};
     if(sts.enum_speed!=DCFG_SPEED_FULL_48MHZ && sts.enum_speed!=DCFG_SPEED_FULL_30_60MHZ) reset_fail(rhport,31);
     else {
-      handle_bus_reset(rhport,r->phase==RESET_ENUM_WAIT && r->rx_flushed && r->nak_seen);
-      if(!r->failure) {
-        dcd_event_bus_reset(rhport,TUSB_SPEED_FULL,false); // before new SETUP event
-        r->phase=0;
-      }
+      if(!r->hardware_prepared) handle_bus_reset(rhport,r->phase==RESET_ENUM_WAIT && r->rx_flushed && r->nak_seen);
+      if(!r->failure) reset_phase(RESET_PUBLISH);
     }
     usbd_spin_unlock(false);
   }
+  if(r->phase==RESET_PUBLISH) {
+    uint32_t const generation=reset_generation;
+    // No outer spinlock: the native result-bearing publisher uses only a zero-
+    // timeout queue send and invokes its notification hook outside its own lock.
+    bool const accepted=r->start_published && dcd_event_reset_try(rhport,true,TUSB_SPEED_FULL,false);
+    usbd_spin_lock(false);
+    if(generation!=reset_generation || r->failure || dcd_device_faulted(rhport) ||
+       (d->gintsts & GINTSTS_USBRST) || (d->gotgint & GOTGINT_SEDET)) {
+      if(!r->failure) reset_fail(rhport,29);
+    } else if(accepted) {
+      reset_retire_sources();
+      r->phase=0; // only accepted END plus hardware proof releases old references
+    } else if(reset_expired(50)) reset_fail(rhport,39);
+    usbd_spin_unlock(false);
+  }
 }
+
 bool dcd_edpt0_setup_begin(uint8_t rhport,uint8_t tag) {
   return !dcd_reset_pending(rhport) && !dcd_device_faulted(rhport) && tag==setup_tag &&
     !(DWC2_REG(rhport)->gintsts & (GINTSTS_USBRST|GINTSTS_ENUMDNE));
@@ -1528,12 +1557,36 @@ static void handle_rxflvl_irq(uint8_t rhport) {
   const uint8_t epnum = grxstsp.ep_ch_num;
 
   dwc2_dep_t* epout = &dwc2->epout[epnum];
-  if(dcd_reset_pending(rhport)) {
-    for(uint16_t i=0;i<(uint16_t)((grxstsp.byte_count+3U)/4U);i++) (void)*rx_fifo;
+  bool const setup_status=packet_status==GRXSTS_PKTSTS_SETUP_RX || packet_status==GRXSTS_PKTSTS_SETUP_DONE;
+  if(dcd_reset_pending(rhport) || (reset_setup_seen && setup_status)) {
+    bool const new_setup=epnum==0 && setup_status && !reset_progress.failure &&
+      (!dcd_reset_pending(rhport) || (reset_progress.enum_seen && reset_progress.rx_flushed));
+    if(new_setup && packet_status==GRXSTS_PKTSTS_SETUP_RX && grxstsp.byte_count!=8) {
+      for(uint16_t i=0;i<(uint16_t)((grxstsp.byte_count+3U)/4U);i++) (void)*rx_fifo;
+      reset_setup_seen=reset_setup_done=false;
+      if(dcd_reset_pending(rhport)) reset_fail(rhport,41);else dwc2_wait_fail();
+      return; // malformed hardware status cannot revive an older control
+    }
+    if(new_setup && packet_status==GRXSTS_PKTSTS_SETUP_RX && grxstsp.byte_count==8) {
+      uint32_t* setup=(uint32_t*)(uintptr_t)setup_buffer_data;
+      setup[0]=*rx_fifo;setup[1]=*rx_fifo;
+      setup_tag++;reset_setup_seen=dcd_event_setup_fence(rhport,true);reset_setup_done=false;
+    } else {
+      for(uint16_t i=0;i<(uint16_t)((grxstsp.byte_count+3U)/4U);i++) (void)*rx_fifo;
+      if(new_setup && packet_status==GRXSTS_PKTSTS_SETUP_DONE && reset_setup_seen) {
+        reset_setup_done=true;
+        epout->doeptsiz |= (3U<<DOEPTSIZ_STUPCNT_Pos);
+      }
+    }
     if(packet_status==GRXSTS_PKTSTS_GLOBAL_OUT_NAK && reset_progress.phase==RESET_NAK_WAIT) reset_progress.nak_seen=true;
-    if(packet_status==GRXSTS_PKTSTS_SETUP_RX || packet_status==GRXSTS_PKTSTS_SETUP_DONE) setup_rx_eligible=false;
-    epout->intr=epout->intr & (DOEPINT_XFRC|DOEPINT_SETUP|DOEPINT_STPKTRX);
-    return; // no old PIO buffer copy, class callback or SETUP notification
+    if(setup_status) setup_rx_eligible=false;
+    // The status pop is the sole owner of PIO SETUP/XFRC (also during Reset).
+    if(packet_status==GRXSTS_PKTSTS_SETUP_DONE) epout->intr=DOEPINT_SETUP|DOEPINT_STPKTRX;
+    else if(packet_status==GRXSTS_PKTSTS_RX_COMPLETE) {
+      uint32_t const quirk=(epnum==0 && quirk_v310a)?epout->intr & (DOEPINT_STPKTRX|DOEPINT_STSPHSRX):0;
+      epout->intr=DOEPINT_XFRC|quirk;
+    }
+    return; // no old PIO target write or Class call; new SETUP is not discarded
   }
 
   switch (packet_status) {
@@ -1542,7 +1595,7 @@ static void handle_rxflvl_irq(uint8_t rhport) {
       break;
 
     case GRXSTS_PKTSTS_SETUP_RX: {
-      setup_rx_eligible=true;ep0_out_armed=false;setup_tag++;
+      setup_rx_eligible=dcd_event_setup_fence(rhport,true);ep0_out_armed=false;setup_tag++;
       // Setup packet received
       uint32_t * setup = (uint32_t*)(uintptr_t) setup_buffer_data;
       // We can receive up to three setup packets in succession, but only the last one is valid.
@@ -1560,7 +1613,8 @@ static void handle_rxflvl_irq(uint8_t rhport) {
       if (edpt_is_enabled(&dwc2->epin[0])) {
         if (!edpt_disable(rhport, 0x80, false, true)) return;
       }
-      dcd_event_setup_received_tagid(rhport, setup_buffer_data, setup_tag,true);
+      if(!dcd_event_setup_try(rhport,setup_buffer_data,setup_tag,true))
+        reset_setup_seen=reset_setup_done=true; // preserve rather than assume host retry
       break;
     }
 
@@ -1607,19 +1661,17 @@ static void handle_rxflvl_irq(uint8_t rhport) {
       const uint32_t doepint = epout->doepint;
       epout->doepint = DOEPINT_XFRC;
 
-      if(epnum==0 && !ep0_out_armed) break; // stale/quirk completion owns no new buffer
+      // Retire synthetic flags even when no OUT buffer is armed. Such a status
+      // never becomes hardware_completed and cannot release an old buffer.
+      if (quirk_v310a && epnum==0 && (doepint & (DOEPINT_STPKTRX | DOEPINT_STSPHSRX))) {
+        epout->doepint = DOEPINT_STPKTRX | DOEPINT_STSPHSRX;
+        break;
+      }
+      if(epnum==0 && !ep0_out_armed) break;
       hardware_completed[epnum][0]=true;
       if (cancel_active(epnum,0)) {
         bulk_cancel[epnum][0].completed=true;
         break;
-      }
-      // v3.10a quirk (see top of function): the extra RX_COMPLETE flagged with Setup Packet Received (STPKTRX) or
-      // Status Phase Received for control write (STSPHSRX) is not a real OUT completion. Drop it
-      if (quirk_v310a) {
-        if (doepint & (DOEPINT_STPKTRX | DOEPINT_STSPHSRX)) {
-          epout->doepint = DOEPINT_STPKTRX | DOEPINT_STSPHSRX;
-          break;
-        }
       }
 
       xfer_ctl_t* xfer = XFER_CTL_BASE(epnum, TUSB_DIR_OUT);
@@ -1806,7 +1858,7 @@ static void handle_ep_irq(uint8_t rhport, uint8_t dir) {
           if(dir && (reset_progress.in_wait & TU_BIT(epnum))) reset_progress.in_done |= (uint16_t)TU_BIT(epnum);
           if(!dir && (reset_progress.out_wait & TU_BIT(epnum))) reset_progress.out_done |= (uint16_t)TU_BIT(epnum);
         }
-        epout->intr=intr.value;
+        epout->intr=(!is_dma && dir==TUSB_DIR_OUT)?intr.value & DOEPINT_EPDISD:intr.value;
         continue;
       }
 

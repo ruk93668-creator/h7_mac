@@ -216,10 +216,14 @@ bool dcd_edpt_iso_activate(uint8_t rhport, tusb_desc_endpoint_t const * desc_ep)
 
 // Called by DCD to notify device stack
 extern void dcd_event_handler(dcd_event_t const * event, bool in_isr);
+// Nonblocking publication with acceptance feedback. A false result retains DCD ownership.
+bool dcd_event_reset_try(uint8_t rhport, bool end, tusb_speed_t speed, bool in_isr);
+bool dcd_event_setup_fence(uint8_t rhport, bool in_isr);
+bool dcd_event_setup_try(uint8_t rhport, uint8_t const* setup, uint8_t tag, bool in_isr);
 
 // helper to send bus signal event
 TU_ATTR_ALWAYS_INLINE static inline void dcd_event_bus_signal (uint8_t rhport, dcd_eventid_t eid, bool in_isr) {
-  dcd_event_t event;
+  dcd_event_t event = {0};
   event.rhport = rhport;
   event.event_id = eid;
   if(eid==DCD_EVENT_BUS_RESET_START || eid==DCD_EVENT_BUS_RESET_END)
@@ -229,7 +233,7 @@ TU_ATTR_ALWAYS_INLINE static inline void dcd_event_bus_signal (uint8_t rhport, d
 
 // helper to send bus reset event
 TU_ATTR_ALWAYS_INLINE static inline  void dcd_event_bus_reset (uint8_t rhport, tusb_speed_t speed, bool in_isr) {
-  dcd_event_t event;
+  dcd_event_t event = {0};
   event.rhport = rhport;
   event.event_id = DCD_EVENT_BUS_RESET;
   event.bus_reset.speed = speed;
@@ -239,7 +243,7 @@ TU_ATTR_ALWAYS_INLINE static inline  void dcd_event_bus_reset (uint8_t rhport, t
 
 // helper to send setup received, tagged with setup_tagid for dcd_edpt0_setup_begin()
 TU_ATTR_ALWAYS_INLINE static inline void dcd_event_setup_received_tagid(uint8_t rhport, uint8_t const * setup, uint8_t setup_tagid, bool in_isr) {
-  dcd_event_t event;
+  dcd_event_t event = {0};
   event.rhport = rhport;
   event.event_id = DCD_EVENT_SETUP_RECEIVED;
   event.setup_tagid = setup_tagid;
@@ -259,7 +263,7 @@ TU_ATTR_ALWAYS_INLINE static inline void dcd_event_setup_received(uint8_t rhport
 
 // helper to send transfer complete event
 TU_ATTR_ALWAYS_INLINE static inline void dcd_event_xfer_complete (uint8_t rhport, uint8_t ep_addr, uint32_t xferred_bytes, uint8_t result, bool in_isr) {
-  dcd_event_t event;
+  dcd_event_t event = {0};
   event.rhport = rhport;
   event.event_id = DCD_EVENT_XFER_COMPLETE;
   event.xfer_complete.ep_addr = ep_addr;
@@ -270,7 +274,7 @@ TU_ATTR_ALWAYS_INLINE static inline void dcd_event_xfer_complete (uint8_t rhport
 }
 
 TU_ATTR_ALWAYS_INLINE static inline void dcd_event_sof(uint8_t rhport, uint32_t frame_count, bool in_isr) {
-  dcd_event_t event;
+  dcd_event_t event = {0};
   event.rhport = rhport;
   event.event_id = DCD_EVENT_SOF;
   event.sof.frame_count = frame_count;

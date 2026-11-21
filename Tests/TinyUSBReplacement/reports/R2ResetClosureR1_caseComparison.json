@@ -1,0 +1,868 @@
+{
+  "r2-reset": [
+    {
+      "name": "active OUT Reset and INQUIRY",
+      "old_passed": true,
+      "new_passed": true,
+      "old_error": null,
+      "new_error": null
+    },
+    {
+      "name": "active IN Reset and READ",
+      "old_passed": true,
+      "new_passed": true,
+      "old_error": null,
+      "new_error": null
+    },
+    {
+      "name": "IN OUT simultaneous Reset",
+      "old_passed": true,
+      "new_passed": true,
+      "old_error": null,
+      "new_error": null
+    },
+    {
+      "name": "EP0 OUT SETUP receiver remains enabled",
+      "old_passed": true,
+      "new_passed": true,
+      "old_error": null,
+      "new_error": null
+    },
+    {
+      "name": "EP0 IN and Reset",
+      "old_passed": true,
+      "new_passed": true,
+      "old_error": null,
+      "new_error": null
+    },
+    {
+      "name": "RX leftovers consumed by explicit flush",
+      "old_passed": true,
+      "new_passed": true,
+      "old_error": null,
+      "new_error": null
+    },
+    {
+      "name": "new SETUP during pending discarded",
+      "old_passed": true,
+      "new_passed": false,
+      "old_error": null,
+      "new_error": null
+    },
+    {
+      "name": "missing IN EPDISD",
+      "old_passed": true,
+      "new_passed": true,
+      "old_error": null,
+      "new_error": null
+    },
+    {
+      "name": "missing OUT EPDISD",
+      "old_passed": true,
+      "new_passed": true,
+      "old_error": null,
+      "new_error": null
+    },
+    {
+      "name": "missing Global NAK",
+      "old_passed": true,
+      "new_passed": true,
+      "old_error": null,
+      "new_error": null
+    },
+    {
+      "name": "RX Flush stuck",
+      "old_passed": true,
+      "new_passed": true,
+      "old_error": null,
+      "new_error": null
+    },
+    {
+      "name": "TX Flush stuck",
+      "old_passed": true,
+      "new_passed": true,
+      "old_error": null,
+      "new_error": null
+    },
+    {
+      "name": "ENUM before RX proof",
+      "old_passed": true,
+      "new_passed": true,
+      "old_error": null,
+      "new_error": null
+    },
+    {
+      "name": "repeat Reset pending",
+      "old_passed": true,
+      "new_passed": true,
+      "old_error": null,
+      "new_error": null
+    },
+    {
+      "name": "Reset group close overlap",
+      "old_passed": true,
+      "new_passed": true,
+      "old_error": null,
+      "new_error": null
+    },
+    {
+      "name": "Backend pending across Reset",
+      "old_passed": true,
+      "new_passed": true,
+      "old_error": null,
+      "new_error": null
+    },
+    {
+      "name": "late old events",
+      "old_passed": true,
+      "new_passed": true,
+      "old_error": null,
+      "new_error": null
+    },
+    {
+      "name": "three Reset reconfigurations",
+      "old_passed": true,
+      "new_passed": true,
+      "old_error": null,
+      "new_error": null
+    },
+    {
+      "name": "Reset Disconnect overlap",
+      "old_passed": true,
+      "new_passed": true,
+      "old_error": null,
+      "new_error": null
+    },
+    {
+      "name": "DWT stops during Reset",
+      "old_passed": true,
+      "new_passed": true,
+      "old_error": null,
+      "new_error": null
+    },
+    {
+      "name": "DWT wraps during Reset",
+      "old_passed": true,
+      "new_passed": true,
+      "old_error": null,
+      "new_error": null
+    },
+    {
+      "name": "RX first attempt stalls then retry succeeds",
+      "old_passed": true,
+      "new_passed": true,
+      "old_error": null,
+      "new_error": null
+    },
+    {
+      "name": "RX old CBW pending at reset",
+      "old_passed": true,
+      "new_passed": true,
+      "old_error": null,
+      "new_error": null
+    },
+    {
+      "name": "old Status queued across reset",
+      "old_passed": true,
+      "new_passed": true,
+      "old_error": null,
+      "new_error": null
+    },
+    {
+      "name": "old Reset END after new Session",
+      "old_passed": true,
+      "new_passed": true,
+      "old_error": null,
+      "new_error": null
+    },
+    {
+      "name": "old SETUP DONE without fresh RX",
+      "old_passed": true,
+      "new_passed": true,
+      "old_error": null,
+      "new_error": null
+    },
+    {
+      "name": "EP0 fresh descriptor after Reset",
+      "old_passed": true,
+      "new_passed": true,
+      "old_error": null,
+      "new_error": null
+    },
+    {
+      "name": "new SETUP arrives during RX flush",
+      "old_passed": true,
+      "new_passed": true,
+      "old_error": null,
+      "new_error": null
+    },
+    {
+      "name": "IRQ remains enabled across reset",
+      "old_passed": true,
+      "new_passed": true,
+      "old_error": null,
+      "new_error": null
+    },
+    {
+      "name": "Backend completion queued during Reset",
+      "old_passed": true,
+      "new_passed": true,
+      "old_error": null,
+      "new_error": null
+    },
+    {
+      "name": "Reset IRQ before Task transfer publication",
+      "old_passed": true,
+      "new_passed": true,
+      "old_error": null,
+      "new_error": null
+    }
+  ],
+  "r2-closure": [
+    {
+      "name": "OUT config zero then configure",
+      "old_passed": true,
+      "new_passed": true,
+      "old_error": null,
+      "new_error": null
+    },
+    {
+      "name": "IN config zero then configure",
+      "old_passed": true,
+      "new_passed": true,
+      "old_error": null,
+      "new_error": null
+    },
+    {
+      "name": "superseding descriptor keeps EP0 and no old status",
+      "old_passed": true,
+      "new_passed": true,
+      "old_error": null,
+      "new_error": null
+    },
+    {
+      "name": "new configuration supersedes old pending configuration",
+      "old_passed": true,
+      "new_passed": true,
+      "old_error": null,
+      "new_error": null
+    },
+    {
+      "name": "OUT Disconnect then legal reconnect",
+      "old_passed": true,
+      "new_passed": true,
+      "old_error": null,
+      "new_error": null
+    },
+    {
+      "name": "IN Disconnect then legal reconnect",
+      "old_passed": true,
+      "new_passed": true,
+      "old_error": null,
+      "new_error": null
+    },
+    {
+      "name": "active IN DeInit then Init and enumerate",
+      "old_passed": true,
+      "new_passed": true,
+      "old_error": null,
+      "new_error": null
+    },
+    {
+      "name": "active OUT DeInit then Init and enumerate",
+      "old_passed": true,
+      "new_passed": true,
+      "old_error": null,
+      "new_error": null
+    },
+    {
+      "name": "DeInit failure retains class and IRQ",
+      "old_passed": true,
+      "new_passed": true,
+      "old_error": null,
+      "new_error": null
+    },
+    {
+      "name": "DeInit pending keeps IRQ and pullup",
+      "old_passed": true,
+      "new_passed": true,
+      "old_error": null,
+      "new_error": null
+    },
+    {
+      "name": "Backend pending across unconfigure and configure",
+      "old_passed": true,
+      "new_passed": true,
+      "old_error": null,
+      "new_error": null
+    },
+    {
+      "name": "Backend pending refuses DeInit before any shutdown",
+      "old_passed": true,
+      "new_passed": true,
+      "old_error": null,
+      "new_error": null
+    },
+    {
+      "name": "missing Global NAK bounded failure retains source",
+      "old_passed": true,
+      "new_passed": true,
+      "old_error": null,
+      "new_error": null
+    },
+    {
+      "name": "missing Disable bounded failure retains source",
+      "old_passed": true,
+      "new_passed": true,
+      "old_error": null,
+      "new_error": null
+    },
+    {
+      "name": "old queued completion cannot affect new CBW",
+      "old_passed": true,
+      "new_passed": true,
+      "old_error": null,
+      "new_error": null
+    },
+    {
+      "name": "normal IN completion races group closure",
+      "old_passed": true,
+      "new_passed": true,
+      "old_error": null,
+      "new_error": null
+    },
+    {
+      "name": "Reset during group closure keeps controlled fault",
+      "old_passed": true,
+      "new_passed": true,
+      "old_error": null,
+      "new_error": null
+    },
+    {
+      "name": "active Bulk Bus Reset remains hardware BLOCKED",
+      "old_passed": false,
+      "new_passed": false,
+      "old_error": null,
+      "new_error": null
+    },
+    {
+      "name": "soft Disconnect then reconnect",
+      "old_passed": true,
+      "new_passed": true,
+      "old_error": null,
+      "new_error": null
+    },
+    {
+      "name": "ten direct DeInit Restart cycles",
+      "old_passed": true,
+      "new_passed": true,
+      "old_error": null,
+      "new_error": null
+    },
+    {
+      "name": "group clock stops during RX drain",
+      "old_passed": true,
+      "new_passed": true,
+      "old_error": null,
+      "new_error": null
+    },
+    {
+      "name": "two OUT endpoints share one NAK lease",
+      "old_passed": true,
+      "new_passed": true,
+      "old_error": null,
+      "new_error": null
+    },
+    {
+      "name": "foreign Global NAK owner fails without clearing it",
+      "old_passed": true,
+      "new_passed": true,
+      "old_error": null,
+      "new_error": null
+    },
+    {
+      "name": "EP0 active DeInit keeps IRQ and control source",
+      "old_passed": true,
+      "new_passed": true,
+      "old_error": null,
+      "new_error": null
+    },
+    {
+      "name": "Connect after DeInit refuses invalid rhport",
+      "old_passed": true,
+      "new_passed": true,
+      "old_error": null,
+      "new_error": null
+    }
+  ],
+  "r2-firmware-tests": [
+    {
+      "name": "complete image unique owner",
+      "old_passed": true,
+      "new_passed": true,
+      "old_error": null,
+      "new_error": null
+    },
+    {
+      "name": "FreeRTOS static queue and mutex",
+      "old_passed": true,
+      "new_passed": true,
+      "old_error": null,
+      "new_error": null
+    },
+    {
+      "name": "nested spin BASEPRI and IRQ admission",
+      "old_passed": true,
+      "new_passed": true,
+      "old_error": null,
+      "new_error": null
+    },
+    {
+      "name": "empty reset EP0 then configuration",
+      "old_passed": true,
+      "new_passed": true,
+      "old_error": null,
+      "new_error": null
+    },
+    {
+      "name": "Bulk OUT cancel and Controller restart",
+      "old_passed": true,
+      "new_passed": true,
+      "old_error": null,
+      "new_error": null
+    },
+    {
+      "name": "active Bulk Bus Reset boundary",
+      "old_passed": false,
+      "new_passed": false,
+      "old_error": null,
+      "new_error": null
+    },
+    {
+      "name": "active Disconnect boundary",
+      "old_passed": false,
+      "new_passed": false,
+      "old_error": null,
+      "new_error": null
+    },
+    {
+      "name": "DWT unavailable retains Buffer",
+      "old_passed": true,
+      "new_passed": true,
+      "old_error": null,
+      "new_error": null
+    },
+    {
+      "name": "RTOS tick deadline during CPU sleep",
+      "old_passed": true,
+      "new_passed": true,
+      "old_error": null,
+      "new_error": null
+    },
+    {
+      "name": "close already retired group",
+      "old_passed": true,
+      "new_passed": true,
+      "old_error": null,
+      "new_error": null
+    },
+    {
+      "name": "close active group preserves fault",
+      "old_passed": true,
+      "new_passed": true,
+      "old_error": null,
+      "new_error": null
+    },
+    {
+      "name": "RAM backend asynchronous completion",
+      "old_passed": true,
+      "new_passed": true,
+      "old_error": null,
+      "new_error": null
+    },
+    {
+      "name": "SCSI INQUIRY",
+      "old_passed": true,
+      "new_passed": true,
+      "old_error": null,
+      "new_error": null
+    },
+    {
+      "name": "SCSI TEST UNIT READY",
+      "old_passed": true,
+      "new_passed": true,
+      "old_error": null,
+      "new_error": null
+    },
+    {
+      "name": "SCSI READ CAPACITY",
+      "old_passed": true,
+      "new_passed": true,
+      "old_error": null,
+      "new_error": null
+    },
+    {
+      "name": "SCSI REQUEST SENSE",
+      "old_passed": true,
+      "new_passed": true,
+      "old_error": null,
+      "new_error": null
+    },
+    {
+      "name": "SCSI RAM WRITE then READ",
+      "old_passed": true,
+      "new_passed": true,
+      "old_error": null,
+      "new_error": null
+    },
+    {
+      "name": "GET_MAX_LUN and BOT Reset",
+      "old_passed": true,
+      "new_passed": true,
+      "old_error": null,
+      "new_error": null
+    },
+    {
+      "name": "EP0 descriptors and SET_ADDRESS",
+      "old_passed": true,
+      "new_passed": true,
+      "old_error": null,
+      "new_error": null
+    }
+  ],
+  "r1b": [
+    {
+      "name": "OUT SUCCESS",
+      "old_passed": true,
+      "new_passed": true,
+      "old_error": null,
+      "new_error": null
+    },
+    {
+      "name": "IN SUCCESS",
+      "old_passed": true,
+      "new_passed": true,
+      "old_error": null,
+      "new_error": null
+    },
+    {
+      "name": "OUT missing NAK bounded FAILED",
+      "old_passed": true,
+      "new_passed": true,
+      "old_error": null,
+      "new_error": null
+    },
+    {
+      "name": "OUT missing Disable bounded FAILED",
+      "old_passed": true,
+      "new_passed": true,
+      "old_error": null,
+      "new_error": null
+    },
+    {
+      "name": "IN missing NAK bounded FAILED",
+      "old_passed": true,
+      "new_passed": true,
+      "old_error": null,
+      "new_error": null
+    },
+    {
+      "name": "IN missing Disable bounded FAILED",
+      "old_passed": true,
+      "new_passed": true,
+      "old_error": null,
+      "new_error": null
+    },
+    {
+      "name": "IN FIFO flush bounded FAILED",
+      "old_passed": true,
+      "new_passed": true,
+      "old_error": null,
+      "new_error": null
+    },
+    {
+      "name": "OUT queued old RX drained",
+      "old_passed": true,
+      "new_passed": true,
+      "old_error": null,
+      "new_error": null
+    },
+    {
+      "name": "old queued XFRC cannot retire new transfer",
+      "old_passed": true,
+      "new_passed": true,
+      "old_error": null,
+      "new_error": null
+    },
+    {
+      "name": "duplicate cancel remains PENDING",
+      "old_passed": true,
+      "new_passed": true,
+      "old_error": null,
+      "new_error": null
+    },
+    {
+      "name": "other OUT can arm after NAK release",
+      "old_passed": true,
+      "new_passed": true,
+      "old_error": null,
+      "new_error": null
+    },
+    {
+      "name": "USB Reset during cancel retains old buffer",
+      "old_passed": true,
+      "new_passed": true,
+      "old_error": null,
+      "new_error": null
+    },
+    {
+      "name": "EP0 SETUP during OUT cancel",
+      "old_passed": true,
+      "new_passed": true,
+      "old_error": null,
+      "new_error": null
+    },
+    {
+      "name": "late raw XFRC before rearm refuses submit",
+      "old_passed": true,
+      "new_passed": true,
+      "old_error": null,
+      "new_error": null
+    },
+    {
+      "name": "real MSC IN BOT Reset deferred status",
+      "old_passed": true,
+      "new_passed": true,
+      "old_error": null,
+      "new_error": null
+    },
+    {
+      "name": "real MSC OUT BOT Reset deferred status",
+      "old_passed": true,
+      "new_passed": true,
+      "old_error": null,
+      "new_error": null
+    },
+    {
+      "name": "ten controller Stop Start cycles",
+      "old_passed": true,
+      "new_passed": true,
+      "old_error": null,
+      "new_error": null
+    },
+    {
+      "name": "controller reset stuck retains state",
+      "old_passed": true,
+      "new_passed": true,
+      "old_error": null,
+      "new_error": null
+    },
+    {
+      "name": "EP0 active IN setup ISR refuses wait",
+      "old_passed": true,
+      "new_passed": true,
+      "old_error": null,
+      "new_error": null
+    },
+    {
+      "name": "superseded BOT Reset never sends stale status",
+      "old_passed": true,
+      "new_passed": true,
+      "old_error": null,
+      "new_error": null
+    },
+    {
+      "name": "foreign Global NAK owner",
+      "old_passed": true,
+      "new_passed": true,
+      "old_error": null,
+      "new_error": null
+    },
+    {
+      "name": "release completion missing",
+      "old_passed": true,
+      "new_passed": true,
+      "old_error": null,
+      "new_error": null
+    },
+    {
+      "name": "normal IN XFRC queued before cancellation",
+      "old_passed": true,
+      "new_passed": true,
+      "old_error": null,
+      "new_error": null
+    },
+    {
+      "name": "old queued XFRC during pending",
+      "old_passed": true,
+      "new_passed": true,
+      "old_error": null,
+      "new_error": null
+    },
+    {
+      "name": "DWT clock unavailable",
+      "old_passed": true,
+      "new_passed": true,
+      "old_error": null,
+      "new_error": null
+    },
+    {
+      "name": "DWT clock stalls",
+      "old_passed": true,
+      "new_passed": true,
+      "old_error": null,
+      "new_error": null
+    },
+    {
+      "name": "Disconnect during pending",
+      "old_passed": true,
+      "new_passed": true,
+      "old_error": null,
+      "new_error": null
+    },
+    {
+      "name": "Reset latched before cancellation poll",
+      "old_passed": true,
+      "new_passed": true,
+      "old_error": null,
+      "new_error": null
+    },
+    {
+      "name": "Controller reset failure retains active source",
+      "old_passed": true,
+      "new_passed": true,
+      "old_error": null,
+      "new_error": null
+    },
+    {
+      "name": "DWT counter wrap during cancellation",
+      "old_passed": true,
+      "new_passed": true,
+      "old_error": null,
+      "new_error": null
+    },
+    {
+      "name": "shared TX flush fences other EP0 PIO producer",
+      "old_passed": true,
+      "new_passed": true,
+      "old_error": null,
+      "new_error": null
+    },
+    {
+      "name": "real MSC IN missing Disable Reset failure retains buffer and status",
+      "old_passed": true,
+      "new_passed": true,
+      "old_error": null,
+      "new_error": null
+    },
+    {
+      "name": "real MSC OUT missing NAK Reset failure retains buffer and status",
+      "old_passed": true,
+      "new_passed": true,
+      "old_error": null,
+      "new_error": null
+    }
+  ],
+  "stack": [
+    {
+      "name": "enumeration descriptors SET_ADDRESS GET_MAX_LUN",
+      "old_passed": true,
+      "new_passed": true,
+      "old_error": null,
+      "new_error": null
+    },
+    {
+      "name": "INQUIRY CBW/Data/CSW",
+      "old_passed": true,
+      "new_passed": true,
+      "old_error": null,
+      "new_error": null
+    },
+    {
+      "name": "multi-chunk READ10 3 sectors",
+      "old_passed": true,
+      "new_passed": true,
+      "old_error": null,
+      "new_error": null
+    },
+    {
+      "name": "RAM WRITE10 and READ10 roundtrip",
+      "old_passed": true,
+      "new_passed": true,
+      "old_error": null,
+      "new_error": null
+    },
+    {
+      "name": "12-byte REQUEST SENSE",
+      "old_passed": true,
+      "new_passed": true,
+      "old_error": null,
+      "new_error": null
+    },
+    {
+      "name": "BOT Reset holds pending_io buffer",
+      "old_passed": true,
+      "new_passed": true,
+      "old_error": null,
+      "new_error": null
+    },
+    {
+      "name": "Bus Reset reconfigure holds pending_io",
+      "old_passed": true,
+      "new_passed": true,
+      "old_error": null,
+      "new_error": null
+    },
+    {
+      "name": "repeated BOT Reset Clear HALT late IO",
+      "old_passed": true,
+      "new_passed": true,
+      "old_error": null,
+      "new_error": null
+    },
+    {
+      "name": "drained software Stop/Restart fake DCD",
+      "old_passed": true,
+      "new_passed": true,
+      "old_error": null,
+      "new_error": null
+    },
+    {
+      "name": "old completion after Bus Reset",
+      "old_passed": true,
+      "new_passed": true,
+      "old_error": null,
+      "new_error": null
+    },
+    {
+      "name": "EP0 SETUP preemption software queue",
+      "old_passed": true,
+      "new_passed": true,
+      "old_error": null,
+      "new_error": null
+    },
+    {
+      "name": "active Data IN BOT Reset actual stall-clear fallback",
+      "old_passed": true,
+      "new_passed": true,
+      "old_error": null,
+      "new_error": null
+    }
+  ],
+  "r1": [
+    {
+      "name": "real IN fail-closed Core fence",
+      "old_passed": false,
+      "new_passed": false,
+      "old_error": "Invalid memory read (UC_ERR_READ_UNMAPPED)",
+      "new_error": "Invalid memory read (UC_ERR_READ_UNMAPPED)"
+    },
+    {
+      "name": "real OUT fail-closed Core fence",
+      "old_passed": false,
+      "new_passed": false,
+      "old_error": null,
+      "new_error": null
+    }
+  ]
+}

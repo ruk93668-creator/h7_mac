@@ -207,6 +207,16 @@ TU_ATTR_ALWAYS_INLINE static inline bool osal_queue_send(osal_queue_t qhdl, void
   return success;
 }
 
+TU_ATTR_ALWAYS_INLINE static inline bool osal_queue_try_send(osal_queue_t qhdl, void const* data, bool in_isr) {
+  return osal_queue_send(qhdl, data, in_isr); // already nonblocking
+}
+TU_ATTR_ALWAYS_INLINE static inline bool osal_queue_peek(osal_queue_t qhdl, void* data) {
+  qhdl->interrupt_set(false);
+  bool const ok = tu_fifo_peek_n(&qhdl->ff, data, qhdl->item_size) == qhdl->item_size;
+  qhdl->interrupt_set(true);
+  return ok;
+}
+
 TU_ATTR_ALWAYS_INLINE static inline bool osal_queue_empty(osal_queue_t qhdl) {
   // Lock-free on purpose: also polled with interrupts enabled by the bare-metal tud/tuh_task fast path,
   // where a stale empty only defers the event to the next poll

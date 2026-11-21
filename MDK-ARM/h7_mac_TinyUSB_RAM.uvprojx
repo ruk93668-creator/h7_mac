@@ -45,14 +45,14 @@
             <NotGenerated>0</NotGenerated>
             <InvalidFlash>1</InvalidFlash>
           </TargetStatus>
-          <OutputDirectory>D:\32\STM32H7\h7_mac_lifecycle\output\TinyUSBReplacement\r2-firmware-1795261862637678800/</OutputDirectory>
+          <OutputDirectory>D:\32\STM32H7\h7_mac_lifecycle\output\TinyUSBReplacement\r2-firmware-1795266077879977900/</OutputDirectory>
           <OutputName>h7_mac_CM7_TinyUSB_RAM</OutputName>
           <CreateExecutable>1</CreateExecutable>
           <CreateLib>0</CreateLib>
           <CreateHexFile>1</CreateHexFile>
           <DebugInformation>1</DebugInformation>
           <BrowseInformation>0</BrowseInformation>
-          <ListingPath>D:\32\STM32H7\h7_mac_lifecycle\output\TinyUSBReplacement\r2-firmware-1795261862637678800/</ListingPath>
+          <ListingPath>D:\32\STM32H7\h7_mac_lifecycle\output\TinyUSBReplacement\r2-firmware-1795266077879977900/</ListingPath>
           <HexFormatSelection>1</HexFormatSelection>
           <Merge32K>0</Merge32K>
           <CreateBatchFile>0</CreateBatchFile>
