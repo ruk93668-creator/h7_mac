@@ -16,6 +16,9 @@ typedef struct
     uint32_t camera_completed, camera_dropped;
     uint32_t uvc_configure_calls, uvc_register_calls, usb_start_calls, usb_stop_calls, usb_cancel_calls;
     SysResult_t usb_stop_result, usb_result, usb_cancel_result, usb_stream_result;
+    uint32_t usb_plan_calls;
+    SysResult_t usb_configure_result, usb_register_result, usb_plan_result;
+    bool usb_register_partial, usb_core_stop_required;
     bool usb_configured, uvc_present, usb_frame_owned, endpoint_busy;
     uint32_t mount_calls, unmount_calls, recover_calls;
     SysResult_t mount_result, unmount_result, recover_result;

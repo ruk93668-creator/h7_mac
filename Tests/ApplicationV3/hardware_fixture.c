@@ -12,6 +12,7 @@ static bool s_camera_initialized, s_camera_running, s_camera_held;
 static CameraConfig_t s_camera_config;
 static CameraCaptureStopFacts_t s_camera_stop_facts;
 static uint8_t s_sample;
+static bool s_uvc_descriptor_ready, s_uvc_registered;
 
 uint32_t Platform_TimeGetMs(void)
 {
@@ -154,12 +155,32 @@ SysResult_t USB_Mode_SelectBootMode(UsbMode_t mode, SysResult_t (*register_class
 SysResult_t USB_UVC_Configure(const VideoStreamConfig_t *config)
 {
     (void)config;
-    return ++g_hardware.uvc_configure_calls == 1U ? SYS_OK : SYS_ERR_INVALID_STATE;
+    ++g_hardware.uvc_configure_calls;
+    if (s_uvc_descriptor_ready)
+        return SYS_ERR_INVALID_STATE;
+    if (g_hardware.usb_configure_result == SYS_OK)
+        s_uvc_descriptor_ready = true;
+    return g_hardware.usb_configure_result;
 }
 
 SysResult_t USB_UVC_Register(void)
 {
-    return ++g_hardware.uvc_register_calls == 1U ? SYS_OK : SYS_ERR_INVALID_STATE;
+    ++g_hardware.uvc_register_calls;
+    if (!s_uvc_descriptor_ready || s_uvc_registered || g_hardware.usb_core_stop_required)
+        return SYS_ERR_INVALID_STATE;
+    ++g_hardware.usb_plan_calls;
+    //模拟Usb_PlanEndpoints在IO/TIMEOUT时留下的Core独立停止状态
+    if (g_hardware.usb_plan_result == SYS_ERR_IO || g_hardware.usb_plan_result == SYS_ERR_TIMEOUT)
+        g_hardware.usb_core_stop_required = true;
+    if (g_hardware.usb_plan_result != SYS_OK)
+        return g_hardware.usb_plan_result;
+    if (g_hardware.usb_register_result != SYS_OK)
+    {
+        g_hardware.usb_core_stop_required = g_hardware.usb_register_partial;
+        return g_hardware.usb_register_result;
+    }
+    s_uvc_registered = true;
+    return SYS_OK;
 }
 
 SysResult_t USB_UVC_GetStreamStatus(UsbUvcStreamStatus_t *status)
@@ -183,6 +204,8 @@ void USB_UVC_Process(void)
 
 SysResult_t USB_Device_Start(void)
 {
+    if (!s_uvc_registered || g_hardware.usb_core_stop_required)
+        return SYS_ERR_INVALID_STATE;
     ++g_hardware.usb_start_calls;
     return SYS_OK;
 }
@@ -192,6 +215,7 @@ SysResult_t USB_Device_Stop(void)
     ++g_hardware.usb_stop_calls;
     if (g_hardware.usb_stop_result == SYS_OK)
     {
+        g_hardware.usb_core_stop_required = false;
         g_hardware.usb_configured = false;
         g_hardware.uvc_present = false;
     }

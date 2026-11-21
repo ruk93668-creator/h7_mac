@@ -61,9 +61,10 @@ def main():
         harness.cc = ["-" + optimization if flag in ("-O0", "-O2") else flag for flag in harness.cc]
         name = "app_v3_" + optimization
         harness.build(name, sources, "AppV3_TestRun")
-        for scenario in range(49):
+        for scenario in range(53):
             row = harness.execute(name, "AppV3_TestRun", scenario)
-            row.pop("trace", None)
+            if scenario < 49:
+                row.pop("trace", None)
             results.append({"optimization": optimization, "id": scenario, **row})
             print(results[-1], flush=True)
 

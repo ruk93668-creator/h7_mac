@@ -17,6 +17,8 @@
 #include <setjmp.h>
 
 volatile uint32_t g_failure;
+volatile uint32_t g_trace_count;
+volatile uint32_t g_trace[1][8];
 static RuntimeEventTarget_t owner = RUNTIME_TARGET_CONTROL;
 static BaseType_t scheduler = taskSCHEDULER_NOT_STARTED;
 static uint32_t critical_depth;
@@ -1352,6 +1354,151 @@ static uint32_t Test_HardwareReplyBackpressure(const AppV3Context_t *context)
     return 0U;
 }
 
+//记录测试夹具中的终结身份和停止次数，供冻结负对照复核
+static void Test_TraceUsbRollback(void)
+{
+    const AppV3ServiceEvent_t *event = &business_events[business_event_count - 1U];
+    g_trace[0][0] = event->command_id;
+    g_trace[0][1] = (uint32_t)event->hardware.state;
+    g_trace[0][2] = (uint32_t)event->result;
+    g_trace[0][3] = (uint32_t)event->hardware.first_fault;
+    g_trace[0][4] = g_hardware.usb_stop_calls;
+    g_trace[0][5] = g_hardware.uvc_register_calls;
+    g_trace[0][6] = g_hardware.usb_core_stop_required ? 1U : 0U;
+    g_trace[0][7] = g_hardware.usb_start_calls;
+    g_trace_count = 1U;
+}
+
+//描述符配置失败尚未进入Core，不需要STOP，配置可重新尝试
+static uint32_t Test_UsbConfigurationFailure(const AppV3Context_t *context)
+{
+    CHECK(Test_HardwareBoot(context) == 0U);
+    g_hardware.usb_configure_result = SYS_ERR_NOT_SUPPORTED;
+    CHECK(UsbService_Request(1U, USB_SERVICE_START, 0U) == SYS_OK);
+    CHECK(Test_ServiceStep(RUNTIME_TARGET_USB) == SYS_OK);
+    Test_PollHardware(RUNTIME_TARGET_USB);
+    Test_PollHardware(RUNTIME_TARGET_USB);
+    CHECK(Test_ReadHardwareResult(RUNTIME_TARGET_USB, 1U, APP_V3_HW_READY, SYS_ERR_NOT_SUPPORTED));
+    CHECK(business_events[0].hardware.first_fault == SYS_ERR_NOT_SUPPORTED);
+    CHECK(g_hardware.uvc_register_calls == 0U && g_hardware.usb_stop_calls == 0U);
+
+    g_hardware.usb_configure_result = SYS_OK;
+    CHECK(UsbService_Request(2U, USB_SERVICE_START, 0U) == SYS_OK);
+    CHECK(Test_ServiceStep(RUNTIME_TARGET_USB) == SYS_OK);
+    Test_PollHardware(RUNTIME_TARGET_USB);
+    g_hardware.usb_configured = true;
+    g_hardware.uvc_present = true;
+    Test_PollHardware(RUNTIME_TARGET_USB);
+    CHECK(Test_ReadHardwareResult(RUNTIME_TARGET_USB, 2U, APP_V3_HW_ACTIVE, SYS_OK));
+    CHECK(g_hardware.uvc_configure_calls == 2U && g_hardware.uvc_register_calls == 1U);
+    return 0U;
+}
+
+//注册部分失败或FIFO规划失败均可能留下Core停止义务
+static uint32_t Test_UsbRegisterRollback(const AppV3Context_t *context, bool plan_failure)
+{
+    SysResult_t original_error = plan_failure ? SYS_ERR_TIMEOUT : SYS_ERR_IO;
+    uint32_t consumed;
+
+    CHECK(Test_HardwareBoot(context) == 0U);
+    if (plan_failure)
+        g_hardware.usb_plan_result = original_error;
+    else
+    {
+        g_hardware.usb_register_result = original_error;
+        g_hardware.usb_register_partial = true;
+    }
+    CHECK(UsbService_Request(11U, USB_SERVICE_START, 0U) == SYS_OK);
+    CHECK(Test_ServiceStep(RUNTIME_TARGET_USB) == SYS_OK);
+    Test_PollHardware(RUNTIME_TARGET_USB);
+    CHECK(g_hardware.usb_core_stop_required && g_hardware.usb_start_calls == 0U &&
+        g_hardware.usb_plan_calls == 1U);
+
+    //STOP失败不能因Configured=false或Class不存在被当成完成
+    g_hardware.usb_stop_result = plan_failure ? SYS_ERR_BUSY : SYS_ERR_IO;
+    Test_PollHardware(RUNTIME_TARGET_USB);
+    if (plan_failure)
+    {
+        CHECK(AppV3Business_Drain(&consumed) == SYS_OK);
+        if (consumed != 0U)
+        {
+            Test_TraceUsbRollback();
+            CHECK(consumed == 0U);
+        }
+        g_hardware.usb_stop_result = SYS_ERR_TIMEOUT;
+        Test_PollHardware(RUNTIME_TARGET_USB);
+    }
+    CHECK(AppV3Business_Drain(&consumed) == SYS_OK && consumed == 1U && business_event_count == 1U);
+    Test_TraceUsbRollback();
+    CHECK(business_events[0].command_id == 11U && business_events[0].result == original_error &&
+        business_events[0].hardware.first_fault == original_error);
+    CHECK(business_events[0].hardware.state == APP_V3_HW_FAULT &&
+        g_hardware.usb_core_stop_required && g_hardware.usb_stop_calls == (plan_failure ? 2U : 1U));
+
+    CHECK(UsbService_Request(12U, USB_SERVICE_RECOVER, 0U) == SYS_OK);
+    CHECK(Test_ServiceStep(RUNTIME_TARGET_USB) == SYS_OK);
+    g_hardware.usb_stop_result = SYS_ERR_IO;
+    Test_PollHardware(RUNTIME_TARGET_USB);
+    CHECK(Test_ReadHardwareResult(RUNTIME_TARGET_USB, 12U, APP_V3_HW_FAULT, SYS_ERR_IO));
+    CHECK(business_events[1].hardware.first_fault == original_error && g_hardware.usb_core_stop_required);
+
+    CHECK(UsbService_Request(13U, USB_SERVICE_RECOVER, 0U) == SYS_OK);
+    CHECK(Test_ServiceStep(RUNTIME_TARGET_USB) == SYS_OK);
+    g_hardware.usb_stop_result = SYS_OK;
+    Test_PollHardware(RUNTIME_TARGET_USB);
+    CHECK(Test_ReadHardwareResult(RUNTIME_TARGET_USB, 13U, APP_V3_HW_READY, SYS_OK));
+    CHECK(!g_hardware.usb_core_stop_required && business_events[2].hardware.first_fault == original_error);
+
+    g_hardware.usb_register_result = SYS_OK;
+    g_hardware.usb_plan_result = SYS_OK;
+    CHECK(UsbService_Request(14U, USB_SERVICE_START, 0U) == SYS_OK);
+    CHECK(Test_ServiceStep(RUNTIME_TARGET_USB) == SYS_OK);
+    Test_PollHardware(RUNTIME_TARGET_USB);
+    g_hardware.usb_configured = true;
+    g_hardware.uvc_present = true;
+    Test_PollHardware(RUNTIME_TARGET_USB);
+    CHECK(Test_ReadHardwareResult(RUNTIME_TARGET_USB, 14U, APP_V3_HW_ACTIVE, SYS_OK));
+    CHECK(g_hardware.uvc_configure_calls == 1U && g_hardware.uvc_register_calls == 2U &&
+        g_hardware.usb_start_calls == 1U);
+    return 0U;
+}
+
+//Control满时原START FAULT不能丢失或被失败后的QUERY覆盖
+static uint32_t Test_UsbRegisterResultBackpressure(const AppV3Context_t *context)
+{
+    AppV3ServiceEvent_t event;
+    uint32_t consumed, command_index;
+
+    CHECK(Test_StartBusiness(context) == 0U);
+    for (command_index = 1U; command_index <= 4U; ++command_index)
+        CHECK(CameraService_Request(command_index, CAMERA_SERVICE_QUERY, 0U) == SYS_OK);
+    CHECK(Test_ServiceStep(RUNTIME_TARGET_CAMERA) == SYS_OK);
+    g_hardware.usb_plan_result = SYS_ERR_IO;
+    g_hardware.usb_stop_result = SYS_ERR_TIMEOUT;
+    owner = RUNTIME_TARGET_IPC;
+    CHECK(UsbService_Request(37U, USB_SERVICE_START, 0U) == SYS_OK);
+    CHECK(Test_ServiceStep(RUNTIME_TARGET_USB) == SYS_OK);
+    Test_PollHardware(RUNTIME_TARGET_USB);
+    Test_PollHardware(RUNTIME_TARGET_USB);
+
+    owner = RUNTIME_TARGET_IPC;
+    CHECK(AppV3Business_TakeResult(RUNTIME_TARGET_USB, 37U, &event) == SYS_ERR_BUSY);
+    owner = RUNTIME_TARGET_CONTROL;
+    CHECK(AppV3Business_Drain(&consumed) == SYS_OK && consumed == 4U);
+    CHECK(UsbService_Request(1U, USB_SERVICE_HARDWARE_QUERY, 0U) == SYS_OK);
+    CHECK(Test_ServiceStep(RUNTIME_TARGET_USB) == SYS_OK);
+    CHECK(AppV3Business_Drain(&consumed) == SYS_OK && consumed == 2U);
+    owner = RUNTIME_TARGET_IPC;
+    CHECK(AppV3Business_TakeResult(RUNTIME_TARGET_USB, 37U, &event) == SYS_OK &&
+        event.requester == RUNTIME_TARGET_IPC && event.service == RUNTIME_TARGET_USB &&
+        event.command_id == 37U && event.sequence == 1U && event.real_hardware &&
+        event.result == SYS_ERR_IO && event.hardware.first_fault == SYS_ERR_IO);
+    CHECK(event.hardware.state == APP_V3_HW_FAULT && g_hardware.usb_core_stop_required &&
+        g_hardware.usb_stop_calls == 1U);
+    CHECK(AppV3Business_TakeResult(RUNTIME_TARGET_USB, 37U, &event) == SYS_ERR_NOT_FOUND);
+    return 0U;
+}
+
 uint32_t AppV3_TestRun(uint32_t scenario)
 {
     const AppV3Context_t *context;
@@ -1474,6 +1621,10 @@ uint32_t AppV3_TestRun(uint32_t scenario)
         case 46U: return Test_CameraFrameReleaseFailure(context);
         case 47U: return Test_StorageMountFacts(context);
         case 48U: return Test_HardwareReplyBackpressure(context);
+        case 49U: return Test_UsbConfigurationFailure(context);
+        case 50U:
+        case 51U: return Test_UsbRegisterRollback(context, scenario == 51U);
+        case 52U: return Test_UsbRegisterResultBackpressure(context);
         default: break;
     }
     if (scenario >= 19U)
