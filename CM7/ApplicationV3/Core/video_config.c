@@ -54,12 +54,21 @@ SysResult_t VideoConfig_RequestUpdate(const VideoConfig_t *config)
 }
 
 //SD录像策略独立于USB目标FPS，不设置传感器时序
+//默认沿用产品SD卡的第三个MBR分区；测试工程可指定现有FAT分区
+#ifndef APP_STORAGE_PARTITION
+#define APP_STORAGE_PARTITION 3U
+#endif
+
+#if APP_STORAGE_PARTITION < 0 || APP_STORAGE_PARTITION > 4
+#error APP_STORAGE_PARTITION_must_be_between_zero_and_four
+#endif
+
 static const AppStorageConfig_t s_storage_config =
 {
     .record_fps = 25U,
 
     //当前SD卡使用第三个MBR分区，未格式化或改动卡布局
-    .partition = 3U,
+    .partition = APP_STORAGE_PARTITION,
 
     .segment_bytes = 4UL * 1024UL * 1024UL,
 
