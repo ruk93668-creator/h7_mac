@@ -216,8 +216,30 @@ static void BoardSmoke_Poll(void)
             return;
         }
         s_smoke_started = xTaskGetTickCount();
+#if APP_V3_BOARD_SMOKE == APP_V3_BOARD_SMOKE_USB
+        //第一次QUERY成功后留出主机绑定摄像头驱动的观察时间
+        if (step == 2U)
+        {
+            g_app_v3_board_smoke.state = APP_V3_SMOKE_OBSERVE;
+            return;
+        }
+#endif
         g_app_v3_board_smoke.state = APP_V3_SMOKE_SUBMIT;
     }
+
+#if APP_V3_BOARD_SMOKE == APP_V3_BOARD_SMOKE_USB
+    if (g_app_v3_board_smoke.state == APP_V3_SMOKE_OBSERVE)
+    {
+        //沿用原Control轮询，观察期间不阻塞任务，也不提前提交STOP
+        TickType_t now = xTaskGetTickCount();
+        if ((TickType_t)(now - s_smoke_started) < pdMS_TO_TICKS(APP_V3_BOARD_SMOKE_USB_OBSERVE_MS))
+            return;
+
+        //窗口结束后才开始计算STOP自身的提交与完成期限
+        s_smoke_started = now;
+        g_app_v3_board_smoke.state = APP_V3_SMOKE_SUBMIT;
+    }
+#endif
 
     //仅未成功入队的BUSY可以重试，重试沿用原命令编号
     if (g_app_v3_board_smoke.state != APP_V3_SMOKE_SUBMIT &&

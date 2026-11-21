@@ -231,6 +231,9 @@ static uint32_t business_event_count;
 static bool run_control_business, run_storage_business;
 #if APP_V3_BOARD_SMOKE != APP_V3_BOARD_SMOKE_OFF
 static uint32_t board_scenario;
+#if APP_V3_BOARD_SMOKE == APP_V3_BOARD_SMOKE_USB
+static uint32_t usb_observe_polls;
+#endif
 static void Test_BoardWait(void);
 #endif
 static SysResult_t Test_StoreEvent(const AppV3ServiceEvent_t *event, void *context);
@@ -1611,6 +1614,21 @@ static void Test_BoardWait(void)
             g_failure = __LINE__;
         return;
     }
+#if APP_V3_BOARD_SMOKE == APP_V3_BOARD_SMOKE_USB
+    if (state == APP_V3_SMOKE_OBSERVE)
+    {
+        UBaseType_t capacity, space;
+
+        //边界前一Tick仍不能入队STOP，避免仅凭尚未调用硬件判定队列为空
+        if (step != 2U || g_app_v3_board_smoke.received != 2U || g_hardware.usb_stop_calls != 0U ||
+            AppV3Queue_Query(fixture_loops[RUNTIME_TARGET_USB]->queue, &capacity, &space) != SYS_OK ||
+            space != capacity || usb_observe_polls >= 2U)
+            g_failure = __LINE__;
+        test_tick += usb_observe_polls == 0U ? pdMS_TO_TICKS(APP_V3_BOARD_SMOKE_USB_OBSERVE_MS) - 1U : 1U;
+        ++usb_observe_polls;
+        return;
+    }
+#endif
     if (state != APP_V3_SMOKE_WAIT || g_app_v3_board_smoke.received != step ||
         Test_CompleteBoardOperation(service, step) != 0U)
     {
@@ -1680,6 +1698,10 @@ static uint32_t Test_BoardSmoke(uint32_t scenario)
                 g_app_v3_board_smoke.events[1].hardware.primary == 1024U);
     }
 
+#if APP_V3_BOARD_SMOKE == APP_V3_BOARD_SMOKE_USB
+    //正常与STOP故障都必须先完成观察窗口，截止点随后走原STOP路径
+    CHECK(usb_observe_polls == 2U);
+#endif
     //验证真实结果的身份、顺序和唯一交付，外部噪声不占用测试快照
     CHECK(g_app_v3_board_smoke.received == expected_results);
     for (step = 0U; step < expected_results; ++step)
