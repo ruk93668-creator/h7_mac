@@ -26,12 +26,47 @@ static AppV3ServiceInstance_t s_camera, s_usb, s_storage;
 //服务清单是任务身份、启动入口、存储和配置的唯一来源。
 static const AppV3ServiceRecord_t s_services[] =
 {
-    {{RUNTIME_TARGET_CAMERA, "Camera", AppV3_ServiceRun, s_camera_stack, STACK_WORDS(s_camera_stack), 3U,
-       RUNTIME_EVENT_BOOT_READY}, AppV3_CameraInit, &s_camera},
-    {{RUNTIME_TARGET_USB, "Usb", AppV3_ServiceRun, s_usb_stack, STACK_WORDS(s_usb_stack), 4U,
-       RUNTIME_EVENT_BOOT_READY}, AppV3_UsbInit, &s_usb},
-    {{RUNTIME_TARGET_STORAGE, "Storage", AppV3_ServiceRun, s_storage_stack, STACK_WORDS(s_storage_stack), 1U,
-       RUNTIME_EVENT_BOOT_READY}, AppV3_StorageInit, &s_storage}
+    {
+        {
+            RUNTIME_TARGET_CAMERA,
+            "Camera",
+            AppV3_ServiceRun,
+            s_camera_stack,
+            STACK_WORDS(s_camera_stack),
+            3U,
+            RUNTIME_EVENT_BOOT_READY
+        },
+        AppV3_CameraInit,
+        &s_camera
+    },
+
+    {
+        {
+            RUNTIME_TARGET_USB,
+            "Usb",
+            AppV3_ServiceRun,
+            s_usb_stack,
+            STACK_WORDS(s_usb_stack),
+            4U,
+            RUNTIME_EVENT_BOOT_READY
+        },
+        AppV3_UsbInit,
+        &s_usb
+    },
+
+    {
+        {
+            RUNTIME_TARGET_STORAGE,
+            "Storage",
+            AppV3_ServiceRun,
+            s_storage_stack,
+            STACK_WORDS(s_storage_stack),
+            1U,
+            RUNTIME_EVENT_BOOT_READY
+        },
+        AppV3_StorageInit,
+        &s_storage
+    }
 };
 
 //按照固定服务清单创建任务并记录实际创建数量
@@ -97,11 +132,9 @@ SysResult_t AppV3_InitService(RuntimeEventTarget_t owner, const AppV3Context_t *
     if (AppV3Record_Query(owner, &result) != SYS_ERR_BUSY)
         return SYS_ERR_ALREADY_EXISTS;
     result = service->init(context);
+    //将原初始化失败发布给等待者，并用同一结果生成启动报告
     if (result != SYS_OK)
-    {
-        (void)AppV3Record_Fail(owner, result);
-        return result;
-    }
+        return AppV3Record_Fail(owner, result);
 
     //底层初始化完成以后才发布本次创建的只读服务对象。
     *service->instance = (AppV3ServiceInstance_t){owner, context};

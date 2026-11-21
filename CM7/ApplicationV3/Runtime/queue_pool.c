@@ -3,7 +3,8 @@
 #include "platform_sync.h"
 #include "queue.h"
 
-#define MESSAGE_SLOTS 6U
+//保留六条公共通道，另为Camera、USB和Storage各留一个四项槽
+#define MESSAGE_SLOTS 9U
 #define MESSAGE_DEPTH 4U
 #define SIGNAL_SLOTS 3U
 #define POOL_SIZE (MESSAGE_SLOTS + SIGNAL_SLOTS)

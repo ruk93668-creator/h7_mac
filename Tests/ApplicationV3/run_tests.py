@@ -30,6 +30,15 @@ def main():
                   not (flag == "-I" and harness.cc[index + 1] in legacy_includes)]
     harness.cc.extend(("-I", V3 / "Core", "-I", V3 / "Tasks", "-I", V3 / "Runtime", "--split_sections"))
     kernel = ROOT / "Middlewares/Third_Party/FreeRTOS/Source"
+    real_run = harness.run
+
+    def run_with_queue_fault_seam(command):
+        # Only the host-side kernel build exposes the original send symbol to the fixture.
+        if kernel / "queue.c" in command:
+            command = [*command, "-DxQueueGenericSend=Test_RealQueueSend"]
+        return real_run(command)
+
+    harness.run = run_with_queue_fault_seam
     sources = [
         Path(__file__).with_name("startup_test.c"),
         V3 / "Core/app_main.c",
@@ -49,7 +58,7 @@ def main():
         harness.cc = ["-" + optimization if flag in ("-O0", "-O2") else flag for flag in harness.cc]
         name = "app_v3_" + optimization
         harness.build(name, sources, "AppV3_TestRun")
-        for scenario in range(18):
+        for scenario in range(24):
             row = harness.execute(name, "AppV3_TestRun", scenario)
             row.pop("trace", None)
             results.append({"optimization": optimization, "id": scenario, **row})

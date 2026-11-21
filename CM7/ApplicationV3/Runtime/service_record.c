@@ -85,26 +85,31 @@ static SysResult_t Record_Publish(RuntimeEventTarget_t owner,
     const AppV3ServiceInstance_t *instance, SysResult_t result)
 {
     RecordSlot_t *slot = Record_Find(owner);
-    uint32_t saved, token = 1U;
+    uint32_t token = 1U;
+    SysResult_t signal_result;
 
     if (slot == NULL)
         return SYS_ERR_INVALID_ARG;
     if (!Record_TaskContext() || !App_MessagesIsOwner(owner))
         return SYS_ERR_INVALID_STATE;
-    saved = Record_Lock();
-    //已发布状态不允许被重复初始化覆盖
+
+    //Record没有ISR访问者。使用内核临界区把信号提交和状态发布绑定在同一次任务调度边界上
+    taskENTER_CRITICAL();
     if (slot->state != RECORD_WAITING)
     {
-        Record_Unlock(saved);
+        taskEXIT_CRITICAL();
         return SYS_ERR_ALREADY_EXISTS;
     }
 
-    //先发布对象和结果，再唤醒等待者。非破坏性 Peek 让多位等待者看到同一结果。
-    slot->instance = instance;
+    //信号槽私有且销毁时已排空。即使提交异常，也必须冻结实际失败并释放临界区
+    signal_result = AppV3Queue_Put(slot->signal, &token, 0U);
+    if (result == SYS_OK && signal_result != SYS_OK)
+        result = signal_result;
+    slot->instance = result == SYS_OK ? instance : NULL;
     slot->result = result;
     slot->state = result == SYS_OK ? RECORD_READY : RECORD_FAILED;
-    Record_Unlock(saved);
-    return AppV3Queue_Put(slot->signal, &token, 0U);
+    taskEXIT_CRITICAL();
+    return result;
 }
 
 //发布与服务身份匹配的只读实例
@@ -186,7 +191,8 @@ SysResult_t AppV3Record_Open(RuntimeEventTarget_t owner, TickType_t timeout, App
     saved = Record_Lock();
     //消费等待结果后解除销毁门禁，并在同一临界区取得引用
     --slot->waiters;
-    if (result == SYS_OK)
+    //信号失败时，已在等待的任务最迟在自己的期限到达后读取真实失败
+    if (result == SYS_OK || slot->state == RECORD_FAILED)
         result = Record_Acquire(slot, owner, task, out);
     Record_Unlock(saved);
     return result;
@@ -260,11 +266,13 @@ SysResult_t AppV3Record_Destroy(RuntimeEventTarget_t owner)
     Record_Unlock(saved);
     result = AppV3Queue_Get(slot->signal, &token, 0U);
     saved = Record_Lock();
-    if (result == SYS_OK)
+    //FAILED允许信号未入队，等待者退出后仍可撤回该记录
+    if (result == SYS_OK || (old_state == RECORD_FAILED && result == SYS_ERR_BUSY))
     {
         //就绪信号已经取走，新等待者可以等待下一次发布
         slot->instance = NULL;
         slot->state = RECORD_WAITING;
+        result = SYS_OK;
     }
     else
         slot->state = old_state;

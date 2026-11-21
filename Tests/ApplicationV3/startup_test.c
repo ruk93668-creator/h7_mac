@@ -15,7 +15,7 @@ volatile uint32_t g_failure;
 static RuntimeEventTarget_t owner = RUNTIME_TARGET_CONTROL;
 static BaseType_t scheduler = taskSCHEDULER_NOT_STARTED;
 static uint32_t critical_depth;
-static bool notify_fails;
+static bool notify_fails, event_hint, count_event_hints;
 static uint32_t exception, primask;
 static uint32_t irq_priority = configLIBRARY_MAX_SYSCALL_INTERRUPT_PRIORITY;
 static TickType_t test_tick;
@@ -24,6 +24,25 @@ static AppV3Queue_t pinned_queue;
 static SysResult_t during_wait;
 static bool record_probe;
 static const AppV3Context_t *record_context;
+static SysResult_t record_probe_expected;
+static bool reject_next_queue_send;
+static uint32_t rejected_queue_sends;
+
+BaseType_t Test_RealQueueSend(QueueHandle_t queue, const void *item, TickType_t timeout,
+    BaseType_t position);
+
+//只拦截专项点上的一次提交，其余收发使用真实FreeRTOS队列
+BaseType_t xQueueGenericSend(QueueHandle_t queue, const void *item, TickType_t timeout,
+    BaseType_t position)
+{
+    if (reject_next_queue_send)
+    {
+        reject_next_queue_send = false;
+        ++rejected_queue_sends;
+        return errQUEUE_FULL;
+    }
+    return Test_RealQueueSend(queue, item, timeout, position);
+}
 
 TaskHandle_t xTaskGetCurrentTaskHandle(void)
 {
@@ -96,7 +115,8 @@ BaseType_t xTaskGetSchedulerState(void)
 SysResult_t RuntimeEvent_Post(RuntimeEventTarget_t target, uint32_t events)
 {
     (void)target;
-    (void)events;
+    if (count_event_hints && !notify_fails && (events & RUNTIME_EVENT_WAKE) != 0U)
+        event_hint = true;
     return notify_fails ? SYS_ERR_IO : SYS_OK;
 }
 
@@ -126,7 +146,7 @@ void vTaskSuspendAll(void)
     {
         RuntimeEventTarget_t saved_owner = owner;
         owner = RUNTIME_TARGET_CAMERA;
-        if (AppV3_InitService(owner, record_context) != SYS_OK ||
+        if (AppV3_InitService(owner, record_context) != record_probe_expected ||
             AppV3Record_Destroy(owner) != SYS_ERR_BUSY)
             g_failure = __LINE__;
         owner = saved_owner;
@@ -195,6 +215,7 @@ static unsigned int scheduled_priority, created_threads, fail_thread;
 static uint32_t scheduled_stack_words;
 static bool event_test;
 static unsigned int event_count;
+static uint32_t event_delays, event_wait_ms, event_callback_calls;
 static bool check_boot_order, framework_ready;
 static TaskFunction_t scheduled_entry;
 static void *scheduled_argument;
@@ -271,7 +292,11 @@ SysResult_t App_EventsReleaseBoot(void)
 
 void vTaskDelay(TickType_t ticks)
 {
-    (void)ticks;
+    if (event_test && ticks == 1U)
+    {
+        ++event_delays;
+        return;
+    }
     g_failure = __LINE__;
     longjmp(task_exit, 1);
 }
@@ -281,11 +306,20 @@ SysResult_t App_EventsWait(RuntimeEventTarget_t target, uint32_t timeout_ms, uin
     if (event_test)
     {
         ++waited;
+        event_wait_ms += timeout_ms;
+        if (event_hint)
+        {
+            event_hint = false;
+            *events = RUNTIME_EVENT_WAKE;
+            return SYS_OK;
+        }
         return SYS_ERR_TIMEOUT;
     }
 
     if (target == RUNTIME_TARGET_CONTROL)
     {
+        if (timeout_ms == 0U)
+            return SYS_ERR_TIMEOUT;
         if (timeout_ms == 100U && waited++ == 0U)
         {
             test_tick += pdMS_TO_TICKS(1000U);
@@ -337,6 +371,183 @@ static SysResult_t Test_QueueReadable(AppV3Queue_t queue, void *context)
     return SYS_OK;
 }
 
+//私有槽全部占用后，逐条验证原业务通道的收发身份和消息
+static uint32_t Test_ExistingMessageChannels(void)
+{
+    static const struct
+    {
+        AppChannel_t channel;
+        RuntimeEventTarget_t sender;
+        RuntimeEventTarget_t receiver;
+    } routes[] =
+    {
+        {APP_CHANNEL_CAMERA_COMMAND, RUNTIME_TARGET_CONTROL, RUNTIME_TARGET_CAMERA},
+        {APP_CHANNEL_USB_COMMAND, RUNTIME_TARGET_CONTROL, RUNTIME_TARGET_USB},
+        {APP_CHANNEL_CONTROL, RUNTIME_TARGET_CAMERA, RUNTIME_TARGET_CONTROL},
+        {APP_CHANNEL_TO_CAMERA, RUNTIME_TARGET_USB, RUNTIME_TARGET_CAMERA},
+        {APP_CHANNEL_TO_USB, RUNTIME_TARGET_CAMERA, RUNTIME_TARGET_USB}
+    };
+    AppMessage_t message = {.type = APP_MESSAGE_START};
+    uint32_t route_index;
+    for (route_index = 0U; route_index < sizeof(routes) / sizeof(routes[0]); ++route_index)
+    {
+        owner = routes[route_index].sender;
+        message.source = owner;
+        message.command_id = route_index + 1U;
+        CHECK(App_MessagesSend(routes[route_index].channel, &message) == SYS_OK);
+        owner = routes[route_index].receiver;
+        CHECK(App_MessagesReceive(routes[route_index].channel, &message) &&
+            message.source == routes[route_index].sender && message.command_id == route_index + 1U);
+    }
+    owner = RUNTIME_TARGET_CONTROL;
+    return 0U;
+}
+
+//完成原任务组织、BOOT和三个实际Service初始化后审计两个静态池
+static uint32_t Test_PrivateQueuesAfterStartup(void)
+{
+    static const RuntimeEventTarget_t service_owners[] =
+    {
+        RUNTIME_TARGET_CAMERA, RUNTIME_TARGET_USB, RUNTIME_TARGET_STORAGE
+    };
+    AppV3Queue_t service_queues[3U], excess, startup;
+    AppV3RecordRef_t references[3U] = {{0}};
+    AppMessage_t message = {.type = APP_MESSAGE_START};
+    UBaseType_t capacity, remaining;
+    uint32_t service_index;
+
+    check_boot_order = true;
+    CHECK(App_TasksCreate() == SYS_OK && g_app_tasks_debug.created_tasks == 5U);
+    CHECK(App_Init() == SYS_OK);
+    CHECK(App_TasksRecordInitialization(SYS_OK) == SYS_OK);
+    scheduler = taskSCHEDULER_RUNNING;
+    CHECK(App_TasksReleaseBoot() == SYS_OK && g_app_tasks_debug.boot_released == 1U);
+    for (service_index = 0U; service_index < 3U; ++service_index)
+    {
+        owner = service_owners[service_index];
+        CHECK(AppV3_InitService(owner, AppV3_GetContext()) == SYS_OK);
+        CHECK(AppV3_ReportInitialization(owner, SYS_OK) == SYS_OK);
+    }
+    owner = RUNTIME_TARGET_CONTROL;
+    CHECK(AppV3_DrainInitialization() == SYS_OK && published_count == 1U && published.result == SYS_OK);
+    CHECK(AppV3_GetStartupQueue(&startup) == SYS_OK);
+    CHECK(AppV3Queue_Query(startup, &capacity, &remaining) == SYS_OK && capacity == 4U && remaining == 4U);
+    CHECK(AppV3Queue_Alloc(sizeof(uint32_t), 1U, &excess) == SYS_ERR_NO_RESOURCE);
+
+    //从各自真实任务身份申请队列，同时保留三个已发布Record
+    for (service_index = 0U; service_index < 3U; ++service_index)
+    {
+        CHECK(AppV3Record_Open(service_owners[service_index], 0U, &references[service_index]) == SYS_OK);
+        owner = service_owners[service_index];
+        CHECK(AppV3Queue_Alloc(sizeof(message), 4U, &service_queues[service_index]) == SYS_OK);
+        message.command_id = service_index + 1U;
+        CHECK(AppV3Queue_Put(service_queues[service_index], &message, 0U) == SYS_OK);
+        owner = RUNTIME_TARGET_CONTROL;
+    }
+    CHECK(AppV3Queue_Alloc(sizeof(message), 4U, &excess) == SYS_ERR_NO_RESOURCE);
+    CHECK(Test_ExistingMessageChannels() == 0U);
+    for (service_index = 0U; service_index < 3U; ++service_index)
+    {
+        CHECK(AppV3Queue_Get(service_queues[service_index], &message, 0U) == SYS_OK &&
+            message.command_id == service_index + 1U);
+        CHECK(AppV3Record_Close(&references[service_index]) == SYS_OK);
+    }
+    return 0U;
+}
+
+//模式一在每次消费后补入新消息，模式二故意不消费
+static SysResult_t Test_R1Readable(AppV3Queue_t queue, void *context)
+{
+    uint32_t mode = *(const uint32_t *)context;
+    AppMessage_t message;
+    SysResult_t result;
+
+    ++event_callback_calls;
+    if (mode == 2U)
+        return SYS_OK;
+    result = Test_QueueReadable(queue, NULL);
+    if (result != SYS_OK || mode == 0U)
+        return result;
+
+    message = (AppMessage_t){.type = APP_MESSAGE_START, .command_id = event_count + 4U};
+    return AppV3Queue_Put(queue, &message, 0U);
+}
+
+static uint32_t Test_EventLoopR1(uint32_t mode)
+{
+    AppV3EventLoop_t loop = {.initialized = false};
+    AppV3Queue_t queue;
+    AppMessage_t message = {.type = APP_MESSAGE_START};
+    UBaseType_t capacity, remaining;
+    uint32_t events, message_index;
+
+    event_test = true;
+    count_event_hints = true;
+    notify_fails = mode != 0U;
+    CHECK(AppV3Queue_Alloc(sizeof(message), 4U, &queue) == SYS_OK);
+    CHECK(AppV3EventLoop_Init(&loop, owner) == SYS_OK);
+    CHECK(AppV3EventLoop_Subscribe(&loop, queue, Test_R1Readable, &mode) == SYS_OK);
+    for (message_index = 1U; message_index <= 4U; ++message_index)
+    {
+        message.command_id = message_index;
+        CHECK(AppV3Queue_Put(queue, &message, 0U) == SYS_OK);
+    }
+    CHECK(AppV3EventLoop_Step(&loop, 100U, &events) == SYS_OK);
+    CHECK(event_callback_calls == 4U && event_wait_ms == 0U && event_delays == 1U && waited == 1U);
+    CHECK(events == (mode == 0U ? RUNTIME_EVENT_WAKE : 0U));
+    CHECK(AppV3Queue_Query(queue, &capacity, &remaining) == SYS_OK && capacity == 4U);
+    if (mode == 0U)
+    {
+        CHECK(event_count == 4U && remaining == 4U);
+        CHECK(AppV3EventLoop_Step(&loop, 100U, &events) == SYS_ERR_TIMEOUT && event_wait_ms == 100U);
+        CHECK(event_callback_calls == 4U && event_delays == 1U);
+        return 0U;
+    }
+
+    //持续来件和不消费都必须受相同的回调预算约束
+    CHECK(remaining == 0U);
+    CHECK(AppV3EventLoop_Step(&loop, 100U, &events) == SYS_OK);
+    CHECK(event_callback_calls == 8U && event_wait_ms == 0U && event_delays == 2U && waited == 2U);
+    CHECK(event_count == (mode == 1U ? 8U : 0U));
+    CHECK(AppV3Queue_Query(queue, &capacity, &remaining) == SYS_OK && remaining == 0U);
+    return 0U;
+}
+
+//在Open已登记等待者时拒绝实际信号提交，检查失败、超时及槽位撤回
+static uint32_t Test_RecordSignalFailure(bool prior_failure, const AppV3Context_t *context)
+{
+    AppV3RecordRef_t reference = {0};
+    AppV3ServiceInstance_t instance = {RUNTIME_TARGET_CAMERA, context};
+    SysResult_t published_result;
+
+    record_probe = true;
+    record_context = context;
+    reject_next_queue_send = true;
+    fixture_camera_result = prior_failure ? SYS_ERR_IO : SYS_OK;
+    record_probe_expected = prior_failure ? SYS_ERR_IO : SYS_ERR_BUSY;
+    CHECK(AppV3Record_Open(RUNTIME_TARGET_CAMERA, 1U, &reference) == record_probe_expected);
+    CHECK(record_probe && rejected_queue_sends == 1U && reference.ticket == 0U && reference.instance == NULL);
+    record_probe = false;
+
+    //后来调用者仍观察原错误，成功的假报告无法越过Record核验
+    CHECK(AppV3Record_Query(RUNTIME_TARGET_CAMERA, &published_result) == SYS_OK &&
+        published_result == record_probe_expected);
+    CHECK(AppV3Record_Open(RUNTIME_TARGET_CAMERA, 0U, &reference) == record_probe_expected);
+    owner = RUNTIME_TARGET_CAMERA;
+    CHECK(AppV3_ReportInitialization(owner, SYS_OK) == SYS_ERR_INVALID_STATE);
+    CHECK(AppV3_ReportInitialization(owner, record_probe_expected) == SYS_OK);
+    owner = RUNTIME_TARGET_CONTROL;
+    CHECK(AppV3_DrainInitialization() == SYS_OK && published_count == 1U &&
+        published.last_fault == record_probe_expected);
+    owner = RUNTIME_TARGET_CAMERA;
+    CHECK(AppV3Record_Destroy(owner) == SYS_OK);
+    CHECK(AppV3Record_Create(owner, &instance) == SYS_OK);
+    CHECK(AppV3Record_Open(owner, 0U, &reference) == SYS_OK && reference.instance == &instance);
+    CHECK(AppV3Record_Close(&reference) == SYS_OK && AppV3Record_Destroy(owner) == SYS_OK);
+    CHECK(g_failure == 0U && critical_depth == 0U);
+    return 0U;
+}
+
 uint32_t AppV3_TestRun(uint32_t scenario)
 {
     const AppV3Context_t *context;
@@ -356,7 +567,7 @@ uint32_t AppV3_TestRun(uint32_t scenario)
         return 0U;
     }
 
-    if (scenario >= 15U)
+    if (scenario >= 15U && scenario <= 17U)
     {
         check_boot_order = true;
         fail_thread = scenario == 16U ? 2U : 0U;
@@ -389,10 +600,21 @@ uint32_t AppV3_TestRun(uint32_t scenario)
         return 0U;
     }
 
+    if (scenario == 18U)
+        return Test_PrivateQueuesAfterStartup();
+
     CHECK(App_Init() == SYS_OK);
     context = AppV3_GetContext();
     CHECK(context->video == &fixture_video && context->storage == &fixture_storage);
     CHECK(App_MessagesInit() == SYS_OK);
+
+    if (scenario >= 19U)
+    {
+        scheduler = taskSCHEDULER_RUNNING;
+        if (scenario <= 21U)
+            return Test_EventLoopR1(scenario - 19U);
+        return Test_RecordSignalFailure(scenario == 23U, context);
+    }
 
     if (scenario == 8U || scenario == 9U)
     {
@@ -400,7 +622,10 @@ uint32_t AppV3_TestRun(uint32_t scenario)
         UBaseType_t capacity, space;
         AppMessage_t item = {.type = APP_MESSAGE_START};
         scheduler = taskSCHEDULER_RUNNING;
+        AppV3Queue_t reserved[3U];
         CHECK(AppV3_GetStartupQueue(&queue) == SYS_OK);
+        for (uint32_t private_index = 0U; private_index < 3U; ++private_index)
+            CHECK(AppV3Queue_Alloc(sizeof(item), 4U, &reserved[private_index]) == SYS_OK);
         CHECK(AppV3Queue_Alloc(sizeof(item), 1U, &replacement) == SYS_ERR_NO_RESOURCE);
         CHECK(AppV3Queue_Query(queue, &capacity, &space) == SYS_OK && capacity == 4U && space == 4U);
         CHECK(AppV3Queue_Subscribe(queue, owner) == SYS_OK);

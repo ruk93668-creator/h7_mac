@@ -3,6 +3,7 @@
 #include "platform_sync.h"
 
 #define EVENT_QUEUE_RECHECK_MS 100U
+#define EVENT_DISPATCH_BUDGET 4U
 
 //校验线程、调度和中断状态，确保回调由所属任务执行
 static bool EventLoop_IsOwner(RuntimeEventTarget_t owner)
@@ -69,29 +70,32 @@ SysResult_t AppV3EventLoop_Unsubscribe(AppV3EventLoop_t *loop)
     return result;
 }
 
-//依据真实队列判断是否需要执行回调
-static SysResult_t EventLoop_Dispatch(AppV3EventLoop_t *loop, bool *readable)
+//检查真实队列，只在存在消息时调用所属任务的回调
+static SysResult_t EventLoop_Dispatch(AppV3EventLoop_t *loop, uint32_t *remaining, bool *dispatched)
 {
-    UBaseType_t capacity, space;
-    SysResult_t result;
+    *dispatched = false;
+    while (*remaining != 0U && loop->readable != NULL)
+    {
+        UBaseType_t capacity, space;
+        SysResult_t result = AppV3Queue_Query(loop->queue, &capacity, &space);
 
-    *readable = false;
-    if (loop->readable == NULL)
-        return SYS_OK;
-
-    //通知位只是提示，只有队列确有数据时才执行回调
-    result = AppV3Queue_Query(loop->queue, &capacity, &space);
-    if (result != SYS_OK || space == capacity)
-        return result;
-
-    *readable = true;
-    return loop->readable(loop->queue, loop->context);
+        //每次回调前重新检查，包括回调可能撤销订阅的情况
+        if (result != SYS_OK || space == capacity)
+            return result;
+        --*remaining;
+        *dispatched = true;
+        result = loop->readable(loop->queue, loop->context);
+        if (result != SYS_OK)
+            return result;
+    }
+    return SYS_OK;
 }
 
-//执行一次队列检查、事件等待和唤醒后检查
+//执行一次有界分发和事件等待，通知只作为提示
 SysResult_t AppV3EventLoop_Step(AppV3EventLoop_t *loop, uint32_t timeout_ms, uint32_t *events)
 {
-    SysResult_t result, dispatch_result;
+    uint32_t remaining = EVENT_DISPATCH_BUDGET;
+    SysResult_t wait_result, dispatch_result;
     bool readable_before_wait, readable_after_wait;
 
     if (loop == NULL || events == NULL)
@@ -99,20 +103,26 @@ SysResult_t AppV3EventLoop_Step(AppV3EventLoop_t *loop, uint32_t timeout_ms, uin
     if (!loop->initialized || !EventLoop_IsOwner(loop->owner))
         return SYS_ERR_INVALID_STATE;
 
-    //在等待前后检查真实队列，通知合并或失败时仍保留所有入队数据。
+    //已有消息直接处理；即使只有一个合并通知，也不在回调之间等待
     *events = 0U;
-    result = EventLoop_Dispatch(loop, &readable_before_wait);
-    if (result != SYS_OK)
-        return result;
-    //有订阅时限制等待，队列已有消息但通知失败仍能推进
-    if (loop->readable != NULL && timeout_ms > EVENT_QUEUE_RECHECK_MS)
-        timeout_ms = EVENT_QUEUE_RECHECK_MS;
-    result = App_EventsWait(loop->owner, timeout_ms, events);
-    if (result != SYS_OK && result != SYS_ERR_TIMEOUT)
-        return result;
-    //重新查询等待期间到达的消息，即使本轮等待超时
-    dispatch_result = EventLoop_Dispatch(loop, &readable_after_wait);
+    dispatch_result = EventLoop_Dispatch(loop, &remaining, &readable_before_wait);
     if (dispatch_result != SYS_OK)
         return dispatch_result;
-    return readable_before_wait || readable_after_wait ? SYS_OK : result;
+
+    //本轮有进展或已经用完预算时，只读取通知位，不进入长等待
+    if (readable_before_wait)
+        timeout_ms = 0U;
+    else if (loop->readable != NULL && timeout_ms > EVENT_QUEUE_RECHECK_MS)
+        timeout_ms = EVENT_QUEUE_RECHECK_MS;
+    wait_result = App_EventsWait(loop->owner, timeout_ms, events);
+    if (wait_result != SYS_OK && wait_result != SYS_ERR_TIMEOUT)
+        return wait_result;
+
+    //唤醒前后共用预算，避免持续来件或回调不消费时独占CPU
+    dispatch_result = EventLoop_Dispatch(loop, &remaining, &readable_after_wait);
+    if (remaining == 0U)
+        vTaskDelay(1U);
+    if (dispatch_result != SYS_OK)
+        return dispatch_result;
+    return readable_before_wait || readable_after_wait ? SYS_OK : wait_result;
 }

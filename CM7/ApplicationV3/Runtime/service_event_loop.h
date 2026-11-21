@@ -22,7 +22,7 @@ SysResult_t AppV3EventLoop_Subscribe(AppV3EventLoop_t *loop, AppV3Queue_t queue,
     AppV3QueueReadable_t readable, void *context);
 //撤回当前循环的订阅，由原订阅任务执行
 SysResult_t AppV3EventLoop_Unsubscribe(AppV3EventLoop_t *loop);
-//等待事件并按真实队列状态分发，订阅期间定期检查
+//有界分发；用完预算时阻塞一个Tick，让低优先级任务有运行机会
 SysResult_t AppV3EventLoop_Step(AppV3EventLoop_t *loop, uint32_t timeout_ms, uint32_t *events);
 
 #endif
