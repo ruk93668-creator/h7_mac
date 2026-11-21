@@ -1,7 +1,7 @@
 # Q0 硬件补充审计
 
 日期：2026-11-21；基线：`f0ce45fd9ab7250b1e22260e087d606ee5ed9ecb`。
-状态：NOT_VERIFIED。以下明确区分芯片能力、软件配置与实际板级连接。2026-11-21 用户补交 SVG 原理图后的核验见 §6；§1 为此前本地搜索记录，不能再解读为当前仍无原理图。原理图网络已核验，PCB/实装/测量尚未验证。
+状态：六网、外围及 EP 图纸设计 PASS。PCB 焊盘网络和封装记录与图纸相符。送审 PCB 与手中板卡的版本对应关系及实际装配、通断、供电和时序为 NOT_VERIFIED。§1–§5 记录早期审计，当前证据和放行结论见 §6–§7。
 
 ## 1. 本地证据搜索（事实）
 
@@ -107,6 +107,39 @@
 
 已补齐：原理图上的完整 U5 料号标注、六条预期网络、VCC/GND、CS 上拉、CLK 串阻、同网去耦和 EP 的图纸处理证据。替代 §3 对上述“没有图纸证据”的初轮描述。
 
-仍未验证：实装料号/封装与丝印、该图是否对应当前 PCB/实板版本、实际 PCB 网表与布局、EP 适用连接要求及实板处理、电源与信号测量、Flash 原有数据及写入授权。SVG 的型号文字不能证明实装型号；图中 EP 不连接也不是符合性证明。
+SVG 单独无法核验：实装料号与丝印、当前实板版本、PCB 焊盘及布线、EP 处理、电源与信号测量、Flash 原有数据及写入授权。PCB 和 EP 后续核验见 §7。SVG 的型号文字不能证明实装型号；图中 EP 不连接的封装符合性已在 §7 复核。
 
-建议下一步针对 EP 与板卡版本补充 PCB/封装库证据，并由用户/GPT 复核这次原理图结论和 Q1.1 契约后决定是否放行。Q0 总体继续 NOT_VERIFIED，本文件不授予 Q1 开发、下载或擦写权限。
+## 7. Q0 最终逐网审计
+
+审核基线为 `e37b7ce166126caccc4a5f9a0ea5e8bf1670f22c`。本轮复核 §6 的 SVG ZIP 及主控、数据存储页 SHA256，同时在同一资料目录找到 Altium 导出的 `主控.schdoc`、`数据存储.schdoc`、`电源管理.schdoc` 与 `PCB1_1.pcbdoc`。SVG 图框为板子 V1、版本 V1.0；页号和修订日期见 §6.1。PCB 为 Protel Advanced PCB ASCII 5.01（文件格式版本），板记录 UID 为 `F71C2802-30AE-4C8C-AC23-D5D9D50F68DE`，SHA256 为 `3f3094906db2b98058042fa827596b060e336b0de5c90fd3caced31a97418eb3`。封装、U5 的源 UID `gge9` 和以下网络与配套资料匹配。PCB 文件未据此认定是手中板卡的生产版本。
+
+使用 PCB 的 Component ID 定位 U11（39）、U5（2）、R34（111）、R35（112）、C66（83）和 C67（84），再由 Pad 的 NET 字段解析 Net ID，核对每条网络的所有端点，并查见各 QSPI 网络的走线记录。这里的 PCB 证据为焊盘网络归属及走线记录。未运行 Altium DRC 或铜皮连通性检查，也未测量板卡。原始设计文件保留在原目录。
+
+| 信号 | SVG 第 2 页 U11.1 | SVG 第 6 页 U5 与外围 | PCB 焊盘网络 | 结论 |
+| --- | --- | --- | --- | --- |
+| BK1_NCS | PG6 / G15 | U5.1 / CS#，分支到 R34.1 | `QSPI_NCS`（47）为 U11.G15、U5.1、R34.1 | PASS |
+| CLK | PF10 / L3 | U5.6 / CLK，R35 串联 22 Ω | `QSPI_CLK`（104）为 U11.L3→R35.2，`$5N63`（42）为 R35.1→U5.6 | PASS |
+| BK1_IO0 | PF8 / K4 | U5.5 / DI(IO0) | `QSPI_IO0`（43）为 U11.K4、U5.5 | PASS |
+| BK1_IO1 | PF9 / L4 | U5.2 / DO(IO1) | `QSPI_IO1`（45）为 U11.L4、U5.2 | PASS |
+| BK1_IO2 | PF7 / K3 | U5.3 / WP#(IO2) | `QSPI_IO2`（46）为 U11.K3、U5.3 | PASS |
+| BK1_IO3 | PF6 / K2 | U5.7 / HOLD# 或 RESET#(IO3) | `QSPI_IO3`（44）为 U11.K2、U5.7 | PASS |
+
+PASS 适用于设计资料。各行的实板通断均为 NOT_VERIFIED。仅 CLK 串联电阻，NCS 的 R34 为上拉。
+
+| 项目 | 原理图与 PCB 证据 | 结论 |
+| --- | --- | --- |
+| VCC/GND | 第 1 页 U9（TPS54302DDCR）所在 5V→3.3 V 电源区提供 VCC。第 6 页 U5.8 为 VCC（PCB 网 20），U5.4 为 GND（网 7）。 | 设计 PASS，电压/纹波与上电过程 NOT_VERIFIED |
+| CS 上拉 | 第 6 页 R34 10 kΩ；PCB R34.1 接 QSPI_NCS，R34.2 接 VCC。 | 设计 PASS，上电 CS 波形 NOT_VERIFIED |
+| 去耦 | 第 6 页 C66 1 µF、C67 100 nF；PCB 两颗均为 pad 2 接 VCC、pad 1 接 GND，均在 U5 同一面。 | 设计 PASS，实装与去耦效果 NOT_VERIFIED |
+| 器件及封装 | 第 6 页及 `数据存储.schdoc` 标注 U5 为 W25Q128JVEIQ TR，U5 PCB footprint 为 `WSON-8_L6.0-W8.0-P1.27-BL-EP`，对应 Winbond E 封装 WSON-8 8×6 mm。PCB U11 footprint 名含 STM32H743XIH6，器件型号以第 2 页的 STM32H747XIH6 标注为准，所查六个焊球一致。 | 设计封装与焊球对应 PASS，实装型号/采购后缀 NOT_VERIFIED |
+| 暴露焊盘 | 第 6 页 U5.9 标示不连接。PCB 有 U5 pad 9，尺寸 133.8580×169.2910 mil，无 NET 字段。在该 pad 范围内未发现 PCB Via 记录与其相交。Winbond W25Q128JV Rev F §10.4 对 E 封装中心焊盘允许悬空或接器件地，要求避免下方的裸露过孔。 | EP 悬空设计 PASS，实板制造与装配 NOT_VERIFIED |
+
+厂商出处见 [Winbond W25Q128JV Rev F §3.2–3.3、§10.4、§11.1](https://www.winbond.com/resource-files/w25q128jv%20revf%2003272018%20plus.pdf)。
+
+### 复用和时钟结论
+
+六条 PCB 网络的焊盘列表只含上表端点。对照 §4 中基线源码，STM32H747 的现用 SDRAM、SDMMC1、DCMI、USB GPIO 无重叠，设计复核 PASS。SDRAM 使用 PLL2R，SDMMC1 和相机 XCLK 使用 PLL1Q，USB 使用 HSI48。将 QSPI 独立选到 D1HCLK、只设置 QSPI mux/分频且保持共享端口其他引脚配置，可避免改动这些时钟配置。实际 QSPI 频率、双核访问和外设并行运行为 NOT_VERIFIED。
+
+### Q0 放行建议
+
+建议 Q0 的原理图及 PCB 设计审核通过，交由人工决定是否批准 Q1.1 只读驱动开发。当前资料未发现 NEEDS_FIX。实板版本、实装料号、通断、供电、CS 波形、实际通信和信号完整性保留 NOT_VERIFIED，在 Q1.1 实板验证中单独确认。Flash 原有数据及写入授权仍未核实，留在后续擦写阶段单独审批。
