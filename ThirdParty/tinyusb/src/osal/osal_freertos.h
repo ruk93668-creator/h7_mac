@@ -94,7 +94,11 @@ TU_ATTR_ALWAYS_INLINE static inline void osal_task_delay(uint32_t msec) {
 }
 
 TU_ATTR_ALWAYS_INLINE static inline uint32_t osal_time_millis(void) {
+  #ifdef pdTICKS_TO_MS
   return pdTICKS_TO_MS(xTaskGetTickCount());
+#else
+  return (uint32_t)(((uint64_t)xTaskGetTickCount() * 1000U) / configTICK_RATE_HZ);
+#endif
 }
 
 //--------------------------------------------------------------------+
@@ -209,7 +213,10 @@ TU_ATTR_ALWAYS_INLINE static inline void osal_semaphore_reset(osal_semaphore_t c
 // MUTEX API (priority inheritance)
 //--------------------------------------------------------------------+
 TU_ATTR_ALWAYS_INLINE static inline osal_mutex_t osal_mutex_create(osal_mutex_def_t *mdef) {
-#if configSUPPORT_STATIC_ALLOCATION
+#if !configUSE_MUTEXES
+  (void)mdef;
+  return NULL; // unused OSAL mutex API when project explicitly disables mutexes
+#elif configSUPPORT_STATIC_ALLOCATION
   return xSemaphoreCreateMutexStatic(mdef);
 #else
   (void) mdef;

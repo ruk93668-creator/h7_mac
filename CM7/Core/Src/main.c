@@ -22,6 +22,10 @@
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
 #include "platform_rtos.h"
+#if defined(TINYUSB_RAM_EXPERIMENT)
+#include "tinyusb_experiment.h"
+#include "Tasks/usb_task.h"
+#endif
 #include "framework_init.h"
 #include "app_tasks.h"
 #include "usb_mode.h"
@@ -74,6 +78,7 @@ typedef char SdramMpuWindowCheck_t[
 ];
 
 //配置SDRAM业务窗口的MPU属性
+#if !defined(TINYUSB_RAM_EXPERIMENT)
 static void MPU_ConfigSdram(void)
 {
 	MPU_Region_InitTypeDef region = {0};
@@ -97,6 +102,7 @@ static void MPU_ConfigSdram(void)
 	HAL_MPU_Enable(MPU_PRIVILEGED_DEFAULT);
 }
 
+#endif
 //保存main准备和调度器启动结果，供Keil观察
 SysResult_t init_error;
 /* USER CODE END 0 */
@@ -140,6 +146,11 @@ int main(void)
 
   /* Configure the system clock */
   SystemClock_Config();
+#if defined(TINYUSB_RAM_EXPERIMENT)
+  if (!TinyUSB_ExperimentPrepare() || UsbTask_Create() != SYS_OK) Error_Handler();
+  init_error = Platform_RtosStart();
+  Error_Handler();
+#else
 /* USER CODE BEGIN Boot_Mode_Sequence_2 */
 /* When system initialization is finished, Cortex-M7 will release Cortex-M4 by means of
 HSEM notification */
@@ -186,6 +197,7 @@ Error_Handler();
 		/*  System Fault Policy */
 	}	
   /* USER CODE END SysInit */
+#endif
 
   /* Initialize all configured peripherals */
   /* USER CODE BEGIN 2 */

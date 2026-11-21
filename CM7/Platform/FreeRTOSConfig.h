@@ -26,7 +26,11 @@ void Platform_RtosAssert(const char *file, uint32_t line);
 #define configSUPPORT_STATIC_ALLOCATION      1
 #define configSUPPORT_DYNAMIC_ALLOCATION     0
 #define configUSE_TIMERS                     0
+#if defined(TINYUSB_RAM_EXPERIMENT)
+#define configUSE_MUTEXES                    1
+#else
 #define configUSE_MUTEXES                    0
+#endif
 #define configUSE_RECURSIVE_MUTEXES          0
 #define configUSE_COUNTING_SEMAPHORES        0
 #define configQUEUE_REGISTRY_SIZE            0

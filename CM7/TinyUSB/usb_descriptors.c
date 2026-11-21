@@ -1,4 +1,6 @@
 #include "tusb.h"
+/* 1209:0001 is a non-unique pid.codes private test PID. Never redistribute,
+ * sell or manufacture devices with it. https://pid.codes/1209/0001/ */
 static tusb_desc_device_t const device = {
     .bLength=sizeof(tusb_desc_device_t), .bDescriptorType=TUSB_DESC_DEVICE,
     .bcdUSB=0x0200, .bMaxPacketSize0=64, .idVendor=0x1209, .idProduct=0x0001,

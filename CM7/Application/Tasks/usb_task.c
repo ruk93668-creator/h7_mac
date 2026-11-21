@@ -1,4 +1,7 @@
 #include "usb_task.h"
+#if defined(TINYUSB_RAM_EXPERIMENT)
+#include "tinyusb_experiment.h"
+#endif
 
 #include "app_status.h"
 #include "app_events.h"
@@ -36,6 +39,7 @@ volatile UsbTaskDebug_t g_usb_task_debug;
 static void UsbTask_Run(void *argument);
 
 //处理USB命令、传输完成及帧归还
+#if !defined(TINYUSB_RAM_EXPERIMENT)
 static void UsbTask_Process(uint32_t events);
 
 //提交本任务已完成处理的状态，不读写其他任务或SRAM4
@@ -48,6 +52,7 @@ static void UsbTask_Reply(void);
 static void UsbTask_Observe(AppUsbDiagnosticField_t field,
     const AppUsbRuntimeStatus_t *status);
 
+#endif
 //创建并登记唯一静态Usb任务
 SysResult_t UsbTask_Create(void)
 {
@@ -69,12 +74,20 @@ SysResult_t UsbTask_Create(void)
         return SYS_ERR_NO_RESOURCE;
 
     //登记该任务的事件接收端，供启动屏障和通知定位
+#if defined(TINYUSB_RAM_EXPERIMENT)
+    return SYS_OK;
+#else
     return App_EventsAttach(RUNTIME_TARGET_USB, s_usb_task);
+#endif
 }
 
 //等待USB事件并推进数据面
 static void UsbTask_Run(void *argument)
 {
+#if defined(TINYUSB_RAM_EXPERIMENT)
+    (void)argument;
+    TinyUSB_ExperimentRun();
+#else
     uint32_t events;
 
     //独立记录栈扫描时刻，不改变任务等待和业务周期
@@ -113,9 +126,11 @@ static void UsbTask_Run(void *argument)
         }
 
     }
+#endif
 }
 
 //处理USB命令、传输完成及帧归还
+#if !defined(TINYUSB_RAM_EXPERIMENT)
 static void UsbTask_Process(uint32_t events)
 {
     AppMessage_t command;
@@ -221,3 +236,5 @@ static void UsbTask_Observe(AppUsbDiagnosticField_t field,
             break;
     }
 }
+
+#endif

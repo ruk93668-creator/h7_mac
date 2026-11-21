@@ -464,7 +464,7 @@ static bool r1_abort_fault[2];
 static uint8_t abort_failure_reason[2]; // first: 1 clock, 2 clock-change, 3 stopped-clock, 4 deadline, 5 foreign NAK, 6 reset, 7 unplug, 8 enum
 typedef struct {
   uint8_t phase; // 0 live, 1 NAK, 2 disable, 3 TX flush, 4 OUT release, 5 retired
-  uint32_t began, previous_cycle, clock_hz, generation;
+  uint32_t began, previous_cycle, clock_hz, generation, began_ms;
   uint8_t *source;
   bool disabled, completed, nak_marker, nak_in;
 } bulk_cancel_t;
@@ -528,14 +528,15 @@ dcd_abort_result_t dcd_edpt_abort_safe(uint8_t rhport, uint8_t ep_addr) {
       (SystemCoreClock/1000U) > UINT32_MAX/50U) return cancel_failed(rhport,1);
   usbd_spin_lock(false); // serialize all task changes against PIO IRQ, never wait under lock
   if (!c->phase) {
-    c->phase=1;c->began=DWT->CYCCNT;c->previous_cycle=c->began;c->clock_hz=SystemCoreClock;c->completed=hardware_completed[n][dir];
+    c->phase=1;c->began_ms=tusb_time_millis_api();c->began=DWT->CYCCNT;c->previous_cycle=c->began;c->clock_hz=SystemCoreClock;c->completed=hardware_completed[n][dir];
     c->generation=transfer_generation[n][dir];c->source=XFER_CTL_BASE(n,dir)->buffer;
     if (dir) { ep->intr=DIEPINT_INEPNE; d->diepmsk |= 0x42U; d->diepempmsk &= ~TU_BIT(n); deferred_tx_mask &= ~TU_BIT(n); ep->ctl |= EPCTL_SNAK; }
   }
   if (c->generation!=transfer_generation[n][dir] || c->source!=XFER_CTL_BASE(n,dir)->buffer) {usbd_spin_unlock(false);return cancel_failed(rhport,10);}
   uint32_t now=DWT->CYCCNT;
   if (SystemCoreClock!=c->clock_hz || now==c->previous_cycle ||
-      (uint32_t)(now-c->began) >= (c->clock_hz/1000U)*50U) {
+      (uint32_t)(now-c->began) >= (c->clock_hz/1000U)*50U ||
+      (uint32_t)(tusb_time_millis_api()-c->began_ms) >= 50U) {
     usbd_spin_unlock(false);return cancel_failed(rhport,SystemCoreClock!=c->clock_hz ? 2 : now==c->previous_cycle ? 3 : 4);
   }
   c->previous_cycle=now;
@@ -983,8 +984,32 @@ bool dcd_edpt_open(uint8_t rhport, tusb_desc_endpoint_t const* desc_edpt) {
 
 // Close all non-control endpoints, cancel all pending transfers if any.
 void dcd_edpt_close_all(uint8_t rhport) {
-  (void)rhport;
-  dwc2_wait_fail(); // shared RX/EP0 group proof is not supplied by this legacy void API
+  // This void legacy API cannot report asynchronous progress. Accept an already
+  // retired group (including the empty group), otherwise preserve ownership.
+  // Callers needing active close must first drive the existing Bulk abort API.
+  if (dcd_device_faulted(rhport) || any_cancel()) {dwc2_wait_fail();return;}
+  dwc2_regs_t *d=DWC2_REG(rhport);
+  usbd_spin_lock(false);
+  bool safe=!(d->gintsts & GINTSTS_RXFLVL);
+  for(uint8_t n=1;n<_dwc2_controller[rhport].ep_count;n++) {
+    for(uint8_t dir=0;dir<2;dir++) {
+      dwc2_dep_t *ep=&d->ep[dir?0:1][n];
+      // TXFE is a read-only FIFO-empty level, not a pending terminal event.
+      uint32_t events=ep->intr & (dir ? ~DIEPINT_TXFE : UINT32_MAX);
+      if ((ep->ctl & EPCTL_EPENA) || events || pio_refs[n] ||
+          XFER_CTL_BASE(n,dir)->buffer || XFER_CTL_BASE(n,dir)->ff) safe=false;
+    }
+  }
+  if (!safe) {usbd_spin_unlock(false);dwc2_wait_fail();return;}
+  for(uint8_t n=1;n<_dwc2_controller[rhport].ep_count;n++) {
+    d->epin[n].ctl &= ~EPCTL_USBAEP;
+    d->epout[n].ctl &= ~EPCTL_USBAEP;
+    d->daintmsk &= ~(TU_BIT(n) | TU_BIT(n+16));
+    d->diepempmsk &= ~TU_BIT(n);
+  }
+  // Keep FIFO allocation reservations: re-opening the same RAM MSC endpoints
+  // reuses their space. No shared RX flush or EP0 register mutation is needed.
+  usbd_spin_unlock(false);
 }
 
 bool dcd_edpt_iso_alloc(uint8_t rhport, uint8_t ep_addr, uint16_t largest_packet_size) {
@@ -1712,6 +1737,12 @@ void dcd_int_handler(uint8_t rhport) {
     const uint32_t otg_int = dwc2->gotgint;
 
     if (otg_int & GOTGINT_SEDET) {
+      // Disconnect is not hardware retirement. Never let Core reset/reuse class
+      // storage while a PIO endpoint remains enabled without a stop proof.
+      bool enabled=false;
+      for(uint8_t n=0;n<_dwc2_controller[rhport].ep_count;n++)
+        if ((dwc2->epin[n].ctl | dwc2->epout[n].ctl) & EPCTL_EPENA) enabled=true;
+      if (enabled) {(void)cancel_failed(rhport,7);dwc2->gotgint=otg_int;return;}
       if (any_cancel()) {(void)cancel_failed(rhport,7);dwc2->gotgint=otg_int;return;}
       usbd_spin_lock(true);
       dwc2->gintmsk &= ~GINTMSK_OTGINT;
