@@ -15,7 +15,12 @@ def main():
     parser = argparse.ArgumentParser()
     parser.add_argument("output", type=Path)
     parser.add_argument("--board-smoke", choices=("off", "camera", "usb", "storage"), default="off")
+    parser.add_argument("--board-stress", choices=("off", "repeat", "recovery"), default="off")
     args = parser.parse_args()
+    if args.board_stress != "off" and args.board_smoke == "off":
+        parser.error("--board-stress requires a board smoke scenario")
+    if args.board_stress == "recovery" and args.board_smoke == "camera":
+        parser.error("recovery stress is available for USB and Storage")
     output = args.output.resolve()
     output.mkdir(parents=True, exist_ok=False)
     os.environ["C1_TEST_OUTPUT_ROOT"] = str(output)
@@ -32,7 +37,8 @@ def main():
                   not (flag == "-I" and harness.cc[index + 1] in legacy_includes)]
     harness.cc.extend(("-I", V3 / "Core", "-I", V3 / "Tasks", "-I", V3 / "Runtime", "--split_sections"))
     smoke_selection = ("off", "camera", "usb", "storage").index(args.board_smoke)
-    harness.cc.append(f"-DAPP_V3_BOARD_SMOKE={smoke_selection}")
+    stress_selection = ("off", "repeat", "recovery").index(args.board_stress)
+    harness.cc.extend((f"-DAPP_V3_BOARD_SMOKE={smoke_selection}", f"-DAPP_V3_BOARD_STRESS={stress_selection}"))
     kernel = ROOT / "Middlewares/Third_Party/FreeRTOS/Source"
     real_run = harness.run
 
@@ -66,6 +72,10 @@ def main():
         name = "app_v3_" + optimization
         harness.build(name, sources, "AppV3_TestRun")
         scenarios = range(53, 58) if smoke_selection else range(53)
+        if stress_selection:
+            scenarios = list(range(58, 61 if stress_selection == 2 else 60))
+            if args.board_smoke == "usb" and args.board_stress == "repeat":
+                scenarios.append(61)
         for scenario in scenarios:
             row = harness.execute(name, "AppV3_TestRun", scenario)
             if scenario < 49:

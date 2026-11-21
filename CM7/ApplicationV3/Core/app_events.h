@@ -26,4 +26,9 @@ SysResult_t App_EventsWait(RuntimeEventTarget_t target, uint32_t timeout_ms, uin
 //检查当前执行者是否为目标任务
 bool App_EventsIsOwner(RuntimeEventTarget_t target);
 
+#if defined(APP_V3_BOARD_STRESS) && APP_V3_BOARD_STRESS != 0
+//Control在测试终结时读取现有静态任务的最小剩余栈，单位为StackType_t
+bool App_EventsReadStackWatermarks(UBaseType_t remaining_words[RUNTIME_TARGET_COUNT]);
+#endif
+
 #endif

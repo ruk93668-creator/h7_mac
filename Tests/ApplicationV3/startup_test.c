@@ -235,6 +235,9 @@ static uint32_t board_scenario;
 static uint32_t usb_observe_polls;
 #endif
 static void Test_BoardWait(void);
+#if APP_V3_BOARD_STRESS != APP_V3_BOARD_STRESS_OFF
+static void Test_StressWait(void);
+#endif
 #endif
 static SysResult_t Test_StoreEvent(const AppV3ServiceEvent_t *event, void *context);
 static uint32_t Test_StartBusiness(const AppV3Context_t *context);
@@ -347,7 +350,12 @@ SysResult_t App_EventsWait(RuntimeEventTarget_t target, uint32_t timeout_ms, uin
 #if APP_V3_BOARD_SMOKE != APP_V3_BOARD_SMOKE_OFF
     if (board_scenario != 0U && target == RUNTIME_TARGET_CONTROL)
     {
-        Test_BoardWait();
+#if APP_V3_BOARD_STRESS != APP_V3_BOARD_STRESS_OFF
+        if (board_scenario >= 58U)
+            Test_StressWait();
+        else
+#endif
+            Test_BoardWait();
         return SYS_ERR_TIMEOUT;
     }
 #endif
@@ -1540,10 +1548,13 @@ static SysResult_t Test_QueueBoardEvent(RuntimeEventTarget_t service, uint32_t c
 //完成选中服务的本次操作；Control只在返回后消费业务队列
 static uint32_t Test_CompleteBoardOperation(RuntimeEventTarget_t service, uint32_t step)
 {
-    if (step == 0U)
+    if (step == 0U && service == RUNTIME_TARGET_CAMERA)
     {
         g_hardware.frame_ready = true;
         g_hardware.camera_completed = 1U;
+    }
+    if (step == 0U && service == RUNTIME_TARGET_USB)
+    {
         g_hardware.usb_configured = true;
         g_hardware.uvc_present = true;
     }
@@ -1715,6 +1726,195 @@ static uint32_t Test_BoardSmoke(uint32_t scenario)
 }
 #endif
 
+#if APP_V3_BOARD_STRESS != APP_V3_BOARD_STRESS_OFF
+//验证Control只在测试终结读取栈水位，实际栈扫描留给实板
+bool App_EventsReadStackWatermarks(UBaseType_t remaining_words[RUNTIME_TARGET_COUNT])
+{
+    uint32_t target_index;
+
+    if (owner != RUNTIME_TARGET_CONTROL)
+        return false;
+    for (target_index = 0U; target_index < RUNTIME_TARGET_COUNT; ++target_index)
+        remaining_words[target_index] = 128U + target_index;
+    return true;
+}
+
+#if APP_V3_BOARD_STRESS == APP_V3_BOARD_STRESS_RECOVERY
+//在两个操作窗口内分别模拟拔除与复接，由真实Service推进FAULT
+static void Test_StressDetach(RuntimeEventTarget_t service, uint32_t step)
+{
+    if (step == 2U && board_scenario != 59U)
+    {
+        if (service == RUNTIME_TARGET_USB)
+            g_hardware.usb_configured = false;
+        else
+            g_hardware.card_present = false;
+        Test_PollHardware(service);
+    }
+    if (step == 3U && service == RUNTIME_TARGET_STORAGE)
+    {
+        g_hardware.card_present = true;
+        g_hardware.unmount_result = SYS_ERR_IO;
+        g_hardware.recover_result = board_scenario == 60U ? SYS_ERR_IO : SYS_OK;
+    }
+    if (step == 3U && service == RUNTIME_TARGET_USB && board_scenario == 60U)
+        g_hardware.usb_stop_result = SYS_ERR_IO;
+}
+#endif
+
+//为实板脚本提供可控时间和外设事实，仍经过原Control、队列、Service和PubSub
+static void Test_StressWait(void)
+{
+    RuntimeEventTarget_t service = g_app_v3_board_smoke.service;
+    AppV3BoardSmokeState_t state = g_app_v3_board_smoke.state;
+    uint32_t step = g_app_v3_board_smoke.step;
+
+    ++waited;
+    if (waited == 1U)
+    {
+        if (state != APP_V3_SMOKE_IDLE || Test_StartBusiness(AppV3_GetContext()) != 0U)
+            g_failure = __LINE__;
+        return;
+    }
+    if (state == APP_V3_SMOKE_COMPLETE || state == APP_V3_SMOKE_FAILED ||
+        state == APP_V3_SMOKE_TIMED_OUT || waited > APP_V3_BOARD_SMOKE_STEPS * 3U + 12U)
+        longjmp(task_exit, 1);
+
+    if (state == APP_V3_SMOKE_OBSERVE)
+    {
+        UBaseType_t capacity, space;
+
+        //观察时下一条命令必须尚未入队
+        if (AppV3Queue_Query(fixture_loops[service]->queue, &capacity, &space) != SYS_OK ||
+            space != capacity || g_app_v3_board_smoke.received != step)
+            g_failure = __LINE__;
+#if APP_V3_BOARD_STRESS == APP_V3_BOARD_STRESS_RECOVERY
+        Test_StressDetach(service, step);
+        test_tick += pdMS_TO_TICKS(APP_V3_BOARD_STRESS_OPERATOR_MS);
+#else
+#if APP_V3_BOARD_SMOKE == APP_V3_BOARD_SMOKE_USB
+        if (board_scenario == 61U)
+        {
+            //模拟观察期间已断连，随后STOP本身仍能成功完成
+            g_hardware.usb_configured = false;
+            Test_PollHardware(service);
+        }
+#endif
+        test_tick += pdMS_TO_TICKS(APP_V3_BOARD_STRESS_SOAK_MS);
+#endif
+        return;
+    }
+    if (state != APP_V3_SMOKE_WAIT || g_app_v3_board_smoke.received != step)
+    {
+        g_failure = __LINE__;
+        longjmp(task_exit, 1);
+    }
+
+#if APP_V3_BOARD_STRESS == APP_V3_BOARD_STRESS_RECOVERY
+    if (step == 4U && service == RUNTIME_TARGET_STORAGE)
+        g_hardware.unmount_result = SYS_OK;
+    if (Test_CompleteBoardOperation(service, step == 4U ? 0U : step) != 0U)
+        g_failure = __LINE__;
+#else
+    if (board_scenario == 59U && step == 6U)
+    {
+        g_hardware.sensor_stop_result = SYS_ERR_IO;
+        g_hardware.usb_stop_result = SYS_ERR_IO;
+        g_hardware.unmount_result = SYS_ERR_IO;
+    }
+    if (Test_CompleteBoardOperation(service, step % APP_V3_BOARD_SMOKE_CYCLE_STEPS) != 0U)
+        g_failure = __LINE__;
+#endif
+}
+
+static uint32_t Test_BoardStress(uint32_t scenario)
+{
+    uint32_t step, expected_results = APP_V3_BOARD_SMOKE_STEPS;
+    CHECK(ControlTask_Create() == SYS_OK);
+    scheduler = taskSCHEDULER_RUNNING;
+    board_scenario = scenario;
+    notify_fails = true;
+    if (setjmp(task_exit) == 0)
+        scheduled_entry(scheduled_argument);
+    //保留脚本停在哪一步，避免外层断言覆盖夹具首错
+    g_trace_count = 1U;
+    g_trace[0][0] = g_failure;
+    g_trace[0][1] = waited;
+    g_trace[0][2] = g_app_v3_board_smoke.received;
+    g_trace[0][3] = g_app_v3_board_smoke.state;
+    g_trace[0][4] = g_app_v3_board_smoke.step;
+    g_trace[0][5] = (uint32_t)g_app_v3_board_smoke.result;
+    g_trace[0][6] = g_app_v3_board_smoke.stack_sampled;
+    g_trace[0][7] = (uint32_t)g_app_v3_board_smoke.events[g_app_v3_board_smoke.received == 0U ?
+        0U : g_app_v3_board_smoke.received - 1U].result;
+    CHECK(g_failure == 0U && g_app_v3_board_smoke.stack_sampled);
+    for (step = 0U; step < RUNTIME_TARGET_COUNT; ++step)
+        CHECK(g_app_v3_board_smoke.stack_remaining_words[step] == 128U + step);
+
+    if (scenario == 58U)
+    {
+        CHECK(g_app_v3_board_smoke.state == APP_V3_SMOKE_COMPLETE &&
+            g_app_v3_board_smoke.result == SYS_OK);
+#if APP_V3_BOARD_STRESS == APP_V3_BOARD_STRESS_REPEAT
+        CHECK(g_hardware.capture_start_calls + g_hardware.usb_start_calls + g_hardware.mount_calls ==
+            APP_V3_BOARD_STRESS_CYCLES);
+        CHECK(g_hardware.sensor_stop_calls + g_hardware.usb_stop_calls + g_hardware.unmount_calls ==
+            APP_V3_BOARD_STRESS_CYCLES);
+#else
+        CHECK(g_app_v3_board_smoke.events[2].hardware.state == APP_V3_HW_FAULT &&
+            g_app_v3_board_smoke.events[2].hardware.first_fault != SYS_OK);
+        CHECK(g_app_v3_board_smoke.events[3].hardware.state == APP_V3_HW_READY &&
+            g_app_v3_board_smoke.events[3].hardware.first_fault ==
+            g_app_v3_board_smoke.events[2].hardware.first_fault);
+        CHECK(g_hardware.usb_start_calls + g_hardware.mount_calls == 2U);
+#endif
+        CHECK(!g_hardware.storage_owner && !g_hardware.usb_configured && !g_hardware.storage_writable);
+    }
+    else
+    {
+        CHECK(g_app_v3_board_smoke.state == APP_V3_SMOKE_FAILED);
+#if APP_V3_BOARD_STRESS == APP_V3_BOARD_STRESS_RECOVERY
+        expected_results = scenario == 59U ? 3U : 4U;
+        CHECK(g_app_v3_board_smoke.result == (scenario == 59U ? SYS_ERR_PROTOCOL : SYS_ERR_IO));
+        CHECK(g_hardware.usb_start_calls + g_hardware.mount_calls == 1U);
+        if (scenario == 60U)
+        {
+            CHECK(g_app_v3_board_smoke.events[3].hardware.state == APP_V3_HW_FAULT);
+            CHECK(g_app_v3_board_smoke.events[3].hardware.first_fault ==
+                g_app_v3_board_smoke.events[2].hardware.first_fault);
+        }
+#else
+#if APP_V3_BOARD_SMOKE == APP_V3_BOARD_SMOKE_USB
+        if (scenario == 61U)
+        {
+            CHECK(g_app_v3_board_smoke.received == 3U && g_app_v3_board_smoke.result == SYS_ERR_IO &&
+                g_app_v3_board_smoke.events[2].result == SYS_OK &&
+                g_app_v3_board_smoke.events[2].hardware.state == APP_V3_HW_READY &&
+                g_app_v3_board_smoke.events[2].hardware.first_fault == SYS_ERR_IO &&
+                g_hardware.usb_start_calls == 1U);
+            return 0U;
+        }
+#endif
+        expected_results = 7U;
+        CHECK(g_app_v3_board_smoke.result == SYS_ERR_IO &&
+            g_app_v3_board_smoke.events[6].hardware.state == APP_V3_HW_FAULT);
+        CHECK(g_hardware.capture_start_calls + g_hardware.usb_start_calls + g_hardware.mount_calls == 2U);
+#endif
+    }
+
+    //断连、恢复和跨轮运营都保留独立且单调的命令身份
+    CHECK(g_app_v3_board_smoke.received == expected_results);
+    for (step = 0U; step < expected_results; ++step)
+    {
+        const volatile AppV3ServiceEvent_t *event = &g_app_v3_board_smoke.events[step];
+        CHECK(event->service == g_app_v3_board_smoke.service && event->requester == RUNTIME_TARGET_CONTROL &&
+            event->command_id == APP_V3_BOARD_SMOKE_FIRST_ID + step && event->sequence == step + 1U &&
+            event->real_hardware);
+    }
+    return 0U;
+}
+#endif
+
 uint32_t AppV3_TestRun(uint32_t scenario)
 {
     const AppV3Context_t *context;
@@ -1780,6 +1980,10 @@ uint32_t AppV3_TestRun(uint32_t scenario)
 #if APP_V3_BOARD_SMOKE != APP_V3_BOARD_SMOKE_OFF
     if (scenario >= 53U && scenario <= 57U)
         return Test_BoardSmoke(scenario);
+#if APP_V3_BOARD_STRESS != APP_V3_BOARD_STRESS_OFF
+    if (scenario >= 58U && scenario <= 61U)
+        return Test_BoardStress(scenario);
+#endif
 #endif
 
     switch (scenario)

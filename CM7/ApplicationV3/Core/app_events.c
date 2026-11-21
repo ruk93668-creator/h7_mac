@@ -278,6 +278,26 @@ static void AppEvents_UsbNotify(uint32_t events, void *context)
 }
 
 //检查当前执行者是否为目标任务
+#if defined(APP_V3_BOARD_STRESS) && APP_V3_BOARD_STRESS != 0
+//复用调度前登记的句柄，不访问其他任务的业务Context
+bool App_EventsReadStackWatermarks(UBaseType_t remaining_words[RUNTIME_TARGET_COUNT])
+{
+    uint32_t target_index;
+
+    //只允许BOOT后的Control采样；任务句柄在调度启动后不会再写入
+    if (remaining_words == NULL || !s_boot_ready || !App_EventsIsOwner(RUNTIME_TARGET_CONTROL))
+        return false;
+
+    for (target_index = 0U; target_index < RUNTIME_TARGET_COUNT; ++target_index)
+    {
+        if (s_tasks[target_index] == NULL)
+            return false;
+        remaining_words[target_index] = uxTaskGetStackHighWaterMark(s_tasks[target_index]);
+    }
+    return true;
+}
+#endif
+
 bool App_EventsIsOwner(RuntimeEventTarget_t target)
 {
     return (uint32_t)target < RUNTIME_TARGET_COUNT && Platform_SyncGetException() == 0U &&
