@@ -1,0 +1,94 @@
+{
+  "baseline": "daa6d7c82412c883555fd8c6d3fd9a9f80f0c4a3",
+  "full_build": "0 Error(s), 0 Warning(s)",
+  "bundle": "D:\\32\\STM32H7\\h7_mac_lifecycle\\output\\TinyUSBReplacement\\R2Closure-review-749a21eb3ea4",
+  "axf_sha256": "749a21eb3ea461ab52ac8bea5e71caf39a13fc5ea78d1de7065bc33c289e9b19",
+  "sizes": {
+    "code": 47918,
+    "ro": 1086,
+    "rw": 316,
+    "zi": 25788
+  },
+  "unique_irq": {
+    "index": 117,
+    "entry": "0x8002d89"
+  },
+  "final_functions": {
+    "tud_deinit": "0x80094d9",
+    "dcd_deinit": "0x8003e49",
+    "dcd_task": "0x8005541",
+    "dcd_deinit_ready": "0x8003ebd",
+    "dcd_edpt_close_all_safe": "0x8004655",
+    "tud_disconnect": "0x8009659",
+    "tud_connect": "0x80093e5",
+    "__scatterload": "0x80002a1"
+  },
+  "old_test_sources_unchanged": [
+    "Tests/TinyUSBReplacement/build_r2.py",
+    "Tests/TinyUSBReplacement/check_r2_default.py",
+    "Tests/TinyUSBReplacement/compile_probe.py",
+    "Tests/TinyUSBReplacement/dwc2_test.c",
+    "Tests/TinyUSBReplacement/r1_dcd.c",
+    "Tests/TinyUSBReplacement/r1_msc.c",
+    "Tests/TinyUSBReplacement/r1_test.c",
+    "Tests/TinyUSBReplacement/r1b_core.c",
+    "Tests/TinyUSBReplacement/r1b_dcd.c",
+    "Tests/TinyUSBReplacement/r1b_wait_test.c",
+    "Tests/TinyUSBReplacement/run_dwc2_tests.py",
+    "Tests/TinyUSBReplacement/run_r1_tests.py",
+    "Tests/TinyUSBReplacement/run_r1b_tests.py",
+    "Tests/TinyUSBReplacement/run_r1b_wait_tests.py",
+    "Tests/TinyUSBReplacement/run_stack_tests.py",
+    "Tests/TinyUSBReplacement/run_video_tests.py",
+    "Tests/TinyUSBReplacement/stack_test.c",
+    "Tests/TinyUSBReplacement/video_boundary.c",
+    "Tests/TinyUSBReplacement/video_test.c"
+  ],
+  "old_19_assertion_body_unchanged": true,
+  "production": {
+    "CM7/TinyUSB/tinyusb_experiment.c": "28252e725bcc00a3100e88f10a8915e613056022be1fcd7f3266dca96e3b2cf9",
+    "MDK-ARM/h7_mac_TinyUSB_RAM.uvprojx": "487ab83cb6ae7921b0dd1f4b1d13238416a581a6f9964f1f49ff19817d72c362",
+    "ThirdParty/tinyusb/UPSTREAM.json": "2fc053415ea9279d3ca5e80163def1ee5e8f44a5b2d39309ac7b98725b8d1315",
+    "ThirdParty/tinyusb/src/device/dcd.h": "a3bbd5da5503f681ac02f3bd29189b3d8ad504036883a9596520d9311ad6ac36",
+    "ThirdParty/tinyusb/src/device/usbd.c": "49a9aa762feea1181d484ad45cf605d22edc09e7873b4332434825501eb21394",
+    "ThirdParty/tinyusb/src/device/usbd.h": "31980667286255fb0346c0b11d41f87ffeb4b3da2429d5cf94ba4ed9f6d5ae82",
+    "ThirdParty/tinyusb/src/portable/synopsys/dwc2/dcd_dwc2.c": "8c94f9e86aa6792bc0b5078a16fe6449c6cb9ce89aa6bbcb07e123126f06777c",
+    "ThirdParty/tinyusb/src/portable/synopsys/dwc2/dwc2_common.c": "655929ad5fe7dfbca0f3fb4cfed0f4ddf0ef5295c86ed6f7de23b3e65702658a"
+  },
+  "summaries": {
+    "r2-closure": {
+      "cases": 25,
+      "passed": 25,
+      "assertions": 185
+    },
+    "r2-firmware-tests": {
+      "cases": 19,
+      "passed": 18,
+      "assertions": 114
+    },
+    "r1b": {
+      "cases": 33,
+      "passed": 33,
+      "assertions": 313
+    },
+    "stack": {
+      "cases": 12,
+      "passed": 12,
+      "assertions": 1679
+    },
+    "r1": {
+      "cases": 2,
+      "passed": 0,
+      "assertions": 3
+    }
+  },
+  "historical_contract_change": {
+    "test": "active Disconnect boundary",
+    "old": "immediate fault before Task",
+    "new": "pending retirement in existing Task",
+    "classification": "CONTRACT_CHANGED: explicitly requested normal Disconnect; old failing assertion retained"
+  },
+  "active_reset": "BLOCKED",
+  "hardware": "NOT_TESTED",
+  "pdf_sha256": "61d07b67deb291aed8a5cf8019c94add0a1065318542e57b3287d2694b14bd60"
+}

@@ -268,11 +268,13 @@ bool dwc2_core_init(uint8_t rhport, bool is_hs_phy, bool is_dma) {
 bool dwc2_core_deinit(uint8_t rhport) {
   dwc2_regs_t* dwc2 = DWC2_REG(rhport);
 
-  // Disable global interrupt
+  // Caller already proved endpoint/PIO quiescence. Keep the old interrupt
+  // admission on reset failure; never shut down NVIC/pullup on that path.
+  const uint32_t prior_gint=dwc2->gahbcfg & GAHBCFG_GINT;
   dwc2->gahbcfg &= ~GAHBCFG_GINT;
 
   // Reset core: this also flushes FIFOs and clears all interrupt registers
-  if (!reset_core(dwc2)) return false;
+  if (!reset_core(dwc2)) {dwc2->gahbcfg |= prior_gint;return false;}
 
   // Stop PHY clock and gate HCLK for power saving (per databook chapter 14)
   dwc2->pcgcctl |= PCGCCTL_STOPPCLK | PCGCCTL_GATEHCLK;

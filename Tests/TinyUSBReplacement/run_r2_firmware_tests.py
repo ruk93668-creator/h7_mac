@@ -13,10 +13,18 @@ from unicorn.arm_const import *
 build=json.loads((HERE/'reports/r2-build.json').read_text(encoding='utf-8'));axf=Path(build['output'])/'h7_mac_CM7_TinyUSB_RAM.axf'
 for path,h in build['source_sha256'].items():assert hashlib.sha256((ROOT/path).read_bytes()).hexdigest()==h,('stale AXF',path)
 with axf.open('rb') as f:
- e=ELFFile(f);symbols={s.name:s['st_value'] for s in e.get_section_by_name('.symtab').iter_symbols()};sections=[(s['sh_addr'],s.data()) for s in e.iter_sections() if s['sh_flags']&2 and s['sh_type']=='SHT_PROGBITS' and s['sh_size']]
+ e=ELFFile(f);load_segments=[(p['p_paddr'],p.data()) for p in e.iter_segments() if p['p_type']=='PT_LOAD' and p['p_filesz']];symbols={s.name:s['st_value'] for s in e.get_section_by_name('.symtab').iter_symbols()};sections=[(s['sh_addr'],s.data()) for s in e.iter_sections() if s['sh_flags']&2 and s['sh_type']=='SHT_PROGBITS' and s['sh_size']]
 class Model(VM):
  def __init__(self):
   super().__init__(symbols,sections,'tud_rhport_init',{})
+  # ARMCC scatter images may compress RW initializers in the Flash load segment.
+  # Load real LMA bytes and run the actual library scatter/decompress code before
+  # the modeled scheduler-ready state. Never manufacture initialized USB state.
+  for address,data in load_segments:self.cpu.mem_write(address,data)
+  self.cpu.reg_write(UC_ARM_REG_SP,0x2001fff0)
+  self.cpu.emu_start(symbols['__scatterload']|1,symbols['__rt_entry']&~1,count=1000000)
+  assert self.cpu.reg_read(UC_ARM_REG_PC)==(symbols['__rt_entry']&~1),'scatter initialization did not finish'
+
   self.cpu.mem_map(0x58000000,0x100000)
   self.cpu.hook_add(UC_HOOK_MEM_READ,self.clock,begin=0xe0001004,end=0xe0001007)
   self.wr(BASE+0x48,8<<10);self.wr(BASE+0x40,0x4f54310a);self.wr(0xe000ed88,0xf00000)

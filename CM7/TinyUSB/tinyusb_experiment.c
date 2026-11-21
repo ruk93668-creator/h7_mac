@@ -86,6 +86,14 @@ void TinyUSB_ExperimentRun(void)
             if (tud_rhport_init(0,&init))
             { g_tinyusb_experiment.stopped=0; g_tinyusb_experiment.command=0; }
         }
+        else if (g_tinyusb_experiment.command == 3U && !g_tinyusb_experiment.stopped)
+        {
+            if (tud_disconnect()) g_tinyusb_experiment.command=0;
+        }
+        else if (g_tinyusb_experiment.command == 4U && !g_tinyusb_experiment.stopped)
+        {
+            if (tud_connect()) g_tinyusb_experiment.command=0;
+        }
         if (usbd_device_failed()) g_tinyusb_experiment.failures++;
         g_tinyusb_experiment.polls++;
         vTaskDelay(1); /* bounded revisit even when no DCD event is queued */

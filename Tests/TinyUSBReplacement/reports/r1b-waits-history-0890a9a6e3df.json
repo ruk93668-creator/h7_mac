@@ -1,0 +1,468 @@
+{
+  "kind": "bounded failure regression of original six hangs",
+  "cases": [
+    {
+      "case": 1,
+      "name": "OUT GONAKEFF missing",
+      "expectation_met": true,
+      "returned": true,
+      "raw": [
+        2,
+        0,
+        1,
+        0
+      ],
+      "reads": {},
+      "writes": [],
+      "error": null,
+      "pc": "0x10000000"
+    },
+    {
+      "case": 2,
+      "name": "OUT EPDISD missing after NAK",
+      "expectation_met": true,
+      "returned": true,
+      "raw": [
+        2,
+        0,
+        1,
+        0
+      ],
+      "reads": {},
+      "writes": [],
+      "error": null,
+      "pc": "0x10000000"
+    },
+    {
+      "case": 3,
+      "name": "IN INEPNE missing",
+      "expectation_met": true,
+      "returned": true,
+      "raw": [
+        2,
+        0,
+        1,
+        0
+      ],
+      "reads": {
+        "0x40080940": 2,
+        "0x40080948": 22
+      },
+      "writes": [
+        {
+          "address": "0x40080940",
+          "value": "0x88000000"
+        }
+      ],
+      "error": null,
+      "pc": "0x10000000"
+    },
+    {
+      "case": 4,
+      "name": "IN EPDISD missing after NAK",
+      "expectation_met": true,
+      "returned": true,
+      "raw": [
+        2,
+        0,
+        1,
+        0
+      ],
+      "reads": {
+        "0x40080940": 3,
+        "0x40080948": 23
+      },
+      "writes": [
+        {
+          "address": "0x40080940",
+          "value": "0x88000000"
+        },
+        {
+          "address": "0x40080940",
+          "value": "0xc8200000"
+        }
+      ],
+      "error": null,
+      "pc": "0x10000000"
+    },
+    {
+      "case": 5,
+      "name": "EP0 OUT never generic disabled",
+      "expectation_met": true,
+      "returned": true,
+      "raw": [
+        2,
+        0,
+        0,
+        0
+      ],
+      "reads": {
+        "0x40080b00": 2
+      },
+      "writes": [
+        {
+          "address": "0x40080b00",
+          "value": "0x80000000"
+        }
+      ],
+      "error": null,
+      "pc": "0x10000000"
+    },
+    {
+      "case": 6,
+      "name": "PIO status ZLP combined CNAK EPENA",
+      "expectation_met": true,
+      "returned": true,
+      "raw": [
+        2,
+        1,
+        0,
+        0
+      ],
+      "reads": {
+        "0x40080014": 1,
+        "0x40080908": 1,
+        "0x40080900": 1
+      },
+      "writes": [
+        {
+          "address": "0x40080910",
+          "value": "0x80000"
+        },
+        {
+          "address": "0x40080900",
+          "value": "0x84000000"
+        }
+      ],
+      "error": null,
+      "pc": "0x10000000"
+    },
+    {
+      "case": 7,
+      "name": "TX FIFO Flush never clears",
+      "expectation_met": true,
+      "returned": true,
+      "raw": [
+        2,
+        0,
+        1,
+        0
+      ],
+      "reads": {
+        "0x40080010": 22
+      },
+      "writes": [
+        {
+          "address": "0x40080010",
+          "value": "0xa0"
+        }
+      ],
+      "error": null,
+      "pc": "0x10000000"
+    },
+    {
+      "case": 8,
+      "name": "Controller DeInit AHB idle absent",
+      "expectation_met": true,
+      "returned": true,
+      "raw": [
+        2,
+        0,
+        1,
+        0
+      ],
+      "reads": {
+        "0x40080014": 1,
+        "0x40080010": 23,
+        "0x40080b00": 1,
+        "0x40080b08": 1,
+        "0x40080900": 1,
+        "0x40080908": 1,
+        "0x40080b20": 1,
+        "0x40080b28": 1,
+        "0x40080920": 1,
+        "0x40080928": 1,
+        "0x40080b40": 1,
+        "0x40080b48": 1,
+        "0x40080940": 1,
+        "0x40080948": 1,
+        "0x40080b60": 1,
+        "0x40080b68": 1,
+        "0x40080960": 1,
+        "0x40080968": 1,
+        "0x40080b80": 1,
+        "0x40080b88": 1,
+        "0x40080980": 1,
+        "0x40080988": 1,
+        "0x40080ba0": 1,
+        "0x40080ba8": 1,
+        "0x400809a0": 1,
+        "0x400809a8": 1,
+        "0x40080bc0": 1,
+        "0x40080bc8": 1,
+        "0x400809c0": 1,
+        "0x400809c8": 1,
+        "0x40080be0": 1,
+        "0x40080be8": 1,
+        "0x400809e0": 1,
+        "0x400809e8": 1,
+        "0x40080c00": 1,
+        "0x40080c08": 1,
+        "0x40080a00": 1,
+        "0x40080a08": 1,
+        "0x40080008": 3
+      },
+      "writes": [
+        {
+          "address": "0x40080008",
+          "value": "0x0"
+        },
+        {
+          "address": "0x40080008",
+          "value": "0x0"
+        }
+      ],
+      "error": null,
+      "pc": "0x10000000"
+    },
+    {
+      "case": 9,
+      "name": "RX FIFO Flush never clears",
+      "expectation_met": true,
+      "returned": true,
+      "raw": [
+        2,
+        0,
+        1,
+        0
+      ],
+      "reads": {
+        "0x40080010": 22
+      },
+      "writes": [
+        {
+          "address": "0x40080010",
+          "value": "0x10"
+        }
+      ],
+      "error": null,
+      "pc": "0x10000000"
+    }
+  ],
+  "commands": [
+    {
+      "argv": [
+        "D:\\32\\ARM\\ARMCC\\Bin\\armcc.exe",
+        "--cpu",
+        "Cortex-M7",
+        "--c99",
+        "--gnu",
+        "--split_sections",
+        "-O0",
+        "-DTINYUSB_MODEL=1",
+        "-DSTM32H747xx",
+        "-DCORE_CM7",
+        "-I",
+        "D:\\32\\STM32H7\\h7_mac_lifecycle\\CM7\\TinyUSB",
+        "-I",
+        "D:\\32\\STM32H7\\h7_mac_lifecycle\\ThirdParty\\tinyusb\\src",
+        "-I",
+        "D:\\32\\STM32H7\\h7_mac_lifecycle\\CM7\\Core\\Inc",
+        "-I",
+        "D:\\32\\STM32H7\\h7_mac_lifecycle\\Drivers\\STM32H7xx_HAL_Driver\\Inc",
+        "-I",
+        "D:\\32\\STM32H7\\h7_mac_lifecycle\\Drivers\\STM32H7xx_HAL_Driver\\Inc\\Legacy",
+        "-I",
+        "D:\\32\\STM32H7\\h7_mac_lifecycle\\Drivers\\CMSIS\\Device\\ST\\STM32H7xx\\Include",
+        "-I",
+        "D:\\32\\STM32H7\\h7_mac_lifecycle\\Drivers\\CMSIS\\Include",
+        "-I",
+        "D:\\32\\STM32H7\\h7_mac_lifecycle\\Common\\Inc",
+        "-I",
+        "D:\\32\\STM32H7\\h7_mac_lifecycle\\Board\\Inc",
+        "-I",
+        "D:\\32\\STM32H7\\h7_mac_lifecycle\\CM7\\Application",
+        "-I",
+        "D:\\32\\STM32H7\\h7_mac_lifecycle\\CM7\\Service",
+        "-I",
+        "D:\\32\\STM32H7\\h7_mac_lifecycle\\CM7\\Device\\Inc",
+        "-I",
+        "D:\\32\\STM32H7\\h7_mac_lifecycle\\CM7\\Media\\Inc",
+        "-I",
+        "D:\\32\\STM32H7\\h7_mac_lifecycle\\CM7\\Platform",
+        "-I",
+        "D:\\32\\STM32H7\\h7_mac_lifecycle\\CM7\\BSP",
+        "-I",
+        "D:\\32\\STM32H7\\h7_mac_lifecycle\\CM7\\Framework",
+        "-I",
+        "D:\\32\\STM32H7\\h7_mac_lifecycle\\CM7\\Device\\Components\\OV5640",
+        "-I",
+        "D:\\32\\STM32H7\\h7_mac_lifecycle\\Middlewares\\ST\\STM32_USB_Device_Library\\Core\\Inc",
+        "-I",
+        "D:\\32\\STM32H7\\h7_mac_lifecycle\\Middlewares\\Third_Party\\FreeRTOS\\Source\\include",
+        "-I",
+        "D:\\32\\STM32H7\\h7_mac_lifecycle\\Middlewares\\Third_Party\\FreeRTOS\\Source\\portable\\RVDS\\ARM_CM7\\r0p1",
+        "-I",
+        "D:\\32\\STM32H7\\h7_mac_lifecycle\\Middlewares\\Third_Party\\FatFs",
+        "-c",
+        "D:\\32\\STM32H7\\h7_mac_lifecycle\\Tests\\TinyUSBReplacement\\r1b_wait_test.c",
+        "-o",
+        "D:\\32\\STM32H7\\h7_mac_lifecycle\\output\\TinyUSBReplacement\\r1b-waits-1795252859580571100\\r1b_wait_test.o"
+      ],
+      "exit": 0,
+      "output": ""
+    },
+    {
+      "argv": [
+        "D:\\32\\ARM\\ARMCC\\Bin\\armcc.exe",
+        "--cpu",
+        "Cortex-M7",
+        "--c99",
+        "--gnu",
+        "--split_sections",
+        "-O0",
+        "-DTINYUSB_MODEL=1",
+        "-DSTM32H747xx",
+        "-DCORE_CM7",
+        "-I",
+        "D:\\32\\STM32H7\\h7_mac_lifecycle\\CM7\\TinyUSB",
+        "-I",
+        "D:\\32\\STM32H7\\h7_mac_lifecycle\\ThirdParty\\tinyusb\\src",
+        "-I",
+        "D:\\32\\STM32H7\\h7_mac_lifecycle\\CM7\\Core\\Inc",
+        "-I",
+        "D:\\32\\STM32H7\\h7_mac_lifecycle\\Drivers\\STM32H7xx_HAL_Driver\\Inc",
+        "-I",
+        "D:\\32\\STM32H7\\h7_mac_lifecycle\\Drivers\\STM32H7xx_HAL_Driver\\Inc\\Legacy",
+        "-I",
+        "D:\\32\\STM32H7\\h7_mac_lifecycle\\Drivers\\CMSIS\\Device\\ST\\STM32H7xx\\Include",
+        "-I",
+        "D:\\32\\STM32H7\\h7_mac_lifecycle\\Drivers\\CMSIS\\Include",
+        "-I",
+        "D:\\32\\STM32H7\\h7_mac_lifecycle\\Common\\Inc",
+        "-I",
+        "D:\\32\\STM32H7\\h7_mac_lifecycle\\Board\\Inc",
+        "-I",
+        "D:\\32\\STM32H7\\h7_mac_lifecycle\\CM7\\Application",
+        "-I",
+        "D:\\32\\STM32H7\\h7_mac_lifecycle\\CM7\\Service",
+        "-I",
+        "D:\\32\\STM32H7\\h7_mac_lifecycle\\CM7\\Device\\Inc",
+        "-I",
+        "D:\\32\\STM32H7\\h7_mac_lifecycle\\CM7\\Media\\Inc",
+        "-I",
+        "D:\\32\\STM32H7\\h7_mac_lifecycle\\CM7\\Platform",
+        "-I",
+        "D:\\32\\STM32H7\\h7_mac_lifecycle\\CM7\\BSP",
+        "-I",
+        "D:\\32\\STM32H7\\h7_mac_lifecycle\\CM7\\Framework",
+        "-I",
+        "D:\\32\\STM32H7\\h7_mac_lifecycle\\CM7\\Device\\Components\\OV5640",
+        "-I",
+        "D:\\32\\STM32H7\\h7_mac_lifecycle\\Middlewares\\ST\\STM32_USB_Device_Library\\Core\\Inc",
+        "-I",
+        "D:\\32\\STM32H7\\h7_mac_lifecycle\\Middlewares\\Third_Party\\FreeRTOS\\Source\\include",
+        "-I",
+        "D:\\32\\STM32H7\\h7_mac_lifecycle\\Middlewares\\Third_Party\\FreeRTOS\\Source\\portable\\RVDS\\ARM_CM7\\r0p1",
+        "-I",
+        "D:\\32\\STM32H7\\h7_mac_lifecycle\\Middlewares\\Third_Party\\FatFs",
+        "-c",
+        "D:\\32\\STM32H7\\h7_mac_lifecycle\\ThirdParty\\tinyusb\\src\\portable\\synopsys\\dwc2\\dwc2_common.c",
+        "-o",
+        "D:\\32\\STM32H7\\h7_mac_lifecycle\\output\\TinyUSBReplacement\\r1b-waits-1795252859580571100\\dwc2_common.o"
+      ],
+      "exit": 0,
+      "output": ""
+    },
+    {
+      "argv": [
+        "D:\\32\\ARM\\ARMCC\\Bin\\armcc.exe",
+        "--cpu",
+        "Cortex-M7",
+        "--c99",
+        "--gnu",
+        "--split_sections",
+        "-O0",
+        "-DTINYUSB_MODEL=1",
+        "-DSTM32H747xx",
+        "-DCORE_CM7",
+        "-I",
+        "D:\\32\\STM32H7\\h7_mac_lifecycle\\CM7\\TinyUSB",
+        "-I",
+        "D:\\32\\STM32H7\\h7_mac_lifecycle\\ThirdParty\\tinyusb\\src",
+        "-I",
+        "D:\\32\\STM32H7\\h7_mac_lifecycle\\CM7\\Core\\Inc",
+        "-I",
+        "D:\\32\\STM32H7\\h7_mac_lifecycle\\Drivers\\STM32H7xx_HAL_Driver\\Inc",
+        "-I",
+        "D:\\32\\STM32H7\\h7_mac_lifecycle\\Drivers\\STM32H7xx_HAL_Driver\\Inc\\Legacy",
+        "-I",
+        "D:\\32\\STM32H7\\h7_mac_lifecycle\\Drivers\\CMSIS\\Device\\ST\\STM32H7xx\\Include",
+        "-I",
+        "D:\\32\\STM32H7\\h7_mac_lifecycle\\Drivers\\CMSIS\\Include",
+        "-I",
+        "D:\\32\\STM32H7\\h7_mac_lifecycle\\Common\\Inc",
+        "-I",
+        "D:\\32\\STM32H7\\h7_mac_lifecycle\\Board\\Inc",
+        "-I",
+        "D:\\32\\STM32H7\\h7_mac_lifecycle\\CM7\\Application",
+        "-I",
+        "D:\\32\\STM32H7\\h7_mac_lifecycle\\CM7\\Service",
+        "-I",
+        "D:\\32\\STM32H7\\h7_mac_lifecycle\\CM7\\Device\\Inc",
+        "-I",
+        "D:\\32\\STM32H7\\h7_mac_lifecycle\\CM7\\Media\\Inc",
+        "-I",
+        "D:\\32\\STM32H7\\h7_mac_lifecycle\\CM7\\Platform",
+        "-I",
+        "D:\\32\\STM32H7\\h7_mac_lifecycle\\CM7\\BSP",
+        "-I",
+        "D:\\32\\STM32H7\\h7_mac_lifecycle\\CM7\\Framework",
+        "-I",
+        "D:\\32\\STM32H7\\h7_mac_lifecycle\\CM7\\Device\\Components\\OV5640",
+        "-I",
+        "D:\\32\\STM32H7\\h7_mac_lifecycle\\Middlewares\\ST\\STM32_USB_Device_Library\\Core\\Inc",
+        "-I",
+        "D:\\32\\STM32H7\\h7_mac_lifecycle\\Middlewares\\Third_Party\\FreeRTOS\\Source\\include",
+        "-I",
+        "D:\\32\\STM32H7\\h7_mac_lifecycle\\Middlewares\\Third_Party\\FreeRTOS\\Source\\portable\\RVDS\\ARM_CM7\\r0p1",
+        "-I",
+        "D:\\32\\STM32H7\\h7_mac_lifecycle\\Middlewares\\Third_Party\\FatFs",
+        "-c",
+        "D:\\32\\STM32H7\\h7_mac_lifecycle\\ThirdParty\\tinyusb\\src\\common\\tusb_fifo.c",
+        "-o",
+        "D:\\32\\STM32H7\\h7_mac_lifecycle\\output\\TinyUSBReplacement\\r1b-waits-1795252859580571100\\tusb_fifo.o"
+      ],
+      "exit": 0,
+      "output": ""
+    },
+    {
+      "argv": [
+        "D:\\32\\ARM\\ARMCC\\Bin\\armlink.exe",
+        "D:\\32\\STM32H7\\h7_mac_lifecycle\\output\\TinyUSBReplacement\\r1b-waits-1795252859580571100\\r1b_wait_test.o",
+        "D:\\32\\STM32H7\\h7_mac_lifecycle\\output\\TinyUSBReplacement\\r1b-waits-1795252859580571100\\dwc2_common.o",
+        "D:\\32\\STM32H7\\h7_mac_lifecycle\\output\\TinyUSBReplacement\\r1b-waits-1795252859580571100\\tusb_fifo.o",
+        "--entry",
+        "Dwc2_Run",
+        "--scatter",
+        "D:\\32\\STM32H7\\h7_mac_lifecycle\\Tests\\EndpointLifecycle\\test.sct",
+        "--map",
+        "--list",
+        "D:\\32\\STM32H7\\h7_mac_lifecycle\\output\\TinyUSBReplacement\\r1b-waits-1795252859580571100\\dwc2.map",
+        "-o",
+        "D:\\32\\STM32H7\\h7_mac_lifecycle\\output\\TinyUSBReplacement\\r1b-waits-1795252859580571100\\dwc2.axf"
+      ],
+      "exit": 0,
+      "output": ""
+    }
+  ],
+  "artifact": "D:\\32\\STM32H7\\h7_mac_lifecycle\\output\\TinyUSBReplacement\\r1b-waits-1795252859580571100\\dwc2.axf",
+  "hardware": "NOT_TESTED",
+  "meaning": "Each call must return; actual firmware DWT deadline/clock validity decides failure. Emulator instruction budget remains only a test harness watchdog.",
+  "sources": {
+    "Tests/TinyUSBReplacement/r1b_wait_test.c": "82650e275d9eb9658f351830f2924ad5dce5f2a6023a64f9168a7185a8a54342",
+    "ThirdParty/tinyusb/src/portable/synopsys/dwc2/dwc2_common.c": "655929ad5fe7dfbca0f3fb4cfed0f4ddf0ef5295c86ed6f7de23b3e65702658a",
+    "ThirdParty/tinyusb/src/common/tusb_fifo.c": "61f3f43caf0d8c9caa27edf0daf65e307199161fd194344a9f510f443d1a26bb",
+    "ThirdParty/tinyusb/src/portable/synopsys/dwc2/dcd_dwc2.c": "8c94f9e86aa6792bc0b5078a16fe6449c6cb9ce89aa6bbcb07e123126f06777c"
+  }
+}

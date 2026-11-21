@@ -1,0 +1,788 @@
+{
+  "artifact": "D:\\32\\STM32H7\\h7_mac_lifecycle\\output\\TinyUSBReplacement\\r2-firmware-1795251785791259800\\h7_mac_CM7_TinyUSB_RAM.axf",
+  "axf_sha256": "03434f2548e4b8b3cb823e4d04e74ff1004dc8382399db70c0e2f8a4efcca302",
+  "cases": [
+    {
+      "name": "complete image unique owner",
+      "passed": true,
+      "checks": [
+        {
+          "name": "real full firmware init",
+          "actual": 1,
+          "expected": 1,
+          "passed": true
+        },
+        {
+          "name": "strong handler exists",
+          "actual": true,
+          "expected": true,
+          "passed": true
+        },
+        {
+          "name": "HAL_PCD_IRQHandler absent",
+          "actual": false,
+          "expected": false,
+          "passed": true
+        },
+        {
+          "name": "USB_Mode_Start absent",
+          "actual": false,
+          "expected": false,
+          "passed": true
+        },
+        {
+          "name": "USBD_Init absent",
+          "actual": false,
+          "expected": false,
+          "passed": true
+        },
+        {
+          "name": "BSP_USB_Start absent",
+          "actual": false,
+          "expected": false,
+          "passed": true
+        },
+        {
+          "name": "StorageTask_Run absent",
+          "actual": false,
+          "expected": false,
+          "passed": true
+        },
+        {
+          "name": "original static task linked",
+          "actual": true,
+          "expected": true,
+          "passed": true
+        }
+      ],
+      "error": null,
+      "calls": [
+        {
+          "function": "tud_rhport_init",
+          "args": [
+            0,
+            536989696
+          ],
+          "returned": true,
+          "basepri": 0
+        }
+      ],
+      "register_writes": []
+    },
+    {
+      "name": "FreeRTOS static queue and mutex",
+      "passed": false,
+      "checks": [
+        {
+          "name": "real full firmware init",
+          "actual": 1,
+          "expected": 1,
+          "passed": true
+        },
+        {
+          "name": "static queue nonnull",
+          "actual": false,
+          "expected": true,
+          "passed": false
+        },
+        {
+          "name": "static mutex nonnull",
+          "actual": false,
+          "expected": true,
+          "passed": false
+        },
+        {
+          "name": "real kernel xQueueGenericCreateStatic",
+          "actual": true,
+          "expected": true,
+          "passed": true
+        },
+        {
+          "name": "real kernel xQueueCreateMutexStatic",
+          "actual": true,
+          "expected": true,
+          "passed": true
+        },
+        {
+          "name": "real kernel vPortEnterCritical",
+          "actual": true,
+          "expected": true,
+          "passed": true
+        }
+      ],
+      "error": null,
+      "calls": [
+        {
+          "function": "tud_rhport_init",
+          "args": [
+            0,
+            536989696
+          ],
+          "returned": true,
+          "basepri": 0
+        }
+      ],
+      "register_writes": []
+    },
+    {
+      "name": "nested spin BASEPRI and IRQ admission",
+      "passed": true,
+      "checks": [
+        {
+          "name": "real full firmware init",
+          "actual": 1,
+          "expected": 1,
+          "passed": true
+        },
+        {
+          "name": "task BASEPRI",
+          "actual": 80,
+          "expected": 80,
+          "passed": true
+        },
+        {
+          "name": "nested BASEPRI",
+          "actual": 80,
+          "expected": 80,
+          "passed": true
+        },
+        {
+          "name": "pending USB IRQ blocked by actual BASEPRI",
+          "actual": true,
+          "expected": true,
+          "passed": true
+        },
+        {
+          "name": "inner exit preserves mask",
+          "actual": 80,
+          "expected": 80,
+          "passed": true
+        },
+        {
+          "name": "outer exit restores mask",
+          "actual": 0,
+          "expected": 0,
+          "passed": true
+        },
+        {
+          "name": "ISR spin is nonblocking",
+          "actual": 0,
+          "expected": 0,
+          "passed": true
+        }
+      ],
+      "error": null,
+      "calls": [
+        {
+          "function": "tud_rhport_init",
+          "args": [
+            0,
+            536989696
+          ],
+          "returned": true,
+          "basepri": 0
+        },
+        {
+          "function": "usbd_spin_lock",
+          "args": [
+            0
+          ],
+          "returned": true,
+          "basepri": 80
+        },
+        {
+          "function": "usbd_spin_lock",
+          "args": [
+            0
+          ],
+          "returned": true,
+          "basepri": 80
+        },
+        {
+          "function": "usbd_spin_unlock",
+          "args": [
+            0
+          ],
+          "returned": true,
+          "basepri": 80
+        },
+        {
+          "function": "usbd_spin_unlock",
+          "args": [
+            0
+          ],
+          "returned": true,
+          "basepri": 0
+        },
+        {
+          "function": "usbd_spin_lock",
+          "args": [
+            1
+          ],
+          "returned": true,
+          "basepri": 0
+        },
+        {
+          "function": "usbd_spin_unlock",
+          "args": [
+            1
+          ],
+          "returned": true,
+          "basepri": 0
+        }
+      ],
+      "register_writes": []
+    },
+    {
+      "name": "empty reset EP0 then configuration",
+      "passed": false,
+      "checks": [
+        {
+          "name": "real full firmware init",
+          "actual": 1,
+          "expected": 1,
+          "passed": true
+        }
+      ],
+      "error": "tud_task_ext did not return; PC=0x8002da6",
+      "calls": [
+        {
+          "function": "tud_rhport_init",
+          "args": [
+            0,
+            536989696
+          ],
+          "returned": true,
+          "basepri": 0
+        },
+        {
+          "function": "tud_task_ext",
+          "args": [
+            0,
+            0
+          ],
+          "returned": false,
+          "basepri": 0
+        }
+      ],
+      "register_writes": []
+    },
+    {
+      "name": "Bulk OUT cancel and Controller restart",
+      "passed": false,
+      "checks": [
+        {
+          "name": "real full firmware init",
+          "actual": 1,
+          "expected": 1,
+          "passed": true
+        }
+      ],
+      "error": "tud_task_ext did not return; PC=0x8002da6",
+      "calls": [
+        {
+          "function": "tud_rhport_init",
+          "args": [
+            0,
+            536989696
+          ],
+          "returned": true,
+          "basepri": 0
+        },
+        {
+          "function": "tud_task_ext",
+          "args": [
+            0,
+            0
+          ],
+          "returned": false,
+          "basepri": 0
+        }
+      ],
+      "register_writes": []
+    },
+    {
+      "name": "active Bulk Bus Reset boundary",
+      "passed": false,
+      "checks": [
+        {
+          "name": "real full firmware init",
+          "actual": 1,
+          "expected": 1,
+          "passed": true
+        }
+      ],
+      "error": "tud_task_ext did not return; PC=0x8002da6",
+      "calls": [
+        {
+          "function": "tud_rhport_init",
+          "args": [
+            0,
+            536989696
+          ],
+          "returned": true,
+          "basepri": 0
+        },
+        {
+          "function": "tud_task_ext",
+          "args": [
+            0,
+            0
+          ],
+          "returned": false,
+          "basepri": 0
+        }
+      ],
+      "register_writes": []
+    },
+    {
+      "name": "active Disconnect boundary",
+      "passed": false,
+      "checks": [
+        {
+          "name": "real full firmware init",
+          "actual": 1,
+          "expected": 1,
+          "passed": true
+        }
+      ],
+      "error": "tud_task_ext did not return; PC=0x8002da6",
+      "calls": [
+        {
+          "function": "tud_rhport_init",
+          "args": [
+            0,
+            536989696
+          ],
+          "returned": true,
+          "basepri": 0
+        },
+        {
+          "function": "tud_task_ext",
+          "args": [
+            0,
+            0
+          ],
+          "returned": false,
+          "basepri": 0
+        }
+      ],
+      "register_writes": []
+    },
+    {
+      "name": "DWT unavailable retains Buffer",
+      "passed": false,
+      "checks": [
+        {
+          "name": "real full firmware init",
+          "actual": 1,
+          "expected": 1,
+          "passed": true
+        }
+      ],
+      "error": "tud_task_ext did not return; PC=0x8002da6",
+      "calls": [
+        {
+          "function": "tud_rhport_init",
+          "args": [
+            0,
+            536989696
+          ],
+          "returned": true,
+          "basepri": 0
+        },
+        {
+          "function": "tud_task_ext",
+          "args": [
+            0,
+            0
+          ],
+          "returned": false,
+          "basepri": 0
+        }
+      ],
+      "register_writes": []
+    },
+    {
+      "name": "RTOS tick deadline during CPU sleep",
+      "passed": false,
+      "checks": [
+        {
+          "name": "real full firmware init",
+          "actual": 1,
+          "expected": 1,
+          "passed": true
+        }
+      ],
+      "error": "tud_task_ext did not return; PC=0x8002da6",
+      "calls": [
+        {
+          "function": "tud_rhport_init",
+          "args": [
+            0,
+            536989696
+          ],
+          "returned": true,
+          "basepri": 0
+        },
+        {
+          "function": "tud_task_ext",
+          "args": [
+            0,
+            0
+          ],
+          "returned": false,
+          "basepri": 0
+        }
+      ],
+      "register_writes": []
+    },
+    {
+      "name": "close already retired group",
+      "passed": false,
+      "checks": [
+        {
+          "name": "real full firmware init",
+          "actual": 1,
+          "expected": 1,
+          "passed": true
+        }
+      ],
+      "error": "tud_task_ext did not return; PC=0x8002da6",
+      "calls": [
+        {
+          "function": "tud_rhport_init",
+          "args": [
+            0,
+            536989696
+          ],
+          "returned": true,
+          "basepri": 0
+        },
+        {
+          "function": "tud_task_ext",
+          "args": [
+            0,
+            0
+          ],
+          "returned": false,
+          "basepri": 0
+        }
+      ],
+      "register_writes": []
+    },
+    {
+      "name": "close active group preserves fault",
+      "passed": false,
+      "checks": [
+        {
+          "name": "real full firmware init",
+          "actual": 1,
+          "expected": 1,
+          "passed": true
+        }
+      ],
+      "error": "tud_task_ext did not return; PC=0x8002da6",
+      "calls": [
+        {
+          "function": "tud_rhport_init",
+          "args": [
+            0,
+            536989696
+          ],
+          "returned": true,
+          "basepri": 0
+        },
+        {
+          "function": "tud_task_ext",
+          "args": [
+            0,
+            0
+          ],
+          "returned": false,
+          "basepri": 0
+        }
+      ],
+      "register_writes": []
+    },
+    {
+      "name": "RAM backend asynchronous completion",
+      "passed": false,
+      "checks": [
+        {
+          "name": "real full firmware init",
+          "actual": 1,
+          "expected": 1,
+          "passed": true
+        }
+      ],
+      "error": "tud_task_ext did not return; PC=0x8002da6",
+      "calls": [
+        {
+          "function": "tud_rhport_init",
+          "args": [
+            0,
+            536989696
+          ],
+          "returned": true,
+          "basepri": 0
+        },
+        {
+          "function": "tud_task_ext",
+          "args": [
+            0,
+            0
+          ],
+          "returned": false,
+          "basepri": 0
+        }
+      ],
+      "register_writes": []
+    },
+    {
+      "name": "SCSI INQUIRY",
+      "passed": false,
+      "checks": [
+        {
+          "name": "init",
+          "actual": 1,
+          "expected": 1,
+          "passed": true
+        }
+      ],
+      "error": "tud_task_ext did not return; PC=0x8002da6",
+      "calls": [
+        {
+          "function": "tud_rhport_init",
+          "args": [
+            0,
+            536989696
+          ],
+          "returned": true,
+          "basepri": 0
+        },
+        {
+          "function": "tud_task_ext",
+          "args": [
+            0,
+            0
+          ],
+          "returned": false,
+          "basepri": 0
+        }
+      ],
+      "register_writes": []
+    },
+    {
+      "name": "SCSI TEST UNIT READY",
+      "passed": false,
+      "checks": [
+        {
+          "name": "init",
+          "actual": 1,
+          "expected": 1,
+          "passed": true
+        }
+      ],
+      "error": "tud_task_ext did not return; PC=0x8002da6",
+      "calls": [
+        {
+          "function": "tud_rhport_init",
+          "args": [
+            0,
+            536989696
+          ],
+          "returned": true,
+          "basepri": 0
+        },
+        {
+          "function": "tud_task_ext",
+          "args": [
+            0,
+            0
+          ],
+          "returned": false,
+          "basepri": 0
+        }
+      ],
+      "register_writes": []
+    },
+    {
+      "name": "SCSI READ CAPACITY",
+      "passed": false,
+      "checks": [
+        {
+          "name": "init",
+          "actual": 1,
+          "expected": 1,
+          "passed": true
+        }
+      ],
+      "error": "tud_task_ext did not return; PC=0x8002da6",
+      "calls": [
+        {
+          "function": "tud_rhport_init",
+          "args": [
+            0,
+            536989696
+          ],
+          "returned": true,
+          "basepri": 0
+        },
+        {
+          "function": "tud_task_ext",
+          "args": [
+            0,
+            0
+          ],
+          "returned": false,
+          "basepri": 0
+        }
+      ],
+      "register_writes": []
+    },
+    {
+      "name": "SCSI REQUEST SENSE",
+      "passed": false,
+      "checks": [
+        {
+          "name": "init",
+          "actual": 1,
+          "expected": 1,
+          "passed": true
+        }
+      ],
+      "error": "tud_task_ext did not return; PC=0x8002da6",
+      "calls": [
+        {
+          "function": "tud_rhport_init",
+          "args": [
+            0,
+            536989696
+          ],
+          "returned": true,
+          "basepri": 0
+        },
+        {
+          "function": "tud_task_ext",
+          "args": [
+            0,
+            0
+          ],
+          "returned": false,
+          "basepri": 0
+        }
+      ],
+      "register_writes": []
+    },
+    {
+      "name": "SCSI RAM WRITE then READ",
+      "passed": false,
+      "checks": [
+        {
+          "name": "init",
+          "actual": 1,
+          "expected": 1,
+          "passed": true
+        }
+      ],
+      "error": "tud_task_ext did not return; PC=0x8002da6",
+      "calls": [
+        {
+          "function": "tud_rhport_init",
+          "args": [
+            0,
+            536989696
+          ],
+          "returned": true,
+          "basepri": 0
+        },
+        {
+          "function": "tud_task_ext",
+          "args": [
+            0,
+            0
+          ],
+          "returned": false,
+          "basepri": 0
+        }
+      ],
+      "register_writes": []
+    },
+    {
+      "name": "GET_MAX_LUN and BOT Reset",
+      "passed": false,
+      "checks": [
+        {
+          "name": "init",
+          "actual": 1,
+          "expected": 1,
+          "passed": true
+        }
+      ],
+      "error": "tud_task_ext did not return; PC=0x8002da6",
+      "calls": [
+        {
+          "function": "tud_rhport_init",
+          "args": [
+            0,
+            536989696
+          ],
+          "returned": true,
+          "basepri": 0
+        },
+        {
+          "function": "tud_task_ext",
+          "args": [
+            0,
+            0
+          ],
+          "returned": false,
+          "basepri": 0
+        }
+      ],
+      "register_writes": []
+    },
+    {
+      "name": "EP0 descriptors and SET_ADDRESS",
+      "passed": false,
+      "checks": [
+        {
+          "name": "init",
+          "actual": 1,
+          "expected": 1,
+          "passed": true
+        }
+      ],
+      "error": "tud_task_ext did not return; PC=0x8002da6",
+      "calls": [
+        {
+          "function": "tud_rhport_init",
+          "args": [
+            0,
+            536989696
+          ],
+          "returned": true,
+          "basepri": 0
+        },
+        {
+          "function": "tud_task_ext",
+          "args": [
+            0,
+            0
+          ],
+          "returned": false,
+          "basepri": 0
+        }
+      ],
+      "register_writes": []
+    }
+  ],
+  "summary": {
+    "cases": 19,
+    "passed": 2,
+    "assertions": 37
+  },
+  "hardware": "NOT_TESTED",
+  "boundary": "Complete Keil AXF real kernel/port/queue/MSC/DCD; explicit scheduler readiness and MMIO model, not RTOS runtime or silicon acceptance"
+}

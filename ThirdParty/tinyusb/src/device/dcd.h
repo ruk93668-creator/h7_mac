@@ -186,6 +186,11 @@ bool dcd_device_faulted(uint8_t rhport);
 bool dcd_device_pending(uint8_t rhport);
 bool dcd_edpt_cancel_pending(uint8_t rhport,uint8_t ep_addr);
 uint32_t dcd_edpt_generation(uint8_t rhport, uint8_t ep_addr);
+// Optional task-driven group closure; EP0 is excluded, never disable OUT0.
+dcd_abort_result_t dcd_edpt_close_all_safe(uint8_t rhport);
+void dcd_task(uint8_t rhport);
+bool dcd_deinit_ready(uint8_t rhport);
+
 
 #ifdef TUP_DCD_EDPT_CLOSE_API
 // Close an endpoint.

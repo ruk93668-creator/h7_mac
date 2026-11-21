@@ -35,22 +35,22 @@
     "Middlewares\\Third_Party\\FreeRTOS\\Source\\portable\\RVDS\\ARM_CM7\\r0p1\\port.c": "3fde833a632df07279628fd0e35b69f092096c96396acdb818e637277afff545",
     "CM7\\Application\\Tasks\\usb_task.c": "d8f76fd346921c892e2e3f53f02e762b1553f3c8cf603b84b67515fd7189e5c7",
     "CM7\\Service\\usb_msc_ram.c": "8693516dc9c5678b9be7d6600a4138aa3acea04e54058d2ec3a8986eb1f9cc89",
-    "CM7\\TinyUSB\\tinyusb_experiment.c": "82054a1c70011c72fc6c34067b652efd63a3ac8e1ed8211723b99bd0bc7a170b",
+    "CM7\\TinyUSB\\tinyusb_experiment.c": "28252e725bcc00a3100e88f10a8915e613056022be1fcd7f3266dca96e3b2cf9",
     "CM7\\TinyUSB\\tinyusb_ram.c": "3f8892d2aa9b7e4c32700eab80bad13f79b29a1d19eb3f1f65f6272cf52e8cd5",
     "CM7\\TinyUSB\\usb_descriptors.c": "3490f80435914a4ffb246bfb28f06ee6e50644eb7777091ad52b8adacf5cc8db",
     "ThirdParty\\tinyusb\\src\\tusb.c": "68c29870ba69070a1f0187f63dd42fed9407ddb4adabf1ae264874018d1120e9",
     "ThirdParty\\tinyusb\\src\\common\\tusb_fifo.c": "61f3f43caf0d8c9caa27edf0daf65e307199161fd194344a9f510f443d1a26bb",
-    "ThirdParty\\tinyusb\\src\\device\\usbd.c": "f9b5991a8d8028589b1b4728da6de6a83b650437bd2446f79ec6541188faa974",
+    "ThirdParty\\tinyusb\\src\\device\\usbd.c": "49a9aa762feea1181d484ad45cf605d22edc09e7873b4332434825501eb21394",
     "ThirdParty\\tinyusb\\src\\class\\msc\\msc_device.c": "e5266552b1bbfe8fad59ae82b8f169c26974c67d76d9b9694c4e9f718fb8b071",
-    "ThirdParty\\tinyusb\\src\\portable\\synopsys\\dwc2\\dcd_dwc2.c": "c1e6fae518ce4b19093c629746e0fa9fb9c73e31123ec742a3e90f028bb82d4b",
-    "ThirdParty\\tinyusb\\src\\portable\\synopsys\\dwc2\\dwc2_common.c": "b0a4f19e61c7890edaf3042f00ba876d5b98281dcc735921dce26d45914065a5"
+    "ThirdParty\\tinyusb\\src\\portable\\synopsys\\dwc2\\dcd_dwc2.c": "8c94f9e86aa6792bc0b5078a16fe6449c6cb9ce89aa6bbcb07e123126f06777c",
+    "ThirdParty\\tinyusb\\src\\portable\\synopsys\\dwc2\\dwc2_common.c": "655929ad5fe7dfbca0f3fb4cfed0f4ddf0ef5295c86ed6f7de23b3e65702658a"
   },
   "preserved": {
     "MDK-ARM\\h7_mac.uvprojx": "27bf0d42ffd6bbd50715e439d310e886c750a93a86162a76f091363cfeaa3cc8",
     "MDK-ARM\\h7_mac.uvoptx": "7ba86c873c85bdf59cc15a6b75f428c47fc87d0e584df38aa230eeb2a58ebefe",
     "MDK-ARM\\RTE\\_h7_mac_CM7\\RTE_Components.h": "6681d5f7c1dc8b3eb7821a2a087dda3d8205e064043957ba6f538a398c0d3079"
   },
-  "project_sha256": "552c6296a5543a742120c7413bc2002fcb0826501b17c153acd3d7004572aba2",
+  "project_sha256": "487ab83cb6ae7921b0dd1f4b1d13238416a581a6f9964f1f49ff19817d72c362",
   "argv": [
     "D:/32/UV4/UV4.exe",
     "-j0",
@@ -59,11 +59,11 @@
     "-t",
     "TinyUSB_RAM_CM7",
     "-o",
-    "D:\\32\\STM32H7\\h7_mac_lifecycle\\output\\TinyUSBReplacement\\r2-firmware-1795250620068566200\\build.log"
+    "D:\\32\\STM32H7\\h7_mac_lifecycle\\output\\TinyUSBReplacement\\r2-firmware-1795254027454109400\\build.log"
   ],
   "exit": 0,
   "summary": "0 Error(s), 0 Warning(s)",
-  "output": "D:\\32\\STM32H7\\h7_mac_lifecycle\\output\\TinyUSBReplacement\\r2-firmware-1795250620068566200",
+  "output": "D:\\32\\STM32H7\\h7_mac_lifecycle\\output\\TinyUSBReplacement\\r2-firmware-1795254027454109400",
   "sources": [
     "../Drivers/STM32H7xx_HAL_Driver/Src/stm32h7xx_hal_cortex.c",
     "../Drivers/STM32H7xx_HAL_Driver/Src/stm32h7xx_hal_pwr.c",
@@ -112,9 +112,9 @@
   ],
   "default_project_sha256": "27bf0d42ffd6bbd50715e439d310e886c750a93a86162a76f091363cfeaa3cc8",
   "artifacts": {
-    "h7_mac_CM7_TinyUSB_RAM.axf": "3c70c67e66b3457130a8885b83baab66eb27fce12bdcdb56073aaac805accb29",
-    "h7_mac_CM7_TinyUSB_RAM.hex": "c331ffd76c05078f5c1021d6c2f07d6cde789a20390b8c15479627ec62103391",
-    "h7_mac_CM7_TinyUSB_RAM.map": "bd4106e9af7b33b94f85af1b3d76b0e9a1cb40b8d52eccf4795a98b078dfe3e1"
+    "h7_mac_CM7_TinyUSB_RAM.axf": "749a21eb3ea461ab52ac8bea5e71caf39a13fc5ea78d1de7065bc33c289e9b19",
+    "h7_mac_CM7_TinyUSB_RAM.hex": "d1189ab81a3ba7a1c85cc81dc1a89715d31b0ec25335613d2b1490f844e21744",
+    "h7_mac_CM7_TinyUSB_RAM.map": "51947e852b1ffa0b5636f7557327632c1200a11ce0b5ac0fec61ec30e063c094"
   },
   "hardware": "NOT_TESTED"
 }

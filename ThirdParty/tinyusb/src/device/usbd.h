@@ -125,10 +125,11 @@ bool tud_ready(void) {
 // Remote wake up host, only if suspended and enabled by host
 bool tud_remote_wakeup(void);
 
-// Disable pull-up resistor on D+ D-, a no-op on MCUs without software control. Always returns true
+// Task context only. Request disconnect and poll with tud_task(). True means
+// retirement and pullup removal completed; false retains pending/fault ownership.
 bool tud_disconnect(void);
 
-// Enable pull-up resistor on D+ D-, a no-op on MCUs without software control. Always returns true
+// Enable pullup only on an initialized controller with no pending closure/fault.
 bool tud_connect(void);
 
 // Enable or disable the Start Of Frame callback support.

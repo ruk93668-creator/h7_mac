@@ -474,6 +474,8 @@ static bool hardware_completed[DWC2_EP_MAX][2];
 static uint16_t rx_left[DWC2_EP_MAX];
 static uint8_t pio_refs[DWC2_EP_MAX];
 static int8_t out_nak_owner = -1;
+static bool closing_noncontrol;
+static uint32_t close_began_ms,close_began_cycle,close_previous_cycle,close_clock_hz;
 static uint32_t deferred_tx_mask; // other IN producers paused during shared FIFO command
 extern uint32_t tusb_time_millis_api(void);
 bool dcd_device_faulted(uint8_t rhport) {
@@ -502,7 +504,7 @@ static bool any_cancel(void) {
     if (cancel_active(n,d)) return true;
   return false;
 }
-bool dcd_device_pending(uint8_t p) {return p==0 && any_cancel();}
+bool dcd_device_pending(uint8_t p) {return p==0 && (any_cancel() || closing_noncontrol);}
 static dcd_abort_result_t cancel_failed(uint8_t rhport,uint8_t reason) {
   if (!abort_failure_reason[rhport]) abort_failure_reason[rhport]=reason;
   r1_abort_fault[rhport] = true;
@@ -747,7 +749,7 @@ bool dcd_configure(uint8_t rhport, uint32_t cfg_id, const void* cfg_param) {
 }
 
 bool dcd_init(uint8_t rhport, const tusb_rhport_init_t* rh_init) {
-  if (any_cancel()) return false;
+  if (closing_noncontrol || any_cancel()) return false;
   if (dcd_device_faulted(rhport)) return false;
   dwc2_clock_init(rhport, rh_init->role);
 
@@ -816,11 +818,14 @@ bool dcd_init(uint8_t rhport, const tusb_rhport_init_t* rh_init) {
 bool dcd_deinit(uint8_t rhport) {
   if (any_cancel()) return false;
   if (dcd_device_faulted(rhport)) return false;
+  if (!dcd_deinit_ready(rhport)) return false;
+  if (!dwc2_core_deinit(rhport)) return false;
+  // Only the proven controller reset may precede pullup/IRQ shutdown.
   dcd_disconnect(rhport);
-  if (any_cancel() || !dwc2_core_deinit(rhport)) return false;
   tu_memclr(xfer_status,sizeof(xfer_status));
   tu_memclr(bulk_cancel,sizeof(bulk_cancel));
   deferred_tx_mask=0;
+  closing_noncontrol=false;
   out_nak_owner=-1; // only after actual controller reset proof
   return true;
 }
@@ -911,7 +916,7 @@ void dcd_remote_wakeup(uint8_t rhport) {
 }
 
 void dcd_connect(uint8_t rhport) {
-  if (any_cancel()) return;
+  if (closing_noncontrol || any_cancel()) return;
   if (dcd_device_faulted(rhport)) return ;
   dwc2_regs_t* dwc2 = DWC2_REG(rhport);
 
@@ -975,14 +980,81 @@ void dcd_sof_enable(uint8_t rhport, bool en) {
 
 bool dcd_edpt_open(uint8_t rhport, tusb_desc_endpoint_t const* desc_edpt) {
   if (dcd_device_faulted(rhport)) return false;
-  if (any_cancel()) return false;
+  if (closing_noncontrol || any_cancel()) return false;
   TU_ASSERT(dfifo_alloc(rhport, desc_edpt->bEndpointAddress, tu_edpt_packet_size(desc_edpt),
                        desc_edpt->bmAttributes.xfer));
   edpt_activate(rhport, desc_edpt);
   return true;
 }
 
-// Close all non-control endpoints, cancel all pending transfers if any.
+// Polls only existing per-endpoint cancellation facts. No second scheduler or
+// controller/session state machine. Native USBD task is the sole caller.
+dcd_abort_result_t dcd_edpt_close_all_safe(uint8_t rhport) {
+  if (rhport!=0 || __get_IPSR()!=0 || dcd_device_faulted(rhport)) return DCD_ABORT_FAILED;
+  dwc2_regs_t *d=DWC2_REG(rhport);
+  // Check the entire scope before changing hardware; active ISO/DMA unqualified.
+  if (dma_device_enabled(d)) return DCD_ABORT_UNSUPPORTED;
+  for(uint8_t n=1;n<_dwc2_controller[rhport].ep_count;n++) for(uint8_t dir=0;dir<2;dir++) {
+    dwc2_dep_t *ep=&d->ep[dir?0:1][n];
+    if ((XFER_CTL_BASE(n,dir)->buffer || XFER_CTL_BASE(n,dir)->ff || (ep->ctl & EPCTL_EPENA)) &&
+        ((ep->ctl>>18)&3)!=DEPCTL_EPTYPE_BULK) return DCD_ABORT_UNSUPPORTED;
+  }
+  usbd_spin_lock(false);
+  if(!closing_noncontrol) {close_began_ms=tusb_time_millis_api();close_began_cycle=DWT->CYCCNT;close_previous_cycle=close_began_cycle;close_clock_hz=SystemCoreClock;}
+  closing_noncontrol=true; // fence every nonzero submission before first abort
+  usbd_spin_unlock(false);
+  uint32_t now=DWT->CYCCNT;
+  if(!(DWT->CTRL & DWT_CTRL_CYCCNTENA_Msk) || !(CoreDebug->DEMCR & CoreDebug_DEMCR_TRCENA_Msk) ||
+      SystemCoreClock<1000U || SystemCoreClock!=close_clock_hz || now==close_previous_cycle) return cancel_failed(rhport,13);
+  close_previous_cycle=now;
+  if((uint32_t)(tusb_time_millis_api()-close_began_ms)>=50U ||
+      (SystemCoreClock>=1000U && (uint32_t)(DWT->CYCCNT-close_began_cycle)>=(SystemCoreClock/1000U)*50U)) return cancel_failed(rhport,12);
+  bool pending=false;
+  for(uint8_t n=1;n<_dwc2_controller[rhport].ep_count;n++) for(uint8_t dir=0;dir<2;dir++) {
+    dwc2_dep_t *ep=&d->ep[dir?0:1][n];
+    if (!cancel_active(n,dir) && !XFER_CTL_BASE(n,dir)->buffer && !XFER_CTL_BASE(n,dir)->ff && !(ep->ctl & EPCTL_EPENA)) continue;
+    dcd_abort_result_t r=dcd_edpt_abort_safe(rhport,(uint8_t)(n | (dir?0x80:0)));
+    if (r==DCD_ABORT_FAILED || r==DCD_ABORT_UNSUPPORTED) return cancel_failed(rhport,11);
+    if (r==DCD_ABORT_PENDING) pending=true;
+  }
+  if(pending || (d->gintsts & GINTSTS_RXFLVL)) return DCD_ABORT_PENDING;
+  // Existing legacy close performs the second all-endpoint hardware preflight.
+  // No shared RX flush; SETUP/EP0 allocations remain untouched.
+  dcd_edpt_close_all(rhport);
+  if(dcd_device_faulted(rhport)) return DCD_ABORT_FAILED;
+  closing_noncontrol=false;
+  return DCD_ABORT_SUCCESS;
+}
+void dcd_task(uint8_t rhport) {
+  if(closing_noncontrol && !dcd_device_faulted(rhport)) (void)dcd_edpt_close_all_safe(rhport);
+}
+static uint32_t retirement_events(dwc2_dep_t *ep,uint8_t n,uint8_t dir) {
+  uint32_t events=ep->intr & (dir ? ~DIEPINT_TXFE : UINT32_MAX);
+  // NAK-effective carries no PIO or completion reference once this exact IN
+  // transfer has passed disable + targeted FIFO flush and returned its source.
+  // Still reject XFRC/EPDISD/error facts; do not erase them to pass readiness.
+  if(dir && bulk_cancel[n][dir].phase==5 && !XFER_CTL_BASE(n,dir)->buffer)
+    events &= ~DIEPINT_INEPNE;
+  return events;
+}
+bool dcd_deinit_ready(uint8_t rhport) {
+  if(rhport!=0 || closing_noncontrol || any_cancel() || dcd_device_faulted(rhport)) return false;
+  dwc2_regs_t *d=DWC2_REG(rhport);
+  if(d->gintsts & (GINTSTS_RXFLVL | GINTSTS_USBRST | GINTSTS_ENUMDNE)) return false;
+  if(d->grstctl & (GRSTCTL_TXFFLSH | GRSTCTL_RXFFLSH | GRSTCTL_CSRST)) return false;
+  for(uint8_t n=0;n<_dwc2_controller[rhport].ep_count;n++) {
+    if(pio_refs[n]) return false;
+    for(uint8_t dir=0;dir<2;dir++) {
+      dwc2_dep_t *ep=&d->ep[dir?0:1][n];
+      if((ep->ctl & EPCTL_EPENA) || retirement_events(ep,n,dir)) return false;
+      if(XFER_CTL_BASE(n,dir)->ff) return false;
+      if(XFER_CTL_BASE(n,dir)->buffer && (n!=0 || !hardware_completed[n][dir])) return false;
+    }
+  }
+  return true; // EP0 normal completion proof or no buffer; never EPDIS OUT0
+}
+
+// Legacy void entry accepts only already-retired endpoints.
 void dcd_edpt_close_all(uint8_t rhport) {
   // This void legacy API cannot report asynchronous progress. Accept an already
   // retired group (including the empty group), otherwise preserve ownership.
@@ -995,7 +1067,7 @@ void dcd_edpt_close_all(uint8_t rhport) {
     for(uint8_t dir=0;dir<2;dir++) {
       dwc2_dep_t *ep=&d->ep[dir?0:1][n];
       // TXFE is a read-only FIFO-empty level, not a pending terminal event.
-      uint32_t events=ep->intr & (dir ? ~DIEPINT_TXFE : UINT32_MAX);
+      uint32_t events=retirement_events(ep,n,dir);
       if ((ep->ctl & EPCTL_EPENA) || events || pio_refs[n] ||
           XFER_CTL_BASE(n,dir)->buffer || XFER_CTL_BASE(n,dir)->ff) safe=false;
     }
@@ -1013,14 +1085,14 @@ void dcd_edpt_close_all(uint8_t rhport) {
 }
 
 bool dcd_edpt_iso_alloc(uint8_t rhport, uint8_t ep_addr, uint16_t largest_packet_size) {
-  if (any_cancel()) return false;
+  if (closing_noncontrol || any_cancel()) return false;
   if (dcd_device_faulted(rhport)) return false;
   TU_ASSERT(dfifo_alloc(rhport, ep_addr, largest_packet_size, TUSB_XFER_ISOCHRONOUS));
   return true;
 }
 
 bool dcd_edpt_iso_activate(uint8_t rhport,  tusb_desc_endpoint_t const * p_endpoint_desc) {
-  if (any_cancel()) return false;
+  if (closing_noncontrol || any_cancel()) return false;
   if (dcd_device_faulted(rhport)) return false;
   // Disable EP to clear potential incomplete transfers
   if (!edpt_disable(rhport, p_endpoint_desc->bEndpointAddress, false, false)) return false;
@@ -1033,6 +1105,7 @@ bool dcd_edpt_xfer(uint8_t rhport, uint8_t ep_addr, uint8_t* buffer, uint16_t to
   (void) is_isr;
   uint8_t const epnum = tu_edpt_number(ep_addr);
   uint8_t const dir = tu_edpt_dir(ep_addr);
+  if (epnum!=0 && closing_noncontrol) return false;
   xfer_ctl_t* xfer = XFER_CTL_BASE(epnum, dir);
   if (cancel_active(epnum,dir) || transfer_generation[epnum][dir]==UINT32_MAX) return false;
   if (DWC2_REG(rhport)->gintsts & (GINTSTS_USBRST | GINTSTS_ENUMDNE)) return false;
@@ -1080,6 +1153,7 @@ bool dcd_edpt_xfer_fifo(uint8_t rhport, uint8_t ep_addr, tu_fifo_t* ff, uint16_t
   (void) is_isr;
   uint8_t const epnum = tu_edpt_number(ep_addr);
   uint8_t const dir = tu_edpt_dir(ep_addr);
+  if(cancel_active(epnum,dir) || (epnum!=0 && closing_noncontrol)) return false;
   xfer_ctl_t* xfer = XFER_CTL_BASE(epnum, dir);
   bool ret;
 
@@ -1737,12 +1811,8 @@ void dcd_int_handler(uint8_t rhport) {
     const uint32_t otg_int = dwc2->gotgint;
 
     if (otg_int & GOTGINT_SEDET) {
-      // Disconnect is not hardware retirement. Never let Core reset/reuse class
-      // storage while a PIO endpoint remains enabled without a stop proof.
-      bool enabled=false;
-      for(uint8_t n=0;n<_dwc2_controller[rhport].ep_count;n++)
-        if ((dwc2->epin[n].ctl | dwc2->epout[n].ctl) & EPCTL_EPENA) enabled=true;
-      if (enabled) {(void)cancel_failed(rhport,7);dwc2->gotgint=otg_int;return;}
+      // Notify unplug eligibility now; native task delays Class reset until
+      // nonzero Bulk retirement. SEDET itself is not a stopping proof.
       if (any_cancel()) {(void)cancel_failed(rhport,7);dwc2->gotgint=otg_int;return;}
       usbd_spin_lock(true);
       dwc2->gintmsk &= ~GINTMSK_OTGINT;

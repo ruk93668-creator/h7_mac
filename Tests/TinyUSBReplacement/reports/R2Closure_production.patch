@@ -1,0 +1,575 @@
+diff --git a/CM7/TinyUSB/tinyusb_experiment.c b/CM7/TinyUSB/tinyusb_experiment.c
+index 57b6f30..9fda071 100644
+--- a/CM7/TinyUSB/tinyusb_experiment.c
++++ b/CM7/TinyUSB/tinyusb_experiment.c
+@@ -86,6 +86,14 @@ void TinyUSB_ExperimentRun(void)
+             if (tud_rhport_init(0,&init))
+             { g_tinyusb_experiment.stopped=0; g_tinyusb_experiment.command=0; }
+         }
++        else if (g_tinyusb_experiment.command == 3U && !g_tinyusb_experiment.stopped)
++        {
++            if (tud_disconnect()) g_tinyusb_experiment.command=0;
++        }
++        else if (g_tinyusb_experiment.command == 4U && !g_tinyusb_experiment.stopped)
++        {
++            if (tud_connect()) g_tinyusb_experiment.command=0;
++        }
+         if (usbd_device_failed()) g_tinyusb_experiment.failures++;
+         g_tinyusb_experiment.polls++;
+         vTaskDelay(1); /* bounded revisit even when no DCD event is queued */
+diff --git a/MDK-ARM/h7_mac_TinyUSB_RAM.uvprojx b/MDK-ARM/h7_mac_TinyUSB_RAM.uvprojx
+index 2def523..035bb7c 100644
+--- a/MDK-ARM/h7_mac_TinyUSB_RAM.uvprojx
++++ b/MDK-ARM/h7_mac_TinyUSB_RAM.uvprojx
+@@ -45,14 +45,14 @@
+             <NotGenerated>0</NotGenerated>
+             <InvalidFlash>1</InvalidFlash>
+           </TargetStatus>
+-          <OutputDirectory>D:\32\STM32H7\h7_mac_lifecycle\output\TinyUSBReplacement\r2-firmware-1795250620068566200/</OutputDirectory>
++          <OutputDirectory>D:\32\STM32H7\h7_mac_lifecycle\output\TinyUSBReplacement\r2-firmware-1795254027454109400/</OutputDirectory>
+           <OutputName>h7_mac_CM7_TinyUSB_RAM</OutputName>
+           <CreateExecutable>1</CreateExecutable>
+           <CreateLib>0</CreateLib>
+           <CreateHexFile>1</CreateHexFile>
+           <DebugInformation>1</DebugInformation>
+           <BrowseInformation>0</BrowseInformation>
+-          <ListingPath>D:\32\STM32H7\h7_mac_lifecycle\output\TinyUSBReplacement\r2-firmware-1795250620068566200/</ListingPath>
++          <ListingPath>D:\32\STM32H7\h7_mac_lifecycle\output\TinyUSBReplacement\r2-firmware-1795254027454109400/</ListingPath>
+           <HexFormatSelection>1</HexFormatSelection>
+           <Merge32K>0</Merge32K>
+           <CreateBatchFile>0</CreateBatchFile>
+diff --git a/ThirdParty/tinyusb/UPSTREAM.json b/ThirdParty/tinyusb/UPSTREAM.json
+index 31fe77e..80ff75e 100644
+--- a/ThirdParty/tinyusb/UPSTREAM.json
++++ b/ThirdParty/tinyusb/UPSTREAM.json
+@@ -2,7 +2,7 @@
+   "repository": "https://github.com/hathach/tinyusb",
+   "sha": "da5b55a5803a3b9ca788ccc82569db699c01aa74",
+   "archive_sha256": "40cefc21be15af18f0b9cc63c0d8f0a08c5b265ab8966a7bf271246be318c792",
+-  "selection": "Pinned device common/OSAL, MSC, Video and DWC2. files are pristine upstream hashes. Local R1/R1B/R2 changes are listed in upstream_audit.json and R2_upstream.patch; upstream version unchanged. Historical R1B diff is preserved.",
++  "selection": "Pinned device common/OSAL, MSC, Video and DWC2. files are pristine upstream hashes. Local R1/R1B/R2/R2-Closure changes are listed in upstream_audit.json and R2Closure_upstream.patch; upstream version unchanged. Historical R1B and R2 diffs preserved.",
+   "files": {
+     "LICENSE": "b01185698f530f4f61b28f42d5a4d6bbe7834bde6a63f00773235628a7bdce22",
+     "src/class/msc/msc.h": "a013ae5c79c67a27b2cf4d8f9bf65bc07785bffc568681def300a5066b768640",
+diff --git a/ThirdParty/tinyusb/src/device/dcd.h b/ThirdParty/tinyusb/src/device/dcd.h
+index cb8f97f..c8133f1 100644
+--- a/ThirdParty/tinyusb/src/device/dcd.h
++++ b/ThirdParty/tinyusb/src/device/dcd.h
+@@ -186,6 +186,11 @@ bool dcd_device_faulted(uint8_t rhport);
+ bool dcd_device_pending(uint8_t rhport);
+ bool dcd_edpt_cancel_pending(uint8_t rhport,uint8_t ep_addr);
+ uint32_t dcd_edpt_generation(uint8_t rhport, uint8_t ep_addr);
++// Optional task-driven group closure; EP0 is excluded, never disable OUT0.
++dcd_abort_result_t dcd_edpt_close_all_safe(uint8_t rhport);
++void dcd_task(uint8_t rhport);
++bool dcd_deinit_ready(uint8_t rhport);
++
+ 
+ #ifdef TUP_DCD_EDPT_CLOSE_API
+ // Close an endpoint.
+diff --git a/ThirdParty/tinyusb/src/device/usbd.c b/ThirdParty/tinyusb/src/device/usbd.c
+index c5df5fb..6afe1ac 100644
+--- a/ThirdParty/tinyusb/src/device/usbd.c
++++ b/ThirdParty/tinyusb/src/device/usbd.c
+@@ -141,6 +141,15 @@ typedef struct {
+ static usbd_device_t    _usbd_dev;
+ // stamp of the newest SETUP queued: written only by dcd_event_handler(), the task only compares against it
+ static volatile uint32_t _usbd_setup_seq;
++static volatile bool config_close_pending;
++static volatile bool unplug_close_pending;
++static bool soft_unplug;
++static tusb_control_request_t config_close_request;
++static uint32_t config_close_seq;
++static void usbd_poll_closure(void);
++static dcd_abort_result_t usbd_close_group(uint8_t rhport);
++static bool process_std_device_request(uint8_t rhport, tusb_control_request_t const *p_request);
++
+ uint32_t usbd_setup_sequence(void) { return _usbd_setup_seq; }
+ // set by an unplug, cleared by the next bus reset (written only by dcd_event_handler()): a SETUP reported in
+ // between was received before the unplug, since a new connection always starts with a bus reset
+@@ -470,6 +479,10 @@ TU_ATTR_WEAK bool dcd_edpt_xfer_fifo(uint8_t rhport, uint8_t ep_addr, tu_fifo_t
+ 
+ TU_ATTR_WEAK bool dcd_edpt_cancel_pending(uint8_t p,uint8_t ep) {(void)p;(void)ep;return false;}
+ TU_ATTR_WEAK bool dcd_device_pending(uint8_t p) {(void)p;return false;}
++TU_ATTR_WEAK void dcd_task(uint8_t p) {(void)p;}
++TU_ATTR_WEAK bool dcd_deinit_ready(uint8_t p) {(void)p;return true;}
++TU_ATTR_WEAK dcd_abort_result_t dcd_edpt_close_all_safe(uint8_t p) {(void)p;return DCD_ABORT_UNSUPPORTED;}
++
+ TU_ATTR_WEAK bool dcd_device_faulted(uint8_t p) { (void)p;return false; }
+ TU_ATTR_WEAK uint32_t dcd_edpt_generation(uint8_t p,uint8_t ep) { (void)p;(void)ep;return 0; }
+ static bool usbd_failed(void) { return _usbd_abort_failed || dcd_device_faulted(0); }
+@@ -534,12 +547,16 @@ bool tud_remote_wakeup(void) {
+ }
+ 
+ bool tud_disconnect(void) {
+-  dcd_disconnect(_usbd_rhport);
+-  return true;
++  if(!tud_inited() || usbd_failed()) return false;
++  if(_usbd_unplugged && !unplug_close_pending) return true;
++  soft_unplug=true;
++  if(!unplug_close_pending) dcd_event_bus_signal(_usbd_rhport,DCD_EVENT_UNPLUGGED,false);
++  usbd_poll_closure();
++  return !unplug_close_pending && !usbd_failed();
+ }
+ 
+ bool tud_connect(void) {
+-  if (usbd_failed() || dcd_device_pending(_usbd_rhport)) return false;
++  if (!tud_inited() || unplug_close_pending || config_close_pending || usbd_failed() || dcd_device_pending(_usbd_rhport)) return false;
+   dcd_connect(_usbd_rhport);
+   return true;
+ }
+@@ -557,7 +574,7 @@ bool tud_configure(uint8_t rhport, uint32_t cfg_id, const void* cfg_param) {
+ }
+ 
+ bool tud_rhport_init(uint8_t rhport, const tusb_rhport_init_t* rh_init) {
+-  if (dcd_device_pending(rhport)) return false;
++  if (unplug_close_pending || config_close_pending || dcd_device_pending(rhport)) return false;
+   if (usbd_failed()) return false;
+   if (tud_inited()) {
+     return true; // skip if already initialized
+@@ -640,11 +657,15 @@ bool tud_deinit(uint8_t rhport) {
+ 
+   const uint8_t cfg_num = _usbd_dev.cfg_num;
+ 
+-  // Deinit device controller driver
+-  dcd_int_disable(rhport);
+-  dcd_disconnect(rhport);
++  // Keep IRQ and pullup while existing Bulk cancellation progresses. Backend
++  // quiescence was checked above; control endpoints need their own proof.
++  if(config_close_pending || unplug_close_pending) return false;
++  dcd_abort_result_t closed=usbd_close_group(rhport);
++  if(closed!=DCD_ABORT_SUCCESS || !dcd_deinit_ready(rhport)) return false;
+   TU_ASSERT(dcd_deinit(rhport));
+   if (usbd_failed()) return false;
++  // No IRQ/source is needed for progression after actual reset proof.
++  dcd_int_disable(rhport);
+ 
+   // Deinit class drivers
+   for (uint8_t i = 0; i < TOTAL_DRIVER_COUNT; i++) {
+@@ -680,7 +701,22 @@ bool tud_deinit(uint8_t rhport) {
+   return true;
+ }
+ 
++static dcd_abort_result_t usbd_close_group(uint8_t rhport) {
++  usbd_spin_lock(false);
++  for(uint8_t n=1;n<CFG_TUD_ENDPPOINT_MAX;n++) for(uint8_t dir=0;dir<2;dir++) endpoint_generation[n][dir]=0;
++  dcd_abort_result_t result=dcd_edpt_close_all_safe(rhport);
++  if(result==DCD_ABORT_UNSUPPORTED) {
++    dcd_edpt_close_all(rhport); // unchanged compatibility for other DCDs
++    result=usbd_failed() ? DCD_ABORT_FAILED : DCD_ABORT_SUCCESS;
++  }
++  if(result!=DCD_ABORT_SUCCESS && result!=DCD_ABORT_PENDING) _usbd_abort_failed=true;
++  usbd_spin_unlock(false);
++  return result;
++}
++
+ static void configuration_reset(uint8_t rhport) {
++  config_close_pending=false;
++  unplug_close_pending=false;
+   tu_memclr(endpoint_generation,sizeof(endpoint_generation));
+   for (uint8_t i = 0; i < TOTAL_DRIVER_COUNT; i++) {
+     usbd_class_driver_t const* driver = get_driver(i);
+@@ -707,6 +743,8 @@ bool tud_task_event_ready(void) {
+ 
+ // the call usbd_defer_func_after_queue() holds; false if none
+ static bool run_after_queue_call(void) {
++  // Preserve backend completion until Class reset can abandon it safely.
++  if(config_close_pending || unplug_close_pending) return false;
+   osal_task_func_t const func = _usbd_after_queue.func;
+   if (func == NULL) {
+     return false;
+@@ -737,9 +775,9 @@ static bool usbd_process_event(dcd_event_t* event) {
+       break;
+ 
+     case DCD_EVENT_UNPLUGGED:
+-      TU_LOG_USBD("\r\n");
+-      usbd_reset(event->rhport);
+-      tud_umount_cb();
++      // ISR already revoked old SETUP/completion eligibility. Class reset is
++      // delayed until task-driven endpoint retirement, not inferred from unplug.
++      usbd_poll_closure();
+       break;
+ 
+     case DCD_EVENT_SETUP_RECEIVED:
+@@ -772,6 +810,7 @@ static bool usbd_process_event(dcd_event_t* event) {
+       break;
+ 
+     case DCD_EVENT_XFER_COMPLETE: {
++      if(unplug_close_pending || (config_close_pending && tu_edpt_number(event->xfer_complete.ep_addr)!=0)) break;
+       // Invoke the class callback associated with the endpoint address
+       uint8_t const ep_addr = event->xfer_complete.ep_addr;
+       uint8_t const epnum = tu_edpt_number(ep_addr);
+@@ -875,8 +914,11 @@ static bool usbd_process_event(dcd_event_t* event) {
+ bool tud_task_ext(uint32_t timeout_ms, bool in_isr) {
+   if (!tud_inited()) return true;
+   if (in_isr) return false;
++  dcd_task(_usbd_rhport);
++  usbd_poll_closure();
++  if(usbd_failed()) return false;
+ #if CFG_TUD_MSC
+-  mscd_task(); // existing task context only, never ISR or an extra scheduler
++  if(!config_close_pending && !unplug_close_pending) mscd_task(); // existing task context only, never ISR or an extra scheduler
+ #endif
+   if (timeout_ms > 1U) timeout_ms=1U; // allow pending hardware deadlines to be serviced
+ 
+@@ -1130,6 +1172,10 @@ static bool process_std_device_request(uint8_t rhport, tusb_control_request_t co
+ 
+     case TUSB_REQ_SET_CONFIGURATION: {
+       uint8_t const cfg_num = (uint8_t) p_request->wValue;
++      if(config_close_pending) {
++        config_close_request=*p_request;config_close_seq=usbd_setup_sequence();
++        return true; // newest SETUP owns the eventual status; no second closure
++      }
+ 
+       // Only process if new configure is different
+       if (_usbd_dev.cfg_num != cfg_num) {
+@@ -1138,8 +1184,13 @@ static bool process_std_device_request(uint8_t rhport, tusb_control_request_t co
+           TU_LOG_USBD("  Clear current Configuration (%u) before switching\r\n", _usbd_dev.cfg_num);
+ 
+           dcd_sof_enable(rhport, false);
+-          dcd_edpt_close_all(rhport);
+-          if (usbd_failed()) return false;
++          dcd_abort_result_t closed=usbd_close_group(rhport);
++          if(closed==DCD_ABORT_PENDING) {
++            config_close_request=*p_request;config_close_seq=usbd_setup_sequence();
++            config_close_pending=true;
++            return true; // do not queue Status ZLP while old buffers are owned
++          }
++          if(closed!=DCD_ABORT_SUCCESS) return false;
+ 
+           // close all drivers and current configured state except bus speed
+           const uint8_t speed = _usbd_dev.speed;
+@@ -1228,8 +1279,46 @@ static bool process_get_status(uint8_t rhport, tusb_control_request_t const * re
+   return tud_control_xfer(rhport, request, &status, 2);
+ }
+ 
+-// This handles the actual request and its response.
+-// Returns false if unable to complete the request, causing caller to stall control endpoints.
++// Continue only the existing DCD group-close operation in the native USB task.
++// Control eligibility is separate from endpoint and backend retirement.
++static void usbd_poll_closure(void) {
++  if(usbd_failed() || !tud_inited()) return;
++  if(unplug_close_pending) {
++    if(usbd_close_group(_usbd_rhport)!=DCD_ABORT_SUCCESS) return;
++    // OUT0 is never disabled as a generic endpoint. An active EP0 transaction
++    // without normal completion cannot be retired on mere physical unplug.
++    usbd_spin_lock(false);
++    if(usbd_failed() || !unplug_close_pending) {usbd_spin_unlock(false);return;}
++    if(!dcd_deinit_ready(_usbd_rhport)) {_usbd_abort_failed=true;usbd_spin_unlock(false);return;}
++    bool physical_soft=soft_unplug;
++    soft_unplug=false;
++    if(physical_soft) dcd_disconnect(_usbd_rhport);
++    usbd_reset(_usbd_rhport);
++    usbd_spin_unlock(false);
++    tud_umount_cb();
++    return;
++  }
++  if(config_close_pending) {
++    if(usbd_close_group(_usbd_rhport)!=DCD_ABORT_SUCCESS) return;
++    usbd_spin_lock(false);
++    if(usbd_failed() || unplug_close_pending || !config_close_pending) {usbd_spin_unlock(false);return;}
++    tusb_control_request_t request=config_close_request;
++    bool eligible=config_close_seq==usbd_setup_sequence() && !_usbd_unplugged;
++    // A newer control request can be active while old non-control endpoints
++    // retire. Do not erase its control state, completion identity or EP0 claim.
++    usbd_device_t live=_usbd_dev;
++    uint32_t ep0_generation[2]={endpoint_generation[0][0],endpoint_generation[0][1]};
++    configuration_reset(_usbd_rhport); // pending MSC async IO remains owned
++    _usbd_dev.ctrl_xfer=live.ctrl_xfer;
++    _usbd_dev.speed=live.speed;
++    _usbd_dev.connected=live.connected;_usbd_dev.addressed=live.addressed;_usbd_dev.suspended=live.suspended;
++    for(uint8_t dir=0;dir<2;dir++) {_usbd_dev.ep_status[0][dir]=live.ep_status[0][dir];endpoint_generation[0][dir]=ep0_generation[dir];}
++    if(eligible && !process_std_device_request(_usbd_rhport,&request)) _usbd_abort_failed=true;
++    usbd_spin_unlock(false); // SETUP sequence check and status submit are atomic
++  }
++}
++
++// Handle the current SETUP; false asks the existing Core to stall EP0.
+ static bool process_setup_received(uint8_t rhport, tusb_control_request_t const * p_request) {
+   // Initialize control transfer state for this request. The request copy must be
+   // visible to usbd_control_xfer_cb when the (asynchronous) status ZLP completes,
+@@ -1564,6 +1653,9 @@ TU_ATTR_FAST_FUNC void dcd_event_handler(dcd_event_t const* event, bool in_isr)
+   bool send = false;
+   switch (event->event_id) {
+     case DCD_EVENT_UNPLUGGED:
++      unplug_close_pending=true;
++      config_close_pending=false;
++      tu_memclr(endpoint_generation,sizeof(endpoint_generation));
+       _usbd_dev.connected = 0;
+       _usbd_dev.addressed = 0;
+       _usbd_dev.cfg_num = 0;
+@@ -1649,6 +1741,7 @@ TU_ATTR_FAST_FUNC void dcd_event_handler(dcd_event_t const* event, bool in_isr)
+       uint8_t const ep_addr = event->xfer_complete.ep_addr;
+       uint8_t const epnum = tu_edpt_number(ep_addr);
+       uint8_t const ep_dir = tu_edpt_dir(ep_addr);
++      if(unplug_close_pending || (config_close_pending && epnum!=0)) return;
+       if (event->xfer_complete.generation && event->xfer_complete.generation != endpoint_generation[epnum][ep_dir]) return;
+ 
+       send = true;
+@@ -1762,6 +1855,7 @@ bool usbd_edpt_open(uint8_t rhport, tusb_desc_endpoint_t const* desc_ep) {
+ }
+ 
+ bool usbd_edpt_claim(uint8_t rhport, uint8_t ep_addr) {
++  if(tu_edpt_number(ep_addr)!=0 && (unplug_close_pending || config_close_pending)) return false;
+   if (usbd_failed()) return false;
+   (void) rhport;
+ 
+@@ -1774,6 +1868,7 @@ bool usbd_edpt_claim(uint8_t rhport, uint8_t ep_addr) {
+ }
+ 
+ bool usbd_edpt_release(uint8_t rhport, uint8_t ep_addr) {
++  if(tu_edpt_number(ep_addr)!=0 && (unplug_close_pending || config_close_pending)) return false;
+   if (dcd_edpt_cancel_pending(rhport,ep_addr)) return false;
+   if (usbd_failed()) return false;
+   (void) rhport;
+@@ -1804,6 +1899,7 @@ bool usbd_edpt_xfer(uint8_t rhport, uint8_t ep_addr, uint8_t* buffer, uint16_t t
+ 
+   uint8_t const epnum = tu_edpt_number(ep_addr);
+   uint8_t const dir = tu_edpt_dir(ep_addr);
++  if(epnum!=0 && (unplug_close_pending || config_close_pending)) return false;
+ 
+   // TODO skip ready() check for now since enumeration also use this API
+   // TU_VERIFY(tud_ready());
+@@ -1861,6 +1957,7 @@ bool usbd_edpt_xfer(uint8_t rhport, uint8_t ep_addr, uint8_t* buffer, uint16_t t
+ // success message. If total_bytes is too big, the FIFO will copy only what is available
+ // into the USB buffer!
+ bool usbd_edpt_xfer_fifo(uint8_t rhport, uint8_t ep_addr, tu_fifo_t* ff, uint16_t total_bytes, bool is_isr) {
++  if(tu_edpt_number(ep_addr)!=0 && (unplug_close_pending || config_close_pending)) return false;
+   if (usbd_failed()) return false;
+   #if CFG_TUD_EDPT_DEDICATED_HWFIFO
+   rhport = _usbd_rhport;
+diff --git a/ThirdParty/tinyusb/src/device/usbd.h b/ThirdParty/tinyusb/src/device/usbd.h
+index 1efa4d9..3e99b13 100644
+--- a/ThirdParty/tinyusb/src/device/usbd.h
++++ b/ThirdParty/tinyusb/src/device/usbd.h
+@@ -125,10 +125,11 @@ bool tud_ready(void) {
+ // Remote wake up host, only if suspended and enabled by host
+ bool tud_remote_wakeup(void);
+ 
+-// Disable pull-up resistor on D+ D-, a no-op on MCUs without software control. Always returns true
++// Task context only. Request disconnect and poll with tud_task(). True means
++// retirement and pullup removal completed; false retains pending/fault ownership.
+ bool tud_disconnect(void);
+ 
+-// Enable pull-up resistor on D+ D-, a no-op on MCUs without software control. Always returns true
++// Enable pullup only on an initialized controller with no pending closure/fault.
+ bool tud_connect(void);
+ 
+ // Enable or disable the Start Of Frame callback support.
+diff --git a/ThirdParty/tinyusb/src/portable/synopsys/dwc2/dcd_dwc2.c b/ThirdParty/tinyusb/src/portable/synopsys/dwc2/dcd_dwc2.c
+index 638a3e0..46f0d3a 100644
+--- a/ThirdParty/tinyusb/src/portable/synopsys/dwc2/dcd_dwc2.c
++++ b/ThirdParty/tinyusb/src/portable/synopsys/dwc2/dcd_dwc2.c
+@@ -474,6 +474,8 @@ static bool hardware_completed[DWC2_EP_MAX][2];
+ static uint16_t rx_left[DWC2_EP_MAX];
+ static uint8_t pio_refs[DWC2_EP_MAX];
+ static int8_t out_nak_owner = -1;
++static bool closing_noncontrol;
++static uint32_t close_began_ms,close_began_cycle,close_previous_cycle,close_clock_hz;
+ static uint32_t deferred_tx_mask; // other IN producers paused during shared FIFO command
+ extern uint32_t tusb_time_millis_api(void);
+ bool dcd_device_faulted(uint8_t rhport) {
+@@ -502,7 +504,7 @@ static bool any_cancel(void) {
+     if (cancel_active(n,d)) return true;
+   return false;
+ }
+-bool dcd_device_pending(uint8_t p) {return p==0 && any_cancel();}
++bool dcd_device_pending(uint8_t p) {return p==0 && (any_cancel() || closing_noncontrol);}
+ static dcd_abort_result_t cancel_failed(uint8_t rhport,uint8_t reason) {
+   if (!abort_failure_reason[rhport]) abort_failure_reason[rhport]=reason;
+   r1_abort_fault[rhport] = true;
+@@ -747,7 +749,7 @@ bool dcd_configure(uint8_t rhport, uint32_t cfg_id, const void* cfg_param) {
+ }
+ 
+ bool dcd_init(uint8_t rhport, const tusb_rhport_init_t* rh_init) {
+-  if (any_cancel()) return false;
++  if (closing_noncontrol || any_cancel()) return false;
+   if (dcd_device_faulted(rhport)) return false;
+   dwc2_clock_init(rhport, rh_init->role);
+ 
+@@ -816,11 +818,14 @@ bool dcd_init(uint8_t rhport, const tusb_rhport_init_t* rh_init) {
+ bool dcd_deinit(uint8_t rhport) {
+   if (any_cancel()) return false;
+   if (dcd_device_faulted(rhport)) return false;
++  if (!dcd_deinit_ready(rhport)) return false;
++  if (!dwc2_core_deinit(rhport)) return false;
++  // Only the proven controller reset may precede pullup/IRQ shutdown.
+   dcd_disconnect(rhport);
+-  if (any_cancel() || !dwc2_core_deinit(rhport)) return false;
+   tu_memclr(xfer_status,sizeof(xfer_status));
+   tu_memclr(bulk_cancel,sizeof(bulk_cancel));
+   deferred_tx_mask=0;
++  closing_noncontrol=false;
+   out_nak_owner=-1; // only after actual controller reset proof
+   return true;
+ }
+@@ -911,7 +916,7 @@ void dcd_remote_wakeup(uint8_t rhport) {
+ }
+ 
+ void dcd_connect(uint8_t rhport) {
+-  if (any_cancel()) return;
++  if (closing_noncontrol || any_cancel()) return;
+   if (dcd_device_faulted(rhport)) return ;
+   dwc2_regs_t* dwc2 = DWC2_REG(rhport);
+ 
+@@ -975,14 +980,81 @@ void dcd_sof_enable(uint8_t rhport, bool en) {
+ 
+ bool dcd_edpt_open(uint8_t rhport, tusb_desc_endpoint_t const* desc_edpt) {
+   if (dcd_device_faulted(rhport)) return false;
+-  if (any_cancel()) return false;
++  if (closing_noncontrol || any_cancel()) return false;
+   TU_ASSERT(dfifo_alloc(rhport, desc_edpt->bEndpointAddress, tu_edpt_packet_size(desc_edpt),
+                        desc_edpt->bmAttributes.xfer));
+   edpt_activate(rhport, desc_edpt);
+   return true;
+ }
+ 
+-// Close all non-control endpoints, cancel all pending transfers if any.
++// Polls only existing per-endpoint cancellation facts. No second scheduler or
++// controller/session state machine. Native USBD task is the sole caller.
++dcd_abort_result_t dcd_edpt_close_all_safe(uint8_t rhport) {
++  if (rhport!=0 || __get_IPSR()!=0 || dcd_device_faulted(rhport)) return DCD_ABORT_FAILED;
++  dwc2_regs_t *d=DWC2_REG(rhport);
++  // Check the entire scope before changing hardware; active ISO/DMA unqualified.
++  if (dma_device_enabled(d)) return DCD_ABORT_UNSUPPORTED;
++  for(uint8_t n=1;n<_dwc2_controller[rhport].ep_count;n++) for(uint8_t dir=0;dir<2;dir++) {
++    dwc2_dep_t *ep=&d->ep[dir?0:1][n];
++    if ((XFER_CTL_BASE(n,dir)->buffer || XFER_CTL_BASE(n,dir)->ff || (ep->ctl & EPCTL_EPENA)) &&
++        ((ep->ctl>>18)&3)!=DEPCTL_EPTYPE_BULK) return DCD_ABORT_UNSUPPORTED;
++  }
++  usbd_spin_lock(false);
++  if(!closing_noncontrol) {close_began_ms=tusb_time_millis_api();close_began_cycle=DWT->CYCCNT;close_previous_cycle=close_began_cycle;close_clock_hz=SystemCoreClock;}
++  closing_noncontrol=true; // fence every nonzero submission before first abort
++  usbd_spin_unlock(false);
++  uint32_t now=DWT->CYCCNT;
++  if(!(DWT->CTRL & DWT_CTRL_CYCCNTENA_Msk) || !(CoreDebug->DEMCR & CoreDebug_DEMCR_TRCENA_Msk) ||
++      SystemCoreClock<1000U || SystemCoreClock!=close_clock_hz || now==close_previous_cycle) return cancel_failed(rhport,13);
++  close_previous_cycle=now;
++  if((uint32_t)(tusb_time_millis_api()-close_began_ms)>=50U ||
++      (SystemCoreClock>=1000U && (uint32_t)(DWT->CYCCNT-close_began_cycle)>=(SystemCoreClock/1000U)*50U)) return cancel_failed(rhport,12);
++  bool pending=false;
++  for(uint8_t n=1;n<_dwc2_controller[rhport].ep_count;n++) for(uint8_t dir=0;dir<2;dir++) {
++    dwc2_dep_t *ep=&d->ep[dir?0:1][n];
++    if (!cancel_active(n,dir) && !XFER_CTL_BASE(n,dir)->buffer && !XFER_CTL_BASE(n,dir)->ff && !(ep->ctl & EPCTL_EPENA)) continue;
++    dcd_abort_result_t r=dcd_edpt_abort_safe(rhport,(uint8_t)(n | (dir?0x80:0)));
++    if (r==DCD_ABORT_FAILED || r==DCD_ABORT_UNSUPPORTED) return cancel_failed(rhport,11);
++    if (r==DCD_ABORT_PENDING) pending=true;
++  }
++  if(pending || (d->gintsts & GINTSTS_RXFLVL)) return DCD_ABORT_PENDING;
++  // Existing legacy close performs the second all-endpoint hardware preflight.
++  // No shared RX flush; SETUP/EP0 allocations remain untouched.
++  dcd_edpt_close_all(rhport);
++  if(dcd_device_faulted(rhport)) return DCD_ABORT_FAILED;
++  closing_noncontrol=false;
++  return DCD_ABORT_SUCCESS;
++}
++void dcd_task(uint8_t rhport) {
++  if(closing_noncontrol && !dcd_device_faulted(rhport)) (void)dcd_edpt_close_all_safe(rhport);
++}
++static uint32_t retirement_events(dwc2_dep_t *ep,uint8_t n,uint8_t dir) {
++  uint32_t events=ep->intr & (dir ? ~DIEPINT_TXFE : UINT32_MAX);
++  // NAK-effective carries no PIO or completion reference once this exact IN
++  // transfer has passed disable + targeted FIFO flush and returned its source.
++  // Still reject XFRC/EPDISD/error facts; do not erase them to pass readiness.
++  if(dir && bulk_cancel[n][dir].phase==5 && !XFER_CTL_BASE(n,dir)->buffer)
++    events &= ~DIEPINT_INEPNE;
++  return events;
++}
++bool dcd_deinit_ready(uint8_t rhport) {
++  if(rhport!=0 || closing_noncontrol || any_cancel() || dcd_device_faulted(rhport)) return false;
++  dwc2_regs_t *d=DWC2_REG(rhport);
++  if(d->gintsts & (GINTSTS_RXFLVL | GINTSTS_USBRST | GINTSTS_ENUMDNE)) return false;
++  if(d->grstctl & (GRSTCTL_TXFFLSH | GRSTCTL_RXFFLSH | GRSTCTL_CSRST)) return false;
++  for(uint8_t n=0;n<_dwc2_controller[rhport].ep_count;n++) {
++    if(pio_refs[n]) return false;
++    for(uint8_t dir=0;dir<2;dir++) {
++      dwc2_dep_t *ep=&d->ep[dir?0:1][n];
++      if((ep->ctl & EPCTL_EPENA) || retirement_events(ep,n,dir)) return false;
++      if(XFER_CTL_BASE(n,dir)->ff) return false;
++      if(XFER_CTL_BASE(n,dir)->buffer && (n!=0 || !hardware_completed[n][dir])) return false;
++    }
++  }
++  return true; // EP0 normal completion proof or no buffer; never EPDIS OUT0
++}
++
++// Legacy void entry accepts only already-retired endpoints.
+ void dcd_edpt_close_all(uint8_t rhport) {
+   // This void legacy API cannot report asynchronous progress. Accept an already
+   // retired group (including the empty group), otherwise preserve ownership.
+@@ -995,7 +1067,7 @@ void dcd_edpt_close_all(uint8_t rhport) {
+     for(uint8_t dir=0;dir<2;dir++) {
+       dwc2_dep_t *ep=&d->ep[dir?0:1][n];
+       // TXFE is a read-only FIFO-empty level, not a pending terminal event.
+-      uint32_t events=ep->intr & (dir ? ~DIEPINT_TXFE : UINT32_MAX);
++      uint32_t events=retirement_events(ep,n,dir);
+       if ((ep->ctl & EPCTL_EPENA) || events || pio_refs[n] ||
+           XFER_CTL_BASE(n,dir)->buffer || XFER_CTL_BASE(n,dir)->ff) safe=false;
+     }
+@@ -1013,14 +1085,14 @@ void dcd_edpt_close_all(uint8_t rhport) {
+ }
+ 
+ bool dcd_edpt_iso_alloc(uint8_t rhport, uint8_t ep_addr, uint16_t largest_packet_size) {
+-  if (any_cancel()) return false;
++  if (closing_noncontrol || any_cancel()) return false;
+   if (dcd_device_faulted(rhport)) return false;
+   TU_ASSERT(dfifo_alloc(rhport, ep_addr, largest_packet_size, TUSB_XFER_ISOCHRONOUS));
+   return true;
+ }
+ 
+ bool dcd_edpt_iso_activate(uint8_t rhport,  tusb_desc_endpoint_t const * p_endpoint_desc) {
+-  if (any_cancel()) return false;
++  if (closing_noncontrol || any_cancel()) return false;
+   if (dcd_device_faulted(rhport)) return false;
+   // Disable EP to clear potential incomplete transfers
+   if (!edpt_disable(rhport, p_endpoint_desc->bEndpointAddress, false, false)) return false;
+@@ -1033,6 +1105,7 @@ bool dcd_edpt_xfer(uint8_t rhport, uint8_t ep_addr, uint8_t* buffer, uint16_t to
+   (void) is_isr;
+   uint8_t const epnum = tu_edpt_number(ep_addr);
+   uint8_t const dir = tu_edpt_dir(ep_addr);
++  if (epnum!=0 && closing_noncontrol) return false;
+   xfer_ctl_t* xfer = XFER_CTL_BASE(epnum, dir);
+   if (cancel_active(epnum,dir) || transfer_generation[epnum][dir]==UINT32_MAX) return false;
+   if (DWC2_REG(rhport)->gintsts & (GINTSTS_USBRST | GINTSTS_ENUMDNE)) return false;
+@@ -1080,6 +1153,7 @@ bool dcd_edpt_xfer_fifo(uint8_t rhport, uint8_t ep_addr, tu_fifo_t* ff, uint16_t
+   (void) is_isr;
+   uint8_t const epnum = tu_edpt_number(ep_addr);
+   uint8_t const dir = tu_edpt_dir(ep_addr);
++  if(cancel_active(epnum,dir) || (epnum!=0 && closing_noncontrol)) return false;
+   xfer_ctl_t* xfer = XFER_CTL_BASE(epnum, dir);
+   bool ret;
+ 
+@@ -1737,12 +1811,8 @@ void dcd_int_handler(uint8_t rhport) {
+     const uint32_t otg_int = dwc2->gotgint;
+ 
+     if (otg_int & GOTGINT_SEDET) {
+-      // Disconnect is not hardware retirement. Never let Core reset/reuse class
+-      // storage while a PIO endpoint remains enabled without a stop proof.
+-      bool enabled=false;
+-      for(uint8_t n=0;n<_dwc2_controller[rhport].ep_count;n++)
+-        if ((dwc2->epin[n].ctl | dwc2->epout[n].ctl) & EPCTL_EPENA) enabled=true;
+-      if (enabled) {(void)cancel_failed(rhport,7);dwc2->gotgint=otg_int;return;}
++      // Notify unplug eligibility now; native task delays Class reset until
++      // nonzero Bulk retirement. SEDET itself is not a stopping proof.
+       if (any_cancel()) {(void)cancel_failed(rhport,7);dwc2->gotgint=otg_int;return;}
+       usbd_spin_lock(true);
+       dwc2->gintmsk &= ~GINTMSK_OTGINT;
+diff --git a/ThirdParty/tinyusb/src/portable/synopsys/dwc2/dwc2_common.c b/ThirdParty/tinyusb/src/portable/synopsys/dwc2/dwc2_common.c
+index 1dd1967..be83c68 100644
+--- a/ThirdParty/tinyusb/src/portable/synopsys/dwc2/dwc2_common.c
++++ b/ThirdParty/tinyusb/src/portable/synopsys/dwc2/dwc2_common.c
+@@ -268,11 +268,13 @@ bool dwc2_core_init(uint8_t rhport, bool is_hs_phy, bool is_dma) {
+ bool dwc2_core_deinit(uint8_t rhport) {
+   dwc2_regs_t* dwc2 = DWC2_REG(rhport);
+ 
+-  // Disable global interrupt
++  // Caller already proved endpoint/PIO quiescence. Keep the old interrupt
++  // admission on reset failure; never shut down NVIC/pullup on that path.
++  const uint32_t prior_gint=dwc2->gahbcfg & GAHBCFG_GINT;
+   dwc2->gahbcfg &= ~GAHBCFG_GINT;
+ 
+   // Reset core: this also flushes FIFOs and clears all interrupt registers
+-  if (!reset_core(dwc2)) return false;
++  if (!reset_core(dwc2)) {dwc2->gahbcfg |= prior_gint;return false;}
+ 
+   // Stop PHY clock and gate HCLK for power saving (per databook chapter 14)
+   dwc2->pcgcctl |= PCGCCTL_STOPPCLK | PCGCCTL_GATEHCLK;
