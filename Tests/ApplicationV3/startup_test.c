@@ -17,6 +17,8 @@ static BaseType_t scheduler = taskSCHEDULER_NOT_STARTED;
 static uint32_t critical_depth;
 static bool notify_fails;
 static uint32_t exception, primask;
+static uint32_t irq_priority = configLIBRARY_MAX_SYSCALL_INTERRUPT_PRIORITY;
+static TickType_t test_tick;
 static bool blocking_probe;
 static AppV3Queue_t pinned_queue;
 static SysResult_t during_wait;
@@ -43,6 +45,17 @@ uint32_t Platform_SyncGetPrimask(void)
 uint32_t Platform_SyncGetBasepri(void)
 {
     return 0U;
+}
+
+uint32_t Platform_SyncGetIrqPriority(uint32_t irq_number)
+{
+    (void)irq_number;
+    return irq_priority;
+}
+
+TickType_t xTaskGetTickCount(void)
+{
+    return test_tick;
 }
 
 void Platform_SyncDisableIrq(void)
@@ -254,7 +267,10 @@ SysResult_t App_EventsWait(RuntimeEventTarget_t target, uint32_t timeout_ms, uin
     if (target == RUNTIME_TARGET_CONTROL)
     {
         if (timeout_ms == 100U && waited++ == 0U)
+        {
+            test_tick += pdMS_TO_TICKS(1000U);
             return SYS_ERR_TIMEOUT;
+        }
         if (timeout_ms != 100U || waited != 2U)
             g_failure = __LINE__;
         longjmp(task_exit, 1);
@@ -331,9 +347,9 @@ uint32_t AppV3_TestRun(uint32_t scenario)
         UBaseType_t capacity, space;
         AppMessage_t item = {0};
         scheduler = taskSCHEDULER_RUNNING;
-        CHECK(AppV3Queue_Alloc(sizeof(item), 2U, &queue) == SYS_OK);
+        CHECK(AppV3_GetStartupQueue(&queue) == SYS_OK);
         CHECK(AppV3Queue_Alloc(sizeof(item), 1U, &replacement) == SYS_ERR_NO_RESOURCE);
-        CHECK(AppV3Queue_Query(queue, &capacity, &space) == SYS_OK && capacity == 2U && space == 2U);
+        CHECK(AppV3Queue_Query(queue, &capacity, &space) == SYS_OK && capacity == 4U && space == 4U);
         CHECK(AppV3Queue_Subscribe(queue, owner) == SYS_OK);
         CHECK(AppV3Queue_Free(queue) == SYS_ERR_BUSY);
         notify_fails = true;
@@ -341,12 +357,19 @@ uint32_t AppV3_TestRun(uint32_t scenario)
         CHECK(AppV3Queue_Put(queue, &item, 0U) == SYS_OK);
         item.command_id = 12U;
         CHECK(AppV3Queue_Put(queue, &item, 0U) == SYS_OK);
+        CHECK(AppV3Queue_Put(queue, &item, 0U) == SYS_OK);
+        CHECK(AppV3Queue_Put(queue, &item, 0U) == SYS_OK);
         CHECK(AppV3Queue_Put(queue, &item, 0U) == SYS_ERR_BUSY);
         CHECK(AppV3Queue_Get(queue, &item, 0U) == SYS_OK && item.command_id == 11U);
         if (scenario == 9U)
         {
             CHECK(AppV3Queue_GetFromIsr(queue, &item) == SYS_ERR_INVALID_STATE);
+            exception = 3U;
+            CHECK(AppV3Queue_GetFromIsr(queue, &item) == SYS_ERR_INVALID_STATE);
             exception = 16U;
+            --irq_priority;
+            CHECK(AppV3Queue_GetFromIsr(queue, &item) == SYS_ERR_INVALID_STATE);
+            ++irq_priority;
             CHECK(AppV3Queue_Free(queue) == SYS_ERR_INVALID_STATE);
             CHECK(AppV3Queue_GetFromIsr(queue, &item) == SYS_OK && item.command_id == 12U);
             CHECK(AppV3Queue_PutFromIsr(queue, &item) == SYS_OK);
@@ -354,6 +377,8 @@ uint32_t AppV3_TestRun(uint32_t scenario)
         }
         CHECK(AppV3Queue_Unsubscribe(queue, owner) == SYS_OK);
         CHECK(AppV3Queue_Free(queue) == SYS_ERR_BUSY);
+        CHECK(AppV3Queue_Get(queue, &item, 0U) == SYS_OK && item.command_id == 12U);
+        CHECK(AppV3Queue_Get(queue, &item, 0U) == SYS_OK && item.command_id == 12U);
         CHECK(AppV3Queue_Get(queue, &item, 0U) == SYS_OK && item.command_id == 12U);
         blocking_probe = true;
         pinned_queue = queue;
@@ -421,7 +446,7 @@ uint32_t AppV3_TestRun(uint32_t scenario)
         scheduler = taskSCHEDULER_RUNNING;
         event_test = true;
         notify_fails = true;
-        CHECK(AppV3Queue_Alloc(sizeof(item), 3U, &queue) == SYS_OK);
+        CHECK(AppV3_GetStartupQueue(&queue) == SYS_OK);
         item.command_id = 1U;
         CHECK(AppV3Queue_Put(queue, &item, 0U) == SYS_OK);
         CHECK(AppV3EventLoop_Init(&loop, owner) == SYS_OK);
@@ -471,18 +496,24 @@ uint32_t AppV3_TestRun(uint32_t scenario)
         CHECK(scheduled_stack_words == 2048U && scheduled_priority == 1U);
     }
 
-    if (scenario == 6U)
+    if (scenario == 6U || scenario == 14U)
     {
         CHECK(ControlTask_Create() == SYS_OK);
         CHECK(scheduled_stack_words == 768U && scheduled_priority == 2U);
         scheduler = taskSCHEDULER_RUNNING;
         owner = RUNTIME_TARGET_CAMERA;
         notify_fails = true;
-        CHECK(AppV3_ReportInitialization(owner, SYS_ERR_IO) == SYS_OK);
+        if (scenario == 6U)
+        {
+            fixture_camera_result = SYS_ERR_IO;
+            CHECK(AppV3_InitService(owner, context) == SYS_ERR_IO);
+            CHECK(AppV3_ReportInitialization(owner, SYS_ERR_IO) == SYS_OK);
+        }
         owner = RUNTIME_TARGET_CONTROL;
         if (setjmp(task_exit) == 0)
             scheduled_entry(scheduled_argument);
-        CHECK(waited == 2U && published_count == 1U && published.last_fault == SYS_ERR_IO);
+        CHECK(waited == 2U && published_count == 1U);
+        CHECK(published.last_fault == (scenario == 6U ? SYS_ERR_IO : SYS_ERR_TIMEOUT));
         CHECK(g_failure == 0U);
         return 0U;
     }
@@ -530,18 +561,53 @@ uint32_t AppV3_TestRun(uint32_t scenario)
     {
         owner = RUNTIME_TARGET_USB;
         notify_fails = true;
+        CHECK(AppV3_ReportInitialization(owner, SYS_OK) == SYS_ERR_INVALID_STATE);
+        CHECK(AppV3_InitService(owner, context) == SYS_OK);
+        CHECK(AppV3_ReportInitialization(owner, SYS_OK) == SYS_OK);
+        owner = RUNTIME_TARGET_CONTROL;
+        CHECK(AppV3_DrainInitialization() == SYS_OK && published_count == 0U);
+        CHECK(AppV3_DrainInitialization() == SYS_OK && published_count == 0U);
+        return 0U;
+    }
+
+    if (scenario == 13U)
+    {
+        AppV3Queue_t queue;
+        CHECK(AppV3_GetStartupQueue(&queue) == SYS_OK);
+        startup_message.type = APP_MESSAGE_ACK;
+        startup_message.source = RUNTIME_TARGET_STORAGE;
+        CHECK(AppV3Queue_Put(queue, &startup_message, 0U) == SYS_OK);
+        startup_message.type = APP_MESSAGE_START;
+        startup_message.source = owner;
+        CHECK(App_MessagesSend(APP_CHANNEL_CONTROL, &startup_message) == SYS_OK);
+        owner = RUNTIME_TARGET_USB;
+        CHECK(AppV3_InitService(owner, context) == SYS_OK);
+        CHECK(AppV3_ReportInitialization(owner, SYS_OK) == SYS_OK);
+        CHECK(AppV3_ReportInitialization(owner, SYS_OK) == SYS_OK);
+        owner = RUNTIME_TARGET_CONTROL;
+        CHECK(AppV3_DrainInitialization() == SYS_OK && published_count == 0U);
+        CHECK(App_MessagesReceive(APP_CHANNEL_CONTROL, &startup_message));
+        CHECK(startup_message.type == APP_MESSAGE_START);
+        CHECK(AppV3_ExpireInitialization() == SYS_OK && published.result == SYS_ERR_TIMEOUT);
+        owner = RUNTIME_TARGET_CAMERA;
+        CHECK(AppV3_InitService(owner, context) == SYS_OK);
+        CHECK(AppV3_ReportInitialization(owner, SYS_OK) == SYS_OK);
+        owner = RUNTIME_TARGET_STORAGE;
+        CHECK(AppV3_InitService(owner, context) == SYS_OK);
         CHECK(AppV3_ReportInitialization(owner, SYS_OK) == SYS_OK);
         owner = RUNTIME_TARGET_CONTROL;
         CHECK(AppV3_DrainInitialization() == SYS_OK && published_count == 1U);
-        CHECK(AppV3_DrainInitialization() == SYS_OK && published_count == 1U);
+        CHECK(published.result == SYS_ERR_TIMEOUT);
         return 0U;
     }
 
     CHECK(scenario == 5U);
     startup_message.source = RUNTIME_TARGET_CONTROL;
     startup_message.type = APP_MESSAGE_START;
+    AppV3Queue_t queue;
+    CHECK(AppV3_GetStartupQueue(&queue) == SYS_OK);
     for (filler_index = 0U; filler_index < 4U; ++filler_index)
-        CHECK(App_MessagesSend(APP_CHANNEL_CONTROL, &startup_message) == SYS_OK);
+        CHECK(AppV3Queue_Put(queue, &startup_message, 0U) == SYS_OK);
 
     //执行真实任务入口，模拟等待函数在已观察到重试后返回测试。
     owner = RUNTIME_TARGET_STORAGE;
@@ -549,8 +615,8 @@ uint32_t AppV3_TestRun(uint32_t scenario)
         scheduled_entry(scheduled_argument);
     CHECK(waited == 4U && g_failure == 0U);
     owner = RUNTIME_TARGET_CONTROL;
-    CHECK(App_MessagesReceive(APP_CHANNEL_CONTROL, &startup_message));
+    CHECK(App_MessagesReceive(APP_CHANNEL_STARTUP, &startup_message));
     CHECK(startup_message.type == APP_MESSAGE_ACK && startup_message.source == RUNTIME_TARGET_STORAGE);
-    CHECK(!App_MessagesReceive(APP_CHANNEL_CONTROL, &startup_message));
+    CHECK(!App_MessagesReceive(APP_CHANNEL_STARTUP, &startup_message));
     return 0U;
 }

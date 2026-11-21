@@ -202,10 +202,13 @@ static SysResult_t QueuePool_IsrTransfer(AppV3Queue_t queue, const void *input, 
     uint8_t target;
     QueueSlot_t *slot;
     BaseType_t result, yield = pdFALSE;
+    uint32_t exception = Platform_SyncGetException();
 
     if (input == NULL && output == NULL)
         return SYS_ERR_INVALID_ARG;
-    if (Platform_SyncGetException() == 0U)
+    //与 App_Events 一致，仅允许可调用 FreeRTOS 的外设 IRQ。
+    if (exception < 16U || Platform_SyncGetIrqPriority(exception - 16U) <
+        configLIBRARY_MAX_SYSCALL_INTERRUPT_PRIORITY)
         return SYS_ERR_INVALID_STATE;
     portASSERT_IF_INTERRUPT_PRIORITY_INVALID();
     slot = QueuePool_Pin(queue, &target);

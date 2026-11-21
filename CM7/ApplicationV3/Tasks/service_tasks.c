@@ -6,6 +6,10 @@
 #include "../Runtime/service_event_loop.h"
 #include <stddef.h>
 
+#define STARTUP_DEADLINE_MS 1000U
+#define STARTUP_POLL_MS 100U
+#define STARTUP_MAX_ATTEMPTS (1U + STARTUP_DEADLINE_MS / STARTUP_POLL_MS)
+
 static StackType_t s_control_stack[768U] __attribute__((aligned(8)));
 static StaticTask_t s_task_controls[RUNTIME_TARGET_COUNT];
 static uint32_t s_task_attempted;
@@ -15,6 +19,7 @@ void AppV3_ServiceRun(void *argument)
     const AppV3ThreadSpec_t *thread = argument;
     SysResult_t initialization = SYS_ERR_INVALID_STATE;
     uint32_t events;
+    uint32_t report_attempts = 0U;
     bool report_pending = false;
     bool boot_seen = false;
     AppV3EventLoop_t loop = {0};
@@ -29,7 +34,7 @@ void AppV3_ServiceRun(void *argument)
     {
         //Storage 没有旧控制消费唤醒，待发期间定时检查队列空间。
         SysResult_t result = AppV3EventLoop_Step(&loop,
-            report_pending ? 100U : APP_EVENTS_WAIT_FOREVER, &events);
+            report_pending ? STARTUP_POLL_MS : APP_EVENTS_WAIT_FOREVER, &events);
         if (result != SYS_OK && result != SYS_ERR_TIMEOUT)
         {
             configASSERT(result == SYS_OK);
@@ -47,17 +52,49 @@ void AppV3_ServiceRun(void *argument)
 
         //队列满时保留原结果。入队成功后只由 Control 消费。
         if (report_pending)
-            report_pending = AppV3_ReportInitialization(thread->owner, initialization) != SYS_OK;
+        {
+            SysResult_t report = AppV3_ReportInitialization(thread->owner, initialization);
+            ++report_attempts;
+            report_pending = report == SYS_ERR_NO_RESOURCE && report_attempts < STARTUP_MAX_ATTEMPTS;
+        }
     }
+}
+
+static SysResult_t AppV3_CheckStartupDeadline(const TickType_t *started)
+{
+    if ((TickType_t)(xTaskGetTickCount() - *started) < pdMS_TO_TICKS(STARTUP_DEADLINE_MS))
+        return SYS_OK;
+    return AppV3_ExpireInitialization();
+}
+
+static SysResult_t AppV3_StartupReadable(AppV3Queue_t queue, void *context)
+{
+    SysResult_t result;
+    (void)queue;
+
+    //先检查截止时间，再处理队列，避免晚到报告把超时改写为成功。
+    result = AppV3_CheckStartupDeadline(context);
+    if (result != SYS_OK)
+        return result;
+    return AppV3_DrainInitialization();
 }
 
 static void AppV3_ControlRun(void *argument)
 {
-    SysResult_t result = App_TasksReleaseBoot();
     uint32_t events;
+    TickType_t started = xTaskGetTickCount();
+    AppV3Queue_t startup_queue;
+    AppV3EventLoop_t loop = {0};
+    SysResult_t result = AppV3EventLoop_Init(&loop, RUNTIME_TARGET_CONTROL);
     (void)argument;
 
-    //原 BOOT 屏障失败时进入停驻，不执行服务调度。
+    //控制入口先能接收结果，再释放原 BOOT 屏障。
+    if (result == SYS_OK)
+        result = AppV3_GetStartupQueue(&startup_queue);
+    if (result == SYS_OK)
+        result = AppV3EventLoop_Subscribe(&loop, startup_queue, AppV3_StartupReadable, &started);
+    if (result == SYS_OK)
+        result = App_TasksReleaseBoot();
     configASSERT(result == SYS_OK);
     while (result != SYS_OK)
         vTaskDelay(portMAX_DELAY);
@@ -65,10 +102,10 @@ static void AppV3_ControlRun(void *argument)
     for (;;)
     {
         //保留原 Control 的 100 ms 周期。即使通知失败，已入队的报告仍会被取出。
-        result = App_EventsWait(RUNTIME_TARGET_CONTROL, 100U, &events);
+        result = AppV3EventLoop_Step(&loop, STARTUP_POLL_MS, &events);
         if (result == SYS_OK || result == SYS_ERR_TIMEOUT)
         {
-            result = AppV3_DrainInitialization();
+            result = AppV3_CheckStartupDeadline(&started);
             configASSERT(result == SYS_OK);
         }
         else

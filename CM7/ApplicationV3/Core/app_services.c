@@ -55,6 +55,8 @@ SysResult_t AppV3_StartServices(uint32_t *created)
 
 //Control 独占首个初始化错误，复用原 IPC 状态出口。
 static AppControlStatus_t s_startup_status;
+static uint32_t s_startup_completed;
+static bool s_startup_published;
 
 static const AppV3ServiceRecord_t *AppV3_FindRecord(RuntimeEventTarget_t owner)
 {
@@ -88,7 +90,7 @@ SysResult_t AppV3_InitService(RuntimeEventTarget_t owner, const AppV3Context_t *
         return SYS_ERR_INVALID_STATE;
 
     //重复调用不得写正在被其他任务读取的公开对象。
-    if (AppV3Record_Query(owner) != SYS_ERR_BUSY)
+    if (AppV3Record_Query(owner, &result) != SYS_ERR_BUSY)
         return SYS_ERR_ALREADY_EXISTS;
     result = service->init(context);
     if (result != SYS_OK)
@@ -105,44 +107,90 @@ SysResult_t AppV3_InitService(RuntimeEventTarget_t owner, const AppV3Context_t *
 SysResult_t AppV3_ReportInitialization(RuntimeEventTarget_t owner, SysResult_t result)
 {
     AppMessage_t message = {.type = APP_MESSAGE_FAULT};
+    SysResult_t recorded;
 
     //沿用原消息 ABI，零命令编号保留给 V3 启动报告。
     if (AppV3_FindService(owner) == NULL || result > SYS_OK)
         return SYS_ERR_INVALID_ARG;
 
+    //初始化返回值必须与该服务已经发布的事实一致。
+    if (!App_MessagesIsOwner(owner) || AppV3Record_Query(owner, &recorded) != SYS_OK || recorded != result)
+        return SYS_ERR_INVALID_STATE;
     if (result == SYS_OK)
         message.type = APP_MESSAGE_ACK;
     message.source = owner;
     message.result = result;
-    return App_MessagesSend(APP_CHANNEL_CONTROL, &message);
+    return App_MessagesSend(APP_CHANNEL_STARTUP, &message);
+}
+
+static uint32_t AppV3_StartupRequired(void)
+{
+    size_t service_index;
+    uint32_t required = 0U;
+
+    //聚合只依据启动清单，不能另设需要维护的服务数量或身份表。
+    for (service_index = 0U; service_index < sizeof(s_services) / sizeof(s_services[0]); ++service_index)
+        required |= 1UL << s_services[service_index].thread.owner;
+    return required;
+}
+
+static SysResult_t AppV3_PublishStartup(void)
+{
+    SysResult_t result;
+
+    if (s_startup_published)
+        return SYS_OK;
+    if (s_startup_status.last_fault == SYS_OK && s_startup_completed != AppV3_StartupRequired())
+        return SYS_OK;
+
+    //成功需全部真实结果；失败保留首次错误并且只发布一次。
+    s_startup_status.result = s_startup_status.last_fault;
+    result = App_StatusPublishControl(&s_startup_status);
+    if (result == SYS_OK)
+        s_startup_published = true;
+    return result;
 }
 
 SysResult_t AppV3_DrainInitialization(void)
 {
     AppMessage_t message;
-    bool accepted = false;
+    uint32_t received;
 
     if (!App_MessagesIsOwner(RUNTIME_TARGET_CONTROL))
         return SYS_ERR_INVALID_STATE;
 
-    //每个服务只提交一份启动报告，通知仅用于唤醒。
-    while (App_MessagesReceive(APP_CHANNEL_CONTROL, &message))
+    //仅消费独立启动通道，每轮最多处理一队列容量。
+    for (received = 0U; received < 4U && App_MessagesReceive(APP_CHANNEL_STARTUP, &message); ++received)
     {
+        uint32_t owner_bit;
+        SysResult_t recorded;
+
         if (message.command_id != 0U || AppV3_FindService(message.source) == NULL)
             continue;
         if (!((message.type == APP_MESSAGE_ACK && message.result == SYS_OK) ||
               (message.type == APP_MESSAGE_FAULT && message.result < SYS_OK)))
             continue;
 
-        //后续成功或第二个错误不能覆盖最早观察到的错误。
+        //按真实发布结果核验 ACK/FAULT；重复报告不能再次推进计数或首错。
+        owner_bit = 1UL << message.source;
+        if ((s_startup_completed & owner_bit) != 0U ||
+            AppV3Record_Query(message.source, &recorded) != SYS_OK || recorded != message.result)
+            continue;
+        s_startup_completed |= owner_bit;
         if (s_startup_status.last_fault == SYS_OK)
             s_startup_status.last_fault = message.result;
-        accepted = true;
     }
 
-    //配置准备只报告结果，不能写成视频正在运行。
-    if (!accepted)
-        return SYS_OK;
-    s_startup_status.result = s_startup_status.last_fault;
-    return App_StatusPublishControl(&s_startup_status);
+    return AppV3_PublishStartup();
+}
+
+SysResult_t AppV3_ExpireInitialization(void)
+{
+    if (!App_MessagesIsOwner(RUNTIME_TARGET_CONTROL))
+        return SYS_ERR_INVALID_STATE;
+
+    //已完成的启动保留其结果，截止后到达的成功不能覆盖超时。
+    if (s_startup_completed != AppV3_StartupRequired() && s_startup_status.last_fault == SYS_OK)
+        s_startup_status.last_fault = SYS_ERR_TIMEOUT;
+    return AppV3_PublishStartup();
 }

@@ -251,16 +251,21 @@ SysResult_t AppV3Record_Destroy(RuntimeEventTarget_t owner)
     return result;
 }
 
-SysResult_t AppV3Record_Query(RuntimeEventTarget_t owner)
+SysResult_t AppV3Record_Query(RuntimeEventTarget_t owner, SysResult_t *out)
 {
     RecordSlot_t *slot = Record_Find(owner);
     uint32_t saved;
     SysResult_t result;
 
-    if (slot == NULL || !Record_TaskContext())
+    if (slot == NULL || out == NULL || !Record_TaskContext())
         return SYS_ERR_INVALID_STATE;
     saved = Record_Lock();
-    result = slot->state == RECORD_READY || slot->state == RECORD_FAILED ? slot->result : SYS_ERR_BUSY;
+    result = SYS_ERR_BUSY;
+    if (slot->state == RECORD_READY || slot->state == RECORD_FAILED)
+    {
+        *out = slot->result;
+        result = SYS_OK;
+    }
     Record_Unlock(saved);
     return result;
 }

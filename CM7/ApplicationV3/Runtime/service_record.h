@@ -24,7 +24,7 @@ SysResult_t AppV3Record_Open(RuntimeEventTarget_t owner, TickType_t timeout, App
 SysResult_t AppV3Record_Close(AppV3RecordRef_t *reference);
 SysResult_t AppV3Record_Destroy(RuntimeEventTarget_t owner);
 
-//返回当前发布结果，尚未完成时返回 BUSY；不会取得引用。
-SysResult_t AppV3Record_Query(RuntimeEventTarget_t owner);
+//查询独立的发布事实，实际错误通过 out 返回。
+SysResult_t AppV3Record_Query(RuntimeEventTarget_t owner, SysResult_t *out);
 
 #endif

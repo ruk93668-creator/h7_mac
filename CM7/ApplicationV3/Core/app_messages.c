@@ -1,6 +1,7 @@
 #include "app_messages.h"
 #include "app_events.h"
 #include "../Runtime/queue_pool.h"
+#include "app_services.h"
 #include "platform_sync.h"
 #include <stddef.h>
 
@@ -16,7 +17,7 @@ static bool s_messages_attempted;
 static const RuntimeEventTarget_t s_message_receivers[APP_CHANNEL_COUNT] =
 {
     RUNTIME_TARGET_CAMERA, RUNTIME_TARGET_USB, RUNTIME_TARGET_CONTROL,
-    RUNTIME_TARGET_CAMERA, RUNTIME_TARGET_USB
+    RUNTIME_TARGET_CAMERA, RUNTIME_TARGET_USB, RUNTIME_TARGET_CONTROL
 };
 
 //检查当前任务是否为指定业务所有者
@@ -61,6 +62,8 @@ SysResult_t App_MessagesSend(AppChannel_t channel, const AppMessage_t *message)
         allowed = App_MessagesIsOwner(RUNTIME_TARGET_USB);
     else if (channel == APP_CHANNEL_TO_USB)
         allowed = App_MessagesIsOwner(RUNTIME_TARGET_CAMERA);
+    else if (channel == APP_CHANNEL_STARTUP)
+        allowed = AppV3_FindService(message->source) != NULL && App_MessagesIsOwner(message->source);
     else
         allowed = App_MessagesIsOwner(message->source);
     if (!allowed)
@@ -69,7 +72,8 @@ SysResult_t App_MessagesSend(AppChannel_t channel, const AppMessage_t *message)
     //成功入队就是消息已提交，通知位只负责唤醒，不作为交付凭据
     if (AppV3Queue_Put(s_message_handles[channel], message, 0U) != SYS_OK)
         return SYS_ERR_NO_RESOURCE;
-    (void)RuntimeEvent_Post(s_message_receivers[channel], RUNTIME_EVENT_WAKE);
+    if (channel != APP_CHANNEL_STARTUP)
+        (void)RuntimeEvent_Post(s_message_receivers[channel], RUNTIME_EVENT_WAKE);
     return SYS_OK;
 }
 
@@ -92,7 +96,18 @@ bool App_MessagesReceive(AppChannel_t channel, AppMessage_t *message)
         (void)RuntimeEvent_Post(RUNTIME_TARGET_CAMERA, RUNTIME_EVENT_WAKE);
         (void)RuntimeEvent_Post(RUNTIME_TARGET_USB, RUNTIME_EVENT_WAKE);
     }
-    else
+    else if (channel != APP_CHANNEL_STARTUP)
         (void)RuntimeEvent_Post(RUNTIME_TARGET_CONTROL, RUNTIME_EVENT_WAKE);
     return true;
+}
+
+//启动队列仅交给 Control 的 Event Loop，报告由各 Service 经验证后提交。
+SysResult_t AppV3_GetStartupQueue(AppV3Queue_t *queue)
+{
+    if (queue == NULL)
+        return SYS_ERR_INVALID_ARG;
+    if (!App_MessagesIsOwner(RUNTIME_TARGET_CONTROL) || s_message_handles[APP_CHANNEL_STARTUP].generation == 0U)
+        return SYS_ERR_INVALID_STATE;
+    *queue = s_message_handles[APP_CHANNEL_STARTUP];
+    return SYS_OK;
 }
