@@ -1,0 +1,116 @@
+{
+  "baseline": "5e640632e3d6f7d0a0a6c7e8dfe58b6fc798a1e3",
+  "full_build": "0 Error(s), 0 Warning(s)",
+  "bundle": "D:\\32\\STM32H7\\h7_mac_lifecycle\\output\\TinyUSBReplacement\\R2ResetClosure-review-28b17dae3c26",
+  "axf_sha256": "28b17dae3c265752db075c2c93b6648d33414c14e6694685cd1d5c6433132c9b",
+  "sizes": {
+    "code": 51338,
+    "ro": 1086,
+    "rw": 324,
+    "zi": 25836
+  },
+  "unique_irq": {
+    "index": 117,
+    "entry": "0x8002d89"
+  },
+  "final_functions": {
+    "tud_deinit": "0x800a029",
+    "dcd_deinit": "0x8003e6d",
+    "dcd_task": "0x80056e5",
+    "dcd_deinit_ready": "0x8003ee9",
+    "dcd_edpt_close_all_safe": "0x80046f9",
+    "tud_disconnect": "0x800a1c1",
+    "tud_connect": "0x8009f29",
+    "__scatterload": "0x80002a1",
+    "reset_begin": "0x8009021",
+    "reset_poll": "0x800959d",
+    "handle_bus_reset": "0x80064c9",
+    "dcd_reset_pending": "0x8005631",
+    "dcd_reset_generation": "0x8005625"
+  },
+  "old_test_sources_unchanged": [
+    "Tests/TinyUSBReplacement/build_r2.py",
+    "Tests/TinyUSBReplacement/check_r2_default.py",
+    "Tests/TinyUSBReplacement/collect_r2_closure_evidence.py",
+    "Tests/TinyUSBReplacement/compile_probe.py",
+    "Tests/TinyUSBReplacement/dwc2_test.c",
+    "Tests/TinyUSBReplacement/r1_dcd.c",
+    "Tests/TinyUSBReplacement/r1_msc.c",
+    "Tests/TinyUSBReplacement/r1_test.c",
+    "Tests/TinyUSBReplacement/r1b_core.c",
+    "Tests/TinyUSBReplacement/r1b_dcd.c",
+    "Tests/TinyUSBReplacement/r1b_wait_test.c",
+    "Tests/TinyUSBReplacement/run_dwc2_tests.py",
+    "Tests/TinyUSBReplacement/run_r1_tests.py",
+    "Tests/TinyUSBReplacement/run_r1b_tests.py",
+    "Tests/TinyUSBReplacement/run_r1b_wait_tests.py",
+    "Tests/TinyUSBReplacement/run_r2_closure_tests.py",
+    "Tests/TinyUSBReplacement/run_stack_tests.py",
+    "Tests/TinyUSBReplacement/run_video_tests.py",
+    "Tests/TinyUSBReplacement/stack_test.c",
+    "Tests/TinyUSBReplacement/video_boundary.c",
+    "Tests/TinyUSBReplacement/video_test.c"
+  ],
+  "old_19_assertion_body_unchanged": true,
+  "production": {
+    "CM7/TinyUSB/tinyusb_experiment.c": "28252e725bcc00a3100e88f10a8915e613056022be1fcd7f3266dca96e3b2cf9",
+    "MDK-ARM/h7_mac_TinyUSB_RAM.uvprojx": "6a2b0de699b3ac9492ec5cd5072fefc30e59687ac9b5cbc0ce8ca7ffbf4ac42b",
+    "ThirdParty/tinyusb/UPSTREAM.json": "81e7c3ba4419240d2d4afd2a592cefa3bbc41b916adb0303c80dff5260790962",
+    "ThirdParty/tinyusb/src/device/dcd.h": "112a53ad56e8867f914815458d0e95c78a7d6f5b429b7902fe6a6516ab577e0e",
+    "ThirdParty/tinyusb/src/device/usbd.c": "290af1aefaf24c05f48f5954a2156f3dbeb98023d72a9e9003ba3f0b900ac985",
+    "ThirdParty/tinyusb/src/device/usbd.h": "31980667286255fb0346c0b11d41f87ffeb4b3da2429d5cf94ba4ed9f6d5ae82",
+    "ThirdParty/tinyusb/src/portable/synopsys/dwc2/dcd_dwc2.c": "c580a6ff6aadb657779f8d32969de9c0aa40111ffd592350bc3ad4e32ac9d7c9",
+    "ThirdParty/tinyusb/src/portable/synopsys/dwc2/dwc2_common.c": "655929ad5fe7dfbca0f3fb4cfed0f4ddf0ef5295c86ed6f7de23b3e65702658a"
+  },
+  "summaries": {
+    "r2-reset": {
+      "cases": 31,
+      "passed": 31,
+      "assertions": 574
+    },
+    "r2-closure": {
+      "cases": 25,
+      "passed": 24,
+      "assertions": 185
+    },
+    "r2-firmware-tests": {
+      "cases": 19,
+      "passed": 17,
+      "assertions": 114
+    },
+    "r1b": {
+      "cases": 33,
+      "passed": 33,
+      "assertions": 313
+    },
+    "stack": {
+      "cases": 12,
+      "passed": 12,
+      "assertions": 1679
+    },
+    "r1": {
+      "cases": 2,
+      "passed": 0,
+      "assertions": 3
+    }
+  },
+  "historical_contract_change": {
+    "tests": [
+      "R2 active Bulk Bus Reset boundary",
+      "Closure active Bulk Bus Reset remains hardware BLOCKED"
+    ],
+    "old": "immediate fault",
+    "new": "pending reset-specific retirement, no release before proof",
+    "classification": "CONTRACT_CHANGED by ResetClosure task; original assertions retained; prior Disconnect FAIL retained"
+  },
+  "active_reset": "VERIFIED: full AXF model normal reset succeeds, missing proof fails; silicon NOT_TESTED",
+  "hardware": "NOT_TESTED",
+  "pdf_sha256": "61d07b67deb291aed8a5cf8019c94add0a1065318542e57b3287d2694b14bd60",
+  "artifact_manifest": {
+    "build.log": "b8ec9f6250ca5776b94f81dd8ba71266ff09c79c838129fbac061b1ffacd8375",
+    "h7_mac_CM7_TinyUSB_RAM.axf": "28b17dae3c265752db075c2c93b6648d33414c14e6694685cd1d5c6433132c9b",
+    "h7_mac_CM7_TinyUSB_RAM.hex": "f584cff0ae747ccf479bfbe749bfc475fc20473b42fceeccccc9c613f36f537f",
+    "h7_mac_CM7_TinyUSB_RAM.map": "1a22552cf4d0eb690c43dc5341ceb68c9eab8e3cfe93933b0eaf337871e32b4b"
+  },
+  "wait_boundary_cases": 9
+}

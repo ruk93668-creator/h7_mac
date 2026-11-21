@@ -27,6 +27,7 @@ class Model(VM):
 
   self.cpu.mem_map(0x58000000,0x100000)
   self.cpu.hook_add(UC_HOOK_MEM_READ,self.clock,begin=0xe0001004,end=0xe0001007)
+  self.wr(BASE+0x808,3<<1) # FS48 PHY negotiated speed (DSTS hardware input)
   self.wr(BASE+0x48,8<<10);self.wr(BASE+0x40,0x4f54310a);self.wr(0xe000ed88,0xf00000)
   self.wr(symbols['SystemCoreClock'],480000000);self.wr(0xe0001000,1);self.wr(0xe000edfc,1<<24)
   # State normally set by xPortStartScheduler. It is input to this software model.

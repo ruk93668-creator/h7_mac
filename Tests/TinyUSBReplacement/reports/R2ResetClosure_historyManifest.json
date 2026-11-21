@@ -1,0 +1,967 @@
+[
+  {
+    "path": "Tests/TinyUSBReplacement/reports/compile-history-099fdaf6b2c8.json",
+    "bytes": 63259,
+    "sha256": "099fdaf6b2c891a7005228940a607f5176e9680ee4451eaba313989ec4c5b668"
+  },
+  {
+    "path": "Tests/TinyUSBReplacement/reports/compile-history-201e9c2ed34f.json",
+    "bytes": 47732,
+    "sha256": "201e9c2ed34fe6b1935104b0208f0564be8ac7a0671487cc12eea64f29d73e5a"
+  },
+  {
+    "path": "Tests/TinyUSBReplacement/reports/compile-history-257a7e445654.json",
+    "bytes": 63259,
+    "sha256": "257a7e445654768d009ac094c4f916d6b69f4fb4515c9e97069c8d73be27cc14"
+  },
+  {
+    "path": "Tests/TinyUSBReplacement/reports/compile-history-2ed34f7a22c5.json",
+    "bytes": 64293,
+    "sha256": "2ed34f7a22c5c0cca6d3b1e979b0dbb137b64528186cc42ebb851c8fbe77e452"
+  },
+  {
+    "path": "Tests/TinyUSBReplacement/reports/compile-history-6bc1342f67f6.json",
+    "bytes": 47732,
+    "sha256": "6bc1342f67f64f32c77c93cdee8d34441bfe1789c8486d3099c74d8f76f246d9"
+  },
+  {
+    "path": "Tests/TinyUSBReplacement/reports/compile-history-8488bd3f7af6.json",
+    "bytes": 63869,
+    "sha256": "8488bd3f7af615f84d27957b6e99d9a00c125ee0415b36aa22c3672f7ca39981"
+  },
+  {
+    "path": "Tests/TinyUSBReplacement/reports/compile-history-8cd6c0fd1e59.json",
+    "bytes": 63171,
+    "sha256": "8cd6c0fd1e59c0db5785b45771bb10e1322782dfcd483ae6acc504fea1bda357"
+  },
+  {
+    "path": "Tests/TinyUSBReplacement/reports/compile-history-951f211a07ca.json",
+    "bytes": 63259,
+    "sha256": "951f211a07cae6dd9147418f6381644e3238671181b21204cc5ef6051eaee58b"
+  },
+  {
+    "path": "Tests/TinyUSBReplacement/reports/compile-history-9c6ce5c5101a.json",
+    "bytes": 63869,
+    "sha256": "9c6ce5c5101a078dd168dfb7a60f817ee9959c2262a93b013daa3f472bbd10bb"
+  },
+  {
+    "path": "Tests/TinyUSBReplacement/reports/compile-history-aae6c61380be.json",
+    "bytes": 47732,
+    "sha256": "aae6c61380bec05782f02d85da419e5f8363a5c49caf322a79736d7927a9796e"
+  },
+  {
+    "path": "Tests/TinyUSBReplacement/reports/compile-history-ac42ecc1b4e7.json",
+    "bytes": 63259,
+    "sha256": "ac42ecc1b4e71d8d4b7dca1091013a5271bafe15918410e03ac2fffaadb23c49"
+  },
+  {
+    "path": "Tests/TinyUSBReplacement/reports/compile-history-b8fc303d6000.json",
+    "bytes": 63259,
+    "sha256": "b8fc303d60007a667014466c09c0ee8fb53cd1ac6d8613f2e38d6021119894d6"
+  },
+  {
+    "path": "Tests/TinyUSBReplacement/reports/compile-history-c02e78885204.json",
+    "bytes": 63259,
+    "sha256": "c02e788852045e5b21ce2bf80282fddc77754dcf523b0211fe2f7f80a6099986"
+  },
+  {
+    "path": "Tests/TinyUSBReplacement/reports/compile-history-cacb7ccf615c.json",
+    "bytes": 47732,
+    "sha256": "cacb7ccf615cae155e49eae458a0fbf2e82355070301acb8d8c61ea148ffae29"
+  },
+  {
+    "path": "Tests/TinyUSBReplacement/reports/compile-history-d71cc5662e34.json",
+    "bytes": 63259,
+    "sha256": "d71cc5662e3499cd7eafea87bbc2bb5be2fdac9cf85da6e382b19adef400c737"
+  },
+  {
+    "path": "Tests/TinyUSBReplacement/reports/compile-history-efbc52505836.json",
+    "bytes": 63259,
+    "sha256": "efbc525058362f30047ad58e183bcfdbe09e4fa43fe2d03d3621015906c02ebd"
+  },
+  {
+    "path": "Tests/TinyUSBReplacement/reports/compile-history-f44e56707f69.json",
+    "bytes": 63259,
+    "sha256": "f44e56707f696b471a0588b9f15ce4d643c74ac087031c8dee17c8d74b6c2d74"
+  },
+  {
+    "path": "Tests/TinyUSBReplacement/reports/compile-history-f7905b2fbfa1.json",
+    "bytes": 47732,
+    "sha256": "f7905b2fbfa1bc0287f5f9ce60a9590e62ceacc20026e87f87c9ffc5092c010c"
+  },
+  {
+    "path": "Tests/TinyUSBReplacement/reports/compile-history-fd09397de5c4.json",
+    "bytes": 63259,
+    "sha256": "fd09397de5c42c91b29d344a0073be3888280422e5e6f29899cae94721adf49f"
+  },
+  {
+    "path": "Tests/TinyUSBReplacement/reports/dwc2-history-8073b1827646.json",
+    "bytes": 13560,
+    "sha256": "8073b1827646977c836a1576b760c909a02b368f5067d0a16e8376f0f60b761d"
+  },
+  {
+    "path": "Tests/TinyUSBReplacement/reports/r1-history-34399137c869.json",
+    "bytes": 26269,
+    "sha256": "34399137c869beb566cd459525eacd5ae1930a0eb2b41376515b30950a3d6165"
+  },
+  {
+    "path": "Tests/TinyUSBReplacement/reports/r1-history-c878c6e69cce.json",
+    "bytes": 26269,
+    "sha256": "c878c6e69cce1972bcd9b3bb2a62ac39bf3dfe6c853df39338ca03083e8365e9"
+  },
+  {
+    "path": "Tests/TinyUSBReplacement/reports/r1-history-c8a89f312d25.json",
+    "bytes": 26620,
+    "sha256": "c8a89f312d2538f9deb2601571cca181a31be643d92e7c928941a3a7ba42ed4a"
+  },
+  {
+    "path": "Tests/TinyUSBReplacement/reports/r1-history-cc3e3abe850e.json",
+    "bytes": 27329,
+    "sha256": "cc3e3abe850e5a7b813162aaa613ecfdc7ecc583cea530600699cfa83d9f9839"
+  },
+  {
+    "path": "Tests/TinyUSBReplacement/reports/r1-history-cff19a42ba9e.json",
+    "bytes": 26269,
+    "sha256": "cff19a42ba9e1c46f17af8f12e564ab23b3faaf844712a41a07cac2f8192d372"
+  },
+  {
+    "path": "Tests/TinyUSBReplacement/reports/r1-history-ee00c82c8b2e.json",
+    "bytes": 26269,
+    "sha256": "ee00c82c8b2ed0f84b34aee0cf3a98f7025f5abaac856aa7c9e3b745b35c8760"
+  },
+  {
+    "path": "Tests/TinyUSBReplacement/reports/r1-history-f116878cf57f.json",
+    "bytes": 26289,
+    "sha256": "f116878cf57f06c78e9e481a2747e6cd47c08f43a8ac48f021d35b3d62b0b909"
+  },
+  {
+    "path": "Tests/TinyUSBReplacement/reports/r1b-history-05a792587a66.json",
+    "bytes": 746875,
+    "sha256": "05a792587a66f05e6b0888b4852e9aa8195a647bcf52c8ac43fb964129333d9b"
+  },
+  {
+    "path": "Tests/TinyUSBReplacement/reports/r1b-history-104b1549fb82.json",
+    "bytes": 625706,
+    "sha256": "104b1549fb827eddd06541146db1a60445068961cf9e9a21ce09536a879e8ec5"
+  },
+  {
+    "path": "Tests/TinyUSBReplacement/reports/r1b-history-106c6a4a3044.json",
+    "bytes": 746671,
+    "sha256": "106c6a4a30443190555153f4e990d97c79ac41a44bb119c7fdd2cfa7276717fd"
+  },
+  {
+    "path": "Tests/TinyUSBReplacement/reports/r1b-history-10de83e35cca.json",
+    "bytes": 626750,
+    "sha256": "10de83e35cca61b1cf311c553c76d68f49f00a0b4559c959d203aea56de647dc"
+  },
+  {
+    "path": "Tests/TinyUSBReplacement/reports/r1b-history-2622fbcbc997.json",
+    "bytes": 626750,
+    "sha256": "2622fbcbc997ec7c7cf6b4a196265dcd277a729884c600e507e9ae0d08621c40"
+  },
+  {
+    "path": "Tests/TinyUSBReplacement/reports/r1b-history-2b31731cec8e.json",
+    "bytes": 664095,
+    "sha256": "2b31731cec8e5eab9a64632296bc6879b3ba9ce7b0cc7c01b39ceaea4884561d"
+  },
+  {
+    "path": "Tests/TinyUSBReplacement/reports/r1b-history-45363efe9c0d.json",
+    "bytes": 629368,
+    "sha256": "45363efe9c0d96adb7cbb3a541c1caa7a22aaa21810c6a02014966595018c170"
+  },
+  {
+    "path": "Tests/TinyUSBReplacement/reports/r1b-history-5780496ae4aa.json",
+    "bytes": 429064,
+    "sha256": "5780496ae4aa53d2a6e0109b11c777068c8e652fac6c276c9fefa7cf9145b583"
+  },
+  {
+    "path": "Tests/TinyUSBReplacement/reports/r1b-history-5bba17d6ca80.json",
+    "bytes": 631648,
+    "sha256": "5bba17d6ca80254ac05a91e3cd73e5feca0749b900d459393e238fa8b9fbbc66"
+  },
+  {
+    "path": "Tests/TinyUSBReplacement/reports/r1b-history-5f69444ee69b.json",
+    "bytes": 645738,
+    "sha256": "5f69444ee69b6f2179de6631ecfad3106a5db5443e827fb67ea42dabb5d02579"
+  },
+  {
+    "path": "Tests/TinyUSBReplacement/reports/r1b-history-651058cf1994.json",
+    "bytes": 708105,
+    "sha256": "651058cf199432c6bfdc031b407f15eac735bd75da7d0634419dc3d591ca5b81"
+  },
+  {
+    "path": "Tests/TinyUSBReplacement/reports/r1b-history-6cbaaf97cbf7.json",
+    "bytes": 304629,
+    "sha256": "6cbaaf97cbf76fc908177418f82f148abb50c4c3168e9db2098f3cf6c6d08b83"
+  },
+  {
+    "path": "Tests/TinyUSBReplacement/reports/r1b-history-6f9b14c10b40.json",
+    "bytes": 746671,
+    "sha256": "6f9b14c10b40b788bc9ff6c93ce09e835bb2e0d35bfb93d4992d6eb51766b873"
+  },
+  {
+    "path": "Tests/TinyUSBReplacement/reports/r1b-history-72c5b494fed0.json",
+    "bytes": 667981,
+    "sha256": "72c5b494fed021b47cc98ae8860201a76081fe0503e6d5f4b120248237fcba19"
+  },
+  {
+    "path": "Tests/TinyUSBReplacement/reports/r1b-history-748146f1e7e7.json",
+    "bytes": 665535,
+    "sha256": "748146f1e7e7104e59a65e7c563013d353703afdaf6fcafe127c794522c870fa"
+  },
+  {
+    "path": "Tests/TinyUSBReplacement/reports/r1b-history-74f4f4375c1e.json",
+    "bytes": 646768,
+    "sha256": "74f4f4375c1e58034a9f3f4ab5aee3313ab3681e7909a0d81fcfae0bd788ea2b"
+  },
+  {
+    "path": "Tests/TinyUSBReplacement/reports/r1b-history-765a3a9ffca0.json",
+    "bytes": 746875,
+    "sha256": "765a3a9ffca0f83c98f24d75ae40a09e3f5e421947da057a0a86678b8ae9981a"
+  },
+  {
+    "path": "Tests/TinyUSBReplacement/reports/r1b-history-782117a2977c.json",
+    "bytes": 235075,
+    "sha256": "782117a2977c742c74d9267b65a21a7f40cc1669dd26597d900d825841374389"
+  },
+  {
+    "path": "Tests/TinyUSBReplacement/reports/r1b-history-793d57f7c3cd.json",
+    "bytes": 707714,
+    "sha256": "793d57f7c3cddd6dce0fc8e663af80d4b01a3d47a658312abfdfb72d3638385c"
+  },
+  {
+    "path": "Tests/TinyUSBReplacement/reports/r1b-history-8810496681b9.json",
+    "bytes": 746671,
+    "sha256": "8810496681b970c78adecf9c75c8a4c3f00ccafde9a19486ddbf4e382636616f"
+  },
+  {
+    "path": "Tests/TinyUSBReplacement/reports/r1b-history-8a40009a8662.json",
+    "bytes": 212988,
+    "sha256": "8a40009a86626f2da5d20d39aedac377ac53502004ff6644792558970e5fb520"
+  },
+  {
+    "path": "Tests/TinyUSBReplacement/reports/r1b-history-9fae07e79199.json",
+    "bytes": 1029936,
+    "sha256": "9fae07e79199d3376d904fba97e8c04581ea68fd6e72afa975cd1ea6f4d05d77"
+  },
+  {
+    "path": "Tests/TinyUSBReplacement/reports/r1b-history-a3dd3b6402fa.json",
+    "bytes": 746671,
+    "sha256": "a3dd3b6402fa7094c1b2e14c1d1f241bfa809d3ae3925164f3e323cc462ac39b"
+  },
+  {
+    "path": "Tests/TinyUSBReplacement/reports/r1b-history-ac5a10b59c91.json",
+    "bytes": 746671,
+    "sha256": "ac5a10b59c91c0dfc59f338b51aa86b0e5eed919c279fc3af119bc75fa8f906e"
+  },
+  {
+    "path": "Tests/TinyUSBReplacement/reports/r1b-history-b3429e235487.json",
+    "bytes": 646768,
+    "sha256": "b3429e235487e5228dff322f7a5de099381d4c2796e45abf6d651ad9e6f104cf"
+  },
+  {
+    "path": "Tests/TinyUSBReplacement/reports/r1b-history-b4cbb27130a5.json",
+    "bytes": 632276,
+    "sha256": "b4cbb27130a511e7861fc3af07941872d0d6b9c97feb155904f620c702a509c8"
+  },
+  {
+    "path": "Tests/TinyUSBReplacement/reports/r1b-history-d8924fc0c2bc.json",
+    "bytes": 665535,
+    "sha256": "d8924fc0c2bc760c283718e842c69d3466124736eec91fd3436a11ed1d1e943e"
+  },
+  {
+    "path": "Tests/TinyUSBReplacement/reports/r1b-history-dd6bfde3a5b3.json",
+    "bytes": 707714,
+    "sha256": "dd6bfde3a5b3426ffea2e35b6372b0ec991bde5dabe8ee8284a9a9179c227c2f"
+  },
+  {
+    "path": "Tests/TinyUSBReplacement/reports/r1b-history-e1b89470293a.json",
+    "bytes": 707714,
+    "sha256": "e1b89470293ae5ec9456e94357edbf2ed77055a3b43f232258d3d22ff5120a40"
+  },
+  {
+    "path": "Tests/TinyUSBReplacement/reports/r1b-history-e5a9dc084cef.json",
+    "bytes": 245596,
+    "sha256": "e5a9dc084cef90b9798eb600d23d9d99084b06c004aa67fefeb814adf162ecfa"
+  },
+  {
+    "path": "Tests/TinyUSBReplacement/reports/r1b-history-e959ba88b713.json",
+    "bytes": 429064,
+    "sha256": "e959ba88b7136f16b348f362907374caa822a582d21562960bd2bc1e9df8abd8"
+  },
+  {
+    "path": "Tests/TinyUSBReplacement/reports/r1b-history-ebc80301cc36.json",
+    "bytes": 245596,
+    "sha256": "ebc80301cc369f57107e58fb7c0376c3178bb161aa76a8871ca2dd732f860dd8"
+  },
+  {
+    "path": "Tests/TinyUSBReplacement/reports/r1b-history-f86e510c8f49.json",
+    "bytes": 746875,
+    "sha256": "f86e510c8f49e20b536814cf36cc5ed21c4757d06129e0051d970bd3a7e1a48a"
+  },
+  {
+    "path": "Tests/TinyUSBReplacement/reports/r1b-waits-history-0002a739e96e.json",
+    "bytes": 13154,
+    "sha256": "0002a739e96e5b4757be6e56d54849ad48f75fd9dd4fd5ebb7d0c2fd7f1a0d36"
+  },
+  {
+    "path": "Tests/TinyUSBReplacement/reports/r1b-waits-history-0890a9a6e3df.json",
+    "bytes": 14149,
+    "sha256": "0890a9a6e3dfa9508af3b99c68fd45cffadd421a4c126a723630faf92637cb64"
+  },
+  {
+    "path": "Tests/TinyUSBReplacement/reports/r1b-waits-history-1d21f9d4fcb0.json",
+    "bytes": 13604,
+    "sha256": "1d21f9d4fcb069d229173630c10a81f6e8151f6279bf4198c00108322c873c12"
+  },
+  {
+    "path": "Tests/TinyUSBReplacement/reports/r1b-waits-history-26ae97ccb9e1.json",
+    "bytes": 14149,
+    "sha256": "26ae97ccb9e173f7b68ca3becb707afcb0d810cb704ca8091edab227d982348b"
+  },
+  {
+    "path": "Tests/TinyUSBReplacement/reports/r1b-waits-history-2c01e8399c85.json",
+    "bytes": 13213,
+    "sha256": "2c01e8399c857ebecafde240f9b159e177870cf393f46951357b6843f1ea7365"
+  },
+  {
+    "path": "Tests/TinyUSBReplacement/reports/r1b-waits-history-2f4037bdec0f.json",
+    "bytes": 13154,
+    "sha256": "2f4037bdec0fe2bdd08cd3bda27a067f76d3be4e62f6a641471e0acea04b1306"
+  },
+  {
+    "path": "Tests/TinyUSBReplacement/reports/r1b-waits-history-402df4b34cf2.json",
+    "bytes": 14149,
+    "sha256": "402df4b34cf2d67ac3461ed9f7955e0f80b476c1296014c21b9e2e1ca453e15c"
+  },
+  {
+    "path": "Tests/TinyUSBReplacement/reports/r1b-waits-history-58b80ffdd63f.json",
+    "bytes": 13604,
+    "sha256": "58b80ffdd63f232127e75e018b7b3f70cbd4c848b5e9ffe9bcdd35bdd2a1f523"
+  },
+  {
+    "path": "Tests/TinyUSBReplacement/reports/r1b-waits-history-7e85c50517d2.json",
+    "bytes": 13578,
+    "sha256": "7e85c50517d21d34db90d73fd79784e67287f45354651336983279df7cb787d4"
+  },
+  {
+    "path": "Tests/TinyUSBReplacement/reports/r1b-waits-history-9450a17fb786.json",
+    "bytes": 14149,
+    "sha256": "9450a17fb786172a138281bdd54f3115f703eda343f60e453247765f7402f981"
+  },
+  {
+    "path": "Tests/TinyUSBReplacement/reports/r1b-waits-history-b2979f5cfb85.json",
+    "bytes": 13578,
+    "sha256": "b2979f5cfb854d4be975ca1d4e250593bef7b7803850e78efb2bb221402a564c"
+  },
+  {
+    "path": "Tests/TinyUSBReplacement/reports/r1b-waits-history-bb562529f6c3.json",
+    "bytes": 13154,
+    "sha256": "bb562529f6c39fb2948f194878ef847a724f7c472d320cc7b419971a1663483a"
+  },
+  {
+    "path": "Tests/TinyUSBReplacement/reports/r1b-waits-history-cf7ca868ebde.json",
+    "bytes": 13213,
+    "sha256": "cf7ca868ebdef3a4393696f81c12369c2cbdee1be41d7bcd1c33ef96b0ddb0dc"
+  },
+  {
+    "path": "Tests/TinyUSBReplacement/reports/r1b-waits-history-e2fb4fb146eb.json",
+    "bytes": 13213,
+    "sha256": "e2fb4fb146eba03094d9de13d7cc59445414a242342beb246e3619955dd36443"
+  },
+  {
+    "path": "Tests/TinyUSBReplacement/reports/r1b-waits-history-e51a2ef1b03f.json",
+    "bytes": 13606,
+    "sha256": "e51a2ef1b03f475fb0d69c6a066c61ffccc639480bd573b0f4b3c218e6a13646"
+  },
+  {
+    "path": "Tests/TinyUSBReplacement/reports/r1b-waits-history-e89fa87b0421.json",
+    "bytes": 13578,
+    "sha256": "e89fa87b042184027cf4dd8b7113eca5deb00e0d91563104172075e91a5ec722"
+  },
+  {
+    "path": "Tests/TinyUSBReplacement/reports/r1b-waits-history-eff5ba589d37.json",
+    "bytes": 14149,
+    "sha256": "eff5ba589d37bf64b5299772850671a5cf1736c14140d24d66427b544a6147e4"
+  },
+  {
+    "path": "Tests/TinyUSBReplacement/reports/r1b-waits-history-f3428698f694.json",
+    "bytes": 14149,
+    "sha256": "f3428698f69468d6a5c2014c197c7ad8fc5e9ca758c57f789514bd287936fee8"
+  },
+  {
+    "path": "Tests/TinyUSBReplacement/reports/r1b-waits-history-f3d3456d83a0.json",
+    "bytes": 14149,
+    "sha256": "f3d3456d83a0a3a98aab937d3ad7334e037369334c2cf5166c2cd5d71535efde"
+  },
+  {
+    "path": "Tests/TinyUSBReplacement/reports/r1b-waits-history-f5d2ad2b1c9d.json",
+    "bytes": 13604,
+    "sha256": "f5d2ad2b1c9df1dd02499547c98a34a562b4dbb54651f9b5eff6b556a83da4ae"
+  },
+  {
+    "path": "Tests/TinyUSBReplacement/reports/r1b-waits-history-fca0d95e21b1.json",
+    "bytes": 13604,
+    "sha256": "fca0d95e21b1f9370a9e4123117416a167f5b7bd7c56f15c19ad4be875dbcea8"
+  },
+  {
+    "path": "Tests/TinyUSBReplacement/reports/r2-build-history-07d4d94e30a5.json",
+    "bytes": 3152,
+    "sha256": "07d4d94e30a536053ee33cf7f9ba6eeef76d5182073866dbd5cce14c35786a45"
+  },
+  {
+    "path": "Tests/TinyUSBReplacement/reports/r2-build-history-18e74bb84f67.json",
+    "bytes": 9442,
+    "sha256": "18e74bb84f676d1d2e4015447d833473e7086e9e0f1ee6b7a76ac7e18eb4c45c"
+  },
+  {
+    "path": "Tests/TinyUSBReplacement/reports/r2-build-history-19d346589eac.json",
+    "bytes": 9442,
+    "sha256": "19d346589eac1156d9deddf1490c21b53461ec59f1af7411a39e760a4274efb1"
+  },
+  {
+    "path": "Tests/TinyUSBReplacement/reports/r2-build-history-28a17f748c3a.json",
+    "bytes": 9442,
+    "sha256": "28a17f748c3af03dfed471417bd447252186ad9d3414408e5d29417d8f8bb9c3"
+  },
+  {
+    "path": "Tests/TinyUSBReplacement/reports/r2-build-history-2fd3b3fbc082.json",
+    "bytes": 9130,
+    "sha256": "2fd3b3fbc082f7537742c165febd69e689fd1fde57dd289315734d01fdbfb5fe"
+  },
+  {
+    "path": "Tests/TinyUSBReplacement/reports/r2-build-history-348abeb6301a.json",
+    "bytes": 9442,
+    "sha256": "348abeb6301aae9c969709dea55c5be9bd63affa140df6f3fcd006c2609d8be0"
+  },
+  {
+    "path": "Tests/TinyUSBReplacement/reports/r2-build-history-360907017d2e.json",
+    "bytes": 9442,
+    "sha256": "360907017d2e1caaf9cc84066e32bba9778decb1337dde47297489bec9647d23"
+  },
+  {
+    "path": "Tests/TinyUSBReplacement/reports/r2-build-history-3d9e207cd470.json",
+    "bytes": 3464,
+    "sha256": "3d9e207cd4708153378a8d9f52552fc7cfec618fbe0557a048b14b91a83fd733"
+  },
+  {
+    "path": "Tests/TinyUSBReplacement/reports/r2-build-history-55f74bd4dbb0.json",
+    "bytes": 9442,
+    "sha256": "55f74bd4dbb0b5ac59f92306e6100b37b7f959b9224e10cda95f58910e2b3855"
+  },
+  {
+    "path": "Tests/TinyUSBReplacement/reports/r2-build-history-6086779cdeb3.json",
+    "bytes": 9442,
+    "sha256": "6086779cdeb3c81691284d1e81a3a16038b324aac1f9546383e4fc5925b49a7b"
+  },
+  {
+    "path": "Tests/TinyUSBReplacement/reports/r2-build-history-790da201daad.json",
+    "bytes": 3464,
+    "sha256": "790da201daadee3b3e980795c4fadb2a9f6db38b5c3957f3b1a4f5af094988c9"
+  },
+  {
+    "path": "Tests/TinyUSBReplacement/reports/r2-build-history-86e1ed35da37.json",
+    "bytes": 9442,
+    "sha256": "86e1ed35da3773a8c7680bd2a408eb01080b149ed11449142fa8493040c1decc"
+  },
+  {
+    "path": "Tests/TinyUSBReplacement/reports/r2-build-history-8baf413c8d5f.json",
+    "bytes": 9442,
+    "sha256": "8baf413c8d5f37d418720df22a84ca40214c9e883ac0415ab342cc6973fa3812"
+  },
+  {
+    "path": "Tests/TinyUSBReplacement/reports/r2-build-history-8f002330982a.json",
+    "bytes": 9442,
+    "sha256": "8f002330982aa4efd5408993d8de30a97adc8bd375e51c774293d7160f3912b1"
+  },
+  {
+    "path": "Tests/TinyUSBReplacement/reports/r2-build-history-909c95414e31.json",
+    "bytes": 3464,
+    "sha256": "909c95414e31845ddf8c762063bd81c7460314ce81d89d9c2e6265d9ca7f1c17"
+  },
+  {
+    "path": "Tests/TinyUSBReplacement/reports/r2-build-history-b384ca064c8c.json",
+    "bytes": 9442,
+    "sha256": "b384ca064c8c7118509529be354a0a4eb500b1c57a562a7416a08c0b4ba72cc4"
+  },
+  {
+    "path": "Tests/TinyUSBReplacement/reports/r2-build-history-b4328c52f593.json",
+    "bytes": 9442,
+    "sha256": "b4328c52f593b1886c47afeec28773219a2b78fbff61e6e8e3e5b2178a576e5e"
+  },
+  {
+    "path": "Tests/TinyUSBReplacement/reports/r2-build-history-c5b5d76666df.json",
+    "bytes": 9442,
+    "sha256": "c5b5d76666df967b7dae94845852a691cf265180508ccaab4dd1eabd66056b26"
+  },
+  {
+    "path": "Tests/TinyUSBReplacement/reports/r2-build-history-c8a35820572a.json",
+    "bytes": 9442,
+    "sha256": "c8a35820572a6f85c80f84a71e5f6788b24dd2fe11003954f10976d3fde1c0af"
+  },
+  {
+    "path": "Tests/TinyUSBReplacement/reports/r2-build-history-d8e290234e5f.json",
+    "bytes": 9442,
+    "sha256": "d8e290234e5fe6132d5a34f6fed057a6a310f70b87636e48be0ebedcacad0510"
+  },
+  {
+    "path": "Tests/TinyUSBReplacement/reports/r2-build-history-d97e7149eba1.json",
+    "bytes": 9442,
+    "sha256": "d97e7149eba1f1e2ad2b3dbe1e566a905d2c12b071be60508f5db090ea7d8557"
+  },
+  {
+    "path": "Tests/TinyUSBReplacement/reports/r2-build-r2-firmware-1795250216958420000.log",
+    "bytes": 1779,
+    "sha256": "eca081adff1b2e895b1823b464db4be184ce6592c2d00cfa243731f9abab219d"
+  },
+  {
+    "path": "Tests/TinyUSBReplacement/reports/r2-build-r2-firmware-1795250289930797200.log",
+    "bytes": 1779,
+    "sha256": "e9e64c54097ef289e39012b7a62254e0af8d59de715591d30b89a2b1564aaa06"
+  },
+  {
+    "path": "Tests/TinyUSBReplacement/reports/r2-build-r2-firmware-1795250620068566200.log",
+    "bytes": 1779,
+    "sha256": "ebd1b74710287af28e05abb6d0ad514bf70a84e19fabe78eaa41083680aa7737"
+  },
+  {
+    "path": "Tests/TinyUSBReplacement/reports/r2-build-r2-firmware-1795251785791259800.log",
+    "bytes": 1779,
+    "sha256": "2ee89e7b0405dd7ec76c8947add7058162ba2c96abd65cff82e59c8ede6d7c43"
+  },
+  {
+    "path": "Tests/TinyUSBReplacement/reports/r2-build-r2-firmware-1795252217178827600.log",
+    "bytes": 1779,
+    "sha256": "b6b86cc5fe339bab57a0b3770d0aa3e02b6455a7b8e606a2de95fb86ab5c91b0"
+  },
+  {
+    "path": "Tests/TinyUSBReplacement/reports/r2-build-r2-firmware-1795252347280560200.log",
+    "bytes": 1779,
+    "sha256": "6356327ba72f301cebc95cfa4dbe7e70317f20a87ad169c1f0114b5a7251d951"
+  },
+  {
+    "path": "Tests/TinyUSBReplacement/reports/r2-build-r2-firmware-1795252569247013700.log",
+    "bytes": 1779,
+    "sha256": "3e7432597e1e16eec39b8dd84ba2896d9eceac568e1825f91979a5a257085e9e"
+  },
+  {
+    "path": "Tests/TinyUSBReplacement/reports/r2-build-r2-firmware-1795252606376748900.log",
+    "bytes": 1779,
+    "sha256": "6d30630296368ad3622f8013883b44c31f61c5728020e8acd5a4cc51c2dadbd7"
+  },
+  {
+    "path": "Tests/TinyUSBReplacement/reports/r2-build-r2-firmware-1795252836286518000.log",
+    "bytes": 1779,
+    "sha256": "7c44df9e2cf393c1a47afbe3024b4246307573d9a7149357c95d3f19f111d657"
+  },
+  {
+    "path": "Tests/TinyUSBReplacement/reports/r2-build-r2-firmware-1795253149133419600.log",
+    "bytes": 1779,
+    "sha256": "706ad8e992a93f24debc5d1e05ba65dd17967082853b1cd81515a7d2c738c2fa"
+  },
+  {
+    "path": "Tests/TinyUSBReplacement/reports/r2-build-r2-firmware-1795254027454109400.log",
+    "bytes": 1779,
+    "sha256": "2418810f38fad773aa2f26ccefc98bc88fc5f0fd43a972eb93367f9e81dffaa2"
+  },
+  {
+    "path": "Tests/TinyUSBReplacement/reports/r2-build-r2-firmware-1795260629989936100.log",
+    "bytes": 2123,
+    "sha256": "0f962673eb2348af4f6b58cb57d0f9acb2ab4ee177357788e68f8cb76f3a7a35"
+  },
+  {
+    "path": "Tests/TinyUSBReplacement/reports/r2-build-r2-firmware-1795260840068932800.log",
+    "bytes": 1779,
+    "sha256": "7fbe41dad91db60cdfddbf2091ee5e59e73276e9193a7efc6821200abf2940e0"
+  },
+  {
+    "path": "Tests/TinyUSBReplacement/reports/r2-build-r2-firmware-1795261015727260800.log",
+    "bytes": 1779,
+    "sha256": "fcfc59c36b4f13bfc7d4baea7f45a12ebeff3ac2e4e4535e0ee78b8c3d80f0d3"
+  },
+  {
+    "path": "Tests/TinyUSBReplacement/reports/r2-build-r2-firmware-1795261125917525900.log",
+    "bytes": 1779,
+    "sha256": "0cc1dab2db44c03e95724dd110c3e85e8582ee8eea48c57b9fb45b39f6719a14"
+  },
+  {
+    "path": "Tests/TinyUSBReplacement/reports/r2-build-r2-firmware-1795261266445186900.log",
+    "bytes": 1779,
+    "sha256": "b9724c8153a32b1e774a4f91d29ffa9ede93d51b6482f9cb144e2220478a2128"
+  },
+  {
+    "path": "Tests/TinyUSBReplacement/reports/r2-build-r2-firmware-1795261533935505400.log",
+    "bytes": 1779,
+    "sha256": "e9772f59e640da7ec2cf70775a4dcf3f4316d26c8be870d1ceb928aaa2d2b6be"
+  },
+  {
+    "path": "Tests/TinyUSBReplacement/reports/r2-build-r2-firmware-1795261585811622700.log",
+    "bytes": 1779,
+    "sha256": "9652d1d20c538e3246118fe2e9347b426ee2b4788e00825d8b749e2def2ecda6"
+  },
+  {
+    "path": "Tests/TinyUSBReplacement/reports/r2-build-r2-firmware-1795261862637678800.log",
+    "bytes": 1779,
+    "sha256": "b8ec9f6250ca5776b94f81dd8ba71266ff09c79c838129fbac061b1ffacd8375"
+  },
+  {
+    "path": "Tests/TinyUSBReplacement/reports/r2-closure-history-36fefe32fdd4.json",
+    "bytes": 838406,
+    "sha256": "36fefe32fdd48b0f9cf69b107e2414c69c7b24b7b573140f57e5f37ee0add0fe"
+  },
+  {
+    "path": "Tests/TinyUSBReplacement/reports/r2-closure-history-43affd2ee119.json",
+    "bytes": 474534,
+    "sha256": "43affd2ee119e3020f34534b0a40c277119cd46c9672e531f8be24e76cd61d65"
+  },
+  {
+    "path": "Tests/TinyUSBReplacement/reports/r2-closure-history-5bcdca5961ac.json",
+    "bytes": 454948,
+    "sha256": "5bcdca5961ac5d246bc4ec13e350a74263caab263d86f4f5982e77ceb258451e"
+  },
+  {
+    "path": "Tests/TinyUSBReplacement/reports/r2-closure-history-8e1fdada3db0.json",
+    "bytes": 816959,
+    "sha256": "8e1fdada3db09287cc72ae371a5da04d50b13f7920aa27911d76643883da4d9c"
+  },
+  {
+    "path": "Tests/TinyUSBReplacement/reports/r2-closure-history-8f5a679312cd.json",
+    "bytes": 816959,
+    "sha256": "8f5a679312cd3caea30c79c9cdfad40f4b89d15b05fd5feff8a65dfcf6d40dba"
+  },
+  {
+    "path": "Tests/TinyUSBReplacement/reports/r2-closure-history-953cc7688bbf.json",
+    "bytes": 1209222,
+    "sha256": "953cc7688bbfc1e3a4cd8d59d48bf85fbb1180195814039f76bcbd610f16738f"
+  },
+  {
+    "path": "Tests/TinyUSBReplacement/reports/r2-closure-history-afe8c891d5b3.json",
+    "bytes": 1209222,
+    "sha256": "afe8c891d5b36bfe532126963260ff85a7885eba9c3ee9a1c33b5191fd604759"
+  },
+  {
+    "path": "Tests/TinyUSBReplacement/reports/r2-closure-history-bbdb8026a9d9.json",
+    "bytes": 816959,
+    "sha256": "bbdb8026a9d9dfa725694cbf6c46830edee466b3bd1dfc28778ba384513574c7"
+  },
+  {
+    "path": "Tests/TinyUSBReplacement/reports/r2-closure-history-ddace79e7493.json",
+    "bytes": 1209222,
+    "sha256": "ddace79e74938bfcd8dfd056ce0049529607353177a55a9ebdea97aff447a009"
+  },
+  {
+    "path": "Tests/TinyUSBReplacement/reports/r2-closure-history-f0862fe9622d.json",
+    "bytes": 798492,
+    "sha256": "f0862fe9622d04c72cfb758821da1c89a8fadeb16d4645ec84635f7e6158993e"
+  },
+  {
+    "path": "Tests/TinyUSBReplacement/reports/r2-firmware-tests-history-263983f28dc5.json",
+    "bytes": 240865,
+    "sha256": "263983f28dc545845ddd1d6973efd4673029d2c281c721e1ad058ac2d51dc594"
+  },
+  {
+    "path": "Tests/TinyUSBReplacement/reports/r2-firmware-tests-history-29f79ec31a8e.json",
+    "bytes": 244635,
+    "sha256": "29f79ec31a8e406654b33ce1c0435e79ea739bb8fb1a627727b768aa5d7ba2c9"
+  },
+  {
+    "path": "Tests/TinyUSBReplacement/reports/r2-firmware-tests-history-2c6b278b87b0.json",
+    "bytes": 219412,
+    "sha256": "2c6b278b87b0084f3e58c051ffee69c426ff6a2acfb2182c2c7be53684f20821"
+  },
+  {
+    "path": "Tests/TinyUSBReplacement/reports/r2-firmware-tests-history-3a7011c7628c.json",
+    "bytes": 92554,
+    "sha256": "3a7011c7628cce0107c77883858d0a1b1719f461a037b656a1564d3f503b691d"
+  },
+  {
+    "path": "Tests/TinyUSBReplacement/reports/r2-firmware-tests-history-3a7c6e7f8f94.json",
+    "bytes": 238278,
+    "sha256": "3a7c6e7f8f94c7da1af20292e379e960ea509f75a84801ecbeb1dafb00d63d6e"
+  },
+  {
+    "path": "Tests/TinyUSBReplacement/reports/r2-firmware-tests-history-41b2c4f0ffb2.json",
+    "bytes": 240865,
+    "sha256": "41b2c4f0ffb2a1370b2d2b5b9b5c6a996f91709c7ffaea83dd56f8e3d490b549"
+  },
+  {
+    "path": "Tests/TinyUSBReplacement/reports/r2-firmware-tests-history-69ea2b9f5457.json",
+    "bytes": 395610,
+    "sha256": "69ea2b9f5457b6c26d87b511a474b62674aff718ff8fe6f9b410e74d093a0413"
+  },
+  {
+    "path": "Tests/TinyUSBReplacement/reports/r2-firmware-tests-history-a4bab4bc79d9.json",
+    "bytes": 395610,
+    "sha256": "a4bab4bc79d9a126c7cd6aa3bd992eb08708e7a464d8806ce4fba1e2b58ff40c"
+  },
+  {
+    "path": "Tests/TinyUSBReplacement/reports/r2-firmware-tests-history-ac8e73c9b192.json",
+    "bytes": 244635,
+    "sha256": "ac8e73c9b1929a555e799fc69e01d429bd9e992c487f046192d843b71a766612"
+  },
+  {
+    "path": "Tests/TinyUSBReplacement/reports/r2-firmware-tests-history-ba1e5ffd1458.json",
+    "bytes": 244635,
+    "sha256": "ba1e5ffd1458310d85b7e111795a76e9829f342b95314f8c6a8a08e68532b1f3"
+  },
+  {
+    "path": "Tests/TinyUSBReplacement/reports/r2-firmware-tests-history-bfecc6b0747a.json",
+    "bytes": 395610,
+    "sha256": "bfecc6b0747ab90fa5a191b01f5bba93b2c7aae1f426b945547a55ab8200fd8a"
+  },
+  {
+    "path": "Tests/TinyUSBReplacement/reports/r2-firmware-tests-history-c33a68fff706.json",
+    "bytes": 244635,
+    "sha256": "c33a68fff7068a7fda32871ef0a3f3b848b98155a2d5db2c2e9918f8fba3314b"
+  },
+  {
+    "path": "Tests/TinyUSBReplacement/reports/r2-firmware-tests-history-c4a672ead367.json",
+    "bytes": 244635,
+    "sha256": "c4a672ead367ebede0835be48846ab1050dc6cbd991f2817729894af4b986a3c"
+  },
+  {
+    "path": "Tests/TinyUSBReplacement/reports/r2-firmware-tests-history-f81d661d00ce.json",
+    "bytes": 228605,
+    "sha256": "f81d661d00cedfce270909b8a3290d27df2d99e00051a6083604337b44b66de8"
+  },
+  {
+    "path": "Tests/TinyUSBReplacement/reports/r2-firmware-tests-history-ff41c80d5b29.json",
+    "bytes": 17699,
+    "sha256": "ff41c80d5b29f899f206ade891d5d49a5c274c98e66a2538e333e8b248bc347b"
+  },
+  {
+    "path": "Tests/TinyUSBReplacement/reports/r2-reset-history-2657c8d776d5.json",
+    "bytes": 1263723,
+    "sha256": "2657c8d776d528fa5b5f33bf4cf94f1d4ba1bc79ba58e5599ede4ceb403b3821"
+  },
+  {
+    "path": "Tests/TinyUSBReplacement/reports/r2-reset-history-3bbf4c44689d.json",
+    "bytes": 1393235,
+    "sha256": "3bbf4c44689d2c013393fca0457f704ee315269102e4f5b521a17a334077701c"
+  },
+  {
+    "path": "Tests/TinyUSBReplacement/reports/r2-reset-history-57ac5ac3c5c9.json",
+    "bytes": 792721,
+    "sha256": "57ac5ac3c5c9949791b3bb6514f081956a1cd2782ca17cf348e10cc5925489af"
+  },
+  {
+    "path": "Tests/TinyUSBReplacement/reports/r2-reset-history-5be2b9c79e23.json",
+    "bytes": 1313819,
+    "sha256": "5be2b9c79e23b0118219becfbc43f76d351af978f79ff31c3297263ca360c118"
+  },
+  {
+    "path": "Tests/TinyUSBReplacement/reports/r2-reset-history-76589ae63abc.json",
+    "bytes": 780300,
+    "sha256": "76589ae63abcb132435aefe38052c7a4f25e69e143de540f62f2afba2571579a"
+  },
+  {
+    "path": "Tests/TinyUSBReplacement/reports/r2-reset-history-8f89bd8e5e78.json",
+    "bytes": 1310439,
+    "sha256": "8f89bd8e5e78ce0f6c7b31f2d36e37200a4e340bc822b5993c1a07f72694b684"
+  },
+  {
+    "path": "Tests/TinyUSBReplacement/reports/r2-reset-history-bb3371d978f5.json",
+    "bytes": 1392503,
+    "sha256": "bb3371d978f5693aadc76a4097586c673ba3c965a03bb22ab0a631919f92e4da"
+  },
+  {
+    "path": "Tests/TinyUSBReplacement/reports/r2-reset-history-c9c5a9081e8d.json",
+    "bytes": 1260595,
+    "sha256": "c9c5a9081e8d9f6efa145660560b388840e5bfdb4acdf474d6292bc3e8761050"
+  },
+  {
+    "path": "Tests/TinyUSBReplacement/reports/r2-reset-history-ce455c16f04a.json",
+    "bytes": 1313819,
+    "sha256": "ce455c16f04a9a28a4916b6e97bb7d9ac6cf14580503e7499b57ebd22a93d9c6"
+  },
+  {
+    "path": "Tests/TinyUSBReplacement/reports/r2-reset-history-e4397f699ce7.json",
+    "bytes": 1313819,
+    "sha256": "e4397f699ce785e1368199af576c7bdcaed50d48f104b3ae4bdef6b5c0ebbfb9"
+  },
+  {
+    "path": "Tests/TinyUSBReplacement/reports/r2-reset-history-fe70906b0978.json",
+    "bytes": 820915,
+    "sha256": "fe70906b09783538879d47f3fe76e37d4de320317b729b12d70f7f2bde929927"
+  },
+  {
+    "path": "Tests/TinyUSBReplacement/reports/stack-history-1f9596b34d72.json",
+    "bytes": 26082,
+    "sha256": "1f9596b34d726b12551721a452617c6dfc031c2fc4ef3693fd09a964ce0ae8f3"
+  },
+  {
+    "path": "Tests/TinyUSBReplacement/reports/stack-history-221ce40683f7.json",
+    "bytes": 26082,
+    "sha256": "221ce40683f7a2bc38926043581af6bfc077c5cbb927a5f0cafde6e576f618f8"
+  },
+  {
+    "path": "Tests/TinyUSBReplacement/reports/stack-history-25345a511ce3.json",
+    "bytes": 25740,
+    "sha256": "25345a511ce336376e6cdb4344c112695ffe6c4209cf688336b9f16fa3a4aed5"
+  },
+  {
+    "path": "Tests/TinyUSBReplacement/reports/stack-history-29cfd0c41e1d.json",
+    "bytes": 26082,
+    "sha256": "29cfd0c41e1d46319c97cbfa761298479052d837685329dd576bf09bdfa8f365"
+  },
+  {
+    "path": "Tests/TinyUSBReplacement/reports/stack-history-3dcae9562aeb.json",
+    "bytes": 26710,
+    "sha256": "3dcae9562aeb8f495236c54a3dc388e1013d2fafed86eb739b8d80f1e194e783"
+  },
+  {
+    "path": "Tests/TinyUSBReplacement/reports/stack-history-3fba95fe4e51.json",
+    "bytes": 26710,
+    "sha256": "3fba95fe4e51eb4d29dadd120f6a48426c605d63e760401711043345172eb79c"
+  },
+  {
+    "path": "Tests/TinyUSBReplacement/reports/stack-history-561937ea9027.json",
+    "bytes": 26082,
+    "sha256": "561937ea90270923c3eb6fa4406807817c37ee4dfa42361c8299a2a5c160afb6"
+  },
+  {
+    "path": "Tests/TinyUSBReplacement/reports/stack-history-5be48fa62cf9.json",
+    "bytes": 26082,
+    "sha256": "5be48fa62cf97364abecc2a8e4045ffc773f79f77f84b6cfd76bb64fb3f8dba0"
+  },
+  {
+    "path": "Tests/TinyUSBReplacement/reports/stack-history-6108d1071a74.json",
+    "bytes": 26082,
+    "sha256": "6108d1071a74c79a0f79e1313165e6cf0db12d1fa7ccf78f8e7b57ef2e799941"
+  },
+  {
+    "path": "Tests/TinyUSBReplacement/reports/stack-history-6265ddd04612.json",
+    "bytes": 26082,
+    "sha256": "6265ddd0461234c24ad69740a2e06ae7b5a76d309654be05139315c81683b80e"
+  },
+  {
+    "path": "Tests/TinyUSBReplacement/reports/stack-history-65c6e3193701.json",
+    "bytes": 26082,
+    "sha256": "65c6e31937018e662aba0506b7a37d38979d7c5e89ccf60b0a4a2bbae2f60c45"
+  },
+  {
+    "path": "Tests/TinyUSBReplacement/reports/stack-history-69f26d698db1.json",
+    "bytes": 26082,
+    "sha256": "69f26d698db19898e82f001125b75eeebc96958bd6e5b45d87e61ba71c5ac3cb"
+  },
+  {
+    "path": "Tests/TinyUSBReplacement/reports/stack-history-759ee7633fe6.json",
+    "bytes": 25743,
+    "sha256": "759ee7633fe65e61432090e45b9375488b378c2603dd06477d0f88a277e342f3"
+  },
+  {
+    "path": "Tests/TinyUSBReplacement/reports/stack-history-82be89acd4b5.json",
+    "bytes": 26082,
+    "sha256": "82be89acd4b5f29c8a34374487c5e3b9d712af836cb09d8fc9c47c9cc6cae1a2"
+  },
+  {
+    "path": "Tests/TinyUSBReplacement/reports/stack-history-88f3f5ebd1d1.json",
+    "bytes": 26082,
+    "sha256": "88f3f5ebd1d10a0cda6521cbf4fc117ca0ee0dc62e76cd494a560bfc7fe696a3"
+  },
+  {
+    "path": "Tests/TinyUSBReplacement/reports/stack-history-a07ff039eea6.json",
+    "bytes": 26082,
+    "sha256": "a07ff039eea67c2d3d65172e45ae25dca9d64bbf2475ee508286157a854c3649"
+  },
+  {
+    "path": "Tests/TinyUSBReplacement/reports/stack-history-bd823c35b83d.json",
+    "bytes": 26710,
+    "sha256": "bd823c35b83d57dc66f9c03d899be925b25efc6170f54d3812d5ff0ef416f3b7"
+  },
+  {
+    "path": "Tests/TinyUSBReplacement/reports/stack-history-c2b4ec351622.json",
+    "bytes": 26082,
+    "sha256": "c2b4ec351622aae34d0fc04c02158a5838eb0618f5d8b1a7615dbaa1975a81ed"
+  },
+  {
+    "path": "Tests/TinyUSBReplacement/reports/stack-history-c9a0746cd215.json",
+    "bytes": 26082,
+    "sha256": "c9a0746cd21546dbdf0961d6f4060c6871820411f4a56842ffc3ad56433f7479"
+  },
+  {
+    "path": "Tests/TinyUSBReplacement/reports/stack-history-d0f433f4d09b.json",
+    "bytes": 26082,
+    "sha256": "d0f433f4d09b956d76fc2a1375d3f44539bf57f5146ca47d4613d6ce84b4b6c8"
+  },
+  {
+    "path": "Tests/TinyUSBReplacement/reports/stack-history-d8946d658b98.json",
+    "bytes": 26082,
+    "sha256": "d8946d658b98861a6a8b0f180828da553b440fd42fcd79d6f343e0f1da728f32"
+  },
+  {
+    "path": "Tests/TinyUSBReplacement/reports/stack-history-efba4d378284.json",
+    "bytes": 26082,
+    "sha256": "efba4d378284b01a8ec81ed5b1dfb18741cefcfea4db89be5bf7e9dde51b7560"
+  },
+  {
+    "path": "Tests/TinyUSBReplacement/reports/stack-history-f064b8ac2947.json",
+    "bytes": 26082,
+    "sha256": "f064b8ac29477766cd6d40fb37137866d3379e9b615152e9f6111f797b952aaf"
+  },
+  {
+    "path": "Tests/TinyUSBReplacement/reports/stack-history-f5243fe538ad.json",
+    "bytes": 26082,
+    "sha256": "f5243fe538ad88431c37c97369f31b22c13ce12e78f8708eed6cebfdf22caca4"
+  },
+  {
+    "path": "Tests/TinyUSBReplacement/reports/upstream-history-0b431a83be9d.json",
+    "bytes": 39122,
+    "sha256": "0b431a83be9d279e0403c32357609e08c6a263d2667abe11d8af0c75052cf748"
+  },
+  {
+    "path": "Tests/TinyUSBReplacement/reports/upstream-history-2307d5b88cfd.json",
+    "bytes": 39122,
+    "sha256": "2307d5b88cfd290a98c54ca6d49f0e41531fa9bddf79263dfc96d0b7d4291a21"
+  },
+  {
+    "path": "Tests/TinyUSBReplacement/reports/upstream-history-3456f5b21492.json",
+    "bytes": 39148,
+    "sha256": "3456f5b214922c8b822e49aba03175d8c0ec8fb49599683c4e9c92ce42c91d0c"
+  },
+  {
+    "path": "Tests/TinyUSBReplacement/reports/upstream-history-47b14d721365.json",
+    "bytes": 38647,
+    "sha256": "47b14d7213658b1c0f5442dddda5275719bcc48ed49bb1639a3df52b429a41a9"
+  },
+  {
+    "path": "Tests/TinyUSBReplacement/reports/upstream-history-4ed5ec2be802.json",
+    "bytes": 39122,
+    "sha256": "4ed5ec2be8024f4a852f5f9c1c04f9db4ca357c6437e9ba42fbca5af27786883"
+  },
+  {
+    "path": "Tests/TinyUSBReplacement/reports/upstream-history-6ca7936693d7.json",
+    "bytes": 39148,
+    "sha256": "6ca7936693d7cce09395eeb187aa5e01fc8320d740278031711fe8965e079b35"
+  },
+  {
+    "path": "Tests/TinyUSBReplacement/reports/upstream-history-82c676d7e237.json",
+    "bytes": 39122,
+    "sha256": "82c676d7e23781f4795f27e10865d634f80296a63d9aebd931698ebe69eeaf59"
+  },
+  {
+    "path": "Tests/TinyUSBReplacement/reports/upstream-history-90106d95e3a3.json",
+    "bytes": 39089,
+    "sha256": "90106d95e3a335ff9d6fe5a62fe3a82d73a87f8e0b2867b9d51a4d49642b1f90"
+  },
+  {
+    "path": "Tests/TinyUSBReplacement/reports/upstream-history-c83008efa245.json",
+    "bytes": 39089,
+    "sha256": "c83008efa245a25fe8adce52484c9b5020bf2f538aea3c227abdd08aecc87213"
+  },
+  {
+    "path": "Tests/TinyUSBReplacement/reports/upstream-history-e3c5d8e41530.json",
+    "bytes": 39122,
+    "sha256": "e3c5d8e41530cf24f1c0a822072d1e4a19fb4aa898e8c7ddef707d02da269535"
+  },
+  {
+    "path": "Tests/TinyUSBReplacement/reports/upstream-history-e9fef8c9841e.json",
+    "bytes": 39148,
+    "sha256": "e9fef8c9841e4ea6e9ca776c55a1360f822f97d37c41236e1d3c7d3be554bf24"
+  },
+  {
+    "path": "Tests/TinyUSBReplacement/reports/video-history-214d2a599b8d.json",
+    "bytes": 7157,
+    "sha256": "214d2a599b8d2dd00dda3490504fced21669945a021d17ed0684639fc0746e54"
+  }
+]

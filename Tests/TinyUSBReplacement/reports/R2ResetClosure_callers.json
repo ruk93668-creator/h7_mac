@@ -1,0 +1,215 @@
+{
+  "tud_disconnect": [
+    {
+      "path": "ThirdParty/tinyusb/src/device/usbd.c",
+      "line": 552,
+      "text": "bool tud_disconnect(void) {"
+    },
+    {
+      "path": "ThirdParty/tinyusb/src/device/usbd.h",
+      "line": 130,
+      "text": "bool tud_disconnect(void);"
+    }
+  ],
+  "tud_connect": [
+    {
+      "path": "ThirdParty/tinyusb/src/device/usbd.c",
+      "line": 561,
+      "text": "bool tud_connect(void) {"
+    },
+    {
+      "path": "ThirdParty/tinyusb/src/device/usbd.h",
+      "line": 133,
+      "text": "bool tud_connect(void);"
+    }
+  ],
+  "tud_deinit": [
+    {
+      "path": "ThirdParty/tinyusb/src/tusb.c",
+      "line": 157,
+      "text": "TU_ASSERT(tud_deinit(rhport));"
+    },
+    {
+      "path": "ThirdParty/tinyusb/src/device/usbd.c",
+      "line": 649,
+      "text": "bool tud_deinit(uint8_t rhport) {"
+    },
+    {
+      "path": "ThirdParty/tinyusb/src/device/usbd.c",
+      "line": 962,
+      "text": "return true; // events queued after the stop wait for the next run, or are dropped by tud_deinit()"
+    },
+    {
+      "path": "ThirdParty/tinyusb/src/device/usbd.c",
+      "line": 1012,
+      "text": "// before tud_task() can return and tud_deinit() delete the queue, and a send waiting on a full queue is"
+    },
+    {
+      "path": "ThirdParty/tinyusb/src/device/usbd.h",
+      "line": 64,
+      "text": "bool tud_deinit(uint8_t rhport);"
+    },
+    {
+      "path": "ThirdParty/tinyusb/src/device/usbd.h",
+      "line": 73,
+      "text": "// call tud_deinit() from this task if needed"
+    },
+    {
+      "path": "ThirdParty/tinyusb/src/device/usbd.h",
+      "line": 83,
+      "text": "// if blocked. Call once per stop from one other task (not ISR) to stop the USB task before tud_deinit()."
+    }
+  ],
+  "dcd_task": [
+    {
+      "path": "ThirdParty/tinyusb/src/device/dcd.h",
+      "line": 192,
+      "text": "void dcd_task(uint8_t rhport);"
+    },
+    {
+      "path": "ThirdParty/tinyusb/src/device/usbd.c",
+      "line": 483,
+      "text": "TU_ATTR_WEAK void dcd_task(uint8_t p) {(void)p;}"
+    },
+    {
+      "path": "ThirdParty/tinyusb/src/device/usbd.c",
+      "line": 933,
+      "text": "dcd_task(_usbd_rhport);"
+    },
+    {
+      "path": "ThirdParty/tinyusb/src/portable/synopsys/dwc2/dcd_dwc2.c",
+      "line": 1050,
+      "text": "void dcd_task(uint8_t rhport) {"
+    }
+  ],
+  "dcd_deinit_ready": [
+    {
+      "path": "ThirdParty/tinyusb/src/device/dcd.h",
+      "line": 193,
+      "text": "bool dcd_deinit_ready(uint8_t rhport);"
+    },
+    {
+      "path": "ThirdParty/tinyusb/src/device/usbd.c",
+      "line": 484,
+      "text": "TU_ATTR_WEAK bool dcd_deinit_ready(uint8_t p) {(void)p;return true;}"
+    },
+    {
+      "path": "ThirdParty/tinyusb/src/device/usbd.c",
+      "line": 668,
+      "text": "if(closed!=DCD_ABORT_SUCCESS || !dcd_deinit_ready(rhport)) return false;"
+    },
+    {
+      "path": "ThirdParty/tinyusb/src/device/usbd.c",
+      "line": 1309,
+      "text": "if(!dcd_deinit_ready(_usbd_rhport)) {_usbd_abort_failed=true;usbd_spin_unlock(false);return;}"
+    },
+    {
+      "path": "ThirdParty/tinyusb/src/portable/synopsys/dwc2/dcd_dwc2.c",
+      "line": 841,
+      "text": "if (!dcd_deinit_ready(rhport)) return false;"
+    },
+    {
+      "path": "ThirdParty/tinyusb/src/portable/synopsys/dwc2/dcd_dwc2.c",
+      "line": 1063,
+      "text": "bool dcd_deinit_ready(uint8_t rhport) {"
+    }
+  ],
+  "dcd_edpt_close_all_safe": [
+    {
+      "path": "ThirdParty/tinyusb/src/device/dcd.h",
+      "line": 191,
+      "text": "dcd_abort_result_t dcd_edpt_close_all_safe(uint8_t rhport);"
+    },
+    {
+      "path": "ThirdParty/tinyusb/src/device/usbd.c",
+      "line": 487,
+      "text": "TU_ATTR_WEAK dcd_abort_result_t dcd_edpt_close_all_safe(uint8_t p) {(void)p;return DCD_ABORT_UNSUPPORTED;}"
+    },
+    {
+      "path": "ThirdParty/tinyusb/src/device/usbd.c",
+      "line": 711,
+      "text": "dcd_abort_result_t result=dcd_edpt_close_all_safe(rhport);"
+    },
+    {
+      "path": "ThirdParty/tinyusb/src/portable/synopsys/dwc2/dcd_dwc2.c",
+      "line": 1014,
+      "text": "dcd_abort_result_t dcd_edpt_close_all_safe(uint8_t rhport) {"
+    },
+    {
+      "path": "ThirdParty/tinyusb/src/portable/synopsys/dwc2/dcd_dwc2.c",
+      "line": 1052,
+      "text": "if(closing_noncontrol && !dcd_device_faulted(rhport)) (void)dcd_edpt_close_all_safe(rhport);"
+    }
+  ],
+  "dcd_deinit": [
+    {
+      "path": "ThirdParty/tinyusb/src/device/dcd.h",
+      "line": 110,
+      "text": "bool dcd_deinit(uint8_t rhport);"
+    },
+    {
+      "path": "ThirdParty/tinyusb/src/device/usbd.c",
+      "line": 73,
+      "text": "TU_ATTR_WEAK bool dcd_deinit(uint8_t rhport) {"
+    },
+    {
+      "path": "ThirdParty/tinyusb/src/device/usbd.c",
+      "line": 669,
+      "text": "TU_ASSERT(dcd_deinit(rhport));"
+    },
+    {
+      "path": "ThirdParty/tinyusb/src/portable/synopsys/dwc2/dcd_dwc2.c",
+      "line": 838,
+      "text": "bool dcd_deinit(uint8_t rhport) {"
+    },
+    {
+      "path": "ThirdParty/tinyusb/src/portable/synopsys/dwc2/dcd_dwc2.c",
+      "line": 868,
+      "text": "if (!dcd_deinit(rhport) || !dcd_init(rhport, &rh_init)) {"
+    }
+  ],
+  "dcd_edpt_close_all": [
+    {
+      "path": "ThirdParty/tinyusb/src/device/dcd.h",
+      "line": 162,
+      "text": "void dcd_edpt_close_all       (uint8_t rhport);"
+    },
+    {
+      "path": "ThirdParty/tinyusb/src/device/usbd.c",
+      "line": 713,
+      "text": "dcd_edpt_close_all(rhport); // unchanged compatibility for other DCDs"
+    },
+    {
+      "path": "ThirdParty/tinyusb/src/portable/synopsys/dwc2/dcd_dwc2.c",
+      "line": 1045,
+      "text": "dcd_edpt_close_all(rhport);"
+    },
+    {
+      "path": "ThirdParty/tinyusb/src/portable/synopsys/dwc2/dcd_dwc2.c",
+      "line": 1081,
+      "text": "void dcd_edpt_close_all(uint8_t rhport) {"
+    }
+  ],
+  "dwc2_core_deinit": [
+    {
+      "path": "ThirdParty/tinyusb/src/portable/synopsys/dwc2/dcd_dwc2.c",
+      "line": 842,
+      "text": "if (!dwc2_core_deinit(rhport)) return false;"
+    },
+    {
+      "path": "ThirdParty/tinyusb/src/portable/synopsys/dwc2/dwc2_common.c",
+      "line": 268,
+      "text": "bool dwc2_core_deinit(uint8_t rhport) {"
+    },
+    {
+      "path": "ThirdParty/tinyusb/src/portable/synopsys/dwc2/dwc2_common.h",
+      "line": 78,
+      "text": "bool dwc2_core_deinit(uint8_t rhport);"
+    },
+    {
+      "path": "ThirdParty/tinyusb/src/portable/synopsys/dwc2/hcd_dwc2.c",
+      "line": 1591,
+      "text": "dwc2_core_deinit(rhport);"
+    }
+  ]
+}

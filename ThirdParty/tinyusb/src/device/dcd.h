@@ -51,6 +51,7 @@ typedef struct TU_ATTR_ALIGNED(4) {
     // BUS RESET
     struct {
       tusb_speed_t speed;
+      uint32_t generation; // optional native DCD reset identity, 0 for legacy DCDs
     } bus_reset;
 
     // SOF
@@ -190,6 +191,8 @@ uint32_t dcd_edpt_generation(uint8_t rhport, uint8_t ep_addr);
 dcd_abort_result_t dcd_edpt_close_all_safe(uint8_t rhport);
 void dcd_task(uint8_t rhport);
 bool dcd_deinit_ready(uint8_t rhport);
+bool dcd_reset_pending(uint8_t rhport);
+uint32_t dcd_reset_generation(uint8_t rhport);
 
 
 #ifdef TUP_DCD_EDPT_CLOSE_API
@@ -219,6 +222,8 @@ TU_ATTR_ALWAYS_INLINE static inline void dcd_event_bus_signal (uint8_t rhport, d
   dcd_event_t event;
   event.rhport = rhport;
   event.event_id = eid;
+  if(eid==DCD_EVENT_BUS_RESET_START || eid==DCD_EVENT_BUS_RESET_END)
+    event.bus_reset.generation=dcd_reset_generation(rhport);
   dcd_event_handler(&event, in_isr);
 }
 
@@ -228,6 +233,7 @@ TU_ATTR_ALWAYS_INLINE static inline  void dcd_event_bus_reset (uint8_t rhport, t
   event.rhport = rhport;
   event.event_id = DCD_EVENT_BUS_RESET;
   event.bus_reset.speed = speed;
+  event.bus_reset.generation=dcd_reset_generation(rhport);
   dcd_event_handler(&event, in_isr);
 }
 

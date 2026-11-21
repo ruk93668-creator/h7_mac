@@ -474,6 +474,21 @@ static bool hardware_completed[DWC2_EP_MAX][2];
 static uint16_t rx_left[DWC2_EP_MAX];
 static uint8_t pio_refs[DWC2_EP_MAX];
 static int8_t out_nak_owner = -1;
+// Reset-local progress only: native DCD IRQ facts and native USB task polling.
+// No class/backend ownership is cleared until reset proof and ENUMDNE.
+typedef struct {
+  uint8_t phase, failed_phase, failure, retries;
+  bool enum_seen, rx_flushed, nak_seen, flush_observed;
+  uint16_t in_wait, in_done, out_wait, out_done;
+  uint32_t began_ms, began_cycle, phase_ms, phase_cycle, previous_cycle, clock_hz;
+  uint32_t fault_gint, fault_grst, fault_dctl, flush_cycle;
+} reset_progress_t;
+static volatile reset_progress_t reset_progress;
+static volatile uint32_t reset_generation;
+static bool setup_rx_eligible;
+static bool ep0_out_armed;
+static volatile uint8_t setup_tag;
+static void reset_poll(uint8_t rhport);
 static bool closing_noncontrol;
 static uint32_t close_began_ms,close_began_cycle,close_previous_cycle,close_clock_hz;
 static uint32_t deferred_tx_mask; // other IN producers paused during shared FIFO command
@@ -504,13 +519,16 @@ static bool any_cancel(void) {
     if (cancel_active(n,d)) return true;
   return false;
 }
-bool dcd_device_pending(uint8_t p) {return p==0 && (any_cancel() || closing_noncontrol);}
+bool dcd_reset_pending(uint8_t p) {return p==0 && reset_progress.phase!=0;}
+uint32_t dcd_reset_generation(uint8_t p) {(void)p;return reset_generation;}
+bool dcd_device_pending(uint8_t p) {return p==0 && (any_cancel() || closing_noncontrol || dcd_reset_pending(p));}
 static dcd_abort_result_t cancel_failed(uint8_t rhport,uint8_t reason) {
   if (!abort_failure_reason[rhport]) abort_failure_reason[rhport]=reason;
   r1_abort_fault[rhport] = true;
   return DCD_ABORT_FAILED; // leave phases, hardware changes and pointers intact
 }
 dcd_abort_result_t dcd_edpt_abort_safe(uint8_t rhport, uint8_t ep_addr) {
+  if(dcd_reset_pending(rhport)) return DCD_ABORT_FAILED;
 #if CFG_TUSB_MCU != OPT_MCU_STM32H7
   (void)rhport;(void)ep_addr;return DCD_ABORT_UNSUPPORTED;
 #else
@@ -593,6 +611,7 @@ dcd_abort_result_t dcd_edpt_abort_safe(uint8_t rhport, uint8_t ep_addr) {
 }
 
 static bool edpt_disable(uint8_t rhport, uint8_t ep_addr, bool stall, bool is_isr) {
+  if(dcd_reset_pending(rhport)) return false;
   if (any_cancel()) { dwc2_wait_fail(); return false; }
   // The legacy void OUT stall path has no RX retirement result; never fabricate it.
   if (!(ep_addr & 0x80) && (ep_addr & 15)) {dwc2_wait_fail();return false;}
@@ -749,6 +768,7 @@ bool dcd_configure(uint8_t rhport, uint32_t cfg_id, const void* cfg_param) {
 }
 
 bool dcd_init(uint8_t rhport, const tusb_rhport_init_t* rh_init) {
+  if(dcd_reset_pending(rhport)) return false;
   if (closing_noncontrol || any_cancel()) return false;
   if (dcd_device_faulted(rhport)) return false;
   dwc2_clock_init(rhport, rh_init->role);
@@ -816,7 +836,7 @@ bool dcd_init(uint8_t rhport, const tusb_rhport_init_t* rh_init) {
 }
 
 bool dcd_deinit(uint8_t rhport) {
-  if (any_cancel()) return false;
+  if (dcd_reset_pending(rhport) || any_cancel()) return false;
   if (dcd_device_faulted(rhport)) return false;
   if (!dcd_deinit_ready(rhport)) return false;
   if (!dwc2_core_deinit(rhport)) return false;
@@ -916,6 +936,7 @@ void dcd_remote_wakeup(uint8_t rhport) {
 }
 
 void dcd_connect(uint8_t rhport) {
+  if(dcd_reset_pending(rhport)) return ;
   if (closing_noncontrol || any_cancel()) return;
   if (dcd_device_faulted(rhport)) return ;
   dwc2_regs_t* dwc2 = DWC2_REG(rhport);
@@ -979,6 +1000,7 @@ void dcd_sof_enable(uint8_t rhport, bool en) {
  *------------------------------------------------------------------*/
 
 bool dcd_edpt_open(uint8_t rhport, tusb_desc_endpoint_t const* desc_edpt) {
+  if(dcd_reset_pending(rhport)) return false;
   if (dcd_device_faulted(rhport)) return false;
   if (closing_noncontrol || any_cancel()) return false;
   TU_ASSERT(dfifo_alloc(rhport, desc_edpt->bEndpointAddress, tu_edpt_packet_size(desc_edpt),
@@ -1026,6 +1048,7 @@ dcd_abort_result_t dcd_edpt_close_all_safe(uint8_t rhport) {
   return DCD_ABORT_SUCCESS;
 }
 void dcd_task(uint8_t rhport) {
+  if(dcd_reset_pending(rhport)) {reset_poll(rhport);return;}
   if(closing_noncontrol && !dcd_device_faulted(rhport)) (void)dcd_edpt_close_all_safe(rhport);
 }
 static uint32_t retirement_events(dwc2_dep_t *ep,uint8_t n,uint8_t dir) {
@@ -1038,7 +1061,7 @@ static uint32_t retirement_events(dwc2_dep_t *ep,uint8_t n,uint8_t dir) {
   return events;
 }
 bool dcd_deinit_ready(uint8_t rhport) {
-  if(rhport!=0 || closing_noncontrol || any_cancel() || dcd_device_faulted(rhport)) return false;
+  if(rhport!=0 || dcd_reset_pending(rhport) || closing_noncontrol || any_cancel() || dcd_device_faulted(rhport)) return false;
   dwc2_regs_t *d=DWC2_REG(rhport);
   if(d->gintsts & (GINTSTS_RXFLVL | GINTSTS_USBRST | GINTSTS_ENUMDNE)) return false;
   if(d->grstctl & (GRSTCTL_TXFFLSH | GRSTCTL_RXFFLSH | GRSTCTL_CSRST)) return false;
@@ -1059,6 +1082,7 @@ void dcd_edpt_close_all(uint8_t rhport) {
   // This void legacy API cannot report asynchronous progress. Accept an already
   // retired group (including the empty group), otherwise preserve ownership.
   // Callers needing active close must first drive the existing Bulk abort API.
+  if (dcd_reset_pending(rhport)) return;
   if (dcd_device_faulted(rhport) || any_cancel()) {dwc2_wait_fail();return;}
   dwc2_regs_t *d=DWC2_REG(rhport);
   usbd_spin_lock(false);
@@ -1085,6 +1109,7 @@ void dcd_edpt_close_all(uint8_t rhport) {
 }
 
 bool dcd_edpt_iso_alloc(uint8_t rhport, uint8_t ep_addr, uint16_t largest_packet_size) {
+  if(dcd_reset_pending(rhport)) return false;
   if (closing_noncontrol || any_cancel()) return false;
   if (dcd_device_faulted(rhport)) return false;
   TU_ASSERT(dfifo_alloc(rhport, ep_addr, largest_packet_size, TUSB_XFER_ISOCHRONOUS));
@@ -1092,6 +1117,7 @@ bool dcd_edpt_iso_alloc(uint8_t rhport, uint8_t ep_addr, uint16_t largest_packet
 }
 
 bool dcd_edpt_iso_activate(uint8_t rhport,  tusb_desc_endpoint_t const * p_endpoint_desc) {
+  if(dcd_reset_pending(rhport)) return false;
   if (closing_noncontrol || any_cancel()) return false;
   if (dcd_device_faulted(rhport)) return false;
   // Disable EP to clear potential incomplete transfers
@@ -1101,6 +1127,7 @@ bool dcd_edpt_iso_activate(uint8_t rhport,  tusb_desc_endpoint_t const * p_endpo
 }
 
 bool dcd_edpt_xfer(uint8_t rhport, uint8_t ep_addr, uint8_t* buffer, uint16_t total_bytes, bool is_isr) {
+  if(dcd_reset_pending(rhport)) return false;
   if (dcd_device_faulted(rhport)) return false;
   (void) is_isr;
   uint8_t const epnum = tu_edpt_number(ep_addr);
@@ -1134,6 +1161,8 @@ bool dcd_edpt_xfer(uint8_t rhport, uint8_t ep_addr, uint8_t* buffer, uint16_t to
       _dcd_data.ep0_pending[dir] = total_bytes;
     }
 
+    // Publish only after admission, before EPENA can permit the IRQ consumer.
+    if(epnum==0 && dir==TUSB_DIR_OUT) ep0_out_armed=true;
     // Schedule packets to be sent within interrupt
     edpt_schedule_packets(rhport, epnum, dir);
     ret = true;
@@ -1149,6 +1178,7 @@ bool dcd_edpt_xfer(uint8_t rhport, uint8_t ep_addr, uint8_t* buffer, uint16_t to
 // success message. If total_bytes is too big, the FIFO will copy only what is available
 // into the USB buffer!
 bool dcd_edpt_xfer_fifo(uint8_t rhport, uint8_t ep_addr, tu_fifo_t* ff, uint16_t total_bytes, bool is_isr) {
+  if(dcd_reset_pending(rhport)) return false;
   if (dcd_device_faulted(rhport)) return false;
   (void) is_isr;
   uint8_t const epnum = tu_edpt_number(ep_addr);
@@ -1183,6 +1213,7 @@ bool dcd_edpt_xfer_fifo(uint8_t rhport, uint8_t ep_addr, tu_fifo_t* ff, uint16_t
 }
 
 void dcd_edpt_stall(uint8_t rhport, uint8_t ep_addr) {
+  if(dcd_reset_pending(rhport)) return ;
   if (dcd_device_faulted(rhport)) return ;
   dwc2_regs_t* dwc2 = DWC2_REG(rhport);
   if (!edpt_disable(rhport, ep_addr, true, false)) return;
@@ -1196,6 +1227,7 @@ void dcd_edpt_stall(uint8_t rhport, uint8_t ep_addr) {
 }
 
 void dcd_edpt_clear_stall(uint8_t rhport, uint8_t ep_addr) {
+  if(dcd_reset_pending(rhport)) return ;
   if (dcd_edpt_cancel_pending(rhport,ep_addr)) return;
   if (dcd_device_faulted(rhport)) return ;
   dwc2_regs_t* dwc2 = DWC2_REG(rhport);
@@ -1212,111 +1244,207 @@ void dcd_edpt_clear_stall(uint8_t rhport, uint8_t ep_addr) {
 // Interrupt Handler
 //--------------------------------------------------------------------
 
-// 7.4.1 Initialization on USB Reset
-// Must be called from critical section
-static void handle_bus_reset(uint8_t rhport) {
-  dwc2_regs_t *dwc2 = DWC2_REG(rhport);
-  const uint8_t ep_count =  dwc2_ep_count(dwc2);
-
-  dwc2->diepempmsk = 0;
-  // Bus Reset is not permission to discard a still-enabled endpoint or pending RX.
-  for (uint8_t n=0;n<ep_count;n++)
-    if ((dwc2->epin[n].ctl | dwc2->epout[n].ctl) & EPCTL_EPENA) { dwc2_wait_fail();return; }
-  if (dwc2->gintsts & GINTSTS_RXFLVL) { dwc2_wait_fail();return; }
-
-  _dcd_data.ep0_pending[TUSB_DIR_OUT] = 0;
-  _dcd_data.ep0_pending[TUSB_DIR_IN] = 0;
-  _dcd_data.sof_en = false;
-
-  // 1. NAK for all OUT endpoints
-  for (uint8_t n = 0; n < ep_count; n++) {
-    dwc2->epout[n].doepctl |= DOEPCTL_SNAK;
+enum { RESET_RX_BEGIN=1, RESET_RX_WAIT, RESET_NAK_WAIT, RESET_OUT_WAIT,
+       RESET_TX_WAIT, RESET_NAK_RELEASE, RESET_ENUM_WAIT, RESET_FAST_WAIT,
+       RESET_FAILED=255 };
+static void reset_fail(uint8_t rhport,uint8_t why) {
+  volatile reset_progress_t *r=&reset_progress;
+  if(!r->failure) {
+    r->failure=why;r->failed_phase=r->phase;
+    r->fault_gint=DWC2_REG(rhport)->gintsts;
+    r->fault_grst=DWC2_REG(rhport)->grstctl;
+    r->fault_dctl=DWC2_REG(rhport)->dctl;
   }
-
-  // Disable all IN endpoints
-  for (uint8_t n = 0; n < ep_count; n++) {
-    dwc2_dep_t* dep = &dwc2->epin[n];
-    if (edpt_is_enabled(dep)) {
-      dep->diepctl |= DIEPCTL_SNAK | DIEPCTL_EPDIS;
+  r->phase=RESET_FAILED;
+  (void)cancel_failed(rhport,why); // retain all endpoint pointers and partial facts
+}
+static void reset_phase(uint8_t phase) {
+  reset_progress.phase=phase;
+  reset_progress.flush_observed=false;
+  reset_progress.phase_cycle=DWT->CYCCNT;
+  reset_progress.phase_ms=tusb_time_millis_api();
+}
+// RM0399 says flush self-clear takes eight slower PHY/AHB clocks.
+// Keep an additional conservative 1 us DWT gap for the fixed FS48/H747 clocks.
+static bool reset_flush_settled(void) {
+  volatile reset_progress_t *r=&reset_progress;
+  if(!r->flush_observed) {r->flush_observed=true;r->flush_cycle=DWT->CYCCNT;return false;}
+  return (uint32_t)(DWT->CYCCNT-r->flush_cycle)>=r->clock_hz/1000000U;
+}
+static bool reset_expired(uint32_t ms) {
+  volatile reset_progress_t *r=&reset_progress;
+  return (uint32_t)(tusb_time_millis_api()-r->phase_ms)>=ms ||
+    (uint32_t)(DWT->CYCCNT-r->phase_cycle)>=(r->clock_hz/1000U)*ms;
+}
+// Keep FIFO reservations after active reset. Reconfiguration while SETUP can
+// arrive is unnecessary for this fixed FS RAM MSC configuration and is avoided.
+static void handle_bus_reset(uint8_t rhport,bool out0_proved) {
+  dwc2_regs_t *d=DWC2_REG(rhport);
+  for(uint8_t n=0;n<dwc2_ep_count(d);n++) {
+    if(d->epin[n].ctl & EPCTL_EPENA) {reset_fail(rhport,34);return;}
+    if((d->epout[n].ctl & EPCTL_EPENA) && !(n==0 && out0_proved)) {reset_fail(rhport,34);return;}
+    if(pio_refs[n]) {reset_fail(rhport,34);return;}
+  }
+  if(d->gintsts & GINTSTS_RXFLVL) {reset_fail(rhport,34);return;}
+  // No live OUT0 source is used in PIO: reset fence discarded every old packet.
+  // OUT0 is never written with EPDIS, even if EPENA remains set for SETUP.
+  d->diepempmsk=0;
+  d->daintmsk=TU_BIT(0)|TU_BIT(16);
+  d->diepmsk=DIEPMSK_TOM|DIEPMSK_XFRCM;
+  d->doepmsk=DOEPMSK_STUPM|DOEPMSK_XFRCM;
+  for(uint8_t n=0;n<dwc2_ep_count(d);n++) {
+    d->epin[n].intr=d->epin[n].intr;
+    if(n) d->epout[n].intr=d->epout[n].intr; // EP0 flags stay with RX status consumer
+    if(n) {d->epin[n].ctl &= ~EPCTL_USBAEP;d->epout[n].ctl &= ~EPCTL_USBAEP;}
+    d->epout[n].ctl |= EPCTL_SNAK;
+  }
+  tu_memclr(xfer_status,sizeof(xfer_status));
+  tu_memclr(bulk_cancel,sizeof(bulk_cancel));
+  tu_memclr(rx_left,sizeof(rx_left));
+  tu_memclr(hardware_completed,sizeof(hardware_completed));
+  deferred_tx_mask=0;
+  _dcd_data.ep0_pending[0]=_dcd_data.ep0_pending[1]=0;
+  _dcd_data.sof_en=false;
+  dwc2_dcfg_t cfg={.value=d->dcfg};cfg.address=0;d->dcfg=cfg.value;
+  d->epin[0].ctl &= ~DIEPCTL0_MPSIZ_Msk; // fixed full-speed EP0 64
+  d->epout[0].ctl &= ~DOEPCTL0_MPSIZ_Msk;
+  d->epout[0].doeptsiz=3U<<DOEPTSIZ_STUPCNT_Pos;
+  xfer_status[0][0].max_size=xfer_status[0][1].max_size=64;
+  ep0_out_armed=false;
+  setup_rx_eligible=false; // a DONE crossing this boundary cannot revive old RX
+  d->gintmsk |= GINTMSK_OTGINT|GINTMSK_USBRST|GINTMSK_ENUMDNEM|GINTMSK_IEPINT|GINTMSK_RXFLVLM;
+}
+static void reset_issue_rx(uint8_t rhport) {
+  volatile reset_progress_t *r=&reset_progress;dwc2_regs_t *d=DWC2_REG(rhport);
+  // RM0399 p2752: ENUMDNE ends reset signaling. Only the reset-specific
+  // p2910 RX flush/retry is permitted here, before that window closes.
+  if(r->enum_seen || (d->gintsts & GINTSTS_ENUMDNE)) {reset_fail(rhport,20);return;}
+  uint32_t command=d->grstctl;
+  if(!(command & GRSTCTL_AHBIDL)) return;
+  if(command & (GRSTCTL_TXFFLSH|GRSTCTL_CSRST)) {reset_fail(rhport,35);return;}
+  d->gintmsk &= ~GINTMSK_RXFLVLM; // sole RX pop consumer pauses for RXFFLSH
+  d->grstctl=command|GRSTCTL_RXFFLSH;
+  reset_phase(RESET_RX_WAIT);
+  if(d->gintsts & GINTSTS_ENUMDNE) reset_fail(rhport,20);
+}
+static void reset_begin(uint8_t rhport) {
+  dwc2_regs_t *d=DWC2_REG(rhport);volatile reset_progress_t *r=&reset_progress;
+  if(r->phase || any_cancel() || closing_noncontrol || dcd_device_faulted(rhport) ||
+      dma_device_enabled(d) || reset_generation==UINT32_MAX || out_nak_owner!=-1 ||
+      (d->dctl & 8U) || (d->gintsts & GINTSTS_BOUTNAKEFF)) {reset_fail(rhport,29);return;}
+  if(!(DWT->CTRL & DWT_CTRL_CYCCNTENA_Msk) || !(CoreDebug->DEMCR & CoreDebug_DEMCR_TRCENA_Msk) || SystemCoreClock<1000U) {reset_fail(rhport,28);return;}
+  bool empty=!(d->gintsts & GINTSTS_RXFLVL);
+  for(uint8_t n=0;n<dwc2_ep_count(d);n++) {
+    if(pio_refs[n]) {reset_fail(rhport,34);return;}
+    for(uint8_t dir=0;dir<2;dir++) {
+      dwc2_dep_t *ep=&d->ep[dir?0:1][n];xfer_ctl_t *x=XFER_CTL_BASE(n,dir);
+      if(x->buffer || x->ff || (ep->ctl & EPCTL_EPENA)) empty=false;
+      if(x->ff || (n && (x->buffer || (ep->ctl & EPCTL_EPENA)) && ((ep->ctl>>18)&3)!=DEPCTL_EPTYPE_BULK)) {reset_fail(rhport,36);return;}
     }
   }
-
-  // 2. Set up interrupt mask for EP0
-  dwc2->daintmsk = TU_BIT(DAINTMSK_OEPM_Pos) | TU_BIT(DAINTMSK_IEPM_Pos);
-  dwc2->doepmsk = DOEPMSK_STUPM | DOEPMSK_XFRCM;
-  dwc2->diepmsk = DIEPMSK_TOM | DIEPMSK_XFRCM;
-
-  // 4. Set up DFIFO
-  if (!dfifo_flush_tx(dwc2, 0x10) || !dfifo_flush_rx(dwc2)) return;
-  tu_memclr(xfer_status,sizeof(xfer_status));
-  dfifo_device_init(rhport);
-
-  // 5. Reset device address
-  dwc2_dcfg_t dcfg = {.value = dwc2->dcfg};
-  dcfg.address = 0;
-  dwc2->dcfg = dcfg.value;
-
-  pti_configure(dwc2); // No operation if !CFG_TUD_DWC2_PTI_ENABLE
-
-  // 6. Configure maximum packet size for EP0
-  uint8_t mps = 0;
-  switch (CFG_TUD_ENDPOINT0_SIZE) {
-    case 8: mps = 3; break;
-    case 16: mps = 2; break;
-    case 32: mps = 1; break;
-    case 64: mps = 0; break;
-    default: mps = 0; break;
-  }
-
-  dwc2->epin[0].ctl &= ~DIEPCTL0_MPSIZ_Msk;
-  dwc2->epout[0].ctl &= ~DOEPCTL0_MPSIZ_Msk;
-  dwc2->epin[0].ctl |= mps << DIEPCTL0_MPSIZ_Pos;
-  dwc2->epout[0].ctl |= mps << DOEPCTL0_MPSIZ_Pos;
-
-  xfer_status[0][TUSB_DIR_OUT].max_size = CFG_TUD_ENDPOINT0_SIZE;
-  xfer_status[0][TUSB_DIR_IN].max_size = CFG_TUD_ENDPOINT0_SIZE;
-
-  uint32_t gintmsk = GINTMSK_OTGINT | GINTMSK_IEPINT;
-  // PTI carries missed ISOC IN data to the next frame; IncompISOCIN must stay masked
-  if (!pti_device_enabled(dwc2)) {
-    gintmsk |= GINTMSK_IISOIXFRM;
-  }
-  if(dma_device_enabled(dwc2)) {
-    #if DWC2_SETUP_GUARD_ENABLE
-    // Do not rely on Setup Phase Done to detect a SETUP DMA rewind: the same short-packet erratum can suppress it
-    dwc2->doepmsk |= DOEPMSK_B2BSTUP;
-    #endif
-    gintmsk |= GINTMSK_OEPINT;
-    dma_setup_prepare(rhport);
+  tu_memclr((void*)r,sizeof(*r));reset_generation++;
+  r->clock_hz=SystemCoreClock;r->began_cycle=r->previous_cycle=DWT->CYCCNT;r->began_ms=tusb_time_millis_api();
+  reset_phase(empty ? RESET_FAST_WAIT : RESET_RX_BEGIN);
+  setup_rx_eligible=false;ep0_out_armed=false;setup_tag++; // native 32-bit SETUP sequence also invalidates
+  d->diepempmsk=0;
+  if(empty) {
+    // Initial/no-reference reset: no flush is needed to prove old resources.
+    // The first FIFO layout is installed while reset signaling is still active.
+    if(!_dcd_data.dfifo_top) {
+      if(d->gintsts & GINTSTS_ENUMDNE) {reset_fail(rhport,20);return;}
+      dfifo_device_init(rhport);
+    }
+    r->rx_flushed=true;
+    handle_bus_reset(rhport,false);
   } else {
-    dwc2->epout[0].doeptsiz |= (3 << DOEPTSIZ_STUPCNT_Pos);
+    out_nak_owner=-2; // reset owns the existing global lease, no parallel writer
+    d->diepmsk |= DIEPMSK_EPDM|DIEPMSK_XFRCM;
+    d->doepmsk |= DOEPMSK_EPDM|DOEPMSK_XFRCM;
+    d->daintmsk=0x01ff01ffU;
+    d->gintmsk |= GINTMSK_IEPINT|GINTMSK_OEPINT|GINTMSK_RXFLVLM;
+    for(uint8_t n=0;n<dwc2_ep_count(d);n++) {
+      d->epin[n].intr=d->epin[n].intr;
+      if(d->epin[n].ctl & EPCTL_EPENA) {r->in_wait |= (uint16_t)TU_BIT(n);d->epin[n].ctl |= EPCTL_EPDIS;}
+      d->epout[n].intr=d->epout[n].intr;
+      d->epout[n].ctl |= EPCTL_EPENA|EPCTL_SNAK; // RM reset-only enable/drain
+    }
+    reset_issue_rx(rhport); // single check/write, never wait in this ISR
   }
-
-  dwc2->gintmsk |= gintmsk;
+  if(!r->failure) dcd_event_bus_signal(rhport,DCD_EVENT_BUS_RESET_START,true);
 }
-
 static void handle_enum_done(uint8_t rhport) {
-  dwc2_regs_t *dwc2 = DWC2_REG(rhport);
-  const dwc2_dsts_t dsts = {.value = dwc2->dsts};
-  tusb_speed_t speed;
-  switch (dsts.enum_speed) {
-    case DCFG_SPEED_HIGH:
-      speed = TUSB_SPEED_HIGH;
-    break;
-
-    case DCFG_SPEED_LOW:
-      speed = TUSB_SPEED_LOW;
-    break;
-
-    case DCFG_SPEED_FULL_30_60MHZ:
-    case DCFG_SPEED_FULL_48MHZ:
-    default:
-      speed = TUSB_SPEED_FULL;
-    break;
+  volatile reset_progress_t *r=&reset_progress;
+  if(!r->phase) {reset_fail(rhport,37);return;}
+  if(!r->rx_flushed) {reset_fail(rhport,20);return;} // no unproved late RX flush
+  r->enum_seen=true;
+}
+static void reset_poll(uint8_t rhport) {
+  volatile reset_progress_t *r=&reset_progress;dwc2_regs_t *d=DWC2_REG(rhport);
+  if(!r->phase || r->failure || dcd_device_faulted(rhport)) return;
+  uint32_t now=DWT->CYCCNT;
+  if(SystemCoreClock!=r->clock_hz || now==r->previous_cycle ||
+      !(DWT->CTRL & DWT_CTRL_CYCCNTENA_Msk) || !(CoreDebug->DEMCR & CoreDebug_DEMCR_TRCENA_Msk)) {reset_fail(rhport,28);return;}
+  r->previous_cycle=now;
+  if((uint32_t)(tusb_time_millis_api()-r->began_ms)>=1000U || (uint32_t)(now-r->began_cycle)>=(r->clock_hz/1000U)*1000U) {reset_fail(rhport,38);return;}
+  if((d->gintsts & GINTSTS_USBRST) || (d->gotgint & GOTGINT_SEDET)) {reset_fail(rhport,29);return;}
+  if(r->phase==RESET_RX_BEGIN) {
+    usbd_spin_lock(false);reset_issue_rx(rhport);usbd_spin_unlock(false);
+    if(r->phase==RESET_RX_BEGIN && reset_expired(2)) reset_fail(rhport,21);
+  } else if(r->phase==RESET_RX_WAIT) {
+    usbd_spin_lock(false);
+    if(r->enum_seen || (d->gintsts & GINTSTS_ENUMDNE)) reset_fail(rhport,20);
+    else if(!(d->grstctl & GRSTCTL_RXFFLSH) && reset_flush_settled()) {
+      r->rx_flushed=true;
+      if((d->dctl & 8U) || (d->gintsts & GINTSTS_BOUTNAKEFF)) reset_fail(rhport,30);
+      else {r->nak_seen=false;d->dctl |= DCTL_SGONAK;reset_phase(RESET_NAK_WAIT);d->gintmsk |= GINTMSK_RXFLVLM;}
+    } else if(reset_expired(2)) {
+      if(r->retries++==0) reset_issue_rx(rhport); else reset_fail(rhport,22);
+    }
+    usbd_spin_unlock(false);
+  } else if(r->phase==RESET_NAK_WAIT) {
+    if(r->nak_seen && (d->gintsts & GINTSTS_BOUTNAKEFF)) {
+      usbd_spin_lock(false);
+      for(uint8_t n=1;n<dwc2_ep_count(d);n++) {
+        if(d->epout[n].ctl & EPCTL_EPENA) {d->epout[n].intr=DOEPINT_EPDISD;r->out_wait|=(uint16_t)TU_BIT(n);d->epout[n].ctl |= EPCTL_EPDIS|EPCTL_SNAK;}
+      }
+      reset_phase(RESET_OUT_WAIT);usbd_spin_unlock(false);
+    } else if(reset_expired(50)) reset_fail(rhport,23);
+  } else if(r->phase==RESET_OUT_WAIT) {
+    bool disabled=(r->in_wait==r->in_done && r->out_wait==r->out_done);
+    for(uint8_t n=0;n<dwc2_ep_count(d);n++) {
+      if(d->epin[n].ctl & EPCTL_EPENA) disabled=false;
+      if(n && (d->epout[n].ctl & EPCTL_EPENA)) disabled=false;
+    }
+    if(disabled && !(d->gintsts & GINTSTS_RXFLVL) && (d->grstctl & GRSTCTL_AHBIDL)) {
+      usbd_spin_lock(false);
+      if(d->grstctl & (GRSTCTL_RXFFLSH|GRSTCTL_TXFFLSH|GRSTCTL_CSRST)) reset_fail(rhport,35);
+      else {d->grstctl=GRSTCTL_TXFFLSH|(0x10U<<GRSTCTL_TXFNUM_Pos);reset_phase(RESET_TX_WAIT);}
+      usbd_spin_unlock(false);
+    } else if(reset_expired(50)) reset_fail(rhport,r->in_wait!=r->in_done?24:25);
+  } else if(r->phase==RESET_TX_WAIT) {
+    if(!(d->grstctl & GRSTCTL_TXFFLSH) && reset_flush_settled()) {d->dctl |= DCTL_CGONAK;reset_phase(RESET_NAK_RELEASE);}
+    else if(reset_expired(2)) reset_fail(rhport,26);
+  } else if(r->phase==RESET_NAK_RELEASE) {
+    if(!(d->dctl & 8U) && !(d->gintsts & GINTSTS_BOUTNAKEFF)) {out_nak_owner=-1;reset_phase(RESET_ENUM_WAIT);}
+    else if(reset_expired(50)) reset_fail(rhport,27);
   }
-
-  // TODO must update GUSBCFG_TRDT according to link speed
-  dcd_event_bus_reset(rhport, speed, true);
+  if((r->phase==RESET_ENUM_WAIT || r->phase==RESET_FAST_WAIT) && r->enum_seen && !(d->gintsts & GINTSTS_RXFLVL)) {
+    usbd_spin_lock(false);
+    const dwc2_dsts_t sts={.value=d->dsts};
+    if(sts.enum_speed!=DCFG_SPEED_FULL_48MHZ && sts.enum_speed!=DCFG_SPEED_FULL_30_60MHZ) reset_fail(rhport,31);
+    else {
+      handle_bus_reset(rhport,r->phase==RESET_ENUM_WAIT && r->rx_flushed && r->nak_seen);
+      if(!r->failure) {
+        dcd_event_bus_reset(rhport,TUSB_SPEED_FULL,false); // before new SETUP event
+        r->phase=0;
+      }
+    }
+    usbd_spin_unlock(false);
+  }
+}
+bool dcd_edpt0_setup_begin(uint8_t rhport,uint8_t tag) {
+  return !dcd_reset_pending(rhport) && !dcd_device_faulted(rhport) && tag==setup_tag &&
+    !(DWC2_REG(rhport)->gintsts & (GINTSTS_USBRST|GINTSTS_ENUMDNE));
 }
 
 #if 0
@@ -1339,7 +1467,7 @@ TU_ATTR_ALWAYS_INLINE static inline void print_doepint(uint32_t doepint) {
 
 #if CFG_TUD_DWC2_SLAVE_ENABLE
 static uint16_t epin_write_tx_fifo(dwc2_regs_t *dwc2, uint8_t epnum) {
-  if (cancel_active(epnum,1)) return 0;
+  if (dcd_reset_pending(0) || cancel_active(epnum,1)) return 0;
   // Do not write any TX FIFO while GRSTCTL owns a shared FIFO/reset command.
   // Preserve source and resume via TXFE only after observed command completion.
   if (dwc2->grstctl & (GRSTCTL_TXFFLSH | GRSTCTL_RXFFLSH | GRSTCTL_CSRST)) {
@@ -1400,6 +1528,13 @@ static void handle_rxflvl_irq(uint8_t rhport) {
   const uint8_t epnum = grxstsp.ep_ch_num;
 
   dwc2_dep_t* epout = &dwc2->epout[epnum];
+  if(dcd_reset_pending(rhport)) {
+    for(uint16_t i=0;i<(uint16_t)((grxstsp.byte_count+3U)/4U);i++) (void)*rx_fifo;
+    if(packet_status==GRXSTS_PKTSTS_GLOBAL_OUT_NAK && reset_progress.phase==RESET_NAK_WAIT) reset_progress.nak_seen=true;
+    if(packet_status==GRXSTS_PKTSTS_SETUP_RX || packet_status==GRXSTS_PKTSTS_SETUP_DONE) setup_rx_eligible=false;
+    epout->intr=epout->intr & (DOEPINT_XFRC|DOEPINT_SETUP|DOEPINT_STPKTRX);
+    return; // no old PIO buffer copy, class callback or SETUP notification
+  }
 
   switch (packet_status) {
     case GRXSTS_PKTSTS_GLOBAL_OUT_NAK:
@@ -1407,6 +1542,7 @@ static void handle_rxflvl_irq(uint8_t rhport) {
       break;
 
     case GRXSTS_PKTSTS_SETUP_RX: {
+      setup_rx_eligible=true;ep0_out_armed=false;setup_tag++;
       // Setup packet received
       uint32_t * setup = (uint32_t*)(uintptr_t) setup_buffer_data;
       // We can receive up to three setup packets in succession, but only the last one is valid.
@@ -1419,10 +1555,12 @@ static void handle_rxflvl_irq(uint8_t rhport) {
       // Pop this word causes the Setup interrupt
       epout->doeptsiz |= (3 << DOEPTSIZ_STUPCNT_Pos);
       epout->doepint = DOEPINT_SETUP | DOEPINT_STPKTRX; // Clear SETUP interrupt, required for core to re-write this control word
+      if(!setup_rx_eligible) break;
+      setup_rx_eligible=false;
       if (edpt_is_enabled(&dwc2->epin[0])) {
         if (!edpt_disable(rhport, 0x80, false, true)) return;
       }
-      dcd_event_setup_received(rhport, setup_buffer_data, true);
+      dcd_event_setup_received_tagid(rhport, setup_buffer_data, setup_tag,true);
       break;
     }
 
@@ -1430,6 +1568,10 @@ static void handle_rxflvl_irq(uint8_t rhport) {
       // Out packet received
       const uint16_t byte_count = grxstsp.byte_count;
       xfer_ctl_t* xfer = XFER_CTL_BASE(epnum, TUSB_DIR_OUT);
+      if(epnum==0 && !ep0_out_armed) {
+        for(uint16_t i=0;i<(uint16_t)((byte_count+3U)/4U);i++) (void)*rx_fifo;
+        break;
+      }
 
       if (cancel_active(epnum,0) || byte_count > rx_left[epnum]) {
         if (byte_count > rx_left[epnum] && !cancel_active(epnum,0)) dwc2_wait_fail();
@@ -1465,6 +1607,7 @@ static void handle_rxflvl_irq(uint8_t rhport) {
       const uint32_t doepint = epout->doepint;
       epout->doepint = DOEPINT_XFRC;
 
+      if(epnum==0 && !ep0_out_armed) break; // stale/quirk completion owns no new buffer
       hardware_completed[epnum][0]=true;
       if (cancel_active(epnum,0)) {
         bulk_cancel[epnum][0].completed=true;
@@ -1484,6 +1627,7 @@ static void handle_rxflvl_irq(uint8_t rhport) {
         // EP0 can only handle one packet, schedule another packet to be received.
         edpt_schedule_packets(rhport, 0, TUSB_DIR_OUT);
       } else {
+        if(epnum==0) ep0_out_armed=false;
         dcd_event_xfer_complete(rhport, epnum, xfer->total_len, XFER_RESULT_SUCCESS, true);
       }
       break;
@@ -1498,7 +1642,7 @@ static void handle_epin_slave(uint8_t rhport, uint8_t epnum, dwc2_diepint_t diep
   dwc2_dep_t* epin = &dwc2->epin[epnum];
   xfer_ctl_t* xfer = XFER_CTL_BASE(epnum, TUSB_DIR_IN);
 
-  if (cancel_active(epnum,1)) return;
+  if (dcd_reset_pending(rhport) || cancel_active(epnum,1)) return;
   if (diepint_bm.xfer_complete) {
     if ((epnum == 0) && (0 != _dcd_data.ep0_pending[TUSB_DIR_IN])) {
       // EP0 can only handle one packet. Schedule another packet to be transmitted.
@@ -1657,6 +1801,14 @@ static void handle_ep_irq(uint8_t rhport, uint8_t dir) {
         dwc2_doepint_t doepint_bm;
       } intr;
       intr.value = epout->intr;
+      if(dcd_reset_pending(rhport)) {
+        if(intr.value & 2U) {
+          if(dir && (reset_progress.in_wait & TU_BIT(epnum))) reset_progress.in_done |= (uint16_t)TU_BIT(epnum);
+          if(!dir && (reset_progress.out_wait & TU_BIT(epnum))) reset_progress.out_done |= (uint16_t)TU_BIT(epnum);
+        }
+        epout->intr=intr.value;
+        continue;
+      }
 
       if (!is_dma && dir==TUSB_DIR_OUT) {
         // PIO XFRC/SETUP belong exclusively to the RX status pop consumer.
@@ -1760,28 +1912,17 @@ void dcd_int_handler(uint8_t rhport) {
   dwc2_regs_t* dwc2 = DWC2_REG(rhport);
   const uint32_t gintmask = dwc2->gintmsk;
   const uint32_t gintsts = dwc2->gintsts & gintmask;
-  if (!dcd_device_faulted(rhport) && !(gintsts & (GINTSTS_USBRST | GINTSTS_ENUMDNE | GINTSTS_OTGINT))) resume_deferred_tx(dwc2);
+  if (!dcd_reset_pending(rhport) && !dcd_device_faulted(rhport) && !(gintsts & (GINTSTS_USBRST | GINTSTS_ENUMDNE | GINTSTS_OTGINT))) resume_deferred_tx(dwc2);
 
-  if (gintsts & GINTSTS_USBRST) {
-    // USBRST is start of reset.
-    dwc2->gintsts = GINTSTS_USBRST;
-
-    if (any_cancel()) { (void)cancel_failed(rhport,6); return; }
-    usbd_spin_lock(true);
-    handle_bus_reset(rhport);
-    usbd_spin_unlock(true);
-  }
-
-  if (gintsts & GINTSTS_ENUMDNE) {
-    if (any_cancel()) {(void)cancel_failed(rhport,8);dwc2->gintsts=GINTSTS_ENUMDNE;return;}
-    // ENUMDNE is the end of reset where speed of the link is detected
-    dwc2->gintsts = GINTSTS_ENUMDNE;
-    // There may be a pending suspend event, so we clear it first
-    dwc2->gintsts = GINTSTS_USBSUSP;
-    usbd_spin_lock(true);
-    dwc2->gintmsk |= GINTMSK_USBSUSPM;
-    usbd_spin_unlock(true);
-    handle_enum_done(rhport);
+  if (gintsts & GINTSTS_USBRST) {dwc2->gintsts=GINTSTS_USBRST;reset_begin(rhport);}
+  if (gintsts & GINTSTS_ENUMDNE) {dwc2->gintsts=GINTSTS_ENUMDNE;handle_enum_done(rhport);}
+  if(dcd_reset_pending(rhport)) {
+    if((gintsts & GINTSTS_OTGINT) && (dwc2->gotgint & GOTGINT_SEDET)) {dwc2->gotgint=GOTGINT_SEDET;reset_fail(rhport,32);}
+    if(gintsts & GINTSTS_IEPINT) handle_ep_irq(rhport,TUSB_DIR_IN);
+    if(gintsts & GINTSTS_OEPINT) handle_ep_irq(rhport,TUSB_DIR_OUT);
+    if(reset_progress.phase!=RESET_RX_WAIT && !(dwc2->grstctl & GRSTCTL_RXFFLSH))
+      for(uint8_t i=0;i<8 && (dwc2->gintsts & GINTSTS_RXFLVL);i++) handle_rxflvl_irq(rhport);
+    return;
   }
 
   if (gintsts & GINTSTS_USBSUSP) {
