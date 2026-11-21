@@ -34,6 +34,7 @@ static const AppV3ServiceRecord_t s_services[] =
        RUNTIME_EVENT_BOOT_READY}, AppV3_StorageInit, &s_storage}
 };
 
+//按照固定服务清单创建任务并记录实际创建数量
 SysResult_t AppV3_StartServices(uint32_t *created)
 {
     size_t service_index;
@@ -58,6 +59,7 @@ static AppControlStatus_t s_startup_status;
 static uint32_t s_startup_completed;
 static bool s_startup_published;
 
+//按任务身份查找编译期服务描述
 static const AppV3ServiceRecord_t *AppV3_FindRecord(RuntimeEventTarget_t owner)
 {
     size_t service_index;
@@ -70,6 +72,7 @@ static const AppV3ServiceRecord_t *AppV3_FindRecord(RuntimeEventTarget_t owner)
     return NULL;
 }
 
+//返回已登记的服务身份
 const RuntimeEventTarget_t *AppV3_FindService(RuntimeEventTarget_t owner)
 {
     const AppV3ServiceRecord_t *service = AppV3_FindRecord(owner);
@@ -78,6 +81,7 @@ const RuntimeEventTarget_t *AppV3_FindService(RuntimeEventTarget_t owner)
     return service == NULL ? NULL : &service->thread.owner;
 }
 
+//在所属任务中准备服务并发布真实初始化结果
 SysResult_t AppV3_InitService(RuntimeEventTarget_t owner, const AppV3Context_t *context)
 {
     const AppV3ServiceRecord_t *service = AppV3_FindRecord(owner);
@@ -104,6 +108,7 @@ SysResult_t AppV3_InitService(RuntimeEventTarget_t owner, const AppV3Context_t *
     return AppV3Record_Create(owner, service->instance);
 }
 
+//将已发布的服务结果提交到专用启动通道
 SysResult_t AppV3_ReportInitialization(RuntimeEventTarget_t owner, SysResult_t result)
 {
     AppMessage_t message = {.type = APP_MESSAGE_FAULT};
@@ -123,6 +128,7 @@ SysResult_t AppV3_ReportInitialization(RuntimeEventTarget_t owner, SysResult_t r
     return App_MessagesSend(APP_CHANNEL_STARTUP, &message);
 }
 
+//从服务清单计算整体启动所需的任务集合
 static uint32_t AppV3_StartupRequired(void)
 {
     size_t service_index;
@@ -134,6 +140,7 @@ static uint32_t AppV3_StartupRequired(void)
     return required;
 }
 
+//仅发布已满足条件的整体启动结果
 static SysResult_t AppV3_PublishStartup(void)
 {
     SysResult_t result;
@@ -151,6 +158,7 @@ static SysResult_t AppV3_PublishStartup(void)
     return result;
 }
 
+//由Control限量接收并核对启动报告
 SysResult_t AppV3_DrainInitialization(void)
 {
     AppMessage_t message;
@@ -165,6 +173,7 @@ SysResult_t AppV3_DrainInitialization(void)
         uint32_t owner_bit;
         SysResult_t recorded;
 
+        //专用通道仍需校验身份与消息类型，拒绝非法启动报告
         if (message.command_id != 0U || AppV3_FindService(message.source) == NULL)
             continue;
         if (!((message.type == APP_MESSAGE_ACK && message.result == SYS_OK) ||
@@ -184,6 +193,7 @@ SysResult_t AppV3_DrainInitialization(void)
     return AppV3_PublishStartup();
 }
 
+//冻结启动超时结果并交由原状态接口发布
 SysResult_t AppV3_ExpireInitialization(void)
 {
     if (!App_MessagesIsOwner(RUNTIME_TARGET_CONTROL))

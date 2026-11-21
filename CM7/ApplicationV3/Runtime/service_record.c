@@ -24,9 +24,11 @@ typedef struct
     RecordState_t state;
 } RecordSlot_t;
 
+//固定槽与服务身份对应，发布事实和持有票据同步更新
 static RecordSlot_t s_records[RUNTIME_TARGET_COUNT];
 static bool s_initialized;
 
+//关闭中断以保护发布状态、等待者和引用关系
 static uint32_t Record_Lock(void)
 {
     uint32_t saved = Platform_SyncGetPrimask();
@@ -35,23 +37,27 @@ static uint32_t Record_Lock(void)
     return saved;
 }
 
+//确保所有写入可见后恢复原中断状态
 static void Record_Unlock(uint32_t saved)
 {
     Platform_SyncMemoryBarrier();
     Platform_SyncRestoreIrq(saved);
 }
 
+//Record只在可正常调度的任务上下文访问
 static bool Record_TaskContext(void)
 {
     return Platform_SyncGetException() == 0U && Platform_SyncGetPrimask() == 0U &&
         Platform_SyncGetBasepri() == 0U && xTaskGetSchedulerState() == taskSCHEDULER_RUNNING;
 }
 
+//按静态服务身份定位运行时记录
 static RecordSlot_t *Record_Find(RuntimeEventTarget_t owner)
 {
     return s_initialized && AppV3_FindService(owner) != NULL ? &s_records[owner] : NULL;
 }
 
+//调度前建立各服务的Record就绪队列
 SysResult_t AppV3Record_Init(void)
 {
     uint32_t owner;
@@ -74,6 +80,7 @@ SysResult_t AppV3Record_Init(void)
     return SYS_OK;
 }
 
+//由服务所有者一次性发布实例或实际初始化错误
 static SysResult_t Record_Publish(RuntimeEventTarget_t owner,
     const AppV3ServiceInstance_t *instance, SysResult_t result)
 {
@@ -85,6 +92,7 @@ static SysResult_t Record_Publish(RuntimeEventTarget_t owner,
     if (!Record_TaskContext() || !App_MessagesIsOwner(owner))
         return SYS_ERR_INVALID_STATE;
     saved = Record_Lock();
+    //已发布状态不允许被重复初始化覆盖
     if (slot->state != RECORD_WAITING)
     {
         Record_Unlock(saved);
@@ -99,6 +107,7 @@ static SysResult_t Record_Publish(RuntimeEventTarget_t owner,
     return AppV3Queue_Put(slot->signal, &token, 0U);
 }
 
+//发布与服务身份匹配的只读实例
 SysResult_t AppV3Record_Create(RuntimeEventTarget_t owner, const AppV3ServiceInstance_t *instance)
 {
     if (instance == NULL || instance->owner != owner || instance->config == NULL)
@@ -106,6 +115,7 @@ SysResult_t AppV3Record_Create(RuntimeEventTarget_t owner, const AppV3ServiceIns
     return Record_Publish(owner, instance, SYS_OK);
 }
 
+//发布失败原因，使已有等待者可以退出
 SysResult_t AppV3Record_Fail(RuntimeEventTarget_t owner, SysResult_t result)
 {
     if (result >= SYS_OK)
@@ -113,6 +123,7 @@ SysResult_t AppV3Record_Fail(RuntimeEventTarget_t owner, SysResult_t result)
     return Record_Publish(owner, NULL, result);
 }
 
+//在临界区内分配绑定当前任务的持有票据
 static SysResult_t Record_Acquire(RecordSlot_t *slot, RuntimeEventTarget_t owner,
     TaskHandle_t task, AppV3RecordRef_t *out)
 {
@@ -138,6 +149,7 @@ static SysResult_t Record_Acquire(RecordSlot_t *slot, RuntimeEventTarget_t owner
     return SYS_ERR_NO_RESOURCE;
 }
 
+//取得已发布实例，尚未发布时最多等待指定Tick
 SysResult_t AppV3Record_Open(RuntimeEventTarget_t owner, TickType_t timeout, AppV3RecordRef_t *out)
 {
     RecordSlot_t *slot = Record_Find(owner);
@@ -152,6 +164,7 @@ SysResult_t AppV3Record_Open(RuntimeEventTarget_t owner, TickType_t timeout, App
 
     task = xTaskGetCurrentTaskHandle();
     saved = Record_Lock();
+    //已有结果直接核验，零等待调用不进入FreeRTOS阻塞路径
     if (slot->state != RECORD_WAITING || timeout == 0U)
     {
         result = Record_Acquire(slot, owner, task, out);
@@ -167,9 +180,11 @@ SysResult_t AppV3Record_Open(RuntimeEventTarget_t owner, TickType_t timeout, App
     }
     ++slot->waiters;
     Record_Unlock(saved);
+    //等待发生在临界区之外，等待标记保持原槽有效
     result = AppV3Queue_Peek(slot->signal, &token, timeout);
 
     saved = Record_Lock();
+    //消费等待结果后解除销毁门禁，并在同一临界区取得引用
     --slot->waiters;
     if (result == SYS_OK)
         result = Record_Acquire(slot, owner, task, out);
@@ -177,6 +192,7 @@ SysResult_t AppV3Record_Open(RuntimeEventTarget_t owner, TickType_t timeout, App
     return result;
 }
 
+//核对实际持有者和票据后关闭引用
 SysResult_t AppV3Record_Close(AppV3RecordRef_t *reference)
 {
     RecordSlot_t *slot;
@@ -193,6 +209,7 @@ SysResult_t AppV3Record_Close(AppV3RecordRef_t *reference)
     saved = Record_Lock();
     for (index = 0U; index < RECORD_HOLDERS; ++index)
     {
+        //票据同时匹配任务与已发布实例，旧票据不能关闭新持有
         if (slot->holders[index] != task || slot->tickets[index] != reference->ticket ||
             slot->instance != reference->instance)
             continue;
@@ -205,6 +222,7 @@ SysResult_t AppV3Record_Close(AppV3RecordRef_t *reference)
     return SYS_ERR_NOT_FOUND;
 }
 
+//由服务所有者撤回无人等待或持有的实例
 SysResult_t AppV3Record_Destroy(RuntimeEventTarget_t owner)
 {
     RecordSlot_t *slot = Record_Find(owner);
@@ -222,6 +240,7 @@ SysResult_t AppV3Record_Destroy(RuntimeEventTarget_t owner)
         Record_Unlock(saved);
         return SYS_ERR_INVALID_STATE;
     }
+    //已经唤醒但尚未完成Open的任务仍然占用该记录
     if (slot->waiters != 0U)
     {
         Record_Unlock(saved);
@@ -229,6 +248,7 @@ SysResult_t AppV3Record_Destroy(RuntimeEventTarget_t owner)
     }
     for (index = 0U; index < RECORD_HOLDERS; ++index)
     {
+        //只有全部持有者归还票据后才能撤回实例
         if (slot->holders[index] == NULL)
             continue;
         Record_Unlock(saved);
@@ -242,6 +262,7 @@ SysResult_t AppV3Record_Destroy(RuntimeEventTarget_t owner)
     saved = Record_Lock();
     if (result == SYS_OK)
     {
+        //就绪信号已经取走，新等待者可以等待下一次发布
         slot->instance = NULL;
         slot->state = RECORD_WAITING;
     }
@@ -251,6 +272,7 @@ SysResult_t AppV3Record_Destroy(RuntimeEventTarget_t owner)
     return result;
 }
 
+//查询发布状态和原始结果，保留持有关系
 SysResult_t AppV3Record_Query(RuntimeEventTarget_t owner, SysResult_t *out)
 {
     RecordSlot_t *slot = Record_Find(owner);
@@ -260,6 +282,7 @@ SysResult_t AppV3Record_Query(RuntimeEventTarget_t owner, SysResult_t *out)
     if (slot == NULL || out == NULL || !Record_TaskContext())
         return SYS_ERR_INVALID_STATE;
     saved = Record_Lock();
+    //尚未发布和服务已发布BUSY故障是两个不同事实
     result = SYS_ERR_BUSY;
     if (slot->state == RECORD_READY || slot->state == RECORD_FAILED)
     {

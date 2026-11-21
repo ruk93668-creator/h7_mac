@@ -15,10 +15,14 @@ typedef struct
     bool initialized;
 } AppV3EventLoop_t;
 
+//在该循环的所属任务内初始化零填充对象
 SysResult_t AppV3EventLoop_Init(AppV3EventLoop_t *loop, RuntimeEventTarget_t owner);
+//为当前循环绑定唯一队列及可读回调
 SysResult_t AppV3EventLoop_Subscribe(AppV3EventLoop_t *loop, AppV3Queue_t queue,
     AppV3QueueReadable_t readable, void *context);
+//撤回当前循环的订阅，由原订阅任务执行
 SysResult_t AppV3EventLoop_Unsubscribe(AppV3EventLoop_t *loop);
+//等待事件并按真实队列状态分发，订阅期间定期检查
 SysResult_t AppV3EventLoop_Step(AppV3EventLoop_t *loop, uint32_t timeout_ms, uint32_t *events);
 
 #endif

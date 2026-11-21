@@ -101,7 +101,7 @@ SysResult_t App_EventsAttach(RuntimeEventTarget_t target, TaskHandle_t task)
 //记录初始化结果并准备启动条件
 SysResult_t App_EventsRecordInitialization(SysResult_t result)
 {
-    uint32_t i;
+    uint32_t target_index;
 
     //初始化结果只允许在调度器启动前提交一次
     if (!s_initialized || s_prepared || s_failed || Platform_SyncGetException() != 0U ||
@@ -116,9 +116,9 @@ SysResult_t App_EventsRecordInitialization(SysResult_t result)
     }
 
     //逐一确认所有通知接收端都已创建
-    for (i = 0U; i < RUNTIME_TARGET_COUNT; i++)
+    for (target_index = 0U; target_index < RUNTIME_TARGET_COUNT; target_index++)
     {
-        if (s_tasks[i] == NULL)
+        if (s_tasks[target_index] == NULL)
             return SYS_ERR_INVALID_STATE;
     }
 
@@ -130,7 +130,7 @@ SysResult_t App_EventsRecordInitialization(SysResult_t result)
 //向全部业务任务发布启动屏障
 SysResult_t App_EventsReleaseBoot(void)
 {
-    uint32_t i;
+    uint32_t target_index;
 
     //仅允许调度器运行后的Control任务放行，main不能提前广播
     if (Platform_SyncGetException() != 0U || !s_prepared || s_failed ||
@@ -145,12 +145,12 @@ SysResult_t App_EventsReleaseBoot(void)
     //先完整提交屏障，再让高优先级任务执行
     taskENTER_CRITICAL();
     s_boot_ready = true;
-    for (i = 0U; i < RUNTIME_TARGET_COUNT; i++)
+    for (target_index = 0U; target_index < RUNTIME_TARGET_COUNT; target_index++)
     {
 
         //把BOOT与早期锁存提示一起送出，重复提示位允许合并
-        (void)xTaskNotify(s_tasks[i], RUNTIME_EVENT_BOOT_READY | s_pending[i], eSetBits);
-        s_pending[i] = 0U;
+        (void)xTaskNotify(s_tasks[target_index], RUNTIME_EVENT_BOOT_READY | s_pending[target_index], eSetBits);
+        s_pending[target_index] = 0U;
     }
 
     //全部接收端通知完成后退出临界区，允许高优先级任务执行

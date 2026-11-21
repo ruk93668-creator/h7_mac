@@ -7,6 +7,7 @@
 //Framework 在 BOOT 前写一次，之后各服务只读。
 static AppV3Context_t s_context;
 
+//框架初始化阶段准备V3共享配置和Record槽
 SysResult_t App_Init(void)
 {
     s_context.video = VideoConfig_GetDefault();
@@ -18,6 +19,7 @@ SysResult_t App_Init(void)
     return AppV3Record_Init();
 }
 
+//提供调度启动后只读的共享上下文
 const AppV3Context_t *AppV3_GetContext(void)
 {
     return &s_context;

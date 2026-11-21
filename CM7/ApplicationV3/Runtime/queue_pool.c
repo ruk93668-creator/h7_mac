@@ -19,10 +19,13 @@ typedef struct
     bool reserved;
 } QueueSlot_t;
 
+//槽位独占静态控制块，句柄代次和订阅关系都由池维护
 static QueueSlot_t s_slots[POOL_SIZE];
+//宽槽保存原应用消息，短信号使用独立空间
 static uint8_t s_messages[MESSAGE_SLOTS][MESSAGE_DEPTH * sizeof(AppMessage_t)] __attribute__((aligned(8)));
 static uint32_t s_signals[SIGNAL_SLOTS];
 
+//保存并关闭全局中断，保护任务和ISR共享的槽位
 static uint32_t QueuePool_Lock(void)
 {
     uint32_t saved = Platform_SyncGetPrimask();
@@ -32,12 +35,14 @@ static uint32_t QueuePool_Lock(void)
     return saved;
 }
 
+//先完成槽位状态写入，再恢复调用前的中断状态
 static void QueuePool_Unlock(uint32_t saved)
 {
     Platform_SyncMemoryBarrier();
     Platform_SyncRestoreIrq(saved);
 }
 
+//用槽位和代次查找现存队列，拒绝已经回收的句柄
 static QueueSlot_t *QueuePool_Find(AppV3Queue_t queue)
 {
     if (queue.index >= POOL_SIZE || queue.generation == 0U)
@@ -47,6 +52,7 @@ static QueueSlot_t *QueuePool_Find(AppV3Queue_t queue)
     return slot->queue != NULL && slot->generation == queue.generation ? slot : NULL;
 }
 
+//持有槽位后再离开临界区，避免收发过程中被销毁
 static QueueSlot_t *QueuePool_Pin(AppV3Queue_t queue, uint8_t *target)
 {
     uint32_t saved = QueuePool_Lock();
@@ -63,6 +69,7 @@ static QueueSlot_t *QueuePool_Pin(AppV3Queue_t queue, uint8_t *target)
     return slot;
 }
 
+//收发结束后解除销毁门禁
 static void QueuePool_Unpin(QueueSlot_t *slot)
 {
     uint32_t saved = QueuePool_Lock();
@@ -70,6 +77,7 @@ static void QueuePool_Unpin(QueueSlot_t *slot)
     QueuePool_Unlock(saved);
 }
 
+//检查任务上下文和等待参数
 static bool QueuePool_TaskContext(TickType_t timeout)
 {
     //允许调度前以零等待建立静态对象，有界阻塞仅在正常任务上下文。
@@ -80,12 +88,14 @@ static bool QueuePool_TaskContext(TickType_t timeout)
         Platform_SyncGetBasepri() == 0U && xTaskGetSchedulerState() == taskSCHEDULER_RUNNING);
 }
 
+//按消息尺寸从固定容量等级取得静态队列
 SysResult_t AppV3Queue_Alloc(size_t item_bytes, UBaseType_t length, AppV3Queue_t *out)
 {
     uint32_t saved, index;
     bool signal = item_bytes <= sizeof(s_signals[0]) && length == 1U;
     uint32_t limit = signal ? POOL_SIZE : MESSAGE_SLOTS;
 
+    //先检查消息尺寸和容量，避免超出静态负载区
     if (out == NULL || item_bytes == 0U || item_bytes > sizeof(AppMessage_t) ||
         length == 0U || length > MESSAGE_DEPTH)
         return SYS_ERR_INVALID_ARG;
@@ -96,6 +106,7 @@ SysResult_t AppV3Queue_Alloc(size_t item_bytes, UBaseType_t length, AppV3Queue_t
     for (index = signal ? MESSAGE_SLOTS : 0U; index < limit; ++index)
     {
         QueueSlot_t *slot = &s_slots[index];
+        //跳过已分配、正在销毁或代次耗尽的槽
         if (slot->queue != NULL || slot->reserved || slot->generation == UINT32_MAX)
             continue;
 
@@ -116,6 +127,7 @@ SysResult_t AppV3Queue_Alloc(size_t item_bytes, UBaseType_t length, AppV3Queue_t
     return SYS_ERR_NO_RESOURCE;
 }
 
+//仅回收没有订阅、在途操作和待消费数据的队列
 SysResult_t AppV3Queue_Free(AppV3Queue_t queue)
 {
     QueueSlot_t *slot;
@@ -141,10 +153,12 @@ SysResult_t AppV3Queue_Free(AppV3Queue_t queue)
         return SYS_ERR_BUSY;
     }
 
+    //先使旧句柄不可查找，底层销毁完成前仍占用该槽
     handle = slot->queue;
     slot->queue = NULL;
     slot->reserved = true;
     QueuePool_Unlock(saved);
+    //底层销毁在池临界区之外执行
     vQueueDelete(handle);
     saved = QueuePool_Lock();
     slot->reserved = false;
@@ -152,6 +166,7 @@ SysResult_t AppV3Queue_Free(AppV3Queue_t queue)
     return SYS_OK;
 }
 
+//执行任务上下文的入队、出队或非破坏性读取
 static SysResult_t QueuePool_TaskTransfer(AppV3Queue_t queue, const void *input, void *output,
     TickType_t timeout, bool peek)
 {
@@ -159,6 +174,7 @@ static SysResult_t QueuePool_TaskTransfer(AppV3Queue_t queue, const void *input,
     QueueSlot_t *slot;
     BaseType_t result;
 
+    //收发操作必须提供消息存储
     if (input == NULL && output == NULL)
         return SYS_ERR_INVALID_ARG;
     if (!QueuePool_TaskContext(timeout))
@@ -170,33 +186,40 @@ static SysResult_t QueuePool_TaskTransfer(AppV3Queue_t queue, const void *input,
     //内核负责实际复制与唤醒阻塞者，在此期间保持销毁门禁。
     if (input != NULL)
     {
+        //入队成功即已保存消息，通知失败只影响唤醒时机
         result = xQueueSend(slot->queue, input, timeout);
         if (result == pdPASS && target < RUNTIME_TARGET_COUNT)
             (void)RuntimeEvent_Post((RuntimeEventTarget_t)target, RUNTIME_EVENT_WAKE);
     }
+    //区分保留队首的读取与实际消费
     else if (peek)
         result = xQueuePeek(slot->queue, output, timeout);
     else
         result = xQueueReceive(slot->queue, output, timeout);
+    //底层操作和通知返回后允许其他任务重新检查是否可销毁
     QueuePool_Unpin(slot);
     return result == pdPASS ? SYS_OK : (timeout != 0U ? SYS_ERR_TIMEOUT : SYS_ERR_BUSY);
 }
 
+//提交消息，等待上限由调用者指定
 SysResult_t AppV3Queue_Put(AppV3Queue_t queue, const void *item, TickType_t timeout)
 {
     return QueuePool_TaskTransfer(queue, item, NULL, timeout, false);
 }
 
+//取走队首消息，等待上限由调用者指定
 SysResult_t AppV3Queue_Get(AppV3Queue_t queue, void *item, TickType_t timeout)
 {
     return QueuePool_TaskTransfer(queue, NULL, item, timeout, false);
 }
 
+//读取队首消息并保留内容，供Record等待者共享就绪结果
 SysResult_t AppV3Queue_Peek(AppV3Queue_t queue, void *item, TickType_t timeout)
 {
     return QueuePool_TaskTransfer(queue, NULL, item, timeout, true);
 }
 
+//在允许调用FreeRTOS的IRQ中执行零等待收发
 static SysResult_t QueuePool_IsrTransfer(AppV3Queue_t queue, const void *input, void *output)
 {
     uint8_t target;
@@ -204,6 +227,7 @@ static SysResult_t QueuePool_IsrTransfer(AppV3Queue_t queue, const void *input, 
     BaseType_t result, yield = pdFALSE;
     uint32_t exception = Platform_SyncGetException();
 
+    //收发操作必须提供消息存储
     if (input == NULL && output == NULL)
         return SYS_ERR_INVALID_ARG;
     //与 App_Events 一致，仅允许可调用 FreeRTOS 的外设 IRQ。
@@ -223,21 +247,26 @@ static SysResult_t QueuePool_IsrTransfer(AppV3Queue_t queue, const void *input, 
     }
     else
         result = xQueueReceiveFromISR(slot->queue, output, &yield);
+    //底层操作和通知返回后允许其他任务重新检查是否可销毁
     QueuePool_Unpin(slot);
+    //只在内核确认唤醒高优先级任务时请求调度
     portYIELD_FROM_ISR(yield);
     return result == pdPASS ? SYS_OK : SYS_ERR_BUSY;
 }
 
+//从ISR提交消息，队列满时保留已入队内容
 SysResult_t AppV3Queue_PutFromIsr(AppV3Queue_t queue, const void *item)
 {
     return QueuePool_IsrTransfer(queue, item, NULL);
 }
 
+//从ISR取走一条已入队消息
 SysResult_t AppV3Queue_GetFromIsr(AppV3Queue_t queue, void *item)
 {
     return QueuePool_IsrTransfer(queue, NULL, item);
 }
 
+//查询队列容量和剩余槽位，查询期间保持槽位有效
 SysResult_t AppV3Queue_Query(AppV3Queue_t queue, UBaseType_t *capacity, UBaseType_t *space)
 {
     uint8_t target;
@@ -252,12 +281,15 @@ SysResult_t AppV3Queue_Query(AppV3Queue_t queue, UBaseType_t *capacity, UBaseTyp
     if (slot == NULL)
         return SYS_ERR_NOT_FOUND;
 
+    //容量固定，剩余槽位取自内核队列的当前状态
     *capacity = slot->capacity;
     *space = uxQueueSpacesAvailable(slot->queue);
+    //底层操作和通知返回后允许其他任务重新检查是否可销毁
     QueuePool_Unpin(slot);
     return SYS_OK;
 }
 
+//由目标任务建立或撤销唯一的队列唤醒关系
 static SysResult_t QueuePool_Subscription(AppV3Queue_t queue, RuntimeEventTarget_t owner, bool subscribe)
 {
     QueueSlot_t *slot;
@@ -269,6 +301,7 @@ static SysResult_t QueuePool_Subscription(AppV3Queue_t queue, RuntimeEventTarget
 
     saved = QueuePool_Lock();
     slot = QueuePool_Find(queue);
+    //过期句柄不能修改复用后的订阅关系
     if (slot == NULL)
         result = SYS_ERR_NOT_FOUND;
     else if (subscribe && slot->target == RUNTIME_TARGET_COUNT)
@@ -285,11 +318,13 @@ static SysResult_t QueuePool_Subscription(AppV3Queue_t queue, RuntimeEventTarget
     return result;
 }
 
+//绑定队列可读提示的接收任务
 SysResult_t AppV3Queue_Subscribe(AppV3Queue_t queue, RuntimeEventTarget_t owner)
 {
     return QueuePool_Subscription(queue, owner, true);
 }
 
+//撤销所属任务的队列可读提示
 SysResult_t AppV3Queue_Unsubscribe(AppV3Queue_t queue, RuntimeEventTarget_t owner)
 {
     return QueuePool_Subscription(queue, owner, false);

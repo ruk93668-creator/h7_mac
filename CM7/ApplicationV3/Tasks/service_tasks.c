@@ -10,10 +10,12 @@
 #define STARTUP_POLL_MS 100U
 #define STARTUP_MAX_ATTEMPTS (1U + STARTUP_DEADLINE_MS / STARTUP_POLL_MS)
 
+//保留原Control静态栈及各目标任务的创建状态
 static StackType_t s_control_stack[768U] __attribute__((aligned(8)));
 static StaticTask_t s_task_controls[RUNTIME_TARGET_COUNT];
 static uint32_t s_task_attempted;
 
+//在服务所属任务内等待BOOT、准备实例并提交结果
 void AppV3_ServiceRun(void *argument)
 {
     const AppV3ThreadSpec_t *thread = argument;
@@ -35,6 +37,7 @@ void AppV3_ServiceRun(void *argument)
         //Storage 没有旧控制消费唤醒，待发期间定时检查队列空间。
         SysResult_t result = AppV3EventLoop_Step(&loop,
             report_pending ? STARTUP_POLL_MS : APP_EVENTS_WAIT_FOREVER, &events);
+        //等待异常时让出CPU，服务保持原启动结果
         if (result != SYS_OK && result != SYS_ERR_TIMEOUT)
         {
             configASSERT(result == SYS_OK);
@@ -60,6 +63,7 @@ void AppV3_ServiceRun(void *argument)
     }
 }
 
+//用Tick差值判定启动期限，适配计数器回绕
 static SysResult_t AppV3_CheckStartupDeadline(const TickType_t *started)
 {
     if ((TickType_t)(xTaskGetTickCount() - *started) < pdMS_TO_TICKS(STARTUP_DEADLINE_MS))
@@ -67,6 +71,7 @@ static SysResult_t AppV3_CheckStartupDeadline(const TickType_t *started)
     return AppV3_ExpireInitialization();
 }
 
+//Control收到队列可读提示后推进启动报告
 static SysResult_t AppV3_StartupReadable(AppV3Queue_t queue, void *context)
 {
     SysResult_t result;
@@ -79,6 +84,7 @@ static SysResult_t AppV3_StartupReadable(AppV3Queue_t queue, void *context)
     return AppV3_DrainInitialization();
 }
 
+//协调BOOT屏障、启动结果消费和超时处理
 static void AppV3_ControlRun(void *argument)
 {
     uint32_t events;
@@ -95,6 +101,7 @@ static void AppV3_ControlRun(void *argument)
         result = AppV3EventLoop_Subscribe(&loop, startup_queue, AppV3_StartupReadable, &started);
     if (result == SYS_OK)
         result = App_TasksReleaseBoot();
+    //任何准备错误都禁止该Control入口继续运行
     configASSERT(result == SYS_OK);
     while (result != SYS_OK)
         vTaskDelay(portMAX_DELAY);
@@ -116,6 +123,7 @@ static void AppV3_ControlRun(void *argument)
     }
 }
 
+//使用静态栈与TCB创建唯一任务并登记通知入口
 SysResult_t AppV3_CreateThread(const AppV3ThreadSpec_t *thread)
 {
     TaskHandle_t handle;
@@ -131,15 +139,18 @@ SysResult_t AppV3_CreateThread(const AppV3ThreadSpec_t *thread)
     if ((s_task_attempted & owner_bit) != 0U)
         return SYS_ERR_ALREADY_EXISTS;
 
+    //调用内核前冻结创建尝试，部分失败也不会重复使用TCB
     s_task_attempted |= owner_bit;
     handle = xTaskCreateStatic(thread->entry, thread->name, thread->stack_words,
         (void *)thread, thread->priority, thread->stack, &s_task_controls[thread->owner]);
     if (handle == NULL)
         return SYS_ERR_NO_RESOURCE;
 
+    //只在任务实际创建成功后登记通知接收端
     return App_EventsAttach(thread->owner, handle);
 }
 
+//按原栈和优先级创建Control专用任务
 SysResult_t ControlTask_Create(void)
 {
     static const AppV3ThreadSpec_t control =

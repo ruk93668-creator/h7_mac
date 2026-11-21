@@ -29,16 +29,17 @@ bool App_MessagesIsOwner(RuntimeEventTarget_t target)
 //准备静态消息队列
 SysResult_t App_MessagesInit(void)
 {
-    uint32_t i;
+    uint32_t channel_index;
 
     //只允许调度前创建一次，任何部分失败都由main终止启动
     if (s_messages_attempted || Platform_SyncGetException() != 0U ||
         xTaskGetSchedulerState() != taskSCHEDULER_NOT_STARTED)
         return SYS_ERR_INVALID_STATE;
     s_messages_attempted = true;
-    for (i = 0U; i < APP_CHANNEL_COUNT; i++)
+    //逐通道分配固定槽，部分失败交由启动流程处理
+    for (channel_index = 0U; channel_index < APP_CHANNEL_COUNT; channel_index++)
     {
-        SysResult_t result = AppV3Queue_Alloc(sizeof(AppMessage_t), APP_MESSAGE_QUEUE_LENGTH, &s_message_handles[i]);
+        SysResult_t result = AppV3Queue_Alloc(sizeof(AppMessage_t), APP_MESSAGE_QUEUE_LENGTH, &s_message_handles[channel_index]);
         if (result != SYS_OK)
             return result;
     }
@@ -52,6 +53,7 @@ SysResult_t App_MessagesSend(AppChannel_t channel, const AppMessage_t *message)
 
     if ((uint32_t)channel >= APP_CHANNEL_COUNT || message == NULL)
         return SYS_ERR_INVALID_ARG;
+    //未分配通道或中断调用不能进入任务消息接口
     if (s_message_handles[channel].generation == 0U || Platform_SyncGetException() != 0U)
         return SYS_ERR_INVALID_STATE;
 
@@ -83,6 +85,7 @@ bool App_MessagesReceive(AppChannel_t channel, AppMessage_t *message)
     if ((uint32_t)channel >= APP_CHANNEL_COUNT || message == NULL ||
         s_message_handles[channel].generation == 0U || !App_MessagesIsOwner(s_message_receivers[channel]))
         return false;
+    //只有当前任务成功取走队首时才通知发送者重试
     if (AppV3Queue_Get(s_message_handles[channel], message, 0U) != SYS_OK)
         return false;
 
@@ -108,6 +111,7 @@ SysResult_t AppV3_GetStartupQueue(AppV3Queue_t *queue)
         return SYS_ERR_INVALID_ARG;
     if (!App_MessagesIsOwner(RUNTIME_TARGET_CONTROL) || s_message_handles[APP_CHANNEL_STARTUP].generation == 0U)
         return SYS_ERR_INVALID_STATE;
+    //交给Control的句柄指向原队列，Event Loop无需另建缓冲区
     *queue = s_message_handles[APP_CHANNEL_STARTUP];
     return SYS_OK;
 }
