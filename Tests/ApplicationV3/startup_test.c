@@ -1,12 +1,119 @@
-//复用历史夹具的真实 FreeRTOS Queue/List，调度与设备验证可注入。
-#include "../CameraLifecycleC1/transport_test.c"
-#include "../../CM7/ApplicationV3/Core/app_services.h"
+//使用真实 FreeRTOS Queue/List。测试只模拟调度、身份和设备状态。
+#include "app_services.h"
+#include "app_events.h"
 #include "app_main.h"
 #include "app_tasks.h"
 #include "app_status.h"
-#include "Tasks/storage_task.h"
-#include "Tasks/control_task.h"
+#include "service_tasks.h"
+#include "queue.h"
 #include <setjmp.h>
+
+volatile uint32_t g_failure;
+static RuntimeEventTarget_t owner = RUNTIME_TARGET_CONTROL;
+static BaseType_t scheduler = taskSCHEDULER_NOT_STARTED;
+static uint32_t critical_depth;
+static bool notify_fails;
+
+#define CHECK(condition) do { if (!(condition)) { g_failure = __LINE__; return __LINE__; } } while (0)
+
+uint32_t Platform_SyncGetException(void)
+{
+    return 0U;
+}
+
+uint32_t Platform_SyncGetPrimask(void)
+{
+    return 0U;
+}
+
+bool App_EventsIsOwner(RuntimeEventTarget_t target)
+{
+    return owner == target;
+}
+
+BaseType_t xTaskGetSchedulerState(void)
+{
+    return scheduler;
+}
+
+SysResult_t RuntimeEvent_Post(RuntimeEventTarget_t target, uint32_t events)
+{
+    (void)target;
+    (void)events;
+    return notify_fails ? SYS_ERR_IO : SYS_OK;
+}
+
+void Platform_RtosAssert(const char *file, uint32_t line)
+{
+    (void)file;
+    g_failure = line;
+}
+
+void vPortEnterCritical(void)
+{
+    ++critical_depth;
+}
+
+void vPortExitCritical(void)
+{
+    if (critical_depth == 0U)
+        g_failure = __LINE__;
+    else
+        --critical_depth;
+}
+
+//软测只执行非阻塞队列操作，意外的任务阻塞视为失败。
+void vTaskSuspendAll(void)
+{
+    g_failure = __LINE__;
+}
+
+BaseType_t xTaskResumeAll(void)
+{
+    g_failure = __LINE__;
+    return pdTRUE;
+}
+
+BaseType_t xTaskRemoveFromEventList(const List_t *list)
+{
+    (void)list;
+    g_failure = __LINE__;
+    return pdFALSE;
+}
+
+void vTaskPlaceOnEventList(List_t *list, TickType_t ticks)
+{
+    (void)list;
+    (void)ticks;
+    g_failure = __LINE__;
+}
+
+void vTaskInternalSetTimeOutState(TimeOut_t *timeout)
+{
+    timeout->xOverflowCount = 0;
+    timeout->xTimeOnEntering = 0U;
+}
+
+BaseType_t xTaskCheckForTimeOut(TimeOut_t *timeout, TickType_t *remaining_ticks)
+{
+    (void)timeout;
+    (void)remaining_ticks;
+    return pdTRUE;
+}
+
+void vTaskMissedYield(void)
+{
+    g_failure = __LINE__;
+}
+
+UBaseType_t uxTaskGetNumberOfTasks(void)
+{
+    return 0U;
+}
+
+void vPortValidateInterruptPriority(void)
+{
+}
 
 static VideoConfig_t fixture_video;
 static AppStorageConfig_t fixture_storage;
@@ -124,7 +231,8 @@ uint32_t AppV3_TestRun(uint32_t scenario)
     uint32_t filler_index;
 
     CHECK(sizeof(AppMessage_t) == 52U);
-    CHECK(sizeof(AppLifecycleMessage_t) == 56U);
+    CHECK(offsetof(AppMessage_t, frame) == 28U);
+    CHECK(sizeof(IpcApplicationStatus_t) == 80U);
     fixture_video.output = VIDEO_OUTPUT_USB_UVC;
     fixture_storage.record_fps = 25U;
 

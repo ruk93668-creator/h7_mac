@@ -3,7 +3,6 @@
 
 #include "sys_result.h"
 
-//检查原生运行时应用模式
 SysResult_t App_Init(void);
 
-#endif /* CM7_APP_MAIN_H */
+#endif

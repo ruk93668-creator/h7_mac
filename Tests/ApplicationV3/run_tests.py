@@ -23,17 +23,30 @@ def main():
     )
     harness = importlib.util.module_from_spec(spec)
     spec.loader.exec_module(harness)
-    messages = ROOT / "CM7/Application/app_messages.c"
-    sources = [Path(__file__).with_name("startup_test.c"), *sorted(V3.rglob("*.c")),
-               ROOT / "CM7/Application/app_camera_lifecycle.c"]
+    # C1's Python runner only supplies ARMCC5 linking and Cortex-M execution.
+    legacy_includes = {ROOT / "CM7/Application", ROOT / "CM7/Application/Tasks"}
+    harness.cc = [flag for index, flag in enumerate(harness.cc)
+                  if flag not in legacy_includes and
+                  not (flag == "-I" and harness.cc[index + 1] in legacy_includes)]
+    harness.cc.extend(("-I", V3 / "Core", "-I", V3 / "Tasks", "--split_sections"))
+    kernel = ROOT / "Middlewares/Third_Party/FreeRTOS/Source"
+    sources = [
+        Path(__file__).with_name("startup_test.c"),
+        V3 / "Core/app_main.c",
+        V3 / "Core/app_services.c",
+        V3 / "Core/app_messages.c",
+        V3 / "Services/Camera/camera_service.c",
+        V3 / "Services/Storage/storage_service.c",
+        V3 / "Services/USB/usb_service.c",
+        V3 / "Tasks/service_tasks.c",
+        kernel / "queue.c",
+        kernel / "list.c",
+    ]
     results = []
     for optimization in ("O0", "O2"):
         harness.cc = ["-" + optimization if flag in ("-O0", "-O2") else flag for flag in harness.cc]
-        harness.cc += ["--split_sections"]
         name = "app_v3_" + optimization
-        harness.build(name, sources, "AppV3_TestRun", [
-            "-DAPP_V3_BUILD=1", f'-DC1_MESSAGES_SOURCE="{messages.as_posix()}"'
-        ])
+        harness.build(name, sources, "AppV3_TestRun")
         for scenario in range(7):
             row = harness.execute(name, "AppV3_TestRun", scenario)
             row.pop("trace", None)

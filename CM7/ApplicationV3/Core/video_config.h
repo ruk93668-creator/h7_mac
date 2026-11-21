@@ -2,7 +2,17 @@
 #define CM7_VIDEO_CONFIG_H
 
 #include "video_config_types.h"
-#include "app_storage.h"
+
+typedef struct
+{
+    uint32_t record_fps;
+    uint32_t segment_bytes;
+    uint32_t segment_ms;
+    uint32_t total_bytes;
+    uint32_t reserve_bytes;
+    uint32_t max_segments;
+    uint32_t partition;//0自动选卷，1至4指定MBR分区
+} AppStorageConfig_t;
 
 //返回唯一的冷启动默认配置，调用者不得修改
 const VideoConfig_t *VideoConfig_GetDefault(void);

@@ -2,15 +2,8 @@
 #include "app_tasks.h"
 #include "app_events.h"
 #include "platform_sync.h"
-#include "Tasks/camera_task.h"
-#include "Tasks/usb_task.h"
-#include "Tasks/storage_task.h"
-#include "Tasks/control_task.h"
+#include "service_tasks.h"
 #include <stddef.h>
-
-#ifndef APP_V3_BUILD
-#error Select the isolated CM7 Application V3 target.
-#endif
 
 //沿用四个任务的原栈容量和优先级。IPC 仍由原文件创建。
 #define TASK_WORDS(stack) (sizeof(stack) / sizeof((stack)[0]))

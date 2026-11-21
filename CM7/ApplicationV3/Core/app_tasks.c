@@ -1,11 +1,8 @@
 #include "app_tasks.h"
 #include "app_events.h"
 #include "app_messages.h"
-#include "Tasks/camera_task.h"
-#include "Tasks/usb_task.h"
-#include "Tasks/control_task.h"
-#include "Tasks/ipc_task.h"
-#include "Tasks/storage_task.h"
+#include "../Tasks/service_tasks.h"
+#include "../Tasks/ipc_task.h"
 #include "platform_sync.h"
 
 //记录任务创建数量、准备状态和启动屏障结果

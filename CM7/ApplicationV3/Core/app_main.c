@@ -3,10 +3,6 @@
 #include "framework_init.h"
 #include <stddef.h>
 
-#ifndef APP_V3_BUILD
-#error Select the isolated CM7 Application V3 target.
-#endif
-
 //Framework 在 BOOT 前写一次，之后各服务只读。
 static AppV3Context_t s_context;
 
