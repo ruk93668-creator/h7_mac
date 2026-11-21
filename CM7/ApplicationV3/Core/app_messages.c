@@ -1,20 +1,13 @@
 #include "app_messages.h"
 #include "app_events.h"
-#include "queue.h"
+#include "../Runtime/queue_pool.h"
 #include "platform_sync.h"
 #include <stddef.h>
 
 #define APP_MESSAGE_QUEUE_LENGTH 4U
 
-//每个方向使用独立静态队列，命令不与图像消息争用槽位
-static StaticQueue_t s_message_queues[APP_CHANNEL_COUNT];
-
-//队列内只存描述和凭据，图像仍由Media管理
-static uint8_t s_message_storage[APP_CHANNEL_COUNT][APP_MESSAGE_QUEUE_LENGTH * sizeof(AppMessage_t)]
-    __attribute__((aligned(8)));
-
-//保存各通道的内核队列句柄
-static QueueHandle_t s_message_handles[APP_CHANNEL_COUNT];
+//通道只保存池句柄，队列控制块与数据区集中由固定池管理。
+static AppV3Queue_t s_message_handles[APP_CHANNEL_COUNT];
 
 //记录队列初始化尝试，部分失败后不复用静态控制块
 static bool s_messages_attempted;
@@ -44,10 +37,9 @@ SysResult_t App_MessagesInit(void)
     s_messages_attempted = true;
     for (i = 0U; i < APP_CHANNEL_COUNT; i++)
     {
-        s_message_handles[i] = xQueueCreateStatic(APP_MESSAGE_QUEUE_LENGTH,
-            sizeof(AppMessage_t), s_message_storage[i], &s_message_queues[i]);
-        if (s_message_handles[i] == NULL)
-            return SYS_ERR_NO_RESOURCE;
+        SysResult_t result = AppV3Queue_Alloc(sizeof(AppMessage_t), APP_MESSAGE_QUEUE_LENGTH, &s_message_handles[i]);
+        if (result != SYS_OK)
+            return result;
     }
     return SYS_OK;
 }
@@ -59,7 +51,7 @@ SysResult_t App_MessagesSend(AppChannel_t channel, const AppMessage_t *message)
 
     if ((uint32_t)channel >= APP_CHANNEL_COUNT || message == NULL)
         return SYS_ERR_INVALID_ARG;
-    if (s_message_handles[channel] == NULL || Platform_SyncGetException() != 0U)
+    if (s_message_handles[channel].generation == 0U || Platform_SyncGetException() != 0U)
         return SYS_ERR_INVALID_STATE;
 
     //命令只由Control发送，帧消息只允许相应所有者发送
@@ -75,7 +67,7 @@ SysResult_t App_MessagesSend(AppChannel_t channel, const AppMessage_t *message)
         return SYS_ERR_INVALID_STATE;
 
     //成功入队就是消息已提交，通知位只负责唤醒，不作为交付凭据
-    if (xQueueSend(s_message_handles[channel], message, 0U) != pdPASS)
+    if (AppV3Queue_Put(s_message_handles[channel], message, 0U) != SYS_OK)
         return SYS_ERR_NO_RESOURCE;
     (void)RuntimeEvent_Post(s_message_receivers[channel], RUNTIME_EVENT_WAKE);
     return SYS_OK;
@@ -85,9 +77,9 @@ SysResult_t App_MessagesSend(AppChannel_t channel, const AppMessage_t *message)
 bool App_MessagesReceive(AppChannel_t channel, AppMessage_t *message)
 {
     if ((uint32_t)channel >= APP_CHANNEL_COUNT || message == NULL ||
-        s_message_handles[channel] == NULL || !App_MessagesIsOwner(s_message_receivers[channel]))
+        s_message_handles[channel].generation == 0U || !App_MessagesIsOwner(s_message_receivers[channel]))
         return false;
-    if (xQueueReceive(s_message_handles[channel], message, 0U) != pdPASS)
+    if (AppV3Queue_Get(s_message_handles[channel], message, 0U) != SYS_OK)
         return false;
 
     //腾出槽位后唤醒发送方，队列满时保存的消息才能继续提交

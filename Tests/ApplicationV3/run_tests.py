@@ -28,7 +28,7 @@ def main():
     harness.cc = [flag for index, flag in enumerate(harness.cc)
                   if flag not in legacy_includes and
                   not (flag == "-I" and harness.cc[index + 1] in legacy_includes)]
-    harness.cc.extend(("-I", V3 / "Core", "-I", V3 / "Tasks", "--split_sections"))
+    harness.cc.extend(("-I", V3 / "Core", "-I", V3 / "Tasks", "-I", V3 / "Runtime", "--split_sections"))
     kernel = ROOT / "Middlewares/Third_Party/FreeRTOS/Source"
     sources = [
         Path(__file__).with_name("startup_test.c"),
@@ -39,6 +39,7 @@ def main():
         V3 / "Services/Storage/storage_service.c",
         V3 / "Services/USB/usb_service.c",
         V3 / "Tasks/service_tasks.c",
+        *sorted((V3 / "Runtime").glob("*.c")),
         kernel / "queue.c",
         kernel / "list.c",
     ]
@@ -47,7 +48,7 @@ def main():
         harness.cc = ["-" + optimization if flag in ("-O0", "-O2") else flag for flag in harness.cc]
         name = "app_v3_" + optimization
         harness.build(name, sources, "AppV3_TestRun")
-        for scenario in range(8):
+        for scenario in range(10):
             row = harness.execute(name, "AppV3_TestRun", scenario)
             row.pop("trace", None)
             results.append({"optimization": optimization, "id": scenario, **row})

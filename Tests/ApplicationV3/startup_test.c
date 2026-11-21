@@ -6,6 +6,7 @@
 #include "app_status.h"
 #include "service_tasks.h"
 #include "queue.h"
+#include "queue_pool.h"
 #include <setjmp.h>
 
 volatile uint32_t g_failure;
@@ -13,17 +14,51 @@ static RuntimeEventTarget_t owner = RUNTIME_TARGET_CONTROL;
 static BaseType_t scheduler = taskSCHEDULER_NOT_STARTED;
 static uint32_t critical_depth;
 static bool notify_fails;
+static uint32_t exception, primask;
+static bool blocking_probe;
+static AppV3Queue_t pinned_queue;
+static SysResult_t during_wait;
 
 #define CHECK(condition) do { if (!(condition)) { g_failure = __LINE__; return __LINE__; } } while (0)
 
 uint32_t Platform_SyncGetException(void)
 {
-    return 0U;
+    return exception;
 }
 
 uint32_t Platform_SyncGetPrimask(void)
 {
+    return primask;
+}
+
+uint32_t Platform_SyncGetBasepri(void)
+{
     return 0U;
+}
+
+void Platform_SyncDisableIrq(void)
+{
+    primask = 1U;
+}
+
+void Platform_SyncRestoreIrq(uint32_t saved)
+{
+    primask = saved;
+}
+
+void Platform_SyncMemoryBarrier(void)
+{
+}
+
+void vPortFree(void *pointer)
+{
+    (void)pointer;
+    g_failure = __LINE__;
+}
+
+SysResult_t RuntimeEvent_PostFromIsr(RuntimeEventTarget_t target, uint32_t events)
+{
+    return RuntimeEvent_Post(target, events);
 }
 
 bool App_EventsIsOwner(RuntimeEventTarget_t target)
@@ -65,12 +100,16 @@ void vPortExitCritical(void)
 //软测只执行非阻塞队列操作，意外的任务阻塞视为失败。
 void vTaskSuspendAll(void)
 {
-    g_failure = __LINE__;
+    if (blocking_probe)
+        during_wait = AppV3Queue_Free(pinned_queue);
+    else
+        g_failure = __LINE__;
 }
 
 BaseType_t xTaskResumeAll(void)
 {
-    g_failure = __LINE__;
+    if (!blocking_probe)
+        g_failure = __LINE__;
     return pdTRUE;
 }
 
@@ -249,6 +288,48 @@ uint32_t AppV3_TestRun(uint32_t scenario)
     context = AppV3_GetContext();
     CHECK(context->video == &fixture_video && context->storage == &fixture_storage);
     CHECK(App_MessagesInit() == SYS_OK);
+
+    if (scenario == 8U || scenario == 9U)
+    {
+        AppV3Queue_t queue, replacement;
+        UBaseType_t capacity, space;
+        AppMessage_t item = {0};
+        scheduler = taskSCHEDULER_RUNNING;
+        CHECK(AppV3Queue_Alloc(sizeof(item), 2U, &queue) == SYS_OK);
+        CHECK(AppV3Queue_Alloc(sizeof(item), 1U, &replacement) == SYS_ERR_NO_RESOURCE);
+        CHECK(AppV3Queue_Query(queue, &capacity, &space) == SYS_OK && capacity == 2U && space == 2U);
+        CHECK(AppV3Queue_Subscribe(queue, owner) == SYS_OK);
+        CHECK(AppV3Queue_Free(queue) == SYS_ERR_BUSY);
+        notify_fails = true;
+        item.command_id = 11U;
+        CHECK(AppV3Queue_Put(queue, &item, 0U) == SYS_OK);
+        item.command_id = 12U;
+        CHECK(AppV3Queue_Put(queue, &item, 0U) == SYS_OK);
+        CHECK(AppV3Queue_Put(queue, &item, 0U) == SYS_ERR_BUSY);
+        CHECK(AppV3Queue_Get(queue, &item, 0U) == SYS_OK && item.command_id == 11U);
+        if (scenario == 9U)
+        {
+            CHECK(AppV3Queue_GetFromIsr(queue, &item) == SYS_ERR_INVALID_STATE);
+            exception = 16U;
+            CHECK(AppV3Queue_Free(queue) == SYS_ERR_INVALID_STATE);
+            CHECK(AppV3Queue_GetFromIsr(queue, &item) == SYS_OK && item.command_id == 12U);
+            CHECK(AppV3Queue_PutFromIsr(queue, &item) == SYS_OK);
+            exception = 0U;
+        }
+        CHECK(AppV3Queue_Unsubscribe(queue, owner) == SYS_OK);
+        CHECK(AppV3Queue_Free(queue) == SYS_ERR_BUSY);
+        CHECK(AppV3Queue_Get(queue, &item, 0U) == SYS_OK && item.command_id == 12U);
+        blocking_probe = true;
+        pinned_queue = queue;
+        CHECK(AppV3Queue_Get(queue, &item, 1U) == SYS_ERR_TIMEOUT && during_wait == SYS_ERR_BUSY);
+        blocking_probe = false;
+        CHECK(AppV3Queue_Free(queue) == SYS_OK);
+        CHECK(AppV3Queue_Free(queue) == SYS_ERR_NOT_FOUND);
+        CHECK(AppV3Queue_Alloc(sizeof(item), 2U, &replacement) == SYS_OK);
+        CHECK(AppV3Queue_Get(queue, &item, 0U) == SYS_ERR_NOT_FOUND);
+        CHECK(g_failure == 0U);
+        return 0U;
+    }
 
     if (scenario == 1U)
     {
