@@ -7,6 +7,7 @@
 #include "service_tasks.h"
 #include "queue.h"
 #include "queue_pool.h"
+#include "service_record.h"
 #include <setjmp.h>
 
 volatile uint32_t g_failure;
@@ -18,6 +19,13 @@ static uint32_t exception, primask;
 static bool blocking_probe;
 static AppV3Queue_t pinned_queue;
 static SysResult_t during_wait;
+static bool record_probe;
+static const AppV3Context_t *record_context;
+
+TaskHandle_t xTaskGetCurrentTaskHandle(void)
+{
+    return (TaskHandle_t)(uintptr_t)(owner + 1U);
+}
 
 #define CHECK(condition) do { if (!(condition)) { g_failure = __LINE__; return __LINE__; } } while (0)
 
@@ -100,7 +108,16 @@ void vPortExitCritical(void)
 //软测只执行非阻塞队列操作，意外的任务阻塞视为失败。
 void vTaskSuspendAll(void)
 {
-    if (blocking_probe)
+    if (record_probe)
+    {
+        RuntimeEventTarget_t saved_owner = owner;
+        owner = RUNTIME_TARGET_CAMERA;
+        if (AppV3_InitService(owner, record_context) != SYS_OK ||
+            AppV3Record_Destroy(owner) != SYS_ERR_BUSY)
+            g_failure = __LINE__;
+        owner = saved_owner;
+    }
+    else if (blocking_probe)
         during_wait = AppV3Queue_Free(pinned_queue);
     else
         g_failure = __LINE__;
@@ -108,7 +125,7 @@ void vTaskSuspendAll(void)
 
 BaseType_t xTaskResumeAll(void)
 {
-    if (!blocking_probe)
+    if (!blocking_probe && !record_probe)
         g_failure = __LINE__;
     return pdTRUE;
 }
@@ -327,6 +344,51 @@ uint32_t AppV3_TestRun(uint32_t scenario)
         CHECK(AppV3Queue_Free(queue) == SYS_ERR_NOT_FOUND);
         CHECK(AppV3Queue_Alloc(sizeof(item), 2U, &replacement) == SYS_OK);
         CHECK(AppV3Queue_Get(queue, &item, 0U) == SYS_ERR_NOT_FOUND);
+        CHECK(g_failure == 0U);
+        return 0U;
+    }
+
+    if (scenario == 10U || scenario == 11U)
+    {
+        AppV3RecordRef_t references[5] = {{0}}, stale;
+        RuntimeEventTarget_t camera = RUNTIME_TARGET_CAMERA;
+        uint32_t holder_index;
+        scheduler = taskSCHEDULER_RUNNING;
+        CHECK(AppV3Record_Open(camera, 0U, &references[0]) == SYS_ERR_BUSY);
+        blocking_probe = true;
+        CHECK(AppV3Record_Open(camera, 1U, &references[0]) == SYS_ERR_TIMEOUT);
+        blocking_probe = false;
+        if (scenario == 11U)
+        {
+            owner = camera;
+            fixture_camera_result = SYS_ERR_IO;
+            CHECK(AppV3_InitService(owner, context) == SYS_ERR_IO);
+            owner = RUNTIME_TARGET_CONTROL;
+            CHECK(AppV3Record_Open(camera, 1U, &references[0]) == SYS_ERR_IO);
+            CHECK(AppV3Record_Destroy(camera) == SYS_ERR_INVALID_STATE);
+            CHECK(g_failure == 0U);
+            return 0U;
+        }
+        record_probe = true;
+        record_context = context;
+        CHECK(AppV3Record_Open(camera, 1U, &references[0]) == SYS_OK);
+        record_probe = false;
+        CHECK(references[0].instance->config == context && references[0].instance->owner == camera);
+        for (holder_index = 1U; holder_index < 4U; ++holder_index)
+            CHECK(AppV3Record_Open(camera, 0U, &references[holder_index]) == SYS_OK);
+        CHECK(AppV3Record_Open(camera, 0U, &references[4]) == SYS_ERR_NO_RESOURCE);
+        owner = camera;
+        CHECK(AppV3Record_Close(&references[0]) == SYS_ERR_NOT_FOUND);
+        CHECK(AppV3_InitService(owner, context) == SYS_ERR_ALREADY_EXISTS);
+        CHECK(AppV3Record_Destroy(camera) == SYS_ERR_BUSY);
+        owner = RUNTIME_TARGET_CONTROL;
+        stale = references[0];
+        for (holder_index = 0U; holder_index < 4U; ++holder_index)
+            CHECK(AppV3Record_Close(&references[holder_index]) == SYS_OK);
+        CHECK(AppV3Record_Close(&stale) == SYS_ERR_NOT_FOUND);
+        owner = camera;
+        CHECK(AppV3Record_Destroy(camera) == SYS_OK);
+        CHECK(AppV3Record_Open(camera, 0U, &references[0]) == SYS_ERR_BUSY);
         CHECK(g_failure == 0U);
         return 0U;
     }

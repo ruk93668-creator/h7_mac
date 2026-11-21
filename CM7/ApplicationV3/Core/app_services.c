@@ -1,5 +1,6 @@
 #include "app_services.h"
 #include "app_status.h"
+#include "../Runtime/service_record.h"
 #include "../Tasks/service_tasks.h"
 #include <stddef.h>
 
@@ -11,6 +12,7 @@ typedef struct
 {
     AppV3ThreadSpec_t thread;
     SysResult_t (*init)(const AppV3Context_t *context);
+    AppV3ServiceInstance_t *instance;
 } AppV3ServiceRecord_t;
 
 #define STACK_WORDS(stack) (sizeof(stack) / sizeof((stack)[0]))
@@ -19,15 +21,17 @@ static StackType_t s_camera_stack[1536U] __attribute__((aligned(8)));
 static StackType_t s_usb_stack[2048U] __attribute__((aligned(8)));
 static StackType_t s_storage_stack[2048U] __attribute__((aligned(8)));
 
+static AppV3ServiceInstance_t s_camera, s_usb, s_storage;
+
 //服务清单是任务身份、启动入口、存储和配置的唯一来源。
 static const AppV3ServiceRecord_t s_services[] =
 {
     {{RUNTIME_TARGET_CAMERA, "Camera", AppV3_ServiceRun, s_camera_stack, STACK_WORDS(s_camera_stack), 3U,
-       RUNTIME_EVENT_BOOT_READY}, AppV3_CameraInit},
+       RUNTIME_EVENT_BOOT_READY}, AppV3_CameraInit, &s_camera},
     {{RUNTIME_TARGET_USB, "Usb", AppV3_ServiceRun, s_usb_stack, STACK_WORDS(s_usb_stack), 4U,
-       RUNTIME_EVENT_BOOT_READY}, AppV3_UsbInit},
+       RUNTIME_EVENT_BOOT_READY}, AppV3_UsbInit, &s_usb},
     {{RUNTIME_TARGET_STORAGE, "Storage", AppV3_ServiceRun, s_storage_stack, STACK_WORDS(s_storage_stack), 1U,
-       RUNTIME_EVENT_BOOT_READY}, AppV3_StorageInit}
+       RUNTIME_EVENT_BOOT_READY}, AppV3_StorageInit, &s_storage}
 };
 
 SysResult_t AppV3_StartServices(uint32_t *created)
@@ -75,6 +79,7 @@ const RuntimeEventTarget_t *AppV3_FindService(RuntimeEventTarget_t owner)
 SysResult_t AppV3_InitService(RuntimeEventTarget_t owner, const AppV3Context_t *context)
 {
     const AppV3ServiceRecord_t *service = AppV3_FindRecord(owner);
+    SysResult_t result;
 
     //查找服务不授予写权限，初始化只能在对应任务内执行。
     if (service == NULL || context == NULL)
@@ -82,7 +87,19 @@ SysResult_t AppV3_InitService(RuntimeEventTarget_t owner, const AppV3Context_t *
     if (!App_MessagesIsOwner(owner))
         return SYS_ERR_INVALID_STATE;
 
-    return service->init(context);
+    //重复调用不得写正在被其他任务读取的公开对象。
+    if (AppV3Record_Query(owner) != SYS_ERR_BUSY)
+        return SYS_ERR_ALREADY_EXISTS;
+    result = service->init(context);
+    if (result != SYS_OK)
+    {
+        (void)AppV3Record_Fail(owner, result);
+        return result;
+    }
+
+    //底层初始化完成以后才发布本次创建的只读服务对象。
+    *service->instance = (AppV3ServiceInstance_t){owner, context};
+    return AppV3Record_Create(owner, service->instance);
 }
 
 SysResult_t AppV3_ReportInitialization(RuntimeEventTarget_t owner, SysResult_t result)

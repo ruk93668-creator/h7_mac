@@ -1,6 +1,7 @@
 #include "app_context.h"
 #include "app_main.h"
 #include "framework_init.h"
+#include "../Runtime/service_record.h"
 #include <stddef.h>
 
 //Framework 在 BOOT 前写一次，之后各服务只读。
@@ -12,7 +13,9 @@ SysResult_t App_Init(void)
     s_context.storage = VideoConfig_GetStorage();
 
     //缺少配置时不放行业务任务。
-    return s_context.video != NULL && s_context.storage != NULL ? SYS_OK : SYS_ERR_INVALID_STATE;
+    if (s_context.video == NULL || s_context.storage == NULL)
+        return SYS_ERR_INVALID_STATE;
+    return AppV3Record_Init();
 }
 
 const AppV3Context_t *AppV3_GetContext(void)
