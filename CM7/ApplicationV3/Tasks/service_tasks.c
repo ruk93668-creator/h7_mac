@@ -5,19 +5,13 @@
 #include "service_tasks.h"
 #include <stddef.h>
 
-//沿用四个任务的原栈容量和优先级。IPC 仍由原文件创建。
-#define TASK_WORDS(stack) (sizeof(stack) / sizeof((stack)[0]))
-
-static StackType_t s_camera_stack[1536U] __attribute__((aligned(8)));
-static StackType_t s_usb_stack[2048U] __attribute__((aligned(8)));
-static StackType_t s_storage_stack[2048U] __attribute__((aligned(8)));
 static StackType_t s_control_stack[768U] __attribute__((aligned(8)));
-static StaticTask_t s_task_controls[RUNTIME_TARGET_COUNT - 1U];
-static bool s_task_attempted[RUNTIME_TARGET_COUNT - 1U];
+static StaticTask_t s_task_controls[RUNTIME_TARGET_COUNT];
+static uint32_t s_task_attempted;
 
-static void AppV3_ServiceRun(void *argument)
+void AppV3_ServiceRun(void *argument)
 {
-    const RuntimeEventTarget_t *service_owner = argument;
+    const AppV3ThreadSpec_t *thread = argument;
     SysResult_t initialization = SYS_ERR_INVALID_STATE;
     uint32_t events;
     bool report_pending = false;
@@ -26,7 +20,7 @@ static void AppV3_ServiceRun(void *argument)
     for (;;)
     {
         //Storage 没有旧控制消费唤醒，待发期间定时检查队列空间。
-        SysResult_t result = App_EventsWait(*service_owner,
+        SysResult_t result = App_EventsWait(thread->owner,
             report_pending ? 100U : APP_EVENTS_WAIT_FOREVER, &events);
         if (result != SYS_OK && result != SYS_ERR_TIMEOUT)
         {
@@ -36,16 +30,16 @@ static void AppV3_ServiceRun(void *argument)
         }
 
         //任何普通通知都不能触发重复初始化。
-        if (!boot_seen && result == SYS_OK && (events & RUNTIME_EVENT_BOOT_READY) != 0U)
+        if (!boot_seen && result == SYS_OK && (events & thread->boot_events) == thread->boot_events)
         {
             boot_seen = true;
-            initialization = AppV3_InitService(*service_owner, AppV3_GetContext());
+            initialization = AppV3_InitService(thread->owner, AppV3_GetContext());
             report_pending = true;
         }
 
         //队列满时保留原结果。入队成功后只由 Control 消费。
         if (report_pending)
-            report_pending = AppV3_ReportInitialization(*service_owner, initialization) != SYS_OK;
+            report_pending = AppV3_ReportInitialization(thread->owner, initialization) != SYS_OK;
     }
 }
 
@@ -77,48 +71,36 @@ static void AppV3_ControlRun(void *argument)
     }
 }
 
-static SysResult_t AppV3_CreateTask(RuntimeEventTarget_t owner, const char *name,
-    StackType_t *stack, uint32_t stack_words, UBaseType_t priority)
+SysResult_t AppV3_CreateThread(const AppV3ThreadSpec_t *thread)
 {
-    const RuntimeEventTarget_t *service_owner = AppV3_FindService(owner);
     TaskHandle_t handle;
-    bool control = owner == RUNTIME_TARGET_CONTROL;
-    uint32_t slot = owner == RUNTIME_TARGET_STORAGE ? RUNTIME_TARGET_IPC : owner;
+    uint32_t owner_bit;
 
-    //只在调度前创建，不重用已经尝试过的静态控制块。
+    if (thread == NULL || (uint32_t)thread->owner >= RUNTIME_TARGET_COUNT)
+        return SYS_ERR_INVALID_ARG;
+
+    //在调度前独占初始化；失败后保留已尝试事实，避免再次使用 TCB。
     if (Platform_SyncGetException() != 0U || xTaskGetSchedulerState() != taskSCHEDULER_NOT_STARTED)
         return SYS_ERR_INVALID_STATE;
-    if (!control && service_owner == NULL)
-        return SYS_ERR_INVALID_ARG;
-    if (s_task_attempted[slot])
+    owner_bit = 1UL << thread->owner;
+    if ((s_task_attempted & owner_bit) != 0U)
         return SYS_ERR_ALREADY_EXISTS;
 
-    s_task_attempted[slot] = true;
-    handle = xTaskCreateStatic(control ? AppV3_ControlRun : AppV3_ServiceRun,
-        name, stack_words, (void *)service_owner, priority, stack, &s_task_controls[slot]);
+    s_task_attempted |= owner_bit;
+    handle = xTaskCreateStatic(thread->entry, thread->name, thread->stack_words,
+        (void *)thread, thread->priority, thread->stack, &s_task_controls[thread->owner]);
     if (handle == NULL)
         return SYS_ERR_NO_RESOURCE;
 
-    return App_EventsAttach(owner, handle);
-}
-
-//V3 Target 用这四个入口替换旧任务文件，保持原创建顺序。
-SysResult_t CameraTask_Create(void)
-{
-    return AppV3_CreateTask(RUNTIME_TARGET_CAMERA, "Camera", s_camera_stack, TASK_WORDS(s_camera_stack), 3U);
-}
-
-SysResult_t UsbTask_Create(void)
-{
-    return AppV3_CreateTask(RUNTIME_TARGET_USB, "Usb", s_usb_stack, TASK_WORDS(s_usb_stack), 4U);
-}
-
-SysResult_t StorageTask_Create(void)
-{
-    return AppV3_CreateTask(RUNTIME_TARGET_STORAGE, "Storage", s_storage_stack, TASK_WORDS(s_storage_stack), 1U);
+    return App_EventsAttach(thread->owner, handle);
 }
 
 SysResult_t ControlTask_Create(void)
 {
-    return AppV3_CreateTask(RUNTIME_TARGET_CONTROL, "Control", s_control_stack, TASK_WORDS(s_control_stack), 2U);
+    static const AppV3ThreadSpec_t control =
+    {
+        RUNTIME_TARGET_CONTROL, "Control", AppV3_ControlRun, s_control_stack,
+        sizeof(s_control_stack) / sizeof(s_control_stack[0]), 2U, 0U
+    };
+    return AppV3_CreateThread(&control);
 }

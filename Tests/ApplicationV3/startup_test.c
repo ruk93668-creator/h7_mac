@@ -121,7 +121,7 @@ static bool fixture_missing_config;
 static SysResult_t fixture_camera_result;
 static AppControlStatus_t published;
 static unsigned int published_count, waited;
-static unsigned int scheduled_priority;
+static unsigned int scheduled_priority, created_threads, fail_thread;
 static uint32_t scheduled_stack_words;
 static TaskFunction_t scheduled_entry;
 static void *scheduled_argument;
@@ -157,6 +157,8 @@ TaskHandle_t xTaskCreateStatic(TaskFunction_t entry, const char *const name,
 {
     (void)name;
     (void)stack;
+    if (++created_threads == fail_thread)
+        return NULL;
     scheduled_entry = entry;
     scheduled_argument = argument;
     scheduled_priority = priority;
@@ -166,7 +168,7 @@ TaskHandle_t xTaskCreateStatic(TaskFunction_t entry, const char *const name,
 
 SysResult_t App_EventsAttach(RuntimeEventTarget_t target, TaskHandle_t handle)
 {
-    return (target == RUNTIME_TARGET_STORAGE || target == RUNTIME_TARGET_CONTROL) && handle != NULL
+    return target != RUNTIME_TARGET_IPC && handle != NULL
         ? SYS_OK : SYS_ERR_INVALID_ARG;
 }
 
@@ -261,10 +263,20 @@ uint32_t AppV3_TestRun(uint32_t scenario)
         return 0U;
     }
 
+    if (scenario == 7U)
+    {
+        uint32_t created;
+        fail_thread = 2U;
+        CHECK(AppV3_StartServices(&created) == SYS_ERR_NO_RESOURCE);
+        CHECK(created == 1U && created_threads == 2U);
+        CHECK(AppV3_StartServices(&created) == SYS_ERR_ALREADY_EXISTS && created == 0U);
+        return 0U;
+    }
     if (scenario == 5U)
     {
-        CHECK(StorageTask_Create() == SYS_OK);
-        CHECK(StorageTask_Create() == SYS_ERR_ALREADY_EXISTS);
+        uint32_t created;
+        CHECK(AppV3_StartServices(&created) == SYS_OK && created == 3U);
+        CHECK(AppV3_StartServices(&created) == SYS_ERR_ALREADY_EXISTS && created == 0U);
         CHECK(scheduled_stack_words == 2048U && scheduled_priority == 1U);
     }
 

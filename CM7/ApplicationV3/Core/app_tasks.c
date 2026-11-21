@@ -2,6 +2,7 @@
 #include "app_events.h"
 #include "app_messages.h"
 #include "../Tasks/service_tasks.h"
+#include "app_services.h"
 #include "../Tasks/ipc_task.h"
 #include "platform_sync.h"
 
@@ -15,6 +16,7 @@ static bool s_create_attempted;
 SysResult_t App_TasksCreate(void)
 {
     SysResult_t result;
+    uint32_t created_services;
 
     //只允许main在调度器启动前、全局中断未关闭时创建一次
     if (Platform_SyncGetException() != 0U || Platform_SyncGetPrimask() != 0U ||
@@ -30,24 +32,12 @@ SysResult_t App_TasksCreate(void)
         result = App_MessagesInit();
     if (result == SYS_OK)
     {
-
-        //按固定顺序创建Camera任务，成功后更新数量
-        result = CameraTask_Create();
-        if (result == SYS_OK)
-            g_app_tasks_debug.created_tasks++;
+        //业务线程由同一固定清单创建，保留真实已创建数量。
+        result = AppV3_StartServices(&created_services);
+        g_app_tasks_debug.created_tasks += created_services;
     }
     if (result == SYS_OK)
     {
-
-        //只有前一步成功才创建Usb任务，失败立即停止后续步骤
-        result = UsbTask_Create();
-        if (result == SYS_OK)
-            g_app_tasks_debug.created_tasks++;
-    }
-    if (result == SYS_OK)
-    {
-
-        //最后创建Control任务，调度器运行后由它发布BOOT
         result = ControlTask_Create();
         if (result == SYS_OK)
             g_app_tasks_debug.created_tasks++;
@@ -59,14 +49,6 @@ SysResult_t App_TasksCreate(void)
 
         //创建独立IPC任务，BOOT广播使用同一份任务目标集合
         result = IpcTask_Create();
-        if (result == SYS_OK)
-            g_app_tasks_debug.created_tasks++;
-    }
-
-    //存储任务也参与BOOT登记和总数检查，不改变原四任务创建顺序
-    if (result == SYS_OK)
-    {
-        result = StorageTask_Create();
         if (result == SYS_OK)
             g_app_tasks_debug.created_tasks++;
     }
