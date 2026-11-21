@@ -22,7 +22,7 @@ void AppV3_ServiceRun(void *argument)
     uint32_t report_attempts = 0U;
     bool report_pending = false;
     bool boot_seen = false;
-    AppV3EventLoop_t loop = {0};
+    AppV3EventLoop_t loop = {.initialized = false};
     SysResult_t loop_status = AppV3EventLoop_Init(&loop, thread->owner);
 
     //服务在自己线程内建立循环，初始化失败时不进入任何业务分发。
@@ -84,7 +84,7 @@ static void AppV3_ControlRun(void *argument)
     uint32_t events;
     TickType_t started = xTaskGetTickCount();
     AppV3Queue_t startup_queue;
-    AppV3EventLoop_t loop = {0};
+    AppV3EventLoop_t loop = {.initialized = false};
     SysResult_t result = AppV3EventLoop_Init(&loop, RUNTIME_TARGET_CONTROL);
     (void)argument;
 

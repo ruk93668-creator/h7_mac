@@ -195,6 +195,7 @@ static unsigned int scheduled_priority, created_threads, fail_thread;
 static uint32_t scheduled_stack_words;
 static bool event_test;
 static unsigned int event_count;
+static bool check_boot_order, framework_ready;
 static TaskFunction_t scheduled_entry;
 static void *scheduled_argument;
 static jmp_buf task_exit;
@@ -244,8 +245,27 @@ SysResult_t App_EventsAttach(RuntimeEventTarget_t target, TaskHandle_t handle)
         ? SYS_OK : SYS_ERR_INVALID_ARG;
 }
 
-SysResult_t App_TasksReleaseBoot(void)
+SysResult_t App_EventsInit(void)
 {
+    return SYS_OK;
+}
+
+SysResult_t IpcTask_Create(void)
+{
+    ++created_threads;
+    return SYS_OK;
+}
+
+SysResult_t App_EventsRecordInitialization(SysResult_t result)
+{
+    framework_ready = result == SYS_OK;
+    return result;
+}
+
+SysResult_t App_EventsReleaseBoot(void)
+{
+    if (check_boot_order && (!framework_ready || scheduler != taskSCHEDULER_RUNNING))
+        return SYS_ERR_INVALID_STATE;
     return owner == RUNTIME_TARGET_CONTROL ? SYS_OK : SYS_ERR_INVALID_STATE;
 }
 
@@ -320,7 +340,7 @@ static SysResult_t Test_QueueReadable(AppV3Queue_t queue, void *context)
 uint32_t AppV3_TestRun(uint32_t scenario)
 {
     const AppV3Context_t *context;
-    AppMessage_t startup_message = {0};
+    AppMessage_t startup_message = {.type = APP_MESSAGE_START};
     uint32_t filler_index;
 
     CHECK(sizeof(AppMessage_t) == 52U);
@@ -336,6 +356,39 @@ uint32_t AppV3_TestRun(uint32_t scenario)
         return 0U;
     }
 
+    if (scenario >= 15U)
+    {
+        check_boot_order = true;
+        fail_thread = scenario == 16U ? 2U : 0U;
+        if (scenario == 16U)
+        {
+            CHECK(App_TasksCreate() == SYS_ERR_NO_RESOURCE);
+            CHECK(App_TasksRecordInitialization(SYS_OK) == SYS_ERR_INVALID_STATE);
+            CHECK(App_TasksReleaseBoot() == SYS_ERR_INVALID_STATE);
+            CHECK(g_app_tasks_debug.created_tasks == 1U && g_app_tasks_debug.boot_released == 0U);
+            return 0U;
+        }
+
+        CHECK(App_TasksCreate() == SYS_OK && g_app_tasks_debug.created_tasks == 5U);
+        CHECK(App_TasksCreate() == SYS_ERR_INVALID_STATE && created_threads == 5U);
+        CHECK(App_TasksReleaseBoot() == SYS_ERR_INVALID_STATE);
+        if (scenario == 17U)
+        {
+            CHECK(App_TasksRecordInitialization(SYS_ERR_IO) == SYS_ERR_IO);
+            scheduler = taskSCHEDULER_RUNNING;
+            CHECK(App_TasksReleaseBoot() == SYS_ERR_INVALID_STATE);
+            CHECK(g_app_tasks_debug.prepared == 0U && g_app_tasks_debug.boot_released == 0U);
+            return 0U;
+        }
+
+        CHECK(App_Init() == SYS_OK);
+        CHECK(App_TasksRecordInitialization(SYS_OK) == SYS_OK && g_app_tasks_debug.prepared == 1U);
+        CHECK(App_TasksReleaseBoot() == SYS_ERR_INVALID_STATE);
+        scheduler = taskSCHEDULER_RUNNING;
+        CHECK(App_TasksReleaseBoot() == SYS_OK && g_app_tasks_debug.boot_released == 1U);
+        return 0U;
+    }
+
     CHECK(App_Init() == SYS_OK);
     context = AppV3_GetContext();
     CHECK(context->video == &fixture_video && context->storage == &fixture_storage);
@@ -345,7 +398,7 @@ uint32_t AppV3_TestRun(uint32_t scenario)
     {
         AppV3Queue_t queue, replacement;
         UBaseType_t capacity, space;
-        AppMessage_t item = {0};
+        AppMessage_t item = {.type = APP_MESSAGE_START};
         scheduler = taskSCHEDULER_RUNNING;
         CHECK(AppV3_GetStartupQueue(&queue) == SYS_OK);
         CHECK(AppV3Queue_Alloc(sizeof(item), 1U, &replacement) == SYS_ERR_NO_RESOURCE);
@@ -439,9 +492,9 @@ uint32_t AppV3_TestRun(uint32_t scenario)
 
     if (scenario == 12U)
     {
-        AppV3EventLoop_t loop = {0};
+        AppV3EventLoop_t loop = {.initialized = false};
         AppV3Queue_t queue;
-        AppMessage_t item = {0};
+        AppMessage_t item = {.type = APP_MESSAGE_START};
         uint32_t events;
         scheduler = taskSCHEDULER_RUNNING;
         event_test = true;

@@ -33,6 +33,7 @@ def main():
     sources = [
         Path(__file__).with_name("startup_test.c"),
         V3 / "Core/app_main.c",
+        V3 / "Core/app_tasks.c",
         V3 / "Core/app_services.c",
         V3 / "Core/app_messages.c",
         V3 / "Services/Camera/camera_service.c",
@@ -48,7 +49,7 @@ def main():
         harness.cc = ["-" + optimization if flag in ("-O0", "-O2") else flag for flag in harness.cc]
         name = "app_v3_" + optimization
         harness.build(name, sources, "AppV3_TestRun")
-        for scenario in range(15):
+        for scenario in range(18):
             row = harness.execute(name, "AppV3_TestRun", scenario)
             row.pop("trace", None)
             results.append({"optimization": optimization, "id": scenario, **row})
