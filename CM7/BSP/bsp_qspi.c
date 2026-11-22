@@ -426,7 +426,7 @@ static bool Qspi_ReadHardwareValid(void)
 {
     return Qspi_ContextValid() && Qspi_ConfigValid() &&
         s_qspi.State == HAL_QSPI_STATE_READY &&
-        (QUADSPI->CCR & QUADSPI_CCR_FMODE) != QUADSPI_CCR_FMODE;
+        (QUADSPI->CCR & QUADSPI_CCR_FMODE_1) == 0U;
 }
 
 static SysResult_t Qspi_ReadTransfer(uint32_t opcode, uint32_t address,
@@ -503,6 +503,8 @@ static void Qspi_ReadBegin(uint32_t mode, uint32_t address, uint32_t size)
     s_diag.read_opcode = 0U;
     s_diag.read_hal_status = HAL_OK;
     s_diag.read_cleanup_result = SYS_OK;
+    s_diag.read_cleanup_elapsed_ms = 0U;
+    s_diag.read_cr = s_diag.read_dcr = s_diag.read_sr = 0U;
     s_diag.status_valid_mask = 0U;
     memset(&s_diag.status, 0, sizeof(s_diag.status));
     s_read_fault = false;
@@ -602,7 +604,8 @@ SysResult_t BSP_QSPI_Read(BspQspiReadMode_t mode, uint32_t address,
         (uint32_t)mode > BSP_QSPI_READ_QUAD_OUTPUT ||
         address >= BSP_QSPI_CAPACITY_BYTES || size > BSP_QSPI_CAPACITY_BYTES - address ||
         timeout_ms == 0U || timeout_ms > BSP_QSPI_MAX_READ_TIMEOUT_MS ||
-        ptr > UINT32_MAX - (size - 1U) || count_ptr > UINT32_MAX - 3U ||
+        ptr > UINT32_MAX - size || count_ptr > UINT32_MAX - sizeof(*completed) ||
+        (count_ptr & 3U) != 0U ||
         (count_ptr < ptr + size && ptr < count_ptr + sizeof(*completed)))
         return SYS_ERR_INVALID_ARG;
     *completed = 0U;
@@ -618,21 +621,25 @@ SysResult_t BSP_QSPI_Read(BspQspiReadMode_t mode, uint32_t address,
     started = HAL_GetTick();
     Qspi_ReadBegin(mode, address, size);
     //在固定120MHz配置下拒绝03h；不为了兼容它更改共享时钟或运行时分频。
-    if ((mode == BSP_QSPI_READ_STANDARD && s_diag.serial_clock_hz > 50000000U) ||
-        mode == BSP_QSPI_READ_QUAD_OUTPUT)
+    if (mode == BSP_QSPI_READ_STANDARD && s_diag.serial_clock_hz > 50000000U)
         return Qspi_ReadFinish(SYS_ERR_NOT_SUPPORTED, started);
     result = Qspi_ReadStatusLocked(started, timeout_ms);
     if (result == SYS_OK && s_diag.status.busy != 0U)
         result = SYS_ERR_BUSY;
     if (result == SYS_OK && s_diag.status.sus != 0U)
         result = SYS_ERR_INVALID_STATE;
+    //IQ 型号的 QE 应为1；异常只诊断并拒绝，不尝试写寄存器修复。
+    if (result == SYS_OK && mode == BSP_QSPI_READ_QUAD_OUTPUT && s_diag.status.qe == 0U)
+        result = SYS_ERR_NOT_SUPPORTED;
     while (result == SYS_OK && s_diag.read_completed < size)
     {
         bytes = size - s_diag.read_completed;
         if (bytes > QSPI_READ_CHUNK_BYTES)
             bytes = QSPI_READ_CHUNK_BYTES;
-        result = Qspi_ReadTransfer(mode == BSP_QSPI_READ_STANDARD ? 0x03U : 0x0BU,
-            address + s_diag.read_completed, QSPI_ADDRESS_1_LINE, QSPI_DATA_1_LINE,
+        result = Qspi_ReadTransfer(mode == BSP_QSPI_READ_STANDARD ? 0x03U :
+            (mode == BSP_QSPI_READ_FAST ? 0x0BU : 0x6BU),
+            address + s_diag.read_completed, QSPI_ADDRESS_1_LINE,
+            mode == BSP_QSPI_READ_QUAD_OUTPUT ? QSPI_DATA_4_LINES : QSPI_DATA_1_LINE,
             mode == BSP_QSPI_READ_STANDARD ? 0U : 8U, bytes, started, timeout_ms);
         if (result != SYS_OK)
             break;
