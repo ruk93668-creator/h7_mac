@@ -1793,11 +1793,14 @@ static void Test_StressWait(void)
         test_tick += pdMS_TO_TICKS(APP_V3_BOARD_STRESS_OPERATOR_MS);
 #else
 #if APP_V3_BOARD_SMOKE == APP_V3_BOARD_SMOKE_USB
-        if (board_scenario == 61U)
+        if (board_scenario == 61U || board_scenario == 62U)
         {
-            //模拟观察期间已断连，随后STOP本身仍能成功完成
-            g_hardware.usb_configured = false;
+            //分别注入失去配置和Core IO，之后恢复Core夹具结果，让STOP正常完成
+            g_hardware.usb_configured = board_scenario == 62U;
+            g_hardware.usb_result = board_scenario == 62U ? SYS_ERR_IO : SYS_OK;
+            g_hardware.now_ms = 123U;
             Test_PollHardware(service);
+            g_hardware.usb_result = SYS_OK;
         }
 #endif
         test_tick += pdMS_TO_TICKS(APP_V3_BOARD_STRESS_SOAK_MS);
@@ -1885,8 +1888,13 @@ static uint32_t Test_BoardStress(uint32_t scenario)
         }
 #else
 #if APP_V3_BOARD_SMOKE == APP_V3_BOARD_SMOKE_USB
-        if (scenario == 61U)
+        if (scenario == 61U || scenario == 62U)
         {
+            SysResult_t expected_result = scenario == 62U ? SYS_ERR_IO : SYS_OK;
+            CHECK(g_app_v3_usb_first_fault.captured == 1U && g_app_v3_usb_first_fault.time_ms == 123U &&
+                g_app_v3_usb_first_fault.configured == (scenario == 62U) &&
+                g_app_v3_usb_first_fault.core_result == expected_result &&
+                g_app_v3_usb_first_fault.observe_result == expected_result);
             CHECK(g_app_v3_board_smoke.received == 3U && g_app_v3_board_smoke.result == SYS_ERR_IO &&
                 g_app_v3_board_smoke.events[2].result == SYS_OK &&
                 g_app_v3_board_smoke.events[2].hardware.state == APP_V3_HW_READY &&
@@ -1981,7 +1989,7 @@ uint32_t AppV3_TestRun(uint32_t scenario)
     if (scenario >= 53U && scenario <= 57U)
         return Test_BoardSmoke(scenario);
 #if APP_V3_BOARD_STRESS != APP_V3_BOARD_STRESS_OFF
-    if (scenario >= 58U && scenario <= 61U)
+    if (scenario >= 58U && scenario <= 62U)
         return Test_BoardStress(scenario);
 #endif
 #endif

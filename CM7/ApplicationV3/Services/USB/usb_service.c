@@ -232,6 +232,11 @@ static void UsbService_FinishHardware(SysResult_t result, AppV3HardwareState_t s
     (void)AppV3Mailbox_CompleteHardware(&s_usb.mailbox, &s_usb.request.command, result, &s_usb.hardware);
 }
 
+#ifdef APP_V3_USB_FAULT_TRACE_ENABLED
+volatile AppV3UsbFaultTrace_t g_app_v3_usb_first_fault;
+static SysResult_t s_usb_observed_core_result;
+#endif
+
 static SysResult_t UsbService_ObserveDevice(void)
 {
     SysResult_t result;
@@ -241,6 +246,10 @@ static SysResult_t UsbService_ObserveDevice(void)
         s_usb.hardware.flags &= (uint16_t)~USB_HW_CONFIGURED;
     USB_UVC_Process();
     result = USB_Device_GetLastResult();
+#ifdef APP_V3_USB_FAULT_TRACE_ENABLED
+    //保留同一轮读取的Core原值，避免随后Class查询覆盖诊断
+    s_usb_observed_core_result = result;
+#endif
     if (result == SYS_OK && (s_usb.hardware.flags & USB_HW_CONFIGURED) != 0U)
     {
         UsbUvcStreamStatus_t stream;
@@ -276,6 +285,17 @@ uint32_t AppV3_UsbAdvance(void)
         if ((s_usb.hardware.flags & USB_HW_CONFIGURED) == 0U ||
             (result != SYS_OK && result != SYS_ERR_BUSY))
         {
+#ifdef APP_V3_USB_FAULT_TRACE_ENABLED
+            //在STOP清理Core结果前冻结首轮ACTIVE故障，最后提交快照有效标志
+            if (g_app_v3_usb_first_fault.captured == 0U)
+            {
+                g_app_v3_usb_first_fault.time_ms = Platform_TimeGetMs();
+                g_app_v3_usb_first_fault.configured = (s_usb.hardware.flags & USB_HW_CONFIGURED) != 0U;
+                g_app_v3_usb_first_fault.core_result = s_usb_observed_core_result;
+                g_app_v3_usb_first_fault.observe_result = result;
+                g_app_v3_usb_first_fault.captured = 1U;
+            }
+#endif
             s_usb.hardware.first_fault = result == SYS_OK || result == SYS_ERR_BUSY ? SYS_ERR_IO : result;
             s_usb.hardware.state = APP_V3_HW_FAULT;
         }

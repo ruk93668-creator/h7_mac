@@ -4,6 +4,22 @@
 #include "app_context.h"
 #include "sys_result.h"
 
+#if defined(APP_V3_BOARD_SMOKE) && APP_V3_BOARD_SMOKE == 2 && defined(APP_V3_BOARD_STRESS) && APP_V3_BOARD_STRESS != 0
+#define APP_V3_USB_FAULT_TRACE_ENABLED 1
+
+typedef struct
+{
+    uint32_t captured;
+    uint32_t time_ms;
+    uint32_t configured;
+    SysResult_t core_result;
+    SysResult_t observe_result;
+} AppV3UsbFaultTrace_t;
+
+//仅USB Task写入，测试结束后由Keil Watch读取
+extern volatile AppV3UsbFaultTrace_t g_app_v3_usb_first_fault;
+#endif
+
 typedef enum
 {
     USB_SERVICE_MOCK_START = 1,

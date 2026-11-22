@@ -75,7 +75,7 @@ def main():
         if stress_selection:
             scenarios = list(range(58, 61 if stress_selection == 2 else 60))
             if args.board_smoke == "usb" and args.board_stress == "repeat":
-                scenarios.append(61)
+                scenarios.extend((61, 62))
         for scenario in scenarios:
             row = harness.execute(name, "AppV3_TestRun", scenario)
             if scenario < 49:
