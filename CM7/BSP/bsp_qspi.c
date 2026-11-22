@@ -408,3 +408,243 @@ SysResult_t BSP_QSPI_GetDiagnostics(BspQspiDiagnostics_t *diagnostics)
     Qspi_Give();
     return SYS_OK;
 }
+
+//按256B提交有效前缀，HAL失败或短接收不污染调用者尚未确认的区间。
+#define QSPI_READ_CHUNK_BYTES 256U
+static uint8_t s_read_buffer[QSPI_READ_CHUNK_BYTES];
+static bool s_read_fault;
+
+static uint32_t Qspi_ReadRemaining(uint32_t started, uint32_t budget)
+{
+    uint32_t elapsed = HAL_GetTick() - started;
+    if (elapsed >= budget)
+        return 0U;
+    return budget - elapsed > QSPI_IO_TIMEOUT_MS ? QSPI_IO_TIMEOUT_MS : budget - elapsed;
+}
+
+static bool Qspi_ReadHardwareValid(void)
+{
+    return Qspi_ContextValid() && Qspi_ConfigValid() &&
+        s_qspi.State == HAL_QSPI_STATE_READY &&
+        (QUADSPI->CCR & QUADSPI_CCR_FMODE) != QUADSPI_CCR_FMODE;
+}
+
+static SysResult_t Qspi_ReadTransfer(uint32_t opcode, uint32_t address,
+    uint32_t address_mode, uint32_t data_mode, uint32_t dummy,
+    uint32_t bytes, uint32_t started, uint32_t budget)
+{
+    QSPI_CommandTypeDef command = {0};
+    HAL_StatusTypeDef hal;
+    SysResult_t result;
+    uint32_t remaining;
+    s_diag.read_opcode = opcode;
+    //每段和每条命令前复核硬件；短临界区只保护操作权，不跨 HAL 等待。
+    if (!Qspi_ReadHardwareValid())
+    {
+        s_read_fault = true;
+        return SYS_ERR_INVALID_STATE;
+    }
+    remaining = Qspi_ReadRemaining(started, budget);
+    if (remaining == 0U)
+    {
+        s_read_fault = true;
+        return SYS_ERR_TIMEOUT;
+    }
+    command.Instruction = opcode;
+    command.InstructionMode = QSPI_INSTRUCTION_1_LINE;
+    command.AddressMode = address_mode;
+    command.AddressSize = QSPI_ADDRESS_24_BITS;
+    command.Address = address;
+    command.AlternateByteMode = QSPI_ALTERNATE_BYTES_NONE;
+    command.DataMode = data_mode;
+    command.DummyCycles = dummy;
+    command.NbData = bytes;
+    command.DdrMode = QSPI_DDR_MODE_DISABLE;
+    command.DdrHoldHalfCycle = QSPI_DDR_HHC_ANALOG_DELAY;
+    command.SIOOMode = QSPI_SIOO_INST_EVERY_CMD;
+    s_diag.read_stage = BSP_QSPI_READ_STAGE_COMMAND;
+    hal = HAL_QSPI_Command(&s_qspi, &command, remaining);
+    s_diag.read_hal_status = hal;
+    result = Qspi_Result(hal);
+    if (result == SYS_OK && QUADSPI->DLR != bytes - 1U)
+        result = SYS_ERR_PROTOCOL;
+    if (result == SYS_OK && !Qspi_ReadHardwareValid())
+        result = SYS_ERR_INVALID_STATE;
+    remaining = Qspi_ReadRemaining(started, budget);
+    if (result == SYS_OK && remaining == 0U)
+        result = SYS_ERR_TIMEOUT;
+    if (result != SYS_OK)
+    {
+        s_read_fault = true;
+        return result;
+    }
+    s_diag.read_stage = BSP_QSPI_READ_STAGE_RECEIVE;
+    hal = HAL_QSPI_Receive(&s_qspi, s_read_buffer, remaining);
+    s_diag.read_hal_status = hal;
+    result = Qspi_Result(hal);
+    if (result == SYS_OK && (s_qspi.RxXferSize != bytes || s_qspi.RxXferCount != 0U))
+        result = SYS_ERR_PROTOCOL;
+    if (result == SYS_OK && !Qspi_ReadHardwareValid())
+        result = SYS_ERR_INVALID_STATE;
+    if (result == SYS_OK && Qspi_ReadRemaining(started, budget) == 0U)
+        result = SYS_ERR_TIMEOUT;
+    if (result != SYS_OK)
+        s_read_fault = true;
+    return result;
+}
+
+static void Qspi_ReadBegin(uint32_t mode, uint32_t address, uint32_t size)
+{
+    s_diag.read_mode = mode;
+    s_diag.read_address = address;
+    s_diag.read_requested = size;
+    s_diag.read_completed = 0U;
+    s_diag.read_stage = BSP_QSPI_READ_STAGE_CHECK;
+    s_diag.read_opcode = 0U;
+    s_diag.read_hal_status = HAL_OK;
+    s_diag.read_cleanup_result = SYS_OK;
+    s_diag.status_valid_mask = 0U;
+    memset(&s_diag.status, 0, sizeof(s_diag.status));
+    s_read_fault = false;
+}
+
+static SysResult_t Qspi_ReadFinish(SysResult_t result, uint32_t started)
+{
+    uint32_t cleanup_started;
+    s_diag.read_result = result;
+    s_diag.read_elapsed_ms = HAL_GetTick() - started;
+    s_diag.read_hal_error = s_qspi.ErrorCode;
+    s_diag.read_hal_state = s_qspi.State;
+    if (s_owned && __HAL_RCC_QSPI_IS_CLK_ENABLED())
+    {
+        s_diag.read_cr = QUADSPI->CR;
+        s_diag.read_dcr = QUADSPI->DCR;
+        s_diag.read_sr = QUADSPI->SR;
+    }
+    if (s_read_fault)
+    {
+        //先保存首错再清理；异常 DMA 配置/上下文不能交给 HAL Abort 访问未知句柄。
+        s_diag.ready = 0U;
+        s_diag.fault = 1U;
+        cleanup_started = HAL_GetTick();
+        s_diag.read_cleanup_result = !Qspi_ContextValid() ||
+            !__HAL_RCC_QSPI_IS_CLK_ENABLED() || (QUADSPI->CR & QUADSPI_CR_DMAEN) != 0U ?
+            SYS_ERR_INVALID_STATE : Qspi_Cleanup();
+        s_diag.read_cleanup_elapsed_ms = HAL_GetTick() - cleanup_started;
+    }
+    else if (result == SYS_OK)
+        s_diag.read_stage = BSP_QSPI_READ_STAGE_COMPLETE;
+    Qspi_Give();
+    return result;
+}
+
+static SysResult_t Qspi_ReadStatusLocked(uint32_t started, uint32_t budget)
+{
+    static const uint8_t commands[3] = {0x05U, 0x35U, 0x15U};
+    uint32_t i;
+    SysResult_t result;
+    for (i = 0U; i < 3U; i++)
+    {
+        result = Qspi_ReadTransfer(commands[i], 0U, QSPI_ADDRESS_NONE,
+            QSPI_DATA_1_LINE, 0U, 1U, started, budget);
+        if (result != SYS_OK)
+            return result;
+        if (i == 0U)
+        {
+            s_diag.status.sr1 = s_read_buffer[0];
+            s_diag.status.busy = s_read_buffer[0] & 1U;
+            s_diag.status.wel = (s_read_buffer[0] >> 1) & 1U;
+        }
+        else if (i == 1U)
+        {
+            s_diag.status.sr2 = s_read_buffer[0];
+            s_diag.status.qe = (s_read_buffer[0] >> 1) & 1U;
+            s_diag.status.sus = (s_read_buffer[0] >> 7) & 1U;
+        }
+        else
+            s_diag.status.sr3 = s_read_buffer[0];
+        s_diag.status_valid_mask |= 1U << i;
+    }
+    return SYS_OK;
+}
+
+SysResult_t BSP_QSPI_ReadStatus(BspQspiStatus_t *status, uint32_t timeout_ms)
+{
+    uint32_t started;
+    SysResult_t result;
+    if (status == NULL || timeout_ms == 0U || timeout_ms > BSP_QSPI_MAX_READ_TIMEOUT_MS)
+        return SYS_ERR_INVALID_ARG;
+    if (!Qspi_ContextValid())
+        return SYS_ERR_INVALID_STATE;
+    if (!Qspi_Take())
+        return SYS_ERR_BUSY;
+    if (s_diag.ready == 0U || s_diag.fault != 0U)
+    {
+        Qspi_Give();
+        return SYS_ERR_INVALID_STATE;
+    }
+    started = HAL_GetTick();
+    Qspi_ReadBegin(UINT32_MAX, 0U, 0U);
+    result = Qspi_ReadStatusLocked(started, timeout_ms);
+    if (result == SYS_OK)
+        *status = s_diag.status;
+    return Qspi_ReadFinish(result, started);
+}
+
+SysResult_t BSP_QSPI_Read(BspQspiReadMode_t mode, uint32_t address,
+    void *buffer, uint32_t size, uint32_t *completed, uint32_t timeout_ms)
+{
+    uint32_t started, bytes;
+    uintptr_t ptr = (uintptr_t)buffer, count_ptr = (uintptr_t)completed;
+    SysResult_t result;
+    //先用减法验证所有边界；此阶段不读取任何 QSPI/RCC/GPIO 寄存器。
+    if (buffer == NULL || completed == NULL || size == 0U ||
+        (uint32_t)mode > BSP_QSPI_READ_QUAD_OUTPUT ||
+        address >= BSP_QSPI_CAPACITY_BYTES || size > BSP_QSPI_CAPACITY_BYTES - address ||
+        timeout_ms == 0U || timeout_ms > BSP_QSPI_MAX_READ_TIMEOUT_MS ||
+        ptr > UINT32_MAX - (size - 1U) || count_ptr > UINT32_MAX - 3U ||
+        (count_ptr < ptr + size && ptr < count_ptr + sizeof(*completed)))
+        return SYS_ERR_INVALID_ARG;
+    *completed = 0U;
+    if (!Qspi_ContextValid())
+        return SYS_ERR_INVALID_STATE;
+    if (!Qspi_Take())
+        return SYS_ERR_BUSY;
+    if (s_diag.ready == 0U || s_diag.fault != 0U)
+    {
+        Qspi_Give();
+        return SYS_ERR_INVALID_STATE;
+    }
+    started = HAL_GetTick();
+    Qspi_ReadBegin(mode, address, size);
+    //在固定120MHz配置下拒绝03h；不为了兼容它更改共享时钟或运行时分频。
+    if ((mode == BSP_QSPI_READ_STANDARD && s_diag.serial_clock_hz > 50000000U) ||
+        mode == BSP_QSPI_READ_QUAD_OUTPUT)
+        return Qspi_ReadFinish(SYS_ERR_NOT_SUPPORTED, started);
+    result = Qspi_ReadStatusLocked(started, timeout_ms);
+    if (result == SYS_OK && s_diag.status.busy != 0U)
+        result = SYS_ERR_BUSY;
+    if (result == SYS_OK && s_diag.status.sus != 0U)
+        result = SYS_ERR_INVALID_STATE;
+    while (result == SYS_OK && s_diag.read_completed < size)
+    {
+        bytes = size - s_diag.read_completed;
+        if (bytes > QSPI_READ_CHUNK_BYTES)
+            bytes = QSPI_READ_CHUNK_BYTES;
+        result = Qspi_ReadTransfer(mode == BSP_QSPI_READ_STANDARD ? 0x03U : 0x0BU,
+            address + s_diag.read_completed, QSPI_ADDRESS_1_LINE, QSPI_DATA_1_LINE,
+            mode == BSP_QSPI_READ_STANDARD ? 0U : 8U, bytes, started, timeout_ms);
+        if (result != SYS_OK)
+            break;
+        s_diag.read_stage = BSP_QSPI_READ_STAGE_COPY;
+        memcpy((uint8_t *)buffer + s_diag.read_completed, s_read_buffer, bytes);
+        s_diag.read_completed += bytes;
+        *completed = s_diag.read_completed;
+        if (Qspi_ReadRemaining(started, timeout_ms) == 0U)
+        {
+            s_read_fault = true;
+            result = SYS_ERR_TIMEOUT;
+        }
+    }
+    return Qspi_ReadFinish(result, started);
+}
