@@ -1,0 +1,6 @@
+python_deps/
+__pycache__/
+*.o
+*.axf
+*.map
+build/

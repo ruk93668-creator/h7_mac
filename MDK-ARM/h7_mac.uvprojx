@@ -3456,7 +3456,8 @@
             <IncludeLibsPath></IncludeLibsPath>
             <Misc>--keep=g_ipc
 --keep=*(.framework_init)
---keep=*(.device_export)</Misc>
+--keep=*(.device_export)
+--keep=bsp_bt_uart.o(*)</Misc>
             <LinkerInputFile></LinkerInputFile>
             <DisabledWarnings></DisabledWarnings>
           </LDads>
@@ -4700,6 +4701,8 @@
         <Group>
           <GroupName>CM7\BSP</GroupName>
           <Files>
+            <File><FileName>bsp_bt_uart.c</FileName><FileType>1</FileType><FilePath>../CM7/BSP/bsp_bt_uart.c</FilePath></File>
+            <File><FileName>bsp_bt_uart.h</FileName><FileType>5</FileType><FilePath>../CM7/BSP/bsp_bt_uart.h</FilePath></File>
             <File>
               <FileName>bsp_camera.c</FileName>
               <FileType>1</FileType>

@@ -1,0 +1,104 @@
+[
+  {
+    "name": "current_cm7",
+    "command": [
+      "D:/32/UV4/UV4.exe",
+      "-j0",
+      "-b",
+      "D:\\32\\STM32H7\\h7_mac_ble\\MDK-ARM\\h7_mac.uvprojx",
+      "-t",
+      "h7_mac_CM7",
+      "-o",
+      "D:\\32\\STM32H7\\h7_mac_ble\\Tests\\BleB1\\current_cm7_build.log"
+    ],
+    "exit": 0,
+    "pass": true,
+    "regions": {
+      "ER_IROM1": {
+        "size": 143380,
+        "limit": 1048576
+      },
+      "ER_FW_INIT": {
+        "size": 204,
+        "limit": 4294967295
+      },
+      "ER_DEVICE_EXPORT": {
+        "size": 4,
+        "limit": 4294967295
+      },
+      "RW_IRAM1": {
+        "size": 72416,
+        "limit": 131072
+      },
+      "RW_SDMMC_DMA": {
+        "size": 32768,
+        "limit": 32768
+      },
+      "RW_SHARED": {
+        "size": 320,
+        "limit": 4096
+      }
+    },
+    "api_symbols": {
+      "BSP_BT_UART_Init": true,
+      "BSP_BT_UART_Read": true,
+      "BSP_BT_UART_Write": true,
+      "BSP_BT_UART_Recover": true,
+      "BSP_BT_UART_DeInit": true,
+      "BSP_BT_UART_GetDiagnostics": true,
+      "USART2_IRQHandler": true
+    },
+    "log_sha256": "f47510804fbd3661d2207f7e68aa7e177fdafea3041286eeb213ebbe92dfa0e3"
+  },
+  {
+    "name": "baseline_cm7",
+    "command": [
+      "D:/32/UV4/UV4.exe",
+      "-j0",
+      "-b",
+      "D:\\32\\STM32H7\\h7_mac_ble\\MDK-ARM\\h7_mac_ble_b1_baseline.uvprojx",
+      "-t",
+      "h7_mac_CM7",
+      "-o",
+      "D:\\32\\STM32H7\\h7_mac_ble\\Tests\\BleB1\\baseline_cm7_build.log"
+    ],
+    "exit": 0,
+    "pass": true,
+    "regions": {
+      "ER_IROM1": {
+        "size": 140608,
+        "limit": 1048576
+      },
+      "ER_FW_INIT": {
+        "size": 192,
+        "limit": 4294967295
+      },
+      "ER_DEVICE_EXPORT": {
+        "size": 4,
+        "limit": 4294967295
+      },
+      "RW_IRAM1": {
+        "size": 69184,
+        "limit": 131072
+      },
+      "RW_SDMMC_DMA": {
+        "size": 32768,
+        "limit": 32768
+      },
+      "RW_SHARED": {
+        "size": 320,
+        "limit": 4096
+      }
+    },
+    "api_symbols": {
+      "BSP_BT_UART_Init": false,
+      "BSP_BT_UART_Read": false,
+      "BSP_BT_UART_Write": false,
+      "BSP_BT_UART_Recover": false,
+      "BSP_BT_UART_DeInit": false,
+      "BSP_BT_UART_GetDiagnostics": false,
+      "USART2_IRQHandler": true
+    },
+    "log_sha256": "b0e1be01fca10b99b7716d0cc2c5ff0d3bc117d2431d35020352071c8f022912"
+  }
+]

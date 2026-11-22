@@ -1,0 +1,22 @@
+[
+  {
+    "command": "D:/32/ARM/ARMCC/Bin/armcc.exe --cpu Cortex-M7 --c99 -O2 -DSTM32H747xx -DCORE_CM7 -DUSE_HAL_DRIVER -I D:\\32\\STM32H7\\h7_mac_ble\\CM7\\Core\\Inc -I D:\\32\\STM32H7\\h7_mac_ble\\CM7\\BSP -I D:\\32\\STM32H7\\h7_mac_ble\\CM7\\Framework -I D:\\32\\STM32H7\\h7_mac_ble\\Common\\Inc -I D:\\32\\STM32H7\\h7_mac_ble\\Drivers\\STM32H7xx_HAL_Driver\\Inc -I D:\\32\\STM32H7\\h7_mac_ble\\Drivers\\CMSIS\\Include -I D:\\32\\STM32H7\\h7_mac_ble\\Drivers\\CMSIS\\Device\\ST\\STM32H7xx\\Include -c D:\\32\\STM32H7\\h7_mac_ble\\Tests\\BleB1\\uart_contract.c -o D:\\32\\STM32H7\\h7_mac_ble\\Tests\\BleB1\\uart_contract.o",
+    "exit": 0,
+    "output": ""
+  },
+  {
+    "command": "D:/32/ARM/ARMCC/Bin/armcc.exe --cpu Cortex-M7 --c99 -O2 -DSTM32H747xx -DCORE_CM7 -DUSE_HAL_DRIVER -I D:\\32\\STM32H7\\h7_mac_ble\\CM7\\Core\\Inc -I D:\\32\\STM32H7\\h7_mac_ble\\CM7\\BSP -I D:\\32\\STM32H7\\h7_mac_ble\\CM7\\Framework -I D:\\32\\STM32H7\\h7_mac_ble\\Common\\Inc -I D:\\32\\STM32H7\\h7_mac_ble\\Drivers\\STM32H7xx_HAL_Driver\\Inc -I D:\\32\\STM32H7\\h7_mac_ble\\Drivers\\CMSIS\\Include -I D:\\32\\STM32H7\\h7_mac_ble\\Drivers\\CMSIS\\Device\\ST\\STM32H7xx\\Include -c D:\\32\\STM32H7\\h7_mac_ble\\CM7\\BSP\\bsp_bt_uart.c -o D:\\32\\STM32H7\\h7_mac_ble\\Tests\\BleB1\\bsp_bt_uart.o",
+    "exit": 0,
+    "output": ""
+  },
+  {
+    "command": "D:/32/ARM/ARMCC/Bin/armcc.exe --cpu Cortex-M7 --c99 -O2 -DSTM32H747xx -DCORE_CM7 -DUSE_HAL_DRIVER -I D:\\32\\STM32H7\\h7_mac_ble\\CM7\\Core\\Inc -I D:\\32\\STM32H7\\h7_mac_ble\\CM7\\BSP -I D:\\32\\STM32H7\\h7_mac_ble\\CM7\\Framework -I D:\\32\\STM32H7\\h7_mac_ble\\Common\\Inc -I D:\\32\\STM32H7\\h7_mac_ble\\Drivers\\STM32H7xx_HAL_Driver\\Inc -I D:\\32\\STM32H7\\h7_mac_ble\\Drivers\\CMSIS\\Include -I D:\\32\\STM32H7\\h7_mac_ble\\Drivers\\CMSIS\\Device\\ST\\STM32H7xx\\Include -c D:\\32\\STM32H7\\h7_mac_ble\\Drivers\\STM32H7xx_HAL_Driver\\Src\\stm32h7xx_hal_gpio.c -o D:\\32\\STM32H7\\h7_mac_ble\\Tests\\BleB1\\stm32h7xx_hal_gpio.o",
+    "exit": 0,
+    "output": ""
+  },
+  {
+    "command": "D:/32/ARM/ARMCC/Bin/armlink.exe D:\\32\\STM32H7\\h7_mac_ble\\Tests\\BleB1\\uart_contract.o D:\\32\\STM32H7\\h7_mac_ble\\Tests\\BleB1\\bsp_bt_uart.o D:\\32\\STM32H7\\h7_mac_ble\\Tests\\BleB1\\stm32h7xx_hal_gpio.o --entry B1_TestRun --scatter D:\\32\\STM32H7\\h7_mac_ble\\Tests\\UsbDeviceStage1\\test.sct -o D:\\32\\STM32H7\\h7_mac_ble\\Tests\\BleB1\\uart_contract.axf",
+    "exit": 0,
+    "output": ""
+  }
+]

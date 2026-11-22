@@ -1,0 +1,15 @@
+{
+  "modified_existing_files": [
+    "MDK-ARM/h7_mac.uvprojx"
+  ],
+  "new_production_files": [
+    "CM7/BSP/bsp_bt_uart.c",
+    "CM7/BSP/bsp_bt_uart.h"
+  ],
+  "cm4_project_target_unchanged": true,
+  "freertos_config_unchanged": true,
+  "camera_usb_storage_sources_unchanged": true,
+  "dynamic_allocation_used": false,
+  "hardware_verified": false,
+  "b2_started": false
+}
