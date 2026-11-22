@@ -8,9 +8,7 @@
 #include <stddef.h>
 #include <string.h>
 
-#ifdef APP_V3_USB_FAULT_TRACE_ENABLED
 #include "platform_sync.h"
-#endif
 
 //对应官方Core的16个端点编号，不预设Class用途
 #define USB_DEVICE_EP_COUNT 16U
@@ -376,6 +374,34 @@ bool USB_Device_IsConfigured(void)
     return s_started && !s_stop_required && s_device.dev_state == USBD_STATE_CONFIGURED;
 }
 
+//调用者已屏蔽本核中断，状态和Configured使用同一次采样
+static bool Usb_ReadLinkState(UsbDeviceLinkState_t *state)
+{
+    state->dev_state = s_device.dev_state;
+    state->dev_old_state = s_device.dev_old_state;
+    state->started = s_started;
+    state->stop_required = s_stop_required;
+    state->last_result = s_last_result;
+    return state->started && !state->stop_required && state->dev_state == USBD_STATE_CONFIGURED;
+}
+
+//正式路径只读取链路字段，恢复调用者原来的中断状态
+bool USB_Device_ReadLinkState(UsbDeviceLinkState_t *state)
+{
+    uint32_t saved_primask;
+    bool configured;
+
+    if (state == NULL)
+        return false;
+
+    saved_primask = Platform_SyncGetPrimask();
+    Platform_SyncDisableIrq();
+    configured = Usb_ReadLinkState(state);
+    Platform_SyncMemoryBarrier();
+    Platform_SyncRestoreIrq(saved_primask);
+    return configured;
+}
+
 #ifdef APP_V3_USB_FAULT_TRACE_ENABLED
 static UsbDeviceTraceEvent_t s_r2_events[USB_DEVICE_TRACE_CAPACITY];
 static uint32_t s_r2_sequence;
@@ -403,18 +429,19 @@ static void Usb_RecordR2Event(UsbDeviceTraceKind_t kind, uint8_t configuration)
 bool USB_Device_ReadR2Trace(UsbDeviceR2Trace_t *trace)
 {
     uint32_t saved_primask, event_index, source_index;
+    UsbDeviceLinkState_t state;
     bool configured;
 
     saved_primask = Platform_SyncGetPrimask();
     Platform_SyncDisableIrq();
 
     //Configured和各状态字段使用同一次采样，ISR不能在字段之间修改Core
-    configured = USB_Device_IsConfigured();
-    trace->dev_state = s_device.dev_state;
-    trace->dev_old_state = s_device.dev_old_state;
-    trace->started = s_started;
-    trace->stop_required = s_stop_required;
-    trace->last_result = s_last_result;
+    configured = Usb_ReadLinkState(&state);
+    trace->dev_state = state.dev_state;
+    trace->dev_old_state = state.dev_old_state;
+    trace->started = state.started;
+    trace->stop_required = state.stop_required;
+    trace->last_result = state.last_result;
     trace->event_sequence = s_r2_sequence;
     trace->event_count = s_r2_count;
     source_index = (s_r2_next + USB_DEVICE_TRACE_CAPACITY - s_r2_count) % USB_DEVICE_TRACE_CAPACITY;

@@ -45,6 +45,18 @@ typedef struct
 bool USB_Device_ReadR2Trace(UsbDeviceR2Trace_t *trace);
 #endif
 
+//USB任务读取同一采样点的链路事实；短临界区内不执行USB操作
+typedef struct
+{
+    uint8_t dev_state;
+    uint8_t dev_old_state;
+    bool started;
+    bool stop_required;
+    SysResult_t last_result;
+} UsbDeviceLinkState_t;
+
+bool USB_Device_ReadLinkState(UsbDeviceLinkState_t *state);
+
 //端点资源快照，busy期间缓冲区仍由底层持有
 typedef struct
 {

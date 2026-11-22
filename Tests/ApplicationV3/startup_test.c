@@ -1378,6 +1378,85 @@ static uint32_t Test_HardwareReplyBackpressure(const AppV3Context_t *context)
 }
 
 //记录测试夹具中的终结身份和停止次数，供冻结负对照复核
+//通过现有Service命令验证健康Suspend和真实失联的边界
+static uint32_t Test_UsbSuspend(const AppV3Context_t *context, uint32_t scenario)
+{
+    uint32_t process_calls, before;
+    uint32_t observation_index;
+
+    CHECK(Test_HardwareBoot(context) == 0U);
+    CHECK(UsbService_Request(1U, USB_SERVICE_START, 0U) == SYS_OK);
+    CHECK(Test_ServiceStep(RUNTIME_TARGET_USB) == SYS_OK);
+    Test_PollHardware(RUNTIME_TARGET_USB);
+    g_hardware.usb_configured = true;
+    g_hardware.uvc_present = true;
+    Test_PollHardware(RUNTIME_TARGET_USB);
+    CHECK(Test_ReadHardwareResult(RUNTIME_TARGET_USB, 1U, APP_V3_HW_ACTIVE, SYS_OK));
+
+    //模拟五分钟内主机未Resume，USB仍占用原资源，不推进UVC
+    process_calls = g_hardware.usb_process_calls;
+    g_hardware.usb_configured = false;
+    g_hardware.usb_bus_state = USBD_STATE_SUSPENDED;
+    g_hardware.usb_previous_state = USBD_STATE_CONFIGURED;
+    for (observation_index = 1U; observation_index <= 5U; ++observation_index)
+    {
+        g_hardware.now_ms = observation_index * 60000U;
+        Test_PollHardware(RUNTIME_TARGET_USB);
+    }
+    CHECK(g_hardware.usb_process_calls == process_calls && g_hardware.usb_stop_calls == 0U);
+    CHECK(UsbService_Request(2U, USB_SERVICE_HARDWARE_QUERY, 0U) == SYS_OK);
+    CHECK(Test_ServiceStep(RUNTIME_TARGET_USB) == SYS_OK);
+    CHECK(Test_ReadHardwareResult(RUNTIME_TARGET_USB, 2U, APP_V3_HW_ACTIVE, SYS_OK));
+    CHECK((business_events[1].hardware.flags & 1U) == 0U &&
+        business_events[1].hardware.first_fault == SYS_OK);
+
+    if (scenario == 64U)
+    {
+        //显式STOP仍通过原设备清理路径
+        CHECK(UsbService_Request(3U, USB_SERVICE_STOP, 0U) == SYS_OK);
+        CHECK(Test_ServiceStep(RUNTIME_TARGET_USB) == SYS_OK);
+        Test_PollHardware(RUNTIME_TARGET_USB);
+        CHECK(Test_ReadHardwareResult(RUNTIME_TARGET_USB, 3U, APP_V3_HW_READY, SYS_OK));
+        CHECK(g_hardware.usb_stop_calls == 1U && (business_events[2].hardware.flags & 2U) != 0U);
+        return 0U;
+    }
+
+    if (scenario == 63U)
+    {
+        //只有真实CONFIGURED重新出现，才恢复正常UVC推进
+        g_hardware.usb_configured = true;
+        g_hardware.usb_bus_state = USBD_STATE_CONFIGURED;
+    }
+    else if (scenario == 65U)
+        g_hardware.usb_result = SYS_ERR_IO;
+    else if (scenario == 66U)
+        g_hardware.usb_bus_state = USBD_STATE_DEFAULT;
+    else if (scenario == 67U)
+        g_hardware.usb_bus_state = USBD_STATE_ADDRESSED;
+    else if (scenario == 68U)
+        g_hardware.usb_core_stop_required = true;
+    else
+        g_hardware.usb_previous_state = USBD_STATE_ADDRESSED;
+
+    before = g_hardware.usb_process_calls;
+    Test_PollHardware(RUNTIME_TARGET_USB);
+    CHECK(UsbService_Request(3U, USB_SERVICE_HARDWARE_QUERY, 0U) == SYS_OK);
+    CHECK(Test_ServiceStep(RUNTIME_TARGET_USB) == SYS_OK);
+    if (scenario == 63U)
+    {
+        CHECK(Test_ReadHardwareResult(RUNTIME_TARGET_USB, 3U, APP_V3_HW_ACTIVE, SYS_OK));
+        CHECK(business_events[2].hardware.first_fault == SYS_OK &&
+            (business_events[2].hardware.flags & 1U) != 0U && g_hardware.usb_process_calls == before + 1U);
+    }
+    else
+    {
+        CHECK(Test_ReadHardwareResult(RUNTIME_TARGET_USB, 3U, APP_V3_HW_FAULT, SYS_OK));
+        CHECK(business_events[2].hardware.first_fault == SYS_ERR_IO);
+    }
+    CHECK(g_hardware.usb_stop_calls == 0U);
+    return 0U;
+}
+
 static void Test_TraceUsbRollback(void)
 {
     const AppV3ServiceEvent_t *event = &business_events[business_event_count - 1U];
@@ -1896,7 +1975,7 @@ static uint32_t Test_BoardStress(uint32_t scenario)
                 g_app_v3_usb_first_fault.core_result == expected_result &&
                 g_app_v3_usb_first_fault.observe_result == expected_result);
             CHECK(g_app_v3_usb_first_fault.platform.dev_state ==
-                (scenario == 62U ? USBD_STATE_CONFIGURED : USBD_STATE_SUSPENDED));
+                (scenario == 62U ? USBD_STATE_CONFIGURED : USBD_STATE_DEFAULT));
             CHECK(g_app_v3_usb_first_fault.platform.dev_old_state == USBD_STATE_CONFIGURED &&
                 g_app_v3_usb_first_fault.platform.last_result == expected_result &&
                 g_app_v3_usb_first_fault.platform.event_sequence == 4U &&
@@ -1999,6 +2078,9 @@ uint32_t AppV3_TestRun(uint32_t scenario)
         return Test_BoardStress(scenario);
 #endif
 #endif
+
+    if (scenario >= 63U && scenario <= 69U)
+        return Test_UsbSuspend(context, scenario);
 
     switch (scenario)
     {

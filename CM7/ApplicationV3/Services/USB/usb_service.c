@@ -238,24 +238,40 @@ static SysResult_t s_usb_observed_core_result;
 static UsbDeviceR2Trace_t s_usb_platform_trace;
 #endif
 
-static SysResult_t UsbService_ObserveDevice(void)
+//仅ACTIVE允许健康挂起；START仍须观察到真实CONFIGURED
+static SysResult_t UsbService_ObserveDevice(bool *suspended)
 {
     SysResult_t result;
+    UsbDeviceLinkState_t link;
+    bool configured;
 #ifdef APP_V3_USB_FAULT_TRACE_ENABLED
-    if (USB_Device_ReadR2Trace(&s_usb_platform_trace))
+    configured = USB_Device_ReadR2Trace(&s_usb_platform_trace);
+    link = (UsbDeviceLinkState_t){s_usb_platform_trace.dev_state, s_usb_platform_trace.dev_old_state,
+        s_usb_platform_trace.started, s_usb_platform_trace.stop_required, s_usb_platform_trace.last_result};
 #else
-    if (USB_Device_IsConfigured())
+    configured = USB_Device_ReadLinkState(&link);
 #endif
+    if (configured)
         s_usb.hardware.flags |= USB_HW_CONFIGURED;
     else
         s_usb.hardware.flags &= (uint16_t)~USB_HW_CONFIGURED;
-    USB_UVC_Process();
+
+    //挂起保留USB所有权和现有持有标志，暂停UVC推进直到主机恢复配置
+    if (suspended != NULL)
+        *suspended = !configured && link.dev_state == USBD_STATE_SUSPENDED &&
+            link.dev_old_state == USBD_STATE_CONFIGURED && link.started &&
+            !link.stop_required && link.last_result == SYS_OK;
+    if (suspended == NULL || !*suspended)
+        USB_UVC_Process();
     result = USB_Device_GetLastResult();
 #ifdef APP_V3_USB_FAULT_TRACE_ENABLED
     //保留同一轮读取的Core原值，避免随后Class查询覆盖诊断
     s_usb_observed_core_result = result;
 #endif
-    if (result == SYS_OK && (s_usb.hardware.flags & USB_HW_CONFIGURED) != 0U)
+    //采样时已有设备级错误时保留它，后续成功不能掩盖
+    if (suspended != NULL && result == SYS_OK)
+        result = link.last_result;
+    if (result == SYS_OK && configured)
     {
         UsbUvcStreamStatus_t stream;
         result = USB_UVC_GetStreamStatus(&stream);
@@ -286,8 +302,9 @@ uint32_t AppV3_UsbAdvance(void)
         return APP_EVENTS_WAIT_FOREVER;
     if (s_usb.hardware.state == APP_V3_HW_ACTIVE)
     {
-        result = UsbService_ObserveDevice();
-        if ((s_usb.hardware.flags & USB_HW_CONFIGURED) == 0U ||
+        bool suspended;
+        result = UsbService_ObserveDevice(&suspended);
+        if (((s_usb.hardware.flags & USB_HW_CONFIGURED) == 0U && (!suspended || result != SYS_OK)) ||
             (result != SYS_OK && result != SYS_ERR_BUSY))
         {
 #ifdef APP_V3_USB_FAULT_TRACE_ENABLED
@@ -314,7 +331,7 @@ uint32_t AppV3_UsbAdvance(void)
     if (s_usb.hardware.state == APP_V3_HW_STARTING)
     {
         result = now - s_usb.request.started_ms >= USB_HW_ENUM_TIMEOUT_MS ? SYS_ERR_TIMEOUT :
-            (s_usb.waiting_configured ? UsbService_ObserveDevice() : UsbService_BeginDevice());
+            (s_usb.waiting_configured ? UsbService_ObserveDevice(NULL) : UsbService_BeginDevice());
         if (result == SYS_OK && (s_usb.hardware.flags & USB_HW_CONFIGURED) != 0U)
             UsbService_FinishHardware(SYS_OK, APP_V3_HW_ACTIVE);
         if (result != SYS_OK && result != SYS_ERR_BUSY)

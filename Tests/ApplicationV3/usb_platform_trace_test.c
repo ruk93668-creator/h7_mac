@@ -12,6 +12,7 @@ volatile uint32_t g_failure;
 uint32_t UsbTrace_TestRun(uint32_t scenario)
 {
     UsbDeviceR2Trace_t snapshot = {0};
+    UsbDeviceLinkState_t link;
     uint32_t event_index;
 
     //初始化正式BSP依赖的时钟事实，保持与原USB夹具一致
@@ -31,6 +32,11 @@ uint32_t UsbTrace_TestRun(uint32_t scenario)
         __disable_irq();
         CHECK_EQUAL(USB_Device_ReadR2Trace(&snapshot), false);
         CHECK_EQUAL(__get_PRIMASK(), 1U);
+        CHECK_EQUAL(USB_Device_ReadLinkState(&link), false);
+        CHECK_EQUAL(__get_PRIMASK(), 1U);
+        CHECK_EQUAL(link.dev_state, USBD_STATE_SUSPENDED);
+        CHECK_EQUAL(link.dev_old_state, USBD_STATE_CONFIGURED);
+        CHECK_EQUAL(link.started && !link.stop_required && link.last_result == SYS_OK, true);
         __enable_irq();
         CHECK_EQUAL(snapshot.dev_state, USBD_STATE_SUSPENDED);
         CHECK_EQUAL(snapshot.dev_old_state, USBD_STATE_CONFIGURED);
@@ -42,6 +48,10 @@ uint32_t UsbTrace_TestRun(uint32_t scenario)
         CHECK_EQUAL(USB_Device_ReadR2Trace(&snapshot), true);
         CHECK_EQUAL(__get_PRIMASK(), 0U);
         CHECK_EQUAL(snapshot.events[snapshot.event_count - 1U].kind, USB_DEVICE_TRACE_RESUME);
+        CHECK_EQUAL(USB_Device_ReadLinkState(&link), true);
+        Request(0, USB_REQ_SET_CONFIGURATION, 0, 0, 0);
+        CHECK_EQUAL(USB_Device_ReadLinkState(&link), false);
+        CHECK_EQUAL(link.dev_state, USBD_STATE_ADDRESSED);
         return 0U;
     }
 

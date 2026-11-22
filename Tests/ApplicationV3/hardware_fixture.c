@@ -200,6 +200,7 @@ SysResult_t USB_UVC_CancelFrame(void)
 
 void USB_UVC_Process(void)
 {
+    ++g_hardware.usb_process_calls;
 }
 
 SysResult_t USB_Device_Start(void)
@@ -227,22 +228,39 @@ bool USB_Device_IsConfigured(void)
     return g_hardware.usb_configured;
 }
 
+bool USB_Device_ReadLinkState(UsbDeviceLinkState_t *link)
+{
+    link->dev_state = g_hardware.usb_bus_state;
+    if (link->dev_state == 0U)
+        link->dev_state = g_hardware.usb_configured ? USBD_STATE_CONFIGURED : USBD_STATE_DEFAULT;
+    link->dev_old_state = g_hardware.usb_previous_state != 0U ?
+        g_hardware.usb_previous_state : USBD_STATE_CONFIGURED;
+    link->started = g_hardware.usb_start_calls != 0U;
+    link->stop_required = g_hardware.usb_core_stop_required;
+    link->last_result = g_hardware.usb_result;
+    return link->started && !link->stop_required && link->dev_state == USBD_STATE_CONFIGURED;
+}
+
 #ifdef APP_V3_USB_FAULT_TRACE_ENABLED
 bool USB_Device_ReadR2Trace(UsbDeviceR2Trace_t *trace)
 {
+    UsbDeviceLinkState_t link;
+    bool configured = USB_Device_ReadLinkState(&link);
+
     *trace = (UsbDeviceR2Trace_t){0};
-    trace->dev_state = g_hardware.usb_configured ? USBD_STATE_CONFIGURED : USBD_STATE_SUSPENDED;
-    trace->dev_old_state = USBD_STATE_CONFIGURED;
-    trace->started = true;
-    trace->last_result = g_hardware.usb_result;
+    trace->dev_state = link.dev_state;
+    trace->dev_old_state = link.dev_old_state;
+    trace->started = link.started;
+    trace->stop_required = link.stop_required;
+    trace->last_result = link.last_result;
     trace->event_sequence = 4U;
     trace->event_count = 1U;
     trace->events[0] = (UsbDeviceTraceEvent_t)
     {
-        4U, g_hardware.now_ms, USB_DEVICE_TRACE_SUSPEND,
+        4U, g_hardware.now_ms, USB_DEVICE_TRACE_DISCONNECT,
         trace->dev_state, trace->dev_old_state, 0U
     };
-    return g_hardware.usb_configured;
+    return configured;
 }
 #endif
 
