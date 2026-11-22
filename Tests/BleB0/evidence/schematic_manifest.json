@@ -1,0 +1,40 @@
+{
+  "archive_sha256": "27a102df66feff202c26ec7b70227d8968e17e4ad0f89a6798d499d777d8946e",
+  "entries": [
+    {
+      "name": "SCH_Schematic1_1_1-电源管理_2026-11-16.svg",
+      "sha256": "2f95239f85d58556595b83b0d28b788e353a8d77696fe0d0e4a8651b215dbfc5",
+      "bytes": 169496
+    },
+    {
+      "name": "SCH_Schematic1_1_2-主控_2026-11-16.svg",
+      "sha256": "4e85fcd92e0288d3635a66298a905356d36ca73d0848af473ba6d94bae8f05e4",
+      "bytes": 579766
+    },
+    {
+      "name": "SCH_Schematic1_1_3-SDRAM存储_2026-11-16.svg",
+      "sha256": "a0256dae2485a49ba13a3f6a6f98aebcaa51afd6ae7915a63993f0187fdf116b",
+      "bytes": 173829
+    },
+    {
+      "name": "SCH_Schematic1_1_4-摄像头接口_2026-11-16.svg",
+      "sha256": "d43e037a655d6a2f5402e8e6fbbfb719bb86add294682d1e6fe393fc9b83ca08",
+      "bytes": 180525
+    },
+    {
+      "name": "SCH_Schematic1_1_5-以太网接口_2026-11-16.svg",
+      "sha256": "dc532102b75a21df00c1abd3dfb6746fe4ecd1c960d3975b9aa5d0f3ed1f66cb",
+      "bytes": 248031
+    },
+    {
+      "name": "SCH_Schematic1_1_6-数据存储_2026-11-16.svg",
+      "sha256": "a61ecca28310c888ac4de007e8fe1cc247bf713e3f454643a66d1d7c406f7594",
+      "bytes": 133110
+    },
+    {
+      "name": "SCH_Schematic1_1_7-调试与扩展_2026-11-16.svg",
+      "sha256": "9c52708ba2f523ccf40f8372559a5b6e94e55f6ba3d1bd2a9b50f17554ac5901",
+      "bytes": 236656
+    }
+  ]
+}

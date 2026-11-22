@@ -1,0 +1,433 @@
+{
+  "source_commit": "f0ce45fd9ab7250b1e22260e087d606ee5ed9ecb",
+  "application_v3_exists": false,
+  "files": [
+    {
+      "path": "CM7/Application/Tasks/camera_task.c",
+      "sha256": "fc80c874b3024c0c4f3a65383987d2b81e1ded43c9f32a801572d7451d526be6",
+      "matches": [
+        {
+          "line": 11,
+          "text": "#define CAMERA_TASK_STACK_WORDS 1536U"
+        },
+        {
+          "line": 22,
+          "text": "static StackType_t s_camera_stack[CAMERA_TASK_STACK_WORDS] __attribute__((aligned(8)));"
+        },
+        {
+          "line": 59,
+          "text": "s_camera_task = xTaskCreateStatic(CameraTask_Run, \"Camera\", CAMERA_TASK_STACK_WORDS,"
+        }
+      ]
+    },
+    {
+      "path": "CM7/Application/Tasks/control_task.c",
+      "sha256": "4fa2e17d5431dead8eae2190395f0810e6505080950d268f1b525d0d71855045",
+      "matches": [
+        {
+          "line": 11,
+          "text": "#define CONTROL_TASK_STACK_WORDS 768U"
+        },
+        {
+          "line": 33,
+          "text": "static StackType_t s_control_stack[CONTROL_TASK_STACK_WORDS] __attribute__((aligned(8)));"
+        },
+        {
+          "line": 92,
+          "text": "s_control_task = xTaskCreateStatic(ControlTask_Run, \"Control\", CONTROL_TASK_STACK_WORDS,"
+        }
+      ]
+    },
+    {
+      "path": "CM7/Application/Tasks/ipc_task.c",
+      "sha256": "3b924fd5963deb63d1ec7cbcca470a7db980874807bd5d35d69e2c1070594d75",
+      "matches": [
+        {
+          "line": 10,
+          "text": "#define IPC_TASK_STACK_WORDS 512U"
+        },
+        {
+          "line": 20,
+          "text": "static StackType_t s_ipc_stack[IPC_TASK_STACK_WORDS] __attribute__((aligned(8)));"
+        },
+        {
+          "line": 48,
+          "text": "s_ipc_task = xTaskCreateStatic(IpcTask_Run, \"IPC\", IPC_TASK_STACK_WORDS,"
+        }
+      ]
+    },
+    {
+      "path": "CM7/Application/Tasks/storage_task.c",
+      "sha256": "8d2eea8be7468aa0a61872031312b54c1de84b21c82fc44164f06bb763cfc154",
+      "matches": [
+        {
+          "line": 9,
+          "text": "#define STORAGE_STACK_WORDS 2048U"
+        },
+        {
+          "line": 14,
+          "text": "static StackType_t s_stack[STORAGE_STACK_WORDS] __attribute__((aligned(8)));"
+        },
+        {
+          "line": 25,
+          "text": "s_task = xTaskCreateStatic(StorageTask_Run, \"Storage\", STORAGE_STACK_WORDS,"
+        }
+      ]
+    },
+    {
+      "path": "CM7/Application/Tasks/usb_task.c",
+      "sha256": "23afd4161a8d4f020f1b7051e3f5993abdd4007b2e4c694571d62667e7fdb0a8",
+      "matches": [
+        {
+          "line": 15,
+          "text": "#define USB_TASK_STACK_WORDS 2048U"
+        },
+        {
+          "line": 26,
+          "text": "static StackType_t s_usb_stack[USB_TASK_STACK_WORDS] __attribute__((aligned(8)));"
+        },
+        {
+          "line": 63,
+          "text": "s_usb_task = xTaskCreateStatic(UsbTask_Run, \"Usb\", USB_TASK_STACK_WORDS,"
+        }
+      ]
+    },
+    {
+      "path": "CM7/BSP/bsp_dcmi.c",
+      "sha256": "612493be98d9e8408746d25cf0787da74f6ff6955a7304077122c7d7422e6609",
+      "matches": [
+        {
+          "line": 297,
+          "text": "if ( (DMA1_Stream0->CR & DMA_SxCR_EN) != 0U ||"
+        },
+        {
+          "line": 301,
+          "text": "HAL_NVIC_DisableIRQ(DMA1_Stream0_IRQn);"
+        },
+        {
+          "line": 306,
+          "text": "s_dcmi_dma.Instance = DMA1_Stream0;"
+        },
+        {
+          "line": 376,
+          "text": "HAL_NVIC_ClearPendingIRQ(DMA1_Stream0_IRQn);"
+        },
+        {
+          "line": 378,
+          "text": "HAL_NVIC_SetPriority(DMA1_Stream0_IRQn, DCMI_DMA_IRQ_PRIORITY, 0U);"
+        },
+        {
+          "line": 379,
+          "text": "HAL_NVIC_SetPriority(DCMI_IRQn, DCMI_IRQ_PRIORITY, 0U);"
+        },
+        {
+          "line": 380,
+          "text": "HAL_NVIC_EnableIRQ(DMA1_Stream0_IRQn);"
+        },
+        {
+          "line": 459,
+          "text": "(DMA1_Stream0->CR & DMA_SxCR_EN) != 0U ||"
+        },
+        {
+          "line": 486,
+          "text": "CLEAR_BIT(DMA1_Stream0->CR, DMA_SxCR_CT);"
+        },
+        {
+          "line": 611,
+          "text": "HAL_NVIC_DisableIRQ(DMA1_Stream0_IRQn);"
+        },
+        {
+          "line": 658,
+          "text": "HAL_NVIC_EnableIRQ(DMA1_Stream0_IRQn);"
+        },
+        {
+          "line": 708,
+          "text": "remaining = DMA1_Stream0->NDTR;"
+        },
+        {
+          "line": 740,
+          "text": "if ((DMA1_Stream0->CR & DMA_SxCR_EN) != 0U)"
+        },
+        {
+          "line": 748,
+          "text": "remaining = DMA1_Stream0->NDTR;"
+        },
+        {
+          "line": 749,
+          "text": "if ((DMA1_Stream0->FCR & DMA_SxFCR_DMDIS) != 0U ||"
+        },
+        {
+          "line": 750,
+          "text": "(DMA1_Stream0->CR & DMA_SxCR_DBM) != 0U ||"
+        },
+        {
+          "line": 864,
+          "text": "target_address = &DMA1_Stream0->M0AR;"
+        },
+        {
+          "line": 865,
+          "text": "other_address = DMA1_Stream0->M1AR;"
+        },
+        {
+          "line": 873,
+          "text": "target_address = &DMA1_Stream0->M1AR;"
+        },
+        {
+          "line": 874,
+          "text": "other_address = DMA1_Stream0->M0AR;"
+        },
+        {
+          "line": 913,
+          "text": "control = DMA1_Stream0->CR;"
+        },
+        {
+          "line": 914,
+          "text": "remaining = DMA1_Stream0->NDTR;"
+        },
+        {
+          "line": 936,
+          "text": "control = DMA1_Stream0->CR;"
+        },
+        {
+          "line": 937,
+          "text": "remaining_after = DMA1_Stream0->NDTR;"
+        },
+        {
+          "line": 1001,
+          "text": "(DMA1_Stream0->CR & DMA_SxCR_EN) != 0U || (DCMI->CR & DCMI_CR_CAPTURE) != 0U ||"
+        },
+        {
+          "line": 1154,
+          "text": "DMA1_Stream0->NDTR != 0U || (DMA1_Stream0->CR & DMA_SxCR_EN) != 0U)"
+        },
+        {
+          "line": 1179,
+          "text": "if ((DMA1_Stream0->CR & DMA_SxCR_CT) == 0U)"
+        },
+        {
+          "line": 1213,
+          "text": "if ((DMA1_Stream0->CR & DMA_SxCR_CT) != 0U)"
+        },
+        {
+          "line": 1239,
+          "text": "void DMA1_Stream0_IRQHandler(void)"
+        },
+        {
+          "line": 1319,
+          "text": "current_target = DMA1_Stream0->CR & DMA_SxCR_CT;"
+        },
+        {
+          "line": 1401,
+          "text": "(DMA1_Stream0->CR & DMA_IT_TE) != 0U)"
+        },
+        {
+          "line": 1404,
+          "text": "(DMA1_Stream0->CR & DMA_IT_DME) != 0U)"
+        },
+        {
+          "line": 1409,
+          "text": "(DMA1_Stream0->FCR & DMA_IT_FE) != 0U)"
+        },
+        {
+          "line": 1433,
+          "text": "HAL_NVIC_ClearPendingIRQ(DMA1_Stream0_IRQn);"
+        },
+        {
+          "line": 1443,
+          "text": "while ((DMA1_Stream0->CR & DMA_SxCR_EN) != 0U ||"
+        },
+        {
+          "line": 1513,
+          "text": "Dcmi_RecordError(DMA1_Stream0->NDTR == 0U ?"
+        },
+        {
+          "line": 1559,
+          "text": "(DMA1_Stream0->CR & DMA_SxCR_EN) != 0U ||"
+        },
+        {
+          "line": 1647,
+          "text": "&DMA1_Stream0->M0AR : &DMA1_Stream0->M1AR;"
+        },
+        {
+          "line": 1648,
+          "text": "uint32_t other = target == BSP_DCMI_TARGET_M0 ? DMA1_Stream0->M1AR : DMA1_Stream0->M0AR;"
+        },
+        {
+          "line": 1659,
+          "text": "control = DMA1_Stream0->CR;"
+        },
+        {
+          "line": 1660,
+          "text": "remaining = DMA1_Stream0->NDTR;"
+        },
+        {
+          "line": 1697,
+          "text": "control = DMA1_Stream0->CR;"
+        },
+        {
+          "line": 1698,
+          "text": "after = DMA1_Stream0->NDTR;"
+        }
+      ]
+    },
+    {
+      "path": "CM7/BSP/bsp_sdmmc.c",
+      "sha256": "dbf1e4d4711b2c79a10f1500fad83726d36cb2e23705f53f8315ae8eefd097b9",
+      "matches": [
+        {
+          "line": 491,
+          "text": "HAL_NVIC_SetPriority(SDMMC1_IRQn, 7U, 0U);"
+        }
+      ]
+    },
+    {
+      "path": "CM7/BSP/bsp_usb.c",
+      "sha256": "0c5126d639e1b505ecad5ba1b5344d2463da87d2bc74af4a3d20b7918cb2b778",
+      "matches": [
+        {
+          "line": 605,
+          "text": "HAL_NVIC_SetPriority(OTG_FS_IRQn, USB_IRQ_PRIORITY, 0U);"
+        }
+      ]
+    },
+    {
+      "path": "CM7/Core/Inc/stm32h7xx_hal_conf.h",
+      "sha256": "681f3e7e690a8275c9da4f4934d859be146e8e9c50677b5cc6327def0b6b9682",
+      "matches": [
+        {
+          "line": 48,
+          "text": "/* #define HAL_ETH_MODULE_ENABLED   */"
+        },
+        {
+          "line": 67,
+          "text": "/* #define HAL_QSPI_MODULE_ENABLED   */"
+        },
+        {
+          "line": 78,
+          "text": "/* #define HAL_UART_MODULE_ENABLED   */"
+        },
+        {
+          "line": 285,
+          "text": "#ifdef HAL_ETH_MODULE_ENABLED"
+        },
+        {
+          "line": 287,
+          "text": "#endif /* HAL_ETH_MODULE_ENABLED */"
+        },
+        {
+          "line": 417,
+          "text": "#ifdef HAL_QSPI_MODULE_ENABLED"
+        },
+        {
+          "line": 419,
+          "text": "#endif /* HAL_QSPI_MODULE_ENABLED */"
+        },
+        {
+          "line": 461,
+          "text": "#ifdef HAL_UART_MODULE_ENABLED"
+        },
+        {
+          "line": 463,
+          "text": "#endif /* HAL_UART_MODULE_ENABLED */"
+        }
+      ]
+    },
+    {
+      "path": "CM7/Platform/FreeRTOSConfig.h",
+      "sha256": "1a7c241f132259cc408f1c98bbd0e27375e595df2b1f7b1906dbbcb04d340c9c",
+      "matches": [
+        {
+          "line": 26,
+          "text": "#define configSUPPORT_STATIC_ALLOCATION      1"
+        },
+        {
+          "line": 27,
+          "text": "#define configSUPPORT_DYNAMIC_ALLOCATION     0"
+        },
+        {
+          "line": 28,
+          "text": "#define configUSE_TIMERS                     0"
+        },
+        {
+          "line": 29,
+          "text": "#define configUSE_MUTEXES                    0"
+        },
+        {
+          "line": 30,
+          "text": "#define configUSE_RECURSIVE_MUTEXES          0"
+        },
+        {
+          "line": 31,
+          "text": "#define configUSE_COUNTING_SEMAPHORES        0"
+        }
+      ]
+    },
+    {
+      "path": "CM7/Platform/platform_hal_timebase.c",
+      "sha256": "375820a3a247fdaa73a7e8a61f5a8b3e580c897c0234caef22f7474c3da9edc6",
+      "matches": [
+        {
+          "line": 29,
+          "text": "HAL_NVIC_SetPriority(TIM6_DAC_IRQn, HAL_TIMEBASE_IRQ_PRIORITY, 0U);"
+        }
+      ]
+    },
+    {
+      "path": "CM4/BSP/bsp_iic.c",
+      "sha256": "b62e36063eb80b4af21990618f44e6772604de19682b0bb4d8c49daeb7e83a70",
+      "matches": [
+        {
+          "line": 69,
+          "text": "HAL_NVIC_SetPriority(I2C2_EV_IRQn, 0U, 0U);"
+        },
+        {
+          "line": 70,
+          "text": "HAL_NVIC_SetPriority(I2C2_ER_IRQn, 0U, 0U);"
+        }
+      ]
+    },
+    {
+      "path": "CM4/Core/Inc/stm32h7xx_hal_conf.h",
+      "sha256": "681f3e7e690a8275c9da4f4934d859be146e8e9c50677b5cc6327def0b6b9682",
+      "matches": [
+        {
+          "line": 48,
+          "text": "/* #define HAL_ETH_MODULE_ENABLED   */"
+        },
+        {
+          "line": 67,
+          "text": "/* #define HAL_QSPI_MODULE_ENABLED   */"
+        },
+        {
+          "line": 78,
+          "text": "/* #define HAL_UART_MODULE_ENABLED   */"
+        },
+        {
+          "line": 285,
+          "text": "#ifdef HAL_ETH_MODULE_ENABLED"
+        },
+        {
+          "line": 287,
+          "text": "#endif /* HAL_ETH_MODULE_ENABLED */"
+        },
+        {
+          "line": 417,
+          "text": "#ifdef HAL_QSPI_MODULE_ENABLED"
+        },
+        {
+          "line": 419,
+          "text": "#endif /* HAL_QSPI_MODULE_ENABLED */"
+        },
+        {
+          "line": 461,
+          "text": "#ifdef HAL_UART_MODULE_ENABLED"
+        },
+        {
+          "line": 463,
+          "text": "#endif /* HAL_UART_MODULE_ENABLED */"
+        }
+      ]
+    }
+  ],
+  "limits": "Text inventory only; no board, DMA allocation, IRQ latency, memory fit or other-branch compatibility verification."
+}

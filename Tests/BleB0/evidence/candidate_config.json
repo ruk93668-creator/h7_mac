@@ -1,0 +1,50 @@
+{
+  "source": "rtlbt_config; reference only, not selected for board",
+  "sha256": "87ddfaff52d680eaf443316ea2875c695311c8236e9fc263057af61eb4e64f0b",
+  "signature": "0x8723ab55",
+  "length": 55,
+  "entries": [
+    {
+      "offset": "0xf4",
+      "length": 8,
+      "data_hex": "0100000005500000",
+      "uart_rate_code": null,
+      "hw_flow_control": null
+    },
+    {
+      "offset": "0xc",
+      "length": 16,
+      "data_hex": "0280920450c5ea19e11bf1af5f01a40b",
+      "uart_rate_code": "0x4928002",
+      "hw_flow_control": true
+    },
+    {
+      "offset": "0x27",
+      "length": 1,
+      "data_hex": "63",
+      "uart_rate_code": null,
+      "hw_flow_control": null
+    },
+    {
+      "offset": "0xfe",
+      "length": 1,
+      "data_hex": "01",
+      "uart_rate_code": null,
+      "hw_flow_control": null
+    },
+    {
+      "offset": "0x15b",
+      "length": 4,
+      "data_hex": "0b0b0b0a",
+      "uart_rate_code": null,
+      "hw_flow_control": null
+    },
+    {
+      "offset": "0x1e3",
+      "length": 1,
+      "data_hex": "00",
+      "uart_rate_code": null,
+      "hw_flow_control": null
+    }
+  ]
+}

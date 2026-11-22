@@ -1,0 +1,68 @@
+[
+  {
+    "file": "hci_h5.c",
+    "url": "https://github.com/torvalds/linux/blob/v6.12/drivers/bluetooth/hci_h5.c",
+    "bytes": 26340,
+    "sha256": "b4f46a9dd23fdf07f1334e54fa794d8e54b57a9ad102d49c60e2359bab0a9399"
+  },
+  {
+    "file": "btrtl.c",
+    "url": "https://github.com/torvalds/linux/blob/v6.12/drivers/bluetooth/btrtl.c",
+    "bytes": 39914,
+    "sha256": "c21981be94634571299aeeab32522b79e0eddf225b6133afd09ea4ade7c1533f"
+  },
+  {
+    "file": "npl.c",
+    "url": "https://github.com/apache/mynewt-nimble/blob/nimble_1_8_0_tag/porting/npl/freertos/src/npl_os_freertos.c",
+    "bytes": 7864,
+    "sha256": "71266ebd503f3c2c7fdeb8cfc90833eb1835c86aa6580b61926dbbb5634a4cbc"
+  },
+  {
+    "file": "npl.h",
+    "url": "https://github.com/apache/mynewt-nimble/blob/nimble_1_8_0_tag/porting/npl/freertos/include/nimble/nimble_npl_os.h",
+    "bytes": 6545,
+    "sha256": "e6ac461fbf6e1003ea75036511f1cb4e69d0ca2e34982462305efab11157cf5f"
+  },
+  {
+    "file": "nimble_freertos.c",
+    "url": "https://github.com/apache/mynewt-nimble/blob/nimble_1_8_0_tag/porting/npl/freertos/src/nimble_port_freertos.c",
+    "bytes": 1913,
+    "sha256": "2002e658a641da91fdc8eda63c51f6f0faecf550c7810e19bc07ee8e3926d889"
+  },
+  {
+    "file": "hci_uart.c",
+    "url": "https://github.com/apache/mynewt-nimble/blob/nimble_1_8_0_tag/nimble/transport/uart/src/hci_uart.c",
+    "bytes": 6597,
+    "sha256": "f78c39daaeb40726ee9f08569a7340ffe289dfba5142a5df3d8491c0c6d4e3af"
+  },
+  {
+    "file": "ble_gatts.c",
+    "url": "https://github.com/apache/mynewt-nimble/blob/nimble_1_8_0_tag/nimble/host/src/ble_gatts.c",
+    "bytes": 63577,
+    "sha256": "c9be6173be4a18060ad239fe65404ea1f640d7e0f89719a8b66f0a4596f2d6c9"
+  },
+  {
+    "file": "mem.c",
+    "url": "https://github.com/apache/mynewt-nimble/blob/nimble_1_8_0_tag/porting/nimble/src/os_msys_init.c",
+    "bytes": 4554,
+    "sha256": "a13885119e71cfbbd52e10256a15da5324a13730c342dbbe987b74bdad411533"
+  },
+  {
+    "file": "rtk.c",
+    "url": "https://github.com/lwfinger/rtl8723bs_bt/blob/09eb91f52a639ec5e4c5c4c98dc2afede046cf20/hciattach_rtk.c",
+    "bytes": 64056,
+    "sha256": "9aeadde113b409c2126c815670dba5e3122d9295e94ab34d1ed63f9c791b9a63"
+  },
+  {
+    "file": "rtlbt_config",
+    "url": "https://github.com/lwfinger/rtl8723bs_bt/blob/09eb91f52a639ec5e4c5c4c98dc2afede046cf20/rtlbt_config",
+    "bytes": 55,
+    "sha256": "87ddfaff52d680eaf443316ea2875c695311c8236e9fc263057af61eb4e64f0b"
+  },
+  {
+    "file": "btstack_LICENSE",
+    "url": "https://github.com/bluekitchen/btstack/blob/9edb5d82ea6ec4466a393415d65030929330acdf/LICENSE",
+    "bytes": 1721,
+    "sha256": "10aa5f952979a9fa2f58bf63c1390c9795b41f8eca405ab975ab926e4d14fc5a"
+  }
+]
