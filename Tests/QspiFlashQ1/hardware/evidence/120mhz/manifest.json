@@ -1,0 +1,10 @@
+{
+  "mock/results.json": "f497336a3b057daf37768ebc78421d066b61bd794d4b70f153e7b485262fe495",
+  "mock/run.log": "81bbfd53c7ecd6d11f3571195b878a3d814d8db3dfbd1fe1001a6612f0d18743",
+  "mock/commands.json": "dcba1b560b93591a69a2c2cbedafdcf8df083a4884c0579032b9fc5ae50db9d4",
+  "hal_link/results.json": "6cc1bd72b53696e979c0a0273050e7f48e0b3fcbbb5b808ed901796f7ca66989",
+  "hal_link/commands.json": "7c010a4dad6b37cb56e00da5500857f750bb02298f9d3b551ab88d05766b2be2",
+  "h7_mac_CM7.log": "6d226147fd9e7e58fdfea45c92f884c7a54fad748d77dd60f76dae623b00f73a",
+  "h7_mac_CM4.log": "6d2ae210734f0247c634b7fb4fca52d1b4e370cea83b3636be045e77ca7d8f7b",
+  "build_results.json": "3a7916d8b80f934aa87db7b2145dda2930267b81aa37cc95c5f1848f999b2843"
+}

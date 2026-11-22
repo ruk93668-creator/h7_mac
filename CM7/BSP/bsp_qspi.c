@@ -4,7 +4,7 @@
 #include <stddef.h>
 #include <string.h>
 
-#define QSPI_TARGET_HZ 30000000UL
+#define QSPI_TARGET_HZ 120000000UL
 //首次 HAL Init 强制使用 5000ms；预算另留准备/识别余量，不能虚报为短超时。
 #define QSPI_INIT_BUDGET_MS (HAL_QSPI_TIMEOUT_DEFAULT_VALUE + 200U)
 #define QSPI_IO_TIMEOUT_MS 100U
@@ -153,7 +153,7 @@ static bool Qspi_ConfigValid(void)
     uint32_t dcr_mask = QUADSPI_DCR_FSIZE | QUADSPI_DCR_CSHT | QUADSPI_DCR_CKMODE;
     return Qspi_HardwareValid() &&
         (QUADSPI->CR & cr_mask) ==
-            ((s_diag.prescaler << QUADSPI_CR_PRESCALER_Pos) | QUADSPI_CR_EN) &&
+            ((s_diag.prescaler << QUADSPI_CR_PRESCALER_Pos) | QSPI_SAMPLE_SHIFTING_HALFCYCLE | QUADSPI_CR_EN) &&
         (QUADSPI->DCR & dcr_mask) == ((23U << QUADSPI_DCR_FSIZE_Pos) | QSPI_CS_HIGH_TIME_8_CYCLE) &&
         (QUADSPI->SR & QUADSPI_SR_BUSY) == 0U;
 }
@@ -314,7 +314,8 @@ SysResult_t BSP_QSPI_Init(void)
         s_qspi.Instance = QUADSPI;
         s_qspi.Init.ClockPrescaler = s_diag.prescaler;
         s_qspi.Init.FifoThreshold = 1U;
-        s_qspi.Init.SampleShifting = QSPI_SAMPLE_SHIFTING_NONE;
+        //高速读取延后半周期采样，并在初始化后核对 SSHIFT；稳定性由实板复测确认。
+        s_qspi.Init.SampleShifting = QSPI_SAMPLE_SHIFTING_HALFCYCLE;
         s_qspi.Init.FlashSize = 23U;
         s_qspi.Init.ChipSelectHighTime = QSPI_CS_HIGH_TIME_8_CYCLE;
         s_qspi.Init.ClockMode = QSPI_CLOCK_MODE_0;

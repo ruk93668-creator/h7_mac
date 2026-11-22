@@ -16,4 +16,4 @@
 
 构建脚本拒绝覆盖已有同名快照，复跑时使用新的 label；历史回归默认读取 baseline/verified。输出仅写 `output/QspiFlashQ1/` 和其隔离副本，审核用文本证据冻结于本目录 evidence/。
 
-本次 BSP Mock 为 51 个用例、981 条断言，全部通过；真实 HAL 测试独立通过。历史三组回归均存在基线同样的失败，不能标记全套回归 PASS。证据和限制见 `Docs/QSPI/Q1_1_SoftwareReport.md`。
+Q1.1 原验收基线的 BSP Mock 为51个用例、981条断言，全部通过；真实 HAL 测试独立通过。历史三组回归均存在基线同样的失败，不能标记全套回归 PASS。原证据和限制见 `Docs/QSPI/Q1_1_SoftwareReport.md`。后续120MHz配置的当前测试为51例、992条断言，其证据独立放在 hardware/evidence/120mhz，见 `Docs/QSPI/Q1_1_120MHzRetest.md`；用户日常编译、烧录只使用原 `MDK-ARM/h7_mac.uvprojx` 的 M7 target。

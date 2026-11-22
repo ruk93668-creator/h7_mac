@@ -87,7 +87,8 @@ HAL_StatusTypeDef HAL_QSPI_Init(QSPI_HandleTypeDef *handle)
         s_tick += 5300U;
     if (s_case == 30U)
         s_tick += 5150U;
-    QUADSPI->CR = (handle->Init.ClockPrescaler << QUADSPI_CR_PRESCALER_Pos) | QUADSPI_CR_EN;
+    QUADSPI->CR = (handle->Init.ClockPrescaler << QUADSPI_CR_PRESCALER_Pos) |
+        handle->Init.SampleShifting | QUADSPI_CR_EN;
     QUADSPI->DCR = (23U << QUADSPI_DCR_FSIZE_Pos) | QSPI_CS_HIGH_TIME_8_CYCLE;
     handle->State = HAL_QSPI_STATE_READY;
     if (s_case == 7U)
@@ -252,7 +253,8 @@ int Q1_TestRun(uint32_t id)
         CHECK(result == SYS_OK && diag.ready == 1U && diag.fault == 0U);
         CHECK(diag.msp_called == 1U && diag.msp_result == SYS_OK);
         CHECK(diag.received_bytes == 3U && diag.init_timeout_ms == 5000U && s_timeout_seen == 5000U);
-        CHECK(diag.prescaler == 7U && diag.serial_clock_hz <= 30000000U);
+        CHECK(diag.prescaler == 1U && diag.serial_clock_hz <= 120000000U);
+        CHECK((diag.cr & QUADSPI_CR_SSHIFT) != 0U);
         CHECK((GPIOF->MODER & ~QSPI_F_MASK) == (saved_f & ~QSPI_F_MASK));
         CHECK((GPIOG->MODER & ~QSPI_G_MASK) == (saved_g & ~QSPI_G_MASK));
         CHECK(BSP_QSPI_GetId(&cached) == SYS_OK && cached == BSP_QSPI_EXPECTED_ID);
