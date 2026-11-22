@@ -1895,6 +1895,12 @@ static uint32_t Test_BoardStress(uint32_t scenario)
                 g_app_v3_usb_first_fault.configured == (scenario == 62U) &&
                 g_app_v3_usb_first_fault.core_result == expected_result &&
                 g_app_v3_usb_first_fault.observe_result == expected_result);
+            CHECK(g_app_v3_usb_first_fault.platform.dev_state ==
+                (scenario == 62U ? USBD_STATE_CONFIGURED : USBD_STATE_SUSPENDED));
+            CHECK(g_app_v3_usb_first_fault.platform.dev_old_state == USBD_STATE_CONFIGURED &&
+                g_app_v3_usb_first_fault.platform.last_result == expected_result &&
+                g_app_v3_usb_first_fault.platform.event_sequence == 4U &&
+                g_app_v3_usb_first_fault.platform.events[0].tick_ms == 123U);
             CHECK(g_app_v3_board_smoke.received == 3U && g_app_v3_board_smoke.result == SYS_ERR_IO &&
                 g_app_v3_board_smoke.events[2].result == SYS_OK &&
                 g_app_v3_board_smoke.events[2].hardware.state == APP_V3_HW_READY &&

@@ -235,12 +235,17 @@ static void UsbService_FinishHardware(SysResult_t result, AppV3HardwareState_t s
 #ifdef APP_V3_USB_FAULT_TRACE_ENABLED
 volatile AppV3UsbFaultTrace_t g_app_v3_usb_first_fault;
 static SysResult_t s_usb_observed_core_result;
+static UsbDeviceR2Trace_t s_usb_platform_trace;
 #endif
 
 static SysResult_t UsbService_ObserveDevice(void)
 {
     SysResult_t result;
+#ifdef APP_V3_USB_FAULT_TRACE_ENABLED
+    if (USB_Device_ReadR2Trace(&s_usb_platform_trace))
+#else
     if (USB_Device_IsConfigured())
+#endif
         s_usb.hardware.flags |= USB_HW_CONFIGURED;
     else
         s_usb.hardware.flags &= (uint16_t)~USB_HW_CONFIGURED;
@@ -293,6 +298,7 @@ uint32_t AppV3_UsbAdvance(void)
                 g_app_v3_usb_first_fault.configured = (s_usb.hardware.flags & USB_HW_CONFIGURED) != 0U;
                 g_app_v3_usb_first_fault.core_result = s_usb_observed_core_result;
                 g_app_v3_usb_first_fault.observe_result = result;
+                g_app_v3_usb_first_fault.platform = s_usb_platform_trace;
                 g_app_v3_usb_first_fault.captured = 1U;
             }
 #endif

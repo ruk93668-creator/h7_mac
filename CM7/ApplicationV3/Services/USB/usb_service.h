@@ -4,8 +4,9 @@
 #include "app_context.h"
 #include "sys_result.h"
 
-#if defined(APP_V3_BOARD_SMOKE) && APP_V3_BOARD_SMOKE == 2 && defined(APP_V3_BOARD_STRESS) && APP_V3_BOARD_STRESS != 0
-#define APP_V3_USB_FAULT_TRACE_ENABLED 1
+#include "usb_device.h"
+
+#ifdef APP_V3_USB_FAULT_TRACE_ENABLED
 
 typedef struct
 {
@@ -14,6 +15,7 @@ typedef struct
     uint32_t configured;
     SysResult_t core_result;
     SysResult_t observe_result;
+    UsbDeviceR2Trace_t platform;
 } AppV3UsbFaultTrace_t;
 
 //仅USB Task写入，测试结束后由Keil Watch读取

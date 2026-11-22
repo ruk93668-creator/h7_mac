@@ -227,6 +227,25 @@ bool USB_Device_IsConfigured(void)
     return g_hardware.usb_configured;
 }
 
+#ifdef APP_V3_USB_FAULT_TRACE_ENABLED
+bool USB_Device_ReadR2Trace(UsbDeviceR2Trace_t *trace)
+{
+    *trace = (UsbDeviceR2Trace_t){0};
+    trace->dev_state = g_hardware.usb_configured ? USBD_STATE_CONFIGURED : USBD_STATE_SUSPENDED;
+    trace->dev_old_state = USBD_STATE_CONFIGURED;
+    trace->started = true;
+    trace->last_result = g_hardware.usb_result;
+    trace->event_sequence = 4U;
+    trace->event_count = 1U;
+    trace->events[0] = (UsbDeviceTraceEvent_t)
+    {
+        4U, g_hardware.now_ms, USB_DEVICE_TRACE_SUSPEND,
+        trace->dev_state, trace->dev_old_state, 0U
+    };
+    return g_hardware.usb_configured;
+}
+#endif
+
 SysResult_t USB_Device_GetLastResult(void)
 {
     return g_hardware.usb_result;
