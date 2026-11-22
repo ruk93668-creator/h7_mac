@@ -4771,6 +4771,11 @@
               <FilePath>../CM7/BSP/bsp_qspi.c</FilePath>
             </File>
             <File>
+              <FileName>m7_project_test.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>../Tests/QspiFlashQ1/hardware/m7_project_test.c</FilePath>
+            </File>
+            <File>
               <FileName>bsp_sdmmc.h</FileName>
               <FileType>5</FileType>
               <FilePath>../CM7/BSP/bsp_sdmmc.h</FilePath>

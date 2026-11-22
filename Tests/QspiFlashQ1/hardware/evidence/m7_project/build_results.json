@@ -1,0 +1,18 @@
+[
+  {
+    "target": "h7_mac_CM7",
+    "exit": 0,
+    "counts": [
+      0,
+      0
+    ]
+  },
+  {
+    "target": "h7_mac_CM4",
+    "exit": 0,
+    "counts": [
+      0,
+      0
+    ]
+  }
+]
