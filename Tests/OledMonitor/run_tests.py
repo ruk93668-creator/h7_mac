@@ -3,7 +3,8 @@ from pathlib import Path
 import json, subprocess, sys, struct, zlib
 ROOT=Path(__file__).resolve().parents[2]
 HERE=Path(__file__).resolve().parent
-OUT=ROOT/'output/OledMonitor'
+UI2='--ui2' in sys.argv
+OUT=ROOT/('output/OledMenu' if UI2 else 'output/OledMonitor')
 OUT.mkdir(parents=True,exist_ok=True)
 sys.stdout.reconfigure(encoding='utf-8')
 sys.path.insert(0,str(ROOT/'Tests/OledAsyncAcceptance/python_deps'))
@@ -34,6 +35,16 @@ NAMES += [
  'UI1 ASCII边界、非NUL结尾及双向裁剪',
  'UI1 全部接口在非IDLE保持原帧及错误契约',
 ]
+if UI2:
+ NAMES += [
+  'UI2 固定页面表、初始化、非法ID及失败后状态保留',
+  'UI2 快速输入、滚动、空页、单项与父子游标恢复',
+  'UI2 标题、窗口文字、高亮、屏边及非IDLE互斥',
+  'UI2 忙期间事件只改变逻辑状态，下一帧显示并可恢复监控',
+  'UI2 菜单像素失败整帧回滚并重试',
+  'UI2 刷新提交BUSY整帧回滚并重试',
+  'UI2 刷新提交IO错误整帧回滚并重试',
+ ]
 commands=[]
 def run(args):
  args=list(map(str,args));r=subprocess.run(args,cwd=ROOT,capture_output=True)
@@ -50,12 +61,19 @@ rows=[]
 for opt in ['O0','O2']:
  obj=OUT/('monitor_'+opt+'.o');axf=obj.with_suffix('.axf')
  flags=[cc,'--cpu','Cortex-M4','--c99','-'+opt]
+ if UI2:flags+=['-DOLED_UI2_TEST_INPUT=1']
  for inc in ['CM4/Device/Inc','CM4/BSP','Common/Inc','Board/Inc','CM4/Application','CM4/Framework','CM4/Platform','CM4/Service']:
   flags+=['-I',ROOT/inc]
  run(flags+['-c',HERE/'monitor_test.c','-o',obj])
  draw=OUT/('draw_'+opt+'.o')
  run(flags+['-c',ROOT/'CM4/Application/oled_ui_draw.c','-o',draw])
- run([cc.with_name('armlink.exe'),obj,draw,'--entry','OledMonitor_TestRun','--scatter',HERE/'test.sct',
+ extra=[]
+ if UI2:
+  for part in ('page','menu'):
+   path=OUT/('ui2_'+part+'_'+opt+'.o')
+   run(flags+['-c',ROOT/('CM4/Application/oled_ui_'+part+'.c'),'-o',path])
+   extra.append(path)
+ run([cc.with_name('armlink.exe'),obj,draw,*extra,'--entry','OledMonitor_TestRun','--scatter',HERE/'test.sct',
       '--keep=*(.framework_init)','--keep=*(.device_export)','--no_scanlib','-o',axf])
  with axf.open('rb') as f:
   elf=ELFFile(f);entry=elf.header['e_entry']
