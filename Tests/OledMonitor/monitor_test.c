@@ -257,6 +257,7 @@ static uint32_t AppCase(uint32_t id)
 #include "ui2_cases.inc"
 #include "ui2_input_cases.inc"
 #include "UiCompatCase.inc"
+#include "UiPreMergeCase.inc"
 #include "UiSysCase.inc"
 #include "Ui6Case.inc"
 #include "Ui20FpsCase.inc"
@@ -279,6 +280,8 @@ uint32_t OledMonitor_TestRun(uint32_t id)
         return UiSysCase(id);
     if (id >= 86U && id <= 87U)
         return UiCompatCase(id);
+    if (id == 88U)
+        return UiPreMergeCase();
     if (id == 76U)
         return Ui2InputCase();
     if (id >= 69U)

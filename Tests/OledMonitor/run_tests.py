@@ -4,7 +4,9 @@ import json, subprocess, sys, struct, zlib, time
 ROOT=Path(__file__).resolve().parents[2]
 HERE=Path(__file__).resolve().parent
 UI2='--ui2' in sys.argv
-OUT=ROOT/('output/OledMenu' if UI2 else 'output/OledMonitor')
+case_filter = int(sys.argv[sys.argv.index('--case') + 1]) if '--case' in sys.argv else None
+OUT=ROOT/('output/OledFocused' if case_filter is not None else
+          'output/OledMenu' if UI2 else 'output/OledMonitor')
 OUT.mkdir(parents=True,exist_ok=True)
 sys.stdout.reconfigure(encoding='utf-8')
 sys.path.insert(0,str(ROOT/'Tests/OledAsyncAcceptance/python_deps'))
@@ -52,6 +54,7 @@ if UI2:NAMES += ['UI6 6000帧连续状态切换、IPC抖动与跨Tick回绕']
 if UI2:NAMES += ["菜单50ms、监控100ms与忙期跳帧"]
 if UI2:NAMES += ['系统监控导航与无发布数据', '系统任务ID、重建、截断、低栈、失联及过期', '系统Heap边界、累计峰值与CPU有效性']
 if UI2:NAMES += ['OLED_UI 字模、光标和数值编辑边界', 'OLED_UI 图标、过渡、滚动和弹窗连续帧']
+if UI2:NAMES += ["合并前：弹窗与局部页面切换时隔离旧输入"]
 commands=[]
 def run(args):
  args=list(map(str,args));r=subprocess.run(args,cwd=ROOT,capture_output=True)
@@ -87,6 +90,7 @@ for opt in ['O0','O2']:
   sections=[(s['sh_addr'],s.data()) for s in elf.iter_sections() if s['sh_flags']&2 and s['sh_type']=='SHT_PROGBITS' and s['sh_size']]
   symbols={s.name:s['st_value'] for s in elf.get_section_by_name('.symtab').iter_symbols()}
  for case,name in enumerate(NAMES):
+  if case_filter is not None and case != case_filter:continue
   u=Uc(UC_ARCH_ARM,UC_MODE_THUMB|UC_MODE_MCLASS)
   for address,size in [(0x08000000,0x100000),(0x20000000,0x40000),(0x01000000,0x1000)]:u.mem_map(address,size)
   for address,data in sections:u.mem_write(address,data)

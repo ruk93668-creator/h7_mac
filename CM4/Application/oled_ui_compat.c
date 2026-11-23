@@ -156,7 +156,7 @@ static int16_t OledUi_CompatPosition(const OledUiCompat_t *ui, uint32_t now)
     return (int16_t)(ui->from + (target - ui->from) * progress / 1000);
 }
 
-bool OledUi_CompatEvent(OledUiCompat_t *ui, uint32_t event, uint32_t now)
+static bool OledUi_CompatApplyEvent(OledUiCompat_t *ui, uint32_t event, uint32_t now)
 {
     int32_t value;
     const OledUiCompatItem_t *item = &s_tools[ui->selected];
@@ -238,6 +238,26 @@ bool OledUi_CompatEvent(OledUiCompat_t *ui, uint32_t event, uint32_t now)
         }
     }
     return true;
+}
+
+OledUiCompatResult_t OledUi_CompatEvent(OledUiCompat_t *ui, uint32_t event, uint32_t now)
+{
+    uint8_t modal, view;
+    uint32_t opened;
+
+    if (ui == NULL || ui->selected >= TOOL_COUNT)
+        return OLED_UI_COMPAT_HANDLED;
+    modal = ui->modal;
+    view = ui->view;
+    opened = ui->opened;
+    if (!OledUi_CompatApplyEvent(ui, event, now))
+        return OLED_UI_COMPAT_PARENT;
+
+    //文字窗口超时后同拍重新打开时，类型相同但输入上下文已经更新。
+    if (view != ui->view || modal != ui->modal ||
+        (ui->modal != TOOL_MODAL_NONE && opened != ui->opened))
+        return OLED_UI_COMPAT_CONTEXT_CHANGED;
+    return OLED_UI_COMPAT_HANDLED;
 }
 
 static SysResult_t OledUi_CompatCursor(OledDevice_t *oled, int16_t x, int16_t y,

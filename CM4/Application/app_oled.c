@@ -130,7 +130,13 @@ static SysResult_t App_OledConsumeInput(void)
         previous = s_ui2_state.current;
         if (previous == OLED_UI_PAGE_TOOLS)
         {
-            if (OledUi_CompatEvent(&s_oled_compat, event, now))
+            OledUiCompatResult_t action = OledUi_CompatEvent(&s_oled_compat, event, now);
+            if (action == OLED_UI_COMPAT_CONTEXT_CHANGED)
+            {
+                OledUi_InputDiscard(&s_oled_input_queue);
+                break;
+            }
+            if (action == OLED_UI_COMPAT_HANDLED)
                 continue;
             event = OLED_UI_EVENT_BACK;
         }
