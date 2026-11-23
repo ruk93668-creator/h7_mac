@@ -256,6 +256,8 @@ static uint32_t AppCase(uint32_t id)
 #if defined(OLED_UI2_TEST_INPUT) && OLED_UI2_TEST_INPUT
 #include "ui2_cases.inc"
 #include "ui2_input_cases.inc"
+#include "UiCompatCase.inc"
+#include "UiSysCase.inc"
 #include "Ui6Case.inc"
 #include "Ui20FpsCase.inc"
 #include "Ui5Case.inc"
@@ -273,6 +275,10 @@ uint32_t OledMonitor_TestRun(uint32_t id)
         return Ui6Case(id);
     if (id == 82U)
         return Ui20FpsCase();
+    if (id >= 83U && id <= 85U)
+        return UiSysCase(id);
+    if (id >= 86U && id <= 87U)
+        return UiCompatCase(id);
     if (id == 76U)
         return Ui2InputCase();
     if (id >= 69U)

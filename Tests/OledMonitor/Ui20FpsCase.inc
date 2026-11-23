@@ -32,23 +32,30 @@ static uint32_t Ui20FpsCase(void)
     for (i = 0U; i < 8U; i++)
         Complete(SYS_OK);
 
-    Step(300U);
-    CHECK(s_tx_count == 25U && s_view_calls == 4U);
+    //第四帧在旧帧释放时接着提交，不等待下一个50ms机会。
+    CHECK(s_oled.refresh_state == OLED_REFRESH_WAIT_CMD && s_tx_count == 25U && s_view_calls == 4U);
+    s_tx_count = 1U;
     for (i = 0U; i < 8U; i++)
         Complete(SYS_OK);
     CHECK(g_oled_monitor_debug.completed_frames == 4U);
 
-    //清除仿真传输日志的容量用量，保留真实的应用诊断和Timer。
+    Step(299U);
+    CHECK(s_view_calls == 4U);
+    Step(300U);
+    CHECK(s_tx_count == 9U && s_view_calls == 5U);
+    for (i = 0U; i < 8U; i++)
+        Complete(SYS_OK);
+
     s_tx_count = 0U;
     Ui2Post(OLED_UI_EVENT_BACK);
     Step(350U);
-    CHECK(s_tx_count == 1U && s_view_calls == 5U);
+    CHECK(s_tx_count == 1U && s_view_calls == 6U);
     for (i = 0U; i < 8U; i++)
         Complete(SYS_OK);
     Step(400U);
-    CHECK(s_tx_count == 8U && s_view_calls == 5U);
+    CHECK(s_tx_count == 8U && s_view_calls == 6U);
     Step(450U);
-    CHECK(s_tx_count == 9U && s_view_calls == 6U);
+    CHECK(s_tx_count == 9U && s_view_calls == 7U);
     CHECK(s_timer_pool_count == 1U && s_heap_size == 1U);
     return 0U;
 }

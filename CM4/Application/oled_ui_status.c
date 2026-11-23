@@ -181,3 +181,189 @@ bool OledUi_StatusBuild(OledUiPageId_t page, const IpcApplicationView_t *view,
         OledUi_StatusStream(view, page == OLED_UI_PAGE_USB, status);
     return true;
 }
+
+//快照先检查固定容量和生成标识，任何异常都不使用其中的部分字段。
+static bool OledUi_SystemValid(const OledUiSystemStatus_t *system)
+{
+    uint32_t i, j;
+    if (system == NULL || system->version != OLED_UI_SYSTEM_VERSION || system->session == 0U ||
+        system->count > OLED_UI_TASK_CAPACITY || system->count > system->total ||
+        ((system->flags & OLED_UI_SYSTEM_TASKS) == 0U && system->count != 0U))
+        return false;
+
+    for (i = 0U; i < system->count; i++)
+    {
+        if (system->tasks[i].id == 0U)
+            return false;
+        for (j = 0U; j < i; j++)
+            if (system->tasks[j].id == system->tasks[i].id)
+                return false;
+    }
+    return true;
+}
+
+uint8_t OledUi_SystemTaskSelect(const OledUiSystemStatus_t *system, OledUiTaskCursor_t *cursor,
+    int32_t direction)
+{
+    uint32_t i, selected;
+    if (cursor == NULL || !OledUi_SystemValid(system) || system->count == 0U)
+        return 0U;
+
+    selected = cursor->session == system->session ? cursor->index : 0U;
+    if (selected >= system->count)
+        selected = system->count - 1U;
+    if (cursor->session == system->session)
+        for (i = 0U; i < system->count; i++)
+            if (system->tasks[i].id == cursor->id)
+            {
+                selected = i;
+                break;
+            }
+    if (direction > 0 && selected + 1U < system->count)
+        selected++;
+    if (direction < 0 && selected != 0U)
+        selected--;
+    cursor->index = (uint8_t)selected;
+    cursor->id = system->tasks[selected].id;
+    cursor->session = system->session;
+    return cursor->index;
+}
+
+static void OledUi_SystemValue(char *line, const char *label, bool valid, uint32_t value)
+{
+    OledUi_StatusAppend(line, label);
+    if (valid)
+        OledUi_StatusNumber(line, value);
+    else
+        OledUi_StatusAppend(line, "N/A");
+}
+
+static bool OledUi_SystemStackValid(const OledUiTaskStatus_t *task)
+{
+    return (task->flags & OLED_UI_TASK_STACK) != 0U && task->stack_bytes != 0U &&
+        task->hwm_bytes <= task->stack_bytes;
+}
+
+static void OledUi_SystemTask(const OledUiSystemStatus_t *system,
+    const OledUiTaskCursor_t *cursor, OledUiStatus_t *status)
+{
+    static const char * const names[] = {"RUN", "READY", "BLOCK", "SUSP", "EXIT"};
+    OledUiTaskCursor_t current = {0};
+    const OledUiTaskStatus_t *task;
+    uint32_t i, shown = 0U;
+    char name[17];
+
+    OledUi_SystemValue(status->lines[0],
+        system->total > system->count ? "TRUNCATED " : "TASKS ", true, system->total);
+    if (system->count == 0U)
+        return;
+    if (cursor != NULL)
+        current = *cursor;
+    task = &system->tasks[OledUi_SystemTaskSelect(system, &current, 0)];
+    for (i = 0U; i < sizeof(task->name) && task->name[i] != '\0'; i++)
+    {
+        unsigned char ch = (unsigned char)task->name[i];
+        name[shown++] = ch >= 32U && ch <= 126U ? (char)ch : '?';
+    }
+    name[shown] = '\0';
+    OledUi_StatusAppend(status->lines[1], name);
+    OledUi_SystemValue(status->lines[1], " #", true, task->id);
+
+    if (current.stack_detail)
+    {
+        bool valid = OledUi_SystemStackValid(task);
+        if (valid && (task->hwm_bytes < 128U || task->hwm_bytes <= task->stack_bytes / 10U))
+            OledUi_StatusAppend(status->lines[2], "! ");
+        OledUi_SystemValue(status->lines[2], "B ", valid, task->stack_bytes);
+        OledUi_SystemValue(status->lines[2], " MIN ", valid, task->hwm_bytes);
+        OledUi_SystemValue(status->lines[2], " PK ", valid,
+            valid ? task->stack_bytes - task->hwm_bytes : 0U);
+    }
+    else
+    {
+        OledUi_StatusAppend(status->lines[2], task->state < sizeof(names) / sizeof(names[0]) ?
+            names[task->state] : "STATE N/A");
+        OledUi_SystemValue(status->lines[2], " P", true, task->priority);
+        OledUi_SystemValue(status->lines[2], " CPU ", (task->flags & OLED_UI_TASK_CPU) != 0U &&
+            task->cpu_permille <= 1000U, task->cpu_permille / 10U);
+        if ((task->flags & OLED_UI_TASK_CPU) != 0U && task->cpu_permille <= 1000U)
+            OledUi_StatusAppend(status->lines[2], "%");
+    }
+}
+
+bool OledUi_SystemBuild(OledUiPageId_t page, const IpcApplicationView_t *ipc,
+    const OledUiSystemStatus_t *system, const OledUiTaskCursor_t *cursor,
+    uint32_t now, OledUiStatus_t *status)
+{
+    bool valid, heap;
+    const char *issue = NULL;
+    uint32_t i, total = 0U, peak = 0U;
+    if (ipc == NULL || status == NULL || page < OLED_UI_PAGE_TASKS || page > OLED_UI_PAGE_RUNTIME)
+        return false;
+
+    memset(status, 0, sizeof(*status));
+    status->first_row = 1U;
+    if (ipc->peer_state != IPC_PEER_ONLINE)
+        issue = OledUi_StatusPeer(ipc->peer_state);
+    else if (ipc->read_result != SYS_OK && ipc->read_result != SYS_ERR_BUSY)
+        issue = "IPC READ ERROR";
+    else if (!OledUi_SystemValid(system))
+        issue = system == NULL ? "NOT PUBLISHED" : "INVALID SNAPSHOT";
+    else if (now - system->received_ms >= OLED_UI_SYSTEM_MAX_AGE_MS)
+        issue = "STALE SNAPSHOT";
+    valid = issue == NULL;
+
+    if (page == OLED_UI_PAGE_RUNTIME)
+    {
+        OledUi_SystemValue(status->lines[0], "CM4 UP ", true, now / 1000U);
+        OledUi_StatusAppend(status->lines[0], "s");
+        OledUi_StatusAppend(status->lines[1], "CM7 ");
+        OledUi_StatusAppend(status->lines[1], OledUi_StatusPeer(ipc->peer_state));
+        OledUi_SystemValue(status->lines[2], "CM7 UP ",
+            valid && (system->flags & OLED_UI_SYSTEM_UPTIME) != 0U,
+            valid ? system->uptime_ms / 1000U : 0U);
+        return true;
+    }
+    if (!valid)
+    {
+        OledUi_StatusAppend(status->lines[0], issue);
+        OledUi_StatusAppend(status->lines[1], page == OLED_UI_PAGE_TASKS ? "TASKS N/A" :
+            (page == OLED_UI_PAGE_CPU ? "CPU N/A" : "RTOS HEAP N/A"));
+        return true;
+    }
+    if (page == OLED_UI_PAGE_TASKS)
+    {
+        if ((system->flags & OLED_UI_SYSTEM_TASKS) != 0U)
+            OledUi_SystemTask(system, cursor, status);
+        else
+            OledUi_StatusAppend(status->lines[0], "TASKS N/A");
+    }
+    else if (page == OLED_UI_PAGE_CPU)
+    {
+        valid = (system->flags & OLED_UI_SYSTEM_CPU) != 0U && system->cpu_permille <= 1000U;
+        OledUi_SystemValue(status->lines[0], "CPU ", valid, system->cpu_permille / 10U);
+        if (valid)
+            OledUi_StatusAppend(status->lines[0], "%");
+        OledUi_StatusAppend(status->lines[1], "TASK CPU IN TASKS");
+    }
+    else
+    {
+        heap = (system->flags & OLED_UI_SYSTEM_HEAP) != 0U && system->heap_min <= system->heap_free &&
+            system->heap_free <= system->heap_total;
+        OledUi_SystemValue(status->lines[0], "HEAP ", heap, system->heap_free);
+        OledUi_SystemValue(status->lines[0], "/", heap, system->heap_total);
+        OledUi_SystemValue(status->lines[1], "MIN ", heap, system->heap_min);
+        OledUi_SystemValue(status->lines[1], " FAIL ", (system->flags & OLED_UI_SYSTEM_ALLOC_FAILURES) != 0U,
+            system->alloc_failures);
+        for (i = 0U; i < system->count; i++)
+            if (OledUi_SystemStackValid(&system->tasks[i]))
+            {
+                uint32_t used = system->tasks[i].stack_bytes - system->tasks[i].hwm_bytes;
+                peak = peak > UINT32_MAX - used ? UINT32_MAX : peak + used;
+                total++;
+            }
+        OledUi_SystemValue(status->lines[2], "SUM PEAK ", total != 0U, peak);
+        OledUi_SystemValue(status->lines[2], " N", total != 0U, total);
+    }
+    return true;
+}

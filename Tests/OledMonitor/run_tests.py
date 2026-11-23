@@ -50,6 +50,8 @@ if UI2:NAMES += ['UI4 动画中间帧、滚动、长文本与时间回绕', 'UI4
 if UI2:NAMES += ['UI5 Camera与USB有效、过期、失联和故障模型', 'UI5 Ethernet/Storage缺失与本地诊断字段']
 if UI2:NAMES += ['UI6 6000帧连续状态切换、IPC抖动与跨Tick回绕']
 if UI2:NAMES += ["菜单50ms、监控100ms与忙期跳帧"]
+if UI2:NAMES += ['系统监控导航与无发布数据', '系统任务ID、重建、截断、低栈、失联及过期', '系统Heap边界、累计峰值与CPU有效性']
+if UI2:NAMES += ['OLED_UI 字模、光标和数值编辑边界', 'OLED_UI 图标、过渡、滚动和弹窗连续帧']
 commands=[]
 def run(args):
  args=list(map(str,args));r=subprocess.run(args,cwd=ROOT,capture_output=True)
@@ -74,7 +76,7 @@ for opt in ['O0','O2']:
  run(flags+['-c',ROOT/'CM4/Application/oled_ui_draw.c','-o',draw])
  extra=[]
  if UI2:
-  for part in ('page','menu','input','anim','status'):
+  for part in ('page','menu','input','anim','status','compat'):
    path=OUT/('ui2_'+part+'_'+opt+'.o')
    run(flags+['-c',ROOT/('CM4/Application/oled_ui_'+part+'.c'),'-o',path])
    extra.append(path)
@@ -91,7 +93,7 @@ for opt in ['O0','O2']:
   u.reg_write(UC_ARM_REG_SP,0x2003fff0);u.reg_write(UC_ARM_REG_LR,0x01000001);u.reg_write(UC_ARM_REG_R0,case)
   error=None
   started=time.perf_counter()
-  budget=2000000000 if case==81 else 10000000
+  budget={81:2000000000,87:80000000}.get(case,10000000)
   try:u.emu_start(entry|1,0x01000000,count=budget)
   except Exception as exc:error=str(exc)
   elapsed=time.perf_counter()-started
@@ -100,6 +102,9 @@ for opt in ['O0','O2']:
   passed=not error and not line and u.reg_read(UC_ARM_REG_PC)==0x01000000 and u.reg_read(UC_ARM_REG_R0)==0
   row=dict(case=case,name=name,optimization=opt,result='PASS' if passed else 'FAIL',checks=checks,failure_line=line,error=error,host_seconds=round(elapsed,6))
   rows.append(row)
+  if passed and opt=='O0' and case==87:
+   count=struct.unpack('<I',u.mem_read(symbols['g_compat_count'],4))[0]
+   (OUT/'compat-frames.bin').write_bytes(u.mem_read(symbols['g_compat_frames'],count*512))
   if passed and opt=='O0' and case in [18,22,23,33,36,39]:
    address=struct.unpack('<I',u.mem_read(symbols['g_monitor_frame_address'],4))[0]
    frame=u.mem_read(address,512)

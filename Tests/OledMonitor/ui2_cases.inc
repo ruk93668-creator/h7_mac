@@ -55,8 +55,10 @@ static uint32_t Ui2Case(uint32_t id)
         CHECK(OledUi_PageMovePrevious(&state) == SYS_OK && state.revision == 1U);
         for (i = 0; i < 100U; i++)
             CHECK(OledUi_PageMoveNext(&state) == SYS_OK);
-        CHECK(state.cursor[state.current].selected == 4U);
-        CHECK(state.cursor[state.current].first_visible == 2U && state.revision == 5U);
+        CHECK(state.cursor[state.current].selected == 6U);
+        CHECK(state.cursor[state.current].first_visible == 4U && state.revision == 7U);
+        CHECK(OledUi_PageMovePrevious(&state) == SYS_OK);
+        CHECK(OledUi_PageMovePrevious(&state) == SYS_OK);
         CHECK(OledUi_PageMovePrevious(&state) == SYS_OK);
         CHECK(OledUi_PageDispatch(&state, OLED_UI_EVENT_SELECT) == SYS_OK);
         CHECK(state.current == OLED_UI_PAGE_ABOUT);
@@ -65,7 +67,7 @@ static uint32_t Ui2Case(uint32_t id)
         CHECK(OledUi_PageDispatch(&state, OLED_UI_EVENT_SELECT) == SYS_OK);
         CHECK(OledUi_PageMoveNext(&state) == SYS_OK && memcmp(&state,&saved,sizeof(state)) == 0);
         CHECK(OledUi_PageBack(&state) == SYS_OK && state.current == OLED_UI_PAGE_SYSTEM);
-        CHECK(state.cursor[state.current].selected == 3U && state.cursor[state.current].first_visible == 2U);
+        CHECK(state.cursor[state.current].selected == 3U && state.cursor[state.current].first_visible == 3U);
         CHECK(OledUi_PageOpen(&state, OLED_UI_PAGE_CAMERA) == SYS_OK);
         CHECK(OledUi_PageMoveNext(&state) == SYS_OK);
         CHECK(OledUi_PageDispatch(&state, OLED_UI_EVENT_SELECT) == SYS_OK);
