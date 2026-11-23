@@ -47,6 +47,7 @@ if UI2:
  ]
 if UI2:NAMES += ["UI2 U7 相位、抖动、短按、长按与Tick回绕"]
 if UI2:NAMES += ['UI4 动画中间帧、滚动、长文本与时间回绕', 'UI4 弹窗副本、确认、取消、绘制与超时']
+if UI2:NAMES += ['UI5 Camera与USB有效、过期、失联和故障模型', 'UI5 Ethernet/Storage缺失与本地诊断字段']
 commands=[]
 def run(args):
  args=list(map(str,args));r=subprocess.run(args,cwd=ROOT,capture_output=True)
@@ -71,7 +72,7 @@ for opt in ['O0','O2']:
  run(flags+['-c',ROOT/'CM4/Application/oled_ui_draw.c','-o',draw])
  extra=[]
  if UI2:
-  for part in ('page','menu','input','anim'):
+  for part in ('page','menu','input','anim','status'):
    path=OUT/('ui2_'+part+'_'+opt+'.o')
    run(flags+['-c',ROOT/('CM4/Application/oled_ui_'+part+'.c'),'-o',path])
    extra.append(path)

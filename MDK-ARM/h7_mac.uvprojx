@@ -1061,6 +1061,11 @@
               <FilePath>../CM4/Application/oled_ui_input.c</FilePath>
             </File>
             <File>
+              <FileName>oled_ui_status.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>../CM4/Application/oled_ui_status.c</FilePath>
+            </File>
+            <File>
               <FileName>oled_ui_anim.c</FileName>
               <FileType>1</FileType>
               <FilePath>../CM4/Application/oled_ui_anim.c</FilePath>

@@ -8,7 +8,7 @@
 
 //标题与三条菜单行均按8像素对齐。选中行最后反色。
 SysResult_t OledUi_MenuRenderVisual(OledDevice_t *oled, const OledUiPageState_t *state,
-    const OledUiVisual_t *visual)
+    const OledUiVisual_t *visual, const OledUiStatus_t *status)
 {
     const OledUiPage_t *page;
     const OledUiCursor_t *cursor;
@@ -33,10 +33,13 @@ SysResult_t OledUi_MenuRenderVisual(OledDevice_t *oled, const OledUiPageState_t 
         return result;
     if (page->type == OLED_UI_PAGE_TYPE_INFO)
     {
-        label = visual != NULL ? OledUi_AnimText(page->info, OLED_UI_TITLE_LIMIT, visual->age) : page->info;
-        result = OledUi_DrawString(oled, 3, OLED_UI_ROW_HEIGHT, label, OLED_UI_TITLE_LIMIT);
-        if (result != SYS_OK)
-            return result;
+        if (status == NULL)
+        {
+            label = visual != NULL ? OledUi_AnimText(page->info, OLED_UI_TITLE_LIMIT, visual->age) : page->info;
+            result = OledUi_DrawString(oled, 3, OLED_UI_ROW_HEIGHT, label, OLED_UI_TITLE_LIMIT);
+            if (result != SYS_OK)
+                return result;
+        }
     }
     else
     {
@@ -74,6 +77,17 @@ SysResult_t OledUi_MenuRenderVisual(OledDevice_t *oled, const OledUiPageState_t 
         }
     }
 
+    if (status != NULL && status->first_row > 0U && status->first_row < 4U)
+        for (row = status->first_row; row < 4U; row++)
+        {
+            label = status->lines[row - status->first_row];
+            if (visual != NULL)
+                label = OledUi_AnimText(label, OLED_UI_TITLE_LIMIT, visual->age);
+            result = OledUi_DrawString(oled, 3, (int16_t)(row * OLED_UI_ROW_HEIGHT), label, OLED_UI_TITLE_LIMIT);
+            if (result != SYS_OK)
+                return result;
+        }
+
     result = OledUi_DrawString(oled, 3, 0, page->title, OLED_UI_TITLE_LIMIT);
     if (result != SYS_OK || visual == NULL || visual->transition_width == 0U)
         return result;
@@ -82,7 +96,7 @@ SysResult_t OledUi_MenuRenderVisual(OledDevice_t *oled, const OledUiPageState_t 
 
 SysResult_t OledUi_MenuRender(OledDevice_t *oled, const OledUiPageState_t *state)
 {
-    return OledUi_MenuRenderVisual(oled, state, NULL);
+    return OledUi_MenuRenderVisual(oled, state, NULL, NULL);
 }
 
 SysResult_t OledUi_MenuPopup(OledDevice_t *oled, const OledUiPopup_t *popup, uint32_t now)

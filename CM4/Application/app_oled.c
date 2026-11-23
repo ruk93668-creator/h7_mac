@@ -329,13 +329,19 @@ static void App_OledRefresh(void *context)
     {
         const OledUiPage_t *page;
         OledUiVisual_t visual;
+        OledUiStatus_t status;
+        OledUiStatusCounters_t counters;
         uint32_t now = Platform_TimeGetMs();
 
         result = OledUi_PageGetCurrent(&s_ui2_state, &page);
         if (result == SYS_OK)
         {
             OledUi_AnimSample(&s_oled_anim, &s_ui2_state, now, &visual);
-            result = OledUi_MenuRenderVisual(oled, &s_ui2_state, &visual);
+            counters.completed = g_oled_monitor_debug.completed_frames;
+            counters.io_errors = g_oled_monitor_debug.io_errors;
+            counters.render_errors = g_oled_monitor_debug.render_errors;
+            result = OledUi_MenuRenderVisual(oled, &s_ui2_state, &visual,
+                OledUi_StatusBuild(page->id, &view, &counters, &status) ? &status : NULL);
         }
         OledUi_PopupTick(&s_oled_popup, now);
         if (result == SYS_OK)
