@@ -4,7 +4,13 @@
 #include <stddef.h>
 #include <string.h>
 
+#if defined(QSPI_QUAD_ID_DIAGNOSTIC)
+#include "../../Tests/QspiFlashQ1/hardware/qspi_quad_id.h"
 #if defined(QSPI_SFDP_DIAGNOSTIC)
+#error Select only one QSPI diagnostic
+#endif
+#define QSPI_TARGET_HZ QSPI_QUAD_ID_DIAGNOSTIC
+#elif defined(QSPI_SFDP_DIAGNOSTIC)
 #include "../../Tests/QspiFlashQ1/hardware/qspi_sfdp_diagnostic.h"
 #define QSPI_TARGET_HZ 30000000UL
 #else
@@ -462,6 +468,15 @@ static SysResult_t Qspi_ReadTransfer(uint32_t opcode, uint32_t address,
     command.Address = address;
     command.AlternateByteMode = QSPI_ALTERNATE_BYTES_NONE;
     command.DataMode = data_mode;
+#if defined(QSPI_QUAD_ID_DIAGNOSTIC)
+    if (opcode == 0x94U)
+    {
+        //Figure 41：地址后发送 Fxh 模式字节，再进入空周期。
+        command.AlternateByteMode = QSPI_ALTERNATE_BYTES_4_LINES;
+        command.AlternateBytesSize = QSPI_ALTERNATE_BYTES_8_BITS;
+        command.AlternateBytes = 0xF0U;
+    }
+#endif
     command.DummyCycles = dummy;
     command.NbData = bytes;
     command.DdrMode = QSPI_DDR_MODE_DISABLE;
@@ -687,6 +702,45 @@ SysResult_t QspiDiagnostic_ReadSfdp(uint8_t data[QSPI_SFDP_BYTES])
     {
         memcpy(data, s_read_buffer, QSPI_SFDP_BYTES);
         s_diag.read_completed = QSPI_SFDP_BYTES;
+    }
+    return Qspi_ReadFinish(result, started);
+}
+#endif
+
+#if defined(QSPI_QUAD_ID_DIAGNOSTIC)
+SysResult_t QspiDiagnostic_ReadQuadId(uint8_t id[QSPI_QUAD_ID_BYTES])
+{
+    const uint32_t budget = 100U;
+    uint32_t started;
+    SysResult_t result;
+    if (id == NULL)
+        return SYS_ERR_INVALID_ARG;
+    if (!Qspi_ContextValid())
+        return SYS_ERR_INVALID_STATE;
+    if (!Qspi_Take())
+        return SYS_ERR_BUSY;
+    if (s_diag.ready == 0U || s_diag.fault != 0U ||
+        s_diag.serial_clock_hz != QSPI_TARGET_HZ)
+    {
+        Qspi_Give();
+        return SYS_ERR_INVALID_STATE;
+    }
+    started = HAL_GetTick();
+    Qspi_ReadBegin(UINT32_MAX, 0U, QSPI_QUAD_ID_BYTES);
+    result = Qspi_ReadStatusLocked(started, budget);
+    if (result == SYS_OK && s_diag.status.busy != 0U)
+        result = SYS_ERR_BUSY;
+    if (result == SYS_OK && s_diag.status.sus != 0U)
+        result = SYS_ERR_INVALID_STATE;
+    if (result == SYS_OK && s_diag.status.qe == 0U)
+        result = SYS_ERR_NOT_SUPPORTED;
+    if (result == SYS_OK)
+        result = Qspi_ReadTransfer(0x94U, 0U, QSPI_ADDRESS_4_LINES,
+            QSPI_DATA_4_LINES, 4U, QSPI_QUAD_ID_BYTES, started, budget);
+    if (result == SYS_OK)
+    {
+        memcpy(id, s_read_buffer, QSPI_QUAD_ID_BYTES);
+        s_diag.read_completed = QSPI_QUAD_ID_BYTES;
     }
     return Qspi_ReadFinish(result, started);
 }

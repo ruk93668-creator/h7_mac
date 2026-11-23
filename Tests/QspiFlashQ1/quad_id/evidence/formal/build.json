@@ -1,0 +1,42 @@
+{
+  "baseline": "ec5ba117a9483b62ee16f6f7b35a285f9d82bce3",
+  "profile": "formal",
+  "original_project_sha256": "3cfd9f11784eaa6d71ddab4d3587ab488d56ffc33d9b6c67c9eae9b34879eda7",
+  "build_project_sha256": "e2076deead6be41af1119cd632d1d90bf9a177aa0dd115dd89d90c7a794ac7bf",
+  "sources": {
+    "CM7/BSP/bsp_qspi.c": "559a5351a12ea6dc6129206a404e3980912ce72620555f3413ed21e2fefb7e4d",
+    "Tests/QspiFlashQ1/hardware/m7_project_test.c": "3dbe768e294d5dc3918545a20a2bff099f70fe2dbbe4d66c85a9d49b1e0ff576",
+    "Tests/QspiFlashQ1/hardware/qspi_quad_id.h": "0ad26a14cfc953051cc4cde6fc741bf55bb553be589531cb3b5b1ea65d3e37ec",
+    "Tests/QspiFlashQ1/hardware/qspi_quad_id_probe.h": "a9a68c12cae6aa3113764cada7cd960e49e2de9c6c566db70c906c928737c347"
+  },
+  "builds": [
+    {
+      "target": "h7_mac_CM7",
+      "errors": 0,
+      "warnings": 0,
+      "loads": [
+        [
+          "0x8000000",
+          "0x80241d4"
+        ]
+      ],
+      "axf_sha256": "5b7a1bbc907a338e7dacc85ba33a7f0b3132b5fe1b706f1e40b10f73b5ac4799",
+      "log_sha256": "78d73358f6b485c983b4b121adfe1308977132ada527838fa1b1b29d649420e8",
+      "symbols": {}
+    },
+    {
+      "target": "h7_mac_CM4",
+      "errors": 0,
+      "warnings": 0,
+      "loads": [
+        [
+          "0x8100000",
+          "0x8106c88"
+        ]
+      ],
+      "axf_sha256": "a7626daa48873c25ec11327f2d70383232b2cf12a3a2158db0ce8da0ec8aa85d",
+      "log_sha256": "476249f6b7730c8bcd510f087cb88e665f502440931e38a28176228bc444d7e2",
+      "symbols": {}
+    }
+  ]
+}
