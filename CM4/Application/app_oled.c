@@ -214,8 +214,14 @@ static void App_OledUi2Poll(void)
 #endif
 #endif
 
-//沿用原有100ms周期，不另建任务或第二个刷新Timer
-#define APP_OLED_PERIOD_MS 100U
+//同一个Timer每50ms提供菜单刷新机会，监控仍以100ms限频。
+#define APP_OLED_MONITOR_PERIOD_MS 100U
+#if APP_OLED_UI_ENABLED
+#define APP_OLED_PERIOD_MS 50U
+static uint32_t s_oled_monitor_tick;
+#else
+#define APP_OLED_PERIOD_MS APP_OLED_MONITOR_PERIOD_MS
+#endif
 
 //保存已经就绪的OLED设备，不直接操作BSP或HAL
 static OledDevice_t *s_app_oled;
@@ -294,6 +300,7 @@ SysResult_t App_OledInit(void)
     //全部准备成功后才允许主循环推进刷新
 #if APP_OLED_UI_ENABLED
     (void)OledUi_PageInit(&s_ui2_state);
+    s_oled_monitor_tick = Platform_TimeGetMs();
     s_oled_input_queue.reverse = OLED_UI3_REVERSE != 0;
 #if APP_OLED_U7_ENABLED
     g_oled_ui2_u7_result = App_OledU7Init();
@@ -369,6 +376,18 @@ static void App_OledRefresh(void *context)
         g_oled_monitor_debug.busy_skips++;
         return;
     }
+
+#if APP_OLED_UI_ENABLED
+    if (s_ui2_state.current == OLED_UI_PAGE_MONITOR)
+    {
+        uint32_t now = Platform_TimeGetMs();
+
+        //先确保设备空闲，再限频监控的IPC取样和绘制。无符号差支持回绕。
+        if (now - s_oled_monitor_tick < APP_OLED_MONITOR_PERIOD_MS)
+            return;
+        s_oled_monitor_tick = now;
+    }
+#endif
 
     //整屏使用一份完整本地视图，禁止直接访问g_ipc共享对象
     result = IPC_Service_GetApplicationStatus(&view);

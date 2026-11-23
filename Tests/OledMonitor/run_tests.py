@@ -49,6 +49,7 @@ if UI2:NAMES += ["UI2 U7 相位、抖动、短按、长按与Tick回绕"]
 if UI2:NAMES += ['UI4 动画中间帧、滚动、长文本与时间回绕', 'UI4 弹窗副本、确认、取消、绘制与超时']
 if UI2:NAMES += ['UI5 Camera与USB有效、过期、失联和故障模型', 'UI5 Ethernet/Storage缺失与本地诊断字段']
 if UI2:NAMES += ['UI6 6000帧连续状态切换、IPC抖动与跨Tick回绕']
+if UI2:NAMES += ["菜单50ms、监控100ms与忙期跳帧"]
 commands=[]
 def run(args):
  args=list(map(str,args));r=subprocess.run(args,cwd=ROOT,capture_output=True)
