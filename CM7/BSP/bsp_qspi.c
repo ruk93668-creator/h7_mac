@@ -755,6 +755,7 @@ SysResult_t QspiDiagnostic_ReadQuadId(uint8_t id[QSPI_QUAD_ID_BYTES])
 #endif
 
 #define QSPI_PROGRAM_BUSY_LIMIT_MS 20U
+#define QSPI_SECTOR_BUSY_LIMIT_MS 500U
 
 typedef struct
 {
@@ -781,7 +782,9 @@ static SysResult_t Qspi_WriteOpen(QspiWrite_t *write, const QspiWritePolicy_t *p
     diag->failed_address = address;
     if (input == NULL || address >= BSP_QSPI_CAPACITY_BYTES || size == 0U ||
         size > BSP_QSPI_CAPACITY_BYTES - address || budget == 0U ||
-        budget > BSP_QSPI_MAX_WRITE_TIMEOUT_MS)
+        budget > BSP_QSPI_MAX_WRITE_TIMEOUT_MS ||
+        (opcode == 0x20U && (size != BSP_QSPI_SECTOR_BYTES ||
+         (address % BSP_QSPI_SECTOR_BYTES) != 0U)))
         return diag->result = SYS_ERR_INVALID_ARG;
     if (policy->address >= BSP_QSPI_CAPACITY_BYTES ||
         policy->bytes > BSP_QSPI_CAPACITY_BYTES - policy->address ||
@@ -1084,4 +1087,51 @@ SysResult_t BSP_QSPI_Program(uint32_t address, const void *buffer, uint32_t size
     uint32_t timeout_ms, BspQspiWriteDiagnostics_t *diagnostics)
 {
     return Qspi_ProgramWithPolicy(&s_write_policy, address, buffer, size, timeout_ms, diagnostics);
+}
+
+static SysResult_t Qspi_EraseWithPolicy(const QspiWritePolicy_t *policy, uint32_t address,
+    const void *backup, uint32_t backup_size, uint32_t timeout_ms,
+    BspQspiWriteDiagnostics_t *diag)
+{
+    QspiWrite_t write;
+    uint32_t command_budget;
+    SysResult_t result = Qspi_WriteOpen(&write, policy, 0x20U, address, backup, backup_size,
+        timeout_ms, diag);
+    if (result != SYS_OK)
+        return result;
+    if (write.budget <= QSPI_SECTOR_BUSY_LIMIT_MS)
+        return Qspi_WriteFinish(&write, SYS_ERR_TIMEOUT);
+    command_budget = write.budget - QSPI_SECTOR_BUSY_LIMIT_MS;
+    diag->stage = BSP_QSPI_WRITE_STATUS;
+    result = Qspi_WriteIdle(&write, command_budget);
+    if (result == SYS_OK)
+    {
+        diag->stage = BSP_QSPI_WRITE_PREFLIGHT;
+        //逐字节核对整个扇区，备份不一致时禁止发送 WREN。
+        result = Qspi_WriteCheckData(&write, address, BSP_QSPI_SECTOR_BYTES, backup, false);
+    }
+    if (result == SYS_OK)
+        result = Qspi_WriteEnable(&write, address, command_budget);
+    if (result == SYS_OK)
+    {
+        diag->stage = BSP_QSPI_WRITE_COMMAND;
+        result = Qspi_WriteCommand(&write, 0x20U, address, 0U, command_budget);
+    }
+    if (result == SYS_OK)
+        result = Qspi_WriteWait(&write, QSPI_SECTOR_BUSY_LIMIT_MS);
+    if (result == SYS_OK)
+    {
+        diag->stage = BSP_QSPI_WRITE_VERIFY;
+        result = Qspi_WriteCheckData(&write, address, BSP_QSPI_SECTOR_BYTES, NULL, true);
+        if (result != SYS_OK)
+            write.fault = true;
+    }
+    return Qspi_WriteFinish(&write, result);
+}
+
+SysResult_t BSP_QSPI_EraseSector(uint32_t address, const void *backup, uint32_t backup_size,
+    uint32_t timeout_ms, BspQspiWriteDiagnostics_t *diagnostics)
+{
+    return Qspi_EraseWithPolicy(&s_write_policy, address, backup, backup_size,
+        timeout_ms, diagnostics);
 }

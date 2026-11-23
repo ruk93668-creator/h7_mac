@@ -41,6 +41,19 @@ static HAL_StatusTypeDef WriteModelCommand(QSPI_HandleTypeDef *handle, QSPI_Comm
                 return HAL_ERROR;
             s_wel = s_scenario != 5U;
             break;
+        case 0x20U:
+            s_mutations++;
+            CHECK(s_wel == 1U && s_address >= MODEL_BASE && s_address < BSP_QSPI_CAPACITY_BYTES);
+            CHECK(s_address % BSP_QSPI_SECTOR_BYTES == 0U && s_bytes == 0U);
+            CHECK(cmd->AddressMode == QSPI_ADDRESS_1_LINE && cmd->AddressSize == QSPI_ADDRESS_24_BITS);
+            CHECK(cmd->DataMode == QSPI_DATA_NONE && cmd->DummyCycles == 0U);
+            if (s_scenario == 35U || s_scenario == 36U)
+                return HAL_ERROR;
+            memset(&s_array[s_address - MODEL_BASE], 0xFF, BSP_QSPI_SECTOR_BYTES);
+            if (s_scenario == 37U)
+                s_array[s_address - MODEL_BASE + 4095U] = 0U;
+            s_busy_polls = 2U;
+            break;
         case 0x02U:
             s_mutations++;
             CHECK(s_wel == 1U && s_address >= MODEL_BASE && s_address < BSP_QSPI_CAPACITY_BYTES);
@@ -82,7 +95,10 @@ static HAL_StatusTypeDef WriteModelReceive(QSPI_HandleTypeDef *handle, uint8_t *
         if (s_busy_polls != 0U)
         {
             data[0] |= 1U;
-            if (s_scenario != 8U && --s_busy_polls == 0U && s_scenario != 18U)
+            if (s_scenario == 40U && s_busy_polls == 2U)
+                s_tick += 399U;
+            if (s_scenario != 8U && s_scenario != 34U && --s_busy_polls == 0U &&
+                s_scenario != 18U && s_scenario != 43U)
                 s_wel = 0U;
         }
     }
@@ -131,7 +147,7 @@ static HAL_StatusTypeDef WriteModelAbort(QSPI_HandleTypeDef *handle)
 {
     (void)handle;
     s_abort++;
-    return s_scenario == 11U ? HAL_ERROR : HAL_OK;
+    return s_scenario == 11U || s_scenario == 36U ? HAL_ERROR : HAL_OK;
 }
 
 static void WriteModelInit(uint32_t id)
@@ -163,11 +179,102 @@ static void WriteModelInit(uint32_t id)
     }
 }
 
+static int Erase_TestRun(uint32_t id)
+{
+    static uint8_t backup[BSP_QSPI_SECTOR_BYTES];
+    BspQspiWriteDiagnostics_t diag;
+    QspiWritePolicy_t policy = s_model;
+    uint32_t address = MODEL_BASE, bytes = sizeof(backup), budget = 2000U, i;
+    SysResult_t result, expected;
+    WriteModelInit(id);
+    if (id == 39U) address += BSP_QSPI_SECTOR_BYTES;
+    for (i = 0U; i < sizeof(backup); i++)
+        backup[i] = (uint8_t)(i ^ (i >> 3U));
+    memcpy(&s_array[address - MODEL_BASE], backup, sizeof(backup));
+    if (id == 28U)
+    {
+        CHECK(BSP_QSPI_EraseSector(address, backup, bytes, budget, &diag) == SYS_ERR_NOT_SUPPORTED);
+        CHECK(g_commands == 0U && diag.completed == 0U && diag.opcode == 0x20U);
+        return (int)g_failure;
+    }
+    if (id == 29U) address++;
+    if (id == 30U) policy.bytes = BSP_QSPI_SECTOR_BYTES - 1U;
+    if (id == 31U) bytes--;
+    if (id == 32U) backup[4095] ^= 1U;
+    if (id == 33U) s_sr3 = 0x04U;
+    if (id == 38U) budget = 500U;
+    if (id == 41U) s_tick = UINT32_MAX - 9U;
+    if (id == 42U) s_sr2 = 0x80U;
+    if (id == 44U) s_sr1 = 4U;
+    s_full_preflight = BSP_QSPI_SECTOR_BYTES;
+    result = Qspi_EraseWithPolicy(&policy, address, backup, bytes, budget, &diag);
+    CHECK(diag.result == result && diag.opcode == 0x20U);
+    switch (id)
+    {
+        case 29U: case 31U:
+            expected = SYS_ERR_INVALID_ARG;
+            CHECK(g_commands == 0U);
+            break;
+        case 30U:
+            expected = SYS_ERR_NOT_SUPPORTED;
+            CHECK(g_commands == 0U);
+            break;
+        case 32U:
+            expected = SYS_ERR_PROTOCOL;
+            CHECK(diag.failed_address == address + 4095U && s_wren == 0U && diag.fault == 0U);
+            break;
+        case 33U: case 44U:
+            expected = SYS_ERR_NOT_SUPPORTED;
+            CHECK(s_wren == 0U && diag.fault == 0U);
+            break;
+        case 34U:
+            expected = SYS_ERR_TIMEOUT;
+            CHECK(diag.elapsed_ms >= 500U && diag.elapsed_ms < 600U);
+            CHECK(diag.flash_completion_unknown == 1U && diag.fault == 1U && diag.completed == 0U);
+            break;
+        case 35U: case 36U:
+            expected = SYS_ERR_IO;
+            CHECK(diag.flash_completion_unknown == 1U && diag.fault == 1U && s_abort == 1U);
+            CHECK((diag.cleanup_result != SYS_OK) == (id == 36U));
+            break;
+        case 37U:
+            expected = SYS_ERR_PROTOCOL;
+            CHECK(diag.completed == 3840U && diag.failed_address == address + 4095U);
+            CHECK(diag.fault == 1U && diag.flash_completion_unknown == 0U);
+            break;
+        case 38U:
+            expected = SYS_ERR_TIMEOUT;
+            CHECK(g_commands == 0U && diag.fault == 0U);
+            break;
+        case 42U:
+            expected = SYS_ERR_INVALID_STATE;
+            CHECK(s_wren == 0U && diag.fault == 0U);
+            break;
+        case 43U:
+            expected = SYS_ERR_INVALID_STATE;
+            CHECK(diag.flash_completion_unknown == 1U && diag.fault == 1U);
+            break;
+        default:
+            expected = SYS_OK;
+            CHECK(diag.completed == BSP_QSPI_SECTOR_BYTES && diag.failed_address == UINT32_MAX);
+            CHECK(s_received == BSP_QSPI_SECTOR_BYTES && s_wren == 1U && s_mutations == 1U && s_abort == 0U);
+            for (i = 0U; i < sizeof(backup); i++)
+                CHECK(s_array[address - MODEL_BASE + i] == 0xFFU);
+            if (id == 40U)
+                CHECK(diag.elapsed_ms >= 400U && diag.elapsed_ms < 500U);
+            break;
+    }
+    CHECK(result == expected);
+    return (int)g_failure;
+}
+
 int Write_TestRun(uint32_t id)
 {
     BspQspiWriteDiagnostics_t diag;
     uint32_t address = MODEL_BASE + 255U, bytes = sizeof(s_pattern), budget = 2000U;
     SysResult_t result, expected;
+    if (id >= 28U)
+        return Erase_TestRun(id);
     WriteModelInit(id);
     s_diag.read_opcode = 0x5AU;
     if (id == 0U)

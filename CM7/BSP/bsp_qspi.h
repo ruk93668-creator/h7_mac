@@ -133,4 +133,9 @@ SysResult_t BSP_QSPI_Read(BspQspiReadMode_t mode, uint32_t address,
 SysResult_t BSP_QSPI_Program(uint32_t address, const void *buffer, uint32_t size,
     uint32_t timeout_ms, BspQspiWriteDiagnostics_t *diagnostics);
 
+//仅擦除一个 4 KiB 对齐扇区。backup 必须是当前扇区的完整已保存副本。
+//其有效性、独占和不重叠要求与 Program 一致，由调用者保证持久化备份。
+SysResult_t BSP_QSPI_EraseSector(uint32_t address, const void *backup, uint32_t backup_size,
+    uint32_t timeout_ms, BspQspiWriteDiagnostics_t *diagnostics);
+
 #endif
