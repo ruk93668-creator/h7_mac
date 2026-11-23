@@ -1,4 +1,5 @@
 #include "camera_service.h"
+#include "../../Tasks/record_board.h"
 #include "../../Tasks/service_tasks.h"
 #include "camera_capture.h"
 #include "ov5640_device.h"
@@ -128,6 +129,9 @@ typedef struct
 typedef SysResult_t (*CameraFrameSend_t)(CameraFrameConsumer_t consumer, const AppMessage_t *message);
 
 static CameraTransfer_t s_transfers[CAMERA_FRAME_CONSUMER_COUNT];
+#if APP_V3_RECORD_BOARD_TEST
+volatile AppV3RecordBoardCamera_t g_app_v3_record_camera;
+#endif
 static uint32_t s_frame_sequence;
 static uint8_t s_next_consumer;
 
@@ -201,6 +205,16 @@ static void CameraFrame_Receive(CameraFrameConsumer_t consumer, const AppMessage
     else if (message->type == APP_MESSAGE_RETURN_ACK_CONSUMED &&
         transfer->state == CAMERA_TRANSFER_WAIT_CONSUMED)
     {
+#if APP_V3_RECORD_BOARD_TEST
+        //只有Camera消费匹配的SD确认且持有真实Loan时才增加计数。
+        if (consumer == CAMERA_FRAME_CONSUMER_STORAGE && transfer->reply.lease_id != 0U)
+        {
+            g_app_v3_record_camera.request_id = message->command_id;
+            g_app_v3_record_camera.session = message->stream_epoch;
+            g_app_v3_record_camera.lease_id = message->lease_id;
+            ++g_app_v3_record_camera.confirmed;
+        }
+#endif
         //保留退休高水位，重复消息不得命中下一请求。
         transfer->lease.raw = (CameraFrameLease_t){0};
         transfer->jpeg_storage = false;

@@ -1,4 +1,5 @@
 #include "storage_service.h"
+#include "../../Tasks/record_board.h"
 #include "../../Tasks/service_tasks.h"
 #include "storage_fs.h"
 #include "sd_block.h"
@@ -50,6 +51,34 @@ static struct
     bool admission;
     bool draining;
 } s_record;
+
+#if APP_V3_RECORD_BOARD_TEST
+volatile AppV3RecordBoardStorage_t g_app_v3_record_storage;
+
+//由StorageTask在本轮业务返回后采样，不向其他任务暴露文件或帧地址。
+static void StorageRecordBoard_Snapshot(void)
+{
+    StorageFsDiagnostics_t facts;
+    BspSdmmcIoDiagnostics_t io;
+
+    g_app_v3_record_storage.io_snapshot_result = BSP_SDMMC_GetIoDiagnostics(&io);
+    if (g_app_v3_record_storage.io_snapshot_result == SYS_OK)
+        g_app_v3_record_storage.io = io;
+    g_app_v3_record_storage.hardware = s_storage.hardware;
+    g_app_v3_record_storage.file_number = s_record.file_number;
+    g_app_v3_record_storage.file = s_record.file;
+    g_app_v3_record_storage.frames = s_record.avi.frames;
+    g_app_v3_record_storage.movi_end = s_record.avi.position;
+    g_app_v3_record_storage.first_tick = s_record.avi.first_tick;
+    g_app_v3_record_storage.last_tick = s_record.avi.last_tick;
+    g_app_v3_record_storage.admission = s_record.admission;
+    g_app_v3_record_storage.frame_state = s_record.frame_state;
+    g_app_v3_record_storage.fatfs_owner = SD_Block_IsOwner(SD_BLOCK_CLIENT_FATFS);
+    g_app_v3_record_storage.filesystem_valid = StorageFS_GetDiagnostics(&facts) == SYS_OK ? 1U : 0U;
+    if (g_app_v3_record_storage.filesystem_valid)
+        g_app_v3_record_storage.filesystem = facts;
+}
+#endif
 
 //只改变模拟状态，保持实际设备状态口独立
 static SysResult_t StorageService_Start(StorageServiceContext_t *context,
@@ -200,6 +229,10 @@ static SysResult_t StorageService_CloseVolume(bool recover)
     if (facts.state == STORAGE_DIAG_MOUNTED)
     {
         result = StorageFS_Unmount();
+#if APP_V3_RECORD_BOARD_TEST
+        g_app_v3_record_storage.unmount_attempted = true;
+        g_app_v3_record_storage.unmount_result = result;
+#endif
         //拔卡可能先令原Unmount进入FS_FAULT，RECOVER下一轮继续走原恢复入口
         if (result != SYS_OK && result != SYS_ERR_BUSY && recover &&
             StorageFS_GetDiagnostics(&facts) == SYS_OK && facts.state == STORAGE_DIAG_FAULT)
@@ -309,6 +342,9 @@ static void StorageRecord_Receive(const AppMessage_t *message)
         message->result == SYS_OK && message->stream_epoch == s_record.transfer.stream_epoch &&
         message->lease_id == s_record.transfer.lease_id)
     {
+#if APP_V3_RECORD_BOARD_TEST
+        ++g_app_v3_record_storage.ack;
+#endif
         s_record.frame_state = STORAGE_FRAME_CONFIRM;
         return;
     }
@@ -330,6 +366,12 @@ static void StorageRecord_Receive(const AppMessage_t *message)
             if (result != SYS_OK)
                 StorageRecord_Fault(result);
         }
+#if APP_V3_RECORD_BOARD_TEST
+        ++g_app_v3_record_storage.offer;
+        g_app_v3_record_storage.request_id = message->command_id;
+        g_app_v3_record_storage.session = message->stream_epoch;
+        g_app_v3_record_storage.lease_id = message->lease_id;
+#endif
         s_record.frame_state = STORAGE_FRAME_RETURN;
     }
     else
@@ -378,6 +420,12 @@ static void StorageRecord_Send(uint32_t now)
     message.lease_id = s_record.transfer.lease_id;
     if (App_MessagesSend(APP_CHANNEL_STORAGE_TO_CAMERA, &message) != SYS_OK)
         return;
+#if APP_V3_RECORD_BOARD_TEST
+    if (message.type == APP_MESSAGE_FRAME_RETURN)
+        ++g_app_v3_record_storage.returned;
+    else if (message.type == APP_MESSAGE_RETURN_ACK_CONSUMED && message.lease_id != 0U)
+        ++g_app_v3_record_storage.confirmed;
+#endif
     s_record.frame_state = next;
     if (message.type == APP_MESSAGE_FRAME_REQUEST)
     {
@@ -425,11 +473,23 @@ static SysResult_t StorageRecord_Close(bool recover)
         {
             if (s_record.first_fault == SYS_OK && !s_record.avi.finished)
             {
+#if APP_V3_RECORD_BOARD_TEST
+                uint32_t started = Platform_TimeGetMs();
+                g_app_v3_record_storage.finish_attempted = true;
+#endif
                 result = MjpegAvi_Finish(&s_record.avi);
+#if APP_V3_RECORD_BOARD_TEST
+                g_app_v3_record_storage.finish_result = result;
+                g_app_v3_record_storage.finish_ms = Platform_TimeGetMs() - started;
+#endif
                 if (result != SYS_OK)
                     StorageRecord_Fault(result);
             }
             result = StorageFS_Close(s_record.file);
+#if APP_V3_RECORD_BOARD_TEST
+            g_app_v3_record_storage.close_attempted = true;
+            g_app_v3_record_storage.close_result = result;
+#endif
             if (result != SYS_OK)
                 return result;
             s_record.file = 0U;
@@ -502,7 +562,7 @@ static SysResult_t StorageService_HardwareCommand(const AppV3ServiceCommand_t *c
 }
 
 //使用原驱动的有界等待，Service只在后续轮次重试BUSY
-uint32_t AppV3_StorageAdvance(void)
+static uint32_t StorageService_Advance(void)
 {
     SysResult_t result;
     uint32_t operation;
@@ -559,6 +619,9 @@ uint32_t AppV3_StorageAdvance(void)
         if (result == SYS_OK && writable)
         {
             s_record.avi = (MjpegAvi_t){0};
+#if APP_V3_RECORD_BOARD_TEST
+            g_app_v3_record_storage = (AppV3RecordBoardStorage_t){.file_number = 0U};
+#endif
             s_record.file_number = s_storage.request.command.argument;
             s_record.sample_at = Platform_TimeGetMs() - 1000U / s_storage.config->record_fps;
             s_record.admission = true;
@@ -590,6 +653,17 @@ uint32_t AppV3_StorageAdvance(void)
     s_storage.request.pending = false;
     (void)AppV3Mailbox_CompleteHardware(&s_storage.mailbox, &s_storage.request.command, result, &s_storage.hardware);
     return STORAGE_HW_POLL_MS;
+}
+
+uint32_t AppV3_StorageAdvance(void)
+{
+    uint32_t wait = StorageService_Advance();
+
+#if APP_V3_RECORD_BOARD_TEST
+    if (App_MessagesIsOwner(RUNTIME_TARGET_STORAGE))
+        StorageRecordBoard_Snapshot();
+#endif
+    return wait;
 }
 
 //一次可读回调只接收一条命令，Event Loop负责控制批次预算

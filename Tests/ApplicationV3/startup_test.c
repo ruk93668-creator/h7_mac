@@ -1,4 +1,5 @@
 #include "supervisor.h"
+#include "record_board.h"
 //使用真实 FreeRTOS Queue/List。测试只模拟调度、身份和设备状态。
 #include "app_services.h"
 #include "app_events.h"
@@ -2477,6 +2478,74 @@ static uint32_t Test_Supervisor(const AppV3Context_t *context, uint32_t scenario
     return 0U;
 }
 
+#if APP_V3_RECORD_BOARD_TEST
+bool App_EventsReadStackWatermarks(UBaseType_t remaining_words[RUNTIME_TARGET_COUNT])
+{
+    uint32_t index;
+
+    if (owner != RUNTIME_TARGET_CONTROL)
+        return false;
+    for (index = 0U; index < RUNTIME_TARGET_COUNT; ++index)
+        remaining_words[index] = 128U + index;
+    return true;
+}
+
+SysResult_t BSP_SDMMC_GetIoDiagnostics(BspSdmmcIoDiagnostics_t *diagnostics)
+{
+    *diagnostics = (BspSdmmcIoDiagnostics_t){.active = 0U};
+    return SYS_OK;
+}
+
+static uint32_t Test_RecordBoard(const AppV3Context_t *context, uint32_t scenario)
+{
+    fixture_video.camera.format = CAMERA_PIXEL_FORMAT_JPEG;
+    fixture_storage.partition = APP_STORAGE_PARTITION;
+    CHECK(Test_HardwareBoot(context) == 0U);
+    AppV3_RecordBoardPoll();
+    CHECK(g_app_v3_record_board.configured_partition == APP_STORAGE_PARTITION);
+    CHECK(g_app_v3_record_board.issued == 0U && g_hardware.capture_start_calls == 0U &&
+        g_hardware.mount_calls == 0U);
+
+    //非Control轮次不能消耗命令。错误分区不得触碰相机或卷。
+    g_app_v3_record_command.command = 2U;
+    g_app_v3_record_command.file_number = 0x51U;
+    owner = RUNTIME_TARGET_STORAGE;
+    AppV3_RecordBoardPoll();
+    CHECK(g_app_v3_record_command.command == 2U);
+    owner = RUNTIME_TARGET_CONTROL;
+    AppV3_RecordBoardPoll();
+    CHECK(g_app_v3_record_board.dispatch_result == SYS_ERR_INVALID_ARG &&
+        g_app_v3_record_command.command == 0U && g_app_v3_record_command.file_number == 0U);
+    CHECK(g_hardware.capture_start_calls == 0U && g_hardware.mount_calls == 0U);
+
+    if (scenario == 96U)
+    {
+        g_app_v3_record_command.command = 8U;
+        AppV3_RecordBoardPoll();
+        CHECK(g_app_v3_record_board.stack_valid &&
+            g_app_v3_record_board.stack_remaining_words[RUNTIME_TARGET_CAMERA] == 128U + RUNTIME_TARGET_CAMERA);
+        return 0U;
+    }
+    g_hardware.card_present = true;
+    g_app_v3_record_command.approved_partition = APP_STORAGE_PARTITION;
+    g_app_v3_record_command.file_number = 0x51U;
+    g_app_v3_record_command.command = 2U;
+    AppV3_RecordBoardPoll();
+    CHECK(g_app_v3_record_board.command_pending && g_app_v3_record_board.dispatch_result == SYS_OK);
+    Test_SupervisorStep(RUNTIME_TARGET_CAMERA);
+    CHECK(g_hardware.capture_start_calls == 1U && g_hardware.mount_calls == 0U);
+    g_hardware.frame_ready = true;
+    Test_SupervisorStep(RUNTIME_TARGET_CAMERA);
+    Test_SupervisorStep(RUNTIME_TARGET_STORAGE);
+    AppV3Supervisor_Poll();
+    AppV3_RecordBoardPoll();
+    CHECK(!g_app_v3_record_board.command_pending && g_app_v3_record_storage.fatfs_owner &&
+        g_app_v3_record_storage.file_number == 0x51U);
+    CHECK(g_app_v3_record_board.supervisor.active == (APP_V3_PIPE_CAMERA | APP_V3_PIPE_RECORD));
+    return 0U;
+}
+#endif
+
 uint32_t AppV3_TestRun(uint32_t scenario)
 {
     const AppV3Context_t *context;
@@ -2551,6 +2620,10 @@ uint32_t AppV3_TestRun(uint32_t scenario)
 #if APP_V3_RAW_UVC_TEST
     if (scenario >= 75U && scenario <= 82U)
         return Test_RawUvcTransport(context, scenario);
+#endif
+#if APP_V3_RECORD_BOARD_TEST
+    if (scenario >= 96U && scenario <= 97U)
+        return Test_RecordBoard(context, scenario);
 #endif
     if (scenario >= 92U && scenario <= 95U)
         return Test_Supervisor(context, scenario);

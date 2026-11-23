@@ -17,7 +17,10 @@ def main():
     parser.add_argument("--board-smoke", choices=("off", "camera", "usb", "storage"), default="off")
     parser.add_argument("--board-stress", choices=("off", "repeat", "recovery"), default="off")
     parser.add_argument("--raw-uvc", action="store_true")
+    parser.add_argument("--record-board", action="store_true")
     args = parser.parse_args()
+    if args.record_board and (args.raw_uvc or getattr(args, "raw_board", False) or args.board_smoke != "off"):
+        parser.error("--record-board selects an independent profile")
     if args.board_stress != "off" and args.board_smoke == "off":
         parser.error("--board-stress requires a board smoke scenario")
     if args.board_stress == "recovery" and args.board_smoke == "camera":
@@ -42,6 +45,8 @@ def main():
     harness.cc.extend((f"-DAPP_V3_BOARD_SMOKE={smoke_selection}", f"-DAPP_V3_BOARD_STRESS={stress_selection}"))
     if args.raw_uvc:
         harness.cc.append("-DAPP_V3_RAW_UVC_TEST=1")
+    if args.record_board:
+        harness.cc.extend(("-DAPP_V3_RECORD_BOARD_TEST=1", "-DAPP_VIDEO_MJPEG_MODE=1", "-DAPP_STORAGE_PARTITION=1"))
     kernel = ROOT / "Middlewares/Third_Party/FreeRTOS/Source"
     real_run = harness.run
 
@@ -87,6 +92,8 @@ def main():
             scenarios = [*scenarios, *range(88, 96)]
         if args.raw_uvc:
             scenarios = range(75, 83)
+        if args.record_board:
+            scenarios = range(96, 98)
         for scenario in scenarios:
             row = harness.execute(name, "AppV3_TestRun", scenario)
             if scenario < 49:
