@@ -56,11 +56,36 @@ SysResult_t CameraCapture_ReleaseFrame(void);
 
 //取得连续采集的完整图像，成功时借用数据并填写frame
 //JPEG跨FIFO尾部时data2非空，size_bytes为总长度，size_bytes2为第二段长度
-//唯一消费者归还前，两段内存都不能被DMA复用
+// 旧 Raw 入口占用 USB 配额；旧 Release 只能归还该入口建立的租约
 bool CameraCapture_StreamGetFrame(CameraFrame_t *frame);
 
 //释放当前完整帧，允许下一次采集
 SysResult_t CameraCapture_StreamReleaseFrame(void);
+
+// 固定的 Raw 借用身份；枚举值不代表外设已接入
+typedef enum
+{
+    CAMERA_FRAME_CONSUMER_USB = 0,
+    CAMERA_FRAME_CONSUMER_ETHERNET,
+    CAMERA_FRAME_CONSUMER_WIFI,
+    CAMERA_FRAME_CONSUMER_STORAGE,
+    CAMERA_FRAME_CONSUMER_COUNT
+} CameraFrameConsumer_t;
+
+typedef struct
+{
+    uint32_t generation; // Raw 采集实例，归还时禁止跨实例匹配
+    uint32_t lease_id;   // 实例内单调递增，零表示未持有
+    uint32_t buffer_id;  // 七槽中的实际零基索引
+    CameraFrameConsumer_t consumer;
+} CameraFrameLease_t;
+
+// 由 Camera 所有者在任务中调用。仅 Raw；失败不改写输出；已持有或无可借帧返回 BUSY
+SysResult_t CameraCapture_StreamAcquire(CameraFrameConsumer_t consumer,
+    CameraFrameLease_t *lease, CameraFrame_t *frame);
+
+// 调用前须确认全部读取者已退出。只归还完整身份匹配的 Raw 物理槽
+SysResult_t CameraCapture_StreamReleaseLease(const CameraFrameLease_t *lease);
 
 //启动连续采集，固定格式使用五缓冲，JPEG使用独立字节FIFO
 SysResult_t CameraCapture_StartStream(void);
