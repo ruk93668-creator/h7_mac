@@ -23,9 +23,9 @@
 #if APP_OLED_UI_ENABLED
 #include "oled_ui_menu.h"
 #include "oled_ui_input.h"
+#include "platform_time.h"
 
 #if APP_OLED_U7_ENABLED
-#include "platform_time.h"
 #include "stm32h7xx_hal.h"
 #endif
 
@@ -44,6 +44,8 @@ volatile AppOledUi2Debug_t g_oled_ui2_debug;
 #endif
 static OledUiPageState_t s_ui2_state;
 static OledUiInputQueue_t s_oled_input_queue;
+static OledUiAnim_t s_oled_anim;
+static OledUiPopup_t s_oled_popup;
 volatile uint32_t g_oled_ui_dropped_inputs;
 
 //页面变化后仍在队列中的事件属于旧页面，不能作用到新界面。
@@ -51,16 +53,32 @@ static SysResult_t App_OledConsumeInput(void)
 {
     uint32_t event;
     uint8_t previous;
+    const OledUiPage_t *page;
+    uint32_t now = Platform_TimeGetMs();
     SysResult_t result = SYS_OK;
 
     while ((event = OledUi_InputTake(&s_oled_input_queue)) != 0U)
     {
+        if (OledUi_PopupEvent(&s_oled_popup, event, now))
+        {
+            OledUi_InputDiscard(&s_oled_input_queue);
+            break;
+        }
         previous = s_ui2_state.current;
+        if (event == OLED_UI_EVENT_SELECT &&
+            OledUi_PageGetCurrent(&s_ui2_state, &page) == SYS_OK &&
+            page->type == OLED_UI_PAGE_TYPE_INFO)
+        {
+            OledUi_PopupOpen(&s_oled_popup, "PAGE INFO", "READ ONLY", true, now, 3000U);
+            OledUi_InputDiscard(&s_oled_input_queue);
+            break;
+        }
         if (event == OLED_UI_EVENT_SELECT && previous == OLED_UI_PAGE_MONITOR)
             event = OLED_UI_EVENT_OPEN_MENU;
         result = OledUi_PageDispatch(&s_ui2_state, event);
         if (s_ui2_state.current != previous)
         {
+            s_oled_anim.target_y = 0U;
             OledUi_InputDiscard(&s_oled_input_queue);
             break;
         }
@@ -308,7 +326,21 @@ static void App_OledRefresh(void *context)
     memcpy(s_frame_backup, oled->framebuffer, sizeof(s_frame_backup));
 #if APP_OLED_UI_ENABLED
     if (s_ui2_state.current != OLED_UI_PAGE_MONITOR)
-        result = OledUi_MenuRender(oled, &s_ui2_state);
+    {
+        const OledUiPage_t *page;
+        OledUiVisual_t visual;
+        uint32_t now = Platform_TimeGetMs();
+
+        result = OledUi_PageGetCurrent(&s_ui2_state, &page);
+        if (result == SYS_OK)
+        {
+            OledUi_AnimSample(&s_oled_anim, &s_ui2_state, now, &visual);
+            result = OledUi_MenuRenderVisual(oled, &s_ui2_state, &visual);
+        }
+        OledUi_PopupTick(&s_oled_popup, now);
+        if (result == SYS_OK)
+            result = OledUi_MenuPopup(oled, &s_oled_popup, now);
+    }
     else
 #endif
         result = OledUi_Render(oled, &view);
@@ -316,6 +348,11 @@ static void App_OledRefresh(void *context)
     {
         memcpy(oled->framebuffer, s_frame_backup, sizeof(s_frame_backup));
         g_oled_monitor_debug.render_errors++;
+#if APP_OLED_UI_ENABLED
+        if (s_ui2_state.current != OLED_UI_PAGE_MONITOR && !s_oled_popup.active)
+            OledUi_PopupOpen(&s_oled_popup, "RENDER ERROR", "RETRYING", false,
+                Platform_TimeGetMs(), 1800U);
+#endif
         App_OledRecordError(result);
         return;
     }

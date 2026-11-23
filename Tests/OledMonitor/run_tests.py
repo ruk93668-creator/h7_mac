@@ -46,6 +46,7 @@ if UI2:
   'UI2 刷新提交IO错误整帧回滚并重试',
  ]
 if UI2:NAMES += ["UI2 U7 相位、抖动、短按、长按与Tick回绕"]
+if UI2:NAMES += ['UI4 动画中间帧、滚动、长文本与时间回绕', 'UI4 弹窗副本、确认、取消、绘制与超时']
 commands=[]
 def run(args):
  args=list(map(str,args));r=subprocess.run(args,cwd=ROOT,capture_output=True)
@@ -70,7 +71,7 @@ for opt in ['O0','O2']:
  run(flags+['-c',ROOT/'CM4/Application/oled_ui_draw.c','-o',draw])
  extra=[]
  if UI2:
-  for part in ('page','menu','input'):
+  for part in ('page','menu','input','anim'):
    path=OUT/('ui2_'+part+'_'+opt+'.o')
    run(flags+['-c',ROOT/('CM4/Application/oled_ui_'+part+'.c'),'-o',path])
    extra.append(path)
