@@ -21,7 +21,7 @@ ARMCC5 5.06u7 O0/O2 各通过 2/2 录像邮箱专项和 73/73 默认套件。A1 
 | CM7 录像测试 | 139602 / 4234 / 1296 / 101504 | 0 Error、0 Warning |
 | CM4 | 26302 / 1438 / 936 / 3576 | 0 Error、0 Warning |
 
-录像宏为 `APP_VIDEO_MJPEG_MODE=1, APP_VIDEO_TEST_MODE=0, APP_V3_RECORD_BOARD_TEST=1, APP_STORAGE_PARTITION=1`。产品 Map 无板测 Watch 符号。CM4 HEX 与冻结版 SHA256 一致。证据在 `output/ApplicationV3/StorageSupervisor/`，镜像与 Map 位于 `S0-Keil-20261123-204241/`，回归清单为 `S0-Regression-20261123-204659/verification.json`。用户的 Keil 工程、选项及 A4.1 活动 CM7 AXF/Map 已恢复。录像 AXF SHA256 为 `E830D3B366CE218398CF27C4767A1A90D273BEDD92E71062EF43B12A4290FB36`。
+录像宏为 `APP_VIDEO_MJPEG_MODE=1, APP_VIDEO_TEST_MODE=0, APP_V3_RECORD_BOARD_TEST=1, APP_STORAGE_PARTITION=1`。产品 Map 无板测 Watch 符号。CM4 HEX 与冻结版 SHA256 一致。证据在 `output/ApplicationV3/StorageSupervisor/`，镜像与 Map 位于 `S0-Keil-20261123-204241/`，回归清单为 `S0-Regression-20261123-204659/verification.json`。用户的 Keil 工程、选项及构建前活动的 CM7 AXF/Map 已恢复。A4.1 镜像仍保存在其独立归档。录像 AXF SHA256 为 `E830D3B366CE218398CF27C4767A1A90D273BEDD92E71062EF43B12A4290FB36`。
 
 ## 烧录和 Watch
 
