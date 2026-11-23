@@ -4,9 +4,9 @@
 #include <stddef.h>
 #include <string.h>
 
-#if defined(QSPI_H1_BACKUP) || defined(QSPI_H1_WRITE)
+#if defined(QSPI_H1_BACKUP) || defined(QSPI_H1_BACKUP120) || defined(QSPI_H1_WRITE)
 #include "../../Tests/QspiFlashQ1/hardware/qspi_h1.h"
-#define QSPI_TARGET_HZ 30000000UL
+#define QSPI_TARGET_HZ H1_CLOCK_HZ
 #elif defined(QSPI_QUAD_ID_DIAGNOSTIC)
 #include "../../Tests/QspiFlashQ1/hardware/qspi_quad_id.h"
 #if defined(QSPI_SFDP_DIAGNOSTIC)
@@ -1139,6 +1139,6 @@ SysResult_t BSP_QSPI_EraseSector(uint32_t address, const void *backup, uint32_t 
         timeout_ms, diagnostics);
 }
 
-#if defined(QSPI_H1_BACKUP) || defined(QSPI_H1_WRITE)
+#if defined(QSPI_H1_BACKUP) || defined(QSPI_H1_BACKUP120) || defined(QSPI_H1_WRITE)
 #include "../../Tests/QspiFlashQ1/hardware/qspi_h1.inc"
 #endif

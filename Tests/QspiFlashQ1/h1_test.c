@@ -7,13 +7,13 @@ static HAL_StatusTypeDef H1MockCommand(QSPI_HandleTypeDef *handle, QSPI_CommandT
     uint32_t timeout)
 {
     s_h1_opcode = cmd->Instruction;
-    if (s_h1_opcode == 0x4BU)
+    if (s_h1_opcode == 0x4BU || s_h1_opcode == 0x5AU)
     {
         CHECK(timeout > 0U && cmd->InstructionMode == QSPI_INSTRUCTION_1_LINE);
         CHECK(cmd->Address == 0U && cmd->AddressMode == QSPI_ADDRESS_1_LINE &&
             cmd->AddressSize == QSPI_ADDRESS_24_BITS && cmd->DummyCycles == 8U);
-        CHECK(cmd->DataMode == QSPI_DATA_1_LINE && cmd->NbData == 8U);
-        QUADSPI->DLR = 7U;
+        CHECK(cmd->DataMode == QSPI_DATA_1_LINE && cmd->NbData == (s_h1_opcode == 0x4BU ? 8U : 16U));
+        QUADSPI->DLR = cmd->NbData - 1U;
         return HAL_OK;
     }
     if (s_h1_opcode == 0x03U || s_h1_opcode == 0x6BU)
@@ -43,11 +43,24 @@ static HAL_StatusTypeDef H1MockReceive(QSPI_HandleTypeDef *handle, uint8_t *data
         handle->RxXferCount = 0U;
         return HAL_OK;
     }
+    if (s_h1_opcode == 0x5AU)
+    {
+        memset(data, 0xFF, 16U);
+        if (s_h1_scenario != 2U)
+            memcpy(data, "SFDP", 4U);
+        handle->RxXferSize = 16U;
+        handle->RxXferCount = 0U;
+        return HAL_OK;
+    }
     result = WriteModelReceive(handle, data, timeout);
     if (s_opcode == 0x0BU)
     {
         s_h1_reads++;
-#if defined(QSPI_H1_BACKUP)
+#if defined(QSPI_H1_BACKUP120)
+        CHECK(s_h1_opcode != 0x03U);
+        if (s_h1_scenario == 1U && s_h1_opcode == 0x6BU)
+            data[s_bytes - 1U] ^= 1U;
+#elif defined(QSPI_H1_BACKUP)
         if (s_h1_scenario == 1U && s_h1_opcode == 0x0BU)
             data[s_bytes - 1U] ^= 1U;
 #else
@@ -107,21 +120,31 @@ int H1_TestRun(uint32_t id)
     uint32_t mutations;
     WriteModelInit(0U);
     s_h1_scenario = id;
-    CHECK(s_diag.serial_clock_hz == 30000000U && s_diag.prescaler == 7U);
+    CHECK(s_diag.serial_clock_hz == H1_CLOCK_HZ && s_diag.prescaler == 240000000U / H1_CLOCK_HZ - 1U);
     s_read_command_hook = H1MockCommand;
     s_read_receive_hook = H1MockReceive;
-#if defined(QSPI_H1_BACKUP)
+#if defined(QSPI_H1_BACKUP) || defined(QSPI_H1_BACKUP120)
     s_array[0] = 0x53U;
     s_array[sizeof(s_array) - 1U] = 0xAAU;
+#if defined(QSPI_H1_BACKUP120)
+    s_sr2 = id == 3U ? 0U : 2U;
+#endif
     CHECK(!QspiH1_ArmValid(0U) && !QspiH1_ArmValid(H1_WRITE_ARM | H1_PROGRAM));
     QspiH1_Run(H1_WRITE_ARM | H1_PROGRAM);
     CHECK(g_qspi_h1_capture.complete == 0U && g_commands == 0U);
     QspiH1_Run(H1_BACKUP_ARM);
     CHECK(g_qspi_h1_capture.complete == 1U && g_qspi_h1_capture.magic == H1_CAPTURE_MAGIC);
-    CHECK(g_qspi_h1_capture.result == (id == 1U ? SYS_ERR_PROTOCOL : SYS_OK));
-    CHECK(g_qspi_h1_capture.standard[0] == 0x53U &&
-          g_qspi_h1_capture.standard[H1_CAPTURE_BYTES - 1U] == 0xAAU);
-    CHECK(s_h1_reads == 64U && s_mutations == 0U && s_wren == 0U);
+    CHECK(g_qspi_h1_capture.version == H1_CAPTURE_VERSION);
+    CHECK(g_qspi_h1_capture.result == (id == 3U ? SYS_ERR_NOT_SUPPORTED :
+        (id == 0U ? SYS_OK : SYS_ERR_PROTOCOL)));
+    if (id != 2U)
+        CHECK(g_qspi_h1_capture.first[0] == 0x53U &&
+              g_qspi_h1_capture.first[H1_CAPTURE_BYTES - 1U] == 0xAAU);
+    CHECK(s_h1_reads == (id == 2U ? 0U : (id == 3U ? 32U : 64U)));
+#if defined(QSPI_H1_BACKUP120)
+    CHECK((memcmp(g_qspi_h1_capture.sfdp, "SFDP", 4U) == 0) == (id != 2U));
+#endif
+    CHECK(s_mutations == 0U && s_wren == 0U);
     mutations = g_commands;
     QspiH1_Run(H1_BACKUP_ARM);
     CHECK(g_commands == mutations);

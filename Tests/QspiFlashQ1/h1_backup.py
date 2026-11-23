@@ -15,6 +15,8 @@ OFFSET = 255
 CAPTURE = struct.Struct('<7Ii8s')
 INPUT = struct.Struct('<8I8s')
 OPS = {'program': 1, 'erase': 2, 'restore': 3}
+CAPTURE_LAYOUTS = {'backup': (1, 30000000, 0, ('03', '0B')),
+                   'backup120': (2, 120000000, 16, ('0B', '6B'))}
 
 
 def require(condition, message):
@@ -123,23 +125,34 @@ def reviewed_build(path, profile, symbol, size):
 
 
 def unpack_capture(raw):
-    require(len(raw) == CAPTURE.size + 4 * SECTOR, 'Expected exactly 16,424 capture bytes')
+    require(len(raw) >= CAPTURE.size, 'Capture header missing')
     tag, abi, complete, address, size, jedec, frequency, result, uid = CAPTURE.unpack_from(raw)
-    require((tag, abi, complete, address, size, jedec, frequency, result) ==
-            (0x31424351, 1, 1, NEIGHBOR, 2 * SECTOR, 0xEF4018, 30000000, 0),
+    require((tag, complete, address, size, jedec, result) ==
+            (0x31424351, 1, NEIGHBOR, 2 * SECTOR, 0xEF4018, 0),
             'Capture status, clock, identity or range does not match H1')
+    layout = next((item for item in CAPTURE_LAYOUTS.values() if item[0] == abi and item[1] == frequency), None)
+    require(layout is not None, 'Capture ABI and clock do not match an H1 profile')
+    _, _, trailer, _ = layout
+    end = CAPTURE.size + 4 * SECTOR
+    require(len(raw) == end + trailer, 'Capture size does not match its ABI')
+    if trailer:
+        require(raw[end:end + 4] == b'SFDP', '120 MHz SFDP positive control failed')
     require(uid not in (b'\0' * 8, b'\xff' * 8), 'Invalid W25Q unique ID')
-    standard, fast = raw[CAPTURE.size:CAPTURE.size + 2 * SECTOR], raw[CAPTURE.size + 2 * SECTOR:]
-    require(standard == fast, '03h and 0Bh differ; capture rejected')
-    return uid, standard[SECTOR:], standard[:SECTOR]
+    first, second = raw[CAPTURE.size:CAPTURE.size + 2 * SECTOR], raw[CAPTURE.size + 2 * SECTOR:end]
+    require(first == second, 'Read paths differ; capture rejected')
+    return uid, first[SECTOR:], first[:SECTOR]
 
 
 def import_capture(args):
-    length = CAPTURE.size + 4 * SECTOR
-    build, address = reviewed_build(args.build, 'backup', 'g_qspi_h1_capture', length)
+    profile = json.loads(args.build.read_text(encoding='utf-8'))['profile']
+    require(profile in CAPTURE_LAYOUTS, 'Read-only backup build manifest required')
+    abi, frequency, trailer, commands = CAPTURE_LAYOUTS[profile]
+    length = CAPTURE.size + 4 * SECTOR + trailer
+    build, address = reviewed_build(args.build, profile, 'g_qspi_h1_capture', length)
     source = args.export.read_bytes()
     raw = from_ihex(source.decode('ascii'), address, length) if args.export.suffix.lower() in ('.hex', '.ihex') else source
     uid, target, neighbor = unpack_capture(raw)
+    require(CAPTURE.unpack_from(raw)[1] == abi, 'Capture ABI does not match the selected AXF')
     read_time = datetime.fromisoformat(args.read_time.replace('Z', '+00:00'))
     require(read_time.tzinfo is not None and args.board.strip(), 'Board ID and timezone-offset read time required')
     require(re.fullmatch(r'[0-9a-fA-F]{40}', args.firmware_sha) is not None, 'Full firmware Git SHA required')
@@ -149,6 +162,8 @@ def import_capture(args):
     (args.out / 'neighbor.bin').write_bytes(neighbor)
     metadata = dict(kind=args.kind, board=args.board, read_time=read_time.isoformat(), imported_at=now(),
         uid=uid.hex(), jedec='EF4018', firmware_sha=args.firmware_sha.lower(),
+        capture_profile=profile, serial_hz=frequency, read_opcodes=list(commands),
+        sfdp=raw[-trailer:].hex() if trailer else None,
         axf_sha256=build['axf_sha256'], input_export_sha256=sha(source), capture_sha256=sha(raw),
         target=dict(address=TARGET, bytes=SECTOR, sha256=sha(target), crc32=crc(target)),
         neighbor=dict(address=NEIGHBOR, bytes=SECTOR, sha256=sha(neighbor), crc32=crc(neighbor)))
@@ -161,6 +176,14 @@ def check_archive(directory):
     raw = (directory / 'capture.bin').read_bytes()
     uid, target, neighbor = unpack_capture(raw)
     require(meta['uid'] == uid.hex() and meta['capture_sha256'] == sha(raw), 'Backup identity mismatch')
+    abi = CAPTURE.unpack_from(raw)[1]
+    profile = 'backup' if abi == 1 else 'backup120'
+    _, frequency, trailer, commands = CAPTURE_LAYOUTS[profile]
+    if abi != 1 or 'capture_profile' in meta:
+        require(meta.get('capture_profile') == profile and meta.get('serial_hz') == frequency and
+                meta.get('read_opcodes') == list(commands) and
+                meta.get('sfdp') == (raw[-trailer:].hex() if trailer else None),
+                'Backup read-path metadata differs from capture')
     for name, address, data in [('target', TARGET, target), ('neighbor', NEIGHBOR, neighbor)]:
         require((directory / (name + '.bin')).read_bytes() == data, 'Backup file diverges from capture')
         require(meta[name] == dict(address=address, bytes=SECTOR, sha256=sha(data), crc32=crc(data)),

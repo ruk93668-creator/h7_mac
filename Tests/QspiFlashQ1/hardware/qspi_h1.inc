@@ -2,7 +2,7 @@
 volatile uint32_t g_qspi_h1_arm;
 static bool s_h1_used;
 
-static SysResult_t H1_ReadUid(uint8_t uid[8])
+static SysResult_t H1_ReadFactory(uint32_t opcode, uint8_t *output, uint32_t bytes)
 {
     uint32_t started;
     SysResult_t result;
@@ -10,22 +10,27 @@ static SysResult_t H1_ReadUid(uint8_t uid[8])
         return SYS_ERR_INVALID_STATE;
     if (!Qspi_Take())
         return SYS_ERR_BUSY;
-    if (s_diag.ready == 0U || s_diag.fault != 0U || s_diag.serial_clock_hz != 30000000UL)
+    if (s_diag.ready == 0U || s_diag.fault != 0U || s_diag.serial_clock_hz != H1_CLOCK_HZ)
     {
         Qspi_Give();
         return SYS_ERR_INVALID_STATE;
     }
     started = HAL_GetTick();
-    Qspi_ReadBegin(UINT32_MAX, 0U, 8U);
-    //4Bh 无阵列地址。24 个单线零位加 8 个空周期构成 32 个占位时钟。
-    result = Qspi_ReadTransfer(0x4BU, 0U, QSPI_ADDRESS_1_LINE, QSPI_DATA_1_LINE,
-        8U, 8U, started, 100U);
+    Qspi_ReadBegin(UINT32_MAX, 0U, bytes);
+    //4Bh 把 24 个单线零位视为占位。5Ah 使用实际地址 0，两者均再加 8 个空周期。
+    result = Qspi_ReadTransfer(opcode, 0U, QSPI_ADDRESS_1_LINE, QSPI_DATA_1_LINE,
+        8U, bytes, started, 100U);
     if (result == SYS_OK)
     {
-        memcpy(uid, s_read_buffer, 8U);
-        s_diag.read_completed = 8U;
+        memcpy(output, s_read_buffer, bytes);
+        s_diag.read_completed = bytes;
     }
     return Qspi_ReadFinish(result, started);
+}
+
+static SysResult_t H1_ReadUid(uint8_t uid[8])
+{
+    return H1_ReadFactory(0x4BU, uid, 8U);
 }
 
 static bool H1_UidValid(const uint8_t uid[8])
@@ -47,15 +52,22 @@ static SysResult_t H1_Read(BspQspiReadMode_t mode, uint32_t address, uint8_t *da
     return result == SYS_OK && confirmed != size ? SYS_ERR_PROTOCOL : result;
 }
 
-#if defined(QSPI_H1_BACKUP)
+#if defined(QSPI_H1_BACKUP) || defined(QSPI_H1_BACKUP120)
 typedef struct
 {
     uint32_t magic, version, complete, address, bytes, jedec, serial_hz;
     SysResult_t result;
-    uint8_t uid[8], standard[H1_CAPTURE_BYTES], fast[H1_CAPTURE_BYTES];
+    uint8_t uid[8], first[H1_CAPTURE_BYTES], second[H1_CAPTURE_BYTES];
+#if defined(QSPI_H1_BACKUP120)
+    uint8_t sfdp[16];
+#endif
 } H1Capture_t;
 H1Capture_t g_qspi_h1_capture;
+#if defined(QSPI_H1_BACKUP120)
+typedef char H1CaptureLayout[(sizeof(H1Capture_t) == 16440U) ? 1 : -1];
+#else
 typedef char H1CaptureLayout[(sizeof(H1Capture_t) == 16424U) ? 1 : -1];
+#endif
 
 bool QspiH1_ArmValid(uint32_t arm)
 {
@@ -65,11 +77,16 @@ bool QspiH1_ArmValid(uint32_t arm)
 void QspiH1_Run(uint32_t arm)
 {
     H1Capture_t *capture = &g_qspi_h1_capture;
+#if defined(QSPI_H1_BACKUP120)
+    const BspQspiReadMode_t first = BSP_QSPI_READ_FAST, second = BSP_QSPI_READ_QUAD_OUTPUT;
+#else
+    const BspQspiReadMode_t first = BSP_QSPI_READ_STANDARD, second = BSP_QSPI_READ_FAST;
+#endif
     if (s_h1_used || !QspiH1_ArmValid(arm))
         return;
     s_h1_used = true;
     capture->magic = H1_CAPTURE_MAGIC;
-    capture->version = H1_VERSION;
+    capture->version = H1_CAPTURE_VERSION;
     capture->address = H1_NEIGHBOR;
     capture->bytes = H1_CAPTURE_BYTES;
     capture->jedec = s_diag.jedec_id;
@@ -77,12 +94,17 @@ void QspiH1_Run(uint32_t arm)
     capture->result = H1_ReadUid(capture->uid);
     if (capture->result == SYS_OK && !H1_UidValid(capture->uid))
         capture->result = SYS_ERR_PROTOCOL;
+#if defined(QSPI_H1_BACKUP120)
     if (capture->result == SYS_OK)
-        capture->result = H1_Read(BSP_QSPI_READ_STANDARD, H1_NEIGHBOR,
-            capture->standard, H1_CAPTURE_BYTES);
+        capture->result = H1_ReadFactory(0x5AU, capture->sfdp, sizeof(capture->sfdp));
+    if (capture->result == SYS_OK && memcmp(capture->sfdp, "SFDP", 4U) != 0)
+        capture->result = SYS_ERR_PROTOCOL;
+#endif
     if (capture->result == SYS_OK)
-        capture->result = H1_Read(BSP_QSPI_READ_FAST, H1_NEIGHBOR, capture->fast, H1_CAPTURE_BYTES);
-    if (capture->result == SYS_OK && memcmp(capture->standard, capture->fast, H1_CAPTURE_BYTES) != 0)
+        capture->result = H1_Read(first, H1_NEIGHBOR, capture->first, H1_CAPTURE_BYTES);
+    if (capture->result == SYS_OK)
+        capture->result = H1_Read(second, H1_NEIGHBOR, capture->second, H1_CAPTURE_BYTES);
+    if (capture->result == SYS_OK && memcmp(capture->first, capture->second, H1_CAPTURE_BYTES) != 0)
         capture->result = SYS_ERR_PROTOCOL;
     __DMB();
     capture->complete = 1U;

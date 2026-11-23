@@ -1,0 +1,48 @@
+{
+  "cases": 4,
+  "assertions": 1643,
+  "passed": 4,
+  "rows": [
+    {
+      "case": 0,
+      "name": "120 MHz dual read and SFDP",
+      "assertions": 644,
+      "failure_line": 0,
+      "commands": 70,
+      "hal_init_calls": 1,
+      "error": null,
+      "pass": true
+    },
+    {
+      "case": 1,
+      "name": "0B and 6B differ",
+      "assertions": 644,
+      "failure_line": 0,
+      "commands": 70,
+      "hal_init_calls": 1,
+      "error": null,
+      "pass": true
+    },
+    {
+      "case": 2,
+      "name": "SFDP control fails",
+      "assertions": 31,
+      "failure_line": 0,
+      "commands": 0,
+      "hal_init_calls": 1,
+      "error": null,
+      "pass": true
+    },
+    {
+      "case": 3,
+      "name": "Quad disabled",
+      "assertions": 324,
+      "failure_line": 0,
+      "commands": 38,
+      "hal_init_calls": 1,
+      "error": null,
+      "pass": true
+    }
+  ],
+  "source_sha256": "0fba48f539614d011b5ad21a7731ea19342a374e3190af999c55164a7efdb588"
+}

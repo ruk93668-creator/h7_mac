@@ -10,9 +10,9 @@ import tarfile
 from elftools.elf.elffile import ELFFile
 
 ROOT = Path(__file__).resolve().parents[2]
-BASE = 'e9e9a4f2954ed0070fe9a89be7e7cc2aaf8b55e4'
+BASE = 'ca841b78cfca4b5b50d20741e68a3af260f13259'
 profile, run = sys.argv[1:]
-assert profile in ('backup', 'write') and re.fullmatch(r'[A-Za-z0-9_-]+', run)
+assert profile in ('backup', 'backup120', 'write') and re.fullmatch(r'[A-Za-z0-9_-]+', run)
 dest = ROOT / 'output/QspiFlashQ1/h1' / run / profile
 dest.mkdir(parents=True)
 archive = subprocess.check_output(['git', 'archive', BASE], cwd=ROOT)
@@ -27,7 +27,7 @@ for rel in sources:
 relative = 'MDK-ARM/h7_mac.uvprojx'
 original = (ROOT / relative).read_bytes()
 def select_macro(match):
-    prior = rb',QSPI_(QUAD_ID_DIAGNOSTIC|SFDP_DIAGNOSTIC|H1_BACKUP|H1_WRITE)(?:=[0-9]+)?(?=,|$)'
+    prior = rb',QSPI_(QUAD_ID_DIAGNOSTIC|SFDP_DIAGNOSTIC|H1_BACKUP120|H1_BACKUP|H1_WRITE)(?:=[0-9]+)?(?=,|$)'
     normal = re.sub(prior, b'', match[1])
     return b'<Define>' + normal + b',QSPI_H1_' + profile.upper().encode() + b'</Define>'
 
@@ -51,7 +51,7 @@ with axf.open('rb') as f:
     symbols = {s.name: (s['st_value'], s['st_size']) for s in elf.get_section_by_name('.symtab').iter_symbols()}
 assert loads and all(0x08000000 <= a < b <= 0x08040000 for a, b in loads)
 names = ['g_q1_hw_arm', 'g_q1_hw_report', 'g_qspi_h1_arm']
-if profile == 'backup':
+if profile in ('backup', 'backup120'):
     names += ['g_qspi_h1_capture']
     assert 'HAL_QSPI_Transmit' not in symbols and 'g_qspi_h1_input' not in symbols
 else:

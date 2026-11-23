@@ -21,6 +21,17 @@ class H1BackupTests(unittest.TestCase):
     def test_exact_capture_splits_both_sectors(self):
         self.assertEqual(h.unpack_capture(self.capture()), (self.uid, self.original, self.neighbor))
 
+    def test_120mhz_capture_requires_sfdp_and_matching_paths(self):
+        data = self.neighbor + self.original
+        header = h.CAPTURE.pack(0x31424351, 2, 1, h.NEIGHBOR, 8192, 0xEF4018, 120000000, 0, self.uid)
+        sfdp = b'SFDP' + bytes(12)
+        self.assertEqual(h.unpack_capture(header + data * 2 + sfdp),
+                         (self.uid, self.original, self.neighbor))
+        for raw in (header + data * 2, header + data * 2 + bytes(16),
+                    header + data + bytes(8192) + sfdp):
+            with self.assertRaises(ValueError):
+                h.unpack_capture(raw)
+
     def test_bad_capture_length_status_identity_and_mismatch(self):
         for raw in (self.capture()[:-1], self.capture(complete=0),
                     self.capture(uid=b'\xff' * 8), self.capture(second=b'\xff' * 8192)):
@@ -86,6 +97,36 @@ class H1BackupTests(unittest.TestCase):
         uid, target, neighbor = h.unpack_capture(capture)
         packet = h.build_package('program', uid, target, neighbor, target)
         self.assertEqual(h.from_ihex(h.to_ihex(write_addr, packet), write_addr, len(packet)), packet)
+
+    @unittest.skipUnless(os.environ.get('H1_BACKUP120_BUILD'), 'Set H1_BACKUP120_BUILD to the local manifest')
+    def test_import_120mhz_with_actual_axf(self):
+        from contextlib import redirect_stdout
+        from io import StringIO
+        import json
+        from types import SimpleNamespace
+
+        build = Path(os.environ['H1_BACKUP120_BUILD'])
+        payload = self.neighbor + self.original
+        header = h.CAPTURE.pack(0x31424351, 2, 1, h.NEIGHBOR, 8192, 0xEF4018, 120000000, 0, self.uid)
+        raw = header + payload * 2 + b'SFDP' + bytes(12)
+        manifest, address = h.reviewed_build(build, 'backup120', 'g_qspi_h1_capture', len(raw))
+        with TemporaryDirectory() as tmp:
+            folder = Path(tmp)
+            export = folder/'synthetic.hex'
+            export.write_text(h.to_ihex(address, raw), encoding='ascii')
+            args = SimpleNamespace(build=build, out=folder/'capture', export=export,
+                board='SYNTHETIC', read_time='2026-11-23T12:00:00+08:00',
+                kind='original', firmware_sha='a'*40)
+            with redirect_stdout(StringIO()):
+                h.import_capture(args)
+            meta, uid, backup, adjacent = h.check_archive(args.out)
+            self.assertEqual((uid, backup, adjacent), (self.uid, self.original, self.neighbor))
+            self.assertEqual(meta['axf_sha256'], manifest['axf_sha256'])
+            self.assertEqual(meta['read_opcodes'], ['0B', '6B'])
+            meta['capture_profile'] = 'backup'
+            (args.out/'backup.json').write_text(json.dumps(meta), encoding='utf-8')
+            with self.assertRaises(ValueError):
+                h.check_archive(args.out)
 
 
 if __name__ == '__main__':

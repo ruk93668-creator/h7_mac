@@ -4,7 +4,8 @@
 #include "bsp_qspi.h"
 #include <stdbool.h>
 
-#if !defined(CORE_CM7) || (defined(QSPI_H1_BACKUP) && defined(QSPI_H1_WRITE)) || \
+#if !defined(CORE_CM7) || (defined(QSPI_H1_BACKUP) + defined(QSPI_H1_BACKUP120) + \
+    defined(QSPI_H1_WRITE) != 1) || \
     defined(QSPI_SFDP_DIAGNOSTIC) || defined(QSPI_QUAD_ID_DIAGNOSTIC)
 #error Select one H1 diagnostic profile on CM7 only
 #endif
@@ -16,6 +17,13 @@
 #define H1_CAPTURE_MAGIC 0x31424351UL
 #define H1_INPUT_MAGIC 0x31495751UL
 #define H1_VERSION 1U
+#if defined(QSPI_H1_BACKUP120)
+#define H1_CLOCK_HZ 120000000UL
+#define H1_CAPTURE_VERSION 2U
+#else
+#define H1_CLOCK_HZ 30000000UL
+#define H1_CAPTURE_VERSION H1_VERSION
+#endif
 #define H1_BACKUP_ARM 0x48314252UL
 #define H1_WRITE_ARM 0x48315700UL
 #define H1_PROGRAM 1U
