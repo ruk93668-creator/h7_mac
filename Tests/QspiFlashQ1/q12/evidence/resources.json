@@ -1,0 +1,94 @@
+{
+  "baseline": [
+    {
+      "target": "h7_mac_CM7",
+      "maximum_static_stack": 1344,
+      "stack_limitations": "Unknown stack sizes/cycles/function pointers excluded; no board high-water measurement",
+      "stacks": {
+        "Q1_Task": {
+          "frame": 96,
+          "static_chain": 264
+        }
+      },
+      "object_rows": [
+        "      2710        240          0         12        208      20174   bsp_qspi.o",
+        "       372         62         29          4       3328       9665   m7_project_test.o"
+      ],
+      "image_loads": [
+        {
+          "start": "0x8000000",
+          "end_exclusive": "0x802399c",
+          "bytes": 145820
+        }
+      ],
+      "image_sha256": "801d5f764cca80189dcd00273ce3f916b70d1749649fb9cab6ae53e5fb9171ea"
+    },
+    {
+      "target": "h7_mac_CM4",
+      "maximum_static_stack": 432,
+      "stack_limitations": "Unknown stack sizes/cycles/function pointers excluded; no board high-water measurement",
+      "stacks": {},
+      "object_rows": [],
+      "image_loads": [
+        {
+          "start": "0x8100000",
+          "end_exclusive": "0x8106c88",
+          "bytes": 27784
+        }
+      ],
+      "image_sha256": "5dee29d97e40c73c204ac48d0c248b0e50b0fa36380868c3498d25faa98e0456"
+    }
+  ],
+  "current": [
+    {
+      "target": "h7_mac_CM7",
+      "maximum_static_stack": 1344,
+      "stack_limitations": "Unknown stack sizes/cycles/function pointers excluded; no board high-water measurement",
+      "stacks": {
+        "Q1_Task": {
+          "frame": 192,
+          "static_chain": 704
+        },
+        "Q12_Scan": {
+          "frame": 208,
+          "static_chain": 512
+        },
+        "Q12_Compare": {
+          "frame": 40,
+          "static_chain": 304
+        },
+        "BSP_QSPI_Read": {
+          "frame": 64,
+          "static_chain": 264
+        }
+      },
+      "object_rows": [
+        "      4052        336          3         13        560      27354   bsp_qspi.o",
+        "      1060        106         97          8      11884      14166   m7_project_test.o"
+      ],
+      "image_loads": [
+        {
+          "start": "0x8000000",
+          "end_exclusive": "0x80241d4",
+          "bytes": 147924
+        }
+      ],
+      "image_sha256": "6e53b364457ecaae02e306a085744586fd3ff0649596d859f696148006be832e"
+    },
+    {
+      "target": "h7_mac_CM4",
+      "maximum_static_stack": 432,
+      "stack_limitations": "Unknown stack sizes/cycles/function pointers excluded; no board high-water measurement",
+      "stacks": {},
+      "object_rows": [],
+      "image_loads": [
+        {
+          "start": "0x8100000",
+          "end_exclusive": "0x8106c88",
+          "bytes": 27784
+        }
+      ],
+      "image_sha256": "26338c2af942b5c7c29f4dca1869e0ce3265d7142368d31f6749476bed02a581"
+    }
+  ]
+}

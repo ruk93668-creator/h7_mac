@@ -8,6 +8,10 @@ static uint32_t s_test_ipsr;
 uint32_t g_assertions, g_failure, g_commands, g_init_calls;
 static uint32_t s_case, s_tick, s_hclk, s_timeout_seen, s_command_timeout, s_receive_timeout;
 static SysResult_t s_nested;
+//Q1.2 复用原有初始化夹具；空钩子保持全部 Q1.1 用例原样执行。
+static HAL_StatusTypeDef (*s_read_command_hook)(QSPI_HandleTypeDef *, QSPI_CommandTypeDef *, uint32_t);
+static HAL_StatusTypeDef (*s_read_receive_hook)(QSPI_HandleTypeDef *, uint8_t *, uint32_t);
+static HAL_StatusTypeDef (*s_read_abort_hook)(QSPI_HandleTypeDef *);
 #define CHECK(x) do { g_assertions++; if (!(x) && g_failure == 0U) g_failure = __LINE__; } while (0)
 
 uint32_t HAL_GetTick(void)
@@ -110,6 +114,8 @@ HAL_StatusTypeDef HAL_QSPI_Init(QSPI_HandleTypeDef *handle)
 
 HAL_StatusTypeDef HAL_QSPI_Command(QSPI_HandleTypeDef *handle, QSPI_CommandTypeDef *cmd, uint32_t timeout)
 {
+    if (s_read_command_hook != NULL)
+        return s_read_command_hook(handle, cmd, timeout);
     (void)handle;
     g_commands++;
     CHECK(__get_PRIMASK() == 0U);
@@ -134,6 +140,8 @@ HAL_StatusTypeDef HAL_QSPI_Command(QSPI_HandleTypeDef *handle, QSPI_CommandTypeD
 
 HAL_StatusTypeDef HAL_QSPI_Receive(QSPI_HandleTypeDef *handle, uint8_t *data, uint32_t timeout)
 {
+    if (s_read_receive_hook != NULL)
+        return s_read_receive_hook(handle, data, timeout);
     CHECK(__get_PRIMASK() == 0U);
     CHECK(timeout > 0U && timeout <= 100U);
     s_receive_timeout = timeout;
@@ -173,6 +181,8 @@ HAL_StatusTypeDef HAL_QSPI_Receive(QSPI_HandleTypeDef *handle, uint8_t *data, ui
 
 HAL_StatusTypeDef HAL_QSPI_Abort(QSPI_HandleTypeDef *handle)
 {
+    if (s_read_abort_hook != NULL)
+        return s_read_abort_hook(handle);
     CHECK(__get_PRIMASK() == 0U);
     CHECK(handle->Timeout == 100U);
     if (s_case == 33U)

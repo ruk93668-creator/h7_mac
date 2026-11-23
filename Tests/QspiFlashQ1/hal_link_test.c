@@ -19,6 +19,9 @@ uint32_t HAL_RCC_GetHCLKFreq(void)
 int Q1_LinkEntry(void)
 {
     BspQspiDiagnostics_t diag;
+    BspQspiStatus_t status;
+    uint8_t bytes[4];
+    uint32_t completed;
     uint32_t id;
     SysResult_t result = BSP_QSPI_Init();
     if (result != SYS_OK)
@@ -27,6 +30,15 @@ int Q1_LinkEntry(void)
     if (result != SYS_OK)
         return (int)result;
     result = BSP_QSPI_GetDiagnostics(&diag);
+    if (result != SYS_OK)
+        return (int)result;
+    result = BSP_QSPI_ReadStatus(&status, 1000U);
+    if (result != SYS_OK)
+        return (int)result;
+    result = BSP_QSPI_Read(BSP_QSPI_READ_FAST, 0U, bytes, sizeof(bytes), &completed, 1000U);
+    if (result != SYS_OK)
+        return (int)result;
+    result = BSP_QSPI_Read(BSP_QSPI_READ_QUAD_OUTPUT, 0U, bytes, sizeof(bytes), &completed, 1000U);
     if (result != SYS_OK)
         return (int)result;
     return (int)BSP_QSPI_DeInit();

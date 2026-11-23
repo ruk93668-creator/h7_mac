@@ -23,6 +23,7 @@ volatile Q1HardwareReport_t g_q1_hw_report;
 
 static StaticTask_t s_test_tcb;
 static StackType_t s_test_stack[768] __attribute__((aligned(8)));
+#include "q12_scan.h"
 
 //由生成器逐字提取批准基线的同名函数，不改变生产时钟配方。
 
@@ -61,7 +62,12 @@ static void Q1_Task(void *argument)
     __DMB();
     g_q1_hw_report.phase = 4U;
     g_q1_hw_report.complete = 1U;
-    //一次运行只有一次识别；失败不自动重试，成功不循环发送命令。
+    //Q1.2 必须另行授权并单独置 RAM 门闩；沿用本任务，不新增任务。
+    while (g_q12_hw_arm != Q12_ARM_MAGIC)
+        vTaskDelay(pdMS_TO_TICKS(10U));
+    g_q12_hw_arm = 0U;
+    Q12_Scan();
+    //一次运行只有一次扫描；失败不自动重试。
     for (;;)
         vTaskDelay(pdMS_TO_TICKS(1000U));
 }

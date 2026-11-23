@@ -1,0 +1,32 @@
+[
+  {
+    "variant": "baseline",
+    "suite": "SdramRange",
+    "exit": 1
+  },
+  {
+    "variant": "baseline",
+    "suite": "DcmiReplaceTarget",
+    "exit": 1
+  },
+  {
+    "variant": "baseline",
+    "suite": "UsbUvcDescriptors",
+    "exit": 1
+  },
+  {
+    "variant": "current",
+    "suite": "SdramRange",
+    "exit": 1
+  },
+  {
+    "variant": "current",
+    "suite": "DcmiReplaceTarget",
+    "exit": 1
+  },
+  {
+    "variant": "current",
+    "suite": "UsbUvcDescriptors",
+    "exit": 1
+  }
+]

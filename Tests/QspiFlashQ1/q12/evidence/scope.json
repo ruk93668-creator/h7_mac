@@ -1,0 +1,20 @@
+{
+  "baseline": "457bd068dc53cfb61347aff090670dc98064c557",
+  "production": [
+    "CM7/BSP/bsp_qspi.c",
+    "CM7/BSP/bsp_qspi.h"
+  ],
+  "q11_implementation_unchanged": true,
+  "allowed_flash_opcodes": [
+    "9F",
+    "05",
+    "35",
+    "15",
+    "03",
+    "0B",
+    "6B"
+  ],
+  "forbidden_commands": "No WREN/program/erase/status-write/unprotect/Flash Reset; reviewed command construction and Mock allowlist",
+  "hardware_executed": false,
+  "local_keil_configs": "Preserved and excluded from Git staging; project hash recorded in build JSON"
+}

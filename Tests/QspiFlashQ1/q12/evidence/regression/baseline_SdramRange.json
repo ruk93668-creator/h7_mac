@@ -1,0 +1,154 @@
+{
+  "total": 26,
+  "pass": 18,
+  "fail": 8,
+  "compiled_values": [
+    3489660928,
+    67108864,
+    8388608,
+    3498049536,
+    3489661952,
+    3498049536,
+    7,
+    614400,
+    32,
+    64512
+  ],
+  "buffers": [
+    [
+      3489661952,
+      3490276352
+    ],
+    [
+      3490276352,
+      3490890752
+    ],
+    [
+      3490890752,
+      3491505152
+    ],
+    [
+      3491505152,
+      3492119552
+    ],
+    [
+      3492119552,
+      3492733952
+    ],
+    [
+      3492733952,
+      3493348352
+    ],
+    [
+      3493348352,
+      3493962752
+    ]
+  ],
+  "command": "D:/32/ARM/ARMCC/Bin/armcc.exe --cpu Cortex-M7 --c99 -O0 -I D:\\32\\STM32H7\\h7_mac_qflash\\output\\QspiFlashQ1\\q12\\baseline\\Tests\\CameraStreamState\\stubs -I D:\\32\\STM32H7\\h7_mac_qflash\\output\\QspiFlashQ1\\q12\\baseline\\Common\\Inc -I D:\\32\\STM32H7\\h7_mac_qflash\\output\\QspiFlashQ1\\q12\\baseline\\CM7\\Media\\Inc -I D:\\32\\STM32H7\\h7_mac_qflash\\output\\QspiFlashQ1\\q12\\baseline\\CM7\\BSP -I D:\\32\\STM32H7\\h7_mac_qflash\\output\\QspiFlashQ1\\q12\\baseline\\CM7\\Platform -c D:\\32\\STM32H7\\h7_mac_qflash\\output\\QspiFlashQ1\\q12\\baseline\\Tests\\SdramRange\\layout_probe.c -o D:\\32\\STM32H7\\h7_mac_qflash\\output\\QspiFlashQ1\\q12\\baseline\\Tests\\SdramRange\\layout_probe.o",
+  "cases": [
+    {
+      "name": "FMC Bank2 base",
+      "pass": true
+    },
+    {
+      "name": "Physical geometry capacity",
+      "pass": true
+    },
+    {
+      "name": "Business window exactly 4MiB",
+      "pass": false
+    },
+    {
+      "name": "Media end derives from same window",
+      "pass": true
+    },
+    {
+      "name": "Reserved first 1KiB",
+      "pass": true
+    },
+    {
+      "name": "MPU base alignment",
+      "pass": true
+    },
+    {
+      "name": "Five 600KiB stream buffers",
+      "pass": false
+    },
+    {
+      "name": "Buffer 0 aligned and in window",
+      "pass": true
+    },
+    {
+      "name": "Buffer 1 aligned and in window",
+      "pass": true
+    },
+    {
+      "name": "Buffer 2 aligned and in window",
+      "pass": true
+    },
+    {
+      "name": "Buffer 3 aligned and in window",
+      "pass": true
+    },
+    {
+      "name": "Buffer 4 aligned and in window",
+      "pass": true
+    },
+    {
+      "name": "Buffer 5 aligned and in window",
+      "pass": true
+    },
+    {
+      "name": "Buffer 6 aligned and in window",
+      "pass": true
+    },
+    {
+      "name": "No stream buffer overlap",
+      "pass": true
+    },
+    {
+      "name": "Exact stream end",
+      "pass": false
+    },
+    {
+      "name": "Buffer0 exact address",
+      "pass": true
+    },
+    {
+      "name": "Buffer1 exact address",
+      "pass": true
+    },
+    {
+      "name": "Buffer2 exact address",
+      "pass": true
+    },
+    {
+      "name": "Window tail bounded",
+      "pass": false
+    },
+    {
+      "name": "Snapshot preserved and bounded",
+      "pass": true
+    },
+    {
+      "name": "Window smaller than physical chip",
+      "pass": true
+    },
+    {
+      "name": "64KiB window cannot fit stream",
+      "pass": false
+    },
+    {
+      "name": "zero window rejected",
+      "pass": false
+    },
+    {
+      "name": "non power-of-two window rejected",
+      "pass": false
+    },
+    {
+      "name": "window beyond chip rejected",
+      "pass": false
+    }
+  ]
+}
