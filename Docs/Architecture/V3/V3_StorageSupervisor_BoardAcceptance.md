@@ -5,15 +5,15 @@
 | 阶段 | 状态 | 已知证据或条件 |
 | --- | --- | --- |
 | S0 软件入口、构建与回归 | PASS | ARMCC5 专项、双核产物、Watch 符号、工具正反对照 |
-| S0 实卡分区确认 | BLOCKED | 镜像为候选 MBR FAT 分区 1，等操作者核对实际 SD 和批准写入 |
-| S1 实卡录制 | NOT_RUN | Camera JPEG、可写挂载、SD 写入与真实速率 |
-| S2 AVI 收尾及所有权 | NOT_RUN | 匹配 RETURN/ACK/CONSUMED、实际 Finish/Close/Unmount、Windows 文件结构与播放 |
+| S0 本次实卡分区 | PASS | 实板使用分区 1，停止后卷诊断与 F 盘 AVI 对应 |
+| S1 实卡录制 | PASS | 350 帧 JPEG、约 17.15 FPS |
+| S2 AVI 收尾及所有权 | PASS | Camera 消费 350 次确认，Finish/Close/Unmount 成功，Windows 完整解码和场景变化核对通过 |
 | S3 Supervisor 实板 | NOT_RUN | 局部和全局启停、无复位重启、Query、故障隔离与显式恢复 |
 | S4 稳定性与性能 | NOT_RUN | 循环、实际文件、计数、延时、栈水位、I/O 诊断 |
 
 ## S0 软件证据
 
-ARMCC5 5.06u7 O0/O2 各通过 2/2 录像邮箱专项和 73/73 默认套件。A1 物理租约、A2 Dispatcher、A3 UVC Reader 和 Raw Service、原八组板测软件配置均通过，两档合计 356/356，另有本地 A4.1 编排 10/10。验证了 BOOT 无自动启动、非 Control 轮次不能取走命令、空或不匹配分区拒绝、Camera 先于 Storage 启动、栈采样入口。原 ABI 52 B AppMessage、16 B ServiceCommand、80 B IPC。只读 AVI 工具接受合成的正确索引，拒绝错误索引，未检查真实录像。
+ARMCC5 5.06u7 O0/O2 各通过 2/2 录像邮箱专项和 73/73 默认套件。A1 物理租约、A2 Dispatcher、A3 UVC Reader 和 Raw Service、原八组板测软件配置均通过，两档合计 356/356，另有本地 A4.1 编排 10/10。验证了 BOOT 无自动启动、非 Control 轮次不能取走命令、空或不匹配分区拒绝、Camera 先于 Storage 启动、栈采样入口。原 ABI 52 B AppMessage、16 B ServiceCommand、80 B IPC。只读 AVI 工具接受合成的正确索引，拒绝错误索引，真实录像检查见下文。
 
 | Keil Target | Code / RO / RW / ZI（B） | 结果 |
 | --- | --- | --- |
@@ -49,3 +49,13 @@ S2 正常完成后，从全停状态发 2，录下 Camera 同身份完成先于 
 建议十轮使用不同文件号。报告中记录两次采样的时间、Camera 完成和丢帧增量、写入帧和字节增量。单个录像段可用 `1000 × (frames − 1) / (last_tick − first_tick)` 计算实际平均写入 FPS，至少两帧且时间差非零时才有效。`movi_end − 224` 是成功提交的已封装帧字节，最终 AVI 文件字节和索引数量取自复制文件。单段仍受原 4 MiB/60 秒上限，不将多轮分段测试声明为无间断长录像。记录 `finish_ms` 和 Watch STOP 命令耗时（后者含协调轮询），用 8 采样 Camera、Storage、Control 栈高水位。首轮不做写入期间拔卡。
 
 失败时保留前后 Watch、未修补的原 AVI、Filesystem 和 IDMA 结果、租约状态及首错。保持当前现场，停止扩大测试，禁止用超时强制释放、清空租约、自动重启或格式化。
+
+## 首轮实板证据
+
+板端录像文件 `00000051.AVI`（会话 1，分区 1）完整写入 350 帧。首末帧跨度 20,352 ms，实测约 17.15 FPS。成功提交的 movi 数据为 3,104,952 B。停止后 Storage READY，Supervisor 最近 Camera 结果为 ACTIVE，活动掩码仅有 Camera，首错和 uncertain 均为 0。停止耗时 182 ms，AVI Finish 耗时 77 ms。Finish、Close、Unmount 均已执行且返回 0，文件数和 FATFS 所有权清零。
+
+Storage OFFER、RETURN、ACK、确认入队各 350 次；Camera 单独快照实证已消费 350 次，最后一笔对应请求 350、会话 1、Loan 351。
+
+Windows 从 F 盘只读复制 AVI 后与原件 SHA256 一致，SHA256 为 `d85521004d80d0a2ab382c83d5876af88333d4da8b57a4b11b93f3de853fec45`。文件长 3,110,784 B，RIFF、movi、idx1 结构检查通过。MJPEG 320×240，共 350 个 JPEG chunk 和 350 条匹配索引。FFmpeg 完整解码 350 帧，350 帧像素摘要各异，错误输出为空。抽取的六帧可见实际场景变化。AVI 头标称速率为 17.16 FPS，板端首末帧测得速率另列。
+
+板端两张停止后快照及解读存于 `output/ApplicationV3/StorageSupervisor/S1-S2-Memory-20261123-214038/`。AVI 副本、Camera 快照、只读分析和解码结果存于 `output/ApplicationV3/StorageSupervisor/S2-AVI-20261123-214345/`，原始媒体仅留本机。S3 仅取得局部停止证据，尚未开展独立重复录像、逆序全停、无复位重启或故障恢复。S4 仅有首轮测量。
