@@ -1,0 +1,17 @@
+{
+  "development_base": "ca841b78cfca4b5b50d20741e68a3af260f13259",
+  "direct_baseline": "81d9b4b8b25598fc8193c3590cbb4551495c552a",
+  "production": [
+    "CM7/BSP/bsp_qspi.c",
+    "CM7/BSP/bsp_qspi.h"
+  ],
+  "write_policy_bytes": 0,
+  "new_mutation_opcodes": [],
+  "recovery_read_opcodes": [
+    "9F",
+    "05",
+    "35",
+    "15"
+  ],
+  "hardware_run": false
+}

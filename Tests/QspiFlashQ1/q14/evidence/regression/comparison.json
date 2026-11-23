@@ -1,0 +1,54 @@
+[
+  {
+    "suite": "SdramRange",
+    "same_observed_results": true,
+    "summaries": [
+      {
+        "total": 26,
+        "pass": 18,
+        "fail": 8
+      },
+      {
+        "total": 26,
+        "pass": 18,
+        "fail": 8
+      }
+    ]
+  },
+  {
+    "suite": "DcmiReplaceTarget",
+    "same_observed_results": true,
+    "summaries": [
+      {
+        "total": 133,
+        "passed": 88,
+        "failed": 45,
+        "assertions": 5475
+      },
+      {
+        "total": 133,
+        "passed": 88,
+        "failed": 45,
+        "assertions": 5475
+      }
+    ]
+  },
+  {
+    "suite": "UsbUvcDescriptors",
+    "same_observed_results": true,
+    "summaries": [
+      {
+        "total": 8,
+        "passed": 7,
+        "failures": 0,
+        "errors": 1
+      },
+      {
+        "total": 8,
+        "passed": 7,
+        "failures": 0,
+        "errors": 1
+      }
+    ]
+  }
+]

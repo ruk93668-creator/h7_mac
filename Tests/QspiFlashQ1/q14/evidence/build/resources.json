@@ -1,0 +1,40 @@
+{
+  "h7_mac_CM7": {
+    "baseline": {
+      "rom": 148928,
+      "ram": 114752,
+      "stack": 1344,
+      "recover_linked": false
+    },
+    "current": {
+      "rom": 149644,
+      "ram": 114856,
+      "stack": 1344,
+      "recover_linked": false
+    },
+    "delta": {
+      "rom": 716,
+      "ram": 104,
+      "stack": 0
+    }
+  },
+  "h7_mac_CM4": {
+    "baseline": {
+      "rom": 28676,
+      "ram": 4512,
+      "stack": 432,
+      "recover_linked": false
+    },
+    "current": {
+      "rom": 28676,
+      "ram": 4512,
+      "stack": 432,
+      "recover_linked": false
+    },
+    "delta": {
+      "rom": 0,
+      "ram": 0,
+      "stack": 0
+    }
+  }
+}

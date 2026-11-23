@@ -1,0 +1,41 @@
+{
+  "source": "local H1 original archives, verified without changing them",
+  "result": "PASS (H1 one approved sector and one cycle)",
+  "same_flash_identity_verified": true,
+  "pattern_crc32": "0x6AFF4F17",
+  "bytes_programmed": 520,
+  "bytes_erased": 4096,
+  "final_target_and_neighbor_match_original": true,
+  "waveform": "NOT_VERIFIED",
+  "nonblank_restore": "NOT_RUN",
+  "exported_at": "2026-11-23T21:06:41+08:00",
+  "sha256": {
+    "field-backup-120": {
+      "backup.json": "a8e1052268264f1474fcd15ff70f5f1bfd244b31da59640d029159b0de3b1aef",
+      "capture.bin": "5acbef785fd4a9f1736591102a1268e6bfeb1266c6013a5201edbb5281f6b59c",
+      "h1_original_120.hex": "06ebb17df2fc00fe20f606526eed4f914a2288d2c67cae7980da53a042969eb5",
+      "neighbor.bin": "f47a8ec3e9aff2318d896942282ad4fe37d6391c82914f54a5da8a37de1300c6",
+      "readout_firmware.axf": "d77340b7708cbf925d45b8c058d634b68a164b72a88c5326445ae614b5ef5c74",
+      "target.bin": "f47a8ec3e9aff2318d896942282ad4fe37d6391c82914f54a5da8a37de1300c6"
+    },
+    "field-programmed-120": {
+      "backup.json": "8e5f43ea3346cd8d6b84e05c6e8125fdb55a988fe1b3ae9e298d9eef9536062e",
+      "capture.bin": "18c5840967736bb8d057e88d65b4401539380cf810f49710d4ae04b21d61e677",
+      "h1_programmed_120.hex": "727063287e0243eff82a8396200e7be4a92f7b278c0c2602a728f0e7237d82a4",
+      "neighbor.bin": "f47a8ec3e9aff2318d896942282ad4fe37d6391c82914f54a5da8a37de1300c6",
+      "readout_firmware.axf": "7d73bf2a032a3d41181b001cb593540f4d15f3ef319fb5855eba799b864800f1",
+      "target.bin": "58f5a42f8e5e16ea26b8342b78dd1ade3e80d7e1ed9d523374c271f56421cff5"
+    },
+    "field-erased-120": {
+      "backup.json": "d800e7bfd6b4cb434e32070c17c57ed0e790750498c5f381a21d8debb397f383",
+      "capture.bin": "5acbef785fd4a9f1736591102a1268e6bfeb1266c6013a5201edbb5281f6b59c",
+      "h1_erased_120.hex": "06ebb17df2fc00fe20f606526eed4f914a2288d2c67cae7980da53a042969eb5",
+      "neighbor.bin": "f47a8ec3e9aff2318d896942282ad4fe37d6391c82914f54a5da8a37de1300c6",
+      "readout_firmware.axf": "a663ad25952bf7071c2ccb7c92a7eb2941487c324e71eb25649018bf84dbedc0",
+      "target.bin": "f47a8ec3e9aff2318d896942282ad4fe37d6391c82914f54a5da8a37de1300c6"
+    },
+    "field-program-01-local/program_result.json": "16b7fd837ebe02decd5ca4084ee54efbdd64badb34cc532daf67b391ec36a302",
+    "field-erase-01-local/erase_result.json": "2c0b48ac5eb1cd8d6d1d65a2cbba26774acb99dc89ccd4eecd24660db1517112",
+    "field-erased-120/h1_final_verification.json": "c2033b7338f50f567394b6a53690c9dc50504335720c2f4519676d460c517a0c"
+  }
+}

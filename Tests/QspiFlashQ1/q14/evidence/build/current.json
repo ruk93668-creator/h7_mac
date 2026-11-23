@@ -1,0 +1,49 @@
+{
+  "revision": "f480cc10485bf5939c13783f650887414d19516d",
+  "project_sha256": "e2076deead6be41af1119cd632d1d90bf9a177aa0dd115dd89d90c7a794ac7bf",
+  "source_sha256": "50f80330758e12853831bb98f66e87364f3c2ef8f80da268dcd93630c3965f7d",
+  "builds": [
+    {
+      "target": "h7_mac_CM7",
+      "sizes": [
+        145046,
+        3226,
+        1372,
+        113484
+      ],
+      "maximum_static_stack": 1344,
+      "errors": 0,
+      "warnings": 0,
+      "loads": [
+        [
+          134217728,
+          134366372
+        ]
+      ],
+      "axf_sha256": "b3fbd6bf49e71eb86f23f097c3271adba5bc8ec1ca70b34ad84c84877887e148",
+      "log_sha256": "b1969d4a77246d66846fb9c886b4f342cdf1d69a4d6bd86c7287078cd1d2bc1a",
+      "recover_linked": false
+    },
+    {
+      "target": "h7_mac_CM4",
+      "sizes": [
+        26302,
+        1438,
+        936,
+        3576
+      ],
+      "maximum_static_stack": 432,
+      "errors": 0,
+      "warnings": 0,
+      "loads": [
+        [
+          135266304,
+          135294088
+        ]
+      ],
+      "axf_sha256": "8f99113a7644919bb5fc9ac31aefdb4c1b9628e23ee1a7027f21f01a518db1f3",
+      "log_sha256": "f0d1893fffc0d7119d6bb5210faf68959b1379b8574de3d1646dffc5b41b60ae",
+      "recover_linked": false
+    }
+  ]
+}

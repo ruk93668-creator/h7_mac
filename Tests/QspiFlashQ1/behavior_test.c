@@ -12,6 +12,7 @@ static SysResult_t s_nested;
 static HAL_StatusTypeDef (*s_read_command_hook)(QSPI_HandleTypeDef *, QSPI_CommandTypeDef *, uint32_t);
 static HAL_StatusTypeDef (*s_read_receive_hook)(QSPI_HandleTypeDef *, uint8_t *, uint32_t);
 static HAL_StatusTypeDef (*s_read_abort_hook)(QSPI_HandleTypeDef *);
+static HAL_StatusTypeDef (*s_deinit_hook)(QSPI_HandleTypeDef *);
 static uint32_t (*s_tick_hook)(void);
 static HAL_StatusTypeDef (*s_write_transmit_hook)(QSPI_HandleTypeDef *, uint8_t *, uint32_t);
 #define CHECK(x) do { g_assertions++; if (!(x) && g_failure == 0U) g_failure = __LINE__; } while (0)
@@ -207,6 +208,8 @@ HAL_StatusTypeDef HAL_QSPI_Abort(QSPI_HandleTypeDef *handle)
 
 HAL_StatusTypeDef HAL_QSPI_DeInit(QSPI_HandleTypeDef *handle)
 {
+    if (s_deinit_hook != NULL)
+        return s_deinit_hook(handle);
     CHECK(__get_PRIMASK() == 0U);
     if (s_case == 43U)
         return HAL_ERROR;
