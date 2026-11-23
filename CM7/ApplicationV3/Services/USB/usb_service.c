@@ -1,5 +1,9 @@
 #include "usb_service.h"
 #include "../../Core/app_messages.h"
+
+#ifndef APP_V3_RAW_UVC_TEST
+#define APP_V3_RAW_UVC_TEST 0
+#endif
 #include "../../Tasks/service_tasks.h"
 #include "usb_device.h"
 #include "usb_uvc.h"
@@ -98,8 +102,8 @@ static const UsbServiceHandler_t s_handlers[USB_SERVICE_OP_COUNT] =
 #define USB_HW_VIDEO_QUIET 2U
 #define USB_HW_FRAME_HELD 4U
 
-//Class配置在Boot后仅成功一次，重新连接仍复用原描述符
-//UsbTask拥有交接端点。它只记录读取权和运输状态，本阶段不调用UVC帧提交。
+//帧交接状态由UsbTask独立维护，枚举状态不能用于归还帧。
+//A2运输只记录交接事实，独立Raw测试用匹配的A3提交ID证明读者退出。
 typedef enum
 {
     USB_FRAME_IDLE = 0,
@@ -283,6 +287,136 @@ SysResult_t UsbService_CancelFrameRequest(void)
     return SYS_OK;
 }
 
+#if APP_V3_RAW_UVC_TEST
+static uint32_t s_uvc_reader_id;
+
+static bool UsbService_IsExitReason(UsbUvcReaderExit_t reason)
+{
+    return reason == USB_UVC_READER_EXIT_EOF || reason == USB_UVC_READER_EXIT_CANCELLED ||
+        reason == USB_UVC_READER_EXIT_CLOSED;
+}
+
+//验证单次成功Submit。Class缺失或换代时，只读证明仍关联原提交。
+static SysResult_t UsbService_CheckReaderProof(bool *retired)
+{
+    UsbUvcReaderProof_t proof;
+    SysResult_t result = USB_UVC_ReadReaderProof(&proof);
+
+    *retired = false;
+    if (result != SYS_OK)
+        return result;
+    if (proof.accepted_id != s_uvc_reader_id)
+        return SYS_ERR_PROTOCOL;
+    if (proof.accepted_first_fault != SYS_OK && s_usb.hardware.first_fault == SYS_OK)
+        s_usb.hardware.first_fault = proof.accepted_first_fault;
+    *retired = proof.retired_id == s_uvc_reader_id && UsbService_IsExitReason(proof.retired_reason);
+    return SYS_OK;
+}
+
+//先推进旧提交，再交给A2归还和消费确认；这里不允许调用USB_Device_Stop。
+static SysResult_t UsbService_AdvanceReader(bool closing)
+{
+    bool retired;
+    UsbUvcStreamStatus_t stream;
+    SysResult_t result;
+
+    if (s_uvc_reader_id == 0U)
+        return SYS_OK;
+
+    result = UsbService_CheckReaderProof(&retired);
+    if (result != SYS_OK)
+        return result;
+    if (!retired && !closing && (s_usb.hardware.flags & USB_HW_CONFIGURED) != 0U &&
+        (USB_UVC_GetStreamStatus(&stream) != SYS_OK || !stream.frame_owned))
+    {
+        //短暂解绑与再配置可能在两轮之间完成，先重查旧证明以排除恰好退休的竞争。
+        result = UsbService_CheckReaderProof(&retired);
+        if (result != SYS_OK || !retired)
+            return result == SYS_OK ? SYS_ERR_PROTOCOL : result;
+    }
+    if (!retired && closing)
+    {
+        //显式停止允许推进取消；失败不关闭旧租约，也不推断Class已退休。
+        if (!s_usb.cancel_requested)
+        {
+            result = USB_UVC_CancelFrame();
+            if (result != SYS_OK)
+            {
+                //读证明可能与Class解绑并发，核对当轮真实末包/Close结果。
+                if (UsbService_CheckReaderProof(&retired) != SYS_OK || !retired)
+                    return result;
+            }
+            else
+                s_usb.cancel_requested = true;
+        }
+        if (!retired)
+        {
+            USB_UVC_Process();
+            result = UsbService_CheckReaderProof(&retired);
+            if (result != SYS_OK)
+                return result;
+        }
+    }
+    if (!retired)
+        return SYS_ERR_BUSY;
+
+    result = UsbService_ReleaseFrame();
+    if (result == SYS_OK)
+    {
+        s_uvc_reader_id = 0U;
+        s_usb.cancel_requested = false;
+        s_usb.hardware.flags &= (uint16_t)~USB_HW_FRAME_HELD;
+    }
+    return result;
+}
+
+static SysResult_t UsbService_SubmitRawFrame(void)
+{
+    UsbUvcStreamStatus_t stream;
+    UsbUvcReaderProof_t before;
+    CameraFrame_t frame;
+    uint32_t frame_id;
+    SysResult_t result;
+
+    //只有Host真实协商并打开Alt1，才允许申请或提交业务帧。
+    if (s_uvc_reader_id != 0U || (s_frame.state != USB_FRAME_IDLE && s_frame.state != USB_FRAME_OFFERED))
+        return SYS_ERR_BUSY;
+    result = USB_UVC_GetStreamStatus(&stream);
+    if (result != SYS_OK || !stream.can_submit)
+        return SYS_ERR_BUSY;
+    if (s_frame.state == USB_FRAME_IDLE)
+        return UsbService_RequestFrame();
+
+    result = USB_UVC_ReadReaderProof(&before);
+    if (result != SYS_OK)
+        return result;
+    if (before.accepted_id != before.retired_id || before.accepted_id == UINT32_MAX)
+        return SYS_ERR_BUSY;
+
+    result = UsbService_ReadFrame(&frame, &frame_id);
+    if (result != SYS_OK)
+        return result;
+    if (frame.format != CAMERA_PIXEL_FORMAT_YUV422 || frame.width != 160U || frame.height != 120U ||
+        frame.size_bytes != 38400U || frame.size_bytes2 != 0U || frame.data2 != NULL)
+        result = SYS_ERR_PROTOCOL;
+    else
+        result = USB_UVC_SubmitFrame(frame.data, frame.size_bytes);
+
+    if (result == SYS_OK)
+    {
+        //唯一UsbTask成功提交一次，IRQ只退休不分配ID；留存预期ID可跨解绑核对。
+        s_uvc_reader_id = before.accepted_id + 1U;
+        s_usb.hardware.flags |= USB_HW_FRAME_HELD;
+        return SYS_OK;
+    }
+
+    //提交明确失败时Class从未接管该帧，才可直接交回A2。
+    if (UsbService_ReleaseFrame() != SYS_OK)
+        return SYS_ERR_PROTOCOL;
+    return result == SYS_ERR_INVALID_STATE ? SYS_ERR_BUSY : result;
+}
+#endif
+
 static SysResult_t UsbService_BeginDevice(void)
 {
     SysResult_t result;
@@ -333,7 +467,7 @@ static SysResult_t UsbService_CheckFrame(void)
         return SYS_OK;
     }
 
-    //当前设计没有任何SubmitFrame调用，这条路径只用于保守处理底层异常
+    //已登记的A3读者由前置退场处理；这里仍防止未知Class持有越过整设备STOP。
     s_usb.hardware.flags |= USB_HW_FRAME_HELD;
     if (s_usb.cancel_requested && stream.result != SYS_OK && stream.result != SYS_ERR_BUSY)
         return stream.result;
@@ -470,17 +604,26 @@ static SysResult_t UsbService_ObserveDevice(bool *suspended)
             s_usb.hardware.primary = stream.completed_frames;
             if (stream.frame_owned)
             {
-                //本阶段没有帧提交入口，意外占用必须冻结并走明确的停止或恢复
+                //只认可本任务已绑定提交的占用，未知读者保留故障。
                 s_usb.hardware.flags |= USB_HW_FRAME_HELD;
+#if APP_V3_RAW_UVC_TEST
+                if (s_uvc_reader_id != 0U)
+                    return SYS_OK;
+#endif
                 return SYS_ERR_INVALID_STATE;
             }
+#if APP_V3_RAW_UVC_TEST
+            //这里只观察当前Class，旧提交的持有标记必须等匹配的退休凭据再清除。
+            if (s_uvc_reader_id != 0U)
+                return SYS_OK;
+#endif
             s_usb.hardware.flags &= (uint16_t)~USB_HW_FRAME_HELD;
         }
     }
     return result;
 }
 
-//仅由UsbTask推进枚举、失联和有界STOP，绝不提交视频帧
+//仅UsbTask推进枚举、已批准Raw测试的帧提交及有界STOP。
 uint32_t AppV3_UsbAdvance(void)
 {
     uint32_t now;
@@ -512,8 +655,31 @@ uint32_t AppV3_UsbAdvance(void)
         }
     }
 
+#if APP_V3_RAW_UVC_TEST
+    //STOP前先推进匹配旧读者；A2退出证明未闭合仍不能调用Device STOP。
+    result = UsbService_AdvanceReader(s_usb.hardware.state != APP_V3_HW_ACTIVE);
+    if (result != SYS_OK && result != SYS_ERR_BUSY)
+    {
+        if (s_usb.hardware.first_fault == SYS_OK)
+            s_usb.hardware.first_fault = result;
+        if (s_usb.hardware.state == APP_V3_HW_ACTIVE)
+            s_usb.hardware.state = APP_V3_HW_FAULT;
+    }
+#endif
     //停止或异常只关闭申请，待发Return和消费确认在FAULT中继续排空。
     UsbFrame_Advance(s_usb.hardware.state != APP_V3_HW_ACTIVE);
+#if APP_V3_RAW_UVC_TEST
+    if (s_usb.hardware.state == APP_V3_HW_ACTIVE && (s_usb.hardware.flags & USB_HW_CONFIGURED) != 0U)
+    {
+        result = UsbService_SubmitRawFrame();
+        if (result != SYS_OK && result != SYS_ERR_BUSY && result != SYS_ERR_NO_RESOURCE)
+        {
+            if (s_usb.hardware.first_fault == SYS_OK)
+                s_usb.hardware.first_fault = result;
+            s_usb.hardware.state = APP_V3_HW_FAULT;
+        }
+    }
+#endif
     if (s_usb.hardware.state == APP_V3_HW_ACTIVE)
         return USB_HW_POLL_MS;
     if (!s_usb.request.pending)

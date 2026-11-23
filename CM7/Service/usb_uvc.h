@@ -33,6 +33,25 @@ typedef struct
     bool can_submit;
 } UsbUvcStreamStatus_t;
 
+typedef enum
+{
+    USB_UVC_READER_EXIT_NONE = 0,
+    USB_UVC_READER_EXIT_EOF,
+    USB_UVC_READER_EXIT_CANCELLED,
+    USB_UVC_READER_EXIT_CLOSED
+} UsbUvcReaderExit_t;
+
+typedef struct
+{
+    uint32_t accepted_id; // 最近一次成功接收的帧
+    uint32_t retired_id;  // 最近一次已证实退出的帧，跨Class生命周期保留
+    UsbUvcReaderExit_t retired_reason;
+    SysResult_t accepted_first_fault;
+} UsbUvcReaderProof_t;
+
+//仅UsbTask正常上下文调用；Class解绑后仍可读取上次提交与退出事实
+SysResult_t USB_UVC_ReadReaderProof(UsbUvcReaderProof_t *proof);
+
 //纯校验输出能力，不改变描述符或活动Class
 SysResult_t USB_UVC_ValidateConfig(const VideoStreamConfig_t *config);
 

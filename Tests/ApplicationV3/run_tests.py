@@ -16,6 +16,7 @@ def main():
     parser.add_argument("output", type=Path)
     parser.add_argument("--board-smoke", choices=("off", "camera", "usb", "storage"), default="off")
     parser.add_argument("--board-stress", choices=("off", "repeat", "recovery"), default="off")
+    parser.add_argument("--raw-uvc", action="store_true")
     args = parser.parse_args()
     if args.board_stress != "off" and args.board_smoke == "off":
         parser.error("--board-stress requires a board smoke scenario")
@@ -39,6 +40,8 @@ def main():
     smoke_selection = ("off", "camera", "usb", "storage").index(args.board_smoke)
     stress_selection = ("off", "repeat", "recovery").index(args.board_stress)
     harness.cc.extend((f"-DAPP_V3_BOARD_SMOKE={smoke_selection}", f"-DAPP_V3_BOARD_STRESS={stress_selection}"))
+    if args.raw_uvc:
+        harness.cc.append("-DAPP_V3_RAW_UVC_TEST=1")
     kernel = ROOT / "Middlewares/Third_Party/FreeRTOS/Source"
     real_run = harness.run
 
@@ -80,6 +83,8 @@ def main():
             scenarios = [*scenarios, *range(63, 70)]
         if not smoke_selection:
             scenarios = [*scenarios, *range(70, 75)]
+        if args.raw_uvc:
+            scenarios = range(75, 83)
         for scenario in scenarios:
             row = harness.execute(name, "AppV3_TestRun", scenario)
             if scenario < 49:

@@ -1254,6 +1254,110 @@ static uint32_t Test_FrameTransport(const AppV3Context_t *context, uint32_t scen
     return 0U;
 }
 
+#if APP_V3_RAW_UVC_TEST
+static uint32_t Test_RawUvcTransport(const AppV3Context_t *context, uint32_t scenario)
+{
+    uint32_t consumed, processes;
+    bool submit_failed = scenario == 78U || scenario == 79U;
+
+    CHECK(Test_FrameTransportBoot(context) == 0U);
+    g_hardware.frame_ready = true;
+    Test_PollHardware(RUNTIME_TARGET_USB);
+    Test_PollHardware(RUNTIME_TARGET_CAMERA);
+    CHECK(g_hardware.frame_acquire_calls == 0U && g_hardware.raw_submits == 0U);
+
+    g_hardware.raw_can_submit = true;
+    if (submit_failed)
+        g_hardware.raw_submit_result = scenario == 78U ? SYS_ERR_BUSY : SYS_ERR_IO;
+    Test_PollHardware(RUNTIME_TARGET_USB);
+    Test_PollHardware(RUNTIME_TARGET_CAMERA);
+    Test_PollHardware(RUNTIME_TARGET_CAMERA);
+    Test_PollHardware(RUNTIME_TARGET_USB);
+    CHECK(g_hardware.raw_submits == 1U && g_hardware.frame_lease_releases == 0U);
+    g_hardware.raw_can_submit = false;
+    if (submit_failed)
+    {
+        Test_PollHardware(RUNTIME_TARGET_USB);
+        Test_PollHardware(RUNTIME_TARGET_CAMERA);
+        CHECK(g_hardware.raw_proof.accepted_id == 0U && g_hardware.frame_lease_releases == 1U);
+        return 0U;
+    }
+
+    CHECK(g_hardware.raw_proof.accepted_id == 1U && g_hardware.raw_proof.retired_id == 0U);
+    if (scenario == 76U)
+    {
+        CHECK(UsbService_Request(3U, USB_SERVICE_STOP, 0U) == SYS_OK);
+        CHECK(Test_ServiceStep(RUNTIME_TARGET_USB) == SYS_OK);
+        Test_PollHardware(RUNTIME_TARGET_USB);
+        CHECK(g_hardware.usb_cancel_calls == 1U);
+        CHECK(g_hardware.usb_stop_calls == 0U && g_hardware.frame_lease_releases == 0U);
+    }
+    else if (scenario == 77U || scenario == 82U)
+    {
+        //旧Class消失后，新Class虽然空闲，旧提交仍无退出凭据。
+        if (scenario == 77U)
+        {
+            g_hardware.uvc_present = false;
+            g_hardware.usb_configured = false;
+            g_hardware.usb_bus_state = USBD_STATE_DEFAULT;
+            Test_PollHardware(RUNTIME_TARGET_USB);
+        }
+        g_hardware.uvc_present = true;
+        g_hardware.usb_configured = true;
+        g_hardware.usb_bus_state = USBD_STATE_CONFIGURED;
+        g_hardware.usb_frame_owned = false;
+        g_hardware.raw_can_submit = true;
+        //变化完全发生在两轮之间时同样需要以旧提交身份判断。
+        Test_PollHardware(RUNTIME_TARGET_USB);
+        CHECK(UsbService_Request(3U, USB_SERVICE_RECOVER, 0U) == SYS_OK);
+        CHECK(Test_ServiceStep(RUNTIME_TARGET_USB) == SYS_OK);
+        g_hardware.now_ms = 1001U;
+        Test_PollHardware(RUNTIME_TARGET_USB);
+        Test_PollHardware(RUNTIME_TARGET_CAMERA);
+        CHECK(Test_ReadHardwareResult(RUNTIME_TARGET_USB, 3U, APP_V3_HW_FAULT, SYS_ERR_TIMEOUT));
+        CHECK(g_hardware.raw_proof.retired_id == 0U && g_hardware.raw_submits == 1U);
+        CHECK(g_hardware.frame_lease_releases == 0U && g_hardware.usb_stop_calls == 0U);
+        return 0U;
+    }
+    else if (scenario == 80U)
+    {
+        processes = g_hardware.usb_process_calls;
+        g_hardware.usb_bus_state = USBD_STATE_SUSPENDED;
+        Test_PollHardware(RUNTIME_TARGET_USB);
+        Test_PollHardware(RUNTIME_TARGET_CAMERA);
+        CHECK(g_hardware.usb_process_calls == processes && g_hardware.usb_cancel_calls == 0U);
+        CHECK(g_hardware.frame_lease_releases == 0U);
+        g_hardware.usb_bus_state = USBD_STATE_CONFIGURED;
+    }
+    else if (scenario == 81U)
+    {
+        CHECK(CameraService_Request(3U, CAMERA_SERVICE_STOP, 0U) == SYS_OK);
+        CHECK(Test_ServiceStep(RUNTIME_TARGET_CAMERA) == SYS_OK);
+        Test_PollHardware(RUNTIME_TARGET_CAMERA);
+        CHECK(AppV3Business_Drain(&consumed) == SYS_OK && consumed == 0U);
+        CHECK(g_hardware.sensor_stop_calls == 0U && g_hardware.frame_lease_releases == 0U);
+    }
+
+    //只有该次Submit的正向退出凭据才能触发真实Return。
+    g_hardware.raw_proof.retired_id = 1U;
+    g_hardware.raw_proof.retired_reason = scenario == 76U ?
+        USB_UVC_READER_EXIT_CANCELLED : USB_UVC_READER_EXIT_EOF;
+    g_hardware.usb_frame_owned = false;
+    Test_PollHardware(RUNTIME_TARGET_USB);
+    Test_PollHardware(RUNTIME_TARGET_CAMERA);
+    CHECK(g_hardware.frame_lease_releases == 1U && g_hardware.usb_stop_calls == 0U);
+    Test_PollHardware(RUNTIME_TARGET_CAMERA);
+    Test_PollHardware(RUNTIME_TARGET_USB);
+    Test_PollHardware(RUNTIME_TARGET_CAMERA);
+    if (scenario == 76U)
+        CHECK(Test_ReadHardwareResult(RUNTIME_TARGET_USB, 3U, APP_V3_HW_READY, SYS_OK));
+    if (scenario == 81U)
+        CHECK(Test_ReadHardwareResult(RUNTIME_TARGET_CAMERA, 3U, APP_V3_HW_READY, SYS_OK));
+    CHECK(g_hardware.frame_lease_releases == 1U && g_hardware.raw_submits == 1U);
+    return 0U;
+}
+#endif
+
 static uint32_t Test_CameraHardware(const AppV3Context_t *context)
 {
     AppV3Queue_t queue;
@@ -2247,6 +2351,10 @@ uint32_t AppV3_TestRun(uint32_t scenario)
 #endif
 #endif
 
+#if APP_V3_RAW_UVC_TEST
+    if (scenario >= 75U && scenario <= 82U)
+        return Test_RawUvcTransport(context, scenario);
+#endif
     if (scenario >= 70U && scenario <= 74U)
         return Test_FrameTransport(context, scenario);
 

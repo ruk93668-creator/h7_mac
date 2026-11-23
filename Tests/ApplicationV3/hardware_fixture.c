@@ -213,8 +213,28 @@ SysResult_t USB_UVC_GetStreamStatus(UsbUvcStreamStatus_t *status)
     if (!g_hardware.uvc_present)
         return SYS_ERR_INVALID_STATE;
     *status = (UsbUvcStreamStatus_t){.state = USB_UVC_WAIT_FRAME,
-        .result = g_hardware.usb_stream_result, .frame_owned = g_hardware.usb_frame_owned};
+        .result = g_hardware.usb_stream_result, .frame_owned = g_hardware.usb_frame_owned,
+        .can_submit = g_hardware.raw_can_submit && !g_hardware.usb_frame_owned};
     return SYS_OK;
+}
+
+SysResult_t USB_UVC_ReadReaderProof(UsbUvcReaderProof_t *proof)
+{
+    *proof = g_hardware.raw_proof;
+    return SYS_OK;
+}
+
+SysResult_t USB_UVC_SubmitFrame(const uint8_t *frame, uint32_t length)
+{
+    ++g_hardware.raw_submits;
+    if (frame == NULL || length != 38400U)
+        return SYS_ERR_INVALID_ARG;
+    if (g_hardware.raw_submit_result == SYS_OK)
+    {
+        ++g_hardware.raw_proof.accepted_id;
+        g_hardware.usb_frame_owned = true;
+    }
+    return g_hardware.raw_submit_result;
 }
 
 SysResult_t USB_UVC_CancelFrame(void)

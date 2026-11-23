@@ -16,6 +16,15 @@
 #error APP_VIDEO_MJPEG_MODE_must_be_zero_or_one
 #endif
 
+#ifndef APP_V3_RAW_UVC_TEST
+#define APP_V3_RAW_UVC_TEST 0
+#endif
+
+#if (APP_V3_RAW_UVC_TEST != 0 && APP_V3_RAW_UVC_TEST != 1) || \
+    (APP_V3_RAW_UVC_TEST && (APP_VIDEO_TEST_MODE || APP_VIDEO_MJPEG_MODE))
+#error APP_V3_RAW_UVC_TEST_requires_an_independent_Raw_configuration
+#endif
+
 //保存唯一默认视频配置，TEST构建只关闭视频链路
 static const VideoConfig_t s_default_config =
 {
@@ -27,8 +36,8 @@ static const VideoConfig_t s_default_config =
     },
     .output = APP_VIDEO_TEST_MODE ? VIDEO_OUTPUT_USB_TEST : VIDEO_OUTPUT_USB_UVC,
 
-    //输出目标25FPS，实际采集与主机接收速率另行测量
-    .output_fps =  25U,
+    //产品保持25FPS，独立Raw验收使用10FPS，采集节拍仍由原模块决定。
+    .output_fps = APP_V3_RAW_UVC_TEST ? 10U : 25U,
 
     //JPEG帧长由配置限定，25FPS时必须满足FS每40ms的包数预算
     .output_max_frame_bytes = APP_VIDEO_MJPEG_MODE ? 40000U : 0U

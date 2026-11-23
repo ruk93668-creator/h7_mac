@@ -4,6 +4,7 @@
 #include "camera_capture.h"
 #include "storage_fs.h"
 #include "usb_device.h"
+#include "usb_uvc.h"
 
 typedef struct
 {
@@ -21,6 +22,10 @@ typedef struct
     SysResult_t usb_configure_result, usb_register_result, usb_plan_result;
     bool usb_register_partial, usb_core_stop_required;
     bool usb_configured, uvc_present, usb_frame_owned, endpoint_busy;
+    bool raw_can_submit;
+    uint32_t raw_submits;
+    SysResult_t raw_submit_result;
+    UsbUvcReaderProof_t raw_proof;
     uint8_t usb_bus_state, usb_previous_state;
     uint32_t mount_calls, unmount_calls, recover_calls;
     SysResult_t mount_result, unmount_result, recover_result;
