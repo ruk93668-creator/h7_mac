@@ -247,11 +247,14 @@ static uint32_t AppCase(uint32_t id)
 #include "ui1_cases.inc"
 #if defined(OLED_UI2_TEST_INPUT) && OLED_UI2_TEST_INPUT
 #include "ui2_cases.inc"
+#include "ui2_input_cases.inc"
 #endif
 
 uint32_t OledMonitor_TestRun(uint32_t id)
 {
 #if defined(OLED_UI2_TEST_INPUT) && OLED_UI2_TEST_INPUT
+    if (id == 76U)
+        return Ui2InputCase();
     if (id >= 69U)
         return Ui2Case(id);
 #endif

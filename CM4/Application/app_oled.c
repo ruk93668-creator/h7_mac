@@ -9,6 +9,12 @@
 #if defined(OLED_UI2_TEST_INPUT) && OLED_UI2_TEST_INPUT
 #include "oled_ui_menu.h"
 
+#if defined(OLED_UI2_U7_INPUT) && OLED_UI2_U7_INPUT
+#include "oled_ui_input.h"
+#include "platform_time.h"
+#include "stm32h7xx_hal.h"
+#endif
+
 //测试入口使用单槽邮箱。先写事件，再发布request；收到ack后才发下一条。
 typedef struct
 {
@@ -21,6 +27,66 @@ typedef struct
 typedef char AppOledUi2DebugSize[(sizeof(AppOledUi2Debug_t) <= 16U) ? 1 : -1];
 volatile AppOledUi2Debug_t g_oled_ui2_debug;
 static OledUiPageState_t s_ui2_state;
+
+#if defined(OLED_UI2_U7_INPUT) && OLED_UI2_U7_INPUT
+//U7接线取自调试与扩展页及主控页。C接地，输入使用上拉。
+volatile SysResult_t g_oled_ui2_u7_result;
+static OledUiInput_t s_ui2_input;
+static uint32_t s_ui2_input_tick;
+static bool s_ui2_input_ready;
+
+static uint8_t App_OledU7Phase(void)
+{
+    return (uint8_t)((HAL_GPIO_ReadPin(GPIOI, GPIO_PIN_6) == GPIO_PIN_SET ? 2U : 0U) |
+        (HAL_GPIO_ReadPin(GPIOC, GPIO_PIN_15) == GPIO_PIN_SET ? 1U : 0U));
+}
+
+static bool App_OledU7Pressed(void)
+{
+    return HAL_GPIO_ReadPin(GPIOI, GPIO_PIN_9) == GPIO_PIN_RESET;
+}
+
+static SysResult_t App_OledU7Init(void)
+{
+    GPIO_InitTypeDef gpio = {0};
+
+    //PC15也可作为LSE输出。LSE启用时放弃编码器，保持监控与邮箱可用。
+    if ((RCC->BDCR & RCC_BDCR_LSEON) != 0U)
+        return SYS_ERR_NOT_SUPPORTED;
+
+    __HAL_RCC_GPIOI_CLK_ENABLE();
+    __HAL_RCC_GPIOC_CLK_ENABLE();
+    gpio.Mode = GPIO_MODE_INPUT;
+    gpio.Pull = GPIO_PULLUP;
+    gpio.Pin = GPIO_PIN_6 | GPIO_PIN_9;
+    HAL_GPIO_Init(GPIOI, &gpio);
+    gpio.Pin = GPIO_PIN_15;
+    HAL_GPIO_Init(GPIOC, &gpio);
+
+    s_ui2_input_tick = Platform_TimeGetMs();
+    OledUi_InputInit(&s_ui2_input, App_OledU7Phase(), App_OledU7Pressed(), s_ui2_input_tick);
+    s_ui2_input_ready = true;
+    return SYS_OK;
+}
+
+static void App_OledU7Poll(void)
+{
+    uint32_t now, event;
+
+    if (!s_ui2_input_ready)
+        return;
+    now = Platform_TimeGetMs();
+    if (now == s_ui2_input_tick)
+        return;
+    s_ui2_input_tick = now;
+    event = OledUi_InputSample(&s_ui2_input, App_OledU7Phase(), App_OledU7Pressed(), now);
+    if (event == 0U)
+        return;
+    if (event == OLED_UI_EVENT_SELECT && s_ui2_state.current == OLED_UI_PAGE_MONITOR)
+        event = OLED_UI_EVENT_OPEN_MENU;
+    g_oled_ui2_u7_result = OledUi_PageDispatch(&s_ui2_state, event);
+}
+#endif
 
 //事件只更新下一帧逻辑状态，刷新忙时也不会写Framebuffer。
 static void App_OledUi2Poll(void)
@@ -115,6 +181,9 @@ SysResult_t App_OledInit(void)
     //全部准备成功后才允许主循环推进刷新
 #if defined(OLED_UI2_TEST_INPUT) && OLED_UI2_TEST_INPUT
     (void)OledUi_PageInit(&s_ui2_state);
+#if defined(OLED_UI2_U7_INPUT) && OLED_UI2_U7_INPUT
+    g_oled_ui2_u7_result = App_OledU7Init();
+#endif
 #endif
     s_app_oled = oled;
     return SYS_OK;
@@ -133,6 +202,9 @@ void App_OledRun(void)
     //Process只推进传输，不在发送期间重绘Framebuffer
 #if defined(OLED_UI2_TEST_INPUT) && OLED_UI2_TEST_INPUT
     App_OledUi2Poll();
+#if defined(OLED_UI2_U7_INPUT) && OLED_UI2_U7_INPUT
+    App_OledU7Poll();
+#endif
 #endif
     previous = s_app_oled->refresh_state;
     result = s_app_oled->ops->process(s_app_oled);
