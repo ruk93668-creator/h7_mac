@@ -16,4 +16,4 @@ with a.open('rb') as f:
   if s['sh_flags']&2 and s['sh_type']=='SHT_PROGBITS' and s['sh_size']:u.mem_write(s['sh_addr'],s.data())
 u.reg_write(UC_ARM_REG_SP,0x2003fff0);u.reg_write(UC_ARM_REG_LR,0x01000001);u.emu_start(entry|1,0x01000000,count=5000000)
 line=u.reg_read(UC_ARM_REG_R0);ok=line==0 and u.reg_read(UC_ARM_REG_PC)==0x01000000
-(H/'h5_results.json').write_bytes((json.dumps({'pass':ok,'failure_line':line,'hardware_verified':False,'coverage':['link_timeout','config_crc','reliable_delivery','duplicate','bad_crc','partial_write','valid_ack','retry_exhaustion']},indent=2)+'\n').encode());print('H5',ok,line);raise SystemExit(not ok)
+(H/'h5_results.json').write_bytes((json.dumps({'pass':ok,'failure_line':line,'hardware_verified':False,'coverage':['link_timeout','all_30_sync_frames_exact_under_partial_writes','config_crc','reliable_delivery','duplicate','bad_crc','partial_write','valid_ack','retry_exhaustion']},indent=2)+'\n').encode());print('H5',ok,line);raise SystemExit(not ok)

@@ -4,6 +4,7 @@
   "hardware_verified": false,
   "coverage": [
     "link_timeout",
+    "all_30_sync_frames_exact_under_partial_writes",
     "config_crc",
     "reliable_delivery",
     "duplicate",
