@@ -39,7 +39,7 @@ static HAL_StatusTypeDef WriteModelCommand(QSPI_HandleTypeDef *handle, QSPI_Comm
             s_wren++;
             if (s_scenario == 19U)
                 return HAL_ERROR;
-            s_wel = s_scenario != 5U;
+            s_wel = s_scenario != 5U && s_scenario != 45U;
             break;
         case 0x20U:
             s_mutations++;
@@ -91,6 +91,8 @@ static HAL_StatusTypeDef WriteModelReceive(QSPI_HandleTypeDef *handle, uint8_t *
     handle->RxXferCount = 0U;
     if (s_opcode == 0x05U)
     {
+        if (s_scenario == 46U && s_mutations != 0U)
+            return HAL_ERROR;
         data[0] = (uint8_t)(s_sr1 | (s_wel << 1U));
         if (s_busy_polls != 0U)
         {
@@ -116,6 +118,8 @@ static HAL_StatusTypeDef WriteModelReceive(QSPI_HandleTypeDef *handle, uint8_t *
             s_verified_until = s_address + s_bytes;
             if (s_scenario == 9U)
                 data[s_bytes - 1U] ^= 1U;
+            if (s_scenario == 47U)
+                QUADSPI->CR ^= QUADSPI_CR_PRESCALER;
         }
         if (s_scenario == 20U && s_wren == 0U)
             s_tick += 3000U;
@@ -253,6 +257,20 @@ static int Erase_TestRun(uint32_t id)
         case 43U:
             expected = SYS_ERR_INVALID_STATE;
             CHECK(diag.flash_completion_unknown == 1U && diag.fault == 1U);
+            break;
+        case 45U:
+            expected = SYS_ERR_PROTOCOL;
+            CHECK(s_wren == 1U && s_mutations == 0U && diag.fault == 0U);
+            break;
+        case 46U:
+            expected = SYS_ERR_IO;
+            CHECK(diag.flash_completion_unknown == 1U && diag.fault == 1U &&
+                diag.stage == BSP_QSPI_WRITE_BUSY && diag.hal_status == HAL_ERROR);
+            break;
+        case 47U:
+            expected = SYS_ERR_INVALID_STATE;
+            CHECK(diag.flash_completion_unknown == 0U && diag.fault == 1U &&
+                diag.stage == BSP_QSPI_WRITE_VERIFY && diag.completed == 0U);
             break;
         default:
             expected = SYS_OK;

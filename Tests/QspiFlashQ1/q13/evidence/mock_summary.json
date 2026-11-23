@@ -1,0 +1,38 @@
+{
+  "q11": {
+    "cases": 51,
+    "passed": 51,
+    "assertions": 992,
+    "source_sha256": "6ce0a50e72aaa5ce6528e9fdd1f4dd0f7010e6de2c8e89796ea887fcdef5012c"
+  },
+  "q12": {
+    "cases": 516,
+    "passed": 516,
+    "assertions": 285725,
+    "source_sha256": "6ce0a50e72aaa5ce6528e9fdd1f4dd0f7010e6de2c8e89796ea887fcdef5012c"
+  },
+  "sfdp": {
+    "cases": 6,
+    "passed": 6,
+    "assertions": 600,
+    "source_sha256": "6ce0a50e72aaa5ce6528e9fdd1f4dd0f7010e6de2c8e89796ea887fcdef5012c"
+  },
+  "quad30": {
+    "cases": 11,
+    "passed": 11,
+    "assertions": 1466,
+    "source_sha256": "6ce0a50e72aaa5ce6528e9fdd1f4dd0f7010e6de2c8e89796ea887fcdef5012c"
+  },
+  "quad120": {
+    "cases": 11,
+    "passed": 11,
+    "assertions": 1466,
+    "source_sha256": "6ce0a50e72aaa5ce6528e9fdd1f4dd0f7010e6de2c8e89796ea887fcdef5012c"
+  },
+  "write": {
+    "cases": 48,
+    "passed": 48,
+    "assertions": 25971,
+    "source_sha256": "6ce0a50e72aaa5ce6528e9fdd1f4dd0f7010e6de2c8e89796ea887fcdef5012c"
+  }
+}

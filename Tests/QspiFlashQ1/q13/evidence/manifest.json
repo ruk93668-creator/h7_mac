@@ -1,0 +1,21 @@
+{
+  "build/h7_mac_CM4.log": "4a64738e2cebd3446c14dfe1ffb275cd8cb9ecaacda1a94f3d17af320b738d89",
+  "build/h7_mac_CM7.log": "498d9fedb7852ed2aa9335ac4b787d666e74cc1114e1eb154a22b0de2259c653",
+  "build/results.json": "e07fe4954a39950c39e8fb524d9b6e90de042eb374031b246b0e0d4975fed0ed",
+  "hal_gate/commands.json": "04272944f13b496677f59a0c2b458e0432e6d52dd3cc5950982e0e8237aa0c37",
+  "hal_gate/link_map.log": "01e91c63fc850ca1a0e4cff8d63b7424a7dfe9391788f708c4bb5f492ee4f23c",
+  "hal_gate/results.json": "6346c6abfc15e43cda1da7e047935c5cb3d9c0374c285ec931e1730c0ffa9c6b",
+  "mock_summary.json": "4dd1cea1c1b07387fc827fb2da18ebfb70a194f70dc6a5291069663fd2398d1c",
+  "regression/baseline_DcmiReplaceTarget.log": "c741394a137915ba897fcd2763321a4dc0ac70c03fc2abd99655023e5de38f5d",
+  "regression/baseline_SdramRange.log": "ab781d3c0d1d47fd44224b822a9bcdf398869d8b4bffdc9c79a7b25a56ac4eaa",
+  "regression/baseline_UsbUvcDescriptors.log": "7e0f856b75e93d3efc0f730d7495584a69d7384964462815a799c04e4495a003",
+  "regression/comparison.json": "a986266e3932e6b0f2128d3d46332a8ed619d2270aa824a505427356e6947fba",
+  "regression/current_DcmiReplaceTarget.log": "f6852043032538060ea1d39d5d7d2e3a63c9b6a0fea4efbbec0061975c204f2d",
+  "regression/current_SdramRange.log": "c7a5b409e1084c13b9d1fb370168a429d7fe993bb0471ea4e5c0826c4064d109",
+  "regression/current_UsbUvcDescriptors.log": "05a261fdc1510f45866d4c9096fcc648b9baafdade64521c44de63eb59b3c23e",
+  "regression/results.json": "c21ca7169f2e49c51469b49cbdcef675ddfc19376f759de82d5c5e95757fe185",
+  "scope.json": "2e9eddcab783d72a27d78a35cc4803f4ea2bf5c725c82a648088f5448a0e9284",
+  "write/commands.json": "2024ea0bb408420a352e90d6f18287e8aa395ecdb3204bc96f0c82b672508cfc",
+  "write/results.json": "e83b60efff3ef42fbb6d7c4f10fe94bfdf217aea12614241ec1de14aa191f25a",
+  "write/run.log": "3d19a2642ac9b0980f4ce7ce9c3021dc42c2f135aab6ebd09dcfcf08ef577adb"
+}

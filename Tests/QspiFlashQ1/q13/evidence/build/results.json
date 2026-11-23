@@ -1,0 +1,50 @@
+{
+  "baseline": "b5c79ecb14956cd04dc2823c34273ca2be70d4da",
+  "source": "7b36cbeb8228a444e379e3c261abd3addcdaeddf",
+  "original_project_sha256": "196c82e397aebc902a8be3aa9ec1ae6b714225b44c97f1b846a033c62800d211",
+  "build_project_sha256": "e2076deead6be41af1119cd632d1d90bf9a177aa0dd115dd89d90c7a794ac7bf",
+  "builds": [
+    {
+      "target": "h7_mac_CM7",
+      "errors": 0,
+      "warnings": 0,
+      "sizes": [
+        144334,
+        3226,
+        1368,
+        113384
+      ],
+      "stack_bytes": 1344,
+      "write_symbols": [],
+      "loads": [
+        [
+          "0x8000000",
+          "0x80241dc"
+        ]
+      ],
+      "axf_sha256": "76f86ae7f57dbb52201fe93f76e8fca38314ed732569f9ce21c8cabcbb75ddec",
+      "log_sha256": "498d9fedb7852ed2aa9335ac4b787d666e74cc1114e1eb154a22b0de2259c653"
+    },
+    {
+      "target": "h7_mac_CM4",
+      "errors": 0,
+      "warnings": 0,
+      "sizes": [
+        26302,
+        1438,
+        936,
+        3576
+      ],
+      "stack_bytes": 432,
+      "write_symbols": [],
+      "loads": [
+        [
+          "0x8100000",
+          "0x8106c88"
+        ]
+      ],
+      "axf_sha256": "abc0ee529a4fa6225b4ffb94e9234d994873fe9b058a36143e86ba045e938d63",
+      "log_sha256": "4a64738e2cebd3446c14dfe1ffb275cd8cb9ecaacda1a94f3d17af320b738d89"
+    }
+  ]
+}

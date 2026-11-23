@@ -1,0 +1,18 @@
+{
+  "production": [
+    "CM7/BSP/bsp_qspi.c",
+    "CM7/BSP/bsp_qspi.h"
+  ],
+  "preexisting_read_logic_unchanged": true,
+  "private_policy": {
+    "address": 0,
+    "bytes": 0
+  },
+  "mutation_commands": [
+    "0x02U",
+    "0x06U",
+    "0x20U"
+  ],
+  "no_dynamic_allocation_or_task": true,
+  "hardware_run": false
+}

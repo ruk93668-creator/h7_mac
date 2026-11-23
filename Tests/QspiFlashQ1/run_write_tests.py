@@ -19,7 +19,9 @@ names = ['public policy closed', 'out of capacity', 'size exceeds capacity',
          'erase WPS protection', 'erase busy forever', 'erase command error',
          'erase abort also fails', 'erase verify final byte not FF', 'erase budget too short',
          'final sector erased', 'near maximum erase duration', 'erase across tick wrap',
-         'erase suspended', 'erase WEL stays set', 'erase BP protection']
+         'erase suspended', 'erase WEL stays set', 'erase BP protection',
+         'erase WEL not set', 'erase status receive fails after command',
+         'erase verify detects controller drift']
 start = source.index('names = [')
 end = source.index('\nrows = ', start)
 source = source[:start] + 'names = ' + repr(names) + source[end:]
