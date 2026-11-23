@@ -1,0 +1,15 @@
+{
+  "pass": true,
+  "failure_line": 0,
+  "hardware_verified": false,
+  "coverage": [
+    "link_timeout",
+    "config_crc",
+    "reliable_delivery",
+    "duplicate",
+    "bad_crc",
+    "partial_write",
+    "valid_ack",
+    "retry_exhaustion"
+  ]
+}

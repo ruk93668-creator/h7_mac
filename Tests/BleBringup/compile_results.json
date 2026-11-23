@@ -1,0 +1,306 @@
+{
+  "linked": false,
+  "hardware_verified": false,
+  "files": [
+    {
+      "file": "CM7/Platform/bt_hci_h5.c",
+      "exit": 0,
+      "output": ""
+    },
+    {
+      "file": "CM7/Platform/BLE/ble_heap.c",
+      "exit": 0,
+      "output": ""
+    },
+    {
+      "file": "CM7/Platform/BLE/ble_npl.c",
+      "exit": 0,
+      "output": ""
+    },
+    {
+      "file": "Middlewares/Third_Party/NimBLE/nimble/host/src/ble_att.c",
+      "exit": 0,
+      "output": ""
+    },
+    {
+      "file": "Middlewares/Third_Party/NimBLE/nimble/host/src/ble_att_clt.c",
+      "exit": 0,
+      "output": "\"D:\\32\\STM32H7\\h7_mac_ble\\Middlewares\\Third_Party\\NimBLE\\nimble\\host\\src\\ble_att_clt.c\", line 165: Warning:  #111-D: statement is unreachable\r\n      if (start_handle == 0 || start_handle > end_handle) {\r\n      ^\r\n\"D:\\32\\STM32H7\\h7_mac_ble\\Middlewares\\Third_Party\\NimBLE\\nimble\\host\\src\\ble_att_clt.c\", line 242: Warning:  #111-D: statement is unreachable\r\n      rc = ble_hs_mbuf_pullup_base(om, sizeof(*rsp));\r\n      ^\r\n\"D:\\32\\STM32H7\\h7_mac_ble\\Middlewares\\Third_Party\\NimBLE\\nimble\\host\\src\\ble_att_clt.c\", line 291: Warning:  #111-D: statement is unreachable\r\n      if (start_handle == 0 || start_handle > end_handle) {\r\n      ^\r\n\"D:\\32\\STM32H7\\h7_mac_ble\\Middlewares\\Third_Party\\NimBLE\\nimble\\host\\src\\ble_att_clt.c\", line 342: Warning:  #111-D: statement is unreachable\r\n      rc = 0;\r\n      ^\r\n\"D:\\32\\STM32H7\\h7_mac_ble\\Middlewares\\Third_Party\\NimBLE\\nimble\\host\\src\\ble_att_clt.c\", line 373: Warning:  #111-D: statement is unreachable\r\n      if (start_handle == 0 || start_handle > end_handle) {\r\n      ^\r\n\"D:\\32\\STM32H7\\h7_mac_ble\\Middlewares\\Third_Party\\NimBLE\\nimble\\host\\src\\ble_att_clt.c\", line 404: Warning:  #111-D: statement is unreachable\r\n      rc = ble_hs_mbuf_pullup_base(rxom, sizeof(*rsp));\r\n      ^\r\n\"D:\\32\\STM32H7\\h7_mac_ble\\Middlewares\\Third_Party\\NimBLE\\nimble\\host\\src\\ble_att_clt.c\", line 460: Warning:  #111-D: statement is unreachable\r\n      if (handle == 0) {\r\n      ^\r\n\"D:\\32\\STM32H7\\h7_mac_ble\\Middlewares\\Third_Party\\NimBLE\\nimble\\host\\src\\ble_att_clt.c\", line 487: Warning:  #111-D: statement is unreachable\r\n      ble_gattc_rx_read_rsp(conn_handle, cid, 0, rxom);\r\n      ^\r\n\"D:\\32\\STM32H7\\h7_mac_ble\\Middlewares\\Third_Party\\NimBLE\\nimble\\host\\src\\ble_att_clt.c\", line 506: Warning:  #111-D: statement is unreachable\r\n      if (handle == 0) {\r\n      ^\r\n\"D:\\32\\STM32H7\\h7_mac_ble\\Middlewares\\Third_Party\\NimBLE\\nimble\\host\\src\\ble_att_clt.c\", line 534: Warning:  #111-D: statement is unreachable\r\n      ble_gattc_rx_read_blob_rsp(conn_handle, cid, 0, rxom);\r\n      ^\r\n\"D:\\32\\STM32H7\\h7_mac_ble\\Middlewares\\Third_Party\\NimBLE\\nimble\\host\\src\\ble_att_clt.c\", line 554: Warning:  #111-D: statement is unreachable\r\n      if (num_handles < 1) {\r\n      ^\r\n\"D:\\32\\STM32H7\\h7_mac_ble\\Middlewares\\Third_Party\\NimBLE\\nimble\\host\\src\\ble_att_clt.c\", line 582: Warning:  #111-D: statement is unreachable\r\n      ble_gattc_rx_read_mult_rsp(conn_handle, cid, 0, rxom, false);\r\n      ^\r\n\"D:\\32\\STM32H7\\h7_mac_ble\\Middlewares\\Third_Party\\NimBLE\\nimble\\host\\src\\ble_att_clt.c\", line 594: Warning:  #111-D: statement is unreachable\r\n      ble_gattc_rx_read_mult_rsp(conn_handle, cid, 0, rxom, true);\r\n      ^\r\n\"D:\\32\\STM32H7\\h7_mac_ble\\Middlewares\\Third_Party\\NimBLE\\nimble\\host\\src\\ble_att_clt.c\", line 614: Warning:  #111-D: statement is unreachable\r\n      if (start_handle == 0 || start_handle > end_handle) {\r\n      ^\r\n\"D:\\32\\STM32H7\\h7_mac_ble\\Middlewares\\Third_Party\\NimBLE\\nimble\\host\\src\\ble_att_clt.c\", line 667: Warning:  #111-D: statement is unreachable\r\n      rc = ble_hs_mbuf_pullup_base(rxom, sizeof(*rsp));\r\n      ^\r\n\"D:\\32\\STM32H7\\h7_mac_ble\\Middlewares\\Third_Party\\NimBLE\\nimble\\host\\src\\ble_att_clt.c\", line 711: Warning:  #111-D: statement is unreachable\r\n      req = ble_att_cmd_get(BLE_ATT_OP_WRITE_REQ, sizeof(*req), &txom2);\r\n      ^\r\n\"D:\\32\\STM32H7\\h7_mac_ble\\Middlewares\\Third_Party\\NimBLE\\nimble\\host\\src\\ble_att_clt.c\", line 750: Warning:  #111-D: statement is unreachable\r\n      cmd = ble_att_cmd_get(BLE_ATT_OP_WRITE_CMD, sizeof(*cmd), &txom2);\r\n      ^\r\n\"D:\\32\\STM32H7\\h7_mac_ble\\Middlewares\\Third_Party\\NimBLE\\nimble\\host\\src\\ble_att_clt.c\", line 770: Warning:  #111-D: statement is unreachable\r\n      ble_gattc_rx_write_rsp(conn_handle, cid);\r\n      ^\r\n\"D:\\32\\STM32H7\\h7_mac_ble\\Middlewares\\Third_Party\\NimBLE\\nimble\\host\\src\\ble_att_clt.c\", line 790: Warning:  #111-D: statement is unreachable\r\n      if (handle == 0) {\r\n      ^\r\n\"D:\\32\\STM32H7\\h7_mac_ble\\Middlewares\\Third_Party\\NimBLE\\nimble\\host\\src\\ble_att_clt.c\", line 835: Warning:  #111-D: statement is unreachable\r\n      handle = 0;\r\n      ^\r\n\"D:\\32\\STM32H7\\h7_mac_ble\\Middlewares\\Third_Party\\NimBLE\\nimble\\host\\src\\ble_att_clt.c\", line 872: Warning:  #111-D: statement is unreachable\r\n      req = ble_att_cmd_get(BLE_ATT_OP_EXEC_WRITE_REQ, sizeof(*req), &txom);\r\n      ^\r\n\"D:\\32\\STM32H7\\h7_mac_ble\\Middlewares\\Third_Party\\NimBLE\\nimble\\host\\src\\ble_att_clt.c\", line 894: Warning:  #111-D: statement is unreachable\r\n      ble_gattc_rx_exec_write_rsp(conn_handle, cid, 0);\r\n      ^\r\n\"D:\\32\\STM32H7\\h7_mac_ble\\Middlewares\\Third_Party\\NimBLE\\nimble\\host\\src\\ble_att_clt.c\", line 1005: Warning:  #111-D: statement is unreachable\r\n      if (ble_att_cmd_get(BLE_ATT_OP_NOTIFY_MULTI_REQ, 0, &txom2) == NULL) {\r\n      ^\r\nD:\\32\\STM32H7\\h7_mac_ble\\Middlewares\\Third_Party\\NimBLE\\nimble\\host\\src\\ble_att_clt.c: 23 warnings, 0 errors\r\n"
+    },
+    {
+      "file": "Middlewares/Third_Party/NimBLE/nimble/host/src/ble_att_cmd.c",
+      "exit": 0,
+      "output": ""
+    },
+    {
+      "file": "Middlewares/Third_Party/NimBLE/nimble/host/src/ble_att_svr.c",
+      "exit": 0,
+      "output": "\"D:\\32\\STM32H7\\h7_mac_ble\\Middlewares\\Third_Party\\NimBLE\\nimble\\host\\src\\ble_att_svr.c\", line 1748: Warning:  #111-D: statement is unreachable\r\n      txom = NULL;\r\n      ^\r\n\"D:\\32\\STM32H7\\h7_mac_ble\\Middlewares\\Third_Party\\NimBLE\\nimble\\host\\src\\ble_att_svr.c\", line 2644: Warning:  #185-D: dynamic initialization in unreachable code\r\n      int rc = 0;\r\n          ^\r\nD:\\32\\STM32H7\\h7_mac_ble\\Middlewares\\Third_Party\\NimBLE\\nimble\\host\\src\\ble_att_svr.c: 2 warnings, 0 errors\r\n"
+    },
+    {
+      "file": "Middlewares/Third_Party/NimBLE/nimble/host/src/ble_cs.c",
+      "exit": 0,
+      "output": ""
+    },
+    {
+      "file": "Middlewares/Third_Party/NimBLE/nimble/host/src/ble_dtm.c",
+      "exit": 0,
+      "output": ""
+    },
+    {
+      "file": "Middlewares/Third_Party/NimBLE/nimble/host/src/ble_eatt.c",
+      "exit": 0,
+      "output": ""
+    },
+    {
+      "file": "Middlewares/Third_Party/NimBLE/nimble/host/src/ble_eddystone.c",
+      "exit": 0,
+      "output": ""
+    },
+    {
+      "file": "Middlewares/Third_Party/NimBLE/nimble/host/src/ble_gap.c",
+      "exit": 0,
+      "output": ""
+    },
+    {
+      "file": "Middlewares/Third_Party/NimBLE/nimble/host/src/ble_gattc.c",
+      "exit": 0,
+      "output": "\"D:\\32\\STM32H7\\h7_mac_ble\\Middlewares\\Third_Party\\NimBLE\\nimble\\host\\src\\ble_gattc.c\", line 1602: Warning:  #111-D: statement is unreachable\r\n      proc = ble_gattc_proc_alloc();\r\n      ^\r\n\"D:\\32\\STM32H7\\h7_mac_ble\\Middlewares\\Third_Party\\NimBLE\\nimble\\host\\src\\ble_gattc.c\", line 1815: Warning:  #111-D: statement is unreachable\r\n      proc = ble_gattc_proc_alloc();\r\n      ^\r\n\"D:\\32\\STM32H7\\h7_mac_ble\\Middlewares\\Third_Party\\NimBLE\\nimble\\host\\src\\ble_gattc.c\", line 2131: Warning:  #111-D: statement is unreachable\r\n      proc = ble_gattc_proc_alloc();\r\n      ^\r\n\"D:\\32\\STM32H7\\h7_mac_ble\\Middlewares\\Third_Party\\NimBLE\\nimble\\host\\src\\ble_gattc.c\", line 2364: Warning:  #111-D: statement is unreachable\r\n      proc = ble_gattc_proc_alloc();\r\n      ^\r\n\"D:\\32\\STM32H7\\h7_mac_ble\\Middlewares\\Third_Party\\NimBLE\\nimble\\host\\src\\ble_gattc.c\", line 2603: Warning:  #111-D: statement is unreachable\r\n      proc = ble_gattc_proc_alloc();\r\n      ^\r\n\"D:\\32\\STM32H7\\h7_mac_ble\\Middlewares\\Third_Party\\NimBLE\\nimble\\host\\src\\ble_gattc.c\", line 2813: Warning:  #111-D: statement is unreachable\r\n      proc = ble_gattc_proc_alloc();\r\n      ^\r\n\"D:\\32\\STM32H7\\h7_mac_ble\\Middlewares\\Third_Party\\NimBLE\\nimble\\host\\src\\ble_gattc.c\", line 2951: Warning:  #111-D: statement is unreachable\r\n      proc = ble_gattc_proc_alloc();\r\n      ^\r\n\"D:\\32\\STM32H7\\h7_mac_ble\\Middlewares\\Third_Party\\NimBLE\\nimble\\host\\src\\ble_gattc.c\", line 3113: Warning:  #111-D: statement is unreachable\r\n      proc = ble_gattc_proc_alloc();\r\n      ^\r\n\"D:\\32\\STM32H7\\h7_mac_ble\\Middlewares\\Third_Party\\NimBLE\\nimble\\host\\src\\ble_gattc.c\", line 3309: Warning:  #111-D: statement is unreachable\r\n      proc = ble_gattc_proc_alloc();\r\n      ^\r\n\"D:\\32\\STM32H7\\h7_mac_ble\\Middlewares\\Third_Party\\NimBLE\\nimble\\host\\src\\ble_gattc.c\", line 3519: Warning:  #111-D: statement is unreachable\r\n      proc = NULL;\r\n      ^\r\n\"D:\\32\\STM32H7\\h7_mac_ble\\Middlewares\\Third_Party\\NimBLE\\nimble\\host\\src\\ble_gattc.c\", line 3601: Warning:  #111-D: statement is unreachable\r\n      ble_gattc_log_write(attr_handle, OS_MBUF_PKTLEN(txom), 0);\r\n      ^\r\n\"D:\\32\\STM32H7\\h7_mac_ble\\Middlewares\\Third_Party\\NimBLE\\nimble\\host\\src\\ble_gattc.c\", line 3705: Warning:  #111-D: statement is unreachable\r\n      proc = ble_gattc_proc_alloc();\r\n      ^\r\n\"D:\\32\\STM32H7\\h7_mac_ble\\Middlewares\\Third_Party\\NimBLE\\nimble\\host\\src\\ble_gattc.c\", line 4019: Warning:  #111-D: statement is unreachable\r\n      proc = ble_gattc_proc_alloc();\r\n      ^\r\n\"D:\\32\\STM32H7\\h7_mac_ble\\Middlewares\\Third_Party\\NimBLE\\nimble\\host\\src\\ble_gattc.c\", line 4293: Warning:  #111-D: statement is unreachable\r\n      proc = NULL;\r\n      ^\r\n\"D:\\32\\STM32H7\\h7_mac_ble\\Middlewares\\Third_Party\\NimBLE\\nimble\\host\\src\\ble_gattc.c\", line 4433: Warning:  #185-D: dynamic initialization in unreachable code\r\n      int i = 0;\r\n          ^\r\n\"D:\\32\\STM32H7\\h7_mac_ble\\Middlewares\\Third_Party\\NimBLE\\nimble\\host\\src\\ble_gattc.c\", line 4527: Warning:  #111-D: statement is unreachable\r\n      BLE_HS_LOG_DEBUG(\"conn_handle %d\\n\", conn_handle);\r\n      ^\r\n\"D:\\32\\STM32H7\\h7_mac_ble\\Middlewares\\Third_Party\\NimBLE\\nimble\\host\\src\\ble_gattc.c\", line 4799: Warning:  #111-D: statement is unreachable\r\n      proc = ble_gattc_extract_first_by_conn_cid_op(conn_handle, cid,\r\n      ^\r\n\"D:\\32\\STM32H7\\h7_mac_ble\\Middlewares\\Third_Party\\NimBLE\\nimble\\host\\src\\ble_gattc.c\", line 4821: Warning:  #111-D: statement is unreachable\r\n      proc = ble_gattc_extract_first_by_conn_cid_op(conn_handle, cid,\r\n      ^\r\n\"D:\\32\\STM32H7\\h7_mac_ble\\Middlewares\\Third_Party\\NimBLE\\nimble\\host\\src\\ble_gattc.c\", line 4844: Warning:  #111-D: statement is unreachable\r\n      proc = ble_gattc_extract_first_by_conn_cid_op(conn_handle, cid,\r\n      ^\r\n\"D:\\32\\STM32H7\\h7_mac_ble\\Middlewares\\Third_Party\\NimBLE\\nimble\\host\\src\\ble_gattc.c\", line 4866: Warning:  #111-D: statement is unreachable\r\n      proc = ble_gattc_extract_first_by_conn_cid_op(conn_handle, cid,\r\n      ^\r\n\"D:\\32\\STM32H7\\h7_mac_ble\\Middlewares\\Third_Party\\NimBLE\\nimble\\host\\src\\ble_gattc.c\", line 4890: Warning:  #111-D: statement is unreachable\r\n      proc = BLE_GATTC_RX_EXTRACT_RX_ENTRY(conn_handle, cid,\r\n      ^\r\n\"D:\\32\\STM32H7\\h7_mac_ble\\Middlewares\\Third_Party\\NimBLE\\nimble\\host\\src\\ble_gattc.c\", line 4914: Warning:  #111-D: statement is unreachable\r\n      proc = BLE_GATTC_RX_EXTRACT_RX_ENTRY(\r\n      ^\r\n\"D:\\32\\STM32H7\\h7_mac_ble\\Middlewares\\Third_Party\\NimBLE\\nimble\\host\\src\\ble_gattc.c\", line 4938: Warning:  #111-D: statement is unreachable\r\n      proc = ble_gattc_extract_first_by_conn_cid_op(conn_handle, cid,\r\n      ^\r\n\"D:\\32\\STM32H7\\h7_mac_ble\\Middlewares\\Third_Party\\NimBLE\\nimble\\host\\src\\ble_gattc.c\", line 4960: Warning:  #111-D: statement is unreachable\r\n      proc = ble_gattc_extract_first_by_conn_cid_op(conn_handle, cid,\r\n      ^\r\n\"D:\\32\\STM32H7\\h7_mac_ble\\Middlewares\\Third_Party\\NimBLE\\nimble\\host\\src\\ble_gattc.c\", line 4983: Warning:  #111-D: statement is unreachable\r\n      proc = BLE_GATTC_RX_EXTRACT_RX_ENTRY(conn_handle, cid,\r\n      ^\r\n\"D:\\32\\STM32H7\\h7_mac_ble\\Middlewares\\Third_Party\\NimBLE\\nimble\\host\\src\\ble_gattc.c\", line 5007: Warning:  #111-D: statement is unreachable\r\n      proc = ble_gattc_extract_first_by_conn_cid_op(conn_handle, cid,\r\n      ^\r\n\"D:\\32\\STM32H7\\h7_mac_ble\\Middlewares\\Third_Party\\NimBLE\\nimble\\host\\src\\ble_gattc.c\", line 5030: Warning:  #111-D: statement is unreachable\r\n      op = variable ? BLE_GATT_OP_READ_MULT_VAR : BLE_GATT_OP_READ_MULT;\r\n      ^\r\n\"D:\\32\\STM32H7\\h7_mac_ble\\Middlewares\\Third_Party\\NimBLE\\nimble\\host\\src\\ble_gattc.c\", line 5052: Warning:  #111-D: statement is unreachable\r\n      proc = ble_gattc_extract_first_by_conn_cid_op(conn_handle, cid,\r\n      ^\r\n\"D:\\32\\STM32H7\\h7_mac_ble\\Middlewares\\Third_Party\\NimBLE\\nimble\\host\\src\\ble_gattc.c\", line 5077: Warning:  #111-D: statement is unreachable\r\n      proc = BLE_GATTC_RX_EXTRACT_RX_ENTRY(conn_handle, cid,\r\n      ^\r\n\"D:\\32\\STM32H7\\h7_mac_ble\\Middlewares\\Third_Party\\NimBLE\\nimble\\host\\src\\ble_gattc.c\", line 5101: Warning:  #111-D: statement is unreachable\r\n      proc = BLE_GATTC_RX_EXTRACT_RX_ENTRY(conn_handle, cid,\r\n      ^\r\nD:\\32\\STM32H7\\h7_mac_ble\\Middlewares\\Third_Party\\NimBLE\\nimble\\host\\src\\ble_gattc.c: 30 warnings, 0 errors\r\n"
+    },
+    {
+      "file": "Middlewares/Third_Party/NimBLE/nimble/host/src/ble_gatts.c",
+      "exit": 0,
+      "output": ""
+    },
+    {
+      "file": "Middlewares/Third_Party/NimBLE/nimble/host/src/ble_hs.c",
+      "exit": 0,
+      "output": ""
+    },
+    {
+      "file": "Middlewares/Third_Party/NimBLE/nimble/host/src/ble_hs_adv.c",
+      "exit": 0,
+      "output": ""
+    },
+    {
+      "file": "Middlewares/Third_Party/NimBLE/nimble/host/src/ble_hs_atomic.c",
+      "exit": 0,
+      "output": ""
+    },
+    {
+      "file": "Middlewares/Third_Party/NimBLE/nimble/host/src/ble_hs_cfg.c",
+      "exit": 0,
+      "output": ""
+    },
+    {
+      "file": "Middlewares/Third_Party/NimBLE/nimble/host/src/ble_hs_conn.c",
+      "exit": 0,
+      "output": ""
+    },
+    {
+      "file": "Middlewares/Third_Party/NimBLE/nimble/host/src/ble_hs_flow.c",
+      "exit": 0,
+      "output": ""
+    },
+    {
+      "file": "Middlewares/Third_Party/NimBLE/nimble/host/src/ble_hs_hci.c",
+      "exit": 0,
+      "output": "\"D:\\32\\STM32H7\\h7_mac_ble\\Middlewares\\Third_Party\\NimBLE\\nimble\\host\\src\\ble_hs_hci.c\", line 34: Warning:  #550-D: variable \"ble_hs_hci_max_pkts\"  was set but never used\r\n  static uint8_t ble_hs_hci_max_pkts;\r\n                 ^\r\nD:\\32\\STM32H7\\h7_mac_ble\\Middlewares\\Third_Party\\NimBLE\\nimble\\host\\src\\ble_hs_hci.c: 1 warning, 0 errors\r\n"
+    },
+    {
+      "file": "Middlewares/Third_Party/NimBLE/nimble/host/src/ble_hs_hci_cmd.c",
+      "exit": 0,
+      "output": ""
+    },
+    {
+      "file": "Middlewares/Third_Party/NimBLE/nimble/host/src/ble_hs_hci_evt.c",
+      "exit": 0,
+      "output": "\"D:\\32\\STM32H7\\h7_mac_ble\\Middlewares\\Third_Party\\NimBLE\\nimble\\host\\src\\ble_hs_hci_evt.c\", line 471: Warning:  #1254-D: arithmetic on pointer to void or function type\r\n      data += sizeof(*ev);\r\n           ^\r\n\"D:\\32\\STM32H7\\h7_mac_ble\\Middlewares\\Third_Party\\NimBLE\\nimble\\host\\src\\ble_hs_hci_evt.c\", line 492: Warning:  #1254-D: arithmetic on pointer to void or function type\r\n          data += sizeof(*rpt) + 1 + rpt->data_len;\r\n               ^\r\n\"D:\\32\\STM32H7\\h7_mac_ble\\Middlewares\\Third_Party\\NimBLE\\nimble\\host\\src\\ble_hs_hci_evt.c\", line 518: Warning:  #1254-D: arithmetic on pointer to void or function type\r\n      data += sizeof(*ev);\r\n           ^\r\n\"D:\\32\\STM32H7\\h7_mac_ble\\Middlewares\\Third_Party\\NimBLE\\nimble\\host\\src\\ble_hs_hci_evt.c\", line 525: Warning:  #1254-D: arithmetic on pointer to void or function type\r\n          data += sizeof(rpt) + rpt->data_len + 1;\r\n               ^\r\nD:\\32\\STM32H7\\h7_mac_ble\\Middlewares\\Third_Party\\NimBLE\\nimble\\host\\src\\ble_hs_hci_evt.c: 4 warnings, 0 errors\r\n"
+    },
+    {
+      "file": "Middlewares/Third_Party/NimBLE/nimble/host/src/ble_hs_hci_util.c",
+      "exit": 0,
+      "output": ""
+    },
+    {
+      "file": "Middlewares/Third_Party/NimBLE/nimble/host/src/ble_hs_id.c",
+      "exit": 0,
+      "output": ""
+    },
+    {
+      "file": "Middlewares/Third_Party/NimBLE/nimble/host/src/ble_hs_log.c",
+      "exit": 0,
+      "output": ""
+    },
+    {
+      "file": "Middlewares/Third_Party/NimBLE/nimble/host/src/ble_hs_mbuf.c",
+      "exit": 0,
+      "output": ""
+    },
+    {
+      "file": "Middlewares/Third_Party/NimBLE/nimble/host/src/ble_hs_misc.c",
+      "exit": 0,
+      "output": ""
+    },
+    {
+      "file": "Middlewares/Third_Party/NimBLE/nimble/host/src/ble_hs_mqueue.c",
+      "exit": 0,
+      "output": ""
+    },
+    {
+      "file": "Middlewares/Third_Party/NimBLE/nimble/host/src/ble_hs_periodic_sync.c",
+      "exit": 0,
+      "output": ""
+    },
+    {
+      "file": "Middlewares/Third_Party/NimBLE/nimble/host/src/ble_hs_pvcy.c",
+      "exit": 0,
+      "output": ""
+    },
+    {
+      "file": "Middlewares/Third_Party/NimBLE/nimble/host/src/ble_hs_shutdown.c",
+      "exit": 0,
+      "output": ""
+    },
+    {
+      "file": "Middlewares/Third_Party/NimBLE/nimble/host/src/ble_hs_startup.c",
+      "exit": 0,
+      "output": ""
+    },
+    {
+      "file": "Middlewares/Third_Party/NimBLE/nimble/host/src/ble_hs_stop.c",
+      "exit": 0,
+      "output": ""
+    },
+    {
+      "file": "Middlewares/Third_Party/NimBLE/nimble/host/src/ble_ibeacon.c",
+      "exit": 0,
+      "output": ""
+    },
+    {
+      "file": "Middlewares/Third_Party/NimBLE/nimble/host/src/ble_iso.c",
+      "exit": 0,
+      "output": ""
+    },
+    {
+      "file": "Middlewares/Third_Party/NimBLE/nimble/host/src/ble_l2cap.c",
+      "exit": 0,
+      "output": ""
+    },
+    {
+      "file": "Middlewares/Third_Party/NimBLE/nimble/host/src/ble_l2cap_coc.c",
+      "exit": 0,
+      "output": ""
+    },
+    {
+      "file": "Middlewares/Third_Party/NimBLE/nimble/host/src/ble_l2cap_sig.c",
+      "exit": 0,
+      "output": ""
+    },
+    {
+      "file": "Middlewares/Third_Party/NimBLE/nimble/host/src/ble_l2cap_sig_cmd.c",
+      "exit": 0,
+      "output": ""
+    },
+    {
+      "file": "Middlewares/Third_Party/NimBLE/nimble/host/src/ble_sm.c",
+      "exit": 0,
+      "output": ""
+    },
+    {
+      "file": "Middlewares/Third_Party/NimBLE/nimble/host/src/ble_sm_alg.c",
+      "exit": 0,
+      "output": ""
+    },
+    {
+      "file": "Middlewares/Third_Party/NimBLE/nimble/host/src/ble_sm_cmd.c",
+      "exit": 0,
+      "output": ""
+    },
+    {
+      "file": "Middlewares/Third_Party/NimBLE/nimble/host/src/ble_sm_lgcy.c",
+      "exit": 0,
+      "output": ""
+    },
+    {
+      "file": "Middlewares/Third_Party/NimBLE/nimble/host/src/ble_sm_sc.c",
+      "exit": 0,
+      "output": ""
+    },
+    {
+      "file": "Middlewares/Third_Party/NimBLE/nimble/host/src/ble_store.c",
+      "exit": 0,
+      "output": ""
+    },
+    {
+      "file": "Middlewares/Third_Party/NimBLE/nimble/host/src/ble_store_util.c",
+      "exit": 0,
+      "output": ""
+    },
+    {
+      "file": "Middlewares/Third_Party/NimBLE/nimble/host/src/ble_uuid.c",
+      "exit": 0,
+      "output": "\"D:\\32\\STM32H7\\h7_mac_ble\\Middlewares\\Third_Party\\NimBLE\\nimble\\host\\src\\ble_uuid.c\", line 391: Warning:  #1254-D: arithmetic on pointer to void or function type\r\n          put_le32(dst + 12, BLE_UUID32(uuid)->value);\r\n                       ^\r\nD:\\32\\STM32H7\\h7_mac_ble\\Middlewares\\Third_Party\\NimBLE\\nimble\\host\\src\\ble_uuid.c: 1 warning, 0 errors\r\n"
+    },
+    {
+      "file": "Middlewares/Third_Party/NimBLE/nimble/host/util/src/addr.c",
+      "exit": 0,
+      "output": ""
+    },
+    {
+      "file": "Middlewares/Third_Party/NimBLE/nimble/transport/src/monitor.c",
+      "exit": 0,
+      "output": ""
+    },
+    {
+      "file": "Middlewares/Third_Party/NimBLE/nimble/transport/src/rx_task.c",
+      "exit": 0,
+      "output": "\"D:\\32\\STM32H7\\h7_mac_ble\\Middlewares\\Third_Party\\NimBLE\\nimble\\transport\\src\\rx_task.c\", line 49: Warning:  #177-D: function \"rx_task_func\"  was declared but never referenced\r\n  rx_task_func(void *arg)\r\n  ^\r\nD:\\32\\STM32H7\\h7_mac_ble\\Middlewares\\Third_Party\\NimBLE\\nimble\\transport\\src\\rx_task.c: 1 warning, 0 errors\r\n"
+    },
+    {
+      "file": "Middlewares/Third_Party/NimBLE/nimble/transport/src/transport.c",
+      "exit": 0,
+      "output": "\"D:\\32\\STM32H7\\h7_mac_ble\\Middlewares\\Third_Party\\NimBLE\\nimble\\transport\\src\\transport.c\", line 289: Warning:  #188-D: enumerated type mixed with another type\r\n      err = 0;\r\n          ^\r\nD:\\32\\STM32H7\\h7_mac_ble\\Middlewares\\Third_Party\\NimBLE\\nimble\\transport\\src\\transport.c: 1 warning, 0 errors\r\n"
+    },
+    {
+      "file": "Middlewares/Third_Party/NimBLE/porting/nimble/src/endian.c",
+      "exit": 0,
+      "output": ""
+    },
+    {
+      "file": "Middlewares/Third_Party/NimBLE/porting/nimble/src/mem.c",
+      "exit": 0,
+      "output": "\"D:\\32\\STM32H7\\h7_mac_ble\\Middlewares\\Third_Party\\NimBLE\\porting\\nimble\\src\\mem.c\", line 324: Warning:  #1-D: last line of file ends without a newline\r\n  }\r\n   ^\r\nD:\\32\\STM32H7\\h7_mac_ble\\Middlewares\\Third_Party\\NimBLE\\porting\\nimble\\src\\mem.c: 1 warning, 0 errors\r\n"
+    },
+    {
+      "file": "Middlewares/Third_Party/NimBLE/porting/nimble/src/nimble_port.c",
+      "exit": 0,
+      "output": ""
+    },
+    {
+      "file": "Middlewares/Third_Party/NimBLE/porting/nimble/src/os_mbuf.c",
+      "exit": 0,
+      "output": "\"D:\\32\\STM32H7\\h7_mac_ble\\Middlewares\\Third_Party\\NimBLE\\porting\\nimble\\src\\os_mbuf.c\", line 452: Warning:  #1254-D: arithmetic on pointer to void or function type\r\n          data += space;\r\n               ^\r\n\"D:\\32\\STM32H7\\h7_mac_ble\\Middlewares\\Third_Party\\NimBLE\\porting\\nimble\\src\\os_mbuf.c\", line 467: Warning:  #1254-D: arithmetic on pointer to void or function type\r\n          data += new->om_len;\r\n               ^\r\n\"D:\\32\\STM32H7\\h7_mac_ble\\Middlewares\\Third_Party\\NimBLE\\porting\\nimble\\src\\os_mbuf.c\", line 718: Warning:  #1254-D: arithmetic on pointer to void or function type\r\n              rc = memcmp(om->om_data + om_off, data + data_off, chunk_sz);\r\n                                                     ^\r\n\"D:\\32\\STM32H7\\h7_mac_ble\\Middlewares\\Third_Party\\NimBLE\\porting\\nimble\\src\\os_mbuf.c\", line 1276: Warning:  #1-D: last line of file ends without a newline\r\n  }\r\n   ^\r\nD:\\32\\STM32H7\\h7_mac_ble\\Middlewares\\Third_Party\\NimBLE\\porting\\nimble\\src\\os_mbuf.c: 4 warnings, 0 errors\r\n"
+    },
+    {
+      "file": "Middlewares/Third_Party/NimBLE/porting/nimble/src/os_mempool.c",
+      "exit": 0,
+      "output": "\"D:\\32\\STM32H7\\h7_mac_ble\\Middlewares\\Third_Party\\NimBLE\\porting\\nimble\\src\\os_mempool.c\", line 198: Warning:  #188-D: enumerated type mixed with another type\r\n          return rc;\r\n                 ^\r\n\"D:\\32\\STM32H7\\h7_mac_ble\\Middlewares\\Third_Party\\NimBLE\\porting\\nimble\\src\\os_mempool.c\", line 204: Warning:  #188-D: enumerated type mixed with another type\r\n      return 0;\r\n             ^\r\n\"D:\\32\\STM32H7\\h7_mac_ble\\Middlewares\\Third_Party\\NimBLE\\porting\\nimble\\src\\os_mempool.c\", line 242: Warning:  #188-D: enumerated type mixed with another type\r\n      return 0;\r\n             ^\r\n\"D:\\32\\STM32H7\\h7_mac_ble\\Middlewares\\Third_Party\\NimBLE\\porting\\nimble\\src\\os_mempool.c\", line 310: Warning:  #223-D: function \"static_assert\" declared implicitly\r\n      static_assert(sizeof block_addr == sizeof baddr32,\r\n      ^\r\nD:\\32\\STM32H7\\h7_mac_ble\\Middlewares\\Third_Party\\NimBLE\\porting\\nimble\\src\\os_mempool.c: 4 warnings, 0 errors\r\n"
+    },
+    {
+      "file": "Middlewares/Third_Party/NimBLE/porting/nimble/src/os_msys_init.c",
+      "exit": 0,
+      "output": "\"D:\\32\\STM32H7\\h7_mac_ble\\Middlewares\\Third_Party\\NimBLE\\porting\\nimble\\src\\os_msys_init.c\", line 156: Warning:  #1-D: last line of file ends without a newline\r\n  }\r\n   ^\r\nD:\\32\\STM32H7\\h7_mac_ble\\Middlewares\\Third_Party\\NimBLE\\porting\\nimble\\src\\os_msys_init.c: 1 warning, 0 errors\r\n"
+    },
+    {
+      "file": "Middlewares/Third_Party/NimBLE/nimble/host/services/gap/src/ble_svc_gap.c",
+      "exit": 0,
+      "output": "\"D:\\32\\STM32H7\\h7_mac_ble\\Middlewares\\Third_Party\\NimBLE\\nimble\\host\\services\\gap\\src\\ble_svc_gap.c\", line 38: Warning:  #550-D: variable \"ble_svc_gap_chr_changed_cb_fn\"  was set but never used\r\n  static ble_svc_gap_chr_changed_fn *ble_svc_gap_chr_changed_cb_fn;\r\n                                     ^\r\nD:\\32\\STM32H7\\h7_mac_ble\\Middlewares\\Third_Party\\NimBLE\\nimble\\host\\services\\gap\\src\\ble_svc_gap.c: 1 warning, 0 errors\r\n"
+    },
+    {
+      "file": "Middlewares/Third_Party/NimBLE/nimble/host/services/gatt/src/ble_svc_gatt.c",
+      "exit": 0,
+      "output": ""
+    }
+  ]
+}

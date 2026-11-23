@@ -1,0 +1,5 @@
+{
+  "version": "FreeRTOS-Kernel V10.6.2",
+  "url": "https://raw.githubusercontent.com/FreeRTOS/FreeRTOS-Kernel/V10.6.2/portable/MemMang/heap_4.c",
+  "sha256": "37426078a083b5fe4e76adb76dc6f0f109a10273c3b644dc786e29891cbe1bbc"
+}
