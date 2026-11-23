@@ -151,7 +151,8 @@ typedef struct
     uint32_t fault_stage, fault_latched;
     SysResult_t primary_result, cleanup_result, last_cleanup_result;
     BspQspiCleanupStage_t cleanup_stage, last_cleanup_stage;
-    uint32_t cleanup_attempted, fault_address, fault_opcode, hal_status, hal_error, hal_state;
+    uint32_t cleanup_attempted, cleanup_hal_status, last_cleanup_hal_status;
+    uint32_t fault_address, fault_opcode, hal_status, hal_error, hal_state;
     uint32_t flash_completion_unknown, wren_possible, mutation_possible;
     uint32_t recovery_attempts;
     SysResult_t recovery_result;

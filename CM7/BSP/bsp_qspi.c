@@ -37,8 +37,9 @@ static const QspiWritePolicy_t s_write_policy = {0U, 0U};
 
 static QSPI_HandleTypeDef s_qspi;
 static BspQspiDiagnostics_t s_diag;
-static BspQspiFaultDiagnostics_t s_fault;
+static BspQspiFaultDiagnostics_t s_fault_diag;
 static BspQspiCleanupStage_t s_cleanup_stage;
+static HAL_StatusTypeDef s_cleanup_hal_status;
 static bool s_busy;
 static bool s_owned;
 static bool s_hal_attempted;
@@ -89,34 +90,37 @@ static void Qspi_RecordFault(BspQspiFaultOrigin_t origin, uint32_t stage, SysRes
     //已锁存时保留首错，后续清理和恢复只能更新各自的证据。
     if (s_diag.fault != 0U)
         return;
-    s_fault.fault_origin = origin;
-    s_fault.fault_stage = stage;
-    s_fault.primary_result = result;
-    s_fault.cleanup_result = s_fault.last_cleanup_result = SYS_OK;
-    s_fault.cleanup_stage = s_fault.last_cleanup_stage = BSP_QSPI_CLEANUP_NONE;
-    s_fault.cleanup_attempted = 0U;
-    s_fault.fault_address = address;
-    s_fault.fault_opcode = opcode;
-    s_fault.hal_status = hal_status;
-    s_fault.hal_error = s_qspi.ErrorCode;
-    s_fault.hal_state = s_qspi.State;
-    s_fault.flash_completion_unknown = s_fault.wren_possible = s_fault.mutation_possible = 0U;
-    s_fault.controller_idle_verified = s_fault.flash_idle_verified = 0U;
-    s_fault.recovery_result = SYS_OK;
-    s_fault.recovery_stage = BSP_QSPI_RECOVERY_NONE;
-    s_fault.recovery_elapsed_ms = 0U;
+    s_fault_diag.fault_origin = origin;
+    s_fault_diag.fault_stage = stage;
+    s_fault_diag.primary_result = result;
+    s_fault_diag.cleanup_result = s_fault_diag.last_cleanup_result = SYS_OK;
+    s_fault_diag.cleanup_stage = s_fault_diag.last_cleanup_stage = BSP_QSPI_CLEANUP_NONE;
+    s_fault_diag.cleanup_attempted = 0U;
+    s_fault_diag.cleanup_hal_status = s_fault_diag.last_cleanup_hal_status = HAL_OK;
+    s_fault_diag.fault_address = address;
+    s_fault_diag.fault_opcode = opcode;
+    s_fault_diag.hal_status = hal_status;
+    s_fault_diag.hal_error = s_qspi.ErrorCode;
+    s_fault_diag.hal_state = s_qspi.State;
+    s_fault_diag.flash_completion_unknown = s_fault_diag.wren_possible = s_fault_diag.mutation_possible = 0U;
+    s_fault_diag.controller_idle_verified = s_fault_diag.flash_idle_verified = 0U;
+    s_fault_diag.recovery_result = SYS_OK;
+    s_fault_diag.recovery_stage = BSP_QSPI_RECOVERY_NONE;
+    s_fault_diag.recovery_elapsed_ms = 0U;
 }
 
 static void Qspi_RecordCleanup(SysResult_t result)
 {
-    if (s_fault.cleanup_attempted == 0U)
+    if (s_fault_diag.cleanup_attempted == 0U)
     {
-        s_fault.cleanup_result = result;
-        s_fault.cleanup_stage = s_cleanup_stage;
-        s_fault.cleanup_attempted = 1U;
+        s_fault_diag.cleanup_result = result;
+        s_fault_diag.cleanup_stage = s_cleanup_stage;
+        s_fault_diag.cleanup_hal_status = s_cleanup_hal_status;
+        s_fault_diag.cleanup_attempted = 1U;
     }
-    s_fault.last_cleanup_result = result;
-    s_fault.last_cleanup_stage = s_cleanup_stage;
+    s_fault_diag.last_cleanup_result = result;
+    s_fault_diag.last_cleanup_stage = s_cleanup_stage;
+    s_fault_diag.last_cleanup_hal_status = s_cleanup_hal_status;
 }
 
 static void Qspi_SavePins(GPIO_TypeDef *gpio, QspiPins_t *save)
@@ -237,33 +241,10 @@ static void Qspi_RestorePins(GPIO_TypeDef *gpio, const QspiPins_t *save,
     MODIFY_REG(gpio->AFR[0], af_mask, save->af & af_mask);
 }
 
-static SysResult_t Qspi_Cleanup(void)
+static bool Qspi_PinsRestored(void)
 {
-    HAL_StatusTypeDef status;
-    uint32_t started = HAL_GetTick();
-    if (!s_owned)
-        return SYS_OK;
-    if (!Qspi_ContextValid() || !__HAL_RCC_QSPI_IS_CLK_ENABLED())
-        return SYS_ERR_INVALID_STATE;
-    if (s_hal_attempted)
-    {
-        s_qspi.Timeout = QSPI_IO_TIMEOUT_MS;
-        status = HAL_QSPI_Abort(&s_qspi);
-        if (status != HAL_OK || (QUADSPI->SR & QUADSPI_SR_BUSY) != 0U ||
-            HAL_GetTick() - started > QSPI_IO_TIMEOUT_MS + 1U)
-            return SYS_ERR_IO;
-        status = HAL_QSPI_DeInit(&s_qspi);
-        if (status != HAL_OK || (QUADSPI->CR & QUADSPI_CR_EN) != 0U)
-            return SYS_ERR_IO;
-    }
-    //不关 GPIOF/G 时钟，只归还本模块保存的引脚位和 QSPI mux。
-    Qspi_RestorePins(GPIOF, &s_f, QSPI_F_PINS, QSPI_F_MASK, 0xFF000000UL);
-    MODIFY_REG(GPIOF->AFR[1], 0x00000FFFUL, s_f_af_high & 0x00000FFFUL);
-    Qspi_RestorePins(GPIOG, &s_g, QSPI_G_PINS, QSPI_G_MASK, 0x0F000000UL);
-    __HAL_RCC_QSPI_CONFIG(s_clock_source);
-    __HAL_RCC_QSPI_CLK_DISABLE();
-    if (__HAL_RCC_QSPI_IS_CLK_ENABLED() || __HAL_RCC_GET_QSPI_SOURCE() != s_clock_source ||
-        (GPIOF->MODER & QSPI_F_MASK) != (s_f.mode & QSPI_F_MASK) ||
+    return __HAL_RCC_GPIOF_IS_CLK_ENABLED() && __HAL_RCC_GPIOG_IS_CLK_ENABLED() &&
+        !((GPIOF->MODER & QSPI_F_MASK) != (s_f.mode & QSPI_F_MASK) ||
         (GPIOG->MODER & QSPI_G_MASK) != (s_g.mode & QSPI_G_MASK) ||
         (GPIOF->OTYPER & QSPI_F_PINS) != (s_f.type & QSPI_F_PINS) ||
         (GPIOG->OTYPER & QSPI_G_PINS) != (s_g.type & QSPI_G_PINS) ||
@@ -273,10 +254,77 @@ static SysResult_t Qspi_Cleanup(void)
         (GPIOG->PUPDR & QSPI_G_MASK) != (s_g.pull & QSPI_G_MASK) ||
         (GPIOF->AFR[0] & 0xFF000000UL) != (s_f.af & 0xFF000000UL) ||
         (GPIOF->AFR[1] & 0xFFFUL) != (s_f_af_high & 0xFFFUL) ||
-        (GPIOG->AFR[0] & 0x0F000000UL) != (s_g.af & 0x0F000000UL))
+        (GPIOG->AFR[0] & 0x0F000000UL) != (s_g.af & 0x0F000000UL));
+}
+
+static bool Qspi_ControllerStopped(void)
+{
+    return __HAL_RCC_QSPI_IS_CLK_ENABLED() &&
+        (QUADSPI->SR & QUADSPI_SR_BUSY) == 0U &&
+        (QUADSPI->CR & (QUADSPI_CR_EN | QUADSPI_CR_ABORT | QUADSPI_CR_DMAEN |
+            QUADSPI_CR_TEIE | QUADSPI_CR_TCIE | QUADSPI_CR_FTIE | QUADSPI_CR_SMIE |
+            QUADSPI_CR_TOIE)) == 0U;
+}
+
+static SysResult_t Qspi_Cleanup(void)
+{
+    uint32_t started;
+    s_cleanup_stage = BSP_QSPI_CLEANUP_NONE;
+    s_cleanup_hal_status = HAL_OK;
+    if (!s_owned)
+        return SYS_OK;
+    s_cleanup_stage = BSP_QSPI_CLEANUP_CHECK;
+    s_fault_diag.controller_idle_verified = 0U;
+    if (!Qspi_ContextValid() || !__HAL_RCC_QSPI_IS_CLK_ENABLED() ||
+        (QUADSPI->CR & QUADSPI_CR_DMAEN) != 0U ||
+        (QUADSPI->CCR & QUADSPI_CCR_FMODE_1) != 0U)
+        return SYS_ERR_INVALID_STATE;
+    if (s_hal_attempted)
+    {
+        if (s_qspi.Instance != QUADSPI)
+            return SYS_ERR_INVALID_STATE;
+        s_cleanup_stage = BSP_QSPI_CLEANUP_ABORT;
+        started = HAL_GetTick();
+        s_qspi.Timeout = QSPI_IO_TIMEOUT_MS;
+        //主错误已经保存。Abort 本身不保证清除旧 HAL ErrorCode。
+        s_qspi.ErrorCode = HAL_QSPI_ERROR_NONE;
+        s_cleanup_hal_status = HAL_QSPI_Abort(&s_qspi);
+        if (s_cleanup_hal_status != HAL_OK || s_qspi.ErrorCode != HAL_QSPI_ERROR_NONE ||
+            !Qspi_ContextValid() || !__HAL_RCC_QSPI_IS_CLK_ENABLED() ||
+            (QUADSPI->SR & QUADSPI_SR_BUSY) != 0U ||
+            (QUADSPI->CR & (QUADSPI_CR_ABORT | QUADSPI_CR_DMAEN)) != 0U ||
+            HAL_GetTick() - started > QSPI_IO_TIMEOUT_MS + 1U)
+            return SYS_ERR_IO;
+        s_cleanup_stage = BSP_QSPI_CLEANUP_DEINIT;
+        s_cleanup_hal_status = HAL_QSPI_DeInit(&s_qspi);
+        if (s_cleanup_hal_status != HAL_OK || s_qspi.ErrorCode != HAL_QSPI_ERROR_NONE ||
+            s_qspi.State != HAL_QSPI_STATE_RESET || !Qspi_ControllerStopped() ||
+            HAL_GetTick() - started > QSPI_IO_TIMEOUT_MS + 1U)
+            return SYS_ERR_IO;
+        s_hal_attempted = false;
+    }
+    if (!Qspi_ControllerStopped())
+        return SYS_ERR_IO;
+    s_fault_diag.controller_idle_verified = 1U;
+    //先读回所属引脚和 mux，再关门。部分失败时保留所有权。
+    s_cleanup_stage = BSP_QSPI_CLEANUP_PINS;
+    if (!__HAL_RCC_GPIOF_IS_CLK_ENABLED() || !__HAL_RCC_GPIOG_IS_CLK_ENABLED())
+        return SYS_ERR_INVALID_STATE;
+    Qspi_RestorePins(GPIOF, &s_f, QSPI_F_PINS, QSPI_F_MASK, 0xFF000000UL);
+    MODIFY_REG(GPIOF->AFR[1], 0x00000FFFUL, s_f_af_high & 0x00000FFFUL);
+    Qspi_RestorePins(GPIOG, &s_g, QSPI_G_PINS, QSPI_G_MASK, 0x0F000000UL);
+    if (!Qspi_PinsRestored())
+        return SYS_ERR_IO;
+    s_cleanup_stage = BSP_QSPI_CLEANUP_MUX;
+    __HAL_RCC_QSPI_CONFIG(s_clock_source);
+    if (__HAL_RCC_GET_QSPI_SOURCE() != s_clock_source)
+        return SYS_ERR_IO;
+    s_cleanup_stage = BSP_QSPI_CLEANUP_GATE;
+    __HAL_RCC_QSPI_CLK_DISABLE();
+    if (__HAL_RCC_QSPI_IS_CLK_ENABLED())
         return SYS_ERR_IO;
     s_owned = false;
-    s_hal_attempted = false;
+    s_cleanup_stage = BSP_QSPI_CLEANUP_COMPLETE;
     return SYS_OK;
 }
 
@@ -441,8 +489,10 @@ SysResult_t BSP_QSPI_DeInit(void)
     s_diag.cleanup_elapsed_ms = HAL_GetTick() - started;
     if (result != SYS_OK)
     {
+        uint32_t controller_idle = s_fault_diag.controller_idle_verified;
         Qspi_RecordFault(BSP_QSPI_FAULT_CLEANUP, s_cleanup_stage, result, 0U, 0U,
-            HAL_OK);
+            s_cleanup_hal_status);
+        s_fault_diag.controller_idle_verified = controller_idle;
         s_diag.fault = 1U;
     }
     if (s_diag.fault != 0U)
@@ -489,7 +539,7 @@ SysResult_t BSP_QSPI_GetFaultDiagnostics(BspQspiFaultDiagnostics_t *diagnostics)
         return SYS_ERR_INVALID_STATE;
     if (!Qspi_Take())
         return SYS_ERR_BUSY;
-    *diagnostics = s_fault;
+    *diagnostics = s_fault_diag;
     diagnostics->fault_latched = s_diag.fault;
     Qspi_Give();
     return SYS_OK;
@@ -626,9 +676,7 @@ static SysResult_t Qspi_ReadFinish(SysResult_t result, uint32_t started)
         s_diag.ready = 0U;
         s_diag.fault = 1U;
         cleanup_started = HAL_GetTick();
-        s_diag.read_cleanup_result = !Qspi_ContextValid() ||
-            !__HAL_RCC_QSPI_IS_CLK_ENABLED() || (QUADSPI->CR & QUADSPI_CR_DMAEN) != 0U ?
-            SYS_ERR_INVALID_STATE : Qspi_Cleanup();
+        s_diag.read_cleanup_result = Qspi_Cleanup();
         s_diag.read_cleanup_elapsed_ms = HAL_GetTick() - cleanup_started;
         Qspi_RecordCleanup(s_diag.read_cleanup_result);
     }
@@ -899,9 +947,9 @@ static SysResult_t Qspi_WriteFinish(QspiWrite_t *write, SysResult_t result)
     s_diag = write->saved_read;
     if (diag->completed != 0U)
     {
-        s_fault.confirmed_write_address = diag->address;
-        s_fault.confirmed_write_bytes = diag->completed;
-        s_fault.confirmed_write_opcode = diag->opcode;
+        s_fault_diag.confirmed_write_address = diag->address;
+        s_fault_diag.confirmed_write_bytes = diag->completed;
+        s_fault_diag.confirmed_write_opcode = diag->opcode;
     }
     if (result != SYS_OK)
     {
@@ -915,10 +963,10 @@ static SysResult_t Qspi_WriteFinish(QspiWrite_t *write, SysResult_t result)
             origin = BSP_QSPI_FAULT_WREN;
         Qspi_RecordFault(origin, diag->stage, result, diag->failed_address,
             diag->wire_opcode, diag->hal_status);
-        s_fault.flash_completion_unknown = write->pending;
-        s_fault.wren_possible = write->wren_attempted;
-        s_fault.mutation_possible = write->mutation_attempted;
-        s_fault.flash_idle_verified = write->flash_idle;
+        s_fault_diag.flash_completion_unknown = write->pending;
+        s_fault_diag.wren_possible = write->wren_attempted;
+        s_fault_diag.mutation_possible = write->mutation_attempted;
+        s_fault_diag.flash_idle_verified = write->flash_idle;
     }
     if (write->fault || write->armed || write->pending || s_read_fault)
     {
@@ -927,8 +975,7 @@ static SysResult_t Qspi_WriteFinish(QspiWrite_t *write, SysResult_t result)
         diag->flash_completion_unknown = write->pending;
         cleanup_started = HAL_GetTick();
         //Abort 只清理 MCU 事务。Flash 内部操作可能仍未完成。
-        diag->cleanup_result = !Qspi_ContextValid() || !__HAL_RCC_QSPI_IS_CLK_ENABLED() ||
-            (QUADSPI->CR & QUADSPI_CR_DMAEN) != 0U ? SYS_ERR_INVALID_STATE : Qspi_Cleanup();
+        diag->cleanup_result = Qspi_Cleanup();
         diag->cleanup_elapsed_ms = HAL_GetTick() - cleanup_started;
         Qspi_RecordCleanup(diag->cleanup_result);
     }
