@@ -84,7 +84,7 @@ def main():
         if not smoke_selection:
             scenarios = [*scenarios, *range(70, 75)]
         if not smoke_selection:
-            scenarios = [*scenarios, *range(88, 92)]
+            scenarios = [*scenarios, *range(88, 96)]
         if args.raw_uvc:
             scenarios = range(75, 83)
         for scenario in scenarios:

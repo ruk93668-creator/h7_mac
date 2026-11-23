@@ -1,3 +1,4 @@
+#include "supervisor.h"
 //使用真实 FreeRTOS Queue/List。测试只模拟调度、身份和设备状态。
 #include "app_services.h"
 #include "app_events.h"
@@ -2359,6 +2360,123 @@ static uint32_t Test_Recording(const AppV3Context_t *context, uint32_t scenario)
     return 0U;
 }
 
+//只推进真实Control结果和指定任务本轮，验证依赖顺序及真实终结身份。
+static void Test_SupervisorStep(RuntimeEventTarget_t service)
+{
+    uint32_t consumed;
+
+    owner = RUNTIME_TARGET_CONTROL;
+    AppV3Supervisor_Poll();
+    (void)Test_ServiceStep(service);
+    Test_PollHardware(service);
+    (void)AppV3Business_Drain(&consumed);
+}
+
+static uint32_t Test_Supervisor(const AppV3Context_t *context, uint32_t scenario)
+{
+    AppV3SupervisorStatus_t snapshot;
+    uint32_t pending, i;
+
+    fixture_video.camera.format = CAMERA_PIXEL_FORMAT_JPEG;
+    fixture_storage.segment_bytes = 1024U;
+    fixture_storage.segment_ms = 1000U;
+    CHECK(Test_HardwareBoot(context) == 0U);
+    g_hardware.card_present = true;
+    CHECK(AppV3Supervisor_Set(8U, 0U) == SYS_ERR_NOT_SUPPORTED);
+    CHECK(AppV3Supervisor_Set(APP_V3_PIPE_RECORD, 0U) == SYS_ERR_INVALID_ARG);
+    owner = RUNTIME_TARGET_USB;
+    CHECK(AppV3Supervisor_Set(APP_V3_PIPE_USB, 0U) == SYS_ERR_INVALID_STATE);
+    owner = RUNTIME_TARGET_CONTROL;
+    CHECK(AppV3Supervisor_Set(APP_V3_PIPE_USB | APP_V3_PIPE_RECORD, 7U) == SYS_OK);
+    CHECK(AppV3Supervisor_Set(0U, 0U) == SYS_ERR_BUSY);
+
+    Test_SupervisorStep(RUNTIME_TARGET_CAMERA);
+    CHECK(g_hardware.capture_start_calls == 1U && g_hardware.usb_start_calls == 0U &&
+        g_hardware.mount_calls == 0U);
+    CHECK(AppV3Supervisor_Read(&snapshot) == SYS_OK && snapshot.pending_component == APP_V3_PIPE_CAMERA);
+    if (scenario == 94U)
+    {
+        pending = snapshot.pending_id;
+        test_tick = pdMS_TO_TICKS(12000U);
+        AppV3Supervisor_Poll();
+        CHECK(AppV3Supervisor_Read(&snapshot) == SYS_OK && snapshot.first_fault == SYS_ERR_TIMEOUT &&
+            snapshot.pending_id == pending && snapshot.timed_out);
+        CHECK(AppV3Supervisor_Set(0U, 0U) == SYS_ERR_BUSY);
+        g_hardware.frame_ready = true;
+        Test_SupervisorStep(RUNTIME_TARGET_CAMERA);
+        CHECK(AppV3Supervisor_Read(&snapshot) == SYS_OK && snapshot.pending_id == 0U &&
+            snapshot.first_fault == SYS_ERR_TIMEOUT && snapshot.active == APP_V3_PIPE_CAMERA);
+        AppV3Supervisor_Poll();
+        CHECK(g_hardware.usb_start_calls == 0U && g_hardware.mount_calls == 0U);
+        return 0U;
+    }
+    g_hardware.frame_ready = true;
+    Test_SupervisorStep(RUNTIME_TARGET_CAMERA);
+    CHECK(AppV3Supervisor_Read(&snapshot) == SYS_OK && snapshot.active == APP_V3_PIPE_CAMERA);
+
+    g_hardware.uvc_present = true;
+    g_hardware.usb_configured = true;
+    if (scenario == 93U)
+        g_hardware.usb_configure_result = SYS_ERR_IO;
+    Test_SupervisorStep(RUNTIME_TARGET_USB);
+    Test_SupervisorStep(RUNTIME_TARGET_USB);
+    if (scenario == 93U)
+    {
+        CHECK(AppV3Supervisor_Read(&snapshot) == SYS_OK && snapshot.first_fault == SYS_ERR_IO &&
+            !snapshot.planning && g_hardware.mount_calls == 0U);
+        CHECK(AppV3Supervisor_Set(0U, 0U) == SYS_OK);
+        Test_SupervisorStep(RUNTIME_TARGET_CAMERA);
+        CHECK(g_hardware.sensor_stop_calls == 1U);
+        return 0U;
+    }
+    CHECK(AppV3Supervisor_Read(&snapshot) == SYS_OK &&
+        snapshot.active == (APP_V3_PIPE_CAMERA | APP_V3_PIPE_USB));
+    Test_SupervisorStep(RUNTIME_TARGET_STORAGE);
+    AppV3Supervisor_Poll();
+    CHECK(AppV3Supervisor_Read(&snapshot) == SYS_OK && snapshot.active == 7U && !snapshot.planning);
+
+    if (scenario == 95U)
+    {
+        g_hardware.endpoint_busy = true;
+        CHECK(AppV3Supervisor_Set(APP_V3_PIPE_RECORD, 0U) == SYS_OK);
+        Test_SupervisorStep(RUNTIME_TARGET_USB);
+        g_hardware.now_ms += 3000U;
+        Test_SupervisorStep(RUNTIME_TARGET_USB);
+        CHECK(AppV3Supervisor_Read(&snapshot) == SYS_OK && (snapshot.uncertain & APP_V3_PIPE_USB) != 0U);
+        CHECK(g_hardware.sensor_stop_calls == 0U && g_hardware.unmount_calls == 0U);
+        CHECK(AppV3Supervisor_Recover(APP_V3_PIPE_CAMERA) == SYS_ERR_INVALID_STATE);
+        g_hardware.endpoint_busy = false;
+        CHECK(AppV3Supervisor_Recover(APP_V3_PIPE_USB) == SYS_OK);
+        Test_SupervisorStep(RUNTIME_TARGET_USB);
+        CHECK(AppV3Supervisor_Read(&snapshot) == SYS_OK && snapshot.uncertain == 0U &&
+            snapshot.active == (APP_V3_PIPE_CAMERA | APP_V3_PIPE_RECORD));
+        return 0U;
+    }
+
+    CHECK(AppV3Supervisor_Set(APP_V3_PIPE_RECORD, 0U) == SYS_OK);
+    Test_SupervisorStep(RUNTIME_TARGET_USB);
+    AppV3Supervisor_Poll();
+    CHECK(AppV3Supervisor_Read(&snapshot) == SYS_OK &&
+        snapshot.active == (APP_V3_PIPE_CAMERA | APP_V3_PIPE_RECORD));
+    CHECK(g_hardware.sensor_stop_calls == 0U && g_hardware.unmount_calls == 0U);
+    CHECK(AppV3Supervisor_Query(APP_V3_PIPE_RECORD) == SYS_OK);
+    Test_SupervisorStep(RUNTIME_TARGET_STORAGE);
+    CHECK(AppV3Supervisor_Read(&snapshot) == SYS_OK &&
+        (snapshot.storage.hardware.flags & STORAGE_RECORD_ACTIVE) != 0U);
+
+    CHECK(AppV3Supervisor_Set(0U, 0U) == SYS_OK);
+    for (i = 0U; i < 5U; ++i)
+    {
+        Test_SupervisorStep(RUNTIME_TARGET_STORAGE);
+        Test_SupervisorStep(RUNTIME_TARGET_CAMERA);
+    }
+    AppV3Supervisor_Poll();
+    CHECK(AppV3Supervisor_Read(&snapshot) == SYS_OK && snapshot.active == 0U &&
+        snapshot.uncertain == 0U && !snapshot.planning && snapshot.first_fault == SYS_OK);
+    CHECK(g_hardware.sensor_stop_calls == 1U && g_hardware.unmount_calls == 1U);
+    return 0U;
+}
+
 uint32_t AppV3_TestRun(uint32_t scenario)
 {
     const AppV3Context_t *context;
@@ -2434,6 +2552,8 @@ uint32_t AppV3_TestRun(uint32_t scenario)
     if (scenario >= 75U && scenario <= 82U)
         return Test_RawUvcTransport(context, scenario);
 #endif
+    if (scenario >= 92U && scenario <= 95U)
+        return Test_Supervisor(context, scenario);
     if (scenario >= 88U && scenario <= 91U)
         return Test_Recording(context, scenario);
     if (scenario >= 70U && scenario <= 74U)

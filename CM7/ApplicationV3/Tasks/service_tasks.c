@@ -3,6 +3,10 @@
 #include "app_events.h"
 #include "platform_sync.h"
 #include "service_tasks.h"
+#include "supervisor.h"
+#include "../Services/Camera/camera_service.h"
+#include "../Services/USB/usb_service.h"
+#include "../Services/Storage/storage_service.h"
 #include "board_smoke.h"
 #include "../Runtime/service_event_loop.h"
 #include "../Runtime/service_events.h"
@@ -358,6 +362,331 @@ static void BoardSmoke_Poll(void)
 }
 #endif
 
+//由原ControlTask串行调度实际Service；表只描述当前已接入的依赖。
+#define SUPERVISOR_TIMEOUT_MS 10000U
+
+typedef enum
+{
+    SUPERVISOR_START,
+    SUPERVISOR_STOP,
+    SUPERVISOR_RECOVER,
+    SUPERVISOR_QUERY
+} SupervisorOperation_t;
+
+typedef struct
+{
+    uint32_t bit;
+    uint32_t provider;
+    RuntimeEventTarget_t service;
+    uint8_t operations[4];
+} SupervisorService_t;
+
+static const SupervisorService_t s_supervisor_services[] =
+{
+    {
+        APP_V3_PIPE_CAMERA,
+        0U,
+        RUNTIME_TARGET_CAMERA,
+        {CAMERA_SERVICE_START, CAMERA_SERVICE_STOP, CAMERA_SERVICE_RECOVER, CAMERA_SERVICE_HARDWARE_QUERY}
+    },
+
+    {
+        APP_V3_PIPE_USB,
+        APP_V3_PIPE_CAMERA,
+        RUNTIME_TARGET_USB,
+        {USB_SERVICE_START, USB_SERVICE_STOP, USB_SERVICE_RECOVER, USB_SERVICE_HARDWARE_QUERY}
+    },
+
+    {
+        APP_V3_PIPE_RECORD,
+        APP_V3_PIPE_CAMERA,
+        RUNTIME_TARGET_STORAGE,
+        {STORAGE_SERVICE_RECORD_START, STORAGE_SERVICE_RECORD_STOP, STORAGE_SERVICE_RECOVER, STORAGE_SERVICE_RECORD_QUERY}
+    }
+};
+
+#define SUPERVISOR_SERVICES (sizeof(s_supervisor_services) / sizeof(s_supervisor_services[0]))
+
+static struct
+{
+    AppV3SupervisorStatus_t status;
+    const SupervisorService_t *pending;
+    SupervisorOperation_t operation;
+    uint32_t desired;
+    uint32_t file_number;
+    uint32_t subscription;
+    TickType_t started;
+    bool submitted;
+} s_supervisor;
+static uint32_t s_supervisor_id = 0x79000000U;
+
+//保留本轮首错。已入队的事务继续等待原身份，不重发硬件命令。
+static void Supervisor_Fail(SysResult_t result)
+{
+    if (s_supervisor.status.first_fault == SYS_OK)
+        s_supervisor.status.first_fault = result;
+    s_supervisor.status.planning = false;
+}
+
+static void Supervisor_ClearPending(void)
+{
+    s_supervisor.pending = NULL;
+    s_supervisor.status.pending_id = 0U;
+    s_supervisor.status.pending_component = 0U;
+    s_supervisor.submitted = false;
+}
+
+static void Supervisor_Store(const AppV3ServiceEvent_t *event)
+{
+    switch (event->service)
+    {
+        case RUNTIME_TARGET_CAMERA:
+            s_supervisor.status.camera = *event;
+            break;
+        case RUNTIME_TARGET_USB:
+            s_supervisor.status.usb = *event;
+            break;
+        case RUNTIME_TARGET_STORAGE:
+            s_supervisor.status.storage = *event;
+            break;
+        default:
+            break;
+    }
+}
+
+//业务回调只接纳匹配命令的终结，后续依赖调用留给Control下一轮。
+static SysResult_t Supervisor_Result(const AppV3ServiceEvent_t *event, void *context)
+{
+    const SupervisorService_t *pending = s_supervisor.pending;
+    AppV3HardwareState_t expected;
+    uint32_t component;
+
+    (void)context;
+    if (!s_supervisor.submitted || pending == NULL || !event->real_hardware ||
+        event->requester != RUNTIME_TARGET_CONTROL || event->service != pending->service ||
+        event->command_id != s_supervisor.status.pending_id)
+        return SYS_OK;
+
+    //只有服务自己给出的匹配终结才能转移已确认状态。
+    component = pending->bit;
+    Supervisor_Store(event);
+    s_supervisor.status.active &= ~component;
+    s_supervisor.status.uncertain &= ~component;
+    if (event->hardware.state == APP_V3_HW_ACTIVE)
+        s_supervisor.status.active |= component;
+    else if (event->hardware.state != APP_V3_HW_READY)
+        s_supervisor.status.uncertain |= component;
+
+    expected = s_supervisor.operation == SUPERVISOR_START ? APP_V3_HW_ACTIVE : APP_V3_HW_READY;
+    if (event->result != SYS_OK || (s_supervisor.operation != SUPERVISOR_QUERY && event->hardware.state != expected))
+        Supervisor_Fail(event->result == SYS_OK ? SYS_ERR_PROTOCOL : event->result);
+    else if (s_supervisor.operation == SUPERVISOR_QUERY && event->hardware.first_fault != SYS_OK)
+        Supervisor_Fail(event->hardware.first_fault);
+    Supervisor_ClearPending();
+    return SYS_OK;
+}
+
+static SysResult_t Supervisor_Begin(void)
+{
+    SysResult_t result = SYS_OK;
+
+    if (!App_MessagesIsOwner(RUNTIME_TARGET_CONTROL) || !AppV3_BusinessReady())
+        return SYS_ERR_INVALID_STATE;
+    if (s_supervisor.pending != NULL || s_supervisor.status.planning)
+        return SYS_ERR_BUSY;
+    //静态常驻，只有首个实际计划才占用一个既有订阅槽。
+    if (s_supervisor.subscription == 0U)
+        result = AppV3Business_Subscribe(RUNTIME_TARGET_COUNT, Supervisor_Result, NULL, &s_supervisor.subscription);
+    return result;
+}
+
+static void Supervisor_NewStep(const SupervisorService_t *service, SupervisorOperation_t operation)
+{
+    if (s_supervisor_id == UINT32_MAX)
+    {
+        Supervisor_Fail(SYS_ERR_NO_RESOURCE);
+        return;
+    }
+    s_supervisor.pending = service;
+    s_supervisor.operation = operation;
+    s_supervisor.status.pending_component = service->bit;
+    s_supervisor.status.pending_id = ++s_supervisor_id;
+    s_supervisor.started = xTaskGetTickCount();
+}
+
+static uint32_t Supervisor_Dependents(uint32_t provider)
+{
+    uint32_t i, mask = 0U;
+
+    for (i = 0U; i < SUPERVISOR_SERVICES; ++i)
+        if ((s_supervisor_services[i].provider & provider) != 0U)
+            mask |= s_supervisor_services[i].bit;
+    return mask;
+}
+
+//先逆序关闭不再需要的消费者，再正序启动新增依赖。
+static void Supervisor_Plan(void)
+{
+    uint32_t i, current = s_supervisor.status.active | s_supervisor.status.uncertain;
+    uint32_t stop = current & ~s_supervisor.desired;
+    uint32_t start = s_supervisor.desired & ~s_supervisor.status.active;
+
+    for (i = SUPERVISOR_SERVICES; i != 0U; --i)
+    {
+        const SupervisorService_t *service = &s_supervisor_services[i - 1U];
+        if ((stop & service->bit) != 0U && (current & Supervisor_Dependents(service->bit)) == 0U)
+        {
+            Supervisor_NewStep(service, SUPERVISOR_STOP);
+            return;
+        }
+    }
+    for (i = 0U; i < SUPERVISOR_SERVICES; ++i)
+    {
+        const SupervisorService_t *service = &s_supervisor_services[i];
+        if ((start & service->bit) != 0U && (s_supervisor.status.active & service->provider) == service->provider)
+        {
+            Supervisor_NewStep(service, SUPERVISOR_START);
+            return;
+        }
+    }
+    if (stop != 0U || start != 0U)
+        Supervisor_Fail(SYS_ERR_INVALID_STATE);
+    else
+        s_supervisor.status.planning = false;
+}
+
+SysResult_t AppV3Supervisor_Set(uint32_t components, uint32_t file_number)
+{
+    uint32_t i, supported = 0U, desired = components;
+    SysResult_t result;
+
+    if (!App_MessagesIsOwner(RUNTIME_TARGET_CONTROL))
+        return SYS_ERR_INVALID_STATE;
+
+    //逐项展开当前固定依赖，未接入的设备位始终拒绝。
+    for (i = 0U; i < SUPERVISOR_SERVICES; ++i)
+    {
+        supported |= s_supervisor_services[i].bit;
+        if ((components & s_supervisor_services[i].bit) != 0U)
+            desired |= s_supervisor_services[i].provider;
+    }
+    if ((components & ~supported) != 0U)
+        return SYS_ERR_NOT_SUPPORTED;
+    if ((desired & s_supervisor.status.uncertain) != 0U)
+        return SYS_ERR_INVALID_STATE;
+    if ((desired & APP_V3_PIPE_RECORD & ~s_supervisor.status.active) != 0U && file_number == 0U)
+        return SYS_ERR_INVALID_ARG;
+    result = Supervisor_Begin();
+    if (result != SYS_OK)
+        return result;
+
+    s_supervisor.desired = desired;
+    s_supervisor.file_number = file_number;
+    //若仍有未证明退出的服务，清理计划保留旧首错。
+    if (s_supervisor.status.uncertain == 0U)
+        s_supervisor.status.first_fault = SYS_OK;
+    s_supervisor.status.timed_out = false;
+    s_supervisor.status.planning = true;
+    return SYS_OK;
+}
+
+static SysResult_t Supervisor_Single(uint32_t component, SupervisorOperation_t operation)
+{
+    uint32_t i;
+    SysResult_t result;
+
+    if (!App_MessagesIsOwner(RUNTIME_TARGET_CONTROL))
+        return SYS_ERR_INVALID_STATE;
+    if (operation == SUPERVISOR_RECOVER &&
+        ((s_supervisor.status.uncertain & component) == 0U ||
+         ((s_supervisor.status.active | s_supervisor.status.uncertain) & Supervisor_Dependents(component)) != 0U))
+        return SYS_ERR_INVALID_STATE;
+    for (i = 0U; i < SUPERVISOR_SERVICES; ++i)
+    {
+        if (s_supervisor_services[i].bit != component)
+            continue;
+        result = Supervisor_Begin();
+        if (result != SYS_OK)
+            return result;
+        if (s_supervisor_id == UINT32_MAX)
+            return SYS_ERR_NO_RESOURCE;
+        Supervisor_NewStep(&s_supervisor_services[i], operation);
+        return SYS_OK;
+    }
+    return SYS_ERR_NOT_SUPPORTED;
+}
+
+SysResult_t AppV3Supervisor_Recover(uint32_t component)
+{
+    return Supervisor_Single(component, SUPERVISOR_RECOVER);
+}
+
+SysResult_t AppV3Supervisor_Query(uint32_t component)
+{
+    return Supervisor_Single(component, SUPERVISOR_QUERY);
+}
+
+SysResult_t AppV3Supervisor_Read(AppV3SupervisorStatus_t *status)
+{
+    if (status == NULL)
+        return SYS_ERR_INVALID_ARG;
+    if (!App_MessagesIsOwner(RUNTIME_TARGET_CONTROL))
+        return SYS_ERR_INVALID_STATE;
+    *status = s_supervisor.status;
+    return SYS_OK;
+}
+
+static SysResult_t Supervisor_Submit(void)
+{
+    const SupervisorService_t *service = s_supervisor.pending;
+    uint32_t id = s_supervisor.status.pending_id;
+    uint32_t operation = service->operations[s_supervisor.operation];
+
+    switch (service->service)
+    {
+        case RUNTIME_TARGET_CAMERA:
+            return CameraService_Request(id, (CameraServiceOperation_t)operation, 0U);
+        case RUNTIME_TARGET_USB:
+            return UsbService_Request(id, (UsbServiceOperation_t)operation, 0U);
+        case RUNTIME_TARGET_STORAGE:
+            return StorageService_Request(id, (StorageServiceOperation_t)operation, s_supervisor.file_number);
+        default:
+            return SYS_ERR_NOT_SUPPORTED;
+    }
+}
+
+void AppV3Supervisor_Poll(void)
+{
+    SysResult_t result;
+
+    if (!App_MessagesIsOwner(RUNTIME_TARGET_CONTROL))
+        return;
+    if (s_supervisor.pending == NULL && s_supervisor.status.planning)
+        Supervisor_Plan();
+    if (s_supervisor.pending == NULL)
+        return;
+
+    //超时保留已到达Service队列的命令，停止后续调度并等待匹配的迟到结果。
+    if (xTaskGetTickCount() - s_supervisor.started >= pdMS_TO_TICKS(SUPERVISOR_TIMEOUT_MS))
+    {
+        s_supervisor.status.timed_out = true;
+        Supervisor_Fail(SYS_ERR_TIMEOUT);
+        if (!s_supervisor.submitted)
+            Supervisor_ClearPending();
+        return;
+    }
+    if (s_supervisor.submitted)
+        return;
+    result = Supervisor_Submit();
+    if (result == SYS_OK)
+        s_supervisor.submitted = true;
+    else if (result != SYS_ERR_BUSY && result != SYS_ERR_NO_RESOURCE)
+    {
+        Supervisor_Fail(result);
+        Supervisor_ClearPending();
+    }
+}
+
 //协调BOOT屏障、启动结果消费和超时处理
 static void AppV3_ControlRun(void *argument)
 {
@@ -388,6 +717,7 @@ static void AppV3_ControlRun(void *argument)
         if (AppV3_BusinessReady())
         {
             (void)AppV3Business_Drain(&business_consumed);
+            AppV3Supervisor_Poll();
 #if APP_V3_BOARD_SMOKE != APP_V3_BOARD_SMOKE_OFF
             BoardSmoke_Poll();
 #endif
