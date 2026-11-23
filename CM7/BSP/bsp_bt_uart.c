@@ -132,10 +132,13 @@ SysResult_t BSP_BT_UART_Init(void)
     s_debug.init_attempts++;
     BtUart_Unlock(saved);
 
-    //只读取共享USART234578时钟源，不修改选择器或PLL
-    hz = HAL_RCCEx_GetPeriphCLKFreq(RCC_PERIPHCLK_USART2);
-    divider = (hz + BSP_BT_UART_BAUD / 2U) / BSP_BT_UART_BAUD;
+    //本工程USART2使用PCLK1；当前HAL的通用外设频率查询不支持USART2
+    //先核对共享时钟选择器，再读取实际PCLK1频率，不改选择器或PLL
     result = SYS_ERR_NOT_SUPPORTED;
+    if (__HAL_RCC_GET_USART234578_SOURCE() != RCC_USART234578CLKSOURCE_PCLK1)
+        goto finish;
+    hz = HAL_RCC_GetPCLK1Freq();
+    divider = (hz + BSP_BT_UART_BAUD / 2U) / BSP_BT_UART_BAUD;
     if (divider < 16U || divider > 65535U) goto finish;
     //超出2%误差不宣告串口就绪
     if ((hz / divider > BSP_BT_UART_BAUD + BSP_BT_UART_BAUD / 50U) ||

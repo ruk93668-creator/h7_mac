@@ -5,7 +5,7 @@
 ## 实现范围
 
 - 新增 `CM7/BSP/bsp_bt_uart.c/.h`，只操作 CM7 USART2、PD5 TX/PA3 RX AF7；IRQ38，优先级7，无 DMA、无 RTS/CTS、无 WAKE/模块复位操作。
-- 115200、8 数据位、偶校验、1 停止位。读取实际 USART2 kernel clock，16倍采样、PRESC=1，根据实际频率计算 BRR，并检查约2%误差上限；不修改共享时钟 mux 或 PLL。
+- 115200、8 数据位、偶校验、1 停止位。核对 USART2 时钟源为 PCLK1 后读取实际 PCLK1 频率，16倍采样、PRESC=1，根据实际频率计算 BRR，并检查约2%误差上限；不修改共享时钟 mux 或 PLL。
 - 2 KiB RX、1 KiB TX 静态 ring；单次 API 在短临界区最多复制64字节。索引差值和2次幂容量支持循环使用；不阻塞等待队列空间，不创建 Task。
 - `Init` 等待 TEACK/REACK，具有10ms Tick上界及100000轮询兜底；等待期间中断打开。初始化/恢复使用 busy 状态，直到发布完成后才开启 USART2 IRQ。
 - RX/错误中断，TXE 按需启停；每次 IRQ 最多32次 RX 读取、1字节 TX，不调用 RTOS、分配器或日志输出。
@@ -62,6 +62,10 @@ python Tests/BleB1/run_build.py
 ```
 
 依赖及构建产物不提交；脚本使用本机 `D:/32/ARM/ARMCC/Bin` 和 `D:/32/UV4/UV4.exe`，其他环境需要调整。run_build在MDK目录生成临时对照工程，finally清理；uVision可能更新 RTE 注释，仅在确认无用户改动后恢复这些生成差异。
+
+## 实板时钟查询修正
+
+用户提供的 Keil 截图显示 `init_attempts=1`、`ready=0`、`last_result=-7`。原 BSP 调用的 HAL 通用频率查询没有 USART2 分支，返回 0 后触发 BRR 检查失败。BSP 现核对 PCLK1 选择器并使用 HAL_RCC_GetPCLK1Freq。修正后 ARM 合约测试 18/18，CM7 完整目标构建 0 错误、0 警告。实板待重新烧录复测。
 
 ## 实板调试与剩余验收
 

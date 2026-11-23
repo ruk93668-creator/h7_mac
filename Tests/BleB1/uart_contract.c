@@ -4,7 +4,7 @@
 
 void USART2_IRQHandler(void);
 static uint32_t s_hz = 120000000U;
-uint32_t HAL_RCCEx_GetPeriphCLKFreq(uint64_t clock) { (void)clock; return s_hz; }
+uint32_t HAL_RCC_GetPCLK1Freq(void) { return s_hz; }
 uint32_t HAL_GetTick(void) { return 0U; }
 void HAL_NVIC_SetPriority(IRQn_Type irq, uint32_t pre, uint32_t sub) { (void)sub; NVIC_SetPriority(irq, pre); }
 void HAL_NVIC_EnableIRQ(IRQn_Type irq) { NVIC_EnableIRQ(irq); }
@@ -33,6 +33,11 @@ uint32_t B1_TestRun(uint32_t id)
     }
     if (id == 11U)
     {
+        RCC->D2CCIP2R = RCC_USART234578CLKSOURCE_PLL2;
+        CHECK(BSP_BT_UART_Init() == SYS_ERR_NOT_SUPPORTED);
+        CHECK(RCC->D2CCIP2R == RCC_USART234578CLKSOURCE_PLL2);
+        CHECK((RCC->APB1LENR & RCC_APB1LENR_USART2EN) == 0U);
+        RCC->D2CCIP2R = RCC_USART234578CLKSOURCE_PCLK1;
         s_hz=0U;
         CHECK(BSP_BT_UART_Init() == SYS_ERR_NOT_SUPPORTED);
         CHECK((RCC->APB1LENR & RCC_APB1LENR_USART2EN) == 0U);

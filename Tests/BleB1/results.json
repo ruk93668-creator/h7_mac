@@ -1,7 +1,7 @@
 {
-  "driver_sha256": "060ae0f4bda07c6b8805529dce6855073b9ab9943169132b11aa71523c04b194",
+  "driver_sha256": "6c23a15bd665635ee861e133f2a20ac98ea28cdcb39346125d77cd7a40500f7a",
   "hardware_verified": false,
-  "model_limits": "No timing, real UART serialization/parity, analog signals, automatic exception scheduling, dual-core or NVIC nesting validation. TXE immediate; explicit software IRQ invocation; ACK and W1C modeled. HAL clock query stub=120MHz.",
+  "model_limits": "No timing, real UART serialization/parity, analog signals, automatic exception scheduling, dual-core or NVIC nesting validation. TXE immediate; explicit software IRQ invocation; ACK and W1C modeled. HAL PCLK1 query stub=120MHz with RCC mux selection modeled.",
   "summary": {
     "total": 18,
     "passed": 18

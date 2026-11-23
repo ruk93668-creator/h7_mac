@@ -59,6 +59,6 @@ for case,name in enumerate(names):
     wire_ok=bytes(tx)==expected;ok=ok and wire_ok
     rows.append({'id':case,'name':name,'pass':ok,'failure_line':line,'diagnostic_words':list(struct.unpack('<23I',u.mem_read(diag_addr,92))),'error':error,'tx_bytes':len(tx),'tx_sequence_match':wire_ok,'tx_sha256':hashlib.sha256(bytes(tx)).hexdigest()})
     print(name,'PASS' if ok else 'FAIL',line,error,flush=True)
-result={'driver_sha256':hashlib.sha256((ROOT/'CM7/BSP/bsp_bt_uart.c').read_bytes()).hexdigest(),'hardware_verified':False,'model_limits':'No timing, real UART serialization/parity, analog signals, automatic exception scheduling, dual-core or NVIC nesting validation. TXE immediate; explicit software IRQ invocation; ACK and W1C modeled. HAL clock query stub=120MHz.','summary':{'total':len(rows),'passed':sum(r['pass'] for r in rows)},'cases':rows}
+result={'driver_sha256':hashlib.sha256((ROOT/'CM7/BSP/bsp_bt_uart.c').read_bytes()).hexdigest(),'hardware_verified':False,'model_limits':'No timing, real UART serialization/parity, analog signals, automatic exception scheduling, dual-core or NVIC nesting validation. TXE immediate; explicit software IRQ invocation; ACK and W1C modeled. HAL PCLK1 query stub=120MHz with RCC mux selection modeled.','summary':{'total':len(rows),'passed':sum(r['pass'] for r in rows)},'cases':rows}
 (HERE/'results.json').write_text(json.dumps(result,indent=2)+'\n',encoding='utf-8')
 raise SystemExit(not all(r['pass'] for r in rows))
