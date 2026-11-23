@@ -25,6 +25,7 @@ SCENARIOS = [f"four-loan release order {rank + 1}" for rank in range(24)] + [
     "legacy isolation and long-held Storage buffer",
     "invalid pool without a safe replacement",
     "unchanged JPEG FIFO and SD retain/release",
+    "JPEG Storage-only physical owner and wrong-session rejection",
 ]
 OBSERVATIONS = ("g_failure", "g_checks", "g_stream_size", "g_capture_size", "g_lease_size")
 

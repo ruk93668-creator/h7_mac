@@ -397,6 +397,39 @@ static uint32_t JpegRegression(void)
     return 0U;
 }
 
+//直接取得SD位。旧USB归还不能清除SD位，旧会话不能归还新Loan。
+static uint32_t JpegStorageOnly(void)
+{
+    CameraFrame_t frame;
+    CameraMjpegLease_t lease, wrong;
+    uint32_t index, next;
+    uint8_t *data;
+
+    CHECK(CameraCapture_Init(&s_jpeg) == SYS_OK);
+    CHECK(CameraCapture_StartStream() == SYS_OK);
+    CHECK(CameraCapture_StreamAcquireJpegStorage(&lease, &frame) == SYS_ERR_BUSY);
+    data = (uint8_t *)s_targets[0];
+    for (index = 0U; index < CAMERA_MJPEG_BLOCK_BYTES; ++index)
+        data[index] = mjpeg_fixture[index % sizeof(mjpeg_fixture)];
+    for (index = 0U; index < CAMERA_MJPEG_BLOCK_BYTES / sizeof(mjpeg_fixture); ++index)
+        s_jpeg_ops->frame(s_context);
+    CHECK(s_jpeg_ops->block_complete(BSP_DCMI_TARGET_M0,
+        (uint32_t)(uintptr_t)data, &next, s_context) == SYS_OK);
+    CameraCapture_Process();
+    CHECK(CameraCapture_StreamAcquireJpegStorage(&lease, &frame) == SYS_OK);
+    CHECK(lease.session != 0U && lease.id != 0U && frame.size_bytes == sizeof(mjpeg_fixture));
+    CHECK(memcmp(frame.data, mjpeg_fixture, frame.size_bytes) == 0);
+    CHECK(CameraCapture_StreamReleaseFrame() == SYS_ERR_INVALID_STATE);
+    CHECK(CameraCapture_Stop() == SYS_ERR_BUSY);
+    wrong = lease;
+    ++wrong.session;
+    CHECK(CameraCapture_StreamReleaseJpegStorage(&wrong) != SYS_OK);
+    CHECK(CameraCapture_StreamReleaseJpegStorage(&lease) == SYS_OK);
+    CHECK(CameraCapture_StreamReleaseJpegStorage(&lease) != SYS_OK);
+    CHECK(CameraCapture_Stop() == SYS_OK && CameraCapture_IsStopped());
+    return 0U;
+}
+
 uint32_t A1_TestRun(uint32_t scenario)
 {
     g_stream_size = sizeof(CameraStream_t);
@@ -404,6 +437,8 @@ uint32_t A1_TestRun(uint32_t scenario)
     g_lease_size = sizeof(CameraFrameLease_t);
     if (scenario == 30U)
         return JpegRegression();
+    if (scenario == 31U)
+        return JpegStorageOnly();
     CHECK(StartRaw() == 0U);
     if (scenario < 24U)
         return ReleaseOrder(scenario);

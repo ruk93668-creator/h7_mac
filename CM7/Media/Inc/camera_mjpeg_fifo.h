@@ -23,6 +23,8 @@ typedef struct
 } CameraMjpegLease_t;
 
 //Camera为当前持有的JPEG增加SD引用，不扫描或复制图像
+SysResult_t CameraMjpegFifo_AcquireStorage(CameraMjpegLease_t *lease, CameraFrame_t *frame);
+
 SysResult_t CameraMjpegFifo_RetainFrame(const CameraFrame_t *frame, CameraMjpegLease_t *lease);
 
 //Camera按凭据归还SD引用，重复或过期归还被拒绝

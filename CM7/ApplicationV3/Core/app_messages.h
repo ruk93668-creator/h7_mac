@@ -13,7 +13,11 @@ typedef enum
     APP_CHANNEL_TO_CAMERA,
     APP_CHANNEL_TO_USB,
     APP_CHANNEL_STARTUP,
-    APP_CHANNEL_COUNT
+    APP_CHANNEL_COUNT,
+
+    //录像使用旧禁用通道对应的静态槽，旧通道编号仍保持拒绝语义。
+    APP_CHANNEL_STORAGE_TO_CAMERA = APP_CHANNEL_COUNT,
+    APP_CHANNEL_CAMERA_TO_STORAGE
 } AppChannel_t;
 
 typedef enum

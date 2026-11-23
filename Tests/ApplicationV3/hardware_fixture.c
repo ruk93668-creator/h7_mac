@@ -1,3 +1,4 @@
+#include "mjpeg_avi.h"
 #include "hardware_fixture.h"
 #include "ov5640_device.h"
 #include "usb_mode.h"
@@ -93,8 +94,11 @@ SysResult_t CameraCapture_GetStats(CameraCaptureStats_t *stats)
 bool CameraCapture_StreamGetFrame(CameraFrame_t *frame)
 {
     uint32_t bytes;
-    if (!s_camera_running || !g_hardware.frame_ready || s_camera_held ||
-        CameraConfig_GetFrameSize(&s_camera_config, &bytes) != SYS_OK)
+    if (!s_camera_running || !g_hardware.frame_ready || s_camera_held)
+        return false;
+    if (s_camera_config.format == CAMERA_PIXEL_FORMAT_JPEG)
+        bytes = 12U;
+    else if (CameraConfig_GetFrameSize(&s_camera_config, &bytes) != SYS_OK)
         return false;
 
     g_hardware.frame_ready = false;
@@ -391,4 +395,76 @@ SysResult_t StorageFS_GetSpace(uint64_t *total_bytes, uint64_t *free_bytes)
     *total_bytes = 1024ULL * 512U;
     *free_bytes = 512ULL * 512U;
     return g_hardware.storage_owner ? SYS_OK : SYS_ERR_INVALID_STATE;
+}
+
+
+SysResult_t CameraCapture_StreamAcquireJpegStorage(CameraMjpegLease_t *lease, CameraFrame_t *frame)
+{
+    CameraFrameLease_t acquired;
+    SysResult_t result = CameraCapture_StreamAcquire(CAMERA_FRAME_CONSUMER_STORAGE, &acquired, frame);
+    if (result == SYS_OK)
+    {
+        *lease = (CameraMjpegLease_t){acquired.generation, acquired.lease_id};
+        frame->size_bytes = 12U;
+        frame->size_bytes2 = 4U;
+        frame->data2 = frame->data;
+    }
+    return result;
+}
+
+SysResult_t CameraCapture_StreamReleaseJpegStorage(const CameraMjpegLease_t *lease)
+{
+    const CameraFrameLease_t acquired = {lease->session, lease->id, 0U, CAMERA_FRAME_CONSUMER_STORAGE};
+    return CameraCapture_StreamReleaseLease(&acquired);
+}
+
+SysResult_t StorageFS_Open(const char *path, uint32_t mode, StorageFile_t *file)
+{
+    if (!g_hardware.storage_writable || mode != (STORAGE_FS_OPEN_WRITE | STORAGE_FS_OPEN_CREATE_NEW) ||
+        path == NULL || path[11] != '.' || !g_hardware.storage_owner)
+        return SYS_ERR_INVALID_STATE;
+    *file = 1U;
+    ++g_hardware.storage.open_files;
+    return SYS_OK;
+}
+
+SysResult_t StorageFS_Close(StorageFile_t file)
+{
+    if (file != 1U || g_hardware.storage.open_files == 0U)
+        return SYS_ERR_INVALID_STATE;
+    --g_hardware.storage.open_files;
+    return SYS_OK;
+}
+
+SysResult_t MjpegAvi_Begin(MjpegAvi_t *avi, StorageFile_t file, uint16_t width, uint16_t height, uint16_t fps)
+{
+    *avi = (MjpegAvi_t){.file = file, .width = width, .height = height, .rate = fps};
+    return SYS_OK;
+}
+
+SysResult_t MjpegAvi_AppendFrame(MjpegAvi_t *avi, const CameraFrame_t *frame, uint32_t tick, uint32_t limit)
+{
+    (void)limit;
+    ++g_hardware.record_writes;
+    if (!s_camera_held || frame->size_bytes2 != 4U || frame->data2 == NULL)
+        return SYS_ERR_PROTOCOL;
+    if (g_hardware.record_write_result != SYS_OK)
+    {
+        avi->failed = true;
+        return g_hardware.record_write_result;
+    }
+    if (avi->frames == 0U)
+        avi->first_tick = tick;
+    ++avi->frames;
+    avi->last_tick = tick;
+    return SYS_OK;
+}
+
+SysResult_t MjpegAvi_Finish(MjpegAvi_t *avi)
+{
+    ++g_hardware.record_finishes;
+    if (s_camera_held || avi->frames == 0U || avi->failed)
+        return SYS_ERR_INVALID_STATE;
+    avi->finished = true;
+    return SYS_OK;
 }

@@ -321,17 +321,15 @@ SysResult_t CameraMjpegFifo_Process(void)
     return SYS_OK;
 }
 
-//借出一张完整JPEG，不复制FIFO内容
-bool CameraMjpegFifo_GetFrame(CameraFrame_t *frame)
+//在原FIFO账本取出最新就绪帧，保留整帧引用供唯一调用者提交所有权
+static MjpegLoan_t *Mjpeg_TakeLatest(uint32_t *slot)
 {
-    uint32_t first, index;
+    uint32_t index;
     MjpegLoan_t *entry;
 
-    //USB入口一次只持有一张，SD引用不会阻止下一张USB取帧
-    if (frame == NULL || !s_fifo.running || s_fifo.result != SYS_OK ||
-        s_fifo.loaned || s_fifo.ready_count == 0U || s_fifo.next_loan == UINT32_MAX)
-        return false;
-
+    if (!s_fifo.running || s_fifo.result != SYS_OK ||
+        s_fifo.ready_count == 0U || s_fifo.next_loan == UINT32_MAX)
+        return NULL;
     //只使用已完全归还的槽，不覆盖任一路持有的数据
     for (index = 0U; index < CAMERA_MJPEG_MAX_LOANS; index++)
     {
@@ -339,7 +337,7 @@ bool CameraMjpegFifo_GetFrame(CameraFrame_t *frame)
             break;
     }
     if (index == CAMERA_MJPEG_MAX_LOANS)
-        return false;
+        return NULL;
     //取帧只选择最新READY，旧帧不能在下一次取帧时回退交付
     while (s_fifo.ready_count > 1U)
     {
@@ -351,14 +349,16 @@ bool CameraMjpegFifo_GetFrame(CameraFrame_t *frame)
     entry = &s_fifo.loans[index];
     entry->frame = s_fifo.ready[s_fifo.ready_head];
     entry->id = ++s_fifo.next_loan;
-    entry->usb_owned = true;
-    entry->sd_owned = false;
-    s_fifo.legacy_index = (uint8_t)index;
-    s_fifo.loan = entry->frame;
     s_fifo.ready_head = (uint8_t)((s_fifo.ready_head + 1U) % CAMERA_MJPEG_FRAME_QUEUE);
     s_fifo.ready_count--;
-    s_fifo.loaned = true;
+    *slot = index;
+    return entry;
+}
 
+//跨FIFO末尾的帧输出两段只读视图
+static void Mjpeg_LoanView(const MjpegLoan_t *entry, CameraFrame_t *frame)
+{
+    uint32_t first;
     //跨FIFO末尾的帧保持两段描述，不拼接整帧
     first = CAMERA_MJPEG_FIFO_BYTES - entry->frame.offset;
     if (first > entry->frame.length)
@@ -370,7 +370,49 @@ bool CameraMjpegFifo_GetFrame(CameraFrame_t *frame)
     frame->size_bytes = entry->frame.length;
     frame->size_bytes2 = entry->frame.length - first;
     frame->data2 = frame->size_bytes2 == 0U ? NULL : (const uint8_t *)(uintptr_t)CAMERA_MJPEG_FIFO_BASE;
+}
+
+//原入口仅保留一张USB或内部自检帧
+bool CameraMjpegFifo_GetFrame(CameraFrame_t *frame)
+{
+    uint32_t index;
+    MjpegLoan_t *entry;
+
+    if (frame == NULL || s_fifo.loaned)
+        return false;
+    entry = Mjpeg_TakeLatest(&index);
+    if (entry == NULL)
+        return false;
+    entry->usb_owned = true;
+    s_fifo.legacy_index = (uint8_t)index;
+    s_fifo.loan = entry->frame;
+    s_fifo.loaned = true;
+    Mjpeg_LoanView(entry, frame);
     return true;
+}
+
+//SD-only直接取得原SD位，不创建USB持有或第二套块引用
+SysResult_t CameraMjpegFifo_AcquireStorage(CameraMjpegLease_t *lease, CameraFrame_t *frame)
+{
+    uint32_t index;
+    MjpegLoan_t *entry;
+
+    if (lease == NULL || frame == NULL)
+        return SYS_ERR_INVALID_ARG;
+    if (!s_fifo.running || s_fifo.result != SYS_OK)
+        return SYS_ERR_INVALID_STATE;
+    if (s_fifo.next_loan == UINT32_MAX)
+        return SYS_ERR_NO_RESOURCE;
+
+    //Dispatcher限制每消费者一个事务。它与原入口共用现有Loan和SD位。
+    entry = Mjpeg_TakeLatest(&index);
+    if (entry == NULL)
+        return SYS_ERR_BUSY;
+    entry->sd_owned = true;
+    lease->session = s_loan_session;
+    lease->id = entry->id;
+    Mjpeg_LoanView(entry, frame);
+    return SYS_OK;
 }
 
 //Camera为当前原帧登记独立SD引用

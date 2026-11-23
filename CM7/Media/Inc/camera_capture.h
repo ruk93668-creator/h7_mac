@@ -2,6 +2,7 @@
 #define CAMERA_CAPTURE_H
 
 #include "camera_config.h"
+#include "camera_mjpeg_fifo.h"
 #include "sys_result.h"
 #include <stdbool.h>
 
@@ -86,6 +87,10 @@ SysResult_t CameraCapture_StreamAcquire(CameraFrameConsumer_t consumer,
 
 // 调用前须确认全部读取者已退出。只归还完整身份匹配的 Raw 物理槽
 SysResult_t CameraCapture_StreamReleaseLease(const CameraFrameLease_t *lease);
+
+//仅CameraTask调用，JPEG的会话和编号由原FIFO分配。
+SysResult_t CameraCapture_StreamAcquireJpegStorage(CameraMjpegLease_t *lease, CameraFrame_t *frame);
+SysResult_t CameraCapture_StreamReleaseJpegStorage(const CameraMjpegLease_t *lease);
 
 //启动连续采集，固定格式使用五缓冲，JPEG使用独立字节FIFO
 SysResult_t CameraCapture_StartStream(void);

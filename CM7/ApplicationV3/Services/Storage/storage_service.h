@@ -15,10 +15,18 @@ typedef enum
     STORAGE_SERVICE_START = 16,
     STORAGE_SERVICE_STOP,
     STORAGE_SERVICE_HARDWARE_QUERY,
-    STORAGE_SERVICE_RECOVER
+    STORAGE_SERVICE_RECOVER,
+    STORAGE_SERVICE_RECORD_START, //argument为非零文件编号，已有文件保持原样
+    STORAGE_SERVICE_RECORD_STOP,
+    STORAGE_SERVICE_RECORD_QUERY
 } StorageServiceOperation_t;
 
-//由其他登记任务提交模拟命令；SYS_OK只表示成功入队
+//录像查询primary/detail分别为成功写入帧数和可用存储扇区。
+#define STORAGE_RECORD_ACTIVE  8U
+#define STORAGE_RECORD_FILE   16U
+#define STORAGE_RECORD_DRAIN  32U
+
+//由其他登记任务提交命令；SYS_OK只表示成功入队
 SysResult_t StorageService_Request(uint32_t command_id, StorageServiceOperation_t operation, uint32_t argument);
 
 //静态Registry使用的启动入口，只有所属任务可以准备或撤回资源

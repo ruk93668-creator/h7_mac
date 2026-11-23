@@ -46,25 +46,46 @@ SysResult_t App_MessagesInit(void)
     return SYS_OK;
 }
 
-//历史命令通道继续禁用；帧数据只走两条既有FIFO
+//历史命令保持禁用。两条录像FIFO复用其原有静态槽，不增加池容量。
+static AppChannel_t AppMessages_Slot(AppChannel_t channel)
+{
+    if (channel == APP_CHANNEL_STORAGE_TO_CAMERA)
+        return APP_CHANNEL_CAMERA_COMMAND;
+    if (channel == APP_CHANNEL_CAMERA_TO_STORAGE)
+        return APP_CHANNEL_USB_COMMAND;
+    return channel;
+}
+
+static RuntimeEventTarget_t AppMessages_Receiver(AppChannel_t channel)
+{
+    if (channel == APP_CHANNEL_STORAGE_TO_CAMERA)
+        return RUNTIME_TARGET_CAMERA;
+    if (channel == APP_CHANNEL_CAMERA_TO_STORAGE)
+        return RUNTIME_TARGET_STORAGE;
+    return s_message_receivers[channel];
+}
+
+//只允许已登记的通道进入队列。
 static bool AppMessages_IsActive(AppChannel_t channel)
 {
     return channel == APP_CHANNEL_CONTROL || channel == APP_CHANNEL_STARTUP ||
-        channel == APP_CHANNEL_TO_CAMERA || channel == APP_CHANNEL_TO_USB;
+        channel == APP_CHANNEL_TO_CAMERA || channel == APP_CHANNEL_TO_USB ||
+        channel == APP_CHANNEL_STORAGE_TO_CAMERA || channel == APP_CHANNEL_CAMERA_TO_STORAGE;
 }
 
 //数据通道校验发送任务和方向，其他业务类型不得挤占租约归还通道
 static SysResult_t AppMessages_CheckFrameRoute(AppChannel_t channel, const AppMessage_t *message)
 {
-    if (channel == APP_CHANNEL_TO_CAMERA)
+    if (channel == APP_CHANNEL_TO_CAMERA || channel == APP_CHANNEL_STORAGE_TO_CAMERA)
     {
+        RuntimeEventTarget_t sender = channel == APP_CHANNEL_TO_CAMERA ? RUNTIME_TARGET_USB : RUNTIME_TARGET_STORAGE;
         if (message->type != APP_MESSAGE_FRAME_REQUEST && message->type != APP_MESSAGE_FRAME_CANCEL_REQUEST &&
             message->type != APP_MESSAGE_FRAME_RETURN && message->type != APP_MESSAGE_RETURN_ACK_CONSUMED)
             return SYS_ERR_NOT_SUPPORTED;
-        if (message->source != RUNTIME_TARGET_USB)
+        if (message->source != sender)
             return SYS_ERR_INVALID_STATE;
     }
-    if (channel == APP_CHANNEL_TO_USB)
+    if (channel == APP_CHANNEL_TO_USB || channel == APP_CHANNEL_CAMERA_TO_STORAGE)
     {
         if (message->type != APP_MESSAGE_FRAME_OFFER && message->type != APP_MESSAGE_RETURN_ACK)
             return SYS_ERR_NOT_SUPPORTED;
@@ -79,7 +100,7 @@ SysResult_t App_MessagesSend(AppChannel_t channel, const AppMessage_t *message)
 {
     SysResult_t result;
 
-    if ((uint32_t)channel >= APP_CHANNEL_COUNT || message == NULL)
+    if ((uint32_t)channel > APP_CHANNEL_CAMERA_TO_STORAGE || message == NULL)
         return SYS_ERR_INVALID_ARG;
     if (!AppMessages_IsActive(channel))
         return SYS_ERR_NOT_SUPPORTED;
@@ -87,7 +108,7 @@ SysResult_t App_MessagesSend(AppChannel_t channel, const AppMessage_t *message)
     if (result != SYS_OK)
         return result;
     //未分配通道或中断调用不能进入任务消息接口
-    if (s_message_handles[channel].generation == 0U || Platform_SyncGetException() != 0U)
+    if (s_message_handles[AppMessages_Slot(channel)].generation == 0U || Platform_SyncGetException() != 0U)
         return SYS_ERR_INVALID_STATE;
 
     //启动报告只接受Registry服务的实际所有者，业务结果保持原来源校验
@@ -96,10 +117,10 @@ SysResult_t App_MessagesSend(AppChannel_t channel, const AppMessage_t *message)
         return SYS_ERR_INVALID_STATE;
 
     //成功入队就是消息已提交，通知位只负责唤醒，不作为交付凭据
-    if (AppV3Queue_Put(s_message_handles[channel], message, 0U) != SYS_OK)
+    if (AppV3Queue_Put(s_message_handles[AppMessages_Slot(channel)], message, 0U) != SYS_OK)
         return SYS_ERR_NO_RESOURCE;
     if (channel != APP_CHANNEL_STARTUP)
-        (void)RuntimeEvent_Post(s_message_receivers[channel], RUNTIME_EVENT_WAKE);
+        (void)RuntimeEvent_Post(AppMessages_Receiver(channel), RUNTIME_EVENT_WAKE);
     return SYS_OK;
 }
 
@@ -107,11 +128,11 @@ SysResult_t App_MessagesSend(AppChannel_t channel, const AppMessage_t *message)
 bool App_MessagesReceive(AppChannel_t channel, AppMessage_t *message)
 {
     if (!AppMessages_IsActive(channel) || message == NULL ||
-        s_message_handles[channel].generation == 0U || Platform_SyncGetException() != 0U ||
-        !App_MessagesIsOwner(s_message_receivers[channel]))
+        s_message_handles[AppMessages_Slot(channel)].generation == 0U || Platform_SyncGetException() != 0U ||
+        !App_MessagesIsOwner(AppMessages_Receiver(channel)))
         return false;
     //只有当前任务成功取走队首时才通知发送者重试
-    if (AppV3Queue_Get(s_message_handles[channel], message, 0U) != SYS_OK)
+    if (AppV3Queue_Get(s_message_handles[AppMessages_Slot(channel)], message, 0U) != SYS_OK)
         return false;
 
     //腾出槽位后唤醒发送方，队列满时保存的消息才能继续提交
@@ -123,7 +144,9 @@ bool App_MessagesReceive(AppChannel_t channel, AppMessage_t *message)
     }
     else if (channel == APP_CHANNEL_TO_CAMERA)
         (void)RuntimeEvent_Post(RUNTIME_TARGET_USB, RUNTIME_EVENT_WAKE);
-    else if (channel == APP_CHANNEL_TO_USB)
+    else if (channel == APP_CHANNEL_STORAGE_TO_CAMERA)
+        (void)RuntimeEvent_Post(RUNTIME_TARGET_STORAGE, RUNTIME_EVENT_WAKE);
+    else if (channel == APP_CHANNEL_TO_USB || channel == APP_CHANNEL_CAMERA_TO_STORAGE)
         (void)RuntimeEvent_Post(RUNTIME_TARGET_CAMERA, RUNTIME_EVENT_WAKE);
     return true;
 }

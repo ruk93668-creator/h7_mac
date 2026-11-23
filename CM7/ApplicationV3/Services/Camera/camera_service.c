@@ -113,7 +113,12 @@ typedef enum
 typedef struct
 {
     CameraTransferState_t state;
-    CameraFrameLease_t lease;
+    union
+    {
+        CameraFrameLease_t raw;
+        CameraMjpegLease_t jpeg;
+    } lease;
+    bool jpeg_storage;
     AppMessage_t reply;
     uint32_t last_request;
     bool admitted;
@@ -126,9 +131,11 @@ static CameraTransfer_t s_transfers[CAMERA_FRAME_CONSUMER_COUNT];
 static uint32_t s_frame_sequence;
 static uint8_t s_next_consumer;
 
-//生产阶段只有UsbTask的物理队列。测试在Camera所有者内替换三路模拟消费者的发送端。
+//CameraTask将每路回复发往所属消费者，不共享下行队首。
 static SysResult_t CameraFrame_Send(CameraFrameConsumer_t consumer, const AppMessage_t *message)
 {
+    if (consumer == CAMERA_FRAME_CONSUMER_STORAGE)
+        return App_MessagesSend(APP_CHANNEL_CAMERA_TO_STORAGE, message);
     if (consumer != CAMERA_FRAME_CONSUMER_USB)
         return SYS_ERR_NOT_SUPPORTED;
     return App_MessagesSend(APP_CHANNEL_TO_USB, message);
@@ -195,7 +202,8 @@ static void CameraFrame_Receive(CameraFrameConsumer_t consumer, const AppMessage
         transfer->state == CAMERA_TRANSFER_WAIT_CONSUMED)
     {
         //保留退休高水位，重复消息不得命中下一请求。
-        transfer->lease = (CameraFrameLease_t){0};
+        transfer->lease.raw = (CameraFrameLease_t){0};
+        transfer->jpeg_storage = false;
         transfer->reply = (AppMessage_t){.command_id = 0U};
         transfer->admitted = false;
         transfer->reject_offer = false;
@@ -208,8 +216,15 @@ static void CameraFrame_Acquire(CameraTransfer_t *transfer, CameraFrameConsumer_
     SysResult_t result = SYS_ERR_NO_RESOURCE;
 
     //序号用于观测分发顺序，不使用任意地址或缓冲区号编码
+    transfer->jpeg_storage = consumer == CAMERA_FRAME_CONSUMER_STORAGE && s_camera.config != NULL &&
+        s_camera.config->format == CAMERA_PIXEL_FORMAT_JPEG;
     if (s_frame_sequence != UINT32_MAX)
-        result = CameraCapture_StreamAcquire(consumer, &transfer->lease, &transfer->reply.frame);
+    {
+        if (transfer->jpeg_storage)
+            result = CameraCapture_StreamAcquireJpegStorage(&transfer->lease.jpeg, &transfer->reply.frame);
+        else
+            result = CameraCapture_StreamAcquire(consumer, &transfer->lease.raw, &transfer->reply.frame);
+    }
     if (result == SYS_ERR_BUSY)
         return;
     if (result != SYS_OK)
@@ -219,8 +234,8 @@ static void CameraFrame_Acquire(CameraTransfer_t *transfer, CameraFrameConsumer_
     }
 
     transfer->reply.type = APP_MESSAGE_FRAME_OFFER;
-    transfer->reply.stream_epoch = transfer->lease.generation;
-    transfer->reply.lease_id = transfer->lease.lease_id;
+    transfer->reply.stream_epoch = transfer->jpeg_storage ? transfer->lease.jpeg.session : transfer->lease.raw.generation;
+    transfer->reply.lease_id = transfer->jpeg_storage ? transfer->lease.jpeg.id : transfer->lease.raw.lease_id;
     transfer->reply.frame_id = ++s_frame_sequence;
     transfer->reply.timestamp_ms = Platform_TimeGetMs();
     transfer->state = CAMERA_TRANSFER_OFFER_PENDING;
@@ -256,7 +271,8 @@ static SysResult_t CameraFrame_AdvanceSlot(CameraFrameConsumer_t consumer, bool 
 
     if (transfer->state == CAMERA_TRANSFER_RELEASING)
     {
-        result = CameraCapture_StreamReleaseLease(&transfer->lease);
+        result = transfer->jpeg_storage ? CameraCapture_StreamReleaseJpegStorage(&transfer->lease.jpeg) :
+            CameraCapture_StreamReleaseLease(&transfer->lease.raw);
         if (result != SYS_OK)
             return result;
 
@@ -325,6 +341,8 @@ static SysResult_t CameraService_AdvanceFrames(bool admission)
     //原EventLoop仍只订阅服务命令。数据FIFO每轮有界处理并由轮询兜底。
     for (count = 0U; count < 4U && App_MessagesReceive(APP_CHANNEL_TO_CAMERA, &message); ++count)
         CameraFrame_Receive(CAMERA_FRAME_CONSUMER_USB, &message, admission);
+    for (count = 0U; count < 4U && App_MessagesReceive(APP_CHANNEL_STORAGE_TO_CAMERA, &message); ++count)
+        CameraFrame_Receive(CAMERA_FRAME_CONSUMER_STORAGE, &message, admission);
 
     return CameraFrame_Advance(admission, CameraFrame_Send);
 }

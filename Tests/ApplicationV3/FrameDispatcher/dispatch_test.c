@@ -56,7 +56,7 @@ static uint32_t Test_FourConsumers(void)
         CHECK(s_transfers[index].reply.frame_id == index + 1U);
         if (index + 1U < CAMERA_FRAME_CONSUMER_COUNT)
             CHECK(s_transfers[index + 1U].state == CAMERA_TRANSFER_REQUESTED);
-        held[index] = s_transfers[index].lease;
+        held[index] = s_transfers[index].lease.raw;
         frames[index] = s_transfers[index].reply.frame;
         for (prior = 0U; prior < index; ++prior)
             CHECK(held[prior].buffer_id != held[index].buffer_id);
@@ -90,7 +90,7 @@ static uint32_t Test_ConsumptionAndOldReturn(void)
     CHECK(CameraFrame_Advance(true, Test_Send) == SYS_OK);
     CHECK(CameraFrame_Advance(true, Test_Send) == SYS_OK);
     offer = s_delivered[consumer];
-    physical_buffer = s_transfers[consumer].lease.buffer_id;
+    physical_buffer = s_transfers[consumer].lease.raw.buffer_id;
 
     //先注入过期代次，再注入重复Return，核对实际槽和终结记录互不冒充。
     Test_Receive(consumer, APP_MESSAGE_FRAME_RETURN, 1U, offer.stream_epoch + 1U, offer.lease_id, true);

@@ -1352,6 +1352,30 @@ SysResult_t CameraCapture_StreamAcquire(CameraFrameConsumer_t consumer,
     return CameraStream_Acquire(&s_capture.stream, &s_capture.config, (uint8_t)consumer, lease, frame);
 }
 
+//录像从JPEG FIFO取得SD位，与Raw的物理账本完全独立。
+SysResult_t CameraCapture_StreamAcquireJpegStorage(CameraMjpegLease_t *lease, CameraFrame_t *frame)
+{
+    if (!s_capture.initialized || s_capture.mode != CAMERA_CAPTURE_MODE_STREAM ||
+        s_capture.state != CAMERA_CAPTURE_CAPTURING)
+        return SYS_ERR_INVALID_STATE;
+    if (s_capture.config.format != CAMERA_PIXEL_FORMAT_JPEG)
+        return SYS_ERR_NOT_SUPPORTED;
+    return CameraMjpegFifo_AcquireStorage(lease, frame);
+}
+
+//保留原错误排空转换，最后一个真实借用归还后才离开DRAINING。
+SysResult_t CameraCapture_StreamReleaseJpegStorage(const CameraMjpegLease_t *lease)
+{
+    SysResult_t result;
+
+    if (!CameraCapture_CanReturnStream() || s_capture.config.format != CAMERA_PIXEL_FORMAT_JPEG)
+        return SYS_ERR_INVALID_STATE;
+    result = CameraMjpegFifo_ReleaseLease(lease);
+    if (result == SYS_OK)
+        CameraCapture_FinishStreamDrain();
+    return result;
+}
+
 SysResult_t CameraCapture_StreamReleaseLease(const CameraFrameLease_t *lease)
 {
     uint32_t primask;

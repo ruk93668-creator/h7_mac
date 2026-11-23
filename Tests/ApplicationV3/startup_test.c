@@ -2280,6 +2280,85 @@ static uint32_t Test_BoardStress(uint32_t scenario)
 }
 #endif
 
+//录像以真实Service消息推进，AVI和SD后端由可注入夹具提供。
+static uint32_t Test_Recording(const AppV3Context_t *context, uint32_t scenario)
+{
+    uint32_t i;
+    AppMessage_t retired;
+
+    if (scenario != 90U)
+        fixture_video.camera.format = CAMERA_PIXEL_FORMAT_JPEG;
+    fixture_storage.segment_bytes = 1024U;
+    fixture_storage.segment_ms = 1000U;
+    CHECK(Test_HardwareBoot(context) == 0U);
+    if (scenario != 90U)
+    {
+        CHECK(CameraService_Request(1U, CAMERA_SERVICE_START, 0U) == SYS_OK);
+        CHECK(Test_ServiceStep(RUNTIME_TARGET_CAMERA) == SYS_OK);
+        Test_PollHardware(RUNTIME_TARGET_CAMERA);
+        g_hardware.frame_ready = true;
+        Test_PollHardware(RUNTIME_TARGET_CAMERA);
+        CHECK(Test_ReadHardwareResult(RUNTIME_TARGET_CAMERA, 1U, APP_V3_HW_ACTIVE, SYS_OK));
+    }
+    g_hardware.card_present = true;
+    owner = RUNTIME_TARGET_CONTROL;
+    CHECK(StorageService_Request(2U, STORAGE_SERVICE_RECORD_START, 0x51U) == SYS_OK);
+    CHECK(Test_ServiceStep(RUNTIME_TARGET_STORAGE) == SYS_OK);
+    Test_PollHardware(RUNTIME_TARGET_STORAGE);
+    if (scenario == 90U)
+    {
+        CHECK(Test_ReadHardwareResult(RUNTIME_TARGET_STORAGE, 2U, APP_V3_HW_READY, SYS_ERR_NOT_SUPPORTED));
+        CHECK(g_hardware.mount_calls == 0U);
+        return 0U;
+    }
+    CHECK(Test_ReadHardwareResult(RUNTIME_TARGET_STORAGE, 2U, APP_V3_HW_ACTIVE, SYS_OK));
+    CHECK(g_hardware.storage_writable && g_hardware.storage_owner);
+    if (scenario == 89U)
+        g_hardware.record_write_result = SYS_ERR_IO;
+    g_hardware.frame_ready = true;
+    Test_PollHardware(RUNTIME_TARGET_STORAGE);
+    Test_PollHardware(RUNTIME_TARGET_CAMERA);
+    Test_PollHardware(RUNTIME_TARGET_CAMERA);
+    if (scenario == 91U)
+    {
+        //已发布的帧在STOP后仍需完整归还，Storage不开始写该帧。
+        owner = RUNTIME_TARGET_CONTROL;
+        CHECK(StorageService_Request(3U, STORAGE_SERVICE_RECORD_STOP, 0U) == SYS_OK);
+        CHECK(Test_ServiceStep(RUNTIME_TARGET_STORAGE) == SYS_OK);
+    }
+    Test_PollHardware(RUNTIME_TARGET_STORAGE);
+    CHECK(g_hardware.frame_lease_releases == 0U);
+    CHECK(g_hardware.record_writes == (scenario == 91U ? 0U : 1U));
+    CHECK(g_hardware.record_finishes == 0U);
+    if (scenario == 88U)
+    {
+        owner = RUNTIME_TARGET_CONTROL;
+        CHECK(StorageService_Request(3U, STORAGE_SERVICE_RECORD_STOP, 0U) == SYS_OK);
+        CHECK(Test_ServiceStep(RUNTIME_TARGET_STORAGE) == SYS_OK);
+    }
+    for (i = 0U; i < 5U; ++i)
+    {
+        Test_PollHardware(RUNTIME_TARGET_CAMERA);
+        Test_PollHardware(RUNTIME_TARGET_STORAGE);
+    }
+    CHECK(g_hardware.frame_lease_releases == 1U);
+    CHECK(g_hardware.storage.open_files == 0U && !g_hardware.storage_owner);
+    CHECK(g_hardware.record_finishes == (scenario == 88U ? 1U : 0U));
+    owner = RUNTIME_TARGET_CAMERA;
+    CHECK(!App_MessagesReceive(APP_CHANNEL_STORAGE_TO_CAMERA, &retired));
+    owner = RUNTIME_TARGET_CONTROL;
+    if (scenario != 89U)
+        CHECK(Test_ReadHardwareResult(RUNTIME_TARGET_STORAGE, 3U, APP_V3_HW_READY, SYS_OK));
+    else
+    {
+        owner = RUNTIME_TARGET_CONTROL;
+        CHECK(StorageService_Request(3U, STORAGE_SERVICE_RECORD_QUERY, 0U) == SYS_OK);
+        CHECK(Test_ServiceStep(RUNTIME_TARGET_STORAGE) == SYS_OK);
+        CHECK(Test_ReadHardwareResult(RUNTIME_TARGET_STORAGE, 3U, APP_V3_HW_FAULT, SYS_OK));
+    }
+    return 0U;
+}
+
 uint32_t AppV3_TestRun(uint32_t scenario)
 {
     const AppV3Context_t *context;
@@ -2355,6 +2434,8 @@ uint32_t AppV3_TestRun(uint32_t scenario)
     if (scenario >= 75U && scenario <= 82U)
         return Test_RawUvcTransport(context, scenario);
 #endif
+    if (scenario >= 88U && scenario <= 91U)
+        return Test_Recording(context, scenario);
     if (scenario >= 70U && scenario <= 74U)
         return Test_FrameTransport(context, scenario);
 

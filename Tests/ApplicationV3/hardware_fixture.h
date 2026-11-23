@@ -27,6 +27,8 @@ typedef struct
     SysResult_t raw_submit_result;
     UsbUvcReaderProof_t raw_proof;
     uint8_t usb_bus_state, usb_previous_state;
+    uint32_t record_writes, record_finishes;
+    SysResult_t record_write_result;
     uint32_t mount_calls, unmount_calls, recover_calls;
     SysResult_t mount_result, unmount_result, recover_result;
     bool card_present, storage_owner, storage_writable, storage_busy;
