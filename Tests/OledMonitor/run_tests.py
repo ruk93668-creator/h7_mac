@@ -1,6 +1,6 @@
 """Compile production CM4 OLED/IPC view code with ARMCC5, then execute in Unicorn."""
 from pathlib import Path
-import json, subprocess, sys, struct, zlib
+import json, subprocess, sys, struct, zlib, time
 ROOT=Path(__file__).resolve().parents[2]
 HERE=Path(__file__).resolve().parent
 UI2='--ui2' in sys.argv
@@ -48,6 +48,7 @@ if UI2:
 if UI2:NAMES += ["UI2 U7 相位、抖动、短按、长按与Tick回绕"]
 if UI2:NAMES += ['UI4 动画中间帧、滚动、长文本与时间回绕', 'UI4 弹窗副本、确认、取消、绘制与超时']
 if UI2:NAMES += ['UI5 Camera与USB有效、过期、失联和故障模型', 'UI5 Ethernet/Storage缺失与本地诊断字段']
+if UI2:NAMES += ['UI6 6000帧连续状态切换、IPC抖动与跨Tick回绕']
 commands=[]
 def run(args):
  args=list(map(str,args));r=subprocess.run(args,cwd=ROOT,capture_output=True)
@@ -88,11 +89,15 @@ for opt in ['O0','O2']:
   for address,data in sections:u.mem_write(address,data)
   u.reg_write(UC_ARM_REG_SP,0x2003fff0);u.reg_write(UC_ARM_REG_LR,0x01000001);u.reg_write(UC_ARM_REG_R0,case)
   error=None
-  try:u.emu_start(entry|1,0x01000000,count=10000000)
+  started=time.perf_counter()
+  budget=2000000000 if case==81 else 10000000
+  try:u.emu_start(entry|1,0x01000000,count=budget)
   except Exception as exc:error=str(exc)
+  elapsed=time.perf_counter()-started
+  if not error and u.reg_read(UC_ARM_REG_PC)!=0x01000000:error="instruction budget exhausted before return"
   checks,line=struct.unpack('<2I',u.mem_read(symbols['g_result'],8))
   passed=not error and not line and u.reg_read(UC_ARM_REG_PC)==0x01000000 and u.reg_read(UC_ARM_REG_R0)==0
-  row=dict(case=case,name=name,optimization=opt,result='PASS' if passed else 'FAIL',checks=checks,failure_line=line,error=error)
+  row=dict(case=case,name=name,optimization=opt,result='PASS' if passed else 'FAIL',checks=checks,failure_line=line,error=error,host_seconds=round(elapsed,6))
   rows.append(row)
   if passed and opt=='O0' and case in [18,22,23,33,36,39]:
    address=struct.unpack('<I',u.mem_read(symbols['g_monitor_frame_address'],4))[0]

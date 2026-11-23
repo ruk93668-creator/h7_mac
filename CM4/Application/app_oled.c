@@ -6,6 +6,58 @@
 #include <stddef.h>
 #include <string.h>
 
+#if defined(OLED_UI6_TIMING) && OLED_UI6_TIMING
+#include "stm32h7xx.h"
+
+//仅调试版统计周期，正式版没有探针开销。
+typedef struct
+{
+    uint32_t clock_hz;
+    uint32_t dwt_ok;
+    uint32_t render_cycles;
+    uint32_t render_max_cycles;
+    uint32_t refresh_cycles;
+    uint32_t refresh_max_cycles;
+    uint32_t render_samples;
+    uint32_t refresh_samples;
+} AppOledTiming_t;
+
+volatile AppOledTiming_t g_oled_ui_timing;
+static uint32_t s_oled_refresh_started;
+
+static void App_OledTimingInit(void)
+{
+    uint32_t before;
+    SystemCoreClockUpdate();
+    g_oled_ui_timing.clock_hz = SystemCoreClock;
+    CoreDebug->DEMCR |= CoreDebug_DEMCR_TRCENA_Msk;
+    DWT->CYCCNT = 0U;
+    DWT->CTRL |= DWT_CTRL_CYCCNTENA_Msk;
+    before = DWT->CYCCNT;
+    __NOP();
+    __NOP();
+    g_oled_ui_timing.dwt_ok = DWT->CYCCNT != before;
+}
+
+static void App_OledTimingRender(uint32_t start)
+{
+    uint32_t elapsed = DWT->CYCCNT - start;
+    g_oled_ui_timing.render_cycles = elapsed;
+    if (elapsed > g_oled_ui_timing.render_max_cycles)
+        g_oled_ui_timing.render_max_cycles = elapsed;
+    g_oled_ui_timing.render_samples++;
+}
+
+static void App_OledTimingComplete(void)
+{
+    uint32_t elapsed = DWT->CYCCNT - s_oled_refresh_started;
+    g_oled_ui_timing.refresh_cycles = elapsed;
+    if (elapsed > g_oled_ui_timing.refresh_max_cycles)
+        g_oled_ui_timing.refresh_max_cycles = elapsed;
+    g_oled_ui_timing.refresh_samples++;
+}
+#endif
+
 #ifndef OLED_UI3_U7_ENABLED
 #define OLED_UI3_U7_ENABLED 1
 #endif
@@ -247,6 +299,9 @@ SysResult_t App_OledInit(void)
     g_oled_ui2_u7_result = App_OledU7Init();
 #endif
 #endif
+#if defined(OLED_UI6_TIMING) && OLED_UI6_TIMING
+    App_OledTimingInit();
+#endif
     s_app_oled = oled;
     return SYS_OK;
 }
@@ -290,7 +345,12 @@ void App_OledRun(void)
     //只有最后一页成功完成并回到IDLE，才计为整屏完成
     if (previous == OLED_REFRESH_WAIT_DATA &&
         s_app_oled->refresh_state == OLED_REFRESH_IDLE)
+    {
         g_oled_monitor_debug.completed_frames++;
+#if defined(OLED_UI6_TIMING) && OLED_UI6_TIMING
+        App_OledTimingComplete();
+#endif
+    }
 }
 
 //周期取得IPC副本并启动一轮完整界面刷新
@@ -299,6 +359,9 @@ static void App_OledRefresh(void *context)
     OledDevice_t *oled = context;
     IpcApplicationView_t view;
     SysResult_t result;
+#if defined(OLED_UI6_TIMING) && OLED_UI6_TIMING
+    uint32_t render_started;
+#endif
 
     //上一帧仍在发送时跳过，不能先清屏再发现设备忙
     if (oled->refresh_state != OLED_REFRESH_IDLE)
@@ -324,6 +387,9 @@ static void App_OledRefresh(void *context)
 
     //只在IDLE备份和绘图，后续刷新成功后这份Framebuffer一直保持不变
     memcpy(s_frame_backup, oled->framebuffer, sizeof(s_frame_backup));
+#if defined(OLED_UI6_TIMING) && OLED_UI6_TIMING
+    render_started = DWT->CYCCNT;
+#endif
 #if APP_OLED_UI_ENABLED
     if (s_ui2_state.current != OLED_UI_PAGE_MONITOR)
     {
@@ -364,6 +430,10 @@ static void App_OledRefresh(void *context)
     }
 
     //绘制完成才提交第一页，成功后交给主循环推进全部四页
+#if defined(OLED_UI6_TIMING) && OLED_UI6_TIMING
+    App_OledTimingRender(render_started);
+    s_oled_refresh_started = DWT->CYCCNT;
+#endif
     result = oled->ops->refresh(oled);
     g_oled_monitor_debug.last_result = result;
     if (result == SYS_OK)
