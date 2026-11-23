@@ -106,6 +106,62 @@ typedef struct
     uint32_t fault, flash_completion_unknown;
 } BspQspiWriteDiagnostics_t;
 
+typedef enum
+{
+    BSP_QSPI_FAULT_NONE = 0,
+    BSP_QSPI_FAULT_PREPARE,
+    BSP_QSPI_FAULT_HAL_INIT,
+    BSP_QSPI_FAULT_INIT_IDENTIFY,
+    BSP_QSPI_FAULT_READ,
+    BSP_QSPI_FAULT_WRITE_PREFLIGHT,
+    BSP_QSPI_FAULT_WREN,
+    BSP_QSPI_FAULT_MUTATION_COMMAND,
+    BSP_QSPI_FAULT_FLASH_PENDING,
+    BSP_QSPI_FAULT_WRITE_VERIFY,
+    BSP_QSPI_FAULT_CLEANUP
+} BspQspiFaultOrigin_t;
+
+typedef enum
+{
+    BSP_QSPI_CLEANUP_NONE = 0,
+    BSP_QSPI_CLEANUP_CHECK,
+    BSP_QSPI_CLEANUP_ABORT,
+    BSP_QSPI_CLEANUP_DEINIT,
+    BSP_QSPI_CLEANUP_PINS,
+    BSP_QSPI_CLEANUP_MUX,
+    BSP_QSPI_CLEANUP_GATE,
+    BSP_QSPI_CLEANUP_COMPLETE
+} BspQspiCleanupStage_t;
+
+typedef enum
+{
+    BSP_QSPI_RECOVERY_NONE = 0,
+    BSP_QSPI_RECOVERY_BLOCKED,
+    BSP_QSPI_RECOVERY_TICK,
+    BSP_QSPI_RECOVERY_CLEANUP,
+    BSP_QSPI_RECOVERY_INIT,
+    BSP_QSPI_RECOVERY_STATUS,
+    BSP_QSPI_RECOVERY_READY
+} BspQspiRecoveryStage_t;
+
+//独立快照，不改变既有诊断结构和 H1 调试报告的布局。
+typedef struct
+{
+    BspQspiFaultOrigin_t fault_origin;
+    uint32_t fault_stage, fault_latched;
+    SysResult_t primary_result, cleanup_result, last_cleanup_result;
+    BspQspiCleanupStage_t cleanup_stage, last_cleanup_stage;
+    uint32_t cleanup_attempted, fault_address, fault_opcode, hal_status, hal_error, hal_state;
+    uint32_t flash_completion_unknown, wren_possible, mutation_possible;
+    uint32_t recovery_attempts;
+    SysResult_t recovery_result;
+    BspQspiRecoveryStage_t recovery_stage;
+    uint32_t recovery_elapsed_ms, controller_idle_verified, flash_idle_verified;
+    uint32_t confirmed_write_address, confirmed_write_bytes, confirmed_write_opcode;
+} BspQspiFaultDiagnostics_t;
+
+SysResult_t BSP_QSPI_GetFaultDiagnostics(BspQspiFaultDiagnostics_t *diagnostics);
+
 //只允许 HAL Tick 可运行的普通线程；不注册 Initcall，不创建任务，不写 Flash。
 SysResult_t BSP_QSPI_Init(void);
 
