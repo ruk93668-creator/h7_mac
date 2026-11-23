@@ -1041,6 +1041,11 @@
               <FilePath>../CM4/Application/oled_ui.c</FilePath>
             </File>
             <File>
+              <FileName>oled_ui_draw.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>../CM4/Application/oled_ui_draw.c</FilePath>
+            </File>
+            <File>
               <FileName>app_oled.h</FileName>
               <FileType>5</FileType>
               <FilePath>../CM4/Application/app_oled.h</FilePath>

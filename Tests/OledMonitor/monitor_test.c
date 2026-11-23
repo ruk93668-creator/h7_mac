@@ -244,7 +244,11 @@ static uint32_t AppCase(uint32_t id)
 }
 
 //每个用例由仿真器重新装载ELF，静态状态不会串扰
+#include "ui1_cases.inc"
+
 uint32_t OledMonitor_TestRun(uint32_t id)
 {
+    if (id >= 61U)
+        return Ui1_Case(id);
     return id<=42U?UiCase(id):AppCase(id);
 }

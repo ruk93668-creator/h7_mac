@@ -1,5 +1,6 @@
 //OLED界面只使用IPC本地副本，通过Device Ops绘图，不访问共享内存或HAL
 #include "oled_ui.h"
+#include "oled_ui_draw.h"
 #include "ipc_runtime.h"
 #include <stddef.h>
 #include <string.h>
@@ -394,41 +395,87 @@ static const char *OledUi_Control(uint32_t state)
     }
 }
 
-//逐像素绘制一行文本
+//绘制可见字格，清除字格中未点亮的像素。
+static SysResult_t OledUi_DrawGlyph(OledDevice_t *oled,
+    int32_t x, int32_t y, uint8_t character)
+{
+    int32_t column, bit;
+    SysResult_t result;
+
+    if (character < 32U || character > 126U)
+        character = (uint8_t)'?';
+
+    for (column = 0; column < (int32_t)OLED_UI_CELL_WIDTH; column++)
+    {
+        int32_t px = x + column;
+        if (px < 0 || px >= (int32_t)OLED_WIDTH)
+            continue;
+
+        for (bit = 0; bit < (int32_t)OLED_UI_CELL_HEIGHT; bit++)
+        {
+            int32_t py = y + bit;
+            bool on = column < 5 && (s_ascii_font[character - 32U][column] & (1U << bit)) != 0U;
+            if (py < 0 || py >= (int32_t)OLED_HEIGHT)
+                continue;
+
+            result = oled->ops->draw_pixel(oled, (uint16_t)px, (uint16_t)py, on);
+            if (result != SYS_OK)
+                return result;
+        }
+    }
+    return SYS_OK;
+}
+
+//字符串只沿水平方向前进，最多检查到右边界的字格。
+static SysResult_t OledUi_DrawStringImpl(OledDevice_t *oled,
+    int32_t x, int32_t y, const char *text, size_t length)
+{
+    size_t index;
+    SysResult_t result;
+
+    if (y <= -(int32_t)OLED_UI_CELL_HEIGHT || y >= (int32_t)OLED_HEIGHT)
+        return SYS_OK;
+
+    for (index = 0U; index < length && x < (int32_t)OLED_WIDTH && text[index] != '\0'; index++)
+    {
+        if (x > -(int32_t)OLED_UI_CELL_WIDTH)
+        {
+            result = OledUi_DrawGlyph(oled, x, y, (uint8_t)text[index]);
+            if (result != SYS_OK)
+                return result;
+        }
+        x += (int32_t)OLED_UI_CELL_WIDTH;
+    }
+    return SYS_OK;
+}
+
+//保留现有监控行宽及Render的校验顺序。
 static SysResult_t OledUi_DrawText(OledDevice_t *oled,
     uint16_t x, uint16_t y, const char *text)
 {
-    uint32_t index, column, bit;
-    uint8_t character;
+    return OledUi_DrawStringImpl(oled, x, y, text, OLED_UI_COLUMNS);
+}
+
+//公开字符接口沿用单一字库和设备写权限检查。
+SysResult_t OledUi_DrawChar(OledDevice_t *oled, int16_t x, int16_t y, uint8_t character)
+{
+    SysResult_t result = OledUi_CheckWritable(oled);
+
+    if (result != SYS_OK)
+        return result;
+    return OledUi_DrawGlyph(oled, x, y, character);
+}
+
+SysResult_t OledUi_DrawString(OledDevice_t *oled,
+    int16_t x, int16_t y, const char *text, size_t length)
+{
     SysResult_t result;
 
-    //字符数和像素坐标都有限制，外部文本不会造成Framebuffer越界
-    for (index = 0U; index < OLED_UI_COLUMNS && text[index] != '\0'; index++)
-    {
-        character = (uint8_t)text[index];
-        if (character < 32U || character > 126U)
-            character = (uint8_t)'?';
+    if (text == NULL)
+        return SYS_ERR_INVALID_ARG;
 
-        //每个像素都经过Device绘图接口，未使用的第六列保持熄灭
-        for (column = 0U; column < OLED_UI_CELL_WIDTH; column++)
-        {
-            uint32_t px = (uint32_t)x + index * OLED_UI_CELL_WIDTH + column;
-            if (px >= OLED_WIDTH)
-                break;
-
-            for (bit = 0U; bit < OLED_UI_CELL_HEIGHT; bit++)
-            {
-                uint32_t py = (uint32_t)y + bit;
-                bool on = column < 5U && (s_ascii_font[character - 32U][column] & (1U << bit)) != 0U;
-                if (py >= OLED_HEIGHT)
-                    break;
-
-                result = oled->ops->draw_pixel(oled, (uint16_t)px, (uint16_t)py, on);
-                if (result != SYS_OK)
-                    return result;
-            }
-        }
-    }
-
-    return SYS_OK;
+    result = OledUi_CheckWritable(oled);
+    if (result != SYS_OK)
+        return result;
+    return OledUi_DrawStringImpl(oled, x, y, text, length);
 }

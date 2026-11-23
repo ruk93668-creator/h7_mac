@@ -24,12 +24,22 @@ NAMES=[
  'IPC接口失败不发送','绘图失败恢复原Framebuffer','Timer对象池满','缺失设备','设备未READY',
  '缺失Ops不建Timer','底部裁剪','极大坐标裁剪','A4保留且A5已删除']
 assert len(NAMES)==61
+NAMES += [
+ 'UI1 全屏边框、水平和垂直线逐像素比对',
+ 'UI1 极值交叉线、反向线、陡斜线和单点',
+ 'UI1 极值尺寸、负坐标裁剪、零尺寸与屏外图元',
+ 'UI1 反色跨三页且区域外保持原值',
+ 'UI1 圆角轮廓和半径限幅',
+ 'UI1 位图长度、空指针、裁剪和跨页',
+ 'UI1 ASCII边界、非NUL结尾及双向裁剪',
+ 'UI1 全部接口在非IDLE保持原帧及错误契约',
+]
 commands=[]
 def run(args):
  args=list(map(str,args));r=subprocess.run(args,cwd=ROOT,capture_output=True)
  text=(r.stdout+r.stderr).decode(errors='replace')
  commands.append(dict(command=subprocess.list2cmdline(args),exit_code=r.returncode,output=text))
- (HERE/'commands.json').write_text(json.dumps(commands,ensure_ascii=False,indent=2),encoding='utf-8')
+ (OUT/'commands.json').write_text(json.dumps(commands,ensure_ascii=False,indent=2),encoding='utf-8')
  if r.returncode or 'warning:' in text.lower():
   print(text,flush=True)
   raise RuntimeError('Build failed or warning')
@@ -43,7 +53,9 @@ for opt in ['O0','O2']:
  for inc in ['CM4/Device/Inc','CM4/BSP','Common/Inc','Board/Inc','CM4/Application','CM4/Framework','CM4/Platform','CM4/Service']:
   flags+=['-I',ROOT/inc]
  run(flags+['-c',HERE/'monitor_test.c','-o',obj])
- run([cc.with_name('armlink.exe'),obj,'--entry','OledMonitor_TestRun','--scatter',HERE/'test.sct',
+ draw=OUT/('draw_'+opt+'.o')
+ run(flags+['-c',ROOT/'CM4/Application/oled_ui_draw.c','-o',draw])
+ run([cc.with_name('armlink.exe'),obj,draw,'--entry','OledMonitor_TestRun','--scatter',HERE/'test.sct',
       '--keep=*(.framework_init)','--keep=*(.device_export)','--no_scanlib','-o',axf])
  with axf.open('rb') as f:
   elf=ELFFile(f);entry=elf.header['e_entry']
@@ -72,9 +84,9 @@ for opt in ['O0','O2']:
     for _ in range(scale):scan+=b'\0'+expanded
    def chunk(kind,data):return struct.pack('>I',len(data))+kind+data+struct.pack('>I',zlib.crc32(kind+data)&0xffffffff)
    png=b'\x89PNG\r\n\x1a\n'+chunk(b'IHDR',struct.pack('>2I5B',512,128,8,0,0,0,0))+chunk(b'IDAT',zlib.compress(scan))+chunk(b'IEND',b'')
-   (HERE/('preview_'+str(case)+'.png')).write_bytes(png)
+   (OUT/('preview_'+str(case)+'.png')).write_bytes(png)
   print(opt,case,row['result'],name,'line',line,flush=True)
 summary=dict(total=len(rows),passed=sum(r['result']=='PASS' for r in rows),failed=sum(r['result']=='FAIL' for r in rows),assertions=sum(r['checks'] for r in rows))
-(HERE/'results.json').write_text(json.dumps(dict(compiler=version,summary=summary,cases=rows,hardware_verified=False),ensure_ascii=False,indent=2),encoding='utf-8')
+(OUT/'results.json').write_text(json.dumps(dict(compiler=version,summary=summary,cases=rows,hardware_verified=False),ensure_ascii=False,indent=2),encoding='utf-8')
 print(summary)
 raise SystemExit(bool(summary['failed']))
