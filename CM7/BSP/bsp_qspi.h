@@ -7,6 +7,9 @@
 #define BSP_QSPI_EXPECTED_ID 0xEF4018UL
 #define BSP_QSPI_CAPACITY_BYTES 0x01000000UL
 #define BSP_QSPI_MAX_READ_TIMEOUT_MS 60000U
+#define BSP_QSPI_PAGE_BYTES 256U
+#define BSP_QSPI_SECTOR_BYTES 4096U
+#define BSP_QSPI_MAX_WRITE_TIMEOUT_MS 60000U
 
 typedef enum
 {
@@ -77,6 +80,31 @@ typedef struct
     uint32_t read_cleanup_elapsed_ms;
     BspQspiStatus_t status;
 } BspQspiDiagnostics_t;
+
+typedef enum
+{
+    BSP_QSPI_WRITE_CHECK = 0,
+    BSP_QSPI_WRITE_STATUS,
+    BSP_QSPI_WRITE_PREFLIGHT,
+    BSP_QSPI_WRITE_ENABLE,
+    BSP_QSPI_WRITE_WEL,
+    BSP_QSPI_WRITE_COMMAND,
+    BSP_QSPI_WRITE_TRANSMIT,
+    BSP_QSPI_WRITE_BUSY,
+    BSP_QSPI_WRITE_VERIFY,
+    BSP_QSPI_WRITE_COMPLETE
+} BspQspiWriteStage_t;
+
+typedef struct
+{
+    SysResult_t result, cleanup_result;
+    BspQspiWriteStage_t stage;
+    uint32_t opcode, address, requested, completed, failed_address;
+    uint32_t hal_status, hal_error, hal_state, cr, dcr, sr;
+    uint32_t sr1, sr2, sr3, status_valid_mask;
+    uint32_t elapsed_ms, cleanup_elapsed_ms;
+    uint32_t fault, flash_completion_unknown;
+} BspQspiWriteDiagnostics_t;
 
 //只允许 HAL Tick 可运行的普通线程；不注册 Initcall，不创建任务，不写 Flash。
 SysResult_t BSP_QSPI_Init(void);

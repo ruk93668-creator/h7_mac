@@ -24,6 +24,14 @@
 #define QSPI_F_MASK 0x003FF000UL
 #define QSPI_G_MASK 0x00003000UL
 
+typedef struct
+{
+    uint32_t address, bytes;
+} QspiWritePolicy_t;
+
+//当前没有获批测试扇区。公共写入入口只能使用这个不可变策略。
+static const QspiWritePolicy_t s_write_policy = {0U, 0U};
+
 static QSPI_HandleTypeDef s_qspi;
 static BspQspiDiagnostics_t s_diag;
 static bool s_busy;
