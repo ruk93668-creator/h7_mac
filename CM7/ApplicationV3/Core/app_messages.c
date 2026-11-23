@@ -46,19 +46,46 @@ SysResult_t App_MessagesInit(void)
     return SYS_OK;
 }
 
-//历史通道保留编号和静态槽，只允许当前存在生产消费者的两条通道
+//历史命令通道继续禁用；帧数据只走两条既有FIFO
 static bool AppMessages_IsActive(AppChannel_t channel)
 {
-    return channel == APP_CHANNEL_CONTROL || channel == APP_CHANNEL_STARTUP;
+    return channel == APP_CHANNEL_CONTROL || channel == APP_CHANNEL_STARTUP ||
+        channel == APP_CHANNEL_TO_CAMERA || channel == APP_CHANNEL_TO_USB;
+}
+
+//数据通道校验发送任务和方向，其他业务类型不得挤占租约归还通道
+static SysResult_t AppMessages_CheckFrameRoute(AppChannel_t channel, const AppMessage_t *message)
+{
+    if (channel == APP_CHANNEL_TO_CAMERA)
+    {
+        if (message->type != APP_MESSAGE_FRAME_REQUEST && message->type != APP_MESSAGE_FRAME_CANCEL_REQUEST &&
+            message->type != APP_MESSAGE_FRAME_RETURN && message->type != APP_MESSAGE_RETURN_ACK_CONSUMED)
+            return SYS_ERR_NOT_SUPPORTED;
+        if (message->source != RUNTIME_TARGET_USB)
+            return SYS_ERR_INVALID_STATE;
+    }
+    if (channel == APP_CHANNEL_TO_USB)
+    {
+        if (message->type != APP_MESSAGE_FRAME_OFFER && message->type != APP_MESSAGE_RETURN_ACK)
+            return SYS_ERR_NOT_SUPPORTED;
+        if (message->source != RUNTIME_TARGET_CAMERA)
+            return SYS_ERR_INVALID_STATE;
+    }
+    return SYS_OK;
 }
 
 //非阻塞提交消息
 SysResult_t App_MessagesSend(AppChannel_t channel, const AppMessage_t *message)
 {
+    SysResult_t result;
+
     if ((uint32_t)channel >= APP_CHANNEL_COUNT || message == NULL)
         return SYS_ERR_INVALID_ARG;
     if (!AppMessages_IsActive(channel))
         return SYS_ERR_NOT_SUPPORTED;
+    result = AppMessages_CheckFrameRoute(channel, message);
+    if (result != SYS_OK)
+        return result;
     //未分配通道或中断调用不能进入任务消息接口
     if (s_message_handles[channel].generation == 0U || Platform_SyncGetException() != 0U)
         return SYS_ERR_INVALID_STATE;
@@ -80,7 +107,8 @@ SysResult_t App_MessagesSend(AppChannel_t channel, const AppMessage_t *message)
 bool App_MessagesReceive(AppChannel_t channel, AppMessage_t *message)
 {
     if (!AppMessages_IsActive(channel) || message == NULL ||
-        s_message_handles[channel].generation == 0U || !App_MessagesIsOwner(s_message_receivers[channel]))
+        s_message_handles[channel].generation == 0U || Platform_SyncGetException() != 0U ||
+        !App_MessagesIsOwner(s_message_receivers[channel]))
         return false;
     //只有当前任务成功取走队首时才通知发送者重试
     if (AppV3Queue_Get(s_message_handles[channel], message, 0U) != SYS_OK)
@@ -93,6 +121,10 @@ bool App_MessagesReceive(AppChannel_t channel, AppMessage_t *message)
         (void)RuntimeEvent_Post(RUNTIME_TARGET_USB, RUNTIME_EVENT_WAKE);
         (void)RuntimeEvent_Post(RUNTIME_TARGET_STORAGE, RUNTIME_EVENT_WAKE);
     }
+    else if (channel == APP_CHANNEL_TO_CAMERA)
+        (void)RuntimeEvent_Post(RUNTIME_TARGET_USB, RUNTIME_EVENT_WAKE);
+    else if (channel == APP_CHANNEL_TO_USB)
+        (void)RuntimeEvent_Post(RUNTIME_TARGET_CAMERA, RUNTIME_EVENT_WAKE);
     return true;
 }
 

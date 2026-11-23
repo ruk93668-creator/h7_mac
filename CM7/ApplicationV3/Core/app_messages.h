@@ -28,7 +28,10 @@ typedef enum
     APP_MESSAGE_RETURN_ACK,
 
     //取消尚未取得帧的请求，不取消已有租借
-    APP_MESSAGE_FRAME_CANCEL_REQUEST
+    APP_MESSAGE_FRAME_CANCEL_REQUEST,
+
+    //USB实际消费终结回复后确认。同一上行FIFO保证确认先于下一请求
+    APP_MESSAGE_RETURN_ACK_CONSUMED
 } AppMessageType_t;
 
 //消息只复制描述与凭据，不复制SDRAM图像
@@ -40,7 +43,7 @@ typedef struct
     uint32_t stream_epoch;
     uint32_t lease_id;
     SysResult_t result;
-    //完整帧的分发元数据，不参与原租约三元组的匹配
+    //Dispatcher分配的帧序号；物理槽索引只保存在Camera的Media租约中
     uint32_t frame_id;
     uint32_t timestamp_ms;
     CameraFrame_t frame;
@@ -49,7 +52,7 @@ typedef struct
 //准备静态消息队列
 SysResult_t App_MessagesInit(void);
 
-//非阻塞提交消息；未接入的四条历史通道明确返回SYS_ERR_NOT_SUPPORTED
+//非阻塞提交消息；未接入通道或数据通道上的非法类型明确拒绝
 SysResult_t App_MessagesSend(AppChannel_t channel, const AppMessage_t *message);
 
 //取得当前任务所属通道的下一条消息

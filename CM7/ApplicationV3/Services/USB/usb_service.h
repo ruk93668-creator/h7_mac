@@ -39,6 +39,12 @@ typedef enum
 //由其他登记任务提交模拟命令；SYS_OK只表示成功入队
 SysResult_t UsbService_Request(uint32_t command_id, UsbServiceOperation_t operation, uint32_t argument);
 
+//仅UsbTask调用。Request成功表示入队；Read成功后直到Release期间可读取只读View。
+SysResult_t UsbService_RequestFrame(void);
+SysResult_t UsbService_ReadFrame(CameraFrame_t *frame, uint32_t *frame_id);
+SysResult_t UsbService_ReleaseFrame(void);
+SysResult_t UsbService_CancelFrameRequest(void);
+
 //静态Registry使用的启动入口，只有所属任务可以准备或撤回资源
 //由所属任务逐轮推进真实操作，返回建议等待毫秒数
 uint32_t AppV3_UsbAdvance(void);

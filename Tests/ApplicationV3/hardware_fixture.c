@@ -11,6 +11,8 @@ HardwareFixture_t g_hardware = {.card_present = true, .storage = {.state = 1U}};
 static bool s_camera_initialized, s_camera_running, s_camera_held;
 static CameraConfig_t s_camera_config;
 static CameraCaptureStopFacts_t s_camera_stop_facts;
+static CameraFrameLease_t s_frame_lease;
+static uint32_t s_capture_generation;
 static uint8_t s_sample;
 static bool s_uvc_descriptor_ready, s_uvc_registered;
 
@@ -68,6 +70,7 @@ SysResult_t CameraCapture_StartStream(void)
     if (!s_camera_initialized || s_camera_running)
         return SYS_ERR_INVALID_STATE;
     ++g_hardware.capture_start_calls;
+    ++s_capture_generation;
     s_camera_running = true;
     return g_hardware.camera_start_result;
 }
@@ -115,6 +118,28 @@ SysResult_t CameraCapture_StreamReleaseFrame(void)
     if (g_hardware.frame_release_result == SYS_OK)
         s_camera_held = false;
     return g_hardware.frame_release_result;
+}
+
+//A2的运输测试使用可控制的物理边界；A1真实物理账本另有联合专项。
+SysResult_t CameraCapture_StreamAcquire(CameraFrameConsumer_t consumer,
+    CameraFrameLease_t *lease, CameraFrame_t *frame)
+{
+    if (!CameraCapture_StreamGetFrame(frame))
+        return SYS_ERR_BUSY;
+    *lease = (CameraFrameLease_t){s_capture_generation, ++g_hardware.frame_acquire_calls, 0U, consumer};
+    s_frame_lease = *lease;
+    return SYS_OK;
+}
+
+SysResult_t CameraCapture_StreamReleaseLease(const CameraFrameLease_t *lease)
+{
+    if (!s_camera_held || lease->generation != s_frame_lease.generation ||
+        lease->lease_id != s_frame_lease.lease_id || lease->buffer_id != s_frame_lease.buffer_id ||
+        lease->consumer != s_frame_lease.consumer)
+        return SYS_ERR_INVALID_STATE;
+    ++g_hardware.frame_lease_releases;
+    s_camera_held = false;
+    return SYS_OK;
 }
 
 SysResult_t CameraCapture_Stop(void)

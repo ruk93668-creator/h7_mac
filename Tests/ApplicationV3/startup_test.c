@@ -1086,6 +1086,174 @@ static void Test_PollHardware(RuntimeEventTarget_t service)
     owner = RUNTIME_TARGET_CONTROL;
 }
 
+static uint32_t Test_FrameTransportBoot(const AppV3Context_t *context)
+{
+    CHECK(Test_HardwareBoot(context) == 0U);
+    CHECK(CameraService_Request(1U, CAMERA_SERVICE_START, 0U) == SYS_OK);
+    CHECK(Test_ServiceStep(RUNTIME_TARGET_CAMERA) == SYS_OK);
+    Test_PollHardware(RUNTIME_TARGET_CAMERA);
+    g_hardware.frame_ready = true;
+    Test_PollHardware(RUNTIME_TARGET_CAMERA);
+    CHECK(Test_ReadHardwareResult(RUNTIME_TARGET_CAMERA, 1U, APP_V3_HW_ACTIVE, SYS_OK));
+    CHECK(UsbService_Request(2U, USB_SERVICE_START, 0U) == SYS_OK);
+    CHECK(Test_ServiceStep(RUNTIME_TARGET_USB) == SYS_OK);
+    Test_PollHardware(RUNTIME_TARGET_USB);
+    g_hardware.usb_configured = true;
+    g_hardware.uvc_present = true;
+    Test_PollHardware(RUNTIME_TARGET_USB);
+    CHECK(Test_ReadHardwareResult(RUNTIME_TARGET_USB, 2U, APP_V3_HW_ACTIVE, SYS_OK));
+    return 0U;
+}
+
+static uint32_t Test_FillFrameQueue(AppChannel_t channel)
+{
+    AppMessage_t filler = {.command_id = 100U};
+    uint32_t index;
+
+    owner = channel == APP_CHANNEL_TO_CAMERA ? RUNTIME_TARGET_USB : RUNTIME_TARGET_CAMERA;
+    filler.source = owner;
+    filler.type = channel == APP_CHANNEL_TO_CAMERA ? APP_MESSAGE_FRAME_CANCEL_REQUEST : APP_MESSAGE_FRAME_OFFER;
+    for (index = 0U; index < 4U; ++index)
+        CHECK(App_MessagesSend(channel, &filler) == SYS_OK);
+    CHECK(App_MessagesSend(channel, &filler) == SYS_ERR_NO_RESOURCE);
+    return 0U;
+}
+
+static uint32_t Test_FrameTransport(const AppV3Context_t *context, uint32_t scenario)
+{
+    CameraFrame_t frame;
+    uint32_t frame_id, consumed;
+    AppMessage_t message = {.type = APP_MESSAGE_FRAME_REQUEST, .source = RUNTIME_TARGET_USB, .command_id = 1U};
+    bool pressure = scenario == 71U;
+    bool stop_camera = scenario == 72U;
+    bool stop_usb = scenario == 74U;
+
+    CHECK(Test_FrameTransportBoot(context) == 0U);
+    //权限按当前任务及消息方向判断，不能伪造已登记任务的source字段。
+    CHECK(App_MessagesSend(APP_CHANNEL_TO_CAMERA, &message) == SYS_ERR_INVALID_STATE);
+    owner = RUNTIME_TARGET_USB;
+    CHECK(App_MessagesSend(APP_CHANNEL_TO_USB, &message) == SYS_ERR_NOT_SUPPORTED);
+    CHECK(!App_MessagesReceive(APP_CHANNEL_TO_CAMERA, &message));
+    notify_fails = true;
+    if (pressure)
+    {
+        CHECK(Test_FillFrameQueue(APP_CHANNEL_TO_CAMERA) == 0U);
+        CHECK(UsbService_RequestFrame() == SYS_ERR_NO_RESOURCE);
+        Test_PollHardware(RUNTIME_TARGET_CAMERA);
+        owner = RUNTIME_TARGET_USB;
+    }
+    CHECK(UsbService_RequestFrame() == SYS_OK);
+    CHECK(UsbService_RequestFrame() == SYS_ERR_BUSY);
+    g_hardware.frame_ready = true;
+    Test_PollHardware(RUNTIME_TARGET_CAMERA);
+    CHECK(g_hardware.frame_acquire_calls == 1U);
+
+    if (scenario == 73U)
+    {
+        owner = RUNTIME_TARGET_USB;
+        CHECK(UsbService_CancelFrameRequest() == SYS_OK);
+        Test_PollHardware(RUNTIME_TARGET_USB);
+        Test_PollHardware(RUNTIME_TARGET_CAMERA);
+        CHECK(g_hardware.frame_lease_releases == 1U);
+        Test_PollHardware(RUNTIME_TARGET_CAMERA);
+        Test_PollHardware(RUNTIME_TARGET_USB);
+        owner = RUNTIME_TARGET_USB;
+        CHECK(UsbService_ReadFrame(&frame, &frame_id) == SYS_ERR_INVALID_STATE);
+        Test_PollHardware(RUNTIME_TARGET_CAMERA);
+        CHECK(CameraService_Request(3U, CAMERA_SERVICE_STOP, 0U) == SYS_OK);
+        CHECK(Test_ServiceStep(RUNTIME_TARGET_CAMERA) == SYS_OK);
+        Test_PollHardware(RUNTIME_TARGET_CAMERA);
+        CHECK(Test_ReadHardwareResult(RUNTIME_TARGET_CAMERA, 3U, APP_V3_HW_READY, SYS_OK));
+        return 0U;
+    }
+
+    if (pressure)
+        CHECK(Test_FillFrameQueue(APP_CHANNEL_TO_USB) == 0U);
+    Test_PollHardware(RUNTIME_TARGET_CAMERA);
+    Test_PollHardware(RUNTIME_TARGET_USB);
+    owner = RUNTIME_TARGET_USB;
+    if (pressure)
+    {
+        CHECK(UsbService_ReadFrame(&frame, &frame_id) == SYS_ERR_BUSY);
+        Test_PollHardware(RUNTIME_TARGET_CAMERA);
+        Test_PollHardware(RUNTIME_TARGET_USB);
+        owner = RUNTIME_TARGET_USB;
+    }
+    CHECK(UsbService_ReadFrame(&frame, &frame_id) == SYS_OK && frame_id == 1U);
+    CHECK(frame.size_bytes == 38400U && frame.data != NULL);
+
+    if (stop_camera)
+    {
+        owner = RUNTIME_TARGET_CONTROL;
+        CHECK(CameraService_Request(3U, CAMERA_SERVICE_STOP, 0U) == SYS_OK);
+        CHECK(Test_ServiceStep(RUNTIME_TARGET_CAMERA) == SYS_OK);
+        Test_PollHardware(RUNTIME_TARGET_CAMERA);
+        CHECK(g_hardware.sensor_stop_calls == 0U && g_hardware.frame_lease_releases == 0U);
+        owner = RUNTIME_TARGET_USB;
+        //错误代次的RETURN即使从合法任务送来，也不能解除发布的租约。
+        message.type = APP_MESSAGE_FRAME_RETURN;
+        message.stream_epoch = 2U;
+        message.lease_id = 1U;
+        CHECK(App_MessagesSend(APP_CHANNEL_TO_CAMERA, &message) == SYS_OK);
+        Test_PollHardware(RUNTIME_TARGET_CAMERA);
+        CHECK(g_hardware.frame_lease_releases == 0U);
+        owner = RUNTIME_TARGET_USB;
+    }
+
+    if (stop_usb)
+    {
+        owner = RUNTIME_TARGET_CONTROL;
+        CHECK(UsbService_Request(3U, USB_SERVICE_STOP, 0U) == SYS_OK);
+        CHECK(Test_ServiceStep(RUNTIME_TARGET_USB) == SYS_OK);
+        Test_PollHardware(RUNTIME_TARGET_USB);
+        CHECK(g_hardware.usb_stop_calls == 0U && g_hardware.frame_lease_releases == 0U);
+        owner = RUNTIME_TARGET_USB;
+        CHECK(UsbService_RequestFrame() == SYS_ERR_INVALID_STATE);
+    }
+
+    if (pressure)
+        CHECK(Test_FillFrameQueue(APP_CHANNEL_TO_CAMERA) == 0U);
+    CHECK(UsbService_ReleaseFrame() == SYS_OK);
+    Test_PollHardware(RUNTIME_TARGET_USB);
+    if (pressure)
+    {
+        Test_PollHardware(RUNTIME_TARGET_CAMERA);
+        CHECK(g_hardware.frame_lease_releases == 0U);
+        Test_PollHardware(RUNTIME_TARGET_USB);
+        CHECK(Test_FillFrameQueue(APP_CHANNEL_TO_USB) == 0U);
+    }
+    Test_PollHardware(RUNTIME_TARGET_CAMERA);
+    CHECK(g_hardware.frame_lease_releases == 1U);
+    Test_PollHardware(RUNTIME_TARGET_CAMERA);
+
+    if (stop_camera)
+    {
+        CHECK(AppV3Business_Drain(&consumed) == SYS_OK && consumed == 0U);
+        CHECK(g_hardware.sensor_stop_calls == 0U);
+    }
+    if (pressure)
+    {
+        Test_PollHardware(RUNTIME_TARGET_USB);
+        Test_PollHardware(RUNTIME_TARGET_CAMERA);
+        //ACK现在已经入队。填满上行使USB保留消费确认并拒绝下一请求。
+        CHECK(Test_FillFrameQueue(APP_CHANNEL_TO_CAMERA) == 0U);
+        Test_PollHardware(RUNTIME_TARGET_USB);
+        owner = RUNTIME_TARGET_USB;
+        CHECK(UsbService_RequestFrame() == SYS_ERR_BUSY);
+        Test_PollHardware(RUNTIME_TARGET_CAMERA);
+    }
+    Test_PollHardware(RUNTIME_TARGET_USB);
+    Test_PollHardware(RUNTIME_TARGET_CAMERA);
+    if (stop_camera)
+        CHECK(Test_ReadHardwareResult(RUNTIME_TARGET_CAMERA, 3U, APP_V3_HW_READY, SYS_OK));
+    else
+        CHECK(g_hardware.sensor_stop_calls == 0U);
+    if (stop_usb)
+        CHECK(Test_ReadHardwareResult(RUNTIME_TARGET_USB, 3U, APP_V3_HW_READY, SYS_OK));
+    CHECK(g_hardware.frame_lease_releases == 1U);
+    return 0U;
+}
+
 static uint32_t Test_CameraHardware(const AppV3Context_t *context)
 {
     AppV3Queue_t queue;
@@ -2078,6 +2246,9 @@ uint32_t AppV3_TestRun(uint32_t scenario)
         return Test_BoardStress(scenario);
 #endif
 #endif
+
+    if (scenario >= 70U && scenario <= 74U)
+        return Test_FrameTransport(context, scenario);
 
     if (scenario >= 63U && scenario <= 69U)
         return Test_UsbSuspend(context, scenario);

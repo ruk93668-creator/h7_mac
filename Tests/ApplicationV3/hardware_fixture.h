@@ -13,6 +13,7 @@ typedef struct
     uint32_t capture_init_calls, capture_start_calls, capture_stop_calls, frame_release_calls;
     SysResult_t sensor_stop_result, camera_start_result, camera_stop_result, frame_release_result;
     bool frame_ready, stale_camera_stop;
+    uint32_t frame_acquire_calls, frame_lease_releases;
     uint32_t camera_completed, camera_dropped;
     uint32_t uvc_configure_calls, uvc_register_calls, usb_start_calls, usb_stop_calls, usb_cancel_calls;
     SysResult_t usb_stop_result, usb_result, usb_cancel_result, usb_stream_result;

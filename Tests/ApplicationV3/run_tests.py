@@ -78,6 +78,8 @@ def main():
                 scenarios.extend((61, 62))
         if args.board_smoke in ("off", "usb"):
             scenarios = [*scenarios, *range(63, 70)]
+        if not smoke_selection:
+            scenarios = [*scenarios, *range(70, 75)]
         for scenario in scenarios:
             row = harness.execute(name, "AppV3_TestRun", scenario)
             if scenario < 49:

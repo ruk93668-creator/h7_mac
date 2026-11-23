@@ -3,6 +3,7 @@
 #include "camera_capture.h"
 #include "ov5640_device.h"
 #include "platform_time.h"
+#include "../../Core/app_messages.h"
 
 
 typedef struct
@@ -97,6 +98,237 @@ static const CameraServiceHandler_t s_handlers[CAMERA_SERVICE_OP_COUNT] =
 #define CAMERA_HW_MEDIA_STOPPED 4U
 #define CAMERA_HW_DEVICE_ERROR 8U
 
+//每个消费者一个有界交接记录。Media才拥有物理槽，Dispatcher只保存凭据。
+typedef enum
+{
+    CAMERA_TRANSFER_EMPTY = 0,
+    CAMERA_TRANSFER_REQUESTED,
+    CAMERA_TRANSFER_OFFER_PENDING,
+    CAMERA_TRANSFER_PUBLISHED,
+    CAMERA_TRANSFER_RELEASING,
+    CAMERA_TRANSFER_TERMINAL_PENDING,
+    CAMERA_TRANSFER_WAIT_CONSUMED
+} CameraTransferState_t;
+
+typedef struct
+{
+    CameraTransferState_t state;
+    CameraFrameLease_t lease;
+    AppMessage_t reply;
+    uint32_t last_request;
+    bool admitted;
+    bool reject_offer;
+} CameraTransfer_t;
+
+typedef SysResult_t (*CameraFrameSend_t)(CameraFrameConsumer_t consumer, const AppMessage_t *message);
+
+static CameraTransfer_t s_transfers[CAMERA_FRAME_CONSUMER_COUNT];
+static uint32_t s_frame_sequence;
+static uint8_t s_next_consumer;
+
+//生产阶段只有UsbTask的物理队列。测试在Camera所有者内替换三路模拟消费者的发送端。
+static SysResult_t CameraFrame_Send(CameraFrameConsumer_t consumer, const AppMessage_t *message)
+{
+    if (consumer != CAMERA_FRAME_CONSUMER_USB)
+        return SYS_ERR_NOT_SUPPORTED;
+    return App_MessagesSend(APP_CHANNEL_TO_USB, message);
+}
+
+//只有完整的事务标识能改变已发布租约；帧序号和图像地址均不参与归还
+static bool CameraFrame_Matches(const CameraTransfer_t *transfer, const AppMessage_t *message)
+{
+    return message->command_id == transfer->last_request &&
+        message->stream_epoch == transfer->reply.stream_epoch &&
+        message->lease_id == transfer->reply.lease_id;
+}
+
+static void CameraFrame_Terminal(CameraTransfer_t *transfer, AppMessageType_t type, SysResult_t result)
+{
+    //清除View。成功归还后任何回复都不得再携带旧物理地址。
+    transfer->reply.type = type;
+    transfer->reply.result = result;
+    transfer->reply.frame = (CameraFrame_t){0};
+    transfer->state = CAMERA_TRANSFER_TERMINAL_PENDING;
+}
+
+static void CameraFrame_Receive(CameraFrameConsumer_t consumer, const AppMessage_t *message, bool admission)
+{
+    CameraTransfer_t *transfer = &s_transfers[consumer];
+
+    if (message->result != SYS_OK)
+        return;
+    if (message->type == APP_MESSAGE_FRAME_REQUEST)
+    {
+        //同一路FIFO的请求号单调递增。终结未消费时不能覆盖原记录。
+        if (transfer->state != CAMERA_TRANSFER_EMPTY || message->command_id <= transfer->last_request ||
+            message->stream_epoch != 0U || message->lease_id != 0U)
+            return;
+        transfer->last_request = message->command_id;
+        transfer->reply = (AppMessage_t){.source = RUNTIME_TARGET_CAMERA, .command_id = message->command_id};
+        transfer->admitted = admission;
+        transfer->state = CAMERA_TRANSFER_REQUESTED;
+        if (!admission)
+            CameraFrame_Terminal(transfer, APP_MESSAGE_FRAME_OFFER, SYS_ERR_INVALID_STATE);
+        return;
+    }
+
+    if (message->type == APP_MESSAGE_FRAME_CANCEL_REQUEST &&
+        message->command_id == transfer->last_request &&
+        message->stream_epoch == 0U && message->lease_id == 0U)
+    {
+        //已入下行FIFO的OFFER无法撤回，由消费者看到同一OFFER后按身份归还。
+        if (transfer->state == CAMERA_TRANSFER_REQUESTED)
+            CameraFrame_Terminal(transfer, APP_MESSAGE_FRAME_OFFER, SYS_ERR_INVALID_STATE);
+        else if (transfer->state == CAMERA_TRANSFER_OFFER_PENDING)
+        {
+            transfer->reject_offer = true;
+            transfer->state = CAMERA_TRANSFER_RELEASING;
+        }
+        return;
+    }
+
+    if (!CameraFrame_Matches(transfer, message))
+        return;
+    if (message->type == APP_MESSAGE_FRAME_RETURN && transfer->state == CAMERA_TRANSFER_PUBLISHED)
+        transfer->state = CAMERA_TRANSFER_RELEASING;
+    else if (message->type == APP_MESSAGE_RETURN_ACK_CONSUMED &&
+        transfer->state == CAMERA_TRANSFER_WAIT_CONSUMED)
+    {
+        //保留退休高水位，重复消息不得命中下一请求。
+        transfer->lease = (CameraFrameLease_t){0};
+        transfer->reply = (AppMessage_t){.command_id = 0U};
+        transfer->admitted = false;
+        transfer->reject_offer = false;
+        transfer->state = CAMERA_TRANSFER_EMPTY;
+    }
+}
+
+static void CameraFrame_Acquire(CameraTransfer_t *transfer, CameraFrameConsumer_t consumer)
+{
+    SysResult_t result = SYS_ERR_NO_RESOURCE;
+
+    //序号用于观测分发顺序，不使用任意地址或缓冲区号编码
+    if (s_frame_sequence != UINT32_MAX)
+        result = CameraCapture_StreamAcquire(consumer, &transfer->lease, &transfer->reply.frame);
+    if (result == SYS_ERR_BUSY)
+        return;
+    if (result != SYS_OK)
+    {
+        CameraFrame_Terminal(transfer, APP_MESSAGE_FRAME_OFFER, result);
+        return;
+    }
+
+    transfer->reply.type = APP_MESSAGE_FRAME_OFFER;
+    transfer->reply.stream_epoch = transfer->lease.generation;
+    transfer->reply.lease_id = transfer->lease.lease_id;
+    transfer->reply.frame_id = ++s_frame_sequence;
+    transfer->reply.timestamp_ms = Platform_TimeGetMs();
+    transfer->state = CAMERA_TRANSFER_OFFER_PENDING;
+}
+
+//按每轮一次推进，失败保留原物理身份和待提交回复
+static SysResult_t CameraFrame_AdvanceSlot(CameraFrameConsumer_t consumer, bool admission, CameraFrameSend_t send)
+{
+    CameraTransfer_t *transfer = &s_transfers[consumer];
+    SysResult_t result;
+
+    if (transfer->state == CAMERA_TRANSFER_REQUESTED)
+    {
+        if (admission)
+            CameraFrame_Acquire(transfer, consumer);
+        else
+            CameraFrame_Terminal(transfer, APP_MESSAGE_FRAME_OFFER, SYS_ERR_INVALID_STATE);
+        return SYS_OK;
+    }
+
+    if (transfer->state == CAMERA_TRANSFER_OFFER_PENDING)
+    {
+        if (!admission)
+        {
+            //停止后只撤销从未公开的View，不撤销任何已发布租约
+            transfer->reject_offer = true;
+            transfer->state = CAMERA_TRANSFER_RELEASING;
+        }
+        else if (send(consumer, &transfer->reply) == SYS_OK)
+            transfer->state = CAMERA_TRANSFER_PUBLISHED;
+        return SYS_OK;
+    }
+
+    if (transfer->state == CAMERA_TRANSFER_RELEASING)
+    {
+        result = CameraCapture_StreamReleaseLease(&transfer->lease);
+        if (result != SYS_OK)
+            return result;
+
+        //取消未发送OFFER时，负向终结仍使用零租约身份
+        if (transfer->reject_offer)
+        {
+            transfer->reply.stream_epoch = 0U;
+            transfer->reply.lease_id = 0U;
+            transfer->reply.frame_id = 0U;
+            CameraFrame_Terminal(transfer, APP_MESSAGE_FRAME_OFFER, SYS_ERR_INVALID_STATE);
+        }
+        else
+            CameraFrame_Terminal(transfer, APP_MESSAGE_RETURN_ACK, SYS_OK);
+        return SYS_OK;
+    }
+
+    if (transfer->state == CAMERA_TRANSFER_TERMINAL_PENDING && send(consumer, &transfer->reply) == SYS_OK)
+        transfer->state = CAMERA_TRANSFER_WAIT_CONSUMED;
+    return SYS_OK;
+}
+
+static SysResult_t CameraFrame_Advance(bool admission, CameraFrameSend_t send)
+{
+    uint32_t offset;
+    uint8_t scan_start = s_next_consumer;
+    bool priority_advanced = false;
+    SysResult_t first_error = SYS_OK;
+
+    //初始优先USB，随后轮换起点。每个挂起的消费者每轮只推进一次。
+    for (offset = 0U; offset < CAMERA_FRAME_CONSUMER_COUNT; ++offset)
+    {
+        CameraFrameConsumer_t consumer =
+            (CameraFrameConsumer_t)((scan_start + offset) % CAMERA_FRAME_CONSUMER_COUNT);
+        CameraTransferState_t before = s_transfers[consumer].state;
+        SysResult_t result = CameraFrame_AdvanceSlot(consumer, admission && first_error == SYS_OK, send);
+
+        //空转不改变优先级；首个成功借出的消费者把下一轮优先级交给后继。
+        if (!priority_advanced && before == CAMERA_TRANSFER_REQUESTED &&
+            s_transfers[consumer].state == CAMERA_TRANSFER_OFFER_PENDING)
+        {
+            s_next_consumer = (uint8_t)((consumer + 1U) % CAMERA_FRAME_CONSUMER_COUNT);
+            priority_advanced = true;
+        }
+        if (result != SYS_OK && result != SYS_ERR_BUSY && first_error == SYS_OK)
+            first_error = result;
+    }
+    return first_error;
+}
+
+static bool CameraFrame_Draining(void)
+{
+    uint32_t index;
+
+    //只等待关闭前已受理的事务。关闭后拒绝的新请求不能拖延本次STOP。
+    for (index = 0U; index < CAMERA_FRAME_CONSUMER_COUNT; ++index)
+        if (s_transfers[index].admitted)
+            return true;
+    return false;
+}
+
+static SysResult_t CameraService_AdvanceFrames(bool admission)
+{
+    AppMessage_t message;
+    uint32_t count;
+
+    //原EventLoop仍只订阅服务命令。数据FIFO每轮有界处理并由轮询兜底。
+    for (count = 0U; count < 4U && App_MessagesReceive(APP_CHANNEL_TO_CAMERA, &message); ++count)
+        CameraFrame_Receive(CAMERA_FRAME_CONSUMER_USB, &message, admission);
+
+    return CameraFrame_Advance(admission, CameraFrame_Send);
+}
+
 //今后只由CameraTask调用。Device Init已在Framework完成，Media Init按本配置只成功一次
 static SysResult_t CameraService_StartCapture(void)
 {
@@ -143,24 +375,33 @@ static SysResult_t CameraService_StartCapture(void)
     return result;
 }
 
-//仅检查本任务借到的完整帧，然后立刻归还，任何图像指针均不进入消息
-static SysResult_t CameraService_Sample(void)
+//推进真实Media并刷新统计，ACTIVE期间不得借走待分发帧
+static SysResult_t CameraService_ObserveMedia(void)
 {
-    CameraFrame_t frame = {0};
     CameraCaptureStats_t stats;
     SysResult_t result;
-    bool valid;
 
     CameraCapture_Process();
     result = CameraCapture_GetLastResult();
     if (result != SYS_OK)
         return result;
-    //即使本轮没有可取帧，也更新Media的完成和丢帧统计
     result = CameraCapture_GetStats(&stats);
     if (result != SYS_OK)
         return result;
     s_camera.hardware.primary = stats.completed_frames;
     s_camera.hardware.detail = stats.dropped_frames;
+    return SYS_OK;
+}
+
+//只有START首帧自检同步借出并立即归还，之后才开放Dispatcher
+static SysResult_t CameraService_Sample(void)
+{
+    CameraFrame_t frame = {0};
+    SysResult_t result = CameraService_ObserveMedia();
+    bool valid;
+
+    if (result != SYS_OK)
+        return result;
     if (!CameraCapture_StreamGetFrame(&frame))
         return SYS_ERR_BUSY;
 
@@ -232,6 +473,9 @@ static SysResult_t CameraService_StopCapture(void)
     result = CameraService_StopMedia();
     if (result != SYS_OK)
         return result;
+    //物理停机与消费确认分别证明；未消费的已受理ACK不能提前退休。
+    if (CameraFrame_Draining())
+        return SYS_ERR_BUSY;
 
     if (s_camera.sensor != NULL && s_camera.sensor->base.state == DEVICE_STATE_ERROR)
     {
@@ -300,16 +544,26 @@ uint32_t AppV3_CameraAdvance(void)
         return APP_EVENTS_WAIT_FOREVER;
     if (s_camera.hardware.state == APP_V3_HW_ACTIVE)
     {
-        result = CameraService_Sample();
+        result = CameraService_ObserveMedia();
         if (result != SYS_OK && result != SYS_ERR_BUSY)
         {
-            s_camera.hardware.first_fault = result;
+            if (s_camera.hardware.first_fault == SYS_OK)
+                s_camera.hardware.first_fault = result;
             s_camera.hardware.state = APP_V3_HW_FAULT;
         }
-        return CAMERA_HW_POLL_MS;
     }
-    if (!s_camera.request.pending)
-        return APP_EVENTS_WAIT_FOREVER;
+
+    result = CameraService_AdvanceFrames(s_camera.hardware.state == APP_V3_HW_ACTIVE);
+    if (result != SYS_OK)
+    {
+        //真实归还错误仍须留账并推进；ACTIVE立即关闭新的借出。
+        if (s_camera.hardware.first_fault == SYS_OK)
+            s_camera.hardware.first_fault = result;
+        if (s_camera.hardware.state == APP_V3_HW_ACTIVE)
+            s_camera.hardware.state = APP_V3_HW_FAULT;
+    }
+    if (s_camera.hardware.state == APP_V3_HW_ACTIVE || !s_camera.request.pending)
+        return CAMERA_HW_POLL_MS;
 
     now = Platform_TimeGetMs();
     if (s_camera.hardware.state == APP_V3_HW_STARTING)

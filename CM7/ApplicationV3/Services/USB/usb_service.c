@@ -1,4 +1,5 @@
 #include "usb_service.h"
+#include "../../Core/app_messages.h"
 #include "../../Tasks/service_tasks.h"
 #include "usb_device.h"
 #include "usb_uvc.h"
@@ -98,6 +99,190 @@ static const UsbServiceHandler_t s_handlers[USB_SERVICE_OP_COUNT] =
 #define USB_HW_FRAME_HELD 4U
 
 //Class配置在Boot后仅成功一次，重新连接仍复用原描述符
+//UsbTask拥有交接端点。它只记录读取权和运输状态，本阶段不调用UVC帧提交。
+typedef enum
+{
+    USB_FRAME_IDLE = 0,
+    USB_FRAME_WAIT_OFFER,
+    USB_FRAME_CANCEL_PENDING,
+    USB_FRAME_CANCEL_SENT,
+    USB_FRAME_OFFERED,
+    USB_FRAME_READING,
+    USB_FRAME_RETURN_PENDING,
+    USB_FRAME_WAIT_ACK,
+    USB_FRAME_CONSUMED_PENDING
+} UsbFrameState_t;
+
+static struct
+{
+    UsbFrameState_t state;
+    uint32_t request_id;
+    AppMessage_t transfer;
+    SysResult_t result;
+} s_frame;
+
+//失联或停止先停止新请求。已经交给本地读者的帧须由读者明确结束读取。
+static void UsbFrame_Close(void)
+{
+    if (s_frame.state == USB_FRAME_WAIT_OFFER)
+        s_frame.state = USB_FRAME_CANCEL_PENDING;
+    else if (s_frame.state == USB_FRAME_OFFERED)
+    {
+        s_frame.transfer.frame = (CameraFrame_t){0};
+        s_frame.state = USB_FRAME_RETURN_PENDING;
+    }
+}
+
+static void UsbFrame_Receive(const AppMessage_t *message)
+{
+    if (message->source != RUNTIME_TARGET_CAMERA || message->command_id != s_frame.request_id)
+        return;
+
+    if (message->type == APP_MESSAGE_FRAME_OFFER &&
+        (s_frame.state == USB_FRAME_WAIT_OFFER || s_frame.state == USB_FRAME_CANCEL_PENDING ||
+         s_frame.state == USB_FRAME_CANCEL_SENT))
+    {
+        //负向OFFER同样需要消费确认，避免最后一笔取消无法退休。
+        if (message->result != SYS_OK && message->stream_epoch == 0U && message->lease_id == 0U)
+        {
+            s_frame.transfer = *message;
+            s_frame.result = message->result;
+            s_frame.state = USB_FRAME_CONSUMED_PENDING;
+        }
+        else if (message->result == SYS_OK && message->stream_epoch != 0U && message->lease_id != 0U)
+        {
+            bool can_read = s_frame.state == USB_FRAME_WAIT_OFFER &&
+                message->frame.data != NULL && message->frame.size_bytes != 0U;
+            s_frame.transfer = *message;
+            s_frame.state = USB_FRAME_OFFERED;
+            if (!can_read)
+            {
+                s_frame.result = SYS_ERR_INVALID_STATE;
+                UsbFrame_Close();
+            }
+        }
+    }
+    else if (message->type == APP_MESSAGE_RETURN_ACK && s_frame.state == USB_FRAME_WAIT_ACK &&
+        message->stream_epoch == s_frame.transfer.stream_epoch &&
+        message->lease_id == s_frame.transfer.lease_id && message->result == SYS_OK)
+    {
+        if (s_frame.result == SYS_ERR_BUSY)
+            s_frame.result = SYS_OK;
+        s_frame.state = USB_FRAME_CONSUMED_PENDING;
+    }
+}
+
+static void UsbFrame_Flush(void)
+{
+    AppMessage_t message = {.source = RUNTIME_TARGET_USB, .command_id = s_frame.request_id};
+    UsbFrameState_t after;
+
+    //队列失败时只保留原身份，本轮不推断已归还或已消费。
+    switch (s_frame.state)
+    {
+        case USB_FRAME_CANCEL_PENDING:
+            message.type = APP_MESSAGE_FRAME_CANCEL_REQUEST;
+            after = USB_FRAME_CANCEL_SENT;
+            break;
+        case USB_FRAME_RETURN_PENDING:
+            message.type = APP_MESSAGE_FRAME_RETURN;
+            after = USB_FRAME_WAIT_ACK;
+            break;
+        case USB_FRAME_CONSUMED_PENDING:
+            message.type = APP_MESSAGE_RETURN_ACK_CONSUMED;
+            after = USB_FRAME_IDLE;
+            break;
+        default:
+            return;
+    }
+    if (s_frame.state != USB_FRAME_CANCEL_PENDING)
+    {
+        message.stream_epoch = s_frame.transfer.stream_epoch;
+        message.lease_id = s_frame.transfer.lease_id;
+    }
+    if (App_MessagesSend(APP_CHANNEL_TO_CAMERA, &message) == SYS_OK)
+    {
+        s_frame.state = after;
+        if (after == USB_FRAME_IDLE)
+            s_frame.transfer = (AppMessage_t){.command_id = 0U};
+    }
+}
+
+static void UsbFrame_Advance(bool closing)
+{
+    AppMessage_t message;
+    uint32_t count;
+
+    if (closing)
+        UsbFrame_Close();
+    for (count = 0U; count < 4U && App_MessagesReceive(APP_CHANNEL_TO_USB, &message); ++count)
+        UsbFrame_Receive(&message);
+    if (closing)
+        UsbFrame_Close();
+    UsbFrame_Flush();
+}
+
+SysResult_t UsbService_RequestFrame(void)
+{
+    AppMessage_t request = {.type = APP_MESSAGE_FRAME_REQUEST, .source = RUNTIME_TARGET_USB};
+    SysResult_t result;
+
+    if (!App_MessagesIsOwner(RUNTIME_TARGET_USB) || s_usb.hardware.state != APP_V3_HW_ACTIVE ||
+        (s_usb.hardware.flags & USB_HW_CONFIGURED) == 0U)
+        return SYS_ERR_INVALID_STATE;
+    if (s_frame.state != USB_FRAME_IDLE)
+        return SYS_ERR_BUSY;
+    if (s_frame.request_id == UINT32_MAX)
+        return SYS_ERR_NO_RESOURCE;
+
+    //发送失败表示请求未受理，下一次仍使用同一个编号。
+    request.command_id = s_frame.request_id + 1U;
+    result = App_MessagesSend(APP_CHANNEL_TO_CAMERA, &request);
+    if (result == SYS_OK)
+    {
+        s_frame.request_id = request.command_id;
+        s_frame.state = USB_FRAME_WAIT_OFFER;
+        s_frame.result = SYS_ERR_BUSY;
+    }
+    return result;
+}
+
+SysResult_t UsbService_ReadFrame(CameraFrame_t *frame, uint32_t *frame_id)
+{
+    if (frame == NULL || frame_id == NULL)
+        return SYS_ERR_INVALID_ARG;
+    if (!App_MessagesIsOwner(RUNTIME_TARGET_USB) || s_usb.hardware.state != APP_V3_HW_ACTIVE ||
+        (s_usb.hardware.flags & USB_HW_CONFIGURED) == 0U)
+        return SYS_ERR_INVALID_STATE;
+    if (s_frame.state != USB_FRAME_OFFERED)
+        return s_frame.state == USB_FRAME_IDLE && s_frame.result != SYS_OK ? s_frame.result : SYS_ERR_BUSY;
+
+    //此后直到读者调用Release，都不能根据STOP、超时或失联推断读者已退出。
+    *frame = s_frame.transfer.frame;
+    *frame_id = s_frame.transfer.frame_id;
+    s_frame.state = USB_FRAME_READING;
+    return SYS_OK;
+}
+
+SysResult_t UsbService_ReleaseFrame(void)
+{
+    if (!App_MessagesIsOwner(RUNTIME_TARGET_USB) || s_frame.state != USB_FRAME_READING)
+        return SYS_ERR_INVALID_STATE;
+    //调用者确认所有读取者已退出。成功只表示提交归还意图。
+    s_frame.transfer.frame = (CameraFrame_t){0};
+    s_frame.state = USB_FRAME_RETURN_PENDING;
+    return SYS_OK;
+}
+
+SysResult_t UsbService_CancelFrameRequest(void)
+{
+    if (!App_MessagesIsOwner(RUNTIME_TARGET_USB) ||
+        (s_frame.state != USB_FRAME_WAIT_OFFER && s_frame.state != USB_FRAME_OFFERED))
+        return SYS_ERR_INVALID_STATE;
+    UsbFrame_Close();
+    return SYS_OK;
+}
+
 static SysResult_t UsbService_BeginDevice(void)
 {
     SysResult_t result;
@@ -169,6 +354,9 @@ static SysResult_t UsbService_StopDevice(void)
     UsbDeviceEndpointState_t endpoint;
     SysResult_t result;
 
+    //既有UVC停止仍独立执行；持有或未确认的交接不能提前宣告READY。
+    if (s_frame.state != USB_FRAME_IDLE)
+        return SYS_ERR_BUSY;
     if (!s_usb.stop_required)
         return SYS_OK;
     if (!s_usb.stop_applied)
@@ -322,10 +510,14 @@ uint32_t AppV3_UsbAdvance(void)
             s_usb.hardware.first_fault = result == SYS_OK || result == SYS_ERR_BUSY ? SYS_ERR_IO : result;
             s_usb.hardware.state = APP_V3_HW_FAULT;
         }
-        return USB_HW_POLL_MS;
     }
+
+    //停止或异常只关闭申请，待发Return和消费确认在FAULT中继续排空。
+    UsbFrame_Advance(s_usb.hardware.state != APP_V3_HW_ACTIVE);
+    if (s_usb.hardware.state == APP_V3_HW_ACTIVE)
+        return USB_HW_POLL_MS;
     if (!s_usb.request.pending)
-        return APP_EVENTS_WAIT_FOREVER;
+        return s_frame.state != USB_FRAME_IDLE ? USB_HW_POLL_MS : APP_EVENTS_WAIT_FOREVER;
 
     now = Platform_TimeGetMs();
     if (s_usb.hardware.state == APP_V3_HW_STARTING)
