@@ -6,6 +6,35 @@
 #include <stddef.h>
 #include <string.h>
 
+#if defined(OLED_UI2_TEST_INPUT) && OLED_UI2_TEST_INPUT
+#include "oled_ui_menu.h"
+
+//测试入口使用单槽邮箱。先写事件，再发布request；收到ack后才发下一条。
+typedef struct
+{
+    uint32_t request;
+    uint32_t event;
+    uint32_t ack;
+    SysResult_t result;
+} AppOledUi2Debug_t;
+
+typedef char AppOledUi2DebugSize[(sizeof(AppOledUi2Debug_t) <= 16U) ? 1 : -1];
+volatile AppOledUi2Debug_t g_oled_ui2_debug;
+static OledUiPageState_t s_ui2_state;
+
+//事件只更新下一帧逻辑状态，刷新忙时也不会写Framebuffer。
+static void App_OledUi2Poll(void)
+{
+    uint32_t request = g_oled_ui2_debug.request;
+
+    if (request != g_oled_ui2_debug.ack)
+    {
+        g_oled_ui2_debug.result = OledUi_PageDispatch(&s_ui2_state, g_oled_ui2_debug.event);
+        g_oled_ui2_debug.ack = request;
+    }
+}
+#endif
+
 //沿用原有100ms周期，不另建任务或第二个刷新Timer
 #define APP_OLED_PERIOD_MS 100U
 
@@ -84,6 +113,9 @@ SysResult_t App_OledInit(void)
     }
 
     //全部准备成功后才允许主循环推进刷新
+#if defined(OLED_UI2_TEST_INPUT) && OLED_UI2_TEST_INPUT
+    (void)OledUi_PageInit(&s_ui2_state);
+#endif
     s_app_oled = oled;
     return SYS_OK;
 }
@@ -99,6 +131,9 @@ void App_OledRun(void)
         return;
 
     //Process只推进传输，不在发送期间重绘Framebuffer
+#if defined(OLED_UI2_TEST_INPUT) && OLED_UI2_TEST_INPUT
+    App_OledUi2Poll();
+#endif
     previous = s_app_oled->refresh_state;
     result = s_app_oled->ops->process(s_app_oled);
     if (result == SYS_ERR_BUSY)
@@ -152,7 +187,12 @@ static void App_OledRefresh(void *context)
 
     //只在IDLE备份和绘图，后续刷新成功后这份Framebuffer一直保持不变
     memcpy(s_frame_backup, oled->framebuffer, sizeof(s_frame_backup));
-    result = OledUi_Render(oled, &view);
+#if defined(OLED_UI2_TEST_INPUT) && OLED_UI2_TEST_INPUT
+    if (s_ui2_state.current != OLED_UI_PAGE_MONITOR)
+        result = OledUi_MenuRender(oled, &s_ui2_state);
+    else
+#endif
+        result = OledUi_Render(oled, &view);
     if (result != SYS_OK)
     {
         memcpy(oled->framebuffer, s_frame_backup, sizeof(s_frame_backup));
