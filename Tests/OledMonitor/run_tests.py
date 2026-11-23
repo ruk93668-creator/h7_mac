@@ -61,7 +61,7 @@ version=run([cc,'--vsn']).strip()
 rows=[]
 for opt in ['O0','O2']:
  obj=OUT/('monitor_'+opt+'.o');axf=obj.with_suffix('.axf')
- flags=[cc,'--cpu','Cortex-M4','--c99','-'+opt]
+ flags=[cc,'--cpu','Cortex-M4','--c99','-'+opt,'-DOLED_UI3_U7_ENABLED=0']
  if UI2:flags+=['-DOLED_UI2_TEST_INPUT=1']
  for inc in ['CM4/Device/Inc','CM4/BSP','Common/Inc','Board/Inc','CM4/Application','CM4/Framework','CM4/Platform','CM4/Service']:
   flags+=['-I',ROOT/inc]

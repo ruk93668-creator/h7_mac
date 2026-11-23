@@ -6,15 +6,30 @@
 #include <stddef.h>
 #include <string.h>
 
-#if defined(OLED_UI2_TEST_INPUT) && OLED_UI2_TEST_INPUT
-#include "oled_ui_menu.h"
+#ifndef OLED_UI3_U7_ENABLED
+#define OLED_UI3_U7_ENABLED 1
+#endif
+#ifndef OLED_UI3_REVERSE
+#define OLED_UI3_REVERSE 0
+#endif
 
-#if defined(OLED_UI2_U7_INPUT) && OLED_UI2_U7_INPUT
+#if OLED_UI3_U7_ENABLED || (defined(OLED_UI2_U7_INPUT) && OLED_UI2_U7_INPUT)
+#define APP_OLED_U7_ENABLED 1
+#else
+#define APP_OLED_U7_ENABLED 0
+#endif
+
+#define APP_OLED_UI_ENABLED (APP_OLED_U7_ENABLED || OLED_UI2_TEST_INPUT)
+#if APP_OLED_UI_ENABLED
+#include "oled_ui_menu.h"
 #include "oled_ui_input.h"
+
+#if APP_OLED_U7_ENABLED
 #include "platform_time.h"
 #include "stm32h7xx_hal.h"
 #endif
 
+#if defined(OLED_UI2_TEST_INPUT) && OLED_UI2_TEST_INPUT
 //测试入口使用单槽邮箱。先写事件，再发布request；收到ack后才发下一条。
 typedef struct
 {
@@ -26,9 +41,35 @@ typedef struct
 
 typedef char AppOledUi2DebugSize[(sizeof(AppOledUi2Debug_t) <= 16U) ? 1 : -1];
 volatile AppOledUi2Debug_t g_oled_ui2_debug;
+#endif
 static OledUiPageState_t s_ui2_state;
+static OledUiInputQueue_t s_oled_input_queue;
+volatile uint32_t g_oled_ui_dropped_inputs;
 
-#if defined(OLED_UI2_U7_INPUT) && OLED_UI2_U7_INPUT
+//页面变化后仍在队列中的事件属于旧页面，不能作用到新界面。
+static SysResult_t App_OledConsumeInput(void)
+{
+    uint32_t event;
+    uint8_t previous;
+    SysResult_t result = SYS_OK;
+
+    while ((event = OledUi_InputTake(&s_oled_input_queue)) != 0U)
+    {
+        previous = s_ui2_state.current;
+        if (event == OLED_UI_EVENT_SELECT && previous == OLED_UI_PAGE_MONITOR)
+            event = OLED_UI_EVENT_OPEN_MENU;
+        result = OledUi_PageDispatch(&s_ui2_state, event);
+        if (s_ui2_state.current != previous)
+        {
+            OledUi_InputDiscard(&s_oled_input_queue);
+            break;
+        }
+    }
+    g_oled_ui_dropped_inputs = s_oled_input_queue.dropped;
+    return result;
+}
+
+#if APP_OLED_U7_ENABLED
 //U7接线取自调试与扩展页及主控页。C接地，输入使用上拉。
 volatile SysResult_t g_oled_ui2_u7_result;
 static OledUiInput_t s_ui2_input;
@@ -82,23 +123,25 @@ static void App_OledU7Poll(void)
     event = OledUi_InputSample(&s_ui2_input, App_OledU7Phase(), App_OledU7Pressed(), now);
     if (event == 0U)
         return;
-    if (event == OLED_UI_EVENT_SELECT && s_ui2_state.current == OLED_UI_PAGE_MONITOR)
-        event = OLED_UI_EVENT_OPEN_MENU;
-    g_oled_ui2_u7_result = OledUi_PageDispatch(&s_ui2_state, event);
+    g_oled_ui2_u7_result = OledUi_InputPush(&s_oled_input_queue, event, true);
 }
 #endif
 
 //事件只更新下一帧逻辑状态，刷新忙时也不会写Framebuffer。
+#if defined(OLED_UI2_TEST_INPUT) && OLED_UI2_TEST_INPUT
 static void App_OledUi2Poll(void)
 {
     uint32_t request = g_oled_ui2_debug.request;
 
     if (request != g_oled_ui2_debug.ack)
     {
-        g_oled_ui2_debug.result = OledUi_PageDispatch(&s_ui2_state, g_oled_ui2_debug.event);
+        g_oled_ui2_debug.result = OledUi_InputPush(&s_oled_input_queue, g_oled_ui2_debug.event, false);
+        if (g_oled_ui2_debug.result == SYS_OK)
+            g_oled_ui2_debug.result = App_OledConsumeInput();
         g_oled_ui2_debug.ack = request;
     }
 }
+#endif
 #endif
 
 //沿用原有100ms周期，不另建任务或第二个刷新Timer
@@ -179,9 +222,10 @@ SysResult_t App_OledInit(void)
     }
 
     //全部准备成功后才允许主循环推进刷新
-#if defined(OLED_UI2_TEST_INPUT) && OLED_UI2_TEST_INPUT
+#if APP_OLED_UI_ENABLED
     (void)OledUi_PageInit(&s_ui2_state);
-#if defined(OLED_UI2_U7_INPUT) && OLED_UI2_U7_INPUT
+    s_oled_input_queue.reverse = OLED_UI3_REVERSE != 0;
+#if APP_OLED_U7_ENABLED
     g_oled_ui2_u7_result = App_OledU7Init();
 #endif
 #endif
@@ -200,10 +244,13 @@ void App_OledRun(void)
         return;
 
     //Process只推进传输，不在发送期间重绘Framebuffer
+#if APP_OLED_UI_ENABLED
+#if APP_OLED_U7_ENABLED
+    App_OledU7Poll();
+    (void)App_OledConsumeInput();
+#endif
 #if defined(OLED_UI2_TEST_INPUT) && OLED_UI2_TEST_INPUT
     App_OledUi2Poll();
-#if defined(OLED_UI2_U7_INPUT) && OLED_UI2_U7_INPUT
-    App_OledU7Poll();
 #endif
 #endif
     previous = s_app_oled->refresh_state;
@@ -259,7 +306,7 @@ static void App_OledRefresh(void *context)
 
     //只在IDLE备份和绘图，后续刷新成功后这份Framebuffer一直保持不变
     memcpy(s_frame_backup, oled->framebuffer, sizeof(s_frame_backup));
-#if defined(OLED_UI2_TEST_INPUT) && OLED_UI2_TEST_INPUT
+#if APP_OLED_UI_ENABLED
     if (s_ui2_state.current != OLED_UI_PAGE_MONITOR)
         result = OledUi_MenuRender(oled, &s_ui2_state);
     else

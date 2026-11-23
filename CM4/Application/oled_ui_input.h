@@ -20,4 +20,18 @@ typedef struct
 void OledUi_InputInit(OledUiInput_t *input, uint8_t phase, bool pressed, uint32_t now);
 uint32_t OledUi_InputSample(OledUiInput_t *input, uint8_t phase, bool pressed, uint32_t now);
 
+#define OLED_UI_INPUT_QUEUE_CAPACITY 8U
+typedef struct
+{
+    uint8_t pending[OLED_UI_INPUT_QUEUE_CAPACITY];
+    uint8_t count;
+    bool reverse;
+    uint32_t dropped;
+} OledUiInputQueue_t;
+
+//仅主循环使用，入队保序。动作在满队列时可挤掉最早的转动项。
+SysResult_t OledUi_InputPush(OledUiInputQueue_t *queue, uint32_t event, bool physical);
+uint32_t OledUi_InputTake(OledUiInputQueue_t *queue);
+void OledUi_InputDiscard(OledUiInputQueue_t *queue);
+
 #endif
