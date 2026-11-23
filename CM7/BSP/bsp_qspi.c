@@ -4,7 +4,12 @@
 #include <stddef.h>
 #include <string.h>
 
+#if defined(QSPI_SFDP_DIAGNOSTIC)
+#include "../../Tests/QspiFlashQ1/hardware/qspi_sfdp_diagnostic.h"
+#define QSPI_TARGET_HZ 30000000UL
+#else
 #define QSPI_TARGET_HZ 120000000UL
+#endif
 //首次 HAL Init 强制使用 5000ms；预算另留准备/识别余量，不能虚报为短超时。
 #define QSPI_INIT_BUDGET_MS (HAL_QSPI_TIMEOUT_DEFAULT_VALUE + 200U)
 #define QSPI_IO_TIMEOUT_MS 100U
@@ -655,3 +660,34 @@ SysResult_t BSP_QSPI_Read(BspQspiReadMode_t mode, uint32_t address,
     }
     return Qspi_ReadFinish(result, started);
 }
+
+#if defined(QSPI_SFDP_DIAGNOSTIC)
+SysResult_t QspiDiagnostic_ReadSfdp(uint8_t data[QSPI_SFDP_BYTES])
+{
+    const uint32_t budget = 100U;
+    uint32_t started;
+    SysResult_t result;
+    if (data == NULL)
+        return SYS_ERR_INVALID_ARG;
+    if (!Qspi_ContextValid())
+        return SYS_ERR_INVALID_STATE;
+    if (!Qspi_Take())
+        return SYS_ERR_BUSY;
+    if (s_diag.ready == 0U || s_diag.fault != 0U ||
+        s_diag.serial_clock_hz == 0U || s_diag.serial_clock_hz > QSPI_TARGET_HZ)
+    {
+        Qspi_Give();
+        return SYS_ERR_INVALID_STATE;
+    }
+    started = HAL_GetTick();
+    Qspi_ReadBegin(UINT32_MAX, 0U, QSPI_SFDP_BYTES);
+    result = Qspi_ReadTransfer(0x5AU, 0U, QSPI_ADDRESS_1_LINE,
+        QSPI_DATA_1_LINE, 8U, QSPI_SFDP_BYTES, started, budget);
+    if (result == SYS_OK)
+    {
+        memcpy(data, s_read_buffer, QSPI_SFDP_BYTES);
+        s_diag.read_completed = QSPI_SFDP_BYTES;
+    }
+    return Qspi_ReadFinish(result, started);
+}
+#endif

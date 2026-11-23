@@ -1,0 +1,29 @@
+{
+  "baseline": "c58f7d3899a3536c2db0dfdf0f777de781a999de",
+  "target": "h7_mac_CM7",
+  "errors": 0,
+  "warnings": 0,
+  "original_project_sha256": "e2076deead6be41af1119cd632d1d90bf9a177aa0dd115dd89d90c7a794ac7bf",
+  "diagnostic_project_sha256": "3cfd9f11784eaa6d71ddab4d3587ab488d56ffc33d9b6c67c9eae9b34879eda7",
+  "axf_sha256": "4056c551c7c40bb9b69e50aeff6181b07f84ea011dcd1f8c2365ce469570fa81",
+  "flash_loads": [
+    [
+      "0x8000000",
+      "0x8024474"
+    ]
+  ],
+  "symbols": {
+    "g_q1_hw_arm": "0x20000380",
+    "g_q1_hw_report": "0x20008020",
+    "g_qspi_sfdp_arm": "0x20000384",
+    "g_qspi_sfdp_report": "0x20008d80",
+    "QspiDiagnostic_ReadSfdp": "0x80153c5"
+  },
+  "sources": {
+    "CM7/BSP/bsp_qspi.c": "676e21724c54e9cdf88fc04e316711224aed064fb8cfcc328798580fe0daba8a",
+    "Tests/QspiFlashQ1/hardware/m7_project_test.c": "d9a2c7ce6868f9516d7ff9de85971b9e62f709816ba821122d28f98734c1ecfa",
+    "Tests/QspiFlashQ1/hardware/qspi_sfdp_diagnostic.h": "5a6eeb405afec5cc95cf0acf1914b48550fdcb7a4e0278aef5d98cf7f2ef8f4c",
+    "Tests/QspiFlashQ1/hardware/qspi_sfdp_probe.h": "3886b2499d55bdea9bbc7e727659c8b4c37b16a1ece5a8354fdd00e333eb9556"
+  },
+  "log_sha256": "b48130e48d4c353c15ebdda32519dacf5f73ab374fe20feff657aa4bfafd633f"
+}
