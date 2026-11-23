@@ -1,0 +1,11 @@
+{
+  "role": "local Q1.3 M7 rollback candidate; deployed image unverified",
+  "path": "output/QspiFlashQ1/q13/current/MDK-ARM/h7_mac_CM7/h7_mac_CM7.axf",
+  "loads": [
+    [
+      "0x8000000",
+      "0x80241dc"
+    ]
+  ],
+  "sha256": "76f86ae7f57dbb52201fe93f76e8fca38314ed732569f9ce21c8cabcbb75ddec"
+}

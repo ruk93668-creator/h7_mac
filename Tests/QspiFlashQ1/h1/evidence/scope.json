@@ -1,0 +1,15 @@
+{
+  "hardware_run": false,
+  "actual_backup_captured": false,
+  "actual_ram_package_generated": false,
+  "production_window_bytes": 0,
+  "write_candidate_only": true,
+  "candidate_window": [
+    16773120,
+    16777216
+  ],
+  "adjacent_read_only": [
+    16769024,
+    16773120
+  ]
+}

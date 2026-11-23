@@ -1,0 +1,28 @@
+{
+  "cases": 2,
+  "assertions": 1148,
+  "passed": 2,
+  "rows": [
+    {
+      "case": 0,
+      "name": "dual read backup and one shot",
+      "assertions": 574,
+      "failure_line": 0,
+      "commands": 70,
+      "hal_init_calls": 1,
+      "error": null,
+      "pass": true
+    },
+    {
+      "case": 1,
+      "name": "03 and 0B differ",
+      "assertions": 574,
+      "failure_line": 0,
+      "commands": 70,
+      "hal_init_calls": 1,
+      "error": null,
+      "pass": true
+    }
+  ],
+  "source_sha256": "dbbe3d3caf8f56808e5ff05da5ac651f1bfc576e42a194abf1575e7aca65e9fd"
+}

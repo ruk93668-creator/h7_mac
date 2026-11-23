@@ -23,7 +23,9 @@ volatile Q1HardwareReport_t g_q1_hw_report;
 
 static StaticTask_t s_test_tcb;
 static StackType_t s_test_stack[768] __attribute__((aligned(8)));
-#if defined(QSPI_QUAD_ID_DIAGNOSTIC)
+#if defined(QSPI_H1_BACKUP) || defined(QSPI_H1_WRITE)
+#include "qspi_h1.h"
+#elif defined(QSPI_QUAD_ID_DIAGNOSTIC)
 #include "qspi_quad_id_probe.h"
 #elif defined(QSPI_SFDP_DIAGNOSTIC)
 #include "qspi_sfdp_probe.h"
@@ -68,7 +70,19 @@ static void Q1_Task(void *argument)
     __DMB();
     g_q1_hw_report.phase = 4U;
     g_q1_hw_report.complete = 1U;
-#if defined(QSPI_QUAD_ID_DIAGNOSTIC)
+#if defined(QSPI_H1_BACKUP) || defined(QSPI_H1_WRITE)
+    if (g_q1_hw_report.init_result == SYS_OK && id == BSP_QSPI_EXPECTED_ID)
+    {
+        uint32_t arm;
+        do
+        {
+            vTaskDelay(pdMS_TO_TICKS(10U));
+            arm = g_qspi_h1_arm;
+        } while (!QspiH1_ArmValid(arm));
+        g_qspi_h1_arm = 0U;
+        QspiH1_Run(arm);
+    }
+#elif defined(QSPI_QUAD_ID_DIAGNOSTIC)
     if (g_q1_hw_report.init_result == SYS_OK && id == BSP_QSPI_EXPECTED_ID)
     {
         while (g_qspi_quad_id_arm != QSPI_QUAD_ID_ARM_MAGIC)

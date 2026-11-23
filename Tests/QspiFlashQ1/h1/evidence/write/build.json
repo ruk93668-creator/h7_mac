@@ -1,0 +1,50 @@
+{
+  "profile": "write",
+  "baseline": "e9e9a4f2954ed0070fe9a89be7e7cc2aaf8b55e4",
+  "compiler_exit": 0,
+  "errors": 0,
+  "warnings": 0,
+  "data_range": [
+    16773120,
+    16777216
+  ],
+  "loads": [
+    [
+      134217728,
+      134368928
+    ]
+  ],
+  "axf_sha256": "0ca60a9bd2ee35e0d2dd7c98ae3867243ebca957303b27916b0169db4f20eb9f",
+  "axf": "MDK-ARM\\h7_mac_CM7\\h7_mac_CM7.axf",
+  "log_sha256": "c9cd09a8dd83074b4230ff857e945569a0b822ba15542c57bec34949e2c5f001",
+  "original_project_sha256": "196c82e397aebc902a8be3aa9ec1ae6b714225b44c97f1b846a033c62800d211",
+  "project_sha256": "de7f084680c637b0c0aa0c713ea2d0256a951b7998fea9311608d5c8e2113604",
+  "symbols": {
+    "g_q1_hw_arm": {
+      "address": 536871816,
+      "size": 4
+    },
+    "g_q1_hw_report": {
+      "address": 536916960,
+      "size": 276
+    },
+    "g_qspi_h1_arm": {
+      "address": 536871808,
+      "size": 4
+    },
+    "g_qspi_h1_input": {
+      "address": 536903708,
+      "size": 12328
+    },
+    "g_qspi_h1_report": {
+      "address": 536916036,
+      "size": 148
+    }
+  },
+  "sources": {
+    "CM7/BSP/bsp_qspi.c": "dbbe3d3caf8f56808e5ff05da5ac651f1bfc576e42a194abf1575e7aca65e9fd",
+    "Tests/QspiFlashQ1/hardware/m7_project_test.c": "d2928401234e64cfb3c0a48dcd79a7bd071af6e5f14422d0816751d8c81dbf5e",
+    "Tests/QspiFlashQ1/hardware/qspi_h1.h": "5203832ef50d11a5b08c1a83896f6151e4d504ebd7ffab095ab90fc5a8fa4160",
+    "Tests/QspiFlashQ1/hardware/qspi_h1.inc": "7387ac69886d716114dbc43e702a825e0fd53775ae9dd4e445d275de3632ec87"
+  }
+}
