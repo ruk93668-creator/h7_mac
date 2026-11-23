@@ -1,5 +1,19 @@
 # B2-B5 开发检查点（未完成）
 
+## CM7 实板版本探测
+
+当前 CM7 工程已加入独立探测任务。上电后等待约 500 ms，再通过 USART2 进行一轮 H5 建链，依次发送只读命令 0x1001 和 0xFC6D。任务结束后挂起，保留诊断。未包含固件下载、广播或 GATT，B2 实板结果仍待确认。
+
+1. 在 Keil 退出调试，选 h7_mac_CM7 并手动 Download。关闭调试前自动下载后，仅进入 Debug 会使用板上原有固件。
+2. 整板断电再上电，允许 CM7 连续运行至少 15 秒，再查看 Watch 中的 g_ble_probe。若已在调试会话且处于暂停状态，按 F5 让探测运行。
+3. 若未加载符号，在 Command 里执行 `LOAD %L NOCODE INCREMENTAL`，使用与板上固件一致的 AXF。
+4. 展开 g_ble_probe。stage=5、result=0 表示两条命令均已完成。记录 hci_version、hci_revision、lmp_subversion、rom_version、local_event 和 rom_event。
+5. stage=6 表示失败。failed_stage=1 指建链，2 指本地版本，3 指 ROM 版本，4 指最后的 ACK/发送排空。保留 result、h5_state、h5_tx_frames、rx_bytes、uart_fault 和 last_status。last_status=0xFFFFFFFF 表示尚无匹配的 HCI 状态。
+
+本次链接的 g_ble_probe 地址为 0x20005030。旧 UART s_debug 地址已变为 0x2000A32C。重新链接后以符号表为准。CM7 构建 0 错误、0 警告，H5 ARM 合约测试通过，尚未烧录或实板验证本探测版本。
+
+## 早期检查点记录
+
 日期：2026-11-23。用户已授权目标：手机搜索、连接及测试GATT。
 
 本次加入独立H5、BLE专用heap_4包装和NimBLE NPL草稿，尚未加入Keil生产构建，因此现有B1固件不会因这些文件自动广播。

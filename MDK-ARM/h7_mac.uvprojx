@@ -4626,6 +4626,8 @@
         <Group>
           <GroupName>CM7\Platform</GroupName>
           <Files>
+            <File><FileName>ble_version_probe.c</FileName><FileType>1</FileType><FilePath>../CM7/Service/ble_version_probe.c</FilePath></File>
+            <File><FileName>bt_hci_h5.c</FileName><FileType>1</FileType><FilePath>../CM7/Platform/bt_hci_h5.c</FilePath></File>
             <File>
               <FileName>ipc_platform.c</FileName>
               <FileType>1</FileType>
