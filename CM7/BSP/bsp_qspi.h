@@ -99,7 +99,7 @@ typedef struct
 {
     SysResult_t result, cleanup_result;
     BspQspiWriteStage_t stage;
-    uint32_t opcode, address, requested, completed, failed_address;
+    uint32_t opcode, wire_opcode, address, requested, completed, failed_address;
     uint32_t hal_status, hal_error, hal_state, cr, dcr, sr;
     uint32_t sr1, sr2, sr3, status_valid_mask;
     uint32_t elapsed_ms, cleanup_elapsed_ms;
@@ -127,5 +127,10 @@ SysResult_t BSP_QSPI_ReadStatus(BspQspiStatus_t *status, uint32_t timeout_ms);
 //STANDARD 超过50MHz返回 NOT_SUPPORTED，不动态改频；Quad 仅为1-1-4输出。
 SysResult_t BSP_QSPI_Read(BspQspiReadMode_t mode, uint32_t address,
     void *buffer, uint32_t size, uint32_t *completed, uint32_t timeout_ms);
+
+//仅编程已擦除的完整请求。诊断中的 completed 是逐页验读通过的字节数。
+//源缓冲区与诊断必须有效且互不重叠，操作期间由调用者独占。
+SysResult_t BSP_QSPI_Program(uint32_t address, const void *buffer, uint32_t size,
+    uint32_t timeout_ms, BspQspiWriteDiagnostics_t *diagnostics);
 
 #endif

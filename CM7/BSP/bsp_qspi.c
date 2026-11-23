@@ -753,3 +753,335 @@ SysResult_t QspiDiagnostic_ReadQuadId(uint8_t id[QSPI_QUAD_ID_BYTES])
     return Qspi_ReadFinish(result, started);
 }
 #endif
+
+#define QSPI_PROGRAM_BUSY_LIMIT_MS 20U
+
+typedef struct
+{
+    BspQspiWriteDiagnostics_t *diag;
+    BspQspiDiagnostics_t saved_read;
+    uint32_t started, budget;
+    bool armed, pending, fault;
+} QspiWrite_t;
+
+static SysResult_t Qspi_WriteOpen(QspiWrite_t *write, const QspiWritePolicy_t *policy,
+    uint32_t opcode, uint32_t address, const void *input, uint32_t size, uint32_t budget,
+    BspQspiWriteDiagnostics_t *diag)
+{
+    uintptr_t src = (uintptr_t)input, dst = (uintptr_t)diag;
+    if (diag == NULL || (dst & 3U) != 0U || dst > UINTPTR_MAX - sizeof(*diag))
+        return SYS_ERR_INVALID_ARG;
+    if (input != NULL && (src > UINTPTR_MAX - size ||
+        (src < dst + sizeof(*diag) && dst < src + size)))
+        return SYS_ERR_INVALID_ARG;
+    memset(diag, 0, sizeof(*diag));
+    diag->opcode = opcode;
+    diag->address = address;
+    diag->requested = size;
+    diag->failed_address = address;
+    if (input == NULL || address >= BSP_QSPI_CAPACITY_BYTES || size == 0U ||
+        size > BSP_QSPI_CAPACITY_BYTES - address || budget == 0U ||
+        budget > BSP_QSPI_MAX_WRITE_TIMEOUT_MS)
+        return diag->result = SYS_ERR_INVALID_ARG;
+    if (policy->address >= BSP_QSPI_CAPACITY_BYTES ||
+        policy->bytes > BSP_QSPI_CAPACITY_BYTES - policy->address ||
+        address < policy->address || address - policy->address >= policy->bytes ||
+        size > policy->bytes - (address - policy->address))
+        return diag->result = SYS_ERR_NOT_SUPPORTED;
+    if (!Qspi_ContextValid())
+        return diag->result = SYS_ERR_INVALID_STATE;
+    if (!Qspi_Take())
+        return diag->result = SYS_ERR_BUSY;
+    if (s_diag.ready == 0U || s_diag.fault != 0U)
+    {
+        diag->fault = s_diag.fault;
+        Qspi_Give();
+        return diag->result = SYS_ERR_INVALID_STATE;
+    }
+    write->diag = diag;
+    write->saved_read = s_diag;
+    write->started = HAL_GetTick();
+    write->budget = budget;
+    write->armed = write->pending = write->fault = false;
+    s_diag.read_hal_status = HAL_OK;
+    s_read_fault = false;
+    return SYS_OK;
+}
+
+static SysResult_t Qspi_WriteFinish(QspiWrite_t *write, SysResult_t result)
+{
+    BspQspiWriteDiagnostics_t *diag = write->diag;
+    uint32_t cleanup_started;
+    diag->result = result;
+    diag->elapsed_ms = HAL_GetTick() - write->started;
+    diag->hal_error = s_qspi.ErrorCode;
+    diag->hal_state = s_qspi.State;
+    if (s_owned && __HAL_RCC_QSPI_IS_CLK_ENABLED())
+    {
+        diag->cr = QUADSPI->CR;
+        diag->dcr = QUADSPI->DCR;
+        diag->sr = QUADSPI->SR;
+    }
+    s_diag = write->saved_read;
+    if (write->fault || write->armed || write->pending || s_read_fault)
+    {
+        diag->fault = s_diag.fault = 1U;
+        s_diag.ready = 0U;
+        diag->flash_completion_unknown = write->pending;
+        cleanup_started = HAL_GetTick();
+        //Abort 只清理 MCU 事务。Flash 内部操作可能仍未完成。
+        diag->cleanup_result = !Qspi_ContextValid() || !__HAL_RCC_QSPI_IS_CLK_ENABLED() ||
+            (QUADSPI->CR & QUADSPI_CR_DMAEN) != 0U ? SYS_ERR_INVALID_STATE : Qspi_Cleanup();
+        diag->cleanup_elapsed_ms = HAL_GetTick() - cleanup_started;
+    }
+    if (result == SYS_OK)
+    {
+        diag->stage = BSP_QSPI_WRITE_COMPLETE;
+        diag->failed_address = UINT32_MAX;
+    }
+    Qspi_Give();
+    return result;
+}
+
+static SysResult_t Qspi_WriteRead(QspiWrite_t *write, uint32_t opcode, uint32_t address,
+    uint32_t bytes, uint32_t budget)
+{
+    SysResult_t result;
+    write->diag->wire_opcode = opcode;
+    result = Qspi_ReadTransfer(opcode, address, opcode == 0x0BU ? QSPI_ADDRESS_1_LINE :
+        QSPI_ADDRESS_NONE, QSPI_DATA_1_LINE, opcode == 0x0BU ? 8U : 0U,
+        bytes, write->started, budget);
+    write->diag->hal_status = s_diag.read_hal_status;
+    return result;
+}
+
+static SysResult_t Qspi_WriteStatus(QspiWrite_t *write, bool all, uint32_t budget)
+{
+    BspQspiWriteDiagnostics_t *diag = write->diag;
+    SysResult_t result;
+    diag->status_valid_mask = 0U;
+    result = Qspi_WriteRead(write, 0x05U, 0U, 1U, budget);
+    if (result != SYS_OK)
+        return result;
+    diag->sr1 = s_read_buffer[0];
+    diag->status_valid_mask = 1U;
+    if (!all)
+        return SYS_OK;
+    result = Qspi_WriteRead(write, 0x35U, 0U, 1U, budget);
+    if (result != SYS_OK)
+        return result;
+    diag->sr2 = s_read_buffer[0];
+    diag->status_valid_mask |= 2U;
+    result = Qspi_WriteRead(write, 0x15U, 0U, 1U, budget);
+    if (result == SYS_OK)
+    {
+        diag->sr3 = s_read_buffer[0];
+        diag->status_valid_mask |= 4U;
+    }
+    return result;
+}
+
+static bool Qspi_WriteProtected(const BspQspiWriteDiagnostics_t *diag)
+{
+    //保守拒绝任何 BP/CMP 或个别块锁模式，不推算可省略的保护区域。
+    return (diag->sr1 & 0x1CU) != 0U || (diag->sr2 & 0x40U) != 0U ||
+        (diag->sr3 & 0x04U) != 0U;
+}
+
+static SysResult_t Qspi_WriteIdle(QspiWrite_t *write, uint32_t budget)
+{
+    BspQspiWriteDiagnostics_t *diag = write->diag;
+    SysResult_t result = Qspi_WriteStatus(write, true, budget);
+    if (result != SYS_OK)
+        return result;
+    if ((diag->sr1 & 1U) != 0U)
+        return SYS_ERR_BUSY;
+    if ((diag->sr1 & 2U) != 0U || (diag->sr2 & 0x80U) != 0U)
+        return SYS_ERR_INVALID_STATE;
+    return Qspi_WriteProtected(diag) ? SYS_ERR_NOT_SUPPORTED : SYS_OK;
+}
+
+static SysResult_t Qspi_WriteCheckData(QspiWrite_t *write, uint32_t address, uint32_t size,
+    const uint8_t *expected, bool publish_progress)
+{
+    uint32_t offset = 0U, bytes, i;
+    SysResult_t result;
+    while (offset < size)
+    {
+        bytes = size - offset;
+        if (bytes > QSPI_READ_CHUNK_BYTES)
+            bytes = QSPI_READ_CHUNK_BYTES;
+        write->diag->failed_address = address + offset;
+        result = Qspi_WriteRead(write, 0x0BU, address + offset, bytes, write->budget);
+        if (result != SYS_OK)
+            return result;
+        for (i = 0U; i < bytes; i++)
+        {
+            if (s_read_buffer[i] != (expected == NULL ? 0xFFU : expected[offset + i]))
+            {
+                write->diag->failed_address += i;
+                return SYS_ERR_PROTOCOL;
+            }
+        }
+        if (Qspi_ReadRemaining(write->started, write->budget) == 0U)
+            return SYS_ERR_TIMEOUT;
+        if (publish_progress)
+            write->diag->completed += bytes;
+        offset += bytes;
+    }
+    return SYS_OK;
+}
+
+static SysResult_t Qspi_WriteCommand(QspiWrite_t *write, uint32_t opcode, uint32_t address,
+    uint32_t size, uint32_t budget)
+{
+    QSPI_CommandTypeDef command = {0};
+    SysResult_t result;
+    uint32_t remaining;
+    write->diag->wire_opcode = opcode;
+    if (!Qspi_ReadHardwareValid())
+    {
+        write->fault = true;
+        return SYS_ERR_INVALID_STATE;
+    }
+    remaining = Qspi_ReadRemaining(write->started, budget);
+    if (remaining == 0U)
+        return SYS_ERR_TIMEOUT;
+    command.Instruction = opcode;
+    command.InstructionMode = QSPI_INSTRUCTION_1_LINE;
+    command.AddressMode = opcode == 0x06U ? QSPI_ADDRESS_NONE : QSPI_ADDRESS_1_LINE;
+    command.AddressSize = QSPI_ADDRESS_24_BITS;
+    command.Address = address;
+    command.DataMode = size == 0U ? QSPI_DATA_NONE : QSPI_DATA_1_LINE;
+    command.NbData = size;
+    command.SIOOMode = QSPI_SIOO_INST_EVERY_CMD;
+    if (opcode == 0x06U)
+        write->armed = true;
+    else
+        write->pending = true;
+    write->diag->hal_status = HAL_QSPI_Command(&s_qspi, &command, remaining);
+    result = Qspi_Result((HAL_StatusTypeDef)write->diag->hal_status);
+    if (result == SYS_OK && !Qspi_ReadHardwareValid())
+        return SYS_ERR_INVALID_STATE;
+    if (result == SYS_OK && size != 0U && QUADSPI->DLR != size - 1U)
+        return SYS_ERR_PROTOCOL;
+    return result;
+}
+
+static SysResult_t Qspi_WriteEnable(QspiWrite_t *write, uint32_t address, uint32_t budget)
+{
+    BspQspiWriteDiagnostics_t *diag = write->diag;
+    SysResult_t result;
+    diag->failed_address = address;
+    diag->stage = BSP_QSPI_WRITE_STATUS;
+    result = Qspi_WriteIdle(write, budget);
+    if (result != SYS_OK)
+        return result;
+    diag->stage = BSP_QSPI_WRITE_ENABLE;
+    result = Qspi_WriteCommand(write, 0x06U, 0U, 0U, budget);
+    if (result != SYS_OK)
+        return result;
+    diag->stage = BSP_QSPI_WRITE_WEL;
+    result = Qspi_WriteStatus(write, false, budget);
+    if (result != SYS_OK)
+        return result;
+    if ((diag->sr1 & 1U) != 0U)
+        return SYS_ERR_BUSY;
+    if ((diag->sr1 & 2U) == 0U)
+    {
+        write->armed = false;
+        return SYS_ERR_PROTOCOL;
+    }
+    return SYS_OK;
+}
+
+static SysResult_t Qspi_WriteWait(QspiWrite_t *write, uint32_t maximum_ms)
+{
+    BspQspiWriteDiagnostics_t *diag = write->diag;
+    uint32_t budget = HAL_GetTick() - write->started + maximum_ms;
+    SysResult_t result;
+    if (budget > write->budget)
+        budget = write->budget;
+    diag->stage = BSP_QSPI_WRITE_BUSY;
+    do
+    {
+        result = Qspi_WriteStatus(write, false, budget);
+        if (result != SYS_OK)
+            return result;
+    } while ((diag->sr1 & 1U) != 0U);
+    result = Qspi_WriteIdle(write, budget);
+    if (result == SYS_OK)
+        write->pending = write->armed = false;
+    return result;
+}
+
+static SysResult_t Qspi_ProgramPage(QspiWrite_t *write, uint32_t address,
+    const uint8_t *data, uint32_t bytes)
+{
+    uint32_t budget, remaining;
+    SysResult_t result;
+    if (write->budget <= QSPI_PROGRAM_BUSY_LIMIT_MS)
+        return SYS_ERR_TIMEOUT;
+    budget = write->budget - QSPI_PROGRAM_BUSY_LIMIT_MS;
+    result = Qspi_WriteEnable(write, address, budget);
+    if (result != SYS_OK)
+        return result;
+    write->diag->stage = BSP_QSPI_WRITE_COMMAND;
+    result = Qspi_WriteCommand(write, 0x02U, address, bytes, budget);
+    if (result != SYS_OK)
+        return result;
+    remaining = Qspi_ReadRemaining(write->started, budget);
+    if (remaining == 0U)
+        return SYS_ERR_TIMEOUT;
+    write->diag->stage = BSP_QSPI_WRITE_TRANSMIT;
+    write->diag->hal_status = HAL_QSPI_Transmit(&s_qspi, (uint8_t *)data, remaining);
+    result = Qspi_Result((HAL_StatusTypeDef)write->diag->hal_status);
+    if (result == SYS_OK && (s_qspi.TxXferSize != bytes || s_qspi.TxXferCount != 0U))
+        result = SYS_ERR_PROTOCOL;
+    if (result == SYS_OK && !Qspi_ReadHardwareValid())
+        result = SYS_ERR_INVALID_STATE;
+    return result == SYS_OK ? Qspi_WriteWait(write, QSPI_PROGRAM_BUSY_LIMIT_MS) : result;
+}
+
+static SysResult_t Qspi_ProgramWithPolicy(const QspiWritePolicy_t *policy, uint32_t address,
+    const void *buffer, uint32_t size, uint32_t timeout_ms, BspQspiWriteDiagnostics_t *diag)
+{
+    QspiWrite_t write;
+    const uint8_t *data = (const uint8_t *)buffer;
+    uint32_t offset = 0U, bytes;
+    SysResult_t result = Qspi_WriteOpen(&write, policy, 0x02U, address, buffer, size,
+        timeout_ms, diag);
+    if (result != SYS_OK)
+        return result;
+    diag->stage = BSP_QSPI_WRITE_STATUS;
+    result = Qspi_WriteIdle(&write, write.budget);
+    if (result == SYS_OK)
+    {
+        diag->stage = BSP_QSPI_WRITE_PREFLIGHT;
+        result = Qspi_WriteCheckData(&write, address, size, NULL, false);
+    }
+    //完整地址范围和目标内容通过后才允许第一页写入。
+    while (result == SYS_OK && offset < size)
+    {
+        diag->failed_address = address + offset;
+        bytes = BSP_QSPI_PAGE_BYTES - ((address + offset) % BSP_QSPI_PAGE_BYTES);
+        if (bytes > size - offset)
+            bytes = size - offset;
+        result = Qspi_ProgramPage(&write, address + offset, data + offset, bytes);
+        if (result == SYS_OK)
+        {
+            diag->stage = BSP_QSPI_WRITE_VERIFY;
+            result = Qspi_WriteCheckData(&write, address + offset, bytes, data + offset, true);
+            if (result != SYS_OK)
+                write.fault = true;
+        }
+        offset += bytes;
+    }
+    return Qspi_WriteFinish(&write, result);
+}
+
+SysResult_t BSP_QSPI_Program(uint32_t address, const void *buffer, uint32_t size,
+    uint32_t timeout_ms, BspQspiWriteDiagnostics_t *diagnostics)
+{
+    return Qspi_ProgramWithPolicy(&s_write_policy, address, buffer, size, timeout_ms, diagnostics);
+}
