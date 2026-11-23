@@ -166,8 +166,11 @@ SysResult_t BSP_QSPI_GetFaultDiagnostics(BspQspiFaultDiagnostics_t *diagnostics)
 //只允许 HAL Tick 可运行的普通线程；不注册 Initcall，不创建任务，不写 Flash。
 SysResult_t BSP_QSPI_Init(void);
 
-//释放本模块资源；故障锁存不因 DeInit 清除，本阶段需系统复位后重新识别。
+//释放本模块资源。DeInit 不会清除故障锁存。
 SysResult_t BSP_QSPI_DeInit(void);
+
+//仅显式恢复无写风险的锁存故障。写使能或写事务可能发出时仍保留锁存。
+SysResult_t BSP_QSPI_Recover(void);
 
 //仅返回已验证的缓存 ID；未 READY 时不修改输出，不再次发送命令。
 SysResult_t BSP_QSPI_GetId(uint32_t *jedec_id);

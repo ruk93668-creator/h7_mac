@@ -18,3 +18,22 @@
 |Abort/DeInit/资源恢复失败|CLEANUP 或独立清理阶段，原始主错误不被覆盖|仅在无写风险且可重新证明资源时尝试|
 
 `BSP_QSPI_GetFaultDiagnostics()` 提供独立快照，原两套诊断及 H1 RAM ABI 保持原样。fault_stage 所在的 Init/Read/Write/Cleanup 枚举由 fault_origin 指定。首错与首轮清理固定保留，后续清理和恢复另记。写入范围仅记录最近一次具有非零逐字节验证结果的前缀。RAM 诊断无跨复位持久化保证。
+
+```mermaid
+stateDiagram-v2
+    IDLE --> READY: Init 成功
+    IDLE --> IDLE: HAL 前失败且清理成功
+    IDLE --> FAULT: HAL 开始后失败或清理失败
+    READY --> IDLE: DeInit 全部读回通过
+    READY --> FAULT: 事务或清理失败
+    FAULT --> FAULT: 普通入口或 DeInit
+    FAULT --> BLOCKED: Recover 检出写风险
+    BLOCKED --> BLOCKED: 继续保留原故障
+    FAULT --> VERIFY: Recover 取得操作权且无写风险
+    VERIFY --> FAULT: Tick、资源、控制器、ID 或状态验证失败
+    VERIFY --> READY: 控制器空闲且 ID 匹配，BUSY/SUS/WEL 均为 0
+```
+
+清理时依据 BSP 所有权处理私有句柄、控制器、六个 GPIO 位和 QSPI mux。非间接模式或 DMA 状态异常时拒绝 Abort。Abort 需通过 HAL 返回、ErrorCode 和控制器 BUSY/ABORT 读回。DeInit 需通过 HAL 结果、句柄 RESET 和 CR/SR 停止证明。确认 GPIO 和 mux 已归还后才关闭 QSPI 门，门读回通过才清除所有权。部分失败保持所有权，GPIOF/G 门保持开启。控制器停下不代表 Flash 停下。
+
+显式恢复从检查 Tick 开始计入同一个 5200 ms 初始验证预算。预留 HAL 的 5000 ms 初始化上限，其后 JEDEC 与三组状态读取使用剩余预算，失败后的故障清理单独计时。Tick 用无符号差处理回绕，恢复前有固定次数的 Tick 前进探测。实际 HAL 等待仍要求 TIM6 在整个操作中持续运行。没有跨核所有权协议，恢复必须延续 Q1 的 M7 独占合同，禁止外部并发修改所属引脚和 QSPI mux。

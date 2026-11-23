@@ -22,6 +22,7 @@
 //首次 HAL Init 强制使用 5000ms；预算另留准备/识别余量，不能虚报为短超时。
 #define QSPI_INIT_BUDGET_MS (HAL_QSPI_TIMEOUT_DEFAULT_VALUE + 200U)
 #define QSPI_IO_TIMEOUT_MS 100U
+#define QSPI_TICK_PROBE_LIMIT 100000UL
 #define QSPI_F_PINS (GPIO_PIN_6 | GPIO_PIN_7 | GPIO_PIN_8 | GPIO_PIN_9 | GPIO_PIN_10)
 #define QSPI_G_PINS GPIO_PIN_6
 #define QSPI_F_MASK 0x003FF000UL
@@ -43,6 +44,8 @@ static HAL_StatusTypeDef s_cleanup_hal_status;
 static bool s_busy;
 static bool s_owned;
 static bool s_hal_attempted;
+static void Qspi_ReadBegin(uint32_t mode, uint32_t address, uint32_t size);
+static SysResult_t Qspi_ReadStatusLocked(uint32_t started, uint32_t budget);
 //只保存所属引脚位；恢复时不能覆盖 SDRAM/DCMI 的共享端口配置。
 typedef struct
 {
@@ -390,32 +393,21 @@ static SysResult_t Qspi_ReadId(uint32_t started)
     return s_diag.jedec_id == BSP_QSPI_EXPECTED_ID ? SYS_OK : SYS_ERR_PROTOCOL;
 }
 
-SysResult_t BSP_QSPI_Init(void)
+static SysResult_t Qspi_InitLocked(uint32_t started, bool recovering)
 {
     SysResult_t result;
     HAL_StatusTypeDef status;
-    uint32_t started, cleanup_started, attempts;
-    if (!Qspi_ContextValid())
-        return SYS_ERR_INVALID_STATE;
-    if (!Qspi_Take())
-        return SYS_ERR_BUSY;
-    if (s_diag.fault != 0U || s_diag.ready != 0U)
-    {
-        result = s_diag.fault != 0U ? SYS_ERR_INVALID_STATE : SYS_ERR_ALREADY_EXISTS;
-        Qspi_Give();
-        return result;
-    }
-    attempts = s_diag.attempts + 1U;
+    uint32_t cleanup_started, attempts = s_diag.attempts + 1U;
     memset(&s_diag, 0, sizeof(s_diag));
     memset(&s_qspi, 0, sizeof(s_qspi));
     s_diag.attempts = attempts;
     s_diag.msp_result = SYS_ERR_INVALID_STATE;
     s_diag.init_timeout_ms = HAL_QSPI_TIMEOUT_DEFAULT_VALUE;
     s_diag.stage = BSP_QSPI_STAGE_PREPARE;
-    started = HAL_GetTick();
     result = Qspi_PrepareHardware();
     s_diag.prepare_result = result;
-    if (result == SYS_OK && HAL_GetTick() - started >= 100U)
+    if (result == SYS_OK && HAL_GetTick() - started >= (recovering ?
+        QSPI_INIT_BUDGET_MS - HAL_QSPI_TIMEOUT_DEFAULT_VALUE - 1U : 100U))
         result = SYS_ERR_TIMEOUT;
     if (result == SYS_OK)
     {
@@ -443,6 +435,16 @@ SysResult_t BSP_QSPI_Init(void)
         if (result == SYS_OK && (!Qspi_ContextValid() || !Qspi_ConfigValid() ||
             s_qspi.State != HAL_QSPI_STATE_READY || s_qspi.ErrorCode != HAL_QSPI_ERROR_NONE))
             result = SYS_ERR_IO;
+        if (result == SYS_OK && recovering)
+        {
+            s_fault_diag.recovery_stage = BSP_QSPI_RECOVERY_STATUS;
+            Qspi_ReadBegin(UINT32_MAX, 0U, 0U);
+            result = Qspi_ReadStatusLocked(started, QSPI_INIT_BUDGET_MS);
+            if (result == SYS_OK && s_diag.status.busy != 0U)
+                result = SYS_ERR_BUSY;
+            if (result == SYS_OK && (s_diag.status.sus != 0U || s_diag.status.wel != 0U))
+                result = SYS_ERR_INVALID_STATE;
+        }
     }
     Qspi_Snapshot();
     s_diag.elapsed_ms = HAL_GetTick() - started;
@@ -457,12 +459,13 @@ SysResult_t BSP_QSPI_Init(void)
     else
     {
         //HAL 已参与后设备状态不确定，锁存故障；DeInit 不提供隐式恢复通道。
-        Qspi_RecordFault(!s_hal_attempted ? BSP_QSPI_FAULT_PREPARE :
-            (s_diag.stage == BSP_QSPI_STAGE_HAL ? BSP_QSPI_FAULT_HAL_INIT :
-             BSP_QSPI_FAULT_INIT_IDENTIFY), s_diag.stage, result, 0U,
-            s_diag.stage == BSP_QSPI_STAGE_COMMAND || s_diag.stage == BSP_QSPI_STAGE_RECEIVE ?
-            0x9FU : 0U, s_diag.hal_status);
-        s_diag.fault = s_hal_attempted ? 1U : 0U;
+        if (!recovering)
+            Qspi_RecordFault(!s_hal_attempted ? BSP_QSPI_FAULT_PREPARE :
+                (s_diag.stage == BSP_QSPI_STAGE_HAL ? BSP_QSPI_FAULT_HAL_INIT :
+                 BSP_QSPI_FAULT_INIT_IDENTIFY), s_diag.stage, result, 0U,
+                s_diag.stage == BSP_QSPI_STAGE_COMMAND || s_diag.stage == BSP_QSPI_STAGE_RECEIVE ?
+                0x9FU : 0U, s_diag.hal_status);
+        s_diag.fault = recovering || s_hal_attempted ? 1U : 0U;
         cleanup_started = HAL_GetTick();
         s_diag.cleanup_result = Qspi_Cleanup();
         s_diag.cleanup_elapsed_ms = HAL_GetTick() - cleanup_started;
@@ -470,6 +473,88 @@ SysResult_t BSP_QSPI_Init(void)
         if (s_diag.cleanup_result != SYS_OK)
             s_diag.fault = 1U;
     }
+    return result;
+}
+
+SysResult_t BSP_QSPI_Init(void)
+{
+    SysResult_t result;
+    if (!Qspi_ContextValid())
+        return SYS_ERR_INVALID_STATE;
+    if (!Qspi_Take())
+        return SYS_ERR_BUSY;
+    if (s_diag.fault != 0U || s_diag.ready != 0U)
+        result = s_diag.fault != 0U ? SYS_ERR_INVALID_STATE : SYS_ERR_ALREADY_EXISTS;
+    else
+        result = Qspi_InitLocked(HAL_GetTick(), false);
+    Qspi_Give();
+    return result;
+}
+
+static bool Qspi_RecoveryTickLive(uint32_t started)
+{
+    uint32_t i;
+    //观察一次 Tick 前进。即使 Tick 卡死，CPU 检查也会有界退出。
+    for (i = 0U; i < QSPI_TICK_PROBE_LIMIT; i++)
+        if (HAL_GetTick() != started)
+            return Qspi_ContextValid();
+    return false;
+}
+
+SysResult_t BSP_QSPI_Recover(void)
+{
+    SysResult_t result;
+    uint32_t started;
+    if (!Qspi_ContextValid())
+        return SYS_ERR_INVALID_STATE;
+    if (!Qspi_Take())
+        return SYS_ERR_BUSY;
+    if (s_diag.fault == 0U)
+    {
+        result = s_diag.ready != 0U ? SYS_ERR_ALREADY_EXISTS : SYS_ERR_INVALID_STATE;
+        Qspi_Give();
+        return result;
+    }
+    if (s_fault_diag.recovery_attempts != UINT32_MAX)
+        s_fault_diag.recovery_attempts++;
+    started = HAL_GetTick();
+    if (s_fault_diag.wren_possible != 0U || s_fault_diag.mutation_possible != 0U ||
+        s_fault_diag.flash_completion_unknown != 0U)
+    {
+        s_fault_diag.recovery_stage = BSP_QSPI_RECOVERY_BLOCKED;
+        result = SYS_ERR_NOT_SUPPORTED;
+    }
+    else
+    {
+        s_fault_diag.recovery_stage = BSP_QSPI_RECOVERY_TICK;
+        s_fault_diag.flash_idle_verified = 0U;
+        if (!Qspi_RecoveryTickLive(started))
+            result = SYS_ERR_TIMEOUT;
+        else
+        {
+            s_fault_diag.recovery_stage = BSP_QSPI_RECOVERY_CLEANUP;
+            result = Qspi_Cleanup();
+            if (s_cleanup_stage != BSP_QSPI_CLEANUP_NONE)
+                Qspi_RecordCleanup(result);
+            //释放后如发现其他使用者改过所属资源，不重新抢占。
+            if (result == SYS_OK && (__HAL_RCC_QSPI_IS_CLK_ENABLED() ||
+                __HAL_RCC_GET_QSPI_SOURCE() != s_clock_source || !Qspi_PinsRestored()))
+                result = SYS_ERR_BUSY;
+            if (result == SYS_OK)
+            {
+                s_fault_diag.recovery_stage = BSP_QSPI_RECOVERY_INIT;
+                result = Qspi_InitLocked(started, true);
+                if (result == SYS_OK)
+                {
+                    s_fault_diag.recovery_stage = BSP_QSPI_RECOVERY_READY;
+                    s_fault_diag.controller_idle_verified = 1U;
+                    s_fault_diag.flash_idle_verified = 1U;
+                }
+            }
+        }
+    }
+    s_fault_diag.recovery_result = result;
+    s_fault_diag.recovery_elapsed_ms = HAL_GetTick() - started;
     Qspi_Give();
     return result;
 }
