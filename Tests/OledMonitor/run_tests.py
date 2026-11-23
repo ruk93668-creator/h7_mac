@@ -1,6 +1,6 @@
 """Compile production CM4 OLED/IPC view code with ARMCC5, then execute in Unicorn."""
 from pathlib import Path
-import json, subprocess, sys, struct, zlib, time
+import json, subprocess, sys, struct, zlib, time, os
 ROOT=Path(__file__).resolve().parents[2]
 HERE=Path(__file__).resolve().parent
 UI2='--ui2' in sys.argv
@@ -55,6 +55,8 @@ if UI2:NAMES += ["菜单50ms、监控100ms与忙期跳帧"]
 if UI2:NAMES += ['系统监控导航与无发布数据', '系统任务ID、重建、截断、低栈、失联及过期', '系统Heap边界、累计峰值与CPU有效性']
 if UI2:NAMES += ['OLED_UI 字模、光标和数值编辑边界', 'OLED_UI 图标、过渡、滚动和弹窗连续帧']
 if UI2:NAMES += ["合并前：弹窗与局部页面切换时隔离旧输入"]
+if case_filter is not None and not 0 <= case_filter < len(NAMES):
+ raise SystemExit(f'unknown case: {case_filter}')
 commands=[]
 def run(args):
  args=list(map(str,args));r=subprocess.run(args,cwd=ROOT,capture_output=True)
@@ -65,7 +67,7 @@ def run(args):
   print(text,flush=True)
   raise RuntimeError('Build failed or warning')
  return text
-cc=Path('D:/32/ARM/ARMCC/Bin/armcc.exe')
+cc=Path(os.environ.get('OLED_ARMCC','D:/32/ARM/ARMCC/Bin/armcc.exe'))
 version=run([cc,'--vsn']).strip()
 rows=[]
 for opt in ['O0','O2']:
