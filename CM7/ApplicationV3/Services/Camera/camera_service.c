@@ -1,5 +1,4 @@
 #include "camera_service.h"
-#include "../../Tasks/record_board.h"
 #include "../../Tasks/service_tasks.h"
 #include "camera_capture.h"
 #include "ov5640_device.h"
@@ -11,8 +10,6 @@ typedef struct
 {
     AppV3ServiceMailbox_t mailbox;
     const CameraConfig_t *config;
-    uint32_t pattern;
-    bool simulated_running;
     AppV3HardwareReport_t hardware;
     AppV3HardwareRequest_t request;
     Ov5640Device_t *sensor;
@@ -26,71 +23,9 @@ typedef struct
     bool frame_held;
 } CameraServiceContext_t;
 
-typedef SysResult_t (*CameraServiceHandler_t)(CameraServiceContext_t *context,
-    const AppV3ServiceCommand_t *command);
-
 //只有所属任务修改私有状态。发布后API只读取单独保存的队列入口
 static CameraServiceContext_t s_camera;
 static AppV3Queue_t s_endpoint;
-
-//只改变模拟状态，保持实际设备状态口独立
-static SysResult_t CameraService_Start(CameraServiceContext_t *context,
-    const AppV3ServiceCommand_t *command)
-{
-    (void)command;
-    if (context->simulated_running)
-        return SYS_ERR_INVALID_STATE;
-    context->simulated_running = true;
-    return SYS_OK;
-}
-
-//模拟停止不会访问硬件
-static SysResult_t CameraService_Stop(CameraServiceContext_t *context,
-    const AppV3ServiceCommand_t *command)
-{
-    (void)command;
-    if (!context->simulated_running)
-        return SYS_ERR_INVALID_STATE;
-    context->simulated_running = false;
-    return SYS_OK;
-}
-
-//校验本服务的模拟参数，失败时保留原值
-static SysResult_t CameraService_Parameter(CameraServiceContext_t *context,
-    const AppV3ServiceCommand_t *command)
-{
-    if (command->argument == 0U || command->argument > 255U)
-        return SYS_ERR_INVALID_ARG;
-    context->pattern = command->argument;
-    return SYS_OK;
-}
-
-//完成消息携带当前模拟状态，不公开Context地址
-static SysResult_t CameraService_Query(CameraServiceContext_t *context,
-    const AppV3ServiceCommand_t *command)
-{
-    (void)context;
-    (void)command;
-    return SYS_OK;
-}
-
-//故障注入只生成软件FAULT
-static SysResult_t CameraService_Fail(CameraServiceContext_t *context,
-    const AppV3ServiceCommand_t *command)
-{
-    (void)context;
-    (void)command;
-    return SYS_ERR_IO;
-}
-
-static const CameraServiceHandler_t s_handlers[CAMERA_SERVICE_OP_COUNT] =
-{
-    [CAMERA_SERVICE_MOCK_START] = CameraService_Start,
-    [CAMERA_SERVICE_MOCK_STOP] = CameraService_Stop,
-    [CAMERA_SERVICE_SET_PARAMETER] = CameraService_Parameter,
-    [CAMERA_SERVICE_QUERY] = CameraService_Query,
-    [CAMERA_SERVICE_MOCK_FAIL] = CameraService_Fail
-};
 
 #define CAMERA_HW_POLL_MS 10U
 #define CAMERA_HW_TIMEOUT_MS 3000U
@@ -129,21 +64,6 @@ typedef struct
 typedef SysResult_t (*CameraFrameSend_t)(CameraFrameConsumer_t consumer, const AppMessage_t *message);
 
 static CameraTransfer_t s_transfers[CAMERA_FRAME_CONSUMER_COUNT];
-#if APP_V3_JOINT_BOARD_TEST
-volatile AppV3JointCamera_t g_app_v3_joint_camera;
-
-void AppV3_JointCameraSnapshot(void)
-{
-    uint32_t blocks, loans;
-    CameraMjpegFifo_ReadOccupancy(&blocks, &loans);
-    g_app_v3_joint_camera.hardware = s_camera.hardware;
-    g_app_v3_joint_camera.blocks = blocks;
-    g_app_v3_joint_camera.loans = loans;
-}
-#endif
-#if APP_V3_RECORD_BOARD_TEST
-volatile AppV3RecordBoardCamera_t g_app_v3_record_camera;
-#endif
 static uint32_t s_frame_sequence;
 static uint8_t s_next_consumer;
 
@@ -217,27 +137,6 @@ static void CameraFrame_Receive(CameraFrameConsumer_t consumer, const AppMessage
     else if (message->type == APP_MESSAGE_RETURN_ACK_CONSUMED &&
         transfer->state == CAMERA_TRANSFER_WAIT_CONSUMED)
     {
-#if APP_V3_RECORD_BOARD_TEST
-        //只有Camera消费匹配的SD确认且持有真实Loan时才增加计数。
-        if (consumer == CAMERA_FRAME_CONSUMER_STORAGE && transfer->reply.lease_id != 0U)
-        {
-            g_app_v3_record_camera.request_id = message->command_id;
-            g_app_v3_record_camera.session = message->stream_epoch;
-            g_app_v3_record_camera.lease_id = message->lease_id;
-            ++g_app_v3_record_camera.confirmed;
-        }
-#endif
-#if APP_V3_JOINT_BOARD_TEST
-        if (message->lease_id != 0U && consumer == CAMERA_FRAME_CONSUMER_USB)
-        {
-            ++g_app_v3_joint_camera.usb_confirmed;
-            g_app_v3_joint_camera.usb_request_id = message->command_id;
-            g_app_v3_joint_camera.usb_session = message->stream_epoch;
-            g_app_v3_joint_camera.usb_lease_id = message->lease_id;
-        }
-        else if (message->lease_id != 0U && consumer == CAMERA_FRAME_CONSUMER_STORAGE)
-            ++g_app_v3_joint_camera.sd_confirmed;
-#endif
         //保留退休高水位，重复消息不得命中下一请求。
         transfer->lease.raw = (CameraFrameLease_t){0};
         transfer->jpeg = false;
@@ -673,16 +572,9 @@ static SysResult_t CameraService_Readable(AppV3Queue_t queue, void *argument)
     if (command.operation >= CAMERA_SERVICE_START && command.operation <= CAMERA_SERVICE_RECOVER)
         return CameraService_HardwareCommand(&command, result);
 
-    //通过分发表执行合法命令；重复、迟到及非法请求只生成FAULT
     if (result == SYS_OK)
-    {
-        if (command.operation >= CAMERA_SERVICE_OP_COUNT || s_handlers[command.operation] == NULL)
-            result = SYS_ERR_NOT_SUPPORTED;
-        else
-            result = s_handlers[command.operation](context, &command);
-    }
-    return AppV3Mailbox_Complete(&context->mailbox, &command, result,
-        context->simulated_running, context->pattern);
+        result = SYS_ERR_NOT_SUPPORTED;
+    return AppV3Mailbox_Complete(&context->mailbox, &command, result, false, 0U);
 }
 
 //准备本服务的配置、队列与事件订阅，再由Registry发布Record

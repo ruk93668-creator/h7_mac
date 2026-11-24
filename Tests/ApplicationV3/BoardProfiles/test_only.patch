@@ -1,0 +1,1007 @@
+--- a/CM7/ApplicationV3/Tasks/service_tasks.c
++++ b/CM7/ApplicationV3/Tasks/service_tasks.c
+@@ -4,9 +4,14 @@
+ #include "platform_sync.h"
+ #include "service_tasks.h"
+ #include "supervisor.h"
++#include "record_board.h"
++#if APP_V3_RECORD_BOARD_TEST
++#include "platform_time.h"
++#endif
+ #include "../Services/Camera/camera_service.h"
+ #include "../Services/USB/usb_service.h"
+ #include "../Services/Storage/storage_service.h"
++#include "board_smoke.h"
+ #include "../Runtime/service_event_loop.h"
+ #include "../Runtime/service_events.h"
+ #include <stddef.h>
+@@ -42,6 +47,12 @@
+             //硬件推进发生在Service任务内，结果队列背压不会阻止必要的停止推进
+             if (AppV3_BusinessReady())
+                 wait_ms = advance();
++#if APP_V3_JOINT_BOARD_TEST
++                if (thread->owner == RUNTIME_TARGET_CAMERA)
++                    AppV3_JointCameraSnapshot();
++                else if (thread->owner == RUNTIME_TARGET_USB)
++                    AppV3_JointUsbSnapshot();
++#endif
+             result = AppV3Mailbox_Flush(mailbox);
+             if (result == SYS_OK)
+                 result = AppV3EventLoop_Step(&mailbox->loop, wait_ms, &events);
+@@ -98,6 +109,7 @@
+     return AppV3_DrainInitialization();
+ }
+ 
++#include "../../../Tests/ApplicationV3/BoardProfiles/board_smoke_control.inc"
+ 
+ //由原ControlTask串行调度实际Service；表只描述当前已接入的依赖。
+ #define SUPERVISOR_TIMEOUT_MS 10000U
+@@ -424,6 +436,7 @@
+     }
+ }
+ 
++#include "../../../Tests/ApplicationV3/BoardProfiles/record_board_control.inc"
+ 
+ //协调BOOT屏障、启动结果消费和超时处理
+ static void AppV3_ControlRun(void *argument)
+@@ -456,6 +469,12 @@
+         {
+             (void)AppV3Business_Drain(&business_consumed);
+             AppV3Supervisor_Poll();
++#if APP_V3_RECORD_BOARD_TEST
++            AppV3_RecordBoardPoll();
++#endif
++#if APP_V3_BOARD_SMOKE != APP_V3_BOARD_SMOKE_OFF
++            BoardSmoke_Poll();
++#endif
+         }
+         if (business_consumed >= 4U)
+             vTaskDelay(1U);
+--- a/CM7/Service/usb_uvc.h
++++ b/CM7/Service/usb_uvc.h
+@@ -88,5 +88,14 @@
+ //��ѯ�豸���ۼ�EOF�������������Windows��ʾ֡��
+ uint32_t USB_UVC_GetCompletedFrameCount(void);
+ 
++#if APP_V3_JOINT_BOARD_TEST
++typedef struct
++{
++    uint32_t interval, max_frame, max_payload;
++    bool configured, probe_observed, commit_valid, alt1, can_submit;
++} UsbUvcJointLink_t;
++
++void USB_UVC_ReadJointLink(UsbUvcJointLink_t *link);
++#endif
+ 
+ #endif
+--- a/CM7/Service/usb_uvc_class.c
++++ b/CM7/Service/usb_uvc_class.c
+@@ -1220,6 +1220,32 @@
+ }
+ 
+ //��ѯ�豸���ۼ�EOF�����
++#if APP_V3_JOINT_BOARD_TEST
++//��������ʵ���ύ��Commit��Alt����������������Э���Ѿ��ɹ���
++void USB_UVC_ReadJointLink(UsbUvcJointLink_t *link)
++{
++    uint32_t mask = USB_Device_Lock();
++    const UsbUvcContext_t *ctx = s_uvc_active;
++
++    *link = (UsbUvcJointLink_t){.configured = USB_Device_IsConfigured()};
++    if (ctx != NULL)
++    {
++        link->probe_observed = ctx->probe_observed;
++        link->commit_valid = ctx->commit_valid;
++        link->alt1 = ctx->interface_alt[1] == 1U && ctx->ep1_opened && !ctx->ep1_close_pending;
++        link->can_submit = link->configured && link->alt1 && ctx->commit_valid &&
++            ctx->stream_state == USB_UVC_WAIT_FRAME && UVC_PayloadQuiet() &&
++            s_reader_proof.accepted_id == s_reader_proof.retired_id && s_reader_proof.accepted_id != UINT32_MAX;
++        if (ctx->commit_valid)
++        {
++            link->interval = UVC_Read32(ctx->commit + 4U);
++            link->max_frame = UVC_Read32(ctx->commit + 18U);
++            link->max_payload = UVC_Read32(ctx->commit + 22U);
++        }
++    }
++    USB_Device_Unlock(mask);
++}
++#endif
+ 
+ uint32_t USB_UVC_GetCompletedFrameCount(void)
+ {
+--- a/CM7/Platform/usb_device.h
++++ b/CM7/Platform/usb_device.h
+@@ -5,6 +5,45 @@
+ #include "usbd_def.h"
+ #include <stdbool.h>
+ 
++#if defined(APP_V3_BOARD_SMOKE) && APP_V3_BOARD_SMOKE == 2 && defined(APP_V3_BOARD_STRESS) && APP_V3_BOARD_STRESS != 0
++#define APP_V3_USB_FAULT_TRACE_ENABLED 1
++#define USB_DEVICE_TRACE_CAPACITY 8U
++
++typedef enum
++{
++    USB_DEVICE_TRACE_RESET = 1,
++    USB_DEVICE_TRACE_SUSPEND,
++    USB_DEVICE_TRACE_RESUME,
++    USB_DEVICE_TRACE_CONNECT,
++    USB_DEVICE_TRACE_DISCONNECT,
++    USB_DEVICE_TRACE_SET_CONFIGURATION
++} UsbDeviceTraceKind_t;
++
++typedef struct
++{
++    uint32_t sequence;
++    uint32_t tick_ms;
++    uint8_t kind;
++    uint8_t dev_state;
++    uint8_t dev_old_state;
++    uint8_t configuration;
++} UsbDeviceTraceEvent_t;
++
++typedef struct
++{
++    uint8_t dev_state;
++    uint8_t dev_old_state;
++    bool started;
++    bool stop_required;
++    SysResult_t last_result;
++    uint32_t event_sequence;
++    uint32_t event_count;
++    UsbDeviceTraceEvent_t events[USB_DEVICE_TRACE_CAPACITY];
++} UsbDeviceR2Trace_t;
++
++//读取同一采样点的Core状态和最近事件，返回原Configured判据
++bool USB_Device_ReadR2Trace(UsbDeviceR2Trace_t *trace);
++#endif
+ 
+ //USB任务读取同一采样点的链路事实；短临界区内不执行USB操作
+ typedef struct
+--- a/CM7/Platform/usb_device.c
++++ b/CM7/Platform/usb_device.c
+@@ -402,6 +402,59 @@
+     return configured;
+ }
+ 
++#ifdef APP_V3_USB_FAULT_TRACE_ENABLED
++static UsbDeviceTraceEvent_t s_r2_events[USB_DEVICE_TRACE_CAPACITY];
++static uint32_t s_r2_sequence;
++static uint32_t s_r2_count;
++static uint32_t s_r2_next;
++
++//同一USB事件回调顺序写入固定长度记录，不在中断里搬移历史
++static void Usb_RecordR2Event(UsbDeviceTraceKind_t kind, uint8_t configuration)
++{
++    UsbDeviceTraceEvent_t *entry = &s_r2_events[s_r2_next];
++
++    //按原回调完成后的Core状态记录，序号和索引独立，允许序号回绕
++    entry->sequence = ++s_r2_sequence;
++    entry->tick_ms = HAL_GetTick();
++    entry->kind = (uint8_t)kind;
++    entry->dev_state = s_device.dev_state;
++    entry->dev_old_state = s_device.dev_old_state;
++    entry->configuration = configuration;
++    s_r2_next = (s_r2_next + 1U) % USB_DEVICE_TRACE_CAPACITY;
++    if (s_r2_count < USB_DEVICE_TRACE_CAPACITY)
++        ++s_r2_count;
++}
++
++//短临界区内复制已经形成的状态事实，不执行USB协议操作
++bool USB_Device_ReadR2Trace(UsbDeviceR2Trace_t *trace)
++{
++    uint32_t saved_primask, event_index, source_index;
++    UsbDeviceLinkState_t state;
++    bool configured;
++
++    saved_primask = Platform_SyncGetPrimask();
++    Platform_SyncDisableIrq();
++
++    //Configured和各状态字段使用同一次采样，ISR不能在字段之间修改Core
++    configured = Usb_ReadLinkState(&state);
++    trace->dev_state = state.dev_state;
++    trace->dev_old_state = state.dev_old_state;
++    trace->started = state.started;
++    trace->stop_required = state.stop_required;
++    trace->last_result = state.last_result;
++    trace->event_sequence = s_r2_sequence;
++    trace->event_count = s_r2_count;
++    source_index = (s_r2_next + USB_DEVICE_TRACE_CAPACITY - s_r2_count) % USB_DEVICE_TRACE_CAPACITY;
++    for (event_index = 0U; event_index < s_r2_count; ++event_index)
++    {
++        trace->events[event_index] = s_r2_events[source_index];
++        source_index = (source_index + 1U) % USB_DEVICE_TRACE_CAPACITY;
++    }
++    Platform_SyncMemoryBarrier();
++    Platform_SyncRestoreIrq(saved_primask);
++    return configured;
++}
++#endif
+ 
+ //查询设备级运行结果
+ SysResult_t USB_Device_GetLastResult(void)
+@@ -1265,6 +1318,11 @@
+     if (status != USBD_OK)
+         USBD_CtlError(&s_device, &s_device.request);
+ 
++#ifdef APP_V3_USB_FAULT_TRACE_ENABLED
++    //记录已交给官方Core的配置请求及处理后的状态，配置值0表示取消配置
++    if (data[0] == (USB_REQ_TYPE_STANDARD | USB_REQ_RECIPIENT_DEVICE) && data[1] == USB_REQ_SET_CONFIGURATION)
++        Usb_RecordR2Event(USB_DEVICE_TRACE_SET_CONFIGURATION, data[2]);
++#endif
+     //请求处理完成后只通知状态变化，不把协议处理搬到任务
+     Usb_Notify(USB_DEVICE_EVENT_STATE);
+ }
+@@ -1352,6 +1410,9 @@
+             s_last_result = release_result != SYS_OK ? release_result : SYS_ERR_IO;
+         s_stop_required = true;
+     }
++#ifdef APP_V3_USB_FAULT_TRACE_ENABLED
++    Usb_RecordR2Event(USB_DEVICE_TRACE_RESET, 0U);
++#endif
+     Usb_Notify(USB_DEVICE_EVENT_STATE);
+ }
+ 
+@@ -1361,6 +1422,9 @@
+ 
+     //先更新官方Core挂起状态，再通知Application重新检查状态
+     (void)USBD_LL_Suspend(&s_device);
++#ifdef APP_V3_USB_FAULT_TRACE_ENABLED
++    Usb_RecordR2Event(USB_DEVICE_TRACE_SUSPEND, 0U);
++#endif
+     Usb_Notify(USB_DEVICE_EVENT_STATE);
+ }
+ 
+@@ -1370,6 +1434,9 @@
+ 
+     //先恢复官方Core状态，再发送任务唤醒提示
+     (void)USBD_LL_Resume(&s_device);
++#ifdef APP_V3_USB_FAULT_TRACE_ENABLED
++    Usb_RecordR2Event(USB_DEVICE_TRACE_RESUME, 0U);
++#endif
+     Usb_Notify(USB_DEVICE_EVENT_STATE);
+ }
+ 
+@@ -1379,6 +1446,9 @@
+ 
+     //将连接事件交给Core，连接本身不代表枚举完成
+     (void)USBD_LL_DevConnected(&s_device);
++#ifdef APP_V3_USB_FAULT_TRACE_ENABLED
++    Usb_RecordR2Event(USB_DEVICE_TRACE_CONNECT, 0U);
++#endif
+     Usb_Notify(USB_DEVICE_EVENT_STATE);
+ }
+ 
+@@ -1398,6 +1468,9 @@
+     //继续清理遗留数据端点，未全部释放时禁止直接重新启动
+     if (Usb_ReleaseEndpoints() != SYS_OK)
+         s_stop_required = true;
++#ifdef APP_V3_USB_FAULT_TRACE_ENABLED
++    Usb_RecordR2Event(USB_DEVICE_TRACE_DISCONNECT, 0U);
++#endif
+     Usb_Notify(USB_DEVICE_EVENT_STATE);
+ }
+ 
+--- a/CM7/ApplicationV3/Services/Camera/camera_service.c
++++ b/CM7/ApplicationV3/Services/Camera/camera_service.c
+@@ -1,4 +1,5 @@
+ #include "camera_service.h"
++#include "../../Tasks/record_board.h"
+ #include "../../Tasks/service_tasks.h"
+ #include "camera_capture.h"
+ #include "ov5640_device.h"
+@@ -10,6 +11,8 @@
+ {
+     AppV3ServiceMailbox_t mailbox;
+     const CameraConfig_t *config;
++    uint32_t pattern;
++    bool simulated_running;
+     AppV3HardwareReport_t hardware;
+     AppV3HardwareRequest_t request;
+     Ov5640Device_t *sensor;
+@@ -23,9 +26,71 @@
+     bool frame_held;
+ } CameraServiceContext_t;
+ 
++typedef SysResult_t (*CameraServiceHandler_t)(CameraServiceContext_t *context,
++    const AppV3ServiceCommand_t *command);
++
+ //只有所属任务修改私有状态。发布后API只读取单独保存的队列入口
+ static CameraServiceContext_t s_camera;
+ static AppV3Queue_t s_endpoint;
++
++//只改变模拟状态，保持实际设备状态口独立
++static SysResult_t CameraService_Start(CameraServiceContext_t *context,
++    const AppV3ServiceCommand_t *command)
++{
++    (void)command;
++    if (context->simulated_running)
++        return SYS_ERR_INVALID_STATE;
++    context->simulated_running = true;
++    return SYS_OK;
++}
++
++//模拟停止不会访问硬件
++static SysResult_t CameraService_Stop(CameraServiceContext_t *context,
++    const AppV3ServiceCommand_t *command)
++{
++    (void)command;
++    if (!context->simulated_running)
++        return SYS_ERR_INVALID_STATE;
++    context->simulated_running = false;
++    return SYS_OK;
++}
++
++//校验本服务的模拟参数，失败时保留原值
++static SysResult_t CameraService_Parameter(CameraServiceContext_t *context,
++    const AppV3ServiceCommand_t *command)
++{
++    if (command->argument == 0U || command->argument > 255U)
++        return SYS_ERR_INVALID_ARG;
++    context->pattern = command->argument;
++    return SYS_OK;
++}
++
++//完成消息携带当前模拟状态，不公开Context地址
++static SysResult_t CameraService_Query(CameraServiceContext_t *context,
++    const AppV3ServiceCommand_t *command)
++{
++    (void)context;
++    (void)command;
++    return SYS_OK;
++}
++
++//故障注入只生成软件FAULT
++static SysResult_t CameraService_Fail(CameraServiceContext_t *context,
++    const AppV3ServiceCommand_t *command)
++{
++    (void)context;
++    (void)command;
++    return SYS_ERR_IO;
++}
++
++static const CameraServiceHandler_t s_handlers[CAMERA_SERVICE_OP_COUNT] =
++{
++    [CAMERA_SERVICE_MOCK_START] = CameraService_Start,
++    [CAMERA_SERVICE_MOCK_STOP] = CameraService_Stop,
++    [CAMERA_SERVICE_SET_PARAMETER] = CameraService_Parameter,
++    [CAMERA_SERVICE_QUERY] = CameraService_Query,
++    [CAMERA_SERVICE_MOCK_FAIL] = CameraService_Fail
++};
+ 
+ #define CAMERA_HW_POLL_MS 10U
+ #define CAMERA_HW_TIMEOUT_MS 3000U
+@@ -64,6 +129,21 @@
+ typedef SysResult_t (*CameraFrameSend_t)(CameraFrameConsumer_t consumer, const AppMessage_t *message);
+ 
+ static CameraTransfer_t s_transfers[CAMERA_FRAME_CONSUMER_COUNT];
++#if APP_V3_JOINT_BOARD_TEST
++volatile AppV3JointCamera_t g_app_v3_joint_camera;
++
++void AppV3_JointCameraSnapshot(void)
++{
++    uint32_t blocks, loans;
++    CameraMjpegFifo_ReadOccupancy(&blocks, &loans);
++    g_app_v3_joint_camera.hardware = s_camera.hardware;
++    g_app_v3_joint_camera.blocks = blocks;
++    g_app_v3_joint_camera.loans = loans;
++}
++#endif
++#if APP_V3_RECORD_BOARD_TEST
++volatile AppV3RecordBoardCamera_t g_app_v3_record_camera;
++#endif
+ static uint32_t s_frame_sequence;
+ static uint8_t s_next_consumer;
+ 
+@@ -137,6 +217,27 @@
+     else if (message->type == APP_MESSAGE_RETURN_ACK_CONSUMED &&
+         transfer->state == CAMERA_TRANSFER_WAIT_CONSUMED)
+     {
++#if APP_V3_RECORD_BOARD_TEST
++        //只有Camera消费匹配的SD确认且持有真实Loan时才增加计数。
++        if (consumer == CAMERA_FRAME_CONSUMER_STORAGE && transfer->reply.lease_id != 0U)
++        {
++            g_app_v3_record_camera.request_id = message->command_id;
++            g_app_v3_record_camera.session = message->stream_epoch;
++            g_app_v3_record_camera.lease_id = message->lease_id;
++            ++g_app_v3_record_camera.confirmed;
++        }
++#endif
++#if APP_V3_JOINT_BOARD_TEST
++        if (message->lease_id != 0U && consumer == CAMERA_FRAME_CONSUMER_USB)
++        {
++            ++g_app_v3_joint_camera.usb_confirmed;
++            g_app_v3_joint_camera.usb_request_id = message->command_id;
++            g_app_v3_joint_camera.usb_session = message->stream_epoch;
++            g_app_v3_joint_camera.usb_lease_id = message->lease_id;
++        }
++        else if (message->lease_id != 0U && consumer == CAMERA_FRAME_CONSUMER_STORAGE)
++            ++g_app_v3_joint_camera.sd_confirmed;
++#endif
+         //保留退休高水位，重复消息不得命中下一请求。
+         transfer->lease.raw = (CameraFrameLease_t){0};
+         transfer->jpeg = false;
+@@ -572,9 +673,16 @@
+     if (command.operation >= CAMERA_SERVICE_START && command.operation <= CAMERA_SERVICE_RECOVER)
+         return CameraService_HardwareCommand(&command, result);
+ 
++    //通过分发表执行合法命令；重复、迟到及非法请求只生成FAULT
+     if (result == SYS_OK)
+-        result = SYS_ERR_NOT_SUPPORTED;
+-    return AppV3Mailbox_Complete(&context->mailbox, &command, result, false, 0U);
++    {
++        if (command.operation >= CAMERA_SERVICE_OP_COUNT || s_handlers[command.operation] == NULL)
++            result = SYS_ERR_NOT_SUPPORTED;
++        else
++            result = s_handlers[command.operation](context, &command);
++    }
++    return AppV3Mailbox_Complete(&context->mailbox, &command, result,
++        context->simulated_running, context->pattern);
+ }
+ 
+ //准备本服务的配置、队列与事件订阅，再由Registry发布Record
+--- a/CM7/ApplicationV3/Services/Camera/camera_service.h
++++ b/CM7/ApplicationV3/Services/Camera/camera_service.h
+@@ -6,6 +6,12 @@
+ 
+ typedef enum
+ {
++    CAMERA_SERVICE_MOCK_START = 1,
++    CAMERA_SERVICE_MOCK_STOP,
++    CAMERA_SERVICE_SET_PARAMETER,
++    CAMERA_SERVICE_QUERY,
++    CAMERA_SERVICE_MOCK_FAIL,
++    CAMERA_SERVICE_OP_COUNT,
+     CAMERA_SERVICE_START = 16,
+     CAMERA_SERVICE_STOP,
+     CAMERA_SERVICE_HARDWARE_QUERY,
+--- a/CM7/ApplicationV3/Services/USB/usb_service.c
++++ b/CM7/ApplicationV3/Services/USB/usb_service.c
+@@ -1,4 +1,8 @@
+ #include "usb_service.h"
++#include "../../Tasks/record_board.h"
++#if APP_V3_JOINT_BOARD_TEST
++volatile AppV3JointUsb_t g_app_v3_joint_usb;
++#endif
+ #include "../../Core/app_messages.h"
+ 
+ #include "../../Tasks/service_tasks.h"
+@@ -11,6 +15,8 @@
+ {
+     AppV3ServiceMailbox_t mailbox;
+     const VideoConfig_t *config;
++    uint32_t packet_limit;
++    bool simulated_running;
+     AppV3HardwareReport_t hardware;
+     AppV3HardwareRequest_t request;
+     SysResult_t rollback_fault;
+@@ -22,9 +28,71 @@
+     bool cancel_requested;
+ } UsbServiceContext_t;
+ 
++typedef SysResult_t (*UsbServiceHandler_t)(UsbServiceContext_t *context,
++    const AppV3ServiceCommand_t *command);
++
+ //只有所属任务修改私有状态。发布后API只读取单独保存的队列入口
+ static UsbServiceContext_t s_usb;
+ static AppV3Queue_t s_endpoint;
++
++//只改变模拟状态，保持实际设备状态口独立
++static SysResult_t UsbService_Start(UsbServiceContext_t *context,
++    const AppV3ServiceCommand_t *command)
++{
++    (void)command;
++    if (context->simulated_running)
++        return SYS_ERR_INVALID_STATE;
++    context->simulated_running = true;
++    return SYS_OK;
++}
++
++//模拟停止不会访问硬件
++static SysResult_t UsbService_Stop(UsbServiceContext_t *context,
++    const AppV3ServiceCommand_t *command)
++{
++    (void)command;
++    if (!context->simulated_running)
++        return SYS_ERR_INVALID_STATE;
++    context->simulated_running = false;
++    return SYS_OK;
++}
++
++//校验本服务的模拟参数，失败时保留原值
++static SysResult_t UsbService_Parameter(UsbServiceContext_t *context,
++    const AppV3ServiceCommand_t *command)
++{
++    if (command->argument == 0U || command->argument > 1024U)
++        return SYS_ERR_INVALID_ARG;
++    context->packet_limit = command->argument;
++    return SYS_OK;
++}
++
++//完成消息携带当前模拟状态，不公开Context地址
++static SysResult_t UsbService_Query(UsbServiceContext_t *context,
++    const AppV3ServiceCommand_t *command)
++{
++    (void)context;
++    (void)command;
++    return SYS_OK;
++}
++
++//故障注入只生成软件FAULT
++static SysResult_t UsbService_Fail(UsbServiceContext_t *context,
++    const AppV3ServiceCommand_t *command)
++{
++    (void)context;
++    (void)command;
++    return SYS_ERR_IO;
++}
++
++static const UsbServiceHandler_t s_handlers[USB_SERVICE_OP_COUNT] =
++{
++    [USB_SERVICE_MOCK_START] = UsbService_Start,
++    [USB_SERVICE_MOCK_STOP] = UsbService_Stop,
++    [USB_SERVICE_SET_PARAMETER] = UsbService_Parameter,
++    [USB_SERVICE_QUERY] = UsbService_Query,
++    [USB_SERVICE_MOCK_FAIL] = UsbService_Fail
++};
+ 
+ #define USB_HW_POLL_MS 10U
+ #define USB_HW_ENUM_TIMEOUT_MS 5000U
+@@ -91,6 +159,9 @@
+             bool can_read = s_frame.state == USB_FRAME_WAIT_OFFER &&
+                 message->frame.data != NULL && message->frame.size_bytes != 0U;
+             s_frame.transfer = *message;
++#if APP_V3_JOINT_BOARD_TEST
++            ++g_app_v3_joint_usb.offer;
++#endif
+             s_frame.state = USB_FRAME_OFFERED;
+             if (!can_read)
+             {
+@@ -105,6 +176,9 @@
+     {
+         if (s_frame.result == SYS_ERR_BUSY)
+             s_frame.result = SYS_OK;
++#if APP_V3_JOINT_BOARD_TEST
++        ++g_app_v3_joint_usb.ack;
++#endif
+         s_frame.state = USB_FRAME_CONSUMED_PENDING;
+     }
+ }
+@@ -139,6 +213,12 @@
+     }
+     if (App_MessagesSend(APP_CHANNEL_TO_CAMERA, &message) == SYS_OK)
+     {
++#if APP_V3_JOINT_BOARD_TEST
++        if (message.type == APP_MESSAGE_FRAME_RETURN)
++            ++g_app_v3_joint_usb.returned;
++        else if (message.type == APP_MESSAGE_RETURN_ACK_CONSUMED && message.lease_id != 0U)
++            ++g_app_v3_joint_usb.confirmed;
++#endif
+         s_frame.state = after;
+         if (after == USB_FRAME_IDLE)
+             s_frame.transfer = (AppMessage_t){.command_id = 0U};
+@@ -177,6 +257,9 @@
+     result = App_MessagesSend(APP_CHANNEL_TO_CAMERA, &request);
+     if (result == SYS_OK)
+     {
++#if APP_V3_JOINT_BOARD_TEST
++        ++g_app_v3_joint_usb.request;
++#endif
+         s_frame.request_id = request.command_id;
+         s_frame.state = USB_FRAME_WAIT_OFFER;
+         s_frame.result = SYS_ERR_BUSY;
+@@ -316,7 +399,12 @@
+ 
+     //超出UVC配置值的帧正常跳过并归还，绝不截断JPEG。
+     if (frame->size_bytes > config->output_max_frame_bytes)
++    {
++#if APP_V3_JOINT_BOARD_TEST
++        ++g_app_v3_joint_usb.oversize;
++#endif
+         return SYS_ERR_BUSY;
++    }
+     view = (VideoFrameView_t){
+         .spans = {{frame->data, frame->size_bytes - frame->size_bytes2}, {frame->data2, frame->size_bytes2}},
+         .size_bytes = frame->size_bytes,
+@@ -324,7 +412,14 @@
+     };
+     if (!VideoFrameView_Valid(&view))
+         return SYS_ERR_PROTOCOL;
+-    return USB_UVC_SubmitFrameView(&view);
++    {
++        SysResult_t result = USB_UVC_SubmitFrameView(&view);
++#if APP_V3_JOINT_BOARD_TEST
++        if (result == SYS_ERR_BUSY)
++            ++g_app_v3_joint_usb.submit_busy;
++#endif
++        return result;
++    }
+ }
+ 
+ static SysResult_t UsbService_SubmitVideo(void)
+@@ -512,6 +607,11 @@
+     (void)AppV3Mailbox_CompleteHardware(&s_usb.mailbox, &s_usb.request.command, result, &s_usb.hardware);
+ }
+ 
++#ifdef APP_V3_USB_FAULT_TRACE_ENABLED
++volatile AppV3UsbFaultTrace_t g_app_v3_usb_first_fault;
++static SysResult_t s_usb_observed_core_result;
++static UsbDeviceR2Trace_t s_usb_platform_trace;
++#endif
+ 
+ //仅ACTIVE允许健康挂起；START仍须观察到真实CONFIGURED
+ static SysResult_t UsbService_ObserveDevice(bool *suspended)
+@@ -519,7 +619,13 @@
+     SysResult_t result;
+     UsbDeviceLinkState_t link;
+     bool configured;
++#ifdef APP_V3_USB_FAULT_TRACE_ENABLED
++    configured = USB_Device_ReadR2Trace(&s_usb_platform_trace);
++    link = (UsbDeviceLinkState_t){s_usb_platform_trace.dev_state, s_usb_platform_trace.dev_old_state,
++        s_usb_platform_trace.started, s_usb_platform_trace.stop_required, s_usb_platform_trace.last_result};
++#else
+     configured = USB_Device_ReadLinkState(&link);
++#endif
+     if (configured)
+         s_usb.hardware.flags |= USB_HW_CONFIGURED;
+     else
+@@ -533,6 +639,10 @@
+     if (suspended == NULL || !*suspended)
+         USB_UVC_Process();
+     result = USB_Device_GetLastResult();
++#ifdef APP_V3_USB_FAULT_TRACE_ENABLED
++    //保留同一轮读取的Core原值，避免随后Class查询覆盖诊断
++    s_usb_observed_core_result = result;
++#endif
+     //采样时已有设备级错误时保留它，后续成功不能掩盖
+     if (suspended != NULL && result == SYS_OK)
+         result = link.last_result;
+@@ -577,6 +687,18 @@
+         if (((s_usb.hardware.flags & USB_HW_CONFIGURED) == 0U && (!suspended || result != SYS_OK)) ||
+             (result != SYS_OK && result != SYS_ERR_BUSY))
+         {
++#ifdef APP_V3_USB_FAULT_TRACE_ENABLED
++            //在STOP清理Core结果前冻结首轮ACTIVE故障，最后提交快照有效标志
++            if (g_app_v3_usb_first_fault.captured == 0U)
++            {
++                g_app_v3_usb_first_fault.time_ms = Platform_TimeGetMs();
++                g_app_v3_usb_first_fault.configured = (s_usb.hardware.flags & USB_HW_CONFIGURED) != 0U;
++                g_app_v3_usb_first_fault.core_result = s_usb_observed_core_result;
++                g_app_v3_usb_first_fault.observe_result = result;
++                g_app_v3_usb_first_fault.platform = s_usb_platform_trace;
++                g_app_v3_usb_first_fault.captured = 1U;
++            }
++#endif
+             if (s_usb.hardware.first_fault == SYS_OK)
+                 s_usb.hardware.first_fault = result == SYS_OK || result == SYS_ERR_BUSY ? SYS_ERR_IO : result;
+             s_usb.hardware.state = APP_V3_HW_FAULT;
+@@ -659,9 +781,16 @@
+     if (command.operation >= USB_SERVICE_START && command.operation <= USB_SERVICE_RECOVER)
+         return UsbService_HardwareCommand(&command, result);
+ 
++    //通过分发表执行合法命令；重复、迟到及非法请求只生成FAULT
+     if (result == SYS_OK)
+-        result = SYS_ERR_NOT_SUPPORTED;
+-    return AppV3Mailbox_Complete(&context->mailbox, &command, result, false, 0U);
++    {
++        if (command.operation >= USB_SERVICE_OP_COUNT || s_handlers[command.operation] == NULL)
++            result = SYS_ERR_NOT_SUPPORTED;
++        else
++            result = s_handlers[command.operation](context, &command);
++    }
++    return AppV3Mailbox_Complete(&context->mailbox, &command, result,
++        context->simulated_running, context->packet_limit);
+ }
+ 
+ //准备本服务的配置、队列与事件订阅，再由Registry发布Record
+@@ -705,6 +834,32 @@
+ }
+ 
+ //固定Registry指向本服务的实际线程入口
++#if APP_V3_JOINT_BOARD_TEST
++void AppV3_JointUsbSnapshot(void)
++{
++    static uint32_t last_ms;
++    uint32_t now = Platform_TimeGetMs();
++    UsbUvcReaderProof_t proof;
++    UsbUvcJointLink_t link;
++
++    g_app_v3_joint_usb.hardware = s_usb.hardware;
++    if (now - last_ms < 40U)
++        return;
++    last_ms = now;
++    USB_UVC_ReadJointLink(&link);
++    g_app_v3_joint_usb.link = link;
++    if (USB_UVC_ReadReaderProof(&proof) == SYS_OK)
++        g_app_v3_joint_usb.reader = proof;
++    //Class消失时保留之前采到的EOF计数，避免把退场快照清零。
++    if (link.configured)
++        g_app_v3_joint_usb.completed = USB_UVC_GetCompletedFrameCount();
++    g_app_v3_joint_usb.request_id = s_frame.request_id;
++    g_app_v3_joint_usb.session = s_frame.transfer.stream_epoch;
++    g_app_v3_joint_usb.lease_id = s_frame.transfer.lease_id;
++    g_app_v3_joint_usb.frame_id = s_frame.transfer.frame_id;
++    g_app_v3_joint_usb.reader_id = s_uvc_reader_id;
++}
++#endif
+ 
+ void AppV3_UsbRun(void *argument)
+ {
+--- a/CM7/ApplicationV3/Services/USB/usb_service.h
++++ b/CM7/ApplicationV3/Services/USB/usb_service.h
+@@ -4,9 +4,32 @@
+ #include "app_context.h"
+ #include "sys_result.h"
+ 
++#include "usb_device.h"
++
++#ifdef APP_V3_USB_FAULT_TRACE_ENABLED
++
++typedef struct
++{
++    uint32_t captured;
++    uint32_t time_ms;
++    uint32_t configured;
++    SysResult_t core_result;
++    SysResult_t observe_result;
++    UsbDeviceR2Trace_t platform;
++} AppV3UsbFaultTrace_t;
++
++//仅USB Task写入，测试结束后由Keil Watch读取
++extern volatile AppV3UsbFaultTrace_t g_app_v3_usb_first_fault;
++#endif
+ 
+ typedef enum
+ {
++    USB_SERVICE_MOCK_START = 1,
++    USB_SERVICE_MOCK_STOP,
++    USB_SERVICE_SET_PARAMETER,
++    USB_SERVICE_QUERY,
++    USB_SERVICE_MOCK_FAIL,
++    USB_SERVICE_OP_COUNT,
+     USB_SERVICE_START = 16,
+     USB_SERVICE_STOP,
+     USB_SERVICE_HARDWARE_QUERY,
+--- a/CM7/ApplicationV3/Services/Storage/storage_service.c
++++ b/CM7/ApplicationV3/Services/Storage/storage_service.c
+@@ -1,4 +1,5 @@
+ #include "storage_service.h"
++#include "../../Tasks/record_board.h"
+ #include "../../Tasks/service_tasks.h"
+ #include "storage_fs.h"
+ #include "sd_block.h"
+@@ -10,11 +11,16 @@
+ {
+     AppV3ServiceMailbox_t mailbox;
+     const AppStorageConfig_t *config;
++    uint32_t sample_divisor;
++    bool simulated_running;
+     AppV3HardwareReport_t hardware;
+     AppV3HardwareRequest_t request;
+     bool mount_committed;
+     const CameraConfig_t *camera;
+ } StorageServiceContext_t;
++
++typedef SysResult_t (*StorageServiceHandler_t)(StorageServiceContext_t *context,
++    const AppV3ServiceCommand_t *command);
+ 
+ //只有所属任务修改私有状态。发布后API只读取单独保存的队列入口
+ static StorageServiceContext_t s_storage;
+@@ -46,6 +52,92 @@
+     bool draining;
+ } s_record;
+ 
++#if APP_V3_RECORD_BOARD_TEST
++volatile AppV3RecordBoardStorage_t g_app_v3_record_storage;
++
++//由StorageTask在本轮业务返回后采样，不向其他任务暴露文件或帧地址。
++static void StorageRecordBoard_Snapshot(void)
++{
++    StorageFsDiagnostics_t facts;
++    BspSdmmcIoDiagnostics_t io;
++
++    g_app_v3_record_storage.io_snapshot_result = BSP_SDMMC_GetIoDiagnostics(&io);
++    if (g_app_v3_record_storage.io_snapshot_result == SYS_OK)
++        g_app_v3_record_storage.io = io;
++    g_app_v3_record_storage.hardware = s_storage.hardware;
++    g_app_v3_record_storage.file_number = s_record.file_number;
++    g_app_v3_record_storage.file = s_record.file;
++    g_app_v3_record_storage.frames = s_record.avi.frames;
++    g_app_v3_record_storage.movi_end = s_record.avi.position;
++    g_app_v3_record_storage.first_tick = s_record.avi.first_tick;
++    g_app_v3_record_storage.last_tick = s_record.avi.last_tick;
++    g_app_v3_record_storage.admission = s_record.admission;
++    g_app_v3_record_storage.frame_state = s_record.frame_state;
++    g_app_v3_record_storage.fatfs_owner = SD_Block_IsOwner(SD_BLOCK_CLIENT_FATFS);
++    g_app_v3_record_storage.filesystem_valid = StorageFS_GetDiagnostics(&facts) == SYS_OK ? 1U : 0U;
++    if (g_app_v3_record_storage.filesystem_valid)
++        g_app_v3_record_storage.filesystem = facts;
++}
++#endif
++
++//只改变模拟状态，保持实际设备状态口独立
++static SysResult_t StorageService_Start(StorageServiceContext_t *context,
++    const AppV3ServiceCommand_t *command)
++{
++    (void)command;
++    if (context->simulated_running)
++        return SYS_ERR_INVALID_STATE;
++    context->simulated_running = true;
++    return SYS_OK;
++}
++
++//模拟停止不会访问硬件
++static SysResult_t StorageService_Stop(StorageServiceContext_t *context,
++    const AppV3ServiceCommand_t *command)
++{
++    (void)command;
++    if (!context->simulated_running)
++        return SYS_ERR_INVALID_STATE;
++    context->simulated_running = false;
++    return SYS_OK;
++}
++
++//校验本服务的模拟参数，失败时保留原值
++static SysResult_t StorageService_Parameter(StorageServiceContext_t *context,
++    const AppV3ServiceCommand_t *command)
++{
++    if (command->argument == 0U || command->argument > 64U)
++        return SYS_ERR_INVALID_ARG;
++    context->sample_divisor = command->argument;
++    return SYS_OK;
++}
++
++//完成消息携带当前模拟状态，不公开Context地址
++static SysResult_t StorageService_Query(StorageServiceContext_t *context,
++    const AppV3ServiceCommand_t *command)
++{
++    (void)context;
++    (void)command;
++    return SYS_OK;
++}
++
++//故障注入只生成软件FAULT
++static SysResult_t StorageService_Fail(StorageServiceContext_t *context,
++    const AppV3ServiceCommand_t *command)
++{
++    (void)context;
++    (void)command;
++    return SYS_ERR_IO;
++}
++
++static const StorageServiceHandler_t s_handlers[STORAGE_SERVICE_OP_COUNT] =
++{
++    [STORAGE_SERVICE_MOCK_START] = StorageService_Start,
++    [STORAGE_SERVICE_MOCK_STOP] = StorageService_Stop,
++    [STORAGE_SERVICE_SET_PARAMETER] = StorageService_Parameter,
++    [STORAGE_SERVICE_QUERY] = StorageService_Query,
++    [STORAGE_SERVICE_MOCK_FAIL] = StorageService_Fail
++};
+ 
+ #define STORAGE_HW_POLL_MS 50U
+ #define STORAGE_RECORD_POLL_MS 10U
+@@ -137,6 +229,10 @@
+     if (facts.state == STORAGE_DIAG_MOUNTED)
+     {
+         result = StorageFS_Unmount();
++#if APP_V3_RECORD_BOARD_TEST
++        g_app_v3_record_storage.unmount_attempted = true;
++        g_app_v3_record_storage.unmount_result = result;
++#endif
+         //拔卡可能先令原Unmount进入FS_FAULT，RECOVER下一轮继续走原恢复入口
+         if (result != SYS_OK && result != SYS_ERR_BUSY && recover &&
+             StorageFS_GetDiagnostics(&facts) == SYS_OK && facts.state == STORAGE_DIAG_FAULT)
+@@ -246,6 +342,9 @@
+         message->result == SYS_OK && message->stream_epoch == s_record.transfer.stream_epoch &&
+         message->lease_id == s_record.transfer.lease_id)
+     {
++#if APP_V3_RECORD_BOARD_TEST
++        ++g_app_v3_record_storage.ack;
++#endif
+         s_record.frame_state = STORAGE_FRAME_CONFIRM;
+         return;
+     }
+@@ -267,6 +366,12 @@
+             if (result != SYS_OK)
+                 StorageRecord_Fault(result);
+         }
++#if APP_V3_RECORD_BOARD_TEST
++        ++g_app_v3_record_storage.offer;
++        g_app_v3_record_storage.request_id = message->command_id;
++        g_app_v3_record_storage.session = message->stream_epoch;
++        g_app_v3_record_storage.lease_id = message->lease_id;
++#endif
+         s_record.frame_state = STORAGE_FRAME_RETURN;
+     }
+     else
+@@ -315,6 +420,12 @@
+     message.lease_id = s_record.transfer.lease_id;
+     if (App_MessagesSend(APP_CHANNEL_STORAGE_TO_CAMERA, &message) != SYS_OK)
+         return;
++#if APP_V3_RECORD_BOARD_TEST
++    if (message.type == APP_MESSAGE_FRAME_RETURN)
++        ++g_app_v3_record_storage.returned;
++    else if (message.type == APP_MESSAGE_RETURN_ACK_CONSUMED && message.lease_id != 0U)
++        ++g_app_v3_record_storage.confirmed;
++#endif
+     s_record.frame_state = next;
+     if (message.type == APP_MESSAGE_FRAME_REQUEST)
+     {
+@@ -362,11 +473,23 @@
+         {
+             if (s_record.first_fault == SYS_OK && !s_record.avi.finished)
+             {
++#if APP_V3_RECORD_BOARD_TEST
++                uint32_t started = Platform_TimeGetMs();
++                g_app_v3_record_storage.finish_attempted = true;
++#endif
+                 result = MjpegAvi_Finish(&s_record.avi);
++#if APP_V3_RECORD_BOARD_TEST
++                g_app_v3_record_storage.finish_result = result;
++                g_app_v3_record_storage.finish_ms = Platform_TimeGetMs() - started;
++#endif
+                 if (result != SYS_OK)
+                     StorageRecord_Fault(result);
+             }
+             result = StorageFS_Close(s_record.file);
++#if APP_V3_RECORD_BOARD_TEST
++            g_app_v3_record_storage.close_attempted = true;
++            g_app_v3_record_storage.close_result = result;
++#endif
+             if (result != SYS_OK)
+                 return result;
+             s_record.file = 0U;
+@@ -496,6 +619,9 @@
+         if (result == SYS_OK && writable)
+         {
+             s_record.avi = (MjpegAvi_t){0};
++#if APP_V3_RECORD_BOARD_TEST
++            g_app_v3_record_storage = (AppV3RecordBoardStorage_t){.file_number = 0U};
++#endif
+             s_record.file_number = s_storage.request.command.argument;
+             s_record.sample_at = Platform_TimeGetMs() - 1000U / s_storage.config->record_fps;
+             s_record.admission = true;
+@@ -533,6 +659,10 @@
+ {
+     uint32_t wait = StorageService_Advance();
+ 
++#if APP_V3_RECORD_BOARD_TEST
++    if (App_MessagesIsOwner(RUNTIME_TARGET_STORAGE))
++        StorageRecordBoard_Snapshot();
++#endif
+     return wait;
+ }
+ 
+@@ -559,9 +689,16 @@
+     if (command.operation >= STORAGE_SERVICE_START && command.operation <= STORAGE_SERVICE_RECORD_QUERY)
+         return StorageService_HardwareCommand(&command, result);
+ 
++    //通过分发表执行合法命令；重复、迟到及非法请求只生成FAULT
+     if (result == SYS_OK)
+-        result = SYS_ERR_NOT_SUPPORTED;
+-    return AppV3Mailbox_Complete(&context->mailbox, &command, result, false, 0U);
++    {
++        if (command.operation >= STORAGE_SERVICE_OP_COUNT || s_handlers[command.operation] == NULL)
++            result = SYS_ERR_NOT_SUPPORTED;
++        else
++            result = s_handlers[command.operation](context, &command);
++    }
++    return AppV3Mailbox_Complete(&context->mailbox, &command, result,
++        context->simulated_running, context->sample_divisor);
+ }
+ 
+ //准备本服务的配置、队列与事件订阅，再由Registry发布Record
+--- a/CM7/ApplicationV3/Services/Storage/storage_service.h
++++ b/CM7/ApplicationV3/Services/Storage/storage_service.h
+@@ -6,6 +6,12 @@
+ 
+ typedef enum
+ {
++    STORAGE_SERVICE_MOCK_START = 1,
++    STORAGE_SERVICE_MOCK_STOP,
++    STORAGE_SERVICE_SET_PARAMETER,
++    STORAGE_SERVICE_QUERY,
++    STORAGE_SERVICE_MOCK_FAIL,
++    STORAGE_SERVICE_OP_COUNT,
+     STORAGE_SERVICE_START = 16,
+     STORAGE_SERVICE_STOP,
+     STORAGE_SERVICE_HARDWARE_QUERY,

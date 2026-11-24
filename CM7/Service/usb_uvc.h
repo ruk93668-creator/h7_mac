@@ -88,14 +88,5 @@ void USB_UVC_Process(void);
 //查询设备侧累计EOF完成数，不代表Windows显示帧数
 uint32_t USB_UVC_GetCompletedFrameCount(void);
 
-#if APP_V3_JOINT_BOARD_TEST
-typedef struct
-{
-    uint32_t interval, max_frame, max_payload;
-    bool configured, probe_observed, commit_valid, alt1, can_submit;
-} UsbUvcJointLink_t;
-
-void USB_UVC_ReadJointLink(UsbUvcJointLink_t *link);
-#endif
 
 #endif

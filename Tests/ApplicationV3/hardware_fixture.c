@@ -220,6 +220,7 @@ SysResult_t USB_UVC_GetStreamStatus(UsbUvcStreamStatus_t *status)
         return SYS_ERR_INVALID_STATE;
     *status = (UsbUvcStreamStatus_t){.state = USB_UVC_WAIT_FRAME,
         .result = g_hardware.usb_stream_result, .frame_owned = g_hardware.usb_frame_owned,
+        .completed_frames = g_hardware.usb_completed_frames,
         .can_submit = g_hardware.raw_can_submit && !g_hardware.usb_frame_owned};
     return SYS_OK;
 }
@@ -533,6 +534,6 @@ void USB_UVC_ReadJointLink(UsbUvcJointLink_t *link)
 
 uint32_t USB_UVC_GetCompletedFrameCount(void)
 {
-    return g_hardware.raw_completed_frames;
+    return g_hardware.usb_completed_frames;
 }
 #endif

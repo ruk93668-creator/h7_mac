@@ -474,7 +474,6 @@ SysResult_t CameraMjpegFifo_ReleaseLease(const CameraMjpegLease_t *lease)
     return Mjpeg_Return(lease, MJPEG_LEGACY_RETAIN);
 }
 
-#if APP_V3_JOINT_BOARD_TEST
 //从实际账本采样，不改变任何块引用。屏蔽IRQ期间只读取状态。
 void CameraMjpegFifo_ReadOccupancy(uint32_t *blocks, uint32_t *loans)
 {
@@ -491,7 +490,6 @@ void CameraMjpegFifo_ReadOccupancy(uint32_t *blocks, uint32_t *loans)
     *blocks = used;
     *loans = held;
 }
-#endif
 
 //任一路仍持有JPEG时，Stop必须保留DRAINING状态
 bool CameraMjpegFifo_HasLoan(void)

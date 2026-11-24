@@ -14,12 +14,18 @@ V3 = ROOT / "CM7/ApplicationV3"
 def main():
     parser = argparse.ArgumentParser()
     parser.add_argument("output", type=Path)
+    parser.add_argument("--production", action="store_true")
     parser.add_argument("--board-smoke", choices=("off", "camera", "usb", "storage"), default="off")
     parser.add_argument("--board-stress", choices=("off", "repeat", "recovery"), default="off")
     parser.add_argument("--raw-uvc", action="store_true")
     parser.add_argument("--record-board", action="store_true")
     parser.add_argument("--joint-board", action="store_true")
     args = parser.parse_args()
+    if args.production and (args.board_smoke != "off" or args.board_stress != "off" or
+                            args.record_board or args.joint_board):
+        parser.error("--production is independent of the board profiles")
+    if not args.production and not (V3 / "Tasks/board_smoke.h").is_file():
+        parser.error("prepare the isolated tree with BoardProfiles/prepare.py, or select --production")
     if args.joint_board:
         args.record_board = True
     if args.record_board and (args.raw_uvc or getattr(args, "raw_board", False) or args.board_smoke != "off"):
@@ -43,6 +49,8 @@ def main():
                   if flag not in legacy_includes and
                   not (flag == "-I" and harness.cc[index + 1] in legacy_includes)]
     harness.cc.extend(("-I", V3 / "Core", "-I", V3 / "Tasks", "-I", V3 / "Runtime", "--split_sections"))
+    if args.production:
+        harness.cc.extend(("-I", Path(__file__).with_name("BoardProfiles"), "-DAPP_V3_VERIFY_PRODUCT=1"))
     smoke_selection = ("off", "camera", "usb", "storage").index(args.board_smoke)
     stress_selection = ("off", "repeat", "recovery").index(args.board_stress)
     harness.cc.extend((f"-DAPP_V3_BOARD_SMOKE={smoke_selection}", f"-DAPP_V3_BOARD_STRESS={stress_selection}"))
@@ -101,6 +109,9 @@ def main():
             scenarios = range(96, 98)
         if args.joint_board:
             scenarios = range(98, 104)
+        if args.production and not args.raw_uvc:
+            scenarios = [*range(24), 28, 29, *range(38, 53), *range(63, 75),
+                         *range(88, 96), 104]
         for scenario in scenarios:
             row = harness.execute(name, "AppV3_TestRun", scenario)
             if scenario < 49:

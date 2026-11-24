@@ -4,32 +4,9 @@
 #include "app_context.h"
 #include "sys_result.h"
 
-#include "usb_device.h"
-
-#ifdef APP_V3_USB_FAULT_TRACE_ENABLED
-
-typedef struct
-{
-    uint32_t captured;
-    uint32_t time_ms;
-    uint32_t configured;
-    SysResult_t core_result;
-    SysResult_t observe_result;
-    UsbDeviceR2Trace_t platform;
-} AppV3UsbFaultTrace_t;
-
-//仅USB Task写入，测试结束后由Keil Watch读取
-extern volatile AppV3UsbFaultTrace_t g_app_v3_usb_first_fault;
-#endif
 
 typedef enum
 {
-    USB_SERVICE_MOCK_START = 1,
-    USB_SERVICE_MOCK_STOP,
-    USB_SERVICE_SET_PARAMETER,
-    USB_SERVICE_QUERY,
-    USB_SERVICE_MOCK_FAIL,
-    USB_SERVICE_OP_COUNT,
     USB_SERVICE_START = 16,
     USB_SERVICE_STOP,
     USB_SERVICE_HARDWARE_QUERY,

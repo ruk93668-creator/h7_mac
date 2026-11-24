@@ -278,8 +278,6 @@ static void AppEvents_UsbNotify(uint32_t events, void *context)
 }
 
 //检查当前执行者是否为目标任务
-#if (defined(APP_V3_BOARD_STRESS) && APP_V3_BOARD_STRESS != 0) || \
-    (defined(APP_V3_RECORD_BOARD_TEST) && APP_V3_RECORD_BOARD_TEST != 0)
 //复用调度前登记的句柄，不访问其他任务的业务Context
 bool App_EventsReadStackWatermarks(UBaseType_t remaining_words[RUNTIME_TARGET_COUNT])
 {
@@ -297,7 +295,6 @@ bool App_EventsReadStackWatermarks(UBaseType_t remaining_words[RUNTIME_TARGET_CO
     }
     return true;
 }
-#endif
 
 bool App_EventsIsOwner(RuntimeEventTarget_t target)
 {

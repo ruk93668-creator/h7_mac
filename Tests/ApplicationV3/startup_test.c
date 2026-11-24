@@ -19,6 +19,21 @@
 #include "../../CM7/ApplicationV3/Services/Storage/storage_service.h"
 #include <setjmp.h>
 
+#if APP_V3_VERIFY_PRODUCT
+// Keep archived mock scenario names local to this test translation unit.
+#define CAMERA_SERVICE_MOCK_START ((CameraServiceOperation_t)1U)
+#define CAMERA_SERVICE_QUERY ((CameraServiceOperation_t)4U)
+#define CAMERA_SERVICE_MOCK_FAIL ((CameraServiceOperation_t)5U)
+#define USB_SERVICE_SET_PARAMETER ((UsbServiceOperation_t)3U)
+#define USB_SERVICE_QUERY ((UsbServiceOperation_t)4U)
+#define STORAGE_SERVICE_MOCK_START ((StorageServiceOperation_t)1U)
+#define STORAGE_SERVICE_MOCK_STOP ((StorageServiceOperation_t)2U)
+#define STORAGE_SERVICE_SET_PARAMETER ((StorageServiceOperation_t)3U)
+#define STORAGE_SERVICE_QUERY ((StorageServiceOperation_t)4U)
+#define STORAGE_SERVICE_MOCK_FAIL ((StorageServiceOperation_t)5U)
+#endif
+
+
 volatile uint32_t g_failure;
 volatile uint32_t g_trace_count;
 volatile uint32_t g_trace[1][8];
@@ -2736,6 +2751,36 @@ static uint32_t Test_JointJpeg(const AppV3Context_t *context, uint32_t scenario)
 }
 #endif
 
+#if APP_V3_VERIFY_PRODUCT
+static uint32_t Test_ProductRejectsArchivedOperations(const AppV3Context_t *context)
+{
+    uint32_t ticket[3], count, index;
+
+    CHECK(Test_StartBusiness(context) == 0U);
+    CHECK(AppV3Business_Subscribe(RUNTIME_TARGET_CAMERA, Test_StoreEvent, NULL, &ticket[0]) == SYS_OK);
+    CHECK(AppV3Business_Subscribe(RUNTIME_TARGET_USB, Test_StoreEvent, NULL, &ticket[1]) == SYS_OK);
+    CHECK(AppV3Business_Subscribe(RUNTIME_TARGET_STORAGE, Test_StoreEvent, NULL, &ticket[2]) == SYS_OK);
+    CHECK(CameraService_Request(40U, CAMERA_SERVICE_MOCK_START, 0U) == SYS_OK);
+    CHECK(UsbService_Request(41U, USB_SERVICE_SET_PARAMETER, 64U) == SYS_OK);
+    CHECK(StorageService_Request(42U, STORAGE_SERVICE_MOCK_FAIL, 0U) == SYS_OK);
+    CHECK(Test_ServiceStep(RUNTIME_TARGET_CAMERA) == SYS_OK);
+    CHECK(Test_ServiceStep(RUNTIME_TARGET_USB) == SYS_OK);
+    CHECK(Test_ServiceStep(RUNTIME_TARGET_STORAGE) == SYS_OK);
+    CHECK(AppV3Business_Drain(&count) == SYS_OK && count == 3U);
+    for (index = 0U; index < count; ++index)
+    {
+        CHECK(business_events[index].result == SYS_ERR_NOT_SUPPORTED);
+        CHECK(business_events[index].command_id == 40U + index);
+        CHECK(!business_events[index].simulated_running && !business_events[index].real_hardware);
+        CHECK(business_events[index].parameter == 0U);
+        CHECK(AppV3Business_Unsubscribe(ticket[index]) == SYS_OK);
+    }
+    CHECK(g_hardware.capture_start_calls == 0U && g_hardware.usb_start_calls == 0U);
+    CHECK(!g_hardware.storage_owner);
+    return 0U;
+}
+#endif
+
 uint32_t AppV3_TestRun(uint32_t scenario)
 {
     const AppV3Context_t *context;
@@ -2807,6 +2852,10 @@ uint32_t AppV3_TestRun(uint32_t scenario)
 #endif
 #endif
 
+#if APP_V3_VERIFY_PRODUCT
+    if (scenario == 104U)
+        return Test_ProductRejectsArchivedOperations(context);
+#endif
 #if APP_V3_RAW_UVC_TEST
     if (scenario >= 75U && scenario <= 82U)
         return Test_RawUvcTransport(context, scenario);

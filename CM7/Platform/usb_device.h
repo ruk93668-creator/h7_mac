@@ -5,45 +5,6 @@
 #include "usbd_def.h"
 #include <stdbool.h>
 
-#if defined(APP_V3_BOARD_SMOKE) && APP_V3_BOARD_SMOKE == 2 && defined(APP_V3_BOARD_STRESS) && APP_V3_BOARD_STRESS != 0
-#define APP_V3_USB_FAULT_TRACE_ENABLED 1
-#define USB_DEVICE_TRACE_CAPACITY 8U
-
-typedef enum
-{
-    USB_DEVICE_TRACE_RESET = 1,
-    USB_DEVICE_TRACE_SUSPEND,
-    USB_DEVICE_TRACE_RESUME,
-    USB_DEVICE_TRACE_CONNECT,
-    USB_DEVICE_TRACE_DISCONNECT,
-    USB_DEVICE_TRACE_SET_CONFIGURATION
-} UsbDeviceTraceKind_t;
-
-typedef struct
-{
-    uint32_t sequence;
-    uint32_t tick_ms;
-    uint8_t kind;
-    uint8_t dev_state;
-    uint8_t dev_old_state;
-    uint8_t configuration;
-} UsbDeviceTraceEvent_t;
-
-typedef struct
-{
-    uint8_t dev_state;
-    uint8_t dev_old_state;
-    bool started;
-    bool stop_required;
-    SysResult_t last_result;
-    uint32_t event_sequence;
-    uint32_t event_count;
-    UsbDeviceTraceEvent_t events[USB_DEVICE_TRACE_CAPACITY];
-} UsbDeviceR2Trace_t;
-
-//读取同一采样点的Core状态和最近事件，返回原Configured判据
-bool USB_Device_ReadR2Trace(UsbDeviceR2Trace_t *trace);
-#endif
 
 //USB任务读取同一采样点的链路事实；短临界区内不执行USB操作
 typedef struct

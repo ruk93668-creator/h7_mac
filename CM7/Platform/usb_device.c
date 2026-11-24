@@ -402,59 +402,6 @@ bool USB_Device_ReadLinkState(UsbDeviceLinkState_t *state)
     return configured;
 }
 
-#ifdef APP_V3_USB_FAULT_TRACE_ENABLED
-static UsbDeviceTraceEvent_t s_r2_events[USB_DEVICE_TRACE_CAPACITY];
-static uint32_t s_r2_sequence;
-static uint32_t s_r2_count;
-static uint32_t s_r2_next;
-
-//同一USB事件回调顺序写入固定长度记录，不在中断里搬移历史
-static void Usb_RecordR2Event(UsbDeviceTraceKind_t kind, uint8_t configuration)
-{
-    UsbDeviceTraceEvent_t *entry = &s_r2_events[s_r2_next];
-
-    //按原回调完成后的Core状态记录，序号和索引独立，允许序号回绕
-    entry->sequence = ++s_r2_sequence;
-    entry->tick_ms = HAL_GetTick();
-    entry->kind = (uint8_t)kind;
-    entry->dev_state = s_device.dev_state;
-    entry->dev_old_state = s_device.dev_old_state;
-    entry->configuration = configuration;
-    s_r2_next = (s_r2_next + 1U) % USB_DEVICE_TRACE_CAPACITY;
-    if (s_r2_count < USB_DEVICE_TRACE_CAPACITY)
-        ++s_r2_count;
-}
-
-//短临界区内复制已经形成的状态事实，不执行USB协议操作
-bool USB_Device_ReadR2Trace(UsbDeviceR2Trace_t *trace)
-{
-    uint32_t saved_primask, event_index, source_index;
-    UsbDeviceLinkState_t state;
-    bool configured;
-
-    saved_primask = Platform_SyncGetPrimask();
-    Platform_SyncDisableIrq();
-
-    //Configured和各状态字段使用同一次采样，ISR不能在字段之间修改Core
-    configured = Usb_ReadLinkState(&state);
-    trace->dev_state = state.dev_state;
-    trace->dev_old_state = state.dev_old_state;
-    trace->started = state.started;
-    trace->stop_required = state.stop_required;
-    trace->last_result = state.last_result;
-    trace->event_sequence = s_r2_sequence;
-    trace->event_count = s_r2_count;
-    source_index = (s_r2_next + USB_DEVICE_TRACE_CAPACITY - s_r2_count) % USB_DEVICE_TRACE_CAPACITY;
-    for (event_index = 0U; event_index < s_r2_count; ++event_index)
-    {
-        trace->events[event_index] = s_r2_events[source_index];
-        source_index = (source_index + 1U) % USB_DEVICE_TRACE_CAPACITY;
-    }
-    Platform_SyncMemoryBarrier();
-    Platform_SyncRestoreIrq(saved_primask);
-    return configured;
-}
-#endif
 
 //查询设备级运行结果
 SysResult_t USB_Device_GetLastResult(void)
@@ -1318,11 +1265,6 @@ static void Usb_Setup(uint8_t *data)
     if (status != USBD_OK)
         USBD_CtlError(&s_device, &s_device.request);
 
-#ifdef APP_V3_USB_FAULT_TRACE_ENABLED
-    //记录已交给官方Core的配置请求及处理后的状态，配置值0表示取消配置
-    if (data[0] == (USB_REQ_TYPE_STANDARD | USB_REQ_RECIPIENT_DEVICE) && data[1] == USB_REQ_SET_CONFIGURATION)
-        Usb_RecordR2Event(USB_DEVICE_TRACE_SET_CONFIGURATION, data[2]);
-#endif
     //请求处理完成后只通知状态变化，不把协议处理搬到任务
     Usb_Notify(USB_DEVICE_EVENT_STATE);
 }
@@ -1410,9 +1352,6 @@ static void Usb_Reset(void)
             s_last_result = release_result != SYS_OK ? release_result : SYS_ERR_IO;
         s_stop_required = true;
     }
-#ifdef APP_V3_USB_FAULT_TRACE_ENABLED
-    Usb_RecordR2Event(USB_DEVICE_TRACE_RESET, 0U);
-#endif
     Usb_Notify(USB_DEVICE_EVENT_STATE);
 }
 
@@ -1422,9 +1361,6 @@ static void Usb_Suspend(void)
 
     //先更新官方Core挂起状态，再通知Application重新检查状态
     (void)USBD_LL_Suspend(&s_device);
-#ifdef APP_V3_USB_FAULT_TRACE_ENABLED
-    Usb_RecordR2Event(USB_DEVICE_TRACE_SUSPEND, 0U);
-#endif
     Usb_Notify(USB_DEVICE_EVENT_STATE);
 }
 
@@ -1434,9 +1370,6 @@ static void Usb_Resume(void)
 
     //先恢复官方Core状态，再发送任务唤醒提示
     (void)USBD_LL_Resume(&s_device);
-#ifdef APP_V3_USB_FAULT_TRACE_ENABLED
-    Usb_RecordR2Event(USB_DEVICE_TRACE_RESUME, 0U);
-#endif
     Usb_Notify(USB_DEVICE_EVENT_STATE);
 }
 
@@ -1446,9 +1379,6 @@ static void Usb_Connect(void)
 
     //将连接事件交给Core，连接本身不代表枚举完成
     (void)USBD_LL_DevConnected(&s_device);
-#ifdef APP_V3_USB_FAULT_TRACE_ENABLED
-    Usb_RecordR2Event(USB_DEVICE_TRACE_CONNECT, 0U);
-#endif
     Usb_Notify(USB_DEVICE_EVENT_STATE);
 }
 
@@ -1468,9 +1398,6 @@ static void Usb_Disconnect(void)
     //继续清理遗留数据端点，未全部释放时禁止直接重新启动
     if (Usb_ReleaseEndpoints() != SYS_OK)
         s_stop_required = true;
-#ifdef APP_V3_USB_FAULT_TRACE_ENABLED
-    Usb_RecordR2Event(USB_DEVICE_TRACE_DISCONNECT, 0U);
-#endif
     Usb_Notify(USB_DEVICE_EVENT_STATE);
 }
 

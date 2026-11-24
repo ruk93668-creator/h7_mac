@@ -45,9 +45,7 @@ SysResult_t CameraMjpegFifo_ReleaseFrame(void);
 
 //查询是否仍有外部借用，不能据此跳过底层Stop
 bool CameraMjpegFifo_HasLoan(void);
-#if APP_V3_JOINT_BOARD_TEST
 void CameraMjpegFifo_ReadOccupancy(uint32_t *blocks, uint32_t *loans);
-#endif
 
 //只在BSP Stop成功后清理接收端，仍保留外部借用
 void CameraMjpegFifo_OnStopped(void);

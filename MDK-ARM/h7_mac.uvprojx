@@ -3498,7 +3498,14 @@
             <IncludeLibsPath></IncludeLibsPath>
             <Misc>--keep=g_ipc
 --keep=*(.framework_init)
---keep=*(.device_export)</Misc>
+--keep=*(.device_export)
+--keep=AppV3Supervisor_Set
+--keep=AppV3Supervisor_Query
+--keep=AppV3Supervisor_Read
+--keep=AppV3Supervisor_Recover
+--keep=App_EventsReadStackWatermarks
+--keep=CameraMjpegFifo_ReadOccupancy
+--keep=BSP_SDMMC_GetIoDiagnostics</Misc>
             <LinkerInputFile></LinkerInputFile>
             <DisabledWarnings></DisabledWarnings>
           </LDads>
