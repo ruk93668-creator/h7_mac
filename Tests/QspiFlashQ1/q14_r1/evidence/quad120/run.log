@@ -1,0 +1,11 @@
+{"case": 0, "name": "EF 17 repeated", "assertions": 292, "failure_line": 0, "commands": 1, "hal_init_calls": 1, "error": null, "pass": true}
+{"case": 1, "name": "IO0/IO3 swapped", "assertions": 292, "failure_line": 0, "commands": 1, "hal_init_calls": 1, "error": null, "pass": true}
+{"case": 2, "name": "extra dummy shifts output", "assertions": 292, "failure_line": 0, "commands": 1, "hal_init_calls": 1, "error": null, "pass": true}
+{"case": 3, "name": "command timeout", "assertions": 51, "failure_line": 0, "commands": 1, "hal_init_calls": 1, "error": null, "pass": true}
+{"case": 4, "name": "receive timeout", "assertions": 52, "failure_line": 0, "commands": 1, "hal_init_calls": 1, "error": null, "pass": true}
+{"case": 5, "name": "QE clear", "assertions": 41, "failure_line": 0, "commands": 1, "hal_init_calls": 1, "error": null, "pass": true}
+{"case": 6, "name": "short receive", "assertions": 52, "failure_line": 0, "commands": 1, "hal_init_calls": 1, "error": null, "pass": true}
+{"case": 7, "name": "IO1/IO2 swap indistinguishable", "assertions": 292, "failure_line": 0, "commands": 1, "hal_init_calls": 1, "error": null, "pass": true}
+{"case": 8, "name": "device busy", "assertions": 41, "failure_line": 0, "commands": 1, "hal_init_calls": 1, "error": null, "pass": true}
+{"case": 9, "name": "operation suspended", "assertions": 41, "failure_line": 0, "commands": 1, "hal_init_calls": 1, "error": null, "pass": true}
+{"case": 10, "name": "invalid pointer and clock", "assertions": 20, "failure_line": 0, "commands": 1, "hal_init_calls": 1, "error": null, "pass": true}

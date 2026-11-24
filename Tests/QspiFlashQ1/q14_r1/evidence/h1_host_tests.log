@@ -1,0 +1,15 @@
+test_120mhz_capture_requires_sfdp_and_matching_paths (__main__.H1BackupTests.test_120mhz_capture_requires_sfdp_and_matching_paths) ... ok
+test_actual_axf_symbols_and_sram_only_roundtrip (__main__.H1BackupTests.test_actual_axf_symbols_and_sram_only_roundtrip) ... ok
+test_archive_detects_split_file_tamper (__main__.H1BackupTests.test_archive_detects_split_file_tamper) ... ok
+test_bad_capture_length_status_identity_and_mismatch (__main__.H1BackupTests.test_bad_capture_length_status_identity_and_mismatch) ... ok
+test_exact_capture_splits_both_sectors (__main__.H1BackupTests.test_exact_capture_splits_both_sectors) ... ok
+test_ihex_rejects_corruption_and_wrong_range (__main__.H1BackupTests.test_ihex_rejects_corruption_and_wrong_range) ... ok
+test_ihex_roundtrips_across_address_boundary (__main__.H1BackupTests.test_ihex_roundtrips_across_address_boundary) ... ok
+test_import_120mhz_with_actual_axf (__main__.H1BackupTests.test_import_120mhz_with_actual_axf) ... ok
+test_reject_stale_or_ineligible_sector (__main__.H1BackupTests.test_reject_stale_or_ineligible_sector) ... ok
+test_three_distinct_packages_roundtrip (__main__.H1BackupTests.test_three_distinct_packages_roundtrip) ... ok
+
+----------------------------------------------------------------------
+Ran 10 tests in 0.452s
+
+OK

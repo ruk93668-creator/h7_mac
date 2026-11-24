@@ -1,0 +1,1 @@
+{"case": 9, "name": "R1-B01 prior verified page, next valid WEL=0 (strict whole-call contract)", "assertions": 175, "failure_line": 280, "commands": 24, "hal_init_calls": 1, "error": null, "observed": {"ready": 1, "latched": 0, "wrens": 2, "modifications": 1, "mutation_possible": 1, "completed": 1, "first_result": -10}, "pass": false}

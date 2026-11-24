@@ -174,6 +174,145 @@ static int Q14InitFault(uint32_t id)
     return (int)g_failure;
 }
 
+#if defined(QSPI_Q14_R1_TEST)
+static uint32_t s_r1_case, s_r1_post_wren, s_r1_sr1_reads, s_r1_preflight;
+volatile uint32_t g_r1_ready, g_r1_latched, g_r1_wrens, g_r1_modifications;
+volatile uint32_t g_r1_mutation_possible, g_r1_completed, g_r1_first_result;
+
+static HAL_StatusTypeDef R1Command(QSPI_HandleTypeDef *handle, QSPI_CommandTypeDef *cmd, uint32_t timeout)
+{
+    HAL_StatusTypeDef result = WriteModelCommand(handle, cmd, timeout);
+    if (cmd->Instruction == 0x06U && result == HAL_OK)
+    {
+        s_r1_preflight = s_received;
+        s_r1_post_wren = 1U;
+        if (s_r1_case >= 6U && s_r1_case <= 8U)
+            return s_failures[s_r1_case - 6U];
+        if (s_r1_case == 9U && s_wren == 2U)
+            s_wel = 0U;
+    }
+    return result;
+}
+
+static HAL_StatusTypeDef R1Receive(QSPI_HandleTypeDef *handle, uint8_t *data, uint32_t timeout)
+{
+    HAL_StatusTypeDef result = WriteModelReceive(handle, data, timeout);
+    if (s_opcode == 0x05U && s_r1_post_wren != 0U)
+    {
+        s_r1_post_wren = 0U;
+        s_r1_sr1_reads++;
+        if (s_r1_case >= 2U && s_r1_case <= 5U)
+        {
+            data[0] = 0U;  //错误情况下的零字节不是有效 WEL 证据。
+            if (s_r1_case == 2U)
+                return HAL_ERROR;
+            if (s_r1_case == 3U)
+                return HAL_TIMEOUT;
+            if (s_r1_case == 4U)
+                handle->RxXferCount = 1U;
+            if (s_r1_case == 5U)
+                handle->ErrorCode = HAL_QSPI_ERROR_TRANSFER;
+        }
+    }
+    return result;
+}
+
+static HAL_StatusTypeDef R1Abort(QSPI_HandleTypeDef *handle)
+{
+    (void)handle;
+    s_q14_abort++;
+    QUADSPI->SR = 0U;
+    return s_r1_case == 3U ? HAL_ERROR : HAL_OK;
+}
+
+int R1_TestRun(uint32_t id)
+{
+    static uint8_t backup[4096];
+    BspQspiFaultDiagnostics_t fault, after;
+    BspQspiWriteDiagnostics_t wr;
+    BspQspiDiagnostics_t state;
+    uint32_t bytes, commands, i;
+    SysResult_t result, expected;
+    uint8_t data;
+    s_r1_case = id;
+    WriteModelInit(id < 2U ? 5U : 0U);
+    s_read_command_hook = R1Command;
+    s_read_receive_hook = R1Receive;
+    s_read_abort_hook = R1Abort;
+    s_deinit_hook = Q14Deinit;
+    if (id == 1U)
+    {
+        for (i = 0U; i < sizeof(backup); i++)
+            backup[i] = (uint8_t)(i ^ (i >> 4U));
+        memcpy(s_array, backup, sizeof(backup));
+        s_full_preflight = sizeof(backup);
+        result = Qspi_EraseWithPolicy(&s_model, MODEL_BASE, backup, sizeof(backup), 2000U, &wr);
+        CHECK(s_r1_preflight == sizeof(backup) && s_received == sizeof(backup));
+        CHECK(memcmp(backup, s_array, sizeof(backup)) == 0);
+    }
+    else
+    {
+        s_full_preflight = id == 9U ? 520U : 16U;
+        result = Qspi_ProgramWithPolicy(&s_model, MODEL_BASE + 255U, s_pattern, s_full_preflight, 2000U, &wr);
+        CHECK(s_r1_preflight == s_full_preflight);
+    }
+    expected = id == 2U || id == 5U ? SYS_ERR_IO : id == 3U ? SYS_ERR_TIMEOUT :
+        id >= 6U && id <= 8U ? s_results[id - 6U] : SYS_ERR_PROTOCOL;
+    CHECK(result == expected && wr.result == expected);
+    CHECK(BSP_QSPI_GetFaultDiagnostics(&fault) == SYS_OK);
+    CHECK(BSP_QSPI_GetDiagnostics(&state) == SYS_OK);
+    g_r1_ready = state.ready;
+    g_r1_latched = fault.fault_latched;
+    g_r1_wrens = s_wren;
+    g_r1_modifications = s_mutations;
+    g_r1_mutation_possible = fault.mutation_possible;
+    g_r1_completed = wr.completed;
+    g_r1_first_result = (uint32_t)fault.primary_result;
+    CHECK(fault.fault_origin == BSP_QSPI_FAULT_WREN && fault.primary_result == expected);
+    CHECK(fault.wren_possible == 1U && fault.flash_completion_unknown == 0U);
+    CHECK(fault.recovery_attempts == 0U);
+    if (id == 9U)
+    {
+        //严格按完整调用范围审核：第一页已写并确认，第二次 WREN 后才读回 WEL=0。
+        CHECK(wr.stage == BSP_QSPI_WRITE_WEL && wr.status_valid_mask == 1U && wr.sr1 == 0U);
+        CHECK(s_wren == 2U && s_r1_sr1_reads == 2U && s_mutations == 1U && wr.completed == 1U);
+        CHECK(fault.mutation_possible == 1U && fault.confirmed_write_bytes == 1U);
+        CHECK(fault.fault_latched == 1U && state.ready == 0U);  //R1 strict boundary
+        return (int)g_failure;
+    }
+    CHECK(s_wren == 1U && s_mutations == 0U && wr.completed == 0U && fault.mutation_possible == 0U);
+    if (id < 2U)
+    {
+        CHECK(s_r1_sr1_reads == 1U && wr.stage == BSP_QSPI_WRITE_WEL &&
+            wr.hal_status == HAL_OK && wr.hal_error == HAL_QSPI_ERROR_NONE &&
+            wr.status_valid_mask == 1U && wr.sr1 == 0U);
+        CHECK(fault.fault_latched == 0U && state.ready == 1U && state.fault == 0U);
+        CHECK(fault.cleanup_attempted == 0U && s_q14_abort == 0U && s_q14_deinit == 0U);
+        CHECK(BSP_QSPI_Read(BSP_QSPI_READ_FAST, MODEL_BASE, &data, 1U, &bytes, 200U) == SYS_OK &&
+              bytes == 1U && data == s_array[0]);
+        CHECK(s_wren == 1U && s_mutations == 0U && s_q14_abort == 0U && s_q14_deinit == 0U);
+    }
+    else
+    {
+        CHECK(s_r1_sr1_reads == (id < 6U ? 1U : 0U));
+        CHECK(wr.stage == (id < 6U ? BSP_QSPI_WRITE_WEL : BSP_QSPI_WRITE_ENABLE) &&
+            wr.status_valid_mask == (id < 6U ? 0U : 7U));
+        CHECK(wr.fault == 1U && fault.fault_latched == 1U && state.ready == 0U);
+        CHECK(fault.cleanup_attempted == 1U && s_q14_abort == 1U &&
+            s_q14_deinit == (id == 3U ? 0U : 1U));
+        CHECK(fault.cleanup_result == (id == 3U ? SYS_ERR_IO : SYS_OK));
+        Q14CheckLocked();
+        commands = g_commands;
+        CHECK(BSP_QSPI_Recover() == SYS_ERR_NOT_SUPPORTED && g_commands == commands);
+        CHECK(BSP_QSPI_GetFaultDiagnostics(&after) == SYS_OK);
+        CHECK(after.recovery_attempts == 1U && after.recovery_stage == BSP_QSPI_RECOVERY_BLOCKED &&
+            after.fault_latched == 1U && after.primary_result == expected &&
+            after.cleanup_result == fault.cleanup_result && after.cleanup_stage == fault.cleanup_stage);
+    }
+    return (int)g_failure;
+}
+#endif
+
 int Q14_TestRun(uint32_t id)
 {
     uint8_t data;

@@ -1,0 +1,27 @@
+{
+  "cases": 1,
+  "assertions": 175,
+  "passed": 0,
+  "rows": [
+    {
+      "case": 9,
+      "name": "R1-B01 prior verified page, next valid WEL=0 (strict whole-call contract)",
+      "assertions": 175,
+      "failure_line": 280,
+      "commands": 24,
+      "hal_init_calls": 1,
+      "error": null,
+      "observed": {
+        "ready": 1,
+        "latched": 0,
+        "wrens": 2,
+        "modifications": 1,
+        "mutation_possible": 1,
+        "completed": 1,
+        "first_result": -10
+      },
+      "pass": false
+    }
+  ],
+  "source_sha256": "50f80330758e12853831bb98f66e87364f3c2ef8f80da268dcd93630c3965f7d"
+}

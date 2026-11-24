@@ -11,13 +11,17 @@
 |JEDEC/初始化验读失败|INIT_IDENTIFY，锁存 FAULT|同上|
 |纯读取事务失败|READ，锁存 FAULT，保留旧读取进度|可显式验证空闲及 JEDEC 后返回 READY|
 |写预检或首条写命令前故障|WRITE_PREFLIGHT；合法拒绝仍遵守旧结果|未触发 WREN/写命令且锁存时可评估恢复|
-|WREN 可能发出|WREN，和内部编程未知分开保存|存在锁存时阻止自动回到 READY|
-|PP/SE 调用已进入 HAL|MUTATION_COMMAND，标记可能已发出|保持 FAULT；禁止重发或恢复写资格|
-|BUSY 等待或结束状态证明失败|FLASH_PENDING，完成状态未知|保持 FAULT|
-|已证实空闲，验读失败|WRITE_VERIFY，区别于完成未知|保持 FAULT；数据需人工审核|
+|A．WREN 成功，后续有效 SR1 证明 BUSY=0、WEL=0，本次调用尚未尝试 PP/SE|返回 SYS_ERR_PROTOCOL；写诊断仍记录 WREN 已尝试|保持 READY，无需 Recover|
+|B．WREN 命令执行结果不确定|WREN，和内部编程未知分开保存|锁存 FAULT，阻止恢复写资格|
+|C．WREN 成功后 SR1 状态证明失败|WREN，保留首错以及独立清理结果|锁存 FAULT，阻止恢复写资格|
+|D．PP/SE 已尝试且修改命令阶段失败|MUTATION_COMMAND，标记修改命令可能已发出|保持 FAULT；禁止重发或恢复写资格|
+|E．BUSY 等待或结束状态证明失败|FLASH_PENDING，完成状态未知|保持 FAULT|
+|F．已证实空闲，验读失败|WRITE_VERIFY，记录已验读前缀|保持 FAULT；数据需人工审核|
 |Abort/DeInit/资源恢复失败|CLEANUP 或独立清理阶段，原始主错误不被覆盖|仅在无写风险且可重新证明资源时尝试|
 
 `BSP_QSPI_GetFaultDiagnostics()` 提供独立快照，原两套诊断及 H1 RAM ABI 保持原样。fault_stage 所在的 Init/Read/Write/Cleanup 枚举由 fault_origin 指定。首错与首轮清理固定保留，后续清理和恢复另记。写入范围仅记录最近一次具有非零逐字节验证结果的前缀。RAM 诊断无跨复位持久化保证。
+
+A 还要求 HAL WREN 成功、SR1 完整且无 HAL 错误、没有其他需要锁存的控制器、配置或清理错误。有效 SR1 已证明 Flash 空闲且写使能未建立，调用在发送修改命令之前结束，因此无需 Recover。短接收或带 HAL 错误的零值归 C。B–F 有写使能或修改命令已尝试的历史，普通 Init 不清除锁存，显式 Recover 拒绝恢复写资格且不发出 Flash 指令。跨页 Program 已验读前页后遇到下一页 WEL=0 的现状及待审决定见 [R1 跨页技术说明](Q1_4_R1_MultiPageDecision.md)。
 
 ```mermaid
 stateDiagram-v2
@@ -25,6 +29,7 @@ stateDiagram-v2
     IDLE --> IDLE: HAL 前失败且清理成功
     IDLE --> FAULT: HAL 开始后失败或清理失败
     READY --> IDLE: DeInit 全部读回通过
+    READY --> READY: A 条件成立，返回 SYS_ERR_PROTOCOL
     READY --> FAULT: 事务或清理失败
     FAULT --> FAULT: 普通入口或 DeInit
     FAULT --> BLOCKED: Recover 检出写风险
@@ -50,7 +55,7 @@ stateDiagram-v2
 |23–25|HAL 前失败、HAL 已开始失败、JEDEC 不匹配。分别记录并判断是否需显式恢复|
 |26–39、44|写命令前期限、WREN、Program 命令或 Transmit 的三类 HAL 错误、短发送、持续 BUSY、跨页部分完成、写后与验读期限、数据不符、Erase 内部状态未知。确认范围及首错保留，写风险锁存时恢复不发任何命令|
 
-专项核验错误码、READY/FAULT、GPIO/RCC 控制器占用、确认字节数、首错和独立清理、下一次访问，以及实际发送的指令序列。成功恢复只发 9F、05、35、15。已证明可恢复的场景包括无写风险的纯读取故障、模拟 HAL Init/JEDEC 故障及清理在显式调用中重新通过。WREN 可能已经发出、PP/SE 可能已发出、Flash 完成未知，以及已确认空闲但数据验读失败均保留锁存。需要人工核对数据与原始现场，不能用后续 JEDEC 识别恢复写资格。
+专项核验错误码、READY/FAULT、GPIO/RCC 控制器占用、确认字节数、首错和独立清理、下一次访问，以及实际发送的指令序列。成功恢复只发 9F、05、35、15。已证明可恢复的场景包括无写风险的纯读取故障、模拟 HAL Init/JEDEC 故障及清理在显式调用中重新通过。R1 专项覆盖 A–C，逐例结果和跨页 FAIL 见 [R1 回归报告](Q1_4_R1_WrenWel.md)。B–F 锁存后需人工核对数据与原始现场，后续 JEDEC 识别无法恢复写资格。
 
 实际 ST HAL 链接仿真验证初始化 5000 ms 超时。控制器持续 BUSY 时，初始化首错为 SYS_ERR_TIMEOUT，Recover 为 SYS_ERR_IO，FAULT 与所有权保留，未写 CCR 指令。以前的真实 HAL 默认写门禁仍返回 SYS_ERR_NOT_SUPPORTED，外设未映射，Tick 调用数为 0。
 

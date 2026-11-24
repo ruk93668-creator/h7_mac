@@ -1,0 +1,138 @@
+{
+  "cases": 13,
+  "assertions": 11015,
+  "passed": 13,
+  "rows": [
+    {
+      "case": 0,
+      "name": "pattern and both reads",
+      "assertions": 2150,
+      "failure_line": 0,
+      "commands": 333,
+      "hal_init_calls": 1,
+      "error": null,
+      "pass": true
+    },
+    {
+      "case": 1,
+      "name": "wrong target",
+      "assertions": 23,
+      "failure_line": 0,
+      "commands": 0,
+      "hal_init_calls": 1,
+      "error": null,
+      "pass": true
+    },
+    {
+      "case": 2,
+      "name": "wrong live UID",
+      "assertions": 26,
+      "failure_line": 0,
+      "commands": 0,
+      "hal_init_calls": 1,
+      "error": null,
+      "pass": true
+    },
+    {
+      "case": 3,
+      "name": "neighbor differs",
+      "assertions": 71,
+      "failure_line": 0,
+      "commands": 7,
+      "hal_init_calls": 1,
+      "error": null,
+      "pass": true
+    },
+    {
+      "case": 4,
+      "name": "current differs",
+      "assertions": 501,
+      "failure_line": 0,
+      "commands": 71,
+      "hal_init_calls": 1,
+      "error": null,
+      "pass": true
+    },
+    {
+      "case": 5,
+      "name": "bad CRC",
+      "assertions": 23,
+      "failure_line": 0,
+      "commands": 0,
+      "hal_init_calls": 1,
+      "error": null,
+      "pass": true
+    },
+    {
+      "case": 6,
+      "name": "operation does not match arm",
+      "assertions": 23,
+      "failure_line": 0,
+      "commands": 0,
+      "hal_init_calls": 1,
+      "error": null,
+      "pass": true
+    },
+    {
+      "case": 7,
+      "name": "erase current snapshot",
+      "assertions": 1992,
+      "failure_line": 0,
+      "commands": 306,
+      "hal_init_calls": 1,
+      "error": null,
+      "pass": true
+    },
+    {
+      "case": 8,
+      "name": "restore nonblank backup",
+      "assertions": 3118,
+      "failure_line": 0,
+      "commands": 486,
+      "hal_init_calls": 1,
+      "error": null,
+      "pass": true
+    },
+    {
+      "case": 9,
+      "name": "blank restore requires no WREN",
+      "assertions": 1676,
+      "failure_line": 0,
+      "commands": 259,
+      "hal_init_calls": 1,
+      "error": null,
+      "pass": true
+    },
+    {
+      "case": 10,
+      "name": "QE clear before program",
+      "assertions": 44,
+      "failure_line": 0,
+      "commands": 3,
+      "hal_init_calls": 1,
+      "error": null,
+      "pass": true
+    },
+    {
+      "case": 11,
+      "name": "quad mismatch after program",
+      "assertions": 1345,
+      "failure_line": 0,
+      "commands": 205,
+      "hal_init_calls": 1,
+      "error": null,
+      "pass": true
+    },
+    {
+      "case": 12,
+      "name": "original pattern range occupied",
+      "assertions": 23,
+      "failure_line": 0,
+      "commands": 0,
+      "hal_init_calls": 1,
+      "error": null,
+      "pass": true
+    }
+  ],
+  "source_sha256": "50f80330758e12853831bb98f66e87364f3c2ef8f80da268dcd93630c3965f7d"
+}
