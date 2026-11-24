@@ -1,0 +1,15 @@
+{
+  "package": "output\\QspiFlashQ1\\h2\\QSPI_Q1_4_H2_Closure_20261124.zip",
+  "sha256": "4b4acf83e5965a40bf1bc90fd5a4094a54bffc4e02d33c213132c2e8c02e4c18",
+  "capture_original_hashes": {
+    "h2_recover_report.hex": "2681056a2a29932f1ae06d5fd5505855446d21449a4c5875621dc991041dd1e3",
+    "h2_after.hex": "0524d456a206389bcec571ae85790bc10267829b4f21849610afaf9dc53ef0ed",
+    "h2_before.hex": "aebe2d21aba0453487d8fad4949c5e7fa657396497f1b4594413c78704399c96",
+    "verified.json": "b6a9648621461d2beebb682d7f164ccb9cdb7c2bcc08cb5e6ac5874b373aa2ea"
+  },
+  "verification": "H2_RECOVER_PASS",
+  "board_state": "User confirmed 2026-11-24: last downloaded firmware remains H2; no restore",
+  "download_admission": "Incomplete; original MCU backup waived by user",
+  "replay": "python replay.py",
+  "contains_original_mcu_firmware": false
+}
