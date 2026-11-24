@@ -312,7 +312,7 @@ static SysResult_t StorageRecord_Append(const AppMessage_t *message)
         if (result != SYS_OK)
             return result;
     }
-    if (s_record.avi.frames != 0U &&
+    if (s_storage.config->segment_ms != 0U && s_record.avi.frames != 0U &&
         message->timestamp_ms - s_record.avi.first_tick >= s_storage.config->segment_ms)
     {
         s_record.admission = false;

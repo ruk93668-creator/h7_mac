@@ -3,7 +3,7 @@
 #include "storage_fs.h"
 #include "camera_config.h"
 
-#define MJPEG_AVI_MAX_FRAMES 4096U
+#define MJPEG_AVI_MAX_FRAMES 65536U
 #define MJPEG_AVI_INDEX_BASE 0xD0590000UL
 #define MJPEG_AVI_INDEX_BYTES (MJPEG_AVI_MAX_FRAMES * 16U)
 

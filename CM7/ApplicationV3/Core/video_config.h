@@ -7,7 +7,7 @@ typedef struct
 {
     uint32_t record_fps;
     uint32_t segment_bytes;
-    uint32_t segment_ms;
+    uint32_t segment_ms; // 0表示不按时长结束录像
     uint32_t total_bytes;
     uint32_t reserve_bytes;
     uint32_t max_segments;

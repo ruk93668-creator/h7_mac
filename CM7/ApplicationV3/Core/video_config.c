@@ -79,9 +79,9 @@ static const AppStorageConfig_t s_storage_config =
     //当前SD卡使用第三个MBR分区，未格式化或改动卡布局
     .partition = APP_STORAGE_PARTITION,
 
-    .segment_bytes = 4UL * 1024UL * 1024UL,
+    .segment_bytes = 256UL * 1024UL * 1024UL,
 
-    .segment_ms = 60000U,
+    .segment_ms = 0U,
 
     .total_bytes = 16UL * 1024UL * 1024UL,
 
