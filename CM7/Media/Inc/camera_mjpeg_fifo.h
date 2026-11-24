@@ -12,7 +12,6 @@
 #define CAMERA_MJPEG_REGION_END      (CAMERA_MJPEG_DROP_BASE + 2UL * CAMERA_MJPEG_BLOCK_BYTES)
 #define CAMERA_MJPEG_FRAME_QUEUE      7U
 
-//最多保留7张在途帧；每张分别登记USB和SD引用
 #define CAMERA_MJPEG_MAX_LOANS 7U
 
 //跨任务只传递凭据，Media的释放始终由CameraTask执行
@@ -20,18 +19,16 @@ typedef struct
 {
     uint32_t session;
     uint32_t id;
+    CameraFrameConsumer_t consumer;
 } CameraMjpegLease_t;
 
-//Camera为当前持有的JPEG增加SD引用，不扫描或复制图像
-//CameraTask从独立READY取得原USB位，凭FIFO会话及编号归还。
-SysResult_t CameraMjpegFifo_AcquireUsb(CameraMjpegLease_t *lease, CameraFrame_t *frame);
-SysResult_t CameraMjpegFifo_ReleaseUsb(const CameraMjpegLease_t *lease);
+// 每个消费者最多持有一个显式 JPEG 租约，由 CameraTask 维护所有权。
+SysResult_t CameraMjpegFifo_Acquire(CameraFrameConsumer_t consumer,
+    CameraMjpegLease_t *lease, CameraFrame_t *frame);
+SysResult_t CameraMjpegFifo_Release(const CameraMjpegLease_t *lease);
 
-SysResult_t CameraMjpegFifo_AcquireStorage(CameraMjpegLease_t *lease, CameraFrame_t *frame);
-
+// 兼容原有视图持有接口，其凭据只能通过 ReleaseLease 归还。
 SysResult_t CameraMjpegFifo_RetainFrame(const CameraFrame_t *frame, CameraMjpegLease_t *lease);
-
-//Camera按凭据归还SD引用，重复或过期归还被拒绝
 SysResult_t CameraMjpegFifo_ReleaseLease(const CameraMjpegLease_t *lease);
 
 //Camera任务启动JPEG连续字节流，不占用原YUY2五缓冲

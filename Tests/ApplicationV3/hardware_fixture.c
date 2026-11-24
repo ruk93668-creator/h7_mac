@@ -400,13 +400,13 @@ SysResult_t StorageFS_GetSpace(uint64_t *total_bytes, uint64_t *free_bytes)
 }
 
 
-SysResult_t CameraCapture_StreamAcquireJpegStorage(CameraMjpegLease_t *lease, CameraFrame_t *frame)
+static SysResult_t Test_AcquireJpegStorage(CameraMjpegLease_t *lease, CameraFrame_t *frame)
 {
     CameraFrameLease_t acquired;
     SysResult_t result = CameraCapture_StreamAcquire(CAMERA_FRAME_CONSUMER_STORAGE, &acquired, frame);
     if (result == SYS_OK)
     {
-        *lease = (CameraMjpegLease_t){acquired.generation, acquired.lease_id};
+        *lease = (CameraMjpegLease_t){acquired.generation, acquired.lease_id, acquired.consumer};
         frame->size_bytes = 12U;
         frame->size_bytes2 = 4U;
         frame->data2 = frame->data;
@@ -414,9 +414,9 @@ SysResult_t CameraCapture_StreamAcquireJpegStorage(CameraMjpegLease_t *lease, Ca
     return result;
 }
 
-SysResult_t CameraCapture_StreamReleaseJpegStorage(const CameraMjpegLease_t *lease)
+static SysResult_t Test_ReleaseJpegStorage(const CameraMjpegLease_t *lease)
 {
-    const CameraFrameLease_t acquired = {lease->session, lease->id, 0U, CAMERA_FRAME_CONSUMER_STORAGE};
+    const CameraFrameLease_t acquired = {lease->session, lease->id, 0U, lease->consumer};
     return CameraCapture_StreamReleaseLease(&acquired);
 }
 
@@ -472,12 +472,18 @@ SysResult_t MjpegAvi_Finish(MjpegAvi_t *avi)
 }
 
 
-SysResult_t CameraCapture_StreamAcquireJpegUsb(CameraMjpegLease_t *lease, CameraFrame_t *frame)
+SysResult_t CameraCapture_StreamAcquireJpeg(CameraFrameConsumer_t consumer,
+    CameraMjpegLease_t *lease, CameraFrame_t *frame)
 {
+    if (consumer == CAMERA_FRAME_CONSUMER_STORAGE)
+        return Test_AcquireJpegStorage(lease, frame);
+    if (consumer != CAMERA_FRAME_CONSUMER_USB)
+        return SYS_ERR_INVALID_ARG;
+
     if (!s_camera_running || !g_hardware.frame_ready || s_jpeg_usb.id != 0U)
         return SYS_ERR_BUSY;
     g_hardware.frame_ready = false;
-    s_jpeg_usb = (CameraMjpegLease_t){s_capture_generation, ++g_hardware.frame_acquire_calls};
+    s_jpeg_usb = (CameraMjpegLease_t){s_capture_generation, ++g_hardware.frame_acquire_calls, consumer};
     *lease = s_jpeg_usb;
     *frame = (CameraFrame_t){.width = s_camera_config.width, .height = s_camera_config.height,
         .format = CAMERA_PIXEL_FORMAT_JPEG, .data = s_jpeg_usb_data, .data2 = s_jpeg_usb_tail,
@@ -485,9 +491,14 @@ SysResult_t CameraCapture_StreamAcquireJpegUsb(CameraMjpegLease_t *lease, Camera
     return SYS_OK;
 }
 
-SysResult_t CameraCapture_StreamReleaseJpegUsb(const CameraMjpegLease_t *lease)
+SysResult_t CameraCapture_StreamReleaseJpeg(const CameraMjpegLease_t *lease)
 {
-    if (lease->session != s_jpeg_usb.session || lease->id == 0U || lease->id != s_jpeg_usb.id)
+    if (lease == NULL)
+        return SYS_ERR_INVALID_ARG;
+    if (lease->consumer == CAMERA_FRAME_CONSUMER_STORAGE)
+        return Test_ReleaseJpegStorage(lease);
+    if (lease->consumer != s_jpeg_usb.consumer || lease->session != s_jpeg_usb.session ||
+        lease->id == 0U || lease->id != s_jpeg_usb.id)
         return SYS_ERR_INVALID_STATE;
     s_jpeg_usb.id = 0U;
     ++g_hardware.jpeg_usb_releases;

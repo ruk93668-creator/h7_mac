@@ -28,6 +28,7 @@ SCENARIOS = [f"four-loan release order {rank + 1}" for rank in range(24)] + [
     "JPEG Storage-only physical owner and wrong-session rejection",
     "JPEG USB and SD simultaneously own separate physical frames",
     "USB explicit lease keeps both spans when JPEG crosses FIFO tail",
+    "four JPEG consumers, private legacy view and stale session",
 ]
 OBSERVATIONS = ("g_failure", "g_checks", "g_stream_size", "g_capture_size", "g_lease_size")
 

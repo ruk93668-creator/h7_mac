@@ -63,16 +63,6 @@ bool CameraCapture_StreamGetFrame(CameraFrame_t *frame);
 //释放当前完整帧，允许下一次采集
 SysResult_t CameraCapture_StreamReleaseFrame(void);
 
-// 固定的 Raw 借用身份；枚举值不代表外设已接入
-typedef enum
-{
-    CAMERA_FRAME_CONSUMER_USB = 0,
-    CAMERA_FRAME_CONSUMER_ETHERNET,
-    CAMERA_FRAME_CONSUMER_WIFI,
-    CAMERA_FRAME_CONSUMER_STORAGE,
-    CAMERA_FRAME_CONSUMER_COUNT
-} CameraFrameConsumer_t;
-
 typedef struct
 {
     uint32_t generation; // Raw 采集实例，归还时禁止跨实例匹配
@@ -89,10 +79,9 @@ SysResult_t CameraCapture_StreamAcquire(CameraFrameConsumer_t consumer,
 SysResult_t CameraCapture_StreamReleaseLease(const CameraFrameLease_t *lease);
 
 //仅CameraTask调用，JPEG的会话和编号由原FIFO分配。
-SysResult_t CameraCapture_StreamAcquireJpegStorage(CameraMjpegLease_t *lease, CameraFrame_t *frame);
-SysResult_t CameraCapture_StreamReleaseJpegStorage(const CameraMjpegLease_t *lease);
-SysResult_t CameraCapture_StreamAcquireJpegUsb(CameraMjpegLease_t *lease, CameraFrame_t *frame);
-SysResult_t CameraCapture_StreamReleaseJpegUsb(const CameraMjpegLease_t *lease);
+SysResult_t CameraCapture_StreamAcquireJpeg(CameraFrameConsumer_t consumer,
+    CameraMjpegLease_t *lease, CameraFrame_t *frame);
+SysResult_t CameraCapture_StreamReleaseJpeg(const CameraMjpegLease_t *lease);
 
 //启动连续采集，固定格式使用五缓冲，JPEG使用独立字节FIFO
 SysResult_t CameraCapture_StartStream(void);

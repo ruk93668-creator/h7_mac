@@ -253,15 +253,12 @@ static void CameraFrame_Acquire(CameraTransfer_t *transfer, CameraFrameConsumer_
     SysResult_t result = SYS_ERR_NO_RESOURCE;
 
     //序号用于观测分发顺序，不使用任意地址或缓冲区号编码
-    transfer->jpeg = (consumer == CAMERA_FRAME_CONSUMER_STORAGE || consumer == CAMERA_FRAME_CONSUMER_USB) &&
-        s_camera.config != NULL &&
+    transfer->jpeg = s_camera.config != NULL &&
         s_camera.config->format == CAMERA_PIXEL_FORMAT_JPEG;
     if (s_frame_sequence != UINT32_MAX)
     {
         if (transfer->jpeg)
-            result = consumer == CAMERA_FRAME_CONSUMER_USB ?
-                CameraCapture_StreamAcquireJpegUsb(&transfer->lease.jpeg, &transfer->reply.frame) :
-                CameraCapture_StreamAcquireJpegStorage(&transfer->lease.jpeg, &transfer->reply.frame);
+            result = CameraCapture_StreamAcquireJpeg(consumer, &transfer->lease.jpeg, &transfer->reply.frame);
         else
             result = CameraCapture_StreamAcquire(consumer, &transfer->lease.raw, &transfer->reply.frame);
     }
@@ -312,9 +309,7 @@ static SysResult_t CameraFrame_AdvanceSlot(CameraFrameConsumer_t consumer, bool 
     if (transfer->state == CAMERA_TRANSFER_RELEASING)
     {
         if (transfer->jpeg)
-            result = consumer == CAMERA_FRAME_CONSUMER_USB ?
-                CameraCapture_StreamReleaseJpegUsb(&transfer->lease.jpeg) :
-                CameraCapture_StreamReleaseJpegStorage(&transfer->lease.jpeg);
+            result = CameraCapture_StreamReleaseJpeg(&transfer->lease.jpeg);
         else
             result = CameraCapture_StreamReleaseLease(&transfer->lease.raw);
         if (result != SYS_OK)

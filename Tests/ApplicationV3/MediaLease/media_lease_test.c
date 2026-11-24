@@ -389,6 +389,12 @@ static uint32_t JpegRegression(void)
     CHECK(frame.size_bytes == sizeof(mjpeg_fixture) && frame.size_bytes2 == 0U);
     CHECK(memcmp(frame.data, mjpeg_fixture, frame.size_bytes) == 0);
     CHECK(CameraMjpegFifo_RetainFrame(&frame, &sd) == SYS_OK);
+    CHECK(CameraCapture_StreamReleaseJpeg(&sd) == SYS_ERR_INVALID_ARG);
+    {
+        CameraMjpegLease_t wrong = sd;
+        wrong.consumer = CAMERA_FRAME_CONSUMER_USB;
+        CHECK(CameraCapture_StreamReleaseJpeg(&wrong) == SYS_ERR_INVALID_STATE);
+    }
     CHECK(CameraCapture_Stop() == SYS_ERR_BUSY);
     CHECK(CameraCapture_StreamReleaseFrame() == SYS_OK);
     CHECK(CameraCapture_Stop() == SYS_ERR_BUSY);
@@ -407,7 +413,7 @@ static uint32_t JpegStorageOnly(void)
 
     CHECK(CameraCapture_Init(&s_jpeg) == SYS_OK);
     CHECK(CameraCapture_StartStream() == SYS_OK);
-    CHECK(CameraCapture_StreamAcquireJpegStorage(&lease, &frame) == SYS_ERR_BUSY);
+    CHECK(CameraCapture_StreamAcquireJpeg(CAMERA_FRAME_CONSUMER_STORAGE, &lease, &frame) == SYS_ERR_BUSY);
     data = (uint8_t *)s_targets[0];
     for (index = 0U; index < CAMERA_MJPEG_BLOCK_BYTES; ++index)
         data[index] = mjpeg_fixture[index % sizeof(mjpeg_fixture)];
@@ -416,16 +422,16 @@ static uint32_t JpegStorageOnly(void)
     CHECK(s_jpeg_ops->block_complete(BSP_DCMI_TARGET_M0,
         (uint32_t)(uintptr_t)data, &next, s_context) == SYS_OK);
     CameraCapture_Process();
-    CHECK(CameraCapture_StreamAcquireJpegStorage(&lease, &frame) == SYS_OK);
+    CHECK(CameraCapture_StreamAcquireJpeg(CAMERA_FRAME_CONSUMER_STORAGE, &lease, &frame) == SYS_OK);
     CHECK(lease.session != 0U && lease.id != 0U && frame.size_bytes == sizeof(mjpeg_fixture));
     CHECK(memcmp(frame.data, mjpeg_fixture, frame.size_bytes) == 0);
     CHECK(CameraCapture_StreamReleaseFrame() == SYS_ERR_INVALID_STATE);
     CHECK(CameraCapture_Stop() == SYS_ERR_BUSY);
     wrong = lease;
     ++wrong.session;
-    CHECK(CameraCapture_StreamReleaseJpegStorage(&wrong) != SYS_OK);
-    CHECK(CameraCapture_StreamReleaseJpegStorage(&lease) == SYS_OK);
-    CHECK(CameraCapture_StreamReleaseJpegStorage(&lease) != SYS_OK);
+    CHECK(CameraCapture_StreamReleaseJpeg(&wrong) != SYS_OK);
+    CHECK(CameraCapture_StreamReleaseJpeg(&lease) == SYS_OK);
+    CHECK(CameraCapture_StreamReleaseJpeg(&lease) != SYS_OK);
     CHECK(CameraCapture_Stop() == SYS_OK && CameraCapture_IsStopped());
     return 0U;
 }
@@ -434,7 +440,7 @@ static uint32_t JpegStorageOnly(void)
 static uint32_t JpegIndependentConsumers(void)
 {
     CameraFrame_t usb, sd;
-    CameraMjpegLease_t u, s;
+    CameraMjpegLease_t u, s, wrong;
     uint32_t target, i, next;
     uint8_t *source;
 
@@ -453,22 +459,30 @@ static uint32_t JpegIndependentConsumers(void)
             CHECK(next != (uint32_t)s_targets[0] && next != (uint32_t)s_targets[1]);
         CameraCapture_Process();
         if (target == 0U)
-            CHECK(CameraCapture_StreamAcquireJpegUsb(&u, &usb) == SYS_OK);
+            CHECK(CameraCapture_StreamAcquireJpeg(CAMERA_FRAME_CONSUMER_USB, &u, &usb) == SYS_OK);
         else
-            CHECK(CameraCapture_StreamAcquireJpegStorage(&s, &sd) == SYS_OK);
+            CHECK(CameraCapture_StreamAcquireJpeg(CAMERA_FRAME_CONSUMER_STORAGE, &s, &sd) == SYS_OK);
     }
     CHECK(u.session == s.session && u.id != s.id && usb.data != sd.data);
-    CHECK(CameraCapture_StreamAcquireJpegUsb(&s, &sd) == SYS_ERR_BUSY);
+    CHECK(CameraCapture_StreamAcquireJpeg(CAMERA_FRAME_CONSUMER_USB, &s, &sd) == SYS_ERR_BUSY);
     CHECK(!CameraCapture_StreamGetFrame(&sd));
     CHECK(CameraCapture_StreamReleaseFrame() == SYS_ERR_INVALID_STATE);
-    CHECK(CameraCapture_StreamReleaseJpegUsb(&s) != SYS_OK);
-    CHECK(CameraCapture_StreamReleaseJpegStorage(&u) != SYS_OK);
+    CHECK(u.consumer == CAMERA_FRAME_CONSUMER_USB && s.consumer == CAMERA_FRAME_CONSUMER_STORAGE);
+    wrong = s;
+    wrong.consumer = CAMERA_FRAME_CONSUMER_USB;
+    CHECK(CameraCapture_StreamReleaseJpeg(&wrong) == SYS_ERR_INVALID_STATE);
+    wrong = u;
+    wrong.consumer = CAMERA_FRAME_CONSUMER_STORAGE;
+    CHECK(CameraCapture_StreamReleaseJpeg(&wrong) == SYS_ERR_INVALID_STATE);
+    wrong = u;
+    wrong.id = s.id;
+    CHECK(CameraCapture_StreamReleaseJpeg(&wrong) == SYS_ERR_INVALID_STATE);
     CHECK(CameraCapture_Stop() == SYS_ERR_BUSY);
-    CHECK(CameraCapture_StreamReleaseJpegStorage(&s) == SYS_OK);
+    CHECK(CameraCapture_StreamReleaseJpeg(&s) == SYS_OK);
     CHECK(CameraCapture_Stop() == SYS_ERR_BUSY);
     CHECK(memcmp(usb.data, mjpeg_fixture, usb.size_bytes) == 0);
-    CHECK(CameraCapture_StreamReleaseJpegUsb(&u) == SYS_OK);
-    CHECK(CameraCapture_StreamReleaseJpegUsb(&u) != SYS_OK);
+    CHECK(CameraCapture_StreamReleaseJpeg(&u) == SYS_OK);
+    CHECK(CameraCapture_StreamReleaseJpeg(&u) != SYS_OK);
     CHECK(CameraCapture_Stop() == SYS_OK && CameraCapture_IsStopped());
     return 0U;
 }
@@ -507,7 +521,7 @@ static uint32_t JpegUsbWrap(void)
         s_targets[target] = (uint32_t *)next;
         CameraCapture_Process();
 
-        if (CameraCapture_StreamAcquireJpegUsb(&lease, &frame) == SYS_OK)
+        if (CameraCapture_StreamAcquireJpeg(CAMERA_FRAME_CONSUMER_USB, &lease, &frame) == SYS_OK)
         {
             bool wraps = frame.size_bytes2 != 0U;
             if (wraps)
@@ -518,12 +532,75 @@ static uint32_t JpegUsbWrap(void)
                 CHECK(memcmp(frame.data, mjpeg_fixture, first) == 0);
                 CHECK(memcmp(frame.data2, mjpeg_fixture + first, frame.size_bytes2) == 0);
             }
-            CHECK(CameraCapture_StreamReleaseJpegUsb(&lease) == SYS_OK);
+            CHECK(CameraCapture_StreamReleaseJpeg(&lease) == SYS_OK);
             if (wraps)
                 return 0U;
         }
     }
     CHECK(false);
+    return 0U;
+}
+
+static uint32_t JpegPublishForLease(uint32_t target)
+{
+    uint32_t i, next;
+    uint8_t *source = (uint8_t *)s_targets[target];
+
+    for (i = 0U; i < CAMERA_MJPEG_BLOCK_BYTES; ++i)
+        source[i] = mjpeg_fixture[i % sizeof(mjpeg_fixture)];
+    for (i = 0U; i < CAMERA_MJPEG_BLOCK_BYTES / sizeof(mjpeg_fixture); ++i)
+        s_jpeg_ops->frame(s_context);
+    CHECK(s_jpeg_ops->block_complete((BspDcmiTarget_t)target,
+        (uint32_t)(uintptr_t)source, &next, s_context) == SYS_OK);
+    s_targets[target] = (uint32_t *)(uintptr_t)next;
+    CameraCapture_Process();
+    return 0U;
+}
+
+static uint32_t JpegFourConsumers(void)
+{
+    CameraMjpegLease_t leases[CAMERA_FRAME_CONSUMER_COUNT], scratch;
+    CameraFrame_t frames[CAMERA_FRAME_CONSUMER_COUNT], view;
+    const uint32_t order[] = {2U, 0U, 3U, 1U};
+    uint32_t i, j;
+
+    CHECK(CameraCapture_Init(&s_jpeg) == SYS_OK);
+    CHECK(CameraCapture_StartStream() == SYS_OK);
+    CHECK(CameraCapture_StreamAcquireJpeg(CAMERA_FRAME_CONSUMER_COUNT, &scratch,
+        &view) == SYS_ERR_INVALID_ARG);
+    for (i = 0U; i < CAMERA_FRAME_CONSUMER_COUNT; ++i)
+    {
+        CHECK(JpegPublishForLease(i & 1U) == 0U);
+        CHECK(CameraCapture_StreamAcquireJpeg((CameraFrameConsumer_t)i,
+            &leases[i], &frames[i]) == SYS_OK);
+        CHECK(leases[i].consumer == (CameraFrameConsumer_t)i);
+        for (j = 0U; j < i; ++j)
+            CHECK(frames[j].data != frames[i].data && leases[j].id != leases[i].id);
+    }
+
+    CHECK(JpegPublishForLease(0U) == 0U);
+    CHECK(CameraCapture_StreamAcquireJpeg(CAMERA_FRAME_CONSUMER_STORAGE,
+        &scratch, &view) == SYS_ERR_BUSY);
+    CHECK(CameraCapture_StreamGetFrame(&view));
+    CHECK(CameraCapture_StreamReleaseFrame() == SYS_OK);
+    CHECK(CameraMjpegFifo_ReleaseLease(&leases[0]) == SYS_ERR_INVALID_ARG);
+
+    for (i = 0U; i < CAMERA_FRAME_CONSUMER_COUNT; ++i)
+    {
+        j = order[i];
+        CHECK(CameraCapture_Stop() == SYS_ERR_BUSY);
+        CHECK(memcmp(frames[j].data, mjpeg_fixture, frames[j].size_bytes) == 0);
+        CHECK(CameraCapture_StreamReleaseJpeg(&leases[j]) == SYS_OK);
+    }
+    CHECK(CameraCapture_Stop() == SYS_OK && CameraCapture_IsStopped());
+    CHECK(CameraCapture_StartStream() == SYS_OK);
+    CHECK(JpegPublishForLease(0U) == 0U);
+    CHECK(CameraCapture_StreamAcquireJpeg(CAMERA_FRAME_CONSUMER_USB, &scratch, &view) == SYS_OK);
+    CHECK(scratch.id == leases[0].id && scratch.session != leases[0].session);
+    CHECK(CameraCapture_StreamReleaseJpeg(&leases[0]) == SYS_ERR_INVALID_ARG);
+    CHECK(CameraCapture_Stop() == SYS_ERR_BUSY);
+    CHECK(CameraCapture_StreamReleaseJpeg(&scratch) == SYS_OK);
+    CHECK(CameraCapture_Stop() == SYS_OK && CameraCapture_IsStopped());
     return 0U;
 }
 
@@ -540,6 +617,8 @@ uint32_t A1_TestRun(uint32_t scenario)
         return JpegIndependentConsumers();
     if (scenario == 33U)
         return JpegUsbWrap();
+    if (scenario == 34U)
+        return JpegFourConsumers();
     CHECK(StartRaw() == 0U);
     if (scenario < 24U)
         return ReleaseOrder(scenario);

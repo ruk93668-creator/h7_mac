@@ -1352,49 +1352,28 @@ SysResult_t CameraCapture_StreamAcquire(CameraFrameConsumer_t consumer,
     return CameraStream_Acquire(&s_capture.stream, &s_capture.config, (uint8_t)consumer, lease, frame);
 }
 
-//录像从JPEG FIFO取得SD位，与Raw的物理账本完全独立。
-SysResult_t CameraCapture_StreamAcquireJpegStorage(CameraMjpegLease_t *lease, CameraFrame_t *frame)
+// CameraTask 通过 FIFO 所有权记录借出 JPEG 帧。
+SysResult_t CameraCapture_StreamAcquireJpeg(CameraFrameConsumer_t consumer,
+    CameraMjpegLease_t *lease, CameraFrame_t *frame)
 {
+    if ((uint32_t)consumer >= CAMERA_FRAME_CONSUMER_COUNT || lease == NULL || frame == NULL)
+        return SYS_ERR_INVALID_ARG;
     if (!s_capture.initialized || s_capture.mode != CAMERA_CAPTURE_MODE_STREAM ||
         s_capture.state != CAMERA_CAPTURE_CAPTURING)
         return SYS_ERR_INVALID_STATE;
     if (s_capture.config.format != CAMERA_PIXEL_FORMAT_JPEG)
         return SYS_ERR_NOT_SUPPORTED;
-    return CameraMjpegFifo_AcquireStorage(lease, frame);
+    return CameraMjpegFifo_Acquire(consumer, lease, frame);
 }
 
-//保留原错误排空转换，最后一个真实借用归还后才离开DRAINING。
-SysResult_t CameraCapture_StreamReleaseJpegStorage(const CameraMjpegLease_t *lease)
+// 最后一个有效租约归还后可完成原有排空流程。
+SysResult_t CameraCapture_StreamReleaseJpeg(const CameraMjpegLease_t *lease)
 {
     SysResult_t result;
 
     if (!CameraCapture_CanReturnStream() || s_capture.config.format != CAMERA_PIXEL_FORMAT_JPEG)
         return SYS_ERR_INVALID_STATE;
-    result = CameraMjpegFifo_ReleaseLease(lease);
-    if (result == SYS_OK)
-        CameraCapture_FinishStreamDrain();
-    return result;
-}
-
-//USB从JPEG FIFO取得独立USB位，与Raw的物理账本完全独立。
-SysResult_t CameraCapture_StreamAcquireJpegUsb(CameraMjpegLease_t *lease, CameraFrame_t *frame)
-{
-    if (!s_capture.initialized || s_capture.mode != CAMERA_CAPTURE_MODE_STREAM ||
-        s_capture.state != CAMERA_CAPTURE_CAPTURING)
-        return SYS_ERR_INVALID_STATE;
-    if (s_capture.config.format != CAMERA_PIXEL_FORMAT_JPEG)
-        return SYS_ERR_NOT_SUPPORTED;
-    return CameraMjpegFifo_AcquireUsb(lease, frame);
-}
-
-//保留原错误排空转换，最后一个真实借用归还后才离开DRAINING。
-SysResult_t CameraCapture_StreamReleaseJpegUsb(const CameraMjpegLease_t *lease)
-{
-    SysResult_t result;
-
-    if (!CameraCapture_CanReturnStream() || s_capture.config.format != CAMERA_PIXEL_FORMAT_JPEG)
-        return SYS_ERR_INVALID_STATE;
-    result = CameraMjpegFifo_ReleaseUsb(lease);
+    result = CameraMjpegFifo_Release(lease);
     if (result == SYS_OK)
         CameraCapture_FinishStreamDrain();
     return result;

@@ -40,6 +40,16 @@ typedef struct
 
 } CameraFrame_t;
 
+// Raw 和 JPEG 共享消费者枚举，身份与具体输出通道无关。
+typedef enum
+{
+    CAMERA_FRAME_CONSUMER_USB = 0,
+    CAMERA_FRAME_CONSUMER_ETHERNET,
+    CAMERA_FRAME_CONSUMER_WIFI,
+    CAMERA_FRAME_CONSUMER_STORAGE,
+    CAMERA_FRAME_CONSUMER_COUNT
+} CameraFrameConsumer_t;
+
 //判断是否为可变长度格式，不表示当前采集模式已支持
 static inline bool CameraConfig_IsVariableLength(CameraPixelFormat_t format)
 {
