@@ -4,16 +4,23 @@
 #include "app_context.h"
 #include "queue_pool.h"
 
+//按任务索引的只读服务实例配置
 typedef struct
 {
+    //唯一拥有操作权限的任务身份
     RuntimeEventTarget_t owner;
+    //初始化阶段提供的只读配置，生命周期内由所属模块读取
     const AppV3Context_t *config;
 } AppV3ServiceInstance_t;
 
+//使用后必须关闭的服务实例引用
 typedef struct
 {
+    //记录服务就绪后可借用的实例
     const AppV3ServiceInstance_t *instance;
+    //当前登记的凭据，撤销后不能再引用旧上下文
     uint32_t ticket;
+    //唯一拥有操作权限的任务身份
     RuntimeEventTarget_t owner;
 } AppV3RecordRef_t;
 

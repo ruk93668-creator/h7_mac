@@ -11,13 +11,18 @@
 #include "../Runtime/service_events.h"
 #include <stddef.h>
 
+//服务启动结果等待上限，单位毫秒
 #define STARTUP_DEADLINE_MS 1000U
+//Control检查队列进度与启动超时的周期，单位毫秒
 #define STARTUP_POLL_MS 100U
+//启动阶段同轮允许处理的结果上限
 #define STARTUP_MAX_ATTEMPTS (1U + STARTUP_DEADLINE_MS / STARTUP_POLL_MS)
 
 //保留原Control静态栈及各目标任务的创建状态
 static StackType_t s_control_stack[768U] __attribute__((aligned(8)));
+//各任务的静态内核控制块，创建失败也不复用
 static StaticTask_t s_task_controls[RUNTIME_TARGET_COUNT];
+//记录已尝试创建的任务身份位，防止重复创建
 static uint32_t s_task_attempted;
 
 //在服务所属任务内等待BOOT、准备实例并提交结果
@@ -102,6 +107,7 @@ static SysResult_t AppV3_StartupReadable(AppV3Queue_t queue, void *context)
 //由原ControlTask串行调度实际Service；表只描述当前已接入的依赖。
 #define SUPERVISOR_TIMEOUT_MS 10000U
 
+//监督器对单组件发出的生命周期动作
 typedef enum
 {
     SUPERVISOR_START,
@@ -110,14 +116,20 @@ typedef enum
     SUPERVISOR_QUERY
 } SupervisorOperation_t;
 
+//固定的组件依赖及业务命令登记
 typedef struct
 {
+    //本组件在监督器活动掩码中的位
     uint32_t bit;
+    //启动前必须确认可用的依赖组件
     uint32_t provider;
+    //服务身份，用于筛选结果或发送生命周期命令
     RuntimeEventTarget_t service;
+    //索引本组件所支持的命令编号
     uint8_t operations[4];
 } SupervisorService_t;
 
+//监督器固定服务表，声明依赖与命令映射
 static const SupervisorService_t s_supervisor_services[] =
 {
     {
@@ -142,22 +154,33 @@ static const SupervisorService_t s_supervisor_services[] =
     }
 };
 
+//固定服务表实际组件数量
 #define SUPERVISOR_SERVICES (sizeof(s_supervisor_services) / sizeof(s_supervisor_services[0]))
 
+//由Control维护的协调计划和在途命令
 static struct
 {
+    //监督器发布的状态及最近业务终结副本
     AppV3SupervisorStatus_t status;
+    //存在待处理的请求或队列背压下暂存的终结结果
     const SupervisorService_t *pending;
+    //服务或协调器正在处理的操作编号
     SupervisorOperation_t operation;
+    //调用者申请达到的组件活动集合
     uint32_t desired;
+    //创建新录像文件使用的唯一编号，由发起者提供
     uint32_t file_number;
+    //当前结果订阅凭据，推进完成后统一撤销
     uint32_t subscription;
+    //当前命令的起始内核节拍，用来判定终结等待超时
     TickType_t started;
+    //命令已成功入队，等待同一身份结果
     bool submitted;
 } s_supervisor;
+//跨事务递增的命令身份水位
 static uint32_t s_supervisor_id = 0x79000000U;
 
-//保留本轮首错。已入队的事务继续等待原身份，不重发硬件命令。
+//保留当前事务的首个错误。已入队的事务继续等待原身份，不重发硬件命令。
 static void Supervisor_Fail(SysResult_t result)
 {
     if (s_supervisor.status.first_fault == SYS_OK)
@@ -165,6 +188,7 @@ static void Supervisor_Fail(SysResult_t result)
     s_supervisor.status.planning = false;
 }
 
+//清除已终结事务的等待信息
 static void Supervisor_ClearPending(void)
 {
     s_supervisor.pending = NULL;
@@ -173,6 +197,7 @@ static void Supervisor_ClearPending(void)
     s_supervisor.submitted = false;
 }
 
+//按服务和命令身份接收终结并更新活动事实
 static void Supervisor_Store(const AppV3ServiceEvent_t *event)
 {
     switch (event->service)
@@ -223,6 +248,7 @@ static SysResult_t Supervisor_Result(const AppV3ServiceEvent_t *event, void *con
     return SYS_OK;
 }
 
+//检查Control身份并准备一项协调事务
 static SysResult_t Supervisor_Begin(void)
 {
     SysResult_t result = SYS_OK;
@@ -237,6 +263,7 @@ static SysResult_t Supervisor_Begin(void)
     return result;
 }
 
+//为计划中的下一条命令分配编号并设置等待状态
 static void Supervisor_NewStep(const SupervisorService_t *service, SupervisorOperation_t operation)
 {
     if (s_supervisor_id == UINT32_MAX)
@@ -251,6 +278,7 @@ static void Supervisor_NewStep(const SupervisorService_t *service, SupervisorOpe
     s_supervisor.started = xTaskGetTickCount();
 }
 
+//汇总仍依赖该组件的活动或不确定路径
 static uint32_t Supervisor_Dependents(uint32_t provider)
 {
     uint32_t i, mask = 0U;
@@ -292,6 +320,7 @@ static void Supervisor_Plan(void)
         s_supervisor.status.planning = false;
 }
 
+//由Control提交目标活动集合，随后查询实际完成状态
 SysResult_t AppV3Supervisor_Set(uint32_t components, uint32_t file_number)
 {
     uint32_t i, supported = 0U, desired = components;
@@ -327,6 +356,7 @@ SysResult_t AppV3Supervisor_Set(uint32_t components, uint32_t file_number)
     return SYS_OK;
 }
 
+//提交单组件查询或恢复并沿用既有协调约束
 static SysResult_t Supervisor_Single(uint32_t component, SupervisorOperation_t operation)
 {
     uint32_t i;
@@ -353,16 +383,19 @@ static SysResult_t Supervisor_Single(uint32_t component, SupervisorOperation_t o
     return SYS_ERR_NOT_SUPPORTED;
 }
 
+//由Control请求现有的显式恢复契约
 SysResult_t AppV3Supervisor_Recover(uint32_t component)
 {
     return Supervisor_Single(component, SUPERVISOR_RECOVER);
 }
 
+//由Control请求刷新指定组件的真实状态
 SysResult_t AppV3Supervisor_Query(uint32_t component)
 {
     return Supervisor_Single(component, SUPERVISOR_QUERY);
 }
 
+//复制监督器当前只读状态，供协调调用者查询
 SysResult_t AppV3Supervisor_Read(AppV3SupervisorStatus_t *status)
 {
     if (status == NULL)
@@ -373,6 +406,7 @@ SysResult_t AppV3Supervisor_Read(AppV3SupervisorStatus_t *status)
     return SYS_OK;
 }
 
+//将计划步骤交给目标服务的命令邮箱
 static SysResult_t Supervisor_Submit(void)
 {
     const SupervisorService_t *service = s_supervisor.pending;
@@ -392,6 +426,7 @@ static SysResult_t Supervisor_Submit(void)
     }
 }
 
+//由Control按依赖顺序推进业务计划和等待结果
 void AppV3Supervisor_Poll(void)
 {
     SysResult_t result;

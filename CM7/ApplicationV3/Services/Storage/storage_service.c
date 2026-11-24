@@ -6,20 +6,29 @@
 #include "mjpeg_avi.h"
 
 
+//仅由Storage任务推进的卷和录像生命周期
 typedef struct
 {
+    //所属服务独占的命令邮箱及回执暂存
     AppV3ServiceMailbox_t mailbox;
+    //初始化阶段提供的只读配置，生命周期内由所属模块读取
     const AppStorageConfig_t *config;
+    //由服务发布的硬件状态快照
     AppV3HardwareReport_t hardware;
+    //正在推进的硬件命令及起始时间
     AppV3HardwareRequest_t request;
+    //已完成本服务的卷挂载，需要通过原路径卸载
     bool mount_committed;
+    //录像使用的采集配置或监督器观察到的Camera结果
     const CameraConfig_t *camera;
 } StorageServiceContext_t;
 
 //只有所属任务修改私有状态。发布后API只读取单独保存的队列入口
 static StorageServiceContext_t s_storage;
+//只保存对外可提交的队列入口，私有上下文仍由服务任务写入
 static AppV3Queue_t s_endpoint;
 
+//录像帧从申请到归还确认的推进状态
 typedef enum
 {
     STORAGE_FRAME_IDLE = 0,
@@ -34,28 +43,46 @@ typedef enum
 //Task私有，持有传输身份至最后一条确认实际入队。
 static struct
 {
+    //由Storage独占推进的AVI文件索引及写入状态
     MjpegAvi_t avi;
+    //本次操作持有的文件句柄，关闭后不得继续使用
     StorageFile_t file;
+    //Storage入队、归还及确认的当前阶段
     StorageFrameState_t frame_state;
+    //已经受理的帧消息，保留归还交接所需身份
     AppMessage_t transfer;
+    //当前在途帧请求的编号
     uint32_t frame_request;
+    //创建新录像文件使用的唯一编号，由发起者提供
     uint32_t file_number;
+    //按录像节奏允许下一次取帧的时间点
     uint32_t sample_at;
+    //本事务首个错误，后续清理结果不得覆盖
     SysResult_t first_fault;
+    //是否允许发起新的录像帧申请
     bool admission;
+    //已停止准入并等待在途帧、文件和卷退出
     bool draining;
 } s_record;
 
 
+//Storage硬件操作轮询间隔，单位毫秒
 #define STORAGE_HW_POLL_MS 50U
+//录像活动期间的进度轮询间隔，单位毫秒
 #define STORAGE_RECORD_POLL_MS 10U
+//Storage硬件命令的正常等待上限，单位毫秒
 #define STORAGE_HW_TIMEOUT_MS 5000U
+//硬件当前报告卡在位
 #define STORAGE_HW_CARD_PRESENT 1U
+//文件系统仍持有块设备独占凭据
 #define STORAGE_HW_FATFS_OWNER 2U
+//确认卷已卸载且I/O所有权已退出
 #define STORAGE_HW_IO_QUIET 4U
 //StorageFsDiagnostics_t公开状态值
 #define STORAGE_DIAG_READY 1U
+//诊断报告中卷已挂载的状态值
 #define STORAGE_DIAG_MOUNTED 2U
+//诊断报告中卷需要恢复的状态值
 #define STORAGE_DIAG_FAULT 3U
 
 //只读诊断不夺取RAW或FATFS租约
@@ -325,6 +352,7 @@ static void StorageRecord_Send(uint32_t now)
         s_record.transfer = (AppMessage_t){.command_id = 0U};
 }
 
+//处理录像帧写入与归还，并按准入状态申请下一帧
 static void StorageRecord_Advance(uint32_t now)
 {
     AppMessage_t message;
@@ -378,6 +406,7 @@ static SysResult_t StorageRecord_Close(bool recover)
     return result;
 }
 
+//返回成功写入数量以及当前录像资源状态
 static SysResult_t StorageRecord_Query(const AppV3ServiceCommand_t *command)
 {
     AppV3HardwareReport_t report;
@@ -529,6 +558,7 @@ static uint32_t StorageService_Advance(void)
     return STORAGE_HW_POLL_MS;
 }
 
+//由Storage任务推进异步硬件命令及录像退出
 uint32_t AppV3_StorageAdvance(void)
 {
     uint32_t wait = StorageService_Advance();

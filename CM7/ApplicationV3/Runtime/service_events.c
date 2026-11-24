@@ -2,24 +2,36 @@
 #include "service_mailbox.h"
 #include "../Core/app_services.h"
 
+//同时允许登记的固定订阅表项数量
 #define BUSINESS_SUBSCRIPTIONS 3U
+//Control每轮最多消费的终结结果数
 #define BUSINESS_BATCH 4U
 
+//同步结果订阅记录，只能由Control维护
 typedef struct
 {
+    //同步结果回调，调用期间不得阻塞
     AppV3BusinessCallback_t callback;
+    //回调期间可访问的订阅者私有数据
     void *context;
+    //服务身份，用于筛选结果或发送生命周期命令
     RuntimeEventTarget_t service;
+    //当前登记的凭据，撤销后不能再引用旧上下文
     uint32_t ticket;
 } AppV3BusinessSubscription_t;
 
 //订阅、分发与诊断仅由Control操作，不在全局中断锁内调用外部回调
 static AppV3BusinessSubscription_t s_subscriptions[BUSINESS_SUBSCRIPTIONS];
+//由Control维护的业务结果与拒绝记录
 static AppV3BusinessDiagnostics_t s_diagnostics;
+//订阅票号水位，耗尽时停止分配以防复用
 static uint32_t s_last_ticket;
+//消费过程的重入保护标志
 static bool s_draining;
+//正在执行同步回调的订阅凭据
 static uint32_t s_active_ticket;
 
+//终结结果保留项的可交付状态
 typedef enum
 {
     BUSINESS_RESULT_EMPTY = 0,
@@ -27,9 +39,12 @@ typedef enum
     BUSINESS_RESULT_READY
 } BusinessResultState_t;
 
+//按原请求身份保留的终结事件
 typedef struct
 {
+    //向登记任务交付的终结结果副本
     AppV3ServiceEvent_t event;
+    //区分空闲、已保留和待发布的业务终结槽
     BusinessResultState_t state;
 } BusinessResultSlot_t;
 
@@ -235,7 +250,7 @@ static bool Business_Decode(const AppMessage_t *message, AppV3ServiceEvent_t *ev
     return true;
 }
 
-//快照只复制票据；撤销或本轮新增不会访问已经失效的回调上下文
+//快照只复制票据，调用前再次检查订阅有效性，避免访问失效上下文
 static SysResult_t Business_Publish(const AppV3ServiceEvent_t *event)
 {
     uint32_t tickets[BUSINESS_SUBSCRIPTIONS], slot_index;

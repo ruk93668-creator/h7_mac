@@ -2,8 +2,10 @@
 #include "../Core/app_services.h"
 #include "platform_sync.h"
 
+//每条记录可同时持有的凭据数量上限
 #define RECORD_HOLDERS 4U
 
+//服务记录发布与回收状态
 typedef enum
 {
     RECORD_WAITING,
@@ -12,20 +14,30 @@ typedef enum
     RECORD_RECLAIMING
 } RecordState_t;
 
+//可发布实例与等待者的静态记录
 typedef struct
 {
+    //记录发布或失败时用于唤醒等待者的队列
     AppV3Queue_t signal;
+    //记录服务就绪后可借用的实例
     const AppV3ServiceInstance_t *instance;
+    //持有者槽与释放登记，回收时依照该表核验
     TaskHandle_t holders[RECORD_HOLDERS];
+    //逐持有者签发的票号
     uint32_t tickets[RECORD_HOLDERS];
+    //当前记录发放过的最大票号
     uint32_t last_ticket;
+    //仍在等待发布或失败的任务数量
     uint32_t waiters;
+    //最近一次操作或终结结果，保留原错误码
     SysResult_t result;
+    //只有发布成功的实例可以发出借用凭据
     RecordState_t state;
 } RecordSlot_t;
 
 //固定槽与服务身份对应，发布事实和持有票据同步更新
 static RecordSlot_t s_records[RUNTIME_TARGET_COUNT];
+//记录表是否完成初始化
 static bool s_initialized;
 
 //关闭中断以保护发布状态、等待者和引用关系

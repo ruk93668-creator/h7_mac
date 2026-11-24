@@ -5,18 +5,29 @@
 
 //保留六条公共通道，另为Camera、USB和Storage各留一个四项槽
 #define MESSAGE_SLOTS 9U
+//每个业务队列可保存的最大消息条数
 #define MESSAGE_DEPTH 4U
+//只读记录通知使用的静态信号队列配额
 #define SIGNAL_SLOTS 3U
+//静态队列表总槽数，包含业务与记录通知
 #define POOL_SIZE (MESSAGE_SLOTS + SIGNAL_SLOTS)
 
+//队列池槽位状态，由池临界区保护
 typedef struct
 {
+    //队列的内核控制块，只有确认销毁后才可复用
     StaticQueue_t control;
+    //绑定当前对象的内核或应用队列句柄
     QueueHandle_t queue;
+    //槽位或采集实例的代号，用于排除已销毁凭据
     uint32_t generation;
+    //预留的数据容量，单位或元素数由所属对象决定
     UBaseType_t capacity;
+    //已经固定该槽的访问数，归零后才允许回收
     uint16_t users;
+    //接收队列进展通知的任务编号
     uint8_t target;
+    //槽已被分配或保留的标志
     bool reserved;
 } QueueSlot_t;
 
@@ -24,6 +35,7 @@ typedef struct
 static QueueSlot_t s_slots[POOL_SIZE];
 //宽槽保存原应用消息，短信号使用独立空间
 static uint8_t s_messages[MESSAGE_SLOTS][MESSAGE_DEPTH * sizeof(AppMessage_t)] __attribute__((aligned(8)));
+//固定记录通知存储，每条队列拥有自己的槽
 static uint32_t s_signals[SIGNAL_SLOTS];
 
 //保存并关闭全局中断，保护任务和ISR共享的槽位

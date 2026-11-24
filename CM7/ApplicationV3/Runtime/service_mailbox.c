@@ -146,7 +146,7 @@ SysResult_t AppV3Mailbox_Receive(AppV3ServiceMailbox_t *mailbox, AppV3ServiceCom
     return SYS_OK;
 }
 
-//统一终结消息提交和背压，真实与模拟结果使用独立标记
+//统一终结消息提交和背压，有无硬件快照通过独立标记区分
 static SysResult_t Mailbox_Complete(AppV3ServiceMailbox_t *mailbox,
     const AppV3ServiceCommand_t *command, SysResult_t result, bool simulated_running,
     uint32_t parameter, const AppV3HardwareReport_t *hardware)
@@ -182,14 +182,14 @@ static SysResult_t Mailbox_Complete(AppV3ServiceMailbox_t *mailbox,
     return AppV3Mailbox_Flush(mailbox);
 }
 
-//原模拟结果保持原标记和状态语义
+//通用终结用于无法执行的请求，保留兼容消息标记
 SysResult_t AppV3Mailbox_Complete(AppV3ServiceMailbox_t *mailbox,
     const AppV3ServiceCommand_t *command, SysResult_t result, bool simulated_running, uint32_t parameter)
 {
     return Mailbox_Complete(mailbox, command, result, simulated_running, parameter, NULL);
 }
 
-//真实命令返回独立硬件快照，不产生模拟运行位
+//真实命令返回独立硬件快照，运行兼容位保持为零
 SysResult_t AppV3Mailbox_CompleteHardware(AppV3ServiceMailbox_t *mailbox,
     const AppV3ServiceCommand_t *command, SysResult_t result, const AppV3HardwareReport_t *report)
 {

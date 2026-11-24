@@ -6,10 +6,14 @@
 
 //任务每次最多解析一个块，避免长时间占用Camera任务
 #define MJPEG_PROCESS_BUDGET CAMERA_MJPEG_BLOCK_BYTES
+//JPEG解析允许的单帧上限，单位字节
 #define MJPEG_MAX_FRAME_BYTES (65535UL * 4UL)
+//无法使用环内物理块时的索引标记
 #define MJPEG_INVALID_BLOCK UINT8_MAX
 
+//内部自检视图使用的私有拥有者位
 #define MJPEG_LEGACY_FRAME  (1UL << CAMERA_FRAME_CONSUMER_COUNT)
+//兼容读者保留同一物理帧时使用的独立拥有者位
 #define MJPEG_LEGACY_RETAIN (MJPEG_LEGACY_FRAME << 1U)
 
 #if CAMERA_MJPEG_REGION_END > BSP_SDRAM_END || \
@@ -30,6 +34,7 @@ typedef enum
 //每块只保存元数据，不另设图像接收数组
 typedef struct
 {
+    //本对象当前所处的生命周期或传输状态
     MjpegBlockState_t state;
 
     //同一块可包含多张JPEG，每张READY或IN_USE各持一份引用
@@ -45,9 +50,13 @@ typedef struct
 //帧描述只保存范围和块引用，不复制JPEG
 typedef struct
 {
+    //完整JPEG起点相对字节环首地址的字节偏移
     uint32_t offset;
+    //JPEG有效字节数，跨环尾时由两段组成
     uint32_t length;
+    //位图记录帧引用的物理块，归还前禁止复用
     uint64_t blocks;
+    //连续字节段代号，用于隔离丢块前后的数据
     uint32_t epoch;
 } MjpegFrame_t;
 
@@ -55,14 +64,18 @@ typedef struct
 //同一张JPEG独立记录两路引用，全部归还后才回收数据块
 typedef struct
 {
+    //只读图像描述，数据仍由实际持有者负责
     MjpegFrame_t frame;
+    //在对应采集会话内分配的租约编号
     uint32_t id;
+    //实际持有该物理帧的消费者或兼容拥有者位
     uint32_t owners;
 } MjpegLoan_t;
 
 //会话号跨Start保留，旧SD归还不能释放新一轮帧
 static uint32_t s_loan_session;
 
+//连续JPEG解析器识别标记、段和熵数据的状态
 typedef enum
 {
     MJPEG_SEEK_FF = 0,
@@ -81,7 +94,7 @@ typedef enum
 static struct
 {
 
-    //保存本轮图像尺寸和格式，不反向读取Application配置
+    //保存当前采集会话的图像尺寸与格式，Media不读取应用配置
     CameraConfig_t config;
 
     //底层失败时仍保持占用，直到Stop确认成功
@@ -107,7 +120,9 @@ static struct
 
     //IRQ到任务的完成块队列，元素不是图像数据
     volatile uint8_t completed[CAMERA_MJPEG_BLOCK_COUNT];
+    //等待解析的DMA完成块队列首项索引
     volatile uint8_t completed_head;
+    //已完成写入尚待CameraTask解析的块数
     volatile uint8_t completed_count;
 
     //输入FRAME计数只作为边界证据，不能代替DMA完成
@@ -118,32 +133,52 @@ static struct
 
     //任务正在读取的SEALED块，不解析活动DMA目标
     uint8_t parse_block;
+    //已解析到当前块的字节偏移
     uint32_t parse_offset;
+    //当前解析数据所属的连续段代号
     uint32_t parse_epoch;
+    //CameraTask已处理到的最新连续段代号
     uint32_t task_epoch;
 
     //READY队列与唯一IN_USE描述分别持有块引用
     MjpegFrame_t ready[CAMERA_MJPEG_FRAME_QUEUE];
+    //可借帧队列的首项索引
     uint8_t ready_head;
+    //未借出的完整帧数量
     uint8_t ready_count;
 
+    //物理帧租约记录，归还前保留块引用
     MjpegLoan_t loans[CAMERA_MJPEG_MAX_LOANS];
+    //当前自检视图的内部记录，释放后清空
     MjpegLoan_t *legacy;
+    //会话内租约编号的单调水位
     uint32_t next_loan;
+    //本次运行累计完整帧数
     uint32_t completed_frames;
+    //未能交付的累计帧数
     uint32_t dropped_frames;
 
     //保存跨块解析位置和小段头，不存整张JPEG
     MjpegParseState_t parser;
+    //尚未通过边界验证的解析中帧
     MjpegFrame_t partial;
+    //正在处理的JPEG标记
     uint8_t marker;
+    //JPEG标记段声明的长度
     uint16_t segment_length;
+    //当前段尚未解析的字节数
     uint16_t segment_left;
+    //已缓存的必要JPEG头字节
     uint8_t header[18];
+    //已保存头部的有效字节数
     uint8_t header_size;
+    //解析到的图像分量数
     uint8_t components;
+    //已遇到并确认图像尺寸头的证据
     bool saw_sof;
+    //已扫描有效熵编码数据的标志
     bool saw_entropy;
+    //最近已用的硬件帧边界序号
     uint32_t frame_ticket;
 } s_fifo;
 
@@ -385,6 +420,7 @@ bool CameraMjpegFifo_GetFrame(CameraFrame_t *frame)
     return true;
 }
 
+//检查消费者配额后从最新完整JPEG借出物理帧
 SysResult_t CameraMjpegFifo_Acquire(CameraFrameConsumer_t consumer,
     CameraMjpegLease_t *lease, CameraFrame_t *frame)
 {
@@ -429,6 +465,7 @@ static SysResult_t Mjpeg_Return(const CameraMjpegLease_t *lease, uint32_t owner)
     return SYS_ERR_INVALID_STATE;
 }
 
+//CameraTask核对会话、编号和消费者后归还显式租约
 SysResult_t CameraMjpegFifo_Release(const CameraMjpegLease_t *lease)
 {
     if (lease == NULL || (uint32_t)lease->consumer >= CAMERA_FRAME_CONSUMER_COUNT)
@@ -436,6 +473,7 @@ SysResult_t CameraMjpegFifo_Release(const CameraMjpegLease_t *lease)
     return Mjpeg_Return(lease, 1UL << (uint32_t)lease->consumer);
 }
 
+//对当前自检视图增记兼容引用并核对两段描述
 SysResult_t CameraMjpegFifo_RetainFrame(const CameraFrame_t *frame, CameraMjpegLease_t *lease)
 {
     MjpegLoan_t *entry = s_fifo.legacy;
@@ -455,6 +493,7 @@ SysResult_t CameraMjpegFifo_RetainFrame(const CameraFrame_t *frame, CameraMjpegL
     return SYS_OK;
 }
 
+//只撤销内部自检视图持有的引用
 SysResult_t CameraMjpegFifo_ReleaseFrame(void)
 {
     SysResult_t result;
@@ -467,6 +506,7 @@ SysResult_t CameraMjpegFifo_ReleaseFrame(void)
     return result;
 }
 
+//归还Legacy兼容保留引用，最后一个拥有者才释放物理块
 SysResult_t CameraMjpegFifo_ReleaseLease(const CameraMjpegLease_t *lease)
 {
     if (lease == NULL || lease->consumer != CAMERA_FRAME_CONSUMER_COUNT)

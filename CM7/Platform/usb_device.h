@@ -9,30 +9,44 @@
 //USB任务读取同一采样点的链路事实；短临界区内不执行USB操作
 typedef struct
 {
+    //当前USB协议设备状态
     uint8_t dev_state;
+    //挂起前的USB协议设备状态
     uint8_t dev_old_state;
+    //底层设备已启动并可能持有外设资源
     bool started;
+    //已接管底层资源，退出时必须证明设备停止
     bool stop_required;
+    //底层当前或最近一次设备操作结果
     SysResult_t last_result;
 } UsbDeviceLinkState_t;
 
+//在短临界区读取链路状态并返回当前是否已配置
 bool USB_Device_ReadLinkState(UsbDeviceLinkState_t *state);
 
 //端点资源快照，busy期间缓冲区仍由底层持有
 typedef struct
 {
+    //端点已打开的状态
     bool opened;
+    //端点可能仍使用传输缓冲，需要等待退出
     bool busy;
+    //端点处于协议停止状态
     bool stalled;
+    //标识消息语义或端点传输类型，由所属模块按协议解读
     uint8_t type;
+    //端点单包最大长度，单位字节
     uint16_t max_packet;
+    //底层当前或最近一次设备操作结果
     SysResult_t last_result;
 } UsbDeviceEndpointState_t;
 
 //普通C通知，只提示状态变化，不承诺传输或帧已释放
 #define USB_DEVICE_EVENT_STATE 1U
+//通知任务重新检查端点传输进度
 #define USB_DEVICE_EVENT_IO    2U
 
+//链路通知回调，只提示重新检查实际状态
 typedef void (*UsbDeviceEventCallback_t)(uint32_t events, void *context);
 
 //绑定USB状态通知接收端

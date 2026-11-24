@@ -8,20 +8,28 @@
 #include "../Services/Storage/storage_service.h"
 #include <stddef.h>
 
+//静态服务登记记录，关联线程、启动入口和只读配置
 typedef struct
 {
+    //登记服务入口和静态线程资源
     AppV3ThreadSpec_t thread;
     SysResult_t (*init)(const AppV3Context_t *context);
     void (*discard)(void);
+    //记录服务就绪后可借用的实例
     AppV3ServiceInstance_t *instance;
 } AppV3ServiceRecord_t;
 
+//把静态栈数组长度换算成内核需要的字数
 #define STACK_WORDS(stack) (sizeof(stack) / sizeof((stack)[0]))
 
+//Camera任务独占栈，按八字节对齐
 static StackType_t s_camera_stack[1536U] __attribute__((aligned(8)));
+//USB任务独占栈，按八字节对齐
 static StackType_t s_usb_stack[2048U] __attribute__((aligned(8)));
+//Storage任务独占栈，按八字节对齐
 static StackType_t s_storage_stack[2048U] __attribute__((aligned(8)));
 
+//三个服务的静态实例，由各自初始化流程维护
 static AppV3ServiceInstance_t s_camera, s_usb, s_storage;
 
 //服务清单是任务身份、启动入口、存储和配置的唯一来源。
@@ -95,7 +103,9 @@ SysResult_t AppV3_StartServices(uint32_t *created)
 
 //Control 独占首个初始化错误，复用原 IPC 状态出口。
 static AppControlStatus_t s_startup_status;
+//Control已收齐的服务启动完成位
 static uint32_t s_startup_completed;
+//启动结果发布标记，发布后方可处理业务命令
 static volatile bool s_startup_published;
 
 //按任务身份查找编译期服务描述
@@ -256,7 +266,7 @@ bool AppV3_IsServiceInstance(RuntimeEventTarget_t owner, const AppV3ServiceInsta
     return service != NULL && instance == service->instance;
 }
 
-//所有服务成功并由Control发布后才允许提交模拟命令
+//Control发布全部服务就绪结果后才允许提交业务命令
 bool AppV3_BusinessReady(void)
 {
     bool published = s_startup_published;

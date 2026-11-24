@@ -6,32 +6,53 @@
 #include "../../Core/app_messages.h"
 
 
+//仅由CameraTask写入的采集服务上下文
 typedef struct
 {
+    //所属服务独占的命令邮箱及回执暂存
     AppV3ServiceMailbox_t mailbox;
+    //初始化阶段提供的只读配置，生命周期内由所属模块读取
     const CameraConfig_t *config;
+    //由服务发布的硬件状态快照
     AppV3HardwareReport_t hardware;
+    //正在推进的硬件命令及起始时间
     AppV3HardwareRequest_t request;
+    //由CameraTask控制的传感器实例
     Ov5640Device_t *sensor;
+    //请求前观察的停止序号，用于排除旧停止结果
     uint32_t stop_baseline;
+    //记录启动失败的原因，供停止回退后报告
     SysResult_t rollback_fault;
+    //传感器已完成格式配置的标志
     bool sensor_configured;
+    //传感器已启用并可能需要关闭的标志
     bool sensor_started;
+    //Media采集上下文有效的标志
     bool media_initialized;
+    //已尝试启动采集，失败时也可能需清理硬件
     bool capture_attempted;
+    //正在等待硬件给出首帧有效的事实
     bool waiting_frame;
+    //当前任务还持有未归还的自检或读取帧
     bool frame_held;
 } CameraServiceContext_t;
 
 //只有所属任务修改私有状态。发布后API只读取单独保存的队列入口
 static CameraServiceContext_t s_camera;
+//只保存对外可提交的队列入口，私有上下文仍由服务任务写入
 static AppV3Queue_t s_endpoint;
 
+//Camera硬件进度轮询间隔，单位毫秒
 #define CAMERA_HW_POLL_MS 10U
+//Camera硬件操作等待上限，单位毫秒
 #define CAMERA_HW_TIMEOUT_MS 3000U
+//已经观察到实际采集完成的首帧
 #define CAMERA_HW_FRAME_SEEN 1U
+//自检帧仍由Camera持有
 #define CAMERA_HW_FRAME_HELD 2U
+//Media已证明采集硬件停止
 #define CAMERA_HW_MEDIA_STOPPED 4U
+//底层设备或采集发生错误
 #define CAMERA_HW_DEVICE_ERROR 8U
 
 //每个消费者一个有界交接记录。Media才拥有物理槽，Dispatcher只保存凭据。
@@ -46,25 +67,36 @@ typedef enum
     CAMERA_TRANSFER_WAIT_CONSUMED
 } CameraTransferState_t;
 
+//单个消费者的帧交接记录，保持凭据直到事务闭合
 typedef struct
 {
+    //区分待投递和已公开租约，停止时只有未公开帧可撤回
     CameraTransferState_t state;
     union
     {
         CameraFrameLease_t raw;
         CameraMjpegLease_t jpeg;
     } lease;
+    //选用JPEG物理租约的标志，决定归还接口
     bool jpeg;
+    //待投递或等待消费确认的业务消息
     AppMessage_t reply;
+    //该消费者最近受理的帧申请号
     uint32_t last_request;
+    //已开放或已受理的帧准入事实
     bool admitted;
+    //未公开帧在停止时归还后发送拒绝终结
     bool reject_offer;
 } CameraTransfer_t;
 
+//按消费者身份向固定下行通道投递消息
 typedef SysResult_t (*CameraFrameSend_t)(CameraFrameConsumer_t consumer, const AppMessage_t *message);
 
+//各消费者当前的交接状态及租约凭据
 static CameraTransfer_t s_transfers[CAMERA_FRAME_CONSUMER_COUNT];
+//分发帧的递增序号，耗尽时拒绝继续发放
 static uint32_t s_frame_sequence;
+//下次扫描的起点，用于轮换申请者优先顺序
 static uint8_t s_next_consumer;
 
 //CameraTask将每路回复发往所属消费者，不共享下行队首。
@@ -85,6 +117,7 @@ static bool CameraFrame_Matches(const CameraTransfer_t *transfer, const AppMessa
         message->lease_id == transfer->reply.lease_id;
 }
 
+//保留当前请求身份并准备确认或拒绝的终结消息
 static void CameraFrame_Terminal(CameraTransfer_t *transfer, AppMessageType_t type, SysResult_t result)
 {
     //清除View。成功归还后任何回复都不得再携带旧物理地址。
@@ -94,6 +127,7 @@ static void CameraFrame_Terminal(CameraTransfer_t *transfer, AppMessageType_t ty
     transfer->state = CAMERA_TRANSFER_TERMINAL_PENDING;
 }
 
+//核对来源及请求凭据后处理消费者申请和归还
 static void CameraFrame_Receive(CameraFrameConsumer_t consumer, const AppMessage_t *message, bool admission)
 {
     CameraTransfer_t *transfer = &s_transfers[consumer];
@@ -147,6 +181,7 @@ static void CameraFrame_Receive(CameraFrameConsumer_t consumer, const AppMessage
     }
 }
 
+//按采集格式借出帧，成功后保存租约并准备投递
 static void CameraFrame_Acquire(CameraTransfer_t *transfer, CameraFrameConsumer_t consumer)
 {
     SysResult_t result = SYS_ERR_NO_RESOURCE;
@@ -232,6 +267,7 @@ static SysResult_t CameraFrame_AdvanceSlot(CameraFrameConsumer_t consumer, bool 
     return SYS_OK;
 }
 
+//轮换扫描消费者，每个槽最多推进一次
 static SysResult_t CameraFrame_Advance(bool admission, CameraFrameSend_t send)
 {
     uint32_t offset;
@@ -260,6 +296,7 @@ static SysResult_t CameraFrame_Advance(bool admission, CameraFrameSend_t send)
     return first_error;
 }
 
+//判断停机前受理的交接是否全部完成
 static bool CameraFrame_Draining(void)
 {
     uint32_t index;
@@ -271,6 +308,7 @@ static bool CameraFrame_Draining(void)
     return false;
 }
 
+//推进帧消息消费及归还，关闭准入后继续排空
 static SysResult_t CameraService_AdvanceFrames(bool admission)
 {
     AppMessage_t message;
@@ -318,7 +356,7 @@ static SysResult_t CameraService_StartCapture(void)
         s_camera.sensor_started = true;
     }
 
-    //记录启动前的停止序号，不能让上一轮停止事实满足本轮STOP
+    //记录启动前的停止序号，不能让上一轮停止事实满足当前停止请求
     result = CameraCapture_GetStopFacts(&facts);
     if (result != SYS_OK)
         return result;
@@ -480,6 +518,7 @@ static SysResult_t CameraService_HardwareCommand(const AppV3ServiceCommand_t *co
     return SYS_OK;
 }
 
+//保存首错和最终硬件状态，再发布命令终结
 static void CameraService_FinishHardware(SysResult_t result, AppV3HardwareState_t state)
 {
     if (result != SYS_OK && s_camera.hardware.first_fault == SYS_OK)

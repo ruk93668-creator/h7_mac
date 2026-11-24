@@ -5,6 +5,7 @@
 #include "camera_config.h"
 #include <stdbool.h>
 
+//固定业务通道编号，保留既有消息路由约定
 typedef enum
 {
     APP_CHANNEL_CAMERA_COMMAND = 0,
@@ -20,6 +21,7 @@ typedef enum
     APP_CHANNEL_CAMERA_TO_STORAGE
 } AppChannel_t;
 
+//各消息类型用于识别命令、结果和帧交接协议
 typedef enum
 {
     APP_MESSAGE_START = 1,
@@ -41,15 +43,23 @@ typedef enum
 //消息只复制描述与凭据，不复制SDRAM图像
 typedef struct
 {
+    //标明消息承载申请、帧描述、结果或归还确认
     AppMessageType_t type;
+    //发送任务身份，用于约束消息来源
     RuntimeEventTarget_t source;
+    //发起者分配的命令编号，用于识别匹配结果
     uint32_t command_id;
+    //采集会话号，隔离重启前的帧凭据
     uint32_t stream_epoch;
+    //当前会话内唯一的帧租约编号
     uint32_t lease_id;
+    //最近一次操作或终结结果，保留原错误码
     SysResult_t result;
     //Dispatcher分配的帧序号；物理槽索引只保存在Camera的Media租约中
     uint32_t frame_id;
+    //事件或图像时间戳，单位毫秒
     uint32_t timestamp_ms;
+    //只读图像描述，数据仍由实际持有者负责
     CameraFrame_t frame;
 } AppMessage_t;
 

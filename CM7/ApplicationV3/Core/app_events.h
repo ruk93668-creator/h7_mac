@@ -6,6 +6,7 @@
 #include "task.h"
 #include <stdbool.h>
 
+//通知等待的无限期哨兵值
 #define APP_EVENTS_WAIT_FOREVER UINT32_MAX
 
 //准备事件适配和USB状态通知
@@ -26,7 +27,7 @@ SysResult_t App_EventsWait(RuntimeEventTarget_t target, uint32_t timeout_ms, uin
 //检查当前执行者是否为目标任务
 bool App_EventsIsOwner(RuntimeEventTarget_t target);
 
-//Control在测试终结时读取现有静态任务的最小剩余栈，单位为StackType_t
+//由Control读取各静态任务的历史最小剩余栈，单位为StackType_t
 bool App_EventsReadStackWatermarks(UBaseType_t remaining_words[RUNTIME_TARGET_COUNT]);
 
 #endif

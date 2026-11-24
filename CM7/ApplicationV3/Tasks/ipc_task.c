@@ -7,7 +7,9 @@
 #include "platform_sync.h"
 #include <stddef.h>
 
+//IPC任务静态栈容量，单位为内核字
 #define IPC_TASK_STACK_WORDS 512U
+//IPC低优先级，保证图像与USB任务可先运行
 #define IPC_TASK_PRIORITY 1U
 
 //栈余量统计周期，不作为任务唤醒周期

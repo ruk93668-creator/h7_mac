@@ -296,6 +296,7 @@ bool App_EventsReadStackWatermarks(UBaseType_t remaining_words[RUNTIME_TARGET_CO
     return true;
 }
 
+//核验普通任务上下文及目标任务句柄，拒绝中断上下文和临界区内的调用
 bool App_EventsIsOwner(RuntimeEventTarget_t target)
 {
     return (uint32_t)target < RUNTIME_TARGET_COUNT && Platform_SyncGetException() == 0U &&

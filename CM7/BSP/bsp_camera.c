@@ -7,17 +7,26 @@
 //V1接线：PA15控制U10的1.5V电源，PH13为PWDN，PH15为RESETB
 //PB8为I2C1 SCL，PB9为I2C1 SDA，PA8继续输出原有24MHz XCLK
 #define CAMERA_SDA      GPIO_PIN_9
+//摄像头控制总线的时钟引脚
 #define CAMERA_SCL      GPIO_PIN_8
+//摄像头复位引脚，电平时序由BSP管理
 #define CAMERA_RESET    GPIO_PIN_15
+//摄像头掉电控制引脚
 #define CAMERA_PWDN     GPIO_PIN_13
+//摄像头数字电源使能引脚
 #define CAMERA_DVDD_EN  GPIO_PIN_15
+//外部参考时钟输出引脚
 #define CAMERA_XCLK    GPIO_PIN_8
+//摄像头控制总线时钟所用PLL输出频率，单位赫兹
 #define CAMERA_PLLQ_HZ 240000000UL
+//摄像头I2C定时计算使用的内核频率，单位赫兹
 #define CAMERA_I2C_KERNEL_HZ 120000000UL
 //120MHz下分频12：SCL低5.5us、高4.5us，数据建立1.4us、保持0.3us
 //加入滤波与同步延迟后不超过100kHz，仍需实测摄像头端边沿
 #define CAMERA_I2C_TIMING    0xB0D32C36UL
+//传感器控制接口的总线地址，按驱动约定传入
 #define CAMERA_I2C_ADDRESS   0x78U
+//传感器寄存器访问超时，单位毫秒
 #define CAMERA_I2C_TIMEOUT_MS 20U
 
 //记录SCCB是否已经具备访问传感器的上电条件

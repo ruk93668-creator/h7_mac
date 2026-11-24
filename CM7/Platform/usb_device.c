@@ -1333,7 +1333,7 @@ static void Usb_Reset(void)
     if (!s_registered)
         return;
 
-    //总线已复位，旧EP0打开状态不能代表本轮重建成功
+    //总线已复位，旧EP0打开状态不能证明复位后的端点已重建
     memset((void *)&s_endpoints[0][0], 0, sizeof(s_endpoints[0][0]));
     memset((void *)&s_endpoints[1][0], 0, sizeof(s_endpoints[1][0]));
     (void)USBD_LL_SetSpeed(&s_device, USBD_SPEED_FULL);

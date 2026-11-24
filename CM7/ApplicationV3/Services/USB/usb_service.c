@@ -7,36 +7,55 @@
 #include "platform_time.h"
 
 
+//仅由UsbTask写入的设备资源与命令上下文
 typedef struct
 {
+    //所属服务独占的命令邮箱及回执暂存
     AppV3ServiceMailbox_t mailbox;
+    //初始化阶段提供的只读配置，生命周期内由所属模块读取
     const VideoConfig_t *config;
+    //由服务发布的硬件状态快照
     AppV3HardwareReport_t hardware;
+    //正在推进的硬件命令及起始时间
     AppV3HardwareRequest_t request;
+    //记录启动失败的原因，供停止回退后报告
     SysResult_t rollback_fault;
+    //描述符已按当前输出配置准备成功
     bool descriptor_ready;
+    //当前设备会话中UVC类已注册
     bool class_registered;
+    //已接管底层资源，退出时必须证明设备停止
     bool stop_required;
+    //本次停止调用已成功，仍需核对端点资源
     bool stop_applied;
+    //已启动设备，正在等待真实配置状态
     bool waiting_configured;
+    //已对当前读者提交取消，仍须等待退出证据
     bool cancel_requested;
 } UsbServiceContext_t;
 
 //只有所属任务修改私有状态。发布后API只读取单独保存的队列入口
 static UsbServiceContext_t s_usb;
+//只保存对外可提交的队列入口，私有上下文仍由服务任务写入
 static AppV3Queue_t s_endpoint;
 
+//USB进展复查周期，单位毫秒
 #define USB_HW_POLL_MS 10U
+//等待主机完成设备配置的上限，单位毫秒
 #define USB_HW_ENUM_TIMEOUT_MS 5000U
+//等待退出与停止完成的上限，单位毫秒
 #define USB_HW_STOP_TIMEOUT_MS 1000U
 //对应usb_uvc_class.c的UVC_VIDEO_EP_ADDRESS
 #define USB_HW_VIDEO_EP 0x81U
+//同一链路快照已确认当前处于配置状态
 #define USB_HW_CONFIGURED 1U
+//视频端点已完成停止核验
 #define USB_HW_VIDEO_QUIET 2U
+//帧可能仍有读者持有，禁止提前归还
 #define USB_HW_FRAME_HELD 4U
 
 //帧交接状态由UsbTask独立维护，枚举状态不能用于归还帧。
-//A2运输只记录交接事实，独立Raw测试用匹配的A3提交ID证明读者退出。
+//帧归还必须匹配原UVC提交号，以证明读者已退出。
 typedef enum
 {
     USB_FRAME_IDLE = 0,
@@ -50,11 +69,16 @@ typedef enum
     USB_FRAME_CONSUMED_PENDING
 } UsbFrameState_t;
 
+//UsbTask独占的当前帧交接事务
 static struct
 {
+    //从申请推进到消费确认，未闭合前禁止启动下一次交接
     UsbFrameState_t state;
+    //本次帧交接与Camera对应的请求序号
     uint32_t request_id;
+    //已经受理的帧消息，保留归还交接所需身份
     AppMessage_t transfer;
+    //最近一次操作或终结结果，保留原错误码
     SysResult_t result;
 } s_frame;
 
@@ -70,6 +94,7 @@ static void UsbFrame_Close(void)
     }
 }
 
+//按请求号与租约匹配Camera的帧和归还确认
 static void UsbFrame_Receive(const AppMessage_t *message)
 {
     if (message->source != RUNTIME_TARGET_CAMERA || message->command_id != s_frame.request_id)
@@ -109,12 +134,13 @@ static void UsbFrame_Receive(const AppMessage_t *message)
     }
 }
 
+//尝试提交待发的归还或确认，队满时保留原记录
 static void UsbFrame_Flush(void)
 {
     AppMessage_t message = {.source = RUNTIME_TARGET_USB, .command_id = s_frame.request_id};
     UsbFrameState_t after;
 
-    //队列失败时只保留原身份，本轮不推断已归还或已消费。
+    //队列失败时只保留原身份，不得推断已归还或已消费。
     switch (s_frame.state)
     {
         case USB_FRAME_CANCEL_PENDING:
@@ -145,6 +171,7 @@ static void UsbFrame_Flush(void)
     }
 }
 
+//推进UsbTask的交接事务，停止后只处理尾部消息
 static void UsbFrame_Advance(bool closing)
 {
     AppMessage_t message;
@@ -159,6 +186,7 @@ static void UsbFrame_Advance(bool closing)
     UsbFrame_Flush();
 }
 
+//仅UsbTask在准入开放时申请一帧
 SysResult_t UsbService_RequestFrame(void)
 {
     AppMessage_t request = {.type = APP_MESSAGE_FRAME_REQUEST, .source = RUNTIME_TARGET_USB};
@@ -184,6 +212,7 @@ SysResult_t UsbService_RequestFrame(void)
     return result;
 }
 
+//取得当前租约关联的只读帧和分发序号
 SysResult_t UsbService_ReadFrame(CameraFrame_t *frame, uint32_t *frame_id)
 {
     if (frame == NULL || frame_id == NULL)
@@ -201,6 +230,7 @@ SysResult_t UsbService_ReadFrame(CameraFrame_t *frame, uint32_t *frame_id)
     return SYS_OK;
 }
 
+//确认读取方退出后登记归还，队列满也保留身份
 SysResult_t UsbService_ReleaseFrame(void)
 {
     if (!App_MessagesIsOwner(RUNTIME_TARGET_USB) || s_frame.state != USB_FRAME_READING)
@@ -211,6 +241,7 @@ SysResult_t UsbService_ReleaseFrame(void)
     return SYS_OK;
 }
 
+//关闭当前申请入口并推进已有交接退出
 SysResult_t UsbService_CancelFrameRequest(void)
 {
     if (!App_MessagesIsOwner(RUNTIME_TARGET_USB) ||
@@ -220,8 +251,10 @@ SysResult_t UsbService_CancelFrameRequest(void)
     return SYS_OK;
 }
 
+//本服务已关联的UVC提交号，归还后清零
 static uint32_t s_uvc_reader_id;
 
+//只承认真正的完成、取消或关闭作为退场理由
 static bool UsbService_IsExitReason(UsbUvcReaderExit_t reason)
 {
     return reason == USB_UVC_READER_EXIT_EOF || reason == USB_UVC_READER_EXIT_CANCELLED ||
@@ -245,7 +278,7 @@ static SysResult_t UsbService_CheckReaderProof(bool *retired)
     return SYS_OK;
 }
 
-//先推进旧提交，再交给A2归还和消费确认；这里不允许调用USB_Device_Stop。
+//先推进旧提交，再交给帧归还和消费确认；这里不允许调用USB_Device_Stop。
 static SysResult_t UsbService_AdvanceReader(bool closing)
 {
     bool retired;
@@ -327,6 +360,7 @@ static SysResult_t UsbService_SubmitJpeg(const CameraFrame_t *frame)
     return USB_UVC_SubmitFrameView(&view);
 }
 
+//检查链路与提交凭据后按当前格式交给UVC读取
 static SysResult_t UsbService_SubmitVideo(void)
 {
     UsbUvcStreamStatus_t stream;
@@ -369,12 +403,13 @@ static SysResult_t UsbService_SubmitVideo(void)
         return SYS_OK;
     }
 
-    //提交明确失败时Class从未接管该帧，才可直接交回A2。
+    //提交明确失败时Class从未接管该帧，才可直接归还给CameraTask。
     if (UsbService_ReleaseFrame() != SYS_OK)
         return SYS_ERR_PROTOCOL;
     return result == SYS_ERR_INVALID_STATE ? SYS_ERR_BUSY : result;
 }
 
+//准备描述符并注册启动设备，失败时保留停止义务
 static SysResult_t UsbService_BeginDevice(void)
 {
     SysResult_t result;
@@ -503,6 +538,7 @@ static SysResult_t UsbService_HardwareCommand(const AppV3ServiceCommand_t *comma
     return SYS_OK;
 }
 
+//更新硬件状态并带原编号发布生命周期终结
 static void UsbService_FinishHardware(SysResult_t result, AppV3HardwareState_t state)
 {
     if (result != SYS_OK && s_usb.hardware.first_fault == SYS_OK)
@@ -562,7 +598,7 @@ static SysResult_t UsbService_ObserveDevice(bool *suspended)
     return result;
 }
 
-//仅UsbTask推进枚举、已批准Raw测试的帧提交及有界STOP。
+//仅UsbTask推进枚举、按配置执行视频帧提交及有界STOP。
 uint32_t AppV3_UsbAdvance(void)
 {
     uint32_t now;
@@ -583,7 +619,7 @@ uint32_t AppV3_UsbAdvance(void)
         }
     }
 
-    //STOP前先推进匹配旧读者；A2退出证明未闭合仍不能调用Device STOP。
+    //STOP前先推进匹配旧读者；帧交接退出证明未闭合仍不能调用Device STOP。
     result = UsbService_AdvanceReader(s_usb.hardware.state != APP_V3_HW_ACTIVE);
     if (result != SYS_OK && result != SYS_ERR_BUSY)
     {
@@ -676,7 +712,7 @@ SysResult_t AppV3_UsbInit(const AppV3Context_t *context)
     if (context == NULL || context->video == NULL)
         return SYS_ERR_INVALID_STATE;
 
-    //准备阶段只检查输出选择，USB端点在本阶段不启动
+    //准备阶段只检查输出选择，USB端点在准备时保持关闭
     if (context->video->output != VIDEO_OUTPUT_USB_UVC)
         return SYS_ERR_NOT_SUPPORTED;
     result = AppV3Mailbox_Init(&s_usb.mailbox, RUNTIME_TARGET_USB, UsbService_Readable, &s_endpoint);
@@ -706,6 +742,7 @@ SysResult_t UsbService_Request(uint32_t command_id, UsbServiceOperation_t operat
 
 //固定Registry指向本服务的实际线程入口
 
+//从UsbTask上下文运行队列和硬件事件循环
 void AppV3_UsbRun(void *argument)
 {
     AppV3_ServiceRun(argument, &s_usb.mailbox, AppV3_UsbAdvance);

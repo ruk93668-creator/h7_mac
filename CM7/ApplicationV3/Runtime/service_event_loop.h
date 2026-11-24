@@ -3,15 +3,21 @@
 
 #include "queue_pool.h"
 
+//所属任务在队列可读时同步调用的入口
 typedef SysResult_t (*AppV3QueueReadable_t)(AppV3Queue_t queue, void *context);
 
 //对象仅由所属任务访问。订阅和回调不转移队列所有权。
 typedef struct
 {
+    //唯一拥有操作权限的任务身份
     RuntimeEventTarget_t owner;
+    //绑定当前对象的内核或应用队列句柄
     AppV3Queue_t queue;
+    //事件循环分发到当前订阅队列的回调
     AppV3QueueReadable_t readable;
+    //回调期间可访问的订阅者私有数据
     void *context;
+    //准备完成标志，防止使用未建立的对象
     bool initialized;
 } AppV3EventLoop_t;
 

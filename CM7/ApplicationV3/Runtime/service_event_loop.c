@@ -2,7 +2,9 @@
 #include "app_events.h"
 #include "platform_sync.h"
 
+//通知未到时的队列复查周期，单位毫秒
 #define EVENT_QUEUE_RECHECK_MS 100U
+//单次事件分发最多处理的回调次数
 #define EVENT_DISPATCH_BUDGET 4U
 
 //校验线程、调度和中断状态，确保回调由所属任务执行
@@ -109,7 +111,7 @@ SysResult_t AppV3EventLoop_Step(AppV3EventLoop_t *loop, uint32_t timeout_ms, uin
     if (dispatch_result != SYS_OK)
         return dispatch_result;
 
-    //本轮有进展或已经用完预算时，只读取通知位，不进入长等待
+    //分发已有进展或用完预算时，只读取通知位，不进入长等待
     if (readable_before_wait)
         timeout_ms = 0U;
     else if (loop->readable != NULL && timeout_ms > EVENT_QUEUE_RECHECK_MS)

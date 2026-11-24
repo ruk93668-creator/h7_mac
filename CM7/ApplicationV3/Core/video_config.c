@@ -1,6 +1,7 @@
 #include "video_config.h"
 
 #ifndef APP_VIDEO_MJPEG_MODE
+//选择正式视频配置，一为JPEG，零为Raw
 #define APP_VIDEO_MJPEG_MODE 0
 #endif
 
@@ -8,6 +9,7 @@
 #error APP_VIDEO_MJPEG_MODE_must_be_zero_or_one
 #endif
 
+//产品只读视频参数，JPEG与Raw各有固定格式和传输预算
 static const VideoConfig_t s_default_config =
 {
     .camera =
@@ -34,8 +36,9 @@ const VideoConfig_t *VideoConfig_GetDefault(void)
 }
 
 //SD录像策略独立于USB目标FPS，不设置传感器时序
-//默认沿用产品SD卡的第三个MBR分区；测试工程可指定现有FAT分区
+//默认选择SD卡的第三个MBR分区，构建配置可指定现有FAT分区
 #ifndef APP_STORAGE_PARTITION
+//默认选择的MBR分区编号，零表示由挂载逻辑选择
 #define APP_STORAGE_PARTITION 3U
 #endif
 
@@ -43,6 +46,7 @@ const VideoConfig_t *VideoConfig_GetDefault(void)
 #error APP_STORAGE_PARTITION_must_be_between_zero_and_four
 #endif
 
+//固件录像分区与单段文件结束策略
 static const AppStorageConfig_t s_storage_config =
 {
     .record_fps = 25U,

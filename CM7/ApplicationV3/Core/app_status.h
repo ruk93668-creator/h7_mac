@@ -50,7 +50,7 @@ SysResult_t App_StatusGetSnapshot(IpcApplicationStatus_t *snapshot);
 //同时取得本核采样时刻，只供IPC发布方计算同核等待延迟
 SysResult_t App_StatusGetSnapshotAt(IpcApplicationStatus_t *snapshot, uint32_t *sampled_tick);
 
-//Watch查看最近一次汇总，不保证调试器同时刷新全部字段
+//保存最近一次启动汇总，跨任务一致性由状态读取接口保证
 extern volatile IpcApplicationStatus_t g_app_status_debug;
 
 #endif

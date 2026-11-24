@@ -5,6 +5,7 @@
 #include "platform_sync.h"
 #include <stddef.h>
 
+//每个业务通道独占的消息槽数量
 #define APP_MESSAGE_QUEUE_LENGTH 4U
 
 //通道只保存池句柄，队列控制块与数据区集中由固定池管理。
@@ -56,6 +57,7 @@ static AppChannel_t AppMessages_Slot(AppChannel_t channel)
     return channel;
 }
 
+//查找当前允许接收指定通道消息的任务身份
 static RuntimeEventTarget_t AppMessages_Receiver(AppChannel_t channel)
 {
     if (channel == APP_CHANNEL_STORAGE_TO_CAMERA)

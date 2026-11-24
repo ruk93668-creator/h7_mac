@@ -4,11 +4,16 @@
 #include "sys_result.h"
 #include <stdint.h>
 
+//应用任务准备与启动屏障的只读诊断
 typedef struct
 {
+    //记录已成功创建的应用任务
     uint32_t created_tasks;
+    //表明启动所需资源已准备完成
     uint32_t prepared;
+    //标记启动屏障已放行，避免重复放行
     uint32_t boot_released;
+    //最近一次操作或终结结果，保留原错误码
     SysResult_t result;
 } AppTasksDebug_t;
 

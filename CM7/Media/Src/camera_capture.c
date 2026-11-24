@@ -27,6 +27,7 @@
 
 //首1KB保留，Snapshot与Stream复用其后的空间
 #define CAMERA_BUFFER_OFFSET    0x00000400UL
+//固定长度图像物理槽的首地址
 #define CAMERA_BUFFER_BASE      (BSP_SDRAM_BASE + CAMERA_BUFFER_OFFSET)
 
 //保留Snapshot原有63KB容量，不代表整个SDRAM业务窗口
@@ -52,6 +53,7 @@
 
 //JPEG只接收一次DMA窗口，预留容量不等于可传输整块600KiB
 #define CAMERA_JPEG_CAPACITY_BYTES (0xFFFFU * 4U)
+//采集JPEG时等待完整帧的上限，单位毫秒
 #define CAMERA_JPEG_TIMEOUT_MS 1000U
 
 #if CAMERA_JPEG_CAPACITY_BYTES > CAMERA_STREAM_BUFFER_CAPACITY || \
@@ -80,14 +82,20 @@ typedef enum
 //单帧采集上下文
 typedef struct
 {
+    //单帧采集使用的物理写入区
     uint8_t *framebuffer;
+    //物理图像区域可安全写入的字节数
     uint32_t frame_capacity;
+    //配置要求的图像长度，单位字节
     uint32_t frame_bytes;
+    //已经确认可以对外读取的数据字节数
     uint32_t valid_bytes;
 
     //JPEG由硬件确认已写入内存的范围，文件有效长度另行解析
     uint32_t received_bytes;
+    //采集启动时刻，用于有界等待
     uint32_t start_tick;
+    //当前采集等待上限，单位毫秒
     uint32_t timeout_ms;
 } CameraSnapshot_t;
 
@@ -97,6 +105,7 @@ typedef SysResult_t (*CameraStream_ReplaceFn)(
     uint32_t *new_buffer
 );
 
+//固定长度采集槽的物理所有权状态
 typedef enum
 {
     CAMERA_BUFFER_FREE = 0,
@@ -105,19 +114,25 @@ typedef enum
     CAMERA_BUFFER_IN_USE
 } CameraBufferState_t;
 
+//单个固定长度图像槽的地址和所有权
 typedef struct
 {
+    //调用者可读取的图像地址，受当前租约或帧引用保护
     uint8_t *data;
+    //预留的数据容量，单位或元素数由所属对象决定
     uint32_t capacity;
 
     //JPEG每帧长度不同，YUY2仍使用stream.frame_bytes
     uint32_t valid_bytes;
+    //所属通道的终结序号，用于检查发布顺序
     uint32_t sequence;
+    //本对象当前所处的生命周期或传输状态
     CameraBufferState_t state;
     uint32_t lease_id; // 仅在 IN_USE 时有效，归还后清零
     uint8_t consumer;  // 实际借出者，旧入口与显式租约分开识别
 } CameraFrameBuffer_t;
 
+//由CameraTask推进的连续固定长度采集状态
 typedef struct
 {
 
@@ -150,14 +165,21 @@ typedef struct
 //统一管理单帧与连续采集上下文
 typedef struct
 {
+    //初始化阶段提供的只读配置，生命周期内由所属模块读取
     CameraConfig_t config;
+    //当前选择的单帧或连续采集模式
     CameraCaptureMode_t mode;
+    //本对象当前所处的生命周期或传输状态
     CameraCaptureState_t state;
+    //底层当前或最近一次设备操作结果
     SysResult_t last_result;
+    //准备完成标志，防止使用未建立的对象
     bool initialized;
     volatile bool raw_rotation_failed; // ISR 隔离新借出，不改动未提交的槽账本
 
+    //独立的单帧采集资源与进展状态
     CameraSnapshot_t snapshot;
+    //连续采集的物理缓冲与当前所有权
     CameraStream_t stream;
 } CameraCapture_t;
 
@@ -168,6 +190,7 @@ static CameraCapture_t s_capture;
 static uint32_t s_stop_attempt_sequence;
 //区分最近一次正常停止与ERROR后的保护性停止
 static uint32_t s_stop_attempt_kind;
+//已确认停止尝试的硬件返回值
 static SysResult_t s_stop_hardware_result = SYS_ERR_INVALID_STATE;
 
 //保存Application提供的普通C通知入口
@@ -259,7 +282,7 @@ static SysResult_t CameraCapture_CalcSize(
     const CameraConfig_t *config,
     uint32_t *required_bytes);
 
-//初始化五缓冲区地址和状态
+//初始化七缓冲区地址和状态
 static SysResult_t CameraStream_Init(
     CameraStream_t *me,
     const CameraConfig_t *config);
@@ -474,11 +497,11 @@ SysResult_t CameraCapture_StartStream(void)
         return SYS_ERR_BUSY;
     }
 
-    //JPEG连续流使用独立字节FIFO，不借用Snapshot或YUY2五缓冲
+    //JPEG连续流使用独立字节FIFO，不借用Snapshot或YUY2七缓冲
     if (CameraConfig_IsVariableLength(s_capture.config.format))
         return CameraJpegStream_Start();
 
-    //3. 初始化五缓冲状态
+    //3. 初始化七缓冲状态
     result = CameraStream_Init(
         stream,
         &s_capture.config
@@ -861,6 +884,7 @@ static SysResult_t CameraCapture_CalcSize(
     return CameraConfig_GetFrameSize(config, required_bytes);
 }
 
+//检查格式、长度和固定缓冲边界，保持硬件不动
 SysResult_t CameraCapture_ValidateStreamConfig(const CameraConfig_t *config)
 {
     uint32_t bytes;
@@ -880,7 +904,7 @@ SysResult_t CameraCapture_ValidateStreamConfig(const CameraConfig_t *config)
         return SYS_OK;
     }
 
-    //固定长度格式仍按原五缓冲和单次DMA计数校验
+    //固定长度格式仍按原七缓冲和单次DMA计数校验
     result = CameraCapture_CalcSize(config, &bytes);
 
     if (result != SYS_OK)
@@ -893,6 +917,7 @@ SysResult_t CameraCapture_ValidateStreamConfig(const CameraConfig_t *config)
     return SYS_OK;
 }
 
+//按配置绑定七个物理槽并初始化DMA活动目标
 static SysResult_t CameraStream_Init(
     CameraStream_t *me,
     const CameraConfig_t *config)
@@ -933,7 +958,7 @@ static SysResult_t CameraStream_Init(
         return SYS_ERR_INVALID_ARG;
     }
 
-    //检查五缓冲是否超出SDRAM的MPU映射范围
+    //检查七缓冲是否超出SDRAM的MPU映射范围
     buffer_end = buffer_start +
                  (CAMERA_STREAM_BUFFER_COUNT *
                   CAMERA_STREAM_BUFFER_CAPACITY);
@@ -1239,6 +1264,7 @@ static bool CameraStream_GetFrame(CameraStream_t *stream, const CameraConfig_t *
     return CameraStream_Acquire(stream, config, CAMERA_STREAM_LEGACY_OWNER, &lease, frame) == SYS_OK;
 }
 
+//取得内部兼容视图，读取结束后由同一路径归还
 bool CameraCapture_StreamGetFrame(CameraFrame_t *frame)
 {
     if (!s_capture.initialized ||
@@ -1279,6 +1305,7 @@ static SysResult_t CameraStream_Return(CameraStream_t *stream, const CameraFrame
     return SYS_OK;
 }
 
+//归还内部Legacy持有的固定格式帧并核对槽身份
 static SysResult_t CameraStream_ReleaseFrame(CameraStream_t *stream)
 {
     uint32_t primask, index;
@@ -1313,6 +1340,7 @@ static bool CameraCapture_CanReturnStream(void)
          s_capture.state == CAMERA_CAPTURE_ERROR || s_capture.state == CAMERA_CAPTURE_DRAINING);
 }
 
+//最后一个外部引用退出后完成连续采集排空
 static void CameraCapture_FinishStreamDrain(void)
 {
     // 只有已经停下硬件，并且最后一块物理借用归还，才允许下一实例启动
@@ -1323,6 +1351,7 @@ static void CameraCapture_FinishStreamDrain(void)
     }
 }
 
+//由采集任务归还兼容帧并检查排空状态
 SysResult_t CameraCapture_StreamReleaseFrame(void)
 {
     SysResult_t result;
@@ -1337,6 +1366,7 @@ SysResult_t CameraCapture_StreamReleaseFrame(void)
     return result;
 }
 
+//由CameraTask按消费者身份借出Raw帧
 SysResult_t CameraCapture_StreamAcquire(CameraFrameConsumer_t consumer,
     CameraFrameLease_t *lease, CameraFrame_t *frame)
 {
@@ -1379,6 +1409,7 @@ SysResult_t CameraCapture_StreamReleaseJpeg(const CameraMjpegLease_t *lease)
     return result;
 }
 
+//核对Raw代号、槽及消费者后归还原物理缓冲
 SysResult_t CameraCapture_StreamReleaseLease(const CameraFrameLease_t *lease)
 {
     uint32_t primask;
@@ -1410,7 +1441,7 @@ static SysResult_t CameraStream_OnFrameComplete(
 {
     CameraStream_t *stream = (CameraStream_t *)context;
 
-    //只接受当前Media五缓冲实例
+    //只接受当前Media七缓冲实例
     if (stream != &s_capture.stream)
         return SYS_ERR_INVALID_ARG;
     if (s_capture.config.format == CAMERA_PIXEL_FORMAT_JPEG)
