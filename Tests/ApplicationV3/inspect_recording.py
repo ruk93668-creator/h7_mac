@@ -26,7 +26,7 @@ def inspect(stream):
 
     frames = u32(head, 48)
     scale, rate = u32(head, 128), u32(head, 132)
-    require(0 < frames <= 4096 and frames == u32(head, 140), "frame counts differ or exceed recorder limit")
+    require(0 < frames <= 65536 and frames == u32(head, 140), "frame counts differ or exceed recorder limit")
     require(scale > 0 and rate > 0, "invalid AVI rate")
     movi_end = 220 + u32(head, 216)
     require(224 < movi_end and movi_end + 8 + 16 * frames == size, "invalid movi or idx1 extent")
