@@ -14,6 +14,7 @@
 |A．WREN 成功，后续有效 SR1 证明 BUSY=0、WEL=0，本次调用尚未尝试 PP/SE|返回 SYS_ERR_PROTOCOL；写诊断仍记录 WREN 已尝试|保持 READY，无需 Recover|
 |B．WREN 命令执行结果不确定|WREN，和内部编程未知分开保存|锁存 FAULT，阻止恢复写资格|
 |C．WREN 成功后 SR1 状态证明失败|WREN，保留首错以及独立清理结果|锁存 FAULT，阻止恢复写资格|
+|C1．同一 Program 已修改并验读前页，下一页 WREN 后有效 SR1 为 BUSY=0、WEL=0|WREN，返回 SYS_ERR_PROTOCOL，保留已确认前缀，`flash_completion_unknown=0`|锁存 FAULT，Recover 返回 SYS_ERR_NOT_SUPPORTED 且不发指令|
 |D．PP/SE 已尝试且修改命令阶段失败|MUTATION_COMMAND，标记修改命令可能已发出|保持 FAULT；禁止重发或恢复写资格|
 |E．BUSY 等待或结束状态证明失败|FLASH_PENDING，完成状态未知|保持 FAULT|
 |F．已证实空闲，验读失败|WRITE_VERIFY，记录已验读前缀|保持 FAULT；数据需人工审核|
@@ -21,7 +22,9 @@
 
 `BSP_QSPI_GetFaultDiagnostics()` 提供独立快照，原两套诊断及 H1 RAM ABI 保持原样。fault_stage 所在的 Init/Read/Write/Cleanup 枚举由 fault_origin 指定。首错与首轮清理固定保留，后续清理和恢复另记。写入范围仅记录最近一次具有非零逐字节验证结果的前缀。RAM 诊断无跨复位持久化保证。
 
-A 还要求 HAL WREN 成功、SR1 完整且无 HAL 错误、没有其他需要锁存的控制器、配置或清理错误。有效 SR1 已证明 Flash 空闲且写使能未建立，调用在发送修改命令之前结束，因此无需 Recover。短接收或带 HAL 错误的零值归 C。B–F 有写使能或修改命令已尝试的历史，普通 Init 不清除锁存，显式 Recover 拒绝恢复写资格且不发出 Flash 指令。跨页 Program 已验读前页后遇到下一页 WEL=0 的现状及待审决定见 [R1 跨页技术说明](Q1_4_R1_MultiPageDecision.md)。
+A 还要求 HAL WREN 成功、SR1 完整且无 HAL 错误、没有其他需要锁存的控制器、配置或清理错误。有效 SR1 已证明 Flash 空闲且写使能未建立，调用在发送修改命令之前结束，因此无需 Recover。短接收或带 HAL 错误的零值归 C。B–F 有写使能或修改命令已尝试的历史，普通 Init 不清除锁存，显式 Recover 拒绝恢复写资格且不发出 Flash 指令。
+
+修改历史以整次公共 API 调用为边界，每次合法写事务开始时重新初始化。C1 中前页已经验读，当前页尚未发送修改命令，因此仍有已确认前缀，完成状态明确。上一笔独立成功调用的已确认范围仍可查询，当前调用的修改风险标志从零开始。见 [R2 整改报告](Q1_4_R2_WrenWel.md)及 [R1 原始跨页发现](Q1_4_R1_MultiPageDecision.md)。
 
 ```mermaid
 stateDiagram-v2

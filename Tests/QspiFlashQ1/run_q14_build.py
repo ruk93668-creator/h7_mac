@@ -15,12 +15,19 @@ BASE = '81d9b4b8b25598fc8193c3590cbb4551495c552a'
 SOURCE = 'f480cc10485bf5939c13783f650887414d19516d'
 variant = sys.argv[1]
 assert variant in ('baseline', 'current')
+r2 = sys.argv[1:] == ['current', '--r2']
+if r2:
+    OUT = ROOT / 'output/QspiFlashQ1/q14_r2/build'
+    SOURCE = 'b75731da2c5008396dcde7167777b4d759017777'
 directory = OUT / variant
 directory.mkdir(parents=True)
 rev = BASE if variant == 'baseline' else SOURCE
 archive = subprocess.check_output(['git', 'archive', rev], cwd=ROOT)
 with tarfile.open(fileobj=io.BytesIO(archive)) as files:
     files.extractall(directory, filter='data')
+if r2:
+    bsp = Path('CM7/BSP/bsp_qspi.c')
+    (directory / bsp).write_bytes((ROOT / bsp).read_bytes())
 
 project_path = Path('MDK-ARM/h7_mac.uvprojx')
 original = (ROOT / project_path).read_bytes()

@@ -176,6 +176,7 @@ static int Q14InitFault(uint32_t id)
 
 #if defined(QSPI_Q14_R1_TEST)
 static uint32_t s_r1_case, s_r1_post_wren, s_r1_sr1_reads, s_r1_preflight;
+static bool s_r2_second_call;
 volatile uint32_t g_r1_ready, g_r1_latched, g_r1_wrens, g_r1_modifications;
 volatile uint32_t g_r1_mutation_possible, g_r1_completed, g_r1_first_result;
 
@@ -188,7 +189,7 @@ static HAL_StatusTypeDef R1Command(QSPI_HandleTypeDef *handle, QSPI_CommandTypeD
         s_r1_post_wren = 1U;
         if (s_r1_case >= 6U && s_r1_case <= 8U)
             return s_failures[s_r1_case - 6U];
-        if (s_r1_case == 9U && s_wren == 2U)
+        if ((s_r1_case == 9U || s_r1_case == 10U) && s_wren == 2U)
             s_wel = 0U;
     }
     return result;
@@ -197,6 +198,8 @@ static HAL_StatusTypeDef R1Command(QSPI_HandleTypeDef *handle, QSPI_CommandTypeD
 static HAL_StatusTypeDef R1Receive(QSPI_HandleTypeDef *handle, uint8_t *data, uint32_t timeout)
 {
     HAL_StatusTypeDef result = WriteModelReceive(handle, data, timeout);
+    if (s_r2_second_call && s_wren == 1U && s_opcode == 0x0BU && result == HAL_OK)
+        s_received += s_bytes;
     if (s_opcode == 0x05U && s_r1_post_wren != 0U)
     {
         s_r1_post_wren = 0U;
@@ -240,6 +243,14 @@ int R1_TestRun(uint32_t id)
     s_read_receive_hook = R1Receive;
     s_read_abort_hook = R1Abort;
     s_deinit_hook = Q14Deinit;
+    if (id == 10U)
+    {
+        s_full_preflight = 1U;
+        CHECK(Qspi_ProgramWithPolicy(&s_model, MODEL_BASE, s_pattern, 1U, 2000U, &wr) == SYS_OK);
+        CHECK(wr.completed == 1U && s_wren == 1U && s_mutations == 1U && s_array[0] == s_pattern[0]);
+        s_received = 0U;
+        s_r2_second_call = true;
+    }
     if (id == 1U)
     {
         for (i = 0U; i < sizeof(backup); i++)
@@ -278,6 +289,27 @@ int R1_TestRun(uint32_t id)
         CHECK(s_wren == 2U && s_r1_sr1_reads == 2U && s_mutations == 1U && wr.completed == 1U);
         CHECK(fault.mutation_possible == 1U && fault.confirmed_write_bytes == 1U);
         CHECK(fault.fault_latched == 1U && state.ready == 0U);  //R1 strict boundary
+        CHECK(wr.fault == 1U && wr.flash_completion_unknown == 0U &&
+            wr.failed_address == MODEL_BASE + 256U && fault.confirmed_write_address == MODEL_BASE + 255U);
+        CHECK(s_array[255] == s_pattern[0] && s_array[256] == 0xFFU);
+        Q14CheckLocked();
+        commands = g_commands;
+        CHECK(BSP_QSPI_Recover() == SYS_ERR_NOT_SUPPORTED && g_commands == commands && s_mutations == 1U);
+        CHECK(BSP_QSPI_GetFaultDiagnostics(&after) == SYS_OK);
+        CHECK(after.recovery_stage == BSP_QSPI_RECOVERY_BLOCKED && after.fault_latched == 1U &&
+            after.primary_result == SYS_ERR_PROTOCOL && after.confirmed_write_bytes == 1U &&
+            after.flash_completion_unknown == 0U);
+        return (int)g_failure;
+    }
+    if (id == 10U)
+    {
+        CHECK(s_wren == 2U && s_r1_sr1_reads == 2U && s_mutations == 1U && wr.completed == 0U);
+        CHECK(wr.stage == BSP_QSPI_WRITE_WEL && wr.status_valid_mask == 1U && wr.sr1 == 0U);
+        CHECK(fault.mutation_possible == 0U && fault.fault_latched == 0U && state.ready == 1U);
+        CHECK(fault.confirmed_write_address == MODEL_BASE && fault.confirmed_write_bytes == 1U);
+        CHECK(s_q14_abort == 0U && s_q14_deinit == 0U && s_array[255] == 0xFFU);
+        CHECK(BSP_QSPI_Read(BSP_QSPI_READ_FAST, MODEL_BASE, &data, 1U, &bytes, 200U) == SYS_OK &&
+            bytes == 1U && data == s_pattern[0]);
         return (int)g_failure;
     }
     CHECK(s_wren == 1U && s_mutations == 0U && wr.completed == 0U && fault.mutation_possible == 0U);

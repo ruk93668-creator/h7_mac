@@ -1,0 +1,76 @@
+{
+  "comparison_commit": "b75731da2c5008396dcde7167777b4d759017777",
+  "bsp_source_sha256": "07b01f36b85ecb01ef90a6239f742032aad701939429d18556aefe6ad7cc12e8",
+  "cases": {
+    "q11": {
+      "cases": 51,
+      "passed": 51,
+      "assertions": 989,
+      "matches_r1_per_case": true,
+      "results_sha256": "7d66b4b8a0d6c3387c67805d6be546deeb07d5e91b5cf70da599541342e3e204"
+    },
+    "q12": {
+      "cases": 516,
+      "passed": 516,
+      "assertions": 285723,
+      "matches_r1_per_case": true,
+      "results_sha256": "9cc1be0fed92deee3a94e149a4cf4c1ce0b022b5558828102fb83329d564bdaf"
+    },
+    "q13": {
+      "cases": 48,
+      "passed": 48,
+      "assertions": 25971,
+      "matches_r1_per_case": true,
+      "results_sha256": "4390942dc3be544eca6deaf1e0007ae9900f00a9701860c5267ef48e7edd1659"
+    },
+    "q14": {
+      "cases": 45,
+      "passed": 45,
+      "assertions": 12757,
+      "matches_r1_per_case": true,
+      "results_sha256": "df436cf36f3521312c79214faac808027f8451379d5c873909d504285beaf003"
+    },
+    "sfdp": {
+      "cases": 6,
+      "passed": 6,
+      "assertions": 600,
+      "matches_r1_per_case": true,
+      "results_sha256": "b55f0ca9ac1abb3a7a5d1a8b7ff739eb91e528ea4375bc3c1ebe015fa4ef8672"
+    },
+    "quad30": {
+      "cases": 11,
+      "passed": 11,
+      "assertions": 1466,
+      "matches_r1_per_case": true,
+      "results_sha256": "b3c8813cadbf365f8fde9fd5ba147043433fac0871fcf1e1e5f883b02b571faf"
+    },
+    "quad120": {
+      "cases": 11,
+      "passed": 11,
+      "assertions": 1466,
+      "matches_r1_per_case": true,
+      "results_sha256": "b3c8813cadbf365f8fde9fd5ba147043433fac0871fcf1e1e5f883b02b571faf"
+    },
+    "h1backup": {
+      "cases": 2,
+      "passed": 2,
+      "assertions": 1152,
+      "matches_r1_per_case": true,
+      "results_sha256": "43cf647666f6655768e0308231a43b301021033c6655084281fddb683b6a72c9"
+    },
+    "h1backup120": {
+      "cases": 4,
+      "passed": 4,
+      "assertions": 1643,
+      "matches_r1_per_case": true,
+      "results_sha256": "d0494ff349b146ebc6b81f06a210a622e2f60a8b3f58ad313b05734a31e351b6"
+    },
+    "h1write": {
+      "cases": 13,
+      "passed": 13,
+      "assertions": 11015,
+      "matches_r1_per_case": true,
+      "results_sha256": "05511ecdf9284b98053274681de52a2ebc7083c01760f6de0c557db83fef6fa6"
+    }
+  }
+}

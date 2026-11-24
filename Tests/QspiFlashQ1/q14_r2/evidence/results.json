@@ -1,0 +1,217 @@
+{
+  "cases": 11,
+  "assertions": 1349,
+  "passed": 11,
+  "rows": [
+    {
+      "case": 0,
+      "name": "R1-01 Program valid WEL=0",
+      "assertions": 108,
+      "failure_line": 0,
+      "commands": 13,
+      "hal_init_calls": 1,
+      "error": null,
+      "observed": {
+        "ready": 1,
+        "latched": 0,
+        "wrens": 1,
+        "modifications": 0,
+        "mutation_possible": 0,
+        "completed": 0,
+        "first_result": -10
+      },
+      "pass": true
+    },
+    {
+      "case": 1,
+      "name": "R1-02 Erase valid WEL=0",
+      "assertions": 214,
+      "failure_line": 0,
+      "commands": 28,
+      "hal_init_calls": 1,
+      "error": null,
+      "observed": {
+        "ready": 1,
+        "latched": 0,
+        "wrens": 1,
+        "modifications": 0,
+        "mutation_possible": 0,
+        "completed": 0,
+        "first_result": -10
+      },
+      "pass": true
+    },
+    {
+      "case": 2,
+      "name": "R1-03a SR1 HAL_ERROR",
+      "assertions": 92,
+      "failure_line": 0,
+      "commands": 9,
+      "hal_init_calls": 1,
+      "error": null,
+      "observed": {
+        "ready": 0,
+        "latched": 1,
+        "wrens": 1,
+        "modifications": 0,
+        "mutation_possible": 0,
+        "completed": 0,
+        "first_result": -9
+      },
+      "pass": true
+    },
+    {
+      "case": 3,
+      "name": "R1-03b SR1 HAL_TIMEOUT and Abort error",
+      "assertions": 92,
+      "failure_line": 0,
+      "commands": 9,
+      "hal_init_calls": 1,
+      "error": null,
+      "observed": {
+        "ready": 0,
+        "latched": 1,
+        "wrens": 1,
+        "modifications": 0,
+        "mutation_possible": 0,
+        "completed": 0,
+        "first_result": -8
+      },
+      "pass": true
+    },
+    {
+      "case": 4,
+      "name": "R1-03c SR1 short receive",
+      "assertions": 92,
+      "failure_line": 0,
+      "commands": 9,
+      "hal_init_calls": 1,
+      "error": null,
+      "observed": {
+        "ready": 0,
+        "latched": 1,
+        "wrens": 1,
+        "modifications": 0,
+        "mutation_possible": 0,
+        "completed": 0,
+        "first_result": -10
+      },
+      "pass": true
+    },
+    {
+      "case": 5,
+      "name": "R1-03d SR1 HAL_OK with HAL error",
+      "assertions": 92,
+      "failure_line": 0,
+      "commands": 9,
+      "hal_init_calls": 1,
+      "error": null,
+      "observed": {
+        "ready": 0,
+        "latched": 1,
+        "wrens": 1,
+        "modifications": 0,
+        "mutation_possible": 0,
+        "completed": 0,
+        "first_result": -9
+      },
+      "pass": true
+    },
+    {
+      "case": 6,
+      "name": "R1-04a WREN HAL_BUSY",
+      "assertions": 86,
+      "failure_line": 0,
+      "commands": 8,
+      "hal_init_calls": 1,
+      "error": null,
+      "observed": {
+        "ready": 0,
+        "latched": 1,
+        "wrens": 1,
+        "modifications": 0,
+        "mutation_possible": 0,
+        "completed": 0,
+        "first_result": -5
+      },
+      "pass": true
+    },
+    {
+      "case": 7,
+      "name": "R1-04b WREN HAL_ERROR",
+      "assertions": 86,
+      "failure_line": 0,
+      "commands": 8,
+      "hal_init_calls": 1,
+      "error": null,
+      "observed": {
+        "ready": 0,
+        "latched": 1,
+        "wrens": 1,
+        "modifications": 0,
+        "mutation_possible": 0,
+        "completed": 0,
+        "first_result": -9
+      },
+      "pass": true
+    },
+    {
+      "case": 8,
+      "name": "R1-04c WREN HAL_TIMEOUT",
+      "assertions": 86,
+      "failure_line": 0,
+      "commands": 8,
+      "hal_init_calls": 1,
+      "error": null,
+      "observed": {
+        "ready": 0,
+        "latched": 1,
+        "wrens": 1,
+        "modifications": 0,
+        "mutation_possible": 0,
+        "completed": 0,
+        "first_result": -8
+      },
+      "pass": true
+    },
+    {
+      "case": 9,
+      "name": "R1-B01 prior verified page, next valid WEL=0 (strict whole-call contract)",
+      "assertions": 186,
+      "failure_line": 0,
+      "commands": 24,
+      "hal_init_calls": 1,
+      "error": null,
+      "observed": {
+        "ready": 0,
+        "latched": 1,
+        "wrens": 2,
+        "modifications": 1,
+        "mutation_possible": 1,
+        "completed": 1,
+        "first_result": -10
+      },
+      "pass": true
+    },
+    {
+      "case": 10,
+      "name": "R2-01 prior successful call, next call valid WEL=0",
+      "assertions": 215,
+      "failure_line": 0,
+      "commands": 30,
+      "hal_init_calls": 1,
+      "error": null,
+      "observed": {
+        "ready": 1,
+        "latched": 0,
+        "wrens": 2,
+        "modifications": 1,
+        "mutation_possible": 0,
+        "completed": 0,
+        "first_result": -10
+      },
+      "pass": true
+    }
+  ],
+  "source_sha256": "07b01f36b85ecb01ef90a6239f742032aad701939429d18556aefe6ad7cc12e8"
+}

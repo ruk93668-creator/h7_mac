@@ -1226,6 +1226,9 @@ static SysResult_t Qspi_WriteEnable(QspiWrite_t *write, uint32_t address, uint32
         return SYS_ERR_BUSY;
     if ((diag->sr1 & 2U) == 0U)
     {
+        //本次调用已修改前页时锁存部分完成故障。
+        if (write->mutation_attempted)
+            write->fault = true;
         write->armed = false;
         return SYS_ERR_PROTOCOL;
     }
