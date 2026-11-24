@@ -1,0 +1,90 @@
+
+==============================================================================
+
+Memory Map of the image
+
+  Image Entry point : 0x08000109
+
+  Load Region LR_TEST (Base: 0x08000000, Size: 0x00000734, Max: 0x00100000, ABSOLUTE)
+
+    Execution Region ER_TEST (Base: 0x08000000, Size: 0x000006e4, Max: 0xffffffff, ABSOLUTE)
+
+    Base Addr    Size         Type   Attr      Idx    E Section Name        Object
+
+    0x08000000   0x0000004e   Code   RO          323    .text               c_w.l(rt_memclr_w.o)
+    0x0800004e   0x00000002   PAD
+    0x08000050   0x00000030   Code   RO           18    i.H2_Boot           h2.o
+    0x08000080   0x00000088   Code   RO           20    i.H2_Command        h2.o
+    0x08000108   0x000001fc   Code   RO            4  * i.H2_HalEntry       h2_hal_test.o
+    0x08000304   0x000000bc   Code   RO           29    i.H2_Receive        h2.o
+    0x080003c0   0x00000010   Code   RO            5    i.HAL_GetTick       h2_hal_test.o
+    0x080003d0   0x00000086   Code   RO          170    i.HAL_QSPI_Command  stm32h7xx_hal_qspi.o
+    0x08000456   0x000000be   Code   RO          183    i.HAL_QSPI_Receive  stm32h7xx_hal_qspi.o
+    0x08000514   0x00000180   Code   RO          196    i.QSPI_Config       stm32h7xx_hal_qspi.o
+    0x08000694   0x00000048   Code   RO          201    i.QSPI_WaitFlagStateUntilTimeout  stm32h7xx_hal_qspi.o
+    0x080006dc   0x00000006   Data   RO           36    .constdata          h2.o
+
+
+    Execution Region RW_TEST (Base: 0x20000000, Size: 0x00006398, Max: 0x00100000, ABSOLUTE)
+
+    Base Addr    Size         Type   Attr      Idx    E Section Name        Object
+
+    0x20000000   0x0000000c   Data   RW            8    .data               h2_hal_test.o
+    0x2000000c   0x00000044   Data   RW           37    .data               h2.o
+    0x20000050   0x00006348   Zero   RW           35    .bss                h2.o
+
+
+==============================================================================
+
+Image component sizes
+
+
+      Code (inc. data)   RO Data    RW Data    ZI Data      Debug   Object Name
+
+       372         48          6         68      25416        380   h2.o
+       524         24          0         12          0        256   h2_hal_test.o
+       780          0          0          0          0        544   stm32h7xx_hal_qspi.o
+
+    ----------------------------------------------------------------------
+      1676         72          8         80      25416       1180   Object Totals
+         0          0          0          0          0          0   (incl. Generated)
+         0          0          2          0          0          0   (incl. Padding)
+
+    ----------------------------------------------------------------------
+
+      Code (inc. data)   RO Data    RW Data    ZI Data      Debug   Library Member Name
+
+        78          0          0          0          0         80   rt_memclr_w.o
+
+    ----------------------------------------------------------------------
+        80          0          0          0          0         80   Library Totals
+         2          0          0          0          0          0   (incl. Padding)
+
+    ----------------------------------------------------------------------
+
+      Code (inc. data)   RO Data    RW Data    ZI Data      Debug   Library Name
+
+        78          0          0          0          0         80   c_w.l
+
+    ----------------------------------------------------------------------
+        80          0          0          0          0         80   Library Totals
+
+    ----------------------------------------------------------------------
+
+==============================================================================
+
+
+      Code (inc. data)   RO Data    RW Data    ZI Data      Debug   
+
+      1756         72          8         80      25416        560   Grand Totals
+      1756         72          8         80      25416        560   ELF Image Totals
+      1756         72          8         80          0          0   ROM Totals
+
+==============================================================================
+
+    Total RO  Size (Code + RO Data)                 1764 (   1.72kB)
+    Total RW  Size (RW Data + ZI Data)             25496 (  24.90kB)
+    Total ROM Size (Code + RO Data + RW Data)       1844 (   1.80kB)
+
+==============================================================================
+

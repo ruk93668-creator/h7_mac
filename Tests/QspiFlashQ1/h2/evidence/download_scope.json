@@ -1,0 +1,175 @@
+{
+  "baseline": "a897daaca069e1bccad6f1b91aabf09b35a4eb65",
+  "execution_authorized": false,
+  "bsp_sha256": "07b01f36b85ecb01ef90a6239f742032aad701939429d18556aefe6ad7cc12e8",
+  "clock_sha256": "6a4b1464e6bc59451ac9b1ce61b601c8bd6243bcfe9c393710a3b6beac764955",
+  "images": [
+    {
+      "core": "CM7",
+      "flash_ranges": [
+        [
+          134217728,
+          134241372
+        ]
+      ],
+      "data_bytes": 23644,
+      "bank_if_unswapped": 1,
+      "erase_sectors": [
+        {
+          "index": 0,
+          "start": 134217728,
+          "end": 134348800
+        }
+      ],
+      "artifacts": {
+        "axf": {
+          "path": "output\\QspiFlashQ1\\h2\\candidate02\\source\\MDK-ARM\\h7_mac_CM7\\h7_mac_CM7.axf",
+          "sha256": "0a3c52a283a37ed1ad2b2ced549ce4365651906681e0978e7f4d01adfd14b800"
+        },
+        "hex": {
+          "path": "output\\QspiFlashQ1\\h2\\candidate02\\source\\MDK-ARM\\h7_mac_CM7\\h7_mac_CM7.hex",
+          "sha256": "4c49b34ea54903246f7c1aa88220480f4b082f1689a5a50f212567e8f3242966"
+        },
+        "map": {
+          "path": "output\\QspiFlashQ1\\h2\\candidate02\\source\\MDK-ARM\\h7_mac_CM7\\h7_mac_CM7.map",
+          "sha256": "3807a65f16aca13813ff30aa41ee6797ec2731a51c462ada281beae88feb467b"
+        }
+      },
+      "entry": 134218393,
+      "main": 134237405,
+      "axf_loads": [
+        [
+          134217728,
+          134241372
+        ]
+      ],
+      "ram_symbols": {
+        "g_qspi_h2_arm": {
+          "address": 536871008,
+          "size": 4
+        },
+        "g_qspi_h2_report": {
+          "address": 536875560,
+          "size": 4872
+        },
+        "g_qspi_h2_before": {
+          "address": 536880432,
+          "size": 8192
+        },
+        "g_qspi_h2_after": {
+          "address": 536888624,
+          "size": 8192
+        },
+        "s_test_stack": {
+          "address": 536871176,
+          "size": 3072
+        }
+      },
+      "report_layout": [
+        1362380850,
+        1,
+        4872,
+        312,
+        456,
+        16,
+        112,
+        300,
+        408,
+        432,
+        160,
+        188
+      ],
+      "hal_references": {
+        "HAL_QSPI_Command": [
+          "h2.o(i.H2_Command) refers to stm32h7xx_hal_qspi.o(i.HAL_QSPI_Command) for HAL_QSPI_Command"
+        ],
+        "HAL_QSPI_Receive": [
+          "h2.o(i.H2_Receive) refers to stm32h7xx_hal_qspi.o(i.HAL_QSPI_Receive) for HAL_QSPI_Receive"
+        ],
+        "HAL_QSPI_DeInit": [
+          "h2.o(i.H2_DeInit) refers to stm32h7xx_hal_qspi.o(i.HAL_QSPI_DeInit) for HAL_QSPI_DeInit"
+        ]
+      },
+      "program_size": [
+        22650,
+        810,
+        184,
+        35256
+      ],
+      "max_static_stack": 884,
+      "errors": 0,
+      "warnings": 0,
+      "command": [
+        "D:/32/UV4/UV4.exe",
+        "-j0",
+        "-r",
+        "D:\\32\\STM32H7\\h7_mac_qflash\\output\\QspiFlashQ1\\h2\\candidate02\\source\\MDK-ARM\\qspi_h2_CM7.uvprojx",
+        "-t",
+        "h7_mac_CM7",
+        "-o",
+        "D:\\32\\STM32H7\\h7_mac_qflash\\output\\QspiFlashQ1\\h2\\candidate02\\CM7_build.log"
+      ],
+      "build_log_sha256": "f2f40ff078634e6191581ffb863661ed696f5d4a3ac3c8cd234738ee2cd5b889"
+    },
+    {
+      "core": "CM4",
+      "flash_ranges": [
+        [
+          135266304,
+          135267956
+        ]
+      ],
+      "data_bytes": 1652,
+      "bank_if_unswapped": 2,
+      "erase_sectors": [
+        {
+          "index": 0,
+          "start": 135266304,
+          "end": 135397376
+        }
+      ],
+      "artifacts": {
+        "axf": {
+          "path": "output\\QspiFlashQ1\\h2\\candidate02\\source\\MDK-ARM\\h7_mac_CM4\\h7_mac_CM4.axf",
+          "sha256": "0cfea9be62318f1c32d5498239a2944a9bac42af575ebd4c5a224e3134c03177"
+        },
+        "hex": {
+          "path": "output\\QspiFlashQ1\\h2\\candidate02\\source\\MDK-ARM\\h7_mac_CM4\\h7_mac_CM4.hex",
+          "sha256": "f53d5b846ade56c706ec4fc0ea38da900b4dd7679dbdb2b7c0ca0609901487b7"
+        },
+        "map": {
+          "path": "output\\QspiFlashQ1\\h2\\candidate02\\source\\MDK-ARM\\h7_mac_CM4\\h7_mac_CM4.map",
+          "sha256": "cb87e9a0a0ed9fd446bc689984c442dfb1b4f2e410bf458cab7125ba60594279"
+        }
+      },
+      "entry": 135266969,
+      "main": 135267789,
+      "axf_loads": [
+        [
+          135266304,
+          135267956
+        ]
+      ],
+      "program_size": [
+        944,
+        696,
+        12,
+        1636
+      ],
+      "max_static_stack": 24,
+      "errors": 0,
+      "warnings": 0,
+      "command": [
+        "D:/32/UV4/UV4.exe",
+        "-j0",
+        "-r",
+        "D:\\32\\STM32H7\\h7_mac_qflash\\output\\QspiFlashQ1\\h2\\candidate02\\source\\MDK-ARM\\qspi_h2_CM4.uvprojx",
+        "-t",
+        "h7_mac_CM4",
+        "-o",
+        "D:\\32\\STM32H7\\h7_mac_qflash\\output\\QspiFlashQ1\\h2\\candidate02\\CM4_build.log"
+      ],
+      "build_log_sha256": "9aa830fc67cbb9ca0e83a86995703477705401e85ee79ad049163af79c4e5023"
+    }
+  ]
+}

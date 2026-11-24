@@ -1,0 +1,88 @@
+{
+  "cases": 8,
+  "assertions": 2661,
+  "passed": 8,
+  "rows": [
+    {
+      "case": 0,
+      "name": "both gates, injected receive, successful Recover",
+      "assertions": 649,
+      "failure_line": 0,
+      "commands": 130,
+      "hal_init_calls": 2,
+      "error": null,
+      "pass": true
+    },
+    {
+      "case": 1,
+      "name": "real receive error",
+      "assertions": 252,
+      "failure_line": 0,
+      "commands": 50,
+      "hal_init_calls": 1,
+      "error": null,
+      "pass": true
+    },
+    {
+      "case": 2,
+      "name": "short receive",
+      "assertions": 253,
+      "failure_line": 0,
+      "commands": 50,
+      "hal_init_calls": 1,
+      "error": null,
+      "pass": true
+    },
+    {
+      "case": 3,
+      "name": "Recover JEDEC mismatch",
+      "assertions": 272,
+      "failure_line": 0,
+      "commands": 51,
+      "hal_init_calls": 2,
+      "error": null,
+      "pass": true
+    },
+    {
+      "case": 4,
+      "name": "Recover Tick stuck",
+      "assertions": 260,
+      "failure_line": 0,
+      "commands": 50,
+      "hal_init_calls": 1,
+      "error": null,
+      "pass": true
+    },
+    {
+      "case": 5,
+      "name": "DeInit failure",
+      "assertions": 253,
+      "failure_line": 0,
+      "commands": 50,
+      "hal_init_calls": 1,
+      "error": null,
+      "pass": true
+    },
+    {
+      "case": 6,
+      "name": "post-Recover Quad mismatch",
+      "assertions": 464,
+      "failure_line": 0,
+      "commands": 92,
+      "hal_init_calls": 2,
+      "error": null,
+      "pass": true
+    },
+    {
+      "case": 7,
+      "name": "deny all prohibited Flash commands",
+      "assertions": 258,
+      "failure_line": 0,
+      "commands": 50,
+      "hal_init_calls": 1,
+      "error": null,
+      "pass": true
+    }
+  ],
+  "source_sha256": "07b01f36b85ecb01ef90a6239f742032aad701939429d18556aefe6ad7cc12e8"
+}

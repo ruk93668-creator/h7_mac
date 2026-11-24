@@ -1,0 +1,92 @@
+{
+  "resources": {
+    "CM7": {
+      "H2_Task": {
+        "address": "0x8001fd5",
+        "size": 14
+      },
+      "s_test_tcb": {
+        "address": "0x200000b8",
+        "size": 76
+      },
+      "s_test_stack": {
+        "address": "0x20000108",
+        "size": 3072
+      },
+      "s_idle_tcb": {
+        "address": "0x20000d08",
+        "size": 76
+      },
+      "s_idle_stack": {
+        "address": "0x20000d58",
+        "size": 1024
+      },
+      "Stack_Mem": {
+        "address": "0x20007a70",
+        "size": 4096
+      },
+      "TIM6_DAC_IRQHandler": {
+        "address": "0x8004c79",
+        "size": 36
+      },
+      "SysTick_Handler": {
+        "address": "0x8004a4d",
+        "size": 8
+      },
+      "SVC_Handler": {
+        "address": "0x8000339",
+        "size": 28
+      },
+      "PendSV_Handler": {
+        "address": "0x8000395",
+        "size": 92
+      },
+      "QUADSPI_IRQHandler": {
+        "address": "0x800041b",
+        "size": 0
+      },
+      "HAL_QSPI_Init": {
+        "address": "0x8002725",
+        "size": 168
+      },
+      "H2_ControllerOwned": {
+        "address": "0x8000c89",
+        "size": 6
+      }
+    },
+    "CM4": {
+      "Stack_Mem": {
+        "address": "0x10000270",
+        "size": 1024
+      },
+      "main": {
+        "address": "0x81005cd",
+        "size": 98
+      },
+      "HAL_PWREx_EnterSTOPMode": {
+        "address": "0x810047d",
+        "size": 264
+      },
+      "HAL_HSEM_ActivateNotification": {
+        "address": "0x8100441",
+        "size": 12
+      }
+    }
+  },
+  "source_sha256": {
+    "CM7/BSP/bsp_qspi.c": "07b01f36b85ecb01ef90a6239f742032aad701939429d18556aefe6ad7cc12e8",
+    "CM7/BSP/bsp_qspi.h": "ff49f205443a12dc604cf04b9da1588d8e68231de48cc887a39da1da731aac76",
+    "Drivers/STM32H7xx_HAL_Driver/Src/stm32h7xx_hal_qspi.c": "273d8e5182382d11382dc6add606e04a97bcc541458b8651dd649824263ff49b",
+    "Drivers/STM32H7xx_HAL_Driver/Inc/stm32h7xx_hal_qspi.h": "abb4b879b017c3d5dad4373349aa7569b41c49c0b2ed9e4737abf1e6b0851f00",
+    "Tests/QspiFlashQ1/hardware/cm4_main.c": "d19d3fbf544461a3fe809e7f0019c1b9cfd0a6406db405bc2c10857e9ea0589d",
+    "CM7/Platform/FreeRTOSConfig.h": "1a7c241f132259cc408f1c98bbd0e27375e595df2b1f7b1906dbbcb04d340c9c",
+    "Tests/QspiFlashQ1/h2/h2.h": "8964d2d947e49e1776e0dcea56f2289415f89891ca17d3fe9e7aeee5cad3b470",
+    "Tests/QspiFlashQ1/h2/h2.c": "eb700f76e3c1b4475d1e713dad69042a720907417b813670a6c473ffa5de83a6",
+    "Tests/QspiFlashQ1/h2/cm7_main.c": "28076f41190ccbd5d0ae9a1655a3d35f02bb06210a6c1358edc02a0a73ecb595",
+    "Tests/QspiFlashQ1/h2/bsp_qspi_h2.c": "e773d0bcf0dbbacc775bc1448918639976f2050db48ea24fbe035c0557512a00"
+  },
+  "scope": "ARMCC5 H2 candidate02; stack figures are static, not on-board high-water marks",
+  "debug_update_disabled": true,
+  "no_active_build_hooks": true,
+  "hex_and_axf_ranges_identical": true
+}

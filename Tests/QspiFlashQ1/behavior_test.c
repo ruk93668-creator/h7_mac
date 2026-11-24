@@ -3,7 +3,18 @@
 static uint32_t s_test_ipsr;
 //异常上下文由测试注入；其余 CMSIS 屏蔽寄存器仍执行真实 ARM 指令。
 #define __get_IPSR() s_test_ipsr
+#if defined(QSPI_H2_TEST)
+#include "h2/h2.h"
+#define HAL_QSPI_Command H2_Command
+#define HAL_QSPI_Receive H2_Receive
+#define HAL_QSPI_DeInit H2_DeInit
+#endif
 #include "../../CM7/BSP/bsp_qspi.c"
+#if defined(QSPI_H2_TEST)
+#undef HAL_QSPI_Command
+#undef HAL_QSPI_Receive
+#undef HAL_QSPI_DeInit
+#endif
 
 uint32_t g_assertions, g_failure, g_commands, g_init_calls;
 static uint32_t s_case, s_tick, s_hclk, s_timeout_seen, s_command_timeout, s_receive_timeout;

@@ -1,0 +1,10 @@
+test_another_image_or_corrupted_report_rejected (__main__.main.<locals>.ReportTest.test_another_image_or_corrupted_report_rejected) ... ok
+test_corrupt_sector_and_wrong_h1_reference_rejected (__main__.main.<locals>.ReportTest.test_corrupt_sector_and_wrong_h1_reference_rejected) ... ok
+test_exact_ihex_export_and_h1_archive_hash (__main__.main.<locals>.ReportTest.test_exact_ihex_export_and_h1_archive_hash) ... ok
+test_recover_timeout_evidence (__main__.main.<locals>.ReportTest.test_recover_timeout_evidence) ... ok
+test_success_export (__main__.main.<locals>.ReportTest.test_success_export) ... ok
+
+----------------------------------------------------------------------
+Ran 5 tests in 0.034s
+
+OK
