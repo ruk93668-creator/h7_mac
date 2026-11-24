@@ -32,13 +32,13 @@ typedef struct
     CameraFrameConsumer_t consumer;
 } CameraMjpegLease_t;
 
-// 每个消费者最多持有一个显式 JPEG 租约，由 CameraTask 维护所有权。
+//每个消费者最多持有一个显式JPEG租约，由CameraTask维护所有权
 SysResult_t CameraMjpegFifo_Acquire(CameraFrameConsumer_t consumer,
     CameraMjpegLease_t *lease, CameraFrame_t *frame);
 //CameraTask核对会话、编号和消费者后归还显式租约
 SysResult_t CameraMjpegFifo_Release(const CameraMjpegLease_t *lease);
 
-// 兼容原有视图持有接口，其凭据只能通过 ReleaseLease 归还。
+//兼容视图的附加引用只能通过ReleaseLease归还
 SysResult_t CameraMjpegFifo_RetainFrame(const CameraFrame_t *frame, CameraMjpegLease_t *lease);
 //归还Legacy兼容保留引用，最后一个拥有者才释放物理块
 SysResult_t CameraMjpegFifo_ReleaseLease(const CameraMjpegLease_t *lease);
@@ -49,10 +49,10 @@ SysResult_t CameraMjpegFifo_Start(const CameraConfig_t *config);
 //Camera任务解析已完成DMA块，不读取正在写入的目标
 SysResult_t CameraMjpegFifo_Process(void);
 
-//Camera任务借出一张帧描述，数据可能跨FIFO末尾分成两段
+//CameraTask借出内部兼容视图，跨FIFO尾部时使用两段描述
 bool CameraMjpegFifo_GetFrame(CameraFrame_t *frame);
 
-//Camera任务归还唯一借出帧，USB确认释放后才允许调用
+//CameraTask只归还内部兼容视图，显式租约使用Release
 SysResult_t CameraMjpegFifo_ReleaseFrame(void);
 
 //查询是否仍有外部借用，不能据此跳过底层Stop

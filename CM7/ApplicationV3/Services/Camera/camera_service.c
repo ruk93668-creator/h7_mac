@@ -72,10 +72,10 @@ typedef struct
 {
     //区分待投递和已公开租约，停止时只有未公开帧可撤回
     CameraTransferState_t state;
-    union
+    union //按采集格式保存唯一有效的租约凭据
     {
-        CameraFrameLease_t raw;
-        CameraMjpegLease_t jpeg;
+        CameraFrameLease_t raw; //固定长度帧的槽位和消费者身份
+        CameraMjpegLease_t jpeg; //JPEG物理帧的会话、编号和消费者身份
     } lease;
     //选用JPEG物理租约的标志，决定归还接口
     bool jpeg;

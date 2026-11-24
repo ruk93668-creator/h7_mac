@@ -3,7 +3,7 @@
 #include "service_events.h"
 #include "../Core/app_services.h"
 
-//私有消息不得超过R1宽槽负载，保持原AppMessage布局
+//私有命令必须能放入通用消息槽，保持AppMessage布局
 typedef char AppV3ServiceCommandFits[(sizeof(AppV3ServiceCommand_t) <= sizeof(AppMessage_t)) ? 1 : -1];
 
 //先订阅再交出发布入口，任何失败都回收未公开队列

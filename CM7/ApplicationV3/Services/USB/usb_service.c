@@ -460,7 +460,7 @@ static SysResult_t UsbService_CheckFrame(void)
         return SYS_OK;
     }
 
-    //已登记的A3读者由前置退场处理；这里仍防止未知Class持有越过整设备STOP。
+    //已登记读者由前置流程核验退休，此处阻止未登记的Class持帧越过整设备STOP
     s_usb.hardware.flags |= USB_HW_FRAME_HELD;
     if (s_usb.cancel_requested && stream.result != SYS_OK && stream.result != SYS_ERR_BUSY)
         return stream.result;

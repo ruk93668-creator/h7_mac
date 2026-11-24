@@ -13,8 +13,8 @@ typedef struct
 {
     //登记服务入口和静态线程资源
     AppV3ThreadSpec_t thread;
-    SysResult_t (*init)(const AppV3Context_t *context);
-    void (*discard)(void);
+    SysResult_t (*init)(const AppV3Context_t *context); //由所属任务准备发布前的服务资源
+    void (*discard)(void); //发布失败时由所属任务回收未公开资源
     //记录服务就绪后可借用的实例
     AppV3ServiceInstance_t *instance;
 } AppV3ServiceRecord_t;
