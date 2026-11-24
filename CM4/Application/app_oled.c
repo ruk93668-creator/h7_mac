@@ -6,8 +6,255 @@
 #include <stddef.h>
 #include <string.h>
 
-//沿用原有100ms周期，不另建任务或第二个刷新Timer
-#define APP_OLED_PERIOD_MS 100U
+#if defined(OLED_UI6_TIMING) && OLED_UI6_TIMING
+#include "stm32h7xx.h"
+
+//仅调试版统计周期，正式版没有探针开销。
+typedef struct
+{
+    uint32_t clock_hz;
+    uint32_t dwt_ok;
+    uint32_t render_cycles;
+    uint32_t render_max_cycles;
+    uint32_t refresh_cycles;
+    uint32_t refresh_max_cycles;
+    uint32_t render_samples;
+    uint32_t refresh_samples;
+    uint32_t command_cycles[4];
+    uint32_t data_cycles[4];
+    uint32_t completed_interval_cycles;
+    uint32_t defer_ms;
+} AppOledTiming_t;
+
+volatile AppOledTiming_t g_oled_ui_timing;
+static uint32_t s_oled_refresh_started;
+static uint32_t s_oled_phase_started, s_oled_completed_cycle;
+
+static void App_OledTimingInit(void)
+{
+    uint32_t before;
+    SystemCoreClockUpdate();
+    g_oled_ui_timing.clock_hz = SystemCoreClock;
+    CoreDebug->DEMCR |= CoreDebug_DEMCR_TRCENA_Msk;
+    DWT->CYCCNT = 0U;
+    DWT->CTRL |= DWT_CTRL_CYCCNTENA_Msk;
+    before = DWT->CYCCNT;
+    __NOP();
+    __NOP();
+    g_oled_ui_timing.dwt_ok = DWT->CYCCNT != before;
+}
+
+static void App_OledTimingRender(uint32_t start)
+{
+    uint32_t elapsed = DWT->CYCCNT - start;
+    g_oled_ui_timing.render_cycles = elapsed;
+    if (elapsed > g_oled_ui_timing.render_max_cycles)
+        g_oled_ui_timing.render_max_cycles = elapsed;
+    g_oled_ui_timing.render_samples++;
+}
+
+static void App_OledTimingComplete(void)
+{
+    uint32_t now = DWT->CYCCNT;
+    uint32_t elapsed = now - s_oled_refresh_started;
+    if (g_oled_ui_timing.refresh_samples != 0U)
+        g_oled_ui_timing.completed_interval_cycles = now - s_oled_completed_cycle;
+    s_oled_completed_cycle = now;
+    g_oled_ui_timing.refresh_cycles = elapsed;
+    if (elapsed > g_oled_ui_timing.refresh_max_cycles)
+        g_oled_ui_timing.refresh_max_cycles = elapsed;
+    g_oled_ui_timing.refresh_samples++;
+}
+#endif
+
+#ifndef OLED_UI3_U7_ENABLED
+#define OLED_UI3_U7_ENABLED 1
+#endif
+#ifndef OLED_UI3_REVERSE
+#define OLED_UI3_REVERSE 0
+#endif
+
+#if OLED_UI3_U7_ENABLED || (defined(OLED_UI2_U7_INPUT) && OLED_UI2_U7_INPUT)
+#define APP_OLED_U7_ENABLED 1
+#else
+#define APP_OLED_U7_ENABLED 0
+#endif
+
+#define APP_OLED_UI_ENABLED (APP_OLED_U7_ENABLED || OLED_UI2_TEST_INPUT)
+#if APP_OLED_UI_ENABLED
+#include "oled_ui_menu.h"
+#include "oled_ui_input.h"
+#include "oled_ui_compat.h"
+#include "platform_time.h"
+
+#if APP_OLED_U7_ENABLED
+#include "stm32h7xx_hal.h"
+#endif
+
+#if defined(OLED_UI2_TEST_INPUT) && OLED_UI2_TEST_INPUT
+//测试入口使用单槽邮箱。先写事件，再发布request；收到ack后才发下一条。
+typedef struct
+{
+    uint32_t request;
+    uint32_t event;
+    uint32_t ack;
+    SysResult_t result;
+} AppOledUi2Debug_t;
+
+typedef char AppOledUi2DebugSize[(sizeof(AppOledUi2Debug_t) <= 16U) ? 1 : -1];
+volatile AppOledUi2Debug_t g_oled_ui2_debug;
+#endif
+static OledUiPageState_t s_ui2_state;
+static OledUiInputQueue_t s_oled_input_queue;
+static OledUiAnim_t s_oled_anim;
+static OledUiPopup_t s_oled_popup;
+static OledUiCompat_t s_oled_compat;
+volatile uint32_t g_oled_ui_dropped_inputs;
+
+//页面变化后仍在队列中的事件属于旧页面，不能作用到新界面。
+static SysResult_t App_OledConsumeInput(void)
+{
+    uint32_t event;
+    uint8_t previous;
+    const OledUiPage_t *page;
+    uint32_t now = Platform_TimeGetMs();
+    SysResult_t result = SYS_OK;
+
+    while ((event = OledUi_InputTake(&s_oled_input_queue)) != 0U)
+    {
+        if (OledUi_PopupEvent(&s_oled_popup, event, now))
+        {
+            OledUi_InputDiscard(&s_oled_input_queue);
+            break;
+        }
+        previous = s_ui2_state.current;
+        if (previous == OLED_UI_PAGE_TOOLS)
+        {
+            OledUiCompatResult_t action = OledUi_CompatEvent(&s_oled_compat, event, now);
+            if (action == OLED_UI_COMPAT_CONTEXT_CHANGED)
+            {
+                OledUi_InputDiscard(&s_oled_input_queue);
+                break;
+            }
+            if (action == OLED_UI_COMPAT_HANDLED)
+                continue;
+            event = OLED_UI_EVENT_BACK;
+        }
+        if (event == OLED_UI_EVENT_SELECT &&
+            OledUi_PageGetCurrent(&s_ui2_state, &page) == SYS_OK &&
+            page->type == OLED_UI_PAGE_TYPE_INFO)
+        {
+            OledUi_PopupOpen(&s_oled_popup, "PAGE INFO", "READ ONLY", true, now, 3000U);
+            OledUi_InputDiscard(&s_oled_input_queue);
+            break;
+        }
+        if (event == OLED_UI_EVENT_SELECT && previous == OLED_UI_PAGE_MONITOR)
+            event = OLED_UI_EVENT_OPEN_MENU;
+        result = OledUi_PageDispatch(&s_ui2_state, event);
+        if (s_ui2_state.current != previous)
+        {
+            s_oled_anim.target_y = 0U;
+            if (s_ui2_state.current == OLED_UI_PAGE_TOOLS)
+                s_oled_compat.page_at = now;
+            OledUi_InputDiscard(&s_oled_input_queue);
+            break;
+        }
+    }
+    g_oled_ui_dropped_inputs = s_oled_input_queue.dropped;
+    return result;
+}
+
+#if APP_OLED_U7_ENABLED
+//U7接线取自调试与扩展页及主控页。C接地，输入使用上拉。
+volatile SysResult_t g_oled_ui2_u7_result;
+static OledUiInput_t s_ui2_input;
+static uint32_t s_ui2_input_tick;
+static bool s_ui2_input_ready;
+
+static uint8_t App_OledU7Phase(void)
+{
+    return (uint8_t)((HAL_GPIO_ReadPin(GPIOI, GPIO_PIN_6) == GPIO_PIN_SET ? 2U : 0U) |
+        (HAL_GPIO_ReadPin(GPIOC, GPIO_PIN_15) == GPIO_PIN_SET ? 1U : 0U));
+}
+
+static bool App_OledU7Pressed(void)
+{
+    return HAL_GPIO_ReadPin(GPIOI, GPIO_PIN_9) == GPIO_PIN_RESET;
+}
+
+static SysResult_t App_OledU7Init(void)
+{
+    GPIO_InitTypeDef gpio = {0};
+
+    //PC15也可作为LSE输出。LSE启用时放弃编码器，保持监控与邮箱可用。
+    if ((RCC->BDCR & RCC_BDCR_LSEON) != 0U)
+        return SYS_ERR_NOT_SUPPORTED;
+
+    __HAL_RCC_GPIOI_CLK_ENABLE();
+    __HAL_RCC_GPIOC_CLK_ENABLE();
+    gpio.Mode = GPIO_MODE_INPUT;
+    gpio.Pull = GPIO_PULLUP;
+    gpio.Pin = GPIO_PIN_6 | GPIO_PIN_9;
+    HAL_GPIO_Init(GPIOI, &gpio);
+    gpio.Pin = GPIO_PIN_15;
+    HAL_GPIO_Init(GPIOC, &gpio);
+
+    s_ui2_input_tick = Platform_TimeGetMs();
+    OledUi_InputInit(&s_ui2_input, App_OledU7Phase(), App_OledU7Pressed(), s_ui2_input_tick);
+    s_ui2_input_ready = true;
+    return SYS_OK;
+}
+
+static void App_OledU7Poll(void)
+{
+    uint32_t now, event;
+
+    if (!s_ui2_input_ready)
+        return;
+    now = Platform_TimeGetMs();
+    if (now == s_ui2_input_tick)
+        return;
+    s_ui2_input_tick = now;
+    event = OledUi_InputSample(&s_ui2_input, App_OledU7Phase(), App_OledU7Pressed(), now);
+    if (event == 0U)
+        return;
+    g_oled_ui2_u7_result = OledUi_InputPush(&s_oled_input_queue, event, true);
+}
+#endif
+
+//事件只更新下一帧逻辑状态，刷新忙时也不会写Framebuffer。
+#if defined(OLED_UI2_TEST_INPUT) && OLED_UI2_TEST_INPUT
+static void App_OledUi2Poll(void)
+{
+    uint32_t request = g_oled_ui2_debug.request;
+
+    if (request != g_oled_ui2_debug.ack)
+    {
+        g_oled_ui2_debug.result = OledUi_InputPush(&s_oled_input_queue, g_oled_ui2_debug.event, false);
+        if (g_oled_ui2_debug.result == SYS_OK)
+            g_oled_ui2_debug.result = App_OledConsumeInput();
+        g_oled_ui2_debug.ack = request;
+    }
+}
+#endif
+#endif
+
+//同一个Timer每50ms提供菜单刷新机会，监控仍以100ms限频。
+#define APP_OLED_MONITOR_PERIOD_MS 100U
+#if APP_OLED_UI_ENABLED
+#define APP_OLED_PERIOD_MS 50U
+static uint32_t s_oled_monitor_tick;
+static uint32_t s_oled_menu_tick;
+static bool s_oled_menu_attempted;
+static bool s_oled_menu_pending;
+#if defined(OLED_UI6_TIMING) && OLED_UI6_TIMING
+static uint32_t s_oled_requested_tick;
+#endif
+static uint32_t s_oled_completed_tick, s_oled_fps_tenths;
+volatile uint32_t g_oled_completed_interval_ms;
+#else
+#define APP_OLED_PERIOD_MS APP_OLED_MONITOR_PERIOD_MS
+#endif
 
 //保存已经就绪的OLED设备，不直接操作BSP或HAL
 static OledDevice_t *s_app_oled;
@@ -26,6 +273,9 @@ volatile AppOledDebug_t g_oled_monitor_debug;
 
 //在Timer回调中取快照、绘图并尝试启动整屏刷新
 static void App_OledRefresh(void *context);
+#if APP_OLED_UI_ENABLED
+static void App_OledDeadline(void *context);
+#endif
 
 //保存真实失败，供主循环和Keil观察
 static void App_OledRecordError(SysResult_t result);
@@ -68,7 +318,11 @@ SysResult_t App_OledInit(void)
     //保留原周期与回调方式，IPC自己的Timer独立运行
     config.period_ms = APP_OLED_PERIOD_MS;
     config.mode = FRAMEWORK_TIMER_PERIODIC;
+#if APP_OLED_UI_ENABLED
+    config.callback = App_OledDeadline;
+#else
     config.callback = App_OledRefresh;
+#endif
     config.context = oled;
     result = Framework_TimerCreate(&config, &s_oled_timer);
     if (result != SYS_OK)
@@ -84,6 +338,18 @@ SysResult_t App_OledInit(void)
     }
 
     //全部准备成功后才允许主循环推进刷新
+#if APP_OLED_UI_ENABLED
+    (void)OledUi_PageInit(&s_ui2_state);
+    s_oled_monitor_tick = Platform_TimeGetMs();
+    s_oled_completed_tick = s_oled_monitor_tick;
+    s_oled_input_queue.reverse = OLED_UI3_REVERSE != 0;
+#if APP_OLED_U7_ENABLED
+    g_oled_ui2_u7_result = App_OledU7Init();
+#endif
+#endif
+#if defined(OLED_UI6_TIMING) && OLED_UI6_TIMING
+    App_OledTimingInit();
+#endif
     s_app_oled = oled;
     return SYS_OK;
 }
@@ -93,14 +359,41 @@ void App_OledRun(void)
 {
     OledRefreshState_t previous;
     SysResult_t result;
+#if defined(OLED_UI6_TIMING) && OLED_UI6_TIMING
+    uint8_t previous_page;
+#endif
 
     //尚未初始化时不调用设备或IPC接口
     if (s_app_oled == NULL)
         return;
 
     //Process只推进传输，不在发送期间重绘Framebuffer
+#if APP_OLED_UI_ENABLED
+#if APP_OLED_U7_ENABLED
+    App_OledU7Poll();
+    (void)App_OledConsumeInput();
+#endif
+#if defined(OLED_UI2_TEST_INPUT) && OLED_UI2_TEST_INPUT
+    App_OledUi2Poll();
+#endif
+#endif
     previous = s_app_oled->refresh_state;
+#if defined(OLED_UI6_TIMING) && OLED_UI6_TIMING
+    previous_page = s_app_oled->refresh_page;
+#endif
     result = s_app_oled->ops->process(s_app_oled);
+#if defined(OLED_UI6_TIMING) && OLED_UI6_TIMING
+    //软件阶段时长包含总线传输、就绪轮询及推进开销。
+    if (result == SYS_OK && previous != s_app_oled->refresh_state && previous_page < 4U)
+    {
+        uint32_t sampled = DWT->CYCCNT;
+        if (previous == OLED_REFRESH_WAIT_CMD)
+            g_oled_ui_timing.command_cycles[previous_page] = sampled - s_oled_phase_started;
+        else if (previous == OLED_REFRESH_WAIT_DATA)
+            g_oled_ui_timing.data_cycles[previous_page] = sampled - s_oled_phase_started;
+        s_oled_phase_started = sampled;
+    }
+#endif
     if (result == SYS_ERR_BUSY)
     {
         g_oled_monitor_debug.busy_skips++;
@@ -118,8 +411,41 @@ void App_OledRun(void)
     //只有最后一页成功完成并回到IDLE，才计为整屏完成
     if (previous == OLED_REFRESH_WAIT_DATA &&
         s_app_oled->refresh_state == OLED_REFRESH_IDLE)
+    {
+#if APP_OLED_UI_ENABLED
+        uint32_t completed_now = Platform_TimeGetMs();
+        uint32_t elapsed = completed_now - s_oled_completed_tick;
+        s_oled_completed_tick = completed_now;
+        if (g_oled_monitor_debug.completed_frames != 0U && elapsed != 0U)
+        {
+            g_oled_completed_interval_ms = elapsed;
+            s_oled_fps_tenths = elapsed >= 10000U ? 0U : 10000U / elapsed;
+        }
+#endif
         g_oled_monitor_debug.completed_frames++;
+#if defined(OLED_UI6_TIMING) && OLED_UI6_TIMING
+        App_OledTimingComplete();
+#endif
+    }
+#if APP_OLED_UI_ENABLED
+    //定时器仅产生一个待刷新标记。旧帧完成后再尝试，不补发中间帧。
+    if (s_oled_menu_pending && s_ui2_state.current != OLED_UI_PAGE_MONITOR &&
+        s_app_oled->refresh_state == OLED_REFRESH_IDLE)
+        App_OledRefresh(s_app_oled);
+#endif
 }
+
+#if APP_OLED_UI_ENABLED
+static void App_OledDeadline(void *context)
+{
+#if defined(OLED_UI6_TIMING) && OLED_UI6_TIMING
+    if (!s_oled_menu_pending && s_ui2_state.current != OLED_UI_PAGE_MONITOR)
+        s_oled_requested_tick = Platform_TimeGetMs();
+#endif
+    s_oled_menu_pending = s_ui2_state.current != OLED_UI_PAGE_MONITOR;
+    App_OledRefresh(context);
+}
+#endif
 
 //周期取得IPC副本并启动一轮完整界面刷新
 static void App_OledRefresh(void *context)
@@ -127,6 +453,9 @@ static void App_OledRefresh(void *context)
     OledDevice_t *oled = context;
     IpcApplicationView_t view;
     SysResult_t result;
+#if defined(OLED_UI6_TIMING) && OLED_UI6_TIMING
+    uint32_t render_started;
+#endif
 
     //上一帧仍在发送时跳过，不能先清屏再发现设备忙
     if (oled->refresh_state != OLED_REFRESH_IDLE)
@@ -134,6 +463,32 @@ static void App_OledRefresh(void *context)
         g_oled_monitor_debug.busy_skips++;
         return;
     }
+
+#if APP_OLED_UI_ENABLED
+    if (s_ui2_state.current == OLED_UI_PAGE_MONITOR)
+    {
+        uint32_t now = Platform_TimeGetMs();
+
+        //先确保设备空闲，再限频监控的IPC取样和绘制。无符号差支持回绕。
+        if (now - s_oled_monitor_tick < APP_OLED_MONITOR_PERIOD_MS)
+            return;
+        s_oled_monitor_tick = now;
+        s_oled_menu_attempted = false;
+    }
+    else
+    {
+        uint32_t now = Platform_TimeGetMs();
+
+        if (s_oled_menu_attempted && now - s_oled_menu_tick < APP_OLED_PERIOD_MS)
+            return;
+#if defined(OLED_UI6_TIMING) && OLED_UI6_TIMING
+        g_oled_ui_timing.defer_ms = now - s_oled_requested_tick;
+#endif
+        s_oled_menu_pending = false;
+        s_oled_menu_tick = now;
+        s_oled_menu_attempted = true;
+    }
+#endif
 
     //整屏使用一份完整本地视图，禁止直接访问g_ipc共享对象
     result = IPC_Service_GetApplicationStatus(&view);
@@ -152,16 +507,58 @@ static void App_OledRefresh(void *context)
 
     //只在IDLE备份和绘图，后续刷新成功后这份Framebuffer一直保持不变
     memcpy(s_frame_backup, oled->framebuffer, sizeof(s_frame_backup));
-    result = OledUi_Render(oled, &view);
+#if defined(OLED_UI6_TIMING) && OLED_UI6_TIMING
+    render_started = DWT->CYCCNT;
+#endif
+#if APP_OLED_UI_ENABLED
+    if (s_ui2_state.current == OLED_UI_PAGE_TOOLS)
+        result = OledUi_CompatRender(oled, &s_oled_compat, Platform_TimeGetMs(), s_oled_fps_tenths);
+    else if (s_ui2_state.current != OLED_UI_PAGE_MONITOR)
+    {
+        const OledUiPage_t *page;
+        OledUiVisual_t visual;
+        OledUiStatus_t status;
+        OledUiStatusCounters_t counters;
+        uint32_t now = Platform_TimeGetMs();
+
+        result = OledUi_PageGetCurrent(&s_ui2_state, &page);
+        if (result == SYS_OK)
+        {
+            OledUi_AnimSample(&s_oled_anim, &s_ui2_state, now, &visual);
+            counters.completed = g_oled_monitor_debug.completed_frames;
+            counters.io_errors = g_oled_monitor_debug.io_errors;
+            counters.render_errors = g_oled_monitor_debug.render_errors;
+            result = OledUi_MenuRenderVisual(oled, &s_ui2_state, &visual,
+                (OledUi_StatusBuild(page->id, &view, &counters, &status) ||
+                 //公共IPC尚未发布任务诊断，NULL在窗口显示为未发布。
+                 OledUi_SystemBuild(page->id, &view, NULL, NULL, now, &status)) ? &status : NULL);
+        }
+        OledUi_PopupTick(&s_oled_popup, now);
+        if (result == SYS_OK)
+            result = OledUi_MenuPopup(oled, &s_oled_popup, now);
+    }
+    else
+#endif
+        result = OledUi_Render(oled, &view);
     if (result != SYS_OK)
     {
         memcpy(oled->framebuffer, s_frame_backup, sizeof(s_frame_backup));
         g_oled_monitor_debug.render_errors++;
+#if APP_OLED_UI_ENABLED
+        if (s_ui2_state.current != OLED_UI_PAGE_MONITOR && !s_oled_popup.active)
+            OledUi_PopupOpen(&s_oled_popup, "RENDER ERROR", "RETRYING", false,
+                Platform_TimeGetMs(), 1800U);
+#endif
         App_OledRecordError(result);
         return;
     }
 
     //绘制完成才提交第一页，成功后交给主循环推进全部四页
+#if defined(OLED_UI6_TIMING) && OLED_UI6_TIMING
+    App_OledTimingRender(render_started);
+    s_oled_refresh_started = DWT->CYCCNT;
+    s_oled_phase_started = s_oled_refresh_started;
+#endif
     result = oled->ops->refresh(oled);
     g_oled_monitor_debug.last_result = result;
     if (result == SYS_OK)

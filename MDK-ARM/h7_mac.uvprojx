@@ -1041,6 +1041,41 @@
               <FilePath>../CM4/Application/oled_ui.c</FilePath>
             </File>
             <File>
+              <FileName>oled_ui_draw.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>../CM4/Application/oled_ui_draw.c</FilePath>
+            </File>
+            <File>
+              <FileName>oled_ui_page.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>../CM4/Application/oled_ui_page.c</FilePath>
+            </File>
+            <File>
+              <FileName>oled_ui_menu.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>../CM4/Application/oled_ui_menu.c</FilePath>
+            </File>
+            <File>
+              <FileName>oled_ui_input.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>../CM4/Application/oled_ui_input.c</FilePath>
+            </File>
+            <File>
+              <FileName>oled_ui_status.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>../CM4/Application/oled_ui_status.c</FilePath>
+            </File>
+            <File>
+              <FileName>oled_ui_compat.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>../CM4/Application/oled_ui_compat.c</FilePath>
+            </File>
+            <File>
+              <FileName>oled_ui_anim.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>../CM4/Application/oled_ui_anim.c</FilePath>
+            </File>
+            <File>
               <FileName>app_oled.h</FileName>
               <FileType>5</FileType>
               <FilePath>../CM4/Application/app_oled.h</FilePath>

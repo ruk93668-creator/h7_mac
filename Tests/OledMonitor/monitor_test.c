@@ -121,7 +121,12 @@ static uint32_t Init(void)
     CHECK(Framework_InitRuntime()==SYS_OK);
     CHECK(s_app_oled==&s_oled);CHECK(s_sync_a4==1U);CHECK(s_sync_a5==0U);
     CHECK(s_timer_pool_count==1U && s_heap_size==1U);
-    CHECK(s_timer_pool[0].config.period_ms==100U);return 0U;
+#if APP_OLED_UI_ENABLED
+    CHECK(s_timer_pool[0].config.period_ms == 50U);
+#else
+    CHECK(s_timer_pool[0].config.period_ms == 100U);
+#endif
+    return 0U;
 }
 
 //计时入口与正式主循环顺序保持一致
@@ -234,6 +239,9 @@ static uint32_t AppCase(uint32_t id)
     if(id==47U || id==48U){memset(s_oled.framebuffer,0x37,512);s_submit_result=id==47U?SYS_ERR_BUSY:SYS_ERR_IO;Step(100);for(i=0;i<512;i++)CHECK(s_oled.framebuffer[i]==0x37);CHECK(s_oled.refresh_state==OLED_REFRESH_IDLE);CHECK(s_tx_count==0);CHECK(g_oled_monitor_debug.last_error==(id==47U?SYS_OK:SYS_ERR_IO));s_submit_result=SYS_OK;Step(200);CHECK(s_tx_count==1);return 0;}
     if(id==52U){s_view_result=SYS_ERR_IO;Step(100);CHECK(s_tx_count==0);CHECK(g_oled_monitor_debug.ipc_errors==1);return 0;}
     if(id==53U){s_oled.ops=&s_test_ops;s_fail_pixel=30;memset(s_oled.framebuffer,0x27,512);Step(100);for(i=0;i<512;i++)CHECK(s_oled.framebuffer[i]==0x27);CHECK(s_tx_count==0);CHECK(g_oled_monitor_debug.render_errors==1);return 0;}
+#if APP_OLED_UI_ENABLED
+    Step(50);CHECK(s_tx_count == 0);
+#endif
     Step(99);CHECK(s_tx_count==0);Step(100);CHECK(s_tx_count==1);CHECK(s_view_calls==1);
     memcpy(s_saved,s_oled.framebuffer,512);
     if(id==45U){CHECK(g_oled_monitor_debug.submitted_frames==1);return 0;}
@@ -244,7 +252,42 @@ static uint32_t AppCase(uint32_t id)
 }
 
 //每个用例由仿真器重新装载ELF，静态状态不会串扰
+#include "ui1_cases.inc"
+#if defined(OLED_UI2_TEST_INPUT) && OLED_UI2_TEST_INPUT
+#include "ui2_cases.inc"
+#include "ui2_input_cases.inc"
+#include "UiCompatCase.inc"
+#include "UiPreMergeCase.inc"
+#include "UiSysCase.inc"
+#include "Ui6Case.inc"
+#include "Ui20FpsCase.inc"
+#include "Ui5Case.inc"
+#include "Ui4Case.inc"
+#endif
+
 uint32_t OledMonitor_TestRun(uint32_t id)
 {
+#if defined(OLED_UI2_TEST_INPUT) && OLED_UI2_TEST_INPUT
+    if (id >= 77U && id <= 78U)
+        return Ui4Case(id);
+    if (id >= 79U && id <= 80U)
+        return Ui5Case(id);
+    if (id >= 81U && id <= 81U)
+        return Ui6Case(id);
+    if (id == 82U)
+        return Ui20FpsCase();
+    if (id >= 83U && id <= 85U)
+        return UiSysCase(id);
+    if (id >= 86U && id <= 87U)
+        return UiCompatCase(id);
+    if (id == 88U)
+        return UiPreMergeCase();
+    if (id == 76U)
+        return Ui2InputCase();
+    if (id >= 69U)
+        return Ui2Case(id);
+#endif
+    if (id >= 61U)
+        return Ui1_Case(id);
     return id<=42U?UiCase(id):AppCase(id);
 }
