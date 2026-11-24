@@ -1,0 +1,71 @@
+# ApplicationV3 Storage JPEG/AVI 与 Supervisor 集中实板验收
+
+源码起点 `d6f9b6fea2c72c2ec2e167f067913565c2004cc3`，分支 `codex/application-v3-media-usb`。S0 仅加入独立板测编排和诊断。普通板测一次只运行一个 Service；录像板测使用现有 ControlTask 的 `AppV3Supervisor_Set/Query/Read/Recover`。BOOT 不打开外设或可写卷，Watch 通过静态邮箱提交命令。Camera/Storage 公共接口、JPEG FIFO 所有权、IPC、FreeRTOS 任务配置和产品默认配置沿用原实现。
+
+| 阶段 | 状态 | 已知证据或条件 |
+| --- | --- | --- |
+| S0 软件入口、构建与回归 | PASS | ARMCC5 专项、双核产物、Watch 符号、工具正反对照 |
+| S0 本次实卡分区 | PASS | 实板使用分区 1，停止后卷诊断与 F 盘 AVI 对应 |
+| S1 实卡录制 | PASS | 350 帧 JPEG、约 17.15 FPS |
+| S2 AVI 收尾及所有权 | PASS | Camera 消费 350 次确认，Finish/Close/Unmount 成功，Windows 完整解码和场景变化核对通过 |
+| S3 Supervisor 正常路径 | PASS | 正常启停、全停顺序、无复位重启及自主收尾后的 Query |
+| S3-I / J 实板故障隔离与恢复 | NOT_RUN | STOP 失败和显式 RECOVER |
+| S4 一轮重复启停 | PASS | 用户确认一轮足够，已取得板端计数、延时和栈水位 |
+| S4 长时稳定性 | NOT_RUN | 本轮收口范围外 |
+
+## S0 软件证据
+
+ARMCC5 5.06u7 O0/O2 各通过 2/2 录像邮箱专项和 73/73 默认套件。A1 物理租约、A2 Dispatcher、A3 UVC Reader 和 Raw Service、原八组板测软件配置均通过，两档合计 356/356，另有本地 A4.1 编排 10/10。验证了 BOOT 无自动启动、非 Control 轮次不能取走命令、空或不匹配分区拒绝、Camera 先于 Storage 启动、栈采样入口。原 ABI 52 B AppMessage、16 B ServiceCommand、80 B IPC。只读 AVI 工具接受合成的正确索引，拒绝错误索引，真实录像检查见下文。
+
+| Keil Target | Code / RO / RW / ZI（B） | 结果 |
+| --- | --- | --- |
+| CM7 产品 | 137338 / 3982 / 1292 / 101028 | 0 Error、0 Warning |
+| CM7 录像测试 | 139602 / 4234 / 1296 / 101504 | 0 Error、0 Warning |
+| CM4 | 26302 / 1438 / 936 / 3576 | 0 Error、0 Warning |
+
+录像宏为 `APP_VIDEO_MJPEG_MODE=1, APP_VIDEO_TEST_MODE=0, APP_V3_RECORD_BOARD_TEST=1, APP_STORAGE_PARTITION=1`。产品 Map 无板测 Watch 符号。CM4 HEX 与冻结版 SHA256 一致。证据在 `output/ApplicationV3/StorageSupervisor/`，镜像与 Map 位于 `S0-Keil-20261123-204241/`，回归清单为 `S0-Regression-20261123-204659/verification.json`。用户的 Keil 工程、选项及构建前活动的 CM7 AXF/Map 已恢复。A4.1 镜像仍保存在其独立归档。录像 AXF SHA256 为 `E830D3B366CE218398CF27C4767A1A90D273BEDD92E71062EF43B12A4290FB36`。
+
+## 烧录和 Watch
+
+先确认插入的实际 SD 卡和允许写入的 MBR FAT 分区。Windows 只读查询可用 `Get-Volume -DriveLetter F`、`Get-Partition -DriveLetter F`，将 F 换成实际盘符，再按返回的 DiskNumber 用 `Get-Disk -Number N` 确认为同一物理 SD 和 MBR。仅当确认分区 1 是批准测试分区时才用此镜像录像；若批准的是其他分区，先改板测宏并重建。使用 FAT16/FAT32，保留已有数据并检查待用文件号尚未出现。
+
+1. 退出 Keil Debug。把归档 `Recording/h7_mac_CM7.axf` 和对应 Map 复制到原 `MDK-ARM/h7_mac_CM7/`（保留归档，CM7 AXF 哈希应与上表相同）。用原工程先选择 CM4 下载，再选择 CM7 直接 **Flash → Download**。重新 Build 会用原 Keil 配置覆盖板测 AXF。
+2. 进入 CM7 Debug，确认链接符号并加入 Watch。暂停时写命令参数，最后写 `command`，随后 Run。依次观察 `issued` 递增、`dispatch_result=0`、`command_pending=false` 与 `supervisor.pending_id=0`。软件接单和 Service 完成分别核验。每次录像都要重新填分区和文件号。
+3. S1 先用命令 1 启 Camera，再用 5 查询。确认 `supervisor.camera.hardware.state=3`、`flags & 1`、完成数大于零。确认分区后写 `approved_partition=1`、新非零 `file_number`，再用命令 2。检查 Storage ACTIVE、FATFS owner、`filesystem.writable`、文件号、两个时刻的 `frames/movi_end`、`first_tick/last_tick` 及 SD/FatFS 状态。文件刚打开后继续移动物体，留下可辨认的画面变化。
+4. S2 在仍录像且已有完整帧时发命令 3。确认 Storage READY（1）、Camera ACTIVE（3）、原文件句柄清零、卷诊断有效且 `open_files=0`、`fatfs_owner=0`、IDMA 原状态和结果。保存 `finish/close/unmount_attempted` 与各自 result，四条握手计数应一致。Camera 的 `confirmed` 为开机累计，用本次增量并核对最终 `request_id/session/lease_id`。等待完整停止再取卡，复制 AVI 到 Windows。
+5. 用 `python Tests/ApplicationV3/inspect_recording.py <Windows复制的AVI>` 留下 RIFF/movi/idx1 结构和帧数，再用视频播放器观察动态画面。结构验证与可解码、动态画面分别记录。文件存在不单独计为 PASS。
+
+| Watch 符号 | 地址 | 关键字段 |
+| --- | --- | --- |
+| `g_app_v3_record_command` | `0x20008694` | `approved_partition`、`file_number`、`command` |
+| `g_app_v3_record_board` | `0x200086A0` | `configured_partition`、`supervisor`、请求用时、栈水位 |
+| `g_app_v3_record_storage` | `0x20006E04` | `hardware`、`frames/movi_end`、文件与 FATFS/IDMA、握手、实际收尾结果 |
+| `g_app_v3_record_camera` | `0x20006CCC` | Camera 真正消费的确认次数和最后匹配租约 |
+
+命令 1 启 Camera，2 启录像（必要时自动先启 Camera），3 停录像并保留 Camera，4 全局停止，5 查询 Camera，6 查询 Storage，7 显式 Storage RECOVER，8 采集任务栈余量（单位为 4 B 的栈字）。命令 7 仅在原故障安全边界允许、已保存错误现场且经 Query 确认 uncertain 后使用。所有 Watch 数据在任务继续运行若干轮后再暂停读取，禁止由调试器跨任务调用 Service API。
+
+## S3 / S4 实板留证
+
+S2 正常完成后，从全停状态发 2，录下 Camera 同身份完成先于 Storage 挂载的快照。用 3 停当次录像，检查 Camera 继续 ACTIVE。换新文件号发 2，再发 4，检查 Storage READY 后 Camera 才进入停止。全 READY 后用新号重复 2，无 MCU Reset。使用 5、6 读取原实际状态。一次到达配置的时间或文件上限后用 6 刷新，核对 Supervisor 与自主结束的 Storage 一致。若观察到 STOP 失败，记录 `uncertain/first_fault`、两个 Service 与卷快照，确认 Camera 保留，并按已有契约单独验证允许的显式恢复。
+
+实板重复启停最终按用户确认的一轮验收，测试使用未占用的文件号。报告中记录两次采样的时间、Camera 完成和丢帧增量、写入帧和字节增量。单个录像段可用 `1000 × (frames − 1) / (last_tick − first_tick)` 计算实际平均写入 FPS，至少两帧且时间差非零时才有效。`movi_end − 224` 是成功提交的已封装帧字节，最终 AVI 文件字节和索引数量取自复制文件。单段仍受原 4 MiB/60 秒上限，不将多轮分段测试声明为无间断长录像。记录 `finish_ms` 和 Watch STOP 命令耗时（后者含协调轮询），用 8 采样 Camera、Storage、Control 栈高水位。首轮不做写入期间拔卡。
+
+失败时保留前后 Watch、未修补的原 AVI、Filesystem 和 IDMA 结果、租约状态及首错。保持当前现场，停止扩大测试，禁止用超时强制释放、清空租约、自动重启或格式化。
+
+## 首轮实板证据
+
+板端录像文件 `00000051.AVI`（会话 1，分区 1）完整写入 350 帧。首末帧跨度 20,352 ms，实测约 17.15 FPS。成功提交的 movi 数据为 3,104,952 B。停止后 Storage READY，Supervisor 最近 Camera 结果为 ACTIVE，活动掩码仅有 Camera，首错和 uncertain 均为 0。停止耗时 182 ms，AVI Finish 耗时 77 ms。Finish、Close、Unmount 均已执行且返回 0，文件数和 FATFS 所有权清零。
+
+Storage OFFER、RETURN、ACK、确认入队各 350 次；Camera 单独快照实证已消费 350 次，最后一笔对应请求 350、会话 1、Loan 351。
+
+Windows 从 F 盘只读复制 AVI 后与原件 SHA256 一致，SHA256 为 `d85521004d80d0a2ab382c83d5876af88333d4da8b57a4b11b93f3de853fec45`。文件长 3,110,784 B，RIFF、movi、idx1 结构检查通过。MJPEG 320×240，共 350 个 JPEG chunk 和 350 条匹配索引。FFmpeg 完整解码 350 帧，350 帧像素摘要各异，错误输出为空。抽取的六帧可见实际场景变化。AVI 头标称速率为 17.16 FPS，板端首末帧测得速率另列。
+
+板端两张停止后快照及解读存于 `output/ApplicationV3/StorageSupervisor/S1-S2-Memory-20261123-214038/`。AVI 副本、Camera 快照、只读分析和解码结果存于 `output/ApplicationV3/StorageSupervisor/S2-AVI-20261123-214345/`，原始媒体仅留本机。后续 S3 和 S4 实板记录见下节。
+
+## S3 正常路径及 S4 单轮收口
+
+- 自主收尾与 Query（S3-H）PASS。`00000052.AVI` 写入 431 帧后自行收尾，Storage 实际已 READY。Supervisor 在命令 6 前仍记录 Storage ACTIVE 和活动掩码 0x05。查询成功后 Storage 更新为 READY，活动掩码变为 0x01，Camera 保持 ACTIVE，首错和未确认退出位均为零。前后证据见 `output/ApplicationV3/StorageSupervisor/S3H-Storage-20261123-215405/supervisor-query-evidence.json`。
+- 正常依赖启停 PASS。首轮录像局部 STOP 后 Storage READY、Camera 仍 ACTIVE。随后重新录像时 Camera START 0x7900000A 先于 Storage START 0x7900000B，均 ACTIVE，命令编号接续前一轮。全停时 Storage STOP 0x7900000E 先于 Camera STOP 0x7900000F，两者 READY，用时 230 ms，首错和未确认退出位均为零。零复位切换以本次操作顺序及连续命令编号为证据。快照见 `S3-Restart-20261123-220132/` 和 `S3-GlobalStop-20261123-220604/`。
+- S3-I / J 的实板 STOP 失败与显式 RECOVER 保持 NOT_RUN。既有软件回归证据单列。
+- 用户将 S4 重复启停验收收敛为一轮。取 `00000055.AVI` 为正式验收轮，板端记录写入 70 帧，实测 11.55 FPS，AVI Finish 31 ms，全停 198 ms。Finish、Close、Unmount 均成功，两路回到 READY，首错和未确认退出位均为零。四项 Storage 交接计数均为 70。证据见 `S4-Record55-20261123-221216/decoded.json`。
+- 保留此前 `00000054.AVI` 的附加实板对照。板端记录 145 帧、12.57 FPS、Finish 51 ms，Close/Unmount 成功。该轮结束后采集 Camera、Storage、Control 最小剩余栈分别为 5,592、6,612、2,652 B。其余软件以外的长时稳定性和写入期间拔卡未执行。本轮 Windows 全量解码证据对应 `00000051.AVI`。

@@ -15,6 +15,7 @@
 
 //固定视频能力，与描述符保持一致，不依赖图像来源
 #define UVC_VIDEO_EP_ADDRESS 0x81U
+//全速等时视频端点允许的最大单包字节数
 #define UVC_VIDEO_PACKET_BYTES USB_UVC_VIDEO_PACKET_SIZE
 
 //与描述符共用冷启动配置，不保存业务配置指针
@@ -22,7 +23,9 @@ static uint32_t s_video_frame_bytes;
 
 //记录冷启动格式，JPEG按上限校验，YUY2按固定长度校验
 static CameraPixelFormat_t s_video_format;
+//当前视频协商帧间隔，单位为百纳秒
 static uint32_t s_video_interval;
+//Class使用的本地视频参数已经过校验
 static bool s_video_configured;
 
 //累计设备侧真实EOF完成帧数，跨Class重建保留
@@ -31,37 +34,59 @@ static uint32_t s_total_completed_frames;
 //按字段保存参数，不直接映射USB数据
 typedef struct
 {
+    //主机要求保持的协商参数位
     uint16_t bmHint;
+    //描述符中的视频格式索引
     uint8_t bFormatIndex;
+    //该格式下的分辨率条目索引
     uint8_t bFrameIndex;
+    //主机协商的发送周期，单位为百纳秒
     uint32_t dwFrameInterval;
+    //协议携带的关键帧间隔参数
     uint16_t wKeyFrameRate;
+    //协议携带的预测帧间隔参数
     uint16_t wPFrameRate;
+    //协议携带的压缩质量参数
     uint16_t wCompQuality;
+    //协议携带的压缩窗口参数
     uint16_t wCompWindowSize;
+    //协议携带的数据传送延迟参数
     uint16_t wDelay;
+    //一次协商允许的图像最大字节数
     uint32_t dwMaxVideoFrameSize;
+    //允许的单次视频负载传输字节数
     uint32_t dwMaxPayloadTransferSize;
+    //设备用于视频流的时钟频率，单位赫兹
     uint32_t dwClockFrequency;
+    //协商的负载帧边界支持位
     uint8_t bmFramingInfo;
+    //设备优先支持的负载版本
     uint8_t bPreferredVersion;
+    //设备支持的最早负载版本
     uint8_t bMinVersion;
+    //设备支持的最新负载版本
     uint8_t bMaxVersion;
 } UvcStreamingControl_t;
 
 //class内部上下文
 typedef struct
 {
+    //流接口所选备用设置，决定流端点是否可用
     uint8_t interface_alt[2];
 
+    //设备已进入配置状态的标志
     bool configured;
+    //当前流端点已成功打开的标志
     bool ep1_opened;
+    //当前备用设置允许的视频输送状态
     bool streaming;
 
     //关闭失败后只能先重试Alt 0，不能把旧Alt 1当成正常运行
     bool ep1_close_pending;
 
+    //记录主机探测阶段参数
     uint8_t probe[UVC_CONTROL_SIZE];
+    //记录已经确认的主机流参数
     uint8_t commit[UVC_CONTROL_SIZE];
 
     //持久EP0缓冲区，尾部补齐32位PIO读取
@@ -70,24 +95,38 @@ typedef struct
 
     //EP0接收选择器与协商授权，默认查询不能设置有效标志
     uint8_t pending_selector;
+    //探测参数已完成格式和带宽校验
     bool probe_valid;
+    //探测控制响应已实际送达
     bool probe_observed;
+    //正等待探测控制响应完成
     bool probe_reply_pending;
+    //主机已提交经过验证的流参数
     bool commit_valid;
 
     //包Token和底层完成序号共同拒绝迟到通知
     UsbUvcPayloadPacket_t packet;
+    //当前读者和视频包推进所处状态
     volatile UsbUvcStreamState_t stream_state;
+    //视频流当前完成或错误结果
     SysResult_t stream_result;
+    //完成事件对应的负载令牌，用于核对旧回调
     volatile uint32_t event_token;
+    //数据端点收到的完成事件顺序
     uint32_t in_sequence;
 
     //只保存最新SOF，帧间隔从有效Commit读取
     volatile uint32_t available_sof;
+    //最近已消费的USB帧时标，防止重复提交
     uint32_t used_sof;
+    //当前图像开始发送时的USB帧时标
     uint32_t frame_sof;
+    //下一图像允许开始的最早USB帧时标
     uint32_t next_frame_sof;
+    //本次运行累计完整帧数
     uint32_t completed_frames;
+    uint32_t reader_id; // 只有接收该帧的Class实例能发布退出凭据
+    //是否由帧间隔限制下一图像的准入
     bool paced;
 
 } UsbUvcContext_t;
@@ -97,6 +136,9 @@ static UsbUvcContext_t *volatile s_uvc_active;
 
 //跨Class释放保留Token单调性，防止固定池地址复用造成旧完成命中新流
 static UsbUvcPayload_t s_uvc_payload;
+
+//跨解绑保留已提交和已退休身份；单个UsbTask提交，IRQ只处理旧帧退场
+static UsbUvcReaderProof_t s_reader_proof;
 
 //固定池容量必须满足完整Class上下文
 typedef char UvcContextFitsPool[(sizeof(UsbUvcContext_t) <= 1024U) ? 1 : -1];
@@ -111,7 +153,16 @@ static uint8_t UVC_Sof(USBD_HandleTypeDef *pdev);
 static uint8_t UVC_Incomplete(USBD_HandleTypeDef *pdev, uint8_t ep);
 
 //关闭成功后释放Payload借用，不能在Close失败时调用
-static void UVC_ReleaseFrame(UsbUvcContext_t *ctx);
+static bool UVC_PayloadQuiet(void);
+//核对Class上下文仍对应已接受的原读者
+static bool UVC_ReaderMatches(const UsbUvcContext_t *ctx);
+//保留本次读者退出前观察到的首个错误
+static void UVC_RecordReaderFault(UsbUvcContext_t *ctx, SysResult_t result);
+//在源引用与端点读取都退出后提交退休证明
+static SysResult_t UVC_RetireReader(UsbUvcContext_t *ctx, UsbUvcReaderExit_t reason);
+//完成负载退出并依据真实读取结果发布归还证据
+static SysResult_t UVC_ReleaseFrame(UsbUvcContext_t *ctx, UsbUvcReaderExit_t reason,
+    bool endpoint_quiet);
 
 //初始化 UVC Class
 static uint8_t UVC_Init(
@@ -213,11 +264,13 @@ static USBD_DescriptorsTypeDef s_uvc_descriptors =
     USB_UVC_GetInterfaceStrDescriptor//索引5，UVC Camera功能名称
 };
 
+//校验格式、尺寸和帧间隔能否安全通过端点传输
 SysResult_t USB_UVC_ValidateConfig(const VideoStreamConfig_t *config)
 {
     return USB_UVC_ValidateFSConfig(config);
 }
 
+//在线程中保存已校验的描述符参数
 SysResult_t USB_UVC_Configure(const VideoStreamConfig_t *config)
 {
     uint32_t bytes;
@@ -242,6 +295,7 @@ SysResult_t USB_UVC_Configure(const VideoStreamConfig_t *config)
     return SYS_OK;
 }
 
+//将UVC类和当前描述符登记到USB设备层
 SysResult_t USB_UVC_Register(void)
 {
     if (!s_video_configured)
@@ -294,7 +348,11 @@ SysResult_t USB_UVC_SubmitFrameView(const VideoFrameView_t *view)
     if (ctx == NULL || !USB_Device_IsConfigured() || !ctx->commit_valid ||
         !ctx->ep1_opened || ctx->interface_alt[1] != 1U || ctx->ep1_close_pending)
         result = SYS_ERR_INVALID_STATE;
-    else if (ctx->stream_state != USB_UVC_WAIT_FRAME) result = SYS_ERR_BUSY;
+    else if (ctx->stream_state != USB_UVC_WAIT_FRAME ||
+        s_reader_proof.accepted_id != s_reader_proof.retired_id || !UVC_PayloadQuiet())
+        result = SYS_ERR_BUSY;
+    else if (s_reader_proof.accepted_id == UINT32_MAX)
+        result = SYS_ERR_NO_RESOURCE;
     else
     {
         if (s_uvc_payload.state == USB_UVC_PAYLOAD_UNINITIALIZED)
@@ -302,6 +360,9 @@ SysResult_t USB_UVC_SubmitFrameView(const VideoFrameView_t *view)
         result = USB_UVC_PayloadStartView(&s_uvc_payload, view, UVC_VIDEO_PACKET_BYTES);
         if (result == SYS_OK)
         {
+            //成功接收才分配新ID，保留上一笔退休ID和原因
+            ctx->reader_id = ++s_reader_proof.accepted_id;
+            s_reader_proof.accepted_first_fault = SYS_OK;
             ctx->stream_state = USB_UVC_WAIT_SLOT;
             ctx->stream_result = SYS_OK;
             ctx->used_sof = USB_Device_GetSofSequence();
@@ -356,8 +417,27 @@ SysResult_t USB_UVC_GetStreamStatus(UsbUvcStreamStatus_t *status)
     //在同一个USB临界区内查询，Application不直接读取Class内部状态
     status->can_submit = USB_Device_IsConfigured() && ctx->commit_valid &&
         ctx->ep1_opened && ctx->interface_alt[1] == 1U && !ctx->ep1_close_pending &&
-        ctx->stream_state == USB_UVC_WAIT_FRAME && !status->frame_owned;
+        ctx->stream_state == USB_UVC_WAIT_FRAME && UVC_PayloadQuiet() &&
+        s_reader_proof.accepted_id == s_reader_proof.retired_id &&
+        s_reader_proof.accepted_id != UINT32_MAX;
     status->completed_frames = ctx->completed_frames;
+    USB_Device_Unlock(mask);
+    return SYS_OK;
+}
+
+//读取独立于Class寿命的读者身份及退休结果
+SysResult_t USB_UVC_ReadReaderProof(UsbUvcReaderProof_t *proof)
+{
+    uint32_t mask;
+
+    if (proof == NULL)
+        return SYS_ERR_INVALID_ARG;
+    if (__get_IPSR() != 0U)
+        return SYS_ERR_INVALID_STATE;
+
+    //退场事实独立于Class Context，不能以空指针代替匹配的退休ID
+    mask = USB_Device_Lock();
+    *proof = s_reader_proof;
     USB_Device_Unlock(mask);
     return SYS_OK;
 }
@@ -381,22 +461,13 @@ void USB_UVC_Process(void)
     //取消和故障优先，失败时保留帧引用以便重试
     if (ctx->stream_state == USB_UVC_CANCELLING || ctx->stream_state == USB_UVC_RECOVERY)
     {
-        result = USB_UVC_PayloadCancel(&s_uvc_payload);
-        if (result == SYS_ERR_BUSY)
-        {
-            result = USB_Device_AbortEp(UVC_VIDEO_EP_ADDRESS);
-            if (result == SYS_OK) UVC_ReleaseFrame(ctx);
-            else
-            {
-                ctx->stream_result = result;
-                ctx->stream_state = USB_UVC_RECOVERY;
-            }
-        }
-        else if (result == SYS_OK || s_uvc_payload.state == USB_UVC_PAYLOAD_UNINITIALIZED)
-            UVC_ReleaseFrame(ctx);
-        USB_Device_Unlock(mask); return;
+        //Close失败留下的义务仍由原退场路径推进；这里不调用整设备STOP。
+        (void)UVC_ReleaseFrame(ctx, USB_UVC_READER_EXIT_CANCELLED, false);
+        USB_Device_Unlock(mask);
+        return;
     }
-    if (!USB_Device_IsConfigured() || !ctx->ep1_opened || ctx->ep1_close_pending || !ctx->commit_valid)
+    if (!USB_Device_IsConfigured() || !ctx->ep1_opened || ctx->ep1_close_pending ||
+        !ctx->commit_valid || !UVC_ReaderMatches(ctx))
     {
         USB_Device_Unlock(mask);
         return;
@@ -407,8 +478,7 @@ void USB_UVC_Process(void)
     {
         if (ctx->event_token != ctx->packet.token || ctx->event_token == 0U)
         {
-            ctx->stream_result = SYS_ERR_PROTOCOL;
-            ctx->stream_state = USB_UVC_RECOVERY;
+            UVC_RecordReaderFault(ctx, SYS_ERR_PROTOCOL);
             USB_Device_Unlock(mask);
             return;
         }
@@ -416,15 +486,18 @@ void USB_UVC_Process(void)
         ctx->event_token = 0U;
         if (result != SYS_OK)
         {
-            ctx->stream_result = result;
-            ctx->stream_state = USB_UVC_RECOVERY;
+            UVC_RecordReaderFault(ctx, result);
         }
         else if (s_uvc_payload.state == USB_UVC_PAYLOAD_IDLE)
         {
-            ctx->completed_frames++;
-            s_total_completed_frames++;
-            ctx->streaming = false;
-            ctx->stream_state = USB_UVC_WAIT_FRAME;
+            result = UVC_RetireReader(ctx, USB_UVC_READER_EXIT_EOF);
+            if (result == SYS_OK)
+            {
+                ctx->completed_frames++;
+                s_total_completed_frames++;
+            }
+            else
+                UVC_RecordReaderFault(ctx, result);
         }
         else ctx->stream_state = USB_UVC_WAIT_SLOT;
     }
@@ -441,8 +514,7 @@ void USB_UVC_Process(void)
     result = USB_UVC_PayloadBuildPacket(&s_uvc_payload, &ctx->packet);
     if (result != SYS_OK)
     {
-        ctx->stream_result = result;
-        ctx->stream_state = USB_UVC_RECOVERY;
+        UVC_RecordReaderFault(ctx, result);
         USB_Device_Unlock(mask);
         return;
     }
@@ -466,8 +538,7 @@ void USB_UVC_Process(void)
         ctx->stream_state = USB_UVC_WAIT_SLOT;
     else
     {
-        ctx->stream_result = result;
-        ctx->stream_state = USB_UVC_RECOVERY;
+        UVC_RecordReaderFault(ctx, result);
     }
     USB_Device_Unlock(mask);
 }
@@ -526,10 +597,13 @@ static uint8_t UVC_DeInit(
     //取得当前UVC上下文，空上下文无需重复释放
     ctx = pdev->pUserData[0];
     if (ctx == NULL)
-        return USBD_OK;
+        return UVC_PayloadQuiet() && s_reader_proof.accepted_id == s_reader_proof.retired_id ?
+            USBD_OK : USBD_FAIL;
 
     //先关闭视频端点，失败时保留上下文及缓冲区所有权
-    if (ctx->ep1_opened && UVC_SetStreamAlt(ctx, 0U) != USBD_OK)
+    if ((ctx->ep1_opened || !UVC_PayloadQuiet() || ctx->reader_id != 0U ||
+         s_reader_proof.accepted_id != s_reader_proof.retired_id) &&
+        UVC_SetStreamAlt(ctx, 0U) != USBD_OK)
     {
 
         //官方Core忽略取消配置时的DeInit错误，显式STALL阻止成功状态包
@@ -550,6 +624,7 @@ static uint8_t UVC_DeInit(
     return USBD_OK;
 }
 
+//按UVC控制请求处理枚举与流参数协商
 static uint8_t UVC_Setup(
     USBD_HandleTypeDef *pdev,
     USBD_SetupReqTypedef *req
@@ -954,23 +1029,27 @@ static bool UVC_EncodeControl(const UvcStreamingControl_t *control, uint8_t *dat
     return true;
 }
 
+//按小端协议从字节缓冲读取十六位值
 static uint16_t UVC_Read16(const uint8_t *data)
 {
     return (uint16_t)((uint16_t)data[0] | ((uint16_t)data[1] << 8));
 }
 
+//按小端协议从字节缓冲读取三十二位值
 static uint32_t UVC_Read32(const uint8_t *data)
 {
     return (uint32_t)data[0] | ((uint32_t)data[1] << 8) |
         ((uint32_t)data[2] << 16) | ((uint32_t)data[3] << 24);
 }
 
+//把十六位协议字段按小端格式写入缓冲
 static void UVC_Write16(uint8_t *data, uint16_t value)
 {
     data[0] = (uint8_t)value;
     data[1] = (uint8_t)(value >> 8);
 }
 
+//把三十二位协议字段按小端格式写入缓冲
 static void UVC_Write32(uint8_t *data, uint32_t value)
 {
     data[0] = (uint8_t)value;
@@ -1008,7 +1087,12 @@ static uint8_t UVC_SetStreamAlt(UsbUvcContext_t *ctx, uint8_t alternate)
     {
 
         //先禁止新提交，即使Close失败也不能恢复发送
+        bool endpoint_quiet = false;
         ctx->stream_state = USB_UVC_CANCELLING;
+
+        //新Class即使使用相同地址也不能关闭并退休另一实例的提交。
+        if (s_reader_proof.accepted_id != s_reader_proof.retired_id && !UVC_ReaderMatches(ctx))
+            return USBD_FAIL;
         if (ctx->ep1_opened)
         {
 
@@ -1019,11 +1103,18 @@ static uint8_t UVC_SetStreamAlt(UsbUvcContext_t *ctx, uint8_t alternate)
 
                 //保留Alt和端点所有权，允许主机重试Alt 0
                 ctx->ep1_close_pending = true;
+                UVC_RecordReaderFault(ctx, result);
                 return USBD_FAIL;
             }
+            endpoint_quiet = true;
         }
 
-        UVC_ReleaseFrame(ctx);
+        result = UVC_ReleaseFrame(ctx, USB_UVC_READER_EXIT_CLOSED, endpoint_quiet);
+        if (result != SYS_OK)
+        {
+            ctx->ep1_close_pending = true;
+            return USBD_FAIL;
+        }
         ctx->paced = false;
 
         //实际关闭成功后再发布Alt 0
@@ -1035,7 +1126,8 @@ static uint8_t UVC_SetStreamAlt(UsbUvcContext_t *ctx, uint8_t alternate)
     }
 
     //进入Alt 1必须已有Commit，关闭故障必须先恢复
-    if (alternate != 1U || !ctx->commit_valid || ctx->ep1_close_pending)
+    if (alternate != 1U || !ctx->commit_valid || ctx->ep1_close_pending ||
+        (s_reader_proof.accepted_id != s_reader_proof.retired_id && !UVC_ReaderMatches(ctx)))
         return USBD_FAIL;
 
     //同一Alt重复请求不重复申请端点
@@ -1075,6 +1167,7 @@ static uint8_t UVC_DataIn(USBD_HandleTypeDef *pdev, uint8_t ep)
     return USBD_OK;
 }
 
+//登记USB帧时标以控制等时包的推进节奏
 static uint8_t UVC_Sof(USBD_HandleTypeDef *pdev)
 {
     UsbUvcContext_t *ctx;
@@ -1087,6 +1180,7 @@ static uint8_t UVC_Sof(USBD_HandleTypeDef *pdev)
     return USBD_OK;
 }
 
+//登记等时传输未完成，保留本包直至核验
 static uint8_t UVC_Incomplete(USBD_HandleTypeDef *pdev, uint8_t ep)
 {
     UsbUvcContext_t *ctx;
@@ -1096,28 +1190,95 @@ static uint8_t UVC_Incomplete(USBD_HandleTypeDef *pdev, uint8_t ep)
         (ctx->stream_state == USB_UVC_IN_FLIGHT || ctx->stream_state == USB_UVC_WAIT_CONFIRM))
     {
         ctx->event_token = 0U;
-        ctx->stream_result = SYS_ERR_TIMEOUT;
-        ctx->stream_state = USB_UVC_RECOVERY;
+        UVC_RecordReaderFault(ctx, SYS_ERR_TIMEOUT);
     }
     return USBD_OK;
 }
 
-static void UVC_ReleaseFrame(UsbUvcContext_t *ctx)
+//源引用和pending token分别核对，不能凭Class状态或端点状态推断归还。
+static bool UVC_PayloadQuiet(void)
 {
+    return s_uvc_payload.frame == NULL && s_uvc_payload.frame2 == NULL &&
+        s_uvc_payload.pending_token == 0U &&
+        (s_uvc_payload.state == USB_UVC_PAYLOAD_IDLE ||
+         s_uvc_payload.state == USB_UVC_PAYLOAD_UNINITIALIZED);
+}
 
-    //无在途包，或Close/Abort已确认停止后，才允许清理借用
-    if (s_uvc_payload.state != USB_UVC_PAYLOAD_UNINITIALIZED)
+//核对Class上下文仍对应已接受的原读者
+static bool UVC_ReaderMatches(const UsbUvcContext_t *ctx)
+{
+    return ctx->reader_id != 0U && ctx->reader_id == s_reader_proof.accepted_id &&
+        ctx->reader_id != s_reader_proof.retired_id;
+}
+
+//保留本次读者退出前观察到的首个错误
+static void UVC_RecordReaderFault(UsbUvcContext_t *ctx, SysResult_t result)
+{
+    //后续恢复成功不能清除同次提交最先观测到的错误。
+    if (result != SYS_ERR_BUSY && UVC_ReaderMatches(ctx) &&
+        s_reader_proof.accepted_first_fault == SYS_OK)
+        s_reader_proof.accepted_first_fault = result;
+    ctx->stream_result = result;
+    ctx->stream_state = USB_UVC_RECOVERY;
+}
+
+//在源引用与端点读取都退出后提交退休证明
+static SysResult_t UVC_RetireReader(UsbUvcContext_t *ctx, UsbUvcReaderExit_t reason)
+{
+    if (!UVC_PayloadQuiet())
+        return SYS_ERR_INVALID_STATE;
+    if (s_reader_proof.accepted_id != s_reader_proof.retired_id)
     {
-        if (USB_UVC_PayloadCancel(&s_uvc_payload) == SYS_ERR_BUSY)
-            (void)USB_UVC_PayloadAbortPacket(&s_uvc_payload, s_uvc_payload.pending_token);
+        if (!UVC_ReaderMatches(ctx))
+            return SYS_ERR_INVALID_STATE;
+        s_reader_proof.retired_id = ctx->reader_id;
+        s_reader_proof.retired_reason = reason;
+        ctx->reader_id = 0U;
     }
+    else if (ctx->reader_id != 0U)
+        return SYS_ERR_INVALID_STATE;
+
     ctx->event_token = 0U;
     memset(&ctx->packet, 0, sizeof(ctx->packet));
     ctx->stream_state = USB_UVC_WAIT_FRAME;
     ctx->streaming = false;
+    return SYS_OK;
+}
+
+//完成负载退出并依据真实读取结果发布归还证据
+static SysResult_t UVC_ReleaseFrame(UsbUvcContext_t *ctx, UsbUvcReaderExit_t reason,
+    bool endpoint_quiet)
+{
+    SysResult_t result = SYS_OK;
+
+    if (s_reader_proof.accepted_id != s_reader_proof.retired_id &&
+        (!UVC_ReaderMatches(ctx) || UVC_PayloadQuiet()))
+        result = SYS_ERR_INVALID_STATE;
+    else if (!UVC_PayloadQuiet())
+    {
+        //只有匹配的Class可以触碰仍有引用的Payload。
+        if (!UVC_ReaderMatches(ctx))
+            result = SYS_ERR_INVALID_STATE;
+        else
+            result = USB_UVC_PayloadCancel(&s_uvc_payload);
+    }
+    if (result == SYS_ERR_BUSY)
+    {
+        //Close已确认时无需Abort；否则要真实取消端点后才能清原pending token。
+        result = endpoint_quiet ? SYS_OK : USB_Device_AbortEp(UVC_VIDEO_EP_ADDRESS);
+        if (result == SYS_OK)
+            result = USB_UVC_PayloadAbortPacket(&s_uvc_payload, s_uvc_payload.pending_token);
+    }
+    if (result == SYS_OK)
+        result = UVC_RetireReader(ctx, reason);
+    if (result != SYS_OK)
+        UVC_RecordReaderFault(ctx, result);
+    return result;
 }
 
 //查询设备侧累计EOF完成数
+
+//返回设备端确认完成的图像数量
 uint32_t USB_UVC_GetCompletedFrameCount(void)
 {
 

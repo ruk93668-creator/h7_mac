@@ -8,6 +8,8 @@
 #include <stddef.h>
 #include <string.h>
 
+#include "platform_sync.h"
+
 //对应官方Core的16个端点编号，不预设Class用途
 #define USB_DEVICE_EP_COUNT 16U
 
@@ -371,6 +373,35 @@ bool USB_Device_IsConfigured(void)
     //设备已启动、无待恢复故障且主机配置完成时才返回true
     return s_started && !s_stop_required && s_device.dev_state == USBD_STATE_CONFIGURED;
 }
+
+//调用者已屏蔽本核中断，状态和Configured使用同一次采样
+static bool Usb_ReadLinkState(UsbDeviceLinkState_t *state)
+{
+    state->dev_state = s_device.dev_state;
+    state->dev_old_state = s_device.dev_old_state;
+    state->started = s_started;
+    state->stop_required = s_stop_required;
+    state->last_result = s_last_result;
+    return state->started && !state->stop_required && state->dev_state == USBD_STATE_CONFIGURED;
+}
+
+//正式路径只读取链路字段，恢复调用者原来的中断状态
+bool USB_Device_ReadLinkState(UsbDeviceLinkState_t *state)
+{
+    uint32_t saved_primask;
+    bool configured;
+
+    if (state == NULL)
+        return false;
+
+    saved_primask = Platform_SyncGetPrimask();
+    Platform_SyncDisableIrq();
+    configured = Usb_ReadLinkState(state);
+    Platform_SyncMemoryBarrier();
+    Platform_SyncRestoreIrq(saved_primask);
+    return configured;
+}
+
 
 //查询设备级运行结果
 SysResult_t USB_Device_GetLastResult(void)
@@ -1302,7 +1333,7 @@ static void Usb_Reset(void)
     if (!s_registered)
         return;
 
-    //总线已复位，旧EP0打开状态不能代表本轮重建成功
+    //总线已复位，旧EP0打开状态不能证明复位后的端点已重建
     memset((void *)&s_endpoints[0][0], 0, sizeof(s_endpoints[0][0]));
     memset((void *)&s_endpoints[1][0], 0, sizeof(s_endpoints[1][0]));
     (void)USBD_LL_SetSpeed(&s_device, USBD_SPEED_FULL);

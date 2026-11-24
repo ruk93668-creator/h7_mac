@@ -1,0 +1,72 @@
+#include "video_config.h"
+
+#ifndef APP_VIDEO_MJPEG_MODE
+//选择正式视频配置，一为JPEG，零为Raw
+#define APP_VIDEO_MJPEG_MODE 0
+#endif
+
+#if APP_VIDEO_MJPEG_MODE != 0 && APP_VIDEO_MJPEG_MODE != 1
+#error APP_VIDEO_MJPEG_MODE_must_be_zero_or_one
+#endif
+
+//产品只读视频参数，JPEG与Raw各有固定格式和传输预算
+static const VideoConfig_t s_default_config =
+{
+    .camera =
+    {
+        .width = APP_VIDEO_MJPEG_MODE ? 320U : 160U,
+        .height = APP_VIDEO_MJPEG_MODE ? 240U : 120U,
+        .format = APP_VIDEO_MJPEG_MODE ? CAMERA_PIXEL_FORMAT_JPEG : CAMERA_PIXEL_FORMAT_YUV422
+    },
+    .output = VIDEO_OUTPUT_USB_UVC,
+
+    //产品保持25FPS，独立Raw验收使用10FPS，采集节拍仍由原模块决定。
+    .output_fps = APP_VIDEO_MJPEG_MODE ? 25U : 10U,
+
+    //JPEG帧长由配置限定，25FPS时必须满足FS每40ms的包数预算
+    .output_max_frame_bytes = APP_VIDEO_MJPEG_MODE ? 40000U : 0U
+};
+
+//取得静态默认视频配置
+const VideoConfig_t *VideoConfig_GetDefault(void)
+{
+
+    //只返回静态配置地址，调用者不修改或释放该对象
+    return &s_default_config;
+}
+
+//SD录像策略独立于USB目标FPS，不设置传感器时序
+//默认选择SD卡的第三个MBR分区，构建配置可指定现有FAT分区
+#ifndef APP_STORAGE_PARTITION
+//默认选择的MBR分区编号，零表示由挂载逻辑选择
+#define APP_STORAGE_PARTITION 3U
+#endif
+
+#if APP_STORAGE_PARTITION < 0 || APP_STORAGE_PARTITION > 4
+#error APP_STORAGE_PARTITION_must_be_between_zero_and_four
+#endif
+
+//固件录像分区与单段文件结束策略
+static const AppStorageConfig_t s_storage_config =
+{
+    .record_fps = 25U,
+
+    //当前SD卡使用第三个MBR分区，未格式化或改动卡布局
+    .partition = APP_STORAGE_PARTITION,
+
+    .segment_bytes = 256UL * 1024UL * 1024UL,
+
+    .segment_ms = 0U,
+
+    .total_bytes = 16UL * 1024UL * 1024UL,
+
+    .reserve_bytes = 512UL * 1024UL,
+
+    .max_segments = 16U
+};
+
+//提供静态只读策略，开始保存仍需显式业务请求
+const AppStorageConfig_t *VideoConfig_GetStorage(void)
+{
+    return &s_storage_config;
+}

@@ -1,0 +1,89 @@
+#ifndef CM7_V3_BOARD_SMOKE_H
+#define CM7_V3_BOARD_SMOKE_H
+
+#define APP_V3_BOARD_SMOKE_OFF 0
+#define APP_V3_BOARD_SMOKE_CAMERA 1
+#define APP_V3_BOARD_SMOKE_USB 2
+#define APP_V3_BOARD_SMOKE_STORAGE 3
+
+//正式构建关闭；实板测试只允许选择一个服务
+#ifndef APP_V3_BOARD_SMOKE
+#define APP_V3_BOARD_SMOKE APP_V3_BOARD_SMOKE_OFF
+#endif
+
+#if APP_V3_BOARD_SMOKE < APP_V3_BOARD_SMOKE_OFF || APP_V3_BOARD_SMOKE > APP_V3_BOARD_SMOKE_STORAGE
+#error Invalid APP_V3_BOARD_SMOKE selection
+#endif
+
+#define APP_V3_BOARD_STRESS_OFF 0
+#define APP_V3_BOARD_STRESS_REPEAT 1
+#define APP_V3_BOARD_STRESS_RECOVERY 2
+
+//故障复测只接受可进行受控断连或拔卡的测试场景
+#ifndef APP_V3_BOARD_STRESS
+#define APP_V3_BOARD_STRESS APP_V3_BOARD_STRESS_OFF
+#endif
+
+#if APP_V3_BOARD_STRESS < APP_V3_BOARD_STRESS_OFF || APP_V3_BOARD_STRESS > APP_V3_BOARD_STRESS_RECOVERY
+#error Invalid APP_V3_BOARD_STRESS selection
+#endif
+#if APP_V3_BOARD_STRESS != APP_V3_BOARD_STRESS_OFF && APP_V3_BOARD_SMOKE == APP_V3_BOARD_SMOKE_OFF
+#error APP_V3_BOARD_STRESS requires a board smoke selection
+#endif
+#if APP_V3_BOARD_STRESS == APP_V3_BOARD_STRESS_RECOVERY && APP_V3_BOARD_SMOKE == APP_V3_BOARD_SMOKE_CAMERA
+#error Physical detach recovery is only available for USB and Storage
+#endif
+
+#if APP_V3_BOARD_SMOKE != APP_V3_BOARD_SMOKE_OFF
+#include "../Runtime/service_events.h"
+
+#define APP_V3_BOARD_SMOKE_CYCLE_STEPS 4U
+#if APP_V3_BOARD_STRESS == APP_V3_BOARD_STRESS_REPEAT
+#define APP_V3_BOARD_STRESS_CYCLES 10U
+#define APP_V3_BOARD_STRESS_SOAK_MS 300000U
+#define APP_V3_BOARD_SMOKE_STEPS (APP_V3_BOARD_SMOKE_CYCLE_STEPS * APP_V3_BOARD_STRESS_CYCLES)
+#elif APP_V3_BOARD_STRESS == APP_V3_BOARD_STRESS_RECOVERY
+#define APP_V3_BOARD_STRESS_OPERATOR_MS 30000U
+#define APP_V3_BOARD_SMOKE_STEPS 8U
+#else
+#define APP_V3_BOARD_SMOKE_STEPS APP_V3_BOARD_SMOKE_CYCLE_STEPS
+#endif
+#define APP_V3_BOARD_SMOKE_FIRST_ID 0x7B530001UL
+#define APP_V3_BOARD_SMOKE_TIMEOUT_MS 10000U
+#if APP_V3_BOARD_SMOKE == APP_V3_BOARD_SMOKE_USB
+#define APP_V3_BOARD_SMOKE_USB_OBSERVE_MS 30000U
+#endif
+
+typedef enum
+{
+    APP_V3_SMOKE_IDLE = 0,
+    APP_V3_SMOKE_SUBMIT,
+    APP_V3_SMOKE_WAIT,
+    APP_V3_SMOKE_COMPLETE,
+    APP_V3_SMOKE_FAILED,
+    APP_V3_SMOKE_TIMED_OUT,
+#if APP_V3_BOARD_SMOKE == APP_V3_BOARD_SMOKE_USB || APP_V3_BOARD_STRESS != APP_V3_BOARD_STRESS_OFF
+    APP_V3_SMOKE_OBSERVE
+#endif
+} AppV3BoardSmokeState_t;
+
+typedef struct
+{
+    AppV3BoardSmokeState_t state;
+    RuntimeEventTarget_t service;
+    uint32_t step;
+    uint32_t received;
+    SysResult_t result;
+    AppV3ServiceEvent_t events[APP_V3_BOARD_SMOKE_STEPS];
+#if APP_V3_BOARD_STRESS != APP_V3_BOARD_STRESS_OFF
+    uint32_t latency_ticks[APP_V3_BOARD_SMOKE_STEPS];
+    UBaseType_t stack_remaining_words[RUNTIME_TARGET_COUNT];
+    bool stack_sampled;
+#endif
+} AppV3BoardSmokeReport_t;
+
+//只有Control写入；Keil Watch在暂停后读取完整快照
+extern volatile AppV3BoardSmokeReport_t g_app_v3_board_smoke;
+#endif
+
+#endif

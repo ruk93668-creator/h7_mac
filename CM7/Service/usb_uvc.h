@@ -33,6 +33,29 @@ typedef struct
     bool can_submit;
 } UsbUvcStreamStatus_t;
 
+//能够证明UVC不再读取原帧的退出事件
+typedef enum
+{
+    USB_UVC_READER_EXIT_NONE = 0,
+    USB_UVC_READER_EXIT_EOF,
+    USB_UVC_READER_EXIT_CANCELLED,
+    USB_UVC_READER_EXIT_CLOSED
+} UsbUvcReaderExit_t;
+
+//独立于当前Class实例的提交与退休事实
+typedef struct
+{
+    uint32_t accepted_id; // 最近一次成功接收的帧
+    uint32_t retired_id;  // 最近一次已证实退出的帧，跨Class生命周期保留
+    //证明当前提交退休的事件类型
+    UsbUvcReaderExit_t retired_reason;
+    //该次提交观察到的首个读取或退出错误
+    SysResult_t accepted_first_fault;
+} UsbUvcReaderProof_t;
+
+//仅UsbTask正常上下文调用；Class解绑后仍可读取上次提交与退出事实
+SysResult_t USB_UVC_ReadReaderProof(UsbUvcReaderProof_t *proof);
+
 //纯校验输出能力，不改变描述符或活动Class
 SysResult_t USB_UVC_ValidateConfig(const VideoStreamConfig_t *config);
 
@@ -68,5 +91,6 @@ void USB_UVC_Process(void);
 
 //查询设备侧累计EOF完成数，不代表Windows显示帧数
 uint32_t USB_UVC_GetCompletedFrameCount(void);
+
 
 #endif

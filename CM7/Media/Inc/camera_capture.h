@@ -2,17 +2,23 @@
 #define CAMERA_CAPTURE_H
 
 #include "camera_config.h"
+#include "camera_mjpeg_fifo.h"
 #include "sys_result.h"
 #include <stdbool.h>
 
 //采集提示，不携带帧所有权，回调沿用调用者上下文
 #define CAMERA_CAPTURE_EVENT_PROGRESS (1UL << 0)
+//采集故障通知位，仅提示任务读取状态
 #define CAMERA_CAPTURE_EVENT_ERROR    (1UL << 1)
+//采集通知回调，可能由中断触发且不得阻塞
 typedef void (*CameraCaptureEventCallback_t)(uint32_t events, void *context);
 
+//当前采集会话的完成帧和丢帧计数
 typedef struct
 {
+    //本次运行累计完整帧数
     uint32_t completed_frames;
+    //未能交付的累计帧数
     uint32_t dropped_frames;
 } CameraCaptureStats_t;
 
@@ -27,11 +33,17 @@ SysResult_t CameraCapture_ValidateStreamConfig(const CameraConfig_t *config);
 
 //停止事实只由Media所有者读取，不代表帧租约已经归还
 #define CAMERA_STOP_INITIALIZED 1U
+//底层停止或捕获过程的错误标志
 #define CAMERA_STOP_ERROR       2U
+//硬件退出后仍有外部帧待归还
 #define CAMERA_STOP_DRAINING    4U
+//硬件与当前资源退出已确认
 #define CAMERA_STOP_COMPLETE    8U
+//当前停止事实来自正常停止路径
 #define CAMERA_STOP_NORMAL_ATTEMPT     16U
+//当前停止事实来自保护性停止路径
 #define CAMERA_STOP_PROTECTIVE_ATTEMPT 32U
+//区分硬件停止结论与软件帧排空的事实快照
 typedef struct
 {
     uint32_t attempt_sequence;//实际BSP停止调用序号，只用于同轮去重
@@ -56,13 +68,36 @@ SysResult_t CameraCapture_ReleaseFrame(void);
 
 //取得连续采集的完整图像，成功时借用数据并填写frame
 //JPEG跨FIFO尾部时data2非空，size_bytes为总长度，size_bytes2为第二段长度
-//唯一消费者归还前，两段内存都不能被DMA复用
+// 旧 Raw 入口占用 USB 配额；旧 Release 只能归还该入口建立的租约
 bool CameraCapture_StreamGetFrame(CameraFrame_t *frame);
 
 //释放当前完整帧，允许下一次采集
 SysResult_t CameraCapture_StreamReleaseFrame(void);
 
-//启动连续采集，固定格式使用五缓冲，JPEG使用独立字节FIFO
+//由物理槽、消费者和采集代号共同限定的Raw租约
+typedef struct
+{
+    uint32_t generation; // Raw 采集实例，归还时禁止跨实例匹配
+    uint32_t lease_id;   // 实例内单调递增，零表示未持有
+    uint32_t buffer_id;  // 七槽中的实际零基索引
+    //物理租约的登记消费者，归还时与原记录核对
+    CameraFrameConsumer_t consumer;
+} CameraFrameLease_t;
+
+// 由 Camera 所有者在任务中调用。仅 Raw；失败不改写输出；已持有或无可借帧返回 BUSY
+SysResult_t CameraCapture_StreamAcquire(CameraFrameConsumer_t consumer,
+    CameraFrameLease_t *lease, CameraFrame_t *frame);
+
+// 调用前须确认全部读取者已退出。只归还完整身份匹配的 Raw 物理槽
+SysResult_t CameraCapture_StreamReleaseLease(const CameraFrameLease_t *lease);
+
+//仅CameraTask调用，JPEG的会话和编号由原FIFO分配。
+SysResult_t CameraCapture_StreamAcquireJpeg(CameraFrameConsumer_t consumer,
+    CameraMjpegLease_t *lease, CameraFrame_t *frame);
+//由CameraTask按凭据归还JPEG，最后一帧可完成排空
+SysResult_t CameraCapture_StreamReleaseJpeg(const CameraMjpegLease_t *lease);
+
+//启动连续采集，固定格式使用七缓冲，JPEG使用独立字节FIFO
 SysResult_t CameraCapture_StartStream(void);
 
 //停止当前采集，必要时恢复底层硬件

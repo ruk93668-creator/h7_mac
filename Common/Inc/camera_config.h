@@ -18,27 +18,46 @@ typedef enum
 //摄像头输出配置，由Application统一选择
 typedef struct
 {
+	//该图像或配置的水平像素数
 	uint16_t width;
+	//该图像或配置的垂直像素数
 	uint16_t height;
+	//确定像素解释方式和可用的图像传输路径
 	CameraPixelFormat_t format;
 } CameraConfig_t;
 
 //描述一张完整图像
 typedef struct
 {
+    //该图像或配置的水平像素数
     uint16_t width;
+    //该图像或配置的垂直像素数
     uint16_t height;
 
+    //确定像素解释方式和可用的图像传输路径
     CameraPixelFormat_t format;
 
+    //调用者可读取的图像地址，受当前租约或帧引用保护
     const uint8_t *data;
+    //完整图像的有效字节总数
     uint32_t size_bytes;
 
     //跨FIFO末尾时使用第二段，第一段长度为size_bytes减size_bytes2
     const uint8_t *data2;
+    //跨环尾第二段的有效字节数，零表示连续视图
     uint32_t size_bytes2;
 
 } CameraFrame_t;
+
+// Raw 和 JPEG 共享消费者枚举，身份与具体输出通道无关。
+typedef enum
+{
+    CAMERA_FRAME_CONSUMER_USB = 0,
+    CAMERA_FRAME_CONSUMER_ETHERNET,
+    CAMERA_FRAME_CONSUMER_WIFI,
+    CAMERA_FRAME_CONSUMER_STORAGE,
+    CAMERA_FRAME_CONSUMER_COUNT
+} CameraFrameConsumer_t;
 
 //判断是否为可变长度格式，不表示当前采集模式已支持
 static inline bool CameraConfig_IsVariableLength(CameraPixelFormat_t format)

@@ -1153,7 +1153,7 @@
           </Files>
         </Group>
         <Group>
-          <GroupName>CM7\Application</GroupName>
+          <GroupName>Application V3 / Core</GroupName>
           <GroupOption>
             <CommonProperty>
               <UseCPPCompiler>0</UseCPPCompiler>
@@ -1225,199 +1225,401 @@
           </GroupOption>
           <Files>
             <File>
+              <FileName>app_context.h</FileName>
+              <FileType>5</FileType>
+              <FilePath>../CM7/ApplicationV3/Core/app_context.h</FilePath>
+            </File>
+            <File>
+              <FileName>app_events.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>../CM7/ApplicationV3/Core/app_events.c</FilePath>
+            </File>
+            <File>
+              <FileName>app_events.h</FileName>
+              <FileType>5</FileType>
+              <FilePath>../CM7/ApplicationV3/Core/app_events.h</FilePath>
+            </File>
+            <File>
               <FileName>app_main.c</FileName>
               <FileType>1</FileType>
-              <FilePath>../CM7/Application/app_main.c</FilePath>
+              <FilePath>../CM7/ApplicationV3/Core/app_main.c</FilePath>
             </File>
             <File>
-              <FileName>app_camera.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>../CM7/Application/app_camera.c</FilePath>
-            </File>
-            <File>
-              <FileName>app_camera.h</FileName>
+              <FileName>app_main.h</FileName>
               <FileType>5</FileType>
-              <FilePath>../CM7/Application/app_camera.h</FilePath>
+              <FilePath>../CM7/ApplicationV3/Core/app_main.h</FilePath>
             </File>
             <File>
-              <FileName>app_uvc_bridge.c</FileName>
+              <FileName>app_messages.c</FileName>
               <FileType>1</FileType>
-              <FilePath>../CM7/Application/app_uvc_bridge.c</FilePath>
+              <FilePath>../CM7/ApplicationV3/Core/app_messages.c</FilePath>
             </File>
             <File>
-              <FileName>app_uvc_bridge.h</FileName>
+              <FileName>app_messages.h</FileName>
               <FileType>5</FileType>
-              <FilePath>../CM7/Application/app_uvc_bridge.h</FilePath>
+              <FilePath>../CM7/ApplicationV3/Core/app_messages.h</FilePath>
+            </File>
+            <File>
+              <FileName>app_services.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>../CM7/ApplicationV3/Core/app_services.c</FilePath>
+            </File>
+            <File>
+              <FileName>app_services.h</FileName>
+              <FileType>5</FileType>
+              <FilePath>../CM7/ApplicationV3/Core/app_services.h</FilePath>
+            </File>
+            <File>
+              <FileName>app_status.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>../CM7/ApplicationV3/Core/app_status.c</FilePath>
+            </File>
+            <File>
+              <FileName>app_status.h</FileName>
+              <FileType>5</FileType>
+              <FilePath>../CM7/ApplicationV3/Core/app_status.h</FilePath>
+            </File>
+            <File>
+              <FileName>app_tasks.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>../CM7/ApplicationV3/Core/app_tasks.c</FilePath>
+            </File>
+            <File>
+              <FileName>app_tasks.h</FileName>
+              <FileType>5</FileType>
+              <FilePath>../CM7/ApplicationV3/Core/app_tasks.h</FilePath>
             </File>
             <File>
               <FileName>video_config.c</FileName>
               <FileType>1</FileType>
-              <FilePath>../CM7/Application/video_config.c</FilePath>
+              <FilePath>../CM7/ApplicationV3/Core/video_config.c</FilePath>
             </File>
             <File>
               <FileName>video_config.h</FileName>
               <FileType>5</FileType>
-              <FilePath>../CM7/Application/video_config.h</FilePath>
+              <FilePath>../CM7/ApplicationV3/Core/video_config.h</FilePath>
             </File>
+          </Files>
+        </Group>
+        <Group>
+          <GroupName>Application V3 / Runtime</GroupName>
+          <GroupOption>
+            <CommonProperty>
+              <UseCPPCompiler>0</UseCPPCompiler>
+              <RVCTCodeConst>0</RVCTCodeConst>
+              <RVCTZI>0</RVCTZI>
+              <RVCTOtherData>0</RVCTOtherData>
+              <ModuleSelection>0</ModuleSelection>
+              <IncludeInBuild>0</IncludeInBuild>
+              <AlwaysBuild>2</AlwaysBuild>
+              <GenerateAssemblyFile>2</GenerateAssemblyFile>
+              <AssembleAssemblyFile>2</AssembleAssemblyFile>
+              <PublicsOnly>2</PublicsOnly>
+              <StopOnExitCode>11</StopOnExitCode>
+              <CustomArgument></CustomArgument>
+              <IncludeLibraryModules></IncludeLibraryModules>
+              <ComprImg>1</ComprImg>
+            </CommonProperty>
+            <GroupArmAds>
+              <Cads>
+                <interw>2</interw>
+                <Optim>0</Optim>
+                <oTime>2</oTime>
+                <SplitLS>2</SplitLS>
+                <OneElfS>2</OneElfS>
+                <Strict>2</Strict>
+                <EnumInt>2</EnumInt>
+                <PlainCh>2</PlainCh>
+                <Ropi>2</Ropi>
+                <Rwpi>2</Rwpi>
+                <wLevel>4</wLevel>
+                <uThumb>2</uThumb>
+                <uSurpInc>2</uSurpInc>
+                <uC99>2</uC99>
+                <uGnu>2</uGnu>
+                <useXO>2</useXO>
+                <v6Lang>0</v6Lang>
+                <v6LangP>0</v6LangP>
+                <vShortEn>2</vShortEn>
+                <vShortWch>2</vShortWch>
+                <v6Lto>2</v6Lto>
+                <v6WtE>2</v6WtE>
+                <v6Rtti>2</v6Rtti>
+                <VariousControls>
+                  <MiscControls></MiscControls>
+                  <Define></Define>
+                  <Undefine></Undefine>
+                  <IncludePath></IncludePath>
+                </VariousControls>
+              </Cads>
+              <Aads>
+                <interw>2</interw>
+                <Ropi>2</Ropi>
+                <Rwpi>2</Rwpi>
+                <thumb>2</thumb>
+                <SplitLS>2</SplitLS>
+                <SwStkChk>2</SwStkChk>
+                <NoWarn>2</NoWarn>
+                <uSurpInc>2</uSurpInc>
+                <useXO>2</useXO>
+                <ClangAsOpt>0</ClangAsOpt>
+                <VariousControls>
+                  <MiscControls></MiscControls>
+                  <Define></Define>
+                  <Undefine></Undefine>
+                  <IncludePath></IncludePath>
+                </VariousControls>
+              </Aads>
+            </GroupArmAds>
+          </GroupOption>
+          <Files>
             <File>
-              <FileName>app_storage.c</FileName>
+              <FileName>queue_pool.c</FileName>
               <FileType>1</FileType>
-              <FilePath>../CM7/Application/app_storage.c</FilePath>
-              <FileOption>
-                <CommonProperty>
-                  <UseCPPCompiler>2</UseCPPCompiler>
-                  <RVCTCodeConst>0</RVCTCodeConst>
-                  <RVCTZI>0</RVCTZI>
-                  <RVCTOtherData>0</RVCTOtherData>
-                  <ModuleSelection>0</ModuleSelection>
-                  <IncludeInBuild>0</IncludeInBuild>
-                  <AlwaysBuild>0</AlwaysBuild>
-                  <GenerateAssemblyFile>0</GenerateAssemblyFile>
-                  <AssembleAssemblyFile>0</AssembleAssemblyFile>
-                  <PublicsOnly>0</PublicsOnly>
-                  <StopOnExitCode>3</StopOnExitCode>
-                  <CustomArgument></CustomArgument>
-                  <IncludeLibraryModules></IncludeLibraryModules>
-                  <ComprImg>1</ComprImg>
-                </CommonProperty>
-                <FileArmAds>
-                  <Cads>
-                    <interw>2</interw>
-                    <Optim>0</Optim>
-                    <oTime>2</oTime>
-                    <SplitLS>2</SplitLS>
-                    <OneElfS>2</OneElfS>
-                    <Strict>2</Strict>
-                    <EnumInt>2</EnumInt>
-                    <PlainCh>2</PlainCh>
-                    <Ropi>2</Ropi>
-                    <Rwpi>2</Rwpi>
-                    <wLevel>0</wLevel>
-                    <uThumb>2</uThumb>
-                    <uSurpInc>2</uSurpInc>
-                    <uC99>2</uC99>
-                    <uGnu>2</uGnu>
-                    <useXO>2</useXO>
-                    <v6Lang>0</v6Lang>
-                    <v6LangP>0</v6LangP>
-                    <vShortEn>2</vShortEn>
-                    <vShortWch>2</vShortWch>
-                    <v6Lto>2</v6Lto>
-                    <v6WtE>2</v6WtE>
-                    <v6Rtti>2</v6Rtti>
-                    <VariousControls>
-                      <MiscControls></MiscControls>
-                      <Define></Define>
-                      <Undefine></Undefine>
-                      <IncludePath></IncludePath>
-                    </VariousControls>
-                  </Cads>
-                </FileArmAds>
-              </FileOption>
+              <FilePath>../CM7/ApplicationV3/Runtime/queue_pool.c</FilePath>
             </File>
             <File>
-              <FileName>app_storage.h</FileName>
+              <FileName>queue_pool.h</FileName>
               <FileType>5</FileType>
-              <FilePath>../CM7/Application/app_storage.h</FilePath>
-              <FileOption>
-                <CommonProperty>
-                  <UseCPPCompiler>2</UseCPPCompiler>
-                  <RVCTCodeConst>0</RVCTCodeConst>
-                  <RVCTZI>0</RVCTZI>
-                  <RVCTOtherData>0</RVCTOtherData>
-                  <ModuleSelection>0</ModuleSelection>
-                  <IncludeInBuild>0</IncludeInBuild>
-                  <AlwaysBuild>0</AlwaysBuild>
-                  <GenerateAssemblyFile>0</GenerateAssemblyFile>
-                  <AssembleAssemblyFile>0</AssembleAssemblyFile>
-                  <PublicsOnly>0</PublicsOnly>
-                  <StopOnExitCode>3</StopOnExitCode>
-                  <CustomArgument></CustomArgument>
-                  <IncludeLibraryModules></IncludeLibraryModules>
-                  <ComprImg>1</ComprImg>
-                </CommonProperty>
-                <FileArmAds/>
-              </FileOption>
+              <FilePath>../CM7/ApplicationV3/Runtime/queue_pool.h</FilePath>
             </File>
             <File>
-              <FileName>app_frame_dispatcher.c</FileName>
+              <FileName>service_event_loop.c</FileName>
               <FileType>1</FileType>
-              <FilePath>../CM7/Application/app_frame_dispatcher.c</FilePath>
-              <FileOption>
-                <CommonProperty>
-                  <UseCPPCompiler>2</UseCPPCompiler>
-                  <RVCTCodeConst>0</RVCTCodeConst>
-                  <RVCTZI>0</RVCTZI>
-                  <RVCTOtherData>0</RVCTOtherData>
-                  <ModuleSelection>0</ModuleSelection>
-                  <IncludeInBuild>0</IncludeInBuild>
-                  <AlwaysBuild>0</AlwaysBuild>
-                  <GenerateAssemblyFile>0</GenerateAssemblyFile>
-                  <AssembleAssemblyFile>0</AssembleAssemblyFile>
-                  <PublicsOnly>0</PublicsOnly>
-                  <StopOnExitCode>3</StopOnExitCode>
-                  <CustomArgument></CustomArgument>
-                  <IncludeLibraryModules></IncludeLibraryModules>
-                  <ComprImg>1</ComprImg>
-                </CommonProperty>
-                <FileArmAds>
-                  <Cads>
-                    <interw>2</interw>
-                    <Optim>0</Optim>
-                    <oTime>2</oTime>
-                    <SplitLS>2</SplitLS>
-                    <OneElfS>2</OneElfS>
-                    <Strict>2</Strict>
-                    <EnumInt>2</EnumInt>
-                    <PlainCh>2</PlainCh>
-                    <Ropi>2</Ropi>
-                    <Rwpi>2</Rwpi>
-                    <wLevel>0</wLevel>
-                    <uThumb>2</uThumb>
-                    <uSurpInc>2</uSurpInc>
-                    <uC99>2</uC99>
-                    <uGnu>2</uGnu>
-                    <useXO>2</useXO>
-                    <v6Lang>0</v6Lang>
-                    <v6LangP>0</v6LangP>
-                    <vShortEn>2</vShortEn>
-                    <vShortWch>2</vShortWch>
-                    <v6Lto>2</v6Lto>
-                    <v6WtE>2</v6WtE>
-                    <v6Rtti>2</v6Rtti>
-                    <VariousControls>
-                      <MiscControls></MiscControls>
-                      <Define></Define>
-                      <Undefine></Undefine>
-                      <IncludePath></IncludePath>
-                    </VariousControls>
-                  </Cads>
-                </FileArmAds>
-              </FileOption>
+              <FilePath>../CM7/ApplicationV3/Runtime/service_event_loop.c</FilePath>
             </File>
             <File>
-              <FileName>app_frame_dispatcher.h</FileName>
+              <FileName>service_event_loop.h</FileName>
               <FileType>5</FileType>
-              <FilePath>../CM7/Application/app_frame_dispatcher.h</FilePath>
-              <FileOption>
-                <CommonProperty>
-                  <UseCPPCompiler>2</UseCPPCompiler>
-                  <RVCTCodeConst>0</RVCTCodeConst>
-                  <RVCTZI>0</RVCTZI>
-                  <RVCTOtherData>0</RVCTOtherData>
-                  <ModuleSelection>0</ModuleSelection>
-                  <IncludeInBuild>0</IncludeInBuild>
-                  <AlwaysBuild>0</AlwaysBuild>
-                  <GenerateAssemblyFile>0</GenerateAssemblyFile>
-                  <AssembleAssemblyFile>0</AssembleAssemblyFile>
-                  <PublicsOnly>0</PublicsOnly>
-                  <StopOnExitCode>3</StopOnExitCode>
-                  <CustomArgument></CustomArgument>
-                  <IncludeLibraryModules></IncludeLibraryModules>
-                  <ComprImg>1</ComprImg>
-                </CommonProperty>
-                <FileArmAds/>
-              </FileOption>
+              <FilePath>../CM7/ApplicationV3/Runtime/service_event_loop.h</FilePath>
+            </File>
+            <File>
+              <FileName>service_record.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>../CM7/ApplicationV3/Runtime/service_record.c</FilePath>
+            </File>
+            <File>
+              <FileName>service_record.h</FileName>
+              <FileType>5</FileType>
+              <FilePath>../CM7/ApplicationV3/Runtime/service_record.h</FilePath>
+            </File>
+            <File>
+              <FileName>service_events.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>../CM7/ApplicationV3/Runtime/service_events.c</FilePath>
+            </File>
+            <File>
+              <FileName>service_events.h</FileName>
+              <FileType>5</FileType>
+              <FilePath>../CM7/ApplicationV3/Runtime/service_events.h</FilePath>
+            </File>
+            <File>
+              <FileName>service_mailbox.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>../CM7/ApplicationV3/Runtime/service_mailbox.c</FilePath>
+            </File>
+            <File>
+              <FileName>service_mailbox.h</FileName>
+              <FileType>5</FileType>
+              <FilePath>../CM7/ApplicationV3/Runtime/service_mailbox.h</FilePath>
+            </File>
+          </Files>
+        </Group>
+        <Group>
+          <GroupName>Application V3 / Services</GroupName>
+          <GroupOption>
+            <CommonProperty>
+              <UseCPPCompiler>0</UseCPPCompiler>
+              <RVCTCodeConst>0</RVCTCodeConst>
+              <RVCTZI>0</RVCTZI>
+              <RVCTOtherData>0</RVCTOtherData>
+              <ModuleSelection>0</ModuleSelection>
+              <IncludeInBuild>0</IncludeInBuild>
+              <AlwaysBuild>2</AlwaysBuild>
+              <GenerateAssemblyFile>2</GenerateAssemblyFile>
+              <AssembleAssemblyFile>2</AssembleAssemblyFile>
+              <PublicsOnly>2</PublicsOnly>
+              <StopOnExitCode>11</StopOnExitCode>
+              <CustomArgument></CustomArgument>
+              <IncludeLibraryModules></IncludeLibraryModules>
+              <ComprImg>1</ComprImg>
+            </CommonProperty>
+            <GroupArmAds>
+              <Cads>
+                <interw>2</interw>
+                <Optim>0</Optim>
+                <oTime>2</oTime>
+                <SplitLS>2</SplitLS>
+                <OneElfS>2</OneElfS>
+                <Strict>2</Strict>
+                <EnumInt>2</EnumInt>
+                <PlainCh>2</PlainCh>
+                <Ropi>2</Ropi>
+                <Rwpi>2</Rwpi>
+                <wLevel>4</wLevel>
+                <uThumb>2</uThumb>
+                <uSurpInc>2</uSurpInc>
+                <uC99>2</uC99>
+                <uGnu>2</uGnu>
+                <useXO>2</useXO>
+                <v6Lang>0</v6Lang>
+                <v6LangP>0</v6LangP>
+                <vShortEn>2</vShortEn>
+                <vShortWch>2</vShortWch>
+                <v6Lto>2</v6Lto>
+                <v6WtE>2</v6WtE>
+                <v6Rtti>2</v6Rtti>
+                <VariousControls>
+                  <MiscControls></MiscControls>
+                  <Define></Define>
+                  <Undefine></Undefine>
+                  <IncludePath></IncludePath>
+                </VariousControls>
+              </Cads>
+              <Aads>
+                <interw>2</interw>
+                <Ropi>2</Ropi>
+                <Rwpi>2</Rwpi>
+                <thumb>2</thumb>
+                <SplitLS>2</SplitLS>
+                <SwStkChk>2</SwStkChk>
+                <NoWarn>2</NoWarn>
+                <uSurpInc>2</uSurpInc>
+                <useXO>2</useXO>
+                <ClangAsOpt>0</ClangAsOpt>
+                <VariousControls>
+                  <MiscControls></MiscControls>
+                  <Define></Define>
+                  <Undefine></Undefine>
+                  <IncludePath></IncludePath>
+                </VariousControls>
+              </Aads>
+            </GroupArmAds>
+          </GroupOption>
+          <Files>
+            <File>
+              <FileName>camera_service.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>../CM7/ApplicationV3/Services/Camera/camera_service.c</FilePath>
+            </File>
+            <File>
+              <FileName>storage_service.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>../CM7/ApplicationV3/Services/Storage/storage_service.c</FilePath>
+            </File>
+            <File>
+              <FileName>usb_service.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>../CM7/ApplicationV3/Services/USB/usb_service.c</FilePath>
+            </File>
+            <File>
+              <FileName>camera_service.h</FileName>
+              <FileType>5</FileType>
+              <FilePath>../CM7/ApplicationV3/Services/Camera/camera_service.h</FilePath>
+            </File>
+            <File>
+              <FileName>storage_service.h</FileName>
+              <FileType>5</FileType>
+              <FilePath>../CM7/ApplicationV3/Services/Storage/storage_service.h</FilePath>
+            </File>
+            <File>
+              <FileName>usb_service.h</FileName>
+              <FileType>5</FileType>
+              <FilePath>../CM7/ApplicationV3/Services/USB/usb_service.h</FilePath>
+            </File>
+          </Files>
+        </Group>
+        <Group>
+          <GroupName>Application V3 / Tasks</GroupName>
+          <GroupOption>
+            <CommonProperty>
+              <UseCPPCompiler>0</UseCPPCompiler>
+              <RVCTCodeConst>0</RVCTCodeConst>
+              <RVCTZI>0</RVCTZI>
+              <RVCTOtherData>0</RVCTOtherData>
+              <ModuleSelection>0</ModuleSelection>
+              <IncludeInBuild>0</IncludeInBuild>
+              <AlwaysBuild>2</AlwaysBuild>
+              <GenerateAssemblyFile>2</GenerateAssemblyFile>
+              <AssembleAssemblyFile>2</AssembleAssemblyFile>
+              <PublicsOnly>2</PublicsOnly>
+              <StopOnExitCode>11</StopOnExitCode>
+              <CustomArgument></CustomArgument>
+              <IncludeLibraryModules></IncludeLibraryModules>
+              <ComprImg>1</ComprImg>
+            </CommonProperty>
+            <GroupArmAds>
+              <Cads>
+                <interw>2</interw>
+                <Optim>0</Optim>
+                <oTime>2</oTime>
+                <SplitLS>2</SplitLS>
+                <OneElfS>2</OneElfS>
+                <Strict>2</Strict>
+                <EnumInt>2</EnumInt>
+                <PlainCh>2</PlainCh>
+                <Ropi>2</Ropi>
+                <Rwpi>2</Rwpi>
+                <wLevel>4</wLevel>
+                <uThumb>2</uThumb>
+                <uSurpInc>2</uSurpInc>
+                <uC99>2</uC99>
+                <uGnu>2</uGnu>
+                <useXO>2</useXO>
+                <v6Lang>0</v6Lang>
+                <v6LangP>0</v6LangP>
+                <vShortEn>2</vShortEn>
+                <vShortWch>2</vShortWch>
+                <v6Lto>2</v6Lto>
+                <v6WtE>2</v6WtE>
+                <v6Rtti>2</v6Rtti>
+                <VariousControls>
+                  <MiscControls></MiscControls>
+                  <Define></Define>
+                  <Undefine></Undefine>
+                  <IncludePath></IncludePath>
+                </VariousControls>
+              </Cads>
+              <Aads>
+                <interw>2</interw>
+                <Ropi>2</Ropi>
+                <Rwpi>2</Rwpi>
+                <thumb>2</thumb>
+                <SplitLS>2</SplitLS>
+                <SwStkChk>2</SwStkChk>
+                <NoWarn>2</NoWarn>
+                <uSurpInc>2</uSurpInc>
+                <useXO>2</useXO>
+                <ClangAsOpt>0</ClangAsOpt>
+                <VariousControls>
+                  <MiscControls></MiscControls>
+                  <Define></Define>
+                  <Undefine></Undefine>
+                  <IncludePath></IncludePath>
+                </VariousControls>
+              </Aads>
+            </GroupArmAds>
+          </GroupOption>
+          <Files>
+            <File>
+              <FileName>ipc_task.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>../CM7/ApplicationV3/Tasks/ipc_task.c</FilePath>
+            </File>
+            <File>
+              <FileName>ipc_task.h</FileName>
+              <FileType>5</FileType>
+              <FilePath>../CM7/ApplicationV3/Tasks/ipc_task.h</FilePath>
+            </File>
+            <File>
+              <FileName>service_tasks.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>../CM7/ApplicationV3/Tasks/service_tasks.c</FilePath>
+            </File>
+            <File>
+              <FileName>service_tasks.h</FileName>
+              <FileType>5</FileType>
+              <FilePath>../CM7/ApplicationV3/Tasks/service_tasks.h</FilePath>
             </File>
           </Files>
         </Group>
@@ -2214,6 +2416,11 @@
               <FileType>5</FileType>
               <FilePath>../CM7/Platform/ffconf.h</FilePath>
             </File>
+            <File>
+              <FileName>platform_sync.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>../CM7/Platform/platform_sync.c</FilePath>
+            </File>
           </Files>
         </Group>
         <Group>
@@ -2790,166 +2997,6 @@
               <FileType>5</FileType>
               <FilePath>../Common/Inc/runtime_event.h</FilePath>
             </File>
-            <File>
-              <FileName>app_messages.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>../CM7/Application/app_messages.c</FilePath>
-            </File>
-            <File>
-              <FileName>app_messages.h</FileName>
-              <FileType>5</FileType>
-              <FilePath>../CM7/Application/app_messages.h</FilePath>
-            </File>
-            <File>
-              <FileName>app_tasks.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>../CM7/Application/app_tasks.c</FilePath>
-            </File>
-            <File>
-              <FileName>app_tasks.h</FileName>
-              <FileType>5</FileType>
-              <FilePath>../CM7/Application/app_tasks.h</FilePath>
-            </File>
-            <File>
-              <FileName>app_events.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>../CM7/Application/app_events.c</FilePath>
-            </File>
-            <File>
-              <FileName>app_events.h</FileName>
-              <FileType>5</FileType>
-              <FilePath>../CM7/Application/app_events.h</FilePath>
-            </File>
-            <File>
-              <FileName>camera_task.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>../CM7/Application/Tasks/camera_task.c</FilePath>
-            </File>
-            <File>
-              <FileName>camera_task.h</FileName>
-              <FileType>5</FileType>
-              <FilePath>../CM7/Application/Tasks/camera_task.h</FilePath>
-            </File>
-            <File>
-              <FileName>usb_task.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>../CM7/Application/Tasks/usb_task.c</FilePath>
-            </File>
-            <File>
-              <FileName>usb_task.h</FileName>
-              <FileType>5</FileType>
-              <FilePath>../CM7/Application/Tasks/usb_task.h</FilePath>
-            </File>
-            <File>
-              <FileName>control_task.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>../CM7/Application/Tasks/control_task.c</FilePath>
-            </File>
-            <File>
-              <FileName>control_task.h</FileName>
-              <FileType>5</FileType>
-              <FilePath>../CM7/Application/Tasks/control_task.h</FilePath>
-            </File>
-            <File>
-              <FileName>app_status.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>../CM7/Application/app_status.c</FilePath>
-            </File>
-            <File>
-              <FileName>app_status.h</FileName>
-              <FileType>5</FileType>
-              <FilePath>../CM7/Application/app_status.h</FilePath>
-            </File>
-            <File>
-              <FileName>ipc_task.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>../CM7/Application/Tasks/ipc_task.c</FilePath>
-            </File>
-            <File>
-              <FileName>ipc_task.h</FileName>
-              <FileType>5</FileType>
-              <FilePath>../CM7/Application/Tasks/ipc_task.h</FilePath>
-            </File>
-            <File>
-              <FileName>storage_task.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>../CM7/Application/Tasks/storage_task.c</FilePath>
-              <FileOption>
-                <CommonProperty>
-                  <UseCPPCompiler>2</UseCPPCompiler>
-                  <RVCTCodeConst>0</RVCTCodeConst>
-                  <RVCTZI>0</RVCTZI>
-                  <RVCTOtherData>0</RVCTOtherData>
-                  <ModuleSelection>0</ModuleSelection>
-                  <IncludeInBuild>0</IncludeInBuild>
-                  <AlwaysBuild>0</AlwaysBuild>
-                  <GenerateAssemblyFile>0</GenerateAssemblyFile>
-                  <AssembleAssemblyFile>0</AssembleAssemblyFile>
-                  <PublicsOnly>0</PublicsOnly>
-                  <StopOnExitCode>3</StopOnExitCode>
-                  <CustomArgument></CustomArgument>
-                  <IncludeLibraryModules></IncludeLibraryModules>
-                  <ComprImg>1</ComprImg>
-                </CommonProperty>
-                <FileArmAds>
-                  <Cads>
-                    <interw>2</interw>
-                    <Optim>0</Optim>
-                    <oTime>2</oTime>
-                    <SplitLS>2</SplitLS>
-                    <OneElfS>2</OneElfS>
-                    <Strict>2</Strict>
-                    <EnumInt>2</EnumInt>
-                    <PlainCh>2</PlainCh>
-                    <Ropi>2</Ropi>
-                    <Rwpi>2</Rwpi>
-                    <wLevel>0</wLevel>
-                    <uThumb>2</uThumb>
-                    <uSurpInc>2</uSurpInc>
-                    <uC99>2</uC99>
-                    <uGnu>2</uGnu>
-                    <useXO>2</useXO>
-                    <v6Lang>0</v6Lang>
-                    <v6LangP>0</v6LangP>
-                    <vShortEn>2</vShortEn>
-                    <vShortWch>2</vShortWch>
-                    <v6Lto>2</v6Lto>
-                    <v6WtE>2</v6WtE>
-                    <v6Rtti>2</v6Rtti>
-                    <VariousControls>
-                      <MiscControls></MiscControls>
-                      <Define></Define>
-                      <Undefine></Undefine>
-                      <IncludePath></IncludePath>
-                    </VariousControls>
-                  </Cads>
-                </FileArmAds>
-              </FileOption>
-            </File>
-            <File>
-              <FileName>storage_task.h</FileName>
-              <FileType>5</FileType>
-              <FilePath>../CM7/Application/Tasks/storage_task.h</FilePath>
-              <FileOption>
-                <CommonProperty>
-                  <UseCPPCompiler>2</UseCPPCompiler>
-                  <RVCTCodeConst>0</RVCTCodeConst>
-                  <RVCTZI>0</RVCTZI>
-                  <RVCTOtherData>0</RVCTOtherData>
-                  <ModuleSelection>0</ModuleSelection>
-                  <IncludeInBuild>0</IncludeInBuild>
-                  <AlwaysBuild>0</AlwaysBuild>
-                  <GenerateAssemblyFile>0</GenerateAssemblyFile>
-                  <AssembleAssemblyFile>0</AssembleAssemblyFile>
-                  <PublicsOnly>0</PublicsOnly>
-                  <StopOnExitCode>3</StopOnExitCode>
-                  <CustomArgument></CustomArgument>
-                  <IncludeLibraryModules></IncludeLibraryModules>
-                  <ComprImg>1</ComprImg>
-                </CommonProperty>
-                <FileArmAds/>
-              </FileOption>
-            </File>
           </Files>
         </Group>
         <Group>
@@ -3118,7 +3165,7 @@
           <bCustSvd>0</bCustSvd>
           <UseEnv>0</UseEnv>
           <BinPath></BinPath>
-          <IncludePath>;..\CM7\Application\Tasks</IncludePath>
+          <IncludePath>;..\CM7\ApplicationV3\Tasks</IncludePath>
           <LibPath></LibPath>
           <RegisterFilePath></RegisterFilePath>
           <DBRegisterFilePath></DBRegisterFilePath>
@@ -3420,7 +3467,7 @@
               <MiscControls>--preinclude ../CM7/BSP/bsp_sdram_hal_config.h --preinclude ../CM7/BSP/bsp_dcmi_hal_config.h --preinclude ../CM7/BSP/bsp_usb_hal_config.h --preinclude ../CM7/BSP/bsp_sdmmc_hal_config.h </MiscControls>
               <Define>CORE_CM7,USE_HAL_DRIVER,STM32H747xx,USE_PWR_LDO_SUPPLY,APP_VIDEO_MJPEG_MODE=1</Define>
               <Undefine></Undefine>
-              <IncludePath>../CM7/Core/Inc;../Drivers/STM32H7xx_HAL_Driver/Inc;../Drivers/STM32H7xx_HAL_Driver/Inc/Legacy;../Drivers/CMSIS/Device/ST/STM32H7xx/Include;../Drivers/CMSIS/Include;..\Common\Inc;..\Board\Inc;..\CM7\Application;..\CM7\Service;..\CM7\Device\Inc;..\CM7\Media\Inc;..\CM7\Platform;..\CM7\BSP;..\CM7\Framework;..\CM7\Device\Components\OV5640;../Middlewares/ST/STM32_USB_Device_Library/Core/Inc;../Middlewares/Third_Party/FreeRTOS/Source/include;../Middlewares/Third_Party/FreeRTOS/Source/portable/RVDS/ARM_CM7/r0p1;../Middlewares/Third_Party/FatFs</IncludePath>
+              <IncludePath>../CM7/Core/Inc;../Drivers/STM32H7xx_HAL_Driver/Inc;../Drivers/STM32H7xx_HAL_Driver/Inc/Legacy;../Drivers/CMSIS/Device/ST/STM32H7xx/Include;../Drivers/CMSIS/Include;..\Common\Inc;..\Board\Inc;..\CM7\ApplicationV3\Core;..\CM7\Service;..\CM7\Device\Inc;..\CM7\Media\Inc;..\CM7\Platform;..\CM7\BSP;..\CM7\Framework;..\CM7\Device\Components\OV5640;../Middlewares/ST/STM32_USB_Device_Library/Core/Inc;../Middlewares/Third_Party/FreeRTOS/Source/include;../Middlewares/Third_Party/FreeRTOS/Source/portable/RVDS/ARM_CM7/r0p1;../Middlewares/Third_Party/FatFs</IncludePath>
             </VariousControls>
           </Cads>
           <Aads>
@@ -3456,7 +3503,14 @@
             <IncludeLibsPath></IncludeLibsPath>
             <Misc>--keep=g_ipc
 --keep=*(.framework_init)
---keep=*(.device_export)</Misc>
+--keep=*(.device_export)
+--keep=AppV3Supervisor_Set
+--keep=AppV3Supervisor_Query
+--keep=AppV3Supervisor_Read
+--keep=AppV3Supervisor_Recover
+--keep=App_EventsReadStackWatermarks
+--keep=CameraMjpegFifo_ReadOccupancy
+--keep=BSP_SDMMC_GetIoDiagnostics</Misc>
             <LinkerInputFile></LinkerInputFile>
             <DisabledWarnings></DisabledWarnings>
           </LDads>
@@ -4393,62 +4447,197 @@
           </Files>
         </Group>
         <Group>
-          <GroupName>CM7\Application</GroupName>
+          <GroupName>Application V3 / Core</GroupName>
           <Files>
+            <File>
+              <FileName>app_context.h</FileName>
+              <FileType>5</FileType>
+              <FilePath>../CM7/ApplicationV3/Core/app_context.h</FilePath>
+            </File>
+            <File>
+              <FileName>app_events.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>../CM7/ApplicationV3/Core/app_events.c</FilePath>
+            </File>
+            <File>
+              <FileName>app_events.h</FileName>
+              <FileType>5</FileType>
+              <FilePath>../CM7/ApplicationV3/Core/app_events.h</FilePath>
+            </File>
             <File>
               <FileName>app_main.c</FileName>
               <FileType>1</FileType>
-              <FilePath>../CM7/Application/app_main.c</FilePath>
+              <FilePath>../CM7/ApplicationV3/Core/app_main.c</FilePath>
             </File>
             <File>
-              <FileName>app_camera.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>../CM7/Application/app_camera.c</FilePath>
-            </File>
-            <File>
-              <FileName>app_camera.h</FileName>
+              <FileName>app_main.h</FileName>
               <FileType>5</FileType>
-              <FilePath>../CM7/Application/app_camera.h</FilePath>
+              <FilePath>../CM7/ApplicationV3/Core/app_main.h</FilePath>
             </File>
             <File>
-              <FileName>app_uvc_bridge.c</FileName>
+              <FileName>app_messages.c</FileName>
               <FileType>1</FileType>
-              <FilePath>../CM7/Application/app_uvc_bridge.c</FilePath>
+              <FilePath>../CM7/ApplicationV3/Core/app_messages.c</FilePath>
             </File>
             <File>
-              <FileName>app_uvc_bridge.h</FileName>
+              <FileName>app_messages.h</FileName>
               <FileType>5</FileType>
-              <FilePath>../CM7/Application/app_uvc_bridge.h</FilePath>
+              <FilePath>../CM7/ApplicationV3/Core/app_messages.h</FilePath>
+            </File>
+            <File>
+              <FileName>app_services.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>../CM7/ApplicationV3/Core/app_services.c</FilePath>
+            </File>
+            <File>
+              <FileName>app_services.h</FileName>
+              <FileType>5</FileType>
+              <FilePath>../CM7/ApplicationV3/Core/app_services.h</FilePath>
+            </File>
+            <File>
+              <FileName>app_status.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>../CM7/ApplicationV3/Core/app_status.c</FilePath>
+            </File>
+            <File>
+              <FileName>app_status.h</FileName>
+              <FileType>5</FileType>
+              <FilePath>../CM7/ApplicationV3/Core/app_status.h</FilePath>
+            </File>
+            <File>
+              <FileName>app_tasks.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>../CM7/ApplicationV3/Core/app_tasks.c</FilePath>
+            </File>
+            <File>
+              <FileName>app_tasks.h</FileName>
+              <FileType>5</FileType>
+              <FilePath>../CM7/ApplicationV3/Core/app_tasks.h</FilePath>
             </File>
             <File>
               <FileName>video_config.c</FileName>
               <FileType>1</FileType>
-              <FilePath>../CM7/Application/video_config.c</FilePath>
+              <FilePath>../CM7/ApplicationV3/Core/video_config.c</FilePath>
             </File>
             <File>
               <FileName>video_config.h</FileName>
               <FileType>5</FileType>
-              <FilePath>../CM7/Application/video_config.h</FilePath>
+              <FilePath>../CM7/ApplicationV3/Core/video_config.h</FilePath>
             </File>
+          </Files>
+        </Group>
+        <Group>
+          <GroupName>Application V3 / Runtime</GroupName>
+          <Files>
             <File>
-              <FileName>app_storage.c</FileName>
+              <FileName>queue_pool.c</FileName>
               <FileType>1</FileType>
-              <FilePath>../CM7/Application/app_storage.c</FilePath>
+              <FilePath>../CM7/ApplicationV3/Runtime/queue_pool.c</FilePath>
             </File>
             <File>
-              <FileName>app_storage.h</FileName>
+              <FileName>queue_pool.h</FileName>
               <FileType>5</FileType>
-              <FilePath>../CM7/Application/app_storage.h</FilePath>
+              <FilePath>../CM7/ApplicationV3/Runtime/queue_pool.h</FilePath>
             </File>
             <File>
-              <FileName>app_frame_dispatcher.c</FileName>
+              <FileName>service_event_loop.c</FileName>
               <FileType>1</FileType>
-              <FilePath>../CM7/Application/app_frame_dispatcher.c</FilePath>
+              <FilePath>../CM7/ApplicationV3/Runtime/service_event_loop.c</FilePath>
             </File>
             <File>
-              <FileName>app_frame_dispatcher.h</FileName>
+              <FileName>service_event_loop.h</FileName>
               <FileType>5</FileType>
-              <FilePath>../CM7/Application/app_frame_dispatcher.h</FilePath>
+              <FilePath>../CM7/ApplicationV3/Runtime/service_event_loop.h</FilePath>
+            </File>
+            <File>
+              <FileName>service_record.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>../CM7/ApplicationV3/Runtime/service_record.c</FilePath>
+            </File>
+            <File>
+              <FileName>service_record.h</FileName>
+              <FileType>5</FileType>
+              <FilePath>../CM7/ApplicationV3/Runtime/service_record.h</FilePath>
+            </File>
+            <File>
+              <FileName>service_events.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>../CM7/ApplicationV3/Runtime/service_events.c</FilePath>
+            </File>
+            <File>
+              <FileName>service_events.h</FileName>
+              <FileType>5</FileType>
+              <FilePath>../CM7/ApplicationV3/Runtime/service_events.h</FilePath>
+            </File>
+            <File>
+              <FileName>service_mailbox.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>../CM7/ApplicationV3/Runtime/service_mailbox.c</FilePath>
+            </File>
+            <File>
+              <FileName>service_mailbox.h</FileName>
+              <FileType>5</FileType>
+              <FilePath>../CM7/ApplicationV3/Runtime/service_mailbox.h</FilePath>
+            </File>
+          </Files>
+        </Group>
+        <Group>
+          <GroupName>Application V3 / Services</GroupName>
+          <Files>
+            <File>
+              <FileName>camera_service.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>../CM7/ApplicationV3/Services/Camera/camera_service.c</FilePath>
+            </File>
+            <File>
+              <FileName>storage_service.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>../CM7/ApplicationV3/Services/Storage/storage_service.c</FilePath>
+            </File>
+            <File>
+              <FileName>usb_service.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>../CM7/ApplicationV3/Services/USB/usb_service.c</FilePath>
+            </File>
+            <File>
+              <FileName>camera_service.h</FileName>
+              <FileType>5</FileType>
+              <FilePath>../CM7/ApplicationV3/Services/Camera/camera_service.h</FilePath>
+            </File>
+            <File>
+              <FileName>storage_service.h</FileName>
+              <FileType>5</FileType>
+              <FilePath>../CM7/ApplicationV3/Services/Storage/storage_service.h</FilePath>
+            </File>
+            <File>
+              <FileName>usb_service.h</FileName>
+              <FileType>5</FileType>
+              <FilePath>../CM7/ApplicationV3/Services/USB/usb_service.h</FilePath>
+            </File>
+          </Files>
+        </Group>
+        <Group>
+          <GroupName>Application V3 / Tasks</GroupName>
+          <Files>
+            <File>
+              <FileName>ipc_task.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>../CM7/ApplicationV3/Tasks/ipc_task.c</FilePath>
+            </File>
+            <File>
+              <FileName>ipc_task.h</FileName>
+              <FileType>5</FileType>
+              <FilePath>../CM7/ApplicationV3/Tasks/ipc_task.h</FilePath>
+            </File>
+            <File>
+              <FileName>service_tasks.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>../CM7/ApplicationV3/Tasks/service_tasks.c</FilePath>
+            </File>
+            <File>
+              <FileName>service_tasks.h</FileName>
+              <FileType>5</FileType>
+              <FilePath>../CM7/ApplicationV3/Tasks/service_tasks.h</FilePath>
             </File>
           </Files>
         </Group>
@@ -4854,121 +5043,6 @@
               <FileName>runtime_event.h</FileName>
               <FileType>5</FileType>
               <FilePath>../Common/Inc/runtime_event.h</FilePath>
-            </File>
-            <File>
-              <FileName>app_messages.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>../CM7/Application/app_messages.c</FilePath>
-            </File>
-            <File>
-              <FileName>app_camera_lifecycle.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>../CM7/Application/app_camera_lifecycle.c</FilePath>
-            </File>
-            <File>
-              <FileName>app_camera_lifecycle_replay.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>../CM7/Application/app_camera_lifecycle_replay.c</FilePath>
-            </File>
-            <File>
-              <FileName>app_camera_qualification.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>../CM7/Application/app_camera_qualification.c</FilePath>
-            </File>
-            <File>
-              <FileName>app_messages.h</FileName>
-              <FileType>5</FileType>
-              <FilePath>../CM7/Application/app_messages.h</FilePath>
-            </File>
-            <File>
-              <FileName>app_tasks.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>../CM7/Application/app_tasks.c</FilePath>
-            </File>
-            <File>
-              <FileName>app_tasks.h</FileName>
-              <FileType>5</FileType>
-              <FilePath>../CM7/Application/app_tasks.h</FilePath>
-            </File>
-            <File>
-              <FileName>app_events.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>../CM7/Application/app_events.c</FilePath>
-            </File>
-            <File>
-              <FileName>app_events.h</FileName>
-              <FileType>5</FileType>
-              <FilePath>../CM7/Application/app_events.h</FilePath>
-            </File>
-            <File>
-              <FileName>camera_task.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>../CM7/Application/Tasks/camera_task.c</FilePath>
-            </File>
-            <File>
-              <FileName>camera_task.h</FileName>
-              <FileType>5</FileType>
-              <FilePath>../CM7/Application/Tasks/camera_task.h</FilePath>
-            </File>
-            <File>
-              <FileName>usb_task.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>../CM7/Application/Tasks/usb_task.c</FilePath>
-            </File>
-            <File>
-              <FileName>usb_task.h</FileName>
-              <FileType>5</FileType>
-              <FilePath>../CM7/Application/Tasks/usb_task.h</FilePath>
-            </File>
-            <File>
-              <FileName>control_task.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>../CM7/Application/Tasks/control_task.c</FilePath>
-            </File>
-            <File>
-              <FileName>control_task.h</FileName>
-              <FileType>5</FileType>
-              <FilePath>../CM7/Application/Tasks/control_task.h</FilePath>
-            </File>
-            <File>
-              <FileName>app_usb.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>../CM7/Application/app_usb.c</FilePath>
-            </File>
-            <File>
-              <FileName>app_usb.h</FileName>
-              <FileType>5</FileType>
-              <FilePath>../CM7/Application/app_usb.h</FilePath>
-            </File>
-            <File>
-              <FileName>app_status.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>../CM7/Application/app_status.c</FilePath>
-            </File>
-            <File>
-              <FileName>app_status.h</FileName>
-              <FileType>5</FileType>
-              <FilePath>../CM7/Application/app_status.h</FilePath>
-            </File>
-            <File>
-              <FileName>ipc_task.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>../CM7/Application/Tasks/ipc_task.c</FilePath>
-            </File>
-            <File>
-              <FileName>ipc_task.h</FileName>
-              <FileType>5</FileType>
-              <FilePath>../CM7/Application/Tasks/ipc_task.h</FilePath>
-            </File>
-            <File>
-              <FileName>storage_task.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>../CM7/Application/Tasks/storage_task.c</FilePath>
-            </File>
-            <File>
-              <FileName>storage_task.h</FileName>
-              <FileType>5</FileType>
-              <FilePath>../CM7/Application/Tasks/storage_task.h</FilePath>
             </File>
           </Files>
         </Group>
