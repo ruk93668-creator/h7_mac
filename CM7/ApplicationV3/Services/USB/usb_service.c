@@ -1,9 +1,19 @@
 #include "usb_service.h"
+#include "../../Tasks/record_board.h"
+#if APP_V3_JOINT_BOARD_TEST
+volatile AppV3JointUsb_t g_app_v3_joint_usb;
+#endif
 #include "../../Core/app_messages.h"
 
 #ifndef APP_V3_RAW_UVC_TEST
 #define APP_V3_RAW_UVC_TEST 0
 #endif
+
+#ifndef APP_VIDEO_MJPEG_MODE
+#define APP_VIDEO_MJPEG_MODE 0
+#endif
+
+#define APP_V3_UVC_FRAME_PIPE (APP_V3_RAW_UVC_TEST || APP_VIDEO_MJPEG_MODE)
 #include "../../Tasks/service_tasks.h"
 #include "usb_device.h"
 #include "usb_uvc.h"
@@ -158,6 +168,9 @@ static void UsbFrame_Receive(const AppMessage_t *message)
             bool can_read = s_frame.state == USB_FRAME_WAIT_OFFER &&
                 message->frame.data != NULL && message->frame.size_bytes != 0U;
             s_frame.transfer = *message;
+#if APP_V3_JOINT_BOARD_TEST
+            ++g_app_v3_joint_usb.offer;
+#endif
             s_frame.state = USB_FRAME_OFFERED;
             if (!can_read)
             {
@@ -172,6 +185,9 @@ static void UsbFrame_Receive(const AppMessage_t *message)
     {
         if (s_frame.result == SYS_ERR_BUSY)
             s_frame.result = SYS_OK;
+#if APP_V3_JOINT_BOARD_TEST
+        ++g_app_v3_joint_usb.ack;
+#endif
         s_frame.state = USB_FRAME_CONSUMED_PENDING;
     }
 }
@@ -206,6 +222,12 @@ static void UsbFrame_Flush(void)
     }
     if (App_MessagesSend(APP_CHANNEL_TO_CAMERA, &message) == SYS_OK)
     {
+#if APP_V3_JOINT_BOARD_TEST
+        if (message.type == APP_MESSAGE_FRAME_RETURN)
+            ++g_app_v3_joint_usb.returned;
+        else if (message.type == APP_MESSAGE_RETURN_ACK_CONSUMED && message.lease_id != 0U)
+            ++g_app_v3_joint_usb.confirmed;
+#endif
         s_frame.state = after;
         if (after == USB_FRAME_IDLE)
             s_frame.transfer = (AppMessage_t){.command_id = 0U};
@@ -244,6 +266,9 @@ SysResult_t UsbService_RequestFrame(void)
     result = App_MessagesSend(APP_CHANNEL_TO_CAMERA, &request);
     if (result == SYS_OK)
     {
+#if APP_V3_JOINT_BOARD_TEST
+        ++g_app_v3_joint_usb.request;
+#endif
         s_frame.request_id = request.command_id;
         s_frame.state = USB_FRAME_WAIT_OFFER;
         s_frame.result = SYS_ERR_BUSY;
@@ -287,7 +312,7 @@ SysResult_t UsbService_CancelFrameRequest(void)
     return SYS_OK;
 }
 
-#if APP_V3_RAW_UVC_TEST
+#if APP_V3_UVC_FRAME_PIPE
 static uint32_t s_uvc_reader_id;
 
 static bool UsbService_IsExitReason(UsbUvcReaderExit_t reason)
@@ -370,7 +395,46 @@ static SysResult_t UsbService_AdvanceReader(bool closing)
     return result;
 }
 
-static SysResult_t UsbService_SubmitRawFrame(void)
+//将已借出的JPEG转换成两段只读视图。验证长度、尺寸和上限后才交给Class。
+#if APP_VIDEO_MJPEG_MODE
+static SysResult_t UsbService_SubmitJpeg(const CameraFrame_t *frame)
+{
+    VideoFrameView_t view;
+    const VideoConfig_t *config = s_usb.config;
+
+    if (frame->format != CAMERA_PIXEL_FORMAT_JPEG || frame->width != config->camera.width ||
+        frame->height != config->camera.height || frame->size_bytes < 4U ||
+        frame->size_bytes2 >= frame->size_bytes ||
+        (frame->size_bytes2 == 0U) != (frame->data2 == NULL))
+        return SYS_ERR_PROTOCOL;
+
+    //超出UVC配置值的帧正常跳过并归还，绝不截断JPEG。
+    if (frame->size_bytes > config->output_max_frame_bytes)
+    {
+#if APP_V3_JOINT_BOARD_TEST
+        ++g_app_v3_joint_usb.oversize;
+#endif
+        return SYS_ERR_BUSY;
+    }
+    view = (VideoFrameView_t){
+        .spans = {{frame->data, frame->size_bytes - frame->size_bytes2}, {frame->data2, frame->size_bytes2}},
+        .size_bytes = frame->size_bytes,
+        .span_count = frame->size_bytes2 == 0U ? 1U : 2U
+    };
+    if (!VideoFrameView_Valid(&view))
+        return SYS_ERR_PROTOCOL;
+    {
+        SysResult_t result = USB_UVC_SubmitFrameView(&view);
+#if APP_V3_JOINT_BOARD_TEST
+        if (result == SYS_ERR_BUSY)
+            ++g_app_v3_joint_usb.submit_busy;
+#endif
+        return result;
+    }
+}
+#endif
+
+static SysResult_t UsbService_SubmitVideo(void)
 {
     UsbUvcStreamStatus_t stream;
     UsbUvcReaderProof_t before;
@@ -378,6 +442,10 @@ static SysResult_t UsbService_SubmitRawFrame(void)
     uint32_t frame_id;
     SysResult_t result;
 
+#if APP_VIDEO_MJPEG_MODE
+    if (s_usb.config->camera.format != CAMERA_PIXEL_FORMAT_JPEG || s_usb.config->output != VIDEO_OUTPUT_USB_UVC)
+        return SYS_ERR_BUSY;
+#endif
     //只有Host真实协商并打开Alt1，才允许申请或提交业务帧。
     if (s_uvc_reader_id != 0U || (s_frame.state != USB_FRAME_IDLE && s_frame.state != USB_FRAME_OFFERED))
         return SYS_ERR_BUSY;
@@ -396,11 +464,15 @@ static SysResult_t UsbService_SubmitRawFrame(void)
     result = UsbService_ReadFrame(&frame, &frame_id);
     if (result != SYS_OK)
         return result;
+#if APP_VIDEO_MJPEG_MODE
+    result = UsbService_SubmitJpeg(&frame);
+#else
     if (frame.format != CAMERA_PIXEL_FORMAT_YUV422 || frame.width != 160U || frame.height != 120U ||
         frame.size_bytes != 38400U || frame.size_bytes2 != 0U || frame.data2 != NULL)
         result = SYS_ERR_PROTOCOL;
     else
         result = USB_UVC_SubmitFrame(frame.data, frame.size_bytes);
+#endif
 
     if (result == SYS_OK)
     {
@@ -606,13 +678,13 @@ static SysResult_t UsbService_ObserveDevice(bool *suspended)
             {
                 //只认可本任务已绑定提交的占用，未知读者保留故障。
                 s_usb.hardware.flags |= USB_HW_FRAME_HELD;
-#if APP_V3_RAW_UVC_TEST
+#if APP_V3_UVC_FRAME_PIPE
                 if (s_uvc_reader_id != 0U)
                     return SYS_OK;
 #endif
                 return SYS_ERR_INVALID_STATE;
             }
-#if APP_V3_RAW_UVC_TEST
+#if APP_V3_UVC_FRAME_PIPE
             //这里只观察当前Class，旧提交的持有标记必须等匹配的退休凭据再清除。
             if (s_uvc_reader_id != 0U)
                 return SYS_OK;
@@ -650,12 +722,13 @@ uint32_t AppV3_UsbAdvance(void)
                 g_app_v3_usb_first_fault.captured = 1U;
             }
 #endif
-            s_usb.hardware.first_fault = result == SYS_OK || result == SYS_ERR_BUSY ? SYS_ERR_IO : result;
+            if (s_usb.hardware.first_fault == SYS_OK)
+                s_usb.hardware.first_fault = result == SYS_OK || result == SYS_ERR_BUSY ? SYS_ERR_IO : result;
             s_usb.hardware.state = APP_V3_HW_FAULT;
         }
     }
 
-#if APP_V3_RAW_UVC_TEST
+#if APP_V3_UVC_FRAME_PIPE
     //STOP前先推进匹配旧读者；A2退出证明未闭合仍不能调用Device STOP。
     result = UsbService_AdvanceReader(s_usb.hardware.state != APP_V3_HW_ACTIVE);
     if (result != SYS_OK && result != SYS_ERR_BUSY)
@@ -668,10 +741,10 @@ uint32_t AppV3_UsbAdvance(void)
 #endif
     //停止或异常只关闭申请，待发Return和消费确认在FAULT中继续排空。
     UsbFrame_Advance(s_usb.hardware.state != APP_V3_HW_ACTIVE);
-#if APP_V3_RAW_UVC_TEST
+#if APP_V3_UVC_FRAME_PIPE
     if (s_usb.hardware.state == APP_V3_HW_ACTIVE && (s_usb.hardware.flags & USB_HW_CONFIGURED) != 0U)
     {
-        result = UsbService_SubmitRawFrame();
+        result = UsbService_SubmitVideo();
         if (result != SYS_OK && result != SYS_ERR_BUSY && result != SYS_ERR_NO_RESOURCE)
         {
             if (s_usb.hardware.first_fault == SYS_OK)
@@ -788,6 +861,33 @@ SysResult_t UsbService_Request(uint32_t command_id, UsbServiceOperation_t operat
 }
 
 //固定Registry指向本服务的实际线程入口
+#if APP_V3_JOINT_BOARD_TEST
+void AppV3_JointUsbSnapshot(void)
+{
+    static uint32_t last_ms;
+    uint32_t now = Platform_TimeGetMs();
+    UsbUvcReaderProof_t proof;
+    UsbUvcJointLink_t link;
+
+    g_app_v3_joint_usb.hardware = s_usb.hardware;
+    if (now - last_ms < 40U)
+        return;
+    last_ms = now;
+    USB_UVC_ReadJointLink(&link);
+    g_app_v3_joint_usb.link = link;
+    if (USB_UVC_ReadReaderProof(&proof) == SYS_OK)
+        g_app_v3_joint_usb.reader = proof;
+    //Class消失时保留之前采到的EOF计数，避免把退场快照清零。
+    if (link.configured)
+        g_app_v3_joint_usb.completed = USB_UVC_GetCompletedFrameCount();
+    g_app_v3_joint_usb.request_id = s_frame.request_id;
+    g_app_v3_joint_usb.session = s_frame.transfer.stream_epoch;
+    g_app_v3_joint_usb.lease_id = s_frame.transfer.lease_id;
+    g_app_v3_joint_usb.frame_id = s_frame.transfer.frame_id;
+    g_app_v3_joint_usb.reader_id = s_uvc_reader_id;
+}
+#endif
+
 void AppV3_UsbRun(void *argument)
 {
     AppV3_ServiceRun(argument, &s_usb.mailbox, AppV3_UsbAdvance);

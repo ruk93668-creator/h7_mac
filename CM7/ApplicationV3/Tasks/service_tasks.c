@@ -47,6 +47,12 @@ void AppV3_ServiceRun(void *argument, AppV3ServiceMailbox_t *mailbox, uint32_t (
             //硬件推进发生在Service任务内，结果队列背压不会阻止必要的停止推进
             if (AppV3_BusinessReady())
                 wait_ms = advance();
+#if APP_V3_JOINT_BOARD_TEST
+                if (thread->owner == RUNTIME_TARGET_CAMERA)
+                    AppV3_JointCameraSnapshot();
+                else if (thread->owner == RUNTIME_TARGET_USB)
+                    AppV3_JointUsbSnapshot();
+#endif
             result = AppV3Mailbox_Flush(mailbox);
             if (result == SYS_OK)
                 result = AppV3EventLoop_Step(&mailbox->loop, wait_ms, &events);
@@ -695,6 +701,9 @@ void AppV3Supervisor_Poll(void)
 volatile AppV3RecordBoardCommand_t g_app_v3_record_command;
 volatile AppV3RecordBoardStatus_t g_app_v3_record_board;
 static uint32_t s_record_board_started;
+#if APP_V3_JOINT_BOARD_TEST
+volatile uint32_t g_app_v3_joint_time_ms;
+#endif
 
 static SysResult_t RecordBoard_Dispatch(uint32_t command, uint32_t partition, uint32_t file, uint32_t active)
 {
@@ -713,6 +722,25 @@ static SysResult_t RecordBoard_Dispatch(uint32_t command, uint32_t partition, ui
         case 5U: return AppV3Supervisor_Query(APP_V3_PIPE_CAMERA);
         case 6U: return AppV3Supervisor_Query(APP_V3_PIPE_RECORD);
         case 7U: return AppV3Supervisor_Recover(APP_V3_PIPE_RECORD);
+#if APP_V3_JOINT_BOARD_TEST
+        case 9U: return AppV3Supervisor_Set(APP_V3_PIPE_USB, 0U);
+        case 10U:
+            if (partition != APP_STORAGE_PARTITION || file == 0U)
+                return SYS_ERR_INVALID_ARG;
+            if ((active & APP_V3_PIPE_RECORD) != 0U)
+                return SYS_ERR_ALREADY_EXISTS;
+            return AppV3Supervisor_Set(APP_V3_PIPE_USB | APP_V3_PIPE_RECORD, file);
+        case 11U:
+            //独立停USB必须保留当前录像，不能意外创建新录像。
+            if ((active & APP_V3_PIPE_RECORD) == 0U)
+                return SYS_ERR_INVALID_STATE;
+            return AppV3Supervisor_Set(APP_V3_PIPE_RECORD, 0U);
+        case 13U: return AppV3Supervisor_Query(APP_V3_PIPE_USB);
+        case 14U:
+            if ((active & APP_V3_PIPE_RECORD) == 0U)
+                return SYS_ERR_INVALID_STATE;
+            return AppV3Supervisor_Set(APP_V3_PIPE_USB | APP_V3_PIPE_RECORD, 0U);
+#endif
         case 8U:
         {
             UBaseType_t words[RUNTIME_TARGET_COUNT];
@@ -739,6 +767,9 @@ void AppV3_RecordBoardPoll(void)
     if (AppV3Supervisor_Read(&snapshot) != SYS_OK)
         return;
     g_app_v3_record_board.configured_partition = APP_STORAGE_PARTITION;
+#if APP_V3_JOINT_BOARD_TEST
+    g_app_v3_joint_time_ms = Platform_TimeGetMs();
+#endif
     if (g_app_v3_record_board.command_pending && !snapshot.planning && snapshot.pending_id == 0U)
     {
         g_app_v3_record_board.elapsed_ms = Platform_TimeGetMs() - s_record_board_started;

@@ -2546,6 +2546,196 @@ static uint32_t Test_RecordBoard(const AppV3Context_t *context, uint32_t scenari
 }
 #endif
 
+#if APP_V3_JOINT_BOARD_TEST
+static uint32_t Test_JointJpeg(const AppV3Context_t *context, uint32_t scenario)
+{
+    uint32_t i, pending;
+    AppMessage_t filler = {.type = APP_MESSAGE_FRAME_RETURN, .source = RUNTIME_TARGET_USB};
+
+    fixture_video.camera.format = CAMERA_PIXEL_FORMAT_JPEG;
+    fixture_video.output_max_frame_bytes = 40000U;
+    fixture_storage.partition = APP_STORAGE_PARTITION;
+    fixture_storage.segment_bytes = 4096U;
+    fixture_storage.segment_ms = 1000U;
+    CHECK(Test_FrameTransportBoot(context) == 0U);
+    CHECK(StorageService_Request(3U, STORAGE_SERVICE_RECORD_START, 1U) == SYS_OK);
+    CHECK(Test_ServiceStep(RUNTIME_TARGET_STORAGE) == SYS_OK);
+    Test_PollHardware(RUNTIME_TARGET_STORAGE);
+    CHECK(Test_ReadHardwareResult(RUNTIME_TARGET_STORAGE, 3U, APP_V3_HW_ACTIVE, SYS_OK));
+
+    g_hardware.raw_can_submit = true;
+    g_hardware.jpeg_oversize = scenario == 99U;
+    if (scenario == 103U)
+    {
+        //两路上行请求背压期间都不得建立新实体租约。
+        owner = RUNTIME_TARGET_USB;
+        for (i = 0U; i < 4U; ++i)
+            CHECK(App_MessagesSend(APP_CHANNEL_TO_CAMERA, &filler) == SYS_OK);
+        owner = RUNTIME_TARGET_STORAGE;
+        filler.source = RUNTIME_TARGET_STORAGE;
+        for (i = 0U; i < 4U; ++i)
+            CHECK(App_MessagesSend(APP_CHANNEL_STORAGE_TO_CAMERA, &filler) == SYS_OK);
+        Test_PollHardware(RUNTIME_TARGET_USB);
+        Test_PollHardware(RUNTIME_TARGET_STORAGE);
+        CHECK(g_app_v3_joint_usb.request == 0U && g_hardware.frame_acquire_calls == 0U);
+        Test_PollHardware(RUNTIME_TARGET_CAMERA);
+    }
+
+    Test_PollHardware(RUNTIME_TARGET_USB);
+    g_hardware.frame_ready = true;
+    Test_PollHardware(RUNTIME_TARGET_CAMERA);
+    Test_PollHardware(RUNTIME_TARGET_CAMERA);
+    Test_PollHardware(RUNTIME_TARGET_USB);
+    if (scenario == 99U)
+    {
+        Test_PollHardware(RUNTIME_TARGET_USB);
+        Test_PollHardware(RUNTIME_TARGET_CAMERA);
+        CHECK(g_hardware.jpeg_submits == 0U && g_hardware.jpeg_usb_releases == 1U &&
+            g_app_v3_joint_usb.oversize == 1U && g_hardware.usb_stop_calls == 0U);
+        return 0U;
+    }
+    CHECK(g_hardware.jpeg_submits == 1U && g_hardware.raw_proof.accepted_id == 1U);
+    Test_PollHardware(RUNTIME_TARGET_STORAGE);
+    g_hardware.frame_ready = true;
+    Test_PollHardware(RUNTIME_TARGET_CAMERA);
+    Test_PollHardware(RUNTIME_TARGET_CAMERA);
+    CHECK(g_hardware.frame_acquire_calls == 2U);
+    CHECK(g_hardware.jpeg_usb_releases == 0U && g_hardware.frame_lease_releases == 0U);
+
+    if (scenario == 101U)
+    {
+        //USB独立STOP先等自己的Reader；已发布给SD的帧不被USB释放。
+        CHECK(UsbService_Request(4U, USB_SERVICE_STOP, 0U) == SYS_OK);
+        CHECK(Test_ServiceStep(RUNTIME_TARGET_USB) == SYS_OK);
+        Test_PollHardware(RUNTIME_TARGET_USB);
+        CHECK(g_hardware.usb_cancel_calls == 1U && g_hardware.usb_stop_calls == 0U);
+        g_hardware.raw_proof.retired_id = 1U;
+        g_hardware.raw_proof.retired_reason = USB_UVC_READER_EXIT_CANCELLED;
+        g_hardware.usb_frame_owned = false;
+        for (i = 0U; i < 5U; ++i)
+        {
+            Test_PollHardware(RUNTIME_TARGET_USB);
+            Test_PollHardware(RUNTIME_TARGET_CAMERA);
+        }
+        CHECK(Test_ReadHardwareResult(RUNTIME_TARGET_USB, 4U, APP_V3_HW_READY, SYS_OK));
+        CHECK(g_hardware.jpeg_usb_releases == 1U && g_hardware.frame_lease_releases == 0U &&
+            g_hardware.record_writes == 0U && g_hardware.unmount_calls == 0U);
+        Test_PollHardware(RUNTIME_TARGET_STORAGE);
+        Test_PollHardware(RUNTIME_TARGET_CAMERA);
+        CHECK(g_hardware.record_writes == 1U && g_hardware.frame_lease_releases == 1U);
+        return 0U;
+    }
+    if (scenario == 103U)
+    {
+        //旧ACK占满两路下行，终结不能误认错误命令ID或提前退休。
+        Test_PollHardware(RUNTIME_TARGET_STORAGE);
+        g_hardware.raw_proof.retired_id = 1U;
+        g_hardware.raw_proof.retired_reason = USB_UVC_READER_EXIT_EOF;
+        g_hardware.usb_frame_owned = false;
+        Test_PollHardware(RUNTIME_TARGET_USB);
+        owner = RUNTIME_TARGET_CAMERA;
+        filler = (AppMessage_t){.type = APP_MESSAGE_RETURN_ACK, .source = RUNTIME_TARGET_CAMERA,
+            .command_id = 0U, .stream_epoch = 1U, .lease_id = 1U};
+        for (i = 0U; i < 4U; ++i)
+        {
+            CHECK(App_MessagesSend(APP_CHANNEL_TO_USB, &filler) == SYS_OK);
+            CHECK(App_MessagesSend(APP_CHANNEL_CAMERA_TO_STORAGE, &filler) == SYS_OK);
+        }
+        Test_PollHardware(RUNTIME_TARGET_CAMERA);
+        Test_PollHardware(RUNTIME_TARGET_CAMERA);
+        Test_PollHardware(RUNTIME_TARGET_USB);
+        Test_PollHardware(RUNTIME_TARGET_STORAGE);
+        CHECK(g_app_v3_joint_usb.ack == 0U && g_app_v3_record_storage.ack == 0U);
+        Test_PollHardware(RUNTIME_TARGET_CAMERA);
+        Test_PollHardware(RUNTIME_TARGET_USB);
+        Test_PollHardware(RUNTIME_TARGET_STORAGE);
+        Test_PollHardware(RUNTIME_TARGET_CAMERA);
+        CHECK(g_app_v3_joint_camera.usb_confirmed == 1U && g_app_v3_joint_camera.sd_confirmed == 1U);
+        CHECK(g_hardware.jpeg_usb_releases == 1U && g_hardware.frame_lease_releases == 1U);
+        return 0U;
+    }
+    if (scenario == 102U)
+    {
+        //两条上行同时满时保留各自的RETURN，任一路都不能提前清账。
+        owner = RUNTIME_TARGET_USB;
+        for (i = 0U; i < 4U; ++i)
+            CHECK(App_MessagesSend(APP_CHANNEL_TO_CAMERA, &filler) == SYS_OK);
+        owner = RUNTIME_TARGET_STORAGE;
+        filler.source = RUNTIME_TARGET_STORAGE;
+        for (i = 0U; i < 4U; ++i)
+            CHECK(App_MessagesSend(APP_CHANNEL_STORAGE_TO_CAMERA, &filler) == SYS_OK);
+        g_hardware.raw_proof.retired_id = 1U;
+        g_hardware.raw_proof.retired_reason = USB_UVC_READER_EXIT_EOF;
+        g_hardware.usb_frame_owned = false;
+        Test_PollHardware(RUNTIME_TARGET_USB);
+        Test_PollHardware(RUNTIME_TARGET_STORAGE);
+        CHECK(g_hardware.record_writes == 1U && g_app_v3_joint_usb.returned == 0U &&
+            g_app_v3_record_storage.returned == 0U);
+        Test_PollHardware(RUNTIME_TARGET_CAMERA);
+        CHECK(g_hardware.jpeg_usb_releases == 0U && g_hardware.frame_lease_releases == 0U);
+        Test_PollHardware(RUNTIME_TARGET_USB);
+        Test_PollHardware(RUNTIME_TARGET_STORAGE);
+        Test_PollHardware(RUNTIME_TARGET_CAMERA);
+        CHECK(g_hardware.jpeg_usb_releases == 1U && g_hardware.frame_lease_releases == 1U);
+        return 0U;
+    }
+
+    if (scenario == 100U)
+    {
+        //SD仍持有OFFER时，USB EOF可以独立归还；Camera STOP必须等SD。
+        CHECK(CameraService_Request(4U, CAMERA_SERVICE_STOP, 0U) == SYS_OK);
+        CHECK(Test_ServiceStep(RUNTIME_TARGET_CAMERA) == SYS_OK);
+        Test_PollHardware(RUNTIME_TARGET_CAMERA);
+        CHECK(g_hardware.capture_stop_calls != 0U && g_hardware.sensor_stop_calls == 0U);
+        g_hardware.raw_proof.retired_id = 1U;
+        g_hardware.raw_proof.retired_reason = USB_UVC_READER_EXIT_EOF;
+        g_hardware.usb_frame_owned = false;
+        Test_PollHardware(RUNTIME_TARGET_USB);
+        Test_PollHardware(RUNTIME_TARGET_CAMERA);
+        CHECK(g_hardware.jpeg_usb_releases == 1U && g_hardware.frame_lease_releases == 0U &&
+            g_hardware.sensor_stop_calls == 0U);
+        for (i = 0U; i < 5U; ++i)
+        {
+            Test_PollHardware(RUNTIME_TARGET_USB);
+            Test_PollHardware(RUNTIME_TARGET_STORAGE);
+            Test_PollHardware(RUNTIME_TARGET_CAMERA);
+        }
+        CHECK(g_hardware.frame_lease_releases == 1U && g_hardware.sensor_stop_calls == 1U);
+        return 0U;
+    }
+
+    //USB暂时未退休，Storage写入和归还不等待它。
+    Test_PollHardware(RUNTIME_TARGET_STORAGE);
+    CHECK(g_hardware.record_writes == 1U && g_hardware.jpeg_usb_releases == 0U);
+    Test_PollHardware(RUNTIME_TARGET_CAMERA);
+    CHECK(g_hardware.frame_lease_releases == 1U && g_hardware.jpeg_usb_releases == 0U);
+    CHECK(StorageService_Request(4U, STORAGE_SERVICE_RECORD_STOP, 0U) == SYS_OK);
+    CHECK(Test_ServiceStep(RUNTIME_TARGET_STORAGE) == SYS_OK);
+    for (i = 0U; i < 4U; ++i)
+    {
+        Test_PollHardware(RUNTIME_TARGET_STORAGE);
+        Test_PollHardware(RUNTIME_TARGET_CAMERA);
+    }
+    CHECK(Test_ReadHardwareResult(RUNTIME_TARGET_STORAGE, 4U, APP_V3_HW_READY, SYS_OK));
+    CHECK(g_hardware.jpeg_usb_releases == 0U && g_hardware.usb_frame_owned);
+
+    //USB归还遇到队列满；待发RETURN保留，此时旧租约仍未释放。
+    owner = RUNTIME_TARGET_USB;
+    for (pending = 0U; pending < 4U; ++pending)
+        CHECK(App_MessagesSend(APP_CHANNEL_TO_CAMERA, &filler) == SYS_OK);
+    g_hardware.raw_proof.retired_id = 1U;
+    g_hardware.raw_proof.retired_reason = USB_UVC_READER_EXIT_EOF;
+    g_hardware.usb_frame_owned = false;
+    Test_PollHardware(RUNTIME_TARGET_USB);
+    CHECK(g_hardware.jpeg_usb_releases == 0U);
+    Test_PollHardware(RUNTIME_TARGET_CAMERA);
+    Test_PollHardware(RUNTIME_TARGET_USB);
+    Test_PollHardware(RUNTIME_TARGET_CAMERA);
+    CHECK(g_hardware.jpeg_usb_releases == 1U);
+    return 0U;
+}
+#endif
+
 uint32_t AppV3_TestRun(uint32_t scenario)
 {
     const AppV3Context_t *context;
@@ -2620,6 +2810,10 @@ uint32_t AppV3_TestRun(uint32_t scenario)
 #if APP_V3_RAW_UVC_TEST
     if (scenario >= 75U && scenario <= 82U)
         return Test_RawUvcTransport(context, scenario);
+#endif
+#if APP_V3_JOINT_BOARD_TEST
+    if (scenario >= 98U && scenario <= 103U)
+        return Test_JointJpeg(context, scenario);
 #endif
 #if APP_V3_RECORD_BOARD_TEST
     if (scenario >= 96U && scenario <= 97U)

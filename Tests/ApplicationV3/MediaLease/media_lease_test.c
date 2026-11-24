@@ -430,6 +430,103 @@ static uint32_t JpegStorageOnly(void)
     return 0U;
 }
 
+//用真实FIFO在两个DMA块产生不同JPEG，分别持有及归还原Loan。
+static uint32_t JpegIndependentConsumers(void)
+{
+    CameraFrame_t usb, sd;
+    CameraMjpegLease_t u, s;
+    uint32_t target, i, next;
+    uint8_t *source;
+
+    CHECK(CameraCapture_Init(&s_jpeg) == SYS_OK);
+    CHECK(CameraCapture_StartStream() == SYS_OK);
+    for (target = 0U; target < 2U; ++target)
+    {
+        source = (uint8_t *)s_targets[target];
+        for (i = 0U; i < CAMERA_MJPEG_BLOCK_BYTES; ++i)
+            source[i] = mjpeg_fixture[i % sizeof(mjpeg_fixture)];
+        for (i = 0U; i < CAMERA_MJPEG_BLOCK_BYTES / sizeof(mjpeg_fixture); ++i)
+            s_jpeg_ops->frame(s_context);
+        CHECK(s_jpeg_ops->block_complete((BspDcmiTarget_t)target,
+            (uint32_t)(uintptr_t)source, &next, s_context) == SYS_OK);
+        if (target != 0U)
+            CHECK(next != (uint32_t)s_targets[0] && next != (uint32_t)s_targets[1]);
+        CameraCapture_Process();
+        if (target == 0U)
+            CHECK(CameraCapture_StreamAcquireJpegUsb(&u, &usb) == SYS_OK);
+        else
+            CHECK(CameraCapture_StreamAcquireJpegStorage(&s, &sd) == SYS_OK);
+    }
+    CHECK(u.session == s.session && u.id != s.id && usb.data != sd.data);
+    CHECK(CameraCapture_StreamAcquireJpegUsb(&s, &sd) == SYS_ERR_BUSY);
+    CHECK(!CameraCapture_StreamGetFrame(&sd));
+    CHECK(CameraCapture_StreamReleaseFrame() == SYS_ERR_INVALID_STATE);
+    CHECK(CameraCapture_StreamReleaseJpegUsb(&s) != SYS_OK);
+    CHECK(CameraCapture_StreamReleaseJpegStorage(&u) != SYS_OK);
+    CHECK(CameraCapture_Stop() == SYS_ERR_BUSY);
+    CHECK(CameraCapture_StreamReleaseJpegStorage(&s) == SYS_OK);
+    CHECK(CameraCapture_Stop() == SYS_ERR_BUSY);
+    CHECK(memcmp(usb.data, mjpeg_fixture, usb.size_bytes) == 0);
+    CHECK(CameraCapture_StreamReleaseJpegUsb(&u) == SYS_OK);
+    CHECK(CameraCapture_StreamReleaseJpegUsb(&u) != SYS_OK);
+    CHECK(CameraCapture_Stop() == SYS_OK && CameraCapture_IsStopped());
+    return 0U;
+}
+
+//连续模拟JPEG块并借出USB显式租约，验证FIFO尾部两段字节逐一正确。
+static uint32_t JpegUsbWrap(void)
+{
+    CameraFrame_t frame;
+    CameraMjpegLease_t lease;
+    uint32_t turn, next;
+    const uint32_t split = 16U;
+    bool begun = false;
+
+    CHECK(CameraCapture_Init(&s_jpeg) == SYS_OK);
+    CHECK(CameraCapture_StartStream() == SYS_OK);
+    for (turn = 0U; turn < 72U; ++turn)
+    {
+        uint32_t target = turn & 1U;
+        uint8_t *source = (uint8_t *)s_targets[target];
+
+        //末块注入JPEG前缀，下一块接续，避免测试帧被新帧淘汰。
+        memset(source, 0, CAMERA_MJPEG_BLOCK_BYTES);
+        if (begun)
+        {
+            CHECK((uintptr_t)source == CAMERA_MJPEG_FIFO_BASE);
+            memcpy(source, mjpeg_fixture + split, sizeof(mjpeg_fixture) - split);
+            s_jpeg_ops->frame(s_context);
+        }
+        else if ((uintptr_t)source == CAMERA_MJPEG_DROP_BASE - CAMERA_MJPEG_BLOCK_BYTES)
+        {
+            memcpy(source + CAMERA_MJPEG_BLOCK_BYTES - split, mjpeg_fixture, split);
+            begun = true;
+        }
+        CHECK(s_jpeg_ops->block_complete((BspDcmiTarget_t)target,
+            (uint32_t)(uintptr_t)source, &next, s_context) == SYS_OK);
+        s_targets[target] = (uint32_t *)next;
+        CameraCapture_Process();
+
+        if (CameraCapture_StreamAcquireJpegUsb(&lease, &frame) == SYS_OK)
+        {
+            bool wraps = frame.size_bytes2 != 0U;
+            if (wraps)
+            {
+                uint32_t first = frame.size_bytes - frame.size_bytes2;
+                CHECK(frame.size_bytes == sizeof(mjpeg_fixture) &&
+                    (uintptr_t)frame.data2 == CAMERA_MJPEG_FIFO_BASE);
+                CHECK(memcmp(frame.data, mjpeg_fixture, first) == 0);
+                CHECK(memcmp(frame.data2, mjpeg_fixture + first, frame.size_bytes2) == 0);
+            }
+            CHECK(CameraCapture_StreamReleaseJpegUsb(&lease) == SYS_OK);
+            if (wraps)
+                return 0U;
+        }
+    }
+    CHECK(false);
+    return 0U;
+}
+
 uint32_t A1_TestRun(uint32_t scenario)
 {
     g_stream_size = sizeof(CameraStream_t);
@@ -439,6 +536,10 @@ uint32_t A1_TestRun(uint32_t scenario)
         return JpegRegression();
     if (scenario == 31U)
         return JpegStorageOnly();
+    if (scenario == 32U)
+        return JpegIndependentConsumers();
+    if (scenario == 33U)
+        return JpegUsbWrap();
     CHECK(StartRaw() == 0U);
     if (scenario < 24U)
         return ReleaseOrder(scenario);

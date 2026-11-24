@@ -9,6 +9,10 @@
 #error Invalid APP_V3_RECORD_BOARD_TEST selection
 #endif
 
+#if APP_V3_JOINT_BOARD_TEST && !APP_V3_RECORD_BOARD_TEST
+#error Joint board test requires the existing recording test transport
+#endif
+
 #if APP_V3_RECORD_BOARD_TEST
 #include "board_smoke.h"
 #include "supervisor.h"
@@ -81,6 +85,32 @@ typedef struct
     uint32_t session;
     uint32_t lease_id;
 } AppV3RecordBoardCamera_t;
+
+#if APP_V3_JOINT_BOARD_TEST
+#include "usb_uvc.h"
+typedef struct
+{
+    AppV3HardwareReport_t hardware;
+    UsbUvcReaderProof_t reader;
+    UsbUvcJointLink_t link;
+    uint32_t completed, oversize, submit_busy;
+    uint32_t request, offer, returned, ack, confirmed;
+    uint32_t request_id, session, lease_id, frame_id, reader_id;
+} AppV3JointUsb_t;
+
+typedef struct
+{
+    AppV3HardwareReport_t hardware;
+    uint32_t blocks, loans, usb_confirmed, sd_confirmed;
+    uint32_t usb_request_id, usb_session, usb_lease_id;
+} AppV3JointCamera_t;
+
+extern volatile uint32_t g_app_v3_joint_time_ms;
+extern volatile AppV3JointUsb_t g_app_v3_joint_usb;
+extern volatile AppV3JointCamera_t g_app_v3_joint_camera;
+void AppV3_JointUsbSnapshot(void);
+void AppV3_JointCameraSnapshot(void);
+#endif
 
 //Watch先写参数，再写命令；Control只在自身轮次调用Supervisor。
 extern volatile AppV3RecordBoardCommand_t g_app_v3_record_command;

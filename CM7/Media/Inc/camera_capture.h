@@ -91,6 +91,8 @@ SysResult_t CameraCapture_StreamReleaseLease(const CameraFrameLease_t *lease);
 //仅CameraTask调用，JPEG的会话和编号由原FIFO分配。
 SysResult_t CameraCapture_StreamAcquireJpegStorage(CameraMjpegLease_t *lease, CameraFrame_t *frame);
 SysResult_t CameraCapture_StreamReleaseJpegStorage(const CameraMjpegLease_t *lease);
+SysResult_t CameraCapture_StreamAcquireJpegUsb(CameraMjpegLease_t *lease, CameraFrame_t *frame);
+SysResult_t CameraCapture_StreamReleaseJpegUsb(const CameraMjpegLease_t *lease);
 
 //启动连续采集，固定格式使用五缓冲，JPEG使用独立字节FIFO
 SysResult_t CameraCapture_StartStream(void);

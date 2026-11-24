@@ -1220,6 +1220,33 @@ static SysResult_t UVC_ReleaseFrame(UsbUvcContext_t *ctx, UsbUvcReaderExit_t rea
 }
 
 //查询设备侧累计EOF完成数
+#if APP_V3_JOINT_BOARD_TEST
+//采样主机实际提交的Commit与Alt，不从描述符反推协商已经成功。
+void USB_UVC_ReadJointLink(UsbUvcJointLink_t *link)
+{
+    uint32_t mask = USB_Device_Lock();
+    const UsbUvcContext_t *ctx = s_uvc_active;
+
+    *link = (UsbUvcJointLink_t){.configured = USB_Device_IsConfigured()};
+    if (ctx != NULL)
+    {
+        link->probe_observed = ctx->probe_observed;
+        link->commit_valid = ctx->commit_valid;
+        link->alt1 = ctx->interface_alt[1] == 1U && ctx->ep1_opened && !ctx->ep1_close_pending;
+        link->can_submit = link->configured && link->alt1 && ctx->commit_valid &&
+            ctx->stream_state == USB_UVC_WAIT_FRAME && UVC_PayloadQuiet() &&
+            s_reader_proof.accepted_id == s_reader_proof.retired_id && s_reader_proof.accepted_id != UINT32_MAX;
+        if (ctx->commit_valid)
+        {
+            link->interval = UVC_Read32(ctx->commit + 4U);
+            link->max_frame = UVC_Read32(ctx->commit + 18U);
+            link->max_payload = UVC_Read32(ctx->commit + 22U);
+        }
+    }
+    USB_Device_Unlock(mask);
+}
+#endif
+
 uint32_t USB_UVC_GetCompletedFrameCount(void)
 {
 

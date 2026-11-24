@@ -26,6 +26,8 @@ SCENARIOS = [f"four-loan release order {rank + 1}" for rank in range(24)] + [
     "invalid pool without a safe replacement",
     "unchanged JPEG FIFO and SD retain/release",
     "JPEG Storage-only physical owner and wrong-session rejection",
+    "JPEG USB and SD simultaneously own separate physical frames",
+    "USB explicit lease keeps both spans when JPEG crosses FIFO tail",
 ]
 OBSERVATIONS = ("g_failure", "g_checks", "g_stream_size", "g_capture_size", "g_lease_size")
 
@@ -89,7 +91,9 @@ def execute(image, scenario):
     cpu.reg_write(UC_ARM_REG_R0, scenario)
     error = None
     try:
-        cpu.emu_start(symbols[ENTRY] | 1, 0x01000000, count=20000000, timeout=10000000)
+        # The FIFO-tail case clocks a full physical lap through the production JPEG parser.
+        limit = 150_000_000 if scenario == 33 else 20_000_000
+        cpu.emu_start(symbols[ENTRY] | 1, 0x01000000, count=limit, timeout=25_000_000)
     except Exception as exc:
         error = str(exc)
 

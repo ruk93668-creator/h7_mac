@@ -15,6 +15,8 @@ static CameraCaptureStopFacts_t s_camera_stop_facts;
 static CameraFrameLease_t s_frame_lease;
 static uint32_t s_capture_generation;
 static uint8_t s_sample;
+static uint8_t s_jpeg_usb_data[16], s_jpeg_usb_tail[4];
+static CameraMjpegLease_t s_jpeg_usb;
 static bool s_uvc_descriptor_ready, s_uvc_registered;
 
 uint32_t Platform_TimeGetMs(void)
@@ -149,7 +151,7 @@ SysResult_t CameraCapture_StreamReleaseLease(const CameraFrameLease_t *lease)
 SysResult_t CameraCapture_Stop(void)
 {
     ++g_hardware.capture_stop_calls;
-    if (g_hardware.camera_stop_result == SYS_ERR_BUSY || s_camera_held)
+    if (g_hardware.camera_stop_result == SYS_ERR_BUSY || s_camera_held || s_jpeg_usb.id != 0U)
         return SYS_ERR_BUSY;
     if (!g_hardware.stale_camera_stop)
         ++s_camera_stop_facts.attempt_sequence;
@@ -161,7 +163,7 @@ SysResult_t CameraCapture_Stop(void)
 
 bool CameraCapture_IsStopped(void)
 {
-    return s_camera_initialized && !s_camera_running && !s_camera_held;
+    return s_camera_initialized && !s_camera_running && !s_camera_held && s_jpeg_usb.id == 0U;
 }
 
 SysResult_t CameraCapture_GetStopFacts(CameraCaptureStopFacts_t *facts)
@@ -468,3 +470,58 @@ SysResult_t MjpegAvi_Finish(MjpegAvi_t *avi)
     avi->finished = true;
     return SYS_OK;
 }
+
+
+SysResult_t CameraCapture_StreamAcquireJpegUsb(CameraMjpegLease_t *lease, CameraFrame_t *frame)
+{
+    if (!s_camera_running || !g_hardware.frame_ready || s_jpeg_usb.id != 0U)
+        return SYS_ERR_BUSY;
+    g_hardware.frame_ready = false;
+    s_jpeg_usb = (CameraMjpegLease_t){s_capture_generation, ++g_hardware.frame_acquire_calls};
+    *lease = s_jpeg_usb;
+    *frame = (CameraFrame_t){.width = s_camera_config.width, .height = s_camera_config.height,
+        .format = CAMERA_PIXEL_FORMAT_JPEG, .data = s_jpeg_usb_data, .data2 = s_jpeg_usb_tail,
+        .size_bytes = g_hardware.jpeg_oversize ? 40001U : 20U, .size_bytes2 = 4U};
+    return SYS_OK;
+}
+
+SysResult_t CameraCapture_StreamReleaseJpegUsb(const CameraMjpegLease_t *lease)
+{
+    if (lease->session != s_jpeg_usb.session || lease->id == 0U || lease->id != s_jpeg_usb.id)
+        return SYS_ERR_INVALID_STATE;
+    s_jpeg_usb.id = 0U;
+    ++g_hardware.jpeg_usb_releases;
+    return SYS_OK;
+}
+
+SysResult_t USB_UVC_SubmitFrameView(const VideoFrameView_t *view)
+{
+    ++g_hardware.jpeg_submits;
+    if (view->span_count != 2U || view->spans[0].length != 16U ||
+        view->spans[1].length != 4U || !VideoFrameView_Valid(view))
+        return SYS_ERR_PROTOCOL;
+    if (g_hardware.raw_submit_result == SYS_OK)
+    {
+        ++g_hardware.raw_proof.accepted_id;
+        g_hardware.usb_frame_owned = true;
+    }
+    return g_hardware.raw_submit_result;
+}
+
+#if APP_V3_JOINT_BOARD_TEST
+void CameraMjpegFifo_ReadOccupancy(uint32_t *blocks, uint32_t *loans)
+{
+    *loans = (s_camera_held ? 1U : 0U) + (s_jpeg_usb.id != 0U ? 1U : 0U);
+    *blocks = *loans + 2U;
+}
+
+void USB_UVC_ReadJointLink(UsbUvcJointLink_t *link)
+{
+    *link = (UsbUvcJointLink_t){.configured = g_hardware.usb_configured};
+}
+
+uint32_t USB_UVC_GetCompletedFrameCount(void)
+{
+    return g_hardware.raw_completed_frames;
+}
+#endif

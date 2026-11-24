@@ -23,6 +23,10 @@ typedef struct
 } CameraMjpegLease_t;
 
 //Camera为当前持有的JPEG增加SD引用，不扫描或复制图像
+//CameraTask从独立READY取得原USB位，凭FIFO会话及编号归还。
+SysResult_t CameraMjpegFifo_AcquireUsb(CameraMjpegLease_t *lease, CameraFrame_t *frame);
+SysResult_t CameraMjpegFifo_ReleaseUsb(const CameraMjpegLease_t *lease);
+
 SysResult_t CameraMjpegFifo_AcquireStorage(CameraMjpegLease_t *lease, CameraFrame_t *frame);
 
 SysResult_t CameraMjpegFifo_RetainFrame(const CameraFrame_t *frame, CameraMjpegLease_t *lease);
@@ -44,6 +48,9 @@ SysResult_t CameraMjpegFifo_ReleaseFrame(void);
 
 //查询是否仍有外部借用，不能据此跳过底层Stop
 bool CameraMjpegFifo_HasLoan(void);
+#if APP_V3_JOINT_BOARD_TEST
+void CameraMjpegFifo_ReadOccupancy(uint32_t *blocks, uint32_t *loans);
+#endif
 
 //只在BSP Stop成功后清理接收端，仍保留外部借用
 void CameraMjpegFifo_OnStopped(void);

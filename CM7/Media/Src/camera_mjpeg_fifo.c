@@ -372,13 +372,24 @@ static void Mjpeg_LoanView(const MjpegLoan_t *entry, CameraFrame_t *frame)
     frame->data2 = frame->size_bytes2 == 0U ? NULL : (const uint8_t *)(uintptr_t)CAMERA_MJPEG_FIFO_BASE;
 }
 
+//旧自检和显式USB租约共用原USB Owner位，先检查已有持有。
+static bool Mjpeg_UsbBusy(void)
+{
+    uint32_t slot;
+
+    for (slot = 0U; slot < CAMERA_MJPEG_MAX_LOANS; ++slot)
+        if (s_fifo.loans[slot].usb_owned)
+            return true;
+    return false;
+}
+
 //原入口仅保留一张USB或内部自检帧
 bool CameraMjpegFifo_GetFrame(CameraFrame_t *frame)
 {
     uint32_t index;
     MjpegLoan_t *entry;
 
-    if (frame == NULL || s_fifo.loaned)
+    if (frame == NULL || Mjpeg_UsbBusy())
         return false;
     entry = Mjpeg_TakeLatest(&index);
     if (entry == NULL)
@@ -413,6 +424,48 @@ SysResult_t CameraMjpegFifo_AcquireStorage(CameraMjpegLease_t *lease, CameraFram
     lease->id = entry->id;
     Mjpeg_LoanView(entry, frame);
     return SYS_OK;
+}
+
+//从独立READY帧创建可校验的USB租约，不借用旧自检句柄。
+SysResult_t CameraMjpegFifo_AcquireUsb(CameraMjpegLease_t *lease, CameraFrame_t *frame)
+{
+    uint32_t slot;
+    MjpegLoan_t *entry;
+
+    if (lease == NULL || frame == NULL)
+        return SYS_ERR_INVALID_ARG;
+    if (!s_fifo.running || s_fifo.result != SYS_OK)
+        return SYS_ERR_INVALID_STATE;
+    if (s_fifo.next_loan == UINT32_MAX)
+        return SYS_ERR_NO_RESOURCE;
+    if (Mjpeg_UsbBusy())
+        return SYS_ERR_BUSY;
+
+    entry = Mjpeg_TakeLatest(&slot);
+    if (entry == NULL)
+        return SYS_ERR_BUSY;
+    entry->usb_owned = true;
+    lease->session = s_loan_session;
+    lease->id = entry->id;
+    Mjpeg_LoanView(entry, frame);
+    return SYS_OK;
+}
+
+//完整身份只允许解除该帧的USB位。旧自检Loan仍由旧入口归还。
+SysResult_t CameraMjpegFifo_ReleaseUsb(const CameraMjpegLease_t *lease)
+{
+    uint32_t slot;
+
+    if (lease == NULL || lease->session != s_loan_session || lease->id == 0U)
+        return SYS_ERR_INVALID_ARG;
+    for (slot = 0U; slot < CAMERA_MJPEG_MAX_LOANS; ++slot)
+    {
+        MjpegLoan_t *entry = &s_fifo.loans[slot];
+        if (entry->id == lease->id && entry->usb_owned &&
+            (!s_fifo.loaned || slot != s_fifo.legacy_index))
+            return Mjpeg_ReleaseLoan(entry, false);
+    }
+    return SYS_ERR_INVALID_STATE;
 }
 
 //Camera为当前原帧登记独立SD引用
@@ -478,6 +531,25 @@ SysResult_t CameraMjpegFifo_ReleaseLease(const CameraMjpegLease_t *lease)
     }
     return SYS_ERR_INVALID_STATE;
 }
+
+#if APP_V3_JOINT_BOARD_TEST
+//从实际账本采样，不改变任何块引用。屏蔽IRQ期间只读取状态。
+void CameraMjpegFifo_ReadOccupancy(uint32_t *blocks, uint32_t *loans)
+{
+    uint32_t i, used = 0U, held = 0U, mask = __get_PRIMASK();
+
+    __disable_irq();
+    for (i = 0U; i < CAMERA_MJPEG_BLOCK_COUNT; ++i)
+        if (s_fifo.blocks[i].state != MJPEG_BLOCK_FREE)
+            ++used;
+    for (i = 0U; i < CAMERA_MJPEG_MAX_LOANS; ++i)
+        if (s_fifo.loans[i].usb_owned || s_fifo.loans[i].sd_owned)
+            ++held;
+    __set_PRIMASK(mask);
+    *blocks = used;
+    *loans = held;
+}
+#endif
 
 //任一路仍持有JPEG时，Stop必须保留DRAINING状态
 bool CameraMjpegFifo_HasLoan(void)

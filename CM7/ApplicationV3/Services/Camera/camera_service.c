@@ -119,7 +119,7 @@ typedef struct
         CameraFrameLease_t raw;
         CameraMjpegLease_t jpeg;
     } lease;
-    bool jpeg_storage;
+    bool jpeg;
     AppMessage_t reply;
     uint32_t last_request;
     bool admitted;
@@ -129,6 +129,18 @@ typedef struct
 typedef SysResult_t (*CameraFrameSend_t)(CameraFrameConsumer_t consumer, const AppMessage_t *message);
 
 static CameraTransfer_t s_transfers[CAMERA_FRAME_CONSUMER_COUNT];
+#if APP_V3_JOINT_BOARD_TEST
+volatile AppV3JointCamera_t g_app_v3_joint_camera;
+
+void AppV3_JointCameraSnapshot(void)
+{
+    uint32_t blocks, loans;
+    CameraMjpegFifo_ReadOccupancy(&blocks, &loans);
+    g_app_v3_joint_camera.hardware = s_camera.hardware;
+    g_app_v3_joint_camera.blocks = blocks;
+    g_app_v3_joint_camera.loans = loans;
+}
+#endif
 #if APP_V3_RECORD_BOARD_TEST
 volatile AppV3RecordBoardCamera_t g_app_v3_record_camera;
 #endif
@@ -215,9 +227,20 @@ static void CameraFrame_Receive(CameraFrameConsumer_t consumer, const AppMessage
             ++g_app_v3_record_camera.confirmed;
         }
 #endif
+#if APP_V3_JOINT_BOARD_TEST
+        if (message->lease_id != 0U && consumer == CAMERA_FRAME_CONSUMER_USB)
+        {
+            ++g_app_v3_joint_camera.usb_confirmed;
+            g_app_v3_joint_camera.usb_request_id = message->command_id;
+            g_app_v3_joint_camera.usb_session = message->stream_epoch;
+            g_app_v3_joint_camera.usb_lease_id = message->lease_id;
+        }
+        else if (message->lease_id != 0U && consumer == CAMERA_FRAME_CONSUMER_STORAGE)
+            ++g_app_v3_joint_camera.sd_confirmed;
+#endif
         //保留退休高水位，重复消息不得命中下一请求。
         transfer->lease.raw = (CameraFrameLease_t){0};
-        transfer->jpeg_storage = false;
+        transfer->jpeg = false;
         transfer->reply = (AppMessage_t){.command_id = 0U};
         transfer->admitted = false;
         transfer->reject_offer = false;
@@ -230,12 +253,15 @@ static void CameraFrame_Acquire(CameraTransfer_t *transfer, CameraFrameConsumer_
     SysResult_t result = SYS_ERR_NO_RESOURCE;
 
     //序号用于观测分发顺序，不使用任意地址或缓冲区号编码
-    transfer->jpeg_storage = consumer == CAMERA_FRAME_CONSUMER_STORAGE && s_camera.config != NULL &&
+    transfer->jpeg = (consumer == CAMERA_FRAME_CONSUMER_STORAGE || consumer == CAMERA_FRAME_CONSUMER_USB) &&
+        s_camera.config != NULL &&
         s_camera.config->format == CAMERA_PIXEL_FORMAT_JPEG;
     if (s_frame_sequence != UINT32_MAX)
     {
-        if (transfer->jpeg_storage)
-            result = CameraCapture_StreamAcquireJpegStorage(&transfer->lease.jpeg, &transfer->reply.frame);
+        if (transfer->jpeg)
+            result = consumer == CAMERA_FRAME_CONSUMER_USB ?
+                CameraCapture_StreamAcquireJpegUsb(&transfer->lease.jpeg, &transfer->reply.frame) :
+                CameraCapture_StreamAcquireJpegStorage(&transfer->lease.jpeg, &transfer->reply.frame);
         else
             result = CameraCapture_StreamAcquire(consumer, &transfer->lease.raw, &transfer->reply.frame);
     }
@@ -248,8 +274,8 @@ static void CameraFrame_Acquire(CameraTransfer_t *transfer, CameraFrameConsumer_
     }
 
     transfer->reply.type = APP_MESSAGE_FRAME_OFFER;
-    transfer->reply.stream_epoch = transfer->jpeg_storage ? transfer->lease.jpeg.session : transfer->lease.raw.generation;
-    transfer->reply.lease_id = transfer->jpeg_storage ? transfer->lease.jpeg.id : transfer->lease.raw.lease_id;
+    transfer->reply.stream_epoch = transfer->jpeg ? transfer->lease.jpeg.session : transfer->lease.raw.generation;
+    transfer->reply.lease_id = transfer->jpeg ? transfer->lease.jpeg.id : transfer->lease.raw.lease_id;
     transfer->reply.frame_id = ++s_frame_sequence;
     transfer->reply.timestamp_ms = Platform_TimeGetMs();
     transfer->state = CAMERA_TRANSFER_OFFER_PENDING;
@@ -285,8 +311,12 @@ static SysResult_t CameraFrame_AdvanceSlot(CameraFrameConsumer_t consumer, bool 
 
     if (transfer->state == CAMERA_TRANSFER_RELEASING)
     {
-        result = transfer->jpeg_storage ? CameraCapture_StreamReleaseJpegStorage(&transfer->lease.jpeg) :
-            CameraCapture_StreamReleaseLease(&transfer->lease.raw);
+        if (transfer->jpeg)
+            result = consumer == CAMERA_FRAME_CONSUMER_USB ?
+                CameraCapture_StreamReleaseJpegUsb(&transfer->lease.jpeg) :
+                CameraCapture_StreamReleaseJpegStorage(&transfer->lease.jpeg);
+        else
+            result = CameraCapture_StreamReleaseLease(&transfer->lease.raw);
         if (result != SYS_OK)
             return result;
 
