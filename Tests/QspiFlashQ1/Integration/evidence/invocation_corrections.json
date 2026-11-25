@@ -1,0 +1,20 @@
+[
+  {
+    "original": "bsp01/core_10.log",
+    "reason": "required manifest/mock-output arguments omitted",
+    "resolved": "h2_pc_retest.log",
+    "exit": 0
+  },
+  {
+    "original": "v3_01/product_06.log",
+    "reason": "historical trace test requires the isolated BoardProfiles overlay",
+    "resolved": "v3_results/usb_trace_retest/results.json",
+    "exit": 0
+  },
+  {
+    "original": "initial_harness_failures",
+    "reason": "FIFO runner needed an unused host mmap stub and both ARMCC standard assert entry forms",
+    "resolved": "history04/comparison.json",
+    "exit": 0
+  }
+]

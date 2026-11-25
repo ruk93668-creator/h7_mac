@@ -1,0 +1,50 @@
+[
+  {
+    "optimization": "O0",
+    "id": 0,
+    "pass": true,
+    "exit": 0,
+    "error": null,
+    "g_failure": 0,
+    "g_checks": 198,
+    "g_stream_size": 220,
+    "g_capture_size": 264,
+    "g_lease_size": 16
+  },
+  {
+    "optimization": "O0",
+    "id": 1,
+    "pass": true,
+    "exit": 0,
+    "error": null,
+    "g_failure": 0,
+    "g_checks": 20,
+    "g_stream_size": 220,
+    "g_capture_size": 264,
+    "g_lease_size": 16
+  },
+  {
+    "optimization": "O2",
+    "id": 0,
+    "pass": true,
+    "exit": 0,
+    "error": null,
+    "g_failure": 0,
+    "g_checks": 198,
+    "g_stream_size": 220,
+    "g_capture_size": 264,
+    "g_lease_size": 16
+  },
+  {
+    "optimization": "O2",
+    "id": 1,
+    "pass": true,
+    "exit": 0,
+    "error": null,
+    "g_failure": 0,
+    "g_checks": 20,
+    "g_stream_size": 220,
+    "g_capture_size": 264,
+    "g_lease_size": 16
+  }
+]

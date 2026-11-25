@@ -1,0 +1,34 @@
+[
+  {
+    "optimization": "O0",
+    "id": 0,
+    "pass": true,
+    "return": 0,
+    "failure_line": 0,
+    "error": null
+  },
+  {
+    "optimization": "O0",
+    "id": 1,
+    "pass": true,
+    "return": 0,
+    "failure_line": 0,
+    "error": null
+  },
+  {
+    "optimization": "O2",
+    "id": 0,
+    "pass": true,
+    "return": 0,
+    "failure_line": 0,
+    "error": null
+  },
+  {
+    "optimization": "O2",
+    "id": 1,
+    "pass": true,
+    "return": 0,
+    "failure_line": 0,
+    "error": null
+  }
+]

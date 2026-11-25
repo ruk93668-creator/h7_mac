@@ -1,0 +1,38 @@
+[
+  {
+    "optimization": "O0",
+    "id": 96,
+    "pass": true,
+    "return": 0,
+    "failure_line": 0,
+    "error": null,
+    "trace": []
+  },
+  {
+    "optimization": "O0",
+    "id": 97,
+    "pass": true,
+    "return": 0,
+    "failure_line": 0,
+    "error": null,
+    "trace": []
+  },
+  {
+    "optimization": "O2",
+    "id": 96,
+    "pass": true,
+    "return": 0,
+    "failure_line": 0,
+    "error": null,
+    "trace": []
+  },
+  {
+    "optimization": "O2",
+    "id": 97,
+    "pass": true,
+    "return": 0,
+    "failure_line": 0,
+    "error": null,
+    "trace": []
+  }
+]

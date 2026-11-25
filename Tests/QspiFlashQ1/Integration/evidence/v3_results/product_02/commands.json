@@ -1,0 +1,159 @@
+[
+  {
+    "command": [
+      "D:\\32\\ARM\\ARMCC\\Bin\\armcc.exe",
+      "--vsn"
+    ],
+    "exit": 0,
+    "stdout": "Product: MDK Plus 5.32\r\nComponent: ARM Compiler 5.06 update 7 (build 960)\r\nTool: armcc [4d365d]\r\nFor support see http://www.arm.com/support\r\nSoftware supplied by: ARM Limited\r\n",
+    "stderr": ""
+  },
+  {
+    "command": [
+      "D:\\32\\ARM\\ARMCC\\Bin\\armcc.exe",
+      "--cpu",
+      "Cortex-M7",
+      "--c99",
+      "--split_sections",
+      "-O0",
+      "-I",
+      "D:\\32\\STM32H7\\h7_mac_qflash\\output\\QspiFlashQ1\\coexistence\\worktree\\output\\QspiFlashQ1\\Integration\\v3_01\\tree\\Common\\Inc",
+      "-I",
+      "D:\\32\\STM32H7\\h7_mac_qflash\\output\\QspiFlashQ1\\coexistence\\worktree\\output\\QspiFlashQ1\\Integration\\v3_01\\tree\\CM7\\Media\\Inc",
+      "-I",
+      "D:\\32\\STM32H7\\h7_mac_qflash\\output\\QspiFlashQ1\\coexistence\\worktree\\output\\QspiFlashQ1\\Integration\\v3_01\\tree\\CM7\\BSP",
+      "-I",
+      "D:\\32\\STM32H7\\h7_mac_qflash\\output\\QspiFlashQ1\\coexistence\\worktree\\output\\QspiFlashQ1\\Integration\\v3_01\\tree\\CM7\\Platform",
+      "-I",
+      "D:\\32\\STM32H7\\h7_mac_qflash\\output\\QspiFlashQ1\\coexistence\\worktree\\output\\QspiFlashQ1\\Integration\\v3_01\\tree\\Tests\\CameraStreamState\\stubs",
+      "-c",
+      "D:\\32\\STM32H7\\h7_mac_qflash\\output\\QspiFlashQ1\\coexistence\\worktree\\output\\QspiFlashQ1\\Integration\\v3_01\\tree\\Tests\\ApplicationV3\\MediaLease\\media_lease_test.c",
+      "-o",
+      "D:\\32\\STM32H7\\h7_mac_qflash\\output\\QspiFlashQ1\\coexistence\\worktree\\output\\QspiFlashQ1\\Integration\\v3_01\\product_02\\media_lease_test-O0.o"
+    ],
+    "exit": 0,
+    "stdout": "",
+    "stderr": "\"D:\\32\\STM32H7\\h7_mac_qflash\\output\\QspiFlashQ1\\coexistence\\worktree\\output\\QspiFlashQ1\\Integration\\v3_01\\tree\\Tests\\ApplicationV3\\MediaLease\\media_lease_test.c\", line 541: Warning:  #111-D: statement is unreachable\r\n      return 0U;\r\n      ^\r\nD:\\32\\STM32H7\\h7_mac_qflash\\output\\QspiFlashQ1\\coexistence\\worktree\\output\\QspiFlashQ1\\Integration\\v3_01\\tree\\Tests\\ApplicationV3\\MediaLease\\media_lease_test.c: 1 warning, 0 errors\r\n"
+  },
+  {
+    "command": [
+      "D:\\32\\ARM\\ARMCC\\Bin\\armcc.exe",
+      "--cpu",
+      "Cortex-M7",
+      "--c99",
+      "--split_sections",
+      "-O0",
+      "-I",
+      "D:\\32\\STM32H7\\h7_mac_qflash\\output\\QspiFlashQ1\\coexistence\\worktree\\output\\QspiFlashQ1\\Integration\\v3_01\\tree\\Common\\Inc",
+      "-I",
+      "D:\\32\\STM32H7\\h7_mac_qflash\\output\\QspiFlashQ1\\coexistence\\worktree\\output\\QspiFlashQ1\\Integration\\v3_01\\tree\\CM7\\Media\\Inc",
+      "-I",
+      "D:\\32\\STM32H7\\h7_mac_qflash\\output\\QspiFlashQ1\\coexistence\\worktree\\output\\QspiFlashQ1\\Integration\\v3_01\\tree\\CM7\\BSP",
+      "-I",
+      "D:\\32\\STM32H7\\h7_mac_qflash\\output\\QspiFlashQ1\\coexistence\\worktree\\output\\QspiFlashQ1\\Integration\\v3_01\\tree\\CM7\\Platform",
+      "-D__disable_irq=Test_FifoDisableIrq",
+      "-I",
+      "D:\\32\\STM32H7\\h7_mac_qflash\\output\\QspiFlashQ1\\coexistence\\worktree\\output\\QspiFlashQ1\\Integration\\v3_01\\tree\\Tests\\MjpegSdramFifo\\stubs",
+      "-c",
+      "D:\\32\\STM32H7\\h7_mac_qflash\\output\\QspiFlashQ1\\coexistence\\worktree\\output\\QspiFlashQ1\\Integration\\v3_01\\tree\\CM7\\Media\\Src\\camera_mjpeg_fifo.c",
+      "-o",
+      "D:\\32\\STM32H7\\h7_mac_qflash\\output\\QspiFlashQ1\\coexistence\\worktree\\output\\QspiFlashQ1\\Integration\\v3_01\\product_02\\camera_mjpeg_fifo-O0.o"
+    ],
+    "exit": 0,
+    "stdout": "",
+    "stderr": ""
+  },
+  {
+    "command": [
+      "D:\\32\\ARM\\ARMCC\\Bin\\armlink.exe",
+      "D:\\32\\STM32H7\\h7_mac_qflash\\output\\QspiFlashQ1\\coexistence\\worktree\\output\\QspiFlashQ1\\Integration\\v3_01\\product_02\\media_lease_test-O0.o",
+      "D:\\32\\STM32H7\\h7_mac_qflash\\output\\QspiFlashQ1\\coexistence\\worktree\\output\\QspiFlashQ1\\Integration\\v3_01\\product_02\\camera_mjpeg_fifo-O0.o",
+      "--entry",
+      "A1_TestRun",
+      "--scatter",
+      "D:\\32\\STM32H7\\h7_mac_qflash\\output\\QspiFlashQ1\\coexistence\\worktree\\output\\QspiFlashQ1\\Integration\\v3_01\\tree\\Tests\\CameraStreamState\\test.sct",
+      "--list",
+      "D:\\32\\STM32H7\\h7_mac_qflash\\output\\QspiFlashQ1\\coexistence\\worktree\\output\\QspiFlashQ1\\Integration\\v3_01\\product_02\\O0.map",
+      "--map",
+      "-o",
+      "D:\\32\\STM32H7\\h7_mac_qflash\\output\\QspiFlashQ1\\coexistence\\worktree\\output\\QspiFlashQ1\\Integration\\v3_01\\product_02\\O0.axf"
+    ],
+    "exit": 0,
+    "stdout": "",
+    "stderr": ""
+  },
+  {
+    "command": [
+      "D:\\32\\ARM\\ARMCC\\Bin\\armcc.exe",
+      "--cpu",
+      "Cortex-M7",
+      "--c99",
+      "--split_sections",
+      "-O2",
+      "-I",
+      "D:\\32\\STM32H7\\h7_mac_qflash\\output\\QspiFlashQ1\\coexistence\\worktree\\output\\QspiFlashQ1\\Integration\\v3_01\\tree\\Common\\Inc",
+      "-I",
+      "D:\\32\\STM32H7\\h7_mac_qflash\\output\\QspiFlashQ1\\coexistence\\worktree\\output\\QspiFlashQ1\\Integration\\v3_01\\tree\\CM7\\Media\\Inc",
+      "-I",
+      "D:\\32\\STM32H7\\h7_mac_qflash\\output\\QspiFlashQ1\\coexistence\\worktree\\output\\QspiFlashQ1\\Integration\\v3_01\\tree\\CM7\\BSP",
+      "-I",
+      "D:\\32\\STM32H7\\h7_mac_qflash\\output\\QspiFlashQ1\\coexistence\\worktree\\output\\QspiFlashQ1\\Integration\\v3_01\\tree\\CM7\\Platform",
+      "-I",
+      "D:\\32\\STM32H7\\h7_mac_qflash\\output\\QspiFlashQ1\\coexistence\\worktree\\output\\QspiFlashQ1\\Integration\\v3_01\\tree\\Tests\\CameraStreamState\\stubs",
+      "-c",
+      "D:\\32\\STM32H7\\h7_mac_qflash\\output\\QspiFlashQ1\\coexistence\\worktree\\output\\QspiFlashQ1\\Integration\\v3_01\\tree\\Tests\\ApplicationV3\\MediaLease\\media_lease_test.c",
+      "-o",
+      "D:\\32\\STM32H7\\h7_mac_qflash\\output\\QspiFlashQ1\\coexistence\\worktree\\output\\QspiFlashQ1\\Integration\\v3_01\\product_02\\media_lease_test-O2.o"
+    ],
+    "exit": 0,
+    "stdout": "",
+    "stderr": "\"D:\\32\\STM32H7\\h7_mac_qflash\\output\\QspiFlashQ1\\coexistence\\worktree\\output\\QspiFlashQ1\\Integration\\v3_01\\tree\\Tests\\ApplicationV3\\MediaLease\\media_lease_test.c\", line 541: Warning:  #111-D: statement is unreachable\r\n      return 0U;\r\n      ^\r\nD:\\32\\STM32H7\\h7_mac_qflash\\output\\QspiFlashQ1\\coexistence\\worktree\\output\\QspiFlashQ1\\Integration\\v3_01\\tree\\Tests\\ApplicationV3\\MediaLease\\media_lease_test.c: 1 warning, 0 errors\r\n"
+  },
+  {
+    "command": [
+      "D:\\32\\ARM\\ARMCC\\Bin\\armcc.exe",
+      "--cpu",
+      "Cortex-M7",
+      "--c99",
+      "--split_sections",
+      "-O2",
+      "-I",
+      "D:\\32\\STM32H7\\h7_mac_qflash\\output\\QspiFlashQ1\\coexistence\\worktree\\output\\QspiFlashQ1\\Integration\\v3_01\\tree\\Common\\Inc",
+      "-I",
+      "D:\\32\\STM32H7\\h7_mac_qflash\\output\\QspiFlashQ1\\coexistence\\worktree\\output\\QspiFlashQ1\\Integration\\v3_01\\tree\\CM7\\Media\\Inc",
+      "-I",
+      "D:\\32\\STM32H7\\h7_mac_qflash\\output\\QspiFlashQ1\\coexistence\\worktree\\output\\QspiFlashQ1\\Integration\\v3_01\\tree\\CM7\\BSP",
+      "-I",
+      "D:\\32\\STM32H7\\h7_mac_qflash\\output\\QspiFlashQ1\\coexistence\\worktree\\output\\QspiFlashQ1\\Integration\\v3_01\\tree\\CM7\\Platform",
+      "-D__disable_irq=Test_FifoDisableIrq",
+      "-I",
+      "D:\\32\\STM32H7\\h7_mac_qflash\\output\\QspiFlashQ1\\coexistence\\worktree\\output\\QspiFlashQ1\\Integration\\v3_01\\tree\\Tests\\MjpegSdramFifo\\stubs",
+      "-c",
+      "D:\\32\\STM32H7\\h7_mac_qflash\\output\\QspiFlashQ1\\coexistence\\worktree\\output\\QspiFlashQ1\\Integration\\v3_01\\tree\\CM7\\Media\\Src\\camera_mjpeg_fifo.c",
+      "-o",
+      "D:\\32\\STM32H7\\h7_mac_qflash\\output\\QspiFlashQ1\\coexistence\\worktree\\output\\QspiFlashQ1\\Integration\\v3_01\\product_02\\camera_mjpeg_fifo-O2.o"
+    ],
+    "exit": 0,
+    "stdout": "",
+    "stderr": ""
+  },
+  {
+    "command": [
+      "D:\\32\\ARM\\ARMCC\\Bin\\armlink.exe",
+      "D:\\32\\STM32H7\\h7_mac_qflash\\output\\QspiFlashQ1\\coexistence\\worktree\\output\\QspiFlashQ1\\Integration\\v3_01\\product_02\\media_lease_test-O2.o",
+      "D:\\32\\STM32H7\\h7_mac_qflash\\output\\QspiFlashQ1\\coexistence\\worktree\\output\\QspiFlashQ1\\Integration\\v3_01\\product_02\\camera_mjpeg_fifo-O2.o",
+      "--entry",
+      "A1_TestRun",
+      "--scatter",
+      "D:\\32\\STM32H7\\h7_mac_qflash\\output\\QspiFlashQ1\\coexistence\\worktree\\output\\QspiFlashQ1\\Integration\\v3_01\\tree\\Tests\\CameraStreamState\\test.sct",
+      "--list",
+      "D:\\32\\STM32H7\\h7_mac_qflash\\output\\QspiFlashQ1\\coexistence\\worktree\\output\\QspiFlashQ1\\Integration\\v3_01\\product_02\\O2.map",
+      "--map",
+      "-o",
+      "D:\\32\\STM32H7\\h7_mac_qflash\\output\\QspiFlashQ1\\coexistence\\worktree\\output\\QspiFlashQ1\\Integration\\v3_01\\product_02\\O2.axf"
+    ],
+    "exit": 0,
+    "stdout": "",
+    "stderr": ""
+  }
+]

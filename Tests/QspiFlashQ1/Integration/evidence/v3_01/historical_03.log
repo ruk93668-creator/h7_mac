@@ -1,0 +1,4 @@
+{'optimization': 'O0', 'id': 96, 'pass': True, 'return': 0, 'failure_line': 0, 'error': None, 'trace': []}
+{'optimization': 'O0', 'id': 97, 'pass': True, 'return': 0, 'failure_line': 0, 'error': None, 'trace': []}
+{'optimization': 'O2', 'id': 96, 'pass': True, 'return': 0, 'failure_line': 0, 'error': None, 'trace': []}
+{'optimization': 'O2', 'id': 97, 'pass': True, 'return': 0, 'failure_line': 0, 'error': None, 'trace': []}

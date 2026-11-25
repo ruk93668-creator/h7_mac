@@ -1,0 +1,516 @@
+{"case": 0, "name": "pattern=0 address-index=0 length-index=0", "assertions": 89, "failure_line": 0, "commands": 9, "hal_init_calls": 1, "error": null, "pass": true}
+{"case": 1, "name": "pattern=0 address-index=0 length-index=1", "assertions": 90, "failure_line": 0, "commands": 9, "hal_init_calls": 1, "error": null, "pass": true}
+{"case": 2, "name": "pattern=0 address-index=0 length-index=2", "assertions": 91, "failure_line": 0, "commands": 9, "hal_init_calls": 1, "error": null, "pass": true}
+{"case": 3, "name": "pattern=0 address-index=0 length-index=3", "assertions": 92, "failure_line": 0, "commands": 9, "hal_init_calls": 1, "error": null, "pass": true}
+{"case": 4, "name": "pattern=0 address-index=0 length-index=4", "assertions": 343, "failure_line": 0, "commands": 9, "hal_init_calls": 1, "error": null, "pass": true}
+{"case": 5, "name": "pattern=0 address-index=0 length-index=5", "assertions": 344, "failure_line": 0, "commands": 9, "hal_init_calls": 1, "error": null, "pass": true}
+{"case": 6, "name": "pattern=0 address-index=0 length-index=6", "assertions": 365, "failure_line": 0, "commands": 11, "hal_init_calls": 1, "error": null, "pass": true}
+{"case": 7, "name": "pattern=0 address-index=0 length-index=7", "assertions": 620, "failure_line": 0, "commands": 11, "hal_init_calls": 1, "error": null, "pass": true}
+{"case": 8, "name": "pattern=0 address-index=0 length-index=8", "assertions": 1172, "failure_line": 0, "commands": 15, "hal_init_calls": 1, "error": null, "pass": true}
+{"case": 9, "name": "pattern=0 address-index=0 length-index=9", "assertions": 4484, "failure_line": 0, "commands": 39, "hal_init_calls": 1, "error": null, "pass": true}
+{"case": 10, "name": "pattern=0 address-index=1 length-index=0", "assertions": 89, "failure_line": 0, "commands": 9, "hal_init_calls": 1, "error": null, "pass": true}
+{"case": 11, "name": "pattern=0 address-index=1 length-index=1", "assertions": 90, "failure_line": 0, "commands": 9, "hal_init_calls": 1, "error": null, "pass": true}
+{"case": 12, "name": "pattern=0 address-index=1 length-index=2", "assertions": 91, "failure_line": 0, "commands": 9, "hal_init_calls": 1, "error": null, "pass": true}
+{"case": 13, "name": "pattern=0 address-index=1 length-index=3", "assertions": 92, "failure_line": 0, "commands": 9, "hal_init_calls": 1, "error": null, "pass": true}
+{"case": 14, "name": "pattern=0 address-index=1 length-index=4", "assertions": 343, "failure_line": 0, "commands": 9, "hal_init_calls": 1, "error": null, "pass": true}
+{"case": 15, "name": "pattern=0 address-index=1 length-index=5", "assertions": 344, "failure_line": 0, "commands": 9, "hal_init_calls": 1, "error": null, "pass": true}
+{"case": 16, "name": "pattern=0 address-index=1 length-index=6", "assertions": 365, "failure_line": 0, "commands": 11, "hal_init_calls": 1, "error": null, "pass": true}
+{"case": 17, "name": "pattern=0 address-index=1 length-index=7", "assertions": 620, "failure_line": 0, "commands": 11, "hal_init_calls": 1, "error": null, "pass": true}
+{"case": 18, "name": "pattern=0 address-index=1 length-index=8", "assertions": 1172, "failure_line": 0, "commands": 15, "hal_init_calls": 1, "error": null, "pass": true}
+{"case": 19, "name": "pattern=0 address-index=1 length-index=9", "assertions": 4484, "failure_line": 0, "commands": 39, "hal_init_calls": 1, "error": null, "pass": true}
+{"case": 20, "name": "pattern=0 address-index=2 length-index=0", "assertions": 89, "failure_line": 0, "commands": 9, "hal_init_calls": 1, "error": null, "pass": true}
+{"case": 21, "name": "pattern=0 address-index=2 length-index=1", "assertions": 90, "failure_line": 0, "commands": 9, "hal_init_calls": 1, "error": null, "pass": true}
+{"case": 22, "name": "pattern=0 address-index=2 length-index=2", "assertions": 91, "failure_line": 0, "commands": 9, "hal_init_calls": 1, "error": null, "pass": true}
+{"case": 23, "name": "pattern=0 address-index=2 length-index=3", "assertions": 92, "failure_line": 0, "commands": 9, "hal_init_calls": 1, "error": null, "pass": true}
+{"case": 24, "name": "pattern=0 address-index=2 length-index=4", "assertions": 343, "failure_line": 0, "commands": 9, "hal_init_calls": 1, "error": null, "pass": true}
+{"case": 25, "name": "pattern=0 address-index=2 length-index=5", "assertions": 344, "failure_line": 0, "commands": 9, "hal_init_calls": 1, "error": null, "pass": true}
+{"case": 26, "name": "pattern=0 address-index=2 length-index=6", "assertions": 365, "failure_line": 0, "commands": 11, "hal_init_calls": 1, "error": null, "pass": true}
+{"case": 27, "name": "pattern=0 address-index=2 length-index=7", "assertions": 620, "failure_line": 0, "commands": 11, "hal_init_calls": 1, "error": null, "pass": true}
+{"case": 28, "name": "pattern=0 address-index=2 length-index=8", "assertions": 1172, "failure_line": 0, "commands": 15, "hal_init_calls": 1, "error": null, "pass": true}
+{"case": 29, "name": "pattern=0 address-index=2 length-index=9", "assertions": 4484, "failure_line": 0, "commands": 39, "hal_init_calls": 1, "error": null, "pass": true}
+{"case": 30, "name": "pattern=0 address-index=3 length-index=0", "assertions": 89, "failure_line": 0, "commands": 9, "hal_init_calls": 1, "error": null, "pass": true}
+{"case": 31, "name": "pattern=0 address-index=3 length-index=1", "assertions": 90, "failure_line": 0, "commands": 9, "hal_init_calls": 1, "error": null, "pass": true}
+{"case": 32, "name": "pattern=0 address-index=3 length-index=2", "assertions": 91, "failure_line": 0, "commands": 9, "hal_init_calls": 1, "error": null, "pass": true}
+{"case": 33, "name": "pattern=0 address-index=3 length-index=3", "assertions": 92, "failure_line": 0, "commands": 9, "hal_init_calls": 1, "error": null, "pass": true}
+{"case": 34, "name": "pattern=0 address-index=3 length-index=4", "assertions": 343, "failure_line": 0, "commands": 9, "hal_init_calls": 1, "error": null, "pass": true}
+{"case": 35, "name": "pattern=0 address-index=3 length-index=5", "assertions": 344, "failure_line": 0, "commands": 9, "hal_init_calls": 1, "error": null, "pass": true}
+{"case": 36, "name": "pattern=0 address-index=3 length-index=6", "assertions": 365, "failure_line": 0, "commands": 11, "hal_init_calls": 1, "error": null, "pass": true}
+{"case": 37, "name": "pattern=0 address-index=3 length-index=7", "assertions": 620, "failure_line": 0, "commands": 11, "hal_init_calls": 1, "error": null, "pass": true}
+{"case": 38, "name": "pattern=0 address-index=3 length-index=8", "assertions": 1172, "failure_line": 0, "commands": 15, "hal_init_calls": 1, "error": null, "pass": true}
+{"case": 39, "name": "pattern=0 address-index=3 length-index=9", "assertions": 4484, "failure_line": 0, "commands": 39, "hal_init_calls": 1, "error": null, "pass": true}
+{"case": 40, "name": "pattern=0 address-index=4 length-index=0", "assertions": 89, "failure_line": 0, "commands": 9, "hal_init_calls": 1, "error": null, "pass": true}
+{"case": 41, "name": "pattern=0 address-index=4 length-index=1", "assertions": 90, "failure_line": 0, "commands": 9, "hal_init_calls": 1, "error": null, "pass": true}
+{"case": 42, "name": "pattern=0 address-index=4 length-index=2", "assertions": 91, "failure_line": 0, "commands": 9, "hal_init_calls": 1, "error": null, "pass": true}
+{"case": 43, "name": "pattern=0 address-index=4 length-index=3", "assertions": 92, "failure_line": 0, "commands": 9, "hal_init_calls": 1, "error": null, "pass": true}
+{"case": 44, "name": "pattern=0 address-index=4 length-index=4", "assertions": 343, "failure_line": 0, "commands": 9, "hal_init_calls": 1, "error": null, "pass": true}
+{"case": 45, "name": "pattern=0 address-index=4 length-index=5", "assertions": 344, "failure_line": 0, "commands": 9, "hal_init_calls": 1, "error": null, "pass": true}
+{"case": 46, "name": "pattern=0 address-index=4 length-index=6", "assertions": 365, "failure_line": 0, "commands": 11, "hal_init_calls": 1, "error": null, "pass": true}
+{"case": 47, "name": "pattern=0 address-index=4 length-index=7", "assertions": 620, "failure_line": 0, "commands": 11, "hal_init_calls": 1, "error": null, "pass": true}
+{"case": 48, "name": "pattern=0 address-index=4 length-index=8", "assertions": 1172, "failure_line": 0, "commands": 15, "hal_init_calls": 1, "error": null, "pass": true}
+{"case": 49, "name": "pattern=0 address-index=4 length-index=9", "assertions": 4484, "failure_line": 0, "commands": 39, "hal_init_calls": 1, "error": null, "pass": true}
+{"case": 50, "name": "pattern=0 address-index=5 length-index=0", "assertions": 89, "failure_line": 0, "commands": 9, "hal_init_calls": 1, "error": null, "pass": true}
+{"case": 51, "name": "pattern=0 address-index=5 length-index=1", "assertions": 90, "failure_line": 0, "commands": 9, "hal_init_calls": 1, "error": null, "pass": true}
+{"case": 52, "name": "pattern=0 address-index=5 length-index=2", "assertions": 91, "failure_line": 0, "commands": 9, "hal_init_calls": 1, "error": null, "pass": true}
+{"case": 53, "name": "pattern=0 address-index=5 length-index=3", "assertions": 92, "failure_line": 0, "commands": 9, "hal_init_calls": 1, "error": null, "pass": true}
+{"case": 54, "name": "pattern=0 address-index=5 length-index=4", "assertions": 343, "failure_line": 0, "commands": 9, "hal_init_calls": 1, "error": null, "pass": true}
+{"case": 55, "name": "pattern=0 address-index=5 length-index=5", "assertions": 344, "failure_line": 0, "commands": 9, "hal_init_calls": 1, "error": null, "pass": true}
+{"case": 56, "name": "pattern=0 address-index=5 length-index=6", "assertions": 365, "failure_line": 0, "commands": 11, "hal_init_calls": 1, "error": null, "pass": true}
+{"case": 57, "name": "pattern=0 address-index=5 length-index=7", "assertions": 620, "failure_line": 0, "commands": 11, "hal_init_calls": 1, "error": null, "pass": true}
+{"case": 58, "name": "pattern=0 address-index=5 length-index=8", "assertions": 1172, "failure_line": 0, "commands": 15, "hal_init_calls": 1, "error": null, "pass": true}
+{"case": 59, "name": "pattern=0 address-index=5 length-index=9", "assertions": 4484, "failure_line": 0, "commands": 39, "hal_init_calls": 1, "error": null, "pass": true}
+{"case": 60, "name": "pattern=0 address-index=6 length-index=0", "assertions": 89, "failure_line": 0, "commands": 9, "hal_init_calls": 1, "error": null, "pass": true}
+{"case": 61, "name": "pattern=0 address-index=6 length-index=1", "assertions": 29, "failure_line": 0, "commands": 1, "hal_init_calls": 1, "error": null, "pass": true}
+{"case": 62, "name": "pattern=0 address-index=6 length-index=2", "assertions": 29, "failure_line": 0, "commands": 1, "hal_init_calls": 1, "error": null, "pass": true}
+{"case": 63, "name": "pattern=0 address-index=6 length-index=3", "assertions": 29, "failure_line": 0, "commands": 1, "hal_init_calls": 1, "error": null, "pass": true}
+{"case": 64, "name": "pattern=0 address-index=6 length-index=4", "assertions": 29, "failure_line": 0, "commands": 1, "hal_init_calls": 1, "error": null, "pass": true}
+{"case": 65, "name": "pattern=0 address-index=6 length-index=5", "assertions": 29, "failure_line": 0, "commands": 1, "hal_init_calls": 1, "error": null, "pass": true}
+{"case": 66, "name": "pattern=0 address-index=6 length-index=6", "assertions": 29, "failure_line": 0, "commands": 1, "hal_init_calls": 1, "error": null, "pass": true}
+{"case": 67, "name": "pattern=0 address-index=6 length-index=7", "assertions": 29, "failure_line": 0, "commands": 1, "hal_init_calls": 1, "error": null, "pass": true}
+{"case": 68, "name": "pattern=0 address-index=6 length-index=8", "assertions": 29, "failure_line": 0, "commands": 1, "hal_init_calls": 1, "error": null, "pass": true}
+{"case": 69, "name": "pattern=0 address-index=6 length-index=9", "assertions": 29, "failure_line": 0, "commands": 1, "hal_init_calls": 1, "error": null, "pass": true}
+{"case": 70, "name": "pattern=1 address-index=0 length-index=0", "assertions": 89, "failure_line": 0, "commands": 9, "hal_init_calls": 1, "error": null, "pass": true}
+{"case": 71, "name": "pattern=1 address-index=0 length-index=1", "assertions": 90, "failure_line": 0, "commands": 9, "hal_init_calls": 1, "error": null, "pass": true}
+{"case": 72, "name": "pattern=1 address-index=0 length-index=2", "assertions": 91, "failure_line": 0, "commands": 9, "hal_init_calls": 1, "error": null, "pass": true}
+{"case": 73, "name": "pattern=1 address-index=0 length-index=3", "assertions": 92, "failure_line": 0, "commands": 9, "hal_init_calls": 1, "error": null, "pass": true}
+{"case": 74, "name": "pattern=1 address-index=0 length-index=4", "assertions": 343, "failure_line": 0, "commands": 9, "hal_init_calls": 1, "error": null, "pass": true}
+{"case": 75, "name": "pattern=1 address-index=0 length-index=5", "assertions": 344, "failure_line": 0, "commands": 9, "hal_init_calls": 1, "error": null, "pass": true}
+{"case": 76, "name": "pattern=1 address-index=0 length-index=6", "assertions": 365, "failure_line": 0, "commands": 11, "hal_init_calls": 1, "error": null, "pass": true}
+{"case": 77, "name": "pattern=1 address-index=0 length-index=7", "assertions": 620, "failure_line": 0, "commands": 11, "hal_init_calls": 1, "error": null, "pass": true}
+{"case": 78, "name": "pattern=1 address-index=0 length-index=8", "assertions": 1172, "failure_line": 0, "commands": 15, "hal_init_calls": 1, "error": null, "pass": true}
+{"case": 79, "name": "pattern=1 address-index=0 length-index=9", "assertions": 4484, "failure_line": 0, "commands": 39, "hal_init_calls": 1, "error": null, "pass": true}
+{"case": 80, "name": "pattern=1 address-index=1 length-index=0", "assertions": 89, "failure_line": 0, "commands": 9, "hal_init_calls": 1, "error": null, "pass": true}
+{"case": 81, "name": "pattern=1 address-index=1 length-index=1", "assertions": 90, "failure_line": 0, "commands": 9, "hal_init_calls": 1, "error": null, "pass": true}
+{"case": 82, "name": "pattern=1 address-index=1 length-index=2", "assertions": 91, "failure_line": 0, "commands": 9, "hal_init_calls": 1, "error": null, "pass": true}
+{"case": 83, "name": "pattern=1 address-index=1 length-index=3", "assertions": 92, "failure_line": 0, "commands": 9, "hal_init_calls": 1, "error": null, "pass": true}
+{"case": 84, "name": "pattern=1 address-index=1 length-index=4", "assertions": 343, "failure_line": 0, "commands": 9, "hal_init_calls": 1, "error": null, "pass": true}
+{"case": 85, "name": "pattern=1 address-index=1 length-index=5", "assertions": 344, "failure_line": 0, "commands": 9, "hal_init_calls": 1, "error": null, "pass": true}
+{"case": 86, "name": "pattern=1 address-index=1 length-index=6", "assertions": 365, "failure_line": 0, "commands": 11, "hal_init_calls": 1, "error": null, "pass": true}
+{"case": 87, "name": "pattern=1 address-index=1 length-index=7", "assertions": 620, "failure_line": 0, "commands": 11, "hal_init_calls": 1, "error": null, "pass": true}
+{"case": 88, "name": "pattern=1 address-index=1 length-index=8", "assertions": 1172, "failure_line": 0, "commands": 15, "hal_init_calls": 1, "error": null, "pass": true}
+{"case": 89, "name": "pattern=1 address-index=1 length-index=9", "assertions": 4484, "failure_line": 0, "commands": 39, "hal_init_calls": 1, "error": null, "pass": true}
+{"case": 90, "name": "pattern=1 address-index=2 length-index=0", "assertions": 89, "failure_line": 0, "commands": 9, "hal_init_calls": 1, "error": null, "pass": true}
+{"case": 91, "name": "pattern=1 address-index=2 length-index=1", "assertions": 90, "failure_line": 0, "commands": 9, "hal_init_calls": 1, "error": null, "pass": true}
+{"case": 92, "name": "pattern=1 address-index=2 length-index=2", "assertions": 91, "failure_line": 0, "commands": 9, "hal_init_calls": 1, "error": null, "pass": true}
+{"case": 93, "name": "pattern=1 address-index=2 length-index=3", "assertions": 92, "failure_line": 0, "commands": 9, "hal_init_calls": 1, "error": null, "pass": true}
+{"case": 94, "name": "pattern=1 address-index=2 length-index=4", "assertions": 343, "failure_line": 0, "commands": 9, "hal_init_calls": 1, "error": null, "pass": true}
+{"case": 95, "name": "pattern=1 address-index=2 length-index=5", "assertions": 344, "failure_line": 0, "commands": 9, "hal_init_calls": 1, "error": null, "pass": true}
+{"case": 96, "name": "pattern=1 address-index=2 length-index=6", "assertions": 365, "failure_line": 0, "commands": 11, "hal_init_calls": 1, "error": null, "pass": true}
+{"case": 97, "name": "pattern=1 address-index=2 length-index=7", "assertions": 620, "failure_line": 0, "commands": 11, "hal_init_calls": 1, "error": null, "pass": true}
+{"case": 98, "name": "pattern=1 address-index=2 length-index=8", "assertions": 1172, "failure_line": 0, "commands": 15, "hal_init_calls": 1, "error": null, "pass": true}
+{"case": 99, "name": "pattern=1 address-index=2 length-index=9", "assertions": 4484, "failure_line": 0, "commands": 39, "hal_init_calls": 1, "error": null, "pass": true}
+{"case": 100, "name": "pattern=1 address-index=3 length-index=0", "assertions": 89, "failure_line": 0, "commands": 9, "hal_init_calls": 1, "error": null, "pass": true}
+{"case": 101, "name": "pattern=1 address-index=3 length-index=1", "assertions": 90, "failure_line": 0, "commands": 9, "hal_init_calls": 1, "error": null, "pass": true}
+{"case": 102, "name": "pattern=1 address-index=3 length-index=2", "assertions": 91, "failure_line": 0, "commands": 9, "hal_init_calls": 1, "error": null, "pass": true}
+{"case": 103, "name": "pattern=1 address-index=3 length-index=3", "assertions": 92, "failure_line": 0, "commands": 9, "hal_init_calls": 1, "error": null, "pass": true}
+{"case": 104, "name": "pattern=1 address-index=3 length-index=4", "assertions": 343, "failure_line": 0, "commands": 9, "hal_init_calls": 1, "error": null, "pass": true}
+{"case": 105, "name": "pattern=1 address-index=3 length-index=5", "assertions": 344, "failure_line": 0, "commands": 9, "hal_init_calls": 1, "error": null, "pass": true}
+{"case": 106, "name": "pattern=1 address-index=3 length-index=6", "assertions": 365, "failure_line": 0, "commands": 11, "hal_init_calls": 1, "error": null, "pass": true}
+{"case": 107, "name": "pattern=1 address-index=3 length-index=7", "assertions": 620, "failure_line": 0, "commands": 11, "hal_init_calls": 1, "error": null, "pass": true}
+{"case": 108, "name": "pattern=1 address-index=3 length-index=8", "assertions": 1172, "failure_line": 0, "commands": 15, "hal_init_calls": 1, "error": null, "pass": true}
+{"case": 109, "name": "pattern=1 address-index=3 length-index=9", "assertions": 4484, "failure_line": 0, "commands": 39, "hal_init_calls": 1, "error": null, "pass": true}
+{"case": 110, "name": "pattern=1 address-index=4 length-index=0", "assertions": 89, "failure_line": 0, "commands": 9, "hal_init_calls": 1, "error": null, "pass": true}
+{"case": 111, "name": "pattern=1 address-index=4 length-index=1", "assertions": 90, "failure_line": 0, "commands": 9, "hal_init_calls": 1, "error": null, "pass": true}
+{"case": 112, "name": "pattern=1 address-index=4 length-index=2", "assertions": 91, "failure_line": 0, "commands": 9, "hal_init_calls": 1, "error": null, "pass": true}
+{"case": 113, "name": "pattern=1 address-index=4 length-index=3", "assertions": 92, "failure_line": 0, "commands": 9, "hal_init_calls": 1, "error": null, "pass": true}
+{"case": 114, "name": "pattern=1 address-index=4 length-index=4", "assertions": 343, "failure_line": 0, "commands": 9, "hal_init_calls": 1, "error": null, "pass": true}
+{"case": 115, "name": "pattern=1 address-index=4 length-index=5", "assertions": 344, "failure_line": 0, "commands": 9, "hal_init_calls": 1, "error": null, "pass": true}
+{"case": 116, "name": "pattern=1 address-index=4 length-index=6", "assertions": 365, "failure_line": 0, "commands": 11, "hal_init_calls": 1, "error": null, "pass": true}
+{"case": 117, "name": "pattern=1 address-index=4 length-index=7", "assertions": 620, "failure_line": 0, "commands": 11, "hal_init_calls": 1, "error": null, "pass": true}
+{"case": 118, "name": "pattern=1 address-index=4 length-index=8", "assertions": 1172, "failure_line": 0, "commands": 15, "hal_init_calls": 1, "error": null, "pass": true}
+{"case": 119, "name": "pattern=1 address-index=4 length-index=9", "assertions": 4484, "failure_line": 0, "commands": 39, "hal_init_calls": 1, "error": null, "pass": true}
+{"case": 120, "name": "pattern=1 address-index=5 length-index=0", "assertions": 89, "failure_line": 0, "commands": 9, "hal_init_calls": 1, "error": null, "pass": true}
+{"case": 121, "name": "pattern=1 address-index=5 length-index=1", "assertions": 90, "failure_line": 0, "commands": 9, "hal_init_calls": 1, "error": null, "pass": true}
+{"case": 122, "name": "pattern=1 address-index=5 length-index=2", "assertions": 91, "failure_line": 0, "commands": 9, "hal_init_calls": 1, "error": null, "pass": true}
+{"case": 123, "name": "pattern=1 address-index=5 length-index=3", "assertions": 92, "failure_line": 0, "commands": 9, "hal_init_calls": 1, "error": null, "pass": true}
+{"case": 124, "name": "pattern=1 address-index=5 length-index=4", "assertions": 343, "failure_line": 0, "commands": 9, "hal_init_calls": 1, "error": null, "pass": true}
+{"case": 125, "name": "pattern=1 address-index=5 length-index=5", "assertions": 344, "failure_line": 0, "commands": 9, "hal_init_calls": 1, "error": null, "pass": true}
+{"case": 126, "name": "pattern=1 address-index=5 length-index=6", "assertions": 365, "failure_line": 0, "commands": 11, "hal_init_calls": 1, "error": null, "pass": true}
+{"case": 127, "name": "pattern=1 address-index=5 length-index=7", "assertions": 620, "failure_line": 0, "commands": 11, "hal_init_calls": 1, "error": null, "pass": true}
+{"case": 128, "name": "pattern=1 address-index=5 length-index=8", "assertions": 1172, "failure_line": 0, "commands": 15, "hal_init_calls": 1, "error": null, "pass": true}
+{"case": 129, "name": "pattern=1 address-index=5 length-index=9", "assertions": 4484, "failure_line": 0, "commands": 39, "hal_init_calls": 1, "error": null, "pass": true}
+{"case": 130, "name": "pattern=1 address-index=6 length-index=0", "assertions": 89, "failure_line": 0, "commands": 9, "hal_init_calls": 1, "error": null, "pass": true}
+{"case": 131, "name": "pattern=1 address-index=6 length-index=1", "assertions": 29, "failure_line": 0, "commands": 1, "hal_init_calls": 1, "error": null, "pass": true}
+{"case": 132, "name": "pattern=1 address-index=6 length-index=2", "assertions": 29, "failure_line": 0, "commands": 1, "hal_init_calls": 1, "error": null, "pass": true}
+{"case": 133, "name": "pattern=1 address-index=6 length-index=3", "assertions": 29, "failure_line": 0, "commands": 1, "hal_init_calls": 1, "error": null, "pass": true}
+{"case": 134, "name": "pattern=1 address-index=6 length-index=4", "assertions": 29, "failure_line": 0, "commands": 1, "hal_init_calls": 1, "error": null, "pass": true}
+{"case": 135, "name": "pattern=1 address-index=6 length-index=5", "assertions": 29, "failure_line": 0, "commands": 1, "hal_init_calls": 1, "error": null, "pass": true}
+{"case": 136, "name": "pattern=1 address-index=6 length-index=6", "assertions": 29, "failure_line": 0, "commands": 1, "hal_init_calls": 1, "error": null, "pass": true}
+{"case": 137, "name": "pattern=1 address-index=6 length-index=7", "assertions": 29, "failure_line": 0, "commands": 1, "hal_init_calls": 1, "error": null, "pass": true}
+{"case": 138, "name": "pattern=1 address-index=6 length-index=8", "assertions": 29, "failure_line": 0, "commands": 1, "hal_init_calls": 1, "error": null, "pass": true}
+{"case": 139, "name": "pattern=1 address-index=6 length-index=9", "assertions": 29, "failure_line": 0, "commands": 1, "hal_init_calls": 1, "error": null, "pass": true}
+{"case": 140, "name": "pattern=2 address-index=0 length-index=0", "assertions": 89, "failure_line": 0, "commands": 9, "hal_init_calls": 1, "error": null, "pass": true}
+{"case": 141, "name": "pattern=2 address-index=0 length-index=1", "assertions": 90, "failure_line": 0, "commands": 9, "hal_init_calls": 1, "error": null, "pass": true}
+{"case": 142, "name": "pattern=2 address-index=0 length-index=2", "assertions": 91, "failure_line": 0, "commands": 9, "hal_init_calls": 1, "error": null, "pass": true}
+{"case": 143, "name": "pattern=2 address-index=0 length-index=3", "assertions": 92, "failure_line": 0, "commands": 9, "hal_init_calls": 1, "error": null, "pass": true}
+{"case": 144, "name": "pattern=2 address-index=0 length-index=4", "assertions": 343, "failure_line": 0, "commands": 9, "hal_init_calls": 1, "error": null, "pass": true}
+{"case": 145, "name": "pattern=2 address-index=0 length-index=5", "assertions": 344, "failure_line": 0, "commands": 9, "hal_init_calls": 1, "error": null, "pass": true}
+{"case": 146, "name": "pattern=2 address-index=0 length-index=6", "assertions": 365, "failure_line": 0, "commands": 11, "hal_init_calls": 1, "error": null, "pass": true}
+{"case": 147, "name": "pattern=2 address-index=0 length-index=7", "assertions": 620, "failure_line": 0, "commands": 11, "hal_init_calls": 1, "error": null, "pass": true}
+{"case": 148, "name": "pattern=2 address-index=0 length-index=8", "assertions": 1172, "failure_line": 0, "commands": 15, "hal_init_calls": 1, "error": null, "pass": true}
+{"case": 149, "name": "pattern=2 address-index=0 length-index=9", "assertions": 4484, "failure_line": 0, "commands": 39, "hal_init_calls": 1, "error": null, "pass": true}
+{"case": 150, "name": "pattern=2 address-index=1 length-index=0", "assertions": 89, "failure_line": 0, "commands": 9, "hal_init_calls": 1, "error": null, "pass": true}
+{"case": 151, "name": "pattern=2 address-index=1 length-index=1", "assertions": 90, "failure_line": 0, "commands": 9, "hal_init_calls": 1, "error": null, "pass": true}
+{"case": 152, "name": "pattern=2 address-index=1 length-index=2", "assertions": 91, "failure_line": 0, "commands": 9, "hal_init_calls": 1, "error": null, "pass": true}
+{"case": 153, "name": "pattern=2 address-index=1 length-index=3", "assertions": 92, "failure_line": 0, "commands": 9, "hal_init_calls": 1, "error": null, "pass": true}
+{"case": 154, "name": "pattern=2 address-index=1 length-index=4", "assertions": 343, "failure_line": 0, "commands": 9, "hal_init_calls": 1, "error": null, "pass": true}
+{"case": 155, "name": "pattern=2 address-index=1 length-index=5", "assertions": 344, "failure_line": 0, "commands": 9, "hal_init_calls": 1, "error": null, "pass": true}
+{"case": 156, "name": "pattern=2 address-index=1 length-index=6", "assertions": 365, "failure_line": 0, "commands": 11, "hal_init_calls": 1, "error": null, "pass": true}
+{"case": 157, "name": "pattern=2 address-index=1 length-index=7", "assertions": 620, "failure_line": 0, "commands": 11, "hal_init_calls": 1, "error": null, "pass": true}
+{"case": 158, "name": "pattern=2 address-index=1 length-index=8", "assertions": 1172, "failure_line": 0, "commands": 15, "hal_init_calls": 1, "error": null, "pass": true}
+{"case": 159, "name": "pattern=2 address-index=1 length-index=9", "assertions": 4484, "failure_line": 0, "commands": 39, "hal_init_calls": 1, "error": null, "pass": true}
+{"case": 160, "name": "pattern=2 address-index=2 length-index=0", "assertions": 89, "failure_line": 0, "commands": 9, "hal_init_calls": 1, "error": null, "pass": true}
+{"case": 161, "name": "pattern=2 address-index=2 length-index=1", "assertions": 90, "failure_line": 0, "commands": 9, "hal_init_calls": 1, "error": null, "pass": true}
+{"case": 162, "name": "pattern=2 address-index=2 length-index=2", "assertions": 91, "failure_line": 0, "commands": 9, "hal_init_calls": 1, "error": null, "pass": true}
+{"case": 163, "name": "pattern=2 address-index=2 length-index=3", "assertions": 92, "failure_line": 0, "commands": 9, "hal_init_calls": 1, "error": null, "pass": true}
+{"case": 164, "name": "pattern=2 address-index=2 length-index=4", "assertions": 343, "failure_line": 0, "commands": 9, "hal_init_calls": 1, "error": null, "pass": true}
+{"case": 165, "name": "pattern=2 address-index=2 length-index=5", "assertions": 344, "failure_line": 0, "commands": 9, "hal_init_calls": 1, "error": null, "pass": true}
+{"case": 166, "name": "pattern=2 address-index=2 length-index=6", "assertions": 365, "failure_line": 0, "commands": 11, "hal_init_calls": 1, "error": null, "pass": true}
+{"case": 167, "name": "pattern=2 address-index=2 length-index=7", "assertions": 620, "failure_line": 0, "commands": 11, "hal_init_calls": 1, "error": null, "pass": true}
+{"case": 168, "name": "pattern=2 address-index=2 length-index=8", "assertions": 1172, "failure_line": 0, "commands": 15, "hal_init_calls": 1, "error": null, "pass": true}
+{"case": 169, "name": "pattern=2 address-index=2 length-index=9", "assertions": 4484, "failure_line": 0, "commands": 39, "hal_init_calls": 1, "error": null, "pass": true}
+{"case": 170, "name": "pattern=2 address-index=3 length-index=0", "assertions": 89, "failure_line": 0, "commands": 9, "hal_init_calls": 1, "error": null, "pass": true}
+{"case": 171, "name": "pattern=2 address-index=3 length-index=1", "assertions": 90, "failure_line": 0, "commands": 9, "hal_init_calls": 1, "error": null, "pass": true}
+{"case": 172, "name": "pattern=2 address-index=3 length-index=2", "assertions": 91, "failure_line": 0, "commands": 9, "hal_init_calls": 1, "error": null, "pass": true}
+{"case": 173, "name": "pattern=2 address-index=3 length-index=3", "assertions": 92, "failure_line": 0, "commands": 9, "hal_init_calls": 1, "error": null, "pass": true}
+{"case": 174, "name": "pattern=2 address-index=3 length-index=4", "assertions": 343, "failure_line": 0, "commands": 9, "hal_init_calls": 1, "error": null, "pass": true}
+{"case": 175, "name": "pattern=2 address-index=3 length-index=5", "assertions": 344, "failure_line": 0, "commands": 9, "hal_init_calls": 1, "error": null, "pass": true}
+{"case": 176, "name": "pattern=2 address-index=3 length-index=6", "assertions": 365, "failure_line": 0, "commands": 11, "hal_init_calls": 1, "error": null, "pass": true}
+{"case": 177, "name": "pattern=2 address-index=3 length-index=7", "assertions": 620, "failure_line": 0, "commands": 11, "hal_init_calls": 1, "error": null, "pass": true}
+{"case": 178, "name": "pattern=2 address-index=3 length-index=8", "assertions": 1172, "failure_line": 0, "commands": 15, "hal_init_calls": 1, "error": null, "pass": true}
+{"case": 179, "name": "pattern=2 address-index=3 length-index=9", "assertions": 4484, "failure_line": 0, "commands": 39, "hal_init_calls": 1, "error": null, "pass": true}
+{"case": 180, "name": "pattern=2 address-index=4 length-index=0", "assertions": 89, "failure_line": 0, "commands": 9, "hal_init_calls": 1, "error": null, "pass": true}
+{"case": 181, "name": "pattern=2 address-index=4 length-index=1", "assertions": 90, "failure_line": 0, "commands": 9, "hal_init_calls": 1, "error": null, "pass": true}
+{"case": 182, "name": "pattern=2 address-index=4 length-index=2", "assertions": 91, "failure_line": 0, "commands": 9, "hal_init_calls": 1, "error": null, "pass": true}
+{"case": 183, "name": "pattern=2 address-index=4 length-index=3", "assertions": 92, "failure_line": 0, "commands": 9, "hal_init_calls": 1, "error": null, "pass": true}
+{"case": 184, "name": "pattern=2 address-index=4 length-index=4", "assertions": 343, "failure_line": 0, "commands": 9, "hal_init_calls": 1, "error": null, "pass": true}
+{"case": 185, "name": "pattern=2 address-index=4 length-index=5", "assertions": 344, "failure_line": 0, "commands": 9, "hal_init_calls": 1, "error": null, "pass": true}
+{"case": 186, "name": "pattern=2 address-index=4 length-index=6", "assertions": 365, "failure_line": 0, "commands": 11, "hal_init_calls": 1, "error": null, "pass": true}
+{"case": 187, "name": "pattern=2 address-index=4 length-index=7", "assertions": 620, "failure_line": 0, "commands": 11, "hal_init_calls": 1, "error": null, "pass": true}
+{"case": 188, "name": "pattern=2 address-index=4 length-index=8", "assertions": 1172, "failure_line": 0, "commands": 15, "hal_init_calls": 1, "error": null, "pass": true}
+{"case": 189, "name": "pattern=2 address-index=4 length-index=9", "assertions": 4484, "failure_line": 0, "commands": 39, "hal_init_calls": 1, "error": null, "pass": true}
+{"case": 190, "name": "pattern=2 address-index=5 length-index=0", "assertions": 89, "failure_line": 0, "commands": 9, "hal_init_calls": 1, "error": null, "pass": true}
+{"case": 191, "name": "pattern=2 address-index=5 length-index=1", "assertions": 90, "failure_line": 0, "commands": 9, "hal_init_calls": 1, "error": null, "pass": true}
+{"case": 192, "name": "pattern=2 address-index=5 length-index=2", "assertions": 91, "failure_line": 0, "commands": 9, "hal_init_calls": 1, "error": null, "pass": true}
+{"case": 193, "name": "pattern=2 address-index=5 length-index=3", "assertions": 92, "failure_line": 0, "commands": 9, "hal_init_calls": 1, "error": null, "pass": true}
+{"case": 194, "name": "pattern=2 address-index=5 length-index=4", "assertions": 343, "failure_line": 0, "commands": 9, "hal_init_calls": 1, "error": null, "pass": true}
+{"case": 195, "name": "pattern=2 address-index=5 length-index=5", "assertions": 344, "failure_line": 0, "commands": 9, "hal_init_calls": 1, "error": null, "pass": true}
+{"case": 196, "name": "pattern=2 address-index=5 length-index=6", "assertions": 365, "failure_line": 0, "commands": 11, "hal_init_calls": 1, "error": null, "pass": true}
+{"case": 197, "name": "pattern=2 address-index=5 length-index=7", "assertions": 620, "failure_line": 0, "commands": 11, "hal_init_calls": 1, "error": null, "pass": true}
+{"case": 198, "name": "pattern=2 address-index=5 length-index=8", "assertions": 1172, "failure_line": 0, "commands": 15, "hal_init_calls": 1, "error": null, "pass": true}
+{"case": 199, "name": "pattern=2 address-index=5 length-index=9", "assertions": 4484, "failure_line": 0, "commands": 39, "hal_init_calls": 1, "error": null, "pass": true}
+{"case": 200, "name": "pattern=2 address-index=6 length-index=0", "assertions": 89, "failure_line": 0, "commands": 9, "hal_init_calls": 1, "error": null, "pass": true}
+{"case": 201, "name": "pattern=2 address-index=6 length-index=1", "assertions": 29, "failure_line": 0, "commands": 1, "hal_init_calls": 1, "error": null, "pass": true}
+{"case": 202, "name": "pattern=2 address-index=6 length-index=2", "assertions": 29, "failure_line": 0, "commands": 1, "hal_init_calls": 1, "error": null, "pass": true}
+{"case": 203, "name": "pattern=2 address-index=6 length-index=3", "assertions": 29, "failure_line": 0, "commands": 1, "hal_init_calls": 1, "error": null, "pass": true}
+{"case": 204, "name": "pattern=2 address-index=6 length-index=4", "assertions": 29, "failure_line": 0, "commands": 1, "hal_init_calls": 1, "error": null, "pass": true}
+{"case": 205, "name": "pattern=2 address-index=6 length-index=5", "assertions": 29, "failure_line": 0, "commands": 1, "hal_init_calls": 1, "error": null, "pass": true}
+{"case": 206, "name": "pattern=2 address-index=6 length-index=6", "assertions": 29, "failure_line": 0, "commands": 1, "hal_init_calls": 1, "error": null, "pass": true}
+{"case": 207, "name": "pattern=2 address-index=6 length-index=7", "assertions": 29, "failure_line": 0, "commands": 1, "hal_init_calls": 1, "error": null, "pass": true}
+{"case": 208, "name": "pattern=2 address-index=6 length-index=8", "assertions": 29, "failure_line": 0, "commands": 1, "hal_init_calls": 1, "error": null, "pass": true}
+{"case": 209, "name": "pattern=2 address-index=6 length-index=9", "assertions": 29, "failure_line": 0, "commands": 1, "hal_init_calls": 1, "error": null, "pass": true}
+{"case": 210, "name": "pattern=3 address-index=0 length-index=0", "assertions": 89, "failure_line": 0, "commands": 9, "hal_init_calls": 1, "error": null, "pass": true}
+{"case": 211, "name": "pattern=3 address-index=0 length-index=1", "assertions": 90, "failure_line": 0, "commands": 9, "hal_init_calls": 1, "error": null, "pass": true}
+{"case": 212, "name": "pattern=3 address-index=0 length-index=2", "assertions": 91, "failure_line": 0, "commands": 9, "hal_init_calls": 1, "error": null, "pass": true}
+{"case": 213, "name": "pattern=3 address-index=0 length-index=3", "assertions": 92, "failure_line": 0, "commands": 9, "hal_init_calls": 1, "error": null, "pass": true}
+{"case": 214, "name": "pattern=3 address-index=0 length-index=4", "assertions": 343, "failure_line": 0, "commands": 9, "hal_init_calls": 1, "error": null, "pass": true}
+{"case": 215, "name": "pattern=3 address-index=0 length-index=5", "assertions": 344, "failure_line": 0, "commands": 9, "hal_init_calls": 1, "error": null, "pass": true}
+{"case": 216, "name": "pattern=3 address-index=0 length-index=6", "assertions": 365, "failure_line": 0, "commands": 11, "hal_init_calls": 1, "error": null, "pass": true}
+{"case": 217, "name": "pattern=3 address-index=0 length-index=7", "assertions": 620, "failure_line": 0, "commands": 11, "hal_init_calls": 1, "error": null, "pass": true}
+{"case": 218, "name": "pattern=3 address-index=0 length-index=8", "assertions": 1172, "failure_line": 0, "commands": 15, "hal_init_calls": 1, "error": null, "pass": true}
+{"case": 219, "name": "pattern=3 address-index=0 length-index=9", "assertions": 4484, "failure_line": 0, "commands": 39, "hal_init_calls": 1, "error": null, "pass": true}
+{"case": 220, "name": "pattern=3 address-index=1 length-index=0", "assertions": 89, "failure_line": 0, "commands": 9, "hal_init_calls": 1, "error": null, "pass": true}
+{"case": 221, "name": "pattern=3 address-index=1 length-index=1", "assertions": 90, "failure_line": 0, "commands": 9, "hal_init_calls": 1, "error": null, "pass": true}
+{"case": 222, "name": "pattern=3 address-index=1 length-index=2", "assertions": 91, "failure_line": 0, "commands": 9, "hal_init_calls": 1, "error": null, "pass": true}
+{"case": 223, "name": "pattern=3 address-index=1 length-index=3", "assertions": 92, "failure_line": 0, "commands": 9, "hal_init_calls": 1, "error": null, "pass": true}
+{"case": 224, "name": "pattern=3 address-index=1 length-index=4", "assertions": 343, "failure_line": 0, "commands": 9, "hal_init_calls": 1, "error": null, "pass": true}
+{"case": 225, "name": "pattern=3 address-index=1 length-index=5", "assertions": 344, "failure_line": 0, "commands": 9, "hal_init_calls": 1, "error": null, "pass": true}
+{"case": 226, "name": "pattern=3 address-index=1 length-index=6", "assertions": 365, "failure_line": 0, "commands": 11, "hal_init_calls": 1, "error": null, "pass": true}
+{"case": 227, "name": "pattern=3 address-index=1 length-index=7", "assertions": 620, "failure_line": 0, "commands": 11, "hal_init_calls": 1, "error": null, "pass": true}
+{"case": 228, "name": "pattern=3 address-index=1 length-index=8", "assertions": 1172, "failure_line": 0, "commands": 15, "hal_init_calls": 1, "error": null, "pass": true}
+{"case": 229, "name": "pattern=3 address-index=1 length-index=9", "assertions": 4484, "failure_line": 0, "commands": 39, "hal_init_calls": 1, "error": null, "pass": true}
+{"case": 230, "name": "pattern=3 address-index=2 length-index=0", "assertions": 89, "failure_line": 0, "commands": 9, "hal_init_calls": 1, "error": null, "pass": true}
+{"case": 231, "name": "pattern=3 address-index=2 length-index=1", "assertions": 90, "failure_line": 0, "commands": 9, "hal_init_calls": 1, "error": null, "pass": true}
+{"case": 232, "name": "pattern=3 address-index=2 length-index=2", "assertions": 91, "failure_line": 0, "commands": 9, "hal_init_calls": 1, "error": null, "pass": true}
+{"case": 233, "name": "pattern=3 address-index=2 length-index=3", "assertions": 92, "failure_line": 0, "commands": 9, "hal_init_calls": 1, "error": null, "pass": true}
+{"case": 234, "name": "pattern=3 address-index=2 length-index=4", "assertions": 343, "failure_line": 0, "commands": 9, "hal_init_calls": 1, "error": null, "pass": true}
+{"case": 235, "name": "pattern=3 address-index=2 length-index=5", "assertions": 344, "failure_line": 0, "commands": 9, "hal_init_calls": 1, "error": null, "pass": true}
+{"case": 236, "name": "pattern=3 address-index=2 length-index=6", "assertions": 365, "failure_line": 0, "commands": 11, "hal_init_calls": 1, "error": null, "pass": true}
+{"case": 237, "name": "pattern=3 address-index=2 length-index=7", "assertions": 620, "failure_line": 0, "commands": 11, "hal_init_calls": 1, "error": null, "pass": true}
+{"case": 238, "name": "pattern=3 address-index=2 length-index=8", "assertions": 1172, "failure_line": 0, "commands": 15, "hal_init_calls": 1, "error": null, "pass": true}
+{"case": 239, "name": "pattern=3 address-index=2 length-index=9", "assertions": 4484, "failure_line": 0, "commands": 39, "hal_init_calls": 1, "error": null, "pass": true}
+{"case": 240, "name": "pattern=3 address-index=3 length-index=0", "assertions": 89, "failure_line": 0, "commands": 9, "hal_init_calls": 1, "error": null, "pass": true}
+{"case": 241, "name": "pattern=3 address-index=3 length-index=1", "assertions": 90, "failure_line": 0, "commands": 9, "hal_init_calls": 1, "error": null, "pass": true}
+{"case": 242, "name": "pattern=3 address-index=3 length-index=2", "assertions": 91, "failure_line": 0, "commands": 9, "hal_init_calls": 1, "error": null, "pass": true}
+{"case": 243, "name": "pattern=3 address-index=3 length-index=3", "assertions": 92, "failure_line": 0, "commands": 9, "hal_init_calls": 1, "error": null, "pass": true}
+{"case": 244, "name": "pattern=3 address-index=3 length-index=4", "assertions": 343, "failure_line": 0, "commands": 9, "hal_init_calls": 1, "error": null, "pass": true}
+{"case": 245, "name": "pattern=3 address-index=3 length-index=5", "assertions": 344, "failure_line": 0, "commands": 9, "hal_init_calls": 1, "error": null, "pass": true}
+{"case": 246, "name": "pattern=3 address-index=3 length-index=6", "assertions": 365, "failure_line": 0, "commands": 11, "hal_init_calls": 1, "error": null, "pass": true}
+{"case": 247, "name": "pattern=3 address-index=3 length-index=7", "assertions": 620, "failure_line": 0, "commands": 11, "hal_init_calls": 1, "error": null, "pass": true}
+{"case": 248, "name": "pattern=3 address-index=3 length-index=8", "assertions": 1172, "failure_line": 0, "commands": 15, "hal_init_calls": 1, "error": null, "pass": true}
+{"case": 249, "name": "pattern=3 address-index=3 length-index=9", "assertions": 4484, "failure_line": 0, "commands": 39, "hal_init_calls": 1, "error": null, "pass": true}
+{"case": 250, "name": "pattern=3 address-index=4 length-index=0", "assertions": 89, "failure_line": 0, "commands": 9, "hal_init_calls": 1, "error": null, "pass": true}
+{"case": 251, "name": "pattern=3 address-index=4 length-index=1", "assertions": 90, "failure_line": 0, "commands": 9, "hal_init_calls": 1, "error": null, "pass": true}
+{"case": 252, "name": "pattern=3 address-index=4 length-index=2", "assertions": 91, "failure_line": 0, "commands": 9, "hal_init_calls": 1, "error": null, "pass": true}
+{"case": 253, "name": "pattern=3 address-index=4 length-index=3", "assertions": 92, "failure_line": 0, "commands": 9, "hal_init_calls": 1, "error": null, "pass": true}
+{"case": 254, "name": "pattern=3 address-index=4 length-index=4", "assertions": 343, "failure_line": 0, "commands": 9, "hal_init_calls": 1, "error": null, "pass": true}
+{"case": 255, "name": "pattern=3 address-index=4 length-index=5", "assertions": 344, "failure_line": 0, "commands": 9, "hal_init_calls": 1, "error": null, "pass": true}
+{"case": 256, "name": "pattern=3 address-index=4 length-index=6", "assertions": 365, "failure_line": 0, "commands": 11, "hal_init_calls": 1, "error": null, "pass": true}
+{"case": 257, "name": "pattern=3 address-index=4 length-index=7", "assertions": 620, "failure_line": 0, "commands": 11, "hal_init_calls": 1, "error": null, "pass": true}
+{"case": 258, "name": "pattern=3 address-index=4 length-index=8", "assertions": 1172, "failure_line": 0, "commands": 15, "hal_init_calls": 1, "error": null, "pass": true}
+{"case": 259, "name": "pattern=3 address-index=4 length-index=9", "assertions": 4484, "failure_line": 0, "commands": 39, "hal_init_calls": 1, "error": null, "pass": true}
+{"case": 260, "name": "pattern=3 address-index=5 length-index=0", "assertions": 89, "failure_line": 0, "commands": 9, "hal_init_calls": 1, "error": null, "pass": true}
+{"case": 261, "name": "pattern=3 address-index=5 length-index=1", "assertions": 90, "failure_line": 0, "commands": 9, "hal_init_calls": 1, "error": null, "pass": true}
+{"case": 262, "name": "pattern=3 address-index=5 length-index=2", "assertions": 91, "failure_line": 0, "commands": 9, "hal_init_calls": 1, "error": null, "pass": true}
+{"case": 263, "name": "pattern=3 address-index=5 length-index=3", "assertions": 92, "failure_line": 0, "commands": 9, "hal_init_calls": 1, "error": null, "pass": true}
+{"case": 264, "name": "pattern=3 address-index=5 length-index=4", "assertions": 343, "failure_line": 0, "commands": 9, "hal_init_calls": 1, "error": null, "pass": true}
+{"case": 265, "name": "pattern=3 address-index=5 length-index=5", "assertions": 344, "failure_line": 0, "commands": 9, "hal_init_calls": 1, "error": null, "pass": true}
+{"case": 266, "name": "pattern=3 address-index=5 length-index=6", "assertions": 365, "failure_line": 0, "commands": 11, "hal_init_calls": 1, "error": null, "pass": true}
+{"case": 267, "name": "pattern=3 address-index=5 length-index=7", "assertions": 620, "failure_line": 0, "commands": 11, "hal_init_calls": 1, "error": null, "pass": true}
+{"case": 268, "name": "pattern=3 address-index=5 length-index=8", "assertions": 1172, "failure_line": 0, "commands": 15, "hal_init_calls": 1, "error": null, "pass": true}
+{"case": 269, "name": "pattern=3 address-index=5 length-index=9", "assertions": 4484, "failure_line": 0, "commands": 39, "hal_init_calls": 1, "error": null, "pass": true}
+{"case": 270, "name": "pattern=3 address-index=6 length-index=0", "assertions": 89, "failure_line": 0, "commands": 9, "hal_init_calls": 1, "error": null, "pass": true}
+{"case": 271, "name": "pattern=3 address-index=6 length-index=1", "assertions": 29, "failure_line": 0, "commands": 1, "hal_init_calls": 1, "error": null, "pass": true}
+{"case": 272, "name": "pattern=3 address-index=6 length-index=2", "assertions": 29, "failure_line": 0, "commands": 1, "hal_init_calls": 1, "error": null, "pass": true}
+{"case": 273, "name": "pattern=3 address-index=6 length-index=3", "assertions": 29, "failure_line": 0, "commands": 1, "hal_init_calls": 1, "error": null, "pass": true}
+{"case": 274, "name": "pattern=3 address-index=6 length-index=4", "assertions": 29, "failure_line": 0, "commands": 1, "hal_init_calls": 1, "error": null, "pass": true}
+{"case": 275, "name": "pattern=3 address-index=6 length-index=5", "assertions": 29, "failure_line": 0, "commands": 1, "hal_init_calls": 1, "error": null, "pass": true}
+{"case": 276, "name": "pattern=3 address-index=6 length-index=6", "assertions": 29, "failure_line": 0, "commands": 1, "hal_init_calls": 1, "error": null, "pass": true}
+{"case": 277, "name": "pattern=3 address-index=6 length-index=7", "assertions": 29, "failure_line": 0, "commands": 1, "hal_init_calls": 1, "error": null, "pass": true}
+{"case": 278, "name": "pattern=3 address-index=6 length-index=8", "assertions": 29, "failure_line": 0, "commands": 1, "hal_init_calls": 1, "error": null, "pass": true}
+{"case": 279, "name": "pattern=3 address-index=6 length-index=9", "assertions": 29, "failure_line": 0, "commands": 1, "hal_init_calls": 1, "error": null, "pass": true}
+{"case": 280, "name": "pattern=4 address-index=0 length-index=0", "assertions": 89, "failure_line": 0, "commands": 9, "hal_init_calls": 1, "error": null, "pass": true}
+{"case": 281, "name": "pattern=4 address-index=0 length-index=1", "assertions": 90, "failure_line": 0, "commands": 9, "hal_init_calls": 1, "error": null, "pass": true}
+{"case": 282, "name": "pattern=4 address-index=0 length-index=2", "assertions": 91, "failure_line": 0, "commands": 9, "hal_init_calls": 1, "error": null, "pass": true}
+{"case": 283, "name": "pattern=4 address-index=0 length-index=3", "assertions": 92, "failure_line": 0, "commands": 9, "hal_init_calls": 1, "error": null, "pass": true}
+{"case": 284, "name": "pattern=4 address-index=0 length-index=4", "assertions": 343, "failure_line": 0, "commands": 9, "hal_init_calls": 1, "error": null, "pass": true}
+{"case": 285, "name": "pattern=4 address-index=0 length-index=5", "assertions": 344, "failure_line": 0, "commands": 9, "hal_init_calls": 1, "error": null, "pass": true}
+{"case": 286, "name": "pattern=4 address-index=0 length-index=6", "assertions": 365, "failure_line": 0, "commands": 11, "hal_init_calls": 1, "error": null, "pass": true}
+{"case": 287, "name": "pattern=4 address-index=0 length-index=7", "assertions": 620, "failure_line": 0, "commands": 11, "hal_init_calls": 1, "error": null, "pass": true}
+{"case": 288, "name": "pattern=4 address-index=0 length-index=8", "assertions": 1172, "failure_line": 0, "commands": 15, "hal_init_calls": 1, "error": null, "pass": true}
+{"case": 289, "name": "pattern=4 address-index=0 length-index=9", "assertions": 4484, "failure_line": 0, "commands": 39, "hal_init_calls": 1, "error": null, "pass": true}
+{"case": 290, "name": "pattern=4 address-index=1 length-index=0", "assertions": 89, "failure_line": 0, "commands": 9, "hal_init_calls": 1, "error": null, "pass": true}
+{"case": 291, "name": "pattern=4 address-index=1 length-index=1", "assertions": 90, "failure_line": 0, "commands": 9, "hal_init_calls": 1, "error": null, "pass": true}
+{"case": 292, "name": "pattern=4 address-index=1 length-index=2", "assertions": 91, "failure_line": 0, "commands": 9, "hal_init_calls": 1, "error": null, "pass": true}
+{"case": 293, "name": "pattern=4 address-index=1 length-index=3", "assertions": 92, "failure_line": 0, "commands": 9, "hal_init_calls": 1, "error": null, "pass": true}
+{"case": 294, "name": "pattern=4 address-index=1 length-index=4", "assertions": 343, "failure_line": 0, "commands": 9, "hal_init_calls": 1, "error": null, "pass": true}
+{"case": 295, "name": "pattern=4 address-index=1 length-index=5", "assertions": 344, "failure_line": 0, "commands": 9, "hal_init_calls": 1, "error": null, "pass": true}
+{"case": 296, "name": "pattern=4 address-index=1 length-index=6", "assertions": 365, "failure_line": 0, "commands": 11, "hal_init_calls": 1, "error": null, "pass": true}
+{"case": 297, "name": "pattern=4 address-index=1 length-index=7", "assertions": 620, "failure_line": 0, "commands": 11, "hal_init_calls": 1, "error": null, "pass": true}
+{"case": 298, "name": "pattern=4 address-index=1 length-index=8", "assertions": 1172, "failure_line": 0, "commands": 15, "hal_init_calls": 1, "error": null, "pass": true}
+{"case": 299, "name": "pattern=4 address-index=1 length-index=9", "assertions": 4484, "failure_line": 0, "commands": 39, "hal_init_calls": 1, "error": null, "pass": true}
+{"case": 300, "name": "pattern=4 address-index=2 length-index=0", "assertions": 89, "failure_line": 0, "commands": 9, "hal_init_calls": 1, "error": null, "pass": true}
+{"case": 301, "name": "pattern=4 address-index=2 length-index=1", "assertions": 90, "failure_line": 0, "commands": 9, "hal_init_calls": 1, "error": null, "pass": true}
+{"case": 302, "name": "pattern=4 address-index=2 length-index=2", "assertions": 91, "failure_line": 0, "commands": 9, "hal_init_calls": 1, "error": null, "pass": true}
+{"case": 303, "name": "pattern=4 address-index=2 length-index=3", "assertions": 92, "failure_line": 0, "commands": 9, "hal_init_calls": 1, "error": null, "pass": true}
+{"case": 304, "name": "pattern=4 address-index=2 length-index=4", "assertions": 343, "failure_line": 0, "commands": 9, "hal_init_calls": 1, "error": null, "pass": true}
+{"case": 305, "name": "pattern=4 address-index=2 length-index=5", "assertions": 344, "failure_line": 0, "commands": 9, "hal_init_calls": 1, "error": null, "pass": true}
+{"case": 306, "name": "pattern=4 address-index=2 length-index=6", "assertions": 365, "failure_line": 0, "commands": 11, "hal_init_calls": 1, "error": null, "pass": true}
+{"case": 307, "name": "pattern=4 address-index=2 length-index=7", "assertions": 620, "failure_line": 0, "commands": 11, "hal_init_calls": 1, "error": null, "pass": true}
+{"case": 308, "name": "pattern=4 address-index=2 length-index=8", "assertions": 1172, "failure_line": 0, "commands": 15, "hal_init_calls": 1, "error": null, "pass": true}
+{"case": 309, "name": "pattern=4 address-index=2 length-index=9", "assertions": 4484, "failure_line": 0, "commands": 39, "hal_init_calls": 1, "error": null, "pass": true}
+{"case": 310, "name": "pattern=4 address-index=3 length-index=0", "assertions": 89, "failure_line": 0, "commands": 9, "hal_init_calls": 1, "error": null, "pass": true}
+{"case": 311, "name": "pattern=4 address-index=3 length-index=1", "assertions": 90, "failure_line": 0, "commands": 9, "hal_init_calls": 1, "error": null, "pass": true}
+{"case": 312, "name": "pattern=4 address-index=3 length-index=2", "assertions": 91, "failure_line": 0, "commands": 9, "hal_init_calls": 1, "error": null, "pass": true}
+{"case": 313, "name": "pattern=4 address-index=3 length-index=3", "assertions": 92, "failure_line": 0, "commands": 9, "hal_init_calls": 1, "error": null, "pass": true}
+{"case": 314, "name": "pattern=4 address-index=3 length-index=4", "assertions": 343, "failure_line": 0, "commands": 9, "hal_init_calls": 1, "error": null, "pass": true}
+{"case": 315, "name": "pattern=4 address-index=3 length-index=5", "assertions": 344, "failure_line": 0, "commands": 9, "hal_init_calls": 1, "error": null, "pass": true}
+{"case": 316, "name": "pattern=4 address-index=3 length-index=6", "assertions": 365, "failure_line": 0, "commands": 11, "hal_init_calls": 1, "error": null, "pass": true}
+{"case": 317, "name": "pattern=4 address-index=3 length-index=7", "assertions": 620, "failure_line": 0, "commands": 11, "hal_init_calls": 1, "error": null, "pass": true}
+{"case": 318, "name": "pattern=4 address-index=3 length-index=8", "assertions": 1172, "failure_line": 0, "commands": 15, "hal_init_calls": 1, "error": null, "pass": true}
+{"case": 319, "name": "pattern=4 address-index=3 length-index=9", "assertions": 4484, "failure_line": 0, "commands": 39, "hal_init_calls": 1, "error": null, "pass": true}
+{"case": 320, "name": "pattern=4 address-index=4 length-index=0", "assertions": 89, "failure_line": 0, "commands": 9, "hal_init_calls": 1, "error": null, "pass": true}
+{"case": 321, "name": "pattern=4 address-index=4 length-index=1", "assertions": 90, "failure_line": 0, "commands": 9, "hal_init_calls": 1, "error": null, "pass": true}
+{"case": 322, "name": "pattern=4 address-index=4 length-index=2", "assertions": 91, "failure_line": 0, "commands": 9, "hal_init_calls": 1, "error": null, "pass": true}
+{"case": 323, "name": "pattern=4 address-index=4 length-index=3", "assertions": 92, "failure_line": 0, "commands": 9, "hal_init_calls": 1, "error": null, "pass": true}
+{"case": 324, "name": "pattern=4 address-index=4 length-index=4", "assertions": 343, "failure_line": 0, "commands": 9, "hal_init_calls": 1, "error": null, "pass": true}
+{"case": 325, "name": "pattern=4 address-index=4 length-index=5", "assertions": 344, "failure_line": 0, "commands": 9, "hal_init_calls": 1, "error": null, "pass": true}
+{"case": 326, "name": "pattern=4 address-index=4 length-index=6", "assertions": 365, "failure_line": 0, "commands": 11, "hal_init_calls": 1, "error": null, "pass": true}
+{"case": 327, "name": "pattern=4 address-index=4 length-index=7", "assertions": 620, "failure_line": 0, "commands": 11, "hal_init_calls": 1, "error": null, "pass": true}
+{"case": 328, "name": "pattern=4 address-index=4 length-index=8", "assertions": 1172, "failure_line": 0, "commands": 15, "hal_init_calls": 1, "error": null, "pass": true}
+{"case": 329, "name": "pattern=4 address-index=4 length-index=9", "assertions": 4484, "failure_line": 0, "commands": 39, "hal_init_calls": 1, "error": null, "pass": true}
+{"case": 330, "name": "pattern=4 address-index=5 length-index=0", "assertions": 89, "failure_line": 0, "commands": 9, "hal_init_calls": 1, "error": null, "pass": true}
+{"case": 331, "name": "pattern=4 address-index=5 length-index=1", "assertions": 90, "failure_line": 0, "commands": 9, "hal_init_calls": 1, "error": null, "pass": true}
+{"case": 332, "name": "pattern=4 address-index=5 length-index=2", "assertions": 91, "failure_line": 0, "commands": 9, "hal_init_calls": 1, "error": null, "pass": true}
+{"case": 333, "name": "pattern=4 address-index=5 length-index=3", "assertions": 92, "failure_line": 0, "commands": 9, "hal_init_calls": 1, "error": null, "pass": true}
+{"case": 334, "name": "pattern=4 address-index=5 length-index=4", "assertions": 343, "failure_line": 0, "commands": 9, "hal_init_calls": 1, "error": null, "pass": true}
+{"case": 335, "name": "pattern=4 address-index=5 length-index=5", "assertions": 344, "failure_line": 0, "commands": 9, "hal_init_calls": 1, "error": null, "pass": true}
+{"case": 336, "name": "pattern=4 address-index=5 length-index=6", "assertions": 365, "failure_line": 0, "commands": 11, "hal_init_calls": 1, "error": null, "pass": true}
+{"case": 337, "name": "pattern=4 address-index=5 length-index=7", "assertions": 620, "failure_line": 0, "commands": 11, "hal_init_calls": 1, "error": null, "pass": true}
+{"case": 338, "name": "pattern=4 address-index=5 length-index=8", "assertions": 1172, "failure_line": 0, "commands": 15, "hal_init_calls": 1, "error": null, "pass": true}
+{"case": 339, "name": "pattern=4 address-index=5 length-index=9", "assertions": 4484, "failure_line": 0, "commands": 39, "hal_init_calls": 1, "error": null, "pass": true}
+{"case": 340, "name": "pattern=4 address-index=6 length-index=0", "assertions": 89, "failure_line": 0, "commands": 9, "hal_init_calls": 1, "error": null, "pass": true}
+{"case": 341, "name": "pattern=4 address-index=6 length-index=1", "assertions": 29, "failure_line": 0, "commands": 1, "hal_init_calls": 1, "error": null, "pass": true}
+{"case": 342, "name": "pattern=4 address-index=6 length-index=2", "assertions": 29, "failure_line": 0, "commands": 1, "hal_init_calls": 1, "error": null, "pass": true}
+{"case": 343, "name": "pattern=4 address-index=6 length-index=3", "assertions": 29, "failure_line": 0, "commands": 1, "hal_init_calls": 1, "error": null, "pass": true}
+{"case": 344, "name": "pattern=4 address-index=6 length-index=4", "assertions": 29, "failure_line": 0, "commands": 1, "hal_init_calls": 1, "error": null, "pass": true}
+{"case": 345, "name": "pattern=4 address-index=6 length-index=5", "assertions": 29, "failure_line": 0, "commands": 1, "hal_init_calls": 1, "error": null, "pass": true}
+{"case": 346, "name": "pattern=4 address-index=6 length-index=6", "assertions": 29, "failure_line": 0, "commands": 1, "hal_init_calls": 1, "error": null, "pass": true}
+{"case": 347, "name": "pattern=4 address-index=6 length-index=7", "assertions": 29, "failure_line": 0, "commands": 1, "hal_init_calls": 1, "error": null, "pass": true}
+{"case": 348, "name": "pattern=4 address-index=6 length-index=8", "assertions": 29, "failure_line": 0, "commands": 1, "hal_init_calls": 1, "error": null, "pass": true}
+{"case": 349, "name": "pattern=4 address-index=6 length-index=9", "assertions": 29, "failure_line": 0, "commands": 1, "hal_init_calls": 1, "error": null, "pass": true}
+{"case": 350, "name": "pattern=5 address-index=0 length-index=0", "assertions": 89, "failure_line": 0, "commands": 9, "hal_init_calls": 1, "error": null, "pass": true}
+{"case": 351, "name": "pattern=5 address-index=0 length-index=1", "assertions": 90, "failure_line": 0, "commands": 9, "hal_init_calls": 1, "error": null, "pass": true}
+{"case": 352, "name": "pattern=5 address-index=0 length-index=2", "assertions": 91, "failure_line": 0, "commands": 9, "hal_init_calls": 1, "error": null, "pass": true}
+{"case": 353, "name": "pattern=5 address-index=0 length-index=3", "assertions": 92, "failure_line": 0, "commands": 9, "hal_init_calls": 1, "error": null, "pass": true}
+{"case": 354, "name": "pattern=5 address-index=0 length-index=4", "assertions": 343, "failure_line": 0, "commands": 9, "hal_init_calls": 1, "error": null, "pass": true}
+{"case": 355, "name": "pattern=5 address-index=0 length-index=5", "assertions": 344, "failure_line": 0, "commands": 9, "hal_init_calls": 1, "error": null, "pass": true}
+{"case": 356, "name": "pattern=5 address-index=0 length-index=6", "assertions": 365, "failure_line": 0, "commands": 11, "hal_init_calls": 1, "error": null, "pass": true}
+{"case": 357, "name": "pattern=5 address-index=0 length-index=7", "assertions": 620, "failure_line": 0, "commands": 11, "hal_init_calls": 1, "error": null, "pass": true}
+{"case": 358, "name": "pattern=5 address-index=0 length-index=8", "assertions": 1172, "failure_line": 0, "commands": 15, "hal_init_calls": 1, "error": null, "pass": true}
+{"case": 359, "name": "pattern=5 address-index=0 length-index=9", "assertions": 4484, "failure_line": 0, "commands": 39, "hal_init_calls": 1, "error": null, "pass": true}
+{"case": 360, "name": "pattern=5 address-index=1 length-index=0", "assertions": 89, "failure_line": 0, "commands": 9, "hal_init_calls": 1, "error": null, "pass": true}
+{"case": 361, "name": "pattern=5 address-index=1 length-index=1", "assertions": 90, "failure_line": 0, "commands": 9, "hal_init_calls": 1, "error": null, "pass": true}
+{"case": 362, "name": "pattern=5 address-index=1 length-index=2", "assertions": 91, "failure_line": 0, "commands": 9, "hal_init_calls": 1, "error": null, "pass": true}
+{"case": 363, "name": "pattern=5 address-index=1 length-index=3", "assertions": 92, "failure_line": 0, "commands": 9, "hal_init_calls": 1, "error": null, "pass": true}
+{"case": 364, "name": "pattern=5 address-index=1 length-index=4", "assertions": 343, "failure_line": 0, "commands": 9, "hal_init_calls": 1, "error": null, "pass": true}
+{"case": 365, "name": "pattern=5 address-index=1 length-index=5", "assertions": 344, "failure_line": 0, "commands": 9, "hal_init_calls": 1, "error": null, "pass": true}
+{"case": 366, "name": "pattern=5 address-index=1 length-index=6", "assertions": 365, "failure_line": 0, "commands": 11, "hal_init_calls": 1, "error": null, "pass": true}
+{"case": 367, "name": "pattern=5 address-index=1 length-index=7", "assertions": 620, "failure_line": 0, "commands": 11, "hal_init_calls": 1, "error": null, "pass": true}
+{"case": 368, "name": "pattern=5 address-index=1 length-index=8", "assertions": 1172, "failure_line": 0, "commands": 15, "hal_init_calls": 1, "error": null, "pass": true}
+{"case": 369, "name": "pattern=5 address-index=1 length-index=9", "assertions": 4484, "failure_line": 0, "commands": 39, "hal_init_calls": 1, "error": null, "pass": true}
+{"case": 370, "name": "pattern=5 address-index=2 length-index=0", "assertions": 89, "failure_line": 0, "commands": 9, "hal_init_calls": 1, "error": null, "pass": true}
+{"case": 371, "name": "pattern=5 address-index=2 length-index=1", "assertions": 90, "failure_line": 0, "commands": 9, "hal_init_calls": 1, "error": null, "pass": true}
+{"case": 372, "name": "pattern=5 address-index=2 length-index=2", "assertions": 91, "failure_line": 0, "commands": 9, "hal_init_calls": 1, "error": null, "pass": true}
+{"case": 373, "name": "pattern=5 address-index=2 length-index=3", "assertions": 92, "failure_line": 0, "commands": 9, "hal_init_calls": 1, "error": null, "pass": true}
+{"case": 374, "name": "pattern=5 address-index=2 length-index=4", "assertions": 343, "failure_line": 0, "commands": 9, "hal_init_calls": 1, "error": null, "pass": true}
+{"case": 375, "name": "pattern=5 address-index=2 length-index=5", "assertions": 344, "failure_line": 0, "commands": 9, "hal_init_calls": 1, "error": null, "pass": true}
+{"case": 376, "name": "pattern=5 address-index=2 length-index=6", "assertions": 365, "failure_line": 0, "commands": 11, "hal_init_calls": 1, "error": null, "pass": true}
+{"case": 377, "name": "pattern=5 address-index=2 length-index=7", "assertions": 620, "failure_line": 0, "commands": 11, "hal_init_calls": 1, "error": null, "pass": true}
+{"case": 378, "name": "pattern=5 address-index=2 length-index=8", "assertions": 1172, "failure_line": 0, "commands": 15, "hal_init_calls": 1, "error": null, "pass": true}
+{"case": 379, "name": "pattern=5 address-index=2 length-index=9", "assertions": 4484, "failure_line": 0, "commands": 39, "hal_init_calls": 1, "error": null, "pass": true}
+{"case": 380, "name": "pattern=5 address-index=3 length-index=0", "assertions": 89, "failure_line": 0, "commands": 9, "hal_init_calls": 1, "error": null, "pass": true}
+{"case": 381, "name": "pattern=5 address-index=3 length-index=1", "assertions": 90, "failure_line": 0, "commands": 9, "hal_init_calls": 1, "error": null, "pass": true}
+{"case": 382, "name": "pattern=5 address-index=3 length-index=2", "assertions": 91, "failure_line": 0, "commands": 9, "hal_init_calls": 1, "error": null, "pass": true}
+{"case": 383, "name": "pattern=5 address-index=3 length-index=3", "assertions": 92, "failure_line": 0, "commands": 9, "hal_init_calls": 1, "error": null, "pass": true}
+{"case": 384, "name": "pattern=5 address-index=3 length-index=4", "assertions": 343, "failure_line": 0, "commands": 9, "hal_init_calls": 1, "error": null, "pass": true}
+{"case": 385, "name": "pattern=5 address-index=3 length-index=5", "assertions": 344, "failure_line": 0, "commands": 9, "hal_init_calls": 1, "error": null, "pass": true}
+{"case": 386, "name": "pattern=5 address-index=3 length-index=6", "assertions": 365, "failure_line": 0, "commands": 11, "hal_init_calls": 1, "error": null, "pass": true}
+{"case": 387, "name": "pattern=5 address-index=3 length-index=7", "assertions": 620, "failure_line": 0, "commands": 11, "hal_init_calls": 1, "error": null, "pass": true}
+{"case": 388, "name": "pattern=5 address-index=3 length-index=8", "assertions": 1172, "failure_line": 0, "commands": 15, "hal_init_calls": 1, "error": null, "pass": true}
+{"case": 389, "name": "pattern=5 address-index=3 length-index=9", "assertions": 4484, "failure_line": 0, "commands": 39, "hal_init_calls": 1, "error": null, "pass": true}
+{"case": 390, "name": "pattern=5 address-index=4 length-index=0", "assertions": 89, "failure_line": 0, "commands": 9, "hal_init_calls": 1, "error": null, "pass": true}
+{"case": 391, "name": "pattern=5 address-index=4 length-index=1", "assertions": 90, "failure_line": 0, "commands": 9, "hal_init_calls": 1, "error": null, "pass": true}
+{"case": 392, "name": "pattern=5 address-index=4 length-index=2", "assertions": 91, "failure_line": 0, "commands": 9, "hal_init_calls": 1, "error": null, "pass": true}
+{"case": 393, "name": "pattern=5 address-index=4 length-index=3", "assertions": 92, "failure_line": 0, "commands": 9, "hal_init_calls": 1, "error": null, "pass": true}
+{"case": 394, "name": "pattern=5 address-index=4 length-index=4", "assertions": 343, "failure_line": 0, "commands": 9, "hal_init_calls": 1, "error": null, "pass": true}
+{"case": 395, "name": "pattern=5 address-index=4 length-index=5", "assertions": 344, "failure_line": 0, "commands": 9, "hal_init_calls": 1, "error": null, "pass": true}
+{"case": 396, "name": "pattern=5 address-index=4 length-index=6", "assertions": 365, "failure_line": 0, "commands": 11, "hal_init_calls": 1, "error": null, "pass": true}
+{"case": 397, "name": "pattern=5 address-index=4 length-index=7", "assertions": 620, "failure_line": 0, "commands": 11, "hal_init_calls": 1, "error": null, "pass": true}
+{"case": 398, "name": "pattern=5 address-index=4 length-index=8", "assertions": 1172, "failure_line": 0, "commands": 15, "hal_init_calls": 1, "error": null, "pass": true}
+{"case": 399, "name": "pattern=5 address-index=4 length-index=9", "assertions": 4484, "failure_line": 0, "commands": 39, "hal_init_calls": 1, "error": null, "pass": true}
+{"case": 400, "name": "pattern=5 address-index=5 length-index=0", "assertions": 89, "failure_line": 0, "commands": 9, "hal_init_calls": 1, "error": null, "pass": true}
+{"case": 401, "name": "pattern=5 address-index=5 length-index=1", "assertions": 90, "failure_line": 0, "commands": 9, "hal_init_calls": 1, "error": null, "pass": true}
+{"case": 402, "name": "pattern=5 address-index=5 length-index=2", "assertions": 91, "failure_line": 0, "commands": 9, "hal_init_calls": 1, "error": null, "pass": true}
+{"case": 403, "name": "pattern=5 address-index=5 length-index=3", "assertions": 92, "failure_line": 0, "commands": 9, "hal_init_calls": 1, "error": null, "pass": true}
+{"case": 404, "name": "pattern=5 address-index=5 length-index=4", "assertions": 343, "failure_line": 0, "commands": 9, "hal_init_calls": 1, "error": null, "pass": true}
+{"case": 405, "name": "pattern=5 address-index=5 length-index=5", "assertions": 344, "failure_line": 0, "commands": 9, "hal_init_calls": 1, "error": null, "pass": true}
+{"case": 406, "name": "pattern=5 address-index=5 length-index=6", "assertions": 365, "failure_line": 0, "commands": 11, "hal_init_calls": 1, "error": null, "pass": true}
+{"case": 407, "name": "pattern=5 address-index=5 length-index=7", "assertions": 620, "failure_line": 0, "commands": 11, "hal_init_calls": 1, "error": null, "pass": true}
+{"case": 408, "name": "pattern=5 address-index=5 length-index=8", "assertions": 1172, "failure_line": 0, "commands": 15, "hal_init_calls": 1, "error": null, "pass": true}
+{"case": 409, "name": "pattern=5 address-index=5 length-index=9", "assertions": 4484, "failure_line": 0, "commands": 39, "hal_init_calls": 1, "error": null, "pass": true}
+{"case": 410, "name": "pattern=5 address-index=6 length-index=0", "assertions": 89, "failure_line": 0, "commands": 9, "hal_init_calls": 1, "error": null, "pass": true}
+{"case": 411, "name": "pattern=5 address-index=6 length-index=1", "assertions": 29, "failure_line": 0, "commands": 1, "hal_init_calls": 1, "error": null, "pass": true}
+{"case": 412, "name": "pattern=5 address-index=6 length-index=2", "assertions": 29, "failure_line": 0, "commands": 1, "hal_init_calls": 1, "error": null, "pass": true}
+{"case": 413, "name": "pattern=5 address-index=6 length-index=3", "assertions": 29, "failure_line": 0, "commands": 1, "hal_init_calls": 1, "error": null, "pass": true}
+{"case": 414, "name": "pattern=5 address-index=6 length-index=4", "assertions": 29, "failure_line": 0, "commands": 1, "hal_init_calls": 1, "error": null, "pass": true}
+{"case": 415, "name": "pattern=5 address-index=6 length-index=5", "assertions": 29, "failure_line": 0, "commands": 1, "hal_init_calls": 1, "error": null, "pass": true}
+{"case": 416, "name": "pattern=5 address-index=6 length-index=6", "assertions": 29, "failure_line": 0, "commands": 1, "hal_init_calls": 1, "error": null, "pass": true}
+{"case": 417, "name": "pattern=5 address-index=6 length-index=7", "assertions": 29, "failure_line": 0, "commands": 1, "hal_init_calls": 1, "error": null, "pass": true}
+{"case": 418, "name": "pattern=5 address-index=6 length-index=8", "assertions": 29, "failure_line": 0, "commands": 1, "hal_init_calls": 1, "error": null, "pass": true}
+{"case": 419, "name": "pattern=5 address-index=6 length-index=9", "assertions": 29, "failure_line": 0, "commands": 1, "hal_init_calls": 1, "error": null, "pass": true}
+{"case": 420, "name": "invalid parameter 0", "assertions": 29, "failure_line": 0, "commands": 1, "hal_init_calls": 1, "error": null, "pass": true}
+{"case": 421, "name": "invalid parameter 1", "assertions": 29, "failure_line": 0, "commands": 1, "hal_init_calls": 1, "error": null, "pass": true}
+{"case": 422, "name": "invalid parameter 2", "assertions": 29, "failure_line": 0, "commands": 1, "hal_init_calls": 1, "error": null, "pass": true}
+{"case": 423, "name": "invalid parameter 3", "assertions": 29, "failure_line": 0, "commands": 1, "hal_init_calls": 1, "error": null, "pass": true}
+{"case": 424, "name": "invalid parameter 4", "assertions": 29, "failure_line": 0, "commands": 1, "hal_init_calls": 1, "error": null, "pass": true}
+{"case": 425, "name": "invalid parameter 5", "assertions": 29, "failure_line": 0, "commands": 1, "hal_init_calls": 1, "error": null, "pass": true}
+{"case": 426, "name": "invalid parameter 6", "assertions": 29, "failure_line": 0, "commands": 1, "hal_init_calls": 1, "error": null, "pass": true}
+{"case": 427, "name": "invalid parameter 7", "assertions": 29, "failure_line": 0, "commands": 1, "hal_init_calls": 1, "error": null, "pass": true}
+{"case": 428, "name": "invalid parameter 8", "assertions": 29, "failure_line": 0, "commands": 1, "hal_init_calls": 1, "error": null, "pass": true}
+{"case": 429, "name": "invalid parameter 9", "assertions": 29, "failure_line": 0, "commands": 1, "hal_init_calls": 1, "error": null, "pass": true}
+{"case": 430, "name": "invalid parameter 10", "assertions": 29, "failure_line": 0, "commands": 1, "hal_init_calls": 1, "error": null, "pass": true}
+{"case": 431, "name": "invalid parameter 11", "assertions": 29, "failure_line": 0, "commands": 1, "hal_init_calls": 1, "error": null, "pass": true}
+{"case": 432, "name": "invalid parameter 12", "assertions": 29, "failure_line": 0, "commands": 1, "hal_init_calls": 1, "error": null, "pass": true}
+{"case": 433, "name": "invalid parameter 13", "assertions": 29, "failure_line": 0, "commands": 1, "hal_init_calls": 1, "error": null, "pass": true}
+{"case": 434, "name": "invalid parameter 14", "assertions": 29, "failure_line": 0, "commands": 1, "hal_init_calls": 1, "error": null, "pass": true}
+{"case": 435, "name": "invalid parameter 15", "assertions": 29, "failure_line": 0, "commands": 1, "hal_init_calls": 1, "error": null, "pass": true}
+{"case": 436, "name": "invalid parameter 16", "assertions": 29, "failure_line": 0, "commands": 1, "hal_init_calls": 1, "error": null, "pass": true}
+{"case": 437, "name": "invalid parameter 17", "assertions": 29, "failure_line": 0, "commands": 1, "hal_init_calls": 1, "error": null, "pass": true}
+{"case": 438, "name": "invalid parameter 18", "assertions": 29, "failure_line": 0, "commands": 1, "hal_init_calls": 1, "error": null, "pass": true}
+{"case": 439, "name": "invalid parameter 19", "assertions": 29, "failure_line": 0, "commands": 1, "hal_init_calls": 1, "error": null, "pass": true}
+{"case": 440, "name": "fault=1 command=1", "assertions": 40, "failure_line": 0, "commands": 2, "hal_init_calls": 1, "error": null, "pass": true}
+{"case": 441, "name": "fault=2 command=1", "assertions": 40, "failure_line": 0, "commands": 2, "hal_init_calls": 1, "error": null, "pass": true}
+{"case": 442, "name": "fault=3 command=1", "assertions": 40, "failure_line": 0, "commands": 2, "hal_init_calls": 1, "error": null, "pass": true}
+{"case": 443, "name": "fault=4 command=1", "assertions": 41, "failure_line": 0, "commands": 2, "hal_init_calls": 1, "error": null, "pass": true}
+{"case": 444, "name": "fault=5 command=1", "assertions": 41, "failure_line": 0, "commands": 2, "hal_init_calls": 1, "error": null, "pass": true}
+{"case": 445, "name": "fault=6 command=1", "assertions": 41, "failure_line": 0, "commands": 2, "hal_init_calls": 1, "error": null, "pass": true}
+{"case": 446, "name": "fault=7 command=1", "assertions": 41, "failure_line": 0, "commands": 2, "hal_init_calls": 1, "error": null, "pass": true}
+{"case": 447, "name": "fault=8 command=1", "assertions": 41, "failure_line": 0, "commands": 2, "hal_init_calls": 1, "error": null, "pass": true}
+{"case": 448, "name": "fault=9 command=1", "assertions": 40, "failure_line": 0, "commands": 2, "hal_init_calls": 1, "error": null, "pass": true}
+{"case": 449, "name": "fault=10 command=1", "assertions": 40, "failure_line": 0, "commands": 2, "hal_init_calls": 1, "error": null, "pass": true}
+{"case": 450, "name": "fault=11 command=1", "assertions": 41, "failure_line": 0, "commands": 2, "hal_init_calls": 1, "error": null, "pass": true}
+{"case": 451, "name": "fault=12 command=1", "assertions": 41, "failure_line": 0, "commands": 2, "hal_init_calls": 1, "error": null, "pass": true}
+{"case": 452, "name": "fault=1 command=2", "assertions": 46, "failure_line": 0, "commands": 3, "hal_init_calls": 1, "error": null, "pass": true}
+{"case": 453, "name": "fault=2 command=2", "assertions": 46, "failure_line": 0, "commands": 3, "hal_init_calls": 1, "error": null, "pass": true}
+{"case": 454, "name": "fault=3 command=2", "assertions": 46, "failure_line": 0, "commands": 3, "hal_init_calls": 1, "error": null, "pass": true}
+{"case": 455, "name": "fault=4 command=2", "assertions": 47, "failure_line": 0, "commands": 3, "hal_init_calls": 1, "error": null, "pass": true}
+{"case": 456, "name": "fault=5 command=2", "assertions": 47, "failure_line": 0, "commands": 3, "hal_init_calls": 1, "error": null, "pass": true}
+{"case": 457, "name": "fault=6 command=2", "assertions": 47, "failure_line": 0, "commands": 3, "hal_init_calls": 1, "error": null, "pass": true}
+{"case": 458, "name": "fault=7 command=2", "assertions": 47, "failure_line": 0, "commands": 3, "hal_init_calls": 1, "error": null, "pass": true}
+{"case": 459, "name": "fault=8 command=2", "assertions": 47, "failure_line": 0, "commands": 3, "hal_init_calls": 1, "error": null, "pass": true}
+{"case": 460, "name": "fault=9 command=2", "assertions": 46, "failure_line": 0, "commands": 3, "hal_init_calls": 1, "error": null, "pass": true}
+{"case": 461, "name": "fault=10 command=2", "assertions": 46, "failure_line": 0, "commands": 3, "hal_init_calls": 1, "error": null, "pass": true}
+{"case": 462, "name": "fault=11 command=2", "assertions": 47, "failure_line": 0, "commands": 3, "hal_init_calls": 1, "error": null, "pass": true}
+{"case": 463, "name": "fault=12 command=2", "assertions": 47, "failure_line": 0, "commands": 3, "hal_init_calls": 1, "error": null, "pass": true}
+{"case": 464, "name": "fault=1 command=3", "assertions": 52, "failure_line": 0, "commands": 4, "hal_init_calls": 1, "error": null, "pass": true}
+{"case": 465, "name": "fault=2 command=3", "assertions": 52, "failure_line": 0, "commands": 4, "hal_init_calls": 1, "error": null, "pass": true}
+{"case": 466, "name": "fault=3 command=3", "assertions": 52, "failure_line": 0, "commands": 4, "hal_init_calls": 1, "error": null, "pass": true}
+{"case": 467, "name": "fault=4 command=3", "assertions": 53, "failure_line": 0, "commands": 4, "hal_init_calls": 1, "error": null, "pass": true}
+{"case": 468, "name": "fault=5 command=3", "assertions": 53, "failure_line": 0, "commands": 4, "hal_init_calls": 1, "error": null, "pass": true}
+{"case": 469, "name": "fault=6 command=3", "assertions": 53, "failure_line": 0, "commands": 4, "hal_init_calls": 1, "error": null, "pass": true}
+{"case": 470, "name": "fault=7 command=3", "assertions": 53, "failure_line": 0, "commands": 4, "hal_init_calls": 1, "error": null, "pass": true}
+{"case": 471, "name": "fault=8 command=3", "assertions": 53, "failure_line": 0, "commands": 4, "hal_init_calls": 1, "error": null, "pass": true}
+{"case": 472, "name": "fault=9 command=3", "assertions": 52, "failure_line": 0, "commands": 4, "hal_init_calls": 1, "error": null, "pass": true}
+{"case": 473, "name": "fault=10 command=3", "assertions": 52, "failure_line": 0, "commands": 4, "hal_init_calls": 1, "error": null, "pass": true}
+{"case": 474, "name": "fault=11 command=3", "assertions": 53, "failure_line": 0, "commands": 4, "hal_init_calls": 1, "error": null, "pass": true}
+{"case": 475, "name": "fault=12 command=3", "assertions": 53, "failure_line": 0, "commands": 4, "hal_init_calls": 1, "error": null, "pass": true}
+{"case": 476, "name": "fault=1 command=4", "assertions": 62, "failure_line": 0, "commands": 5, "hal_init_calls": 1, "error": null, "pass": true}
+{"case": 477, "name": "fault=2 command=4", "assertions": 62, "failure_line": 0, "commands": 5, "hal_init_calls": 1, "error": null, "pass": true}
+{"case": 478, "name": "fault=3 command=4", "assertions": 62, "failure_line": 0, "commands": 5, "hal_init_calls": 1, "error": null, "pass": true}
+{"case": 479, "name": "fault=4 command=4", "assertions": 63, "failure_line": 0, "commands": 5, "hal_init_calls": 1, "error": null, "pass": true}
+{"case": 480, "name": "fault=5 command=4", "assertions": 63, "failure_line": 0, "commands": 5, "hal_init_calls": 1, "error": null, "pass": true}
+{"case": 481, "name": "fault=6 command=4", "assertions": 63, "failure_line": 0, "commands": 5, "hal_init_calls": 1, "error": null, "pass": true}
+{"case": 482, "name": "fault=7 command=4", "assertions": 63, "failure_line": 0, "commands": 5, "hal_init_calls": 1, "error": null, "pass": true}
+{"case": 483, "name": "fault=8 command=4", "assertions": 63, "failure_line": 0, "commands": 5, "hal_init_calls": 1, "error": null, "pass": true}
+{"case": 484, "name": "fault=9 command=4", "assertions": 62, "failure_line": 0, "commands": 5, "hal_init_calls": 1, "error": null, "pass": true}
+{"case": 485, "name": "fault=10 command=4", "assertions": 62, "failure_line": 0, "commands": 5, "hal_init_calls": 1, "error": null, "pass": true}
+{"case": 486, "name": "fault=11 command=4", "assertions": 63, "failure_line": 0, "commands": 5, "hal_init_calls": 1, "error": null, "pass": true}
+{"case": 487, "name": "fault=12 command=4", "assertions": 63, "failure_line": 0, "commands": 5, "hal_init_calls": 1, "error": null, "pass": true}
+{"case": 488, "name": "QE zero", "assertions": 47, "failure_line": 0, "commands": 4, "hal_init_calls": 1, "error": null, "pass": true}
+{"case": 489, "name": "SR1 busy", "assertions": 47, "failure_line": 0, "commands": 4, "hal_init_calls": 1, "error": null, "pass": true}
+{"case": 490, "name": "suspend", "assertions": 47, "failure_line": 0, "commands": 4, "hal_init_calls": 1, "error": null, "pass": true}
+{"case": 491, "name": "03 rejected at120MHz", "assertions": 29, "failure_line": 0, "commands": 1, "hal_init_calls": 1, "error": null, "pass": true}
+{"case": 492, "name": "ISR", "assertions": 29, "failure_line": 0, "commands": 1, "hal_init_calls": 1, "error": null, "pass": true}
+{"case": 493, "name": "PRIMASK", "assertions": 29, "failure_line": 0, "commands": 1, "hal_init_calls": 1, "error": null, "pass": true}
+{"case": 494, "name": "BASEPRI", "assertions": 29, "failure_line": 0, "commands": 1, "hal_init_calls": 1, "error": null, "pass": true}
+{"case": 495, "name": "FAULTMASK", "assertions": 29, "failure_line": 0, "commands": 1, "hal_init_calls": 1, "error": null, "pass": true}
+{"case": 496, "name": "TIM stopped", "assertions": 29, "failure_line": 0, "commands": 1, "hal_init_calls": 1, "error": null, "pass": true}
+{"case": 497, "name": "TIM IRQ disabled", "assertions": 29, "failure_line": 0, "commands": 1, "hal_init_calls": 1, "error": null, "pass": true}
+{"case": 498, "name": "NVIC disabled", "assertions": 29, "failure_line": 0, "commands": 1, "hal_init_calls": 1, "error": null, "pass": true}
+{"case": 499, "name": "lock occupied", "assertions": 29, "failure_line": 0, "commands": 1, "hal_init_calls": 1, "error": null, "pass": true}
+{"case": 500, "name": "not ready", "assertions": 29, "failure_line": 0, "commands": 1, "hal_init_calls": 1, "error": null, "pass": true}
+{"case": 501, "name": "fault latched", "assertions": 29, "failure_line": 0, "commands": 1, "hal_init_calls": 1, "error": null, "pass": true}
+{"case": 502, "name": "nested six APIs", "assertions": 608, "failure_line": 0, "commands": 6, "hal_init_calls": 1, "error": null, "pass": true}
+{"case": 503, "name": "tick wrap", "assertions": 578, "failure_line": 0, "commands": 6, "hal_init_calls": 1, "error": null, "pass": true}
+{"case": 504, "name": "second chunk timeout", "assertions": 581, "failure_line": 0, "commands": 6, "hal_init_calls": 1, "error": null, "pass": true}
+{"case": 505, "name": "second chunk short", "assertions": 581, "failure_line": 0, "commands": 6, "hal_init_calls": 1, "error": null, "pass": true}
+{"case": 506, "name": "abort failure", "assertions": 30, "failure_line": 0, "commands": 1, "hal_init_calls": 1, "error": null, "pass": true}
+{"case": 507, "name": "tick context lost", "assertions": 57, "failure_line": 0, "commands": 5, "hal_init_calls": 1, "error": null, "pass": true}
+{"case": 508, "name": "unexpected DMA", "assertions": 57, "failure_line": 0, "commands": 5, "hal_init_calls": 1, "error": null, "pass": true}
+{"case": 509, "name": "shared shrinking deadline", "assertions": 58, "failure_line": 0, "commands": 5, "hal_init_calls": 1, "error": null, "pass": true}
+{"case": 510, "name": "memory mapped rejected", "assertions": 28, "failure_line": 0, "commands": 1, "hal_init_calls": 1, "error": null, "pass": true}
+{"case": 511, "name": "DCR corrupt", "assertions": 30, "failure_line": 0, "commands": 1, "hal_init_calls": 1, "error": null, "pass": true}
+{"case": 512, "name": "03 safe simulated48MHz", "assertions": 580, "failure_line": 0, "commands": 6, "hal_init_calls": 1, "error": null, "pass": true}
+{"case": 513, "name": "raw status decoding", "assertions": 48, "failure_line": 0, "commands": 4, "hal_init_calls": 1, "error": null, "pass": true}
+{"case": 514, "name": "status output atomic on failure", "assertions": 49, "failure_line": 0, "commands": 4, "hal_init_calls": 1, "error": null, "pass": true}
+{"case": 515, "name": "HCLK drift", "assertions": 30, "failure_line": 0, "commands": 1, "hal_init_calls": 1, "error": null, "pass": true}

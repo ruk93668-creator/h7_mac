@@ -1,0 +1,6 @@
+{"case": 0, "name": "SFDP and equal nonuniform data", "assertions": 165, "failure_line": 0, "commands": 1, "hal_init_calls": 1, "error": null, "pass": true}
+{"case": 1, "name": "all FF and invalid SFDP signature", "assertions": 165, "failure_line": 0, "commands": 1, "hal_init_calls": 1, "error": null, "pass": true}
+{"case": 2, "name": "command timeout preserves output", "assertions": 42, "failure_line": 0, "commands": 1, "hal_init_calls": 1, "error": null, "pass": true}
+{"case": 3, "name": "short receive preserves output", "assertions": 43, "failure_line": 0, "commands": 1, "hal_init_calls": 1, "error": null, "pass": true}
+{"case": 4, "name": "single-line data mismatch", "assertions": 165, "failure_line": 0, "commands": 1, "hal_init_calls": 1, "error": null, "pass": true}
+{"case": 5, "name": "invalid pointer and clock rejected", "assertions": 20, "failure_line": 0, "commands": 1, "hal_init_calls": 1, "error": null, "pass": true}

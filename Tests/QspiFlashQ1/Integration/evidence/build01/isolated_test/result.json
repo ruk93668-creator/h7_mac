@@ -1,0 +1,42 @@
+{
+  "target": "h7_mac_CM7",
+  "sizes": [
+    147630,
+    3962,
+    1324,
+    105708
+  ],
+  "rom": 152916,
+  "ram": 107032,
+  "maximum_static_stack": 1264,
+  "errors": 0,
+  "warnings": 0,
+  "load_image_sha256": "eac72b8b6c03d173b96c8d124a6f41a9a7f34460651807fe3cd31bdb772bd1e2",
+  "loads": [
+    [
+      134217728,
+      134369692
+    ]
+  ],
+  "symbols": {
+    "Coexist_Finish": 134249665,
+    "Coexist_Poll": 134249789,
+    "Coexist_Prepare": 134250301,
+    "Coexist_Step": 134250393,
+    "Coexist_Task": 134250445,
+    "BSP_QSPI_GetDiagnostics": 134234653,
+    "BSP_QSPI_GetFaultDiagnostics": 134234713,
+    "BSP_QSPI_GetId": 134234781,
+    "BSP_QSPI_Init": 134234853,
+    "BSP_QSPI_Read": 134234937,
+    "BSP_QSPI_ReadStatus": 134235409,
+    "g_qspi_coexist_arm": 536871908,
+    "g_qspi_coexist_report": 536936072
+  },
+  "artifacts": {
+    "h7_mac_CM7.axf": "25d7df6422cfafe7607c6b69915ae99a5eb95dd65e790d18322b701e14117983",
+    "h7_mac_CM7.htm": "b0eed6534d23ae8882ffbda0daa61a089c11d275613f1ec31fae1eff55591835",
+    "h7_mac_CM7.map": "337dd09743ac668fadaa93f959a87723a5a2853f0be07c79f044e24ac9b9b695",
+    "rebuild.log": "fcb3d2cfe220acb8c9fca3f09e6469b1b6c0eb3d986beb6ec6eefe6cb1de44d6"
+  }
+}

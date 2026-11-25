@@ -1,0 +1,154 @@
+[
+  {
+    "variant": "baseline_jpeg",
+    "core": "CM7",
+    "start": 134217728,
+    "end_exclusive": 134362360,
+    "data_bytes": 144632,
+    "internal_sector_indices": [
+      0,
+      1
+    ],
+    "requires_actual_swap_bank_zero_confirmation": true,
+    "download_authorized": false,
+    "hashes": {
+      "h7_mac_CM7.axf": "32b13b57daceee384cb8e558a7a19ee814f7517a8b510809ef0863e728f3d1dd",
+      "h7_mac_CM7.hex": "c981f1ebd61e14864e4a1a433d031363f7a767f427a24c5aca635d9c58fa686b",
+      "h7_mac_CM7.htm": "a4f5bf3f9118d1e8a3f1987c7de87be5682011f871e409fbc5d2e024ff78edd8",
+      "h7_mac_CM7.map": "26120877e489f8b1856e5841c518fbff1db6e0380e65268bf83457dc2b053546"
+    },
+    "symbols": {}
+  },
+  {
+    "variant": "baseline_raw",
+    "core": "CM7",
+    "start": 134217728,
+    "end_exclusive": 134362360,
+    "data_bytes": 144632,
+    "internal_sector_indices": [
+      0,
+      1
+    ],
+    "requires_actual_swap_bank_zero_confirmation": true,
+    "download_authorized": false,
+    "hashes": {
+      "h7_mac_CM7.axf": "d1eec7bc648d2720cd2380e7979e2cb674222142de9541cb8d7fe24521aaab57",
+      "h7_mac_CM7.hex": "552fe5c5b76f71ad297071a8ff110a2c2475331cfa221a927fb39fe252ed3581",
+      "h7_mac_CM7.htm": "bed86ff09cdecad83b3aec7aace9700aeb5a3954b3a03e8b7170130881f694a3",
+      "h7_mac_CM7.map": "26120877e489f8b1856e5841c518fbff1db6e0380e65268bf83457dc2b053546"
+    },
+    "symbols": {}
+  },
+  {
+    "variant": "baseline_cm4",
+    "core": "CM4",
+    "start": 135266304,
+    "end_exclusive": 135294088,
+    "data_bytes": 27784,
+    "internal_sector_indices": [
+      0
+    ],
+    "requires_actual_swap_bank_zero_confirmation": true,
+    "download_authorized": false,
+    "hashes": {
+      "h7_mac_CM4.axf": "a9406eaec883fcb5000dd5d25388fd1664f3a72c29c4f240a810f501a94b3667",
+      "h7_mac_CM4.hex": "3030484c03d4983a192be39142dce7b6dfdb8e6c93a49e1f8285ee846540fb17",
+      "h7_mac_CM4.htm": "de5b4be8439d094458494e31354c26a0ff674028311c3d36b5b7af2a058697c5",
+      "h7_mac_CM4.map": "f68656c2607c2fceabdb7edd823e6816003ae9fae029ee7de064a98730d2f2e8"
+    },
+    "symbols": {}
+  },
+  {
+    "variant": "candidate_jpeg",
+    "core": "CM7",
+    "start": 134217728,
+    "end_exclusive": 134362360,
+    "data_bytes": 144632,
+    "internal_sector_indices": [
+      0,
+      1
+    ],
+    "requires_actual_swap_bank_zero_confirmation": true,
+    "download_authorized": false,
+    "hashes": {
+      "h7_mac_CM7.axf": "7723ef285b3e1650c711638720fd3a296fe6e5c87b910fcdba10eab7d641c69e",
+      "h7_mac_CM7.hex": "c981f1ebd61e14864e4a1a433d031363f7a767f427a24c5aca635d9c58fa686b",
+      "h7_mac_CM7.htm": "3ed20e68a690d9bf487e03f94c6c3671fa331c96967d9b6f10d398fe90652f43",
+      "h7_mac_CM7.map": "4328f0f656a4f4ce47dfa49d7c7ef4e06c8f56c60bf93f2720e268ecf552c9f1"
+    },
+    "symbols": {}
+  },
+  {
+    "variant": "candidate_raw",
+    "core": "CM7",
+    "start": 134217728,
+    "end_exclusive": 134362360,
+    "data_bytes": 144632,
+    "internal_sector_indices": [
+      0,
+      1
+    ],
+    "requires_actual_swap_bank_zero_confirmation": true,
+    "download_authorized": false,
+    "hashes": {
+      "h7_mac_CM7.axf": "460ff671d7933dc4b216e45f91de9c09011cb83b018dd84c65217c18602a3897",
+      "h7_mac_CM7.hex": "552fe5c5b76f71ad297071a8ff110a2c2475331cfa221a927fb39fe252ed3581",
+      "h7_mac_CM7.htm": "c300f3fd846e55fca4cef7cb4b502b0b3aabc9b89f971bad9c2888ee5886ead4",
+      "h7_mac_CM7.map": "4328f0f656a4f4ce47dfa49d7c7ef4e06c8f56c60bf93f2720e268ecf552c9f1"
+    },
+    "symbols": {}
+  },
+  {
+    "variant": "candidate_cm4",
+    "core": "CM4",
+    "start": 135266304,
+    "end_exclusive": 135294088,
+    "data_bytes": 27784,
+    "internal_sector_indices": [
+      0
+    ],
+    "requires_actual_swap_bank_zero_confirmation": true,
+    "download_authorized": false,
+    "hashes": {
+      "h7_mac_CM4.axf": "dcc257599977c78adcf445d05b7cfcc5a2606e7cd19db833aee7811202f6e56b",
+      "h7_mac_CM4.hex": "3030484c03d4983a192be39142dce7b6dfdb8e6c93a49e1f8285ee846540fb17",
+      "h7_mac_CM4.htm": "b4aa58f77d8a812db711a198715b570c46e97bbc6fb4fa5dcf4876772c5fe34d",
+      "h7_mac_CM4.map": "317770c7e1c9ceb5b9fbc337d9256214a15803d02cdb8799012b082c2d0b2bd4"
+    },
+    "symbols": {}
+  },
+  {
+    "variant": "isolated_test",
+    "core": "CM7",
+    "start": 134217728,
+    "end_exclusive": 134369692,
+    "data_bytes": 151964,
+    "internal_sector_indices": [
+      0,
+      1
+    ],
+    "requires_actual_swap_bank_zero_confirmation": true,
+    "download_authorized": false,
+    "hashes": {
+      "h7_mac_CM7.axf": "25d7df6422cfafe7607c6b69915ae99a5eb95dd65e790d18322b701e14117983",
+      "h7_mac_CM7.hex": "110fbcf0971ab974e020c6fddd6f134f1eb3de3aff67cd3451143866c4ce8ddd",
+      "h7_mac_CM7.htm": "b0eed6534d23ae8882ffbda0daa61a089c11d275613f1ec31fae1eff55591835",
+      "h7_mac_CM7.map": "337dd09743ac668fadaa93f959a87723a5a2853f0be07c79f044e24ac9b9b695"
+    },
+    "symbols": {
+      "Coexist_Finish": 134249665,
+      "Coexist_Poll": 134249789,
+      "Coexist_Prepare": 134250301,
+      "Coexist_Step": 134250393,
+      "Coexist_Task": 134250445,
+      "BSP_QSPI_GetDiagnostics": 134234653,
+      "BSP_QSPI_GetFaultDiagnostics": 134234713,
+      "BSP_QSPI_GetId": 134234781,
+      "BSP_QSPI_Init": 134234853,
+      "BSP_QSPI_Read": 134234937,
+      "BSP_QSPI_ReadStatus": 134235409,
+      "g_qspi_coexist_arm": 536871908,
+      "g_qspi_coexist_report": 536936072
+    }
+  }
+]

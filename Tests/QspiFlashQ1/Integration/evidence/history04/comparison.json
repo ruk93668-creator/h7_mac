@@ -1,0 +1,32 @@
+[
+  {
+    "suite": "FIFO_O0",
+    "equal": true,
+    "failed_cases": [
+      5,
+      7,
+      8
+    ]
+  },
+  {
+    "suite": "FIFO_O2",
+    "equal": true,
+    "failed_cases": [
+      5,
+      7,
+      8
+    ]
+  },
+  {
+    "suite": "SdramRange",
+    "equal": true
+  },
+  {
+    "suite": "DcmiReplaceTarget",
+    "equal": true
+  },
+  {
+    "suite": "UsbUvcDescriptors",
+    "equal": true
+  }
+]

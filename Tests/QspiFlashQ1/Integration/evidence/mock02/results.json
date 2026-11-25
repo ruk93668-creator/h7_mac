@@ -1,0 +1,295 @@
+{
+  "cases": 32,
+  "passed": 32,
+  "assertions": 770,
+  "rows": [
+    {
+      "optimization": "O0",
+      "case": 0,
+      "name": "unready no QSPI",
+      "assertions": 16,
+      "failure_line": 0,
+      "error": null,
+      "pass": true
+    },
+    {
+      "optimization": "O0",
+      "case": 1,
+      "name": "startup failure stops",
+      "assertions": 8,
+      "failure_line": 0,
+      "error": null,
+      "pass": true
+    },
+    {
+      "optimization": "O0",
+      "case": 2,
+      "name": "invalid latch ignored",
+      "assertions": 10,
+      "failure_line": 0,
+      "error": null,
+      "pass": true
+    },
+    {
+      "optimization": "O0",
+      "case": 3,
+      "name": "successful nonuniform reads",
+      "assertions": 35,
+      "failure_line": 0,
+      "error": null,
+      "pass": true
+    },
+    {
+      "optimization": "O0",
+      "case": 4,
+      "name": "Init error no retry",
+      "assertions": 31,
+      "failure_line": 0,
+      "error": null,
+      "pass": true
+    },
+    {
+      "optimization": "O0",
+      "case": 5,
+      "name": "JEDEC mismatch",
+      "assertions": 30,
+      "failure_line": 0,
+      "error": null,
+      "pass": true
+    },
+    {
+      "optimization": "O0",
+      "case": 6,
+      "name": "QE absent",
+      "assertions": 31,
+      "failure_line": 0,
+      "error": null,
+      "pass": true
+    },
+    {
+      "optimization": "O0",
+      "case": 7,
+      "name": "WEL unsafe",
+      "assertions": 31,
+      "failure_line": 0,
+      "error": null,
+      "pass": true
+    },
+    {
+      "optimization": "O0",
+      "case": 8,
+      "name": "read timeout",
+      "assertions": 33,
+      "failure_line": 0,
+      "error": null,
+      "pass": true
+    },
+    {
+      "optimization": "O0",
+      "case": 9,
+      "name": "short completed",
+      "assertions": 34,
+      "failure_line": 0,
+      "error": null,
+      "pass": true
+    },
+    {
+      "optimization": "O0",
+      "case": 10,
+      "name": "quad mismatch",
+      "assertions": 36,
+      "failure_line": 0,
+      "error": null,
+      "pass": true
+    },
+    {
+      "optimization": "O0",
+      "case": 11,
+      "name": "Init occupied",
+      "assertions": 30,
+      "failure_line": 0,
+      "error": null,
+      "pass": true
+    },
+    {
+      "optimization": "O0",
+      "case": 12,
+      "name": "readiness revoked",
+      "assertions": 10,
+      "failure_line": 0,
+      "error": null,
+      "pass": true
+    },
+    {
+      "optimization": "O0",
+      "case": 13,
+      "name": "Tick wrap deadline",
+      "assertions": 8,
+      "failure_line": 0,
+      "error": null,
+      "pass": true
+    },
+    {
+      "optimization": "O0",
+      "case": 14,
+      "name": "latch before readiness",
+      "assertions": 38,
+      "failure_line": 0,
+      "error": null,
+      "pass": true
+    },
+    {
+      "optimization": "O0",
+      "case": 15,
+      "name": "static task creation fails",
+      "assertions": 4,
+      "failure_line": 0,
+      "error": null,
+      "pass": true
+    },
+    {
+      "optimization": "O2",
+      "case": 0,
+      "name": "unready no QSPI",
+      "assertions": 16,
+      "failure_line": 0,
+      "error": null,
+      "pass": true
+    },
+    {
+      "optimization": "O2",
+      "case": 1,
+      "name": "startup failure stops",
+      "assertions": 8,
+      "failure_line": 0,
+      "error": null,
+      "pass": true
+    },
+    {
+      "optimization": "O2",
+      "case": 2,
+      "name": "invalid latch ignored",
+      "assertions": 10,
+      "failure_line": 0,
+      "error": null,
+      "pass": true
+    },
+    {
+      "optimization": "O2",
+      "case": 3,
+      "name": "successful nonuniform reads",
+      "assertions": 35,
+      "failure_line": 0,
+      "error": null,
+      "pass": true
+    },
+    {
+      "optimization": "O2",
+      "case": 4,
+      "name": "Init error no retry",
+      "assertions": 31,
+      "failure_line": 0,
+      "error": null,
+      "pass": true
+    },
+    {
+      "optimization": "O2",
+      "case": 5,
+      "name": "JEDEC mismatch",
+      "assertions": 30,
+      "failure_line": 0,
+      "error": null,
+      "pass": true
+    },
+    {
+      "optimization": "O2",
+      "case": 6,
+      "name": "QE absent",
+      "assertions": 31,
+      "failure_line": 0,
+      "error": null,
+      "pass": true
+    },
+    {
+      "optimization": "O2",
+      "case": 7,
+      "name": "WEL unsafe",
+      "assertions": 31,
+      "failure_line": 0,
+      "error": null,
+      "pass": true
+    },
+    {
+      "optimization": "O2",
+      "case": 8,
+      "name": "read timeout",
+      "assertions": 33,
+      "failure_line": 0,
+      "error": null,
+      "pass": true
+    },
+    {
+      "optimization": "O2",
+      "case": 9,
+      "name": "short completed",
+      "assertions": 34,
+      "failure_line": 0,
+      "error": null,
+      "pass": true
+    },
+    {
+      "optimization": "O2",
+      "case": 10,
+      "name": "quad mismatch",
+      "assertions": 36,
+      "failure_line": 0,
+      "error": null,
+      "pass": true
+    },
+    {
+      "optimization": "O2",
+      "case": 11,
+      "name": "Init occupied",
+      "assertions": 30,
+      "failure_line": 0,
+      "error": null,
+      "pass": true
+    },
+    {
+      "optimization": "O2",
+      "case": 12,
+      "name": "readiness revoked",
+      "assertions": 10,
+      "failure_line": 0,
+      "error": null,
+      "pass": true
+    },
+    {
+      "optimization": "O2",
+      "case": 13,
+      "name": "Tick wrap deadline",
+      "assertions": 8,
+      "failure_line": 0,
+      "error": null,
+      "pass": true
+    },
+    {
+      "optimization": "O2",
+      "case": 14,
+      "name": "latch before readiness",
+      "assertions": 38,
+      "failure_line": 0,
+      "error": null,
+      "pass": true
+    },
+    {
+      "optimization": "O2",
+      "case": 15,
+      "name": "static task creation fails",
+      "assertions": 4,
+      "failure_line": 0,
+      "error": null,
+      "pass": true
+    }
+  ]
+}

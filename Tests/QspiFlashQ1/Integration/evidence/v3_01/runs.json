@@ -1,0 +1,205 @@
+[
+  {
+    "command": [
+      "python",
+      "Tests/ApplicationV3/run_tests.py",
+      "D:\\32\\STM32H7\\h7_mac_qflash\\output\\QspiFlashQ1\\coexistence\\worktree\\output\\QspiFlashQ1\\Integration\\v3_01\\product_00",
+      "--production"
+    ],
+    "code": 0,
+    "log": "D:\\32\\STM32H7\\h7_mac_qflash\\output\\QspiFlashQ1\\coexistence\\worktree\\output\\QspiFlashQ1\\Integration\\v3_01\\product_00.log"
+  },
+  {
+    "command": [
+      "python",
+      "Tests/ApplicationV3/run_tests.py",
+      "D:\\32\\STM32H7\\h7_mac_qflash\\output\\QspiFlashQ1\\coexistence\\worktree\\output\\QspiFlashQ1\\Integration\\v3_01\\product_01",
+      "--production",
+      "--raw-uvc"
+    ],
+    "code": 0,
+    "log": "D:\\32\\STM32H7\\h7_mac_qflash\\output\\QspiFlashQ1\\coexistence\\worktree\\output\\QspiFlashQ1\\Integration\\v3_01\\product_01.log"
+  },
+  {
+    "command": [
+      "python",
+      "Tests/ApplicationV3/MediaLease/run_tests.py",
+      "D:\\32\\STM32H7\\h7_mac_qflash\\output\\QspiFlashQ1\\coexistence\\worktree\\output\\QspiFlashQ1\\Integration\\v3_01\\product_02"
+    ],
+    "code": 0,
+    "log": "D:\\32\\STM32H7\\h7_mac_qflash\\output\\QspiFlashQ1\\coexistence\\worktree\\output\\QspiFlashQ1\\Integration\\v3_01\\product_02.log"
+  },
+  {
+    "command": [
+      "python",
+      "Tests/ApplicationV3/FrameDispatcher/run_tests.py",
+      "D:\\32\\STM32H7\\h7_mac_qflash\\output\\QspiFlashQ1\\coexistence\\worktree\\output\\QspiFlashQ1\\Integration\\v3_01\\product_03"
+    ],
+    "code": 0,
+    "log": "D:\\32\\STM32H7\\h7_mac_qflash\\output\\QspiFlashQ1\\coexistence\\worktree\\output\\QspiFlashQ1\\Integration\\v3_01\\product_03.log"
+  },
+  {
+    "command": [
+      "python",
+      "Tests/ApplicationV3/UvcReader/run_tests.py",
+      "D:\\32\\STM32H7\\h7_mac_qflash\\output\\QspiFlashQ1\\coexistence\\worktree\\output\\QspiFlashQ1\\Integration\\v3_01\\product_04"
+    ],
+    "code": 0,
+    "log": "D:\\32\\STM32H7\\h7_mac_qflash\\output\\QspiFlashQ1\\coexistence\\worktree\\output\\QspiFlashQ1\\Integration\\v3_01\\product_04.log"
+  },
+  {
+    "command": [
+      "python",
+      "Tests/ApplicationV3/StorageFs/run_tests.py",
+      "D:\\32\\STM32H7\\h7_mac_qflash\\output\\QspiFlashQ1\\coexistence\\worktree\\output\\QspiFlashQ1\\Integration\\v3_01\\product_05"
+    ],
+    "code": 0,
+    "log": "D:\\32\\STM32H7\\h7_mac_qflash\\output\\QspiFlashQ1\\coexistence\\worktree\\output\\QspiFlashQ1\\Integration\\v3_01\\product_05.log"
+  },
+  {
+    "command": [
+      "python",
+      "Tests/ApplicationV3/run_usb_platform_trace.py",
+      "D:\\32\\STM32H7\\h7_mac_qflash\\output\\QspiFlashQ1\\coexistence\\worktree\\output\\QspiFlashQ1\\Integration\\v3_01\\product_06"
+    ],
+    "code": 1,
+    "log": "D:\\32\\STM32H7\\h7_mac_qflash\\output\\QspiFlashQ1\\coexistence\\worktree\\output\\QspiFlashQ1\\Integration\\v3_01\\product_06.log"
+  },
+  {
+    "command": [
+      "python",
+      "Tests/ApplicationV3/run_tests.py",
+      "D:\\32\\STM32H7\\h7_mac_qflash\\output\\QspiFlashQ1\\coexistence\\worktree\\output\\QspiFlashQ1\\Integration\\v3_01\\historical_00"
+    ],
+    "code": 0,
+    "log": "D:\\32\\STM32H7\\h7_mac_qflash\\output\\QspiFlashQ1\\coexistence\\worktree\\output\\QspiFlashQ1\\Integration\\v3_01\\historical_00.log"
+  },
+  {
+    "command": [
+      "python",
+      "Tests/ApplicationV3/run_tests.py",
+      "D:\\32\\STM32H7\\h7_mac_qflash\\output\\QspiFlashQ1\\coexistence\\worktree\\output\\QspiFlashQ1\\Integration\\v3_01\\historical_01",
+      "--raw-uvc"
+    ],
+    "code": 0,
+    "log": "D:\\32\\STM32H7\\h7_mac_qflash\\output\\QspiFlashQ1\\coexistence\\worktree\\output\\QspiFlashQ1\\Integration\\v3_01\\historical_01.log"
+  },
+  {
+    "command": [
+      "python",
+      "Tests/ApplicationV3/run_tests.py",
+      "D:\\32\\STM32H7\\h7_mac_qflash\\output\\QspiFlashQ1\\coexistence\\worktree\\output\\QspiFlashQ1\\Integration\\v3_01\\historical_02",
+      "--joint-board"
+    ],
+    "code": 0,
+    "log": "D:\\32\\STM32H7\\h7_mac_qflash\\output\\QspiFlashQ1\\coexistence\\worktree\\output\\QspiFlashQ1\\Integration\\v3_01\\historical_02.log"
+  },
+  {
+    "command": [
+      "python",
+      "Tests/ApplicationV3/run_tests.py",
+      "D:\\32\\STM32H7\\h7_mac_qflash\\output\\QspiFlashQ1\\coexistence\\worktree\\output\\QspiFlashQ1\\Integration\\v3_01\\historical_03",
+      "--record-board"
+    ],
+    "code": 0,
+    "log": "D:\\32\\STM32H7\\h7_mac_qflash\\output\\QspiFlashQ1\\coexistence\\worktree\\output\\QspiFlashQ1\\Integration\\v3_01\\historical_03.log"
+  },
+  {
+    "command": [
+      "python",
+      "Tests/ApplicationV3/run_tests.py",
+      "D:\\32\\STM32H7\\h7_mac_qflash\\output\\QspiFlashQ1\\coexistence\\worktree\\output\\QspiFlashQ1\\Integration\\v3_01\\historical_04",
+      "--board-smoke",
+      "camera"
+    ],
+    "code": 0,
+    "log": "D:\\32\\STM32H7\\h7_mac_qflash\\output\\QspiFlashQ1\\coexistence\\worktree\\output\\QspiFlashQ1\\Integration\\v3_01\\historical_04.log"
+  },
+  {
+    "command": [
+      "python",
+      "Tests/ApplicationV3/run_tests.py",
+      "D:\\32\\STM32H7\\h7_mac_qflash\\output\\QspiFlashQ1\\coexistence\\worktree\\output\\QspiFlashQ1\\Integration\\v3_01\\historical_05",
+      "--board-smoke",
+      "camera",
+      "--board-stress",
+      "repeat"
+    ],
+    "code": 0,
+    "log": "D:\\32\\STM32H7\\h7_mac_qflash\\output\\QspiFlashQ1\\coexistence\\worktree\\output\\QspiFlashQ1\\Integration\\v3_01\\historical_05.log"
+  },
+  {
+    "command": [
+      "python",
+      "Tests/ApplicationV3/run_tests.py",
+      "D:\\32\\STM32H7\\h7_mac_qflash\\output\\QspiFlashQ1\\coexistence\\worktree\\output\\QspiFlashQ1\\Integration\\v3_01\\historical_06",
+      "--board-smoke",
+      "usb"
+    ],
+    "code": 0,
+    "log": "D:\\32\\STM32H7\\h7_mac_qflash\\output\\QspiFlashQ1\\coexistence\\worktree\\output\\QspiFlashQ1\\Integration\\v3_01\\historical_06.log"
+  },
+  {
+    "command": [
+      "python",
+      "Tests/ApplicationV3/run_tests.py",
+      "D:\\32\\STM32H7\\h7_mac_qflash\\output\\QspiFlashQ1\\coexistence\\worktree\\output\\QspiFlashQ1\\Integration\\v3_01\\historical_07",
+      "--board-smoke",
+      "usb",
+      "--board-stress",
+      "repeat"
+    ],
+    "code": 0,
+    "log": "D:\\32\\STM32H7\\h7_mac_qflash\\output\\QspiFlashQ1\\coexistence\\worktree\\output\\QspiFlashQ1\\Integration\\v3_01\\historical_07.log"
+  },
+  {
+    "command": [
+      "python",
+      "Tests/ApplicationV3/run_tests.py",
+      "D:\\32\\STM32H7\\h7_mac_qflash\\output\\QspiFlashQ1\\coexistence\\worktree\\output\\QspiFlashQ1\\Integration\\v3_01\\historical_08",
+      "--board-smoke",
+      "usb",
+      "--board-stress",
+      "recovery"
+    ],
+    "code": 0,
+    "log": "D:\\32\\STM32H7\\h7_mac_qflash\\output\\QspiFlashQ1\\coexistence\\worktree\\output\\QspiFlashQ1\\Integration\\v3_01\\historical_08.log"
+  },
+  {
+    "command": [
+      "python",
+      "Tests/ApplicationV3/run_tests.py",
+      "D:\\32\\STM32H7\\h7_mac_qflash\\output\\QspiFlashQ1\\coexistence\\worktree\\output\\QspiFlashQ1\\Integration\\v3_01\\historical_09",
+      "--board-smoke",
+      "storage"
+    ],
+    "code": 0,
+    "log": "D:\\32\\STM32H7\\h7_mac_qflash\\output\\QspiFlashQ1\\coexistence\\worktree\\output\\QspiFlashQ1\\Integration\\v3_01\\historical_09.log"
+  },
+  {
+    "command": [
+      "python",
+      "Tests/ApplicationV3/run_tests.py",
+      "D:\\32\\STM32H7\\h7_mac_qflash\\output\\QspiFlashQ1\\coexistence\\worktree\\output\\QspiFlashQ1\\Integration\\v3_01\\historical_10",
+      "--board-smoke",
+      "storage",
+      "--board-stress",
+      "repeat"
+    ],
+    "code": 0,
+    "log": "D:\\32\\STM32H7\\h7_mac_qflash\\output\\QspiFlashQ1\\coexistence\\worktree\\output\\QspiFlashQ1\\Integration\\v3_01\\historical_10.log"
+  },
+  {
+    "command": [
+      "python",
+      "Tests/ApplicationV3/run_tests.py",
+      "D:\\32\\STM32H7\\h7_mac_qflash\\output\\QspiFlashQ1\\coexistence\\worktree\\output\\QspiFlashQ1\\Integration\\v3_01\\historical_11",
+      "--board-smoke",
+      "storage",
+      "--board-stress",
+      "recovery"
+    ],
+    "code": 0,
+    "log": "D:\\32\\STM32H7\\h7_mac_qflash\\output\\QspiFlashQ1\\coexistence\\worktree\\output\\QspiFlashQ1\\Integration\\v3_01\\historical_11.log"
+  }
+]

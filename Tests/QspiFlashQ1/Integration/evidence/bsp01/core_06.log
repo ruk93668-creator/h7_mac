@@ -1,0 +1,2 @@
+{'real_hal_timeout': 1, 'timeout_value': 5000, 'error_bits': 1, 'elapsed_tick_calls': 5002, 'pass_': True}
+{'program': -7, 'erase': -7, 'tick_calls': 0, 'peripherals_mapped': False, 'pass_': True}

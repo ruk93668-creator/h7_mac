@@ -1,0 +1,12 @@
+{'optimization': 'O0', 'id': 98, 'pass': True, 'return': 0, 'failure_line': 0, 'error': None, 'trace': []}
+{'optimization': 'O0', 'id': 99, 'pass': True, 'return': 0, 'failure_line': 0, 'error': None, 'trace': []}
+{'optimization': 'O0', 'id': 100, 'pass': True, 'return': 0, 'failure_line': 0, 'error': None, 'trace': []}
+{'optimization': 'O0', 'id': 101, 'pass': True, 'return': 0, 'failure_line': 0, 'error': None, 'trace': []}
+{'optimization': 'O0', 'id': 102, 'pass': True, 'return': 0, 'failure_line': 0, 'error': None, 'trace': []}
+{'optimization': 'O0', 'id': 103, 'pass': True, 'return': 0, 'failure_line': 0, 'error': None, 'trace': []}
+{'optimization': 'O2', 'id': 98, 'pass': True, 'return': 0, 'failure_line': 0, 'error': None, 'trace': []}
+{'optimization': 'O2', 'id': 99, 'pass': True, 'return': 0, 'failure_line': 0, 'error': None, 'trace': []}
+{'optimization': 'O2', 'id': 100, 'pass': True, 'return': 0, 'failure_line': 0, 'error': None, 'trace': []}
+{'optimization': 'O2', 'id': 101, 'pass': True, 'return': 0, 'failure_line': 0, 'error': None, 'trace': []}
+{'optimization': 'O2', 'id': 102, 'pass': True, 'return': 0, 'failure_line': 0, 'error': None, 'trace': []}
+{'optimization': 'O2', 'id': 103, 'pass': True, 'return': 0, 'failure_line': 0, 'error': None, 'trace': []}

@@ -1,0 +1,5 @@
+{
+  "qspi_source": "3a5c942dfd1420788102b11cc5271b188f319bf2",
+  "sha256": "07b01f36b85ecb01ef90a6239f742032aad701939429d18556aefe6ad7cc12e8",
+  "headers": "frozen new main plus HAL QSPI switch"
+}

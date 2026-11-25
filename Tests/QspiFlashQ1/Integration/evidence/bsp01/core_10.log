@@ -1,0 +1,2 @@
+usage: test_verify_report.py [-h] manifest mock_output
+test_verify_report.py: error: the following arguments are required: manifest, mock_output

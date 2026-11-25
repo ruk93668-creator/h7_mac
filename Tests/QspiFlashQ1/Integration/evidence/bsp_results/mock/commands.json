@@ -1,0 +1,46 @@
+[
+  {
+    "command": [
+      "D:/32/ARM/ARMCC/Bin/armcc.exe",
+      "--cpu",
+      "Cortex-M7.fp.sp",
+      "--c99",
+      "-O0",
+      "-DSTM32H747xx",
+      "-DCORE_CM7",
+      "-DUSE_HAL_DRIVER",
+      "-I",
+      "D:\\32\\STM32H7\\h7_mac_qflash\\output\\QspiFlashQ1\\coexistence\\worktree\\output\\QspiFlashQ1\\Integration\\bsp01\\tree\\CM7\\Core\\Inc",
+      "-I",
+      "D:\\32\\STM32H7\\h7_mac_qflash\\output\\QspiFlashQ1\\coexistence\\worktree\\output\\QspiFlashQ1\\Integration\\bsp01\\tree\\CM7\\BSP",
+      "-I",
+      "D:\\32\\STM32H7\\h7_mac_qflash\\output\\QspiFlashQ1\\coexistence\\worktree\\output\\QspiFlashQ1\\Integration\\bsp01\\tree\\Common\\Inc",
+      "-I",
+      "D:\\32\\STM32H7\\h7_mac_qflash\\output\\QspiFlashQ1\\coexistence\\worktree\\output\\QspiFlashQ1\\Integration\\bsp01\\tree\\Drivers\\STM32H7xx_HAL_Driver\\Inc",
+      "-I",
+      "D:\\32\\STM32H7\\h7_mac_qflash\\output\\QspiFlashQ1\\coexistence\\worktree\\output\\QspiFlashQ1\\Integration\\bsp01\\tree\\Drivers\\CMSIS\\Include",
+      "-I",
+      "D:\\32\\STM32H7\\h7_mac_qflash\\output\\QspiFlashQ1\\coexistence\\worktree\\output\\QspiFlashQ1\\Integration\\bsp01\\tree\\Drivers\\CMSIS\\Device\\ST\\STM32H7xx\\Include",
+      "-c",
+      "D:\\32\\STM32H7\\h7_mac_qflash\\output\\QspiFlashQ1\\coexistence\\worktree\\output\\QspiFlashQ1\\Integration\\bsp01\\tree\\Tests\\QspiFlashQ1\\behavior_test.c",
+      "-o",
+      "D:\\32\\STM32H7\\h7_mac_qflash\\output\\QspiFlashQ1\\coexistence\\worktree\\output\\QspiFlashQ1\\Integration\\bsp01\\tree\\output\\QspiFlashQ1\\mock\\behavior.o"
+    ],
+    "exit": 0,
+    "output": ""
+  },
+  {
+    "command": [
+      "D:/32/ARM/ARMCC/Bin/armlink.exe",
+      "D:\\32\\STM32H7\\h7_mac_qflash\\output\\QspiFlashQ1\\coexistence\\worktree\\output\\QspiFlashQ1\\Integration\\bsp01\\tree\\output\\QspiFlashQ1\\mock\\behavior.o",
+      "--entry",
+      "Q1_TestRun",
+      "--scatter",
+      "D:\\32\\STM32H7\\h7_mac_qflash\\output\\QspiFlashQ1\\coexistence\\worktree\\output\\QspiFlashQ1\\Integration\\bsp01\\tree\\output\\QspiFlashQ1\\mock\\test.sct",
+      "-o",
+      "D:\\32\\STM32H7\\h7_mac_qflash\\output\\QspiFlashQ1\\coexistence\\worktree\\output\\QspiFlashQ1\\Integration\\bsp01\\tree\\output\\QspiFlashQ1\\mock\\behavior.axf"
+    ],
+    "exit": 0,
+    "output": ""
+  }
+]

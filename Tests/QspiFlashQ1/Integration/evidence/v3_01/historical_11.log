@@ -1,0 +1,6 @@
+{'optimization': 'O0', 'id': 58, 'pass': True, 'return': 0, 'failure_line': 0, 'error': None, 'trace': [[0, 20, 8, 3, 8, 0, 1, 0]]}
+{'optimization': 'O0', 'id': 59, 'pass': True, 'return': 0, 'failure_line': 0, 'error': None, 'trace': [[0, 9, 3, 4, 2, 4294967286, 1, 0]]}
+{'optimization': 'O0', 'id': 60, 'pass': True, 'return': 0, 'failure_line': 0, 'error': None, 'trace': [[0, 12, 4, 4, 3, 4294967287, 1, 4294967287]]}
+{'optimization': 'O2', 'id': 58, 'pass': True, 'return': 0, 'failure_line': 0, 'error': None, 'trace': [[0, 20, 8, 3, 8, 0, 1, 0]]}
+{'optimization': 'O2', 'id': 59, 'pass': True, 'return': 0, 'failure_line': 0, 'error': None, 'trace': [[0, 9, 3, 4, 2, 4294967286, 1, 0]]}
+{'optimization': 'O2', 'id': 60, 'pass': True, 'return': 0, 'failure_line': 0, 'error': None, 'trace': [[0, 12, 4, 4, 3, 4294967287, 1, 4294967287]]}

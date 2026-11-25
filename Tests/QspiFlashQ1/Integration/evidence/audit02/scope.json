@@ -1,0 +1,25 @@
+{
+  "baseline": "62b42d7c0b7df9eadafa00953ee8ce1229da9826",
+  "qspi": "3a5c942dfd1420788102b11cc5271b188f319bf2",
+  "changed_production": [
+    "CM7/BSP/bsp_qspi.c",
+    "CM7/BSP/bsp_qspi.h",
+    "CM7/Core/Inc/stm32h7xx_hal_conf.h",
+    "MDK-ARM/h7_mac.uvprojx"
+  ],
+  "extra_cm7_files": [
+    "..\\CM7\\BSP\\bsp_qspi.c",
+    "..\\Drivers\\STM32H7xx_HAL_Driver\\Src\\stm32h7xx_hal_qspi.c"
+  ],
+  "cm4_target_equal": true,
+  "target_options_equal": true,
+  "default_bsp_tokens_equal": true,
+  "default_bsp_tokens_sha256": "4c57598f5e5bb41fba02c04f019819d54c8da80b2e9efe06f4d946059f66e565",
+  "write_policy_empty": true,
+  "production_source_sha256": {
+    "CM7/BSP/bsp_qspi.c": "d2ec681612af8edf1038fdeefd23369372cd18c1699bc6ffb0bc3c5d5f68fa76",
+    "CM7/BSP/bsp_qspi.h": "ff49f205443a12dc604cf04b9da1588d8e68231de48cc887a39da1da731aac76",
+    "CM7/Core/Inc/stm32h7xx_hal_conf.h": "079a8b814bbbfdf026c830d38653d127b24dd1df56e2837e791bf55d6a6abab7",
+    "MDK-ARM/h7_mac.uvprojx": "0070e1452e0862e9598fbb887945152d6c2c51b9d17ff7ddb6ec882b7fa9e097"
+  }
+}

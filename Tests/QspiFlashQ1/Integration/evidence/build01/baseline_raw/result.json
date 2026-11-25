@@ -1,0 +1,28 @@
+{
+  "target": "h7_mac_CM7",
+  "sizes": [
+    140338,
+    3922,
+    1296,
+    100960
+  ],
+  "rom": 145556,
+  "ram": 102256,
+  "maximum_static_stack": 1264,
+  "errors": 0,
+  "warnings": 0,
+  "load_image_sha256": "97e27ff26304ab6bd2307619249be71c87bff74446695f166882b70136294fd6",
+  "loads": [
+    [
+      134217728,
+      134362360
+    ]
+  ],
+  "symbols": {},
+  "artifacts": {
+    "h7_mac_CM7.axf": "d1eec7bc648d2720cd2380e7979e2cb674222142de9541cb8d7fe24521aaab57",
+    "h7_mac_CM7.htm": "bed86ff09cdecad83b3aec7aace9700aeb5a3954b3a03e8b7170130881f694a3",
+    "h7_mac_CM7.map": "26120877e489f8b1856e5841c518fbff1db6e0380e65268bf83457dc2b053546",
+    "rebuild.log": "bbd5262abc7263267a0e4388b79a7ae48c0628bd46cb58765cb8f8445c17c071"
+  }
+}

@@ -1,0 +1,47 @@
+Traceback (most recent call last):
+  File "D:\32\STM32H7\h7_mac_qflash\output\QspiFlashQ1\coexistence\worktree\output\QspiFlashQ1\Integration\v3_01\tree\Tests\ApplicationV3\run_usb_platform_trace.py", line 39, in <module>
+    h.build(opt,sources,"UsbTrace_TestRun")
+  File "D:\32\STM32H7\h7_mac_qflash\output\QspiFlashQ1\coexistence\worktree\output\QspiFlashQ1\Integration\v3_01\tree\Tests/CameraLifecycleC1/run_tests.py", line 29, in build
+    obj=OUT/(name+str(i)+'.o');run(cc+defs+['-c',src,'-o',obj]);objs.append(obj)
+                               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "D:\32\STM32H7\h7_mac_qflash\output\QspiFlashQ1\coexistence\worktree\output\QspiFlashQ1\Integration\v3_01\tree\Tests\ApplicationV3\run_usb_platform_trace.py", line 30, in run_with_initcall_region
+    return real_run(command)
+           ^^^^^^^^^^^^^^^^^
+  File "D:\32\STM32H7\h7_mac_qflash\output\QspiFlashQ1\coexistence\worktree\output\QspiFlashQ1\Integration\v3_01\tree\Tests/CameraLifecycleC1/run_tests.py", line 17, in run
+    if p.returncode:raise RuntimeError(text)
+                    ^^^^^^^^^^^^^^^^^^^^^^^^
+RuntimeError: "Tests\ApplicationV3\usb_platform_trace_test.c", line 14: Error:  #20: identifier "UsbDeviceR2Trace_t" is undefined
+      UsbDeviceR2Trace_t snapshot = {0};
+      ^
+"Tests\ApplicationV3\usb_platform_trace_test.c", line 26: Warning:  #223-D: function "USB_Device_ReadR2Trace" declared implicitly
+      CHECK_EQUAL(USB_Device_ReadR2Trace(&snapshot), true);
+      ^
+"Tests\ApplicationV3\usb_platform_trace_test.c", line 27: Error:  #20: identifier "USB_DEVICE_TRACE_SET_CONFIGURATION" is undefined
+      CHECK_EQUAL(snapshot.events[snapshot.event_count - 1U].kind, USB_DEVICE_TRACE_SET_CONFIGURATION);
+      ^
+"Tests\ApplicationV3\usb_platform_trace_test.c", line 33: Warning:  #223-D: function "USB_Device_ReadR2Trace" declared implicitly
+          CHECK_EQUAL(USB_Device_ReadR2Trace(&snapshot), false);
+          ^
+"Tests\ApplicationV3\usb_platform_trace_test.c", line 46: Error:  #20: identifier "USB_DEVICE_TRACE_SUSPEND" is undefined
+          CHECK_EQUAL(snapshot.events[snapshot.event_count - 1U].kind, USB_DEVICE_TRACE_SUSPEND);
+          ^
+"Tests\ApplicationV3\usb_platform_trace_test.c", line 48: Warning:  #223-D: function "USB_Device_ReadR2Trace" declared implicitly
+          CHECK_EQUAL(USB_Device_ReadR2Trace(&snapshot), true);
+          ^
+"Tests\ApplicationV3\usb_platform_trace_test.c", line 50: Error:  #20: identifier "USB_DEVICE_TRACE_RESUME" is undefined
+          CHECK_EQUAL(snapshot.events[snapshot.event_count - 1U].kind, USB_DEVICE_TRACE_RESUME);
+          ^
+"Tests\ApplicationV3\usb_platform_trace_test.c", line 66: Warning:  #223-D: function "USB_Device_ReadR2Trace" declared implicitly
+      CHECK_EQUAL(USB_Device_ReadR2Trace(&snapshot), false);
+      ^
+"Tests\ApplicationV3\usb_platform_trace_test.c", line 67: Error:  #20: identifier "USB_DEVICE_TRACE_CAPACITY" is undefined
+      CHECK_EQUAL(snapshot.event_count, USB_DEVICE_TRACE_CAPACITY);
+      ^
+"Tests\ApplicationV3\usb_platform_trace_test.c", line 73: Error:  #20: identifier "USB_DEVICE_TRACE_RESET" is undefined
+      CHECK_EQUAL(snapshot.events[6].kind, USB_DEVICE_TRACE_RESET);
+      ^
+"Tests\ApplicationV3\usb_platform_trace_test.c", line 74: Error:  #20: identifier "USB_DEVICE_TRACE_DISCONNECT" is undefined
+      CHECK_EQUAL(snapshot.events[7].kind, USB_DEVICE_TRACE_DISCONNECT);
+      ^
+Tests\ApplicationV3\usb_platform_trace_test.c: 4 warnings, 7 errors
+

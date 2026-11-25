@@ -1,0 +1,47 @@
+[
+  {
+    "command": [
+      "D:/32/ARM/ARMCC/Bin/armcc.exe",
+      "--cpu",
+      "Cortex-M7",
+      "--c99",
+      "--split_sections",
+      "-O0",
+      "-D__disable_irq=Test_FifoDisableIrq",
+      "-I",
+      "D:\\32\\STM32H7\\h7_mac_qflash\\output\\QspiFlashQ1\\coexistence\\worktree\\output\\QspiFlashQ1\\Integration\\history01\\baseline_O0",
+      "-I",
+      "D:\\32\\STM32H7\\h7_mac_qflash\\output\\QspiFlashQ1\\coexistence\\worktree\\output\\QspiFlashQ1\\Integration\\build01\\baseline_tree\\Tests\\MjpegSdramFifo\\stubs",
+      "-I",
+      "D:\\32\\STM32H7\\h7_mac_qflash\\output\\QspiFlashQ1\\coexistence\\worktree\\output\\QspiFlashQ1\\Integration\\build01\\baseline_tree\\Common\\Inc",
+      "-I",
+      "D:\\32\\STM32H7\\h7_mac_qflash\\output\\QspiFlashQ1\\coexistence\\worktree\\output\\QspiFlashQ1\\Integration\\build01\\baseline_tree\\CM7\\Media\\Inc",
+      "-I",
+      "D:\\32\\STM32H7\\h7_mac_qflash\\output\\QspiFlashQ1\\coexistence\\worktree\\output\\QspiFlashQ1\\Integration\\build01\\baseline_tree\\CM7\\BSP",
+      "-I",
+      "D:\\32\\STM32H7\\h7_mac_qflash\\output\\QspiFlashQ1\\coexistence\\worktree\\output\\QspiFlashQ1\\Integration\\build01\\baseline_tree\\CM7\\Service",
+      "-I",
+      "D:\\32\\STM32H7\\h7_mac_qflash\\output\\QspiFlashQ1\\coexistence\\worktree\\output\\QspiFlashQ1\\Integration\\build01\\baseline_tree\\CM7\\Platform",
+      "-c",
+      "D:\\32\\STM32H7\\h7_mac_qflash\\output\\QspiFlashQ1\\coexistence\\worktree\\output\\QspiFlashQ1\\Integration\\history01\\baseline_O0\\history.c",
+      "-o",
+      "D:\\32\\STM32H7\\h7_mac_qflash\\output\\QspiFlashQ1\\coexistence\\worktree\\output\\QspiFlashQ1\\Integration\\history01\\baseline_O0\\history.o"
+    ],
+    "exit": 0,
+    "output": ""
+  },
+  {
+    "command": [
+      "D:/32/ARM/ARMCC/Bin/armlink.exe",
+      "D:\\32\\STM32H7\\h7_mac_qflash\\output\\QspiFlashQ1\\coexistence\\worktree\\output\\QspiFlashQ1\\Integration\\history01\\baseline_O0\\history.o",
+      "--entry",
+      "HistoryRun",
+      "--scatter",
+      "D:\\32\\STM32H7\\h7_mac_qflash\\output\\QspiFlashQ1\\coexistence\\worktree\\output\\QspiFlashQ1\\Integration\\history01\\baseline_O0\\history.sct",
+      "-o",
+      "D:\\32\\STM32H7\\h7_mac_qflash\\output\\QspiFlashQ1\\coexistence\\worktree\\output\\QspiFlashQ1\\Integration\\history01\\baseline_O0\\history.axf"
+    ],
+    "exit": 1,
+    "output": "Error: L6218E: Undefined symbol mmap (referred from history.o).\r\nFinished: 0 information, 0 warning and 1 error messages.\r\n"
+  }
+]

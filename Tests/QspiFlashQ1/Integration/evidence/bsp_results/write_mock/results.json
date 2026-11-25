@@ -1,0 +1,488 @@
+{
+  "cases": 48,
+  "assertions": 25971,
+  "passed": 48,
+  "rows": [
+    {
+      "case": 0,
+      "name": "public policy closed",
+      "assertions": 17,
+      "failure_line": 0,
+      "commands": 0,
+      "hal_init_calls": 1,
+      "error": null,
+      "pass": true
+    },
+    {
+      "case": 1,
+      "name": "out of capacity",
+      "assertions": 18,
+      "failure_line": 0,
+      "commands": 0,
+      "hal_init_calls": 1,
+      "error": null,
+      "pass": true
+    },
+    {
+      "case": 2,
+      "name": "size exceeds capacity",
+      "assertions": 18,
+      "failure_line": 0,
+      "commands": 0,
+      "hal_init_calls": 1,
+      "error": null,
+      "pass": true
+    },
+    {
+      "case": 3,
+      "name": "non-erased byte on later page",
+      "assertions": 50,
+      "failure_line": 0,
+      "commands": 5,
+      "hal_init_calls": 1,
+      "error": null,
+      "pass": true
+    },
+    {
+      "case": 4,
+      "name": "BP protection",
+      "assertions": 36,
+      "failure_line": 0,
+      "commands": 3,
+      "hal_init_calls": 1,
+      "error": null,
+      "pass": true
+    },
+    {
+      "case": 5,
+      "name": "WEL not set",
+      "assertions": 87,
+      "failure_line": 0,
+      "commands": 11,
+      "hal_init_calls": 1,
+      "error": null,
+      "pass": true
+    },
+    {
+      "case": 6,
+      "name": "program command error",
+      "assertions": 97,
+      "failure_line": 0,
+      "commands": 12,
+      "hal_init_calls": 1,
+      "error": null,
+      "pass": true
+    },
+    {
+      "case": 7,
+      "name": "transmit timeout",
+      "assertions": 99,
+      "failure_line": 0,
+      "commands": 12,
+      "hal_init_calls": 1,
+      "error": null,
+      "pass": true
+    },
+    {
+      "case": 8,
+      "name": "busy forever",
+      "assertions": 405,
+      "failure_line": 0,
+      "commands": 63,
+      "hal_init_calls": 1,
+      "error": null,
+      "pass": true
+    },
+    {
+      "case": 9,
+      "name": "readback mismatch",
+      "assertions": 141,
+      "failure_line": 0,
+      "commands": 19,
+      "hal_init_calls": 1,
+      "error": null,
+      "pass": true
+    },
+    {
+      "case": 10,
+      "name": "second-page failure",
+      "assertions": 180,
+      "failure_line": 0,
+      "commands": 25,
+      "hal_init_calls": 1,
+      "error": null,
+      "pass": true
+    },
+    {
+      "case": 11,
+      "name": "abort also fails",
+      "assertions": 98,
+      "failure_line": 0,
+      "commands": 12,
+      "hal_init_calls": 1,
+      "error": null,
+      "pass": true
+    },
+    {
+      "case": 12,
+      "name": "CMP protection",
+      "assertions": 36,
+      "failure_line": 0,
+      "commands": 3,
+      "hal_init_calls": 1,
+      "error": null,
+      "pass": true
+    },
+    {
+      "case": 13,
+      "name": "WPS protection",
+      "assertions": 36,
+      "failure_line": 0,
+      "commands": 3,
+      "hal_init_calls": 1,
+      "error": null,
+      "pass": true
+    },
+    {
+      "case": 14,
+      "name": "suspended",
+      "assertions": 36,
+      "failure_line": 0,
+      "commands": 3,
+      "hal_init_calls": 1,
+      "error": null,
+      "pass": true
+    },
+    {
+      "case": 15,
+      "name": "tick wrap across four fragments",
+      "assertions": 384,
+      "failure_line": 0,
+      "commands": 58,
+      "hal_init_calls": 1,
+      "error": null,
+      "pass": true
+    },
+    {
+      "case": 16,
+      "name": "last byte of device",
+      "assertions": 127,
+      "failure_line": 0,
+      "commands": 17,
+      "hal_init_calls": 1,
+      "error": null,
+      "pass": true
+    },
+    {
+      "case": 17,
+      "name": "short transmit",
+      "assertions": 98,
+      "failure_line": 0,
+      "commands": 12,
+      "hal_init_calls": 1,
+      "error": null,
+      "pass": true
+    },
+    {
+      "case": 18,
+      "name": "WEL stays set after BUSY",
+      "assertions": 134,
+      "failure_line": 0,
+      "commands": 18,
+      "hal_init_calls": 1,
+      "error": null,
+      "pass": true
+    },
+    {
+      "case": 19,
+      "name": "WREN command error",
+      "assertions": 84,
+      "failure_line": 0,
+      "commands": 10,
+      "hal_init_calls": 1,
+      "error": null,
+      "pass": true
+    },
+    {
+      "case": 20,
+      "name": "time exhausted during preflight",
+      "assertions": 46,
+      "failure_line": 0,
+      "commands": 4,
+      "hal_init_calls": 1,
+      "error": null,
+      "pass": true
+    },
+    {
+      "case": 21,
+      "name": "outside policy",
+      "assertions": 18,
+      "failure_line": 0,
+      "commands": 0,
+      "hal_init_calls": 1,
+      "error": null,
+      "pass": true
+    },
+    {
+      "case": 22,
+      "name": "shared deadline",
+      "assertions": 141,
+      "failure_line": 0,
+      "commands": 19,
+      "hal_init_calls": 1,
+      "error": null,
+      "pass": true
+    },
+    {
+      "case": 23,
+      "name": "initial busy",
+      "assertions": 36,
+      "failure_line": 0,
+      "commands": 3,
+      "hal_init_calls": 1,
+      "error": null,
+      "pass": true
+    },
+    {
+      "case": 24,
+      "name": "initial WEL already set",
+      "assertions": 36,
+      "failure_line": 0,
+      "commands": 3,
+      "hal_init_calls": 1,
+      "error": null,
+      "pass": true
+    },
+    {
+      "case": 25,
+      "name": "single page",
+      "assertions": 127,
+      "failure_line": 0,
+      "commands": 17,
+      "hal_init_calls": 1,
+      "error": null,
+      "pass": true
+    },
+    {
+      "case": 26,
+      "name": "owner occupied",
+      "assertions": 18,
+      "failure_line": 0,
+      "commands": 0,
+      "hal_init_calls": 1,
+      "error": null,
+      "pass": true
+    },
+    {
+      "case": 27,
+      "name": "masked or interrupt context",
+      "assertions": 18,
+      "failure_line": 0,
+      "commands": 0,
+      "hal_init_calls": 1,
+      "error": null,
+      "pass": true
+    },
+    {
+      "case": 28,
+      "name": "public erase policy closed",
+      "assertions": 17,
+      "failure_line": 0,
+      "commands": 0,
+      "hal_init_calls": 1,
+      "error": null,
+      "pass": true
+    },
+    {
+      "case": 29,
+      "name": "unaligned erase",
+      "assertions": 18,
+      "failure_line": 0,
+      "commands": 0,
+      "hal_init_calls": 1,
+      "error": null,
+      "pass": true
+    },
+    {
+      "case": 30,
+      "name": "sector crosses policy",
+      "assertions": 18,
+      "failure_line": 0,
+      "commands": 0,
+      "hal_init_calls": 1,
+      "error": null,
+      "pass": true
+    },
+    {
+      "case": 31,
+      "name": "backup size wrong",
+      "assertions": 18,
+      "failure_line": 0,
+      "commands": 0,
+      "hal_init_calls": 1,
+      "error": null,
+      "pass": true
+    },
+    {
+      "case": 32,
+      "name": "last byte of backup differs",
+      "assertions": 148,
+      "failure_line": 0,
+      "commands": 19,
+      "hal_init_calls": 1,
+      "error": null,
+      "pass": true
+    },
+    {
+      "case": 33,
+      "name": "erase WPS protection",
+      "assertions": 36,
+      "failure_line": 0,
+      "commands": 3,
+      "hal_init_calls": 1,
+      "error": null,
+      "pass": true
+    },
+    {
+      "case": 34,
+      "name": "erase busy forever",
+      "assertions": 8185,
+      "failure_line": 0,
+      "commands": 1358,
+      "hal_init_calls": 1,
+      "error": null,
+      "pass": true
+    },
+    {
+      "case": 35,
+      "name": "erase command error",
+      "assertions": 187,
+      "failure_line": 0,
+      "commands": 25,
+      "hal_init_calls": 1,
+      "error": null,
+      "pass": true
+    },
+    {
+      "case": 36,
+      "name": "erase abort also fails",
+      "assertions": 186,
+      "failure_line": 0,
+      "commands": 25,
+      "hal_init_calls": 1,
+      "error": null,
+      "pass": true
+    },
+    {
+      "case": 37,
+      "name": "erase verify final byte not FF",
+      "assertions": 335,
+      "failure_line": 0,
+      "commands": 47,
+      "hal_init_calls": 1,
+      "error": null,
+      "pass": true
+    },
+    {
+      "case": 38,
+      "name": "erase budget too short",
+      "assertions": 18,
+      "failure_line": 0,
+      "commands": 0,
+      "hal_init_calls": 1,
+      "error": null,
+      "pass": true
+    },
+    {
+      "case": 39,
+      "name": "final sector erased",
+      "assertions": 4430,
+      "failure_line": 0,
+      "commands": 47,
+      "hal_init_calls": 1,
+      "error": null,
+      "pass": true
+    },
+    {
+      "case": 40,
+      "name": "near maximum erase duration",
+      "assertions": 4431,
+      "failure_line": 0,
+      "commands": 47,
+      "hal_init_calls": 1,
+      "error": null,
+      "pass": true
+    },
+    {
+      "case": 41,
+      "name": "erase across tick wrap",
+      "assertions": 4430,
+      "failure_line": 0,
+      "commands": 47,
+      "hal_init_calls": 1,
+      "error": null,
+      "pass": true
+    },
+    {
+      "case": 42,
+      "name": "erase suspended",
+      "assertions": 36,
+      "failure_line": 0,
+      "commands": 3,
+      "hal_init_calls": 1,
+      "error": null,
+      "pass": true
+    },
+    {
+      "case": 43,
+      "name": "erase WEL stays set",
+      "assertions": 222,
+      "failure_line": 0,
+      "commands": 31,
+      "hal_init_calls": 1,
+      "error": null,
+      "pass": true
+    },
+    {
+      "case": 44,
+      "name": "erase BP protection",
+      "assertions": 36,
+      "failure_line": 0,
+      "commands": 3,
+      "hal_init_calls": 1,
+      "error": null,
+      "pass": true
+    },
+    {
+      "case": 45,
+      "name": "erase WEL not set",
+      "assertions": 178,
+      "failure_line": 0,
+      "commands": 24,
+      "hal_init_calls": 1,
+      "error": null,
+      "pass": true
+    },
+    {
+      "case": 46,
+      "name": "erase status receive fails after command",
+      "assertions": 192,
+      "failure_line": 0,
+      "commands": 26,
+      "hal_init_calls": 1,
+      "error": null,
+      "pass": true
+    },
+    {
+      "case": 47,
+      "name": "erase verify detects controller drift",
+      "assertions": 229,
+      "failure_line": 0,
+      "commands": 32,
+      "hal_init_calls": 1,
+      "error": null,
+      "pass": true
+    }
+  ],
+  "source_sha256": "d2ec681612af8edf1038fdeefd23369372cd18c1699bc6ffb0bc3c5d5f68fa76"
+}

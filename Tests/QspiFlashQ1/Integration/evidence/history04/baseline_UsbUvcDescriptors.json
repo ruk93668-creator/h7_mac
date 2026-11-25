@@ -1,0 +1,19 @@
+{
+  "summary": {
+    "total": 8,
+    "passed": -1,
+    "failures": 0,
+    "errors": 9
+  },
+  "original_descriptor_tests": 24,
+  "new_native_string_tests": 8,
+  "new_core_string_tests": 8,
+  "source_sha256": {
+    "CM7/Service/usb_uvc_desc.c": "35bd71fb7611eb9031dfe79a504a65e687e52f5ff8f33385cdfd8eb496947178",
+    "CM7/Service/usb_uvc_desc.h": "6be5f452c3530defbfde48f4ca94e8ead436b21d7d76b4873e06a6ae9c5d2ec3",
+    "CM7/Service/usb_uvc_class.c": "100639e2167c8d6e5a1c585c928a8e7165a77d00759537ef5889d8af5f85bc78"
+  },
+  "core_returncode": 1,
+  "core_cases": [],
+  "output": "setUpClass (__main__.DescriptorTests) ... ERROR\n\n======================================================================\nERROR: setUpClass (__main__.DescriptorTests)\n----------------------------------------------------------------------\nTraceback (most recent call last):\n  File \"D:\\32\\STM32H7\\h7_mac_qflash\\output\\QspiFlashQ1\\coexistence\\worktree\\output\\QspiFlashQ1\\Integration\\build01\\baseline_tree\\Tests\\UsbUvcDescriptors\\run_tests.py\", line 68, in setUpClass\n    cls.symbols, cls.sizes, sections = compile_module()\n                                       ^^^^^^^^^^^^^^^^\n  File \"D:\\32\\STM32H7\\h7_mac_qflash\\output\\QspiFlashQ1\\coexistence\\worktree\\output\\QspiFlashQ1\\Integration\\build01\\baseline_tree\\Tests\\UsbUvcDescriptors\\run_tests.py\", line 50, in compile_module\n    run(args + ['-c', helper, '-o', temp / 'config.o'])\n  File \"D:\\32\\STM32H7\\h7_mac_qflash\\output\\QspiFlashQ1\\coexistence\\worktree\\output\\QspiFlashQ1\\Integration\\build01\\baseline_tree\\Tests\\UsbUvcDescriptors\\run_tests.py\", line 32, in run\n    raise RuntimeError(output)\nRuntimeError: \"C:\\Users\\29062\\AppData\\Local\\Temp\\UsbUvcDescriptors_0mpqtk3g\\config.c\", line 1: Error:  #5: cannot open source input file \"video_config.h\": No such file or directory\r\n  #include \"video_config.h\"\r\n                           ^\r\nC:\\Users\\29062\\AppData\\Local\\Temp\\UsbUvcDescriptors_0mpqtk3g\\config.c: 0 warnings, 1 error\r\n\n\n----------------------------------------------------------------------\nRan 0 tests in 0.082s\n\nFAILED (errors=1)\nTraceback (most recent call last):\r\n  File \"D:\\32\\STM32H7\\h7_mac_qflash\\output\\QspiFlashQ1\\coexistence\\worktree\\output\\QspiFlashQ1\\Integration\\build01\\baseline_tree\\Tests\\UsbUvcDescriptors\\run_string_tests.py\", line 46, in <module>\r\n    run([\"D:/32/ARM/ARMCC/Bin/armlink.exe\", *objects, \"--entry\", \"UvcString_TestRun\", \"--scatter\",\r\n  File \"D:\\32\\STM32H7\\h7_mac_qflash\\output\\QspiFlashQ1\\coexistence\\worktree\\output\\QspiFlashQ1\\Integration\\build01\\baseline_tree\\Tests\\UsbUvcDescriptors\\run_string_tests.py\", line 30, in run\r\n    raise RuntimeError(output)\r\nRuntimeError: Error: L6218E: Undefined symbol Platform_SyncDisableIrq (referred from string_control_test.o).\r\r\nError: L6218E: Undefined symbol Platform_SyncGetPrimask (referred from string_control_test.o).\r\r\nError: L6218E: Undefined symbol Platform_SyncMemoryBarrier (referred from string_control_test.o).\r\r\nError: L6218E: Undefined symbol Platform_SyncRestoreIrq (referred from string_control_test.o).\r\r\nFinished: 0 information, 0 warning and 4 error messages.\r\r\n\r\n"
+}

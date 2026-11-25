@@ -1,0 +1,36 @@
+setUpClass (__main__.DescriptorTests) ... ERROR
+
+======================================================================
+ERROR: setUpClass (__main__.DescriptorTests)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "D:\32\STM32H7\h7_mac_qflash\output\QspiFlashQ1\coexistence\worktree\output\QspiFlashQ1\Integration\build01\baseline_tree\Tests\UsbUvcDescriptors\run_tests.py", line 68, in setUpClass
+    cls.symbols, cls.sizes, sections = compile_module()
+                                       ^^^^^^^^^^^^^^^^
+  File "D:\32\STM32H7\h7_mac_qflash\output\QspiFlashQ1\coexistence\worktree\output\QspiFlashQ1\Integration\build01\baseline_tree\Tests\UsbUvcDescriptors\run_tests.py", line 50, in compile_module
+    run(args + ['-c', helper, '-o', temp / 'config.o'])
+  File "D:\32\STM32H7\h7_mac_qflash\output\QspiFlashQ1\coexistence\worktree\output\QspiFlashQ1\Integration\build01\baseline_tree\Tests\UsbUvcDescriptors\run_tests.py", line 32, in run
+    raise RuntimeError(output)
+RuntimeError: "C:\Users\29062\AppData\Local\Temp\UsbUvcDescriptors_0mpqtk3g\config.c", line 1: Error:  #5: cannot open source input file "video_config.h": No such file or directory
+  #include "video_config.h"
+                           ^
+C:\Users\29062\AppData\Local\Temp\UsbUvcDescriptors_0mpqtk3g\config.c: 0 warnings, 1 error
+
+
+----------------------------------------------------------------------
+Ran 0 tests in 0.082s
+
+FAILED (errors=1)
+
+Traceback (most recent call last):
+  File "D:\32\STM32H7\h7_mac_qflash\output\QspiFlashQ1\coexistence\worktree\output\QspiFlashQ1\Integration\build01\baseline_tree\Tests\UsbUvcDescriptors\run_string_tests.py", line 46, in <module>
+    run(["D:/32/ARM/ARMCC/Bin/armlink.exe", *objects, "--entry", "UvcString_TestRun", "--scatter",
+  File "D:\32\STM32H7\h7_mac_qflash\output\QspiFlashQ1\coexistence\worktree\output\QspiFlashQ1\Integration\build01\baseline_tree\Tests\UsbUvcDescriptors\run_string_tests.py", line 30, in run
+    raise RuntimeError(output)
+RuntimeError: Error: L6218E: Undefined symbol Platform_SyncDisableIrq (referred from string_control_test.o).
+Error: L6218E: Undefined symbol Platform_SyncGetPrimask (referred from string_control_test.o).
+Error: L6218E: Undefined symbol Platform_SyncMemoryBarrier (referred from string_control_test.o).
+Error: L6218E: Undefined symbol Platform_SyncRestoreIrq (referred from string_control_test.o).
+Finished: 0 information, 0 warning and 4 error messages.
+
+

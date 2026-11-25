@@ -3802,7 +3802,8 @@
               <FileType>1</FileType>
               <FilePath>../Drivers/STM32H7xx_HAL_Driver/Src/stm32h7xx_ll_sdmmc.c</FilePath>
             </File>
-          </Files>
+          <File><FileName>stm32h7xx_hal_qspi.c</FileName><FileType>1</FileType><FilePath>..\Drivers\STM32H7xx_HAL_Driver\Src\stm32h7xx_hal_qspi.c</FilePath></File>
+</Files>
         </Group>
         <Group>
           <GroupName>Drivers/CMSIS</GroupName>
@@ -4964,7 +4965,8 @@
               <FileType>1</FileType>
               <FilePath>../CM7/BSP/bsp_sdmmc_memory.c</FilePath>
             </File>
-          </Files>
+          <File><FileName>bsp_qspi.c</FileName><FileType>1</FileType><FilePath>..\CM7\BSP\bsp_qspi.c</FilePath></File>
+</Files>
         </Group>
         <Group>
           <GroupName>Middlewares/USB_Device_Core</GroupName>
