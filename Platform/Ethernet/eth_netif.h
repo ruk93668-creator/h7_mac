@@ -37,7 +37,9 @@ typedef struct
 } EthNetif_t;
 
 //netif->state 由调用者设置为独立上下文；以下操作均在 lwIP 的唯一执行上下文
+//供 netif_add 调用；netif 与其 port 状态须留存到接口停止。
 err_t eth_netif_init(struct netif *netif);
+//单轮有 RX 预算，调用者在同一 lwIP 上下文推进 RX 和 TX 回收。
 void eth_netif_poll(struct netif *netif);
 
 #endif

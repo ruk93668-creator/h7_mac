@@ -83,6 +83,7 @@ err_t eth_network_init(EthNetwork_t *network, const uint8_t mac[6],
 err_t eth_network_init_address(EthNetwork_t *network, const uint8_t mac[6],
 	const EthNetworkAddressConfig_t *config);
 #endif
+//只轮询已初始化的当前拥有者，推进 RX、DHCP 和 lwIP 定时器，不可用于 ISR。
 void eth_network_poll(EthNetwork_t *network);
 
 #endif

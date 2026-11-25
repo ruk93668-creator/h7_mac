@@ -14,7 +14,10 @@ typedef enum
 enum
 {
     HTTP_ROUTE_STREAM = 1000,
-    HTTP_ROUTE_HEALTH
+    HTTP_ROUTE_HEALTH,
+    HTTP_FRAME_PERIOD_MIN_MS = 50,
+    HTTP_FRAME_PERIOD_MAX_MS = 5000,
+    HTTP_REQUEST_TIMEOUT_MS = 5000
 };
 
 static struct
@@ -32,7 +35,9 @@ static struct
     uint16_t period;
     uint16_t used;
     uint16_t response_length;
+#if defined(ETH_MJPEG_FAST_SEND_TEST)
     uint8_t stream_fast_send;
+#endif
     char request[ETH_HTTP_REQUEST_MAX];
     char response[1024];
 } s_http;
@@ -139,7 +144,7 @@ static err_t EthHttp_Init(EthNetwork_t *network, uint16_t frame_period_ms)
 {
     EthTransportConfig_t config = {0};
     err_t result;
-    if (frame_period_ms < 50U || frame_period_ms > 5000U)
+    if (frame_period_ms < HTTP_FRAME_PERIOD_MIN_MS || frame_period_ms > HTTP_FRAME_PERIOD_MAX_MS)
         return ERR_ARG;
     config.listen_port = 80U;
     config.tcp_event = EthHttp_Event;
@@ -148,7 +153,9 @@ static err_t EthHttp_Init(EthNetwork_t *network, uint16_t frame_period_ms)
         return result;
     s_http.network = network;
     s_http.period = frame_period_ms;
+#if defined(ETH_MJPEG_FAST_SEND_TEST)
     s_http.stream_fast_send = 0U;
+#endif
     return ERR_OK;
 }
 
@@ -242,10 +249,12 @@ static void EthHttp_Respond(unsigned code)
 }
 
 //在测试入口初始化后配置，仅用于后续MJPEG连接
+#if defined(ETH_MJPEG_FAST_SEND_TEST)
 void eth_http_set_stream_fast_send(int enabled)
 {
     s_http.stream_fast_send = enabled != 0;
 }
+#endif
 
 static void EthHttp_Request(uint32_t now, uint32_t acked)
 {
@@ -262,8 +271,10 @@ static void EthHttp_Request(uint32_t now, uint32_t acked)
         if (code == HTTP_ROUTE_STREAM)
         {
             ++s_http.stats.streams;
+#if defined(ETH_MJPEG_FAST_SEND_TEST)
             if (s_http.stream_fast_send)
                 (void)eth_tcp_enable_fast_send(s_http.handle);
+#endif
             eth_mjpeg_start(&s_http.mjpeg, s_http.frames, s_http.count, s_http.period, now, acked);
             if (s_http.source.acquire)
                 eth_mjpeg_set_source(&s_http.mjpeg, &s_http.source);
@@ -275,7 +286,7 @@ static void EthHttp_Request(uint32_t now, uint32_t acked)
     }
     if (s_http.used == sizeof(s_http.request))
         EthHttp_Respond(431U);
-    else if ((uint32_t)(now - s_http.started) >= 5000U)
+    else if ((uint32_t)(now - s_http.started) >= HTTP_REQUEST_TIMEOUT_MS)
         EthHttp_Respond(408U);
 }
 

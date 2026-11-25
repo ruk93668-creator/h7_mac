@@ -50,7 +50,9 @@ err_t eth_http_init_source(
 );
 
 //初始化后设置，供后续MJPEG连接选择提交节奏
+#if defined(ETH_MJPEG_FAST_SEND_TEST)
 void eth_http_set_stream_fast_send(int enabled);
+#endif
 
 //读取HTTP请求和MJPEG发送计数快照
 void eth_http_get_statistics(EthHttpStats_t *stats);

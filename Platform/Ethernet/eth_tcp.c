@@ -400,6 +400,7 @@ EthTcpState_t eth_tcp_get_state(EthTcpHandle_t handle)
     return connection ? connection->stats.state : ETH_TCP_IDLE;
 }
 
+#if defined(ETH_MJPEG_FAST_SEND_TEST)
 err_t eth_tcp_enable_fast_send(EthTcpHandle_t handle)
 {
     EthTcpConnection_t *connection = EthTcp_Connection(handle);
@@ -409,6 +410,7 @@ err_t eth_tcp_enable_fast_send(EthTcpHandle_t handle)
     connection->attempt = sys_now();
     return ERR_OK;
 }
+#endif
 
 err_t eth_tcp_send(EthTcpHandle_t handle, const void *data, uint16_t length)
 {

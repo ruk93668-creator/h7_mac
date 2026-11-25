@@ -118,5 +118,6 @@ err_t eth_udp_send(const ip4_addr_t *ip, uint16_t port, const void *data, uint16
 
 void eth_udp_get_statistics(EthUdpStats_t *stats)
 {
-	*stats = s_stats;
+	if (stats != NULL)
+		*stats = s_stats;
 }

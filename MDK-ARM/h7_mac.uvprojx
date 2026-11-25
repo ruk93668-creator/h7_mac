@@ -3629,7 +3629,6 @@
 --keep=eth_http_init_source
 --keep=eth_http_poll
 --keep=eth_http_get_statistics
---keep=eth_http_set_stream_fast_send
 --keep=eth_transport_get_statistics
 --keep=eth_transport_ready
 --keep=eth_transport_init

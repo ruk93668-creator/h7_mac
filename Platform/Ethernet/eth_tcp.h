@@ -89,7 +89,9 @@ EthTcpHandle_t eth_tcp_handle(EthTcpRole_t role);
 EthTcpState_t eth_tcp_get_state(EthTcpHandle_t handle);
 
 //允许当前连接在成功提交后继续发送，资源不足时保留重试间隔
+#if defined(ETH_MJPEG_FAST_SEND_TEST)
 err_t eth_tcp_enable_fast_send(EthTcpHandle_t handle);
+#endif
 
 //复制数据到内部环，成功返回后调用者可立即复用源缓冲
 err_t eth_tcp_send(EthTcpHandle_t handle, const void *data, uint16_t length);

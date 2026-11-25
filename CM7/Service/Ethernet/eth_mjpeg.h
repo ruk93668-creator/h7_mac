@@ -87,7 +87,9 @@ typedef struct
     char header[128];
 } EthMjpeg_t;
 
-//启动本轮视频响应，记录当前TCP确认字节数作为基准
+//初次调用前清零 stream，由 HTTP 所在的同一上下文串行调用。
+//period_ms 必须非零；轮询选帧前须提供常驻的有效帧数组和非零 count，或绑定动态帧源。
+//ack_base 取当前连接已确认字节数，作为本轮视频响应的累计确认基准。
 void eth_mjpeg_start(
     EthMjpeg_t *stream,
     const EthMjpegFrame_t *frames,

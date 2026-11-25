@@ -129,6 +129,8 @@ if e4:
     if dhcp:
         define=controls.find('Define')
         define.text=(define.text or '')+',ETH_LWIP_DHCP'+(',ETH_LWIP_E5' if tcp else '')
+    if e7:
+        controls.find('Define').text+=',ETH_MJPEG_FAST_SEND_TEST'
     if e7_v1_axi:
         define=controls.find('Define')
         define.text+=',ETH_E7_JPEG_AXI'
