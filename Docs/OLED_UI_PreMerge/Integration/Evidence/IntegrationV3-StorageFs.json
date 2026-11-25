@@ -1,0 +1,38 @@
+[
+  {
+    "optimization": "O0",
+    "case": 0,
+    "pass": true,
+    "exit": 0,
+    "error": null,
+    "g_failure": 0,
+    "g_checks": 27
+  },
+  {
+    "optimization": "O0",
+    "case": 1,
+    "pass": true,
+    "exit": 0,
+    "error": null,
+    "g_failure": 0,
+    "g_checks": 18
+  },
+  {
+    "optimization": "O2",
+    "case": 0,
+    "pass": true,
+    "exit": 0,
+    "error": null,
+    "g_failure": 0,
+    "g_checks": 27
+  },
+  {
+    "optimization": "O2",
+    "case": 1,
+    "pass": true,
+    "exit": 0,
+    "error": null,
+    "g_failure": 0,
+    "g_checks": 18
+  }
+]

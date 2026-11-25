@@ -1,0 +1,3 @@
+O0 88 PASS 合并前：弹窗与局部页面切换时隔离旧输入 line 0
+O2 88 PASS 合并前：弹窗与局部页面切换时隔离旧输入 line 0
+{'total': 2, 'passed': 2, 'failed': 0, 'assertions': 62}

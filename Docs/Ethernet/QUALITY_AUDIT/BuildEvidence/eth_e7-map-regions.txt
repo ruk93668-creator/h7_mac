@@ -1,0 +1,7 @@
+Load Region LR_IROM1 (Base: 0x08000000, Size: 0x0001bfb0, Max: 0x00100000, ABSOLUTE, COMPRESSED[0x0001be9c])
+Execution Region ER_IROM1 (Exec base: 0x08000000, Load base: 0x08000000, Size: 0x0001bda8, Max: 0x00100000, ABSOLUTE)
+Execution Region ER_DEVICE_EXPORT (Exec base: 0x0801bda8, Load base: 0x0801bda8, Size: 0x00000004, Max: 0xffffffff, ABSOLUTE)
+Execution Region RW_IRAM1 (Exec base: 0x20000000, Load base: 0x0801be64, Size: 0x00001e68, Max: 0x00020000, ABSOLUTE, COMPRESSED[0x00000038])
+Execution Region RW_E4_CACHE (Exec base: 0x24010000, Load base: 0x0801bdac, Size: 0x0000b67c, Max: 0x00010000, ABSOLUTE)
+Execution Region RW_ETHERNET_DMA (Exec base: 0x24078000, Load base: 0x0801bdac, Size: 0x00003100, Max: 0x00008000, ABSOLUTE, UNINIT)
+Execution Region RW_E7_JPEG (Exec base: 0xd07f0000, Load base: 0x0801be64, Size: 0x0000f000, Max: 0x00010000, ABSOLUTE, UNINIT)

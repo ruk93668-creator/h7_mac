@@ -1,0 +1,13 @@
+ MDK-ARM/RTE/_h7_mac_CM7/RTE_Components.h |   2 +-
+ MDK-ARM/h7_mac.uvprojx                   | 194 ++++++++++++++++-
+ MDK-ARM/h7_mac_CM7_custom.sct            |  21 ++
+ Platform/Ethernet/eth_http.c             | 354 -------------------------------
+ Platform/Ethernet/eth_http.h             |  58 -----
+ Platform/Ethernet/eth_mjpeg.c            | 203 ------------------
+ Platform/Ethernet/eth_mjpeg.h            | 112 ----------
+ Tests/Ethernet/build_firmware.py         |  34 ++-
+ Tests/Ethernet/e4_main.c                 |   5 -
+ Tests/Ethernet/e4_sources.py             |   4 +-
+ Tests/Ethernet/eth_test_board.c          |   5 -
+ Tests/Ethernet/run_e6_host.py            |   2 +-
+ 12 files changed, 243 insertions(+), 751 deletions(-)

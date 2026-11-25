@@ -1,0 +1,54 @@
+67a4271 docs(ethernet): record E0-E7 debug retrospective
+a1fbe31 style(ethernet): align E7 streaming code with project conventions
+4830c60 test(ethernet): add opt-in faster E7 MJPEG TCP submission
+c899784 test(ethernet): enable segmented JPEG reads during E7 streaming
+320640d test(ethernet): compare segmented reads during V1 camera DMA
+2a2e0de docs(ethernet): record V1 camera DMA FIFO fault without Ethernet link
+88f9feb test(ethernet): isolate JPEG copy load from HTTP streaming
+48d1d7d fix(ethernet): set V1 QVGA MJPEG target to 20 fps
+a9b80bd feat(ethernet): add V1 QVGA camera validation target
+4c7d16d test(ethernet): isolate V1 MJPEG private buffer in AXI SRAM
+3f332fd fix(ethernet): add isolated E7 firmware for V1 camera hardware
+03d520e feat(ethernet): add OV5640 JPEG streaming validation firmware
+c31b688 docs(ethernet): record E6 firmware and software verification
+7f321f6 feat(ethernet): implement E6 HTTP and MJPEG validation firmware
+29c9591 test(ethernet): complete E5 DHCP endurance and shutdown acceptance
+68e1df7 fix(ethernet): close E5 peer sessions before waiting on listener
+0528e9d docs(ethernet): record E5 build and validation evidence
+05d2998 feat(ethernet): add bounded E5 Raw TCP and UDP transport
+1f5c05f vendor(lwip): import TCP core from pinned 2.2.1 release
+125e305 Record E4.2 board renew rebind and lease expiry
+78a3735 Add isolated DHCP short lease bench peer
+7ac4cb8 Record E4.2 static fallback board evidence
+782ca45 Record E4.2 board DHCP reconnect and ping evidence
+43a0d2f Implement isolated E4.2 DHCP client and fallback validation
+b9435a2 Import pinned lwIP DHCP, UDP and address conflict detection
+3a8add1 Record E4.1 board ping and reconnect evidence
+9a1c742 Implement isolated lwIP IPv4, ARP and ICMP bench
+d6f7495 Vendor pinned lwIP 2.2.1 sources for E4.1
+31339f6 Audit E3.5 RX and RBU paths; hardware evidence pending
+416b885 Record operator confirmation for E3.5 session 368
+6763ed3 Record E3.5 board validation and full duplex evidence
+309447b Fix Ethernet validation PCAP packet recording
+b8573f5 docs(ethernet): accept E3.5 512-byte bidirectional board test
+5ab7b8b docs(ethernet): accept 60-byte board case with reported zero error counters
+5f7b47b docs(ethernet): preserve validation report LF line endings
+432b9d0 docs(ethernet): record E3.5 60-byte board traffic, driver counters pending
+1330972 fix(ethernet): isolate E3.5 Keil project from cached smoke target
+ad9f552 docs(ethernet): record fresh E3.5 baseline, board acceptance NOT_RUN
+175b14d test(ethernet): prepare E3.5 acceptance bench, hardware pending
+5d8ed49 refactor(ethernet): align naming and source organization with mainline
+f097d38 docs(ethernet): record continuous TX sample and measured offered load
+9ee0046 docs(ethernet): record five-restart RX result with partial capture limit
+a19e2ed docs(ethernet): record recovery RX retest and zero-count limitation
+69d0fc8 docs(ethernet): record verified 1000-frame board RX batch
+d976b5f test(ethernet): verify fixed RX batches and record board smoke evidence
+265dddf test(ethernet): prepare Windows fixed-payload RX peer
+84e392d build(ethernet): include isolated H747 board adapter in CM7
+5249e8a refactor(ethernet): separate board port and public interface types
+4647ac7 style(ethernet): align C sources with mainline calibration
+782bf1b fix(ethernet): use absolute Keil build paths and reject stale maps
+16ad1e5 build(ethernet): reserve CM7 noncacheable AXI DMA window
+b539f33 feat(ethernet): implement E2 E3 raw MAC DMA driver and fault tests
+b282c7c style(ethernet): normalize new files to LF for whitespace checks
+bc4db5a wip(ethernet): add tested PHY foundation and schematic audit

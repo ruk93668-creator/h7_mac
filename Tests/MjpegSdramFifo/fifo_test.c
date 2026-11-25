@@ -45,8 +45,9 @@ static void CheckOwnership(void)
     {
         uint64_t bit = UINT64_C(1) << i;
         refs = (s_fifo.partial.blocks & bit) != 0U;
-        if (s_fifo.loaned && (s_fifo.loan.blocks & bit) != 0U)
-            refs++;
+        for (j = 0U; j < CAMERA_MJPEG_MAX_LOANS; ++j)
+            if (s_fifo.loans[j].owners != 0U && (s_fifo.loans[j].frame.blocks & bit) != 0U)
+                refs++;
         for (j = 0U; j < s_fifo.ready_count; j++)
             refs += (s_fifo.ready[(s_fifo.ready_head + j) % CAMERA_MJPEG_FRAME_QUEUE].blocks & bit) != 0U;
         assert(s_fifo.blocks[i].references == refs);
@@ -64,7 +65,7 @@ static void CheckOwnership(void)
 static void Reset(void)
 {
     CameraConfig_t config = {160U, 120U, CAMERA_PIXEL_FORMAT_JPEG};
-    if (s_fifo.loaned)
+    if (s_fifo.legacy != NULL)
         assert(CameraMjpegFifo_ReleaseFrame() == SYS_OK);
     CameraMjpegFifo_OnStopped();
     mock_start_result = SYS_OK;

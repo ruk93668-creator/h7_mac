@@ -1,0 +1,1161 @@
+diff --git a/MDK-ARM/RTE/_h7_mac_CM7/RTE_Components.h b/MDK-ARM/RTE/_h7_mac_CM7/RTE_Components.h
+index fa15ab537ee330dc4a6f8c7ad20649ac3d3fcd0a..aecaea60efc430c142c87cff17f07c9dd60b1070 100644
+--- a/MDK-ARM/RTE/_h7_mac_CM7/RTE_Components.h
++++ b/MDK-ARM/RTE/_h7_mac_CM7/RTE_Components.h
+@@ -3,7 +3,7 @@
+  * Auto generated Run-Time-Environment Configuration File
+  *      *** Do not modify ! ***
+  *
+- * Project: 'h7_mac' 
++ * Project: 'h7_mac_ethernet_e7_v1' 
+  * Target:  'h7_mac_CM7' 
+  */
+ 
+diff --git a/MDK-ARM/h7_mac.uvprojx b/MDK-ARM/h7_mac.uvprojx
+index 26012b4caab7851513b232c36cf25bec08b5b917..97626323cb1a08ee44fecd9521544aa4636cfcca 100644
+--- a/MDK-ARM/h7_mac.uvprojx
++++ b/MDK-ARM/h7_mac.uvprojx
+@@ -3418,9 +3418,9 @@
+             <v6Rtti>0</v6Rtti>
+             <VariousControls>
+               <MiscControls>--preinclude ../CM7/BSP/bsp_sdram_hal_config.h --preinclude ../CM7/BSP/bsp_dcmi_hal_config.h --preinclude ../CM7/BSP/bsp_usb_hal_config.h --preinclude ../CM7/BSP/bsp_sdmmc_hal_config.h </MiscControls>
+-              <Define>CORE_CM7,USE_HAL_DRIVER,STM32H747xx,USE_PWR_LDO_SUPPLY,APP_VIDEO_MJPEG_MODE=1</Define>
++              <Define>CORE_CM7,USE_HAL_DRIVER,STM32H747xx,USE_PWR_LDO_SUPPLY,APP_VIDEO_MJPEG_MODE=1,ETH_LWIP_DHCP,ETH_LWIP_E5</Define>
+               <Undefine></Undefine>
+-              <IncludePath>../Platform/Ethernet;../CM7/Core/Inc;../Drivers/STM32H7xx_HAL_Driver/Inc;../Drivers/STM32H7xx_HAL_Driver/Inc/Legacy;../Drivers/CMSIS/Device/ST/STM32H7xx/Include;../Drivers/CMSIS/Include;..\Common\Inc;..\Board\Inc;..\CM7\Application;..\CM7\Service;..\CM7\Device\Inc;..\CM7\Media\Inc;..\CM7\Platform;..\CM7\BSP;..\CM7\Framework;..\CM7\Device\Components\OV5640;../Middlewares/ST/STM32_USB_Device_Library/Core/Inc;../Middlewares/Third_Party/FreeRTOS/Source/include;../Middlewares/Third_Party/FreeRTOS/Source/portable/RVDS/ARM_CM7/r0p1;../Middlewares/Third_Party/FatFs</IncludePath>
++              <IncludePath>../Platform/Ethernet;../CM7/Core/Inc;../Drivers/STM32H7xx_HAL_Driver/Inc;../Drivers/STM32H7xx_HAL_Driver/Inc/Legacy;../Drivers/CMSIS/Device/ST/STM32H7xx/Include;../Drivers/CMSIS/Include;..\Common\Inc;..\Board\Inc;..\CM7\Application;..\CM7\Service;..\CM7\Device\Inc;..\CM7\Media\Inc;..\CM7\Platform;..\CM7\BSP;..\CM7\Framework;..\CM7\Device\Components\OV5640;../Middlewares/ST/STM32_USB_Device_Library/Core/Inc;../Middlewares/Third_Party/FreeRTOS/Source/include;../Middlewares/Third_Party/FreeRTOS/Source/portable/RVDS/ARM_CM7/r0p1;../Middlewares/Third_Party/FatFs;../CM7/Service/Ethernet;../ThirdParty/lwip/src/include</IncludePath>
+             </VariousControls>
+           </Cads>
+           <Aads>
+@@ -3457,7 +3457,20 @@
+             <Misc>--keep=g_ipc
+ --keep=*(.framework_init)
+ --keep=*(.device_export)
+---keep=*(.ethernet_dma)</Misc>
++--keep=*(.ethernet_dma)
++--keep=eth_network_init
++--keep=eth_network_init_address
++--keep=eth_network_poll
++--keep=eth_http_init
++--keep=eth_http_init_source
++--keep=eth_http_poll
++--keep=eth_http_get_statistics
++--keep=eth_http_set_stream_fast_send
++--keep=eth_transport_get_statistics
++--keep=eth_transport_ready
++--keep=eth_transport_init
++--keep=eth_transport_poll
++--keep=eth_udp_send</Misc>
+             <LinkerInputFile></LinkerInputFile>
+             <DisabledWarnings></DisabledWarnings>
+           </LDads>
+@@ -4996,6 +5009,181 @@
+             <File><FileName>eth_board_stm32h747.c</FileName><FileType>1</FileType><FilePath>../Platform/Ethernet/eth_board_stm32h747.c</FilePath></File>
+           </Files>
+         </Group>
++        <Group>
++          <GroupName>Ethernet lwIP port</GroupName>
++          <Files>
++            <File>
++              <FileName>eth_netif.c</FileName>
++              <FileType>1</FileType>
++              <FilePath>../Platform/Ethernet/eth_netif.c</FilePath>
++            </File>
++            <File>
++              <FileName>eth_network.c</FileName>
++              <FileType>1</FileType>
++              <FilePath>../Platform/Ethernet/eth_network.c</FilePath>
++            </File>
++            <File>
++              <FileName>eth_udp.c</FileName>
++              <FileType>1</FileType>
++              <FilePath>../Platform/Ethernet/eth_udp.c</FilePath>
++            </File>
++            <File>
++              <FileName>eth_tcp.c</FileName>
++              <FileType>1</FileType>
++              <FilePath>../Platform/Ethernet/eth_tcp.c</FilePath>
++            </File>
++            <File>
++              <FileName>eth_transport.c</FileName>
++              <FileType>1</FileType>
++              <FilePath>../Platform/Ethernet/eth_transport.c</FilePath>
++            </File>
++            <File>
++              <FileName>eth_lwip_time.c</FileName>
++              <FileType>1</FileType>
++              <FilePath>../Platform/Ethernet/eth_lwip_time.c</FilePath>
++            </File>
++            <File>
++              <FileName>eth_lwip_assert.c</FileName>
++              <FileType>1</FileType>
++              <FilePath>../Platform/Ethernet/eth_lwip_assert.c</FilePath>
++            </File>
++          </Files>
++        </Group>
++        <Group>
++          <GroupName>Ethernet Service</GroupName>
++          <Files>
++            <File>
++              <FileName>eth_http.c</FileName>
++              <FileType>1</FileType>
++              <FilePath>../CM7/Service/Ethernet/eth_http.c</FilePath>
++            </File>
++            <File>
++              <FileName>eth_mjpeg.c</FileName>
++              <FileType>1</FileType>
++              <FilePath>../CM7/Service/Ethernet/eth_mjpeg.c</FilePath>
++            </File>
++          </Files>
++        </Group>
++        <Group>
++          <GroupName>Ethernet lwIP 2.2.1</GroupName>
++          <Files>
++            <File>
++              <FileName>def.c</FileName>
++              <FileType>1</FileType>
++              <FilePath>../ThirdParty/lwip/src/core/def.c</FilePath>
++            </File>
++            <File>
++              <FileName>init.c</FileName>
++              <FileType>1</FileType>
++              <FilePath>../ThirdParty/lwip/src/core/init.c</FilePath>
++            </File>
++            <File>
++              <FileName>inet_chksum.c</FileName>
++              <FileType>1</FileType>
++              <FilePath>../ThirdParty/lwip/src/core/inet_chksum.c</FilePath>
++            </File>
++            <File>
++              <FileName>ip.c</FileName>
++              <FileType>1</FileType>
++              <FilePath>../ThirdParty/lwip/src/core/ip.c</FilePath>
++            </File>
++            <File>
++              <FileName>mem.c</FileName>
++              <FileType>1</FileType>
++              <FilePath>../ThirdParty/lwip/src/core/mem.c</FilePath>
++            </File>
++            <File>
++              <FileName>memp.c</FileName>
++              <FileType>1</FileType>
++              <FilePath>../ThirdParty/lwip/src/core/memp.c</FilePath>
++            </File>
++            <File>
++              <FileName>netif.c</FileName>
++              <FileType>1</FileType>
++              <FilePath>../ThirdParty/lwip/src/core/netif.c</FilePath>
++            </File>
++            <File>
++              <FileName>pbuf.c</FileName>
++              <FileType>1</FileType>
++              <FilePath>../ThirdParty/lwip/src/core/pbuf.c</FilePath>
++            </File>
++            <File>
++              <FileName>raw.c</FileName>
++              <FileType>1</FileType>
++              <FilePath>../ThirdParty/lwip/src/core/raw.c</FilePath>
++            </File>
++            <File>
++              <FileName>stats.c</FileName>
++              <FileType>1</FileType>
++              <FilePath>../ThirdParty/lwip/src/core/stats.c</FilePath>
++            </File>
++            <File>
++              <FileName>sys.c</FileName>
++              <FileType>1</FileType>
++              <FilePath>../ThirdParty/lwip/src/core/sys.c</FilePath>
++            </File>
++            <File>
++              <FileName>timeouts.c</FileName>
++              <FileType>1</FileType>
++              <FilePath>../ThirdParty/lwip/src/core/timeouts.c</FilePath>
++            </File>
++            <File>
++              <FileName>etharp.c</FileName>
++              <FileType>1</FileType>
++              <FilePath>../ThirdParty/lwip/src/core/ipv4/etharp.c</FilePath>
++            </File>
++            <File>
++              <FileName>icmp.c</FileName>
++              <FileType>1</FileType>
++              <FilePath>../ThirdParty/lwip/src/core/ipv4/icmp.c</FilePath>
++            </File>
++            <File>
++              <FileName>ip4.c</FileName>
++              <FileType>1</FileType>
++              <FilePath>../ThirdParty/lwip/src/core/ipv4/ip4.c</FilePath>
++            </File>
++            <File>
++              <FileName>ip4_addr.c</FileName>
++              <FileType>1</FileType>
++              <FilePath>../ThirdParty/lwip/src/core/ipv4/ip4_addr.c</FilePath>
++            </File>
++            <File>
++              <FileName>ethernet.c</FileName>
++              <FileType>1</FileType>
++              <FilePath>../ThirdParty/lwip/src/netif/ethernet.c</FilePath>
++            </File>
++            <File>
++              <FileName>udp.c</FileName>
++              <FileType>1</FileType>
++              <FilePath>../ThirdParty/lwip/src/core/udp.c</FilePath>
++            </File>
++            <File>
++              <FileName>dhcp.c</FileName>
++              <FileType>1</FileType>
++              <FilePath>../ThirdParty/lwip/src/core/ipv4/dhcp.c</FilePath>
++            </File>
++            <File>
++              <FileName>acd.c</FileName>
++              <FileType>1</FileType>
++              <FilePath>../ThirdParty/lwip/src/core/ipv4/acd.c</FilePath>
++            </File>
++            <File>
++              <FileName>tcp.c</FileName>
++              <FileType>1</FileType>
++              <FilePath>../ThirdParty/lwip/src/core/tcp.c</FilePath>
++            </File>
++            <File>
++              <FileName>tcp_in.c</FileName>
++              <FileType>1</FileType>
++              <FilePath>../ThirdParty/lwip/src/core/tcp_in.c</FilePath>
++            </File>
++            <File>
++              <FileName>tcp_out.c</FileName>
++              <FileType>1</FileType>
++              <FilePath>../ThirdParty/lwip/src/core/tcp_out.c</FilePath>
++            </File>
++          </Files>
++        </Group>
+       </Groups>
+     </Target>
+   </Targets>
+diff --git a/MDK-ARM/h7_mac_CM7_custom.sct b/MDK-ARM/h7_mac_CM7_custom.sct
+index 38ad9efe109d34551b7ae5143a65aa0a95f090f2..aa3c51c754d995ffdbf752bbde1a93ab6b4bfd81 100644
+--- a/MDK-ARM/h7_mac_CM7_custom.sct
++++ b/MDK-ARM/h7_mac_CM7_custom.sct
+@@ -32,6 +32,27 @@ LR_IROM1 0x08000000 0x00100000
+         *(.ethernet_dma)
+     }
+ 
++    RW_ETHERNET_CPU 0x24010000 0x00010000
++    {
++        mem.o (+RW +ZI)
++        memp.o (+RW +ZI)
++        eth_http.o (+RW +ZI)
++        eth_tcp.o (+RW +ZI)
++        eth_transport.o (+RW +ZI)
++        eth_udp.o (+RW +ZI)
++        eth_network.o (+RW +ZI)
++        tcp.o (+RW +ZI)
++        stats.o (+RW +ZI)
++        netif.o (+RW +ZI)
++        etharp.o (+RW +ZI)
++        dhcp.o (+RW +ZI)
++        ip.o (+RW +ZI)
++        ip4.o (+RW +ZI)
++        raw.o (+RW +ZI)
++        timeouts.o (+RW +ZI)
++        udp.o (+RW +ZI)
++    }
++
+     RW_IRAM1 0x20000000 0x00020000
+     {
+         .ANY (+RW +ZI)
+diff --git a/Platform/Ethernet/eth_http.c b/Platform/Ethernet/eth_http.c
+deleted file mode 100644
+index a451f86b0b72ced3827741ae129d170a81f970d2..0000000000000000000000000000000000000000
+--- a/Platform/Ethernet/eth_http.c
++++ /dev/null
+@@ -1,354 +0,0 @@
+-#include "eth_http.h"
+-#include "lwip/sys.h"
+-#include <stdio.h>
+-#include <string.h>
+-
+-typedef enum
+-{
+-    HTTP_IDLE,
+-    HTTP_REQUEST,
+-    HTTP_RESPONSE,
+-    HTTP_STREAM,
+-    HTTP_DRAIN
+-} HttpState_t;
+-enum
+-{
+-    HTTP_ROUTE_STREAM = 1000,
+-    HTTP_ROUTE_HEALTH
+-};
+-
+-static struct
+-{
+-    EthNetwork_t *network;
+-    const EthMjpegFrame_t *frames;
+-    EthMjpegSource_t source;
+-    EthTcpHandle_t handle;
+-    EthMjpeg_t mjpeg;
+-    EthHttpStats_t stats;
+-    HttpState_t state;
+-    unsigned events;
+-    uint32_t started;
+-    uint16_t count;
+-    uint16_t period;
+-    uint16_t used;
+-    uint16_t response_length;
+-    uint8_t stream_fast_send;
+-    char request[ETH_HTTP_REQUEST_MAX];
+-    char response[1024];
+-} s_http;
+-
+-static const char s_home[] = "<!doctype html><html lang=en><meta charset=utf-8>"
+-    "<meta name=viewport content=\"width=device-width,initial-scale=1\">"
+-    "<link rel=icon href=\"data:,\"><title>STM32H747 Ethernet Camera</title>"
+-    "<h1>STM32H747 Ethernet Camera</h1><p>IPv4 %s | Connected</p>"
+-    "<img src=\"/stream.mjpg\" width=320 height=240 alt=\"MJPEG test stream\" "
+-    "onerror=\"if((this.n=this.n+1||1)&lt;=3)setTimeout(()=>{this.removeAttribute('src');this.src='/stream.mjpg'},500)\">";
+-
+-static int EthHttp_Token(char ch)
+-{
+-    return (ch >= '0' && ch <= '9') || (ch >= 'A' && ch <= 'Z') ||
+-        (ch >= 'a' && ch <= 'z') || (ch && strchr("!#$%&'*+-.^_`|~", ch) != NULL);
+-}
+-
+-static int EthHttp_Equal(const char *text, size_t len, const char *word)
+-{
+-    return strlen(word) == len && memcmp(text, word, len) == 0;
+-}
+-
+-static const char *EthHttp_LineEnd(const char *p, const char *end)
+-{
+-    for (; end - p >= 2; ++p)
+-        if (p[0] == '\r' && p[1] == '\n')
+-            return p;
+-    return NULL;
+-}
+-
+-//校验请求行及头字段，返回对应路由或状态码
+-static unsigned EthHttp_Parse(const char *request, const char *end)
+-{
+-    const char *line = EthHttp_LineEnd(request, end);
+-    const char *method, *path, *p, *next;
+-    if (!line)
+-        return 400U;
+-    method = memchr(request, ' ', (size_t)(line - request));
+-    if (!method || method == request)
+-        return 400U;
+-    for (p = request; p < method; ++p)
+-        if (!EthHttp_Token(*p))
+-            return 400U;
+-    path = memchr(method + 1, ' ', (size_t)(line - method - 1));
+-    if (!path || method[1] != '/' ||
+-        (!EthHttp_Equal(path + 1, (size_t)(line - path - 1), "HTTP/1.1") &&
+-         !EthHttp_Equal(path + 1, (size_t)(line - path - 1), "HTTP/1.0")))
+-        return 400U;
+-    for (p = method + 1; p < path; ++p)
+-        if (!((*p >= '0' && *p <= '9') || (*p >= 'a' && *p <= 'z') ||
+-            (*p >= 'A' && *p <= 'Z') || *p == '/' || *p == '.' || *p == '-' || *p == '_'))
+-            return 400U;
+-    for (p = line + 2; p < end - 2; p = next + 2)
+-    {
+-        const char *colon;
+-        next = EthHttp_LineEnd(p, end);
+-        if (!next || next == p)
+-            return 400U;
+-        colon = p;
+-        while (colon < next && EthHttp_Token(*colon))
+-            ++colon;
+-        if (colon == p || colon == next || *colon != ':')
+-            return 400U;
+-        for (++colon; colon < next; ++colon)
+-            if (((unsigned char)*colon < 32U && *colon != '\t') || *colon == 127)
+-                return 400U;
+-    }
+-    if (!EthHttp_Equal(request, (size_t)(method - request), "GET"))
+-        return 405U;
+-    ++method;
+-    if (EthHttp_Equal(method, (size_t)(path - method), "/"))
+-        return 200U;
+-    if (EthHttp_Equal(method, (size_t)(path - method), "/stream.mjpg"))
+-        return HTTP_ROUTE_STREAM;
+-    if (EthHttp_Equal(method, (size_t)(path - method), "/health"))
+-        return HTTP_ROUTE_HEALTH;
+-    if (EthHttp_Equal(method, (size_t)(path - method), "/favicon.ico"))
+-        return 204U;
+-    return 404U;
+-}
+-
+-//收集当前连接事件并处理连接代次变化
+-static void EthHttp_Event(EthTcpHandle_t handle, unsigned events, void *arg)
+-{
+-    (void)arg;
+-    if (handle.role != ETH_TCP_SERVER || handle.generation != eth_tcp_handle(ETH_TCP_SERVER).generation)
+-        return;
+-    if (events & ETH_TCP_EVENT_OPEN)
+-    {
+-        eth_mjpeg_release_frame(&s_http.mjpeg);
+-        s_http.handle = handle;
+-        s_http.events = 0U;
+-        s_http.used = 0U;
+-        s_http.started = sys_now();
+-        s_http.state = HTTP_REQUEST;
+-        s_http.mjpeg.state = ETH_MJPEG_IDLE;
+-        ++s_http.stats.sessions;
+-    }
+-    if (s_http.state != HTTP_IDLE && handle.generation == s_http.handle.generation)
+-        s_http.events |= events;
+-}
+-
+-static err_t EthHttp_Init(EthNetwork_t *network, uint16_t frame_period_ms)
+-{
+-    EthTransportConfig_t config = {0};
+-    err_t result;
+-    if (frame_period_ms < 50U || frame_period_ms > 5000U)
+-        return ERR_ARG;
+-    config.listen_port = 80U;
+-    config.tcp_event = EthHttp_Event;
+-    result = eth_transport_init(network, &config);
+-    if (result != ERR_OK)
+-        return result;
+-    s_http.network = network;
+-    s_http.period = frame_period_ms;
+-    s_http.stream_fast_send = 0U;
+-    return ERR_OK;
+-}
+-
+-err_t eth_http_init(EthNetwork_t *network, const EthMjpegFrame_t *frames,
+-    uint16_t frame_count, uint16_t frame_period_ms)
+-{
+-    uint16_t i;
+-    err_t result;
+-    if (!frames || !frame_count)
+-        return ERR_ARG;
+-    for (i = 0U; i < frame_count; ++i)
+-        if (!frames[i].data || frames[i].length < 4U)
+-            return ERR_ARG;
+-    result = EthHttp_Init(network, frame_period_ms);
+-    if (result == ERR_OK)
+-    {
+-        s_http.frames = frames;
+-        s_http.count = frame_count;
+-    }
+-    return result;
+-}
+-
+-err_t eth_http_init_source(EthNetwork_t *network, const EthMjpegSource_t *source,
+-    uint16_t frame_period_ms)
+-{
+-    err_t result;
+-    if (!source || !source->acquire || !source->release)
+-        return ERR_ARG;
+-    result = EthHttp_Init(network, frame_period_ms);
+-    if (result == ERR_OK)
+-        s_http.source = *source;
+-    return result;
+-}
+-
+-static void EthHttp_Abort(void)
+-{
+-    eth_mjpeg_release_frame(&s_http.mjpeg);
+-    eth_tcp_abort(s_http.handle);
+-    s_http.state = HTTP_DRAIN;
+-}
+-
+-//组装普通HTTP响应并交给主循环发送
+-static void EthHttp_Respond(unsigned code)
+-{
+-    const char *status, *body, *type = "text/plain; charset=utf-8", *allow = "";
+-    char page[512];
+-    char ip[16];
+-    int length;
+-    switch (code)
+-    {
+-    case 200U:
+-        ++s_http.stats.home;
+-        ip4addr_ntoa_r(netif_ip4_addr(&s_http.network->interface), ip, sizeof(ip));
+-        length = snprintf(page, sizeof(page), s_home, ip);
+-        if (length < 0 || (size_t)length >= sizeof(page))
+-        {
+-            ++s_http.stats.response_errors;
+-            EthHttp_Abort();
+-            return;
+-        }
+-        status = "200 OK";
+-        body = page;
+-        type = "text/html; charset=utf-8";
+-        break;
+-    case HTTP_ROUTE_HEALTH: ++s_http.stats.health; status = "200 OK"; body = "ok\n"; break;
+-    case 204U: ++s_http.stats.favicon; status = "204 No Content"; body = ""; break;
+-    case 405U:
+-        ++s_http.stats.method_rejected; status = "405 Method Not Allowed";
+-        body = "GET only\n"; allow = "Allow: GET\r\n"; break;
+-    case 404U: ++s_http.stats.not_found; status = "404 Not Found"; body = "not found\n"; break;
+-    case 408U: ++s_http.stats.request_timeout; status = "408 Request Timeout"; body = "timeout\n"; break;
+-    case 431U: ++s_http.stats.headers_too_large; status = "431 Request Header Fields Too Large"; body = "header too large\n"; break;
+-    default: ++s_http.stats.bad_request; status = "400 Bad Request"; body = "bad request\n"; break;
+-    }
+-    if (code == 204U)
+-        length = snprintf(s_http.response, sizeof(s_http.response),
+-            "HTTP/1.1 204 No Content\r\nConnection: close\r\nCache-Control: no-store\r\n\r\n");
+-    else
+-        length = snprintf(s_http.response, sizeof(s_http.response),
+-            "HTTP/1.1 %s\r\nConnection: close\r\nCache-Control: no-store\r\n%s"
+-            "Content-Type: %s\r\nContent-Length: %u\r\n\r\n%s",
+-            status, allow, type, (unsigned)strlen(body), body);
+-    if (length <= 0 || (size_t)length >= sizeof(s_http.response))
+-    {
+-        ++s_http.stats.response_errors;
+-        EthHttp_Abort();
+-        return;
+-    }
+-    s_http.response_length = (uint16_t)length;
+-    s_http.state = HTTP_RESPONSE;
+-}
+-
+-//在测试入口初始化后配置，仅用于后续MJPEG连接
+-void eth_http_set_stream_fast_send(int enabled)
+-{
+-    s_http.stream_fast_send = enabled != 0;
+-}
+-
+-static void EthHttp_Request(uint32_t now, uint32_t acked)
+-{
+-    uint16_t old = s_http.used, i;
+-    unsigned code;
+-    s_http.used += eth_tcp_read(s_http.handle, s_http.request + old, (uint16_t)(sizeof(s_http.request) - old));
+-    for (i = old < 3U ? 0U : (uint16_t)(old - 3U); i + 4U <= s_http.used; ++i)
+-    {
+-        if (memcmp(s_http.request + i, "\r\n\r\n", 4U) != 0)
+-            continue;
+-        ++s_http.stats.requests;
+-        s_http.stats.extra_rx += s_http.used - i - 4U;
+-        code = EthHttp_Parse(s_http.request, s_http.request + i + 4U);
+-        if (code == HTTP_ROUTE_STREAM)
+-        {
+-            ++s_http.stats.streams;
+-            if (s_http.stream_fast_send)
+-                (void)eth_tcp_enable_fast_send(s_http.handle);
+-            eth_mjpeg_start(&s_http.mjpeg, s_http.frames, s_http.count, s_http.period, now, acked);
+-            if (s_http.source.acquire)
+-                eth_mjpeg_set_source(&s_http.mjpeg, &s_http.source);
+-            s_http.state = HTTP_STREAM;
+-        }
+-        else
+-            EthHttp_Respond(code);
+-        return;
+-    }
+-    if (s_http.used == sizeof(s_http.request))
+-        EthHttp_Respond(431U);
+-    else if ((uint32_t)(now - s_http.started) >= 5000U)
+-        EthHttp_Respond(408U);
+-}
+-
+-void eth_http_poll(void)
+-{
+-    char discard[128];
+-    EthTcpStats_t tcp;
+-    err_t result;
+-    unsigned events = s_http.events;
+-    uint32_t now = sys_now();
+-    s_http.events = 0U;
+-    if (s_http.state == HTTP_IDLE)
+-        return;
+-    eth_tcp_get_statistics(ETH_TCP_SERVER, &tcp);
+-    if (s_http.mjpeg.state >= ETH_MJPEG_RESPONSE_HEADER && s_http.mjpeg.state <= ETH_MJPEG_STOPPING)
+-        eth_mjpeg_ack(&s_http.mjpeg, now, tcp.acked);
+-    if (events & ETH_TCP_EVENT_FIN)
+-    {
+-        eth_mjpeg_release_frame(&s_http.mjpeg);
+-        ++s_http.stats.peer_fin;
+-        if (s_http.state == HTTP_STREAM)
+-            s_http.mjpeg.state = ETH_MJPEG_STOPPING;
+-        s_http.state = HTTP_DRAIN;
+-    }
+-    if ((events & ETH_TCP_EVENT_CLOSED) || eth_tcp_get_state(s_http.handle) == ETH_TCP_IDLE)
+-    {
+-        eth_mjpeg_release_frame(&s_http.mjpeg);
+-        ++s_http.stats.closed;
+-        if (tcp.last_error != ERR_OK)
+-            ++s_http.stats.connection_errors;
+-        if (s_http.mjpeg.state != ETH_MJPEG_IDLE && s_http.mjpeg.state != ETH_MJPEG_ERROR)
+-            s_http.mjpeg.state = ETH_MJPEG_CLOSED;
+-        s_http.mjpeg.stats.current_fps_milli = 0U;
+-        s_http.state = HTTP_IDLE;
+-        return;
+-    }
+-    if (s_http.state == HTTP_REQUEST)
+-    {
+-        EthHttp_Request(now, tcp.acked);
+-        return;
+-    }
+-    //每个连接只处理一次请求，继续归还接收窗口以完成TCP排空
+-    s_http.stats.extra_rx += eth_tcp_read(s_http.handle, discard, sizeof(discard));
+-    if (s_http.state == HTTP_RESPONSE)
+-    {
+-        result = eth_tcp_send(s_http.handle, s_http.response, s_http.response_length);
+-        if (result == ERR_OK)
+-        {
+-            eth_tcp_close(s_http.handle);
+-            s_http.state = HTTP_DRAIN;
+-        }
+-        else if (result == ERR_MEM)
+-            ++s_http.stats.response_busy;
+-        else
+-        {
+-            ++s_http.stats.response_errors;
+-            EthHttp_Abort();
+-        }
+-    }
+-    else if (s_http.state == HTTP_STREAM)
+-    {
+-        eth_mjpeg_poll(&s_http.mjpeg, s_http.handle, now);
+-        if (s_http.mjpeg.state == ETH_MJPEG_ERROR)
+-            EthHttp_Abort();
+-    }
+-}
+-
+-void eth_http_get_statistics(EthHttpStats_t *stats)
+-{
+-    if (stats)
+-    {
+-        *stats = s_http.stats;
+-        stats->stream_state = s_http.mjpeg.state;
+-        stats->stream = s_http.mjpeg.stats;
+-    }
+-}
+diff --git a/Platform/Ethernet/eth_http.h b/Platform/Ethernet/eth_http.h
+deleted file mode 100644
+index add517b50229fa8f95f26ebc6fd2ed7f5731f716..0000000000000000000000000000000000000000
+--- a/Platform/Ethernet/eth_http.h
++++ /dev/null
+@@ -1,58 +0,0 @@
+-#ifndef ETH_HTTP_H
+-#define ETH_HTTP_H
+-
+-#include "eth_mjpeg.h"
+-#include "eth_transport.h"
+-
+-#define ETH_HTTP_REQUEST_MAX 512U
+-
+-typedef struct
+-{
+-    uint32_t sessions;
+-    uint32_t requests;
+-    uint32_t home;
+-    uint32_t health;
+-    uint32_t streams;
+-    uint32_t favicon;
+-    uint32_t bad_request;
+-    uint32_t method_rejected;
+-    uint32_t not_found;
+-    uint32_t headers_too_large;
+-    uint32_t request_timeout;
+-    uint32_t peer_fin;
+-    uint32_t closed;
+-    uint32_t connection_errors;
+-    //响应提交时发送环空间不足的次数
+-    uint32_t response_busy;
+-    uint32_t response_errors;
+-    uint32_t extra_rx;
+-    EthMjpegState_t stream_state;
+-    //MJPEG发送和整帧确认计数
+-    EthMjpegStats_t stream;
+-} EthHttpStats_t;
+-
+-//使用静态JPEG帧表初始化HTTP服务，周期单位ms
+-err_t eth_http_init(
+-    EthNetwork_t *network,
+-    const EthMjpegFrame_t *frames,
+-    uint16_t frame_count,
+-    uint16_t frame_period_ms
+-);
+-
+-//推进请求解析和响应，在TCP轮询后调用
+-void eth_http_poll(void);
+-
+-//绑定动态JPEG源，发送期间按租约取得和归还帧
+-err_t eth_http_init_source(
+-    EthNetwork_t *network,
+-    const EthMjpegSource_t *source,
+-    uint16_t frame_period_ms
+-);
+-
+-//初始化后设置，供后续MJPEG连接选择提交节奏
+-void eth_http_set_stream_fast_send(int enabled);
+-
+-//读取HTTP请求和MJPEG发送计数快照
+-void eth_http_get_statistics(EthHttpStats_t *stats);
+-
+-#endif
+diff --git a/Platform/Ethernet/eth_mjpeg.c b/Platform/Ethernet/eth_mjpeg.c
+deleted file mode 100644
+index dfed441b48e66df79c5c8acc538fef50367fd51e..0000000000000000000000000000000000000000
+--- a/Platform/Ethernet/eth_mjpeg.c
++++ /dev/null
+@@ -1,203 +0,0 @@
+-#include "eth_mjpeg.h"
+-#include <stdio.h>
+-#include <string.h>
+-
+-enum
+-{
+-    MJPEG_CHUNK = 1024,
+-    MJPEG_STALL_MS = 15000
+-};
+-
+-static const char s_response[] = "HTTP/1.1 200 OK\r\n"
+-    "Content-Type: multipart/x-mixed-replace; boundary=h7frame\r\n"
+-    "Cache-Control: no-cache, no-store\r\nPragma: no-cache\r\nConnection: close\r\n\r\n";
+-
+-void eth_mjpeg_start(EthMjpeg_t *stream, const EthMjpegFrame_t *frames, uint16_t count,
+-    uint16_t period_ms, uint32_t now, uint32_t ack_base)
+-{
+-    EthMjpegStats_t stats = stream->stats;
+-    eth_mjpeg_release_frame(stream);
+-    memset(stream, 0, sizeof(*stream));
+-    stream->stats = stats;
+-    stream->stats.current_fps_milli = 0U;
+-    stream->frames = frames;
+-    stream->count = count;
+-    stream->period_ms = period_ms;
+-    stream->state = ETH_MJPEG_RESPONSE_HEADER;
+-    stream->ack_base = ack_base;
+-    stream->last_progress = now;
+-    stream->retry_due = now;
+-    stream->fps_started = now;
+-}
+-
+-void eth_mjpeg_set_source(EthMjpeg_t *stream, const EthMjpegSource_t *source)
+-{
+-    stream->source = source;
+-}
+-
+-void eth_mjpeg_release_frame(EthMjpeg_t *stream)
+-{
+-    if (stream->borrowed)
+-    {
+-        stream->borrowed = 0U;
+-        stream->source->release(stream->source->context, stream->lease);
+-    }
+-}
+-
+-void eth_mjpeg_ack(EthMjpeg_t *stream, uint32_t now, uint32_t total_acked)
+-{
+-    uint32_t ack = total_acked - stream->ack_base;
+-    uint32_t elapsed;
+-    if (ack != stream->last_ack)
+-    {
+-        stream->last_ack = ack;
+-        stream->last_progress = now;
+-    }
+-    if (stream->waiting_ack && (uint32_t)(ack - stream->frame_end) < UINT32_C(0x80000000))
+-    {
+-        elapsed = now - stream->frame_started;
+-        if (elapsed > stream->stats.max_send_latency_ms)
+-            stream->stats.max_send_latency_ms = elapsed;
+-        ++stream->stats.frames_completed;
+-        ++stream->fps_frames;
+-        stream->waiting_ack = 0U;
+-    }
+-    elapsed = now - stream->fps_started;
+-    if (elapsed >= 1000U)
+-    {
+-        stream->stats.current_fps_milli = stream->fps_frames * UINT32_C(1000000) / elapsed;
+-        stream->fps_started = now;
+-        stream->fps_frames = 0U;
+-    }
+-}
+-
+-//到期时获取一张完整JPEG并准备分片头
+-static void EthMjpeg_BeginFrame(EthMjpeg_t *stream, uint32_t now)
+-{
+-    const EthMjpegFrame_t *frame = &stream->current;
+-    uint32_t skipped = (now - stream->next_frame) / stream->period_ms;
+-    int length;
+-    stream->stats.frame_skipped += skipped;
+-    stream->next_frame += (skipped + 1U) * stream->period_ms;
+-    if (stream->source)
+-    {
+-        EthMjpegAcquire_t result = stream->source->acquire(stream->source->context, &stream->current, &stream->lease);
+-        if (result != ETH_MJPEG_ACQUIRED)
+-        {
+-            ++stream->stats.frame_skipped;
+-            if (result == ETH_MJPEG_INVALID)
+-                ++stream->stats.send_errors;
+-            return;
+-        }
+-        stream->borrowed = 1U;
+-        if (!frame->data || frame->length < 4U)
+-        {
+-            eth_mjpeg_release_frame(stream);
+-            ++stream->stats.send_errors;
+-            ++stream->stats.frame_skipped;
+-            return;
+-        }
+-    }
+-    else
+-        stream->current = stream->frames[stream->sequence % stream->count];
+-    stream->last_progress = now;
+-    stream->frame_started = now;
+-    length = snprintf(stream->header, sizeof(stream->header),
+-        "--h7frame\r\nContent-Type: image/jpeg\r\nContent-Length: %u\r\n"
+-        "X-Frame-Sequence: %lu\r\nX-Frame-CRC32: %08lX\r\n\r\n",
+-        (unsigned)frame->length, (unsigned long)(stream->sequence + 1U), (unsigned long)frame->crc32);
+-    if (length < 0 || (size_t)length >= sizeof(stream->header))
+-    {
+-        ++stream->stats.send_errors;
+-        stream->state = ETH_MJPEG_ERROR;
+-        return;
+-    }
+-    stream->header_length = (uint16_t)length;
+-    stream->state = ETH_MJPEG_FRAME_HEADER;
+-}
+-
+-void eth_mjpeg_poll(EthMjpeg_t *stream, EthTcpHandle_t handle, uint32_t now)
+-{
+-    const void *data;
+-    uint16_t length;
+-    uint16_t amount;
+-    err_t result;
+-    if ((uint32_t)(now - stream->last_progress) >= MJPEG_STALL_MS &&
+-        (stream->waiting_ack || stream->state != ETH_MJPEG_WAIT_NEXT_FRAME))
+-    {
+-        ++stream->stats.send_errors;
+-        stream->state = ETH_MJPEG_ERROR;
+-        return;
+-    }
+-    switch (stream->state)
+-    {
+-    case ETH_MJPEG_RESPONSE_HEADER:
+-        data = s_response;
+-        length = sizeof(s_response) - 1U;
+-        break;
+-    case ETH_MJPEG_FRAME_HEADER:
+-        data = stream->header;
+-        length = stream->header_length;
+-        break;
+-    case ETH_MJPEG_FRAME_DATA:
+-        data = stream->current.data;
+-        length = stream->current.length;
+-        break;
+-    case ETH_MJPEG_FRAME_TRAILER:
+-        data = "\r\n";
+-        length = 2U;
+-        break;
+-    case ETH_MJPEG_WAIT_NEXT_FRAME:
+-        if (!stream->waiting_ack && (uint32_t)(now - stream->next_frame) < UINT32_C(0x80000000))
+-            EthMjpeg_BeginFrame(stream, now);
+-        return;
+-    default:
+-        return;
+-    }
+-    amount = (uint16_t)(length - stream->offset);
+-    if ((uint32_t)(now - stream->retry_due) >= UINT32_C(0x80000000))
+-        return;
+-    if (amount > MJPEG_CHUNK)
+-        amount = MJPEG_CHUNK;
+-    result = eth_tcp_send(handle, (const uint8_t *)data + stream->offset, amount);
+-    if (result == ERR_MEM)
+-    {
+-        ++stream->stats.send_busy;
+-        stream->retry_due = now + 10U;
+-        return;
+-    }
+-    if (result != ERR_OK)
+-    {
+-        ++stream->stats.send_errors;
+-        stream->state = ETH_MJPEG_ERROR;
+-        return;
+-    }
+-    stream->last_progress = now;
+-    stream->retry_due = now;
+-    stream->stats.bytes_submitted += amount;
+-    stream->submitted += amount;
+-    stream->offset += amount;
+-    if (stream->offset != length)
+-        return;
+-    stream->offset = 0U;
+-    if (stream->state == ETH_MJPEG_RESPONSE_HEADER)
+-    {
+-        stream->next_frame = now;
+-        stream->state = ETH_MJPEG_WAIT_NEXT_FRAME;
+-    }
+-    else if (stream->state == ETH_MJPEG_FRAME_TRAILER)
+-    {
+-        ++stream->sequence;
+-        ++stream->stats.frames_submitted;
+-        stream->frame_end = stream->submitted;
+-        stream->waiting_ack = 1U;
+-        stream->state = ETH_MJPEG_WAIT_NEXT_FRAME;
+-    }
+-    else if (stream->state == ETH_MJPEG_FRAME_HEADER)
+-        stream->state = ETH_MJPEG_FRAME_DATA;
+-    else
+-    {
+-        eth_mjpeg_release_frame(stream);
+-        stream->state = ETH_MJPEG_FRAME_TRAILER;
+-    }
+-}
+diff --git a/Platform/Ethernet/eth_mjpeg.h b/Platform/Ethernet/eth_mjpeg.h
+deleted file mode 100644
+index 2508846b8423e3719168e0ac9103a5a30e6a1c1a..0000000000000000000000000000000000000000
+--- a/Platform/Ethernet/eth_mjpeg.h
++++ /dev/null
+@@ -1,112 +0,0 @@
+-#ifndef ETH_MJPEG_H
+-#define ETH_MJPEG_H
+-
+-#include "eth_tcp.h"
+-
+-typedef struct
+-{
+-    //有效的完整JPEG数据
+-    const uint8_t *data;
+-    //JPEG有效字节数
+-    uint16_t length;
+-    //该帧有效数据的CRC32
+-    uint32_t crc32;
+-} EthMjpegFrame_t;
+-
+-typedef enum
+-{
+-    ETH_MJPEG_ACQUIRED,
+-    ETH_MJPEG_UNAVAILABLE,
+-    ETH_MJPEG_INVALID
+-} EthMjpegAcquire_t;
+-
+-typedef struct
+-{
+-    void *context;
+-    EthMjpegAcquire_t (*acquire)(void *context, EthMjpegFrame_t *frame, uint32_t *lease);
+-    void (*release)(void *context, uint32_t lease);
+-} EthMjpegSource_t;
+-
+-typedef enum
+-{
+-    ETH_MJPEG_IDLE,
+-    ETH_MJPEG_RESPONSE_HEADER,
+-    ETH_MJPEG_FRAME_HEADER,
+-    ETH_MJPEG_FRAME_DATA,
+-    ETH_MJPEG_FRAME_TRAILER,
+-    ETH_MJPEG_WAIT_NEXT_FRAME,
+-    ETH_MJPEG_STOPPING,
+-    ETH_MJPEG_CLOSED,
+-    ETH_MJPEG_ERROR
+-} EthMjpegState_t;
+-
+-typedef struct
+-{
+-    //完整提交到TCP发送环的帧数
+-    uint32_t frames_submitted;
+-    //收到整帧累计TCP确认的帧数
+-    uint32_t frames_completed;
+-    uint32_t bytes_submitted;
+-    uint32_t send_busy;
+-    uint32_t send_errors;
+-    //因调度滞后或无可用帧跳过的次数
+-    uint32_t frame_skipped;
+-    //已确认帧率乘以1000
+-    uint32_t current_fps_milli;
+-    //从选帧到整帧确认的最大耗时，单位ms
+-    uint32_t max_send_latency_ms;
+-} EthMjpegStats_t;
+-
+-typedef struct
+-{
+-    EthMjpegState_t state;
+-    EthMjpegStats_t stats;
+-    const EthMjpegFrame_t *frames;
+-    const EthMjpegSource_t *source;
+-    EthMjpegFrame_t current;
+-    uint32_t lease;
+-    uint32_t ack_base;
+-    uint32_t submitted;
+-    uint32_t frame_end;
+-    uint32_t frame_started;
+-    uint32_t next_frame;
+-    uint32_t fps_started;
+-    uint32_t fps_frames;
+-    uint32_t last_progress;
+-    uint32_t last_ack;
+-    uint32_t sequence;
+-    uint32_t retry_due;
+-    uint16_t count;
+-    uint16_t period_ms;
+-    uint16_t offset;
+-    uint16_t header_length;
+-    //已提交整帧，等待帧尾字节确认
+-    uint8_t waiting_ack;
+-    //当前仍持有私有帧租约
+-    uint8_t borrowed;
+-    char header[128];
+-} EthMjpeg_t;
+-
+-//启动本轮视频响应，记录当前TCP确认字节数作为基准
+-void eth_mjpeg_start(
+-    EthMjpeg_t *stream,
+-    const EthMjpegFrame_t *frames,
+-    uint16_t count,
+-    uint16_t period_ms,
+-    uint32_t now,
+-    uint32_t ack_base
+-);
+-
+-//更新累计确认字节，确认整帧后增加完成计数
+-void eth_mjpeg_ack(EthMjpeg_t *stream, uint32_t now, uint32_t total_acked);
+-
+-//按配置周期推进分段提交，队列不足时保留当前偏移
+-void eth_mjpeg_poll(EthMjpeg_t *stream, EthTcpHandle_t handle, uint32_t now);
+-
+-//绑定动态帧源，源和上下文须在连接存续期间有效
+-void eth_mjpeg_set_source(EthMjpeg_t *stream, const EthMjpegSource_t *source);
+-
+-//归还当前私有帧租约，允许提供器复用缓冲
+-void eth_mjpeg_release_frame(EthMjpeg_t *stream);
+-
+-#endif
+diff --git a/Tests/Ethernet/build_firmware.py b/Tests/Ethernet/build_firmware.py
+index 7c45f335f4d4f83c26c870a2279d6ced8fdb4e9a..93c8539e1a0f6df5e94edef33cb25864aeec2e36 100644
+--- a/Tests/Ethernet/build_firmware.py
++++ b/Tests/Ethernet/build_firmware.py
+@@ -1,7 +1,7 @@
+ """Generate isolated Keil validation targets; never flash automatically."""
+ from pathlib import Path
+ import subprocess,xml.etree.ElementTree as ET,copy,re,json,sys,hashlib,time
+-from e4_sources import PORT, LWIP, LWIP_DHCP, LWIP_TCP, TRANSPORT, BENCH, BOARD, HTTP
++from e4_sources import PORT, LWIP, LWIP_DHCP, LWIP_TCP, TRANSPORT, BENCH, BOARD, HTTP, CLOCK, SERVICE
+ ROOT=Path(__file__).resolve().parents[2]
+ OUT=ROOT/'output/Ethernet';OUT.mkdir(parents=True,exist_ok=True)
+ baseline='--baseline' in sys.argv
+@@ -23,14 +23,13 @@ e4='--e4' in sys.argv or dhcp
+ name='baseline' if baseline else 'e35' if e35 else 'e7_v1_qvga' if e7_v1_qvga else 'e7_v1_axi' if e7_v1_axi else 'e7_v1' if e7_v1 else 'e7' if e7_v0 else 'e6' if e6 else 'e5' if e5 else 'e42' if e42 else 'e4' if e4 else 'smoke' if smoke else 'integrated'
+ lwip_sources=LWIP + (LWIP_DHCP if dhcp else []) + (LWIP_TCP if tcp else [])
+ entry='e7' if e7 else name if tcp else 'e4'
+-bench_sources=PORT+['Tests/Ethernet/'+entry+'_main.c']
++bench_sources=PORT+CLOCK+['Tests/Ethernet/'+entry+'_main.c']
+ if tcp:
+     bench_sources+=TRANSPORT+BOARD+(HTTP if e6 else HTTP[:2] if e7 else BENCH)
+ camera_bsp = 'Tests/Ethernet/board_v1' if e7_v1 else 'CM7/BSP'
+ camera_sources = [f'{camera_bsp}/bsp_camera.c','CM7/BSP/bsp_dcmi.c','CM7/BSP/bsp_sdram.c',
+                   'CM7/Device/Src/device.c','CM7/Device/Src/ov5640_device.c',
+                   'CM7/Device/Components/OV5640/ov5640.c','CM7/Device/Components/OV5640/ov5640_reg.c',
+-                  'CM7/Platform/platform_time.c',
+                   'CM7/Media/Src/camera_capture.c','CM7/Media/Src/camera_mjpeg_fifo.c']
+ if e7:
+     bench_sources += camera_sources + ['Tests/Ethernet/e7_camera_provider.c']
+@@ -40,6 +39,16 @@ root=ET.fromstring(project_bytes);targets=root.find('Targets')
+ base=next(t for t in targets if t.findtext('TargetName')=='h7_mac_CM7')
+ for t in list(targets): targets.remove(t)
+ t=copy.deepcopy(base);targets.append(t)
++# 独立目标有自己的协议配置和钩子
++for group in list(t.find('Groups')):
++    if group.findtext('GroupName') in {'Ethernet lwIP port', 'Ethernet Service', 'Ethernet lwIP 2.2.1'}:
++        t.find('Groups').remove(group)
++define=t.find('./TargetOption/TargetArmAds/Cads/VariousControls/Define')
++define.text=','.join(value for value in (define.text or '').split(',')
++                     if value not in {'ETH_LWIP_DHCP', 'ETH_LWIP_E5'})
++link_misc=t.find('.//LDads/Misc')
++link_misc.text='\n'.join(value for value in (link_misc.text or '').splitlines()
++                          if not value.startswith(('--keep=eth_network_', '--keep=eth_http_', '--keep=eth_transport_', '--keep=eth_udp_')))
+ build_dir=OUT/name
+ build_dir.mkdir(parents=True,exist_ok=True)
+ # ARMCC response-file paths must not depend on uVision's inherited directory.
+@@ -67,11 +76,16 @@ if smoke or e35:
+     ET.SubElement(file,'FileType').text='1'
+     ET.SubElement(file,'FilePath').text='../Tests/Ethernet/'+test_source
+     # Dedicated test entry; no Application code is changed or invoked.
+-if e35:
+-    # Test-only cached AXI SRAM for caller buffers/cache pressure. Production scatter unchanged.
+-    scatter=OUT/'e35.sct'
++if not e4 and not baseline:
++    # Raw-frame builds do not link the production lwIP CPU objects.
++    scatter=OUT/(name+'.sct')
+     scatter_text=(ROOT/'MDK-ARM/h7_mac_CM7_custom.sct').read_text()
+-    scatter_text=scatter_text.replace('    RW_IRAM1', '    RW_E35_CACHE 0x24010000 0x00010000\n    {\n        *(.e35_cache)\n    }\n\n    RW_IRAM1')
++    scatter_text, removed=re.subn(r'^    RW_ETHERNET_CPU [^\n]*\n    \{[^}]*\}\n\n',
++                                  '', scatter_text, flags=re.M)
++    if removed != 1:
++        raise SystemExit('unexpected production Ethernet CPU region')
++    if e35:
++        scatter_text=scatter_text.replace('    RW_IRAM1', '    RW_E35_CACHE 0x24010000 0x00010000\n    {\n        *(.e35_cache)\n    }\n\n    RW_IRAM1')
+     scatter.write_text(scatter_text)
+     t.find('.//LDads/ScatterFile').text=str(scatter)
+ if e4:
+@@ -98,6 +112,7 @@ if e4:
+     controls=t.find('./TargetOption/TargetArmAds/Cads/VariousControls')
+     controls.find('IncludePath').text=';'.join((
+         '../Platform/Ethernet','../ThirdParty/lwip/src/include','../CM7/Core/Inc',
++        '../CM7/Platform','../CM7/Service/Ethernet',
+         '../Drivers/STM32H7xx_HAL_Driver/Inc','../Drivers/STM32H7xx_HAL_Driver/Inc/Legacy',
+         '../Drivers/CMSIS/Device/ST/STM32H7xx/Include','../Drivers/CMSIS/Include'))
+     controls.find('MiscControls').text=''
+@@ -154,7 +169,10 @@ if e4:
+     inputs += [scatter]
+     inputs += list((ROOT/'Platform/Ethernet/arch').glob('*.h'))
+     inputs += list((ROOT/'ThirdParty/lwip/src/include').rglob('*.h'))
+-    inputs += [ROOT/path for path in lwip_sources]
++    inputs += [ROOT/path for path in lwip_sources + CLOCK]
++    inputs += [ROOT/path for path in SERVICE] if e6 or e7 else []
++    if e6 or e7:
++        inputs += list((ROOT/'CM7/Service/Ethernet').glob('*.h'))
+ if e6:
+     inputs += sorted((ROOT/'Tests/Ethernet/e6_jpeg_fixtures').glob('*'))
+ if e7:
+diff --git a/Tests/Ethernet/e4_main.c b/Tests/Ethernet/e4_main.c
+index 72f310812b252de87ca758b0dfdec245443669cb..1b297e55d11d6257e3ee8c40ff268d215420b969 100644
+--- a/Tests/Ethernet/e4_main.c
++++ b/Tests/Ethernet/e4_main.c
+@@ -74,11 +74,6 @@ static void EthBench_Mpu(void)
+ 	HAL_MPU_Enable(MPU_PRIVILEGED_DEFAULT);
+ }
+ 
+-u32_t sys_now(void)
+-{
+-	return HAL_GetTick();
+-}
+-
+ void SysTick_Handler(void)
+ {
+ 	HAL_IncTick();
+diff --git a/Tests/Ethernet/e4_sources.py b/Tests/Ethernet/e4_sources.py
+index 1da5b50dbe84dbf72164dbd9b1b72caa26b12f82..e31fcac2810edd182d21bf59aac928442d0efd83 100644
+--- a/Tests/Ethernet/e4_sources.py
++++ b/Tests/Ethernet/e4_sources.py
+@@ -14,5 +14,7 @@ LWIP_TCP = ['ThirdParty/lwip/src/core/' + name + '.c' for name in ('tcp', 'tcp_i
+ TRANSPORT = ['Platform/Ethernet/' + name + '.c' for name in ('eth_udp', 'eth_tcp', 'eth_transport')]
+ BENCH = ['Tests/Ethernet/e5_protocol.c', 'Tests/Ethernet/e5_bench.c']
+ BOARD = ['Tests/Ethernet/eth_test_board.c']
+-HTTP = ['Platform/Ethernet/eth_http.c', 'Platform/Ethernet/eth_mjpeg.c',
++CLOCK = ['Platform/Ethernet/eth_lwip_time.c', 'CM7/Platform/platform_time.c']
++SERVICE = ['CM7/Service/Ethernet/eth_http.c', 'CM7/Service/Ethernet/eth_mjpeg.c']
++HTTP = SERVICE + [
+         'Tests/Ethernet/e6_jpeg_fixtures/e6_jpeg_fixtures.c']
+diff --git a/Tests/Ethernet/eth_test_board.c b/Tests/Ethernet/eth_test_board.c
+index 1cca367975b568982cecefefe8228cf965919714..d8ae36b2f3b1d2d41f56d76c93a0e2d2c8f1b0a3 100644
+--- a/Tests/Ethernet/eth_test_board.c
++++ b/Tests/Ethernet/eth_test_board.c
+@@ -64,11 +64,6 @@ static int EthBench_Clock(void)
+ 	return HAL_RCC_ClockConfig(&clock, FLASH_LATENCY_4) == HAL_OK;
+ }
+ 
+-u32_t sys_now(void)
+-{
+-	return HAL_GetTick();
+-}
+-
+ void SysTick_Handler(void)
+ {
+ 	HAL_IncTick();
+diff --git a/Tests/Ethernet/run_e6_host.py b/Tests/Ethernet/run_e6_host.py
+index 705b7f4bf28260754e728167b80067dd0d8c25bd..72d36c01d4f76a03a2975d33caf8ef907f6ae2c1 100644
+--- a/Tests/Ethernet/run_e6_host.py
++++ b/Tests/Ethernet/run_e6_host.py
+@@ -19,7 +19,7 @@ def main():
+     port = PORT + TRANSPORT + HTTP + ['Tests/Ethernet/test_e6_network.c']
+     lwip = LWIP + LWIP_DHCP + LWIP_TCP
+     flags = ['/nologo', '/std:c11', '/utf-8', '/wd4103', '/wd4324', '/IPlatform/Ethernet',
+-             '/IThirdParty/lwip/src/include', '/DETH_LWIP_DHCP', '/DETH_LWIP_E5',
++             '/ICM7/Service/Ethernet', '/IThirdParty/lwip/src/include', '/DETH_LWIP_DHCP', '/DETH_LWIP_E5',
+              '/Fo' + str(out) + '\\']
+     for sources, warning in ((port, '/W4'), (lwip, '/W3')):
+         subprocess.run(['cl', *flags, warning, '/WX', '/c', *sources], cwd=root, check=True)

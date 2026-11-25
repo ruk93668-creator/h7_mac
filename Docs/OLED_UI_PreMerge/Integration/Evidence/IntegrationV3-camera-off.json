@@ -1,0 +1,92 @@
+[
+  {
+    "optimization": "O0",
+    "id": 53,
+    "pass": true,
+    "return": 0,
+    "failure_line": 0,
+    "error": null,
+    "trace": []
+  },
+  {
+    "optimization": "O0",
+    "id": 54,
+    "pass": true,
+    "return": 0,
+    "failure_line": 0,
+    "error": null,
+    "trace": []
+  },
+  {
+    "optimization": "O0",
+    "id": 55,
+    "pass": true,
+    "return": 0,
+    "failure_line": 0,
+    "error": null,
+    "trace": []
+  },
+  {
+    "optimization": "O0",
+    "id": 56,
+    "pass": true,
+    "return": 0,
+    "failure_line": 0,
+    "error": null,
+    "trace": []
+  },
+  {
+    "optimization": "O0",
+    "id": 57,
+    "pass": true,
+    "return": 0,
+    "failure_line": 0,
+    "error": null,
+    "trace": []
+  },
+  {
+    "optimization": "O2",
+    "id": 53,
+    "pass": true,
+    "return": 0,
+    "failure_line": 0,
+    "error": null,
+    "trace": []
+  },
+  {
+    "optimization": "O2",
+    "id": 54,
+    "pass": true,
+    "return": 0,
+    "failure_line": 0,
+    "error": null,
+    "trace": []
+  },
+  {
+    "optimization": "O2",
+    "id": 55,
+    "pass": true,
+    "return": 0,
+    "failure_line": 0,
+    "error": null,
+    "trace": []
+  },
+  {
+    "optimization": "O2",
+    "id": 56,
+    "pass": true,
+    "return": 0,
+    "failure_line": 0,
+    "error": null,
+    "trace": []
+  },
+  {
+    "optimization": "O2",
+    "id": 57,
+    "pass": true,
+    "return": 0,
+    "failure_line": 0,
+    "error": null,
+    "trace": []
+  }
+]

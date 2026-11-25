@@ -1,0 +1,2 @@
+MDK-ARM/RTE/_h7_mac_CM7/RTE_Components.h:6: trailing whitespace.
++ * Project: 'h7_mac_ethernet_e7_v1' 

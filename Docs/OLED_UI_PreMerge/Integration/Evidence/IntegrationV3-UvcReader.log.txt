@@ -1,0 +1,24 @@
+reader 0 PASS 0 None
+reader 1 PASS 0 None
+reader 2 PASS 0 None
+reader 3 PASS 0 None
+reader 4 PASS 0 None
+reader 5 PASS 0 None
+reader 6 PASS 0 None
+reader 7 PASS 0 None
+reader 8 PASS 0 None
+reader 9 PASS 0 None
+reader 10 PASS 0 None
+{'total': 11, 'passed': 11, 'failed': 0}
+reader 0 PASS 0 None
+reader 1 PASS 0 None
+reader 2 PASS 0 None
+reader 3 PASS 0 None
+reader 4 PASS 0 None
+reader 5 PASS 0 None
+reader 6 PASS 0 None
+reader 7 PASS 0 None
+reader 8 PASS 0 None
+reader 9 PASS 0 None
+reader 10 PASS 0 None
+{'total': 11, 'passed': 11, 'failed': 0}

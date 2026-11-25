@@ -1,0 +1,26 @@
+{
+  "正式 CM7": {
+    "exit": 0,
+    "errors": 0,
+    "warnings": 0,
+    "sizes": {
+      "code": 200778,
+      "ro": 4894,
+      "rw": 1636,
+      "zi": 156716
+    },
+    "firmware_sha256": "ec6a34748a4bb8052e02da41f4c90c74d21f4c930c8b2b39f24654270558a86c"
+  },
+  "正式 CM4": {
+    "exit": 0,
+    "errors": 0,
+    "warnings": 0,
+    "sizes": {
+      "code": 26302,
+      "ro": 1438,
+      "rw": 936,
+      "zi": 3576
+    },
+    "firmware_sha256": "a9910383034247aa9519cbbeadf0d4d046b5e6982f90b426846be6c8fb7b0382"
+  }
+}

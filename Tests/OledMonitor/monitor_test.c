@@ -1,9 +1,10 @@
 //编译真实OLED应用、界面、驱动和Framework，只替换IPC读取及IIC收发
 #include "../../CM4/Device/Src/device.c"
 #include "../../CM4/Device/Src/oled_device.c"
-#include "../../CM4/Application/oled_ui.c"
+#include "../../CM4/Application/UI/oled_ui.c"
 #include "../../CM4/Application/app_oled.c"
 #include "../../CM4/Application/app_main.c"
+#include "../../CM4/BSP/bsp_u7.c"
 #include "../../CM4/Framework/framework_timer.c"
 #include "../../CM4/Framework/framework_event.c"
 #include "../../CM4/Framework/framework_runtime.c"
@@ -28,6 +29,32 @@ static uint8_t s_saved[OLED_BUFFER_SIZE];
 static uint32_t s_pixels;
 static uint32_t s_fail_pixel;
 static SysResult_t s_clear_result;
+
+//记录真实BSP的引脚配置与读取；GPIO保持上拉电平直到用例改变输入。
+OledTestRcc_t g_test_rcc;
+static uint32_t s_gpio_enabled, s_gpio_reads, s_gpio_invalid, s_gpio_pins[3];
+static uint32_t s_gpio_low[3];
+
+void Test_EnableGpio(uint32_t port)
+{
+    s_gpio_enabled |= 1U << port;
+}
+
+void HAL_GPIO_Init(uint32_t port, const GPIO_InitTypeDef *gpio)
+{
+    if ((s_gpio_enabled & (1U << port)) == 0U || gpio->Mode != GPIO_MODE_INPUT ||
+        gpio->Pull != GPIO_PULLUP)
+        s_gpio_invalid++;
+    s_gpio_pins[port] |= gpio->Pin;
+}
+
+GPIO_PinState HAL_GPIO_ReadPin(uint32_t port, uint32_t pin)
+{
+    if ((s_gpio_pins[port] & pin) == 0U)
+        s_gpio_invalid++;
+    s_gpio_reads++;
+    return (s_gpio_low[port] & pin) != 0U ? GPIO_PIN_RESET : GPIO_PIN_SET;
+}
 
 //为无运行库的ARM仿真提供标准内存及字符串操作
 void *memcpy(void *d,const void *s,size_t n){uint8_t *a=d;const uint8_t *b=s;while(n--)*a++=*b++;return d;}
@@ -76,6 +103,12 @@ SysResult_t IPC_Service_GetApplicationStatus(IpcApplicationView_t *view)
     return s_view_result;
 }
 
+SysResult_t IPC_Service_GetRuntimeStatus(IpcRuntimeStatus_t *status)
+{
+    memset(status, 0, sizeof(*status));
+    return SYS_OK;
+}
+
 //失败记录行号，Python逐例读取真实断言结果
 #define CHECK(x) do{g_result.checks++;if(!(x)){g_result.fail_line=__LINE__;return 1U;}}while(0)
 
@@ -121,7 +154,8 @@ static uint32_t Init(void)
     CHECK(Framework_InitRuntime()==SYS_OK);
     CHECK(s_app_oled==&s_oled);CHECK(s_sync_a4==1U);CHECK(s_sync_a5==0U);
     CHECK(s_timer_pool_count==1U && s_heap_size==1U);
-    CHECK(s_timer_pool[0].config.period_ms==100U);return 0U;
+    CHECK(s_timer_pool[0].config.period_ms == 50U);
+    return 0U;
 }
 
 //计时入口与正式主循环顺序保持一致
@@ -234,6 +268,7 @@ static uint32_t AppCase(uint32_t id)
     if(id==47U || id==48U){memset(s_oled.framebuffer,0x37,512);s_submit_result=id==47U?SYS_ERR_BUSY:SYS_ERR_IO;Step(100);for(i=0;i<512;i++)CHECK(s_oled.framebuffer[i]==0x37);CHECK(s_oled.refresh_state==OLED_REFRESH_IDLE);CHECK(s_tx_count==0);CHECK(g_oled_monitor_debug.last_error==(id==47U?SYS_OK:SYS_ERR_IO));s_submit_result=SYS_OK;Step(200);CHECK(s_tx_count==1);return 0;}
     if(id==52U){s_view_result=SYS_ERR_IO;Step(100);CHECK(s_tx_count==0);CHECK(g_oled_monitor_debug.ipc_errors==1);return 0;}
     if(id==53U){s_oled.ops=&s_test_ops;s_fail_pixel=30;memset(s_oled.framebuffer,0x27,512);Step(100);for(i=0;i<512;i++)CHECK(s_oled.framebuffer[i]==0x27);CHECK(s_tx_count==0);CHECK(g_oled_monitor_debug.render_errors==1);return 0;}
+    Step(50);CHECK(s_tx_count == 0);
     Step(99);CHECK(s_tx_count==0);Step(100);CHECK(s_tx_count==1);CHECK(s_view_calls==1);
     memcpy(s_saved,s_oled.framebuffer,512);
     if(id==45U){CHECK(g_oled_monitor_debug.submitted_frames==1);return 0;}
@@ -244,7 +279,48 @@ static uint32_t AppCase(uint32_t id)
 }
 
 //每个用例由仿真器重新装载ELF，静态状态不会串扰
+#include "ui1_cases.inc"
+#if defined(OLED_MONITOR_TEST_MENU) && OLED_MONITOR_TEST_MENU
+#include "ui2_cases.inc"
+#include "ui2_input_cases.inc"
+#include "UiCompatCase.inc"
+#include "UiPreMergeCase.inc"
+#include "UiSysCase.inc"
+#include "Ui6Case.inc"
+#include "Ui20FpsCase.inc"
+#include "Ui5Case.inc"
+#include "Ui4Case.inc"
+#endif
+
 uint32_t OledMonitor_TestRun(uint32_t id)
 {
+#if defined(OLED_MONITOR_TEST_MENU) && OLED_MONITOR_TEST_MENU
+    if (id >= 77U && id <= 78U)
+        return Ui4Case(id);
+    if (id >= 79U && id <= 80U)
+        return Ui5Case(id);
+    if (id >= 81U && id <= 81U)
+        return Ui6Case(id);
+    if (id == 82U)
+        return Ui20FpsCase();
+    if (id >= 83U && id <= 85U)
+        return UiSysCase(id);
+    if (id >= 86U && id <= 87U)
+        return UiCompatCase(id);
+    if (id == 88U)
+        return UiPreMergeCase();
+    if (id == 89U)
+        return UiGlobalStyleCase();
+    if (id == 90U)
+        return UiSystemIconCase();
+    if (id == 91U)
+        return UiSubmenuIconCase();
+    if (id == 76U)
+        return Ui2InputCase();
+    if (id >= 69U)
+        return Ui2Case(id);
+#endif
+    if (id >= 61U)
+        return Ui1_Case(id);
     return id<=42U?UiCase(id):AppCase(id);
 }

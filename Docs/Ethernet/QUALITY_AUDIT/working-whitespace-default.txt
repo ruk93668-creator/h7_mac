@@ -1,0 +1,426 @@
+MDK-ARM/RTE/_h7_mac_CM7/RTE_Components.h:6: trailing whitespace.
++ * Project: 'h7_mac_ethernet_e7_v1' 
+MDK-ARM/h7_mac.uvprojx:3421: trailing whitespace.
++              <Define>CORE_CM7,USE_HAL_DRIVER,STM32H747xx,USE_PWR_LDO_SUPPLY,APP_VIDEO_MJPEG_MODE=1,ETH_LWIP_DHCP,ETH_LWIP_E5</Define>
+MDK-ARM/h7_mac.uvprojx:3423: trailing whitespace.
++              <IncludePath>../Platform/Ethernet;../CM7/Core/Inc;../Drivers/STM32H7xx_HAL_Driver/Inc;../Drivers/STM32H7xx_HAL_Driver/Inc/Legacy;../Drivers/CMSIS/Device/ST/STM32H7xx/Include;../Drivers/CMSIS/Include;..\Common\Inc;..\Board\Inc;..\CM7\Application;..\CM7\Service;..\CM7\Device\Inc;..\CM7\Media\Inc;..\CM7\Platform;..\CM7\BSP;..\CM7\Framework;..\CM7\Device\Components\OV5640;../Middlewares/ST/STM32_USB_Device_Library/Core/Inc;../Middlewares/Third_Party/FreeRTOS/Source/include;../Middlewares/Third_Party/FreeRTOS/Source/portable/RVDS/ARM_CM7/r0p1;../Middlewares/Third_Party/FatFs;../CM7/Service/Ethernet;../ThirdParty/lwip/src/include</IncludePath>
+MDK-ARM/h7_mac.uvprojx:3460: trailing whitespace.
++--keep=*(.ethernet_dma)
+MDK-ARM/h7_mac.uvprojx:3461: trailing whitespace.
++--keep=eth_network_init
+MDK-ARM/h7_mac.uvprojx:3462: trailing whitespace.
++--keep=eth_network_init_address
+MDK-ARM/h7_mac.uvprojx:3463: trailing whitespace.
++--keep=eth_network_poll
+MDK-ARM/h7_mac.uvprojx:3464: trailing whitespace.
++--keep=eth_http_init
+MDK-ARM/h7_mac.uvprojx:3465: trailing whitespace.
++--keep=eth_http_init_source
+MDK-ARM/h7_mac.uvprojx:3466: trailing whitespace.
++--keep=eth_http_poll
+MDK-ARM/h7_mac.uvprojx:3467: trailing whitespace.
++--keep=eth_http_get_statistics
+MDK-ARM/h7_mac.uvprojx:3468: trailing whitespace.
++--keep=eth_http_set_stream_fast_send
+MDK-ARM/h7_mac.uvprojx:3469: trailing whitespace.
++--keep=eth_transport_get_statistics
+MDK-ARM/h7_mac.uvprojx:3470: trailing whitespace.
++--keep=eth_transport_ready
+MDK-ARM/h7_mac.uvprojx:3471: trailing whitespace.
++--keep=eth_transport_init
+MDK-ARM/h7_mac.uvprojx:3472: trailing whitespace.
++--keep=eth_transport_poll
+MDK-ARM/h7_mac.uvprojx:3473: trailing whitespace.
++--keep=eth_udp_send</Misc>
+MDK-ARM/h7_mac.uvprojx:5012: trailing whitespace.
++        <Group>
+MDK-ARM/h7_mac.uvprojx:5013: trailing whitespace.
++          <GroupName>Ethernet lwIP port</GroupName>
+MDK-ARM/h7_mac.uvprojx:5014: trailing whitespace.
++          <Files>
+MDK-ARM/h7_mac.uvprojx:5015: trailing whitespace.
++            <File>
+MDK-ARM/h7_mac.uvprojx:5016: trailing whitespace.
++              <FileName>eth_netif.c</FileName>
+MDK-ARM/h7_mac.uvprojx:5017: trailing whitespace.
++              <FileType>1</FileType>
+MDK-ARM/h7_mac.uvprojx:5018: trailing whitespace.
++              <FilePath>../Platform/Ethernet/eth_netif.c</FilePath>
+MDK-ARM/h7_mac.uvprojx:5019: trailing whitespace.
++            </File>
+MDK-ARM/h7_mac.uvprojx:5020: trailing whitespace.
++            <File>
+MDK-ARM/h7_mac.uvprojx:5021: trailing whitespace.
++              <FileName>eth_network.c</FileName>
+MDK-ARM/h7_mac.uvprojx:5022: trailing whitespace.
++              <FileType>1</FileType>
+MDK-ARM/h7_mac.uvprojx:5023: trailing whitespace.
++              <FilePath>../Platform/Ethernet/eth_network.c</FilePath>
+MDK-ARM/h7_mac.uvprojx:5024: trailing whitespace.
++            </File>
+MDK-ARM/h7_mac.uvprojx:5025: trailing whitespace.
++            <File>
+MDK-ARM/h7_mac.uvprojx:5026: trailing whitespace.
++              <FileName>eth_udp.c</FileName>
+MDK-ARM/h7_mac.uvprojx:5027: trailing whitespace.
++              <FileType>1</FileType>
+MDK-ARM/h7_mac.uvprojx:5028: trailing whitespace.
++              <FilePath>../Platform/Ethernet/eth_udp.c</FilePath>
+MDK-ARM/h7_mac.uvprojx:5029: trailing whitespace.
++            </File>
+MDK-ARM/h7_mac.uvprojx:5030: trailing whitespace.
++            <File>
+MDK-ARM/h7_mac.uvprojx:5031: trailing whitespace.
++              <FileName>eth_tcp.c</FileName>
+MDK-ARM/h7_mac.uvprojx:5032: trailing whitespace.
++              <FileType>1</FileType>
+MDK-ARM/h7_mac.uvprojx:5033: trailing whitespace.
++              <FilePath>../Platform/Ethernet/eth_tcp.c</FilePath>
+MDK-ARM/h7_mac.uvprojx:5034: trailing whitespace.
++            </File>
+MDK-ARM/h7_mac.uvprojx:5035: trailing whitespace.
++            <File>
+MDK-ARM/h7_mac.uvprojx:5036: trailing whitespace.
++              <FileName>eth_transport.c</FileName>
+MDK-ARM/h7_mac.uvprojx:5037: trailing whitespace.
++              <FileType>1</FileType>
+MDK-ARM/h7_mac.uvprojx:5038: trailing whitespace.
++              <FilePath>../Platform/Ethernet/eth_transport.c</FilePath>
+MDK-ARM/h7_mac.uvprojx:5039: trailing whitespace.
++            </File>
+MDK-ARM/h7_mac.uvprojx:5040: trailing whitespace.
++            <File>
+MDK-ARM/h7_mac.uvprojx:5041: trailing whitespace.
++              <FileName>eth_lwip_time.c</FileName>
+MDK-ARM/h7_mac.uvprojx:5042: trailing whitespace.
++              <FileType>1</FileType>
+MDK-ARM/h7_mac.uvprojx:5043: trailing whitespace.
++              <FilePath>../Platform/Ethernet/eth_lwip_time.c</FilePath>
+MDK-ARM/h7_mac.uvprojx:5044: trailing whitespace.
++            </File>
+MDK-ARM/h7_mac.uvprojx:5045: trailing whitespace.
++            <File>
+MDK-ARM/h7_mac.uvprojx:5046: trailing whitespace.
++              <FileName>eth_lwip_assert.c</FileName>
+MDK-ARM/h7_mac.uvprojx:5047: trailing whitespace.
++              <FileType>1</FileType>
+MDK-ARM/h7_mac.uvprojx:5048: trailing whitespace.
++              <FilePath>../Platform/Ethernet/eth_lwip_assert.c</FilePath>
+MDK-ARM/h7_mac.uvprojx:5049: trailing whitespace.
++            </File>
+MDK-ARM/h7_mac.uvprojx:5050: trailing whitespace.
++          </Files>
+MDK-ARM/h7_mac.uvprojx:5051: trailing whitespace.
++        </Group>
+MDK-ARM/h7_mac.uvprojx:5052: trailing whitespace.
++        <Group>
+MDK-ARM/h7_mac.uvprojx:5053: trailing whitespace.
++          <GroupName>Ethernet Service</GroupName>
+MDK-ARM/h7_mac.uvprojx:5054: trailing whitespace.
++          <Files>
+MDK-ARM/h7_mac.uvprojx:5055: trailing whitespace.
++            <File>
+MDK-ARM/h7_mac.uvprojx:5056: trailing whitespace.
++              <FileName>eth_http.c</FileName>
+MDK-ARM/h7_mac.uvprojx:5057: trailing whitespace.
++              <FileType>1</FileType>
+MDK-ARM/h7_mac.uvprojx:5058: trailing whitespace.
++              <FilePath>../CM7/Service/Ethernet/eth_http.c</FilePath>
+MDK-ARM/h7_mac.uvprojx:5059: trailing whitespace.
++            </File>
+MDK-ARM/h7_mac.uvprojx:5060: trailing whitespace.
++            <File>
+MDK-ARM/h7_mac.uvprojx:5061: trailing whitespace.
++              <FileName>eth_mjpeg.c</FileName>
+MDK-ARM/h7_mac.uvprojx:5062: trailing whitespace.
++              <FileType>1</FileType>
+MDK-ARM/h7_mac.uvprojx:5063: trailing whitespace.
++              <FilePath>../CM7/Service/Ethernet/eth_mjpeg.c</FilePath>
+MDK-ARM/h7_mac.uvprojx:5064: trailing whitespace.
++            </File>
+MDK-ARM/h7_mac.uvprojx:5065: trailing whitespace.
++          </Files>
+MDK-ARM/h7_mac.uvprojx:5066: trailing whitespace.
++        </Group>
+MDK-ARM/h7_mac.uvprojx:5067: trailing whitespace.
++        <Group>
+MDK-ARM/h7_mac.uvprojx:5068: trailing whitespace.
++          <GroupName>Ethernet lwIP 2.2.1</GroupName>
+MDK-ARM/h7_mac.uvprojx:5069: trailing whitespace.
++          <Files>
+MDK-ARM/h7_mac.uvprojx:5070: trailing whitespace.
++            <File>
+MDK-ARM/h7_mac.uvprojx:5071: trailing whitespace.
++              <FileName>def.c</FileName>
+MDK-ARM/h7_mac.uvprojx:5072: trailing whitespace.
++              <FileType>1</FileType>
+MDK-ARM/h7_mac.uvprojx:5073: trailing whitespace.
++              <FilePath>../ThirdParty/lwip/src/core/def.c</FilePath>
+MDK-ARM/h7_mac.uvprojx:5074: trailing whitespace.
++            </File>
+MDK-ARM/h7_mac.uvprojx:5075: trailing whitespace.
++            <File>
+MDK-ARM/h7_mac.uvprojx:5076: trailing whitespace.
++              <FileName>init.c</FileName>
+MDK-ARM/h7_mac.uvprojx:5077: trailing whitespace.
++              <FileType>1</FileType>
+MDK-ARM/h7_mac.uvprojx:5078: trailing whitespace.
++              <FilePath>../ThirdParty/lwip/src/core/init.c</FilePath>
+MDK-ARM/h7_mac.uvprojx:5079: trailing whitespace.
++            </File>
+MDK-ARM/h7_mac.uvprojx:5080: trailing whitespace.
++            <File>
+MDK-ARM/h7_mac.uvprojx:5081: trailing whitespace.
++              <FileName>inet_chksum.c</FileName>
+MDK-ARM/h7_mac.uvprojx:5082: trailing whitespace.
++              <FileType>1</FileType>
+MDK-ARM/h7_mac.uvprojx:5083: trailing whitespace.
++              <FilePath>../ThirdParty/lwip/src/core/inet_chksum.c</FilePath>
+MDK-ARM/h7_mac.uvprojx:5084: trailing whitespace.
++            </File>
+MDK-ARM/h7_mac.uvprojx:5085: trailing whitespace.
++            <File>
+MDK-ARM/h7_mac.uvprojx:5086: trailing whitespace.
++              <FileName>ip.c</FileName>
+MDK-ARM/h7_mac.uvprojx:5087: trailing whitespace.
++              <FileType>1</FileType>
+MDK-ARM/h7_mac.uvprojx:5088: trailing whitespace.
++              <FilePath>../ThirdParty/lwip/src/core/ip.c</FilePath>
+MDK-ARM/h7_mac.uvprojx:5089: trailing whitespace.
++            </File>
+MDK-ARM/h7_mac.uvprojx:5090: trailing whitespace.
++            <File>
+MDK-ARM/h7_mac.uvprojx:5091: trailing whitespace.
++              <FileName>mem.c</FileName>
+MDK-ARM/h7_mac.uvprojx:5092: trailing whitespace.
++              <FileType>1</FileType>
+MDK-ARM/h7_mac.uvprojx:5093: trailing whitespace.
++              <FilePath>../ThirdParty/lwip/src/core/mem.c</FilePath>
+MDK-ARM/h7_mac.uvprojx:5094: trailing whitespace.
++            </File>
+MDK-ARM/h7_mac.uvprojx:5095: trailing whitespace.
++            <File>
+MDK-ARM/h7_mac.uvprojx:5096: trailing whitespace.
++              <FileName>memp.c</FileName>
+MDK-ARM/h7_mac.uvprojx:5097: trailing whitespace.
++              <FileType>1</FileType>
+MDK-ARM/h7_mac.uvprojx:5098: trailing whitespace.
++              <FilePath>../ThirdParty/lwip/src/core/memp.c</FilePath>
+MDK-ARM/h7_mac.uvprojx:5099: trailing whitespace.
++            </File>
+MDK-ARM/h7_mac.uvprojx:5100: trailing whitespace.
++            <File>
+MDK-ARM/h7_mac.uvprojx:5101: trailing whitespace.
++              <FileName>netif.c</FileName>
+MDK-ARM/h7_mac.uvprojx:5102: trailing whitespace.
++              <FileType>1</FileType>
+MDK-ARM/h7_mac.uvprojx:5103: trailing whitespace.
++              <FilePath>../ThirdParty/lwip/src/core/netif.c</FilePath>
+MDK-ARM/h7_mac.uvprojx:5104: trailing whitespace.
++            </File>
+MDK-ARM/h7_mac.uvprojx:5105: trailing whitespace.
++            <File>
+MDK-ARM/h7_mac.uvprojx:5106: trailing whitespace.
++              <FileName>pbuf.c</FileName>
+MDK-ARM/h7_mac.uvprojx:5107: trailing whitespace.
++              <FileType>1</FileType>
+MDK-ARM/h7_mac.uvprojx:5108: trailing whitespace.
++              <FilePath>../ThirdParty/lwip/src/core/pbuf.c</FilePath>
+MDK-ARM/h7_mac.uvprojx:5109: trailing whitespace.
++            </File>
+MDK-ARM/h7_mac.uvprojx:5110: trailing whitespace.
++            <File>
+MDK-ARM/h7_mac.uvprojx:5111: trailing whitespace.
++              <FileName>raw.c</FileName>
+MDK-ARM/h7_mac.uvprojx:5112: trailing whitespace.
++              <FileType>1</FileType>
+MDK-ARM/h7_mac.uvprojx:5113: trailing whitespace.
++              <FilePath>../ThirdParty/lwip/src/core/raw.c</FilePath>
+MDK-ARM/h7_mac.uvprojx:5114: trailing whitespace.
++            </File>
+MDK-ARM/h7_mac.uvprojx:5115: trailing whitespace.
++            <File>
+MDK-ARM/h7_mac.uvprojx:5116: trailing whitespace.
++              <FileName>stats.c</FileName>
+MDK-ARM/h7_mac.uvprojx:5117: trailing whitespace.
++              <FileType>1</FileType>
+MDK-ARM/h7_mac.uvprojx:5118: trailing whitespace.
++              <FilePath>../ThirdParty/lwip/src/core/stats.c</FilePath>
+MDK-ARM/h7_mac.uvprojx:5119: trailing whitespace.
++            </File>
+MDK-ARM/h7_mac.uvprojx:5120: trailing whitespace.
++            <File>
+MDK-ARM/h7_mac.uvprojx:5121: trailing whitespace.
++              <FileName>sys.c</FileName>
+MDK-ARM/h7_mac.uvprojx:5122: trailing whitespace.
++              <FileType>1</FileType>
+MDK-ARM/h7_mac.uvprojx:5123: trailing whitespace.
++              <FilePath>../ThirdParty/lwip/src/core/sys.c</FilePath>
+MDK-ARM/h7_mac.uvprojx:5124: trailing whitespace.
++            </File>
+MDK-ARM/h7_mac.uvprojx:5125: trailing whitespace.
++            <File>
+MDK-ARM/h7_mac.uvprojx:5126: trailing whitespace.
++              <FileName>timeouts.c</FileName>
+MDK-ARM/h7_mac.uvprojx:5127: trailing whitespace.
++              <FileType>1</FileType>
+MDK-ARM/h7_mac.uvprojx:5128: trailing whitespace.
++              <FilePath>../ThirdParty/lwip/src/core/timeouts.c</FilePath>
+MDK-ARM/h7_mac.uvprojx:5129: trailing whitespace.
++            </File>
+MDK-ARM/h7_mac.uvprojx:5130: trailing whitespace.
++            <File>
+MDK-ARM/h7_mac.uvprojx:5131: trailing whitespace.
++              <FileName>etharp.c</FileName>
+MDK-ARM/h7_mac.uvprojx:5132: trailing whitespace.
++              <FileType>1</FileType>
+MDK-ARM/h7_mac.uvprojx:5133: trailing whitespace.
++              <FilePath>../ThirdParty/lwip/src/core/ipv4/etharp.c</FilePath>
+MDK-ARM/h7_mac.uvprojx:5134: trailing whitespace.
++            </File>
+MDK-ARM/h7_mac.uvprojx:5135: trailing whitespace.
++            <File>
+MDK-ARM/h7_mac.uvprojx:5136: trailing whitespace.
++              <FileName>icmp.c</FileName>
+MDK-ARM/h7_mac.uvprojx:5137: trailing whitespace.
++              <FileType>1</FileType>
+MDK-ARM/h7_mac.uvprojx:5138: trailing whitespace.
++              <FilePath>../ThirdParty/lwip/src/core/ipv4/icmp.c</FilePath>
+MDK-ARM/h7_mac.uvprojx:5139: trailing whitespace.
++            </File>
+MDK-ARM/h7_mac.uvprojx:5140: trailing whitespace.
++            <File>
+MDK-ARM/h7_mac.uvprojx:5141: trailing whitespace.
++              <FileName>ip4.c</FileName>
+MDK-ARM/h7_mac.uvprojx:5142: trailing whitespace.
++              <FileType>1</FileType>
+MDK-ARM/h7_mac.uvprojx:5143: trailing whitespace.
++              <FilePath>../ThirdParty/lwip/src/core/ipv4/ip4.c</FilePath>
+MDK-ARM/h7_mac.uvprojx:5144: trailing whitespace.
++            </File>
+MDK-ARM/h7_mac.uvprojx:5145: trailing whitespace.
++            <File>
+MDK-ARM/h7_mac.uvprojx:5146: trailing whitespace.
++              <FileName>ip4_addr.c</FileName>
+MDK-ARM/h7_mac.uvprojx:5147: trailing whitespace.
++              <FileType>1</FileType>
+MDK-ARM/h7_mac.uvprojx:5148: trailing whitespace.
++              <FilePath>../ThirdParty/lwip/src/core/ipv4/ip4_addr.c</FilePath>
+MDK-ARM/h7_mac.uvprojx:5149: trailing whitespace.
++            </File>
+MDK-ARM/h7_mac.uvprojx:5150: trailing whitespace.
++            <File>
+MDK-ARM/h7_mac.uvprojx:5151: trailing whitespace.
++              <FileName>ethernet.c</FileName>
+MDK-ARM/h7_mac.uvprojx:5152: trailing whitespace.
++              <FileType>1</FileType>
+MDK-ARM/h7_mac.uvprojx:5153: trailing whitespace.
++              <FilePath>../ThirdParty/lwip/src/netif/ethernet.c</FilePath>
+MDK-ARM/h7_mac.uvprojx:5154: trailing whitespace.
++            </File>
+MDK-ARM/h7_mac.uvprojx:5155: trailing whitespace.
++            <File>
+MDK-ARM/h7_mac.uvprojx:5156: trailing whitespace.
++              <FileName>udp.c</FileName>
+MDK-ARM/h7_mac.uvprojx:5157: trailing whitespace.
++              <FileType>1</FileType>
+MDK-ARM/h7_mac.uvprojx:5158: trailing whitespace.
++              <FilePath>../ThirdParty/lwip/src/core/udp.c</FilePath>
+MDK-ARM/h7_mac.uvprojx:5159: trailing whitespace.
++            </File>
+MDK-ARM/h7_mac.uvprojx:5160: trailing whitespace.
++            <File>
+MDK-ARM/h7_mac.uvprojx:5161: trailing whitespace.
++              <FileName>dhcp.c</FileName>
+MDK-ARM/h7_mac.uvprojx:5162: trailing whitespace.
++              <FileType>1</FileType>
+MDK-ARM/h7_mac.uvprojx:5163: trailing whitespace.
++              <FilePath>../ThirdParty/lwip/src/core/ipv4/dhcp.c</FilePath>
+MDK-ARM/h7_mac.uvprojx:5164: trailing whitespace.
++            </File>
+MDK-ARM/h7_mac.uvprojx:5165: trailing whitespace.
++            <File>
+MDK-ARM/h7_mac.uvprojx:5166: trailing whitespace.
++              <FileName>acd.c</FileName>
+MDK-ARM/h7_mac.uvprojx:5167: trailing whitespace.
++              <FileType>1</FileType>
+MDK-ARM/h7_mac.uvprojx:5168: trailing whitespace.
++              <FilePath>../ThirdParty/lwip/src/core/ipv4/acd.c</FilePath>
+MDK-ARM/h7_mac.uvprojx:5169: trailing whitespace.
++            </File>
+MDK-ARM/h7_mac.uvprojx:5170: trailing whitespace.
++            <File>
+MDK-ARM/h7_mac.uvprojx:5171: trailing whitespace.
++              <FileName>tcp.c</FileName>
+MDK-ARM/h7_mac.uvprojx:5172: trailing whitespace.
++              <FileType>1</FileType>
+MDK-ARM/h7_mac.uvprojx:5173: trailing whitespace.
++              <FilePath>../ThirdParty/lwip/src/core/tcp.c</FilePath>
+MDK-ARM/h7_mac.uvprojx:5174: trailing whitespace.
++            </File>
+MDK-ARM/h7_mac.uvprojx:5175: trailing whitespace.
++            <File>
+MDK-ARM/h7_mac.uvprojx:5176: trailing whitespace.
++              <FileName>tcp_in.c</FileName>
+MDK-ARM/h7_mac.uvprojx:5177: trailing whitespace.
++              <FileType>1</FileType>
+MDK-ARM/h7_mac.uvprojx:5178: trailing whitespace.
++              <FilePath>../ThirdParty/lwip/src/core/tcp_in.c</FilePath>
+MDK-ARM/h7_mac.uvprojx:5179: trailing whitespace.
++            </File>
+MDK-ARM/h7_mac.uvprojx:5180: trailing whitespace.
++            <File>
+MDK-ARM/h7_mac.uvprojx:5181: trailing whitespace.
++              <FileName>tcp_out.c</FileName>
+MDK-ARM/h7_mac.uvprojx:5182: trailing whitespace.
++              <FileType>1</FileType>
+MDK-ARM/h7_mac.uvprojx:5183: trailing whitespace.
++              <FilePath>../ThirdParty/lwip/src/core/tcp_out.c</FilePath>
+MDK-ARM/h7_mac.uvprojx:5184: trailing whitespace.
++            </File>
+MDK-ARM/h7_mac.uvprojx:5185: trailing whitespace.
++          </Files>
+MDK-ARM/h7_mac.uvprojx:5186: trailing whitespace.
++        </Group>
+MDK-ARM/h7_mac_CM7_custom.sct:35: trailing whitespace.
++    RW_ETHERNET_CPU 0x24010000 0x00010000
+MDK-ARM/h7_mac_CM7_custom.sct:36: trailing whitespace.
++    {
+MDK-ARM/h7_mac_CM7_custom.sct:37: trailing whitespace.
++        mem.o (+RW +ZI)
+MDK-ARM/h7_mac_CM7_custom.sct:38: trailing whitespace.
++        memp.o (+RW +ZI)
+MDK-ARM/h7_mac_CM7_custom.sct:39: trailing whitespace.
++        eth_http.o (+RW +ZI)
+MDK-ARM/h7_mac_CM7_custom.sct:40: trailing whitespace.
++        eth_tcp.o (+RW +ZI)
+MDK-ARM/h7_mac_CM7_custom.sct:41: trailing whitespace.
++        eth_transport.o (+RW +ZI)
+MDK-ARM/h7_mac_CM7_custom.sct:42: trailing whitespace.
++        eth_udp.o (+RW +ZI)
+MDK-ARM/h7_mac_CM7_custom.sct:43: trailing whitespace.
++        eth_network.o (+RW +ZI)
+MDK-ARM/h7_mac_CM7_custom.sct:44: trailing whitespace.
++        tcp.o (+RW +ZI)
+MDK-ARM/h7_mac_CM7_custom.sct:45: trailing whitespace.
++        stats.o (+RW +ZI)
+MDK-ARM/h7_mac_CM7_custom.sct:46: trailing whitespace.
++        netif.o (+RW +ZI)
+MDK-ARM/h7_mac_CM7_custom.sct:47: trailing whitespace.
++        etharp.o (+RW +ZI)
+MDK-ARM/h7_mac_CM7_custom.sct:48: trailing whitespace.
++        dhcp.o (+RW +ZI)
+MDK-ARM/h7_mac_CM7_custom.sct:49: trailing whitespace.
++        ip.o (+RW +ZI)
+MDK-ARM/h7_mac_CM7_custom.sct:50: trailing whitespace.
++        ip4.o (+RW +ZI)
+MDK-ARM/h7_mac_CM7_custom.sct:51: trailing whitespace.
++        raw.o (+RW +ZI)
+MDK-ARM/h7_mac_CM7_custom.sct:52: trailing whitespace.
++        timeouts.o (+RW +ZI)
+MDK-ARM/h7_mac_CM7_custom.sct:53: trailing whitespace.
++        udp.o (+RW +ZI)
+MDK-ARM/h7_mac_CM7_custom.sct:54: trailing whitespace.
++    }
+MDK-ARM/h7_mac_CM7_custom.sct:55: trailing whitespace.
++

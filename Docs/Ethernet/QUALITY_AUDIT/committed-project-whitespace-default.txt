@@ -1,0 +1,1764 @@
+CM7/Core/Src/main.c:21: trailing whitespace.
++#include "eth_memory.h"
+CM7/Core/Src/main.c:317: trailing whitespace.
++  /* Dedicated Ethernet DMA window; configured before DCache is enabled. */
+CM7/Core/Src/main.c:318: trailing whitespace.
++  eth_memory_configure();
+MDK-ARM/h7_mac.uvprojx:3423: trailing whitespace.
++              <IncludePath>../Platform/Ethernet;../CM7/Core/Inc;../Drivers/STM32H7xx_HAL_Driver/Inc;../Drivers/STM32H7xx_HAL_Driver/Inc/Legacy;../Drivers/CMSIS/Device/ST/STM32H7xx/Include;../Drivers/CMSIS/Include;..\Common\Inc;..\Board\Inc;..\CM7\Application;..\CM7\Service;..\CM7\Device\Inc;..\CM7\Media\Inc;..\CM7\Platform;..\CM7\BSP;..\CM7\Framework;..\CM7\Device\Components\OV5640;../Middlewares/ST/STM32_USB_Device_Library/Core/Inc;../Middlewares/Third_Party/FreeRTOS/Source/include;../Middlewares/Third_Party/FreeRTOS/Source/portable/RVDS/ARM_CM7/r0p1;../Middlewares/Third_Party/FatFs</IncludePath>
+MDK-ARM/h7_mac.uvprojx:3459: trailing whitespace.
++--keep=*(.device_export)
+MDK-ARM/h7_mac.uvprojx:3460: trailing whitespace.
++--keep=*(.ethernet_dma)</Misc>
+MDK-ARM/h7_mac.uvprojx:4989: trailing whitespace.
++      <Group>
+MDK-ARM/h7_mac.uvprojx:4990: trailing whitespace.
++          <GroupName>Ethernet independent driver</GroupName>
+MDK-ARM/h7_mac.uvprojx:4991: trailing whitespace.
++          <Files>
+MDK-ARM/h7_mac.uvprojx:4992: trailing whitespace.
++            <File><FileName>eth_phy.c</FileName><FileType>1</FileType><FilePath>../Platform/Ethernet/eth_phy.c</FilePath></File>
+MDK-ARM/h7_mac.uvprojx:4993: trailing whitespace.
++            <File><FileName>eth_dma.c</FileName><FileType>1</FileType><FilePath>../Platform/Ethernet/eth_dma.c</FilePath></File>
+MDK-ARM/h7_mac.uvprojx:4994: trailing whitespace.
++            <File><FileName>eth_memory.c</FileName><FileType>1</FileType><FilePath>../Platform/Ethernet/eth_memory.c</FilePath></File>
+MDK-ARM/h7_mac.uvprojx:4995: trailing whitespace.
++            <File><FileName>eth_mac.c</FileName><FileType>1</FileType><FilePath>../Platform/Ethernet/eth_mac.c</FilePath></File>
+MDK-ARM/h7_mac.uvprojx:4996: trailing whitespace.
++            <File><FileName>eth_board_stm32h747.c</FileName><FileType>1</FileType><FilePath>../Platform/Ethernet/eth_board_stm32h747.c</FilePath></File>
+MDK-ARM/h7_mac.uvprojx:4997: trailing whitespace.
++          </Files>
+MDK-ARM/h7_mac.uvprojx:4998: trailing whitespace.
++        </Group>
+MDK-ARM/h7_mac_CM7_custom.sct:30: trailing whitespace.
++    RW_ETHERNET_DMA 0x24078000 UNINIT 0x00008000
+MDK-ARM/h7_mac_CM7_custom.sct:31: trailing whitespace.
++    {
+MDK-ARM/h7_mac_CM7_custom.sct:32: trailing whitespace.
++        *(.ethernet_dma)
+MDK-ARM/h7_mac_CM7_custom.sct:33: trailing whitespace.
++    }
+MDK-ARM/h7_mac_CM7_custom.sct:34: trailing whitespace.
++
+Tests/Ethernet/board_v1/bsp_camera.c:1: trailing whitespace.
++#include "bsp_camera.h"
+Tests/Ethernet/board_v1/bsp_camera.c:2: trailing whitespace.
++#include "framework_init.h"
+Tests/Ethernet/board_v1/bsp_camera.c:3: trailing whitespace.
++#include "stm32h7xx_hal.h"
+Tests/Ethernet/board_v1/bsp_camera.c:4: trailing whitespace.
++#include <stdbool.h>
+Tests/Ethernet/board_v1/bsp_camera.c:5: trailing whitespace.
++#include <stddef.h>
+Tests/Ethernet/board_v1/bsp_camera.c:6: trailing whitespace.
++
+Tests/Ethernet/board_v1/bsp_camera.c:7: trailing whitespace.
++//V1½ÓÏß£ºPA15¿ØÖÆU10µÄ1.5VµçÔ´£¬PH13ÎªPWDN£¬PH15ÎªRESETB
+Tests/Ethernet/board_v1/bsp_camera.c:8: trailing whitespace.
++//PB8ÎªI2C1 SCL£¬PB9ÎªI2C1 SDA£¬PA8¼ÌĞøÊä³öÔ­ÓĞ24MHz XCLK
+Tests/Ethernet/board_v1/bsp_camera.c:9: trailing whitespace.
++#define CAMERA_SDA      GPIO_PIN_9
+Tests/Ethernet/board_v1/bsp_camera.c:10: trailing whitespace.
++#define CAMERA_SCL      GPIO_PIN_8
+Tests/Ethernet/board_v1/bsp_camera.c:11: trailing whitespace.
++#define CAMERA_RESET    GPIO_PIN_15
+Tests/Ethernet/board_v1/bsp_camera.c:12: trailing whitespace.
++#define CAMERA_PWDN     GPIO_PIN_13
+Tests/Ethernet/board_v1/bsp_camera.c:13: trailing whitespace.
++#define CAMERA_DVDD_EN  GPIO_PIN_15
+Tests/Ethernet/board_v1/bsp_camera.c:14: trailing whitespace.
++#define CAMERA_XCLK    GPIO_PIN_8
+Tests/Ethernet/board_v1/bsp_camera.c:15: trailing whitespace.
++#define CAMERA_PLLQ_HZ 240000000UL
+Tests/Ethernet/board_v1/bsp_camera.c:16: trailing whitespace.
++#define CAMERA_I2C_KERNEL_HZ 120000000UL
+Tests/Ethernet/board_v1/bsp_camera.c:17: trailing whitespace.
++//120MHzÏÂ·ÖÆµ12£ºSCLµÍ5.5us¡¢¸ß4.5us£¬Êı¾İ½¨Á¢1.4us¡¢±£³Ö0.3us
+Tests/Ethernet/board_v1/bsp_camera.c:18: trailing whitespace.
++//¼ÓÈëÂË²¨ÓëÍ¬²½ÑÓ³Ùºó²»³¬¹ı100kHz£¬ÈÔĞèÊµ²âÉãÏñÍ·¶Ë±ßÑØ
+Tests/Ethernet/board_v1/bsp_camera.c:19: trailing whitespace.
++#define CAMERA_I2C_TIMING    0xB0D32C36UL
+Tests/Ethernet/board_v1/bsp_camera.c:20: trailing whitespace.
++#define CAMERA_I2C_ADDRESS   0x78U
+Tests/Ethernet/board_v1/bsp_camera.c:21: trailing whitespace.
++#define CAMERA_I2C_TIMEOUT_MS 20U
+Tests/Ethernet/board_v1/bsp_camera.c:22: trailing whitespace.
++
+Tests/Ethernet/board_v1/bsp_camera.c:23: trailing whitespace.
++//¼ÇÂ¼SCCBÊÇ·ñÒÑ¾­¾ß±¸·ÃÎÊ´«¸ĞÆ÷µÄÉÏµçÌõ¼ş
+Tests/Ethernet/board_v1/bsp_camera.c:24: trailing whitespace.
++static bool s_camera_ready;
+Tests/Ethernet/board_v1/bsp_camera.c:25: trailing whitespace.
++//¼ÇÂ¼¹²Ïí¶Ë¿ÚÊÇ·ñÍê³ÉÒ»´ÎĞÔÅäÖÃ
+Tests/Ethernet/board_v1/bsp_camera.c:26: trailing whitespace.
++static bool s_camera_pins_ready;
+Tests/Ethernet/board_v1/bsp_camera.c:27: trailing whitespace.
++//±£´æ×î½üÒ»´ÎSCCB´«ÊäµÄHAL´íÎóÎ»£¬ÒÑ²»Ê¹ÓÃÈí¼şÖğ×Ö½Ú´íÎó±àÂë
+Tests/Ethernet/board_v1/bsp_camera.c:28: trailing whitespace.
++static volatile uint32_t s_sccb_error;
+Tests/Ethernet/board_v1/bsp_camera.c:29: trailing whitespace.
++//±£´æCamera¶ÀÕ¼µÄI2C1¾ä±ú£¬²»ÓëCM4µÄI2C2¹²ÓÃ
+Tests/Ethernet/board_v1/bsp_camera.c:30: trailing whitespace.
++static I2C_HandleTypeDef s_camera_i2c;
+Tests/Ethernet/board_v1/bsp_camera.c:31: trailing whitespace.
++//¼ÇÂ¼I2C1ÊÇ·ñÍê³ÉÅäÖÃ£¬¶Ïµçºó±ØĞëÖØĞÂ³õÊ¼»¯
+Tests/Ethernet/board_v1/bsp_camera.c:32: trailing whitespace.
++static bool s_camera_i2c_ready;
+Tests/Ethernet/board_v1/bsp_camera.c:33: trailing whitespace.
++
+Tests/Ethernet/board_v1/bsp_camera.c:34: trailing whitespace.
++//Ğ£Ñé¹²ÏíÊ±ÖÓÔ´²¢³õÊ¼»¯Camera¶ÀÕ¼µÄI2C1
+Tests/Ethernet/board_v1/bsp_camera.c:35: trailing whitespace.
++static SysResult_t Camera_I2cInit(void);
+Tests/Ethernet/board_v1/bsp_camera.c:36: trailing whitespace.
++
+Tests/Ethernet/board_v1/bsp_camera.c:37: trailing whitespace.
++//¼ÇÂ¼HAL´íÎó²¢×ª»»ÎªÔ­ÓĞÍ¨ÓÃ·µ»ØÂë
+Tests/Ethernet/board_v1/bsp_camera.c:38: trailing whitespace.
++static SysResult_t Camera_I2cResult(HAL_StatusTypeDef status);
+Tests/Ethernet/board_v1/bsp_camera.c:39: trailing whitespace.
++
+Tests/Ethernet/board_v1/bsp_camera.c:40: trailing whitespace.
++//ÔÚCM4»½ĞÑÇ°ÅäÖÃ¹²Ïí¶Ë¿Ú£¬±ÜÃâÁ½ºËÍ¬Ê±¸ÄĞ´GPIOBÅäÖÃ¼Ä´æÆ÷
+Tests/Ethernet/board_v1/bsp_camera.c:41: trailing whitespace.
++void BSP_Camera_EarlyInit(void)
+Tests/Ethernet/board_v1/bsp_camera.c:42: trailing whitespace.
++{
+Tests/Ethernet/board_v1/bsp_camera.c:43: trailing whitespace.
++	GPIO_InitTypeDef gpio = {0};
+Tests/Ethernet/board_v1/bsp_camera.c:44: trailing whitespace.
++
+Tests/Ethernet/board_v1/bsp_camera.c:45: trailing whitespace.
++	//·ÀÖ¹ÖØ¸´ÅäÖÃ¹²Ïí¶Ë¿Ú
+Tests/Ethernet/board_v1/bsp_camera.c:46: trailing whitespace.
++	if ( s_camera_pins_ready)
+Tests/Ethernet/board_v1/bsp_camera.c:47: trailing whitespace.
++		return;
+Tests/Ethernet/board_v1/bsp_camera.c:48: trailing whitespace.
++
+Tests/Ethernet/board_v1/bsp_camera.c:49: trailing whitespace.
++	//¿ªÆôÉãÏñÍ·Òı½ÅÊ±ÖÓ
+Tests/Ethernet/board_v1/bsp_camera.c:50: trailing whitespace.
++	__HAL_RCC_GPIOA_CLK_ENABLE();
+Tests/Ethernet/board_v1/bsp_camera.c:51: trailing whitespace.
++	__HAL_RCC_GPIOH_CLK_ENABLE();
+Tests/Ethernet/board_v1/bsp_camera.c:52: trailing whitespace.
++	__HAL_RCC_GPIOB_CLK_ENABLE();
+Tests/Ethernet/board_v1/bsp_camera.c:53: trailing whitespace.
++
+Tests/Ethernet/board_v1/bsp_camera.c:54: trailing whitespace.
++	//ÏÈÔ¤×°µÍµçÆ½£¬ÔÙ°ÑPA15´Óµ÷ÊÔ¸´ÓÃÇĞÎªÊä³ö£¬±ÜÃâÈí¼şÅäÖÃÊ±ÎóÊ¹ÄÜ
+Tests/Ethernet/board_v1/bsp_camera.c:55: trailing whitespace.
++	HAL_GPIO_WritePin(GPIOA, CAMERA_DVDD_EN, GPIO_PIN_RESET);
+Tests/Ethernet/board_v1/bsp_camera.c:56: trailing whitespace.
++	gpio.Pin = CAMERA_DVDD_EN;
+Tests/Ethernet/board_v1/bsp_camera.c:57: trailing whitespace.
++	gpio.Mode = GPIO_MODE_OUTPUT_PP;
+Tests/Ethernet/board_v1/bsp_camera.c:58: trailing whitespace.
++	gpio.Pull = GPIO_PULLDOWN;
+Tests/Ethernet/board_v1/bsp_camera.c:59: trailing whitespace.
++	gpio.Speed = GPIO_SPEED_FREQ_LOW;
+Tests/Ethernet/board_v1/bsp_camera.c:60: trailing whitespace.
++	HAL_GPIO_Init(GPIOA, &gpio);
+Tests/Ethernet/board_v1/bsp_camera.c:61: trailing whitespace.
++
+Tests/Ethernet/board_v1/bsp_camera.c:62: trailing whitespace.
++	//±£³Ö´«¸ĞÆ÷¸´Î»£¬²¢ÓÃÔ­ÓĞPH13±£³ÖPWDNÓĞĞ§£¬µÈ´ıDVDDÎÈ¶¨
+Tests/Ethernet/board_v1/bsp_camera.c:63: trailing whitespace.
++	HAL_GPIO_WritePin(GPIOH, CAMERA_PWDN, GPIO_PIN_SET);
+Tests/Ethernet/board_v1/bsp_camera.c:64: trailing whitespace.
++	HAL_GPIO_WritePin(GPIOH, CAMERA_RESET, GPIO_PIN_RESET);
+Tests/Ethernet/board_v1/bsp_camera.c:65: trailing whitespace.
++	gpio.Pin = CAMERA_RESET | CAMERA_PWDN;
+Tests/Ethernet/board_v1/bsp_camera.c:66: trailing whitespace.
++	gpio.Mode = GPIO_MODE_OUTPUT_PP;
+Tests/Ethernet/board_v1/bsp_camera.c:67: trailing whitespace.
++	gpio.Pull = GPIO_NOPULL;
+Tests/Ethernet/board_v1/bsp_camera.c:68: trailing whitespace.
++	gpio.Speed = GPIO_SPEED_FREQ_LOW;
+Tests/Ethernet/board_v1/bsp_camera.c:69: trailing whitespace.
++	HAL_GPIO_Init(GPIOH, &gpio);
+Tests/Ethernet/board_v1/bsp_camera.c:70: trailing whitespace.
++
+Tests/Ethernet/board_v1/bsp_camera.c:71: trailing whitespace.
++	//ÔÚ»½ĞÑCM4Ç°Ò»´ÎĞÔÅäÖÃPB8/PB9£¬±ÜÃâÓëOLEDµÄGPIOBÅäÖÃ²¢·¢
+Tests/Ethernet/board_v1/bsp_camera.c:72: trailing whitespace.
++	gpio.Pin = CAMERA_SDA | CAMERA_SCL;
+Tests/Ethernet/board_v1/bsp_camera.c:73: trailing whitespace.
++	gpio.Mode = GPIO_MODE_AF_OD;
+Tests/Ethernet/board_v1/bsp_camera.c:74: trailing whitespace.
++	gpio.Alternate = GPIO_AF4_I2C1;
+Tests/Ethernet/board_v1/bsp_camera.c:75: trailing whitespace.
++	HAL_GPIO_WritePin(GPIOB, gpio.Pin, GPIO_PIN_SET);
+Tests/Ethernet/board_v1/bsp_camera.c:76: trailing whitespace.
++	HAL_GPIO_Init(GPIOB, &gpio);
+Tests/Ethernet/board_v1/bsp_camera.c:77: trailing whitespace.
++
+Tests/Ethernet/board_v1/bsp_camera.c:78: trailing whitespace.
++	s_camera_pins_ready = true;
+Tests/Ethernet/board_v1/bsp_camera.c:79: trailing whitespace.
++}
+Tests/Ethernet/board_v1/bsp_camera.c:80: trailing whitespace.
++
+Tests/Ethernet/board_v1/bsp_camera.c:81: trailing whitespace.
++//Ê¹ÄÜÉãÏñÍ·1.5VÊı×ÖµçÔ´
+Tests/Ethernet/board_v1/bsp_camera.c:82: trailing whitespace.
++void BSP_Camera_PowerEnable(void)
+Tests/Ethernet/board_v1/bsp_camera.c:83: trailing whitespace.
++{
+Tests/Ethernet/board_v1/bsp_camera.c:84: trailing whitespace.
++	//Ê¹ÄÜÖ»¿ØÖÆU10£¬²»´ú±í´«¸ĞÆ÷ÒÑ¾­³õÊ¼»¯»òÔÊĞí·ÃÎÊSCCB
+Tests/Ethernet/board_v1/bsp_camera.c:85: trailing whitespace.
++	BSP_Camera_EarlyInit();
+Tests/Ethernet/board_v1/bsp_camera.c:86: trailing whitespace.
++	HAL_GPIO_WritePin(GPIOA, CAMERA_DVDD_EN, GPIO_PIN_SET);
+Tests/Ethernet/board_v1/bsp_camera.c:87: trailing whitespace.
++}
+Tests/Ethernet/board_v1/bsp_camera.c:88: trailing whitespace.
++
+Tests/Ethernet/board_v1/bsp_camera.c:89: trailing whitespace.
++//¹Ø±ÕÉãÏñÍ·1.5VÊı×ÖµçÔ´²¢½ûÖ¹¼ÌĞø·ÃÎÊSCCB
+Tests/Ethernet/board_v1/bsp_camera.c:90: trailing whitespace.
++void BSP_Camera_PowerDisable(void)
+Tests/Ethernet/board_v1/bsp_camera.c:91: trailing whitespace.
++{
+Tests/Ethernet/board_v1/bsp_camera.c:92: trailing whitespace.
++	GPIO_InitTypeDef gpio = {0};
+Tests/Ethernet/board_v1/bsp_camera.c:93: trailing whitespace.
++
+Tests/Ethernet/board_v1/bsp_camera.c:94: trailing whitespace.
++	//µ÷ÓÃÕß±ØĞëÏÈÍ£Ö¹²É¼¯²¢ÊÍ·Å×ÊÔ´£»´Ë½Ó¿Ú²»Ìæ´úDevice»òMediaÍ£Ö¹
+Tests/Ethernet/board_v1/bsp_camera.c:95: trailing whitespace.
++	BSP_Camera_EarlyInit();
+Tests/Ethernet/board_v1/bsp_camera.c:96: trailing whitespace.
++	HAL_GPIO_WritePin(GPIOH, CAMERA_RESET, GPIO_PIN_RESET);
+Tests/Ethernet/board_v1/bsp_camera.c:97: trailing whitespace.
++	HAL_GPIO_WritePin(GPIOH, CAMERA_PWDN, GPIO_PIN_SET);
+Tests/Ethernet/board_v1/bsp_camera.c:98: trailing whitespace.
++
+Tests/Ethernet/board_v1/bsp_camera.c:99: trailing whitespace.
++	//½öÍ£±¾ÈÎÎñ¶ÀÕ¼µÄI2C1£¬²»ÖØÖÃGPIOB»ò¹²ÏíµÄI2CÊ±ÖÓÑ¡ÔñÆ÷
+Tests/Ethernet/board_v1/bsp_camera.c:100: trailing whitespace.
++	if (s_camera_i2c_ready)
+Tests/Ethernet/board_v1/bsp_camera.c:101: trailing whitespace.
++	{
+Tests/Ethernet/board_v1/bsp_camera.c:102: trailing whitespace.
++		(void)HAL_I2C_DeInit(&s_camera_i2c);
+Tests/Ethernet/board_v1/bsp_camera.c:103: trailing whitespace.
++		s_camera_i2c_ready = false;
+Tests/Ethernet/board_v1/bsp_camera.c:104: trailing whitespace.
++	}
+Tests/Ethernet/board_v1/bsp_camera.c:105: trailing whitespace.
++
+Tests/Ethernet/board_v1/bsp_camera.c:106: trailing whitespace.
++	//ÏÈÍ£Ö¹Ïò´«¸ĞÆ÷Êä³öXCLK£¬ÔÙ¹Ø±ÕDVDD£»²»¸ÄPLL»òMCO·ÖÆµ
+Tests/Ethernet/board_v1/bsp_camera.c:107: trailing whitespace.
++	gpio.Pin = CAMERA_XCLK;
+Tests/Ethernet/board_v1/bsp_camera.c:108: trailing whitespace.
++	gpio.Mode = GPIO_MODE_ANALOG;
+Tests/Ethernet/board_v1/bsp_camera.c:109: trailing whitespace.
++	gpio.Pull = GPIO_NOPULL;
+Tests/Ethernet/board_v1/bsp_camera.c:110: trailing whitespace.
++	HAL_GPIO_Init(GPIOA, &gpio);
+Tests/Ethernet/board_v1/bsp_camera.c:111: trailing whitespace.
++	HAL_GPIO_WritePin(GPIOA, CAMERA_DVDD_EN, GPIO_PIN_RESET);
+Tests/Ethernet/board_v1/bsp_camera.c:112: trailing whitespace.
++	s_camera_ready = false;
+Tests/Ethernet/board_v1/bsp_camera.c:113: trailing whitespace.
++}
+Tests/Ethernet/board_v1/bsp_camera.c:114: trailing whitespace.
++
+Tests/Ethernet/board_v1/bsp_camera.c:115: trailing whitespace.
++//½¨Á¢Êı×ÖµçÔ´ºÍ24MHzÊ±ÖÓ£¬ÔÙ°´Íâ²¿DVDDÊ±ĞòÊÍ·ÅPWDNºÍRESETB
+Tests/Ethernet/board_v1/bsp_camera.c:116: trailing whitespace.
++SysResult_t BSP_Camera_Init(void)
+Tests/Ethernet/board_v1/bsp_camera.c:117: trailing whitespace.
++{
+Tests/Ethernet/board_v1/bsp_camera.c:118: trailing whitespace.
++	PLL1_ClocksTypeDef clocks;
+Tests/Ethernet/board_v1/bsp_camera.c:119: trailing whitespace.
++	uint32_t start;
+Tests/Ethernet/board_v1/bsp_camera.c:120: trailing whitespace.
++	uint32_t i;
+Tests/Ethernet/board_v1/bsp_camera.c:121: trailing whitespace.
++	SysResult_t result;
+Tests/Ethernet/board_v1/bsp_camera.c:122: trailing whitespace.
++
+Tests/Ethernet/board_v1/bsp_camera.c:123: trailing whitespace.
++	if ( s_camera_ready)
+Tests/Ethernet/board_v1/bsp_camera.c:124: trailing whitespace.
++		return SYS_OK;
+Tests/Ethernet/board_v1/bsp_camera.c:125: trailing whitespace.
++
+Tests/Ethernet/board_v1/bsp_camera.c:126: trailing whitespace.
++	BSP_Camera_EarlyInit();
+Tests/Ethernet/board_v1/bsp_camera.c:127: trailing whitespace.
++
+Tests/Ethernet/board_v1/bsp_camera.c:128: trailing whitespace.
++	//¼ì²éPLL1QÆµÂÊºÍÊ±ÖÓÊä³ö
+Tests/Ethernet/board_v1/bsp_camera.c:129: trailing whitespace.
++	HAL_RCCEx_GetPLL1ClockFreq(&clocks);
+Tests/Ethernet/board_v1/bsp_camera.c:130: trailing whitespace.
++	if ( __HAL_RCC_GET_FLAG(RCC_FLAG_PLLRDY) == RESET ||
+Tests/Ethernet/board_v1/bsp_camera.c:131: trailing whitespace.
++		(RCC->PLLCFGR & RCC_PLLCFGR_DIVQ1EN) == 0U ||
+Tests/Ethernet/board_v1/bsp_camera.c:132: trailing whitespace.
++		clocks.PLL1_Q_Frequency != CAMERA_PLLQ_HZ)
+Tests/Ethernet/board_v1/bsp_camera.c:133: trailing whitespace.
++		return SYS_ERR_INVALID_STATE;
+Tests/Ethernet/board_v1/bsp_camera.c:134: trailing whitespace.
++
+Tests/Ethernet/board_v1/bsp_camera.c:135: trailing whitespace.
++	SystemCoreClockUpdate();
+Tests/Ethernet/board_v1/bsp_camera.c:136: trailing whitespace.
++	if ( SystemCoreClock < 1000000U)
+Tests/Ethernet/board_v1/bsp_camera.c:137: trailing whitespace.
++		return SYS_ERR_INVALID_STATE;
+Tests/Ethernet/board_v1/bsp_camera.c:138: trailing whitespace.
++
+Tests/Ethernet/board_v1/bsp_camera.c:139: trailing whitespace.
++	//²»ÇåÁãÒÑÔËĞĞµÄÖÜÆÚ¼ÆÊıÆ÷£¬±ÜÃâ¸ÉÈÅÆäËûDWTÓÃ»§
+Tests/Ethernet/board_v1/bsp_camera.c:140: trailing whitespace.
++	CoreDebug->DEMCR |= CoreDebug_DEMCR_TRCENA_Msk;
+Tests/Ethernet/board_v1/bsp_camera.c:141: trailing whitespace.
++	DWT->CTRL |= DWT_CTRL_CYCCNTENA_Msk;
+Tests/Ethernet/board_v1/bsp_camera.c:142: trailing whitespace.
++	start = DWT->CYCCNT;
+Tests/Ethernet/board_v1/bsp_camera.c:143: trailing whitespace.
++	for (i = 0U;
+Tests/Ethernet/board_v1/bsp_camera.c:144: trailing whitespace.
++		 i < 32U;
+Tests/Ethernet/board_v1/bsp_camera.c:145: trailing whitespace.
++		 i++)
+Tests/Ethernet/board_v1/bsp_camera.c:146: trailing whitespace.
++		__NOP();
+Tests/Ethernet/board_v1/bsp_camera.c:147: trailing whitespace.
++	if ( DWT->CYCCNT == start)
+Tests/Ethernet/board_v1/bsp_camera.c:148: trailing whitespace.
++		return SYS_ERR_NOT_SUPPORTED;
+Tests/Ethernet/board_v1/bsp_camera.c:149: trailing whitespace.
++
+Tests/Ethernet/board_v1/bsp_camera.c:150: trailing whitespace.
++	//ÏÈ×¼±¸Ó²¼şSCCB£¬Ê§°ÜÊ±±£³ÖPWDN¡¢RESETBºÍDVDDµÄ°²È«µçÆ½
+Tests/Ethernet/board_v1/bsp_camera.c:151: trailing whitespace.
++	result = Camera_I2cInit();
+Tests/Ethernet/board_v1/bsp_camera.c:152: trailing whitespace.
++	if (result != SYS_OK)
+Tests/Ethernet/board_v1/bsp_camera.c:153: trailing whitespace.
++		return result;
+Tests/Ethernet/board_v1/bsp_camera.c:154: trailing whitespace.
++
+Tests/Ethernet/board_v1/bsp_camera.c:155: trailing whitespace.
++	//ÑØÓÃ10msµÈ´ı£ºÔ¤ÁôDVDDÉÏÉıĞ¡ÓÚ5ms¼°ÎÈ¶¨ºóÖÁÉÙ5msµÄÒªÇó
+Tests/Ethernet/board_v1/bsp_camera.c:156: trailing whitespace.
++	//Êµ¼ÊµçÑ¹ÉÏÉıÊ±¼ä±ØĞëÔÚTP2²âÁ¿£¬Èí¼şÑÓÊ±²»×÷ÎªµçÔ´ÎÈ¶¨Ö¤Ã÷
+Tests/Ethernet/board_v1/bsp_camera.c:157: trailing whitespace.
++	BSP_Camera_PowerEnable();
+Tests/Ethernet/board_v1/bsp_camera.c:158: trailing whitespace.
++	HAL_Delay(10U);
+Tests/Ethernet/board_v1/bsp_camera.c:159: trailing whitespace.
++	HAL_GPIO_WritePin(GPIOH, CAMERA_PWDN, GPIO_PIN_RESET);
+Tests/Ethernet/board_v1/bsp_camera.c:160: trailing whitespace.
++
+Tests/Ethernet/board_v1/bsp_camera.c:161: trailing whitespace.
++	//HALÍ¬Ê±ÅäÖÃPA8¸´ÓÃÊä³ö£¬240MHz³ıÒÔ10µÃµ½24MHz
+Tests/Ethernet/board_v1/bsp_camera.c:162: trailing whitespace.
++	HAL_RCC_MCOConfig(RCC_MCO1, RCC_MCO1SOURCE_PLL1QCLK, RCC_MCODIV_10);
+Tests/Ethernet/board_v1/bsp_camera.c:163: trailing whitespace.
++
+Tests/Ethernet/board_v1/bsp_camera.c:164: trailing whitespace.
++	//PWDNÊÍ·ÅºóÖÁÉÙ1ms²ÅÄÜÊÍ·ÅRESETB£¬Ö®ºó±£Áô20ms SCCBµÈ´ı
+Tests/Ethernet/board_v1/bsp_camera.c:165: trailing whitespace.
++	HAL_Delay(1U);
+Tests/Ethernet/board_v1/bsp_camera.c:166: trailing whitespace.
++	HAL_GPIO_WritePin(GPIOH, CAMERA_RESET, GPIO_PIN_SET);
+Tests/Ethernet/board_v1/bsp_camera.c:167: trailing whitespace.
++	HAL_Delay(20U);
+Tests/Ethernet/board_v1/bsp_camera.c:168: trailing whitespace.
++	s_camera_ready = true;
+Tests/Ethernet/board_v1/bsp_camera.c:169: trailing whitespace.
++	return SYS_OK;
+Tests/Ethernet/board_v1/bsp_camera.c:170: trailing whitespace.
++}
+Tests/Ethernet/board_v1/bsp_camera.c:171: trailing whitespace.
++
+Tests/Ethernet/board_v1/bsp_camera.c:172: trailing whitespace.
++//Í¨¹ıÓ²¼şI2C¶ÁÈ¡Ò»¸ö16Î»µØÖ·¼Ä´æÆ÷
+Tests/Ethernet/board_v1/bsp_camera.c:173: trailing whitespace.
++SysResult_t BSP_Camera_ReadReg(uint16_t reg, uint8_t *value)
+Tests/Ethernet/board_v1/bsp_camera.c:174: trailing whitespace.
++{
+Tests/Ethernet/board_v1/bsp_camera.c:175: trailing whitespace.
++	uint8_t address[2];
+Tests/Ethernet/board_v1/bsp_camera.c:176: trailing whitespace.
++	SysResult_t result;
+Tests/Ethernet/board_v1/bsp_camera.c:177: trailing whitespace.
++
+Tests/Ethernet/board_v1/bsp_camera.c:178: trailing whitespace.
++	//Î´Íê³ÉÉÏµç»òI2CÅäÖÃÊ±½ûÖ¹·ÃÎÊ£¬²»¸Ä±äµ÷ÓÃÕßµÄÊı¾İ
+Tests/Ethernet/board_v1/bsp_camera.c:179: trailing whitespace.
++	if (value == NULL)
+Tests/Ethernet/board_v1/bsp_camera.c:180: trailing whitespace.
++		return SYS_ERR_INVALID_ARG;
+Tests/Ethernet/board_v1/bsp_camera.c:181: trailing whitespace.
++	if (!s_camera_ready || !s_camera_i2c_ready)
+Tests/Ethernet/board_v1/bsp_camera.c:182: trailing whitespace.
++		return SYS_ERR_INVALID_STATE;
+Tests/Ethernet/board_v1/bsp_camera.c:183: trailing whitespace.
++
+Tests/Ethernet/board_v1/bsp_camera.c:184: trailing whitespace.
++	//ÏÈ·¢¼Ä´æÆ÷¸ßµÍ×Ö½Ú£¬×èÈû·¢ËÍÍê³ÉºóHAL²úÉúSTOP
+Tests/Ethernet/board_v1/bsp_camera.c:185: trailing whitespace.
++	address[0] = (uint8_t)(reg >> 8);
+Tests/Ethernet/board_v1/bsp_camera.c:186: trailing whitespace.
++	address[1] = (uint8_t)reg;
+Tests/Ethernet/board_v1/bsp_camera.c:187: trailing whitespace.
++	result = Camera_I2cResult(HAL_I2C_Master_Transmit(&s_camera_i2c,
+Tests/Ethernet/board_v1/bsp_camera.c:188: trailing whitespace.
++		CAMERA_I2C_ADDRESS, address, 2U, CAMERA_I2C_TIMEOUT_MS));
+Tests/Ethernet/board_v1/bsp_camera.c:189: trailing whitespace.
++	if (result != SYS_OK)
+Tests/Ethernet/board_v1/bsp_camera.c:190: trailing whitespace.
++		return result;
+Tests/Ethernet/board_v1/bsp_camera.c:191: trailing whitespace.
++
+Tests/Ethernet/board_v1/bsp_camera.c:192: trailing whitespace.
++	//ÖØĞÂSTART¶ÁÈ¡µ¥×Ö½Ú£¬ÑØÓÃÔ­ÓĞSTOP·Ö¸ôµÄSCCB¶ÁÊ±Ğò
+Tests/Ethernet/board_v1/bsp_camera.c:193: trailing whitespace.
++	return Camera_I2cResult(HAL_I2C_Master_Receive(&s_camera_i2c,
+Tests/Ethernet/board_v1/bsp_camera.c:194: trailing whitespace.
++		CAMERA_I2C_ADDRESS, value, 1U, CAMERA_I2C_TIMEOUT_MS));
+Tests/Ethernet/board_v1/bsp_camera.c:195: trailing whitespace.
++}
+Tests/Ethernet/board_v1/bsp_camera.c:196: trailing whitespace.
++
+Tests/Ethernet/board_v1/bsp_camera.c:197: trailing whitespace.
++//Í¨¹ıÓ²¼şI2CĞ´ÈëÒ»¸ö16Î»µØÖ·¼Ä´æÆ÷
+Tests/Ethernet/board_v1/bsp_camera.c:198: trailing whitespace.
++SysResult_t BSP_Camera_WriteReg(uint16_t reg, uint8_t value)
+Tests/Ethernet/board_v1/bsp_camera.c:199: trailing whitespace.
++{
+Tests/Ethernet/board_v1/bsp_camera.c:200: trailing whitespace.
++	uint8_t packet[3];
+Tests/Ethernet/board_v1/bsp_camera.c:201: trailing whitespace.
++	SysResult_t result;
+Tests/Ethernet/board_v1/bsp_camera.c:202: trailing whitespace.
++
+Tests/Ethernet/board_v1/bsp_camera.c:203: trailing whitespace.
++	//²»ÔÊĞíÔÚ¶Ïµç»òÎ´³õÊ¼»¯Ê±Ìá½»×ÜÏßÊÂÎñ
+Tests/Ethernet/board_v1/bsp_camera.c:204: trailing whitespace.
++	if (!s_camera_ready || !s_camera_i2c_ready)
+Tests/Ethernet/board_v1/bsp_camera.c:205: trailing whitespace.
++		return SYS_ERR_INVALID_STATE;
+Tests/Ethernet/board_v1/bsp_camera.c:206: trailing whitespace.
++
+Tests/Ethernet/board_v1/bsp_camera.c:207: trailing whitespace.
++	//Éè±¸µØÖ·ÓÉHAL·¢ËÍ£¬Êı¾İÇøÒÀ´ÎÊÇ¼Ä´æÆ÷¸ß×Ö½Ú¡¢µÍ×Ö½ÚºÍÊıÖµ
+Tests/Ethernet/board_v1/bsp_camera.c:208: trailing whitespace.
++	packet[0] = (uint8_t)(reg >> 8);
+Tests/Ethernet/board_v1/bsp_camera.c:209: trailing whitespace.
++	packet[1] = (uint8_t)reg;
+Tests/Ethernet/board_v1/bsp_camera.c:210: trailing whitespace.
++	packet[2] = value;
+Tests/Ethernet/board_v1/bsp_camera.c:211: trailing whitespace.
++	result = Camera_I2cResult(HAL_I2C_Master_Transmit(&s_camera_i2c,
+Tests/Ethernet/board_v1/bsp_camera.c:212: trailing whitespace.
++		CAMERA_I2C_ADDRESS, packet, 3U, CAMERA_I2C_TIMEOUT_MS));
+Tests/Ethernet/board_v1/bsp_camera.c:213: trailing whitespace.
++	if (result != SYS_OK)
+Tests/Ethernet/board_v1/bsp_camera.c:214: trailing whitespace.
++		return result;
+Tests/Ethernet/board_v1/bsp_camera.c:215: trailing whitespace.
++
+Tests/Ethernet/board_v1/bsp_camera.c:216: trailing whitespace.
++	//±£ÁôÔ­À´µÄÈí¼ş¸´Î»µÈ´ı£¬Ê§°Ü´«Êä²»Î±×°³É¸´Î»³É¹¦
+Tests/Ethernet/board_v1/bsp_camera.c:217: trailing whitespace.
++	if (reg == 0x3008U && value == 0x82U)
+Tests/Ethernet/board_v1/bsp_camera.c:218: trailing whitespace.
++		HAL_Delay(5U);
+Tests/Ethernet/board_v1/bsp_camera.c:219: trailing whitespace.
++	return SYS_OK;
+Tests/Ethernet/board_v1/bsp_camera.c:220: trailing whitespace.
++}
+Tests/Ethernet/board_v1/bsp_camera.c:221: trailing whitespace.
++
+Tests/Ethernet/board_v1/bsp_camera.c:222: trailing whitespace.
++//×¢²á°å¼¶³õÊ¼»¯
+Tests/Ethernet/board_v1/bsp_camera.c:223: trailing whitespace.
++FRAMEWORK_INIT_REGISTER(BSP_Camera_Init, INIT_LEVEL_BUS);
+Tests/Ethernet/board_v1/bsp_camera.c:224: trailing whitespace.
++
+Tests/Ethernet/board_v1/bsp_camera.c:225: trailing whitespace.
++//Ğ£ÑéÏÖÓĞ120MHzÄÚºËÊ±ÖÓ²¢ÅäÖÃÔ¼100kHzÓ²¼şI2C
+Tests/Ethernet/board_v1/bsp_camera.c:226: trailing whitespace.
++static SysResult_t Camera_I2cInit(void)
+Tests/Ethernet/board_v1/bsp_camera.c:227: trailing whitespace.
++{
+Tests/Ethernet/board_v1/bsp_camera.c:228: trailing whitespace.
++	SysResult_t result;
+Tests/Ethernet/board_v1/bsp_camera.c:229: trailing whitespace.
++
+Tests/Ethernet/board_v1/bsp_camera.c:230: trailing whitespace.
++	//I2C1/2/3¹²ÓÃÑ¡ÔñÆ÷£¬Ö»¶ÁĞ£Ñé£¬²»¸ÄCM4 OLEDÒÑ¾­Ê¹ÓÃµÄÊ±ÖÓÔ´
+Tests/Ethernet/board_v1/bsp_camera.c:231: trailing whitespace.
++	if (__HAL_RCC_GET_I2C1_SOURCE() != RCC_I2C123CLKSOURCE_D2PCLK1 ||
+Tests/Ethernet/board_v1/bsp_camera.c:232: trailing whitespace.
++		HAL_RCC_GetPCLK1Freq() != CAMERA_I2C_KERNEL_HZ)
+Tests/Ethernet/board_v1/bsp_camera.c:233: trailing whitespace.
++		return SYS_ERR_INVALID_STATE;
+Tests/Ethernet/board_v1/bsp_camera.c:234: trailing whitespace.
++	if (s_camera_i2c_ready)
+Tests/Ethernet/board_v1/bsp_camera.c:235: trailing whitespace.
++		return SYS_OK;
+Tests/Ethernet/board_v1/bsp_camera.c:236: trailing whitespace.
++
+Tests/Ethernet/board_v1/bsp_camera.c:237: trailing whitespace.
++	//½ö¿ªÆôI2C1ÃÅ¿Ø£¬GPIOBÒÑÔÚCM4»½ĞÑÇ°ÅäÖÃ£¬ÔËĞĞÆÚ²»ÔÙ´Î¸Ä¶Ë¿Ú
+Tests/Ethernet/board_v1/bsp_camera.c:238: trailing whitespace.
++	__HAL_RCC_I2C1_CLK_ENABLE();
+Tests/Ethernet/board_v1/bsp_camera.c:239: trailing whitespace.
++	s_camera_i2c.Instance = I2C1;
+Tests/Ethernet/board_v1/bsp_camera.c:240: trailing whitespace.
++	s_camera_i2c.Init.Timing = CAMERA_I2C_TIMING;
+Tests/Ethernet/board_v1/bsp_camera.c:241: trailing whitespace.
++	s_camera_i2c.Init.OwnAddress1 = 0U;
+Tests/Ethernet/board_v1/bsp_camera.c:242: trailing whitespace.
++	s_camera_i2c.Init.AddressingMode = I2C_ADDRESSINGMODE_7BIT;
+Tests/Ethernet/board_v1/bsp_camera.c:243: trailing whitespace.
++	s_camera_i2c.Init.DualAddressMode = I2C_DUALADDRESS_DISABLE;
+Tests/Ethernet/board_v1/bsp_camera.c:244: trailing whitespace.
++	s_camera_i2c.Init.OwnAddress2 = 0U;
+Tests/Ethernet/board_v1/bsp_camera.c:245: trailing whitespace.
++	s_camera_i2c.Init.OwnAddress2Masks = I2C_OA2_NOMASK;
+Tests/Ethernet/board_v1/bsp_camera.c:246: trailing whitespace.
++	s_camera_i2c.Init.GeneralCallMode = I2C_GENERALCALL_DISABLE;
+Tests/Ethernet/board_v1/bsp_camera.c:247: trailing whitespace.
++	s_camera_i2c.Init.NoStretchMode = I2C_NOSTRETCH_DISABLE;
+Tests/Ethernet/board_v1/bsp_camera.c:248: trailing whitespace.
++	result = Camera_I2cResult(HAL_I2C_Init(&s_camera_i2c));
+Tests/Ethernet/board_v1/bsp_camera.c:249: trailing whitespace.
++	if (result != SYS_OK)
+Tests/Ethernet/board_v1/bsp_camera.c:250: trailing whitespace.
++		return result;
+Tests/Ethernet/board_v1/bsp_camera.c:251: trailing whitespace.
++
+Tests/Ethernet/board_v1/bsp_camera.c:252: trailing whitespace.
++	//¿ªÆôÄ£ÄâÂË²¨¡¢¹Ø±ÕÊı×ÖÂË²¨£¬ÓëTIMINGRµÄÅäÖÃ±£³ÖÒ»ÖÂ
+Tests/Ethernet/board_v1/bsp_camera.c:253: trailing whitespace.
++	result = Camera_I2cResult(HAL_I2CEx_ConfigAnalogFilter(&s_camera_i2c,
+Tests/Ethernet/board_v1/bsp_camera.c:254: trailing whitespace.
++		I2C_ANALOGFILTER_ENABLE));
+Tests/Ethernet/board_v1/bsp_camera.c:255: trailing whitespace.
++	if (result == SYS_OK)
+Tests/Ethernet/board_v1/bsp_camera.c:256: trailing whitespace.
++		result = Camera_I2cResult(HAL_I2CEx_ConfigDigitalFilter(&s_camera_i2c, 0U));
+Tests/Ethernet/board_v1/bsp_camera.c:257: trailing whitespace.
++	if (result != SYS_OK)
+Tests/Ethernet/board_v1/bsp_camera.c:258: trailing whitespace.
++	{
+Tests/Ethernet/board_v1/bsp_camera.c:259: trailing whitespace.
++		//³·Ïú°ë³õÊ¼»¯ÍâÉè£¬±£ÁôÊ×´Î´íÎó£¬²»Ç¿ĞĞÖØÊÔ»òÇĞ»»ÎªÈí¼şI2C
+Tests/Ethernet/board_v1/bsp_camera.c:260: trailing whitespace.
++		(void)HAL_I2C_DeInit(&s_camera_i2c);
+Tests/Ethernet/board_v1/bsp_camera.c:261: trailing whitespace.
++		return result;
+Tests/Ethernet/board_v1/bsp_camera.c:262: trailing whitespace.
++	}
+Tests/Ethernet/board_v1/bsp_camera.c:263: trailing whitespace.
++	s_camera_i2c_ready = true;
+Tests/Ethernet/board_v1/bsp_camera.c:264: trailing whitespace.
++	return SYS_OK;
+Tests/Ethernet/board_v1/bsp_camera.c:265: trailing whitespace.
++}
+Tests/Ethernet/board_v1/bsp_camera.c:266: trailing whitespace.
++
+Tests/Ethernet/board_v1/bsp_camera.c:267: trailing whitespace.
++//±£ÁôNACK¡¢×ÜÏß´íÎó¼°³¬Ê±µÄÊµ¼ÊÕï¶Ï£¬²»½«´íÎó×ª»»Îª³É¹¦
+Tests/Ethernet/board_v1/bsp_camera.c:268: trailing whitespace.
++static SysResult_t Camera_I2cResult(HAL_StatusTypeDef status)
+Tests/Ethernet/board_v1/bsp_camera.c:269: trailing whitespace.
++{
+Tests/Ethernet/board_v1/bsp_camera.c:270: trailing whitespace.
++	//HAL_BUSY²»±£Ö¤¸üĞÂErrorCode£¬²»ÄÜ°ÑÉÏÒ»±ÊNACKÎóÈÏ³É±¾´Î´íÎó
+Tests/Ethernet/board_v1/bsp_camera.c:271: trailing whitespace.
++	s_sccb_error = (status == HAL_ERROR || status == HAL_TIMEOUT) ?
+Tests/Ethernet/board_v1/bsp_camera.c:272: trailing whitespace.
++		HAL_I2C_GetError(&s_camera_i2c) : HAL_I2C_ERROR_NONE;
+Tests/Ethernet/board_v1/bsp_camera.c:273: trailing whitespace.
++	if (status == HAL_OK)
+Tests/Ethernet/board_v1/bsp_camera.c:274: trailing whitespace.
++		return SYS_OK;
+Tests/Ethernet/board_v1/bsp_camera.c:275: trailing whitespace.
++	if (status == HAL_BUSY)
+Tests/Ethernet/board_v1/bsp_camera.c:276: trailing whitespace.
++		return SYS_ERR_BUSY;
+Tests/Ethernet/board_v1/bsp_camera.c:277: trailing whitespace.
++	if (status == HAL_TIMEOUT || (s_sccb_error & HAL_I2C_ERROR_TIMEOUT) != 0U)
+Tests/Ethernet/board_v1/bsp_camera.c:278: trailing whitespace.
++		return SYS_ERR_TIMEOUT;
+Tests/Ethernet/board_v1/bsp_camera.c:279: trailing whitespace.
++	return SYS_ERR_IO;
+Tests/Ethernet/board_v1/bsp_camera.c:280: trailing whitespace.
++}
+Tests/Ethernet/board_v1/bsp_camera.h:1: trailing whitespace.
++#ifndef CM7_BSP_CAMERA_H
+Tests/Ethernet/board_v1/bsp_camera.h:2: trailing whitespace.
++#define CM7_BSP_CAMERA_H
+Tests/Ethernet/board_v1/bsp_camera.h:3: trailing whitespace.
++
+Tests/Ethernet/board_v1/bsp_camera.h:4: trailing whitespace.
++#include "sys_result.h"
+Tests/Ethernet/board_v1/bsp_camera.h:5: trailing whitespace.
++
+Tests/Ethernet/board_v1/bsp_camera.h:6: trailing whitespace.
++//ÔÚ»½ĞÑCM4Ç°Ô¤ÅäÖÃÉãÏñÍ·Òı½Å
+Tests/Ethernet/board_v1/bsp_camera.h:7: trailing whitespace.
++void BSP_Camera_EarlyInit(void);
+Tests/Ethernet/board_v1/bsp_camera.h:8: trailing whitespace.
++
+Tests/Ethernet/board_v1/bsp_camera.h:9: trailing whitespace.
++//Ê¹ÄÜU10Êı×ÖµçÔ´£¬´«¸ĞÆ÷³õÊ¼»¯ÈÔÓÉBSP_Camera_InitÍê³É
+Tests/Ethernet/board_v1/bsp_camera.h:10: trailing whitespace.
++void BSP_Camera_PowerEnable(void);
+Tests/Ethernet/board_v1/bsp_camera.h:11: trailing whitespace.
++
+Tests/Ethernet/board_v1/bsp_camera.h:12: trailing whitespace.
++//¹Ø±ÕU10Êı×ÖµçÔ´£»½ö¹©Í£Ö¹²É¼¯²¢Íê³É×ÊÔ´ÊÍ·ÅºóµÄÕû»ú¶ÏµçÁ÷³ÌÊ¹ÓÃ
+Tests/Ethernet/board_v1/bsp_camera.h:13: trailing whitespace.
++//ÆÕÍ¨Device_Stop²»µ÷ÓÃ´Ë½Ó¿Ú£»ÔÙ´ÎÊ¹ÓÃ±ØĞëÍêÕûÖØĞÂ³õÊ¼»¯ºÍÅäÖÃ´«¸ĞÆ÷
+Tests/Ethernet/board_v1/bsp_camera.h:14: trailing whitespace.
++void BSP_Camera_PowerDisable(void);
+Tests/Ethernet/board_v1/bsp_camera.h:15: trailing whitespace.
++
+Tests/Ethernet/board_v1/bsp_camera.h:16: trailing whitespace.
++//³õÊ¼»¯Êı×ÖµçÔ´¡¢XCLKºÍ´«¸ĞÆ÷¸´Î»Ê±Ğò
+Tests/Ethernet/board_v1/bsp_camera.h:17: trailing whitespace.
++SysResult_t BSP_Camera_Init(void);
+Tests/Ethernet/board_v1/bsp_camera.h:18: trailing whitespace.
++
+Tests/Ethernet/board_v1/bsp_camera.h:19: trailing whitespace.
++//Í¨¹ıI2C1¶ÁÈ¡Ò»¸ö¼Ä´æÆ÷£¬½ö¹©Æô¶¯³õÊ¼»¯»òCameraËùÓĞÕßÈÎÎñµ÷ÓÃ
+Tests/Ethernet/board_v1/bsp_camera.h:20: trailing whitespace.
++SysResult_t BSP_Camera_ReadReg(
+Tests/Ethernet/board_v1/bsp_camera.h:21: trailing whitespace.
++    uint16_t reg,
+Tests/Ethernet/board_v1/bsp_camera.h:22: trailing whitespace.
++    uint8_t *value
+Tests/Ethernet/board_v1/bsp_camera.h:23: trailing whitespace.
++);
+Tests/Ethernet/board_v1/bsp_camera.h:24: trailing whitespace.
++
+Tests/Ethernet/board_v1/bsp_camera.h:25: trailing whitespace.
++//Í¨¹ıI2C1Ğ´ÈëÒ»¸ö¼Ä´æÆ÷£¬½ö¹©Æô¶¯³õÊ¼»¯»òCameraËùÓĞÕßÈÎÎñµ÷ÓÃ
+Tests/Ethernet/board_v1/bsp_camera.h:26: trailing whitespace.
++SysResult_t BSP_Camera_WriteReg(
+Tests/Ethernet/board_v1/bsp_camera.h:27: trailing whitespace.
++	uint16_t reg,
+Tests/Ethernet/board_v1/bsp_camera.h:28: trailing whitespace.
++	uint8_t value
+Tests/Ethernet/board_v1/bsp_camera.h:29: trailing whitespace.
++);
+Tests/Ethernet/board_v1/bsp_camera.h:30: trailing whitespace.
++
+Tests/Ethernet/board_v1/bsp_camera.h:31: trailing whitespace.
++#endif
+Tests/Ethernet/e35_frame.c:1: trailing whitespace.
++#include "e35_frame.h"
+Tests/Ethernet/e35_frame.c:2: trailing whitespace.
++#include <string.h>
+Tests/Ethernet/e35_frame.c:3: trailing whitespace.
++
+Tests/Ethernet/e35_frame.c:4: trailing whitespace.
++static const uint8_t s_board_mac[6] = {2U, 0x47U, 0x47U, 0U, 0U, 1U};
+Tests/Ethernet/e35_frame.c:5: trailing whitespace.
++static const uint8_t s_peer_mac[6] = {0xECU, 0x1AU, 0xC3U, 0x3EU, 0xDBU, 0xB2U};
+Tests/Ethernet/e35_frame.c:6: trailing whitespace.
++
+Tests/Ethernet/e35_frame.c:7: trailing whitespace.
++static void EthValidation_Write32(uint8_t *data, uint32_t value)
+Tests/Ethernet/e35_frame.c:8: trailing whitespace.
++{
+Tests/Ethernet/e35_frame.c:9: trailing whitespace.
++	data[0] = (uint8_t)(value >> 24);
+Tests/Ethernet/e35_frame.c:10: trailing whitespace.
++	data[1] = (uint8_t)(value >> 16);
+Tests/Ethernet/e35_frame.c:11: trailing whitespace.
++	data[2] = (uint8_t)(value >> 8);
+Tests/Ethernet/e35_frame.c:12: trailing whitespace.
++	data[3] = (uint8_t)value;
+Tests/Ethernet/e35_frame.c:13: trailing whitespace.
++}
+Tests/Ethernet/e35_frame.c:14: trailing whitespace.
++
+Tests/Ethernet/e35_frame.c:15: trailing whitespace.
++static uint32_t EthValidation_Read32(const uint8_t *data)
+Tests/Ethernet/e35_frame.c:16: trailing whitespace.
++{
+Tests/Ethernet/e35_frame.c:17: trailing whitespace.
++	return ((uint32_t)data[0] << 24) | ((uint32_t)data[1] << 16) |
+Tests/Ethernet/e35_frame.c:18: trailing whitespace.
++		((uint32_t)data[2] << 8) | data[3];
+Tests/Ethernet/e35_frame.c:19: trailing whitespace.
++}
+Tests/Ethernet/e35_frame.c:20: trailing whitespace.
++
+Tests/Ethernet/e35_frame.c:21: trailing whitespace.
++int EthValidation_Build(uint8_t *frame, const EthValidationFrame_t *config, int from_board)
+Tests/Ethernet/e35_frame.c:22: trailing whitespace.
++{
+Tests/Ethernet/e35_frame.c:23: trailing whitespace.
++	size_t offset = config->vlan ? 18U : 14U;
+Tests/Ethernet/e35_frame.c:24: trailing whitespace.
++	size_t index;
+Tests/Ethernet/e35_frame.c:25: trailing whitespace.
++	if (config->length < 60U || config->length > 1522U || config->session == 0U ||
+Tests/Ethernet/e35_frame.c:26: trailing whitespace.
++		config->sequence == 0U)
+Tests/Ethernet/e35_frame.c:27: trailing whitespace.
++		return 0;
+Tests/Ethernet/e35_frame.c:28: trailing whitespace.
++	memcpy(frame, from_board ? s_peer_mac : s_board_mac, 6U);
+Tests/Ethernet/e35_frame.c:29: trailing whitespace.
++	memcpy(frame + 6, from_board ? s_board_mac : s_peer_mac, 6U);
+Tests/Ethernet/e35_frame.c:30: trailing whitespace.
++	if (config->vlan)
+Tests/Ethernet/e35_frame.c:31: trailing whitespace.
++	{
+Tests/Ethernet/e35_frame.c:32: trailing whitespace.
++		frame[12] = 0x81U;
+Tests/Ethernet/e35_frame.c:33: trailing whitespace.
++		frame[13] = 0U;
+Tests/Ethernet/e35_frame.c:34: trailing whitespace.
++		frame[14] = 0U;
+Tests/Ethernet/e35_frame.c:35: trailing whitespace.
++		frame[15] = 7U;
+Tests/Ethernet/e35_frame.c:36: trailing whitespace.
++	}
+Tests/Ethernet/e35_frame.c:37: trailing whitespace.
++	frame[offset - 2U] = 0x88U;
+Tests/Ethernet/e35_frame.c:38: trailing whitespace.
++	frame[offset - 1U] = 0xB5U;
+Tests/Ethernet/e35_frame.c:39: trailing whitespace.
++	memcpy(frame + offset, "E35!", 4U);
+Tests/Ethernet/e35_frame.c:40: trailing whitespace.
++	EthValidation_Write32(frame + offset + 4U, config->session);
+Tests/Ethernet/e35_frame.c:41: trailing whitespace.
++	EthValidation_Write32(frame + offset + 8U, config->sequence);
+Tests/Ethernet/e35_frame.c:42: trailing whitespace.
++	frame[offset + 12U] = (uint8_t)(config->length >> 8);
+Tests/Ethernet/e35_frame.c:43: trailing whitespace.
++	frame[offset + 13U] = (uint8_t)config->length;
+Tests/Ethernet/e35_frame.c:44: trailing whitespace.
++	for (index = offset + 14U;
+Tests/Ethernet/e35_frame.c:45: trailing whitespace.
++		 index < config->length;
+Tests/Ethernet/e35_frame.c:46: trailing whitespace.
++		 ++index)
+Tests/Ethernet/e35_frame.c:47: trailing whitespace.
++		frame[index] = (uint8_t)(index ^ config->sequence ^ (config->sequence >> 8) ^ config->session);
+Tests/Ethernet/e35_frame.c:48: trailing whitespace.
++	return 1;
+Tests/Ethernet/e35_frame.c:49: trailing whitespace.
++}
+Tests/Ethernet/e35_frame.c:50: trailing whitespace.
++
+Tests/Ethernet/e35_frame.c:51: trailing whitespace.
++int EthValidation_Check(const uint8_t *frame, size_t length, uint32_t session,
+Tests/Ethernet/e35_frame.c:52: trailing whitespace.
++	int from_board, EthValidationFrame_t *decoded)
+Tests/Ethernet/e35_frame.c:53: trailing whitespace.
++{
+Tests/Ethernet/e35_frame.c:54: trailing whitespace.
++	size_t offset;
+Tests/Ethernet/e35_frame.c:55: trailing whitespace.
++	size_t index;
+Tests/Ethernet/e35_frame.c:56: trailing whitespace.
++	if (length < 60U || length > 1522U)
+Tests/Ethernet/e35_frame.c:57: trailing whitespace.
++		return 0;
+Tests/Ethernet/e35_frame.c:58: trailing whitespace.
++	offset = frame[12] == 0x81U && frame[13] == 0U ? 18U : 14U;
+Tests/Ethernet/e35_frame.c:59: trailing whitespace.
++	if (frame[offset - 2U] != 0x88U || frame[offset - 1U] != 0xB5U ||
+Tests/Ethernet/e35_frame.c:60: trailing whitespace.
++		memcmp(frame + offset, "E35!", 4U) != 0 || EthValidation_Read32(frame + offset + 4U) != session)
+Tests/Ethernet/e35_frame.c:61: trailing whitespace.
++		return 0;
+Tests/Ethernet/e35_frame.c:62: trailing whitespace.
++	decoded->session = session;
+Tests/Ethernet/e35_frame.c:63: trailing whitespace.
++	decoded->sequence = EthValidation_Read32(frame + offset + 8U);
+Tests/Ethernet/e35_frame.c:64: trailing whitespace.
++	decoded->length = (uint16_t)(((uint16_t)frame[offset + 12U] << 8) | frame[offset + 13U]);
+Tests/Ethernet/e35_frame.c:65: trailing whitespace.
++	decoded->vlan = offset == 18U;
+Tests/Ethernet/e35_frame.c:66: trailing whitespace.
++	if (decoded->sequence == 0U || decoded->length != length ||
+Tests/Ethernet/e35_frame.c:67: trailing whitespace.
++		memcmp(frame, from_board ? s_peer_mac : s_board_mac, 6U) != 0 ||
+Tests/Ethernet/e35_frame.c:68: trailing whitespace.
++		memcmp(frame + 6, from_board ? s_board_mac : s_peer_mac, 6U) != 0 ||
+Tests/Ethernet/e35_frame.c:69: trailing whitespace.
++		(decoded->vlan && (frame[14] != 0U || frame[15] != 7U)))
+Tests/Ethernet/e35_frame.c:70: trailing whitespace.
++		return -1;
+Tests/Ethernet/e35_frame.c:71: trailing whitespace.
++	for (index = offset + 14U;
+Tests/Ethernet/e35_frame.c:72: trailing whitespace.
++		 index < length;
+Tests/Ethernet/e35_frame.c:73: trailing whitespace.
++		 ++index)
+Tests/Ethernet/e35_frame.c:74: trailing whitespace.
++		if (frame[index] != (uint8_t)(index ^ decoded->sequence ^ (decoded->sequence >> 8) ^ session))
+Tests/Ethernet/e35_frame.c:75: trailing whitespace.
++			return -1;
+Tests/Ethernet/e35_frame.c:76: trailing whitespace.
++	return 1;
+Tests/Ethernet/e35_frame.c:77: trailing whitespace.
++}
+Tests/Ethernet/e35_frame.h:1: trailing whitespace.
++//ç‹¬ç«‹å®æ¿éªŒæ”¶åè®®ï¼›é•¿åº¦å‡ä¸å« FCSï¼Œä¸å±äºç”Ÿäº§é©±åŠ¨æ¥å£
+Tests/Ethernet/e35_frame.h:2: trailing whitespace.
++#ifndef E35_FRAME_H
+Tests/Ethernet/e35_frame.h:3: trailing whitespace.
++#define E35_FRAME_H
+Tests/Ethernet/e35_frame.h:4: trailing whitespace.
++#include <stddef.h>
+Tests/Ethernet/e35_frame.h:5: trailing whitespace.
++#include <stdint.h>
+Tests/Ethernet/e35_frame.h:6: trailing whitespace.
++
+Tests/Ethernet/e35_frame.h:7: trailing whitespace.
++typedef struct
+Tests/Ethernet/e35_frame.h:8: trailing whitespace.
++{
+Tests/Ethernet/e35_frame.h:9: trailing whitespace.
++	uint32_t session;
+Tests/Ethernet/e35_frame.h:10: trailing whitespace.
++	uint32_t sequence;
+Tests/Ethernet/e35_frame.h:11: trailing whitespace.
++	uint16_t length;
+Tests/Ethernet/e35_frame.h:12: trailing whitespace.
++	uint8_t vlan;
+Tests/Ethernet/e35_frame.h:13: trailing whitespace.
++} EthValidationFrame_t;
+Tests/Ethernet/e35_frame.h:14: trailing whitespace.
++
+Tests/Ethernet/e35_frame.h:15: trailing whitespace.
++int EthValidation_Build(uint8_t *frame, const EthValidationFrame_t *config, int from_board);
+Tests/Ethernet/e35_frame.h:16: trailing whitespace.
++//1 æœ‰æ•ˆï¼Œ0 éæœ¬ä¼šè¯/éæµ‹è¯•å¸§ï¼Œ-1 æœ¬ä¼šè¯å¸§æŸå
+Tests/Ethernet/e35_frame.h:17: trailing whitespace.
++int EthValidation_Check(const uint8_t *frame, size_t length, uint32_t session,
+Tests/Ethernet/e35_frame.h:18: trailing whitespace.
++	int from_board, EthValidationFrame_t *decoded);
+Tests/Ethernet/e35_frame.h:19: trailing whitespace.
++#endif
+Tests/Ethernet/e35_main.c:1: trailing whitespace.
++//E3.5 ç‹¬ç«‹éªŒæ”¶å…¥å£ï¼›ä¸ä½¿ç”¨ Application / FreeRTOSï¼Œä¸å†™ DMA æè¿°ç¬¦
+Tests/Ethernet/e35_main.c:2: trailing whitespace.
++#include "stm32h7xx_hal.h"
+Tests/Ethernet/e35_main.c:3: trailing whitespace.
++#include "eth_mac.h"
+Tests/Ethernet/e35_main.c:4: trailing whitespace.
++#include "eth_memory.h"
+Tests/Ethernet/e35_main.c:5: trailing whitespace.
++#include "e35_frame.h"
+Tests/Ethernet/e35_main.c:6: trailing whitespace.
++#include <string.h>
+Tests/Ethernet/e35_main.c:7: trailing whitespace.
++
+Tests/Ethernet/e35_main.c:8: trailing whitespace.
++typedef struct
+Tests/Ethernet/e35_main.c:9: trailing whitespace.
++{
+Tests/Ethernet/e35_main.c:10: trailing whitespace.
++	uint32_t active;
+Tests/Ethernet/e35_main.c:11: trailing whitespace.
++	uint32_t start_tick;
+Tests/Ethernet/e35_main.c:12: trailing whitespace.
++	uint32_t end_tick;
+Tests/Ethernet/e35_main.c:13: trailing whitespace.
++	uint32_t heartbeat;
+Tests/Ethernet/e35_main.c:14: trailing whitespace.
++	uint32_t poll_calls;
+Tests/Ethernet/e35_main.c:15: trailing whitespace.
++	uint32_t raw_rx;
+Tests/Ethernet/e35_main.c:16: trailing whitespace.
++	uint32_t valid_rx;
+Tests/Ethernet/e35_main.c:17: trailing whitespace.
++	uint32_t ignored;
+Tests/Ethernet/e35_main.c:18: trailing whitespace.
++	uint32_t corrupt;
+Tests/Ethernet/e35_main.c:19: trailing whitespace.
++	uint32_t gaps;
+Tests/Ethernet/e35_main.c:20: trailing whitespace.
++	uint32_t late_or_duplicate;
+Tests/Ethernet/e35_main.c:21: trailing whitespace.
++	uint32_t next_sequence;
+Tests/Ethernet/e35_main.c:22: trailing whitespace.
++	uint32_t tx_accepted;
+Tests/Ethernet/e35_main.c:23: trailing whitespace.
++	uint32_t tx_completed;
+Tests/Ethernet/e35_main.c:24: trailing whitespace.
++	uint32_t tx_busy;
+Tests/Ethernet/e35_main.c:25: trailing whitespace.
++	uint32_t errors;
+Tests/Ethernet/e35_main.c:26: trailing whitespace.
++	int32_t first_error;
+Tests/Ethernet/e35_main.c:27: trailing whitespace.
++	int32_t service_result;
+Tests/Ethernet/e35_main.c:28: trailing whitespace.
++	uint32_t ccr;
+Tests/Ethernet/e35_main.c:29: trailing whitespace.
++	uint32_t memory_valid;
+Tests/Ethernet/e35_main.c:30: trailing whitespace.
++	uint32_t dma_status;
+Tests/Ethernet/e35_main.c:31: trailing whitespace.
++	uint32_t tx_own_mask;
+Tests/Ethernet/e35_main.c:32: trailing whitespace.
++	uint32_t rx_own_mask;
+Tests/Ethernet/e35_main.c:33: trailing whitespace.
++	uint32_t mac_config;
+Tests/Ethernet/e35_main.c:34: trailing whitespace.
++	uint32_t vlan_config;
+Tests/Ethernet/e35_main.c:35: trailing whitespace.
++	uint32_t caller_tx_address;
+Tests/Ethernet/e35_main.c:36: trailing whitespace.
++	uint32_t caller_rx_address;
+Tests/Ethernet/e35_main.c:37: trailing whitespace.
++	uint32_t cache_pressure_passes;
+Tests/Ethernet/e35_main.c:38: trailing whitespace.
++} EthValidationMetrics_t;
+Tests/Ethernet/e35_main.c:39: trailing whitespace.
++
+Tests/Ethernet/e35_main.c:40: trailing whitespace.
++//åªåœ¨ active=0 æ—¶ä¿®æ”¹é…ç½®ï¼›å‘½ä»¤ 7 é”å­˜ã€‚session æ¯æ¬¡æµ‹è¯•å¿…é¡»æ›´æ¢
+Tests/Ethernet/e35_main.c:41: trailing whitespace.
++volatile uint32_t g_e35_command;
+Tests/Ethernet/e35_main.c:42: trailing whitespace.
++volatile int32_t g_e35_result;
+Tests/Ethernet/e35_main.c:43: trailing whitespace.
++volatile uint32_t g_e35_session = 1U;
+Tests/Ethernet/e35_main.c:44: trailing whitespace.
++volatile uint32_t g_e35_length = 60U;
+Tests/Ethernet/e35_main.c:45: trailing whitespace.
++volatile uint32_t g_e35_vlan;
+Tests/Ethernet/e35_main.c:46: trailing whitespace.
++volatile uint32_t g_e35_poll_enabled = 1U;
+Tests/Ethernet/e35_main.c:47: trailing whitespace.
++volatile uint32_t g_e35_tx_enabled;
+Tests/Ethernet/e35_main.c:48: trailing whitespace.
++volatile uint32_t g_e35_interval_ms = 10U;
+Tests/Ethernet/e35_main.c:49: trailing whitespace.
++volatile uint32_t g_e35_tx_duration_ms = 600000U;
+Tests/Ethernet/e35_main.c:50: trailing whitespace.
++volatile uint32_t g_e35_tx_elapsed_ms;
+Tests/Ethernet/e35_main.c:51: trailing whitespace.
++volatile uint32_t g_e35_restarts;
+Tests/Ethernet/e35_main.c:52: trailing whitespace.
++volatile int32_t g_e35_restart_stop[100];
+Tests/Ethernet/e35_main.c:53: trailing whitespace.
++volatile int32_t g_e35_restart_start[100];
+Tests/Ethernet/e35_main.c:54: trailing whitespace.
++volatile int32_t g_e35_burst[4];
+Tests/Ethernet/e35_main.c:55: trailing whitespace.
++volatile EthValidationMetrics_t g_e35_metrics;
+Tests/Ethernet/e35_main.c:56: trailing whitespace.
++volatile EthStatistics_t g_e35_statistics;
+Tests/Ethernet/e35_main.c:57: trailing whitespace.
++volatile EthLinkState_t g_e35_link;
+Tests/Ethernet/e35_main.c:58: trailing whitespace.
++
+Tests/Ethernet/e35_main.c:59: trailing whitespace.
++static const uint8_t s_mac[6] = {2U, 0x47U, 0x47U, 0U, 0U, 1U};
+Tests/Ethernet/e35_main.c:60: trailing whitespace.
++//ä»…éªŒæ”¶ç›®æ ‡çš„ç‹¬ç«‹ AXI SRAM ç¼“å­˜åŒºï¼Œå’Œç”Ÿäº§ DMA éç¼“å­˜çª—å£å®Œå…¨åˆ†å¼€
+Tests/Ethernet/e35_main.c:61: trailing whitespace.
++static uint8_t s_tx[ETH_BUFFER_SIZE] __attribute__((section(".e35_cache"), aligned(32)));
+Tests/Ethernet/e35_main.c:62: trailing whitespace.
++static uint8_t s_rx[ETH_BUFFER_SIZE] __attribute__((section(".e35_cache"), aligned(32)));
+Tests/Ethernet/e35_main.c:63: trailing whitespace.
++static volatile uint32_t s_cache_pressure[8192] __attribute__((section(".e35_cache"), aligned(32)));
+Tests/Ethernet/e35_main.c:64: trailing whitespace.
++static EthValidationFrame_t s_config;
+Tests/Ethernet/e35_main.c:65: trailing whitespace.
++static uint32_t s_tx_start;
+Tests/Ethernet/e35_main.c:66: trailing whitespace.
++static uint32_t s_last_tx;
+Tests/Ethernet/e35_main.c:67: trailing whitespace.
++static uint32_t s_tx_was_enabled;
+Tests/Ethernet/e35_main.c:68: trailing whitespace.
++static uint32_t s_restart_active;
+Tests/Ethernet/e35_main.c:69: trailing whitespace.
++
+Tests/Ethernet/e35_main.c:70: trailing whitespace.
++void SystemClock_Config(void);
+Tests/Ethernet/e35_main.c:71: trailing whitespace.
++void Error_Handler(void);
+Tests/Ethernet/e35_main.c:72: trailing whitespace.
++static void EthValidation_Record(EthResult_t result);
+Tests/Ethernet/e35_main.c:73: trailing whitespace.
++static EthResult_t EthValidation_Send(void);
+Tests/Ethernet/e35_main.c:74: trailing whitespace.
++static void EthValidation_Command(uint32_t command);
+Tests/Ethernet/e35_main.c:75: trailing whitespace.
++static void EthValidation_Snapshot(void);
+Tests/Ethernet/e35_main.c:76: trailing whitespace.
++
+Tests/Ethernet/e35_main.c:77: trailing whitespace.
++int main(void)
+Tests/Ethernet/e35_main.c:78: trailing whitespace.
++{
+Tests/Ethernet/e35_main.c:79: trailing whitespace.
++	uint32_t service_tick = 0U;
+Tests/Ethernet/e35_main.c:80: trailing whitespace.
++	MPU_Region_InitTypeDef cache_region = {0};
+Tests/Ethernet/e35_main.c:81: trailing whitespace.
++	HAL_MPU_Disable();
+Tests/Ethernet/e35_main.c:82: trailing whitespace.
++	eth_memory_configure();
+Tests/Ethernet/e35_main.c:83: trailing whitespace.
++	cache_region.Enable = MPU_REGION_ENABLE;
+Tests/Ethernet/e35_main.c:84: trailing whitespace.
++	cache_region.Number = MPU_REGION_NUMBER5;
+Tests/Ethernet/e35_main.c:85: trailing whitespace.
++	cache_region.BaseAddress = 0x24010000U;
+Tests/Ethernet/e35_main.c:86: trailing whitespace.
++	cache_region.Size = MPU_REGION_SIZE_64KB;
+Tests/Ethernet/e35_main.c:87: trailing whitespace.
++	cache_region.AccessPermission = MPU_REGION_FULL_ACCESS;
+Tests/Ethernet/e35_main.c:88: trailing whitespace.
++	cache_region.DisableExec = MPU_INSTRUCTION_ACCESS_DISABLE;
+Tests/Ethernet/e35_main.c:89: trailing whitespace.
++	cache_region.TypeExtField = MPU_TEX_LEVEL1;
+Tests/Ethernet/e35_main.c:90: trailing whitespace.
++	cache_region.IsShareable = MPU_ACCESS_NOT_SHAREABLE;
+Tests/Ethernet/e35_main.c:91: trailing whitespace.
++	cache_region.IsCacheable = MPU_ACCESS_CACHEABLE;
+Tests/Ethernet/e35_main.c:92: trailing whitespace.
++	cache_region.IsBufferable = MPU_ACCESS_BUFFERABLE;
+Tests/Ethernet/e35_main.c:93: trailing whitespace.
++	HAL_MPU_ConfigRegion(&cache_region);
+Tests/Ethernet/e35_main.c:94: trailing whitespace.
++	HAL_MPU_Enable(MPU_PRIVILEGED_DEFAULT);
+Tests/Ethernet/e35_main.c:95: trailing whitespace.
++	SCB_EnableICache();
+Tests/Ethernet/e35_main.c:96: trailing whitespace.
++	SCB_EnableDCache();
+Tests/Ethernet/e35_main.c:97: trailing whitespace.
++	HAL_Init();
+Tests/Ethernet/e35_main.c:98: trailing whitespace.
++	SystemClock_Config();
+Tests/Ethernet/e35_main.c:99: trailing whitespace.
++	for (;
+Tests/Ethernet/e35_main.c:100: trailing whitespace.
++		 ;
+Tests/Ethernet/e35_main.c:101: trailing whitespace.
++		 )
+Tests/Ethernet/e35_main.c:102: trailing whitespace.
++	{
+Tests/Ethernet/e35_main.c:103: trailing whitespace.
++		uint32_t command = g_e35_command;
+Tests/Ethernet/e35_main.c:104: trailing whitespace.
++		uint32_t ticket;
+Tests/Ethernet/e35_main.c:105: trailing whitespace.
++		size_t length;
+Tests/Ethernet/e35_main.c:106: trailing whitespace.
++		EthResult_t result;
+Tests/Ethernet/e35_main.c:107: trailing whitespace.
++		++g_e35_metrics.heartbeat;
+Tests/Ethernet/e35_main.c:108: trailing whitespace.
++		g_e35_command = 0U;
+Tests/Ethernet/e35_main.c:109: trailing whitespace.
++		if (command != 0U)
+Tests/Ethernet/e35_main.c:110: trailing whitespace.
++			EthValidation_Command(command);
+Tests/Ethernet/e35_main.c:111: trailing whitespace.
++		if (s_restart_active)
+Tests/Ethernet/e35_main.c:112: trailing whitespace.
++		{
+Tests/Ethernet/e35_main.c:113: trailing whitespace.
++			uint32_t index = g_e35_restarts;
+Tests/Ethernet/e35_main.c:114: trailing whitespace.
++			result = eth_mac_stop();
+Tests/Ethernet/e35_main.c:115: trailing whitespace.
++			g_e35_restart_stop[index] = result;
+Tests/Ethernet/e35_main.c:116: trailing whitespace.
++			if (result == ETH_OK)
+Tests/Ethernet/e35_main.c:117: trailing whitespace.
++			{
+Tests/Ethernet/e35_main.c:118: trailing whitespace.
++				result = eth_mac_start();
+Tests/Ethernet/e35_main.c:119: trailing whitespace.
++				g_e35_restart_start[index] = result;
+Tests/Ethernet/e35_main.c:120: trailing whitespace.
++			}
+Tests/Ethernet/e35_main.c:121: trailing whitespace.
++			g_e35_result = result;
+Tests/Ethernet/e35_main.c:122: trailing whitespace.
++			EthValidation_Record(result);
+Tests/Ethernet/e35_main.c:123: trailing whitespace.
++			if (result != ETH_OK || ++g_e35_restarts == 100U)
+Tests/Ethernet/e35_main.c:124: trailing whitespace.
++				s_restart_active = 0U;
+Tests/Ethernet/e35_main.c:125: trailing whitespace.
++		}
+Tests/Ethernet/e35_main.c:126: trailing whitespace.
++		if (g_e35_tx_enabled && g_e35_metrics.active)
+Tests/Ethernet/e35_main.c:127: trailing whitespace.
++		{
+Tests/Ethernet/e35_main.c:128: trailing whitespace.
++			if (!s_tx_was_enabled)
+Tests/Ethernet/e35_main.c:129: trailing whitespace.
++			{
+Tests/Ethernet/e35_main.c:130: trailing whitespace.
++				s_tx_start = HAL_GetTick();
+Tests/Ethernet/e35_main.c:131: trailing whitespace.
++				s_last_tx = s_tx_start;
+Tests/Ethernet/e35_main.c:132: trailing whitespace.
++			}
+Tests/Ethernet/e35_main.c:133: trailing whitespace.
++			s_tx_was_enabled = 1U;
+Tests/Ethernet/e35_main.c:134: trailing whitespace.
++			g_e35_tx_elapsed_ms = HAL_GetTick() - s_tx_start;
+Tests/Ethernet/e35_main.c:135: trailing whitespace.
++			if (g_e35_tx_elapsed_ms >= g_e35_tx_duration_ms)
+Tests/Ethernet/e35_main.c:136: trailing whitespace.
++				g_e35_tx_enabled = 0U;
+Tests/Ethernet/e35_main.c:137: trailing whitespace.
++			else if ((uint32_t)(HAL_GetTick() - s_last_tx) >= g_e35_interval_ms)
+Tests/Ethernet/e35_main.c:138: trailing whitespace.
++			{
+Tests/Ethernet/e35_main.c:139: trailing whitespace.
++				s_last_tx = HAL_GetTick();
+Tests/Ethernet/e35_main.c:140: trailing whitespace.
++				EthValidation_Send();
+Tests/Ethernet/e35_main.c:141: trailing whitespace.
++			}
+Tests/Ethernet/e35_main.c:142: trailing whitespace.
++		}
+Tests/Ethernet/e35_main.c:143: trailing whitespace.
++		else
+Tests/Ethernet/e35_main.c:144: trailing whitespace.
++			s_tx_was_enabled = 0U;
+Tests/Ethernet/e35_main.c:145: trailing whitespace.
++		result = eth_mac_tx_reclaim(&ticket);
+Tests/Ethernet/e35_main.c:146: trailing whitespace.
++		if (result == ETH_OK && g_e35_metrics.active)
+Tests/Ethernet/e35_main.c:147: trailing whitespace.
++			++g_e35_metrics.tx_completed;
+Tests/Ethernet/e35_main.c:148: trailing whitespace.
++		else if (result != ETH_EMPTY && result != ETH_STATE)
+Tests/Ethernet/e35_main.c:149: trailing whitespace.
++			EthValidation_Record(result);
+Tests/Ethernet/e35_main.c:150: trailing whitespace.
++		if (g_e35_poll_enabled)
+Tests/Ethernet/e35_main.c:151: trailing whitespace.
++		{
+Tests/Ethernet/e35_main.c:152: trailing whitespace.
++			EthValidationFrame_t decoded;
+Tests/Ethernet/e35_main.c:153: trailing whitespace.
++			int checked;
+Tests/Ethernet/e35_main.c:154: trailing whitespace.
++			++g_e35_metrics.poll_calls;
+Tests/Ethernet/e35_main.c:155: trailing whitespace.
++			result = eth_mac_rx_poll(s_rx, sizeof(s_rx), &length);
+Tests/Ethernet/e35_main.c:156: trailing whitespace.
++			if (result == ETH_OK)
+Tests/Ethernet/e35_main.c:157: trailing whitespace.
++			{
+Tests/Ethernet/e35_main.c:158: trailing whitespace.
++				++g_e35_metrics.raw_rx;
+Tests/Ethernet/e35_main.c:159: trailing whitespace.
++				checked = EthValidation_Check(s_rx, length, s_config.session, 0, &decoded);
+Tests/Ethernet/e35_main.c:160: trailing whitespace.
++				if (!g_e35_metrics.active || checked == 0)
+Tests/Ethernet/e35_main.c:161: trailing whitespace.
++					++g_e35_metrics.ignored;
+Tests/Ethernet/e35_main.c:162: trailing whitespace.
++				else if (checked < 0 || decoded.length != s_config.length || decoded.vlan != s_config.vlan)
+Tests/Ethernet/e35_main.c:163: trailing whitespace.
++					++g_e35_metrics.corrupt;
+Tests/Ethernet/e35_main.c:164: trailing whitespace.
++				else
+Tests/Ethernet/e35_main.c:165: trailing whitespace.
++				{
+Tests/Ethernet/e35_main.c:166: trailing whitespace.
++					++g_e35_metrics.valid_rx;
+Tests/Ethernet/e35_main.c:167: trailing whitespace.
++					if (decoded.sequence < g_e35_metrics.next_sequence)
+Tests/Ethernet/e35_main.c:168: trailing whitespace.
++						++g_e35_metrics.late_or_duplicate;
+Tests/Ethernet/e35_main.c:169: trailing whitespace.
++					else
+Tests/Ethernet/e35_main.c:170: trailing whitespace.
++					{
+Tests/Ethernet/e35_main.c:171: trailing whitespace.
++						g_e35_metrics.gaps += decoded.sequence - g_e35_metrics.next_sequence;
+Tests/Ethernet/e35_main.c:172: trailing whitespace.
++						g_e35_metrics.next_sequence = decoded.sequence + 1U;
+Tests/Ethernet/e35_main.c:173: trailing whitespace.
++					}
+Tests/Ethernet/e35_main.c:174: trailing whitespace.
++				}
+Tests/Ethernet/e35_main.c:175: trailing whitespace.
++			}
+Tests/Ethernet/e35_main.c:176: trailing whitespace.
++			else if (result != ETH_EMPTY && result != ETH_STATE)
+Tests/Ethernet/e35_main.c:177: trailing whitespace.
++				EthValidation_Record(result);
+Tests/Ethernet/e35_main.c:178: trailing whitespace.
++		}
+Tests/Ethernet/e35_main.c:179: trailing whitespace.
++		if ((uint32_t)(HAL_GetTick() - service_tick) >= 10U)
+Tests/Ethernet/e35_main.c:180: trailing whitespace.
++		{
+Tests/Ethernet/e35_main.c:181: trailing whitespace.
++			uint32_t index;
+Tests/Ethernet/e35_main.c:182: trailing whitespace.
++			service_tick = HAL_GetTick();
+Tests/Ethernet/e35_main.c:183: trailing whitespace.
++			//å†™é 32 KiB ç¼“å­˜æ•°æ®ï¼Œå†è¯»å›æ£€æŸ¥ï¼›æŒç»­åˆ¶é€ çœŸå® DCache å‹åŠ›
+Tests/Ethernet/e35_main.c:184: trailing whitespace.
++			for (index = 0U;
+Tests/Ethernet/e35_main.c:185: trailing whitespace.
++				 index < 8192U;
+Tests/Ethernet/e35_main.c:186: trailing whitespace.
++				 ++index)
+Tests/Ethernet/e35_main.c:187: trailing whitespace.
++				s_cache_pressure[index] = index ^ service_tick;
+Tests/Ethernet/e35_main.c:188: trailing whitespace.
++			for (index = 0U;
+Tests/Ethernet/e35_main.c:189: trailing whitespace.
++				 index < 8192U;
+Tests/Ethernet/e35_main.c:190: trailing whitespace.
++				 ++index)
+Tests/Ethernet/e35_main.c:191: trailing whitespace.
++				if (s_cache_pressure[index] != (index ^ service_tick))
+Tests/Ethernet/e35_main.c:192: trailing whitespace.
++					EthValidation_Record(ETH_MEMORY);
+Tests/Ethernet/e35_main.c:193: trailing whitespace.
++			++g_e35_metrics.cache_pressure_passes;
+Tests/Ethernet/e35_main.c:194: trailing whitespace.
++			EthValidation_Snapshot();
+Tests/Ethernet/e35_main.c:195: trailing whitespace.
++			if (g_e35_statistics.state == ETH_MAC_RUNNING || g_e35_statistics.state == ETH_MAC_FAULT)
+Tests/Ethernet/e35_main.c:196: trailing whitespace.
++			{
+Tests/Ethernet/e35_main.c:197: trailing whitespace.
++				result = eth_mac_service();
+Tests/Ethernet/e35_main.c:198: trailing whitespace.
++				g_e35_metrics.service_result = result;
+Tests/Ethernet/e35_main.c:199: trailing whitespace.
++				EthValidation_Record(result);
+Tests/Ethernet/e35_main.c:200: trailing whitespace.
++			}
+Tests/Ethernet/e35_main.c:201: trailing whitespace.
++		}
+Tests/Ethernet/e35_main.c:202: trailing whitespace.
++	}
+Tests/Ethernet/e35_main.c:203: trailing whitespace.
++}
+Tests/Ethernet/e35_main.c:204: trailing whitespace.
++
+Tests/Ethernet/e35_main.c:205: trailing whitespace.
++static void EthValidation_Record(EthResult_t result)
+Tests/Ethernet/e35_main.c:206: trailing whitespace.
++{
+Tests/Ethernet/e35_main.c:207: trailing whitespace.
++	if (result < ETH_OK && g_e35_metrics.active)
+Tests/Ethernet/e35_main.c:208: trailing whitespace.
++	{
+Tests/Ethernet/e35_main.c:209: trailing whitespace.
++		++g_e35_metrics.errors;
+Tests/Ethernet/e35_main.c:210: trailing whitespace.
++		if (g_e35_metrics.first_error == 0)
+Tests/Ethernet/e35_main.c:211: trailing whitespace.
++			g_e35_metrics.first_error = result;
+Tests/Ethernet/e35_main.c:212: trailing whitespace.
++	}
+Tests/Ethernet/e35_main.c:213: trailing whitespace.
++}
+Tests/Ethernet/e35_main.c:214: trailing whitespace.
++
+Tests/Ethernet/e35_main.c:215: trailing whitespace.
++static EthResult_t EthValidation_Send(void)
+Tests/Ethernet/e35_main.c:216: trailing whitespace.
++{
+Tests/Ethernet/e35_main.c:217: trailing whitespace.
++	uint32_t ticket;
+Tests/Ethernet/e35_main.c:218: trailing whitespace.
++	EthResult_t result;
+Tests/Ethernet/e35_main.c:219: trailing whitespace.
++	s_config.sequence = g_e35_metrics.tx_accepted + 1U;
+Tests/Ethernet/e35_main.c:220: trailing whitespace.
++	if (!EthValidation_Build(s_tx, &s_config, 1))
+Tests/Ethernet/e35_main.c:221: trailing whitespace.
++		return ETH_ARGUMENT;
+Tests/Ethernet/e35_main.c:222: trailing whitespace.
++	result = eth_mac_tx_submit(s_tx, s_config.length, &ticket);
+Tests/Ethernet/e35_main.c:223: trailing whitespace.
++	if (result == ETH_OK)
+Tests/Ethernet/e35_main.c:224: trailing whitespace.
++	{
+Tests/Ethernet/e35_main.c:225: trailing whitespace.
++		++g_e35_metrics.tx_accepted;
+Tests/Ethernet/e35_main.c:226: trailing whitespace.
++		//æ±¡æŸ“è°ƒç”¨è€…åŸå§‹ç¼“å†²åŒºï¼ŒéªŒè¯é©±åŠ¨ç¡®å®åŒæ­¥å¤åˆ¶ï¼Œä¸èƒ½æ±¡æŸ“ DMA å†…éƒ¨å‰¯æœ¬
+Tests/Ethernet/e35_main.c:227: trailing whitespace.
++		memset(s_tx, 0xCC, sizeof(s_tx));
+Tests/Ethernet/e35_main.c:228: trailing whitespace.
++	}
+Tests/Ethernet/e35_main.c:229: trailing whitespace.
++	else if (result == ETH_BUSY)
+Tests/Ethernet/e35_main.c:230: trailing whitespace.
++		++g_e35_metrics.tx_busy;
+Tests/Ethernet/e35_main.c:231: trailing whitespace.
++	EthValidation_Record(result);
+Tests/Ethernet/e35_main.c:232: trailing whitespace.
++	return result;
+Tests/Ethernet/e35_main.c:233: trailing whitespace.
++}
+Tests/Ethernet/e35_main.c:234: trailing whitespace.
++
+Tests/Ethernet/e35_main.c:235: trailing whitespace.
++static void EthValidation_Command(uint32_t command)
+Tests/Ethernet/e35_main.c:236: trailing whitespace.
++{
+Tests/Ethernet/e35_main.c:237: trailing whitespace.
++	uint32_t index;
+Tests/Ethernet/e35_main.c:238: trailing whitespace.
++	EthStatistics_t statistics;
+Tests/Ethernet/e35_main.c:239: trailing whitespace.
++	EthResult_t result = ETH_ARGUMENT;
+Tests/Ethernet/e35_main.c:240: trailing whitespace.
++	if (command == 1U)
+Tests/Ethernet/e35_main.c:241: trailing whitespace.
++		result = eth_mac_init(s_mac);
+Tests/Ethernet/e35_main.c:242: trailing whitespace.
++	else if (command == 2U)
+Tests/Ethernet/e35_main.c:243: trailing whitespace.
++		result = eth_mac_start();
+Tests/Ethernet/e35_main.c:244: trailing whitespace.
++	else if (command == 3U)
+Tests/Ethernet/e35_main.c:245: trailing whitespace.
++	{
+Tests/Ethernet/e35_main.c:246: trailing whitespace.
++		g_e35_tx_enabled = 0U;
+Tests/Ethernet/e35_main.c:247: trailing whitespace.
++		result = eth_mac_stop();
+Tests/Ethernet/e35_main.c:248: trailing whitespace.
++	}
+Tests/Ethernet/e35_main.c:249: trailing whitespace.
++	else if (command == 7U && !g_e35_metrics.active)
+Tests/Ethernet/e35_main.c:250: trailing whitespace.
++	{
+Tests/Ethernet/e35_main.c:251: trailing whitespace.
++		s_config.session = g_e35_session;
+Tests/Ethernet/e35_main.c:252: trailing whitespace.
++		s_config.sequence = 1U;
+Tests/Ethernet/e35_main.c:253: trailing whitespace.
++		s_config.length = (uint16_t)g_e35_length;
+Tests/Ethernet/e35_main.c:254: trailing whitespace.
++		s_config.vlan = g_e35_vlan != 0U;
+Tests/Ethernet/e35_main.c:255: trailing whitespace.
++		if (g_e35_length <= 1522U && EthValidation_Build(s_tx, &s_config, 1) &&
+Tests/Ethernet/e35_main.c:256: trailing whitespace.
++			eth_mac_get_statistics(&statistics) == ETH_OK && statistics.state == ETH_MAC_RUNNING)
+Tests/Ethernet/e35_main.c:257: trailing whitespace.
++		{
+Tests/Ethernet/e35_main.c:258: trailing whitespace.
++			g_e35_tx_enabled = 0U;
+Tests/Ethernet/e35_main.c:259: trailing whitespace.
++			s_tx_was_enabled = 0U;
+Tests/Ethernet/e35_main.c:260: trailing whitespace.
++			memset((void *)&g_e35_metrics, 0, sizeof(g_e35_metrics));
+Tests/Ethernet/e35_main.c:261: trailing whitespace.
++			g_e35_metrics.next_sequence = 1U;
+Tests/Ethernet/e35_main.c:262: trailing whitespace.
++			g_e35_metrics.start_tick = HAL_GetTick();
+Tests/Ethernet/e35_main.c:263: trailing whitespace.
++			g_e35_metrics.active = 1U;
+Tests/Ethernet/e35_main.c:264: trailing whitespace.
++			result = ETH_OK;
+Tests/Ethernet/e35_main.c:265: trailing whitespace.
++		}
+Tests/Ethernet/e35_main.c:266: trailing whitespace.
++	}
+Tests/Ethernet/e35_main.c:267: trailing whitespace.
++	else if (command == 8U)
+Tests/Ethernet/e35_main.c:268: trailing whitespace.
++	{
+Tests/Ethernet/e35_main.c:269: trailing whitespace.
++		g_e35_tx_enabled = 0U;
+Tests/Ethernet/e35_main.c:270: trailing whitespace.
++		g_e35_metrics.end_tick = HAL_GetTick();
+Tests/Ethernet/e35_main.c:271: trailing whitespace.
++		g_e35_metrics.active = 0U;
+Tests/Ethernet/e35_main.c:272: trailing whitespace.
++		result = ETH_OK;
+Tests/Ethernet/e35_main.c:273: trailing whitespace.
++	}
+Tests/Ethernet/e35_main.c:274: trailing whitespace.
++	else if (command == 9U || command == 10U)
+Tests/Ethernet/e35_main.c:275: trailing whitespace.
++	{
+Tests/Ethernet/e35_main.c:276: trailing whitespace.
++		g_e35_poll_enabled = command == 10U;
+Tests/Ethernet/e35_main.c:277: trailing whitespace.
++		result = ETH_OK;
+Tests/Ethernet/e35_main.c:278: trailing whitespace.
++	}
+Tests/Ethernet/e35_main.c:279: trailing whitespace.
++	else if (command == 11U && !g_e35_metrics.active)
+Tests/Ethernet/e35_main.c:280: trailing whitespace.
++	{
+Tests/Ethernet/e35_main.c:281: trailing whitespace.
++		g_e35_tx_enabled = 0U;
+Tests/Ethernet/e35_main.c:282: trailing whitespace.
++		g_e35_restarts = 0U;
+Tests/Ethernet/e35_main.c:283: trailing whitespace.
++		for (index = 0U;
+Tests/Ethernet/e35_main.c:284: trailing whitespace.
++			 index < 100U;
+Tests/Ethernet/e35_main.c:285: trailing whitespace.
++			 ++index)
+Tests/Ethernet/e35_main.c:286: trailing whitespace.
++		{
+Tests/Ethernet/e35_main.c:287: trailing whitespace.
++			g_e35_restart_stop[index] = 99;
+Tests/Ethernet/e35_main.c:288: trailing whitespace.
++			g_e35_restart_start[index] = 99;
+Tests/Ethernet/e35_main.c:289: trailing whitespace.
++		}
+Tests/Ethernet/e35_main.c:290: trailing whitespace.
++		s_restart_active = 1U;
+Tests/Ethernet/e35_main.c:291: trailing whitespace.
++		result = ETH_OK;
+Tests/Ethernet/e35_main.c:292: trailing whitespace.
++	}
+Tests/Ethernet/e35_main.c:293: trailing whitespace.
++	else if (command == 12U && g_e35_metrics.active && !g_e35_tx_enabled)
+Tests/Ethernet/e35_main.c:294: trailing whitespace.
++	{
+Tests/Ethernet/e35_main.c:295: trailing whitespace.
++		//è°ƒç”¨å››æ¬¡æäº¤ä¸”ä¸­é€”ä¸ reclaimï¼›ç©ºç¯å®¹é‡ 3ï¼Œé¢„æœŸ 0/0/0/BUSY
+Tests/Ethernet/e35_main.c:296: trailing whitespace.
++		for (index = 0U;
+Tests/Ethernet/e35_main.c:297: trailing whitespace.
++			 index < 4U;
+Tests/Ethernet/e35_main.c:298: trailing whitespace.
++			 ++index)
+Tests/Ethernet/e35_main.c:299: trailing whitespace.
++			g_e35_burst[index] = EthValidation_Send();
+Tests/Ethernet/e35_main.c:300: trailing whitespace.
++		result = ETH_OK;
+Tests/Ethernet/e35_main.c:301: trailing whitespace.
++	}
+Tests/Ethernet/e35_main.c:302: trailing whitespace.
++	else if (command == 4U && g_e35_metrics.active)
+Tests/Ethernet/e35_main.c:303: trailing whitespace.
++		result = EthValidation_Send();
+Tests/Ethernet/e35_main.c:304: trailing whitespace.
++	g_e35_result = result;
+Tests/Ethernet/e35_main.c:305: trailing whitespace.
++	EthValidation_Record(result);
+Tests/Ethernet/e35_main.c:306: trailing whitespace.
++	EthValidation_Snapshot();
+Tests/Ethernet/e35_main.c:307: trailing whitespace.
++}
+Tests/Ethernet/e35_main.c:308: trailing whitespace.
++
+Tests/Ethernet/e35_main.c:309: trailing whitespace.
++static void EthValidation_Snapshot(void)
+Tests/Ethernet/e35_main.c:310: trailing whitespace.
++{
+Tests/Ethernet/e35_main.c:311: trailing whitespace.
++	EthStatistics_t statistics;
+Tests/Ethernet/e35_main.c:312: trailing whitespace.
++	EthLinkState_t link;
+Tests/Ethernet/e35_main.c:313: trailing whitespace.
++	uint32_t index;
+Tests/Ethernet/e35_main.c:314: trailing whitespace.
++	uint32_t tx_mask = 0U;
+Tests/Ethernet/e35_main.c:315: trailing whitespace.
++	uint32_t rx_mask = 0U;
+Tests/Ethernet/e35_main.c:316: trailing whitespace.
++	if (eth_mac_get_statistics(&statistics) == ETH_OK)
+Tests/Ethernet/e35_main.c:317: trailing whitespace.
++		g_e35_statistics = statistics;
+Tests/Ethernet/e35_main.c:318: trailing whitespace.
++	if (eth_mac_get_link(&link) == ETH_OK)
+Tests/Ethernet/e35_main.c:319: trailing whitespace.
++		g_e35_link = link;
+Tests/Ethernet/e35_main.c:320: trailing whitespace.
++	g_e35_metrics.ccr = SCB->CCR;
+Tests/Ethernet/e35_main.c:321: trailing whitespace.
++	g_e35_metrics.memory_valid = (uint32_t)eth_memory_valid();
+Tests/Ethernet/e35_main.c:322: trailing whitespace.
++	g_e35_metrics.dma_status = ETH->DMACSR;
+Tests/Ethernet/e35_main.c:323: trailing whitespace.
++	g_e35_metrics.mac_config = ETH->MACCR;
+Tests/Ethernet/e35_main.c:324: trailing whitespace.
++	g_e35_metrics.vlan_config = ETH->MACVTR;
+Tests/Ethernet/e35_main.c:325: trailing whitespace.
++	g_e35_metrics.caller_tx_address = (uint32_t)(uintptr_t)s_tx;
+Tests/Ethernet/e35_main.c:326: trailing whitespace.
++	g_e35_metrics.caller_rx_address = (uint32_t)(uintptr_t)s_rx;
+Tests/Ethernet/e35_main.c:327: trailing whitespace.
++	for (index = 0U;
+Tests/Ethernet/e35_main.c:328: trailing whitespace.
++		 index < ETH_RING_SIZE;
+Tests/Ethernet/e35_main.c:329: trailing whitespace.
++		 ++index)
+Tests/Ethernet/e35_main.c:330: trailing whitespace.
++	{
+Tests/Ethernet/e35_main.c:331: trailing whitespace.
++		if (g_eth_dma_memory.tx[index].w[3] & ETH_DESC_OWN)
+Tests/Ethernet/e35_main.c:332: trailing whitespace.
++			tx_mask |= 1UL << index;
+Tests/Ethernet/e35_main.c:333: trailing whitespace.
++		if (g_eth_dma_memory.rx[index].w[3] & ETH_DESC_OWN)
+Tests/Ethernet/e35_main.c:334: trailing whitespace.
++			rx_mask |= 1UL << index;
+Tests/Ethernet/e35_main.c:335: trailing whitespace.
++	}
+Tests/Ethernet/e35_main.c:336: trailing whitespace.
++	g_e35_metrics.tx_own_mask = tx_mask;
+Tests/Ethernet/e35_main.c:337: trailing whitespace.
++	g_e35_metrics.rx_own_mask = rx_mask;
+Tests/Ethernet/e35_main.c:338: trailing whitespace.
++}
+Tests/Ethernet/e35_main.c:339: trailing whitespace.
++
+Tests/Ethernet/e35_main.c:340: trailing whitespace.
++void Error_Handler(void)
+Tests/Ethernet/e35_main.c:341: trailing whitespace.
++{
+Tests/Ethernet/e35_main.c:342: trailing whitespace.
++	g_e35_result = -100;
+Tests/Ethernet/e35_main.c:343: trailing whitespace.
++	__disable_irq();
+Tests/Ethernet/e35_main.c:344: trailing whitespace.
++	for (;
+Tests/Ethernet/e35_main.c:345: trailing whitespace.
++		 ;
+Tests/Ethernet/e35_main.c:346: trailing whitespace.
++		 )
+Tests/Ethernet/e35_main.c:347: trailing whitespace.
++	{
+Tests/Ethernet/e35_main.c:348: trailing whitespace.
++	}
+Tests/Ethernet/e35_main.c:349: trailing whitespace.
++}
+Tests/Ethernet/e35_main.c:350: trailing whitespace.
++
+Tests/Ethernet/e35_main.c:351: trailing whitespace.
++void SystemClock_Config(void)
+Tests/Ethernet/e35_main.c:352: trailing whitespace.
++{
+Tests/Ethernet/e35_main.c:353: trailing whitespace.
++	RCC_OscInitTypeDef RCC_OscInitStruct = {0};
+Tests/Ethernet/e35_main.c:354: trailing whitespace.
++	RCC_ClkInitTypeDef RCC_ClkInitStruct = {0};
+Tests/Ethernet/e35_main.c:355: trailing whitespace.
++
+Tests/Ethernet/e35_main.c:356: trailing whitespace.
++	/** Supply configuration update enable
+Tests/Ethernet/e35_main.c:357: trailing whitespace.
++  */
+Tests/Ethernet/e35_main.c:358: trailing whitespace.
++	HAL_PWREx_ConfigSupply(PWR_LDO_SUPPLY);
+Tests/Ethernet/e35_main.c:359: trailing whitespace.
++
+Tests/Ethernet/e35_main.c:360: trailing whitespace.
++	/** Configure the main internal regulator output voltage
+Tests/Ethernet/e35_main.c:361: trailing whitespace.
++  */
+Tests/Ethernet/e35_main.c:362: trailing whitespace.
++	__HAL_PWR_VOLTAGESCALING_CONFIG(PWR_REGULATOR_VOLTAGE_SCALE0);
+Tests/Ethernet/e35_main.c:363: trailing whitespace.
++
+Tests/Ethernet/e35_main.c:364: trailing whitespace.
++	while (!__HAL_PWR_GET_FLAG(PWR_FLAG_VOSRDY))
+Tests/Ethernet/e35_main.c:365: trailing whitespace.
++	{
+Tests/Ethernet/e35_main.c:366: trailing whitespace.
++	}
+Tests/Ethernet/e35_main.c:367: trailing whitespace.
++
+Tests/Ethernet/e35_main.c:368: trailing whitespace.
++	/** Initializes the RCC Oscillators according to the specified parameters
+Tests/Ethernet/e35_main.c:369: trailing whitespace.
++  * in the RCC_OscInitTypeDef structure.
+Tests/Ethernet/e35_main.c:370: trailing whitespace.
++  */
+Tests/Ethernet/e35_main.c:371: trailing whitespace.
++	RCC_OscInitStruct.OscillatorType = RCC_OSCILLATORTYPE_HSI;
+Tests/Ethernet/e35_main.c:372: trailing whitespace.
++	RCC_OscInitStruct.HSIState = RCC_HSI_DIV1;
+Tests/Ethernet/e35_main.c:373: trailing whitespace.
++	RCC_OscInitStruct.HSICalibrationValue = RCC_HSICALIBRATION_DEFAULT;
+Tests/Ethernet/e35_main.c:374: trailing whitespace.
++	RCC_OscInitStruct.PLL.PLLState = RCC_PLL_ON;
+Tests/Ethernet/e35_main.c:375: trailing whitespace.
++	RCC_OscInitStruct.PLL.PLLSource = RCC_PLLSOURCE_HSI;
+Tests/Ethernet/e35_main.c:376: trailing whitespace.
++	RCC_OscInitStruct.PLL.PLLM = 4;
+Tests/Ethernet/e35_main.c:377: trailing whitespace.
++	RCC_OscInitStruct.PLL.PLLN = 60;
+Tests/Ethernet/e35_main.c:378: trailing whitespace.
++	RCC_OscInitStruct.PLL.PLLP = 2;
+Tests/Ethernet/e35_main.c:379: trailing whitespace.
++	RCC_OscInitStruct.PLL.PLLQ = 4;
+Tests/Ethernet/e35_main.c:380: trailing whitespace.
++	RCC_OscInitStruct.PLL.PLLR = 2;
+Tests/Ethernet/e35_main.c:381: trailing whitespace.
++	RCC_OscInitStruct.PLL.PLLRGE = RCC_PLL1VCIRANGE_3;
+Tests/Ethernet/e35_main.c:382: trailing whitespace.
++	RCC_OscInitStruct.PLL.PLLVCOSEL = RCC_PLL1VCOWIDE;
+Tests/Ethernet/e35_main.c:383: trailing whitespace.
++	RCC_OscInitStruct.PLL.PLLFRACN = 0;
+Tests/Ethernet/e35_main.c:384: trailing whitespace.
++	if (HAL_RCC_OscConfig(&RCC_OscInitStruct) != HAL_OK)
+Tests/Ethernet/e35_main.c:385: trailing whitespace.
++	{
+Tests/Ethernet/e35_main.c:386: trailing whitespace.
++		Error_Handler();
+Tests/Ethernet/e35_main.c:387: trailing whitespace.
++	}
+Tests/Ethernet/e35_main.c:388: trailing whitespace.
++
+Tests/Ethernet/e35_main.c:389: trailing whitespace.
++	/** Initializes the CPU, AHB and APB buses clocks
+Tests/Ethernet/e35_main.c:390: trailing whitespace.
++  */
+Tests/Ethernet/e35_main.c:391: trailing whitespace.
++	RCC_ClkInitStruct.ClockType = RCC_CLOCKTYPE_HCLK | RCC_CLOCKTYPE_SYSCLK | RCC_CLOCKTYPE_PCLK1 |
+Tests/Ethernet/e35_main.c:392: trailing whitespace.
++		RCC_CLOCKTYPE_PCLK2 | RCC_CLOCKTYPE_D3PCLK1 | RCC_CLOCKTYPE_D1PCLK1;
+Tests/Ethernet/e35_main.c:393: trailing whitespace.
++	RCC_ClkInitStruct.SYSCLKSource = RCC_SYSCLKSOURCE_PLLCLK;
+Tests/Ethernet/e35_main.c:394: trailing whitespace.
++	RCC_ClkInitStruct.SYSCLKDivider = RCC_SYSCLK_DIV1;
+Tests/Ethernet/e35_main.c:395: trailing whitespace.
++	RCC_ClkInitStruct.AHBCLKDivider = RCC_HCLK_DIV2;
+Tests/Ethernet/e35_main.c:396: trailing whitespace.
++	RCC_ClkInitStruct.APB3CLKDivider = RCC_APB3_DIV2;
+Tests/Ethernet/e35_main.c:397: trailing whitespace.
++	RCC_ClkInitStruct.APB1CLKDivider = RCC_APB1_DIV2;
+Tests/Ethernet/e35_main.c:398: trailing whitespace.
++	RCC_ClkInitStruct.APB2CLKDivider = RCC_APB2_DIV2;
+Tests/Ethernet/e35_main.c:399: trailing whitespace.
++	RCC_ClkInitStruct.APB4CLKDivider = RCC_APB4_DIV2;
+Tests/Ethernet/e35_main.c:400: trailing whitespace.
++
+Tests/Ethernet/e35_main.c:401: trailing whitespace.
++	if (HAL_RCC_ClockConfig(&RCC_ClkInitStruct, FLASH_LATENCY_4) != HAL_OK)
+Tests/Ethernet/e35_main.c:402: trailing whitespace.
++	{
+Tests/Ethernet/e35_main.c:403: trailing whitespace.
++		Error_Handler();
+Tests/Ethernet/e35_main.c:404: trailing whitespace.
++	}
+Tests/Ethernet/e35_main.c:405: trailing whitespace.
++}
+Tests/Ethernet/test_e35_frame.c:1: trailing whitespace.
++#include "e35_frame.h"
+Tests/Ethernet/test_e35_frame.c:2: trailing whitespace.
++#include <assert.h>
+Tests/Ethernet/test_e35_frame.c:3: trailing whitespace.
++#include <stdio.h>
+Tests/Ethernet/test_e35_frame.c:4: trailing whitespace.
++#include <string.h>
+Tests/Ethernet/test_e35_frame.c:5: trailing whitespace.
++
+Tests/Ethernet/test_e35_frame.c:6: trailing whitespace.
++int main(int argc, char **argv)
+Tests/Ethernet/test_e35_frame.c:7: trailing whitespace.
++{
+Tests/Ethernet/test_e35_frame.c:8: trailing whitespace.
++	static const uint16_t lengths[] = {60U, 512U, 1514U, 1518U, 1522U};
+Tests/Ethernet/test_e35_frame.c:9: trailing whitespace.
++	uint8_t frame[1522];
+Tests/Ethernet/test_e35_frame.c:10: trailing whitespace.
++	EthValidationFrame_t config = {0x12345678U, 257U, 60U, 0U};
+Tests/Ethernet/test_e35_frame.c:11: trailing whitespace.
++	EthValidationFrame_t decoded;
+Tests/Ethernet/test_e35_frame.c:12: trailing whitespace.
++	size_t index;
+Tests/Ethernet/test_e35_frame.c:13: trailing whitespace.
++	int direction;
+Tests/Ethernet/test_e35_frame.c:14: trailing whitespace.
++	int vectors = argc == 2 && strcmp(argv[1], "--vectors") == 0;
+Tests/Ethernet/test_e35_frame.c:15: trailing whitespace.
++	for (index = 0U;
+Tests/Ethernet/test_e35_frame.c:16: trailing whitespace.
++		 index < sizeof(lengths) / sizeof(lengths[0]);
+Tests/Ethernet/test_e35_frame.c:17: trailing whitespace.
++		 ++index)
+Tests/Ethernet/test_e35_frame.c:18: trailing whitespace.
++	{
+Tests/Ethernet/test_e35_frame.c:19: trailing whitespace.
++		config.length = lengths[index];
+Tests/Ethernet/test_e35_frame.c:20: trailing whitespace.
++		config.vlan = index >= 3U;
+Tests/Ethernet/test_e35_frame.c:21: trailing whitespace.
++		for (direction = 0;
+Tests/Ethernet/test_e35_frame.c:22: trailing whitespace.
++			 direction <= 1;
+Tests/Ethernet/test_e35_frame.c:23: trailing whitespace.
++			 ++direction)
+Tests/Ethernet/test_e35_frame.c:24: trailing whitespace.
++		{
+Tests/Ethernet/test_e35_frame.c:25: trailing whitespace.
++			assert(EthValidation_Build(frame, &config, direction));
+Tests/Ethernet/test_e35_frame.c:26: trailing whitespace.
++			if (vectors)
+Tests/Ethernet/test_e35_frame.c:27: trailing whitespace.
++			{
+Tests/Ethernet/test_e35_frame.c:28: trailing whitespace.
++				size_t byte;
+Tests/Ethernet/test_e35_frame.c:29: trailing whitespace.
++				printf("%u %d ", (unsigned)config.length, direction);
+Tests/Ethernet/test_e35_frame.c:30: trailing whitespace.
++				for (byte = 0U;
+Tests/Ethernet/test_e35_frame.c:31: trailing whitespace.
++					 byte < config.length;
+Tests/Ethernet/test_e35_frame.c:32: trailing whitespace.
++					 ++byte)
+Tests/Ethernet/test_e35_frame.c:33: trailing whitespace.
++					printf("%02x", (unsigned)frame[byte]);
+Tests/Ethernet/test_e35_frame.c:34: trailing whitespace.
++				puts("");
+Tests/Ethernet/test_e35_frame.c:35: trailing whitespace.
++			}
+Tests/Ethernet/test_e35_frame.c:36: trailing whitespace.
++			assert(EthValidation_Check(frame, config.length, config.session, direction, &decoded) == 1);
+Tests/Ethernet/test_e35_frame.c:37: trailing whitespace.
++			assert(decoded.sequence == 257U && decoded.vlan == config.vlan);
+Tests/Ethernet/test_e35_frame.c:38: trailing whitespace.
++			assert(EthValidation_Check(frame, config.length, config.session + 1U, direction, &decoded) == 0);
+Tests/Ethernet/test_e35_frame.c:39: trailing whitespace.
++			assert(EthValidation_Check(frame, config.length, config.session, !direction, &decoded) == -1);
+Tests/Ethernet/test_e35_frame.c:40: trailing whitespace.
++			frame[config.length - 1U] ^= 1U;
+Tests/Ethernet/test_e35_frame.c:41: trailing whitespace.
++			assert(EthValidation_Check(frame, config.length, config.session, direction, &decoded) == -1);
+Tests/Ethernet/test_e35_frame.c:42: trailing whitespace.
++		}
+Tests/Ethernet/test_e35_frame.c:43: trailing whitespace.
++	}
+Tests/Ethernet/test_e35_frame.c:44: trailing whitespace.
++	config.length = 1523U;
+Tests/Ethernet/test_e35_frame.c:45: trailing whitespace.
++	assert(!EthValidation_Build(frame, &config, 0));
+Tests/Ethernet/test_e35_frame.c:46: trailing whitespace.
++	if (!vectors)
+Tests/Ethernet/test_e35_frame.c:47: trailing whitespace.
++		puts("PASS E3.5 frame lengths/session/direction/corruption");
+Tests/Ethernet/test_e35_frame.c:48: trailing whitespace.
++	return 0;
+Tests/Ethernet/test_e35_frame.c:49: trailing whitespace.
++}

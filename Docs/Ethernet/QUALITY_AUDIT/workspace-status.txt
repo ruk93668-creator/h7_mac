@@ -1,0 +1,23 @@
+ M MDK-ARM/RTE/_h7_mac_CM7/RTE_Components.h
+ M MDK-ARM/h7_mac.uvprojx
+ M MDK-ARM/h7_mac_CM7_custom.sct
+ D Platform/Ethernet/eth_http.c
+ D Platform/Ethernet/eth_http.h
+ D Platform/Ethernet/eth_mjpeg.c
+ D Platform/Ethernet/eth_mjpeg.h
+ M Tests/Ethernet/build_firmware.py
+ M Tests/Ethernet/e4_main.c
+ M Tests/Ethernet/e4_sources.py
+ M Tests/Ethernet/eth_test_board.c
+ M Tests/Ethernet/run_e6_host.py
+?? CM7/Service/Ethernet/eth_http.c
+?? CM7/Service/Ethernet/eth_http.h
+?? CM7/Service/Ethernet/eth_mjpeg.c
+?? CM7/Service/Ethernet/eth_mjpeg.h
+?? Docs/Ethernet/BUILD_INTEGRATION.md
+?? Docs/Ethernet/MAIN_MERGE_READINESS.md
+?? Docs/Ethernet/PRODUCTION_ARCHITECTURE.md
+?? Docs/Ethernet/REMAINING_RISKS.md
+?? Docs/Ethernet/TEST_INVENTORY.md
+?? Platform/Ethernet/eth_lwip_assert.c
+?? Platform/Ethernet/eth_lwip_time.c

@@ -19,28 +19,28 @@
           <PackID>Keil.STM32H7xx_DFP.4.1.3</PackID>
           <PackURL>https://www.keil.com/pack/</PackURL>
           <Cpu>IRAM(0x10000000-0x10047FFF) IROM(0x8100000-0x81FFFFF) CLOCK(12000000) FPU3(SFPU) CPUTYPE("Cortex-M4") TZ</Cpu>
-          <FlashUtilSpec></FlashUtilSpec>
-          <StartupFile></StartupFile>
-          <FlashDriverDll></FlashDriverDll>
+          <FlashUtilSpec />
+          <StartupFile />
+          <FlashDriverDll />
           <DeviceId>0</DeviceId>
-          <RegisterFile></RegisterFile>
-          <MemoryEnv></MemoryEnv>
-          <Cmp></Cmp>
-          <Asm></Asm>
-          <Linker></Linker>
-          <OHString></OHString>
-          <InfinionOptionDll></InfinionOptionDll>
-          <SLE66CMisc></SLE66CMisc>
-          <SLE66AMisc></SLE66AMisc>
-          <SLE66LinkerMisc></SLE66LinkerMisc>
+          <RegisterFile />
+          <MemoryEnv />
+          <Cmp />
+          <Asm />
+          <Linker />
+          <OHString />
+          <InfinionOptionDll />
+          <SLE66CMisc />
+          <SLE66AMisc />
+          <SLE66LinkerMisc />
           <SFDFile>$$Device:STM32H747XIHx$CMSIS\SVD\STM32H747_CM4.svd</SFDFile>
           <bCustSvd>0</bCustSvd>
           <UseEnv>0</UseEnv>
-          <BinPath></BinPath>
-          <IncludePath></IncludePath>
-          <LibPath></LibPath>
-          <RegisterFilePath></RegisterFilePath>
-          <DBRegisterFilePath></DBRegisterFilePath>
+          <BinPath />
+          <IncludePath />
+          <LibPath />
+          <RegisterFilePath />
+          <DBRegisterFilePath />
           <TargetStatus>
             <Error>0</Error>
             <ExitCodeStop>0</ExitCodeStop>
@@ -55,15 +55,15 @@
           <CreateHexFile>1</CreateHexFile>
           <DebugInformation>1</DebugInformation>
           <BrowseInformation>1</BrowseInformation>
-          <ListingPath></ListingPath>
+          <ListingPath />
           <HexFormatSelection>1</HexFormatSelection>
           <Merge32K>0</Merge32K>
           <CreateBatchFile>0</CreateBatchFile>
           <BeforeCompile>
             <RunUserProg1>0</RunUserProg1>
             <RunUserProg2>0</RunUserProg2>
-            <UserProg1Name></UserProg1Name>
-            <UserProg2Name></UserProg2Name>
+            <UserProg1Name />
+            <UserProg2Name />
             <UserProg1Dos16Mode>0</UserProg1Dos16Mode>
             <UserProg2Dos16Mode>0</UserProg2Dos16Mode>
             <nStopU1X>0</nStopU1X>
@@ -72,8 +72,8 @@
           <BeforeMake>
             <RunUserProg1>0</RunUserProg1>
             <RunUserProg2>0</RunUserProg2>
-            <UserProg1Name></UserProg1Name>
-            <UserProg2Name></UserProg2Name>
+            <UserProg1Name />
+            <UserProg2Name />
             <UserProg1Dos16Mode>0</UserProg1Dos16Mode>
             <UserProg2Dos16Mode>0</UserProg2Dos16Mode>
             <nStopB1X>0</nStopB1X>
@@ -82,15 +82,15 @@
           <AfterMake>
             <RunUserProg1>0</RunUserProg1>
             <RunUserProg2>1</RunUserProg2>
-            <UserProg1Name></UserProg1Name>
-            <UserProg2Name></UserProg2Name>
+            <UserProg1Name />
+            <UserProg2Name />
             <UserProg1Dos16Mode>0</UserProg1Dos16Mode>
             <UserProg2Dos16Mode>0</UserProg2Dos16Mode>
             <nStopA1X>0</nStopA1X>
             <nStopA2X>0</nStopA2X>
           </AfterMake>
           <SelectedForBatchBuild>1</SelectedForBatchBuild>
-          <SVCSIdString></SVCSIdString>
+          <SVCSIdString />
         </TargetCommonOption>
         <CommonProperty>
           <UseCPPCompiler>0</UseCPPCompiler>
@@ -104,8 +104,8 @@
           <AssembleAssemblyFile>0</AssembleAssemblyFile>
           <PublicsOnly>0</PublicsOnly>
           <StopOnExitCode>3</StopOnExitCode>
-          <CustomArgument></CustomArgument>
-          <IncludeLibraryModules></IncludeLibraryModules>
+          <CustomArgument />
+          <IncludeLibraryModules />
           <ComprImg>0</ComprImg>
         </CommonProperty>
         <DllOption>
@@ -138,11 +138,11 @@
           </Flash1>
           <bUseTDR>1</bUseTDR>
           <Flash2>BIN\UL2V8M.DLL</Flash2>
-          <Flash3></Flash3>
-          <Flash4></Flash4>
-          <pFcarmOut></pFcarmOut>
-          <pFcarmGrp></pFcarmGrp>
-          <pFcArmRoot></pFcArmRoot>
+          <Flash3 />
+          <Flash4 />
+          <pFcarmOut />
+          <pFcarmGrp />
+          <pFcArmRoot />
           <FcArmLst>0</FcArmLst>
         </Utilities>
         <TargetArmAds>
@@ -175,7 +175,7 @@
             <RvctClst>0</RvctClst>
             <GenPPlst>0</GenPPlst>
             <AdsCpuType>"Cortex-M4"</AdsCpuType>
-            <RvctDeviceName></RvctDeviceName>
+            <RvctDeviceName />
             <mOS>0</mOS>
             <uocRom>0</uocRom>
             <uocRam>0</uocRam>
@@ -309,7 +309,7 @@
                 <Size>0x0</Size>
               </OCR_RVCT10>
             </OnChipMemories>
-            <RvctStartVector></RvctStartVector>
+            <RvctStartVector />
           </ArmAdsMisc>
           <Cads>
             <interw>1</interw>
@@ -336,10 +336,10 @@
             <v6WtE>0</v6WtE>
             <v6Rtti>0</v6Rtti>
             <VariousControls>
-              <MiscControls></MiscControls>
+              <MiscControls />
               <Define>CORE_CM4,USE_HAL_DRIVER,STM32H747xx,USE_PWR_LDO_SUPPLY</Define>
-              <Undefine></Undefine>
-              <IncludePath>../CM4/Core/Inc;../Drivers/STM32H7xx_HAL_Driver/Inc;../Drivers/STM32H7xx_HAL_Driver/Inc/Legacy;../Drivers/CMSIS/Device/ST/STM32H7xx/Include;../Drivers/CMSIS/Include;..\Common\Inc;..\Board\Inc;..\CM4\Application;..\CM4\Service;..\CM4\Device\Inc;..\CM4\Platform;..\CM4\BSP;..\CM4\Framework</IncludePath>
+              <Undefine />
+              <IncludePath>../CM4/Core/Inc;../Drivers/STM32H7xx_HAL_Driver/Inc;../Drivers/STM32H7xx_HAL_Driver/Inc/Legacy;../Drivers/CMSIS/Device/ST/STM32H7xx/Include;../Drivers/CMSIS/Include;..\Common\Inc;..\Board\Inc;..\CM4\Application;..\CM4\Application\UI;..\CM4\Application\UI\Assets;..\CM4\Service;..\CM4\Device\Inc;..\CM4\Platform;..\CM4\BSP;..\CM4\Framework</IncludePath>
             </VariousControls>
           </Cads>
           <Aads>
@@ -354,10 +354,10 @@
             <useXO>0</useXO>
             <ClangAsOpt>4</ClangAsOpt>
             <VariousControls>
-              <MiscControls></MiscControls>
-              <Define></Define>
-              <Undefine></Undefine>
-              <IncludePath></IncludePath>
+              <MiscControls />
+              <Define />
+              <Undefine />
+              <IncludePath />
             </VariousControls>
           </Aads>
           <LDads>
@@ -367,17 +367,17 @@
             <noStLib>0</noStLib>
             <RepFail>1</RepFail>
             <useFile>0</useFile>
-            <TextAddressRange></TextAddressRange>
-            <DataAddressRange></DataAddressRange>
-            <pXoBase></pXoBase>
+            <TextAddressRange />
+            <DataAddressRange />
+            <pXoBase />
             <ScatterFile>.\h7_mac_CM4_custom.sct</ScatterFile>
-            <IncludeLibs></IncludeLibs>
-            <IncludeLibsPath></IncludeLibsPath>
+            <IncludeLibs />
+            <IncludeLibsPath />
             <Misc>--keep=g_ipc
 --keep=*(.framework_init)
 --keep=*(.device_export)</Misc>
-            <LinkerInputFile></LinkerInputFile>
-            <DisabledWarnings></DisabledWarnings>
+            <LinkerInputFile />
+            <DisabledWarnings />
           </LDads>
         </TargetArmAds>
       </TargetOption>
@@ -402,8 +402,8 @@
                   <AssembleAssemblyFile>0</AssembleAssemblyFile>
                   <PublicsOnly>0</PublicsOnly>
                   <StopOnExitCode>3</StopOnExitCode>
-                  <CustomArgument></CustomArgument>
-                  <IncludeLibraryModules></IncludeLibraryModules>
+                  <CustomArgument />
+                  <IncludeLibraryModules />
                   <ComprImg>1</ComprImg>
                 </CommonProperty>
                 <FileArmAds>
@@ -419,10 +419,10 @@
                     <useXO>2</useXO>
                     <ClangAsOpt>0</ClangAsOpt>
                     <VariousControls>
-                      <MiscControls></MiscControls>
-                      <Define></Define>
-                      <Undefine></Undefine>
-                      <IncludePath></IncludePath>
+                      <MiscControls />
+                      <Define />
+                      <Undefine />
+                      <IncludePath />
                     </VariousControls>
                   </Aads>
                 </FileArmAds>
@@ -470,8 +470,8 @@
               <AssembleAssemblyFile>2</AssembleAssemblyFile>
               <PublicsOnly>2</PublicsOnly>
               <StopOnExitCode>11</StopOnExitCode>
-              <CustomArgument></CustomArgument>
-              <IncludeLibraryModules></IncludeLibraryModules>
+              <CustomArgument />
+              <IncludeLibraryModules />
               <ComprImg>1</ComprImg>
             </CommonProperty>
             <GroupArmAds>
@@ -500,10 +500,10 @@
                 <v6WtE>2</v6WtE>
                 <v6Rtti>2</v6Rtti>
                 <VariousControls>
-                  <MiscControls></MiscControls>
-                  <Define></Define>
-                  <Undefine></Undefine>
-                  <IncludePath></IncludePath>
+                  <MiscControls />
+                  <Define />
+                  <Undefine />
+                  <IncludePath />
                 </VariousControls>
               </Cads>
               <Aads>
@@ -518,10 +518,10 @@
                 <useXO>2</useXO>
                 <ClangAsOpt>0</ClangAsOpt>
                 <VariousControls>
-                  <MiscControls></MiscControls>
-                  <Define></Define>
-                  <Undefine></Undefine>
-                  <IncludePath></IncludePath>
+                  <MiscControls />
+                  <Define />
+                  <Undefine />
+                  <IncludePath />
                 </VariousControls>
               </Aads>
             </GroupArmAds>
@@ -659,8 +659,8 @@
                   <AssembleAssemblyFile>0</AssembleAssemblyFile>
                   <PublicsOnly>0</PublicsOnly>
                   <StopOnExitCode>3</StopOnExitCode>
-                  <CustomArgument></CustomArgument>
-                  <IncludeLibraryModules></IncludeLibraryModules>
+                  <CustomArgument />
+                  <IncludeLibraryModules />
                   <ComprImg>1</ComprImg>
                 </CommonProperty>
                 <FileArmAds>
@@ -689,10 +689,10 @@
                     <v6WtE>2</v6WtE>
                     <v6Rtti>2</v6Rtti>
                     <VariousControls>
-                      <MiscControls></MiscControls>
-                      <Define></Define>
-                      <Undefine></Undefine>
-                      <IncludePath></IncludePath>
+                      <MiscControls />
+                      <Define />
+                      <Undefine />
+                      <IncludePath />
                     </VariousControls>
                   </Cads>
                 </FileArmAds>
@@ -715,8 +715,8 @@
                   <AssembleAssemblyFile>0</AssembleAssemblyFile>
                   <PublicsOnly>0</PublicsOnly>
                   <StopOnExitCode>3</StopOnExitCode>
-                  <CustomArgument></CustomArgument>
-                  <IncludeLibraryModules></IncludeLibraryModules>
+                  <CustomArgument />
+                  <IncludeLibraryModules />
                   <ComprImg>1</ComprImg>
                 </CommonProperty>
                 <FileArmAds>
@@ -745,10 +745,10 @@
                     <v6WtE>2</v6WtE>
                     <v6Rtti>2</v6Rtti>
                     <VariousControls>
-                      <MiscControls></MiscControls>
-                      <Define></Define>
-                      <Undefine></Undefine>
-                      <IncludePath></IncludePath>
+                      <MiscControls />
+                      <Define />
+                      <Undefine />
+                      <IncludePath />
                     </VariousControls>
                   </Cads>
                 </FileArmAds>
@@ -771,8 +771,8 @@
                   <AssembleAssemblyFile>0</AssembleAssemblyFile>
                   <PublicsOnly>0</PublicsOnly>
                   <StopOnExitCode>3</StopOnExitCode>
-                  <CustomArgument></CustomArgument>
-                  <IncludeLibraryModules></IncludeLibraryModules>
+                  <CustomArgument />
+                  <IncludeLibraryModules />
                   <ComprImg>1</ComprImg>
                 </CommonProperty>
                 <FileArmAds>
@@ -801,10 +801,10 @@
                     <v6WtE>2</v6WtE>
                     <v6Rtti>2</v6Rtti>
                     <VariousControls>
-                      <MiscControls></MiscControls>
-                      <Define></Define>
-                      <Undefine></Undefine>
-                      <IncludePath></IncludePath>
+                      <MiscControls />
+                      <Define />
+                      <Undefine />
+                      <IncludePath />
                     </VariousControls>
                   </Cads>
                 </FileArmAds>
@@ -827,8 +827,8 @@
                   <AssembleAssemblyFile>0</AssembleAssemblyFile>
                   <PublicsOnly>0</PublicsOnly>
                   <StopOnExitCode>3</StopOnExitCode>
-                  <CustomArgument></CustomArgument>
-                  <IncludeLibraryModules></IncludeLibraryModules>
+                  <CustomArgument />
+                  <IncludeLibraryModules />
                   <ComprImg>1</ComprImg>
                 </CommonProperty>
                 <FileArmAds>
@@ -857,10 +857,10 @@
                     <v6WtE>2</v6WtE>
                     <v6Rtti>2</v6Rtti>
                     <VariousControls>
-                      <MiscControls></MiscControls>
-                      <Define></Define>
-                      <Undefine></Undefine>
-                      <IncludePath></IncludePath>
+                      <MiscControls />
+                      <Define />
+                      <Undefine />
+                      <IncludePath />
                     </VariousControls>
                   </Cads>
                 </FileArmAds>
@@ -883,8 +883,8 @@
                   <AssembleAssemblyFile>0</AssembleAssemblyFile>
                   <PublicsOnly>0</PublicsOnly>
                   <StopOnExitCode>3</StopOnExitCode>
-                  <CustomArgument></CustomArgument>
-                  <IncludeLibraryModules></IncludeLibraryModules>
+                  <CustomArgument />
+                  <IncludeLibraryModules />
                   <ComprImg>1</ComprImg>
                 </CommonProperty>
                 <FileArmAds>
@@ -913,10 +913,10 @@
                     <v6WtE>2</v6WtE>
                     <v6Rtti>2</v6Rtti>
                     <VariousControls>
-                      <MiscControls></MiscControls>
-                      <Define></Define>
-                      <Undefine></Undefine>
-                      <IncludePath></IncludePath>
+                      <MiscControls />
+                      <Define />
+                      <Undefine />
+                      <IncludePath />
                     </VariousControls>
                   </Cads>
                 </FileArmAds>
@@ -1036,11 +1036,6 @@
               <FilePath>../CM4/Application/app_oled.c</FilePath>
             </File>
             <File>
-              <FileName>oled_ui.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>../CM4/Application/oled_ui.c</FilePath>
-            </File>
-            <File>
               <FileName>app_oled.h</FileName>
               <FileType>5</FileType>
               <FilePath>../CM4/Application/app_oled.h</FilePath>
@@ -1138,8 +1133,123 @@
           </Files>
         </Group>
         <Group>
+          <GroupName>CM4\Application\UI</GroupName>
+          <Files>
+            <File>
+              <FileName>oled_ui_assets.inc</FileName>
+              <FileType>5</FileType>
+              <FilePath>../CM4/Application/UI/Assets/oled_ui_assets.inc</FilePath>
+            </File>
+            <File>
+              <FileName>oled_ui_bitmaps.inc</FileName>
+              <FileType>5</FileType>
+              <FilePath>../CM4/Application/UI/Assets/oled_ui_bitmaps.inc</FilePath>
+            </File>
+            <File>
+              <FileName>oled_ui.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>../CM4/Application/UI/oled_ui.c</FilePath>
+            </File>
+            <File>
+              <FileName>oled_ui.h</FileName>
+              <FileType>5</FileType>
+              <FilePath>../CM4/Application/UI/oled_ui.h</FilePath>
+            </File>
+            <File>
+              <FileName>oled_ui_anim.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>../CM4/Application/UI/oled_ui_anim.c</FilePath>
+            </File>
+            <File>
+              <FileName>oled_ui_anim.h</FileName>
+              <FileType>5</FileType>
+              <FilePath>../CM4/Application/UI/oled_ui_anim.h</FilePath>
+            </File>
+            <File>
+              <FileName>oled_ui_draw.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>../CM4/Application/UI/oled_ui_draw.c</FilePath>
+            </File>
+            <File>
+              <FileName>oled_ui_draw.h</FileName>
+              <FileType>5</FileType>
+              <FilePath>../CM4/Application/UI/oled_ui_draw.h</FilePath>
+            </File>
+            <File>
+              <FileName>oled_ui_input.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>../CM4/Application/UI/oled_ui_input.c</FilePath>
+            </File>
+            <File>
+              <FileName>oled_ui_input.h</FileName>
+              <FileType>5</FileType>
+              <FilePath>../CM4/Application/UI/oled_ui_input.h</FilePath>
+            </File>
+            <File>
+              <FileName>oled_ui_menu.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>../CM4/Application/UI/oled_ui_menu.c</FilePath>
+            </File>
+            <File>
+              <FileName>oled_ui_menu.h</FileName>
+              <FileType>5</FileType>
+              <FilePath>../CM4/Application/UI/oled_ui_menu.h</FilePath>
+            </File>
+            <File>
+              <FileName>oled_ui_page.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>../CM4/Application/UI/oled_ui_page.c</FilePath>
+            </File>
+            <File>
+              <FileName>oled_ui_page.h</FileName>
+              <FileType>5</FileType>
+              <FilePath>../CM4/Application/UI/oled_ui_page.h</FilePath>
+            </File>
+            <File>
+              <FileName>oled_ui_status.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>../CM4/Application/UI/oled_ui_status.c</FilePath>
+            </File>
+            <File>
+              <FileName>oled_ui_status.h</FileName>
+              <FileType>5</FileType>
+              <FilePath>../CM4/Application/UI/oled_ui_status.h</FilePath>
+            </File>
+            <File>
+              <FileName>oled_ui_tools.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>../CM4/Application/UI/oled_ui_tools.c</FilePath>
+            </File>
+            <File>
+              <FileName>oled_ui_tools.h</FileName>
+              <FileType>5</FileType>
+              <FilePath>../CM4/Application/UI/oled_ui_tools.h</FilePath>
+            </File>
+            <File>
+              <FileName>oled_ui_font.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>../CM4/Application/UI/oled_ui_font.c</FilePath>
+            </File>
+            <File>
+              <FileName>oled_ui_font.h</FileName>
+              <FileType>5</FileType>
+              <FilePath>../CM4/Application/UI/oled_ui_font.h</FilePath>
+            </File>
+          </Files>
+        </Group>
+        <Group>
           <GroupName>CM4\BSP</GroupName>
           <Files>
+            <File>
+              <FileName>bsp_u7.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>../CM4/BSP/bsp_u7.c</FilePath>
+            </File>
+            <File>
+              <FileName>bsp_u7.h</FileName>
+              <FileType>5</FileType>
+              <FilePath>../CM4/BSP/bsp_u7.h</FilePath>
+            </File>
             <File>
               <FileName>bsp_iic.c</FileName>
               <FileType>1</FileType>
@@ -1153,7 +1263,7 @@
           </Files>
         </Group>
         <Group>
-          <GroupName>CM7\Application</GroupName>
+          <GroupName>Application V3 / Core</GroupName>
           <GroupOption>
             <CommonProperty>
               <UseCPPCompiler>0</UseCPPCompiler>
@@ -1167,8 +1277,8 @@
               <AssembleAssemblyFile>2</AssembleAssemblyFile>
               <PublicsOnly>2</PublicsOnly>
               <StopOnExitCode>11</StopOnExitCode>
-              <CustomArgument></CustomArgument>
-              <IncludeLibraryModules></IncludeLibraryModules>
+              <CustomArgument />
+              <IncludeLibraryModules />
               <ComprImg>1</ComprImg>
             </CommonProperty>
             <GroupArmAds>
@@ -1197,10 +1307,10 @@
                 <v6WtE>2</v6WtE>
                 <v6Rtti>2</v6Rtti>
                 <VariousControls>
-                  <MiscControls></MiscControls>
-                  <Define></Define>
-                  <Undefine></Undefine>
-                  <IncludePath></IncludePath>
+                  <MiscControls />
+                  <Define />
+                  <Undefine />
+                  <IncludePath />
                 </VariousControls>
               </Cads>
               <Aads>
@@ -1215,209 +1325,411 @@
                 <useXO>2</useXO>
                 <ClangAsOpt>0</ClangAsOpt>
                 <VariousControls>
-                  <MiscControls></MiscControls>
-                  <Define></Define>
-                  <Undefine></Undefine>
-                  <IncludePath></IncludePath>
+                  <MiscControls />
+                  <Define />
+                  <Undefine />
+                  <IncludePath />
                 </VariousControls>
               </Aads>
             </GroupArmAds>
           </GroupOption>
           <Files>
             <File>
+              <FileName>app_context.h</FileName>
+              <FileType>5</FileType>
+              <FilePath>../CM7/ApplicationV3/Core/app_context.h</FilePath>
+            </File>
+            <File>
+              <FileName>app_events.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>../CM7/ApplicationV3/Core/app_events.c</FilePath>
+            </File>
+            <File>
+              <FileName>app_events.h</FileName>
+              <FileType>5</FileType>
+              <FilePath>../CM7/ApplicationV3/Core/app_events.h</FilePath>
+            </File>
+            <File>
               <FileName>app_main.c</FileName>
               <FileType>1</FileType>
-              <FilePath>../CM7/Application/app_main.c</FilePath>
+              <FilePath>../CM7/ApplicationV3/Core/app_main.c</FilePath>
             </File>
             <File>
-              <FileName>app_camera.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>../CM7/Application/app_camera.c</FilePath>
-            </File>
-            <File>
-              <FileName>app_camera.h</FileName>
+              <FileName>app_main.h</FileName>
               <FileType>5</FileType>
-              <FilePath>../CM7/Application/app_camera.h</FilePath>
+              <FilePath>../CM7/ApplicationV3/Core/app_main.h</FilePath>
             </File>
             <File>
-              <FileName>app_uvc_bridge.c</FileName>
+              <FileName>app_messages.c</FileName>
               <FileType>1</FileType>
-              <FilePath>../CM7/Application/app_uvc_bridge.c</FilePath>
+              <FilePath>../CM7/ApplicationV3/Core/app_messages.c</FilePath>
             </File>
             <File>
-              <FileName>app_uvc_bridge.h</FileName>
+              <FileName>app_messages.h</FileName>
               <FileType>5</FileType>
-              <FilePath>../CM7/Application/app_uvc_bridge.h</FilePath>
+              <FilePath>../CM7/ApplicationV3/Core/app_messages.h</FilePath>
+            </File>
+            <File>
+              <FileName>app_services.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>../CM7/ApplicationV3/Core/app_services.c</FilePath>
+            </File>
+            <File>
+              <FileName>app_services.h</FileName>
+              <FileType>5</FileType>
+              <FilePath>../CM7/ApplicationV3/Core/app_services.h</FilePath>
+            </File>
+            <File>
+              <FileName>app_status.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>../CM7/ApplicationV3/Core/app_status.c</FilePath>
+            </File>
+            <File>
+              <FileName>app_status.h</FileName>
+              <FileType>5</FileType>
+              <FilePath>../CM7/ApplicationV3/Core/app_status.h</FilePath>
+            </File>
+            <File>
+              <FileName>app_tasks.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>../CM7/ApplicationV3/Core/app_tasks.c</FilePath>
+            </File>
+            <File>
+              <FileName>app_tasks.h</FileName>
+              <FileType>5</FileType>
+              <FilePath>../CM7/ApplicationV3/Core/app_tasks.h</FilePath>
             </File>
             <File>
               <FileName>video_config.c</FileName>
               <FileType>1</FileType>
-              <FilePath>../CM7/Application/video_config.c</FilePath>
+              <FilePath>../CM7/ApplicationV3/Core/video_config.c</FilePath>
             </File>
             <File>
               <FileName>video_config.h</FileName>
               <FileType>5</FileType>
-              <FilePath>../CM7/Application/video_config.h</FilePath>
+              <FilePath>../CM7/ApplicationV3/Core/video_config.h</FilePath>
             </File>
+          </Files>
+        </Group>
+        <Group>
+          <GroupName>Application V3 / Runtime</GroupName>
+          <GroupOption>
+            <CommonProperty>
+              <UseCPPCompiler>0</UseCPPCompiler>
+              <RVCTCodeConst>0</RVCTCodeConst>
+              <RVCTZI>0</RVCTZI>
+              <RVCTOtherData>0</RVCTOtherData>
+              <ModuleSelection>0</ModuleSelection>
+              <IncludeInBuild>0</IncludeInBuild>
+              <AlwaysBuild>2</AlwaysBuild>
+              <GenerateAssemblyFile>2</GenerateAssemblyFile>
+              <AssembleAssemblyFile>2</AssembleAssemblyFile>
+              <PublicsOnly>2</PublicsOnly>
+              <StopOnExitCode>11</StopOnExitCode>
+              <CustomArgument />
+              <IncludeLibraryModules />
+              <ComprImg>1</ComprImg>
+            </CommonProperty>
+            <GroupArmAds>
+              <Cads>
+                <interw>2</interw>
+                <Optim>0</Optim>
+                <oTime>2</oTime>
+                <SplitLS>2</SplitLS>
+                <OneElfS>2</OneElfS>
+                <Strict>2</Strict>
+                <EnumInt>2</EnumInt>
+                <PlainCh>2</PlainCh>
+                <Ropi>2</Ropi>
+                <Rwpi>2</Rwpi>
+                <wLevel>4</wLevel>
+                <uThumb>2</uThumb>
+                <uSurpInc>2</uSurpInc>
+                <uC99>2</uC99>
+                <uGnu>2</uGnu>
+                <useXO>2</useXO>
+                <v6Lang>0</v6Lang>
+                <v6LangP>0</v6LangP>
+                <vShortEn>2</vShortEn>
+                <vShortWch>2</vShortWch>
+                <v6Lto>2</v6Lto>
+                <v6WtE>2</v6WtE>
+                <v6Rtti>2</v6Rtti>
+                <VariousControls>
+                  <MiscControls />
+                  <Define />
+                  <Undefine />
+                  <IncludePath />
+                </VariousControls>
+              </Cads>
+              <Aads>
+                <interw>2</interw>
+                <Ropi>2</Ropi>
+                <Rwpi>2</Rwpi>
+                <thumb>2</thumb>
+                <SplitLS>2</SplitLS>
+                <SwStkChk>2</SwStkChk>
+                <NoWarn>2</NoWarn>
+                <uSurpInc>2</uSurpInc>
+                <useXO>2</useXO>
+                <ClangAsOpt>0</ClangAsOpt>
+                <VariousControls>
+                  <MiscControls />
+                  <Define />
+                  <Undefine />
+                  <IncludePath />
+                </VariousControls>
+              </Aads>
+            </GroupArmAds>
+          </GroupOption>
+          <Files>
             <File>
-              <FileName>app_storage.c</FileName>
+              <FileName>queue_pool.c</FileName>
               <FileType>1</FileType>
-              <FilePath>../CM7/Application/app_storage.c</FilePath>
-              <FileOption>
-                <CommonProperty>
-                  <UseCPPCompiler>2</UseCPPCompiler>
-                  <RVCTCodeConst>0</RVCTCodeConst>
-                  <RVCTZI>0</RVCTZI>
-                  <RVCTOtherData>0</RVCTOtherData>
-                  <ModuleSelection>0</ModuleSelection>
-                  <IncludeInBuild>0</IncludeInBuild>
-                  <AlwaysBuild>0</AlwaysBuild>
-                  <GenerateAssemblyFile>0</GenerateAssemblyFile>
-                  <AssembleAssemblyFile>0</AssembleAssemblyFile>
-                  <PublicsOnly>0</PublicsOnly>
-                  <StopOnExitCode>3</StopOnExitCode>
-                  <CustomArgument></CustomArgument>
-                  <IncludeLibraryModules></IncludeLibraryModules>
-                  <ComprImg>1</ComprImg>
-                </CommonProperty>
-                <FileArmAds>
-                  <Cads>
-                    <interw>2</interw>
-                    <Optim>0</Optim>
-                    <oTime>2</oTime>
-                    <SplitLS>2</SplitLS>
-                    <OneElfS>2</OneElfS>
-                    <Strict>2</Strict>
-                    <EnumInt>2</EnumInt>
-                    <PlainCh>2</PlainCh>
-                    <Ropi>2</Ropi>
-                    <Rwpi>2</Rwpi>
-                    <wLevel>0</wLevel>
-                    <uThumb>2</uThumb>
-                    <uSurpInc>2</uSurpInc>
-                    <uC99>2</uC99>
-                    <uGnu>2</uGnu>
-                    <useXO>2</useXO>
-                    <v6Lang>0</v6Lang>
-                    <v6LangP>0</v6LangP>
-                    <vShortEn>2</vShortEn>
-                    <vShortWch>2</vShortWch>
-                    <v6Lto>2</v6Lto>
-                    <v6WtE>2</v6WtE>
-                    <v6Rtti>2</v6Rtti>
-                    <VariousControls>
-                      <MiscControls></MiscControls>
-                      <Define></Define>
-                      <Undefine></Undefine>
-                      <IncludePath></IncludePath>
-                    </VariousControls>
-                  </Cads>
-                </FileArmAds>
-              </FileOption>
+              <FilePath>../CM7/ApplicationV3/Runtime/queue_pool.c</FilePath>
             </File>
             <File>
-              <FileName>app_storage.h</FileName>
+              <FileName>queue_pool.h</FileName>
               <FileType>5</FileType>
-              <FilePath>../CM7/Application/app_storage.h</FilePath>
-              <FileOption>
-                <CommonProperty>
-                  <UseCPPCompiler>2</UseCPPCompiler>
-                  <RVCTCodeConst>0</RVCTCodeConst>
-                  <RVCTZI>0</RVCTZI>
-                  <RVCTOtherData>0</RVCTOtherData>
-                  <ModuleSelection>0</ModuleSelection>
-                  <IncludeInBuild>0</IncludeInBuild>
-                  <AlwaysBuild>0</AlwaysBuild>
-                  <GenerateAssemblyFile>0</GenerateAssemblyFile>
-                  <AssembleAssemblyFile>0</AssembleAssemblyFile>
-                  <PublicsOnly>0</PublicsOnly>
-                  <StopOnExitCode>3</StopOnExitCode>
-                  <CustomArgument></CustomArgument>
-                  <IncludeLibraryModules></IncludeLibraryModules>
-                  <ComprImg>1</ComprImg>
-                </CommonProperty>
-                <FileArmAds/>
-              </FileOption>
+              <FilePath>../CM7/ApplicationV3/Runtime/queue_pool.h</FilePath>
             </File>
             <File>
-              <FileName>app_frame_dispatcher.c</FileName>
+              <FileName>service_event_loop.c</FileName>
               <FileType>1</FileType>
-              <FilePath>../CM7/Application/app_frame_dispatcher.c</FilePath>
-              <FileOption>
-                <CommonProperty>
-                  <UseCPPCompiler>2</UseCPPCompiler>
-                  <RVCTCodeConst>0</RVCTCodeConst>
-                  <RVCTZI>0</RVCTZI>
-                  <RVCTOtherData>0</RVCTOtherData>
-                  <ModuleSelection>0</ModuleSelection>
-                  <IncludeInBuild>0</IncludeInBuild>
-                  <AlwaysBuild>0</AlwaysBuild>
-                  <GenerateAssemblyFile>0</GenerateAssemblyFile>
-                  <AssembleAssemblyFile>0</AssembleAssemblyFile>
-                  <PublicsOnly>0</PublicsOnly>
-                  <StopOnExitCode>3</StopOnExitCode>
-                  <CustomArgument></CustomArgument>
-                  <IncludeLibraryModules></IncludeLibraryModules>
-                  <ComprImg>1</ComprImg>
-                </CommonProperty>
-                <FileArmAds>
-                  <Cads>
-                    <interw>2</interw>
-                    <Optim>0</Optim>
-                    <oTime>2</oTime>
-                    <SplitLS>2</SplitLS>
-                    <OneElfS>2</OneElfS>
-                    <Strict>2</Strict>
-                    <EnumInt>2</EnumInt>
-                    <PlainCh>2</PlainCh>
-                    <Ropi>2</Ropi>
-                    <Rwpi>2</Rwpi>
-                    <wLevel>0</wLevel>
-                    <uThumb>2</uThumb>
-                    <uSurpInc>2</uSurpInc>
-                    <uC99>2</uC99>
-                    <uGnu>2</uGnu>
-                    <useXO>2</useXO>
-                    <v6Lang>0</v6Lang>
-                    <v6LangP>0</v6LangP>
-                    <vShortEn>2</vShortEn>
-                    <vShortWch>2</vShortWch>
-                    <v6Lto>2</v6Lto>
-                    <v6WtE>2</v6WtE>
-                    <v6Rtti>2</v6Rtti>
-                    <VariousControls>
-                      <MiscControls></MiscControls>
-                      <Define></Define>
-                      <Undefine></Undefine>
-                      <IncludePath></IncludePath>
-                    </VariousControls>
-                  </Cads>
-                </FileArmAds>
-              </FileOption>
+              <FilePath>../CM7/ApplicationV3/Runtime/service_event_loop.c</FilePath>
             </File>
             <File>
-              <FileName>app_frame_dispatcher.h</FileName>
+              <FileName>service_event_loop.h</FileName>
               <FileType>5</FileType>
-              <FilePath>../CM7/Application/app_frame_dispatcher.h</FilePath>
-              <FileOption>
-                <CommonProperty>
-                  <UseCPPCompiler>2</UseCPPCompiler>
-                  <RVCTCodeConst>0</RVCTCodeConst>
-                  <RVCTZI>0</RVCTZI>
-                  <RVCTOtherData>0</RVCTOtherData>
-                  <ModuleSelection>0</ModuleSelection>
-                  <IncludeInBuild>0</IncludeInBuild>
-                  <AlwaysBuild>0</AlwaysBuild>
-                  <GenerateAssemblyFile>0</GenerateAssemblyFile>
-                  <AssembleAssemblyFile>0</AssembleAssemblyFile>
-                  <PublicsOnly>0</PublicsOnly>
-                  <StopOnExitCode>3</StopOnExitCode>
-                  <CustomArgument></CustomArgument>
-                  <IncludeLibraryModules></IncludeLibraryModules>
-                  <ComprImg>1</ComprImg>
-                </CommonProperty>
-                <FileArmAds/>
-              </FileOption>
+              <FilePath>../CM7/ApplicationV3/Runtime/service_event_loop.h</FilePath>
+            </File>
+            <File>
+              <FileName>service_record.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>../CM7/ApplicationV3/Runtime/service_record.c</FilePath>
+            </File>
+            <File>
+              <FileName>service_record.h</FileName>
+              <FileType>5</FileType>
+              <FilePath>../CM7/ApplicationV3/Runtime/service_record.h</FilePath>
+            </File>
+            <File>
+              <FileName>service_events.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>../CM7/ApplicationV3/Runtime/service_events.c</FilePath>
+            </File>
+            <File>
+              <FileName>service_events.h</FileName>
+              <FileType>5</FileType>
+              <FilePath>../CM7/ApplicationV3/Runtime/service_events.h</FilePath>
+            </File>
+            <File>
+              <FileName>service_mailbox.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>../CM7/ApplicationV3/Runtime/service_mailbox.c</FilePath>
+            </File>
+            <File>
+              <FileName>service_mailbox.h</FileName>
+              <FileType>5</FileType>
+              <FilePath>../CM7/ApplicationV3/Runtime/service_mailbox.h</FilePath>
+            </File>
+          </Files>
+        </Group>
+        <Group>
+          <GroupName>Application V3 / Services</GroupName>
+          <GroupOption>
+            <CommonProperty>
+              <UseCPPCompiler>0</UseCPPCompiler>
+              <RVCTCodeConst>0</RVCTCodeConst>
+              <RVCTZI>0</RVCTZI>
+              <RVCTOtherData>0</RVCTOtherData>
+              <ModuleSelection>0</ModuleSelection>
+              <IncludeInBuild>0</IncludeInBuild>
+              <AlwaysBuild>2</AlwaysBuild>
+              <GenerateAssemblyFile>2</GenerateAssemblyFile>
+              <AssembleAssemblyFile>2</AssembleAssemblyFile>
+              <PublicsOnly>2</PublicsOnly>
+              <StopOnExitCode>11</StopOnExitCode>
+              <CustomArgument />
+              <IncludeLibraryModules />
+              <ComprImg>1</ComprImg>
+            </CommonProperty>
+            <GroupArmAds>
+              <Cads>
+                <interw>2</interw>
+                <Optim>0</Optim>
+                <oTime>2</oTime>
+                <SplitLS>2</SplitLS>
+                <OneElfS>2</OneElfS>
+                <Strict>2</Strict>
+                <EnumInt>2</EnumInt>
+                <PlainCh>2</PlainCh>
+                <Ropi>2</Ropi>
+                <Rwpi>2</Rwpi>
+                <wLevel>4</wLevel>
+                <uThumb>2</uThumb>
+                <uSurpInc>2</uSurpInc>
+                <uC99>2</uC99>
+                <uGnu>2</uGnu>
+                <useXO>2</useXO>
+                <v6Lang>0</v6Lang>
+                <v6LangP>0</v6LangP>
+                <vShortEn>2</vShortEn>
+                <vShortWch>2</vShortWch>
+                <v6Lto>2</v6Lto>
+                <v6WtE>2</v6WtE>
+                <v6Rtti>2</v6Rtti>
+                <VariousControls>
+                  <MiscControls />
+                  <Define />
+                  <Undefine />
+                  <IncludePath />
+                </VariousControls>
+              </Cads>
+              <Aads>
+                <interw>2</interw>
+                <Ropi>2</Ropi>
+                <Rwpi>2</Rwpi>
+                <thumb>2</thumb>
+                <SplitLS>2</SplitLS>
+                <SwStkChk>2</SwStkChk>
+                <NoWarn>2</NoWarn>
+                <uSurpInc>2</uSurpInc>
+                <useXO>2</useXO>
+                <ClangAsOpt>0</ClangAsOpt>
+                <VariousControls>
+                  <MiscControls />
+                  <Define />
+                  <Undefine />
+                  <IncludePath />
+                </VariousControls>
+              </Aads>
+            </GroupArmAds>
+          </GroupOption>
+          <Files>
+            <File>
+              <FileName>camera_service.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>../CM7/ApplicationV3/Services/Camera/camera_service.c</FilePath>
+            </File>
+            <File>
+              <FileName>storage_service.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>../CM7/ApplicationV3/Services/Storage/storage_service.c</FilePath>
+            </File>
+            <File>
+              <FileName>usb_service.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>../CM7/ApplicationV3/Services/USB/usb_service.c</FilePath>
+            </File>
+            <File>
+              <FileName>camera_service.h</FileName>
+              <FileType>5</FileType>
+              <FilePath>../CM7/ApplicationV3/Services/Camera/camera_service.h</FilePath>
+            </File>
+            <File>
+              <FileName>storage_service.h</FileName>
+              <FileType>5</FileType>
+              <FilePath>../CM7/ApplicationV3/Services/Storage/storage_service.h</FilePath>
+            </File>
+            <File>
+              <FileName>usb_service.h</FileName>
+              <FileType>5</FileType>
+              <FilePath>../CM7/ApplicationV3/Services/USB/usb_service.h</FilePath>
+            </File>
+          </Files>
+        </Group>
+        <Group>
+          <GroupName>Application V3 / Tasks</GroupName>
+          <GroupOption>
+            <CommonProperty>
+              <UseCPPCompiler>0</UseCPPCompiler>
+              <RVCTCodeConst>0</RVCTCodeConst>
+              <RVCTZI>0</RVCTZI>
+              <RVCTOtherData>0</RVCTOtherData>
+              <ModuleSelection>0</ModuleSelection>
+              <IncludeInBuild>0</IncludeInBuild>
+              <AlwaysBuild>2</AlwaysBuild>
+              <GenerateAssemblyFile>2</GenerateAssemblyFile>
+              <AssembleAssemblyFile>2</AssembleAssemblyFile>
+              <PublicsOnly>2</PublicsOnly>
+              <StopOnExitCode>11</StopOnExitCode>
+              <CustomArgument />
+              <IncludeLibraryModules />
+              <ComprImg>1</ComprImg>
+            </CommonProperty>
+            <GroupArmAds>
+              <Cads>
+                <interw>2</interw>
+                <Optim>0</Optim>
+                <oTime>2</oTime>
+                <SplitLS>2</SplitLS>
+                <OneElfS>2</OneElfS>
+                <Strict>2</Strict>
+                <EnumInt>2</EnumInt>
+                <PlainCh>2</PlainCh>
+                <Ropi>2</Ropi>
+                <Rwpi>2</Rwpi>
+                <wLevel>4</wLevel>
+                <uThumb>2</uThumb>
+                <uSurpInc>2</uSurpInc>
+                <uC99>2</uC99>
+                <uGnu>2</uGnu>
+                <useXO>2</useXO>
+                <v6Lang>0</v6Lang>
+                <v6LangP>0</v6LangP>
+                <vShortEn>2</vShortEn>
+                <vShortWch>2</vShortWch>
+                <v6Lto>2</v6Lto>
+                <v6WtE>2</v6WtE>
+                <v6Rtti>2</v6Rtti>
+                <VariousControls>
+                  <MiscControls />
+                  <Define />
+                  <Undefine />
+                  <IncludePath />
+                </VariousControls>
+              </Cads>
+              <Aads>
+                <interw>2</interw>
+                <Ropi>2</Ropi>
+                <Rwpi>2</Rwpi>
+                <thumb>2</thumb>
+                <SplitLS>2</SplitLS>
+                <SwStkChk>2</SwStkChk>
+                <NoWarn>2</NoWarn>
+                <uSurpInc>2</uSurpInc>
+                <useXO>2</useXO>
+                <ClangAsOpt>0</ClangAsOpt>
+                <VariousControls>
+                  <MiscControls />
+                  <Define />
+                  <Undefine />
+                  <IncludePath />
+                </VariousControls>
+              </Aads>
+            </GroupArmAds>
+          </GroupOption>
+          <Files>
+            <File>
+              <FileName>ipc_task.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>../CM7/ApplicationV3/Tasks/ipc_task.c</FilePath>
+            </File>
+            <File>
+              <FileName>ipc_task.h</FileName>
+              <FileType>5</FileType>
+              <FilePath>../CM7/ApplicationV3/Tasks/ipc_task.h</FilePath>
+            </File>
+            <File>
+              <FileName>service_tasks.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>../CM7/ApplicationV3/Tasks/service_tasks.c</FilePath>
+            </File>
+            <File>
+              <FileName>service_tasks.h</FileName>
+              <FileType>5</FileType>
+              <FilePath>../CM7/ApplicationV3/Tasks/service_tasks.h</FilePath>
             </File>
           </Files>
         </Group>
@@ -1436,8 +1748,8 @@
               <AssembleAssemblyFile>2</AssembleAssemblyFile>
               <PublicsOnly>2</PublicsOnly>
               <StopOnExitCode>11</StopOnExitCode>
-              <CustomArgument></CustomArgument>
-              <IncludeLibraryModules></IncludeLibraryModules>
+              <CustomArgument />
+              <IncludeLibraryModules />
               <ComprImg>1</ComprImg>
             </CommonProperty>
             <GroupArmAds>
@@ -1466,10 +1778,10 @@
                 <v6WtE>2</v6WtE>
                 <v6Rtti>2</v6Rtti>
                 <VariousControls>
-                  <MiscControls></MiscControls>
-                  <Define></Define>
-                  <Undefine></Undefine>
-                  <IncludePath></IncludePath>
+                  <MiscControls />
+                  <Define />
+                  <Undefine />
+                  <IncludePath />
                 </VariousControls>
               </Cads>
               <Aads>
@@ -1484,10 +1796,10 @@
                 <useXO>2</useXO>
                 <ClangAsOpt>0</ClangAsOpt>
                 <VariousControls>
-                  <MiscControls></MiscControls>
-                  <Define></Define>
-                  <Undefine></Undefine>
-                  <IncludePath></IncludePath>
+                  <MiscControls />
+                  <Define />
+                  <Undefine />
+                  <IncludePath />
                 </VariousControls>
               </Aads>
             </GroupArmAds>
@@ -1535,8 +1847,8 @@
               <AssembleAssemblyFile>2</AssembleAssemblyFile>
               <PublicsOnly>2</PublicsOnly>
               <StopOnExitCode>11</StopOnExitCode>
-              <CustomArgument></CustomArgument>
-              <IncludeLibraryModules></IncludeLibraryModules>
+              <CustomArgument />
+              <IncludeLibraryModules />
               <ComprImg>1</ComprImg>
             </CommonProperty>
             <GroupArmAds>
@@ -1565,10 +1877,10 @@
                 <v6WtE>2</v6WtE>
                 <v6Rtti>2</v6Rtti>
                 <VariousControls>
-                  <MiscControls></MiscControls>
-                  <Define></Define>
-                  <Undefine></Undefine>
-                  <IncludePath></IncludePath>
+                  <MiscControls />
+                  <Define />
+                  <Undefine />
+                  <IncludePath />
                 </VariousControls>
               </Cads>
               <Aads>
@@ -1583,10 +1895,10 @@
                 <useXO>2</useXO>
                 <ClangAsOpt>0</ClangAsOpt>
                 <VariousControls>
-                  <MiscControls></MiscControls>
-                  <Define></Define>
-                  <Undefine></Undefine>
-                  <IncludePath></IncludePath>
+                  <MiscControls />
+                  <Define />
+                  <Undefine />
+                  <IncludePath />
                 </VariousControls>
               </Aads>
             </GroupArmAds>
@@ -1664,8 +1976,8 @@
                   <AssembleAssemblyFile>0</AssembleAssemblyFile>
                   <PublicsOnly>0</PublicsOnly>
                   <StopOnExitCode>3</StopOnExitCode>
-                  <CustomArgument></CustomArgument>
-                  <IncludeLibraryModules></IncludeLibraryModules>
+                  <CustomArgument />
+                  <IncludeLibraryModules />
                   <ComprImg>1</ComprImg>
                 </CommonProperty>
                 <FileArmAds>
@@ -1694,10 +2006,10 @@
                     <v6WtE>2</v6WtE>
                     <v6Rtti>2</v6Rtti>
                     <VariousControls>
-                      <MiscControls></MiscControls>
-                      <Define></Define>
-                      <Undefine></Undefine>
-                      <IncludePath></IncludePath>
+                      <MiscControls />
+                      <Define />
+                      <Undefine />
+                      <IncludePath />
                     </VariousControls>
                   </Cads>
                 </FileArmAds>
@@ -1720,11 +2032,11 @@
                   <AssembleAssemblyFile>0</AssembleAssemblyFile>
                   <PublicsOnly>0</PublicsOnly>
                   <StopOnExitCode>3</StopOnExitCode>
-                  <CustomArgument></CustomArgument>
-                  <IncludeLibraryModules></IncludeLibraryModules>
+                  <CustomArgument />
+                  <IncludeLibraryModules />
                   <ComprImg>1</ComprImg>
                 </CommonProperty>
-                <FileArmAds/>
+                <FileArmAds />
               </FileOption>
             </File>
             <File>
@@ -1744,8 +2056,8 @@
                   <AssembleAssemblyFile>0</AssembleAssemblyFile>
                   <PublicsOnly>0</PublicsOnly>
                   <StopOnExitCode>3</StopOnExitCode>
-                  <CustomArgument></CustomArgument>
-                  <IncludeLibraryModules></IncludeLibraryModules>
+                  <CustomArgument />
+                  <IncludeLibraryModules />
                   <ComprImg>1</ComprImg>
                 </CommonProperty>
                 <FileArmAds>
@@ -1774,10 +2086,10 @@
                     <v6WtE>2</v6WtE>
                     <v6Rtti>2</v6Rtti>
                     <VariousControls>
-                      <MiscControls></MiscControls>
-                      <Define></Define>
-                      <Undefine></Undefine>
-                      <IncludePath></IncludePath>
+                      <MiscControls />
+                      <Define />
+                      <Undefine />
+                      <IncludePath />
                     </VariousControls>
                   </Cads>
                 </FileArmAds>
@@ -1800,11 +2112,11 @@
                   <AssembleAssemblyFile>0</AssembleAssemblyFile>
                   <PublicsOnly>0</PublicsOnly>
                   <StopOnExitCode>3</StopOnExitCode>
-                  <CustomArgument></CustomArgument>
-                  <IncludeLibraryModules></IncludeLibraryModules>
+                  <CustomArgument />
+                  <IncludeLibraryModules />
                   <ComprImg>1</ComprImg>
                 </CommonProperty>
-                <FileArmAds/>
+                <FileArmAds />
               </FileOption>
             </File>
           </Files>
@@ -1824,8 +2136,8 @@
               <AssembleAssemblyFile>2</AssembleAssemblyFile>
               <PublicsOnly>2</PublicsOnly>
               <StopOnExitCode>11</StopOnExitCode>
-              <CustomArgument></CustomArgument>
-              <IncludeLibraryModules></IncludeLibraryModules>
+              <CustomArgument />
+              <IncludeLibraryModules />
               <ComprImg>1</ComprImg>
             </CommonProperty>
             <GroupArmAds>
@@ -1854,10 +2166,10 @@
                 <v6WtE>2</v6WtE>
                 <v6Rtti>2</v6Rtti>
                 <VariousControls>
-                  <MiscControls></MiscControls>
-                  <Define></Define>
-                  <Undefine></Undefine>
-                  <IncludePath></IncludePath>
+                  <MiscControls />
+                  <Define />
+                  <Undefine />
+                  <IncludePath />
                 </VariousControls>
               </Cads>
               <Aads>
@@ -1872,10 +2184,10 @@
                 <useXO>2</useXO>
                 <ClangAsOpt>0</ClangAsOpt>
                 <VariousControls>
-                  <MiscControls></MiscControls>
-                  <Define></Define>
-                  <Undefine></Undefine>
-                  <IncludePath></IncludePath>
+                  <MiscControls />
+                  <Define />
+                  <Undefine />
+                  <IncludePath />
                 </VariousControls>
               </Aads>
             </GroupArmAds>
@@ -1928,8 +2240,8 @@
               <AssembleAssemblyFile>2</AssembleAssemblyFile>
               <PublicsOnly>2</PublicsOnly>
               <StopOnExitCode>11</StopOnExitCode>
-              <CustomArgument></CustomArgument>
-              <IncludeLibraryModules></IncludeLibraryModules>
+              <CustomArgument />
+              <IncludeLibraryModules />
               <ComprImg>1</ComprImg>
             </CommonProperty>
             <GroupArmAds>
@@ -1958,10 +2270,10 @@
                 <v6WtE>2</v6WtE>
                 <v6Rtti>2</v6Rtti>
                 <VariousControls>
-                  <MiscControls></MiscControls>
-                  <Define></Define>
-                  <Undefine></Undefine>
-                  <IncludePath></IncludePath>
+                  <MiscControls />
+                  <Define />
+                  <Undefine />
+                  <IncludePath />
                 </VariousControls>
               </Cads>
               <Aads>
@@ -1976,10 +2288,10 @@
                 <useXO>2</useXO>
                 <ClangAsOpt>0</ClangAsOpt>
                 <VariousControls>
-                  <MiscControls></MiscControls>
-                  <Define></Define>
-                  <Undefine></Undefine>
-                  <IncludePath></IncludePath>
+                  <MiscControls />
+                  <Define />
+                  <Undefine />
+                  <IncludePath />
                 </VariousControls>
               </Aads>
             </GroupArmAds>
@@ -2022,8 +2334,8 @@
               <AssembleAssemblyFile>2</AssembleAssemblyFile>
               <PublicsOnly>2</PublicsOnly>
               <StopOnExitCode>11</StopOnExitCode>
-              <CustomArgument></CustomArgument>
-              <IncludeLibraryModules></IncludeLibraryModules>
+              <CustomArgument />
+              <IncludeLibraryModules />
               <ComprImg>1</ComprImg>
             </CommonProperty>
             <GroupArmAds>
@@ -2052,10 +2364,10 @@
                 <v6WtE>2</v6WtE>
                 <v6Rtti>2</v6Rtti>
                 <VariousControls>
-                  <MiscControls></MiscControls>
-                  <Define></Define>
-                  <Undefine></Undefine>
-                  <IncludePath></IncludePath>
+                  <MiscControls />
+                  <Define />
+                  <Undefine />
+                  <IncludePath />
                 </VariousControls>
               </Cads>
               <Aads>
@@ -2070,10 +2382,10 @@
                 <useXO>2</useXO>
                 <ClangAsOpt>0</ClangAsOpt>
                 <VariousControls>
-                  <MiscControls></MiscControls>
-                  <Define></Define>
-                  <Undefine></Undefine>
-                  <IncludePath></IncludePath>
+                  <MiscControls />
+                  <Define />
+                  <Undefine />
+                  <IncludePath />
                 </VariousControls>
               </Aads>
             </GroupArmAds>
@@ -2126,8 +2438,8 @@
                   <AssembleAssemblyFile>0</AssembleAssemblyFile>
                   <PublicsOnly>0</PublicsOnly>
                   <StopOnExitCode>3</StopOnExitCode>
-                  <CustomArgument></CustomArgument>
-                  <IncludeLibraryModules></IncludeLibraryModules>
+                  <CustomArgument />
+                  <IncludeLibraryModules />
                   <ComprImg>1</ComprImg>
                 </CommonProperty>
                 <FileArmAds>
@@ -2156,10 +2468,10 @@
                     <v6WtE>2</v6WtE>
                     <v6Rtti>2</v6Rtti>
                     <VariousControls>
-                      <MiscControls></MiscControls>
-                      <Define></Define>
-                      <Undefine></Undefine>
-                      <IncludePath></IncludePath>
+                      <MiscControls />
+                      <Define />
+                      <Undefine />
+                      <IncludePath />
                     </VariousControls>
                   </Cads>
                 </FileArmAds>
@@ -2182,11 +2494,11 @@
                   <AssembleAssemblyFile>0</AssembleAssemblyFile>
                   <PublicsOnly>0</PublicsOnly>
                   <StopOnExitCode>3</StopOnExitCode>
-                  <CustomArgument></CustomArgument>
-                  <IncludeLibraryModules></IncludeLibraryModules>
+                  <CustomArgument />
+                  <IncludeLibraryModules />
                   <ComprImg>1</ComprImg>
                 </CommonProperty>
-                <FileArmAds/>
+                <FileArmAds />
               </FileOption>
             </File>
             <File>
@@ -2214,6 +2526,11 @@
               <FileType>5</FileType>
               <FilePath>../CM7/Platform/ffconf.h</FilePath>
             </File>
+            <File>
+              <FileName>platform_sync.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>../CM7/Platform/platform_sync.c</FilePath>
+            </File>
           </Files>
         </Group>
         <Group>
@@ -2231,8 +2548,8 @@
               <AssembleAssemblyFile>2</AssembleAssemblyFile>
               <PublicsOnly>2</PublicsOnly>
               <StopOnExitCode>11</StopOnExitCode>
-              <CustomArgument></CustomArgument>
-              <IncludeLibraryModules></IncludeLibraryModules>
+              <CustomArgument />
+              <IncludeLibraryModules />
               <ComprImg>1</ComprImg>
             </CommonProperty>
             <GroupArmAds>
@@ -2261,10 +2578,10 @@
                 <v6WtE>2</v6WtE>
                 <v6Rtti>2</v6Rtti>
                 <VariousControls>
-                  <MiscControls></MiscControls>
-                  <Define></Define>
-                  <Undefine></Undefine>
-                  <IncludePath></IncludePath>
+                  <MiscControls />
+                  <Define />
+                  <Undefine />
+                  <IncludePath />
                 </VariousControls>
               </Cads>
               <Aads>
@@ -2279,10 +2596,10 @@
                 <useXO>2</useXO>
                 <ClangAsOpt>0</ClangAsOpt>
                 <VariousControls>
-                  <MiscControls></MiscControls>
-                  <Define></Define>
-                  <Undefine></Undefine>
-                  <IncludePath></IncludePath>
+                  <MiscControls />
+                  <Define />
+                  <Undefine />
+                  <IncludePath />
                 </VariousControls>
               </Aads>
             </GroupArmAds>
@@ -2360,8 +2677,8 @@
                   <AssembleAssemblyFile>0</AssembleAssemblyFile>
                   <PublicsOnly>0</PublicsOnly>
                   <StopOnExitCode>3</StopOnExitCode>
-                  <CustomArgument></CustomArgument>
-                  <IncludeLibraryModules></IncludeLibraryModules>
+                  <CustomArgument />
+                  <IncludeLibraryModules />
                   <ComprImg>1</ComprImg>
                 </CommonProperty>
                 <FileArmAds>
@@ -2390,10 +2707,10 @@
                     <v6WtE>2</v6WtE>
                     <v6Rtti>2</v6Rtti>
                     <VariousControls>
-                      <MiscControls></MiscControls>
-                      <Define></Define>
-                      <Undefine></Undefine>
-                      <IncludePath></IncludePath>
+                      <MiscControls />
+                      <Define />
+                      <Undefine />
+                      <IncludePath />
                     </VariousControls>
                   </Cads>
                 </FileArmAds>
@@ -2416,11 +2733,11 @@
                   <AssembleAssemblyFile>0</AssembleAssemblyFile>
                   <PublicsOnly>0</PublicsOnly>
                   <StopOnExitCode>3</StopOnExitCode>
-                  <CustomArgument></CustomArgument>
-                  <IncludeLibraryModules></IncludeLibraryModules>
+                  <CustomArgument />
+                  <IncludeLibraryModules />
                   <ComprImg>1</ComprImg>
                 </CommonProperty>
-                <FileArmAds/>
+                <FileArmAds />
               </FileOption>
             </File>
             <File>
@@ -2440,11 +2757,11 @@
                   <AssembleAssemblyFile>0</AssembleAssemblyFile>
                   <PublicsOnly>0</PublicsOnly>
                   <StopOnExitCode>3</StopOnExitCode>
-                  <CustomArgument></CustomArgument>
-                  <IncludeLibraryModules></IncludeLibraryModules>
+                  <CustomArgument />
+                  <IncludeLibraryModules />
                   <ComprImg>1</ComprImg>
                 </CommonProperty>
-                <FileArmAds/>
+                <FileArmAds />
               </FileOption>
             </File>
             <File>
@@ -2464,8 +2781,8 @@
                   <AssembleAssemblyFile>0</AssembleAssemblyFile>
                   <PublicsOnly>0</PublicsOnly>
                   <StopOnExitCode>3</StopOnExitCode>
-                  <CustomArgument></CustomArgument>
-                  <IncludeLibraryModules></IncludeLibraryModules>
+                  <CustomArgument />
+                  <IncludeLibraryModules />
                   <ComprImg>1</ComprImg>
                 </CommonProperty>
                 <FileArmAds>
@@ -2494,10 +2811,10 @@
                     <v6WtE>2</v6WtE>
                     <v6Rtti>2</v6Rtti>
                     <VariousControls>
-                      <MiscControls></MiscControls>
-                      <Define></Define>
-                      <Undefine></Undefine>
-                      <IncludePath></IncludePath>
+                      <MiscControls />
+                      <Define />
+                      <Undefine />
+                      <IncludePath />
                     </VariousControls>
                   </Cads>
                 </FileArmAds>
@@ -2520,8 +2837,8 @@
               <AssembleAssemblyFile>0</AssembleAssemblyFile>
               <PublicsOnly>0</PublicsOnly>
               <StopOnExitCode>3</StopOnExitCode>
-              <CustomArgument></CustomArgument>
-              <IncludeLibraryModules></IncludeLibraryModules>
+              <CustomArgument />
+              <IncludeLibraryModules />
               <ComprImg>0</ComprImg>
             </CommonProperty>
             <GroupArmAds>
@@ -2550,10 +2867,10 @@
                 <v6WtE>2</v6WtE>
                 <v6Rtti>2</v6Rtti>
                 <VariousControls>
-                  <MiscControls></MiscControls>
-                  <Define></Define>
-                  <Undefine></Undefine>
-                  <IncludePath></IncludePath>
+                  <MiscControls />
+                  <Define />
+                  <Undefine />
+                  <IncludePath />
                 </VariousControls>
               </Cads>
               <Aads>
@@ -2568,10 +2885,10 @@
                 <useXO>2</useXO>
                 <ClangAsOpt>0</ClangAsOpt>
                 <VariousControls>
-                  <MiscControls></MiscControls>
-                  <Define></Define>
-                  <Undefine></Undefine>
-                  <IncludePath></IncludePath>
+                  <MiscControls />
+                  <Define />
+                  <Undefine />
+                  <IncludePath />
                 </VariousControls>
               </Aads>
             </GroupArmAds>
@@ -2609,8 +2926,8 @@
               <AssembleAssemblyFile>2</AssembleAssemblyFile>
               <PublicsOnly>2</PublicsOnly>
               <StopOnExitCode>11</StopOnExitCode>
-              <CustomArgument></CustomArgument>
-              <IncludeLibraryModules></IncludeLibraryModules>
+              <CustomArgument />
+              <IncludeLibraryModules />
               <ComprImg>1</ComprImg>
             </CommonProperty>
             <GroupArmAds>
@@ -2639,10 +2956,10 @@
                 <v6WtE>2</v6WtE>
                 <v6Rtti>2</v6Rtti>
                 <VariousControls>
-                  <MiscControls></MiscControls>
-                  <Define></Define>
-                  <Undefine></Undefine>
-                  <IncludePath></IncludePath>
+                  <MiscControls />
+                  <Define />
+                  <Undefine />
+                  <IncludePath />
                 </VariousControls>
               </Cads>
               <Aads>
@@ -2657,10 +2974,10 @@
                 <useXO>2</useXO>
                 <ClangAsOpt>0</ClangAsOpt>
                 <VariousControls>
-                  <MiscControls></MiscControls>
-                  <Define></Define>
-                  <Undefine></Undefine>
-                  <IncludePath></IncludePath>
+                  <MiscControls />
+                  <Define />
+                  <Undefine />
+                  <IncludePath />
                 </VariousControls>
               </Aads>
             </GroupArmAds>
@@ -2723,8 +3040,8 @@
               <AssembleAssemblyFile>0</AssembleAssemblyFile>
               <PublicsOnly>0</PublicsOnly>
               <StopOnExitCode>3</StopOnExitCode>
-              <CustomArgument></CustomArgument>
-              <IncludeLibraryModules></IncludeLibraryModules>
+              <CustomArgument />
+              <IncludeLibraryModules />
               <ComprImg>0</ComprImg>
             </CommonProperty>
             <GroupArmAds>
@@ -2753,10 +3070,10 @@
                 <v6WtE>2</v6WtE>
                 <v6Rtti>2</v6Rtti>
                 <VariousControls>
-                  <MiscControls></MiscControls>
-                  <Define></Define>
-                  <Undefine></Undefine>
-                  <IncludePath></IncludePath>
+                  <MiscControls />
+                  <Define />
+                  <Undefine />
+                  <IncludePath />
                 </VariousControls>
               </Cads>
               <Aads>
@@ -2771,10 +3088,10 @@
                 <useXO>2</useXO>
                 <ClangAsOpt>0</ClangAsOpt>
                 <VariousControls>
-                  <MiscControls></MiscControls>
-                  <Define></Define>
-                  <Undefine></Undefine>
-                  <IncludePath></IncludePath>
+                  <MiscControls />
+                  <Define />
+                  <Undefine />
+                  <IncludePath />
                 </VariousControls>
               </Aads>
             </GroupArmAds>
@@ -2789,166 +3106,6 @@
               <FileName>runtime_event.h</FileName>
               <FileType>5</FileType>
               <FilePath>../Common/Inc/runtime_event.h</FilePath>
-            </File>
-            <File>
-              <FileName>app_messages.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>../CM7/Application/app_messages.c</FilePath>
-            </File>
-            <File>
-              <FileName>app_messages.h</FileName>
-              <FileType>5</FileType>
-              <FilePath>../CM7/Application/app_messages.h</FilePath>
-            </File>
-            <File>
-              <FileName>app_tasks.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>../CM7/Application/app_tasks.c</FilePath>
-            </File>
-            <File>
-              <FileName>app_tasks.h</FileName>
-              <FileType>5</FileType>
-              <FilePath>../CM7/Application/app_tasks.h</FilePath>
-            </File>
-            <File>
-              <FileName>app_events.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>../CM7/Application/app_events.c</FilePath>
-            </File>
-            <File>
-              <FileName>app_events.h</FileName>
-              <FileType>5</FileType>
-              <FilePath>../CM7/Application/app_events.h</FilePath>
-            </File>
-            <File>
-              <FileName>camera_task.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>../CM7/Application/Tasks/camera_task.c</FilePath>
-            </File>
-            <File>
-              <FileName>camera_task.h</FileName>
-              <FileType>5</FileType>
-              <FilePath>../CM7/Application/Tasks/camera_task.h</FilePath>
-            </File>
-            <File>
-              <FileName>usb_task.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>../CM7/Application/Tasks/usb_task.c</FilePath>
-            </File>
-            <File>
-              <FileName>usb_task.h</FileName>
-              <FileType>5</FileType>
-              <FilePath>../CM7/Application/Tasks/usb_task.h</FilePath>
-            </File>
-            <File>
-              <FileName>control_task.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>../CM7/Application/Tasks/control_task.c</FilePath>
-            </File>
-            <File>
-              <FileName>control_task.h</FileName>
-              <FileType>5</FileType>
-              <FilePath>../CM7/Application/Tasks/control_task.h</FilePath>
-            </File>
-            <File>
-              <FileName>app_status.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>../CM7/Application/app_status.c</FilePath>
-            </File>
-            <File>
-              <FileName>app_status.h</FileName>
-              <FileType>5</FileType>
-              <FilePath>../CM7/Application/app_status.h</FilePath>
-            </File>
-            <File>
-              <FileName>ipc_task.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>../CM7/Application/Tasks/ipc_task.c</FilePath>
-            </File>
-            <File>
-              <FileName>ipc_task.h</FileName>
-              <FileType>5</FileType>
-              <FilePath>../CM7/Application/Tasks/ipc_task.h</FilePath>
-            </File>
-            <File>
-              <FileName>storage_task.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>../CM7/Application/Tasks/storage_task.c</FilePath>
-              <FileOption>
-                <CommonProperty>
-                  <UseCPPCompiler>2</UseCPPCompiler>
-                  <RVCTCodeConst>0</RVCTCodeConst>
-                  <RVCTZI>0</RVCTZI>
-                  <RVCTOtherData>0</RVCTOtherData>
-                  <ModuleSelection>0</ModuleSelection>
-                  <IncludeInBuild>0</IncludeInBuild>
-                  <AlwaysBuild>0</AlwaysBuild>
-                  <GenerateAssemblyFile>0</GenerateAssemblyFile>
-                  <AssembleAssemblyFile>0</AssembleAssemblyFile>
-                  <PublicsOnly>0</PublicsOnly>
-                  <StopOnExitCode>3</StopOnExitCode>
-                  <CustomArgument></CustomArgument>
-                  <IncludeLibraryModules></IncludeLibraryModules>
-                  <ComprImg>1</ComprImg>
-                </CommonProperty>
-                <FileArmAds>
-                  <Cads>
-                    <interw>2</interw>
-                    <Optim>0</Optim>
-                    <oTime>2</oTime>
-                    <SplitLS>2</SplitLS>
-                    <OneElfS>2</OneElfS>
-                    <Strict>2</Strict>
-                    <EnumInt>2</EnumInt>
-                    <PlainCh>2</PlainCh>
-                    <Ropi>2</Ropi>
-                    <Rwpi>2</Rwpi>
-                    <wLevel>0</wLevel>
-                    <uThumb>2</uThumb>
-                    <uSurpInc>2</uSurpInc>
-                    <uC99>2</uC99>
-                    <uGnu>2</uGnu>
-                    <useXO>2</useXO>
-                    <v6Lang>0</v6Lang>
-                    <v6LangP>0</v6LangP>
-                    <vShortEn>2</vShortEn>
-                    <vShortWch>2</vShortWch>
-                    <v6Lto>2</v6Lto>
-                    <v6WtE>2</v6WtE>
-                    <v6Rtti>2</v6Rtti>
-                    <VariousControls>
-                      <MiscControls></MiscControls>
-                      <Define></Define>
-                      <Undefine></Undefine>
-                      <IncludePath></IncludePath>
-                    </VariousControls>
-                  </Cads>
-                </FileArmAds>
-              </FileOption>
-            </File>
-            <File>
-              <FileName>storage_task.h</FileName>
-              <FileType>5</FileType>
-              <FilePath>../CM7/Application/Tasks/storage_task.h</FilePath>
-              <FileOption>
-                <CommonProperty>
-                  <UseCPPCompiler>2</UseCPPCompiler>
-                  <RVCTCodeConst>0</RVCTCodeConst>
-                  <RVCTZI>0</RVCTZI>
-                  <RVCTOtherData>0</RVCTOtherData>
-                  <ModuleSelection>0</ModuleSelection>
-                  <IncludeInBuild>0</IncludeInBuild>
-                  <AlwaysBuild>0</AlwaysBuild>
-                  <GenerateAssemblyFile>0</GenerateAssemblyFile>
-                  <AssembleAssemblyFile>0</AssembleAssemblyFile>
-                  <PublicsOnly>0</PublicsOnly>
-                  <StopOnExitCode>3</StopOnExitCode>
-                  <CustomArgument></CustomArgument>
-                  <IncludeLibraryModules></IncludeLibraryModules>
-                  <ComprImg>1</ComprImg>
-                </CommonProperty>
-                <FileArmAds/>
-              </FileOption>
             </File>
           </Files>
         </Group>
@@ -2967,8 +3124,8 @@
               <AssembleAssemblyFile>0</AssembleAssemblyFile>
               <PublicsOnly>0</PublicsOnly>
               <StopOnExitCode>3</StopOnExitCode>
-              <CustomArgument></CustomArgument>
-              <IncludeLibraryModules></IncludeLibraryModules>
+              <CustomArgument />
+              <IncludeLibraryModules />
               <ComprImg>0</ComprImg>
             </CommonProperty>
             <GroupArmAds>
@@ -2997,10 +3154,10 @@
                 <v6WtE>2</v6WtE>
                 <v6Rtti>2</v6Rtti>
                 <VariousControls>
-                  <MiscControls></MiscControls>
-                  <Define></Define>
-                  <Undefine></Undefine>
-                  <IncludePath></IncludePath>
+                  <MiscControls />
+                  <Define />
+                  <Undefine />
+                  <IncludePath />
                 </VariousControls>
               </Cads>
               <Aads>
@@ -3015,10 +3172,10 @@
                 <useXO>2</useXO>
                 <ClangAsOpt>0</ClangAsOpt>
                 <VariousControls>
-                  <MiscControls></MiscControls>
-                  <Define></Define>
-                  <Undefine></Undefine>
-                  <IncludePath></IncludePath>
+                  <MiscControls />
+                  <Define />
+                  <Undefine />
+                  <IncludePath />
                 </VariousControls>
               </Aads>
             </GroupArmAds>
@@ -3041,8 +3198,8 @@
                   <AssembleAssemblyFile>0</AssembleAssemblyFile>
                   <PublicsOnly>0</PublicsOnly>
                   <StopOnExitCode>3</StopOnExitCode>
-                  <CustomArgument></CustomArgument>
-                  <IncludeLibraryModules></IncludeLibraryModules>
+                  <CustomArgument />
+                  <IncludeLibraryModules />
                   <ComprImg>1</ComprImg>
                 </CommonProperty>
                 <FileArmAds>
@@ -3071,10 +3228,10 @@
                     <v6WtE>2</v6WtE>
                     <v6Rtti>2</v6Rtti>
                     <VariousControls>
-                      <MiscControls></MiscControls>
-                      <Define></Define>
-                      <Undefine></Undefine>
-                      <IncludePath></IncludePath>
+                      <MiscControls />
+                      <Define />
+                      <Undefine />
+                      <IncludePath />
                     </VariousControls>
                   </Cads>
                 </FileArmAds>
@@ -3100,28 +3257,28 @@
           <PackID>Keil.STM32H7xx_DFP.4.1.3</PackID>
           <PackURL>https://www.keil.com/pack/</PackURL>
           <Cpu>IRAM(0x20000000-0x2001FFFF) IRAM2(0x00000000-0xFFFF) IROM(0x8000000-0x80FFFFF) CLOCK(12000000) FPU3(DFPU) CPUTYPE("Cortex-M7") ELITTLE TZ</Cpu>
-          <FlashUtilSpec></FlashUtilSpec>
-          <StartupFile></StartupFile>
-          <FlashDriverDll></FlashDriverDll>
+          <FlashUtilSpec />
+          <StartupFile />
+          <FlashDriverDll />
           <DeviceId>0</DeviceId>
-          <RegisterFile></RegisterFile>
-          <MemoryEnv></MemoryEnv>
-          <Cmp></Cmp>
-          <Asm></Asm>
-          <Linker></Linker>
-          <OHString></OHString>
-          <InfinionOptionDll></InfinionOptionDll>
-          <SLE66CMisc></SLE66CMisc>
-          <SLE66AMisc></SLE66AMisc>
-          <SLE66LinkerMisc></SLE66LinkerMisc>
+          <RegisterFile />
+          <MemoryEnv />
+          <Cmp />
+          <Asm />
+          <Linker />
+          <OHString />
+          <InfinionOptionDll />
+          <SLE66CMisc />
+          <SLE66AMisc />
+          <SLE66LinkerMisc />
           <SFDFile>$$Device:STM32H747XIHx$CMSIS\SVD\STM32H747_CM7.svd</SFDFile>
           <bCustSvd>0</bCustSvd>
           <UseEnv>0</UseEnv>
-          <BinPath></BinPath>
-          <IncludePath>;..\CM7\Application\Tasks</IncludePath>
-          <LibPath></LibPath>
-          <RegisterFilePath></RegisterFilePath>
-          <DBRegisterFilePath></DBRegisterFilePath>
+          <BinPath />
+          <IncludePath>;..\CM7\ApplicationV3\Tasks</IncludePath>
+          <LibPath />
+          <RegisterFilePath />
+          <DBRegisterFilePath />
           <TargetStatus>
             <Error>0</Error>
             <ExitCodeStop>0</ExitCodeStop>
@@ -3136,15 +3293,15 @@
           <CreateHexFile>0</CreateHexFile>
           <DebugInformation>1</DebugInformation>
           <BrowseInformation>1</BrowseInformation>
-          <ListingPath></ListingPath>
+          <ListingPath />
           <HexFormatSelection>1</HexFormatSelection>
           <Merge32K>0</Merge32K>
           <CreateBatchFile>0</CreateBatchFile>
           <BeforeCompile>
             <RunUserProg1>0</RunUserProg1>
             <RunUserProg2>0</RunUserProg2>
-            <UserProg1Name></UserProg1Name>
-            <UserProg2Name></UserProg2Name>
+            <UserProg1Name />
+            <UserProg2Name />
             <UserProg1Dos16Mode>0</UserProg1Dos16Mode>
             <UserProg2Dos16Mode>0</UserProg2Dos16Mode>
             <nStopU1X>0</nStopU1X>
@@ -3153,8 +3310,8 @@
           <BeforeMake>
             <RunUserProg1>0</RunUserProg1>
             <RunUserProg2>0</RunUserProg2>
-            <UserProg1Name></UserProg1Name>
-            <UserProg2Name></UserProg2Name>
+            <UserProg1Name />
+            <UserProg2Name />
             <UserProg1Dos16Mode>0</UserProg1Dos16Mode>
             <UserProg2Dos16Mode>0</UserProg2Dos16Mode>
             <nStopB1X>0</nStopB1X>
@@ -3163,15 +3320,15 @@
           <AfterMake>
             <RunUserProg1>0</RunUserProg1>
             <RunUserProg2>0</RunUserProg2>
-            <UserProg1Name></UserProg1Name>
-            <UserProg2Name></UserProg2Name>
+            <UserProg1Name />
+            <UserProg2Name />
             <UserProg1Dos16Mode>0</UserProg1Dos16Mode>
             <UserProg2Dos16Mode>0</UserProg2Dos16Mode>
             <nStopA1X>0</nStopA1X>
             <nStopA2X>0</nStopA2X>
           </AfterMake>
           <SelectedForBatchBuild>1</SelectedForBatchBuild>
-          <SVCSIdString></SVCSIdString>
+          <SVCSIdString />
         </TargetCommonOption>
         <CommonProperty>
           <UseCPPCompiler>0</UseCPPCompiler>
@@ -3185,8 +3342,8 @@
           <AssembleAssemblyFile>0</AssembleAssemblyFile>
           <PublicsOnly>0</PublicsOnly>
           <StopOnExitCode>3</StopOnExitCode>
-          <CustomArgument></CustomArgument>
-          <IncludeLibraryModules></IncludeLibraryModules>
+          <CustomArgument />
+          <IncludeLibraryModules />
           <ComprImg>0</ComprImg>
         </CommonProperty>
         <DllOption>
@@ -3219,11 +3376,11 @@
           </Flash1>
           <bUseTDR>1</bUseTDR>
           <Flash2>BIN\UL2V8M.DLL</Flash2>
-          <Flash3></Flash3>
+          <Flash3 />
           <Flash4>program_cm4.ini</Flash4>
-          <pFcarmOut></pFcarmOut>
-          <pFcarmGrp></pFcarmGrp>
-          <pFcArmRoot></pFcArmRoot>
+          <pFcarmOut />
+          <pFcarmGrp />
+          <pFcArmRoot />
           <FcArmLst>0</FcArmLst>
         </Utilities>
         <TargetArmAds>
@@ -3256,7 +3413,7 @@
             <RvctClst>0</RvctClst>
             <GenPPlst>0</GenPPlst>
             <AdsCpuType>"Cortex-M7"</AdsCpuType>
-            <RvctDeviceName></RvctDeviceName>
+            <RvctDeviceName />
             <mOS>0</mOS>
             <uocRom>0</uocRom>
             <uocRam>0</uocRam>
@@ -3390,7 +3547,7 @@
                 <Size>0x10000</Size>
               </OCR_RVCT10>
             </OnChipMemories>
-            <RvctStartVector></RvctStartVector>
+            <RvctStartVector />
           </ArmAdsMisc>
           <Cads>
             <interw>1</interw>
@@ -3419,8 +3576,8 @@
             <VariousControls>
               <MiscControls>--preinclude ../CM7/BSP/bsp_sdram_hal_config.h --preinclude ../CM7/BSP/bsp_dcmi_hal_config.h --preinclude ../CM7/BSP/bsp_usb_hal_config.h --preinclude ../CM7/BSP/bsp_sdmmc_hal_config.h </MiscControls>
               <Define>CORE_CM7,USE_HAL_DRIVER,STM32H747xx,USE_PWR_LDO_SUPPLY,APP_VIDEO_MJPEG_MODE=1,ETH_LWIP_DHCP,ETH_LWIP_E5</Define>
-              <Undefine></Undefine>
-              <IncludePath>../Platform/Ethernet;../CM7/Core/Inc;../Drivers/STM32H7xx_HAL_Driver/Inc;../Drivers/STM32H7xx_HAL_Driver/Inc/Legacy;../Drivers/CMSIS/Device/ST/STM32H7xx/Include;../Drivers/CMSIS/Include;..\Common\Inc;..\Board\Inc;..\CM7\Application;..\CM7\Service;..\CM7\Device\Inc;..\CM7\Media\Inc;..\CM7\Platform;..\CM7\BSP;..\CM7\Framework;..\CM7\Device\Components\OV5640;../Middlewares/ST/STM32_USB_Device_Library/Core/Inc;../Middlewares/Third_Party/FreeRTOS/Source/include;../Middlewares/Third_Party/FreeRTOS/Source/portable/RVDS/ARM_CM7/r0p1;../Middlewares/Third_Party/FatFs;../CM7/Service/Ethernet;../ThirdParty/lwip/src/include</IncludePath>
+              <Undefine />
+              <IncludePath>../CM7/Core/Inc;../Drivers/STM32H7xx_HAL_Driver/Inc;../Drivers/STM32H7xx_HAL_Driver/Inc/Legacy;../Drivers/CMSIS/Device/ST/STM32H7xx/Include;../Drivers/CMSIS/Include;..\Common\Inc;..\Board\Inc;..\CM7\ApplicationV3\Core;..\CM7\Service;..\CM7\Device\Inc;..\CM7\Media\Inc;..\CM7\Platform;..\CM7\BSP;..\CM7\Framework;..\CM7\Device\Components\OV5640;../Middlewares/ST/STM32_USB_Device_Library/Core/Inc;../Middlewares/Third_Party/FreeRTOS/Source/include;../Middlewares/Third_Party/FreeRTOS/Source/portable/RVDS/ARM_CM7/r0p1;../Middlewares/Third_Party/FatFs;../Platform/Ethernet;../CM7/Service/Ethernet;../ThirdParty/lwip/src/include</IncludePath>
             </VariousControls>
           </Cads>
           <Aads>
@@ -3435,10 +3592,10 @@
             <useXO>0</useXO>
             <ClangAsOpt>4</ClangAsOpt>
             <VariousControls>
-              <MiscControls></MiscControls>
-              <Define></Define>
-              <Undefine></Undefine>
-              <IncludePath></IncludePath>
+              <MiscControls />
+              <Define />
+              <Undefine />
+              <IncludePath />
             </VariousControls>
           </Aads>
           <LDads>
@@ -3448,15 +3605,22 @@
             <noStLib>0</noStLib>
             <RepFail>1</RepFail>
             <useFile>0</useFile>
-            <TextAddressRange></TextAddressRange>
-            <DataAddressRange></DataAddressRange>
-            <pXoBase></pXoBase>
+            <TextAddressRange />
+            <DataAddressRange />
+            <pXoBase />
             <ScatterFile>.\h7_mac_CM7_custom.sct</ScatterFile>
-            <IncludeLibs></IncludeLibs>
-            <IncludeLibsPath></IncludeLibsPath>
+            <IncludeLibs />
+            <IncludeLibsPath />
             <Misc>--keep=g_ipc
 --keep=*(.framework_init)
 --keep=*(.device_export)
+--keep=AppV3Supervisor_Set
+--keep=AppV3Supervisor_Query
+--keep=AppV3Supervisor_Read
+--keep=AppV3Supervisor_Recover
+--keep=App_EventsReadStackWatermarks
+--keep=CameraMjpegFifo_ReadOccupancy
+--keep=BSP_SDMMC_GetIoDiagnostics
 --keep=*(.ethernet_dma)
 --keep=eth_network_init
 --keep=eth_network_init_address
@@ -3471,8 +3635,8 @@
 --keep=eth_transport_init
 --keep=eth_transport_poll
 --keep=eth_udp_send</Misc>
-            <LinkerInputFile></LinkerInputFile>
-            <DisabledWarnings></DisabledWarnings>
+            <LinkerInputFile />
+            <DisabledWarnings />
           </LDads>
         </TargetArmAds>
       </TargetOption>
@@ -3502,8 +3666,8 @@
                   <AssembleAssemblyFile>0</AssembleAssemblyFile>
                   <PublicsOnly>0</PublicsOnly>
                   <StopOnExitCode>3</StopOnExitCode>
-                  <CustomArgument></CustomArgument>
-                  <IncludeLibraryModules></IncludeLibraryModules>
+                  <CustomArgument />
+                  <IncludeLibraryModules />
                   <ComprImg>1</ComprImg>
                 </CommonProperty>
                 <FileArmAds>
@@ -3519,10 +3683,10 @@
                     <useXO>2</useXO>
                     <ClangAsOpt>0</ClangAsOpt>
                     <VariousControls>
-                      <MiscControls></MiscControls>
-                      <Define></Define>
-                      <Undefine></Undefine>
-                      <IncludePath></IncludePath>
+                      <MiscControls />
+                      <Define />
+                      <Undefine />
+                      <IncludePath />
                     </VariousControls>
                   </Aads>
                 </FileArmAds>
@@ -3545,8 +3709,8 @@
               <AssembleAssemblyFile>2</AssembleAssemblyFile>
               <PublicsOnly>2</PublicsOnly>
               <StopOnExitCode>11</StopOnExitCode>
-              <CustomArgument></CustomArgument>
-              <IncludeLibraryModules></IncludeLibraryModules>
+              <CustomArgument />
+              <IncludeLibraryModules />
               <ComprImg>1</ComprImg>
             </CommonProperty>
             <GroupArmAds>
@@ -3575,10 +3739,10 @@
                 <v6WtE>2</v6WtE>
                 <v6Rtti>2</v6Rtti>
                 <VariousControls>
-                  <MiscControls></MiscControls>
-                  <Define></Define>
-                  <Undefine></Undefine>
-                  <IncludePath></IncludePath>
+                  <MiscControls />
+                  <Define />
+                  <Undefine />
+                  <IncludePath />
                 </VariousControls>
               </Cads>
               <Aads>
@@ -3593,10 +3757,10 @@
                 <useXO>2</useXO>
                 <ClangAsOpt>0</ClangAsOpt>
                 <VariousControls>
-                  <MiscControls></MiscControls>
-                  <Define></Define>
-                  <Undefine></Undefine>
-                  <IncludePath></IncludePath>
+                  <MiscControls />
+                  <Define />
+                  <Undefine />
+                  <IncludePath />
                 </VariousControls>
               </Aads>
             </GroupArmAds>
@@ -3877,8 +4041,8 @@
               <AssembleAssemblyFile>2</AssembleAssemblyFile>
               <PublicsOnly>2</PublicsOnly>
               <StopOnExitCode>11</StopOnExitCode>
-              <CustomArgument></CustomArgument>
-              <IncludeLibraryModules></IncludeLibraryModules>
+              <CustomArgument />
+              <IncludeLibraryModules />
               <ComprImg>1</ComprImg>
             </CommonProperty>
             <GroupArmAds>
@@ -3907,10 +4071,10 @@
                 <v6WtE>2</v6WtE>
                 <v6Rtti>2</v6Rtti>
                 <VariousControls>
-                  <MiscControls></MiscControls>
-                  <Define></Define>
-                  <Undefine></Undefine>
-                  <IncludePath></IncludePath>
+                  <MiscControls />
+                  <Define />
+                  <Undefine />
+                  <IncludePath />
                 </VariousControls>
               </Cads>
               <Aads>
@@ -3925,10 +4089,10 @@
                 <useXO>2</useXO>
                 <ClangAsOpt>0</ClangAsOpt>
                 <VariousControls>
-                  <MiscControls></MiscControls>
-                  <Define></Define>
-                  <Undefine></Undefine>
-                  <IncludePath></IncludePath>
+                  <MiscControls />
+                  <Define />
+                  <Undefine />
+                  <IncludePath />
                 </VariousControls>
               </Aads>
             </GroupArmAds>
@@ -3943,11 +4107,6 @@
               <FileName>app_oled.c</FileName>
               <FileType>1</FileType>
               <FilePath>../CM4/Application/app_oled.c</FilePath>
-            </File>
-            <File>
-              <FileName>oled_ui.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>../CM4/Application/oled_ui.c</FilePath>
             </File>
             <File>
               <FileName>app_oled.h</FileName>
@@ -3971,8 +4130,8 @@
               <AssembleAssemblyFile>2</AssembleAssemblyFile>
               <PublicsOnly>2</PublicsOnly>
               <StopOnExitCode>11</StopOnExitCode>
-              <CustomArgument></CustomArgument>
-              <IncludeLibraryModules></IncludeLibraryModules>
+              <CustomArgument />
+              <IncludeLibraryModules />
               <ComprImg>1</ComprImg>
             </CommonProperty>
             <GroupArmAds>
@@ -4001,10 +4160,10 @@
                 <v6WtE>2</v6WtE>
                 <v6Rtti>2</v6Rtti>
                 <VariousControls>
-                  <MiscControls></MiscControls>
-                  <Define></Define>
-                  <Undefine></Undefine>
-                  <IncludePath></IncludePath>
+                  <MiscControls />
+                  <Define />
+                  <Undefine />
+                  <IncludePath />
                 </VariousControls>
               </Cads>
               <Aads>
@@ -4019,10 +4178,10 @@
                 <useXO>2</useXO>
                 <ClangAsOpt>0</ClangAsOpt>
                 <VariousControls>
-                  <MiscControls></MiscControls>
-                  <Define></Define>
-                  <Undefine></Undefine>
-                  <IncludePath></IncludePath>
+                  <MiscControls />
+                  <Define />
+                  <Undefine />
+                  <IncludePath />
                 </VariousControls>
               </Aads>
             </GroupArmAds>
@@ -4070,8 +4229,8 @@
               <AssembleAssemblyFile>2</AssembleAssemblyFile>
               <PublicsOnly>2</PublicsOnly>
               <StopOnExitCode>11</StopOnExitCode>
-              <CustomArgument></CustomArgument>
-              <IncludeLibraryModules></IncludeLibraryModules>
+              <CustomArgument />
+              <IncludeLibraryModules />
               <ComprImg>1</ComprImg>
             </CommonProperty>
             <GroupArmAds>
@@ -4100,10 +4259,10 @@
                 <v6WtE>2</v6WtE>
                 <v6Rtti>2</v6Rtti>
                 <VariousControls>
-                  <MiscControls></MiscControls>
-                  <Define></Define>
-                  <Undefine></Undefine>
-                  <IncludePath></IncludePath>
+                  <MiscControls />
+                  <Define />
+                  <Undefine />
+                  <IncludePath />
                 </VariousControls>
               </Cads>
               <Aads>
@@ -4118,10 +4277,10 @@
                 <useXO>2</useXO>
                 <ClangAsOpt>0</ClangAsOpt>
                 <VariousControls>
-                  <MiscControls></MiscControls>
-                  <Define></Define>
-                  <Undefine></Undefine>
-                  <IncludePath></IncludePath>
+                  <MiscControls />
+                  <Define />
+                  <Undefine />
+                  <IncludePath />
                 </VariousControls>
               </Aads>
             </GroupArmAds>
@@ -4154,8 +4313,8 @@
               <AssembleAssemblyFile>2</AssembleAssemblyFile>
               <PublicsOnly>2</PublicsOnly>
               <StopOnExitCode>11</StopOnExitCode>
-              <CustomArgument></CustomArgument>
-              <IncludeLibraryModules></IncludeLibraryModules>
+              <CustomArgument />
+              <IncludeLibraryModules />
               <ComprImg>1</ComprImg>
             </CommonProperty>
             <GroupArmAds>
@@ -4184,10 +4343,10 @@
                 <v6WtE>2</v6WtE>
                 <v6Rtti>2</v6Rtti>
                 <VariousControls>
-                  <MiscControls></MiscControls>
-                  <Define></Define>
-                  <Undefine></Undefine>
-                  <IncludePath></IncludePath>
+                  <MiscControls />
+                  <Define />
+                  <Undefine />
+                  <IncludePath />
                 </VariousControls>
               </Cads>
               <Aads>
@@ -4202,10 +4361,10 @@
                 <useXO>2</useXO>
                 <ClangAsOpt>0</ClangAsOpt>
                 <VariousControls>
-                  <MiscControls></MiscControls>
-                  <Define></Define>
-                  <Undefine></Undefine>
-                  <IncludePath></IncludePath>
+                  <MiscControls />
+                  <Define />
+                  <Undefine />
+                  <IncludePath />
                 </VariousControls>
               </Aads>
             </GroupArmAds>
@@ -4248,8 +4407,8 @@
               <AssembleAssemblyFile>2</AssembleAssemblyFile>
               <PublicsOnly>2</PublicsOnly>
               <StopOnExitCode>11</StopOnExitCode>
-              <CustomArgument></CustomArgument>
-              <IncludeLibraryModules></IncludeLibraryModules>
+              <CustomArgument />
+              <IncludeLibraryModules />
               <ComprImg>1</ComprImg>
             </CommonProperty>
             <GroupArmAds>
@@ -4278,10 +4437,10 @@
                 <v6WtE>2</v6WtE>
                 <v6Rtti>2</v6Rtti>
                 <VariousControls>
-                  <MiscControls></MiscControls>
-                  <Define></Define>
-                  <Undefine></Undefine>
-                  <IncludePath></IncludePath>
+                  <MiscControls />
+                  <Define />
+                  <Undefine />
+                  <IncludePath />
                 </VariousControls>
               </Cads>
               <Aads>
@@ -4296,10 +4455,10 @@
                 <useXO>2</useXO>
                 <ClangAsOpt>0</ClangAsOpt>
                 <VariousControls>
-                  <MiscControls></MiscControls>
-                  <Define></Define>
-                  <Undefine></Undefine>
-                  <IncludePath></IncludePath>
+                  <MiscControls />
+                  <Define />
+                  <Undefine />
+                  <IncludePath />
                 </VariousControls>
               </Aads>
             </GroupArmAds>
@@ -4323,7 +4482,7 @@
           </Files>
         </Group>
         <Group>
-          <GroupName>CM4\BSP</GroupName>
+          <GroupName>CM4\Application\UI</GroupName>
           <GroupOption>
             <CommonProperty>
               <UseCPPCompiler>0</UseCPPCompiler>
@@ -4337,8 +4496,8 @@
               <AssembleAssemblyFile>2</AssembleAssemblyFile>
               <PublicsOnly>2</PublicsOnly>
               <StopOnExitCode>11</StopOnExitCode>
-              <CustomArgument></CustomArgument>
-              <IncludeLibraryModules></IncludeLibraryModules>
+              <CustomArgument />
+              <IncludeLibraryModules />
               <ComprImg>1</ComprImg>
             </CommonProperty>
             <GroupArmAds>
@@ -4367,10 +4526,10 @@
                 <v6WtE>2</v6WtE>
                 <v6Rtti>2</v6Rtti>
                 <VariousControls>
-                  <MiscControls></MiscControls>
-                  <Define></Define>
-                  <Undefine></Undefine>
-                  <IncludePath></IncludePath>
+                  <MiscControls />
+                  <Define />
+                  <Undefine />
+                  <IncludePath />
                 </VariousControls>
               </Cads>
               <Aads>
@@ -4385,10 +4544,184 @@
                 <useXO>2</useXO>
                 <ClangAsOpt>0</ClangAsOpt>
                 <VariousControls>
-                  <MiscControls></MiscControls>
-                  <Define></Define>
-                  <Undefine></Undefine>
-                  <IncludePath></IncludePath>
+                  <MiscControls />
+                  <Define />
+                  <Undefine />
+                  <IncludePath />
+                </VariousControls>
+              </Aads>
+            </GroupArmAds>
+          </GroupOption>
+          <Files>
+            <File>
+              <FileName>oled_ui_assets.inc</FileName>
+              <FileType>5</FileType>
+              <FilePath>../CM4/Application/UI/Assets/oled_ui_assets.inc</FilePath>
+            </File>
+            <File>
+              <FileName>oled_ui_bitmaps.inc</FileName>
+              <FileType>5</FileType>
+              <FilePath>../CM4/Application/UI/Assets/oled_ui_bitmaps.inc</FilePath>
+            </File>
+            <File>
+              <FileName>oled_ui.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>../CM4/Application/UI/oled_ui.c</FilePath>
+            </File>
+            <File>
+              <FileName>oled_ui.h</FileName>
+              <FileType>5</FileType>
+              <FilePath>../CM4/Application/UI/oled_ui.h</FilePath>
+            </File>
+            <File>
+              <FileName>oled_ui_anim.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>../CM4/Application/UI/oled_ui_anim.c</FilePath>
+            </File>
+            <File>
+              <FileName>oled_ui_anim.h</FileName>
+              <FileType>5</FileType>
+              <FilePath>../CM4/Application/UI/oled_ui_anim.h</FilePath>
+            </File>
+            <File>
+              <FileName>oled_ui_draw.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>../CM4/Application/UI/oled_ui_draw.c</FilePath>
+            </File>
+            <File>
+              <FileName>oled_ui_draw.h</FileName>
+              <FileType>5</FileType>
+              <FilePath>../CM4/Application/UI/oled_ui_draw.h</FilePath>
+            </File>
+            <File>
+              <FileName>oled_ui_input.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>../CM4/Application/UI/oled_ui_input.c</FilePath>
+            </File>
+            <File>
+              <FileName>oled_ui_input.h</FileName>
+              <FileType>5</FileType>
+              <FilePath>../CM4/Application/UI/oled_ui_input.h</FilePath>
+            </File>
+            <File>
+              <FileName>oled_ui_menu.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>../CM4/Application/UI/oled_ui_menu.c</FilePath>
+            </File>
+            <File>
+              <FileName>oled_ui_menu.h</FileName>
+              <FileType>5</FileType>
+              <FilePath>../CM4/Application/UI/oled_ui_menu.h</FilePath>
+            </File>
+            <File>
+              <FileName>oled_ui_page.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>../CM4/Application/UI/oled_ui_page.c</FilePath>
+            </File>
+            <File>
+              <FileName>oled_ui_page.h</FileName>
+              <FileType>5</FileType>
+              <FilePath>../CM4/Application/UI/oled_ui_page.h</FilePath>
+            </File>
+            <File>
+              <FileName>oled_ui_status.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>../CM4/Application/UI/oled_ui_status.c</FilePath>
+            </File>
+            <File>
+              <FileName>oled_ui_status.h</FileName>
+              <FileType>5</FileType>
+              <FilePath>../CM4/Application/UI/oled_ui_status.h</FilePath>
+            </File>
+            <File>
+              <FileName>oled_ui_tools.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>../CM4/Application/UI/oled_ui_tools.c</FilePath>
+            </File>
+            <File>
+              <FileName>oled_ui_tools.h</FileName>
+              <FileType>5</FileType>
+              <FilePath>../CM4/Application/UI/oled_ui_tools.h</FilePath>
+            </File>
+            <File>
+              <FileName>oled_ui_font.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>../CM4/Application/UI/oled_ui_font.c</FilePath>
+            </File>
+            <File>
+              <FileName>oled_ui_font.h</FileName>
+              <FileType>5</FileType>
+              <FilePath>../CM4/Application/UI/oled_ui_font.h</FilePath>
+            </File>
+          </Files>
+        </Group>
+        <Group>
+          <GroupName>CM4\BSP</GroupName>
+          <GroupOption>
+            <CommonProperty>
+              <UseCPPCompiler>0</UseCPPCompiler>
+              <RVCTCodeConst>0</RVCTCodeConst>
+              <RVCTZI>0</RVCTZI>
+              <RVCTOtherData>0</RVCTOtherData>
+              <ModuleSelection>0</ModuleSelection>
+              <IncludeInBuild>0</IncludeInBuild>
+              <AlwaysBuild>2</AlwaysBuild>
+              <GenerateAssemblyFile>2</GenerateAssemblyFile>
+              <AssembleAssemblyFile>2</AssembleAssemblyFile>
+              <PublicsOnly>2</PublicsOnly>
+              <StopOnExitCode>11</StopOnExitCode>
+              <CustomArgument />
+              <IncludeLibraryModules />
+              <ComprImg>1</ComprImg>
+            </CommonProperty>
+            <GroupArmAds>
+              <Cads>
+                <interw>2</interw>
+                <Optim>0</Optim>
+                <oTime>2</oTime>
+                <SplitLS>2</SplitLS>
+                <OneElfS>2</OneElfS>
+                <Strict>2</Strict>
+                <EnumInt>2</EnumInt>
+                <PlainCh>2</PlainCh>
+                <Ropi>2</Ropi>
+                <Rwpi>2</Rwpi>
+                <wLevel>4</wLevel>
+                <uThumb>2</uThumb>
+                <uSurpInc>2</uSurpInc>
+                <uC99>2</uC99>
+                <uGnu>2</uGnu>
+                <useXO>2</useXO>
+                <v6Lang>0</v6Lang>
+                <v6LangP>0</v6LangP>
+                <vShortEn>2</vShortEn>
+                <vShortWch>2</vShortWch>
+                <v6Lto>2</v6Lto>
+                <v6WtE>2</v6WtE>
+                <v6Rtti>2</v6Rtti>
+                <VariousControls>
+                  <MiscControls />
+                  <Define />
+                  <Undefine />
+                  <IncludePath />
+                </VariousControls>
+              </Cads>
+              <Aads>
+                <interw>2</interw>
+                <Ropi>2</Ropi>
+                <Rwpi>2</Rwpi>
+                <thumb>2</thumb>
+                <SplitLS>2</SplitLS>
+                <SwStkChk>2</SwStkChk>
+                <NoWarn>2</NoWarn>
+                <uSurpInc>2</uSurpInc>
+                <useXO>2</useXO>
+                <ClangAsOpt>0</ClangAsOpt>
+                <VariousControls>
+                  <MiscControls />
+                  <Define />
+                  <Undefine />
+                  <IncludePath />
                 </VariousControls>
               </Aads>
             </GroupArmAds>
@@ -4404,65 +4737,210 @@
               <FileType>5</FileType>
               <FilePath>../CM4/BSP/bsp_iic.h</FilePath>
             </File>
+            <File>
+              <FileName>bsp_u7.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>../CM4/BSP/bsp_u7.c</FilePath>
+            </File>
+            <File>
+              <FileName>bsp_u7.h</FileName>
+              <FileType>5</FileType>
+              <FilePath>../CM4/BSP/bsp_u7.h</FilePath>
+            </File>
           </Files>
         </Group>
         <Group>
-          <GroupName>CM7\Application</GroupName>
+          <GroupName>Application V3 / Core</GroupName>
           <Files>
+            <File>
+              <FileName>app_context.h</FileName>
+              <FileType>5</FileType>
+              <FilePath>../CM7/ApplicationV3/Core/app_context.h</FilePath>
+            </File>
+            <File>
+              <FileName>app_events.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>../CM7/ApplicationV3/Core/app_events.c</FilePath>
+            </File>
+            <File>
+              <FileName>app_events.h</FileName>
+              <FileType>5</FileType>
+              <FilePath>../CM7/ApplicationV3/Core/app_events.h</FilePath>
+            </File>
             <File>
               <FileName>app_main.c</FileName>
               <FileType>1</FileType>
-              <FilePath>../CM7/Application/app_main.c</FilePath>
+              <FilePath>../CM7/ApplicationV3/Core/app_main.c</FilePath>
             </File>
             <File>
-              <FileName>app_camera.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>../CM7/Application/app_camera.c</FilePath>
-            </File>
-            <File>
-              <FileName>app_camera.h</FileName>
+              <FileName>app_main.h</FileName>
               <FileType>5</FileType>
-              <FilePath>../CM7/Application/app_camera.h</FilePath>
+              <FilePath>../CM7/ApplicationV3/Core/app_main.h</FilePath>
             </File>
             <File>
-              <FileName>app_uvc_bridge.c</FileName>
+              <FileName>app_messages.c</FileName>
               <FileType>1</FileType>
-              <FilePath>../CM7/Application/app_uvc_bridge.c</FilePath>
+              <FilePath>../CM7/ApplicationV3/Core/app_messages.c</FilePath>
             </File>
             <File>
-              <FileName>app_uvc_bridge.h</FileName>
+              <FileName>app_messages.h</FileName>
               <FileType>5</FileType>
-              <FilePath>../CM7/Application/app_uvc_bridge.h</FilePath>
+              <FilePath>../CM7/ApplicationV3/Core/app_messages.h</FilePath>
+            </File>
+            <File>
+              <FileName>app_services.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>../CM7/ApplicationV3/Core/app_services.c</FilePath>
+            </File>
+            <File>
+              <FileName>app_services.h</FileName>
+              <FileType>5</FileType>
+              <FilePath>../CM7/ApplicationV3/Core/app_services.h</FilePath>
+            </File>
+            <File>
+              <FileName>app_status.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>../CM7/ApplicationV3/Core/app_status.c</FilePath>
+            </File>
+            <File>
+              <FileName>app_status.h</FileName>
+              <FileType>5</FileType>
+              <FilePath>../CM7/ApplicationV3/Core/app_status.h</FilePath>
+            </File>
+            <File>
+              <FileName>app_tasks.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>../CM7/ApplicationV3/Core/app_tasks.c</FilePath>
+            </File>
+            <File>
+              <FileName>app_tasks.h</FileName>
+              <FileType>5</FileType>
+              <FilePath>../CM7/ApplicationV3/Core/app_tasks.h</FilePath>
             </File>
             <File>
               <FileName>video_config.c</FileName>
               <FileType>1</FileType>
-              <FilePath>../CM7/Application/video_config.c</FilePath>
+              <FilePath>../CM7/ApplicationV3/Core/video_config.c</FilePath>
             </File>
             <File>
               <FileName>video_config.h</FileName>
               <FileType>5</FileType>
-              <FilePath>../CM7/Application/video_config.h</FilePath>
+              <FilePath>../CM7/ApplicationV3/Core/video_config.h</FilePath>
             </File>
+          </Files>
+        </Group>
+        <Group>
+          <GroupName>Application V3 / Runtime</GroupName>
+          <Files>
             <File>
-              <FileName>app_storage.c</FileName>
+              <FileName>queue_pool.c</FileName>
               <FileType>1</FileType>
-              <FilePath>../CM7/Application/app_storage.c</FilePath>
+              <FilePath>../CM7/ApplicationV3/Runtime/queue_pool.c</FilePath>
             </File>
             <File>
-              <FileName>app_storage.h</FileName>
+              <FileName>queue_pool.h</FileName>
               <FileType>5</FileType>
-              <FilePath>../CM7/Application/app_storage.h</FilePath>
+              <FilePath>../CM7/ApplicationV3/Runtime/queue_pool.h</FilePath>
             </File>
             <File>
-              <FileName>app_frame_dispatcher.c</FileName>
+              <FileName>service_event_loop.c</FileName>
               <FileType>1</FileType>
-              <FilePath>../CM7/Application/app_frame_dispatcher.c</FilePath>
+              <FilePath>../CM7/ApplicationV3/Runtime/service_event_loop.c</FilePath>
             </File>
             <File>
-              <FileName>app_frame_dispatcher.h</FileName>
+              <FileName>service_event_loop.h</FileName>
               <FileType>5</FileType>
-              <FilePath>../CM7/Application/app_frame_dispatcher.h</FilePath>
+              <FilePath>../CM7/ApplicationV3/Runtime/service_event_loop.h</FilePath>
+            </File>
+            <File>
+              <FileName>service_record.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>../CM7/ApplicationV3/Runtime/service_record.c</FilePath>
+            </File>
+            <File>
+              <FileName>service_record.h</FileName>
+              <FileType>5</FileType>
+              <FilePath>../CM7/ApplicationV3/Runtime/service_record.h</FilePath>
+            </File>
+            <File>
+              <FileName>service_events.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>../CM7/ApplicationV3/Runtime/service_events.c</FilePath>
+            </File>
+            <File>
+              <FileName>service_events.h</FileName>
+              <FileType>5</FileType>
+              <FilePath>../CM7/ApplicationV3/Runtime/service_events.h</FilePath>
+            </File>
+            <File>
+              <FileName>service_mailbox.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>../CM7/ApplicationV3/Runtime/service_mailbox.c</FilePath>
+            </File>
+            <File>
+              <FileName>service_mailbox.h</FileName>
+              <FileType>5</FileType>
+              <FilePath>../CM7/ApplicationV3/Runtime/service_mailbox.h</FilePath>
+            </File>
+          </Files>
+        </Group>
+        <Group>
+          <GroupName>Application V3 / Services</GroupName>
+          <Files>
+            <File>
+              <FileName>camera_service.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>../CM7/ApplicationV3/Services/Camera/camera_service.c</FilePath>
+            </File>
+            <File>
+              <FileName>storage_service.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>../CM7/ApplicationV3/Services/Storage/storage_service.c</FilePath>
+            </File>
+            <File>
+              <FileName>usb_service.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>../CM7/ApplicationV3/Services/USB/usb_service.c</FilePath>
+            </File>
+            <File>
+              <FileName>camera_service.h</FileName>
+              <FileType>5</FileType>
+              <FilePath>../CM7/ApplicationV3/Services/Camera/camera_service.h</FilePath>
+            </File>
+            <File>
+              <FileName>storage_service.h</FileName>
+              <FileType>5</FileType>
+              <FilePath>../CM7/ApplicationV3/Services/Storage/storage_service.h</FilePath>
+            </File>
+            <File>
+              <FileName>usb_service.h</FileName>
+              <FileType>5</FileType>
+              <FilePath>../CM7/ApplicationV3/Services/USB/usb_service.h</FilePath>
+            </File>
+          </Files>
+        </Group>
+        <Group>
+          <GroupName>Application V3 / Tasks</GroupName>
+          <Files>
+            <File>
+              <FileName>ipc_task.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>../CM7/ApplicationV3/Tasks/ipc_task.c</FilePath>
+            </File>
+            <File>
+              <FileName>ipc_task.h</FileName>
+              <FileType>5</FileType>
+              <FilePath>../CM7/ApplicationV3/Tasks/ipc_task.h</FilePath>
+            </File>
+            <File>
+              <FileName>service_tasks.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>../CM7/ApplicationV3/Tasks/service_tasks.c</FilePath>
+            </File>
+            <File>
+              <FileName>service_tasks.h</FileName>
+              <FileType>5</FileType>
+              <FilePath>../CM7/ApplicationV3/Tasks/service_tasks.h</FilePath>
             </File>
           </Files>
         </Group>
@@ -4869,121 +5347,6 @@
               <FileType>5</FileType>
               <FilePath>../Common/Inc/runtime_event.h</FilePath>
             </File>
-            <File>
-              <FileName>app_messages.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>../CM7/Application/app_messages.c</FilePath>
-            </File>
-            <File>
-              <FileName>app_camera_lifecycle.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>../CM7/Application/app_camera_lifecycle.c</FilePath>
-            </File>
-            <File>
-              <FileName>app_camera_lifecycle_replay.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>../CM7/Application/app_camera_lifecycle_replay.c</FilePath>
-            </File>
-            <File>
-              <FileName>app_camera_qualification.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>../CM7/Application/app_camera_qualification.c</FilePath>
-            </File>
-            <File>
-              <FileName>app_messages.h</FileName>
-              <FileType>5</FileType>
-              <FilePath>../CM7/Application/app_messages.h</FilePath>
-            </File>
-            <File>
-              <FileName>app_tasks.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>../CM7/Application/app_tasks.c</FilePath>
-            </File>
-            <File>
-              <FileName>app_tasks.h</FileName>
-              <FileType>5</FileType>
-              <FilePath>../CM7/Application/app_tasks.h</FilePath>
-            </File>
-            <File>
-              <FileName>app_events.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>../CM7/Application/app_events.c</FilePath>
-            </File>
-            <File>
-              <FileName>app_events.h</FileName>
-              <FileType>5</FileType>
-              <FilePath>../CM7/Application/app_events.h</FilePath>
-            </File>
-            <File>
-              <FileName>camera_task.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>../CM7/Application/Tasks/camera_task.c</FilePath>
-            </File>
-            <File>
-              <FileName>camera_task.h</FileName>
-              <FileType>5</FileType>
-              <FilePath>../CM7/Application/Tasks/camera_task.h</FilePath>
-            </File>
-            <File>
-              <FileName>usb_task.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>../CM7/Application/Tasks/usb_task.c</FilePath>
-            </File>
-            <File>
-              <FileName>usb_task.h</FileName>
-              <FileType>5</FileType>
-              <FilePath>../CM7/Application/Tasks/usb_task.h</FilePath>
-            </File>
-            <File>
-              <FileName>control_task.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>../CM7/Application/Tasks/control_task.c</FilePath>
-            </File>
-            <File>
-              <FileName>control_task.h</FileName>
-              <FileType>5</FileType>
-              <FilePath>../CM7/Application/Tasks/control_task.h</FilePath>
-            </File>
-            <File>
-              <FileName>app_usb.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>../CM7/Application/app_usb.c</FilePath>
-            </File>
-            <File>
-              <FileName>app_usb.h</FileName>
-              <FileType>5</FileType>
-              <FilePath>../CM7/Application/app_usb.h</FilePath>
-            </File>
-            <File>
-              <FileName>app_status.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>../CM7/Application/app_status.c</FilePath>
-            </File>
-            <File>
-              <FileName>app_status.h</FileName>
-              <FileType>5</FileType>
-              <FilePath>../CM7/Application/app_status.h</FilePath>
-            </File>
-            <File>
-              <FileName>ipc_task.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>../CM7/Application/Tasks/ipc_task.c</FilePath>
-            </File>
-            <File>
-              <FileName>ipc_task.h</FileName>
-              <FileType>5</FileType>
-              <FilePath>../CM7/Application/Tasks/ipc_task.h</FilePath>
-            </File>
-            <File>
-              <FileName>storage_task.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>../CM7/Application/Tasks/storage_task.c</FilePath>
-            </File>
-            <File>
-              <FileName>storage_task.h</FileName>
-              <FileType>5</FileType>
-              <FilePath>../CM7/Application/Tasks/storage_task.h</FilePath>
-            </File>
           </Files>
         </Group>
         <Group>
@@ -5189,17 +5552,17 @@
   </Targets>
 
   <RTE>
-    <apis/>
+    <apis />
     <components>
       <component Cclass="CMSIS" Cgroup="CORE" Cvendor="ARM" Cversion="4.3.0" condition="CMSIS Core">
-        <package name="CMSIS" schemaVersion="1.3" url="http://www.keil.com/pack/" vendor="ARM" version="4.5.0"/>
+        <package name="CMSIS" schemaVersion="1.3" url="http://www.keil.com/pack/" vendor="ARM" version="4.5.0" />
         <targetInfos>
-          <targetInfo name="h7_mac_CM4"/>
-          <targetInfo name="h7_mac_CM7"/>
+          <targetInfo name="h7_mac_CM4" />
+          <targetInfo name="h7_mac_CM7" />
         </targetInfos>
       </component>
     </components>
-    <files/>
+    <files />
   </RTE>
 
   <LayerInfo>

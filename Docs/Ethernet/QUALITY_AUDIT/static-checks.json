@@ -1,0 +1,18 @@
+{
+  "working/default": {
+    "exit": 2,
+    "lines": 213
+  },
+  "working/cr-at-eol": {
+    "exit": 2,
+    "lines": 1
+  },
+  "committed-project/default": {
+    "exit": 2,
+    "lines": 882
+  },
+  "committed-project/cr-at-eol": {
+    "exit": 0,
+    "lines": 0
+  }
+}

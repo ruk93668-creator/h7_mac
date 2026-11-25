@@ -1,0 +1,110 @@
+# Keil XML 清单
+
+## h7_mac_CM4
+
+- 相对 HEAD 目标 XML 一致：True
+- 编译源条目：106，重复：[]，缺失：[]
+- Scatter：`.\h7_mac_CM4_custom.sct`
+- Define：`CORE_CM4,USE_HAL_DRIVER,STM32H747xx,USE_PWR_LDO_SUPPLY`
+- IncludePath：`../CM4/Core/Inc;../Drivers/STM32H7xx_HAL_Driver/Inc;../Drivers/STM32H7xx_HAL_Driver/Inc/Legacy;../Drivers/CMSIS/Device/ST/STM32H7xx/Include;../Drivers/CMSIS/Include;..\Common\Inc;..\Board\Inc;..\CM4\Application;..\CM4\Service;..\CM4\Device\Inc;..\CM4\Platform;..\CM4\BSP;..\CM4\Framework`
+
+- Application/MDK-ARM（2 项）
+- Application/User/CM4/Core（3 项）
+- Application/User/CM7/Core（3 项）
+- Drivers/STM32H7xx_HAL_Driver（24 项）
+- Drivers/CMSIS（1 项）
+- Common（16 项）
+- Board（0 项）
+- CM4\Application（4 项）
+- CM4\Framework（5 项）
+- CM4\Service（2 项）
+- CM4\Device（4 项）
+- CM4\Platform（3 项）
+- CM4\BSP（2 项）
+- CM7\Application（11 项）
+- CM7\Framework（5 项）
+- CM7\Service（15 项）
+- CM7\Device（6 项）
+- CM7\Media（4 项）
+- CM7\Platform（13 项）
+- CM7\BSP（15 项）
+- Middlewares/USB_Device_Core（3 项）
+- CM7 FreeRTOS P0（8 项）
+- CM7 Native Runtime（20 项）
+- FatFs（1 项）
+- ::CMSIS（0 项）
+
+## h7_mac_CM7
+
+- 相对 HEAD 目标 XML 一致：False
+- 编译源条目：148，重复：[]，缺失：[]
+- Scatter：`.\h7_mac_CM7_custom.sct`
+- Define：`CORE_CM7,USE_HAL_DRIVER,STM32H747xx,USE_PWR_LDO_SUPPLY,APP_VIDEO_MJPEG_MODE=1,ETH_LWIP_DHCP,ETH_LWIP_E5`
+- IncludePath：`../Platform/Ethernet;../CM7/Core/Inc;../Drivers/STM32H7xx_HAL_Driver/Inc;../Drivers/STM32H7xx_HAL_Driver/Inc/Legacy;../Drivers/CMSIS/Device/ST/STM32H7xx/Include;../Drivers/CMSIS/Include;..\Common\Inc;..\Board\Inc;..\CM7\Application;..\CM7\Service;..\CM7\Device\Inc;..\CM7\Media\Inc;..\CM7\Platform;..\CM7\BSP;..\CM7\Framework;..\CM7\Device\Components\OV5640;../Middlewares/ST/STM32_USB_Device_Library/Core/Inc;../Middlewares/Third_Party/FreeRTOS/Source/include;../Middlewares/Third_Party/FreeRTOS/Source/portable/RVDS/ARM_CM7/r0p1;../Middlewares/Third_Party/FatFs;../CM7/Service/Ethernet;../ThirdParty/lwip/src/include`
+
+- Application/MDK-ARM（2 项）
+- Application/User/CM4/Core（3 项）
+- Application/User/CM7/Core（3 项）
+- Drivers/STM32H7xx_HAL_Driver（24 项）
+- Drivers/CMSIS（1 项）
+- Common（16 项）
+- Board（0 项）
+- CM4\Application（4 项）
+- CM4\Framework（5 项）
+- CM4\Service（2 项）
+- CM4\Device（4 项）
+- CM4\Platform（3 项）
+- CM4\BSP（2 项）
+- CM7\Application（11 项）
+- CM7\Framework（5 项）
+- CM7\Service（15 项）
+- CM7\Device（6 项）
+- CM7\Media（4 项）
+- CM7\Platform（14 项）
+- CM7\BSP（15 项）
+- Middlewares/USB_Device_Core（3 项）
+- CM7 FreeRTOS P0（8 项）
+- CM7 Native Runtime（25 项）
+- FatFs（1 项）
+- ::CMSIS（0 项）
+- Ethernet independent driver（5 项）
+  - `../Platform/Ethernet/eth_phy.c`
+  - `../Platform/Ethernet/eth_dma.c`
+  - `../Platform/Ethernet/eth_memory.c`
+  - `../Platform/Ethernet/eth_mac.c`
+  - `../Platform/Ethernet/eth_board_stm32h747.c`
+- Ethernet lwIP port（7 项）
+  - `../Platform/Ethernet/eth_netif.c`
+  - `../Platform/Ethernet/eth_network.c`
+  - `../Platform/Ethernet/eth_udp.c`
+  - `../Platform/Ethernet/eth_tcp.c`
+  - `../Platform/Ethernet/eth_transport.c`
+  - `../Platform/Ethernet/eth_lwip_time.c`
+  - `../Platform/Ethernet/eth_lwip_assert.c`
+- Ethernet Service（2 项）
+  - `../CM7/Service/Ethernet/eth_http.c`
+  - `../CM7/Service/Ethernet/eth_mjpeg.c`
+- Ethernet lwIP 2.2.1（23 项）
+  - `../ThirdParty/lwip/src/core/def.c`
+  - `../ThirdParty/lwip/src/core/init.c`
+  - `../ThirdParty/lwip/src/core/inet_chksum.c`
+  - `../ThirdParty/lwip/src/core/ip.c`
+  - `../ThirdParty/lwip/src/core/mem.c`
+  - `../ThirdParty/lwip/src/core/memp.c`
+  - `../ThirdParty/lwip/src/core/netif.c`
+  - `../ThirdParty/lwip/src/core/pbuf.c`
+  - `../ThirdParty/lwip/src/core/raw.c`
+  - `../ThirdParty/lwip/src/core/stats.c`
+  - `../ThirdParty/lwip/src/core/sys.c`
+  - `../ThirdParty/lwip/src/core/timeouts.c`
+  - `../ThirdParty/lwip/src/core/ipv4/etharp.c`
+  - `../ThirdParty/lwip/src/core/ipv4/icmp.c`
+  - `../ThirdParty/lwip/src/core/ipv4/ip4.c`
+  - `../ThirdParty/lwip/src/core/ipv4/ip4_addr.c`
+  - `../ThirdParty/lwip/src/netif/ethernet.c`
+  - `../ThirdParty/lwip/src/core/udp.c`
+  - `../ThirdParty/lwip/src/core/ipv4/dhcp.c`
+  - `../ThirdParty/lwip/src/core/ipv4/acd.c`
+  - `../ThirdParty/lwip/src/core/tcp.c`
+  - `../ThirdParty/lwip/src/core/tcp_in.c`
+  - `../ThirdParty/lwip/src/core/tcp_out.c`

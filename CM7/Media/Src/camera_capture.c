@@ -22,8 +22,12 @@
 //无效缓冲区索引，表示未关联缓冲区
 #define CAMERA_BUFFER_INDEX_INVALID    UINT8_MAX
 
+// 旧入口使用私有所有者标记，但占用 USB 的同一个配额
+#define CAMERA_STREAM_LEGACY_OWNER      ((uint8_t)CAMERA_FRAME_CONSUMER_COUNT)
+
 //首1KB保留，Snapshot与Stream复用其后的空间
 #define CAMERA_BUFFER_OFFSET    0x00000400UL
+//固定长度图像物理槽的首地址
 #define CAMERA_BUFFER_BASE      (BSP_SDRAM_BASE + CAMERA_BUFFER_OFFSET)
 
 //保留Snapshot原有63KB容量，不代表整个SDRAM业务窗口
@@ -49,6 +53,7 @@
 
 //JPEG只接收一次DMA窗口，预留容量不等于可传输整块600KiB
 #define CAMERA_JPEG_CAPACITY_BYTES (0xFFFFU * 4U)
+//采集JPEG时等待完整帧的上限，单位毫秒
 #define CAMERA_JPEG_TIMEOUT_MS 1000U
 
 #if CAMERA_JPEG_CAPACITY_BYTES > CAMERA_STREAM_BUFFER_CAPACITY || \
@@ -77,14 +82,20 @@ typedef enum
 //单帧采集上下文
 typedef struct
 {
+    //单帧采集使用的物理写入区
     uint8_t *framebuffer;
+    //物理图像区域可安全写入的字节数
     uint32_t frame_capacity;
+    //配置要求的图像长度，单位字节
     uint32_t frame_bytes;
+    //已经确认可以对外读取的数据字节数
     uint32_t valid_bytes;
 
     //JPEG由硬件确认已写入内存的范围，文件有效长度另行解析
     uint32_t received_bytes;
+    //采集启动时刻，用于有界等待
     uint32_t start_tick;
+    //当前采集等待上限，单位毫秒
     uint32_t timeout_ms;
 } CameraSnapshot_t;
 
@@ -94,6 +105,7 @@ typedef SysResult_t (*CameraStream_ReplaceFn)(
     uint32_t *new_buffer
 );
 
+//固定长度采集槽的物理所有权状态
 typedef enum
 {
     CAMERA_BUFFER_FREE = 0,
@@ -102,17 +114,25 @@ typedef enum
     CAMERA_BUFFER_IN_USE
 } CameraBufferState_t;
 
+//单个固定长度图像槽的地址和所有权
 typedef struct
 {
+    //调用者可读取的图像地址，受当前租约或帧引用保护
     uint8_t *data;
+    //预留的数据容量，单位或元素数由所属对象决定
     uint32_t capacity;
 
     //JPEG每帧长度不同，YUY2仍使用stream.frame_bytes
     uint32_t valid_bytes;
+    //所属通道的终结序号，用于检查发布顺序
     uint32_t sequence;
+    //本对象当前所处的生命周期或传输状态
     CameraBufferState_t state;
+    uint32_t lease_id; // 仅在 IN_USE 时有效，归还后清零
+    uint8_t consumer;  // 实际借出者，旧入口与显式租约分开识别
 } CameraFrameBuffer_t;
 
+//由CameraTask推进的连续固定长度采集状态
 typedef struct
 {
 
@@ -128,8 +148,8 @@ typedef struct
     //最新完整帧索引，没有待取图像时为无效值
     uint8_t ready_index;
 
-    //Application正在使用的帧索引，归还前禁止DMA覆盖
-    uint8_t in_use_index;
+    uint32_t generation;    // 合法新实例分配，回绕前拒绝启动
+    uint32_t next_lease_id; // 只在当前实例发放编号
 
     //帧序号计数器，每次完成后递增，丢帧也计数
     uint32_t next_sequence;
@@ -145,13 +165,21 @@ typedef struct
 //统一管理单帧与连续采集上下文
 typedef struct
 {
+    //初始化阶段提供的只读配置，生命周期内由所属模块读取
     CameraConfig_t config;
+    //当前选择的单帧或连续采集模式
     CameraCaptureMode_t mode;
+    //本对象当前所处的生命周期或传输状态
     CameraCaptureState_t state;
+    //底层当前或最近一次设备操作结果
     SysResult_t last_result;
+    //准备完成标志，防止使用未建立的对象
     bool initialized;
+    volatile bool raw_rotation_failed; // ISR 隔离新借出，不改动未提交的槽账本
 
+    //独立的单帧采集资源与进展状态
     CameraSnapshot_t snapshot;
+    //连续采集的物理缓冲与当前所有权
     CameraStream_t stream;
 } CameraCapture_t;
 
@@ -162,6 +190,7 @@ static CameraCapture_t s_capture;
 static uint32_t s_stop_attempt_sequence;
 //区分最近一次正常停止与ERROR后的保护性停止
 static uint32_t s_stop_attempt_kind;
+//已确认停止尝试的硬件返回值
 static SysResult_t s_stop_hardware_result = SYS_ERR_INVALID_STATE;
 
 //保存Application提供的普通C通知入口
@@ -253,7 +282,7 @@ static SysResult_t CameraCapture_CalcSize(
     const CameraConfig_t *config,
     uint32_t *required_bytes);
 
-//初始化五缓冲区地址和状态
+//初始化七缓冲区地址和状态
 static SysResult_t CameraStream_Init(
     CameraStream_t *me,
     const CameraConfig_t *config);
@@ -468,11 +497,11 @@ SysResult_t CameraCapture_StartStream(void)
         return SYS_ERR_BUSY;
     }
 
-    //JPEG连续流使用独立字节FIFO，不借用Snapshot或YUY2五缓冲
+    //JPEG连续流使用独立字节FIFO，不借用Snapshot或YUY2七缓冲
     if (CameraConfig_IsVariableLength(s_capture.config.format))
         return CameraJpegStream_Start();
 
-    //3. 初始化五缓冲状态
+    //3. 初始化七缓冲状态
     result = CameraStream_Init(
         stream,
         &s_capture.config
@@ -483,6 +512,7 @@ SysResult_t CameraCapture_StartStream(void)
 
     //4. 单帧字节数转换为DMA Word数量
     dma_words = stream->frame_bytes / sizeof(uint32_t);
+    s_capture.raw_rotation_failed = false;
 
     //5. 启动前先占用Stream模式和采集状态
     s_capture.mode = CAMERA_CAPTURE_MODE_STREAM;
@@ -691,12 +721,25 @@ SysResult_t CameraCapture_ReleaseFrame(void)
     return SYS_OK;
 }
 
+// 只查原物理槽；DCMI 完成中断不会创建或释放活动租约
+static bool CameraCapture_StreamHasLoan(void)
+{
+    uint32_t index;
+
+    if (s_capture.config.format == CAMERA_PIXEL_FORMAT_JPEG)
+        return CameraMjpegFifo_HasLoan();
+
+    for (index = 0U; index < CAMERA_STREAM_BUFFER_COUNT; ++index)
+        if (s_capture.stream.buffers[index].state == CAMERA_BUFFER_IN_USE)
+            return true;
+    return false;
+}
+
 //停止采集并恢复硬件，保留未释放缓冲区的所有权
 SysResult_t CameraCapture_Stop(void)
 {
     SysResult_t result;
     bool has_in_use = false;
-    uint32_t i;
 
     //1. 检查初始化与模式
     if (!s_capture.initialized)
@@ -716,8 +759,7 @@ SysResult_t CameraCapture_Stop(void)
     if (s_capture.state == CAMERA_CAPTURE_DRAINING)
     {
         //硬件已停止，最后一张SD租借归还后才能结束JPEG Stream
-        if (s_capture.mode == CAMERA_CAPTURE_MODE_STREAM &&
-            s_capture.config.format == CAMERA_PIXEL_FORMAT_JPEG && !CameraMjpegFifo_HasLoan())
+        if (s_capture.mode == CAMERA_CAPTURE_MODE_STREAM && !CameraCapture_StreamHasLoan())
         {
             s_capture.mode = CAMERA_CAPTURE_MODE_NONE;
             s_capture.state = CAMERA_CAPTURE_IDLE;
@@ -738,19 +780,7 @@ SysResult_t CameraCapture_Stop(void)
     //3. 检查Stream是否有Application持有的缓冲区
     if (s_capture.mode == CAMERA_CAPTURE_MODE_STREAM)
     {
-        if (s_capture.config.format == CAMERA_PIXEL_FORMAT_JPEG)
-            has_in_use = CameraMjpegFifo_HasLoan();
-        else
-        {
-            for (i = 0U; i < CAMERA_STREAM_BUFFER_COUNT; i++)
-            {
-                if (s_capture.stream.buffers[i].state == CAMERA_BUFFER_IN_USE)
-                {
-                    has_in_use = true;
-                    break;
-                }
-            }
-        }
+        has_in_use = CameraCapture_StreamHasLoan();
 
         //正常主动停止：先要求Application释放图像
         if (s_capture.state == CAMERA_CAPTURE_CAPTURING &&
@@ -854,6 +884,7 @@ static SysResult_t CameraCapture_CalcSize(
     return CameraConfig_GetFrameSize(config, required_bytes);
 }
 
+//检查格式、长度和固定缓冲边界，保持硬件不动
 SysResult_t CameraCapture_ValidateStreamConfig(const CameraConfig_t *config)
 {
     uint32_t bytes;
@@ -873,7 +904,7 @@ SysResult_t CameraCapture_ValidateStreamConfig(const CameraConfig_t *config)
         return SYS_OK;
     }
 
-    //固定长度格式仍按原五缓冲和单次DMA计数校验
+    //固定长度格式仍按原七缓冲和单次DMA计数校验
     result = CameraCapture_CalcSize(config, &bytes);
 
     if (result != SYS_OK)
@@ -886,6 +917,7 @@ SysResult_t CameraCapture_ValidateStreamConfig(const CameraConfig_t *config)
     return SYS_OK;
 }
 
+//按配置绑定七个物理槽并初始化DMA活动目标
 static SysResult_t CameraStream_Init(
     CameraStream_t *me,
     const CameraConfig_t *config)
@@ -926,13 +958,17 @@ static SysResult_t CameraStream_Init(
         return SYS_ERR_INVALID_ARG;
     }
 
-    //检查五缓冲是否超出SDRAM的MPU映射范围
+    //检查七缓冲是否超出SDRAM的MPU映射范围
     buffer_end = buffer_start +
                  (CAMERA_STREAM_BUFFER_COUNT *
                   CAMERA_STREAM_BUFFER_CAPACITY);
 
     if (buffer_end > (uintptr_t)CAMERA_STREAM_SDRAM_END)
         return SYS_ERR_INVALID_ARG;
+
+    // 在改写槽布局前拒绝耗尽的实例编号，旧凭据不能跨实例复用
+    if (me->generation == UINT32_MAX)
+        return SYS_ERR_NO_RESOURCE;
 
     //初始化三块物理缓冲区
     for (i = 0U; i < CAMERA_STREAM_BUFFER_COUNT; i++)
@@ -945,6 +981,8 @@ static SysResult_t CameraStream_Init(
             CAMERA_STREAM_BUFFER_CAPACITY;
 
         me->buffers[i].sequence = 0U;
+        me->buffers[i].lease_id = 0U;
+        me->buffers[i].consumer = 0U;
 
         me->buffers[i].state = CAMERA_BUFFER_FREE;
     }
@@ -961,7 +999,8 @@ static SysResult_t CameraStream_Init(
 
     //尚未向Application交付图像
     me->ready_index = CAMERA_BUFFER_INDEX_INVALID;
-    me->in_use_index = CAMERA_BUFFER_INDEX_INVALID;
+    ++me->generation;
+    me->next_lease_id = 0U;
 
     //保存当前格式的有效帧长度
     me->frame_bytes = frame_bytes;
@@ -973,45 +1012,58 @@ static SysResult_t CameraStream_Init(
     return SYS_OK;
 }
 
-//检查DMA、READY和IN_USE索引与缓冲状态一致
-static bool CameraStream_OwnershipValid(const CameraStream_t *me)
+// 从物理槽验证全部所有权：两块 DMA 不重复，每个消费者最多占用一槽
+static bool CameraStream_OwnershipValid(const CameraStream_t *stream)
 {
-    uint32_t i, free_count = 0U;
-    if (me == NULL || me->dma_m0_index >= CAMERA_STREAM_BUFFER_COUNT ||
-        me->dma_m1_index >= CAMERA_STREAM_BUFFER_COUNT || me->dma_m0_index == me->dma_m1_index)
-        return false;
-    if ((me->ready_index != CAMERA_BUFFER_INDEX_INVALID && me->ready_index >= CAMERA_STREAM_BUFFER_COUNT) ||
-        (me->in_use_index != CAMERA_BUFFER_INDEX_INVALID && me->in_use_index >= CAMERA_STREAM_BUFFER_COUNT))
+    uint32_t index, borrowers = 0U, spare_count = 0U;
+
+    if (stream == NULL || stream->generation == 0U ||
+        stream->dma_m0_index >= CAMERA_STREAM_BUFFER_COUNT ||
+        stream->dma_m1_index >= CAMERA_STREAM_BUFFER_COUNT ||
+        stream->dma_m0_index == stream->dma_m1_index)
         return false;
 
-    //最新READY索引不能指向DMA或借出帧，旧READY仅保留待回收
-    if (me->ready_index != CAMERA_BUFFER_INDEX_INVALID &&
-        (me->ready_index == me->dma_m0_index || me->ready_index == me->dma_m1_index ||
-         me->ready_index == me->in_use_index || me->buffers[me->ready_index].state != CAMERA_BUFFER_READY))
+    // 最新帧提示可以为空；非空时必须仍指向未借出的真实 READY
+    if (stream->ready_index != CAMERA_BUFFER_INDEX_INVALID &&
+        (stream->ready_index >= CAMERA_STREAM_BUFFER_COUNT ||
+         stream->buffers[stream->ready_index].state != CAMERA_BUFFER_READY))
         return false;
-    if (me->in_use_index != CAMERA_BUFFER_INDEX_INVALID &&
-        (me->in_use_index == me->dma_m0_index || me->in_use_index == me->dma_m1_index))
-        return false;
-    for (i = 0U; i < CAMERA_STREAM_BUFFER_COUNT; i++)
+
+    for (index = 0U; index < CAMERA_STREAM_BUFFER_COUNT; ++index)
     {
-        if (i == me->dma_m0_index || i == me->dma_m1_index)
-        {
-            if (me->buffers[i].state != CAMERA_BUFFER_DMA)
-                return false;
-        }
-        else if (i == me->in_use_index)
-        {
-            if (me->buffers[i].state != CAMERA_BUFFER_IN_USE)
-                return false;
-        }
-        else if (me->buffers[i].state == CAMERA_BUFFER_FREE)
-            free_count++;
-        else if (me->buffers[i].state != CAMERA_BUFFER_READY)
-            return false;
-    }
+        const CameraFrameBuffer_t *buffer = &stream->buffers[index];
 
-    //至少保留一个FREE，未完成采集的帧不能伪装成READY
-    return free_count >= 1U;
+        // DMA 目标必须与物理状态一致，且不能携带借用身份
+        if (index == stream->dma_m0_index || index == stream->dma_m1_index)
+        {
+            if (buffer->state != CAMERA_BUFFER_DMA || buffer->lease_id != 0U)
+                return false;
+            continue;
+        }
+
+        // FREE 和未借出的 READY 都可以作为下一次轮换目标
+        if (buffer->state == CAMERA_BUFFER_FREE || buffer->state == CAMERA_BUFFER_READY)
+        {
+            if (buffer->lease_id != 0U)
+                return false;
+            ++spare_count;
+            continue;
+        }
+
+        // 非 DMA、非候选槽必须是带有效租借身份的 IN_USE
+        if (buffer->state != CAMERA_BUFFER_IN_USE || buffer->lease_id == 0U ||
+            buffer->lease_id > stream->next_lease_id || buffer->consumer > CAMERA_STREAM_LEGACY_OWNER)
+            return false;
+
+        // 旧 API 占用 USB 配额，但其私有身份不能被显式 Release 冒用
+        const uint32_t consumer = buffer->consumer == CAMERA_STREAM_LEGACY_OWNER ?
+            CAMERA_FRAME_CONSUMER_USB : buffer->consumer;
+        const uint32_t bit = 1UL << consumer;
+        if ((borrowers & bit) != 0U)
+            return false;
+        borrowers |= bit;
+    }
+    return spare_count != 0U;
 }
 
 //优先使用多余FREE，只有一个FREE时回收最旧的未借出READY
@@ -1024,7 +1076,7 @@ static uint8_t CameraStream_FindReplaceable(const CameraStream_t *me)
         return CAMERA_BUFFER_INDEX_INVALID;
     for (i = 0U; i < CAMERA_STREAM_BUFFER_COUNT; i++)
     {
-        if (i == me->dma_m0_index || i == me->dma_m1_index || i == me->in_use_index)
+        if (i == me->dma_m0_index || i == me->dma_m1_index)
             continue;
         if (me->buffers[i].state == CAMERA_BUFFER_FREE)
         {
@@ -1043,7 +1095,8 @@ static uint8_t CameraStream_FindReplaceable(const CameraStream_t *me)
             }
         }
     }
-    return free_count > 1U ? free_index : ready_index;
+    // 满四个租约时只剩一块可轮换，唯一 FREE 同样合法
+    return free_count > 1U || ready_index == CAMERA_BUFFER_INDEX_INVALID ? free_index : ready_index;
 }
 
 //处理DMA完整帧并保留多个READY，只向消费者交付最新帧
@@ -1103,64 +1156,115 @@ static SysResult_t CameraStream_Rotate(
     return SYS_OK;
 }
 
-//获取完整帧，并取得缓冲区读取权
-static bool CameraStream_GetFrame(
-    CameraStream_t *me,
-    const CameraConfig_t *config,
-    CameraFrame_t *frame)
+// 查找当前可借出的最新 READY；旧接口仅使用原有的最新帧提示
+static uint8_t CameraStream_FindReady(const CameraStream_t *stream, uint8_t consumer)
+{
+    uint8_t latest = stream->ready_index;
+    uint32_t index, youngest_age = UINT32_MAX;
+
+    if (latest != CAMERA_BUFFER_INDEX_INVALID || consumer == CAMERA_STREAM_LEGACY_OWNER)
+        return latest;
+
+    // 最新帧已交付时，显式消费者可独立取得下一块尚未借出的 READY
+    for (index = 0U; index < CAMERA_STREAM_BUFFER_COUNT; ++index)
+    {
+        const CameraFrameBuffer_t *buffer = &stream->buffers[index];
+        uint32_t age = stream->next_sequence - buffer->sequence;
+        if (buffer->state == CAMERA_BUFFER_READY &&
+            (latest == CAMERA_BUFFER_INDEX_INVALID || age < youngest_age))
+        {
+            latest = (uint8_t)index;
+            youngest_age = age;
+        }
+    }
+    return latest;
+}
+
+// 按实际物理槽检查配额；旧调用与显式 USB 共享一个消费者配额
+static bool CameraStream_ConsumerHasLoan(const CameraStream_t *stream, uint8_t consumer)
+{
+    uint32_t index;
+    bool usb_quota = consumer == CAMERA_FRAME_CONSUMER_USB || consumer == CAMERA_STREAM_LEGACY_OWNER;
+
+    for (index = 0U; index < CAMERA_STREAM_BUFFER_COUNT; ++index)
+    {
+        const CameraFrameBuffer_t *buffer = &stream->buffers[index];
+        if (buffer->state == CAMERA_BUFFER_IN_USE &&
+            (buffer->consumer == consumer || (usb_quota &&
+             (buffer->consumer == CAMERA_FRAME_CONSUMER_USB ||
+              buffer->consumer == CAMERA_STREAM_LEGACY_OWNER))))
+            return true;
+    }
+    return false;
+}
+
+// 在同一个短临界区选择 READY 并提交槽身份，完成中断不能抢走该槽
+static SysResult_t CameraStream_Acquire(CameraStream_t *stream, const CameraConfig_t *config,
+    uint8_t consumer, CameraFrameLease_t *lease, CameraFrame_t *frame)
 {
     uint32_t primask;
     uint8_t index;
     CameraFrameBuffer_t *buffer;
-    bool success = false;
+    SysResult_t result = SYS_ERR_INVALID_STATE;
 
-    if (me == NULL || config == NULL || frame == NULL)
-        return false;
+    if (stream == NULL || config == NULL || lease == NULL || frame == NULL)
+        return SYS_ERR_INVALID_ARG;
 
-    //保存原中断屏蔽状态
     primask = __get_PRIMASK();
     __disable_irq();
+    // 换址不确定时冻结所有新借出，但已经发出的身份仍可归还
+    if ((stream == &s_capture.stream && s_capture.raw_rotation_failed) ||
+        !CameraStream_OwnershipValid(stream))
+        goto done;
 
-    index = me->ready_index;
-
-    if (CameraStream_OwnershipValid(me) &&
-        me->in_use_index == CAMERA_BUFFER_INDEX_INVALID &&
-        index < CAMERA_STREAM_BUFFER_COUNT &&
-        index != me->dma_m0_index &&
-        index != me->dma_m1_index)
+    index = CameraStream_FindReady(stream, consumer);
+    if (index == CAMERA_BUFFER_INDEX_INVALID || CameraStream_ConsumerHasLoan(stream, consumer))
     {
-        buffer = &me->buffers[index];
-
-        if (buffer->state == CAMERA_BUFFER_READY &&
-            buffer->data != NULL &&
-            me->frame_bytes != 0U &&
-            me->frame_bytes <= buffer->capacity)
-        {
-
-            //Application取得缓冲区所有权
-            buffer->state = CAMERA_BUFFER_IN_USE;
-            me->in_use_index = index;
-            me->ready_index = CAMERA_BUFFER_INDEX_INVALID;
-
-            //返回图像描述信息，不复制像素数据
-            frame->width = config->width;
-            frame->height = config->height;
-            frame->format = config->format;
-            frame->data = buffer->data;
-            frame->size_bytes = me->frame_bytes;
-            frame->data2 = NULL;
-            frame->size_bytes2 = 0U;
-
-            success = true;
-        }
+        result = SYS_ERR_BUSY;
+        goto done;
     }
 
-    //恢复原中断屏蔽状态
-    __set_PRIMASK(primask);
+    // 不发出回绕后的编号，避免旧凭据命中复用槽
+    if (stream->next_lease_id == UINT32_MAX)
+    {
+        result = SYS_ERR_NO_RESOURCE;
+        goto done;
+    }
 
-    return success;
+    buffer = &stream->buffers[index];
+    if (buffer->data == NULL || stream->frame_bytes == 0U || stream->frame_bytes > buffer->capacity)
+        goto done;
+
+    // 只从真实 READY 转成 IN_USE，失败路径不改写两个输出
+    buffer->state = CAMERA_BUFFER_IN_USE;
+    buffer->consumer = consumer;
+    buffer->lease_id = ++stream->next_lease_id;
+    if (stream->ready_index == index)
+        stream->ready_index = CAMERA_BUFFER_INDEX_INVALID;
+
+    *lease = (CameraFrameLease_t){stream->generation, buffer->lease_id, index,
+        (CameraFrameConsumer_t)consumer};
+    *frame = (CameraFrame_t){
+        .width = config->width, .height = config->height, .format = config->format,
+        .data = buffer->data, .size_bytes = stream->frame_bytes, .data2 = NULL, .size_bytes2 = 0U
+    };
+    result = SYS_OK;
+
+done:
+    __set_PRIMASK(primask);
+    return result;
 }
 
+// 旧入口保留单帧自检。借用时共享 USB 配额，释放时只认可旧入口建立的身份
+static bool CameraStream_GetFrame(CameraStream_t *stream, const CameraConfig_t *config,
+    CameraFrame_t *frame)
+{
+    CameraFrameLease_t lease;
+
+    return CameraStream_Acquire(stream, config, CAMERA_STREAM_LEGACY_OWNER, &lease, frame) == SYS_OK;
+}
+
+//取得内部兼容视图，读取结束后由同一路径归还
 bool CameraCapture_StreamGetFrame(CameraFrame_t *frame)
 {
     if (!s_capture.initialized ||
@@ -1180,74 +1284,154 @@ bool CameraCapture_StreamGetFrame(CameraFrame_t *frame)
     );
 }
 
-//释放Application正在使用的图像
-static SysResult_t CameraStream_ReleaseFrame(
-    CameraStream_t *me)
+// IRQ 已屏蔽；核对槽、实例、租约编号和实际所有者后才归还
+static SysResult_t CameraStream_Return(CameraStream_t *stream, const CameraFrameLease_t *lease)
 {
-    uint32_t primask;
-    uint8_t index;
+    CameraFrameBuffer_t *buffer;
 
-    if (me == NULL)
-        return SYS_ERR_INVALID_ARG;
-
-    primask = __get_PRIMASK();
-    __disable_irq();
-
-    index = me->in_use_index;
-
-    //当前没有有效的消费者缓冲区
-    if (!CameraStream_OwnershipValid(me) ||
-        index >= CAMERA_STREAM_BUFFER_COUNT ||
-        index == me->dma_m0_index ||
-        index == me->dma_m1_index ||
-        me->buffers[index].state != CAMERA_BUFFER_IN_USE)
-    {
-        __set_PRIMASK(primask);
+    if (!CameraStream_OwnershipValid(stream) || lease->buffer_id >= CAMERA_STREAM_BUFFER_COUNT ||
+        lease->generation != stream->generation)
         return SYS_ERR_INVALID_STATE;
-    }
 
-    //归还物理缓冲区
-    me->buffers[index].state = CAMERA_BUFFER_FREE;
+    buffer = &stream->buffers[lease->buffer_id];
+    if (buffer->state != CAMERA_BUFFER_IN_USE || buffer->lease_id != lease->lease_id ||
+        buffer->consumer != (uint8_t)lease->consumer)
+        return SYS_ERR_INVALID_STATE;
 
-    //清除消费者索引
-    me->in_use_index = CAMERA_BUFFER_INDEX_INVALID;
-
-    __set_PRIMASK(primask);
-
+    // 先解除租借身份，之后 DMA 才能将此槽视为可替换
+    buffer->lease_id = 0U;
+    buffer->consumer = 0U;
+    buffer->state = CAMERA_BUFFER_FREE;
     return SYS_OK;
 }
 
-SysResult_t CameraCapture_StreamReleaseFrame(void)
+//归还内部Legacy持有的固定格式帧并核对槽身份
+static SysResult_t CameraStream_ReleaseFrame(CameraStream_t *stream)
 {
-    SysResult_t result;
-    bool draining;
+    uint32_t primask, index;
+    SysResult_t result = SYS_ERR_INVALID_STATE;
 
-    if (!s_capture.initialized ||
-        s_capture.mode != CAMERA_CAPTURE_MODE_STREAM)
-        return SYS_ERR_INVALID_STATE;
+    if (stream == NULL)
+        return SYS_ERR_INVALID_ARG;
 
-    if (s_capture.state != CAMERA_CAPTURE_CAPTURING &&
-        s_capture.state != CAMERA_CAPTURE_ERROR &&
-        s_capture.state != CAMERA_CAPTURE_DRAINING)
-        return SYS_ERR_INVALID_STATE;
+    // 旧接口没有身份参数，只在原账本寻找旧入口创建的独占槽
+    primask = __get_PRIMASK();
+    __disable_irq();
+    for (index = 0U; index < CAMERA_STREAM_BUFFER_COUNT; ++index)
+    {
+        const CameraFrameBuffer_t *buffer = &stream->buffers[index];
+        if (buffer->state == CAMERA_BUFFER_IN_USE && buffer->consumer == CAMERA_STREAM_LEGACY_OWNER)
+        {
+            const CameraFrameLease_t lease = {stream->generation, buffer->lease_id, index,
+                (CameraFrameConsumer_t)CAMERA_STREAM_LEGACY_OWNER};
+            result = CameraStream_Return(stream, &lease);
+            break;
+        }
+    }
+    __set_PRIMASK(primask);
+    return result;
+}
 
-    draining = (s_capture.state == CAMERA_CAPTURE_DRAINING);
+// 归还在正常采集、错误和硬件已停止的排空阶段均有效
+static bool CameraCapture_CanReturnStream(void)
+{
+    return s_capture.initialized && s_capture.mode == CAMERA_CAPTURE_MODE_STREAM &&
+        (s_capture.state == CAMERA_CAPTURE_CAPTURING ||
+         s_capture.state == CAMERA_CAPTURE_ERROR || s_capture.state == CAMERA_CAPTURE_DRAINING);
+}
 
-    result = s_capture.config.format == CAMERA_PIXEL_FORMAT_JPEG ?
-        CameraMjpegFifo_ReleaseFrame() : CameraStream_ReleaseFrame(&s_capture.stream);
-
-    if (result != SYS_OK)
-        return result;
-
-    //只有硬件已经停止，才能结束Stream生命周期
-    if (draining && (s_capture.config.format != CAMERA_PIXEL_FORMAT_JPEG ||
-        !CameraMjpegFifo_HasLoan()))
+//最后一个外部引用退出后完成连续采集排空
+static void CameraCapture_FinishStreamDrain(void)
+{
+    // 只有已经停下硬件，并且最后一块物理借用归还，才允许下一实例启动
+    if (s_capture.state == CAMERA_CAPTURE_DRAINING && !CameraCapture_StreamHasLoan())
     {
         s_capture.mode = CAMERA_CAPTURE_MODE_NONE;
         s_capture.state = CAMERA_CAPTURE_IDLE;
     }
+}
 
-    return SYS_OK;
+//由采集任务归还兼容帧并检查排空状态
+SysResult_t CameraCapture_StreamReleaseFrame(void)
+{
+    SysResult_t result;
+
+    if (!CameraCapture_CanReturnStream())
+        return SYS_ERR_INVALID_STATE;
+    // JPEG 保留 FIFO 原有释放契约
+    result = s_capture.config.format == CAMERA_PIXEL_FORMAT_JPEG ?
+        CameraMjpegFifo_ReleaseFrame() : CameraStream_ReleaseFrame(&s_capture.stream);
+    if (result == SYS_OK)
+        CameraCapture_FinishStreamDrain();
+    return result;
+}
+
+//由CameraTask按消费者身份借出Raw帧
+SysResult_t CameraCapture_StreamAcquire(CameraFrameConsumer_t consumer,
+    CameraFrameLease_t *lease, CameraFrame_t *frame)
+{
+    // 拒绝未知身份；只有 ACTIVE 的 Raw 采集实例能发放租约
+    if ((uint32_t)consumer >= CAMERA_FRAME_CONSUMER_COUNT || lease == NULL || frame == NULL)
+        return SYS_ERR_INVALID_ARG;
+    if (!s_capture.initialized || s_capture.mode != CAMERA_CAPTURE_MODE_STREAM ||
+        s_capture.state != CAMERA_CAPTURE_CAPTURING)
+        return SYS_ERR_INVALID_STATE;
+    if (s_capture.config.format == CAMERA_PIXEL_FORMAT_JPEG)
+        return SYS_ERR_NOT_SUPPORTED;
+
+    return CameraStream_Acquire(&s_capture.stream, &s_capture.config, (uint8_t)consumer, lease, frame);
+}
+
+// CameraTask 通过 FIFO 所有权记录借出 JPEG 帧。
+SysResult_t CameraCapture_StreamAcquireJpeg(CameraFrameConsumer_t consumer,
+    CameraMjpegLease_t *lease, CameraFrame_t *frame)
+{
+    if ((uint32_t)consumer >= CAMERA_FRAME_CONSUMER_COUNT || lease == NULL || frame == NULL)
+        return SYS_ERR_INVALID_ARG;
+    if (!s_capture.initialized || s_capture.mode != CAMERA_CAPTURE_MODE_STREAM ||
+        s_capture.state != CAMERA_CAPTURE_CAPTURING)
+        return SYS_ERR_INVALID_STATE;
+    if (s_capture.config.format != CAMERA_PIXEL_FORMAT_JPEG)
+        return SYS_ERR_NOT_SUPPORTED;
+    return CameraMjpegFifo_Acquire(consumer, lease, frame);
+}
+
+// 最后一个有效租约归还后可完成原有排空流程。
+SysResult_t CameraCapture_StreamReleaseJpeg(const CameraMjpegLease_t *lease)
+{
+    SysResult_t result;
+
+    if (!CameraCapture_CanReturnStream() || s_capture.config.format != CAMERA_PIXEL_FORMAT_JPEG)
+        return SYS_ERR_INVALID_STATE;
+    result = CameraMjpegFifo_Release(lease);
+    if (result == SYS_OK)
+        CameraCapture_FinishStreamDrain();
+    return result;
+}
+
+//核对Raw代号、槽及消费者后归还原物理缓冲
+SysResult_t CameraCapture_StreamReleaseLease(const CameraFrameLease_t *lease)
+{
+    uint32_t primask;
+    SysResult_t result;
+
+    // 私有旧入口身份不接受显式归还；零编号不代表任何真实持有
+    if (lease == NULL || (uint32_t)lease->consumer >= CAMERA_FRAME_CONSUMER_COUNT ||
+        lease->generation == 0U || lease->lease_id == 0U ||
+        lease->buffer_id >= CAMERA_STREAM_BUFFER_COUNT)
+        return SYS_ERR_INVALID_ARG;
+    if (!CameraCapture_CanReturnStream())
+        return SYS_ERR_INVALID_STATE;
+    if (s_capture.config.format == CAMERA_PIXEL_FORMAT_JPEG)
+        return SYS_ERR_NOT_SUPPORTED;
+
+    primask = __get_PRIMASK();
+    __disable_irq();
+    result = CameraStream_Return(&s_capture.stream, lease);
+    __set_PRIMASK(primask);
+    if (result == SYS_OK)
+        CameraCapture_FinishStreamDrain();
+    return result;
 }
 
 //BSP完整帧回调，运行于中断上下文
@@ -1257,7 +1441,7 @@ static SysResult_t CameraStream_OnFrameComplete(
 {
     CameraStream_t *stream = (CameraStream_t *)context;
 
-    //只接受当前Media五缓冲实例
+    //只接受当前Media七缓冲实例
     if (stream != &s_capture.stream)
         return SYS_ERR_INVALID_ARG;
     if (s_capture.config.format == CAMERA_PIXEL_FORMAT_JPEG)
@@ -1265,7 +1449,12 @@ static SysResult_t CameraStream_OnFrameComplete(
 
     //硬件地址替换成功后提交所有权，再通知任务处理进展
     {
+        // 地址写后确认失败时寄存器可能已变，任务收到错误事件前也不可再发布帧
+        if (s_capture.raw_rotation_failed)
+            return SYS_ERR_INVALID_STATE;
         SysResult_t result = CameraStream_Rotate(stream, completed_target, BSP_DCMI_ReplaceTarget);
+        if (result != SYS_OK)
+            s_capture.raw_rotation_failed = true;
         if (s_capture_callback != NULL)
             s_capture_callback(result == SYS_OK ? CAMERA_CAPTURE_EVENT_PROGRESS :
                 CAMERA_CAPTURE_EVENT_ERROR, s_capture_callback_context);
