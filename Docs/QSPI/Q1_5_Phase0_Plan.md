@@ -1,65 +1,65 @@
-# Q1.5 Phase 0 集成准入计划
+# Q1.5-A/B 实施准入建议（Phase 0-R1）
 
-本文件是实施建议，尚未执行生产集成、创建集成分支、构建共存固件或下载板卡。冻结输入与证据见 [兼容性矩阵](Q1_5_Phase0_Compatibility.md)和 [H2 收尾](Q1_4_Closure.md)。当前 QSPI 软件可链接和 H2 单次恢复成立，主线相机业务与 QSPI 共存仍为 NOT_VERIFIED。
+本轮冻结 main 为 `62b42d7c0b7df9eadafa00953ee8ce1229da9826`，QSPI 输入为 `5bdd963862431b490f7e12b21f94b8e7f19ac9e9`。本计划替代旧 Application 底座计划。只完成文档和差异审核，Q1.5-A 尚未获执行准入。底层资源和真实V3入口见 [兼容性矩阵](Q1_5_Phase0_Compatibility.md)。
 
-交付时只读查询 GitHub 发现远端 main 已推进为 `62b42d7c0b7df9eadafa00953ee8ce1229da9826`。本轮没有修改 main，也未将新提交作为源码分析输入。当前矩阵仅覆盖指定的冻结 f0ce45f；若后续选择新 main，必须先明确新的冻结输入并重新审查差异，不能直接套用本报告准入结论。
+## 文件白名单
 
-## 建议文件白名单
-
-Q1.5-A 获准后，以冻结 main 创建新的隔离集成分支和工作树，选择性移植输入。对 main 的生产差异限定如下。
-
-|文件 / 目录|建议动作|
+|文件或范围|未来A阶段建议动作|
 |---|---|
-|CM7/BSP/bsp_qspi.c、bsp_qspi.h|从审核输入选择性移植 BSP；测试构建分支迁出产品翻译单元，保持默认行为/API/诊断 ABI、原子事务权及空写策略。迁移范围和差异须先审核|
-|CM7/Core/Inc/stm32h7xx_hal_conf.h|仅启用 HAL_QSPI_MODULE_ENABLED|
-|MDK-ARM/h7_mac.uvprojx（隔离树）|登记 CM7 HAL QSPI 和 BSP 文件。产品目标不登记 m7_project_test、H1/H2 或其他测试入口，CM4 目标保持主线配置|
-|Tests/QspiFlashQ1/Integration/（拟新增）|冻结输入导出、独立共存测试任务、私有静态缓冲、门闩、诊断快照、只读指令检查、Mock、构建/Map/HEX 审计及现场数据分析工具|
-|Docs/QSPI/|记录构建输入、测试、资源、下载/回退申请及实际结果|
+|CM7/BSP/bsp_qspi.c/.h|选择性移植审核输入的BSP及私有操作权、诊断和空公共写策略；产品测试条件/Tests依赖迁出方法先提交明确差异，不借集成重构已验收API|
+|CM7/Core/Inc/stm32h7xx_hal_conf.h|只启用HAL QSPI模块|
+|隔离分支的MDK-ARM/h7_mac.uvprojx|以新main工程增补CM7 HAL QSPI和BSP文件登记；保留CM4排除项、V3登记、Supervisor keep、Scatter、输出和其他编译参数|
+|Tests/QspiFlashQ1/Integration/（拟新增）|独立测试目标、静态线程、一次门闩、独占内部RAM缓冲、时序/首错/资源报告，Mock与构建/Map/HEX审计|
+|Docs/QSPI/|记录冻结输入、白名单、回归、资源、结果及后续单独下载方案|
 
-目前不建议修改正式 Application、Platform、Framework、CM4、IPC、FreeRTOS、PLL、MPU、DMA、IRQ 或 Scatter。正式产品仅链接可供后续业务显式调用的 BSP，可能被链接器剔除；共存试验使用隔离测试目标在既有正常 Camera/USB/Storage/IPC 应用之外增加低占空比静态任务。测试任务的目标配置、入口登记和源码覆盖仅存在测试树，不进入产品。若实现需要新增生产任务接入、服务层或更广泛白名单，先提交具体变更申请。
+生产侧不增加Service、Mailbox、Queue、Record、Supervisor组件或RuntimeTarget。ApplicationV3全部36文件、原Control/IPC任务、Platform、Framework、CM4、FreeRTOS、HSEM/IPC ABI、MPU、IRQ与Scatter均不列入修改白名单。ST HAL源码沿用冻结main。若产品消费者或业务控制入口确需改变，先独立申请。旧QSPI工程登记的m7_project_test及H1/H2任务不移入产品工程。
 
-原 HAL 驱动代码沿用 main 原版，无需修改 HAL 源文件。迁移禁止把整个 QSPI 分支工程连同 H1/H2 测试入口合入。用户当前 Keil 个人配置和硬件证据须先逐项记录和哈希，所有自动构建在独立目录完成。
+独立软件共存构建在新隔离分支完成，名称建议 codex/qspi-v3-coexistence。本轮没有创建该分支。当前工作树Keil配置有用户修改，须保存原文件、diff和SHA，自动构建只操作隔离树。不能把用户调试宏、下载脚本或输出路径直接覆盖进冻结主线工程。
 
-## Q1.5-A 软件共存
+## A：V3隔离软件共存
 
-1. 记录两个输入提交、逐文件 SHA 和新隔离树，审查相对 main 的文件白名单。H1/H2 原始归档只读保留。
-2. 移植 HAL 开关、工程登记和 BSP，隔离诊断测试条件；比对去测试前默认构建的生产预处理语义、符号和机器代码。若不是仅测试配置迁移，逐项解释实际差异。
-3. 产品 CM7、CM4 全量 Rebuild，0 Error / 0 Warning。测试目标保留正常两核生产启动、HSEM/IPC 和相机/存储/USB 启动路径，另行编译只读试验入口。记录 ROM/RAM、最大静态栈、任务栈分配及 Map，保留原任务栈/优先级、MPU、IRQ、IPC ABI 和地址布局。
-4. Q1.1、Q1.2、Q1.3、SFDP、Quad ID、H1、Q1.4、R1/R2、H2 Mock/HAL 和 PC 工具重跑。保持旧断言、故障首错、公共空写门禁和跨页 R2 语义。生产与共存试验目标中不引用 Program/Erase，试验对真实 HAL 的指令白名单为 9F/05/35/15/0B/6B。
-5. 执行主线 Camera/DCMI、SDRAM、SDMMC、FatFS/AVI、USB UVC、IPC 和 Runtime 回归，与同工具链/配置的 main 对照。历史 SDRAM/DCMI/USB 的既有 FAIL/ERROR 原样保存，逐例比较新增差异；已有失败不能改成整体 PASS，也不能通过改旧断言消除。
-6. 在 Mock 注入读取失败、清理失败、共享 GPIO 非所属位变化、时基耗尽、其他资源占用及并发请求。验证只改所属引脚、QUADSPI 复位不影响其他外设，其他模块首错及资源状态可观察；失败阻止后续 QSPI 自动访问。普通 Init/Read 不绕过 FAULT，Recover 仅单独显式维护请求。
-7. 核对产物只有一个生产启动入口、无 H1/H2 自动门闩/Watch 测试任务、无新的 IRQ/DMA/Memory Mapped/XIP。产品可未保留未调用 BSP 符号，必须另用独立 HAL 链接和共存试验 Map 证明实际 BSP 可达。
-8. 生成 A 报告后停止，提交软件审核。每个候选测试工件重新解析 HEX、核对 AXF 地址和实际内部 Flash 扇区，计算哈希，准备 B 的单独下载及回退计划。A 的软件通过不构成下载授权。
+1. 从冻结新main导出干净底座，单独重建主线JPEG、Raw、CM4作为对照。再按白名单增补产品BSP，记录源文件/工程/工件SHA和完整差异，0 Error/0 Warning。正式目标无测试入口；未被产品调用的BSP可能被剔除，另用HAL链接及共存测试目标证明实际可达。
+2. 测试专用目标保留五个生产任务及原BOOT流程，在Tests目录独立翻译单元中通过测试专用Initcall仅静态创建一个低优先级线程。它不登记App_Events、不修改RUNTIME_TARGET_COUNT、不计入g_app_tasks_debug.created_tasks，不申请V3队列或替换业务回调。静态TCB/768 words栈和优先级1为待验证参数。
+3. 测试线程先周期让出CPU，以只读AppV3_BusinessReady确认全部服务启动成功；该函数只能证明初始化就绪。默认门闩零，未获授权不触碰QSPI；启动失败或超时保存报告并停住。原Control的1s启动限时不能为了QSPI延长或绕过。
+4. 门闩及就绪都满足后，线程独占QSPI Init、ID、状态和短读。建议256B/次，总预算20ms、调用间至少vTaskDelay(10ms)。仅9F/05/35/15/0B/6B，120MHz配置读回；03按现有门禁拒绝，Program/Erase公共写策略保持为空。无自动Init/Recover重试。
+5. 读取发生在测试线程中，不修改服务栈、不在Camera/USB/Storage/Control的循环、消息回调、Supervisor或Frame Dispatcher中插入测试逻辑，不持Frame Lease、FatFS租约、队列锁或临界区等待HAL。禁止测试线程调用Set/Query/Recover/Read等Control专用Supervisor接口。
+6. Mock验证五任务启动、结果背压/漏通知回查、就绪前拒绝QSPI、服务初始化失败及部分创建失败时测试停住、低优先级持续让出、同级Storage/IPC仍推进、QSPI BUSY/FAULT/清理失败保留资源。测试只能在独立夹具模拟IRQ/硬件，禁止生产新增Hook或直接篡改BSP锁存。
+7. 集成前后执行下表回归，逐例保存断言数、原始FAIL与日志。单独核对52/16/80B ABI、Raw七缓冲、JPEG物理块和消费者身份、USB Reader Proof、SD存储独占及首错保留。分支实现以新main现有行为为准，不恢复旧Application路径。
+8. A完成后停止，报告源差异、Map符号、RAM/ROM/静态栈和真实任务水位来源，重新计算候选HEX地址、扇区、SHA及回退对象；等待软件审查与后续下载授权。
 
-## Q1.5-B 只读实板共存
+初次Init和显式Recover最长预算5.2s，只在流未激活的独立维护阶段评估。QSPI在内部256B段间没有主动任务让出，整次大读仍占CPU；如需测试大块必须独立参数记录，不给每段重置完整期限。测试总时限和帧率阈值均为建议，尚不能宣称满足实板实时性。
 
-前提是 A 获准、板卡及电压/时钟条件确认、正式相机两核固件候选和回退对象可核验。当前板上仍是 H2，需先批准配对固件下载；没有旧现场备份，不声称恢复旧现场逐字节相同。
+## 回归矩阵与A通过标准
 
-先测同一候选关闭 QSPI 任务的对照，再启用低占空比 QSPI。使用相同相机分辨率/格式、帧率、USB 主机接收方式、SD 卡和录制策略、运行时长与诊断采样规则。建议逐级执行空闲只读、Camera、Camera+USB、Camera+SD、Camera+USB+SD+双核 IPC。先 256 B/10 ms 间隔，预算 20 ms；测试参数在 A 审核后冻结。使用配置读回 120 MHz 的 0B/6B，03 在此频率保持拒绝，不动态降频掩盖原始失败。
+|组别|未来A要求|当前R1状态|
+|---|---|---|
+|QSPI历史|Q1.1 51、Q1.2 516、Q1.3 48、Q1.4 45、R1/R2 11、SFDP6、Quad ID两频率各11、H1固件19、PC10、H2 Mock8/真实HAL28断言/PC5；保留完整旧用例及各自频率|NOT_RUN，本轮文档审核|
+|V3核心|产品Runtime/Service62、历史Startup73，O0/O2，真实Startup/BOOT身份、三服务发布和Control超时不被QSPI改变|NOT_RUN；计数为新main历史报告目标|
+|V3媒体|MediaLease35、Dispatcher2、UVC Reader11、产品/历史Raw各8，O0/O2；保持读者退出和一消费者一Lease|NOT_RUN|
+|V3存储和联合|USB/SD联合6、RecordBoard2、StorageFS+FatFs+AVI2、AVI上限2、USB平台诊断2，O0/O2|NOT_RUN|
+|V3服务覆盖|Camera Smoke/Repeat 5/2；USB Smoke/Repeat/Recovery12/11/10；Storage5/2/3，各O0/O2；历史覆盖层只应用于临时测试树|NOT_RUN，不能应用到正式源码|
+|历史FIFO|保留原16项中3项FAIL，旧/新main与集成候选按相同输入对照；不得删断言或更名跳过|NOT_RUN，原始历史证据保留|
+|其他主线依赖|相机I2C1/电源、SDRAM/DCMI、SDMMC、FatFS/USB、IPC及Runtime专项，使用新main逐例对照|NOT_RUN，不拿旧f0测试结论替代|
+|工程/资源|CM7 JPEG/Raw、CM4、独立共存测试完整Rebuild0/0；生产Map无测试对象，CM4有效源集及ABI不变，无新DMA/IRQ/MPU/栈优先级改动|NOT_RUN；本轮静态工程审查完成|
+|同配置等价|若BSP未被调用，产品机器代码预期可保持，必须实际比对；新增未剔除只读数据和工程keep变化逐项解释|NOT_RUN，不提前承诺HEX相同|
 
-每级先建议 60 秒确认基本状态，再进行 10 分钟联合采样，最终建议 30 分钟稳定性观察。这些为准入建议，实际矩阵及数值需审核确认。停止时保存所有原始失败和完成时长，不把未完成观察算作通过。不触发写入、擦除、故障注入或自动 Recover。
+V3历史计数来源为冻结主线 [regression_report.md](https://github.com/ruk93668-creator/h7_mac/blob/62b42d7c0b7df9eadafa00953ee8ce1229da9826/Docs/Architecture/V3/PreMerge/regression_report.md)。A回归必须重新执行，不引用历史PASS代替新候选结果。原有SDRAM/DCMI/USB错误若仍出现，保留原始值并确认是否新回归。
 
-|观测|建议通过标准|
-|---|---|
-|身份和资源|ID/状态和配置读回符合预期；无修改类指令；其他外设 GPIO/mux/PLL/MPU/IRQ 不被 QSPI 操作改变|
-|QSPI 数据|请求长度与完成数一致，0B/6B 对固定两个只读扇区逐字节相同、CRC 一致且与已确认参考对应；全 FF 结果仅支持相同内容读回|
-|相机 / USB|持续记录实际采集/完成帧率、丢帧、DMA/DCMI 错误、USB 欠载及 UVC 终结诊断。建议同配置对照平均完成帧率下降不超过 5%，新增硬件/协议错误为零；数值是待批阈值，原本欠载不能忽略|
-|SD / AVI|挂载、写入、同步和关闭结果正常，文件及索引可回读；保留对照已有错误和长尾；不混用 QSPI 与 FatFS/帧缓冲所有权|
-|IPC / 调度|CM4 心跳、IPC ABI、任务栈水位、事件响应、HAL Tick 持续有效。无栈溢出、死锁、非预期重启或新增超时。固定循环 Tick 探测的局限仍保留|
-|QSPI FAULT|发现新 FAULT 或数据失配即停止 QSPI 请求，保留主错误/清理/资源及其他业务快照，单独判断其他业务能否安全继续。恢复另行授权，不自动重试到成功|
+## B与生产控制路径的准入边界
 
-若性能不达标，首先保留原参数结果并审核占空比/调用时点设计，调整后使用独立对照记录。任何降频都标明新频率，不替代 120 MHz 的结论。
+冻结V3正式BOOT后Camera/UVC/Storage不会自动运行。仅新增独立QSPI测试线程而观察三个业务空闲，不能宣布活跃业务共存PASS。当前没有在本轮批准范围内新增Control命令输入或IPC控制协议。B在实板启流前必须明确已获准的真实产品控制入口。不得通过给测试线程伪造Control身份、修改TCB、直接调用Service或在Control循环插入Watch测试邮箱解决。已有历史独立软件夹具可保留原样运行，但不代表产品控制通路已接入；若B需要新的控制通路，单独提交范围与协议批准。
 
-## 风险与人工决策
+B计划沿用Camera→Camera+USB→Camera+SD→联合IPC的逐级只读对照，并同时记录帧率长尾、丢帧/Reader退出、SD写入/关闭/回读、Mailbox背压、事件循环等待、Control首错、心跳间隔和任务栈水位。建议同配置先60秒观察、10分钟联合采样、30分钟稳定性；帧率下降不超过5%、新增硬件/协议错误零是待审阈值。低优先级QSPI读取最多影响同级轮转并不等于没有影响，实际结果取得前均NOT_VERIFIED。
 
-|编号|状态与需要的决定|
-|---|---|
-|D1|确认 A 的 main 冻结底座、独立集成分支名称及逐文件白名单，尤其诊断构建分支迁出方法。当前仅设计，无源码变更|
-|D2|接受 BSP 直接暴露但默认不自动初始化的方案；共存测试入口仅在测试目标。若确有产品消费者，另议其任务时点和所有权|
-|D3|审核 256 B/20 ms/10 ms 初始试验参数、测试时长和帧率差阈值。同步 HAL 轮询依赖 Tick，无法由 H2 独立测试证明实时性|
-|D4|指定之后恢复/共存镜像的两核版本和回退对象；补齐届时 Option Bytes、保护、启动和下载范围证据。用户取消旧内部 Flash 备份的历史事实不能消除|
-|D5|确认 H1 参考属于同板及是否接受全 FF 只读参考的范围限制；禁止为制造数据自行写 Flash|
-|D6|保持 V3 独立。后续若 main 改变，重新冻结和审查；不得按本矩阵直接宣称新主线兼容|
-|D7|当前资源无引脚直接重叠是源码结论，PCB/电气/实际调度以及故障恢复对其他业务的长期影响仍 NOT_VERIFIED|
+数据只读FFE000–FFFFFF，与既有参考按字节/CRC比对。全FF仅说明内容一致；不制作写图案。当前板卡最后下载仍为H2是既有用户确认。本轮不读取板卡、不恢复相机固件，后续下载须另定两核镜像、当前Option Bytes、实际扇区和回退。取消过原MCU备份的事实继续保留，不能声称恢复旧现场逐字节一致。
 
-交付后等待 GPT 批准 Q1.5-A。未经后续准入，不执行 B 或相机固件下载，不合并 main。
+## 待审核决定
+
+- 接受新main为唯一A底座，按白名单移植BSP；测试构建分支迁出生产的方法需在A给出逐项语义证明。
+- 接受BSP直接接入，不增加产品Service/消息队列/Supervisor组件。
+- 审核独立任务的就绪门禁、栈/优先级、256B/20ms/10ms参数和停止条件。
+- 对活跃业务共存先明确Control合法控制入口及授权范围；当前列为B前置阻塞，不扩大本轮协议设计或实施。
+- 审核帧率、丢帧、USB/SD长尾、Heartbeat与栈水位的对照标准。
+- 保留H1/H2历史证据、下载准入缺口和所有延期实板NOT_RUN。
+
+本轮最终状态为 PHASE0_R1_REVIEW_READY。等待GPT审核，不自动进入Q1.5-A。

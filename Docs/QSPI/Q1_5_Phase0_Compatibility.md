@@ -1,37 +1,47 @@
-# Q1.5 Phase 0 兼容性与依赖矩阵
+# Q1.5 Phase 0-R1 兼容性与依赖矩阵
 
-冻结 main 为 `f0ce45fd9ab7250b1e22260e087d606ee5ed9ecb`，QSPI 输入为 `fdb45718ec60db0c4d970d02cad70fa99662dd78`。本轮仅源码分析。Git 对比证明分支的 Application、Media、Platform、Framework、CM4 和 Common 与 main 一致，因此这些本地文件可以作为冻结主线证据。正式生产差异仅新增 BSP 两文件、启用 CM7 HAL QSPI 及 Keil 源文件登记。未读取其他分支作为主线替代物。
+冻结主线为 `62b42d7c0b7df9eadafa00953ee8ce1229da9826`，QSPI 输入为 `5bdd963862431b490f7e12b21f94b8e7f19ac9e9`。本矩阵替代旧 Application 底座的 Phase 0 版本。仅源码审核，不移植、构建或运行。V3 引用均指冻结主线；当前 QSPI 工作树仍保留旧源码，不能把其中同名旧文件当作 V3 证据。完整差异与逐文件记录见 [R1 报告](Q1_5_Phase0_R1_Review.md)及 [机器清单](Phase0R1/source_diff_audit.json)。
 
-## 外设和所有权
+## 启动、任务和队列边界
 
-|资源|主线现状及依据|QSPI 影响与设计结论|
+|对象|冻结V3事实|QSPI集成边界|
 |---|---|---|
-|PF6–PF10 / PG6|SDRAM 使用 PF0–5、PF11–15，PG0–2/4/5/8/15；DCMI 使用 PG10 等其他脚。见 [SDRAM:48](../../CM7/BSP/bsp_sdram.c#L48)、[DCMI:241](../../CM7/BSP/bsp_dcmi.c#L241)|QSPI 六脚未与以上脚位重叠。共享 GPIOF/G 寄存器和端口门，必须保留位级保存/恢复，禁止整个 GPIO 端口复位或关门。源级不冲突，运行并发仍须验证|
-|SDMMC / OV5640 / USB|SDMMC PC8–12/PD2 与 PB 卡检测；Camera SCCB PB8/9、PH15 reset；DCMI PC6/7、PG10、PH12、PE4–6、PB6/7、PA4/6；USB PA11/12。见 [SDMMC:366](../../CM7/BSP/bsp_sdmmc.c#L366)、[Camera:9](../../CM7/BSP/bsp_camera.c#L9)、[USB:579](../../CM7/BSP/bsp_usb.c#L579)|与 QSPI 引脚无直接重叠。只读共存测试记录其他外设时钟、GPIO 和诊断，判断清理/恢复是否误改共享寄存器|
-|时钟|主线 SYSCLK 配方 480 MHz，HCLK 240 MHz。相机 XCLK 与 SDMMC 使用 PLL1Q；FMC 使用 PLL2R；USB 使用 HSI48。见 [系统时钟:233](../../CM7/Core/Src/main.c#L233)、[SDMMC:717](../../CM7/BSP/bsp_sdmmc.c#L717)、[FMC:93](../../CM7/BSP/bsp_sdram.c#L93)、[USB:777](../../CM7/BSP/bsp_usb.c#L777)|QSPI 选 D1HCLK、分频 2，配置目标 120 MHz；不重配共享 PLL。动态 HCLK 改变将触发配置契约错误，禁止将降频结果记为 120 MHz PASS|
-|QUADSPI 所有权|main 无 QSPI 使用者，CM4 未配置 QSPI。CM4 SCCB/OLED 使用 PB10/11。见 [CM4 IIC:57](../../CM4/BSP/bsp_iic.c#L57)|BSP 私有 HAL 句柄、原子操作权只有 M7 内部意义，无法替代跨核锁。维持 M7 独占，CM4 不调用、不改引脚/mux/gate；不借 HSEM 0 实现 QSPI 并发|
-|双核启动与 IPC|M7 在 HSEM 0 释放前准备共享引脚/早期 IPC；两核保留各自正式启动流程。见 [M7:153](../../CM7/Core/Src/main.c#L153)、[M4:86](../../CM4/Core/Src/main.c#L86)|正式共存不可沿用 H2 的停驻 CM4 替代生产应用。保留 IPC ABI、早期启动和 CM4 正常框架；H2 成功只证明独立候选|
-|MPU / SDRAM / DMA|Region1 为 SRAM4 4 KiB，Region2 为 0xD0000000 起 8 MiB 非缓存 SDRAM，QSPI 未映射。见 [MPU:77](../../CM7/Core/Src/main.c#L77)、[MPU:302](../../CM7/Core/Src/main.c#L302)|继续间接轮询，只用内部静态缓冲，不新建 MPU 区域、不使用 Memory Mapped/XIP/DMA。保留相机帧 Lease/FIFO、SD 中转和 USB Reader 的缓冲所有权|
-|初始化|Framework 按 PLATFORM→BUS→DEVICE→MEDIA→SERVICE→APPLICATION 执行。SDRAM 为 BUS；SD 块层 PLATFORM 准备，StorageFS SERVICE 初始化不挂载。见 [Framework:39](../../CM7/Framework/framework_init.c#L39)、[SD:273](../../CM7/Platform/sd_block.c#L273)、[FS:782](../../CM7/Platform/storage_fs.c#L782)|不新增执行阻塞识别的 Initcall。QSPI 初次 Init 在 BOOT 成功后的合法任务中显式触发。与业务准备分离，识别失败可隔离 QSPI，不能自动重启其他模块|
-|FAULT / Cleanup / Recover|读失败保存首错后清理，失败保留资源；Recover 重新验证资源/ID/状态。见 [Cleanup:272](../../CM7/BSP/bsp_qspi.c#L272)、[ReadFinish:743](../../CM7/BSP/bsp_qspi.c#L743)、[Recover:504](../../CM7/BSP/bsp_qspi.c#L504)|其他模块不得再次改 QSPI 六脚/mux；显式维护路径才允许恢复，不在 Camera/USB 回调恢复。不自动重试 Init/Recover。异常导致尚未证明释放时停止 QSPI 访问而非复位 GPIO 或共享 PLL|
-|FatFS 与业务数据|StorageFS 为唯一卷所有者，有固定文件槽和 8 KiB 输入中转；SD 块设备租约由 Platform 管理。见 [FS:19](../../CM7/Platform/storage_fs.c#L19)|QSPI 不接 FatFS、不增加存储卷或参数分区；只读测试请求不借用 SD/相机缓冲。现有写 API 的公共策略为空，不能通过普通 Setter 放开|
-|ApplicationV3|V3 是独立候选，本分支 main 底座仍为原 Application|不主动合并 V3，不把其服务、任务和回归当成本轮底座。V3 获准进入 main 后重新建立集成基线并复核矩阵|
+|创建入口|App_TasksCreate 依次准备事件、USB_MODE_NONE、消息池，再创建三个服务、Control 和 IPC，共五个正式任务|QSPI 产品仅提供 BSP，不增加第六个 RuntimeTarget/Service/队列/监督组件；独立测试任务只在测试目标分配，不能计入 created_tasks。见 [app_tasks.c](https://github.com/ruk93668-creator/h7_mac/blob/62b42d7c0b7df9eadafa00953ee8ce1229da9826/CM7/ApplicationV3/Core/app_tasks.c#L17)|
+|Framework|App_Init 注册 APPLICATION 级，只准备视频/存储只读配置及 Record 槽；main 的框架初始化、任务准备和启动调度路径沿用|不在 Initcall 阻塞识别 Flash，不影响 SDRAM/相机设备准备。只允许测试专用 Initcall 做静态任务创建，线程进入后先等待。见 [app_main.c](https://github.com/ruk93668-creator/h7_mac/blob/62b42d7c0b7df9eadafa00953ee8ce1229da9826/CM7/ApplicationV3/Core/app_main.c#L11)|
+|BOOT屏障|Control 先取得启动队列并订阅，再调用 App_TasksReleaseBoot；App_Events 校验唯一 Control 句柄并一次通知五个目标|测试任务不能调用 ReleaseBoot，不能 App_EventsAttach/Wait 借用任何业务身份，不添加通知位。见 [Control](https://github.com/ruk93668-creator/h7_mac/blob/62b42d7c0b7df9eadafa00953ee8ce1229da9826/CM7/ApplicationV3/Tasks/service_tasks.c#L464)、[屏障](https://github.com/ruk93668-creator/h7_mac/blob/62b42d7c0b7df9eadafa00953ee8ce1229da9826/CM7/ApplicationV3/Core/app_events.c#L130)|
+|全部服务就绪|服务只在第一次 BOOT 后准备实例、报告启动结果；Control 验证 Record、服务身份、重复及截止时间，发布后 AppV3_BusinessReady 才为真；启动上限1000ms|测试线程只读 BusinessReady，BOOT通知与业务就绪不得混同。必须先经过独立运行授权和真实就绪门禁再调用 BSP，失败/超时记录并停住。见 [服务线程](https://github.com/ruk93668-creator/h7_mac/blob/62b42d7c0b7df9eadafa00953ee8ce1229da9826/CM7/ApplicationV3/Tasks/service_tasks.c#L29)、[启动汇总](https://github.com/ruk93668-creator/h7_mac/blob/62b42d7c0b7df9eadafa00953ee8ce1229da9826/CM7/ApplicationV3/Core/app_services.c#L194)|
+|Runtime队列|9个业务槽各4项，3个记录信号槽；句柄代次、使用计数、订阅关系共同防止回收竞争；队列可读通知仅提示，事件分发共用4回调预算|QSPI 测试不占用池槽、服务邮箱、Record 或 PubSub，不改变消息容量/大小。采用自身静态报告和门闩，读缓冲内部独占。见 [queue_pool.c](https://github.com/ruk93668-creator/h7_mac/blob/62b42d7c0b7df9eadafa00953ee8ce1229da9826/CM7/ApplicationV3/Runtime/queue_pool.c#L6)、[事件循环](https://github.com/ruk93668-creator/h7_mac/blob/62b42d7c0b7df9eadafa00953ee8ce1229da9826/CM7/ApplicationV3/Runtime/service_event_loop.c#L95)|
+|Control/Supervisor|Set/Query/Recover/Read 都校验 Control 所有权；启动后 Control 排空业务结果并推进依赖计划，业务回调要求短时非阻塞|QSPI 不进入 Supervisor 表，不使用 APP_V3_PIPE 位，不在 Control 或回调做 HAL 轮询。独立测试任务连 Supervisor_Read 也不能调用。见 [Supervisor](https://github.com/ruk93668-creator/h7_mac/blob/62b42d7c0b7df9eadafa00953ee8ce1229da9826/CM7/ApplicationV3/Tasks/service_tasks.c#L324)、[回调约束](https://github.com/ruk93668-creator/h7_mac/blob/62b42d7c0b7df9eadafa00953ee8ce1229da9826/CM7/ApplicationV3/Runtime/service_events.h#L80)|
+|服务请求与数据|命令16B，AppMessage52B，IPC应用载荷80B；服务邮箱按requester+command_id校验，深度4、终结背压保留；帧通道检查方向与发送者|测试任务不冒用 Camera/USB/Storage/Control requester，不直接投帧/归还消息，不更改ABI。见 [消息路由](https://github.com/ruk93668-creator/h7_mac/blob/62b42d7c0b7df9eadafa00953ee8ce1229da9826/CM7/ApplicationV3/Core/app_messages.c#L80)、[邮箱](https://github.com/ruk93668-creator/h7_mac/blob/62b42d7c0b7df9eadafa00953ee8ce1229da9826/CM7/ApplicationV3/Runtime/service_mailbox.h#L14)|
+|业务激活|服务发布READY不代表开始采集/UVC/录制；BOOT后不自动启流，控制计划由Control推进|A中的空闲V3+QSPI运行只证明空闲共存。活跃业务需要已批准的Control入口或独立既有软件夹具；当前不新增IPC协议、不插入生产任务测试代码。见 [Supervisor计划](https://github.com/ruk93668-creator/h7_mac/blob/62b42d7c0b7df9eadafa00953ee8ce1229da9826/CM7/ApplicationV3/Tasks/service_tasks.c#L293)|
 
-## FreeRTOS 与中断预算
+## 调度、实时性与栈
 
-|任务 / 中断|冻结主线配置|对 QSPI 调用的限制|
+|正式线程|V3入口和实际静态配置|同步QSPI影响|
 |---|---|---|
-|USB task|2048 words，优先级 4，见 [usb_task:15](../../CM7/Application/Tasks/usb_task.c#L15)|不在流处理关键任务执行同步 QSPI|
-|Camera task|1536 words，优先级 3，见 [camera_task:11](../../CM7/Application/Tasks/camera_task.c#L11)|不在逐帧处理、持有 Frame Lease 或控制切换关键段执行|
-|Control task|768 words，优先级 2，见 [control_task:11](../../CM7/Application/Tasks/control_task.c#L11)|不将最长 5.2 秒 Init/Recover 放到控制响应热路径|
-|Storage / IPC|2048 / 512 words，均优先级 1，见 [storage_task:9](../../CM7/Application/Tasks/storage_task.c#L9)、[ipc_task:10](../../CM7/Application/Tasks/ipc_task.c#L10)|相同优先级轮转下仍可能延迟处理，不保证 SD 响应；测试低占空比并显式让出 CPU|
-|TIM6 / DCMI及DMA / USB / SDMMC|NVIC 优先级依次 4 / 5 / 6 / 7。见 [TIM6:4](../../CM7/Platform/platform_hal_timebase.c#L4)、[DCMI:14](../../CM7/BSP/bsp_dcmi.c#L14)、[USB:12](../../CM7/BSP/bsp_usb.c#L12)、[SDMMC:491](../../CM7/BSP/bsp_sdmmc.c#L491)|数值较小者抢占优先。BSP 只在取放操作权时短暂 PRIMASK，轮询期间不长时间关中断，但 HAL 忙等消耗 CPU/总线；实时性需要共存数据，无法由可抢占性直接推断通过|
-|FreeRTOS 内核|1 kHz、抢占、同级轮转，静态分配、无 Mutex/软件 timer，MAX_SYSCALL IRQ=5，见 [配置:18](../../CM7/Platform/FreeRTOSConfig.h#L18)|ISR、PRIMASK/FAULTMASK、会屏蔽 TIM6 的 BASEPRI 环境不能调用；禁止持调度锁/临界区做轮询。TIM6 必须全过程前进，BSP 本身不强制验证 FreeRTOS 调度器状态，由调用者负责合法任务契约|
+|Camera|AppV3_CameraRun → AppV3_ServiceRun；1536 words、优先级3，栈属app_services.c|不得在Frame Acquire/Release、DMA轮换、控制启停期间夹入QSPI。排队延迟会推迟向USB/SD发帧及回收，不能仅以中断仍可抢占推定安全|
+|USB|AppV3_UsbRun → AppV3_ServiceRun；2048 words、优先级4|10ms硬件进度复查、Reader Proof确认退出后才归还帧；同步QSPI不得放入服务推进或USB回调，否则会拉长Reader占用和取消窗口|
+|Storage|AppV3_StorageRun → AppV3_ServiceRun；2048 words、优先级1|独占FatFS/AVI和Storage Lease；与优先级1测试线程轮转仍有CPU/总线竞争，须测写入长尾、队列背压和帧占用，不能只测平均FPS|
+|Control|AppV3_ControlRun；768 words、优先级2，栈属service_tasks.c|启动期限1s、轮询100ms，Init/Recover最坏5.2s不可放入控制任务；不占用同步业务回调预算|
+|IPC|IpcTask_Run；512 words、优先级1|原Heartbeat和80B应用快照发布保持；同级测试轮询不得饿死心跳。QSPI诊断不塞入现有IPC布局|
+|测试目标独立线程|建议另分配StaticTask_t和768 words栈、优先级1；每次256B、总预算20ms、读间隔至少10ms|上述为待A验证的试验参数，生产五个任务栈/优先级均不改。测试线程栈水位用自身句柄采样，禁止借Control身份调用App_EventsReadStackWatermarks；任一实测水位/期限不满足则停测复审|
 
-读取最大公开总预算为 60,000 ms，内部 256 B 分段共用总期限；单次 HAL 最多 100 ms；Init/Recover 总预算 5,200 ms，实际 HAL 初始化默认 5,000 ms。写入限时、轮询和 CPU 竞争也存在，但 Q1.5-A/B 仅运行只读路径。详见 [BSP:23](../../CM7/BSP/bsp_qspi.c#L23)、[Read:827](../../CM7/BSP/bsp_qspi.c#L827)及 [API](../../CM7/BSP/bsp_qspi.h)。
+配置依据为 [服务清单](https://github.com/ruk93668-creator/h7_mac/blob/62b42d7c0b7df9eadafa00953ee8ce1229da9826/CM7/ApplicationV3/Core/app_services.c#L25)、[Control创建](https://github.com/ruk93668-creator/h7_mac/blob/62b42d7c0b7df9eadafa00953ee8ce1229da9826/CM7/ApplicationV3/Tasks/service_tasks.c#L541)、[IPC](https://github.com/ruk93668-creator/h7_mac/blob/62b42d7c0b7df9eadafa00953ee8ce1229da9826/CM7/ApplicationV3/Tasks/ipc_task.c#L10)、[USB推进](https://github.com/ruk93668-creator/h7_mac/blob/62b42d7c0b7df9eadafa00953ee8ce1229da9826/CM7/ApplicationV3/Services/USB/usb_service.c#L570)、[栈查询权限](https://github.com/ruk93668-creator/h7_mac/blob/62b42d7c0b7df9eadafa00953ee8ce1229da9826/CM7/ApplicationV3/Core/app_events.c#L282)。
 
-建议当前只保留 BSP，不新建产品 QSPI Service。尚无真实业务消费者需要请求队列、生命周期或仲裁层。测试路径使用隔离静态低优先级任务，初始建议 768 words / 优先级 1，最多一次 256 B 读取、总调用预算建议 20 ms、调用间显式延时至少 10 ms；这些是待 A 验证的试验参数，不能当作实时性证明。Init/Recover 仅在流未运行的维护时点执行。若后续出现多个业务消费者或稳定时限需求，应另行评审服务层和调度设计。
+内核仍为1kHz、抢占/同级轮转、静态分配、无Mutex/软件Timer，MAX_SYSCALL中断优先级5。TIM6=4、DCMI/DMA=5、USB=6、SDMMC=7不变。BSP仅短临界区取放操作权，HAL轮询持续消耗CPU；Init/Recover的5200ms预算及固定Tick探测不构成实板实时保证。Read公开预算最大60000ms、内部256B分段共享总期限，不能给每段重置预算。测试的20ms总预算并非严格墙钟保证，HAL Tick必须持续工作。ISR、屏蔽TIM6的BASEPRI、PRIMASK/FAULTMASK、调度锁或业务临界区内均不得调用。
 
-## Keil 与测试代码边界
+## 外设、内存和工程
 
-Git 提交树的 QSPI 工程新增 HAL QSPI、bsp_qspi.c/.h 及 `Tests/QspiFlashQ1/hardware/m7_project_test.c`。最后一项注册 Initcall 并创建测试任务，因此不能原样移植该工程到产品。BSP 文件头还有 H1、SFDP、Quad ID 的测试宏及 Tests include。A 阶段需在批准白名单内迁移测试构建适配，保持默认生产行为和原测试可复现，并证明所有原有 API、诊断 ABI 和写门禁不变。当前本地 .uvprojx/.uvoptx 有用户修改，不能用提交树覆盖它们。见 [测试入口:117](../../Tests/QspiFlashQ1/hardware/m7_project_test.c#L117)、[BSP:7](../../CM7/BSP/bsp_qspi.c#L7)。
+|对象|新主线复核|集成结论|
+|---|---|---|
+|QSPI六脚|PF6–10/PG6；SDRAM仍使用PF0–5/11–15和PG0–2/4/5/8/15；DCMI仍使用PC6/7、PG10、PH12、PE4–6、PB6/7、PA4/6|无直接重叠。保存恢复仅限所属位，共享GPIOF/G端口门与寄存器不能全量复位。源级结论需共存和电气证据支持|
+|相机电源与I2C|新bsp_camera改为I2C1：PB9 SDA、PB8 SCL；新增PA15 DVDD、PH13 PWDN，保留PH15 RESET、PA8 XCLK；D2PCLK1为120MHz|旧矩阵的软SCCB描述失效。无QSPI脚位重叠；不改PLL或I2C mux，不在相机供电/初始化回调中访问QSPI。见 [bsp_camera.c](https://github.com/ruk93668-creator/h7_mac/blob/62b42d7c0b7df9eadafa00953ee8ce1229da9826/CM7/BSP/bsp_camera.c#L9)|
+|时钟|main.c、SDRAM/DCMI/SDMMC/USB BSP时钟配方与旧main逐字节一致；HCLK240MHz，SDMMC/相机PLL1Q，FMC PLL2R，USB HSI48|QSPI D1HCLK分频2得配置120MHz，不改共享PLL。不把旧H2的实际单次通信外推为V3共存稳定性|
+|SD和USB|StorageFS/sd_block未变；USB新增一致链路快照，Reader Proof记录accepted/retired及首错|测试不调用SD内部句柄、不改Framebuffer/帧指针，不用QSPI清理证明USB Reader已退出。两类FAULT/Recover严格独立|
+|帧内存|Raw七缓冲不变，新增generation/lease_id/consumer验证与失败轮换锁存；JPEG FIFO新增消费者位及通用Acquire/Release；AVI索引上限由4096增至65536项（1MiB）|不新增QSPI SDRAM区域、不借CameraFrame或Lease缓冲、不改MPU/链接地址。同步CPU竞争可能延迟归还，须回归MediaLease和USB/SD联合路径|
+|MPU/核心启动|main.c与CM4全树未变；SRAM4共享4KiB、SDRAM非缓存8MiB窗口、HSEM0启动握手及双核协议沿用|QSPI不Memory Mapped/XIP/DMA，不复用HSEM0作事务锁。M7独占QUADSPI，BSP原子权不保护另一核，CM4不触碰QSPI资源|
+|FAULT/Cleanup/Recover|沿用QSPI输入契约，清理失败保留所有权，恢复仅显式检查资源/ID/状态；写历史风险拒绝恢复|不重构或移植本轮BSP；未来测试一次故障后静止，不重试Init/Recover，不联动Supervisor或其他设备复位|
+|Keil|新main删除旧Application登记，共有36份V3生产文件，工程登记其中35份并使用Core Include路径；CM4有效C/ASM集合与TargetOption未变，Scatter、两核布局等差异见机器清单|仅从新main工程增加CM7 HAL QSPI/BSP登记。不能覆盖为旧QSPI工程，不能带入m7_project_test/H1/H2测试入口|
+|产品边界|V3已经在冻结main内，OLED/Ethernet/QSPI其他分支均不作为该冻结输入的一部分|QSPI产品仅为BSP，不增Service/队列/Supervisor组件；不主动合入其他分支|
+
+本节GPIO/时钟等未变项的文件级身份与Keil语义对照见 [全量审计](Phase0R1/source_diff_audit.json)。新低层变化的逐项影响见 [R1差异报告](Q1_5_Phase0_R1_Review.md)。保留H1/H2历史证据和用户取消旧MCU备份的事实。当前板上最后下载仍为H2是上一轮用户确认，本轮未连接板卡确认。
