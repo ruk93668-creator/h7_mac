@@ -2,6 +2,7 @@
 //TCP 监听端和主动端各保留一条连接，使用角色和代次隔离旧句柄。
 #include "eth_tcp.h"
 #include "lwip/tcp.h"
+#include "lwip/priv/tcp_priv.h"
 #include "lwip/sys.h"
 #include <string.h>
 
@@ -538,4 +539,34 @@ int eth_tcp_listening(void)
         return 0;
 
     return s_listener != NULL;
+}
+
+void eth_tcp_begin_stop(void)
+{
+    unsigned role;
+    if (!eth_execution_allowed())
+        return;
+    if (s_listener != NULL)
+    {
+        if (tcp_close(s_listener) != ERR_OK)
+            return;
+        s_listener = NULL;
+    }
+    for (role = 0U; role < ETH_TCP_ROLES; ++role)
+    {
+        EthTcpConnection_t *connection = &s_connections[role];
+        if (connection->stats.state == ETH_TCP_CONNECTING)
+            EthTcp_Abort(connection, ERR_ABRT);
+        else if (connection->stats.state == ETH_TCP_OPEN)
+            (void)eth_tcp_close(eth_tcp_handle((EthTcpRole_t)role));
+    }
+}
+
+int eth_tcp_retired(void)
+{
+    return eth_execution_allowed() && s_listener == NULL &&
+        s_connections[ETH_TCP_SERVER].pcb == NULL &&
+        s_connections[ETH_TCP_CLIENT].pcb == NULL &&
+        tcp_active_pcbs == NULL && tcp_tw_pcbs == NULL &&
+        tcp_bound_pcbs == NULL && tcp_listen_pcbs.pcbs == NULL;
 }

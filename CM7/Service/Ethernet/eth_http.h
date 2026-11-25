@@ -59,4 +59,9 @@ void eth_http_set_stream_fast_send(int enabled);
 //在服务上下文读取请求和流的计数快照，空输出指针无操作。
 void eth_http_get_statistics(EthHttpStats_t *stats);
 
+//关闭新帧准入并归还当前 JPEG 私有租约，Transport 负责连接排空。
+void eth_http_begin_stop(void);
+//Transport 全部退休后解除旧服务配置；否则返回 ERR_INPROGRESS。
+err_t eth_http_finish_stop(void);
+
 #endif

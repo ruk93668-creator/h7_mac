@@ -86,4 +86,8 @@ err_t eth_network_init_address(EthNetwork_t *network, const uint8_t mac[6],
 //只轮询已初始化的当前拥有者，推进 RX、DHCP 和 lwIP 定时器，不可用于 ISR。
 void eth_network_poll(EthNetwork_t *network);
 
+//同一拥有者停止接口，调用前须确认上层 PCB 已退休。
+//成功才移除 netif 和解除实例绑定；失败保留实例以便查询和再次停止。
+err_t eth_network_stop(EthNetwork_t *network);
+
 #endif

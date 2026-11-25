@@ -15,4 +15,17 @@ void AppV3_NetworkRun(void *argument);
 //网络任务逐轮处理邮箱和资源，返回有界等待毫秒数。
 uint32_t AppV3_NetworkAdvance(void);
 
+//业务命令由登记的其他任务提交，SYS_OK 只表示入队。
+//START 参数低两位为 static/DHCP/fallback（0/1/2），0x100 选择 HTTP。
+typedef enum
+{
+    NETWORK_SERVICE_START = 16,
+    NETWORK_SERVICE_STOP,
+    NETWORK_SERVICE_RESTART,
+    NETWORK_SERVICE_QUERY
+} NetworkServiceOperation_t;
+
+SysResult_t NetworkService_Request(uint32_t command_id,
+    NetworkServiceOperation_t operation, uint32_t argument);
+
 #endif

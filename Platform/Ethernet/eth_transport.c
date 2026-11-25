@@ -8,6 +8,7 @@ static EthTransportStats_t s_stats;
 static ip4_addr_t s_address;
 static uint32_t s_service_tick, s_client_tick;
 static uint8_t s_udp, s_server, s_client_wait;
+static uint8_t s_stopping;
 
 err_t eth_transport_init(EthNetwork_t *network, const EthTransportConfig_t *config)
 {
@@ -38,8 +39,14 @@ void eth_transport_poll(void)
 	struct netif *interface;
 	uint32_t now;
 	int ready;
-	if (!s_network)
-		return;
+    if (!s_network)
+        return;
+    if (s_stopping)
+    {
+        eth_tcp_begin_stop();
+        eth_tcp_poll();
+        return;
+    }
 	interface = &s_network->interface;
 	now = sys_now();
 	ready = netif_is_up(interface) && netif_is_link_up(interface) &&
@@ -120,4 +127,30 @@ int eth_transport_ready(void)
         return 0;
 
 	return s_stats.ready != 0U;
+}
+
+void eth_transport_begin_stop(void)
+{
+    if (!eth_execution_allowed() || s_network == NULL)
+        return;
+    s_stopping = 1U;
+    s_stats.ready = 0U;
+    eth_udp_stop();
+    eth_tcp_begin_stop();
+}
+
+err_t eth_transport_finish_stop(void)
+{
+    if (!eth_execution_allowed())
+        return ERR_IF;
+    if (s_network == NULL)
+        return ERR_OK;
+    if (!s_stopping || !eth_tcp_retired())
+        return ERR_INPROGRESS;
+    s_udp = 0U;
+    s_server = 0U;
+    s_client_wait = 0U;
+    s_network = NULL;
+    s_stopping = 0U;
+    return ERR_OK;
 }

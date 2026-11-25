@@ -48,7 +48,13 @@ def main():
     harness.cc = [flag for index, flag in enumerate(harness.cc)
                   if flag not in legacy_includes and
                   not (flag == "-I" and harness.cc[index + 1] in legacy_includes)]
-    harness.cc.extend(("-I", ROOT / "Platform/Ethernet"))
+    import sys
+    sys.path.insert(0, str(ROOT / "Tests/Ethernet"))
+    from e4_sources import PORT, TRANSPORT, SERVICE, LWIP, LWIP_DHCP, LWIP_TCP
+    harness.cc.extend(("-I", ROOT / "Platform/Ethernet",
+                       "-I", ROOT / "ThirdParty/lwip/src/include",
+                       "-I", ROOT / "CM7/Service/Ethernet",
+                       "-DETH_LWIP_DHCP", "-DETH_LWIP_E5"))
     harness.cc.extend(("-I", V3 / "Core", "-I", V3 / "Tasks", "-I", V3 / "Runtime", "--split_sections"))
     if args.production:
         harness.cc.extend(("-I", Path(__file__).with_name("BoardProfiles"), "-DAPP_V3_VERIFY_PRODUCT=1"))
@@ -84,7 +90,8 @@ def main():
         V3 / "Services/Storage/storage_service.c",
         V3 / "Services/USB/usb_service.c",
         V3 / "Services/Network/network_service.c",
-        ROOT / "Platform/Ethernet/eth_execution.c",
+        *[ROOT / p for p in PORT + TRANSPORT + SERVICE + LWIP + LWIP_DHCP + LWIP_TCP],
+        Path(__file__).with_name("network_fixture.c"),
         V3 / "Tasks/service_tasks.c",
         *sorted((V3 / "Runtime").glob("*.c")),
         kernel / "queue.c",
@@ -114,7 +121,7 @@ def main():
             scenarios = range(98, 104)
         if args.production and not args.raw_uvc:
             scenarios = [*range(24), 28, 29, *range(38, 53), *range(63, 75),
-                         *range(88, 96), 104]
+                         *range(88, 96), 104, *range(105, 109)]
         for scenario in scenarios:
             row = harness.execute(name, "AppV3_TestRun", scenario)
             if scenario < 49:

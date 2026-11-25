@@ -32,4 +32,10 @@ int eth_transport_ready(void);
 //同一执行上下文读取快照，空输出指针无操作。
 void eth_transport_get_statistics(EthTransportStats_t *stats);
 
+//停止端点准入，推进 TCP 排空后由 finish 确认资源退休。
+void eth_transport_begin_stop(void);
+//ERR_INPROGRESS 表示仍有 PCB，包括 TIME_WAIT，必须继续轮询。
+//ERR_OK 后解除旧 Network 绑定，才能接受新的 init。
+err_t eth_transport_finish_stop(void);
+
 #endif

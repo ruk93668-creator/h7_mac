@@ -120,6 +120,18 @@ EthResult_t eth_mac_get_link(EthLinkState_t *link)
 	return s_negotiation;
 }
 
+EthResult_t eth_mac_recover(const uint8_t mac[6])
+{
+    return eth_mac_init(mac);
+}
+
+EthResult_t eth_mac_stop(void)
+{
+    s_state = ETH_MAC_READY;
+    s_inflight = 0U;
+    return ETH_OK;
+}
+
 EthResult_t eth_mac_start(void)
 {
 	assert(s_state == ETH_MAC_READY && s_link);

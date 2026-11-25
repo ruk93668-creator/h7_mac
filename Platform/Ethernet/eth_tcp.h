@@ -115,4 +115,10 @@ void eth_tcp_get_statistics(EthTcpRole_t role, EthTcpStats_t *stats);
 //查询服务端是否已有监听PCB
 int eth_tcp_listening(void);
 
+//拒绝新连接并申请排空已有连接，只能由拥有者调用。
+void eth_tcp_begin_stop(void);
+//返回非零表示所属独占栈的 active/bound/listen/TIME_WAIT PCB 均已退休。
+//该确认必须在继续推进 lwIP 定时器的同时轮询。
+int eth_tcp_retired(void);
+
 #endif

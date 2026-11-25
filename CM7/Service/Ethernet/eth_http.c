@@ -411,3 +411,28 @@ void eth_http_get_statistics(EthHttpStats_t *stats)
         stats->stream = s_http.mjpeg.stats;
     }
 }
+
+void eth_http_begin_stop(void)
+{
+    if (!eth_execution_allowed() || s_http.network == NULL)
+        return;
+    eth_mjpeg_release_frame(&s_http.mjpeg);
+    s_http.mjpeg.state = ETH_MJPEG_STOPPING;
+    s_http.state = HTTP_DRAIN;
+}
+
+err_t eth_http_finish_stop(void)
+{
+    if (!eth_execution_allowed())
+        return ERR_IF;
+    if (!eth_tcp_retired() || s_http.mjpeg.borrowed)
+        return ERR_INPROGRESS;
+    //PCB 和借用均已退休，此处只撤销剩余配置引用。
+    s_http.network = NULL;
+    s_http.frames = NULL;
+    s_http.source = (EthMjpegSource_t){0};
+    s_http.count = 0U;
+    s_http.state = HTTP_IDLE;
+    s_http.mjpeg.state = ETH_MJPEG_IDLE;
+    return ERR_OK;
+}

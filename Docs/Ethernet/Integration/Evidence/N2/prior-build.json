@@ -1,0 +1,38 @@
+{
+  "cm7_jpeg": {
+    "exit": 1,
+    "errors": 0,
+    "warnings": 1,
+    "sizes": {
+      "code": 206014,
+      "ro": 5790,
+      "rw": 1620,
+      "zi": 169068
+    },
+    "firmware_sha256": "0a56afe816f06aadeb6df50bda0b246414bdf29e25d786984b919a208d64fcf7"
+  },
+  "cm7_raw": {
+    "exit": 1,
+    "errors": 0,
+    "warnings": 1,
+    "sizes": {
+      "code": 206014,
+      "ro": 5790,
+      "rw": 1620,
+      "zi": 169068
+    },
+    "firmware_sha256": "05b5142d51f08ef728d7f849bc045ec3c5705dc6e311f0862ab3054a66b88651"
+  },
+  "cm4": {
+    "exit": 0,
+    "errors": 0,
+    "warnings": 0,
+    "sizes": {
+      "code": 41578,
+      "ro": 20474,
+      "rw": 1040,
+      "zi": 3712
+    },
+    "firmware_sha256": "0c938467b4cf8c798e395a61335671cb9f0c50e8420f4416c6cb72385274cb99"
+  }
+}

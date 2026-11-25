@@ -1,14 +1,17 @@
-# Network 生命周期依赖审查
+# N2 — Network Service 生命周期
 
-状态 SOFTWARE_BLOCKED。尚无正式 Network Service，下面是对现有实现的缺口记录。
+本阶段实现真实 Mailbox START/STOP/RESTART/QUERY，操作只在 NetworkTask 执行。
+START 完成表示软件服务已建立，不表示 PHY、DHCP 租约、TCP listener 已就绪。
 
-- Platform/Ethernet/eth_network.c:17–18 保存 lwIP 初始化事实及唯一 Network 指针，初始化后没有停止、netif_remove 和所有者解除接口。
-- Platform/Ethernet/eth_transport.c:11–31 的 init 设置静态绑定，重复调用返回 ERR_USE。Link 变化只停止端点，不能解除 Transport 配置。
-- CM7/Service/Ethernet/eth_http.c 的初始化、源配置和连接状态同样为单例，缺少外部停止与完成查询入口。
-- eth_tcp_stop 会停止 listener 和已跟踪连接。TIME_WAIT 由 lwIP 自身持有，句柄关闭不能单独证明这些 PCB 已退休。
+STOP 关闭新发送，HTTP 归还私有副本，TCP 发送环按连接截止时间排空或真实 abort。
+调用 tcp_close 后继续运行 sys_check_timeouts，直到 active/TIME_WAIT/bound/listen PCB 全部退休。
+之后才清理 DHCP、ARP、netif，并执行 MAC stop。MAC stop 失败保留实例，返回 FAULT，允许再次 STOP。
+lwip_init 全局只执行一次；服务停止不伪造 lwIP 全局卸载。重新启动重新登记 netif，不重复创建任务或邮箱。
 
-正式服务应复用 AppV3HardwareRequest_t、AppV3Mailbox_Request/CompleteHardware 和 APP_V3_HW_* 状态。Record 发布表示服务实例可接受命令，网络地址、链路、listener 和视频状态必须分别查询。START 可在实例及硬件检查完成后报告服务启动，未接网线不能被误报为有效 IP。具体启动终结仍需生产实现与用例证明。
+MAC 初次初始化失败时保留所有者，显式 recover 先停止 DMA，再重新识别 PHY；不通过清零软件状态替代硬件停止。
+该故障恢复接口属于授权范围内的必要 Platform 修改，须纳入最终独立驱动回归。
 
-STOP 应先关闭 HTTP 和新帧准入，保留归还事务至 Camera 真实 RETURN_ACK，再推进有序 TCP 关闭；超时的连接按原 API 终止，继续驱动 lwIP 定时器直到所属 PCB、pbuf 与发送资源退休。随后撤销 DHCP、ARP 与接口，再调用 MAC Stop 并检查硬件结果。失败保留旧状态和原身份，禁止 memset 或清除 BUSY 后重新启动。
-
-这些机制尚未实现，START/STOP/RESTART、部分失败、旧事件与资源耗尽专项均为 NOT_RUN。
+验证：Evidence/N2/verified-build.json 三正式目标 0 Error/0 Warning。
+lifecycle-results.json 包含真实生产 Service/Mailbox/lwIP 的静态、DHCP、HTTP、停止失败重试及显式 RESTART，O0/O2 通过。
+硬件 MMIO 被测试夹具替代；这些结果不是实板验证。最终联合包仍需补齐网络负载及 Frame Lease 场景。
+历史 draft/prior 构建含枚举初始化警告，保留原结果，不视作 PASS。

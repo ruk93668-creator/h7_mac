@@ -1,6 +1,7 @@
 #include "eth_execution.h"
 //NO_SYS：同一个循环管理 MAC 和 lwIP 定时器
 #include "eth_network.h"
+#include <string.h>
 #include "lwip/init.h"
 #include "lwip/sys.h"
 #include "lwip/timeouts.h"
@@ -15,6 +16,8 @@
 
 static uint8_t s_lwip_initialized;
 static EthNetwork_t *s_owner;
+static uint8_t s_mac_initialized;
+static uint8_t s_mac_attempted;
 
 #if LWIP_DHCP
 #define ETH_DHCP_RETRY_MS 1000U
@@ -192,9 +195,26 @@ static err_t EthNetwork_Init(EthNetwork_t *network, const uint8_t mac[6],
 	if (s_owner != NULL)
 		return ERR_USE;
 
-	network->last_driver_result = eth_mac_init(mac);
-	if (network->last_driver_result != ETH_OK)
-		return ERR_IF;
+    s_owner = network;
+    if (!s_mac_initialized)
+    {
+        network->last_driver_result = s_mac_attempted ? eth_mac_recover(mac) : eth_mac_init(mac);
+        s_mac_attempted = 1U;
+        if (network->last_driver_result == ETH_OK)
+            s_mac_initialized = 1U;
+    }
+    else
+    {
+        EthStatistics_t state;
+        uint8_t current[6];
+        if (eth_mac_get_statistics(&state) != ETH_OK || state.state != ETH_MAC_READY ||
+            eth_mac_get_address(current) != ETH_OK ||
+            memcmp(current, mac, sizeof(current)) != 0)
+            return ERR_IF;
+        network->last_driver_result = ETH_OK;
+    }
+    if (network->last_driver_result != ETH_OK)
+        return ERR_IF;
 	if (!s_lwip_initialized)
 	{
 		lwip_init();
@@ -277,7 +297,7 @@ void eth_network_poll(EthNetwork_t *network)
 
 	uint32_t now;
 
-	if (network == NULL || network != s_owner)
+	if (network == NULL || network != s_owner || !network->initialized)
 		return;
 	now = sys_now();
 	if ((uint32_t)(now - network->service_tick) >= ETH_NETWORK_SERVICE_MS)
@@ -290,4 +310,42 @@ void eth_network_poll(EthNetwork_t *network)
 #if LWIP_DHCP
 	EthNetwork_AddressPoll(network, sys_now());
 #endif
+}
+
+err_t eth_network_stop(EthNetwork_t *network)
+{
+    if (!eth_execution_allowed() || network == NULL || network != s_owner)
+        return ERR_ARG;
+    if (network->initialized)
+    {
+        netif_set_link_down(&network->interface);
+        netif_set_down(&network->interface);
+#if LWIP_DHCP
+        if (netif_dhcp_data(&network->interface) != NULL)
+        {
+            //先撤销在线状态；停止不发送 Release。
+            dhcp_stop(&network->interface);
+            dhcp_cleanup(&network->interface);
+        }
+        network->dhcp_running = 0U;
+#endif
+        etharp_cleanup_netif(&network->interface);
+    }
+    {
+        EthStatistics_t statistics;
+        network->last_driver_result = eth_mac_get_statistics(&statistics);
+        if (network->last_driver_result != ETH_OK)
+            return ERR_IF;
+        if (statistics.state != ETH_MAC_OFF)
+        {
+            network->last_driver_result = eth_mac_stop();
+            if (network->last_driver_result != ETH_OK)
+                return ERR_IF;
+        }
+    }
+    if (network->initialized)
+        netif_remove(&network->interface);
+    network->initialized = 0U;
+    s_owner = NULL;
+    return ERR_OK;
 }

@@ -18,6 +18,12 @@
 #include "../../CM7/ApplicationV3/Services/USB/usb_service.h"
 #include "../../CM7/ApplicationV3/Services/Storage/storage_service.h"
 #include <setjmp.h>
+#include "../../CM7/ApplicationV3/Services/Network/network_service.h"
+#include "eth_execution.h"
+#include "eth_http.h"
+#include "lwip/stats.h"
+#include "lwip/priv/tcp_priv.h"
+extern uint32_t g_network_stop_fail, g_network_link, g_network_init_calls;
 
 #if APP_V3_VERIFY_PRODUCT
 // Keep archived mock scenario names local to this test translation unit.
@@ -2781,6 +2787,76 @@ static uint32_t Test_ProductRejectsArchivedOperations(const AppV3Context_t *cont
 }
 #endif
 
+//真实 Service/Mailbox/lwIP 生命周期，只有 MAC MMIO 被替代。
+static uint32_t Test_NetworkLifecycle(const AppV3Context_t *context, uint32_t scenario)
+{
+    uint32_t ticket, count, round;
+    uint32_t mode = scenario == 106U ? 1U : (scenario == 107U ? 0x100U : 0U);
+    CHECK(Test_StartBusiness(context) == 0U);
+    CHECK(AppV3Business_Subscribe(RUNTIME_TARGET_NETWORK, Test_StoreEvent, NULL, &ticket) == SYS_OK);
+    CHECK(!eth_execution_allowed());
+    g_network_link = 1U;
+    for (round = 0U; round < 3U; ++round)
+    {
+        CHECK(NetworkService_Request(round * 4U + 1U, NETWORK_SERVICE_START, mode) == SYS_OK);
+        CHECK(Test_ServiceStep(RUNTIME_TARGET_NETWORK) == SYS_OK);
+        owner = RUNTIME_TARGET_NETWORK;
+        CHECK(eth_execution_allowed());
+        (void)AppV3_NetworkAdvance();
+        g_hardware.now_ms += 10U;
+        (void)AppV3_NetworkAdvance();
+        owner = RUNTIME_TARGET_CONTROL;
+        CHECK(AppV3Business_Drain(&count) == SYS_OK && count == 1U);
+        CHECK(business_events[business_event_count - 1U].result == SYS_OK);
+        CHECK(business_events[business_event_count - 1U].hardware.state == APP_V3_HW_ACTIVE);
+        CHECK(g_network_init_calls == 1U);
+        if (scenario == 108U && round == 0U)
+            g_network_stop_fail = 1U;
+        CHECK(NetworkService_Request(round * 4U + 2U, NETWORK_SERVICE_STOP, 0U) == SYS_OK);
+        CHECK(Test_ServiceStep(RUNTIME_TARGET_NETWORK) == SYS_OK);
+        owner = RUNTIME_TARGET_NETWORK;
+        (void)AppV3_NetworkAdvance();
+        owner = RUNTIME_TARGET_CONTROL;
+        CHECK(AppV3Business_Drain(&count) == SYS_OK && count == 1U);
+        if (g_network_stop_fail)
+        {
+            CHECK(business_events[business_event_count - 1U].result == SYS_ERR_IO);
+            CHECK(business_events[business_event_count - 1U].hardware.state == APP_V3_HW_FAULT);
+            g_network_stop_fail = 0U;
+            CHECK(NetworkService_Request(3U, NETWORK_SERVICE_STOP, 0U) == SYS_OK);
+            CHECK(Test_ServiceStep(RUNTIME_TARGET_NETWORK) == SYS_OK);
+            owner = RUNTIME_TARGET_NETWORK;
+            (void)AppV3_NetworkAdvance();
+            owner = RUNTIME_TARGET_CONTROL;
+            CHECK(AppV3Business_Drain(&count) == SYS_OK && count == 1U);
+        }
+        CHECK(business_events[business_event_count - 1U].result == SYS_OK);
+        CHECK(business_events[business_event_count - 1U].hardware.state == APP_V3_HW_READY);
+        CHECK(lwip_stats.memp[MEMP_UDP_PCB]->used == 0U);
+        CHECK(lwip_stats.memp[MEMP_TCP_PCB]->used == 0U);
+        CHECK(lwip_stats.memp[MEMP_TCP_PCB_LISTEN]->used == 0U);
+        CHECK(lwip_stats.memp[MEMP_TCP_SEG]->used == 0U);
+        CHECK(lwip_stats.memp[MEMP_PBUF_POOL]->used == 0U);
+        CHECK(netif_list == NULL);
+    }
+    CHECK(NetworkService_Request(20U, NETWORK_SERVICE_RESTART, mode) == SYS_OK);
+    CHECK(Test_ServiceStep(RUNTIME_TARGET_NETWORK) == SYS_OK);
+    owner = RUNTIME_TARGET_NETWORK;
+    (void)AppV3_NetworkAdvance();
+    owner = RUNTIME_TARGET_CONTROL;
+    CHECK(AppV3Business_Drain(&count) == SYS_OK && count == 1U);
+    CHECK(business_events[business_event_count - 1U].hardware.state == APP_V3_HW_ACTIVE);
+    CHECK(NetworkService_Request(21U, NETWORK_SERVICE_STOP, 0U) == SYS_OK);
+    CHECK(Test_ServiceStep(RUNTIME_TARGET_NETWORK) == SYS_OK);
+    owner = RUNTIME_TARGET_NETWORK;
+    (void)AppV3_NetworkAdvance();
+    owner = RUNTIME_TARGET_CONTROL;
+    CHECK(AppV3Business_Drain(&count) == SYS_OK && count == 1U);
+    CHECK(business_events[business_event_count - 1U].hardware.state == APP_V3_HW_READY);
+    CHECK(AppV3Business_Unsubscribe(ticket) == SYS_OK);
+    return 0U;
+}
+
 uint32_t AppV3_TestRun(uint32_t scenario)
 {
     const AppV3Context_t *context;
@@ -2868,6 +2944,8 @@ uint32_t AppV3_TestRun(uint32_t scenario)
     if (scenario >= 96U && scenario <= 97U)
         return Test_RecordBoard(context, scenario);
 #endif
+    if (scenario >= 105U && scenario <= 108U)
+        return Test_NetworkLifecycle(context, scenario);
     if (scenario >= 92U && scenario <= 95U)
         return Test_Supervisor(context, scenario);
     if (scenario >= 88U && scenario <= 91U)

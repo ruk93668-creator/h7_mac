@@ -163,6 +163,20 @@ EthResult_t eth_mac_init(const uint8_t mac[6])
 	return ETH_OK;
 }
 
+//仅显式恢复使用。先证明 DMA 停止，再重新执行板级和 PHY 识别。
+EthResult_t eth_mac_recover(const uint8_t mac[6])
+{
+    EthResult_t result;
+    if (s_state != ETH_MAC_OFF)
+    {
+        result = eth_mac_stop();
+        if (result != ETH_OK)
+            return result;
+    }
+    s_state = ETH_MAC_OFF;
+    return eth_mac_init(mac);
+}
+
 //独立读取 PHY 链路和协商模式
 EthResult_t eth_mac_get_link(EthLinkState_t *snapshot)
 {

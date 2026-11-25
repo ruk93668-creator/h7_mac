@@ -58,6 +58,10 @@ typedef struct
 //显式初始化，不注册 Application；板级须提供 50 MHz 和专用 MPU/链接配置
 EthResult_t eth_mac_init(const uint8_t mac[6]);
 
+//同一串行调用者显式恢复初始化失败；先停止 DMA，失败保留 FAULT。
+//不得在 ISR 或仍有上层协议资源时调用；mac 生命周期与 init 相同。
+EthResult_t eth_mac_recover(const uint8_t mac[6]);
+
 EthResult_t eth_mac_start(void);
 
 //有界复位并确认 DMA 停止后才能归还内部缓冲区
