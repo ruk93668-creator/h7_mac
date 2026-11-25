@@ -162,8 +162,14 @@ bool OledUi_StatusBuild(OledUiPageId_t page, const IpcApplicationView_t *view,
     }
     else if (page == OLED_UI_PAGE_ABOUT)
     {
-        OledUi_StatusAppend(status->lines[0], "CM7 ");
-        OledUi_StatusAppend(status->lines[0], OledUi_StatusPeer(view->peer_state));
+        //20字符范围内完整显示最长的十位心跳计数
+        if (view->peer_state == IPC_PEER_ONLINE)
+            OledUi_StatusAppend(status->lines[0], "M7 OK");
+        else
+        {
+            OledUi_StatusAppend(status->lines[0], "CM7 ");
+            OledUi_StatusAppend(status->lines[0], OledUi_StatusPeer(view->peer_state));
+        }
         OledUi_StatusAppend(status->lines[0], " HB ");
         if (counters->heartbeat_valid && view->peer_state == IPC_PEER_ONLINE)
             OledUi_StatusNumber(status->lines[0], counters->peer_heartbeat);

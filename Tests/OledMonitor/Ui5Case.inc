@@ -54,10 +54,13 @@ static uint32_t Ui5Case(uint32_t id)
         CHECK(OledUi_StatusBuild(OLED_UI_PAGE_STORAGE_INFO, &view, &counters, &status));
         CHECK(status.first_row == 1U && strcmp(status.lines[0], "SD / RECORDING N/A") == 0);
         CHECK(OledUi_StatusBuild(OLED_UI_PAGE_ABOUT, &view, &counters, &status));
-        CHECK(strcmp(status.lines[0], "CM7 ONLINE HB 123") == 0 && strcmp(status.lines[1], "V 3 F 3 IPC 0") == 0);
+        CHECK(strcmp(status.lines[0], "M7 OK HB 123") == 0 && strcmp(status.lines[1], "V 3 F 3 IPC 0") == 0);
+        counters.peer_heartbeat = UINT32_MAX;
+        CHECK(OledUi_StatusBuild(OLED_UI_PAGE_ABOUT, &view, &counters, &status));
+        CHECK(strcmp(status.lines[0], "M7 OK HB 4294967295") == 0);
         counters.heartbeat_valid = false;
         CHECK(OledUi_StatusBuild(OLED_UI_PAGE_ABOUT, &view, &counters, &status));
-        CHECK(strcmp(status.lines[0], "CM7 ONLINE HB N/A") == 0);
+        CHECK(strcmp(status.lines[0], "M7 OK HB N/A") == 0);
         CHECK(strcmp(status.lines[2], "OK 27 IO 2 R 1") == 0);
     }
     return 0U;
