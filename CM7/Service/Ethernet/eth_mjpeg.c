@@ -1,3 +1,4 @@
+//将 JPEG 分段复制到 TCP 发送环，以累计 ACK 统计整帧完成。
 #include "eth_mjpeg.h"
 #include <stdio.h>
 #include <string.h>
@@ -53,7 +54,9 @@ void eth_mjpeg_ack(EthMjpeg_t *stream, uint32_t now, uint32_t total_acked)
         stream->last_ack = ack;
         stream->last_progress = now;
     }
-    if (stream->waiting_ack && (uint32_t)(ack - stream->frame_end) < UINT32_C(0x80000000))
+    //累计 ACK 到达帧尾才记为完成，使用模 2^32 的顺序比较。
+    if (stream->waiting_ack &&
+        (uint32_t)(ack - stream->frame_end) < UINT32_C(0x80000000))
     {
         elapsed = now - stream->frame_started;
         if (elapsed > stream->stats.max_send_latency_ms)
@@ -71,7 +74,7 @@ void eth_mjpeg_ack(EthMjpeg_t *stream, uint32_t now, uint32_t total_acked)
     }
 }
 
-//到期时获取一张完整JPEG并准备分片头
+//到达选帧时间后借用完整 JPEG，并准备当前帧的分段头。
 static void EthMjpeg_BeginFrame(EthMjpeg_t *stream, uint32_t now)
 {
     const EthMjpegFrame_t *frame = &stream->current;
@@ -81,7 +84,8 @@ static void EthMjpeg_BeginFrame(EthMjpeg_t *stream, uint32_t now)
     stream->next_frame += (skipped + 1U) * stream->period_ms;
     if (stream->source)
     {
-        EthMjpegAcquire_t result = stream->source->acquire(stream->source->context, &stream->current, &stream->lease);
+        EthMjpegAcquire_t result = stream->source->acquire(
+            stream->source->context, &stream->current, &stream->lease);
         if (result != ETH_MJPEG_ACQUIRED)
         {
             ++stream->stats.frame_skipped;
@@ -160,6 +164,7 @@ void eth_mjpeg_poll(EthMjpeg_t *stream, EthTcpHandle_t handle, uint32_t now)
     if (amount > MJPEG_CHUNK)
         amount = MJPEG_CHUNK;
     result = eth_tcp_send(handle, (const uint8_t *)data + stream->offset, amount);
+    //发送环不足时保留当前位置和租约，等待下一次尝试。
     if (result == ERR_MEM)
     {
         ++stream->stats.send_busy;
@@ -197,6 +202,7 @@ void eth_mjpeg_poll(EthMjpeg_t *stream, EthTcpHandle_t handle, uint32_t now)
         stream->state = ETH_MJPEG_FRAME_DATA;
     else
     {
+        //JPEG 数据已全部复制，尾分隔符及后续 ACK 不再引用帧缓冲。
         eth_mjpeg_release_frame(stream);
         stream->state = ETH_MJPEG_FRAME_TRAILER;
     }

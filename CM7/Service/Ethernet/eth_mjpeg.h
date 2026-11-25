@@ -1,3 +1,4 @@
+//流状态只在 HTTP 所属的 Raw API 上下文推进。
 #ifndef ETH_MJPEG_H
 #define ETH_MJPEG_H
 
@@ -23,6 +24,7 @@ typedef enum
 typedef struct
 {
     void *context;
+    //仅 ACQUIRED 交出可读的帧和租约，release 后不得访问帧数据。
     EthMjpegAcquire_t (*acquire)(void *context, EthMjpegFrame_t *frame, uint32_t *lease);
     void (*release)(void *context, uint32_t lease);
 } EthMjpegSource_t;
@@ -99,16 +101,16 @@ void eth_mjpeg_start(
     uint32_t ack_base
 );
 
-//更新累计确认字节，确认整帧后增加完成计数
+//用 TCP 累计 ACK 判定整帧完成，源缓冲可能已经在复制后归还。
 void eth_mjpeg_ack(EthMjpeg_t *stream, uint32_t now, uint32_t total_acked);
 
-//按配置周期推进分段提交，队列不足时保留当前偏移
+//尝试提交一段。发送环不足时保留偏移，并延迟重试。
 void eth_mjpeg_poll(EthMjpeg_t *stream, EthTcpHandle_t handle, uint32_t now);
 
-//绑定动态帧源，源和上下文须在连接存续期间有效
+//在首帧获取前绑定动态帧源；回调表和上下文须有效至停止并归还租约。
 void eth_mjpeg_set_source(EthMjpeg_t *stream, const EthMjpegSource_t *source);
 
-//归还当前私有帧租约，允许提供器复用缓冲
+//有租约时同步归还一次，随后提供方可复用缓冲。
 void eth_mjpeg_release_frame(EthMjpeg_t *stream);
 
 #endif

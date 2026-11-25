@@ -1,4 +1,4 @@
-//TCP服务端和客户端各使用一个连接，连接句柄不暴露lwIP PCB
+//TCP 监听端和主动端各保留一条连接，使用角色和代次隔离旧句柄。
 #include "eth_tcp.h"
 #include "lwip/tcp.h"
 #include "lwip/sys.h"
@@ -12,11 +12,13 @@ typedef struct
 {
     struct tcp_pcb *pcb;
     uint8_t rx[ETH_TCP_QUEUE_BYTES];
+    //待复制给 lwIP 的应用发送环。
     uint8_t tx[ETH_TCP_QUEUE_BYTES];
     uint16_t rx_head;
     uint16_t tx_head;
     uint32_t generation;
     uint32_t activity;
+    //连接或排空的截止时间，以及允许再次尝试发送的时间。
     uint32_t deadline;
     uint32_t attempt;
     unsigned events;
@@ -92,7 +94,7 @@ static err_t EthTcp_Receive(void *arg, struct tcp_pcb *pcb, struct pbuf *packet,
     if (length > ETH_TCP_QUEUE_BYTES - connection->stats.rx_pending)
     {
         ++connection->stats.recv_full;
-        return ERR_MEM; //保留pbuf与接收窗口，等待lwIP重新交付
+        return ERR_MEM; //由 lwIP 保留 pbuf，稍后重新交付。
     }
     tail = (uint16_t)((connection->rx_head + connection->stats.rx_pending) % ETH_TCP_QUEUE_BYTES);
     first = (uint16_t)(ETH_TCP_QUEUE_BYTES - tail);
@@ -110,6 +112,7 @@ static err_t EthTcp_Receive(void *arg, struct tcp_pcb *pcb, struct pbuf *packet,
     return ERR_OK;
 }
 
+//累计对端确认，应用发送环空间已在 tcp_write 复制成功时归还。
 static err_t EthTcp_Sent(void *arg, struct tcp_pcb *pcb, u16_t length)
 {
     EthTcpConnection_t *connection = arg;
@@ -274,7 +277,7 @@ void eth_tcp_stop(void)
     }
 }
 
-//处理一个连接的超时、排空及发送重试
+//先处理截止时间和关闭，再尝试把一段连续环数据复制给 lwIP。
 static void EthTcp_PollConnection(EthTcpConnection_t *connection, uint32_t now)
 {
     EthTcpStats_t *stats = &connection->stats;
@@ -331,7 +334,8 @@ static void EthTcp_PollConnection(EthTcpConnection_t *connection, uint32_t now)
         count = TCP_MSS;
     if (count && tcp_sndqueuelen(pcb) < TCP_SND_QUEUELEN)
     {
-        result = tcp_write(pcb, connection->tx + connection->tx_head, count, TCP_WRITE_FLAG_COPY);
+        result = tcp_write(pcb, connection->tx + connection->tx_head,
+            count, TCP_WRITE_FLAG_COPY);
         if (result == ERR_OK)
         {
             connection->tx_head = (uint16_t)((connection->tx_head + count) % ETH_TCP_QUEUE_BYTES);
@@ -367,7 +371,8 @@ static void EthTcp_PollConnection(EthTcpConnection_t *connection, uint32_t now)
         }
     }
     //成功提交后允许下一轮继续，发送窗口或队列受限时保留重试间隔
-    if (connection->fast_send && !retry && stats->state == ETH_TCP_OPEN && !connection->peer_fin)
+    if (connection->fast_send && !retry &&
+        stats->state == ETH_TCP_OPEN && !connection->peer_fin)
         connection->attempt = now;
 }
 

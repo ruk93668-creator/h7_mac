@@ -1,3 +1,4 @@
+//由 lwIP Raw API 的唯一拥有者串行调用本接口和统计查询。
 #ifndef ETH_TCP_PORT_H
 #define ETH_TCP_PORT_H
 
@@ -36,6 +37,7 @@ enum
     ETH_TCP_EVENT_CLOSED = 16
 };
 
+//在 TCP 轮询末尾交付事件位，回调不得递归轮询。
 typedef void (*EthTcpEvent_t)(EthTcpHandle_t handle, unsigned events, void *arg);
 typedef struct
 {
@@ -44,8 +46,8 @@ typedef struct
     uint32_t errors;
     uint32_t timeouts;
     uint32_t rejected;
-    uint32_t submitted;
-    uint32_t queued_lwip;
+    uint32_t submitted;   //已复制到应用环的累计字节数
+    uint32_t queued_lwip; //已复制到 lwIP 的累计字节数
     //对端确认的累计字节数
     uint32_t acked;
     uint32_t received;
@@ -73,7 +75,7 @@ err_t eth_tcp_configure(EthTcpEvent_t callback, void *arg, uint32_t idle_timeout
 //在当前IPv4地址上建立监听
 err_t eth_tcp_server_start(struct netif *netif, uint16_t port);
 
-//向指定IPv4地址和端口发起异步连接
+//发起异步连接。ERR_OK 表示已发起，结果以 OPEN 或关闭事件为准。
 err_t eth_tcp_client_connect(struct netif *netif, const ip4_addr_t *peer, uint16_t port);
 
 //停止监听并终止现有连接
@@ -93,13 +95,15 @@ EthTcpState_t eth_tcp_get_state(EthTcpHandle_t handle);
 err_t eth_tcp_enable_fast_send(EthTcpHandle_t handle);
 #endif
 
-//复制数据到内部环，成功返回后调用者可立即复用源缓冲
+//成功时同步复制整段，调用者可立即复用缓冲；ERR_MEM 时可重试整段。
+//累计 ACK 通过独立事件和统计报告。
 err_t eth_tcp_send(EthTcpHandle_t handle, const void *data, uint16_t length);
 
 //复制可用数据并归还接收窗口，返回实际读取字节数
 uint16_t eth_tcp_read(EthTcpHandle_t handle, void *data, uint16_t capacity);
 
-//申请有序关闭，已提交的数据留待排空
+//申请有序关闭，以 CLOSED 事件判定句柄关闭。
+//该事件不代表 lwIP 的 TIME_WAIT PCB 已回收。
 err_t eth_tcp_close(EthTcpHandle_t handle);
 
 //立即终止有效连接

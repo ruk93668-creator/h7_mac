@@ -1,3 +1,4 @@
+//解析单连接请求，由轮询上下文推进响应及 MJPEG 流。
 #include "eth_http.h"
 #include "lwip/sys.h"
 #include <stdio.h>
@@ -68,7 +69,7 @@ static const char *EthHttp_LineEnd(const char *p, const char *end)
     return NULL;
 }
 
-//校验请求行及头字段，返回对应路由或状态码
+//request 到 end 是完整请求头，end 指向末尾后一字节。返回路由或 HTTP 状态码。
 static unsigned EthHttp_Parse(const char *request, const char *end)
 {
     const char *line = EthHttp_LineEnd(request, end);
@@ -90,6 +91,8 @@ static unsigned EthHttp_Parse(const char *request, const char *end)
         if (!((*p >= '0' && *p <= '9') || (*p >= 'a' && *p <= 'z') ||
             (*p >= 'A' && *p <= 'Z') || *p == '/' || *p == '.' || *p == '-' || *p == '_'))
             return 400U;
+
+    //逐行校验头字段，调用者已经确认末尾的空行。
     for (p = line + 2; p < end - 2; p = next + 2)
     {
         const char *colon;
@@ -119,7 +122,7 @@ static unsigned EthHttp_Parse(const char *request, const char *end)
     return 404U;
 }
 
-//收集当前连接事件并处理连接代次变化
+//只接收当前服务端代次的事件，连接更新时先归还上一帧。
 static void EthHttp_Event(EthTcpHandle_t handle, unsigned events, void *arg)
 {
     (void)arg;
@@ -197,7 +200,7 @@ static void EthHttp_Abort(void)
     s_http.state = HTTP_DRAIN;
 }
 
-//组装普通HTTP响应并交给主循环发送
+//将普通响应写入连接暂存区，由后续轮询提交发送环。
 static void EthHttp_Respond(unsigned code)
 {
     const char *status, *body, *type = "text/plain; charset=utf-8", *allow = "";
@@ -220,15 +223,42 @@ static void EthHttp_Respond(unsigned code)
         body = page;
         type = "text/html; charset=utf-8";
         break;
-    case HTTP_ROUTE_HEALTH: ++s_http.stats.health; status = "200 OK"; body = "ok\n"; break;
-    case 204U: ++s_http.stats.favicon; status = "204 No Content"; body = ""; break;
+    case HTTP_ROUTE_HEALTH:
+        ++s_http.stats.health;
+        status = "200 OK";
+        body = "ok\n";
+        break;
+    case 204U:
+        ++s_http.stats.favicon;
+        status = "204 No Content";
+        body = "";
+        break;
     case 405U:
-        ++s_http.stats.method_rejected; status = "405 Method Not Allowed";
-        body = "GET only\n"; allow = "Allow: GET\r\n"; break;
-    case 404U: ++s_http.stats.not_found; status = "404 Not Found"; body = "not found\n"; break;
-    case 408U: ++s_http.stats.request_timeout; status = "408 Request Timeout"; body = "timeout\n"; break;
-    case 431U: ++s_http.stats.headers_too_large; status = "431 Request Header Fields Too Large"; body = "header too large\n"; break;
-    default: ++s_http.stats.bad_request; status = "400 Bad Request"; body = "bad request\n"; break;
+        ++s_http.stats.method_rejected;
+        status = "405 Method Not Allowed";
+        body = "GET only\n";
+        allow = "Allow: GET\r\n";
+        break;
+    case 404U:
+        ++s_http.stats.not_found;
+        status = "404 Not Found";
+        body = "not found\n";
+        break;
+    case 408U:
+        ++s_http.stats.request_timeout;
+        status = "408 Request Timeout";
+        body = "timeout\n";
+        break;
+    case 431U:
+        ++s_http.stats.headers_too_large;
+        status = "431 Request Header Fields Too Large";
+        body = "header too large\n";
+        break;
+    default:
+        ++s_http.stats.bad_request;
+        status = "400 Bad Request";
+        body = "bad request\n";
+        break;
     }
     if (code == 204U)
         length = snprintf(s_http.response, sizeof(s_http.response),
@@ -260,7 +290,9 @@ static void EthHttp_Request(uint32_t now, uint32_t acked)
 {
     uint16_t old = s_http.used, i;
     unsigned code;
-    s_http.used += eth_tcp_read(s_http.handle, s_http.request + old, (uint16_t)(sizeof(s_http.request) - old));
+    s_http.used += eth_tcp_read(s_http.handle, s_http.request + old,
+        (uint16_t)(sizeof(s_http.request) - old));
+    //回看三个字节，覆盖跨两次读取的头部结束符。
     for (i = old < 3U ? 0U : (uint16_t)(old - 3U); i + 4U <= s_http.used; ++i)
     {
         if (memcmp(s_http.request + i, "\r\n\r\n", 4U) != 0)

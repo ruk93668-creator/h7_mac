@@ -1,3 +1,4 @@
+//HTTP 服务的初始化、轮询和状态查询在同一 lwIP Raw API 上下文串行执行。
 #ifndef ETH_HTTP_H
 #define ETH_HTTP_H
 
@@ -31,7 +32,8 @@ typedef struct
     EthMjpegStats_t stream;
 } EthHttpStats_t;
 
-//使用静态JPEG帧表初始化HTTP服务，周期单位ms
+//借用已初始化的 network 和静态帧表，表及数据须在整个服务期间有效。
+//周期单位 ms。ERR_OK 表示接受配置，监听由 Transport 轮询建立。
 err_t eth_http_init(
     EthNetwork_t *network,
     const EthMjpegFrame_t *frames,
@@ -39,10 +41,10 @@ err_t eth_http_init(
     uint16_t frame_period_ms
 );
 
-//推进请求解析和响应，在TCP轮询后调用
+//在 Network 和 Transport 轮询后推进请求解析、响应提交和清理。
 void eth_http_poll(void);
 
-//绑定动态JPEG源，发送期间按租约取得和归还帧
+//复制 source 回调表并借用 context。周期与返回值含义同静态初始化。
 err_t eth_http_init_source(
     EthNetwork_t *network,
     const EthMjpegSource_t *source,
@@ -54,7 +56,7 @@ err_t eth_http_init_source(
 void eth_http_set_stream_fast_send(int enabled);
 #endif
 
-//读取HTTP请求和MJPEG发送计数快照
+//在服务上下文读取请求和流的计数快照，空输出指针无操作。
 void eth_http_get_statistics(EthHttpStats_t *stats);
 
 #endif
