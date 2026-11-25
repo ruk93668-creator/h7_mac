@@ -14,5 +14,7 @@ LWIP_TCP = ['ThirdParty/lwip/src/core/' + name + '.c' for name in ('tcp', 'tcp_i
 TRANSPORT = ['Platform/Ethernet/' + name + '.c' for name in ('eth_udp', 'eth_tcp', 'eth_transport')]
 BENCH = ['Tests/Ethernet/e5_protocol.c', 'Tests/Ethernet/e5_bench.c']
 BOARD = ['Tests/Ethernet/eth_test_board.c']
-HTTP = ['Platform/Ethernet/eth_http.c', 'Platform/Ethernet/eth_mjpeg.c',
+CLOCK = ['Platform/Ethernet/eth_lwip_time.c', 'CM7/Platform/platform_time.c']
+SERVICE = ['CM7/Service/Ethernet/eth_http.c', 'CM7/Service/Ethernet/eth_mjpeg.c']
+HTTP = SERVICE + [
         'Tests/Ethernet/e6_jpeg_fixtures/e6_jpeg_fixtures.c']

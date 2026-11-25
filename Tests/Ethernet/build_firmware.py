@@ -1,7 +1,7 @@
 """Generate isolated Keil validation targets; never flash automatically."""
 from pathlib import Path
 import subprocess,xml.etree.ElementTree as ET,copy,re,json,sys,hashlib,time
-from e4_sources import PORT, LWIP, LWIP_DHCP, LWIP_TCP, TRANSPORT, BENCH, BOARD, HTTP
+from e4_sources import PORT, LWIP, LWIP_DHCP, LWIP_TCP, TRANSPORT, BENCH, BOARD, HTTP, CLOCK, SERVICE
 ROOT=Path(__file__).resolve().parents[2]
 OUT=ROOT/'output/Ethernet';OUT.mkdir(parents=True,exist_ok=True)
 baseline='--baseline' in sys.argv
@@ -23,14 +23,13 @@ e4='--e4' in sys.argv or dhcp
 name='baseline' if baseline else 'e35' if e35 else 'e7_v1_qvga' if e7_v1_qvga else 'e7_v1_axi' if e7_v1_axi else 'e7_v1' if e7_v1 else 'e7' if e7_v0 else 'e6' if e6 else 'e5' if e5 else 'e42' if e42 else 'e4' if e4 else 'smoke' if smoke else 'integrated'
 lwip_sources=LWIP + (LWIP_DHCP if dhcp else []) + (LWIP_TCP if tcp else [])
 entry='e7' if e7 else name if tcp else 'e4'
-bench_sources=PORT+['Tests/Ethernet/'+entry+'_main.c']
+bench_sources=PORT+CLOCK+['Tests/Ethernet/'+entry+'_main.c']
 if tcp:
     bench_sources+=TRANSPORT+BOARD+(HTTP if e6 else HTTP[:2] if e7 else BENCH)
 camera_bsp = 'Tests/Ethernet/board_v1' if e7_v1 else 'CM7/BSP'
 camera_sources = [f'{camera_bsp}/bsp_camera.c','CM7/BSP/bsp_dcmi.c','CM7/BSP/bsp_sdram.c',
                   'CM7/Device/Src/device.c','CM7/Device/Src/ov5640_device.c',
                   'CM7/Device/Components/OV5640/ov5640.c','CM7/Device/Components/OV5640/ov5640_reg.c',
-                  'CM7/Platform/platform_time.c',
                   'CM7/Media/Src/camera_capture.c','CM7/Media/Src/camera_mjpeg_fifo.c']
 if e7:
     bench_sources += camera_sources + ['Tests/Ethernet/e7_camera_provider.c']
@@ -40,6 +39,16 @@ root=ET.fromstring(project_bytes);targets=root.find('Targets')
 base=next(t for t in targets if t.findtext('TargetName')=='h7_mac_CM7')
 for t in list(targets): targets.remove(t)
 t=copy.deepcopy(base);targets.append(t)
+# 独立目标有自己的协议配置和钩子
+for group in list(t.find('Groups')):
+    if group.findtext('GroupName') in {'Ethernet lwIP port', 'Ethernet Service', 'Ethernet lwIP 2.2.1'}:
+        t.find('Groups').remove(group)
+define=t.find('./TargetOption/TargetArmAds/Cads/VariousControls/Define')
+define.text=','.join(value for value in (define.text or '').split(',')
+                     if value not in {'ETH_LWIP_DHCP', 'ETH_LWIP_E5'})
+link_misc=t.find('.//LDads/Misc')
+link_misc.text='\n'.join(value for value in (link_misc.text or '').splitlines()
+                          if not value.startswith(('--keep=eth_network_', '--keep=eth_http_', '--keep=eth_transport_', '--keep=eth_udp_')))
 build_dir=OUT/name
 build_dir.mkdir(parents=True,exist_ok=True)
 # ARMCC response-file paths must not depend on uVision's inherited directory.
@@ -67,11 +76,16 @@ if smoke or e35:
     ET.SubElement(file,'FileType').text='1'
     ET.SubElement(file,'FilePath').text='../Tests/Ethernet/'+test_source
     # Dedicated test entry; no Application code is changed or invoked.
-if e35:
-    # Test-only cached AXI SRAM for caller buffers/cache pressure. Production scatter unchanged.
-    scatter=OUT/'e35.sct'
+if not e4 and not baseline:
+    # Raw-frame builds do not link the production lwIP CPU objects.
+    scatter=OUT/(name+'.sct')
     scatter_text=(ROOT/'MDK-ARM/h7_mac_CM7_custom.sct').read_text()
-    scatter_text=scatter_text.replace('    RW_IRAM1', '    RW_E35_CACHE 0x24010000 0x00010000\n    {\n        *(.e35_cache)\n    }\n\n    RW_IRAM1')
+    scatter_text, removed=re.subn(r'^    RW_ETHERNET_CPU [^\n]*\n    \{[^}]*\}\n\n',
+                                  '', scatter_text, flags=re.M)
+    if removed != 1:
+        raise SystemExit('unexpected production Ethernet CPU region')
+    if e35:
+        scatter_text=scatter_text.replace('    RW_IRAM1', '    RW_E35_CACHE 0x24010000 0x00010000\n    {\n        *(.e35_cache)\n    }\n\n    RW_IRAM1')
     scatter.write_text(scatter_text)
     t.find('.//LDads/ScatterFile').text=str(scatter)
 if e4:
@@ -98,6 +112,7 @@ if e4:
     controls=t.find('./TargetOption/TargetArmAds/Cads/VariousControls')
     controls.find('IncludePath').text=';'.join((
         '../Platform/Ethernet','../ThirdParty/lwip/src/include','../CM7/Core/Inc',
+        '../CM7/Platform','../CM7/Service/Ethernet',
         '../Drivers/STM32H7xx_HAL_Driver/Inc','../Drivers/STM32H7xx_HAL_Driver/Inc/Legacy',
         '../Drivers/CMSIS/Device/ST/STM32H7xx/Include','../Drivers/CMSIS/Include'))
     controls.find('MiscControls').text=''
@@ -154,7 +169,10 @@ if e4:
     inputs += [scatter]
     inputs += list((ROOT/'Platform/Ethernet/arch').glob('*.h'))
     inputs += list((ROOT/'ThirdParty/lwip/src/include').rglob('*.h'))
-    inputs += [ROOT/path for path in lwip_sources]
+    inputs += [ROOT/path for path in lwip_sources + CLOCK]
+    inputs += [ROOT/path for path in SERVICE] if e6 or e7 else []
+    if e6 or e7:
+        inputs += list((ROOT/'CM7/Service/Ethernet').glob('*.h'))
 if e6:
     inputs += sorted((ROOT/'Tests/Ethernet/e6_jpeg_fixtures').glob('*'))
 if e7:

@@ -64,11 +64,6 @@ static int EthBench_Clock(void)
 	return HAL_RCC_ClockConfig(&clock, FLASH_LATENCY_4) == HAL_OK;
 }
 
-u32_t sys_now(void)
-{
-	return HAL_GetTick();
-}
-
 void SysTick_Handler(void)
 {
 	HAL_IncTick();

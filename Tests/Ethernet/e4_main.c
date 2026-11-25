@@ -74,11 +74,6 @@ static void EthBench_Mpu(void)
 	HAL_MPU_Enable(MPU_PRIVILEGED_DEFAULT);
 }
 
-u32_t sys_now(void)
-{
-	return HAL_GetTick();
-}
-
 void SysTick_Handler(void)
 {
 	HAL_IncTick();

@@ -32,6 +32,27 @@ LR_IROM1 0x08000000 0x00100000
         *(.ethernet_dma)
     }
 
+    RW_ETHERNET_CPU 0x24010000 0x00010000
+    {
+        mem.o (+RW +ZI)
+        memp.o (+RW +ZI)
+        eth_http.o (+RW +ZI)
+        eth_tcp.o (+RW +ZI)
+        eth_transport.o (+RW +ZI)
+        eth_udp.o (+RW +ZI)
+        eth_network.o (+RW +ZI)
+        tcp.o (+RW +ZI)
+        stats.o (+RW +ZI)
+        netif.o (+RW +ZI)
+        etharp.o (+RW +ZI)
+        dhcp.o (+RW +ZI)
+        ip.o (+RW +ZI)
+        ip4.o (+RW +ZI)
+        raw.o (+RW +ZI)
+        timeouts.o (+RW +ZI)
+        udp.o (+RW +ZI)
+    }
+
     RW_IRAM1 0x20000000 0x00020000
     {
         .ANY (+RW +ZI)

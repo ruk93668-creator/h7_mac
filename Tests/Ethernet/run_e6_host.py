@@ -19,7 +19,7 @@ def main():
     port = PORT + TRANSPORT + HTTP + ['Tests/Ethernet/test_e6_network.c']
     lwip = LWIP + LWIP_DHCP + LWIP_TCP
     flags = ['/nologo', '/std:c11', '/utf-8', '/wd4103', '/wd4324', '/IPlatform/Ethernet',
-             '/IThirdParty/lwip/src/include', '/DETH_LWIP_DHCP', '/DETH_LWIP_E5',
+             '/ICM7/Service/Ethernet', '/IThirdParty/lwip/src/include', '/DETH_LWIP_DHCP', '/DETH_LWIP_E5',
              '/Fo' + str(out) + '\\']
     for sources, warning in ((port, '/W4'), (lwip, '/W3')):
         subprocess.run(['cl', *flags, warning, '/WX', '/c', *sources], cwd=root, check=True)
