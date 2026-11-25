@@ -114,6 +114,24 @@ static uint32_t UiGlobalStyleCase(void)
     return 0U;
 }
 
+//从图标区域重建每行字节，匹配审核图标的像素签名。
+static uint32_t UiTileIconChecksum(const OledDevice_t *oled, uint32_t slot)
+{
+    uint32_t x, y, bit, byte;
+    uint32_t checksum = 2166136261UL;
+    uint32_t left = 14U + slot * 42U;
+
+    for (y = 8U; y < 24U; y++)
+        for (x = left; x < left + 16U; x += 8U)
+        {
+            byte = 0U;
+            for (bit = 0U; bit < 8U; bit++)
+                byte = (byte << 1) | (Ui1_Pixel(oled, x + bit, y) ? 1U : 0U);
+            checksum = (checksum ^ byte) * 16777619UL;
+        }
+    return checksum;
+}
+
 //按实际Tiles窗口读取图标区域，与确认预览的像素签名逐项比较。
 static uint32_t UiSystemIconCase(void)
 {
@@ -122,7 +140,7 @@ static uint32_t UiSystemIconCase(void)
     OledUiMenuStyle_t style = {0};
     OledUiPageState_t state;
     OledDevice_t *oled = &s_guard.oled;
-    uint32_t i, x, y, bit, byte, checksum;
+    uint32_t i;
 
     style.font_height = 8U;
     style.cursor_style = 5U;
@@ -134,18 +152,49 @@ static uint32_t UiSystemIconCase(void)
     for (i = 0U; i < 7U; i++)
     {
         CHECK(OledUi_MenuRenderVisual(oled, &state, NULL, NULL, &style) == SYS_OK);
-        checksum = 2166136261UL;
-        for (y = 8U; y < 24U; y++)
-            for (x = 14U + i % 3U * 42U; x < 30U + i % 3U * 42U; x += 8U)
-            {
-                byte = 0U;
-                for (bit = 0U; bit < 8U; bit++)
-                    byte = (byte << 1) | (Ui1_Pixel(oled, x + bit, y) ? 1U : 0U);
-                checksum = (checksum ^ byte) * 16777619UL;
-            }
-        CHECK(checksum == expected[i]);
+        CHECK(UiTileIconChecksum(oled, i % 3U) == expected[i]);
         if (i < 6U)
             CHECK(OledUi_PageMoveNext(&state) == SYS_OK);
+    }
+    return 0U;
+}
+
+//验证四个子菜单的八张新图以及跨页返回箭头。
+static uint32_t UiSubmenuIconCase(void)
+{
+    static const struct
+    {
+        OledUiPageId_t page;
+        uint8_t count;
+        uint32_t expected[5];
+    } cases[] = {
+        {OLED_UI_PAGE_CAMERA, 4U, {0xf535dd12UL, 0x8533a324UL, 0x27f2bde7UL, 0x0385b0c5UL}},
+        {OLED_UI_PAGE_NETWORK, 1U, {0x0385b0c5UL}},
+        {OLED_UI_PAGE_STORAGE, 2U, {0x6431f86cUL, 0x0385b0c5UL}},
+        {OLED_UI_PAGE_SYSTEM_MONITOR, 5U, {0xf6b1dcccUL, 0x2778ca02UL, 0xfb593db1UL, 0x8e3802afUL, 0x0385b0c5UL}}
+    };
+    OledUiMenuStyle_t style = {0};
+    OledUiPageState_t state;
+    OledDevice_t *oled = &s_guard.oled;
+    uint32_t i, j;
+
+    style.font_height = 8U;
+    style.cursor_style = 5U;
+    style.tiles = true;
+    oled->base.state = DEVICE_STATE_READY;
+    oled->ops = &s_test_ops;
+    for (i = 0U; i < sizeof(cases) / sizeof(cases[0]); i++)
+    {
+        CHECK(OledUi_PageInit(&state) == SYS_OK);
+        CHECK(OledUi_PageOpen(&state, OLED_UI_PAGE_SYSTEM) == SYS_OK);
+        CHECK(OledUi_PageOpen(&state, cases[i].page) == SYS_OK);
+        for (j = 0U; j < cases[i].count; j++)
+        {
+            CHECK(OledUi_MenuRenderVisual(oled, &state, NULL, NULL, &style) == SYS_OK);
+            CHECK(UiTileIconChecksum(oled, j % 3U) == cases[i].expected[j]);
+            if (j + 1U < cases[i].count)
+                CHECK(OledUi_PageMoveNext(&state) == SYS_OK);
+        }
     }
     return 0U;
 }

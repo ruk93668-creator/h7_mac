@@ -313,6 +313,8 @@ uint32_t OledMonitor_TestRun(uint32_t id)
         return UiGlobalStyleCase();
     if (id == 90U)
         return UiSystemIconCase();
+    if (id == 91U)
+        return UiSubmenuIconCase();
     if (id == 76U)
         return Ui2InputCase();
     if (id >= 69U)

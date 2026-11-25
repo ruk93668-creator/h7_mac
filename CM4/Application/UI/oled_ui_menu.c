@@ -3,6 +3,7 @@
 #include "oled_ui_font.h"
 #include "oled_ui_tools.h"
 #include "Assets/oled_ui_system_icons.inc"
+#include "Assets/oled_ui_submenu_icons.inc"
 #include <stddef.h>
 
 //菜单每个条目的行高，单位像素
@@ -15,17 +16,28 @@
 #define OLED_UI_LABEL_LIMIT 18U
 
 //按目标页绑定原绘图标，菜单调整顺序时仍显示对应图形
-static const uint8_t *OledUi_MenuSystemIcon(OledUiPageId_t target)
+static const uint8_t *OledUi_MenuItemIcon(const OledUiMenuItem_t *item)
 {
-    switch (target)
+    //不同层级的返回项共用同一个箭头，与目标父页无关
+    if (item->action == OLED_UI_ITEM_BACK)
+        return s_system_icons[4];
+
+    switch (item->target)
     {
         case OLED_UI_PAGE_CAMERA: return s_system_icons[0];
         case OLED_UI_PAGE_NETWORK: return s_system_icons[1];
         case OLED_UI_PAGE_STORAGE: return s_system_icons[2];
         case OLED_UI_PAGE_ABOUT: return s_system_icons[3];
-        case OLED_UI_PAGE_MONITOR: return s_system_icons[4];
         case OLED_UI_PAGE_SYSTEM_MONITOR: return s_system_icons[5];
         case OLED_UI_PAGE_TOOLS: return s_system_icons[6];
+        case OLED_UI_PAGE_CAMERA_STATUS: return s_submenu_icons[0];
+        case OLED_UI_PAGE_CAMERA_FORMAT: return s_submenu_icons[1];
+        case OLED_UI_PAGE_USB: return s_submenu_icons[2];
+        case OLED_UI_PAGE_STORAGE_INFO: return s_submenu_icons[3];
+        case OLED_UI_PAGE_TASKS: return s_submenu_icons[4];
+        case OLED_UI_PAGE_MEMORY: return s_submenu_icons[5];
+        case OLED_UI_PAGE_CPU: return s_submenu_icons[6];
+        case OLED_UI_PAGE_RUNTIME: return s_submenu_icons[7];
         default: return NULL;
     }
 }
@@ -47,7 +59,7 @@ static SysResult_t OledUi_MenuTiles(OledDevice_t *oled, const OledUiPage_t *page
     {
         x = (int16_t)(2U + i * 42U);
         icon_x = (int16_t)(x + (40U - size) / 2U);
-        icon = page->id == OLED_UI_PAGE_SYSTEM ? OledUi_MenuSystemIcon(page->items[index].target) : NULL;
+        icon = OledUi_MenuItemIcon(&page->items[index]);
         if (icon != NULL)
             result = OledUi_DrawIcon16(oled, icon_x, 8, size, icon);
         else
