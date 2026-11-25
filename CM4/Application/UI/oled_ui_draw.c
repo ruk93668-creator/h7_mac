@@ -204,3 +204,36 @@ SysResult_t OledUi_DrawBitmap(OledDevice_t *oled,
 {
     return OledUi_DrawArea(oled, x, y, width, height, 0U, OLED_UI_BITMAP, false, data, length);
 }
+
+//缩小图标时直接采样原位图，不分配中间缓冲
+SysResult_t OledUi_DrawIcon16(OledDevice_t *oled, int16_t x, int16_t y,
+    uint8_t size, const uint8_t bits[32])
+{
+    uint32_t row, col, sx, sy;
+    SysResult_t result;
+
+    if (bits == NULL || size == 0U || size > 16U ||
+        x < 0 || y < 0 || x + size > (int32_t)OLED_WIDTH || y + size > (int32_t)OLED_HEIGHT)
+        return SYS_ERR_INVALID_ARG;
+    if (size == 16U)
+        return OledUi_DrawBitmap(oled, x, y, 16U, 16U, bits, 32U);
+
+    result = OledUi_CheckWritable(oled);
+    if (result != SYS_OK)
+        return result;
+    for (row = 0U; row < size; row++)
+    {
+        sy = row * 16U / size;
+        for (col = 0U; col < size; col++)
+        {
+            sx = col * 16U / size;
+            if ((bits[sy * 2U + sx / 8U] & (0x80U >> (sx % 8U))) != 0U)
+            {
+                result = oled->ops->draw_pixel(oled, (uint16_t)(x + col), (uint16_t)(y + row), true);
+                if (result != SYS_OK)
+                    return result;
+            }
+        }
+    }
+    return SYS_OK;
+}

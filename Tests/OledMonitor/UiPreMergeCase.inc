@@ -113,3 +113,39 @@ static uint32_t UiGlobalStyleCase(void)
     CHECK(i < 3U * OLED_WIDTH);
     return 0U;
 }
+
+//按实际Tiles窗口读取图标区域，与确认预览的像素签名逐项比较。
+static uint32_t UiSystemIconCase(void)
+{
+    static const uint32_t expected[] = {0x5ab64386UL, 0x7197b35aUL, 0x862e6e36UL, 0xb59ec5dfUL,
+        0x0385b0c5UL, 0x336c9112UL, 0x9327d496UL};
+    OledUiMenuStyle_t style = {0};
+    OledUiPageState_t state;
+    OledDevice_t *oled = &s_guard.oled;
+    uint32_t i, x, y, bit, byte, checksum;
+
+    style.font_height = 8U;
+    style.cursor_style = 5U;
+    style.tiles = true;
+    oled->base.state = DEVICE_STATE_READY;
+    oled->ops = &s_test_ops;
+    CHECK(OledUi_PageInit(&state) == SYS_OK);
+    CHECK(OledUi_PageOpen(&state, OLED_UI_PAGE_SYSTEM) == SYS_OK);
+    for (i = 0U; i < 7U; i++)
+    {
+        CHECK(OledUi_MenuRenderVisual(oled, &state, NULL, NULL, &style) == SYS_OK);
+        checksum = 2166136261UL;
+        for (y = 8U; y < 24U; y++)
+            for (x = 14U + i % 3U * 42U; x < 30U + i % 3U * 42U; x += 8U)
+            {
+                byte = 0U;
+                for (bit = 0U; bit < 8U; bit++)
+                    byte = (byte << 1) | (Ui1_Pixel(oled, x + bit, y) ? 1U : 0U);
+                checksum = (checksum ^ byte) * 16777619UL;
+            }
+        CHECK(checksum == expected[i]);
+        if (i < 6U)
+            CHECK(OledUi_PageMoveNext(&state) == SYS_OK);
+    }
+    return 0U;
+}

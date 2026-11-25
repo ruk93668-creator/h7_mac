@@ -27,6 +27,10 @@ SysResult_t OledUi_InvertArea(OledDevice_t *oled,
 SysResult_t OledUi_InvertRoundRect(OledDevice_t *oled,
     int16_t x, int16_t y, uint16_t width, uint16_t height, uint16_t radius);
 
+//绘制16×16单色图标，输入为32字节，缩放后按最近像素采样
+SysResult_t OledUi_DrawIcon16(OledDevice_t *oled, int16_t x, int16_t y,
+    uint8_t size, const uint8_t bits[32]);
+
 //每行独立按字节对齐、MSB在左。0清除、1点亮。length为可读字节数。
 SysResult_t OledUi_DrawBitmap(OledDevice_t *oled,
     int16_t x, int16_t y, uint16_t width, uint16_t height,

@@ -2,6 +2,7 @@
 #include "oled_ui_draw.h"
 #include "oled_ui_font.h"
 #include "oled_ui_tools.h"
+#include "Assets/oled_ui_system_icons.inc"
 #include <stddef.h>
 
 //菜单每个条目的行高，单位像素
@@ -13,6 +14,22 @@
 //普通菜单标签显示的最大字符数
 #define OLED_UI_LABEL_LIMIT 18U
 
+//按目标页绑定原绘图标，菜单调整顺序时仍显示对应图形
+static const uint8_t *OledUi_MenuSystemIcon(OledUiPageId_t target)
+{
+    switch (target)
+    {
+        case OLED_UI_PAGE_CAMERA: return s_system_icons[0];
+        case OLED_UI_PAGE_NETWORK: return s_system_icons[1];
+        case OLED_UI_PAGE_STORAGE: return s_system_icons[2];
+        case OLED_UI_PAGE_ABOUT: return s_system_icons[3];
+        case OLED_UI_PAGE_MONITOR: return s_system_icons[4];
+        case OLED_UI_PAGE_SYSTEM_MONITOR: return s_system_icons[5];
+        case OLED_UI_PAGE_TOOLS: return s_system_icons[6];
+        default: return NULL;
+    }
+}
+
 //使用当前全局字号排列图标和标签，确保总高度不超过24像素
 static SysResult_t OledUi_MenuTiles(OledDevice_t *oled, const OledUiPage_t *page,
     const OledUiCursor_t *cursor, const OledUiVisual_t *visual, const OledUiMenuStyle_t *style)
@@ -21,15 +38,20 @@ static SysResult_t OledUi_MenuTiles(OledDevice_t *oled, const OledUiPage_t *page
     uint8_t size = 24U - style->font_height;
     uint8_t columns = 36U / OledUi_FontWidth(style->font_height);
     uint8_t i, index;
-    int16_t x;
+    int16_t x, icon_x;
+    const uint8_t *icon;
     const char *label;
     SysResult_t result;
 
     for (i = 0U, index = first; i < 3U && index < page->count; i++, index++)
     {
         x = (int16_t)(2U + i * 42U);
-        result = OledUi_DrawMenuIcon(oled, (int16_t)(x + (40U - size) / 2U),
-            8, size, (uint8_t)(page->items[index].target % 5U));
+        icon_x = (int16_t)(x + (40U - size) / 2U);
+        icon = page->id == OLED_UI_PAGE_SYSTEM ? OledUi_MenuSystemIcon(page->items[index].target) : NULL;
+        if (icon != NULL)
+            result = OledUi_DrawIcon16(oled, icon_x, 8, size, icon);
+        else
+            result = OledUi_DrawMenuIcon(oled, icon_x, 8, size, (uint8_t)(page->items[index].target % 5U));
         if (result != SYS_OK)
             return result;
         label = page->items[index].label;

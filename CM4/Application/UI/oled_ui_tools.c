@@ -175,29 +175,13 @@ SysResult_t OledUi_DrawCursor(OledDevice_t *oled, int16_t x, int16_t y,
     }
 }
 
-//从现有16像素位图等间隔取样，为大字体标签让出高度
+//从源图标表取图，缩放方式与一级菜单一致
 SysResult_t OledUi_DrawMenuIcon(OledDevice_t *oled, int16_t x, int16_t y,
     uint8_t size, uint8_t icon)
 {
-    uint32_t row, col, sx, sy;
-    const uint8_t *bits;
-
-    if (size == 0U || size > 16U || icon >= TOOL_COUNT_OF(s_icons) ||
-        x < 0 || y < 0 || x + size > OLED_WIDTH || y + size > OLED_HEIGHT)
+    if (icon >= TOOL_COUNT_OF(s_icons))
         return SYS_ERR_INVALID_ARG;
-    bits = s_icons[icon];
-    if (size == 16U)
-        return OledUi_DrawBitmap(oled, x, y, 16U, 16U, bits, 32U);
-    TOOL_TRY(OledUi_CheckWritable(oled));
-    for (row = 0U; row < size; row++)
-        for (col = 0U; col < size; col++)
-        {
-            sx = col * 16U / size;
-            sy = row * 16U / size;
-            if ((bits[sy * 2U + sx / 8U] & (0x80U >> (sx % 8U))) != 0U)
-                TOOL_TRY(oled->ops->draw_pixel(oled, (uint16_t)(x + col), (uint16_t)(y + row), true));
-        }
-    return SYS_OK;
+    return OledUi_DrawIcon16(oled, x, y, size, s_icons[icon]);
 }
 
 //按同一规则读取工具页和普通菜单的配置
