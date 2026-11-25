@@ -1,0 +1,42 @@
+eth_netif.c
+eth_network.c
+eth_udp.c
+eth_tcp.c
+eth_transport.c
+eth_http.c
+eth_mjpeg.c
+e6_jpeg_fixtures.c
+test_e6_network.c
+正在生成代码...
+def.c
+init.c
+inet_chksum.c
+ip.c
+mem.c
+memp.c
+netif.c
+pbuf.c
+raw.c
+stats.c
+sys.c
+timeouts.c
+etharp.c
+icmp.c
+ip4.c
+ip4_addr.c
+ethernet.c
+udp.c
+dhcp.c
+acd.c
+正在生成代码...
+正在编译...
+tcp.c
+tcp_in.c
+tcp_out.c
+正在生成代码...
+PASS: HTTP complete, fragmented, pipelined, malformed, 404/405/431, favicon and timeout
+ACKed frames=11; FPS(milli)=5000
+PASS: exact JPEG bytes and CRC, ACK cadence, zero-window retry, stall timeout, FIN/RST and stale generation
+DHCP relink ready=1 listen=1 bind=0 old TIME_WAIT port=80
+PASS: virtual 605 s, 3025 frames TCP-ACKed, 5 DHCP renewals
+PASS: physical link transitions, DHCP reacquisition, address change, 50 repeated pages and resource recovery

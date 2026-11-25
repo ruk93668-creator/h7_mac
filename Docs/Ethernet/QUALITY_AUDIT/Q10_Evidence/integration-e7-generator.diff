@@ -1,0 +1,27 @@
+diff --git "a/Docs\\Ethernet\\QUALITY_AUDIT\\Q10_Evidence\\integration-initial-e7\\build_firmware.py.before" "b/C:\\Users\\29062\\AppData\\Local\\Temp\\h7_q10_4kumzl5f\\integration\\Tests\\Ethernet\\build_firmware.py"
+index 93c8539..6dcb9f1 100644
+--- "a/Docs\\Ethernet\\QUALITY_AUDIT\\Q10_Evidence\\integration-initial-e7\\build_firmware.py.before"
++++ "b/C:\\Users\\29062\\AppData\\Local\\Temp\\h7_q10_4kumzl5f\\integration\\Tests\\Ethernet\\build_firmware.py"
+@@ -103,7 +103,8 @@ if e4:
+             if e7:
+                 allowed.update('stm32h7xx_'+stem+'.c' for stem in
+                                ('hal_dcmi','hal_dma','hal_dma_ex','hal_sdram','hal_mdma','ll_fmc'))
+-            if e7_v1:
++            if e7:
++                # Mainline and the independent V1 camera BSP both use HAL I2C.
+                 allowed.update(('stm32h7xx_hal_i2c.c', 'stm32h7xx_hal_i2c_ex.c'))
+             files=group.find('Files')
+             for file in list(files):
+@@ -243,9 +244,10 @@ if not baseline:
+                 re.search(jpeg_base+r'\s+-\s+0x0000f000\s+Zero\s+RW[^\n]*\.e7_jpeg',map_text,re.I) and
+                 re.search(r'Execution Region ER_DEVICE_EXPORT .*Size: 0x00000004',map_text,re.I))
+             result['e4_cpu_link_valid'] &= result[jpeg_check]
+-            result['camera_board_revision']='V1' if e7_v1 else 'V0'
++            result['camera_board_revision']='V1'
++            result['camera_bsp']=camera_bsp
+             result['camera_resolution']=[320,240] if e7_v1_qvga else [160,120]
+-            if e7_v1:
++            if e7:
+                 result['e7_v1_i2c_link_valid']=all(re.search(
+                     r'^\s*'+symbol+r'\s+0x[\da-f]+\s+Thumb Code[^\n]*stm32h7xx_hal_i2c\.o',
+                     map_text, re.M|re.I)

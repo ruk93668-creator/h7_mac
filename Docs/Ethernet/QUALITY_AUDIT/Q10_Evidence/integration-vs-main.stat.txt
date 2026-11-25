@@ -1,0 +1,507 @@
+ {main-before => main-after}/.gitignore             |      3 +
+ {main-before => main-after}/CM7/Core/Src/main.c    |      3 +
+ .../CM7/Service/Ethernet/eth_http.c                |    354 +
+ .../CM7/Service/Ethernet/eth_http.h                |     58 +
+ .../CM7/Service/Ethernet/eth_mjpeg.c               |    203 +
+ .../CM7/Service/Ethernet/eth_mjpeg.h               |    112 +
+ .../Docs/Ethernet/BOARD_SMOKE_EVIDENCE.md          |     45 +
+ /dev/null => main-after/Docs/Ethernet/BRINGUP.md   |    102 +
+ .../Docs/Ethernet/BUILD_INTEGRATION.md             |    106 +
+ .../Docs/Ethernet/CONFIGURATION.md                 |     25 +
+ ...210\252\344\270\216\346\200\273\347\273\223.md" |     22 +
+ ...16Debug\346\227\266\351\227\264\347\272\277.md" |     23 +
+ ...02_PHY_MAC_DMA\345\272\225\345\261\202Debug.md" |    109 +
+ ...277\260\347\254\246\350\200\227\345\260\275.md" |     88 +
+ ...13\350\257\225\345\267\245\345\205\267Debug.md" |     88 +
+ .../DebugReview/05_lwIP_ARP_ICMP_DHCP_Debug.md     |    102 +
+ ...265\204\346\272\220\345\233\236\346\224\266.md" |     88 +
+ ...344\270\216TCP\345\215\217\350\256\256Debug.md" |     48 +
+ .../08_E7_JPEG_CRC\344\270\216SDRAM_AXIRAM.md"     |     93 +
+ ...256\214\346\225\264\346\216\222\346\237\245.md" |     57 +
+ ...47\347\216\207\346\200\247\350\203\275Debug.md" |     50 +
+ ...17Debug\346\226\271\346\263\225\350\256\272.md" |     23 +
+ ...233\230\346\243\200\346\237\245\350\241\250.md" |     57 +
+ .../Docs/Ethernet/E2_E3_IMPLEMENTATION.md          |     66 +
+ .../Docs/Ethernet/E3_5_FINAL_AUDIT.md              |     99 +
+ .../null => main-after/Docs/Ethernet/E3_5_STEPS.md |    109 +
+ .../Docs/Ethernet/E3_5_VALIDATION.md               |    159 +
+ .../Docs/Ethernet/E4_1_IMPLEMENTATION.md           |     49 +
+ /dev/null => main-after/Docs/Ethernet/E4_2_DHCP.md |     21 +
+ .../Docs/Ethernet/E4_2_IMPLEMENTATION.md           |     95 +
+ .../Docs/Ethernet/E5_API_CONTRACT.md               |     17 +
+ .../Docs/Ethernet/E5_ARCHITECTURE.md               |      9 +
+ .../Docs/Ethernet/E5_HARDWARE_VALIDATION.md        |     88 +
+ .../Docs/Ethernet/E5_IMPLEMENTATION.md             |     33 +
+ .../Docs/Ethernet/E5_MEMORY_BUDGET.md              |     30 +
+ .../Docs/Ethernet/E6_ARCHITECTURE.md               |     17 +
+ .../Docs/Ethernet/E6_HARDWARE_VALIDATION.md        |     28 +
+ .../Docs/Ethernet/E6_HTTP_API.md                   |     17 +
+ .../Docs/Ethernet/E6_IMPLEMENTATION.md             |     28 +
+ .../Docs/Ethernet/E6_MEMORY_BUDGET.md              |     15 +
+ .../Docs/Ethernet/E6_MJPEG_PROTOCOL.md             |     17 +
+ .../Docs/Ethernet/E7_ARCHITECTURE.md               |      7 +
+ .../Docs/Ethernet/E7_CAMERA_INTEGRATION.md         |     16 +
+ .../Docs/Ethernet/E7_HARDWARE_VALIDATION.md        |     21 +
+ .../Docs/Ethernet/E7_IMPLEMENTATION.md             |     30 +
+ .../Docs/Ethernet/E7_MEMORY_OWNERSHIP.md           |     18 +
+ .../Docs/Ethernet/E7_V1_ADAPTATION.md              |    115 +
+ .../Evidence/E3_5_20261117/baseline_host.log       |     31 +
+ .../Evidence/E3_5_20261117/behavior_audit.json     |    104 +
+ .../E3_5_20261117/board_512_run1/board_metrics.png |    Bin 0 -> 182023 bytes
+ .../board_512_run1/board_observation.json          |    104 +
+ .../board_512_run1/board_statistics.png            |    Bin 0 -> 185907 bytes
+ .../E3_5_20261117/board_512_run1/peer.json         |     50 +
+ .../E3_5_20261117/board_60_run1/board_metrics.png  |    Bin 0 -> 155883 bytes
+ .../board_60_run1/board_observation.json           |     97 +
+ .../E3_5_20261117/board_60_run1/board_startup.png  |    Bin 0 -> 68341 bytes
+ .../Evidence/E3_5_20261117/board_60_run1/peer.json |     50 +
+ .../Ethernet/Evidence/E3_5_20261117/e35_build.log  |    106 +
+ .../Ethernet/Evidence/E3_5_20261117/e35_layout.txt |      7 +
+ .../Evidence/E3_5_20261117/e35_result.json         |     54 +
+ .../Evidence/E3_5_20261117/extended_host.log       |     35 +
+ .../Evidence/E3_5_20261117/integrated_build.log    |    105 +
+ .../Evidence/E3_5_20261117/integrated_layout.txt   |      3 +
+ .../Evidence/E3_5_20261117/integrated_result.json  |     40 +
+ .../Ethernet/Evidence/E3_5_20261117/manifest.json  |     64 +
+ .../Evidence/E3_5_20261117/npcap_api_only.json     |     50 +
+ .../Evidence/E3_5_20261117/protocol_python.log     |      5 +
+ .../Evidence/E3_5_20261117/smoke_build.log         |    106 +
+ .../Evidence/E3_5_20261117/smoke_layout.txt        |      3 +
+ .../Evidence/E3_5_20261117/smoke_result.json       |     40 +
+ .../Docs/Ethernet/Evidence/E3_5_20261118/README.md |     14 +
+ .../E3_5_20261118/board/1514_retry_metrics.png     |    Bin 0 -> 179460 bytes
+ .../E3_5_20261118/board/duplex_360_metrics.png     |    Bin 0 -> 205857 bytes
+ .../E3_5_20261118/board/duplex_360_statistics.png  |    Bin 0 -> 178642 bytes
+ .../E3_5_20261118/board/duplex_371_metrics.png     |    Bin 0 -> 191891 bytes
+ .../E3_5_20261118/board/duplex_371_statistics.png  |    Bin 0 -> 175620 bytes
+ .../E3_5_20261118/board/link_359_baseline.png      |    Bin 0 -> 197189 bytes
+ .../E3_5_20261118/board/link_359_metrics.png       |    Bin 0 -> 197096 bytes
+ .../E3_5_20261118/board/link_359_statistics.png    |    Bin 0 -> 178935 bytes
+ .../Evidence/E3_5_20261118/board/link_359_up.png   |    Bin 0 -> 289921 bytes
+ .../E3_5_20261118/board/reset_369_metrics.png      |    Bin 0 -> 187110 bytes
+ .../E3_5_20261118/board/restart_368_metrics.png    |    Bin 0 -> 184316 bytes
+ .../E3_5_20261118/board/rx_356_baseline.png        |    Bin 0 -> 145084 bytes
+ .../E3_5_20261118/board/rx_356_exhausted.png       |    Bin 0 -> 185711 bytes
+ .../E3_5_20261118/board/rx_357_metrics.png         |    Bin 0 -> 184102 bytes
+ .../E3_5_20261118/board/rx_357_statistics.png      |    Bin 0 -> 169068 bytes
+ .../E3_5_20261118/board/vlan_355_baseline.png      |    Bin 0 -> 108246 bytes
+ .../E3_5_20261118/board/vlan_355_metrics.png       |    Bin 0 -> 182610 bytes
+ .../E3_5_20261118/board/vlan_355_statistics.png    |    Bin 0 -> 172262 bytes
+ .../Evidence/E3_5_20261118/pcap_replay_371.json    |     30 +
+ .../peer/board_1514_20261118_131310.json           |     50 +
+ .../peer/board_1514_retry_20261118_133656.json     |     50 +
+ .../peer/board_duplex_360_20261118_155130.json     |     50 +
+ .../peer/board_duplex_371_20261118_161049.json     |     50 +
+ .../peer/board_link_359_20261118_154703.json       |     50 +
+ .../peer/board_restart_368_20261118_152645.json    |     50 +
+ .../peer/board_restart_369_20261118_153319.json    |     50 +
+ .../peer/board_restart_370_20261118_153826.json    |     50 +
+ .../peer/board_rx_exhaust_356_20261118_151511.json |     50 +
+ .../board_rx_recovery_357_20261118_151859.json     |     50 +
+ .../peer/board_tx_ring_365_20261118_150258.json    |     50 +
+ .../peer/board_tx_ring_366_20261118_150915.json    |     50 +
+ .../peer/board_vlan_20261118_134200.json           |     50 +
+ .../peer/board_vlan_355_20261118_135612.json       |     50 +
+ .../peer/board_vlan_retry_20261118_134538.json     |     50 +
+ .../peer/pcap_writer_probe_20261118_155743.json    |     50 +
+ .../Evidence/E4_1_20261119/link_recovery.log       |     11 +
+ .../Evidence/E4_1_20261119/pcap_replay.json        |     53 +
+ .../Ethernet/Evidence/E4_1_20261119/ping1000.log   |   1007 +
+ .../Evidence/E4_1_20261119/ping1000_after.png      |    Bin 0 -> 162807 bytes
+ .../Evidence/E4_1_20261119/ping1000_before.png     |    Bin 0 -> 209956 bytes
+ .../Evidence/E4_1_20261119/ping1000_mid.png        |    Bin 0 -> 151651 bytes
+ .../Ethernet/Evidence/E4_2_20261119/dhcp_after.png |    Bin 0 -> 139423 bytes
+ .../Evidence/E4_2_20261119/dhcp_before.png         |    Bin 0 -> 140291 bytes
+ .../Evidence/E4_2_20261119/dhcp_fallback.png       |    Bin 0 -> 200275 bytes
+ .../E4_2_20261119/dhcp_fallback_replay.json        |     95 +
+ .../Evidence/E4_2_20261119/dhcp_relink_replay.json |     55 +
+ .../E4_2_20261119/dhcp_short_lease_replay.json     |    189 +
+ .../Evidence/E4_2_20261119/fallback_ping.log       |     11 +
+ .../Evidence/E4_2_20261119/lease_peer.json         |     86 +
+ .../Docs/Ethernet/Evidence/E4_2_20261119/ping.log  |     11 +
+ .../Evidence/E4_2_20261119/ping_after_expiry.log   |      9 +
+ .../Evidence/E4_2_20261119/ping_after_t2.log       |     11 +
+ .../Docs/Ethernet/HARDWARE_VALIDATION.md           |     42 +
+ .../null => main-after/Docs/Ethernet/INTERFACES.md |     32 +
+ .../Docs/Ethernet/LWIP_PORTING.md                  |     13 +
+ .../Docs/Ethernet/MAIN_MERGE_READINESS.md          |     20 +
+ .../Docs/Ethernet/MEMORY_AND_OWNERSHIP.md          |     74 +
+ .../Docs/Ethernet/PRODUCTION_ARCHITECTURE.md       |     28 +
+ .../Ethernet/QUALITY_AUDIT/API_CONTRACT_AUDIT.md   |     30 +
+ .../Ethernet/QUALITY_AUDIT/ARCHITECTURE_AUDIT.md   |     26 +
+ .../Ethernet/QUALITY_AUDIT/BUILD_REGRESSION.md     |     25 +
+ .../QUALITY_AUDIT/BuildEvidence/e35_result.json    |     97 +
+ .../Ethernet/QUALITY_AUDIT/BuildEvidence/e4.log    |     24 +
+ .../Ethernet/QUALITY_AUDIT/BuildEvidence/e42.log   |     31 +
+ .../QUALITY_AUDIT/BuildEvidence/e42_result.json    |    290 +
+ .../QUALITY_AUDIT/BuildEvidence/e4_result.json     |    285 +
+ .../Ethernet/QUALITY_AUDIT/BuildEvidence/e5.log    |     40 +
+ .../QUALITY_AUDIT/BuildEvidence/e5_result.json     |    301 +
+ .../Ethernet/QUALITY_AUDIT/BuildEvidence/e6.log    |     42 +
+ .../QUALITY_AUDIT/BuildEvidence/e6_result.json     |    349 +
+ .../QUALITY_AUDIT/BuildEvidence/e7-qvga.log        |     60 +
+ .../Ethernet/QUALITY_AUDIT/BuildEvidence/e7.log    |     60 +
+ .../QUALITY_AUDIT/BuildEvidence/e7_result.json     |    321 +
+ .../BuildEvidence/e7_v1_axi_result.json            |    322 +
+ .../BuildEvidence/e7_v1_qvga_result.json           |    322 +
+ .../QUALITY_AUDIT/BuildEvidence/e7_v1_result.json  |    322 +
+ .../QUALITY_AUDIT/BuildEvidence/eth_e35-build.log  |    106 +
+ .../BuildEvidence/eth_e35-map-regions.txt          |      9 +
+ .../QUALITY_AUDIT/BuildEvidence/eth_e4-build.log   |     44 +
+ .../BuildEvidence/eth_e4-map-regions.txt           |      5 +
+ .../QUALITY_AUDIT/BuildEvidence/eth_e42-build.log  |     47 +
+ .../BuildEvidence/eth_e42-map-regions.txt          |      5 +
+ .../QUALITY_AUDIT/BuildEvidence/eth_e5-build.log   |     56 +
+ .../BuildEvidence/eth_e5-map-regions.txt           |      5 +
+ .../QUALITY_AUDIT/BuildEvidence/eth_e6-build.log   |     57 +
+ .../BuildEvidence/eth_e6-map-regions.txt           |      5 +
+ .../QUALITY_AUDIT/BuildEvidence/eth_e7-build.log   |     72 +
+ .../BuildEvidence/eth_e7-map-regions.txt           |      7 +
+ .../BuildEvidence/eth_e7_v1-build.log              |     74 +
+ .../BuildEvidence/eth_e7_v1-map-regions.txt        |      7 +
+ .../BuildEvidence/eth_e7_v1_axi-build.log          |     74 +
+ .../BuildEvidence/eth_e7_v1_axi-map-regions.txt    |      7 +
+ .../BuildEvidence/eth_e7_v1_qvga-build.log         |     74 +
+ .../BuildEvidence/eth_e7_v1_qvga-map-regions.txt   |      7 +
+ .../BuildEvidence/formal-results.json              |     26 +
+ .../BuildEvidence/h7_mac_CM4-build.log             |     48 +
+ .../BuildEvidence/h7_mac_CM4-map-regions.txt       |      6 +
+ .../BuildEvidence/h7_mac_CM7-build.log             |    137 +
+ .../BuildEvidence/h7_mac_CM7-map-regions.txt       |      9 +
+ .../QUALITY_AUDIT/BuildEvidence/host-exit.json     |      8 +
+ .../Ethernet/QUALITY_AUDIT/CODING_STYLE_AUDIT.md   |      3 +
+ .../Docs/Ethernet/QUALITY_AUDIT/COMMENT_AUDIT.md   |      3 +
+ .../Docs/Ethernet/QUALITY_AUDIT/FINDINGS.md        |     15 +
+ .../Docs/Ethernet/QUALITY_AUDIT/GIT_DIFF_AUDIT.md  |     15 +
+ .../Ethernet/QUALITY_AUDIT/KEIL_PROJECT_AUDIT.md   |     15 +
+ .../QUALITY_AUDIT/QUALITY_AUDIT_SUMMARY.md         |     21 +
+ .../Ethernet/QUALITY_AUDIT/TEST_ISOLATION_AUDIT.md |      3 +
+ .../Docs/Ethernet/QUALITY_AUDIT/branch-history.txt |     54 +
+ .../committed-project-whitespace-cr-at-eol.txt     |      0
+ .../committed-project-whitespace-default.txt       |   1764 +
+ .../Docs/Ethernet/QUALITY_AUDIT/committed.diff     | 171249 ++++++++++++++++++
+ .../QUALITY_AUDIT/committed.name-status.txt        |    428 +
+ .../Docs/Ethernet/QUALITY_AUDIT/committed.stat.txt |    429 +
+ .../Docs/Ethernet/QUALITY_AUDIT/main-advance.json  |    288 +
+ .../Docs/Ethernet/QUALITY_AUDIT/project-index.md   |    110 +
+ .../Docs/Ethernet/QUALITY_AUDIT/remote.json        |      4 +
+ .../Docs/Ethernet/QUALITY_AUDIT/snapshot.json      |      8 +
+ .../Docs/Ethernet/QUALITY_AUDIT/source-index.md    |    100 +
+ .../Docs/Ethernet/QUALITY_AUDIT/staged.diff        |      0
+ .../Docs/Ethernet/QUALITY_AUDIT/staged.stat.txt    |      0
+ .../Docs/Ethernet/QUALITY_AUDIT/static-checks.json |     18 +
+ .../Docs/Ethernet/QUALITY_AUDIT/unstaged.diff      |   1161 +
+ .../Docs/Ethernet/QUALITY_AUDIT/unstaged.stat.txt  |     13 +
+ .../Docs/Ethernet/QUALITY_AUDIT/untracked.diff     |   1008 +
+ .../QUALITY_AUDIT/working-whitespace-cr-at-eol.txt |      2 +
+ .../QUALITY_AUDIT/working-whitespace-default.txt   |    426 +
+ .../Docs/Ethernet/QUALITY_AUDIT/working.diff       |   1161 +
+ .../Docs/Ethernet/QUALITY_AUDIT/working.stat.txt   |     13 +
+ .../Ethernet/QUALITY_AUDIT/workspace-status.txt    |     23 +
+ .../Docs/Ethernet/REMAINING_RISKS.md               |     13 +
+ /dev/null => main-after/Docs/Ethernet/STYLE.md     |     42 +
+ .../Docs/Ethernet/TEST_INVENTORY.md                |     29 +
+ .../Docs/Ethernet/WINDOWS_RX_TEST.md               |     47 +
+ /dev/null => main-after/MDK-ARM/.gitignore         |     20 +
+ {main-before => main-after}/MDK-ARM/h7_mac.uvprojx |   1049 +-
+ .../MDK-ARM/h7_mac_CM7_custom.sct                  |     26 +
+ .../Platform/Ethernet/.clang-format                |     21 +
+ .../Platform/Ethernet/arch/bpstruct.h              |      2 +
+ .../null => main-after/Platform/Ethernet/arch/cc.h |     15 +
+ .../Platform/Ethernet/arch/epstruct.h              |      1 +
+ .../Platform/Ethernet/eth_board.h                  |      9 +
+ .../Platform/Ethernet/eth_board_stm32h747.c        |     55 +
+ .../null => main-after/Platform/Ethernet/eth_dma.c |    246 +
+ .../null => main-after/Platform/Ethernet/eth_dma.h |    111 +
+ .../Platform/Ethernet/eth_lwip_assert.c            |     11 +
+ .../Platform/Ethernet/eth_lwip_time.c              |      8 +
+ .../null => main-after/Platform/Ethernet/eth_mac.c |    579 +
+ .../null => main-after/Platform/Ethernet/eth_mac.h |     99 +
+ .../Platform/Ethernet/eth_memory.c                 |     80 +
+ .../Platform/Ethernet/eth_memory.h                 |     14 +
+ .../Platform/Ethernet/eth_netif.c                  |    120 +
+ .../Platform/Ethernet/eth_netif.h                  |     43 +
+ .../Platform/Ethernet/eth_network.c                |    283 +
+ .../Platform/Ethernet/eth_network.h                |     88 +
+ .../null => main-after/Platform/Ethernet/eth_phy.c |     76 +
+ .../null => main-after/Platform/Ethernet/eth_phy.h |     55 +
+ .../null => main-after/Platform/Ethernet/eth_tcp.c |    491 +
+ .../null => main-after/Platform/Ethernet/eth_tcp.h |    112 +
+ .../Platform/Ethernet/eth_transport.c              |    110 +
+ .../Platform/Ethernet/eth_transport.h              |     33 +
+ .../Platform/Ethernet/eth_types.h                  |     48 +
+ .../null => main-after/Platform/Ethernet/eth_udp.c |    122 +
+ .../null => main-after/Platform/Ethernet/eth_udp.h |     23 +
+ .../Platform/Ethernet/lwipopts.h                   |     68 +
+ .../Tests/Ethernet/.clang-format                   |     21 +
+ /dev/null => main-after/Tests/Ethernet/.gitignore  |      1 +
+ .../Tests/Ethernet/board_v1/bsp_camera.c           |    280 +
+ .../Tests/Ethernet/board_v1/bsp_camera.h           |     31 +
+ .../Tests/Ethernet/build_firmware.py               |    259 +
+ .../Tests/Ethernet/build_path_fix_results.json     |     33 +
+ .../Tests/Ethernet/build_results.json              |     74 +
+ .../Tests/Ethernet/decoupling_results.json         |     38 +
+ /dev/null => main-after/Tests/Ethernet/e35_frame.c |     77 +
+ /dev/null => main-after/Tests/Ethernet/e35_frame.h |     19 +
+ /dev/null => main-after/Tests/Ethernet/e35_main.c  |    405 +
+ /dev/null => main-after/Tests/Ethernet/e35_peer.py |    200 +
+ /dev/null => main-after/Tests/Ethernet/e4.sct      |     27 +
+ .../Tests/Ethernet/e42_lease_peer.py               |    231 +
+ /dev/null => main-after/Tests/Ethernet/e4_main.c   |    243 +
+ .../Tests/Ethernet/e4_sources.py                   |     20 +
+ /dev/null => main-after/Tests/Ethernet/e5.sct      |     31 +
+ /dev/null => main-after/Tests/Ethernet/e5_bench.c  |    199 +
+ /dev/null => main-after/Tests/Ethernet/e5_bench.h  |     19 +
+ .../Tests/Ethernet/e5_lease_peer.py                |     87 +
+ /dev/null => main-after/Tests/Ethernet/e5_main.c   |    121 +
+ /dev/null => main-after/Tests/Ethernet/e5_peer.py  |    405 +
+ .../Tests/Ethernet/e5_protocol.c                   |     64 +
+ .../Tests/Ethernet/e5_protocol.h                   |     17 +
+ /dev/null => main-after/Tests/Ethernet/e6.sct      |     31 +
+ .../Ethernet/e6_jpeg_fixtures/e6_jpeg_fixtures.c   |   3091 +
+ .../Ethernet/e6_jpeg_fixtures/e6_jpeg_fixtures.h   |      9 +
+ .../Tests/Ethernet/e6_jpeg_fixtures/frame0.jpg     |    Bin 0 -> 5294 bytes
+ .../Tests/Ethernet/e6_jpeg_fixtures/frame1.jpg     |    Bin 0 -> 5378 bytes
+ .../Tests/Ethernet/e6_jpeg_fixtures/frame2.jpg     |    Bin 0 -> 6363 bytes
+ .../Tests/Ethernet/e6_jpeg_fixtures/frame3.jpg     |    Bin 0 -> 7471 bytes
+ .../Tests/Ethernet/e6_jpeg_fixtures/frame4.jpg     |    Bin 0 -> 7545 bytes
+ .../Tests/Ethernet/e6_jpeg_fixtures/frame5.jpg     |    Bin 0 -> 5426 bytes
+ .../Tests/Ethernet/e6_jpeg_fixtures/frame6.jpg     |    Bin 0 -> 5052 bytes
+ .../Tests/Ethernet/e6_jpeg_fixtures/frame7.jpg     |    Bin 0 -> 6285 bytes
+ /dev/null => main-after/Tests/Ethernet/e6_main.c   |     97 +
+ /dev/null => main-after/Tests/Ethernet/e6_peer.py  |    197 +
+ /dev/null => main-after/Tests/Ethernet/e7.sct      |     36 +
+ .../Tests/Ethernet/e7_camera_provider.c            |    182 +
+ .../Tests/Ethernet/e7_camera_provider.h            |     70 +
+ /dev/null => main-after/Tests/Ethernet/e7_main.c   |    288 +
+ .../Tests/Ethernet/eth_host_wire.h                 |    179 +
+ .../Tests/Ethernet/eth_test_board.c                |     85 +
+ .../Tests/Ethernet/eth_test_board.h                |      8 +
+ .../Tests/Ethernet/eth_test_rx.c                   |     82 +
+ .../Tests/Ethernet/eth_test_rx.h                   |     28 +
+ /dev/null => main-after/Tests/Ethernet/fake_hal.h  |    161 +
+ .../Tests/Ethernet/generate_e6_fixtures.py         |     47 +
+ /dev/null => main-after/Tests/Ethernet/raw_peer.py |     57 +
+ .../Tests/Ethernet/run_e4_host.py                  |     33 +
+ .../Tests/Ethernet/run_e5_host.py                  |     26 +
+ .../Tests/Ethernet/run_e6_host.py                  |     46 +
+ .../null => main-after/Tests/Ethernet/run_host.cmd |     41 +
+ .../Tests/Ethernet/rx_batch_board_results.json     |     29 +
+ .../Tests/Ethernet/rx_batch_results.json           |     44 +
+ .../Tests/Ethernet/rx_recovery_board_results.json  |     36 +
+ .../Tests/Ethernet/rx_restart_board_results.json   |     29 +
+ .../Tests/Ethernet/software_results.json           |     30 +
+ .../Tests/Ethernet/style_results.json              |    120 +
+ .../Tests/Ethernet/style_review_results.json       |     80 +
+ /dev/null => main-after/Tests/Ethernet/test_dma.c  |    152 +
+ .../Tests/Ethernet/test_e35_frame.c                |     49 +
+ .../Tests/Ethernet/test_e35_peer.py                |     38 +
+ .../Tests/Ethernet/test_e42_lease_peer.py          |     73 +
+ .../Tests/Ethernet/test_e4_network.c               |    661 +
+ .../Tests/Ethernet/test_e5_lease_peer.py           |     25 +
+ .../Tests/Ethernet/test_e5_network.c               |    367 +
+ .../Tests/Ethernet/test_e5_peer.py                 |    136 +
+ .../Tests/Ethernet/test_e6_network.c               |    347 +
+ .../Tests/Ethernet/test_e6_peer.py                 |     97 +
+ .../Tests/Ethernet/test_e7_camera_provider.c       |    151 +
+ .../Tests/Ethernet/test_engine.c                   |    113 +
+ /dev/null => main-after/Tests/Ethernet/test_mac.c  |    210 +
+ /dev/null => main-after/Tests/Ethernet/test_main.c |    171 +
+ .../Tests/Ethernet/test_mdio_clock.py              |     12 +
+ /dev/null => main-after/Tests/Ethernet/test_phy.c  |     89 +
+ .../Tests/Ethernet/test_rx_check.c                 |     64 +
+ .../Ethernet/tx_continuous_board_results.json      |     24 +
+ .../Tests/Ethernet/windows_tx.py                   |    109 +
+ .../Tests/Ethernet/windows_tx_results.json         |     13 +
+ /dev/null => main-after/ThirdParty/lwip/CHANGELOG  |   4687 +
+ /dev/null => main-after/ThirdParty/lwip/COPYING    |     25 +
+ /dev/null => main-after/ThirdParty/lwip/README     |    109 +
+ .../null => main-after/ThirdParty/lwip/UPSTREAM.md |      7 +
+ .../ThirdParty/lwip/src/core/def.c                 |    286 +
+ .../ThirdParty/lwip/src/core/inet_chksum.c         |    608 +
+ .../ThirdParty/lwip/src/core/init.c                |    390 +
+ .../ThirdParty/lwip/src/core/ip.c                  |    167 +
+ .../ThirdParty/lwip/src/core/ipv4/acd.c            |    557 +
+ .../ThirdParty/lwip/src/core/ipv4/dhcp.c           |   1999 +
+ .../ThirdParty/lwip/src/core/ipv4/etharp.c         |   1251 +
+ .../ThirdParty/lwip/src/core/ipv4/icmp.c           |    408 +
+ .../ThirdParty/lwip/src/core/ipv4/ip4.c            |   1166 +
+ .../ThirdParty/lwip/src/core/ipv4/ip4_addr.c       |    323 +
+ .../ThirdParty/lwip/src/core/mem.c                 |   1004 +
+ .../ThirdParty/lwip/src/core/memp.c                |    447 +
+ .../ThirdParty/lwip/src/core/netif.c               |   1855 +
+ .../ThirdParty/lwip/src/core/pbuf.c                |   1554 +
+ .../ThirdParty/lwip/src/core/raw.c                 |    673 +
+ .../ThirdParty/lwip/src/core/stats.c               |    168 +
+ .../ThirdParty/lwip/src/core/sys.c                 |    148 +
+ .../ThirdParty/lwip/src/core/tcp.c                 |   2696 +
+ .../ThirdParty/lwip/src/core/tcp_in.c              |   2194 +
+ .../ThirdParty/lwip/src/core/tcp_out.c             |   2260 +
+ .../ThirdParty/lwip/src/core/timeouts.c            |    451 +
+ .../ThirdParty/lwip/src/core/udp.c                 |   1321 +
+ .../lwip/src/include/compat/posix/arpa/inet.h      |     33 +
+ .../lwip/src/include/compat/posix/net/if.h         |     36 +
+ .../lwip/src/include/compat/posix/netdb.h          |     33 +
+ .../lwip/src/include/compat/posix/sys/socket.h     |     33 +
+ .../lwip/src/include/compat/stdc/errno.h           |     33 +
+ .../ThirdParty/lwip/src/include/lwip/acd.h         |    109 +
+ .../ThirdParty/lwip/src/include/lwip/altcp.h       |    207 +
+ .../ThirdParty/lwip/src/include/lwip/altcp_tcp.h   |     72 +
+ .../ThirdParty/lwip/src/include/lwip/altcp_tls.h   |    196 +
+ .../ThirdParty/lwip/src/include/lwip/api.h         |    434 +
+ .../ThirdParty/lwip/src/include/lwip/apps/FILES    |      2 +
+ .../src/include/lwip/apps/altcp_proxyconnect.h     |     79 +
+ .../src/include/lwip/apps/altcp_tls_mbedtls_opts.h |    111 +
+ .../ThirdParty/lwip/src/include/lwip/apps/fs.h     |    139 +
+ .../lwip/src/include/lwip/apps/http_client.h       |    160 +
+ .../ThirdParty/lwip/src/include/lwip/apps/httpd.h  |    256 +
+ .../lwip/src/include/lwip/apps/httpd_opts.h        |    416 +
+ .../lwip/src/include/lwip/apps/lwiperf.h           |    109 +
+ .../ThirdParty/lwip/src/include/lwip/apps/mdns.h   |    154 +
+ .../lwip/src/include/lwip/apps/mdns_domain.h       |     80 +
+ .../lwip/src/include/lwip/apps/mdns_opts.h         |    121 +
+ .../lwip/src/include/lwip/apps/mdns_out.h          |    138 +
+ .../lwip/src/include/lwip/apps/mdns_priv.h         |    237 +
+ .../ThirdParty/lwip/src/include/lwip/apps/mqtt.h   |    207 +
+ .../lwip/src/include/lwip/apps/mqtt_opts.h         |    103 +
+ .../lwip/src/include/lwip/apps/mqtt_priv.h         |    104 +
+ .../lwip/src/include/lwip/apps/netbiosns.h         |     51 +
+ .../lwip/src/include/lwip/apps/netbiosns_opts.h    |     66 +
+ .../ThirdParty/lwip/src/include/lwip/apps/smtp.h   |    128 +
+ .../lwip/src/include/lwip/apps/smtp_opts.h         |     80 +
+ .../ThirdParty/lwip/src/include/lwip/apps/snmp.h   |    143 +
+ .../lwip/src/include/lwip/apps/snmp_core.h         |    377 +
+ .../lwip/src/include/lwip/apps/snmp_mib2.h         |     78 +
+ .../lwip/src/include/lwip/apps/snmp_opts.h         |    297 +
+ .../lwip/src/include/lwip/apps/snmp_scalar.h       |    113 +
+ .../src/include/lwip/apps/snmp_snmpv2_framework.h  |     32 +
+ .../lwip/src/include/lwip/apps/snmp_snmpv2_usm.h   |     24 +
+ .../lwip/src/include/lwip/apps/snmp_table.h        |    134 +
+ .../lwip/src/include/lwip/apps/snmp_threadsync.h   |    114 +
+ .../ThirdParty/lwip/src/include/lwip/apps/snmpv3.h |    114 +
+ .../ThirdParty/lwip/src/include/lwip/apps/sntp.h   |     81 +
+ .../lwip/src/include/lwip/apps/sntp_opts.h         |    215 +
+ .../lwip/src/include/lwip/apps/tftp_client.h       |     50 +
+ .../lwip/src/include/lwip/apps/tftp_common.h       |    108 +
+ .../lwip/src/include/lwip/apps/tftp_opts.h         |    106 +
+ .../lwip/src/include/lwip/apps/tftp_server.h       |     42 +
+ .../ThirdParty/lwip/src/include/lwip/arch.h        |    402 +
+ .../ThirdParty/lwip/src/include/lwip/autoip.h      |     90 +
+ .../ThirdParty/lwip/src/include/lwip/debug.h       |    161 +
+ .../ThirdParty/lwip/src/include/lwip/def.h         |    166 +
+ .../ThirdParty/lwip/src/include/lwip/dhcp.h        |    155 +
+ .../ThirdParty/lwip/src/include/lwip/dhcp6.h       |    104 +
+ .../ThirdParty/lwip/src/include/lwip/dns.h         |    131 +
+ .../ThirdParty/lwip/src/include/lwip/err.h         |    117 +
+ .../ThirdParty/lwip/src/include/lwip/errno.h       |    198 +
+ .../ThirdParty/lwip/src/include/lwip/etharp.h      |    110 +
+ .../ThirdParty/lwip/src/include/lwip/ethip6.h      |     68 +
+ .../ThirdParty/lwip/src/include/lwip/icmp.h        |    110 +
+ .../ThirdParty/lwip/src/include/lwip/icmp6.h       |     72 +
+ .../ThirdParty/lwip/src/include/lwip/if_api.h      |     70 +
+ .../ThirdParty/lwip/src/include/lwip/igmp.h        |    115 +
+ .../ThirdParty/lwip/src/include/lwip/inet.h        |    188 +
+ .../ThirdParty/lwip/src/include/lwip/inet_chksum.h |    104 +
+ .../ThirdParty/lwip/src/include/lwip/init.h        |    100 +
+ .../lwip/src/include/lwip/init.h.cmake.in          |    100 +
+ .../ThirdParty/lwip/src/include/lwip/ip.h          |    339 +
+ .../ThirdParty/lwip/src/include/lwip/ip4.h         |    109 +
+ .../ThirdParty/lwip/src/include/lwip/ip4_addr.h    |    225 +
+ .../ThirdParty/lwip/src/include/lwip/ip4_frag.h    |    100 +
+ .../ThirdParty/lwip/src/include/lwip/ip6.h         |     93 +
+ .../ThirdParty/lwip/src/include/lwip/ip6_addr.h    |    372 +
+ .../ThirdParty/lwip/src/include/lwip/ip6_frag.h    |    144 +
+ .../ThirdParty/lwip/src/include/lwip/ip6_zone.h    |    306 +
+ .../ThirdParty/lwip/src/include/lwip/ip_addr.h     |    468 +
+ .../ThirdParty/lwip/src/include/lwip/mem.h         |     82 +
+ .../ThirdParty/lwip/src/include/lwip/memp.h        |    155 +
+ .../ThirdParty/lwip/src/include/lwip/mld6.h        |     99 +
+ .../ThirdParty/lwip/src/include/lwip/nd6.h         |     90 +
+ .../ThirdParty/lwip/src/include/lwip/netbuf.h      |    116 +
+ .../ThirdParty/lwip/src/include/lwip/netdb.h       |    150 +
+ .../ThirdParty/lwip/src/include/lwip/netif.h       |    698 +
+ .../ThirdParty/lwip/src/include/lwip/netifapi.h    |    161 +
+ .../ThirdParty/lwip/src/include/lwip/opt.h         |   3625 +
+ .../ThirdParty/lwip/src/include/lwip/pbuf.h        |    326 +
+ .../lwip/src/include/lwip/priv/altcp_priv.h        |    159 +
+ .../lwip/src/include/lwip/priv/api_msg.h           |    272 +
+ .../lwip/src/include/lwip/priv/mem_priv.h          |     84 +
+ .../lwip/src/include/lwip/priv/memp_priv.h         |    161 +
+ .../lwip/src/include/lwip/priv/memp_std.h          |    153 +
+ .../lwip/src/include/lwip/priv/nd6_priv.h          |    143 +
+ .../lwip/src/include/lwip/priv/raw_priv.h          |     69 +
+ .../lwip/src/include/lwip/priv/sockets_priv.h      |    175 +
+ .../lwip/src/include/lwip/priv/tcp_priv.h          |    523 +
+ .../lwip/src/include/lwip/priv/tcpip_priv.h        |    176 +
+ .../ThirdParty/lwip/src/include/lwip/prot/acd.h    |     91 +
+ .../ThirdParty/lwip/src/include/lwip/prot/autoip.h |     65 +
+ .../ThirdParty/lwip/src/include/lwip/prot/dhcp.h   |    178 +
+ .../ThirdParty/lwip/src/include/lwip/prot/dhcp6.h  |    138 +
+ .../ThirdParty/lwip/src/include/lwip/prot/dns.h    |    140 +
+ .../ThirdParty/lwip/src/include/lwip/prot/etharp.h |    114 +
+ .../lwip/src/include/lwip/prot/ethernet.h          |    127 +
+ .../ThirdParty/lwip/src/include/lwip/prot/iana.h   |     97 +
+ .../ThirdParty/lwip/src/include/lwip/prot/icmp.h   |    105 +
+ .../ThirdParty/lwip/src/include/lwip/prot/icmp6.h  |    172 +
+ .../ThirdParty/lwip/src/include/lwip/prot/ieee.h   |     91 +
+ .../ThirdParty/lwip/src/include/lwip/prot/igmp.h   |     90 +
+ .../ThirdParty/lwip/src/include/lwip/prot/ip.h     |     59 +
+ .../ThirdParty/lwip/src/include/lwip/prot/ip4.h    |    131 +
+ .../ThirdParty/lwip/src/include/lwip/prot/ip6.h    |    235 +
+ .../ThirdParty/lwip/src/include/lwip/prot/mld6.h   |     71 +
+ .../ThirdParty/lwip/src/include/lwip/prot/nd6.h    |    275 +
+ .../ThirdParty/lwip/src/include/lwip/prot/tcp.h    |    100 +
+ .../ThirdParty/lwip/src/include/lwip/prot/udp.h    |     68 +
+ .../ThirdParty/lwip/src/include/lwip/raw.h         |    143 +
+ .../ThirdParty/lwip/src/include/lwip/sio.h         |    142 +
+ .../ThirdParty/lwip/src/include/lwip/snmp.h        |    213 +
+ .../ThirdParty/lwip/src/include/lwip/sockets.h     |    707 +
+ .../ThirdParty/lwip/src/include/lwip/stats.h       |    494 +
+ .../ThirdParty/lwip/src/include/lwip/sys.h         |    575 +
+ .../ThirdParty/lwip/src/include/lwip/tcp.h         |    500 +
+ .../ThirdParty/lwip/src/include/lwip/tcpbase.h     |     88 +
+ .../ThirdParty/lwip/src/include/lwip/tcpip.h       |    114 +
+ .../ThirdParty/lwip/src/include/lwip/timeouts.h    |    128 +
+ .../ThirdParty/lwip/src/include/lwip/udp.h         |    195 +
+ .../ThirdParty/lwip/src/include/netif/bridgeif.h   |    127 +
+ .../lwip/src/include/netif/bridgeif_opts.h         |     90 +
+ .../ThirdParty/lwip/src/include/netif/etharp.h     |      3 +
+ .../ThirdParty/lwip/src/include/netif/ethernet.h   |     77 +
+ .../ThirdParty/lwip/src/include/netif/ieee802154.h |    112 +
+ .../ThirdParty/lwip/src/include/netif/lowpan6.h    |     89 +
+ .../lwip/src/include/netif/lowpan6_ble.h           |     78 +
+ .../lwip/src/include/netif/lowpan6_common.h        |     82 +
+ .../lwip/src/include/netif/lowpan6_opts.h          |    122 +
+ .../ThirdParty/lwip/src/include/netif/ppp/ccp.h    |    164 +
+ .../lwip/src/include/netif/ppp/chap-md5.h          |     36 +
+ .../lwip/src/include/netif/ppp/chap-new.h          |    200 +
+ .../lwip/src/include/netif/ppp/chap_ms.h           |     44 +
+ .../ThirdParty/lwip/src/include/netif/ppp/eap.h    |    169 +
+ .../ThirdParty/lwip/src/include/netif/ppp/ecp.h    |     62 +
+ .../ThirdParty/lwip/src/include/netif/ppp/eui64.h  |    102 +
+ .../ThirdParty/lwip/src/include/netif/ppp/fsm.h    |    182 +
+ .../ThirdParty/lwip/src/include/netif/ppp/ipcp.h   |    134 +
+ .../ThirdParty/lwip/src/include/netif/ppp/ipv6cp.h |    191 +
+ .../ThirdParty/lwip/src/include/netif/ppp/lcp.h    |    179 +
+ .../ThirdParty/lwip/src/include/netif/ppp/magic.h  |    130 +
+ .../ThirdParty/lwip/src/include/netif/ppp/mppe.h   |    181 +
+ .../lwip/src/include/netif/ppp/polarssl/arc4.h     |     81 +
+ .../lwip/src/include/netif/ppp/polarssl/des.h      |     92 +
+ .../lwip/src/include/netif/ppp/polarssl/md4.h      |     97 +
+ .../lwip/src/include/netif/ppp/polarssl/md5.h      |     96 +
+ .../lwip/src/include/netif/ppp/polarssl/sha1.h     |     96 +
+ .../ThirdParty/lwip/src/include/netif/ppp/ppp.h    |    698 +
+ .../lwip/src/include/netif/ppp/ppp_impl.h          |    736 +
+ .../lwip/src/include/netif/ppp/ppp_opts.h          |    610 +
+ .../ThirdParty/lwip/src/include/netif/ppp/pppapi.h |    137 +
+ .../lwip/src/include/netif/ppp/pppcrypt.h          |    144 +
+ .../lwip/src/include/netif/ppp/pppdebug.h          |     88 +
+ .../ThirdParty/lwip/src/include/netif/ppp/pppoe.h  |    187 +
+ .../lwip/src/include/netif/ppp/pppol2tp.h          |    209 +
+ .../ThirdParty/lwip/src/include/netif/ppp/pppos.h  |    125 +
+ .../ThirdParty/lwip/src/include/netif/ppp/upap.h   |    131 +
+ .../ThirdParty/lwip/src/include/netif/ppp/vj.h     |    169 +
+ .../ThirdParty/lwip/src/include/netif/slipif.h     |     86 +
+ .../ThirdParty/lwip/src/include/netif/zepif.h      |     81 +
+ .../ThirdParty/lwip/src/netif/ethernet.c           |    329 +
+ 506 files changed, 260708 insertions(+), 425 deletions(-)

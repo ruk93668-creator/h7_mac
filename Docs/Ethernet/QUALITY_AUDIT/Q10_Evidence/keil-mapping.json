@@ -1,0 +1,146 @@
+{
+  "cm4_unchanged": true,
+  "cm7_setting_deltas": {
+    ".//Cads/VariousControls/Define": {
+      "main": [
+        "CORE_CM7",
+        "USE_HAL_DRIVER",
+        "STM32H747xx",
+        "USE_PWR_LDO_SUPPLY",
+        "APP_VIDEO_MJPEG_MODE=1"
+      ],
+      "ethernet_additions": [
+        "ETH_LWIP_DHCP",
+        "ETH_LWIP_E5"
+      ],
+      "integration": [
+        "CORE_CM7",
+        "USE_HAL_DRIVER",
+        "STM32H747xx",
+        "USE_PWR_LDO_SUPPLY",
+        "APP_VIDEO_MJPEG_MODE=1",
+        "ETH_LWIP_DHCP",
+        "ETH_LWIP_E5"
+      ]
+    },
+    ".//Cads/VariousControls/IncludePath": {
+      "main": [
+        "../CM7/Core/Inc",
+        "../Drivers/STM32H7xx_HAL_Driver/Inc",
+        "../Drivers/STM32H7xx_HAL_Driver/Inc/Legacy",
+        "../Drivers/CMSIS/Device/ST/STM32H7xx/Include",
+        "../Drivers/CMSIS/Include",
+        "..\\Common\\Inc",
+        "..\\Board\\Inc",
+        "..\\CM7\\ApplicationV3\\Core",
+        "..\\CM7\\Service",
+        "..\\CM7\\Device\\Inc",
+        "..\\CM7\\Media\\Inc",
+        "..\\CM7\\Platform",
+        "..\\CM7\\BSP",
+        "..\\CM7\\Framework",
+        "..\\CM7\\Device\\Components\\OV5640",
+        "../Middlewares/ST/STM32_USB_Device_Library/Core/Inc",
+        "../Middlewares/Third_Party/FreeRTOS/Source/include",
+        "../Middlewares/Third_Party/FreeRTOS/Source/portable/RVDS/ARM_CM7/r0p1",
+        "../Middlewares/Third_Party/FatFs"
+      ],
+      "ethernet_additions": [
+        "../Platform/Ethernet",
+        "../CM7/Service/Ethernet",
+        "../ThirdParty/lwip/src/include"
+      ],
+      "integration": [
+        "../CM7/Core/Inc",
+        "../Drivers/STM32H7xx_HAL_Driver/Inc",
+        "../Drivers/STM32H7xx_HAL_Driver/Inc/Legacy",
+        "../Drivers/CMSIS/Device/ST/STM32H7xx/Include",
+        "../Drivers/CMSIS/Include",
+        "..\\Common\\Inc",
+        "..\\Board\\Inc",
+        "..\\CM7\\ApplicationV3\\Core",
+        "..\\CM7\\Service",
+        "..\\CM7\\Device\\Inc",
+        "..\\CM7\\Media\\Inc",
+        "..\\CM7\\Platform",
+        "..\\CM7\\BSP",
+        "..\\CM7\\Framework",
+        "..\\CM7\\Device\\Components\\OV5640",
+        "../Middlewares/ST/STM32_USB_Device_Library/Core/Inc",
+        "../Middlewares/Third_Party/FreeRTOS/Source/include",
+        "../Middlewares/Third_Party/FreeRTOS/Source/portable/RVDS/ARM_CM7/r0p1",
+        "../Middlewares/Third_Party/FatFs",
+        "../Platform/Ethernet",
+        "../CM7/Service/Ethernet",
+        "../ThirdParty/lwip/src/include"
+      ]
+    },
+    ".//LDads/Misc": {
+      "main": [
+        "--keep=g_ipc",
+        "--keep=*(.framework_init)",
+        "--keep=*(.device_export)",
+        "--keep=AppV3Supervisor_Set",
+        "--keep=AppV3Supervisor_Query",
+        "--keep=AppV3Supervisor_Read",
+        "--keep=AppV3Supervisor_Recover",
+        "--keep=App_EventsReadStackWatermarks",
+        "--keep=CameraMjpegFifo_ReadOccupancy",
+        "--keep=BSP_SDMMC_GetIoDiagnostics"
+      ],
+      "ethernet_additions": [
+        "--keep=*(.ethernet_dma)",
+        "--keep=eth_network_init",
+        "--keep=eth_network_init_address",
+        "--keep=eth_network_poll",
+        "--keep=eth_http_init",
+        "--keep=eth_http_init_source",
+        "--keep=eth_http_poll",
+        "--keep=eth_http_get_statistics",
+        "--keep=eth_http_set_stream_fast_send",
+        "--keep=eth_transport_get_statistics",
+        "--keep=eth_transport_ready",
+        "--keep=eth_transport_init",
+        "--keep=eth_transport_poll",
+        "--keep=eth_udp_send"
+      ],
+      "integration": [
+        "--keep=g_ipc",
+        "--keep=*(.framework_init)",
+        "--keep=*(.device_export)",
+        "--keep=AppV3Supervisor_Set",
+        "--keep=AppV3Supervisor_Query",
+        "--keep=AppV3Supervisor_Read",
+        "--keep=AppV3Supervisor_Recover",
+        "--keep=App_EventsReadStackWatermarks",
+        "--keep=CameraMjpegFifo_ReadOccupancy",
+        "--keep=BSP_SDMMC_GetIoDiagnostics",
+        "--keep=*(.ethernet_dma)",
+        "--keep=eth_network_init",
+        "--keep=eth_network_init_address",
+        "--keep=eth_network_poll",
+        "--keep=eth_http_init",
+        "--keep=eth_http_init_source",
+        "--keep=eth_http_poll",
+        "--keep=eth_http_get_statistics",
+        "--keep=eth_http_set_stream_fast_send",
+        "--keep=eth_transport_get_statistics",
+        "--keep=eth_transport_ready",
+        "--keep=eth_transport_init",
+        "--keep=eth_transport_poll",
+        "--keep=eth_udp_send"
+      ]
+    }
+  },
+  "new_groups": [
+    "Ethernet independent driver",
+    "Ethernet lwIP port",
+    "Ethernet Service",
+    "Ethernet lwIP 2.2.1"
+  ],
+  "rte": {
+    "MDK-ARM/RTE/_h7_mac_CM4/RTE_Components.h": "dad3c26754079b14c307bcc01d6f15ae73d162f966e866d38c280333c823dd34",
+    "MDK-ARM/RTE/_h7_mac_CM7/RTE_Components.h": "6681d5f7c1dc8b3eb7821a2a087dda3d8205e064043957ba6f538a398c0d3079",
+    "MDK-ARM/RTE/_qwe/RTE_Components.h": "4171a2ad9f4aeab9ce290915e8f82aa610a6f53dd7412a91045486a7d1e2f248"
+  }
+}

@@ -1,0 +1,89 @@
+{
+  "cm7": {
+    "exit": 0,
+    "errors": 0,
+    "warnings": 0,
+    "sizes": {
+      "code": 203434,
+      "ro": 5702,
+      "rw": 1592,
+      "zi": 156744
+    },
+    "firmware_sha256": "676a818cd6710916c9adef633c2d0797dad7178ae5629b1c5adce76464291c8a"
+  },
+  "cm4": {
+    "exit": 0,
+    "errors": 0,
+    "warnings": 0,
+    "sizes": {
+      "code": 41578,
+      "ro": 20474,
+      "rw": 1040,
+      "zi": 3712
+    },
+    "firmware_sha256": "1d9f4170fac35b37c69bef3dc964c6d99700aa03fe3c34e4f93171dcb8c9e1fb"
+  },
+  "e4": {
+    "exit": 0,
+    "errors": 0,
+    "warnings": 0,
+    "layout_ok": true,
+    "stable": true
+  },
+  "e42": {
+    "exit": 0,
+    "errors": 0,
+    "warnings": 0,
+    "layout_ok": true,
+    "stable": true
+  },
+  "e5": {
+    "exit": 0,
+    "errors": 0,
+    "warnings": 0,
+    "layout_ok": true,
+    "stable": true
+  },
+  "e6": {
+    "exit": 0,
+    "errors": 0,
+    "warnings": 0,
+    "layout_ok": true,
+    "stable": true
+  },
+  "e7": {
+    "exit": 1,
+    "errors": 7,
+    "warnings": 0,
+    "layout_ok": false,
+    "stable": true
+  },
+  "e7_v1": {
+    "exit": 0,
+    "errors": 0,
+    "warnings": 0,
+    "layout_ok": true,
+    "stable": true
+  },
+  "e7_v1_axi": {
+    "exit": 0,
+    "errors": 0,
+    "warnings": 0,
+    "layout_ok": true,
+    "stable": true
+  },
+  "e7_v1_qvga": {
+    "exit": 0,
+    "errors": 0,
+    "warnings": 0,
+    "layout_ok": true,
+    "stable": true
+  },
+  "e35": {
+    "exit": 0,
+    "errors": 0,
+    "warnings": 0,
+    "layout_ok": null,
+    "stable": true
+  }
+}

@@ -1,0 +1,343 @@
+{
+  "candidate": {
+    "base": "67a4271dcb41e4c3d4075a23e786400ed0352cd5",
+    "files": 3661,
+    "manifest_sha256": "932e6b5d5b1e1d1759badd8f7b0044fb15a64580a66e09bebc4be103fbbccab7",
+    "overlay_sha256": "a76dd5c99f94cfe173570cd0bc360eeb28addcd18e0c5edcdd01c07f2957f42f",
+    "keil_sha256": "429d7166fed72883b051606a9827afb8853f5e3eca77f0b2ba572b3c4ec19bc0",
+    "scatter_sha256": "32b84bead9252139cfc18890dd97c3227856477d3e854f2f8165b12028c4ed71",
+    "rte_pre": "6681d5f7c1dc8b3eb7821a2a087dda3d8205e064043957ba6f538a398c0d3079",
+    "rte_post": "6681d5f7c1dc8b3eb7821a2a087dda3d8205e064043957ba6f538a398c0d3079",
+    "targets": {
+      "cm7": {
+        "result": "PASS",
+        "errors": 0,
+        "warnings": 0,
+        "size": {
+          "code": 200778,
+          "ro": 4894,
+          "rw": 1636,
+          "zi": 156716
+        },
+        "firmware_sha256": "26e2908f3d26f9b0eacea43640d5faccd9ada08781676dac52c63f0c0c79f2d1",
+        "map_sha256": "a048fb473a35ca59d958816e35a3c67cf0053ad4da79db3b43366681a62c5581"
+      },
+      "cm4": {
+        "result": "PASS",
+        "errors": 0,
+        "warnings": 0,
+        "size": {
+          "code": 26302,
+          "ro": 1438,
+          "rw": 936,
+          "zi": 3576
+        },
+        "firmware_sha256": "78f2ed7ece5ccbacbf8f7b4766ab58c3fc926e10414d8f04b402b8e22fe8202d",
+        "map_sha256": "c1995cb3749571c263199243c8914ef13acf63eb2c835293abd150f08b234033"
+      },
+      "e4": {
+        "result": "PASS",
+        "errors": 0,
+        "warnings": 0,
+        "size": {
+          "code": 26842,
+          "ro": 1110,
+          "rw": 156,
+          "zi": 38388
+        },
+        "firmware_sha256": "161bedc04a5efdc74f25cd8eeae61c06f96ae96e88a211ed7d280cc4d133746d",
+        "map_sha256": "85dc22f2700dd3e66dda4a0cd4fe2ec936cf47c26763c8b72515942f7b2a43a3"
+      },
+      "e42": {
+        "result": "PASS",
+        "errors": 0,
+        "warnings": 0,
+        "size": {
+          "code": 38030,
+          "ro": 1242,
+          "rw": 212,
+          "zi": 38720
+        },
+        "firmware_sha256": "9c7388c95bb72595c4b29b7c9626dd9bcffd5ea367f6ce44f48532f972654322",
+        "map_sha256": "fdaeb24d11d6ea141299d4752764270bbcd6f2fc6ae54ebcae52dce48a9dac38"
+      },
+      "e5": {
+        "result": "PASS",
+        "errors": 0,
+        "warnings": 0,
+        "size": {
+          "code": 67546,
+          "ro": 1614,
+          "rw": 348,
+          "zi": 68588
+        },
+        "firmware_sha256": "3fe45b222ea604f256ae8a1b2c410dfc63ffc68f8dc76d8b96cde3db9d26009a",
+        "map_sha256": "b0bf021786d88b5499210888dbf193dfa240d0c14f8837cbb2e4d4d33e0c7765"
+      },
+      "e6": {
+        "result": "PASS",
+        "errors": 0,
+        "warnings": 0,
+        "size": {
+          "code": 70262,
+          "ro": 51434,
+          "rw": 332,
+          "zi": 64380
+        },
+        "firmware_sha256": "2358280ea3040bdf814bf36c0748fe9739bba5eedd24ddb8afcdbdde0bbf21f3",
+        "map_sha256": "9411252a29dd3522173328a0a98212fbf3d15e17180c11d7ffd54c09799d9707"
+      },
+      "e7": {
+        "result": "PASS",
+        "errors": 0,
+        "warnings": 0,
+        "size": {
+          "code": 109938,
+          "ro": 4154,
+          "rw": 516,
+          "zi": 127968
+        },
+        "firmware_sha256": "1a94bec0726bdf4b933444e7aa5a1b27e33903293e7275a11d26cec02169e08f",
+        "map_sha256": "739cdbc3f97be34eaacb6b6d15f151c4626a4761b847b1419833ed5070a5d97a"
+      },
+      "e7_v1": {
+        "result": "PASS",
+        "errors": 0,
+        "warnings": 0,
+        "size": {
+          "code": 111966,
+          "ro": 4154,
+          "rw": 520,
+          "zi": 128052
+        },
+        "firmware_sha256": "fae6dcffabed6e0debc36a0d3569ac53b160b23b66b597756723ca3a45f4bc44",
+        "map_sha256": "e7c6a3cc9f5fa9e3107093fe4fae20dba757c1e3e843808c27cde4298561ee6d"
+      },
+      "e7_v1_axi": {
+        "result": "PASS",
+        "errors": 0,
+        "warnings": 0,
+        "size": {
+          "code": 112010,
+          "ro": 4154,
+          "rw": 520,
+          "zi": 128052
+        },
+        "firmware_sha256": "d09cd7482ed84cdc5c9f5065772153367624b4a8ee08217b366c5fde3507a2d0",
+        "map_sha256": "680d75ab5c8f829bd4ae1b3b199d43cdaee169815ce5d0328970dc734d8f4ebf"
+      },
+      "e7_v1_qvga": {
+        "result": "PASS",
+        "errors": 0,
+        "warnings": 0,
+        "size": {
+          "code": 112014,
+          "ro": 4154,
+          "rw": 520,
+          "zi": 128052
+        },
+        "firmware_sha256": "64195b507ef093919b4e3de9e3f983fbf93ccd8e1b581c09d8bb7dc5dd74aedd",
+        "map_sha256": "12f55df02aa94d69688c313cc0e78d4dd4d5d8c0c094d36d4fa88e75ebe954c1"
+      },
+      "e35": {
+        "result": "PASS",
+        "errors": 0,
+        "warnings": 0,
+        "size": {
+          "code": 68398,
+          "ro": 2862,
+          "rw": 37096,
+          "zi": 81824
+        },
+        "firmware_sha256": "2920fc5aed6dd246209eb0a3a7183117742e4df5cc75f696984a5edfd2e2fc6c",
+        "map_sha256": "0c2d654cbfec4ab422b301e13e009de32b6aa310082d6fd36a4ed1ab66de19da"
+      }
+    },
+    "host_exit_codes": {
+      "e4": 0,
+      "e42": 0,
+      "e5": 0,
+      "e6": 0,
+      "e7": 0,
+      "e7-qvga": 0
+    }
+  },
+  "integration": {
+    "base": "851c1115fe097f7fd2e0bdcaa5f7b3f8c03feb71",
+    "files": 3845,
+    "manifest_sha256": "85ab089d8803e5d344306b3212dabedb062fbbc981beef722f94cc153d68bfbe",
+    "overlay_sha256": "4c1b3393172b2333f94172773c2fa2938cd1168b47724f9304ea6850c6eb1493",
+    "keil_sha256": "db54ece38c3384752e5712ce6f4cf9e9ed27ebe3b186752fc11742406a758af3",
+    "scatter_sha256": "32b84bead9252139cfc18890dd97c3227856477d3e854f2f8165b12028c4ed71",
+    "rte_pre": "6681d5f7c1dc8b3eb7821a2a087dda3d8205e064043957ba6f538a398c0d3079",
+    "rte_post": "6681d5f7c1dc8b3eb7821a2a087dda3d8205e064043957ba6f538a398c0d3079",
+    "targets": {
+      "cm7": {
+        "result": "PASS",
+        "errors": 0,
+        "warnings": 0,
+        "size": {
+          "code": 203434,
+          "ro": 5702,
+          "rw": 1592,
+          "zi": 156744
+        },
+        "firmware_sha256": "676a818cd6710916c9adef633c2d0797dad7178ae5629b1c5adce76464291c8a",
+        "map_sha256": "ffdb6fefd8cf177ab51b77bc73a1ae8ba2f255caccea3984a1c0579067c79766"
+      },
+      "cm4": {
+        "result": "PASS",
+        "errors": 0,
+        "warnings": 0,
+        "size": {
+          "code": 41578,
+          "ro": 20474,
+          "rw": 1040,
+          "zi": 3712
+        },
+        "firmware_sha256": "1d9f4170fac35b37c69bef3dc964c6d99700aa03fe3c34e4f93171dcb8c9e1fb",
+        "map_sha256": "da9230ecaec9ebb52bc9ae0e55dee90dc7826675515c5bfcc79d8fb225d7ee6c"
+      },
+      "e4": {
+        "result": "PASS",
+        "errors": 0,
+        "warnings": 0,
+        "size": {
+          "code": 26842,
+          "ro": 1110,
+          "rw": 156,
+          "zi": 38388
+        },
+        "firmware_sha256": "7a7c93f6694ea07d2825381a31c1c2dd67863a59730098bc160c55f9d3f0b85f",
+        "map_sha256": "0536a83e34ea6296c88eda7f4a1bcb95748e1c794fc4e921d88a40a29954e4c5"
+      },
+      "e42": {
+        "result": "PASS",
+        "errors": 0,
+        "warnings": 0,
+        "size": {
+          "code": 38030,
+          "ro": 1242,
+          "rw": 212,
+          "zi": 38720
+        },
+        "firmware_sha256": "d4e677508b7521d6fcd875ec925e86a2213d479edc3e0e9e3e273aae6e0b7c63",
+        "map_sha256": "4a5648d3531e3070fc6e52672001ffd65b9d73fa3acf0786f031edd8996a06e5"
+      },
+      "e5": {
+        "result": "PASS",
+        "errors": 0,
+        "warnings": 0,
+        "size": {
+          "code": 67546,
+          "ro": 1614,
+          "rw": 348,
+          "zi": 68588
+        },
+        "firmware_sha256": "26639629d88a59ebd46c1d929e2064cddf68cb441112eab66039410169ff1c88",
+        "map_sha256": "cfb730941a559140f71fd5424d53444d3f47e2370c1ef2d994c92b8b65a752dc"
+      },
+      "e6": {
+        "result": "PASS",
+        "errors": 0,
+        "warnings": 0,
+        "size": {
+          "code": 70262,
+          "ro": 51434,
+          "rw": 332,
+          "zi": 64380
+        },
+        "firmware_sha256": "d89efef7c9a272799a877dc06bd70adf7de004515608840bc9700538a6215a7b",
+        "map_sha256": "a9f3b220b00e8d9c0af24a937c3fc9c794f81bbb9a3e78b18de183f663ef2815"
+      },
+      "e7": {
+        "result": "PASS",
+        "errors": 0,
+        "warnings": 0,
+        "size": {
+          "code": 112278,
+          "ro": 4182,
+          "rw": 520,
+          "zi": 128084
+        },
+        "firmware_sha256": "a8590ac15f438c5aa0a7582c59e85458abab24d7056c15bb11803700c2ffa75b",
+        "map_sha256": "9a2a08b71fc7fccd4b6d9a4be5a6e021815edde884214c390694bff7f3e4d808"
+      },
+      "e7_v1": {
+        "result": "PASS",
+        "errors": 0,
+        "warnings": 0,
+        "size": {
+          "code": 112278,
+          "ro": 4182,
+          "rw": 520,
+          "zi": 128084
+        },
+        "firmware_sha256": "9ce7bbe65f8760d5e7ca72e524b9ae645cb8e12caffbee77a0e0b4dcfe0ad3b2",
+        "map_sha256": "c65d863f6df50f30945945b0d527f5a0540ba3e0fb05d3b94cac7786c938eee8"
+      },
+      "e7_v1_axi": {
+        "result": "PASS",
+        "errors": 0,
+        "warnings": 0,
+        "size": {
+          "code": 112322,
+          "ro": 4182,
+          "rw": 520,
+          "zi": 128084
+        },
+        "firmware_sha256": "9ae0a5d6ddb9597f20853e764e20f49944c9856853d5cdbabb57a0757e6ae6b3",
+        "map_sha256": "e581b320f1c69b9b395e64f234b720dee3800a5b12b380c397dc02657664cb49"
+      },
+      "e7_v1_qvga": {
+        "result": "PASS",
+        "errors": 0,
+        "warnings": 0,
+        "size": {
+          "code": 112326,
+          "ro": 4182,
+          "rw": 520,
+          "zi": 128084
+        },
+        "firmware_sha256": "c1d837f1749fe312e904d18ca724f17e1c99fb8425d18d5713e4bdb3769cada5",
+        "map_sha256": "7027ea36be3f2552b975cd338f0b6cefe69e3005be8cab2a70016804a136a675"
+      },
+      "e35": {
+        "result": "PASS",
+        "errors": 0,
+        "warnings": 0,
+        "size": {
+          "code": 139890,
+          "ro": 3958,
+          "rw": 37248,
+          "zi": 112272
+        },
+        "firmware_sha256": "052f96512fe111f79eb62d583c253e47a0d014786586010e3f3ff621a1a45dfe",
+        "map_sha256": "2b0a8e735157dc9b146864597d80b735925d54273e19d6d568bb6e9412e99b2d"
+      }
+    },
+    "host_exit_codes": {
+      "e4": 0,
+      "e42": 0,
+      "e5": 0,
+      "e6": 0,
+      "e7": 0,
+      "e7-qvga": 0
+    }
+  },
+  "rte_original_before": "270b61dded9e5eeb243f633224ced83b1c81bc11f38abf5bc68e9d03d072ba8d",
+  "rte_original_after": "270b61dded9e5eeb243f633224ced83b1c81bc11f38abf5bc68e9d03d072ba8d",
+  "q9_size_match": {
+    "cm7": true,
+    "cm4": true,
+    "e4": true,
+    "e42": true,
+    "e5": true,
+    "e6": true,
+    "e7": true,
+    "e7_v1": true,
+    "e7_v1_axi": true,
+    "e7_v1_qvga": true,
+    "e35": true
+  }
+}
