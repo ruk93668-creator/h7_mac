@@ -25,7 +25,7 @@ lwip_sources=LWIP + (LWIP_DHCP if dhcp else []) + (LWIP_TCP if tcp else [])
 entry='e7' if e7 else name if tcp else 'e4'
 bench_sources=PORT+CLOCK+['Tests/Ethernet/'+entry+'_main.c']
 if tcp:
-    bench_sources+=TRANSPORT+BOARD+(HTTP if e6 else HTTP[:2] if e7 else BENCH)
+    bench_sources+=TRANSPORT+BOARD+(HTTP if e6 else SERVICE if e7 else BENCH)
 camera_bsp = 'Tests/Ethernet/board_v1' if e7_v1 else 'CM7/BSP'
 camera_sources = [f'{camera_bsp}/bsp_camera.c','CM7/BSP/bsp_dcmi.c','CM7/BSP/bsp_sdram.c',
                   'CM7/Device/Src/device.c','CM7/Device/Src/ov5640_device.c',
@@ -75,7 +75,22 @@ if smoke or e35:
     ET.SubElement(file,'FileName').text=test_source
     ET.SubElement(file,'FileType').text='1'
     ET.SubElement(file,'FilePath').text='../Tests/Ethernet/'+test_source
+    # The production main group is removed below; keep the independent entry explicitly.
+    file=ET.SubElement(files,'File')
+    entry_source='e35_main.c' if e35 else 'test_main.c'
+    ET.SubElement(file,'FileName').text=entry_source
+    ET.SubElement(file,'FileType').text='1'
+    ET.SubElement(file,'FilePath').text='../Tests/Ethernet/'+entry_source
     # Dedicated test entry; no Application code is changed or invoked.
+    groups=t.find('Groups')
+    keep={'Application/MDK-ARM','Drivers/STM32H7xx_HAL_Driver','Drivers/CMSIS',
+          '::CMSIS','Ethernet independent driver','Ethernet RX verification only'}
+    for group in list(groups):
+        if group.findtext('GroupName') not in keep:
+            groups.remove(group)
+    # Remove link retention for services which are deliberately absent.
+    t.find('.//LDads/Misc').text='--keep=*(.ethernet_dma)'
+
 if not e4 and not baseline:
     # Raw-frame builds do not link the production lwIP CPU objects.
     scatter=OUT/(name+'.sct')
@@ -84,6 +99,11 @@ if not e4 and not baseline:
                                   '', scatter_text, flags=re.M)
     if removed != 1:
         raise SystemExit('unexpected production Ethernet CPU region')
+    scatter_text=re.sub(r'^    RW_NETWORK_JPEG [^\n]*\n    \{[^}]*\}\n\n',
+                        '', scatter_text, flags=re.M)
+    if smoke or e35:
+        scatter_text=re.sub(r'(?ms)^[ \t]*(?:ER_FW_INIT|ER_DEVICE_EXPORT|RW_SHARED|RW_SDMMC_DMA)[^{]*\{[^}]*\}[ \t]*\r?\n',
+                            '', scatter_text)
     if e35:
         scatter_text=scatter_text.replace('    RW_IRAM1', '    RW_E35_CACHE 0x24010000 0x00010000\n    {\n        *(.e35_cache)\n    }\n\n    RW_IRAM1')
     scatter.write_text(scatter_text)

@@ -4921,6 +4921,11 @@
               <FileType>1</FileType>
               <FilePath>../CM7/ApplicationV3/Services/Network/network_service.c</FilePath>
             </File>
+              <File>
+                <FileName>network_frames.c</FileName>
+                <FileType>1</FileType>
+                <FilePath>..\CM7\ApplicationV3\Services\Network\network_frames.c</FilePath>
+              </File>
           </Files>
         </Group>
         <Group>
@@ -5434,6 +5439,11 @@
               <FileType>1</FileType>
               <FilePath>../CM7/Service/Ethernet/eth_mjpeg.c</FilePath>
             </File>
+              <File>
+                <FileName>eth_jpeg_copy.c</FileName>
+                <FileType>1</FileType>
+                <FilePath>..\CM7\Service\Ethernet\eth_jpeg_copy.c</FilePath>
+              </File>
           </Files>
         </Group>
         <Group>

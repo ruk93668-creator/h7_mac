@@ -3,7 +3,39 @@
 #define APP_V3_NETWORK_SERVICE_H
 
 #include "app_context.h"
+#include "eth_http.h"
 #include "../../Runtime/service_mailbox.h"
+
+//调试只读快照由 NetworkTask 更新；跨字段一致性请暂停 CPU 后读取。
+//业务方通过 QUERY 的原有终结消息取得状态，不得写此镜像或读取 PCB。
+typedef struct
+{
+    uint32_t used;//当前占用项数或字节数
+    uint32_t peak;//运行期间峰值
+    uint32_t errors;//分配失败累计值
+} NetworkPoolStatus_t;
+
+typedef struct
+{
+    uint32_t heartbeat;//网络任务轮询次数，不代表协议已就绪
+    uint32_t ccr;//实际 SCB CCR，DCache 位为 0x10000
+    uint32_t memory_valid;//最近 START 对 DMA MPU 窗口的检查结果
+    uint32_t lifecycle;//AppV3HardwareState_t 的值
+    uint32_t flags;//Link/IP/listener/client-open：1/2/4/8
+    EthNetworkAddressStatus_t address;//DHCP 及当前地址，由唯一拥有者采样
+    EthStatistics_t driver;//实际 MAC/DMA 统计，不能把 RBU 当作丢帧数
+    EthTransportStats_t transport;//连接状态、发送环及 UDP 统计
+    EthHttpStats_t http;//HTTP/MJPEG 状态与完整帧确认统计
+    NetworkPoolStatus_t pbuf;//CPU 管理的 PBUF_POOL
+    NetworkPoolStatus_t heap;//lwIP 静态 heap，单位字节
+    NetworkPoolStatus_t tcp_pcb;//活动与 TIME_WAIT 共用的 PCB 池
+    NetworkPoolStatus_t tcp_listen;//监听 PCB 池
+    NetworkPoolStatus_t tcp_seg;//lwIP TCP 段池
+    NetworkPoolStatus_t udp_pcb;//DHCP 与业务 UDP 共用池
+    NetworkPoolStatus_t timers;//协议超时条目池
+} NetworkServiceStatus_t;
+
+extern volatile NetworkServiceStatus_t g_network_status;
 
 //只有 NetworkTask 可以初始化、轮询和清理协议栈。
 //初始化只发布软件服务，不把 PHY Link 或 DHCP 租约作为启动屏障。
@@ -22,7 +54,12 @@ typedef enum
     NETWORK_SERVICE_START = 16,
     NETWORK_SERVICE_STOP,
     NETWORK_SERVICE_RESTART,
-    NETWORK_SERVICE_QUERY
+    NETWORK_SERVICE_QUERY,
+    //非 HTTP 服务向 argument 指定的网络字节序 IPv4 发起 TCP 5004 连接。
+    //成功只表示发起；QUERY flags 的 0x08 表示已建立，连接错误由后续快照报告。
+    NETWORK_SERVICE_CONNECT,
+    //有序关闭 Client，实际退休仍由 STOP 的完整资源门禁确认。
+    NETWORK_SERVICE_CLOSE_CLIENT
 } NetworkServiceOperation_t;
 
 SysResult_t NetworkService_Request(uint32_t command_id,

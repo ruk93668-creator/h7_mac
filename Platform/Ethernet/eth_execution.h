@@ -2,6 +2,7 @@
 #ifndef ETH_EXECUTION_H
 #define ETH_EXECUTION_H
 
+//由绑定者检查任务身份和可调度性；返回 1 允许，0 拒绝，不得阻塞或调用 Raw API。
 typedef int (*EthExecutionCheck_t)(void *context);
 
 //由启动拥有者绑定一次。回调与 context 常驻，不允许替换或解除。

@@ -65,4 +65,10 @@
 #define LWIP_STATS 1
 #define LWIP_STATS_DISPLAY 0
 
+#ifdef ETH_NETWORK_SERVICE
+//由生产唯一拥有者执行所有带核心断言的 Raw API。
+void eth_execution_assert(void);
+#define LWIP_ASSERT_CORE_LOCKED() eth_execution_assert()
+#endif
+
 #endif

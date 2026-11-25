@@ -7,9 +7,10 @@
 
 //每个业务通道独占的消息槽数量
 #define APP_MESSAGE_QUEUE_LENGTH 4U
+#define APP_MESSAGE_PHYSICAL_CHANNELS (APP_CHANNEL_COUNT + 2U)
 
 //通道只保存池句柄，队列控制块与数据区集中由固定池管理。
-static AppV3Queue_t s_message_handles[APP_CHANNEL_COUNT];
+static AppV3Queue_t s_message_handles[APP_MESSAGE_PHYSICAL_CHANNELS];
 
 //记录队列初始化尝试，部分失败后不复用静态控制块
 static bool s_messages_attempted;
@@ -38,7 +39,7 @@ SysResult_t App_MessagesInit(void)
         return SYS_ERR_INVALID_STATE;
     s_messages_attempted = true;
     //逐通道分配固定槽，部分失败交由启动流程处理
-    for (channel_index = 0U; channel_index < APP_CHANNEL_COUNT; channel_index++)
+    for (channel_index = 0U; channel_index < APP_MESSAGE_PHYSICAL_CHANNELS; channel_index++)
     {
         SysResult_t result = AppV3Queue_Alloc(sizeof(AppMessage_t), APP_MESSAGE_QUEUE_LENGTH, &s_message_handles[channel_index]);
         if (result != SYS_OK)
@@ -54,6 +55,10 @@ static AppChannel_t AppMessages_Slot(AppChannel_t channel)
         return APP_CHANNEL_CAMERA_COMMAND;
     if (channel == APP_CHANNEL_CAMERA_TO_STORAGE)
         return APP_CHANNEL_USB_COMMAND;
+    if (channel == APP_CHANNEL_NETWORK_TO_CAMERA)
+        return (AppChannel_t)APP_CHANNEL_COUNT;
+    if (channel == APP_CHANNEL_CAMERA_TO_NETWORK)
+        return (AppChannel_t)(APP_CHANNEL_COUNT + 1U);
     return channel;
 }
 
@@ -64,6 +69,10 @@ static RuntimeEventTarget_t AppMessages_Receiver(AppChannel_t channel)
         return RUNTIME_TARGET_CAMERA;
     if (channel == APP_CHANNEL_CAMERA_TO_STORAGE)
         return RUNTIME_TARGET_STORAGE;
+    if (channel == APP_CHANNEL_NETWORK_TO_CAMERA)
+        return RUNTIME_TARGET_CAMERA;
+    if (channel == APP_CHANNEL_CAMERA_TO_NETWORK)
+        return RUNTIME_TARGET_NETWORK;
     return s_message_receivers[channel];
 }
 
@@ -72,22 +81,26 @@ static bool AppMessages_IsActive(AppChannel_t channel)
 {
     return channel == APP_CHANNEL_CONTROL || channel == APP_CHANNEL_STARTUP ||
         channel == APP_CHANNEL_TO_CAMERA || channel == APP_CHANNEL_TO_USB ||
-        channel == APP_CHANNEL_STORAGE_TO_CAMERA || channel == APP_CHANNEL_CAMERA_TO_STORAGE;
+        channel == APP_CHANNEL_STORAGE_TO_CAMERA || channel == APP_CHANNEL_CAMERA_TO_STORAGE ||
+        channel == APP_CHANNEL_NETWORK_TO_CAMERA || channel == APP_CHANNEL_CAMERA_TO_NETWORK;
 }
 
 //数据通道校验发送任务和方向，其他业务类型不得挤占租约归还通道
 static SysResult_t AppMessages_CheckFrameRoute(AppChannel_t channel, const AppMessage_t *message)
 {
-    if (channel == APP_CHANNEL_TO_CAMERA || channel == APP_CHANNEL_STORAGE_TO_CAMERA)
+    if (channel == APP_CHANNEL_TO_CAMERA || channel == APP_CHANNEL_STORAGE_TO_CAMERA ||
+        channel == APP_CHANNEL_NETWORK_TO_CAMERA)
     {
-        RuntimeEventTarget_t sender = channel == APP_CHANNEL_TO_CAMERA ? RUNTIME_TARGET_USB : RUNTIME_TARGET_STORAGE;
+        RuntimeEventTarget_t sender = channel == APP_CHANNEL_TO_CAMERA ? RUNTIME_TARGET_USB :
+            (channel == APP_CHANNEL_STORAGE_TO_CAMERA ? RUNTIME_TARGET_STORAGE : RUNTIME_TARGET_NETWORK);
         if (message->type != APP_MESSAGE_FRAME_REQUEST && message->type != APP_MESSAGE_FRAME_CANCEL_REQUEST &&
             message->type != APP_MESSAGE_FRAME_RETURN && message->type != APP_MESSAGE_RETURN_ACK_CONSUMED)
             return SYS_ERR_NOT_SUPPORTED;
         if (message->source != sender)
             return SYS_ERR_INVALID_STATE;
     }
-    if (channel == APP_CHANNEL_TO_USB || channel == APP_CHANNEL_CAMERA_TO_STORAGE)
+    if (channel == APP_CHANNEL_TO_USB || channel == APP_CHANNEL_CAMERA_TO_STORAGE ||
+        channel == APP_CHANNEL_CAMERA_TO_NETWORK)
     {
         if (message->type != APP_MESSAGE_FRAME_OFFER && message->type != APP_MESSAGE_RETURN_ACK)
             return SYS_ERR_NOT_SUPPORTED;
@@ -102,7 +115,7 @@ SysResult_t App_MessagesSend(AppChannel_t channel, const AppMessage_t *message)
 {
     SysResult_t result;
 
-    if ((uint32_t)channel > APP_CHANNEL_CAMERA_TO_STORAGE || message == NULL)
+    if ((uint32_t)channel > APP_CHANNEL_CAMERA_TO_NETWORK || message == NULL)
         return SYS_ERR_INVALID_ARG;
     if (!AppMessages_IsActive(channel))
         return SYS_ERR_NOT_SUPPORTED;
@@ -143,12 +156,16 @@ bool App_MessagesReceive(AppChannel_t channel, AppMessage_t *message)
         (void)RuntimeEvent_Post(RUNTIME_TARGET_CAMERA, RUNTIME_EVENT_WAKE);
         (void)RuntimeEvent_Post(RUNTIME_TARGET_USB, RUNTIME_EVENT_WAKE);
         (void)RuntimeEvent_Post(RUNTIME_TARGET_STORAGE, RUNTIME_EVENT_WAKE);
+        (void)RuntimeEvent_Post(RUNTIME_TARGET_NETWORK, RUNTIME_EVENT_WAKE);
     }
     else if (channel == APP_CHANNEL_TO_CAMERA)
         (void)RuntimeEvent_Post(RUNTIME_TARGET_USB, RUNTIME_EVENT_WAKE);
+    else if (channel == APP_CHANNEL_NETWORK_TO_CAMERA)
+        (void)RuntimeEvent_Post(RUNTIME_TARGET_NETWORK, RUNTIME_EVENT_WAKE);
     else if (channel == APP_CHANNEL_STORAGE_TO_CAMERA)
         (void)RuntimeEvent_Post(RUNTIME_TARGET_STORAGE, RUNTIME_EVENT_WAKE);
-    else if (channel == APP_CHANNEL_TO_USB || channel == APP_CHANNEL_CAMERA_TO_STORAGE)
+    else if (channel == APP_CHANNEL_TO_USB || channel == APP_CHANNEL_CAMERA_TO_STORAGE ||
+        channel == APP_CHANNEL_CAMERA_TO_NETWORK)
         (void)RuntimeEvent_Post(RUNTIME_TARGET_CAMERA, RUNTIME_EVENT_WAKE);
     return true;
 }

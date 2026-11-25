@@ -37,7 +37,7 @@ def main():
                         '/W4', '/WX', '/c', *sources],
                        cwd=root, check=True)
         subprocess.run(['link', '/nologo', '/OUT:' + str(test),
-                        *(str(out / (Path(source).stem + '.obj')) for source in [*sources, HTTP[-1]])],
+                        *(str(out / (Path(source).stem + '.obj')) for source in [*sources, HTTP[-1], "CM7/Service/Ethernet/eth_jpeg_copy.c"])],
                        cwd=root, check=True)
         subprocess.run([str(test)], cwd=root, check=True)
 

@@ -186,6 +186,14 @@ Error_Handler();
 		while(1);
 		/*  System Fault Policy */
 	}	
+#ifdef ETH_NETWORK_SERVICE
+    //Framework 已完成 SDMMC Region 3，之后才允许开启 DCache。
+    //Camera、IPC、Ethernet DMA 继续使用各自的非缓存窗口。
+    __DSB();
+    SCB_EnableDCache();
+    __DSB();
+    __ISB();
+#endif
   /* USER CODE END SysInit */
 
   /* Initialize all configured peripherals */

@@ -1,0 +1,36 @@
+Traceback (most recent call last):
+  File "C:\Users\29062\AppData\Local\Temp\h7_q11_04dmg4_u\repo\Tests\ApplicationV3\run_tests.py", line 138, in <module>
+    raise SystemExit(main())
+                     ^^^^^^
+  File "C:\Users\29062\AppData\Local\Temp\h7_q11_04dmg4_u\repo\Tests\ApplicationV3\run_tests.py", line 105, in main
+    harness.build(name, sources, "AppV3_TestRun")
+  File "C:\Users\29062\AppData\Local\Temp\h7_q11_04dmg4_u\repo\Tests\CameraLifecycleC1\run_tests.py", line 29, in build
+    obj=OUT/(name+str(i)+'.o');run(cc+defs+['-c',src,'-o',obj]);objs.append(obj)
+                               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\29062\AppData\Local\Temp\h7_q11_04dmg4_u\repo\Tests\ApplicationV3\run_tests.py", line 79, in run_with_queue_fault_seam
+    return real_run(command)
+           ^^^^^^^^^^^^^^^^^
+  File "C:\Users\29062\AppData\Local\Temp\h7_q11_04dmg4_u\repo\Tests\CameraLifecycleC1\run_tests.py", line 17, in run
+    if p.returncode:raise RuntimeError(text)
+                    ^^^^^^^^^^^^^^^^^^^^^^^^
+RuntimeError: "C:\Users\29062\AppData\Local\Temp\h7_q11_04dmg4_u\repo\CM7\ApplicationV3\Services\Network\network_frames.h", line 11: Error:  #20: identifier "bool" is undefined
+
+  void NetworkFrames_Poll(bool accepting);
+
+                          ^
+
+"C:\Users\29062\AppData\Local\Temp\h7_q11_04dmg4_u\repo\CM7\ApplicationV3\Services\Network\network_frames.h", line 15: Error:  #20: identifier "bool" is undefined
+
+  bool NetworkFrames_Retired(void);
+
+  ^
+
+"C:\Users\29062\AppData\Local\Temp\h7_q11_04dmg4_u\repo\CM7\ApplicationV3\Services\Network\network_frames.c", line 210: Warning:  #188-D: enumerated type mixed with another type
+
+                  s_frames.identity = (AppMessage_t){0};
+
+                                                     ^
+
+C:\Users\29062\AppData\Local\Temp\h7_q11_04dmg4_u\repo\CM7\ApplicationV3\Services\Network\network_frames.c: 1 warning, 2 errors
+
+

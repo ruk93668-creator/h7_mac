@@ -26,6 +26,16 @@ void eth_memory_configure(void)
 	region.IsCacheable = MPU_ACCESS_NOT_CACHEABLE;
 	region.IsBufferable = MPU_ACCESS_NOT_BUFFERABLE;
 	HAL_MPU_ConfigRegion(&region);
+#ifdef ETH_NETWORK_SERVICE
+    //仅 CPU 管理 lwIP 内存；DMA 描述符和 DMA Buffer 不落入该窗口。
+    region.Number = MPU_REGION_NUMBER5;
+    region.BaseAddress = 0x24010000U;
+    region.Size = MPU_REGION_SIZE_64KB;
+    region.IsShareable = MPU_ACCESS_NOT_SHAREABLE;
+    region.IsCacheable = MPU_ACCESS_CACHEABLE;
+    region.IsBufferable = MPU_ACCESS_BUFFERABLE;
+    HAL_MPU_ConfigRegion(&region);
+#endif
 }
 
 //核对实际链接地址和 MPU 属性

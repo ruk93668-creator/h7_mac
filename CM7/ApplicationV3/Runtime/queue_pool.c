@@ -3,8 +3,8 @@
 #include "platform_sync.h"
 #include "queue.h"
 
-//保留六条公共通道，并为 Camera、USB、Storage、Network 各留一个邮箱槽
-#define MESSAGE_SLOTS 10U
+//八条物理帧/业务通道与四个服务邮箱，共十二个静态队列
+#define MESSAGE_SLOTS 12U
 //每个业务队列可保存的最大消息条数
 #define MESSAGE_DEPTH 4U
 //只读记录通知使用的静态信号队列配额

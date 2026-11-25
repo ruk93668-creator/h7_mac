@@ -9,6 +9,8 @@
 #define APP_V3_PIPE_USB     2U
 //监督器中录像组件的活动位
 #define APP_V3_PIPE_RECORD  4U
+//HTTP 摄像头消费者依赖 Camera，启停顺序由原监督器统一管理。
+#define APP_V3_PIPE_NETWORK 8U
 
 //由Control发布的组件状态与当前业务进展
 typedef struct
@@ -33,6 +35,8 @@ typedef struct
     AppV3ServiceEvent_t usb;
     //最近收到的Storage终结结果及真实卷状态
     AppV3ServiceEvent_t storage;
+    //最近收到的 Network 真实生命周期终结。
+    AppV3ServiceEvent_t network;
 } AppV3SupervisorStatus_t;
 
 //仅ControlTask调用。Set返回计划已受理；实际启停结果通过Read取得。

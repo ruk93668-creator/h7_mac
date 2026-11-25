@@ -23,6 +23,7 @@ for inc in ['CM7/Core/Inc','CM7/Device/Inc','Board','Board/Inc','Middlewares/Thi
 
 sc=OUT/'test.sct';sc.write_text('LR_TEST 0x08000000 0x100000 { ER_INIT 0x08000000 { *(.framework_init) } ER_TEST +0 { .ANY (+RO) } RW_TEST 0x20000000 0x80000 { .ANY (+RW +ZI) } }\n')
 images={}
+EXTRA_REGIONS=[]
 def build(name,sources,entry,defs=[]):
  objs=[]
  for i,src in enumerate(sources):
@@ -36,7 +37,7 @@ def build(name,sources,entry,defs=[]):
  images[name]=(syms,sections)
 def execute(name,entry,id):
  syms,sections=images[name];u=Uc(UC_ARCH_ARM,UC_MODE_THUMB|UC_MODE_MCLASS)
- for a,n in [(0x08000000,0x100000),(0x20000000,0x80000),(0xE000E000,0x2000),(0x01000000,0x1000)]:u.mem_map(a,n)
+ for a,n in [(0x08000000,0x100000),(0x20000000,0x80000),(0xE000E000,0x2000),(0x01000000,0x1000)]+EXTRA_REGIONS:u.mem_map(a,n)
  for a,d in sections:u.mem_write(a,d)
  u.reg_write(UC_ARM_REG_SP,0x2007fff0);u.reg_write(UC_ARM_REG_LR,0x01000001);u.reg_write(UC_ARM_REG_R0,id)
  error=None

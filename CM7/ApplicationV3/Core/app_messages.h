@@ -18,7 +18,10 @@ typedef enum
 
     //录像使用旧禁用通道对应的静态槽，旧通道编号仍保持拒绝语义。
     APP_CHANNEL_STORAGE_TO_CAMERA = APP_CHANNEL_COUNT,
-    APP_CHANNEL_CAMERA_TO_STORAGE
+    APP_CHANNEL_CAMERA_TO_STORAGE,
+    //独立网络帧通道；已有通道编号保持不变。
+    APP_CHANNEL_NETWORK_TO_CAMERA,
+    APP_CHANNEL_CAMERA_TO_NETWORK
 } AppChannel_t;
 
 //各消息类型用于识别命令、结果和帧交接协议

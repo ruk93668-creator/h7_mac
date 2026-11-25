@@ -314,7 +314,9 @@ void eth_network_poll(EthNetwork_t *network)
 
 err_t eth_network_stop(EthNetwork_t *network)
 {
-    if (!eth_execution_allowed() || network == NULL || network != s_owner)
+    if (!eth_execution_allowed())
+        return ERR_IF;
+    if (network == NULL || network != s_owner)
         return ERR_ARG;
     if (network->initialized)
     {
@@ -346,6 +348,19 @@ err_t eth_network_stop(EthNetwork_t *network)
     if (network->initialized)
         netif_remove(&network->interface);
     network->initialized = 0U;
+#if LWIP_DHCP
+    //停止状态不得把旧租约作为仍可用地址发布；诊断累计计数保留。
+    network->address.state = ETH_DHCP_DISABLED;
+    network->address.lease_valid = 0U;
+    network->address.lwip_state = DHCP_STATE_OFF;
+    network->address.ip = *IP4_ADDR_ANY4;
+    network->address.mask = *IP4_ADDR_ANY4;
+    network->address.gateway = *IP4_ADDR_ANY4;
+    network->address.server = *IP4_ADDR_ANY4;
+    network->address.lease_seconds = 0U;
+    network->address.t1_seconds = 0U;
+    network->address.t2_seconds = 0U;
+#endif
     s_owner = NULL;
     return ERR_OK;
 }

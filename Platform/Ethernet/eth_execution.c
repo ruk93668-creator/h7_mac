@@ -21,3 +21,13 @@ int eth_execution_allowed(void)
     return s_check == NULL || s_check(s_context);
 #endif
 }
+
+#ifdef ETH_NETWORK_SERVICE
+#include "arch/cc.h"
+
+void eth_execution_assert(void)
+{
+    if (!eth_execution_allowed())
+        eth_lwip_assert("foreign lwIP execution context", __FILE__, __LINE__);
+}
+#endif

@@ -20,8 +20,11 @@
 #include <setjmp.h>
 #include "../../CM7/ApplicationV3/Services/Network/network_service.h"
 #include "eth_execution.h"
+#include "../../CM7/ApplicationV3/Services/Network/network_frames.h"
+extern uint32_t g_network_frame_ready, g_network_frame_releases, g_network_release_fail;
 #include "eth_http.h"
 #include "lwip/stats.h"
+#include "lwip/dhcp.h"
 #include "lwip/priv/tcp_priv.h"
 extern uint32_t g_network_stop_fail, g_network_link, g_network_init_calls;
 
@@ -1104,6 +1107,8 @@ static void Test_PollHardware(RuntimeEventTarget_t service)
         (void)AppV3_CameraAdvance();
     else if (service == RUNTIME_TARGET_USB)
         (void)AppV3_UsbAdvance();
+    else if (service == RUNTIME_TARGET_NETWORK)
+        (void)AppV3_NetworkAdvance();
     else
         (void)AppV3_StorageAdvance();
     owner = RUNTIME_TARGET_CONTROL;
@@ -2404,7 +2409,7 @@ static uint32_t Test_Supervisor(const AppV3Context_t *context, uint32_t scenario
     fixture_storage.segment_ms = 1000U;
     CHECK(Test_HardwareBoot(context) == 0U);
     g_hardware.card_present = true;
-    CHECK(AppV3Supervisor_Set(8U, 0U) == SYS_ERR_NOT_SUPPORTED);
+    CHECK(AppV3Supervisor_Set(16U, 0U) == SYS_ERR_NOT_SUPPORTED);
     CHECK(AppV3Supervisor_Set(APP_V3_PIPE_RECORD, 0U) == SYS_ERR_INVALID_ARG);
     owner = RUNTIME_TARGET_USB;
     CHECK(AppV3Supervisor_Set(APP_V3_PIPE_USB, 0U) == SYS_ERR_INVALID_STATE);
@@ -2787,6 +2792,301 @@ static uint32_t Test_ProductRejectsArchivedOperations(const AppV3Context_t *cont
 }
 #endif
 
+extern uint32_t g_network_dhcp_server;
+extern uint32_t g_network_browser_bytes, g_network_frame_bytes;
+void Test_NetworkBrowserOpen(void);
+void Test_NetworkBrowserReset(void);
+
+//真实 TCP 三次握手、HTTP 请求、Camera 消息副本和 RST 清理闭环。
+static uint32_t Test_NetworkBrowser(const AppV3Context_t *context)
+{
+    uint32_t i;
+    bool borrowed = false;
+    fixture_video.camera.format = CAMERA_PIXEL_FORMAT_JPEG;
+    CHECK(Test_HardwareBoot(context) == 0U);
+    CHECK(CameraService_Request(1U, CAMERA_SERVICE_START, 0U) == SYS_OK);
+    CHECK(Test_ServiceStep(RUNTIME_TARGET_CAMERA) == SYS_OK);
+    Test_PollHardware(RUNTIME_TARGET_CAMERA);
+    g_hardware.frame_ready = true;
+    Test_PollHardware(RUNTIME_TARGET_CAMERA);
+    CHECK(Test_ReadHardwareResult(RUNTIME_TARGET_CAMERA, 1U, APP_V3_HW_ACTIVE, SYS_OK));
+    g_network_link = 1U;
+    g_network_dhcp_server = 1U;
+    g_network_frame_bytes = 4096U;
+    g_network_frame_ready = 1U;
+    CHECK(NetworkService_Request(2U, NETWORK_SERVICE_START, 0x100U) == SYS_OK);
+    CHECK(Test_ServiceStep(RUNTIME_TARGET_NETWORK) == SYS_OK);
+    Test_PollHardware(RUNTIME_TARGET_NETWORK);
+    CHECK(Test_ReadHardwareResult(RUNTIME_TARGET_NETWORK, 2U, APP_V3_HW_ACTIVE, SYS_OK));
+    g_hardware.now_ms += 10U;
+    Test_PollHardware(RUNTIME_TARGET_NETWORK);
+    Test_NetworkBrowserOpen();
+    for (i = 0U; i < 120U; ++i)
+    {
+        Test_PollHardware(RUNTIME_TARGET_CAMERA);
+        g_hardware.now_ms += 10U;
+        Test_PollHardware(RUNTIME_TARGET_NETWORK);
+        if (g_network_status.http.stream_state == ETH_MJPEG_FRAME_DATA)
+        {
+            owner = RUNTIME_TARGET_NETWORK;
+            borrowed = !NetworkFrames_Retired();
+            owner = RUNTIME_TARGET_CONTROL;
+            break;
+        }
+    }
+    CHECK(borrowed && g_network_frame_releases == 1U && g_network_browser_bytes != 0U);
+    Test_NetworkBrowserReset();
+    for (i = 0U; i < 12U; ++i)
+    {
+        Test_PollHardware(RUNTIME_TARGET_CAMERA);
+        g_hardware.now_ms += 10U;
+        Test_PollHardware(RUNTIME_TARGET_NETWORK);
+    }
+    owner = RUNTIME_TARGET_NETWORK;
+    CHECK(NetworkFrames_Retired());
+    CHECK(eth_tcp_get_state(eth_tcp_handle(ETH_TCP_SERVER)) == ETH_TCP_IDLE);
+    owner = RUNTIME_TARGET_CONTROL;
+    CHECK(NetworkService_Request(3U, NETWORK_SERVICE_STOP, 0U) == SYS_OK);
+    CHECK(Test_ServiceStep(RUNTIME_TARGET_NETWORK) == SYS_OK);
+    Test_PollHardware(RUNTIME_TARGET_NETWORK);
+    CHECK(Test_ReadHardwareResult(RUNTIME_TARGET_NETWORK, 3U, APP_V3_HW_READY, SYS_OK));
+    CHECK(g_network_status.pbuf.used == 0U && g_network_status.tcp_pcb.used == 0U &&
+        g_network_status.tcp_seg.used == 0U && g_network_status.tcp_listen.used == 0U);
+    return 0U;
+}
+
+extern uint32_t g_network_dhcp_server, g_network_discover, g_network_request, g_network_ack;
+
+//由实际报文完成 DORA/ACD，再验证 HTTP listener 和租约随 STOP 一起退休。
+static uint32_t Test_NetworkDhcpHttp(const AppV3Context_t *context)
+{
+    uint32_t i, count, ticket;
+    CHECK(Test_StartBusiness(context) == 0U);
+    CHECK(AppV3Business_Subscribe(RUNTIME_TARGET_NETWORK, Test_StoreEvent, NULL, &ticket) == SYS_OK);
+    g_network_link = g_network_dhcp_server = 1U;
+    CHECK(NetworkService_Request(1U, NETWORK_SERVICE_START, 0x101U) == SYS_OK);
+    CHECK(Test_ServiceStep(RUNTIME_TARGET_NETWORK) == SYS_OK);
+    Test_PollHardware(RUNTIME_TARGET_NETWORK);
+    CHECK(AppV3Business_Drain(&count) == SYS_OK && count == 1U);
+    //ACD 的 100ms 定时不能用每秒一次的模拟轮询替代。
+    for (i = 0U; i < 120U; ++i)
+    {
+        g_hardware.now_ms += 100U;
+        Test_PollHardware(RUNTIME_TARGET_NETWORK);
+    }
+    CHECK(g_network_status.address.lease_valid == 1U);
+    //取得租约后以 DHCP fine timer 的 500ms 粒度推进至 T1 之后。
+    for (i = 0U; i < 140U; ++i)
+    {
+        g_hardware.now_ms += 500U;
+        Test_PollHardware(RUNTIME_TARGET_NETWORK);
+    }
+    g_trace_count = 1U;
+    g_trace[0][0] = g_network_discover;
+    g_trace[0][1] = g_network_request;
+    g_trace[0][2] = g_network_ack;
+    g_trace[0][3] = g_network_status.address.state;
+    g_trace[0][4] = netif_dhcp_data(netif_list)->t1_timeout;
+    g_trace[0][5] = netif_dhcp_data(netif_list)->t1_renew_time;
+    g_trace[0][6] = netif_dhcp_data(netif_list)->lease_used;
+    g_trace[0][7] = g_hardware.now_ms;
+    CHECK(g_network_discover == 1U && g_network_request >= 2U && g_network_ack >= 2U);
+    owner = RUNTIME_TARGET_NETWORK;
+    CHECK(netif_list != NULL && netif_is_link_up(netif_list));
+    CHECK(!ip4_addr_isany(netif_ip4_addr(netif_list)));
+    CHECK(eth_tcp_listening());
+    CHECK(lwip_stats.memp[MEMP_UDP_PCB]->used == 1U);
+    owner = RUNTIME_TARGET_CONTROL;
+    CHECK(NetworkService_Request(2U, NETWORK_SERVICE_STOP, 0U) == SYS_OK);
+    CHECK(Test_ServiceStep(RUNTIME_TARGET_NETWORK) == SYS_OK);
+    Test_PollHardware(RUNTIME_TARGET_NETWORK);
+    CHECK(AppV3Business_Drain(&count) == SYS_OK && count == 1U);
+    CHECK(business_events[business_event_count - 1U].result == SYS_OK);
+    CHECK(netif_list == NULL && lwip_stats.memp[MEMP_UDP_PCB]->used == 0U &&
+        lwip_stats.memp[MEMP_TCP_PCB_LISTEN]->used == 0U &&
+        lwip_stats.memp[MEMP_PBUF_POOL]->used == 0U);
+    CHECK(g_network_status.address.lease_valid == 0U && g_network_status.pbuf.used == 0U &&
+        g_network_status.udp_pcb.used == 0U && g_network_status.tcp_listen.used == 0U);
+    CHECK(AppV3Business_Unsubscribe(ticket) == SYS_OK);
+    return 0U;
+}
+
+static uint32_t Test_NetworkRetirementGate(const AppV3Context_t *context)
+{
+    struct tcp_pcb *pcb;
+    uint32_t count, ticket;
+    CHECK(Test_StartBusiness(context) == 0U);
+    CHECK(AppV3Business_Subscribe(RUNTIME_TARGET_NETWORK, Test_StoreEvent, NULL, &ticket) == SYS_OK);
+    CHECK(NetworkService_Request(1U, NETWORK_SERVICE_START, 0U) == SYS_OK);
+    CHECK(Test_ServiceStep(RUNTIME_TARGET_NETWORK) == SYS_OK);
+    Test_PollHardware(RUNTIME_TARGET_NETWORK);
+    CHECK(AppV3Business_Drain(&count) == SYS_OK && count == 1U);
+    owner = RUNTIME_TARGET_NETWORK;
+    pcb = tcp_new();
+    CHECK(pcb != NULL && tcp_bind(pcb, IP_ADDR_ANY, 5500U) == ERR_OK);
+    owner = RUNTIME_TARGET_CONTROL;
+    CHECK(NetworkService_Request(2U, NETWORK_SERVICE_STOP, 0U) == SYS_OK);
+    CHECK(Test_ServiceStep(RUNTIME_TARGET_NETWORK) == SYS_OK);
+    Test_PollHardware(RUNTIME_TARGET_NETWORK);
+    CHECK(AppV3Business_Drain(&count) == SYS_OK && count == 0U);
+    CHECK(netif_list != NULL && lwip_stats.memp[MEMP_TCP_PCB]->used == 1U);
+    g_hardware.now_ms += 130001U;
+    Test_PollHardware(RUNTIME_TARGET_NETWORK);
+    CHECK(AppV3Business_Drain(&count) == SYS_OK && count == 1U);
+    CHECK(business_events[business_event_count - 1U].result == SYS_ERR_TIMEOUT);
+    CHECK(netif_list != NULL && lwip_stats.memp[MEMP_TCP_PCB]->used == 1U);
+    owner = RUNTIME_TARGET_NETWORK;
+    tcp_abort(pcb);
+    owner = RUNTIME_TARGET_CONTROL;
+    CHECK(NetworkService_Request(3U, NETWORK_SERVICE_STOP, 0U) == SYS_OK);
+    CHECK(Test_ServiceStep(RUNTIME_TARGET_NETWORK) == SYS_OK);
+    Test_PollHardware(RUNTIME_TARGET_NETWORK);
+    CHECK(AppV3Business_Drain(&count) == SYS_OK && count == 1U);
+    CHECK(business_events[business_event_count - 1U].result == SYS_OK);
+    CHECK(netif_list == NULL && lwip_stats.memp[MEMP_TCP_PCB]->used == 0U);
+    CHECK(AppV3Business_Unsubscribe(ticket) == SYS_OK);
+    return 0U;
+}
+
+//四服务沿用同一监督器，Network 退休后才允许 Camera 停止。
+static uint32_t Test_NetworkSupervisor(const AppV3Context_t *context)
+{
+    uint32_t i;
+    AppV3SupervisorStatus_t snapshot;
+    fixture_video.camera.format = CAMERA_PIXEL_FORMAT_JPEG;
+    fixture_storage.segment_bytes = 1024U;
+    CHECK(Test_HardwareBoot(context) == 0U);
+    g_hardware.card_present = true;
+    g_hardware.usb_configured = true;
+    g_hardware.uvc_present = true;
+    CHECK(AppV3Supervisor_Set(APP_V3_PIPE_USB | APP_V3_PIPE_RECORD | APP_V3_PIPE_NETWORK, 7U) == SYS_OK);
+    for (i = 0U; i < 20U; ++i)
+    {
+        g_hardware.frame_ready = true;
+        Test_SupervisorStep(RUNTIME_TARGET_CAMERA);
+        Test_SupervisorStep(RUNTIME_TARGET_USB);
+        Test_SupervisorStep(RUNTIME_TARGET_STORAGE);
+        Test_SupervisorStep(RUNTIME_TARGET_NETWORK);
+    }
+    AppV3Supervisor_Poll();
+    CHECK(AppV3Supervisor_Read(&snapshot) == SYS_OK && snapshot.active == 15U && !snapshot.planning);
+    CHECK(AppV3Supervisor_Set(0U, 0U) == SYS_OK);
+    for (i = 0U; i < 20U; ++i)
+    {
+        Test_SupervisorStep(RUNTIME_TARGET_NETWORK);
+        Test_SupervisorStep(RUNTIME_TARGET_STORAGE);
+        Test_SupervisorStep(RUNTIME_TARGET_USB);
+        Test_SupervisorStep(RUNTIME_TARGET_CAMERA);
+    }
+    AppV3Supervisor_Poll();
+    CHECK(AppV3Supervisor_Read(&snapshot) == SYS_OK && snapshot.active == 0U &&
+        snapshot.uncertain == 0U && !snapshot.planning);
+    CHECK(snapshot.network.hardware.state == APP_V3_HW_READY);
+    CHECK(g_hardware.sensor_stop_calls == 1U && g_hardware.unmount_calls == 1U);
+    return 0U;
+}
+
+//完整生产消息协议；Camera 夹具仅提供可控 DMA 帧及释放结果。
+static uint32_t Test_NetworkFrames(const AppV3Context_t *context, uint32_t scenario)
+{
+    const EthMjpegSource_t *source;
+    EthMjpegFrame_t frame;
+    uint32_t lease, i;
+    AppMessage_t filler = {.type = APP_MESSAGE_FRAME_CANCEL_REQUEST,
+        .source = RUNTIME_TARGET_NETWORK, .command_id = 1000U};
+    fixture_video.camera.format = CAMERA_PIXEL_FORMAT_JPEG;
+    CHECK(Test_HardwareBoot(context) == 0U);
+    CHECK(CameraService_Request(1U, CAMERA_SERVICE_START, 0U) == SYS_OK);
+    CHECK(Test_ServiceStep(RUNTIME_TARGET_CAMERA) == SYS_OK);
+    Test_PollHardware(RUNTIME_TARGET_CAMERA);
+    g_hardware.frame_ready = true;
+    Test_PollHardware(RUNTIME_TARGET_CAMERA);
+    CHECK(Test_ReadHardwareResult(RUNTIME_TARGET_CAMERA, 1U, APP_V3_HW_ACTIVE, SYS_OK));
+    CHECK(NetworkService_Request(2U, NETWORK_SERVICE_START, 0x100U) == SYS_OK);
+    CHECK(Test_ServiceStep(RUNTIME_TARGET_NETWORK) == SYS_OK);
+    Test_PollHardware(RUNTIME_TARGET_NETWORK);
+    CHECK(Test_ReadHardwareResult(RUNTIME_TARGET_NETWORK, 2U, APP_V3_HW_ACTIVE, SYS_OK));
+    owner = RUNTIME_TARGET_NETWORK;
+    source = NetworkFrames_Source();
+    CHECK(source != NULL && NetworkFrames_Retired());
+    if (scenario == 110U)
+    {
+        for (i = 0U; i < 4U; ++i)
+            CHECK(App_MessagesSend(APP_CHANNEL_NETWORK_TO_CAMERA, &filler) == SYS_OK);
+        CHECK(App_MessagesSend(APP_CHANNEL_NETWORK_TO_CAMERA, &filler) == SYS_ERR_NO_RESOURCE);
+    }
+    CHECK(source->acquire(source->context, &frame, &lease) == ETH_MJPEG_UNAVAILABLE);
+    NetworkFrames_Poll(true);
+    if (scenario == 110U)
+    {
+        CHECK(NetworkFrames_Retired());
+        Test_PollHardware(RUNTIME_TARGET_CAMERA);
+        owner = RUNTIME_TARGET_NETWORK;
+        NetworkFrames_Poll(true);
+    }
+    CHECK(!NetworkFrames_Retired());
+    if (scenario == 111U)
+    {
+        NetworkFrames_BeginStop();
+        NetworkFrames_Poll(false);
+    }
+    else
+        g_network_frame_ready = 1U;
+    if (scenario == 114U)
+        g_network_release_fail = 1U;
+    for (i = 0U; i < 12U; ++i)
+    {
+        if (scenario == 113U && i == 2U)
+        {
+            AppMessage_t stale = {.type = APP_MESSAGE_RETURN_ACK,
+                .source = RUNTIME_TARGET_CAMERA, .command_id = 1U,
+                .stream_epoch = UINT32_MAX, .lease_id = UINT32_MAX};
+            owner = RUNTIME_TARGET_CAMERA;
+            CHECK(App_MessagesSend(APP_CHANNEL_CAMERA_TO_NETWORK, &stale) == SYS_OK);
+            owner = RUNTIME_TARGET_NETWORK;
+            NetworkFrames_Poll(true);
+            CHECK(!NetworkFrames_Retired() && g_network_frame_releases == 0U);
+        }
+        Test_PollHardware(RUNTIME_TARGET_CAMERA);
+        owner = RUNTIME_TARGET_NETWORK;
+        if (scenario == 112U && i == 1U)
+            NetworkFrames_BeginStop();
+        NetworkFrames_Poll(scenario != 111U && !(scenario == 112U && i >= 1U));
+    }
+    owner = RUNTIME_TARGET_NETWORK;
+    CHECK(NetworkFrames_Retired());
+    if (scenario == 111U)
+        CHECK(g_network_frame_releases == 0U);
+    else if (scenario == 112U)
+        CHECK(g_network_frame_releases == 1U);
+    else
+    {
+        CHECK(g_network_frame_releases == 1U);
+        CHECK(source->acquire(source->context, &frame, &lease) == ETH_MJPEG_ACQUIRED);
+        CHECK(frame.length == 20U && frame.data[0] == 0xffU && frame.data[19] == 0xd9U);
+        CHECK(!NetworkFrames_Retired());
+        if (scenario == 115U)
+        {
+            owner = RUNTIME_TARGET_USB;
+            source->release(source->context, lease);
+            CHECK(source->acquire(source->context, &frame, &i) == ETH_MJPEG_INVALID);
+            owner = RUNTIME_TARGET_NETWORK;
+            CHECK(!NetworkFrames_Retired());
+        }
+        source->release(source->context, lease + 1U);
+        CHECK(!NetworkFrames_Retired());
+        source->release(source->context, lease);
+        CHECK(NetworkFrames_Retired());
+    }
+    owner = RUNTIME_TARGET_CONTROL;
+    CHECK(NetworkService_Request(3U, NETWORK_SERVICE_STOP, 0U) == SYS_OK);
+    CHECK(Test_ServiceStep(RUNTIME_TARGET_NETWORK) == SYS_OK);
+    Test_PollHardware(RUNTIME_TARGET_NETWORK);
+    CHECK(Test_ReadHardwareResult(RUNTIME_TARGET_NETWORK, 3U, APP_V3_HW_READY, SYS_OK));
+    CHECK(g_hardware.usb_start_calls == 0U && g_hardware.mount_calls == 0U);
+    return 0U;
+}
+
 //真实 Service/Mailbox/lwIP 生命周期，只有 MAC MMIO 被替代。
 static uint32_t Test_NetworkLifecycle(const AppV3Context_t *context, uint32_t scenario)
 {
@@ -2796,8 +3096,9 @@ static uint32_t Test_NetworkLifecycle(const AppV3Context_t *context, uint32_t sc
     CHECK(AppV3Business_Subscribe(RUNTIME_TARGET_NETWORK, Test_StoreEvent, NULL, &ticket) == SYS_OK);
     CHECK(!eth_execution_allowed());
     g_network_link = 1U;
-    for (round = 0U; round < 3U; ++round)
+    for (round = 0U; round < (scenario == 120U ? 100U : 3U); ++round)
     {
+        business_event_count = 0U;
         CHECK(NetworkService_Request(round * 4U + 1U, NETWORK_SERVICE_START, mode) == SYS_OK);
         CHECK(Test_ServiceStep(RUNTIME_TARGET_NETWORK) == SYS_OK);
         owner = RUNTIME_TARGET_NETWORK;
@@ -2839,14 +3140,14 @@ static uint32_t Test_NetworkLifecycle(const AppV3Context_t *context, uint32_t sc
         CHECK(lwip_stats.memp[MEMP_PBUF_POOL]->used == 0U);
         CHECK(netif_list == NULL);
     }
-    CHECK(NetworkService_Request(20U, NETWORK_SERVICE_RESTART, mode) == SYS_OK);
+    CHECK(NetworkService_Request(500U, NETWORK_SERVICE_RESTART, mode) == SYS_OK);
     CHECK(Test_ServiceStep(RUNTIME_TARGET_NETWORK) == SYS_OK);
     owner = RUNTIME_TARGET_NETWORK;
     (void)AppV3_NetworkAdvance();
     owner = RUNTIME_TARGET_CONTROL;
     CHECK(AppV3Business_Drain(&count) == SYS_OK && count == 1U);
     CHECK(business_events[business_event_count - 1U].hardware.state == APP_V3_HW_ACTIVE);
-    CHECK(NetworkService_Request(21U, NETWORK_SERVICE_STOP, 0U) == SYS_OK);
+    CHECK(NetworkService_Request(501U, NETWORK_SERVICE_STOP, 0U) == SYS_OK);
     CHECK(Test_ServiceStep(RUNTIME_TARGET_NETWORK) == SYS_OK);
     owner = RUNTIME_TARGET_NETWORK;
     (void)AppV3_NetworkAdvance();
@@ -2944,7 +3245,17 @@ uint32_t AppV3_TestRun(uint32_t scenario)
     if (scenario >= 96U && scenario <= 97U)
         return Test_RecordBoard(context, scenario);
 #endif
-    if (scenario >= 105U && scenario <= 108U)
+    if (scenario == 119U)
+        return Test_NetworkBrowser(context);
+    if (scenario == 118U)
+        return Test_NetworkDhcpHttp(context);
+    if (scenario == 117U)
+        return Test_NetworkRetirementGate(context);
+    if (scenario == 116U)
+        return Test_NetworkSupervisor(context);
+    if (scenario >= 109U && scenario <= 115U)
+        return Test_NetworkFrames(context, scenario);
+    if (scenario == 120U || (scenario >= 105U && scenario <= 108U))
         return Test_NetworkLifecycle(context, scenario);
     if (scenario >= 92U && scenario <= 95U)
         return Test_Supervisor(context, scenario);

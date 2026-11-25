@@ -1,0 +1,38 @@
+{
+  "media_lease": {
+    "exit": 0,
+    "status": "PASS"
+  },
+  "frame_dispatcher": {
+    "exit": 0,
+    "status": "PASS"
+  },
+  "storage_fs": {
+    "exit": 0,
+    "status": "PASS"
+  },
+  "uvc_reader": {
+    "exit": 0,
+    "status": "PASS"
+  },
+  "camera_i2c_O0": {
+    "exit": 0,
+    "status": "PASS"
+  },
+  "camera_i2c_O2": {
+    "exit": 0,
+    "status": "PASS"
+  },
+  "oled": {
+    "exit": 0,
+    "status": "PASS"
+  },
+  "ipc_v2": {
+    "exit": 0,
+    "status": "PASS"
+  },
+  "ipc_status_legacy": {
+    "exit": 1,
+    "status": "FAIL"
+  }
+}

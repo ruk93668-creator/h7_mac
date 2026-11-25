@@ -167,6 +167,14 @@ EthResult_t eth_mac_init(const uint8_t mac[6])
 EthResult_t eth_mac_recover(const uint8_t mac[6])
 {
     EthResult_t result;
+    unsigned index;
+    uint8_t address_bits = 0U;
+    if (mac == NULL || (mac[0] & 1U) != 0U)
+        return ETH_ARGUMENT;
+    for (index = 0U; index < 6U; ++index)
+        address_bits |= mac[index];
+    if (address_bits == 0U)
+        return ETH_ARGUMENT;
     if (s_state != ETH_MAC_OFF)
     {
         result = eth_mac_stop();

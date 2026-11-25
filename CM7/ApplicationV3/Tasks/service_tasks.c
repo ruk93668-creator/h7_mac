@@ -1,3 +1,4 @@
+#include "../Services/Network/network_service.h"
 #include "../Core/app_services.h"
 #include "app_tasks.h"
 #include "app_events.h"
@@ -105,6 +106,13 @@ static SysResult_t AppV3_StartupReadable(AppV3Queue_t queue, void *context)
 
 
 //由原ControlTask串行调度实际Service；表只描述当前已接入的依赖。
+#ifndef APP_NETWORK_BOOT
+#define APP_NETWORK_BOOT 0
+#endif
+#if APP_NETWORK_BOOT != 0 && APP_NETWORK_BOOT != 1
+#error APP_NETWORK_BOOT_must_be_zero_or_one
+#endif
+
 #define SUPERVISOR_TIMEOUT_MS 10000U
 
 //监督器对单组件发出的生命周期动作
@@ -151,6 +159,12 @@ static const SupervisorService_t s_supervisor_services[] =
         APP_V3_PIPE_CAMERA,
         RUNTIME_TARGET_STORAGE,
         {STORAGE_SERVICE_RECORD_START, STORAGE_SERVICE_RECORD_STOP, STORAGE_SERVICE_RECOVER, STORAGE_SERVICE_RECORD_QUERY}
+    },
+    {
+        APP_V3_PIPE_NETWORK,
+        APP_V3_PIPE_CAMERA,
+        RUNTIME_TARGET_NETWORK,
+        {NETWORK_SERVICE_START, NETWORK_SERVICE_STOP, NETWORK_SERVICE_STOP, NETWORK_SERVICE_QUERY}
     }
 };
 
@@ -202,6 +216,9 @@ static void Supervisor_Store(const AppV3ServiceEvent_t *event)
 {
     switch (event->service)
     {
+        case RUNTIME_TARGET_NETWORK:
+            s_supervisor.status.network = *event;
+            break;
         case RUNTIME_TARGET_CAMERA:
             s_supervisor.status.camera = *event;
             break;
@@ -421,6 +438,9 @@ static SysResult_t Supervisor_Submit(void)
             return UsbService_Request(id, (UsbServiceOperation_t)operation, 0U);
         case RUNTIME_TARGET_STORAGE:
             return StorageService_Request(id, (StorageServiceOperation_t)operation, s_supervisor.file_number);
+        case RUNTIME_TARGET_NETWORK:
+            //该监督器组件提供 DHCP HTTP 视频，底层静态/TCP/UDP 可单独经 Service API 使用。
+            return NetworkService_Request(id, (NetworkServiceOperation_t)operation, 0x101U);
         default:
             return SYS_ERR_NOT_SUPPORTED;
     }
@@ -439,7 +459,8 @@ void AppV3Supervisor_Poll(void)
         return;
 
     //超时保留已到达Service队列的命令，停止后续调度并等待匹配的迟到结果。
-    if (xTaskGetTickCount() - s_supervisor.started >= pdMS_TO_TICKS(SUPERVISOR_TIMEOUT_MS))
+    if (xTaskGetTickCount() - s_supervisor.started >= pdMS_TO_TICKS(s_supervisor.pending->service == RUNTIME_TARGET_NETWORK ?
+        140000U : SUPERVISOR_TIMEOUT_MS))
     {
         s_supervisor.status.timed_out = true;
         Supervisor_Fail(SYS_ERR_TIMEOUT);
@@ -467,6 +488,9 @@ static void AppV3_ControlRun(void *argument)
     TickType_t started = xTaskGetTickCount();
     AppV3Queue_t startup_queue;
     AppV3EventLoop_t loop = {.initialized = false};
+#if APP_NETWORK_BOOT
+    bool network_requested = false;
+#endif
     SysResult_t result = AppV3EventLoop_Init(&loop, RUNTIME_TARGET_CONTROL);
     (void)argument;
 
@@ -490,6 +514,14 @@ static void AppV3_ControlRun(void *argument)
         if (AppV3_BusinessReady())
         {
             (void)AppV3Business_Drain(&business_consumed);
+#if APP_NETWORK_BOOT
+            if (!network_requested)
+            {
+                result = AppV3Supervisor_Set(APP_V3_PIPE_NETWORK, 0U);
+                if (result != SYS_ERR_BUSY)
+                    network_requested = true;
+            }
+#endif
             AppV3Supervisor_Poll();
         }
         if (business_consumed >= 4U)

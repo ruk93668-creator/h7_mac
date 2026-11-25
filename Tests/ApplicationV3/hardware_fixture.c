@@ -6,6 +6,11 @@
 #include "sd_block.h"
 #include "platform_time.h"
 #include <string.h>
+#include "app_messages.h"
+#include "camera_mjpeg_fifo.h"
+uint32_t g_network_frame_bytes = 20U;
+uint32_t g_network_frame_ready, g_network_frame_releases, g_network_release_fail;
+static CameraMjpegLease_t s_jpeg_network;
 
 //仅宿主夹具注入被测Service可观察的底层事实
 HardwareFixture_t g_hardware = {.card_present = true, .storage = {.state = 1U}};
@@ -476,6 +481,29 @@ SysResult_t MjpegAvi_Finish(MjpegAvi_t *avi)
 SysResult_t CameraCapture_StreamAcquireJpeg(CameraFrameConsumer_t consumer,
     CameraMjpegLease_t *lease, CameraFrame_t *frame)
 {
+    if (consumer == CAMERA_FRAME_CONSUMER_ETHERNET)
+    {
+        uint8_t *data = (uint8_t *)(CAMERA_MJPEG_FIFO_BASE + CAMERA_MJPEG_FIFO_BYTES - (g_network_frame_bytes - 4U));
+        uint8_t *tail = (uint8_t *)CAMERA_MJPEG_FIFO_BASE;
+        if (!App_MessagesIsOwner(RUNTIME_TARGET_CAMERA))
+            return SYS_ERR_INVALID_STATE;
+        if (!s_camera_running || !g_network_frame_ready || s_jpeg_network.id != 0U)
+            return SYS_ERR_BUSY;
+        memset(data, 0x55, g_network_frame_bytes - 4U);
+        memset(tail, 0x55, 4U);
+        data[0] = 0xffU;
+        data[1] = 0xd8U;
+        tail[2] = 0xffU;
+        tail[3] = 0xd9U;
+        g_network_frame_ready = 0U;
+        s_jpeg_network = (CameraMjpegLease_t){s_capture_generation,
+            ++g_hardware.frame_acquire_calls, consumer};
+        *lease = s_jpeg_network;
+        *frame = (CameraFrame_t){.width = s_camera_config.width, .height = s_camera_config.height,
+            .format = CAMERA_PIXEL_FORMAT_JPEG, .data = data, .data2 = tail,
+            .size_bytes = g_network_frame_bytes, .size_bytes2 = 4U};
+        return SYS_OK;
+    }
     if (consumer == CAMERA_FRAME_CONSUMER_STORAGE)
         return Test_AcquireJpegStorage(lease, frame);
     if (consumer != CAMERA_FRAME_CONSUMER_USB)
@@ -496,6 +524,20 @@ SysResult_t CameraCapture_StreamReleaseJpeg(const CameraMjpegLease_t *lease)
 {
     if (lease == NULL)
         return SYS_ERR_INVALID_ARG;
+    if (lease->consumer == CAMERA_FRAME_CONSUMER_ETHERNET)
+    {
+        if (!App_MessagesIsOwner(RUNTIME_TARGET_CAMERA) || lease->id == 0U ||
+            lease->id != s_jpeg_network.id || lease->session != s_jpeg_network.session)
+            return SYS_ERR_INVALID_STATE;
+        if (g_network_release_fail)
+        {
+            --g_network_release_fail;
+            return SYS_ERR_IO;
+        }
+        s_jpeg_network.id = 0U;
+        ++g_network_frame_releases;
+        return SYS_OK;
+    }
     if (lease->consumer == CAMERA_FRAME_CONSUMER_STORAGE)
         return Test_ReleaseJpegStorage(lease);
     if (lease->consumer != s_jpeg_usb.consumer || lease->session != s_jpeg_usb.session ||

@@ -127,6 +127,16 @@ int main(
 		}
 		assert(eth_mac_get_statistics(&s) == ETH_OK && s.state == ETH_MAC_FAULT &&
 			s.init_errors == 1U);
+		fail_reset = 0U;
+        phy_regs[2] = 7U;
+        phy_regs[3] = 0xC130U;
+        assert(eth_mac_recover(mac) == ETH_OK);
+        assert(eth_mac_get_statistics(&s) == ETH_OK && s.state == ETH_MAC_READY);
+        fail_reset = 1U;
+        assert(eth_mac_recover(mac) == ETH_TIMEOUT);
+        assert(eth_mac_get_statistics(&s) == ETH_OK && s.state == ETH_MAC_FAULT);
+        fail_reset = 0U;
+        assert(eth_mac_recover(mac) == ETH_OK);
 		puts("PASS: MAC initialization failure is reported and latched");
 		return 0;
 	}
@@ -149,6 +159,8 @@ int main(
 	assert(eth_mac_get_link(&link) == ETH_OK && link.up && link.speed_mbps == 100U &&
 		link.full_duplex);
 	assert(eth_mac_start() == ETH_OK && irq_enabled);
+    assert(eth_mac_recover(NULL) == ETH_ARGUMENT);
+    assert(eth_mac_get_statistics(&s) == ETH_OK && s.state == ETH_MAC_RUNNING);
 	assert(fake_eth.DMACCR == ETH_DMACCR_DSL_128BIT);
 	assert(fake_eth.DMACTDRLR == 3U && fake_eth.DMACRDRLR == 3U);
 	assert(eth_mac_tx_submit(frame, sizeof(frame), &ticket) == ETH_OK);

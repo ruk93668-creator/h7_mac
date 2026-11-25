@@ -102,6 +102,8 @@ static uint8_t s_next_consumer;
 //CameraTask将每路回复发往所属消费者，不共享下行队首。
 static SysResult_t CameraFrame_Send(CameraFrameConsumer_t consumer, const AppMessage_t *message)
 {
+    if (consumer == CAMERA_FRAME_CONSUMER_ETHERNET)
+        return App_MessagesSend(APP_CHANNEL_CAMERA_TO_NETWORK, message);
     if (consumer == CAMERA_FRAME_CONSUMER_STORAGE)
         return App_MessagesSend(APP_CHANNEL_CAMERA_TO_STORAGE, message);
     if (consumer != CAMERA_FRAME_CONSUMER_USB)
@@ -319,6 +321,9 @@ static SysResult_t CameraService_AdvanceFrames(bool admission)
         CameraFrame_Receive(CAMERA_FRAME_CONSUMER_USB, &message, admission);
     for (count = 0U; count < 4U && App_MessagesReceive(APP_CHANNEL_STORAGE_TO_CAMERA, &message); ++count)
         CameraFrame_Receive(CAMERA_FRAME_CONSUMER_STORAGE, &message, admission);
+
+    for (count = 0U; count < 4U && App_MessagesReceive(APP_CHANNEL_NETWORK_TO_CAMERA, &message); ++count)
+        CameraFrame_Receive(CAMERA_FRAME_CONSUMER_ETHERNET, &message, admission);
 
     return CameraFrame_Advance(admission, CameraFrame_Send);
 }

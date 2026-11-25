@@ -53,6 +53,11 @@ LR_IROM1 0x08000000 0x00100000
         udp.o (+RW +ZI)
     }
 
+    RW_NETWORK_JPEG 0xD07F0000 UNINIT 0x0000F000
+    {
+        *(.network_jpeg)
+    }
+
     RW_IRAM1 0x20000000 0x00020000
     {
         .ANY (+RW +ZI)
