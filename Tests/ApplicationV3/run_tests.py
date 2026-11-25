@@ -94,6 +94,7 @@ def main():
         V3 / "Services/Network/network_frames.c",
         *[ROOT / p for p in PORT + TRANSPORT + SERVICE + LWIP + LWIP_DHCP + LWIP_TCP],
         Path(__file__).with_name("network_fixture.c"),
+        ROOT / "Tests/Ethernet/network_board_acceptance.c",
         V3 / "Tasks/service_tasks.c",
         *sorted((V3 / "Runtime").glob("*.c")),
         kernel / "queue.c",
@@ -123,7 +124,7 @@ def main():
             scenarios = range(98, 104)
         if args.production and not args.raw_uvc:
             scenarios = [*range(24), 28, 29, *range(38, 53), *range(63, 75),
-                         *range(88, 96), 104, *range(105, 121)]
+                         *range(88, 96), 104, *range(105, 124)]
         for scenario in scenarios:
             row = harness.execute(name, "AppV3_TestRun", scenario)
             if scenario < 49:

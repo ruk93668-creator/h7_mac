@@ -19,6 +19,7 @@ def sha(path):
 def main():
     parser = argparse.ArgumentParser()
     parser.add_argument("--prepare-only", action="store_true")
+    parser.add_argument("--acceptance", action="store_true", help="Control command producer; no mock or test main")
     parser.add_argument("--output", type=Path, default=ROOT / "output/Ethernet/production")
     args = parser.parse_args()
     out = args.output.resolve()
@@ -33,17 +34,45 @@ def main():
     controls = target.find("./TargetOption/TargetArmAds/Cads/VariousControls")
     defines = [v for v in controls.findtext("Define", "").split(",")
                if not v.startswith(("APP_NETWORK_BOOT=", "APP_VIDEO_MJPEG_MODE="))]
-    defines += ["APP_NETWORK_BOOT=1", "APP_VIDEO_MJPEG_MODE=1"]
+    defines += ["APP_NETWORK_BOOT=" + str(int(not args.acceptance)), "APP_VIDEO_MJPEG_MODE=1"]
     controls.find("Define").text = ",".join(defines)
+    # The acceptance profile changes only the command producer, not production Service logic.
+    if args.acceptance:
+        source = ROOT / "CM7/ApplicationV3/Tasks/service_tasks.c"
+        generated = out / "service_tasks_acceptance.c"
+        text = source.read_text(encoding="utf-8")
+        def include(match):
+            path = (source.parent / match[1]).resolve()
+            return '#include "' + path.as_posix() + '"' if path.is_file() else match[0]
+        text = re.sub(r'^#include "([^"]+)"', include, text, flags=re.M)
+        needle = "            AppV3Supervisor_Poll();"
+        if text.count(needle) != 1:
+            raise SystemExit("Unexpected production Control loop")
+        text = '#include "' + (ROOT / "Tests/Ethernet/network_board_acceptance.h").as_posix() + '"\n' + text
+        text = text.replace(needle, "            NetworkBoardAcceptance_Poll();\n" + needle)
+        generated.write_text(text, encoding="utf-8")
+        files = [f for f in target.findall(".//File") if f.findtext("FileName") == "service_tasks.c"]
+        if len(files) != 1:
+            raise SystemExit("Unexpected production Control source")
+        files[0].find("FilePath").text = generated.as_posix()
+        group = ET.SubElement(target.find("Groups"), "Group")
+        ET.SubElement(group, "GroupName").text = "Hardware acceptance command producer"
+        entry = ET.SubElement(ET.SubElement(group, "Files"), "File")
+        ET.SubElement(entry, "FileName").text = "network_board_acceptance.c"
+        ET.SubElement(entry, "FileType").text = "1"
+        ET.SubElement(entry, "FilePath").text = (ROOT / "Tests/Ethernet/network_board_acceptance.c").as_posix()
+    name = "h7_network_acceptance" if args.acceptance else "h7_network"
     common = target.find("./TargetOption/TargetCommonOption")
     for field in ("OutputDirectory", "ListingPath"):
         common.find(field).text = str(out) + "\\"
-    common.find("OutputName").text = "h7_network"
+    common.find("OutputName").text = name
     common.find("CreateHexFile").text = "1"
     paths = [f.findtext("FilePath", "").replace("\\", "/") for f in target.findall(".//File")]
-    if any("/Tests/" in path or "fixture" in path.lower() for path in paths):
+    if any(("/Tests/" in path and not (args.acceptance and path.endswith("/network_board_acceptance.c"))) or
+           "fixture" in path.lower() for path in paths):
         raise SystemExit("Production profile contains a test source")
-    project = ROOT / "MDK-ARM/h7_mac_ethernet_production.uvprojx"
+    project = ROOT / ("MDK-ARM/h7_mac_ethernet_acceptance.uvprojx" if args.acceptance else
+                      "MDK-ARM/h7_mac_ethernet_production.uvprojx")
     ET.ElementTree(tree).write(project, encoding="utf-8", xml_declaration=True)
     if args.prepare_only:
         print(project)
@@ -57,6 +86,9 @@ def main():
         input_files.extend(p for p in (ROOT / directory).rglob("*")
                            if p.suffix in (".c", ".h", ".s", ".sct"))
     input_files += [original, ROOT / "MDK-ARM/h7_mac_CM7_custom.sct", Path(__file__)]
+    if args.acceptance:
+        input_files += [ROOT / "Tests/Ethernet/network_board_acceptance.c",
+                        ROOT / "Tests/Ethernet/network_board_acceptance.h"]
     before = {p.relative_to(ROOT).as_posix(): sha(p) for p in input_files}
     git = ["git", "-c", "safe.directory=" + ROOT.as_posix()]
     commit = subprocess.check_output(git + ["rev-parse", "HEAD"], cwd=ROOT, text=True).strip()
@@ -74,7 +106,7 @@ def main():
             rte.write_bytes(rte_before)
     text = log.read_text(errors="replace") if log.exists() else ""
     match = re.search(r"(\d+) Error\(s\), (\d+) Warning\(s\)", text)
-    files = {kind: out / ("h7_network." + kind) for kind in ("axf", "hex", "map")}
+    files = {kind: out / (name + "." + kind) for kind in ("axf", "hex", "map")}
     fresh = all(p.is_file() and p.stat().st_mtime >= started - 1 for p in files.values())
     mapping = files["map"].read_text(errors="replace") if fresh else ""
     regions = {}
@@ -98,6 +130,9 @@ def main():
         "warnings": int(match[2]) if match else None, "fresh_layout": fresh,
         "regions": regions, "artifacts": {k: {"path": str(p), "sha256": sha(p)}
                                         for k, p in files.items() if p.is_file()},
+        "control_source_sha256": sha(generated) if args.acceptance else
+            sha(ROOT / "CM7/ApplicationV3/Tasks/service_tasks.c"),
+        "profile": "HARDWARE_ACCEPTANCE" if args.acceptance else "PRODUCTION",
         "hardware": "NOT_RUN"
     }
     (out / "manifest.json").write_text(json.dumps(report, indent=2), encoding="utf-8")

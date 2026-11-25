@@ -20,6 +20,7 @@
 #include <setjmp.h>
 #include "../../CM7/ApplicationV3/Services/Network/network_service.h"
 #include "eth_execution.h"
+#include "../Ethernet/network_board_acceptance.h"
 #include "../../CM7/ApplicationV3/Services/Network/network_frames.h"
 extern uint32_t g_network_frame_ready, g_network_frame_releases, g_network_release_fail;
 #include "eth_http.h"
@@ -2793,6 +2794,57 @@ static uint32_t Test_ProductRejectsArchivedOperations(const AppV3Context_t *cont
 #endif
 
 extern uint32_t g_network_dhcp_server;
+static uint32_t Test_NetworkAcceptanceProducer(const AppV3Context_t *context, uint32_t scenario)
+{
+    uint32_t i;
+    fixture_video.camera.format = CAMERA_PIXEL_FORMAT_JPEG;
+    fixture_storage.segment_bytes = 1024U;
+    CHECK(Test_HardwareBoot(context) == 0U);
+    g_hardware.usb_configured = g_hardware.uvc_present = true;
+    g_n5_cycles = 3U;
+    g_n5_dwell_ms = 100U;
+    if (scenario == 122U)
+        g_n5_command = 2U;
+    else if (scenario == 123U)
+    {
+        g_n5_command = 2U;
+        g_n5_file_number = 7U;
+        g_n5_joint_ms = 500U;
+    }
+    else
+        g_n5_command = 1U;
+    for (i = 0U; i < 100U; ++i)
+    {
+        owner = RUNTIME_TARGET_CONTROL;
+        NetworkBoardAcceptance_Poll();
+        AppV3Supervisor_Poll();
+        g_hardware.frame_ready = true;
+        Test_SupervisorStep(RUNTIME_TARGET_CAMERA);
+        Test_SupervisorStep(RUNTIME_TARGET_USB);
+        Test_SupervisorStep(RUNTIME_TARGET_STORAGE);
+        Test_SupervisorStep(RUNTIME_TARGET_NETWORK);
+        g_hardware.now_ms += 100U;
+        if (g_n5_acceptance.phase == NETWORK_ACCEPTANCE_DONE ||
+            g_n5_acceptance.phase == NETWORK_ACCEPTANCE_FAULT)
+            break;
+    }
+    if (scenario == 122U)
+    {
+        CHECK(g_n5_acceptance.phase == NETWORK_ACCEPTANCE_FAULT &&
+            g_n5_acceptance.first_fault == SYS_ERR_INVALID_ARG);
+        CHECK(g_hardware.mount_calls == 0U && g_hardware.capture_start_calls == 0U);
+    }
+    else
+    {
+        CHECK(g_n5_acceptance.phase == NETWORK_ACCEPTANCE_DONE &&
+            g_n5_acceptance.first_fault == SYS_OK && g_n5_acceptance.active == 0U &&
+            g_n5_acceptance.uncertain == 0U);
+        CHECK(g_n5_acceptance.completed == (scenario == 121U ? 3U : 1U));
+        CHECK(g_network_status.pbuf.used == 0U && g_network_status.tcp_pcb.used == 0U);
+    }
+    return 0U;
+}
+
 extern uint32_t g_network_browser_bytes, g_network_frame_bytes;
 void Test_NetworkBrowserOpen(void);
 void Test_NetworkBrowserReset(void);
@@ -3245,6 +3297,8 @@ uint32_t AppV3_TestRun(uint32_t scenario)
     if (scenario >= 96U && scenario <= 97U)
         return Test_RecordBoard(context, scenario);
 #endif
+    if (scenario >= 121U && scenario <= 123U)
+        return Test_NetworkAcceptanceProducer(context, scenario);
     if (scenario == 119U)
         return Test_NetworkBrowser(context);
     if (scenario == 118U)
