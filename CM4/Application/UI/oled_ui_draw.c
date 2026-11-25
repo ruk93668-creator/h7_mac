@@ -141,8 +141,14 @@ static SysResult_t OledUi_DrawArea(OledDevice_t *oled,
             }
             else if (mode == OLED_UI_INVERT)
             {
+                uint32_t offset;
+
+                //仅在圆角两侧判断覆盖，主体区域直接反色
+                if ((sx < radius || sx >= (int32_t)width - radius) &&
+                    !OledUi_InsideRoundRect(sx, sy, width, height, radius))
+                    continue;
                 //仅反色需要读取SSD1306页布局，写入仍使用Device Ops。
-                uint32_t offset = (uint32_t)py / 8U * OLED_WIDTH + (uint32_t)px;
+                offset = (uint32_t)py / 8U * OLED_WIDTH + (uint32_t)px;
                 on = (oled->framebuffer[offset] & (1U << ((uint32_t)py % 8U))) == 0U;
             }
             else if (mode == OLED_UI_BITMAP)
@@ -183,6 +189,13 @@ SysResult_t OledUi_InvertArea(OledDevice_t *oled,
     int16_t x, int16_t y, uint16_t width, uint16_t height)
 {
     return OledUi_DrawArea(oled, x, y, width, height, 0U, OLED_UI_INVERT, false, NULL, 0U);
+}
+
+//沿用圆角裁剪和设备写入权限，反色以保留选中文字
+SysResult_t OledUi_InvertRoundRect(OledDevice_t *oled,
+    int16_t x, int16_t y, uint16_t width, uint16_t height, uint16_t radius)
+{
+    return OledUi_DrawArea(oled, x, y, width, height, radius, OLED_UI_INVERT, false, NULL, 0U);
 }
 
 SysResult_t OledUi_DrawBitmap(OledDevice_t *oled,

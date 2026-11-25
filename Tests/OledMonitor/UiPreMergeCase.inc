@@ -35,3 +35,81 @@ static uint32_t UiPreMergeCase(void)
     CHECK(g_oled_ui_dropped_inputs == 4U && s_page_state.current == OLED_UI_PAGE_TOOLS);
     return 0U;
 }
+
+//通过实际编辑事件提交设置，再经应用刷新验证主页和两级菜单。
+static uint32_t UiGlobalStyleCase(void)
+{
+    OledUiMenuStyle_t style;
+    OledUiAnim_t anim = {0};
+    OledUiVisual_t visual;
+    uint8_t baseline[OLED_BUFFER_SIZE];
+    uint32_t i;
+
+    DefaultView();
+    CHECK(Init() == 0U);
+    CHECK(OledUi_PageOpen(&s_page_state, OLED_UI_PAGE_SYSTEM) == SYS_OK);
+    CHECK(OledUi_PageOpen(&s_page_state, OLED_UI_PAGE_TOOLS) == SYS_OK);
+    Ui2Post(OLED_UI_EVENT_SELECT);
+    Ui2Post(OLED_UI_EVENT_NEXT);
+    OledUi_ToolsReadStyle(&s_oled_tools, &style);
+    CHECK(!style.tiles);
+    Ui2Post(OLED_UI_EVENT_SELECT);
+    Ui2Post(OLED_UI_EVENT_NEXT);
+    Ui2Post(OLED_UI_EVENT_SELECT);
+    Ui2Post(OLED_UI_EVENT_NEXT);
+    Ui2Post(OLED_UI_EVENT_SELECT);
+    Ui2Post(OLED_UI_EVENT_NEXT);
+    Ui2Post(OLED_UI_EVENT_SELECT);
+    Ui2Post(OLED_UI_EVENT_NEXT);
+    Ui2Post(OLED_UI_EVENT_SELECT);
+    Ui2Post(OLED_UI_EVENT_NEXT);
+    Ui2Post(OLED_UI_EVENT_SELECT);
+    Ui2Post(OLED_UI_EVENT_NEXT);
+    Ui2Post(OLED_UI_EVENT_SELECT);
+    OledUi_ToolsReadStyle(&s_oled_tools, &style);
+    CHECK(style.tiles && style.cursor_style == 2U && style.curve == 1U && style.font_height == 12U);
+
+    Ui2Post(OLED_UI_EVENT_BACK);
+    CHECK(s_page_state.current == OLED_UI_PAGE_SYSTEM);
+    Step(50U);
+    CHECK(s_tx_count == 1U && Ui1_Pixel(&s_oled, 2U, 8U) && Ui1_Pixel(&s_oled, 2U, 31U));
+    for (i = 0U; i < 8U; i++)
+        Complete(SYS_OK);
+
+    Ui2Post(OLED_UI_EVENT_SELECT);
+    CHECK(s_page_state.current == OLED_UI_PAGE_CAMERA);
+    Step(100U);
+    CHECK(s_tx_count == 9U && Ui1_Pixel(&s_oled, 2U, 8U) && Ui1_Pixel(&s_oled, 2U, 31U));
+    OledUi_AnimSample(&anim, &s_page_state, 100U, &style, &visual);
+    CHECK(OledUi_PageMoveNext(&s_page_state) == SYS_OK);
+    OledUi_AnimSample(&anim, &s_page_state, 110U, &style, &visual);
+    OledUi_AnimSample(&anim, &s_page_state, 110U + style.duration_ms / 2U, &style, &visual);
+    CHECK(visual.highlight_pos == 33U);
+    for (i = 0U; i < 8U; i++)
+        Complete(SYS_OK);
+
+    CHECK(OledUi_PageBack(&s_page_state) == SYS_OK);
+    CHECK(OledUi_PageOpen(&s_page_state, OLED_UI_PAGE_TOOLS) == SYS_OK);
+    for (i = 0U; i < 4U; i++)
+        Ui2Post(OLED_UI_EVENT_NEXT);
+    Ui2Post(OLED_UI_EVENT_SELECT);
+    Ui2Post(OLED_UI_EVENT_NEXT);
+    Ui2Post(OLED_UI_EVENT_SELECT);
+    Ui2Post(OLED_UI_EVENT_BACK);
+    Ui2Post(OLED_UI_EVENT_BACK);
+    CHECK(s_page_state.current == OLED_UI_PAGE_MONITOR);
+    s_view.application.dropped_frames = UINT32_MAX;
+    CHECK(OledUi_Render(&s_oled, &s_view) == SYS_OK);
+    memcpy(baseline, s_oled.framebuffer, sizeof(baseline));
+    Step(200U);
+    CHECK(s_tx_count == 17U);
+    //叠加区以外的首页像素只有明暗变化，字号及内容相同。
+    for (i = 0U; i < OLED_BUFFER_SIZE; i++)
+        if (i < 2U * OLED_WIDTH + 96U || i >= 3U * OLED_WIDTH)
+            CHECK((uint8_t)(baseline[i] ^ s_oled.framebuffer[i]) == 0xffU);
+    for (i = 2U * OLED_WIDTH + 96U; i < 3U * OLED_WIDTH; i++)
+        if ((uint8_t)(baseline[i] ^ s_oled.framebuffer[i]) != 0xffU)
+            break;
+    CHECK(i < 3U * OLED_WIDTH);
+    return 0U;
+}

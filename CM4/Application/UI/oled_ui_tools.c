@@ -40,37 +40,6 @@ static const OledUiToolsItem_t s_tools[] =
 //遇到绘制错误时保留错误码并停止绘制本帧
 #define TOOL_TRY(expr) do { SysResult_t r_ = (expr); if (r_ != SYS_OK) return r_; } while (0)
 
-//计算线性、缓动或弹簧运动的千分比进度
-uint16_t OledUi_ToolsProgress(uint8_t curve, uint32_t elapsed, uint32_t duration)
-{
-    uint32_t t, u, i, segment;
-    //PID风格用有界阻尼响应表，避免采样速度改变手感或状态发散。
-    static const uint16_t spring[] = {0,490,900,1080,1090,1030,997,1000};
-    if (duration == 0U || elapsed >= duration)
-        return 1000U;
-    //把非常大的时长与时间差同比缩放，避免乘法溢出和64位除法。
-    while (duration > UINT32_MAX / 1000U)
-    {
-        elapsed >>= 1;
-        duration >>= 1;
-    }
-    t = elapsed * 1000U / duration;
-    if (t > 999U) t = 999U;
-    if (curve == 1U)
-    {
-        u = 1000U - t;
-        return (uint16_t)(1000U - u * u / 1000U);
-    }
-    if (curve == 2U)
-    {
-        segment = t * (TOOL_COUNT_OF(spring) - 1U);
-        i = segment / 1000U;
-        return (uint16_t)((int32_t)spring[i] + ((int32_t)spring[i + 1U] - spring[i]) *
-            (int32_t)(segment % 1000U) / 1000);
-    }
-    return (uint16_t)t;
-}
-
 //读取工具页运动时长，单位ms
 static uint32_t OledUi_ToolsDuration(const OledUiTools_t *ui)
 {
@@ -81,7 +50,7 @@ static uint32_t OledUi_ToolsDuration(const OledUiTools_t *ui)
 static int16_t OledUi_ToolsPosition(const OledUiTools_t *ui, uint32_t now)
 {
     int32_t target = ui->selected * 16;
-    uint16_t progress = OledUi_ToolsProgress((uint8_t)ui->values[TOOL_MOTION],
+    uint16_t progress = OledUi_AnimProgress((uint8_t)ui->values[TOOL_MOTION],
         now - ui->moved, OledUi_ToolsDuration(ui));
     return (int16_t)(ui->from + (target - ui->from) * progress / 1000);
 }
@@ -192,29 +161,57 @@ OledUiToolsResult_t OledUi_ToolsEvent(OledUiTools_t *ui, uint32_t event, uint32_
 }
 
 //按所选样式绘制高亮或指针
-static SysResult_t OledUi_ToolsCursor(OledDevice_t *oled, int16_t x, int16_t y,
+SysResult_t OledUi_DrawCursor(OledDevice_t *oled, int16_t x, int16_t y,
     uint16_t w, uint16_t h, uint8_t style)
 {
-    int16_t row;
-    uint16_t inset;
-
     switch (style)
     {
         case 0U: return OledUi_InvertArea(oled, x, y, w, h);
-        case 1U:
-            //圆角反色用对称短行，中心区域只调用一次反色。
-            for (row = 0; row < 3; row++)
-            {
-                inset = row == 0 ? 3U : (row == 1 ? 1U : 0U);
-                TOOL_TRY(OledUi_InvertArea(oled, x + inset, y + row, w - 2U * inset, 1));
-                TOOL_TRY(OledUi_InvertArea(oled, x + inset, y + h - row - 1U, w - 2U * inset, 1));
-            }
-            return OledUi_InvertArea(oled, x, y + 3, w, h - 6U);
+        case 1U: return OledUi_InvertRoundRect(oled, x, y, w, h, 3U);
         case 2U: return OledUi_DrawRect(oled, x, y, w, h, true);
         case 3U: return OledUi_DrawRoundRect(oled, x, y, w, h, 4U, true);
         case 4U: return OledUi_InvertArea(oled, x, y + h - 2U, w, 2U);
         default: return SYS_OK;
     }
+}
+
+//从现有16像素位图等间隔取样，为大字体标签让出高度
+SysResult_t OledUi_DrawMenuIcon(OledDevice_t *oled, int16_t x, int16_t y,
+    uint8_t size, uint8_t icon)
+{
+    uint32_t row, col, sx, sy;
+    const uint8_t *bits;
+
+    if (size == 0U || size > 16U || icon >= TOOL_COUNT_OF(s_icons) ||
+        x < 0 || y < 0 || x + size > OLED_WIDTH || y + size > OLED_HEIGHT)
+        return SYS_ERR_INVALID_ARG;
+    bits = s_icons[icon];
+    if (size == 16U)
+        return OledUi_DrawBitmap(oled, x, y, 16U, 16U, bits, 32U);
+    TOOL_TRY(OledUi_CheckWritable(oled));
+    for (row = 0U; row < size; row++)
+        for (col = 0U; col < size; col++)
+        {
+            sx = col * 16U / size;
+            sy = row * 16U / size;
+            if ((bits[sy * 2U + sx / 8U] & (0x80U >> (sx % 8U))) != 0U)
+                TOOL_TRY(oled->ops->draw_pixel(oled, (uint16_t)(x + col), (uint16_t)(y + row), true));
+        }
+    return SYS_OK;
+}
+
+//按同一规则读取工具页和普通菜单的配置
+void OledUi_ToolsReadStyle(const OledUiTools_t *ui, OledUiMenuStyle_t *style)
+{
+    static const uint8_t heights[] = {8U, 12U, 16U, 20U};
+
+    style->font_height = heights[ui->values[TOOL_FONT]];
+    style->duration_ms = (uint16_t)OledUi_ToolsDuration(ui);
+    style->scroll_ms = (uint16_t)(32000U / (100U + (uint32_t)ui->values[TOOL_SPEED]));
+    style->cursor_style = (uint8_t)ui->values[TOOL_CURSOR];
+    style->curve = (uint8_t)ui->values[TOOL_MOTION];
+    style->tiles = ui->values[TOOL_LAYOUT] != 0;
+    style->round_window = ui->values[TOOL_WINDOW] != 0;
 }
 
 //格式化非负整数或定点小数
@@ -260,20 +257,20 @@ static SysResult_t OledUi_ToolsModal(OledDevice_t *oled, const OledUiTools_t *ui
 {
     char number[12];
     uint32_t age = now - ui->opened;
-    uint16_t height = (uint16_t)(8U + 22U * OledUi_ToolsProgress(
-        (uint8_t)ui->values[TOOL_MOTION], age, 180U) / 1090U);
+    uint32_t duration = 3U * OledUi_ToolsDuration(ui) / 5U;
+    uint16_t progress = OledUi_AnimProgress((uint8_t)ui->values[TOOL_MOTION], age, duration);
+    uint16_t height = (uint16_t)(8U + 22U * (progress < 1000U ? progress : 1000U) / 1000U);
     int16_t top;
 
     if (ui->modal == TOOL_MODAL_NONE || (ui->modal >= TOOL_MODAL_TEXT && age >= 3500U))
         return SYS_OK;
-    if (age >= 180U) height = 30U;
     top = (int16_t)(32U - height) / 2;
     TOOL_TRY(OledUi_FillRect(oled, 5, top, 118, height, false));
     if (ui->values[TOOL_WINDOW])
         TOOL_TRY(OledUi_DrawRoundRect(oled, 5, top, 118, height, 4, true));
     else
         TOOL_TRY(OledUi_DrawRect(oled, 5, top, 118, height, true));
-    if (age < 180U || ui->modal == TOOL_MODAL_EMPTY) return SYS_OK;
+    if (age < duration || ui->modal == TOOL_MODAL_EMPTY) return SYS_OK;
     TOOL_TRY(OledUi_FontText(oled, 10, 3, 9, 120, s_tools[ui->selected].title, 32, 8));
     if (ui->modal == TOOL_MODAL_TEXT)
         TOOL_TRY(OledUi_FontText(oled, 10, 11, 9, 120, "Read only preview", 17, 8));
@@ -297,9 +294,11 @@ static SysResult_t OledUi_ToolsList(OledDevice_t *oled, const OledUiTools_t *ui,
     uint8_t first = ui->selected < rows ? 0U : (uint8_t)(ui->selected + 1U - rows);
     uint8_t i, n;
     int16_t y, cursor = 8 + (OledUi_ToolsPosition(ui, now) - first * 16) * height / 16;
-    uint32_t offset, step = 45U - (uint32_t)ui->values[TOOL_SPEED] / 8U;
+    uint32_t offset;
+    OledUiMenuStyle_t style;
     const char *label;
 
+    OledUi_ToolsReadStyle(ui, &style);
     if (cursor < 8) cursor = 8;
     if (cursor > 32 - height) cursor = 32 - height;
     TOOL_TRY(OledUi_FontText(oled, 2, 0, 0, 126, "UI TOOLS", 8, 8));
@@ -315,7 +314,7 @@ static SysResult_t OledUi_ToolsList(OledDevice_t *oled, const OledUiTools_t *ui,
         {
             uint32_t excess = offset - 110U;
             uint32_t age = now - ui->entered;
-            offset = age > 500U ? ((age - 500U) / step) % (excess + 20U) : 0U;
+            offset = age > 500U ? ((age - 500U) / style.scroll_ms) % (excess + 20U) : 0U;
             if (offset > excess) offset = excess;
         }
         else
@@ -327,19 +326,25 @@ static SysResult_t OledUi_ToolsList(OledDevice_t *oled, const OledUiTools_t *ui,
             if (ui->values[n])
                 TOOL_TRY(OledUi_FillRect(oled, 3, y + 3, 4, 3, true));
         }
-        else if (n == ui->selected)
+        else if (n == ui->selected && style.cursor_style != 5U)
             TOOL_TRY(OledUi_FontText(oled, 1, y, 0, 8, ">", 1, 8));
     }
     TOOL_TRY(OledUi_DrawLine(oled, 126, 8, 126, 31, true));
     TOOL_TRY(OledUi_FillRect(oled, 125, (int16_t)(8U + ui->selected * 20U / (TOOL_COUNT - 1U)), 3, 4, true));
-    return OledUi_ToolsCursor(oled, 0, cursor, 124, height, (uint8_t)ui->values[TOOL_CURSOR]);
+    return OledUi_DrawCursor(oled, 0, cursor, 124, height, (uint8_t)ui->values[TOOL_CURSOR]);
 }
 
 //绘制当前三项图标及选中状态
 static SysResult_t OledUi_ToolsTiles(OledDevice_t *oled, const OledUiTools_t *ui, uint32_t now)
 {
     uint8_t i, first = (uint8_t)(ui->selected / 3U * 3U);
+    OledUiMenuStyle_t style;
+    uint8_t size, columns;
+    const char *label;
     int16_t x, cursor = 2 + (OledUi_ToolsPosition(ui, now) - first * 16) * 42 / 16;
+    OledUi_ToolsReadStyle(ui, &style);
+    size = 24U - style.font_height;
+    columns = 36U / OledUi_FontWidth(style.font_height);
     if (cursor < 2) cursor = 2;
     if (cursor > 86) cursor = 86;
     TOOL_TRY(OledUi_FontText(oled, 3, 0, 0, 126, s_tools[ui->selected].title, 32, 8));
@@ -347,10 +352,14 @@ static SysResult_t OledUi_ToolsTiles(OledDevice_t *oled, const OledUiTools_t *ui
     {
         const OledUiToolsItem_t *item = &s_tools[first + i];
         x = (int16_t)(2U + i * 42U);
-        TOOL_TRY(OledUi_DrawBitmap(oled, x + 13, 8, 16, 16, s_icons[item->icon], 32U));
-        TOOL_TRY(OledUi_FontText(oled, x + 2, 24, x, x + 40, item->brief, 7, 8));
+        TOOL_TRY(OledUi_DrawMenuIcon(oled, (int16_t)(x + (40U - size) / 2U), 8, size, item->icon));
+        label = item->brief;
+        if (i + first == ui->selected)
+            label = OledUi_AnimText(label, columns, now - ui->entered, style.scroll_ms);
+        TOOL_TRY(OledUi_FontText(oled, x + 2, (int16_t)(8U + size), x + 2, x + 38,
+            label, columns, style.font_height));
     }
-    return OledUi_ToolsCursor(oled, cursor, 8, 40, 24, (uint8_t)ui->values[TOOL_CURSOR]);
+    return OledUi_DrawCursor(oled, cursor, 8, 40, 24, (uint8_t)ui->values[TOOL_CURSOR]);
 }
 
 //绘制受局部裁剪框限制的列表
@@ -416,16 +425,17 @@ static SysResult_t OledUi_ToolsDissolve(OledDevice_t *oled, uint32_t level)
 SysResult_t OledUi_ToolsRender(OledDevice_t *oled, const OledUiTools_t *ui,
     uint32_t now, uint32_t fps_tenths)
 {
-    char number[12];
-    uint32_t age;
+    OledUiMenuStyle_t style;
+    uint32_t age, transition_ms;
     if (ui == NULL || ui->selected >= TOOL_COUNT)
         return SYS_ERR_INVALID_ARG;
     TOOL_TRY(OledUi_CheckWritable(oled));
     if (oled->ops->clear == NULL)
         return SYS_ERR_NOT_SUPPORTED;
     TOOL_TRY(oled->ops->clear(oled));
+    OledUi_ToolsReadStyle(ui, &style);
     if (ui->view == TOOL_VIEW_EMPTY)
-        return SYS_OK;
+        return OledUi_ToolsApplyDisplay(oled, ui, fps_tenths, 0);
     if (ui->view == TOOL_VIEW_GALLERY)
     {
         age = now - ui->opened;
@@ -449,21 +459,31 @@ SysResult_t OledUi_ToolsRender(OledDevice_t *oled, const OledUiTools_t *ui,
     else
         TOOL_TRY(OledUi_ToolsList(oled, ui, now));
 
+    TOOL_TRY(OledUi_ToolsModal(oled, ui, now));
+    age = now - ui->page_at;
+    transition_ms = style.duration_ms * 2U / 3U;
+    if (age < transition_ms)
+        TOOL_TRY(OledUi_ToolsDissolve(oled, OledUi_AnimProgress(style.curve, age, transition_ms) / 250U));
+    return OledUi_ToolsApplyDisplay(oled, ui, fps_tenths, 0);
+}
+
+//最后叠加完成帧率和明暗样式，由App统一处理提交和回滚
+SysResult_t OledUi_ToolsApplyDisplay(OledDevice_t *oled, const OledUiTools_t *ui,
+    uint32_t fps_tenths, int16_t fps_y)
+{
+    char number[12];
+
     if (ui->values[TOOL_FPS])
     {
-        TOOL_TRY(OledUi_FillRect(oled, 96, 0, 32, 8, false));
+        TOOL_TRY(OledUi_FillRect(oled, 96, fps_y, 32, 8, false));
         if (fps_tenths == 0U)
-            TOOL_TRY(OledUi_FontText(oled, 98, 0, 96, 128, "N/A", 3, 8));
+            TOOL_TRY(OledUi_FontText(oled, 98, fps_y, 96, 128, "N/A", 3, 8));
         else
         {
             OledUi_ToolsNumber(number, fps_tenths * 10U, true);
-            TOOL_TRY(OledUi_FontText(oled, 98, 0, 96, 128, number, 5, 8));
+            TOOL_TRY(OledUi_FontText(oled, 98, fps_y, 96, 128, number, 5, 8));
         }
     }
-    TOOL_TRY(OledUi_ToolsModal(oled, ui, now));
-    age = now - ui->page_at;
-    if (age < 160U)
-        TOOL_TRY(OledUi_ToolsDissolve(oled, age / 40U));
     if (ui->values[TOOL_LIGHT])
         TOOL_TRY(OledUi_InvertArea(oled, 0, 0, OLED_WIDTH, OLED_HEIGHT));
     return SYS_OK;

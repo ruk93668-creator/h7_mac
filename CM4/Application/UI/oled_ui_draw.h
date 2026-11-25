@@ -23,6 +23,10 @@ SysResult_t OledUi_DrawRoundRect(OledDevice_t *oled,
 //按原像素值翻转裁剪区域
 SysResult_t OledUi_InvertArea(OledDevice_t *oled,
     int16_t x, int16_t y, uint16_t width, uint16_t height);
+//反色填满圆角矩形，圆弧外像素保持原值
+SysResult_t OledUi_InvertRoundRect(OledDevice_t *oled,
+    int16_t x, int16_t y, uint16_t width, uint16_t height, uint16_t radius);
+
 //每行独立按字节对齐、MSB在左。0清除、1点亮。length为可读字节数。
 SysResult_t OledUi_DrawBitmap(OledDevice_t *oled,
     int16_t x, int16_t y, uint16_t width, uint16_t height,

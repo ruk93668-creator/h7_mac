@@ -26,10 +26,10 @@ static uint32_t UiCompatCase(uint32_t id)
     oled->ops = &s_test_ops;
     if (id == 86U)
     {
-        CHECK(OledUi_ToolsProgress(0, 50, 100) == 500);
-        CHECK(OledUi_ToolsProgress(1, 50, 100) == 750);
-        CHECK(OledUi_ToolsProgress(2, 50, 100) > 1000);
-        CHECK(OledUi_ToolsProgress(2, 100, 100) == 1000);
+        CHECK(OledUi_AnimProgress(0, 50, 100) == 500);
+        CHECK(OledUi_AnimProgress(1, 50, 100) == 750);
+        CHECK(OledUi_AnimProgress(2, 50, 100) > 1000);
+        CHECK(OledUi_AnimProgress(2, 100, 100) == 1000);
         for (i = 0U; i < 4U; i++)
         {
             uint32_t before = s_pixels;

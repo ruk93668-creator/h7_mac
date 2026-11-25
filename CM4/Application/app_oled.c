@@ -26,7 +26,7 @@ static OledUiAnim_t s_oled_anim;
 //保存活动弹窗及到期时间
 static OledUiPopup_t s_oled_popup;
 //保存工具页本地选项、编辑草稿和动画状态
-static OledUiTools_t s_oled_tools;
+static OledUiTools_t s_oled_tools = { .values = {0, 1, 0, 0, 0, 120} };
 //累计队列溢出和切页丢弃的输入事件
 volatile uint32_t g_oled_ui_dropped_inputs;
 
@@ -72,7 +72,7 @@ static SysResult_t App_OledConsumeInput(void)
         result = OledUi_PageDispatch(&s_page_state, event);
         if (s_page_state.current != previous)
         {
-            s_oled_anim.target_y = 0U;
+            s_oled_anim.target_pos = 0U;
             if (s_page_state.current == OLED_UI_PAGE_TOOLS)
                 s_oled_tools.page_at = now;
             OledUi_InputDiscard(&s_oled_input_queue);
@@ -345,16 +345,18 @@ static void App_OledRefresh(void *context)
     else if (s_page_state.current != OLED_UI_PAGE_MONITOR)
     {
         const OledUiPage_t *page;
+        OledUiMenuStyle_t style;
         OledUiVisual_t visual;
         OledUiStatus_t status;
         OledUiStatusCounters_t counters;
         IpcRuntimeStatus_t runtime;
         uint32_t now = Platform_TimeGetMs();
 
+        OledUi_ToolsReadStyle(&s_oled_tools, &style);
         result = OledUi_PageGetCurrent(&s_page_state, &page);
         if (result == SYS_OK)
         {
-            OledUi_AnimSample(&s_oled_anim, &s_page_state, now, &visual);
+            OledUi_AnimSample(&s_oled_anim, &s_page_state, now, page->type == OLED_UI_PAGE_TYPE_MENU ? &style : NULL, &visual);
             counters.completed = g_oled_monitor_debug.completed_frames;
             counters.io_errors = g_oled_monitor_debug.io_errors;
             counters.render_errors = g_oled_monitor_debug.render_errors;
@@ -368,14 +370,18 @@ static void App_OledRefresh(void *context)
             result = OledUi_MenuRenderVisual(oled, &s_page_state, &visual,
                 (OledUi_StatusBuild(page->id, &view, &counters, &status) ||
                  //公共IPC尚未发布任务诊断，NULL在窗口显示为未发布。
-                 OledUi_SystemBuild(page->id, &view, NULL, NULL, now, &status)) ? &status : NULL);
+                 OledUi_SystemBuild(page->id, &view, NULL, NULL, now, &status)) ? &status : NULL, &style);
         }
         OledUi_PopupTick(&s_oled_popup, now);
         if (result == SYS_OK)
-            result = OledUi_MenuPopup(oled, &s_oled_popup, now);
+            result = OledUi_MenuPopup(oled, &s_oled_popup, now, &style);
     }
     else
         result = OledUi_Render(oled, &view);
+    //首页第三行的DROP文本最多15字符，右侧空间可叠加帧率且不遮住监控内容
+    if (result == SYS_OK && s_page_state.current != OLED_UI_PAGE_TOOLS)
+        result = OledUi_ToolsApplyDisplay(oled, &s_oled_tools, s_oled_fps_tenths,
+            s_page_state.current == OLED_UI_PAGE_MONITOR ? 16 : 0);
     if (result != SYS_OK)
     {
         memcpy(oled->framebuffer, s_frame_backup, sizeof(s_frame_backup));

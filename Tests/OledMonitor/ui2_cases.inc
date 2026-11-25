@@ -96,13 +96,17 @@ static uint32_t Ui2Case(uint32_t id)
         CHECK(OledUi_PageOpen(&state, OLED_UI_PAGE_SYSTEM) == SYS_OK);
         CHECK(OledUi_MenuRender(oled, &state) == SYS_OK);
         CHECK(oled->framebuffer[0] == 0U && oled->framebuffer[3] == 0x46);
-        CHECK(oled->framebuffer[255] == 0xffU && oled->framebuffer[383] == 0U);
+        CHECK(oled->framebuffer[128 + 1] == 0U && oled->framebuffer[128 + 126] == 0U);
+        CHECK(oled->framebuffer[128 + 2] == 0x18U && oled->framebuffer[128 + 125] == 0x18U);
+        CHECK(oled->framebuffer[128 + 3] == 0x7eU && oled->framebuffer[128 + 124] == 0x7eU);
+        CHECK(oled->framebuffer[128 + 120] == 0xffU && oled->framebuffer[256 + 120] == 0U);
         CHECK(oled->framebuffer[128 + 15] == 0xc1U);
         CHECK(oled->framebuffer[256 + 15] == 0x7fU);
         for (i = 0U; i < 4U; i++)
             CHECK(OledUi_PageMoveNext(&state) == SYS_OK);
         CHECK(OledUi_MenuRender(oled, &state) == SYS_OK);
-        CHECK(oled->framebuffer[255] == 0U && oled->framebuffer[511] == 0xffU);
+        CHECK(oled->framebuffer[128 + 120] == 0U && oled->framebuffer[384 + 120] == 0xffU);
+        CHECK(oled->framebuffer[384 + 2] == 0x18U && oled->framebuffer[384 + 125] == 0x18U);
         CHECK(oled->framebuffer[128 + 15] == 0x46U);
         CHECK(oled->framebuffer[384 + 15] == 0x80U);
         memcpy(frame, oled->framebuffer, sizeof(frame));
@@ -136,7 +140,7 @@ static uint32_t Ui2Case(uint32_t id)
             }
             CHECK(s_oled.refresh_state == OLED_REFRESH_IDLE);
             Step(200);
-            CHECK(s_oled.framebuffer[383] == 0xffU);
+            CHECK(s_oled.framebuffer[256 + 120] == 0xffU);
             memcpy(s_saved, s_oled.framebuffer, OLED_BUFFER_SIZE);
             for (i=0U; i<8U; i++) Complete(SYS_OK);
             Ui2Post(OLED_UI_EVENT_BACK);
@@ -164,7 +168,7 @@ static uint32_t Ui2Case(uint32_t id)
             s_fail_pixel = 0U;
             s_submit_result = SYS_OK;
             Step(200);
-            CHECK(s_tx_count == 1U && s_oled.framebuffer[255] == 0xffU);
+            CHECK(s_tx_count == 1U && s_oled.framebuffer[128 + 120] == 0xffU);
         }
     }
     return 0U;

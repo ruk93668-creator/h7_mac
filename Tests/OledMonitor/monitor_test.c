@@ -309,6 +309,8 @@ uint32_t OledMonitor_TestRun(uint32_t id)
         return UiCompatCase(id);
     if (id == 88U)
         return UiPreMergeCase();
+    if (id == 89U)
+        return UiGlobalStyleCase();
     if (id == 76U)
         return Ui2InputCase();
     if (id >= 69U)

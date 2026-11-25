@@ -55,6 +55,7 @@ if UI2:NAMES += ["菜单50ms、监控100ms与忙期跳帧"]
 if UI2:NAMES += ['系统监控导航与无发布数据', '系统任务ID、重建、截断、低栈、失联及过期', '系统Heap边界、累计峰值与CPU有效性']
 if UI2:NAMES += ['OLED_UI 字模、光标和数值编辑边界', 'OLED_UI 图标、过渡、滚动和弹窗连续帧']
 if UI2:NAMES += ["合并前：弹窗与局部页面切换时隔离旧输入"]
+if UI2:NAMES += ["工具配置跨级菜单、菜单动画与IPC首页明暗及帧率"]
 if case_filter is not None and not 0 <= case_filter < len(NAMES):
  raise SystemExit(f'unknown case: {case_filter}')
 commands=[]

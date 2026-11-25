@@ -2,7 +2,7 @@
 #define CM4_OLED_UI_TOOLS_H
 
 #include "oled_device.h"
-#include "oled_ui_page.h"
+#include "oled_ui_anim.h"
 #include <stddef.h>
 
 typedef struct
@@ -33,6 +33,15 @@ OledUiToolsResult_t OledUi_ToolsEvent(OledUiTools_t *ui, uint32_t event, uint32_
 SysResult_t OledUi_ToolsRender(OledDevice_t *oled, const OledUiTools_t *ui,
     uint32_t now, uint32_t fps_tenths);
 //计算线性、缓动或弹簧运动的千分比进度
-uint16_t OledUi_ToolsProgress(uint8_t curve, uint32_t elapsed, uint32_t duration);
+//从已确认的设置生成全局渲染样式
+void OledUi_ToolsReadStyle(const OledUiTools_t *ui, OledUiMenuStyle_t *style);
+
+//复用工具页图标、光标以及全屏显示选项
+SysResult_t OledUi_DrawCursor(OledDevice_t *oled, int16_t x, int16_t y,
+    uint16_t width, uint16_t height, uint8_t style);
+SysResult_t OledUi_DrawMenuIcon(OledDevice_t *oled, int16_t x, int16_t y,
+    uint8_t size, uint8_t icon);
+SysResult_t OledUi_ToolsApplyDisplay(OledDevice_t *oled, const OledUiTools_t *ui,
+    uint32_t fps_tenths, int16_t fps_y);
 
 #endif
