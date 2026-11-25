@@ -468,7 +468,7 @@ SysResult_t App_EventsWait(RuntimeEventTarget_t target, uint32_t timeout_ms, uin
             g_failure = __LINE__;
         longjmp(task_exit, 1);
     }
-    if (target != RUNTIME_TARGET_STORAGE)
+    if (target != RUNTIME_TARGET_NETWORK)
     {
         g_failure = __LINE__;
         longjmp(task_exit, 1);
@@ -490,7 +490,7 @@ SysResult_t App_EventsWait(RuntimeEventTarget_t target, uint32_t timeout_ms, uin
         owner = RUNTIME_TARGET_CONTROL;
         if (AppV3_DrainInitialization() != SYS_OK || published_count != 0U)
             g_failure = __LINE__;
-        owner = RUNTIME_TARGET_STORAGE;
+        owner = RUNTIME_TARGET_NETWORK;
         *events = RUNTIME_EVENT_BOOT_READY;
         return SYS_OK;
     }
@@ -552,20 +552,20 @@ static uint32_t Test_PrivateQueuesAfterStartup(void)
 {
     static const RuntimeEventTarget_t service_owners[] =
     {
-        RUNTIME_TARGET_CAMERA, RUNTIME_TARGET_USB, RUNTIME_TARGET_STORAGE
+        RUNTIME_TARGET_CAMERA, RUNTIME_TARGET_USB, RUNTIME_TARGET_STORAGE, RUNTIME_TARGET_NETWORK
     };
-    AppV3Queue_t service_queues[3U], excess, startup;
-    AppV3RecordRef_t references[3U] = {{0}};
+    AppV3Queue_t service_queues[4U], excess, startup;
+    AppV3RecordRef_t references[4U] = {{0}};
     UBaseType_t capacity, remaining;
     uint32_t service_index;
 
     check_boot_order = true;
-    CHECK(App_TasksCreate() == SYS_OK && g_app_tasks_debug.created_tasks == 5U);
+    CHECK(App_TasksCreate() == SYS_OK && g_app_tasks_debug.created_tasks == RUNTIME_TARGET_COUNT);
     CHECK(App_Init() == SYS_OK);
     CHECK(App_TasksRecordInitialization(SYS_OK) == SYS_OK);
     scheduler = taskSCHEDULER_RUNNING;
     CHECK(App_TasksReleaseBoot() == SYS_OK && g_app_tasks_debug.boot_released == 1U);
-    for (service_index = 0U; service_index < 3U; ++service_index)
+    for (service_index = 0U; service_index < 4U; ++service_index)
     {
         owner = service_owners[service_index];
         CHECK(AppV3_InitService(owner, AppV3_GetContext()) == SYS_OK);
@@ -578,7 +578,7 @@ static uint32_t Test_PrivateQueuesAfterStartup(void)
     CHECK(AppV3Queue_Alloc(sizeof(uint32_t), 1U, &excess) == SYS_ERR_NO_RESOURCE);
 
     //V3.1B由各Service初始化时真实占用R1预留槽，测试不再重复申请
-    for (service_index = 0U; service_index < 3U; ++service_index)
+    for (service_index = 0U; service_index < 4U; ++service_index)
     {
         const AppV3EventLoop_t *loop = fixture_loops[service_owners[service_index]];
         CHECK(loop != NULL && loop->owner == service_owners[service_index]);
@@ -592,7 +592,7 @@ static uint32_t Test_PrivateQueuesAfterStartup(void)
         service_queues[1].index != service_queues[2].index);
     CHECK(AppV3Queue_Alloc(sizeof(AppMessage_t), 4U, &excess) == SYS_ERR_NO_RESOURCE);
     CHECK(Test_ExistingMessageChannels() == 0U);
-    for (service_index = 0U; service_index < 3U; ++service_index)
+    for (service_index = 0U; service_index < 4U; ++service_index)
         CHECK(AppV3Record_Close(&references[service_index]) == SYS_OK);
     return 0U;
 }
@@ -695,7 +695,7 @@ static uint32_t Test_StartBusiness(const AppV3Context_t *context)
 {
     static const RuntimeEventTarget_t services[] =
     {
-        RUNTIME_TARGET_CAMERA, RUNTIME_TARGET_USB, RUNTIME_TARGET_STORAGE
+        RUNTIME_TARGET_CAMERA, RUNTIME_TARGET_USB, RUNTIME_TARGET_STORAGE, RUNTIME_TARGET_NETWORK
     };
     uint32_t service_index;
 
@@ -2815,8 +2815,8 @@ uint32_t AppV3_TestRun(uint32_t scenario)
             return 0U;
         }
 
-        CHECK(App_TasksCreate() == SYS_OK && g_app_tasks_debug.created_tasks == 5U);
-        CHECK(App_TasksCreate() == SYS_ERR_INVALID_STATE && created_threads == 5U);
+        CHECK(App_TasksCreate() == SYS_OK && g_app_tasks_debug.created_tasks == RUNTIME_TARGET_COUNT);
+        CHECK(App_TasksCreate() == SYS_ERR_INVALID_STATE && created_threads == RUNTIME_TARGET_COUNT);
         CHECK(App_TasksReleaseBoot() == SYS_ERR_INVALID_STATE);
         if (scenario == 17U)
         {
@@ -2901,7 +2901,7 @@ uint32_t AppV3_TestRun(uint32_t scenario)
         case 31U:
         {
             uint32_t created;
-            CHECK(AppV3_StartServices(&created) == SYS_OK && created == 3U);
+            CHECK(AppV3_StartServices(&created) == SYS_OK && created == 4U);
             CHECK(scheduled_entry == AppV3_StorageRun);
             scheduler = taskSCHEDULER_RUNNING;
             CHECK(App_TasksReleaseBoot() == SYS_OK);
@@ -2958,9 +2958,9 @@ uint32_t AppV3_TestRun(uint32_t scenario)
         UBaseType_t capacity, space;
         AppMessage_t item = {.type = APP_MESSAGE_START};
         scheduler = taskSCHEDULER_RUNNING;
-        AppV3Queue_t reserved[3U];
+        AppV3Queue_t reserved[4U];
         CHECK(AppV3_GetStartupQueue(&queue) == SYS_OK);
-        for (uint32_t private_index = 0U; private_index < 3U; ++private_index)
+        for (uint32_t private_index = 0U; private_index < 4U; ++private_index)
             CHECK(AppV3Queue_Alloc(sizeof(item), 4U, &reserved[private_index]) == SYS_OK);
         CHECK(AppV3Queue_Alloc(sizeof(item), 1U, &replacement) == SYS_ERR_NO_RESOURCE);
         CHECK(AppV3Queue_Query(queue, &capacity, &space) == SYS_OK && capacity == 4U && space == 4U);
@@ -3105,9 +3105,9 @@ uint32_t AppV3_TestRun(uint32_t scenario)
     if (scenario == 5U)
     {
         uint32_t created;
-        CHECK(AppV3_StartServices(&created) == SYS_OK && created == 3U);
+        CHECK(AppV3_StartServices(&created) == SYS_OK && created == 4U);
         CHECK(AppV3_StartServices(&created) == SYS_ERR_ALREADY_EXISTS && created == 0U);
-        CHECK(scheduled_stack_words == 2048U && scheduled_priority == 1U);
+        CHECK(scheduled_stack_words == 2048U && scheduled_priority == 2U);
     }
 
     if (scenario == 6U || scenario == 14U)
@@ -3143,6 +3143,9 @@ uint32_t AppV3_TestRun(uint32_t scenario)
         CHECK(AppV3_InitService(owner, context) == SYS_OK);
         CHECK(AppV3_ReportInitialization(owner, SYS_OK) == SYS_OK);
         owner = RUNTIME_TARGET_STORAGE;
+        CHECK(AppV3_InitService(owner, context) == SYS_OK);
+        CHECK(AppV3_ReportInitialization(owner, SYS_OK) == SYS_OK);
+        owner = RUNTIME_TARGET_NETWORK;
         CHECK(AppV3_InitService(owner, context) == SYS_OK);
         CHECK(AppV3_ReportInitialization(owner, SYS_OK) == SYS_OK);
         owner = RUNTIME_TARGET_CONTROL;
@@ -3224,13 +3227,13 @@ uint32_t AppV3_TestRun(uint32_t scenario)
         CHECK(AppV3Queue_Put(queue, &startup_message, 0U) == SYS_OK);
 
     //执行真实任务入口，模拟等待函数在已观察到重试后返回测试。
-    owner = RUNTIME_TARGET_STORAGE;
+    owner = RUNTIME_TARGET_NETWORK;
     if (setjmp(task_exit) == 0)
         scheduled_entry(scheduled_argument);
     CHECK(waited == 4U && g_failure == 0U);
     owner = RUNTIME_TARGET_CONTROL;
     CHECK(App_MessagesReceive(APP_CHANNEL_STARTUP, &startup_message));
-    CHECK(startup_message.type == APP_MESSAGE_ACK && startup_message.source == RUNTIME_TARGET_STORAGE);
+    CHECK(startup_message.type == APP_MESSAGE_ACK && startup_message.source == RUNTIME_TARGET_NETWORK);
     CHECK(!App_MessagesReceive(APP_CHANNEL_STARTUP, &startup_message));
     return 0U;
 }

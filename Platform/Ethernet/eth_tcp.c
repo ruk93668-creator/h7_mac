@@ -1,3 +1,4 @@
+#include "eth_execution.h"
 //TCP 监听端和主动端各保留一条连接，使用角色和代次隔离旧句柄。
 #include "eth_tcp.h"
 #include "lwip/tcp.h"
@@ -207,6 +208,9 @@ static err_t EthTcp_Accept(void *arg, struct tcp_pcb *pcb, err_t error)
 
 err_t eth_tcp_configure(EthTcpEvent_t callback, void *arg, uint32_t idle_timeout_ms)
 {
+    if (!eth_execution_allowed())
+        return ERR_IF;
+
     if (s_listener || s_connections[ETH_TCP_SERVER].pcb || s_connections[ETH_TCP_CLIENT].pcb)
         return ERR_USE;
     if (idle_timeout_ms >= UINT32_C(0x80000000))
@@ -219,6 +223,9 @@ err_t eth_tcp_configure(EthTcpEvent_t callback, void *arg, uint32_t idle_timeout
 
 err_t eth_tcp_server_start(struct netif *netif, uint16_t port)
 {
+    if (!eth_execution_allowed())
+        return ERR_IF;
+
     struct tcp_pcb *pcb;
     err_t result;
     if (!netif || !port)
@@ -247,6 +254,9 @@ err_t eth_tcp_server_start(struct netif *netif, uint16_t port)
 
 err_t eth_tcp_client_connect(struct netif *netif, const ip4_addr_t *peer, uint16_t port)
 {
+    if (!eth_execution_allowed())
+        return ERR_IF;
+
     struct tcp_pcb *pcb;
     err_t result;
     EthTcpConnection_t *connection = &s_connections[ETH_TCP_CLIENT];
@@ -267,6 +277,9 @@ err_t eth_tcp_client_connect(struct netif *netif, const ip4_addr_t *peer, uint16
 
 void eth_tcp_stop(void)
 {
+    if (!eth_execution_allowed())
+        return;
+
     unsigned role;
     for (role = 0; role < ETH_TCP_ROLES; ++role)
         EthTcp_Abort(&s_connections[role], ERR_RTE);
@@ -378,6 +391,9 @@ static void EthTcp_PollConnection(EthTcpConnection_t *connection, uint32_t now)
 
 void eth_tcp_poll(void)
 {
+    if (!eth_execution_allowed())
+        return;
+
     unsigned role;
     for (role = 0; role < ETH_TCP_ROLES; ++role)
     {
@@ -393,6 +409,9 @@ void eth_tcp_poll(void)
 
 EthTcpHandle_t eth_tcp_handle(EthTcpRole_t role)
 {
+    if (!eth_execution_allowed())
+        return (EthTcpHandle_t){ETH_TCP_ROLES, 0U};
+
     EthTcpHandle_t handle;
     handle.role = role;
     handle.generation = (unsigned)role < ETH_TCP_ROLES ? s_connections[role].generation : 0U;
@@ -401,6 +420,9 @@ EthTcpHandle_t eth_tcp_handle(EthTcpRole_t role)
 
 EthTcpState_t eth_tcp_get_state(EthTcpHandle_t handle)
 {
+    if (!eth_execution_allowed())
+        return ETH_TCP_IDLE;
+
     EthTcpConnection_t *connection = EthTcp_Connection(handle);
     return connection ? connection->stats.state : ETH_TCP_IDLE;
 }
@@ -408,6 +430,9 @@ EthTcpState_t eth_tcp_get_state(EthTcpHandle_t handle)
 #if defined(ETH_MJPEG_FAST_SEND_TEST)
 err_t eth_tcp_enable_fast_send(EthTcpHandle_t handle)
 {
+    if (!eth_execution_allowed())
+        return ERR_IF;
+
     EthTcpConnection_t *connection = EthTcp_Connection(handle);
     if (!connection || !connection->pcb || connection->stats.state != ETH_TCP_OPEN)
         return ERR_CONN;
@@ -419,6 +444,9 @@ err_t eth_tcp_enable_fast_send(EthTcpHandle_t handle)
 
 err_t eth_tcp_send(EthTcpHandle_t handle, const void *data, uint16_t length)
 {
+    if (!eth_execution_allowed())
+        return ERR_IF;
+
     EthTcpConnection_t *connection = EthTcp_Connection(handle);
     uint16_t tail;
     uint16_t first;
@@ -446,6 +474,9 @@ err_t eth_tcp_send(EthTcpHandle_t handle, const void *data, uint16_t length)
 
 uint16_t eth_tcp_read(EthTcpHandle_t handle, void *data, uint16_t capacity)
 {
+    if (!eth_execution_allowed())
+        return 0U;
+
     EthTcpConnection_t *connection = EthTcp_Connection(handle);
     uint16_t first;
     if (!connection || !connection->pcb || !data || !capacity)
@@ -467,6 +498,9 @@ uint16_t eth_tcp_read(EthTcpHandle_t handle, void *data, uint16_t capacity)
 
 err_t eth_tcp_close(EthTcpHandle_t handle)
 {
+    if (!eth_execution_allowed())
+        return ERR_IF;
+
     EthTcpConnection_t *connection = EthTcp_Connection(handle);
     if (!connection || !connection->pcb)
         return ERR_CONN;
@@ -481,6 +515,9 @@ err_t eth_tcp_close(EthTcpHandle_t handle)
 
 void eth_tcp_abort(EthTcpHandle_t handle)
 {
+    if (!eth_execution_allowed())
+        return;
+
     EthTcpConnection_t *connection = EthTcp_Connection(handle);
     if (connection)
         EthTcp_Abort(connection, ERR_ABRT);
@@ -488,11 +525,17 @@ void eth_tcp_abort(EthTcpHandle_t handle)
 
 void eth_tcp_get_statistics(EthTcpRole_t role, EthTcpStats_t *stats)
 {
+    if (!eth_execution_allowed())
+        return;
+
     if (stats && (unsigned)role < ETH_TCP_ROLES)
         *stats = s_connections[role].stats;
 }
 
 int eth_tcp_listening(void)
 {
+    if (!eth_execution_allowed())
+        return 0;
+
     return s_listener != NULL;
 }

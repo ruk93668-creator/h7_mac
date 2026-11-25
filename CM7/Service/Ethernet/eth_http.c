@@ -1,3 +1,4 @@
+#include "eth_execution.h"
 //解析单连接请求，由轮询上下文推进响应及 MJPEG 流。
 #include "eth_http.h"
 #include "lwip/sys.h"
@@ -165,6 +166,9 @@ static err_t EthHttp_Init(EthNetwork_t *network, uint16_t frame_period_ms)
 err_t eth_http_init(EthNetwork_t *network, const EthMjpegFrame_t *frames,
     uint16_t frame_count, uint16_t frame_period_ms)
 {
+    if (!eth_execution_allowed())
+        return ERR_IF;
+
     uint16_t i;
     err_t result;
     if (!frames || !frame_count)
@@ -184,6 +188,9 @@ err_t eth_http_init(EthNetwork_t *network, const EthMjpegFrame_t *frames,
 err_t eth_http_init_source(EthNetwork_t *network, const EthMjpegSource_t *source,
     uint16_t frame_period_ms)
 {
+    if (!eth_execution_allowed())
+        return ERR_IF;
+
     err_t result;
     if (!source || !source->acquire || !source->release)
         return ERR_ARG;
@@ -282,6 +289,9 @@ static void EthHttp_Respond(unsigned code)
 #if defined(ETH_MJPEG_FAST_SEND_TEST)
 void eth_http_set_stream_fast_send(int enabled)
 {
+    if (!eth_execution_allowed())
+        return;
+
     s_http.stream_fast_send = enabled != 0;
 }
 #endif
@@ -324,6 +334,9 @@ static void EthHttp_Request(uint32_t now, uint32_t acked)
 
 void eth_http_poll(void)
 {
+    if (!eth_execution_allowed())
+        return;
+
     char discard[128];
     EthTcpStats_t tcp;
     err_t result;
@@ -388,6 +401,9 @@ void eth_http_poll(void)
 
 void eth_http_get_statistics(EthHttpStats_t *stats)
 {
+    if (!eth_execution_allowed())
+        return;
+
     if (stats)
     {
         *stats = s_http.stats;

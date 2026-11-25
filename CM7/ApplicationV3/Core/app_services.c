@@ -6,6 +6,7 @@
 #include "../Services/Camera/camera_service.h"
 #include "../Services/USB/usb_service.h"
 #include "../Services/Storage/storage_service.h"
+#include "../Services/Network/network_service.h"
 #include <stddef.h>
 
 //静态服务登记记录，关联线程、启动入口和只读配置
@@ -28,9 +29,11 @@ static StackType_t s_camera_stack[1536U] __attribute__((aligned(8)));
 static StackType_t s_usb_stack[2048U] __attribute__((aligned(8)));
 //Storage任务独占栈，按八字节对齐
 static StackType_t s_storage_stack[2048U] __attribute__((aligned(8)));
+//网络拥有者的静态栈，2048 个字，优先级不改变已有服务。
+static StackType_t s_network_stack[2048U] __attribute__((aligned(8)));
 
-//三个服务的静态实例，由各自初始化流程维护
-static AppV3ServiceInstance_t s_camera, s_usb, s_storage;
+//四个服务的静态实例，由各自初始化流程维护
+static AppV3ServiceInstance_t s_camera, s_usb, s_storage, s_network;
 
 //服务清单是任务身份、启动入口、存储和配置的唯一来源。
 static const AppV3ServiceRecord_t s_services[] =
@@ -78,6 +81,15 @@ static const AppV3ServiceRecord_t s_services[] =
         AppV3_StorageInit,
         AppV3_StorageDiscard,
         &s_storage
+    },
+    {
+        {
+            RUNTIME_TARGET_NETWORK, "Network", AppV3_NetworkRun,
+            s_network_stack, STACK_WORDS(s_network_stack), 2U, RUNTIME_EVENT_BOOT_READY
+        },
+        AppV3_NetworkInit,
+        AppV3_NetworkDiscard,
+        &s_network
     }
 };
 

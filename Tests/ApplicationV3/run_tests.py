@@ -48,6 +48,7 @@ def main():
     harness.cc = [flag for index, flag in enumerate(harness.cc)
                   if flag not in legacy_includes and
                   not (flag == "-I" and harness.cc[index + 1] in legacy_includes)]
+    harness.cc.extend(("-I", ROOT / "Platform/Ethernet"))
     harness.cc.extend(("-I", V3 / "Core", "-I", V3 / "Tasks", "-I", V3 / "Runtime", "--split_sections"))
     if args.production:
         harness.cc.extend(("-I", Path(__file__).with_name("BoardProfiles"), "-DAPP_V3_VERIFY_PRODUCT=1"))
@@ -82,6 +83,8 @@ def main():
         V3 / "Services/Camera/camera_service.c",
         V3 / "Services/Storage/storage_service.c",
         V3 / "Services/USB/usb_service.c",
+        V3 / "Services/Network/network_service.c",
+        ROOT / "Platform/Ethernet/eth_execution.c",
         V3 / "Tasks/service_tasks.c",
         *sorted((V3 / "Runtime").glob("*.c")),
         kernel / "queue.c",

@@ -1,0 +1,41 @@
+eth_execution.c
+eth_netif.c
+eth_network.c
+eth_udp.c
+eth_tcp.c
+eth_transport.c
+e5_protocol.c
+e5_bench.c
+test_e5_network.c
+正在生成代码...
+def.c
+init.c
+inet_chksum.c
+ip.c
+mem.c
+memp.c
+netif.c
+pbuf.c
+raw.c
+stats.c
+sys.c
+timeouts.c
+etharp.c
+icmp.c
+ip4.c
+ip4_addr.c
+ethernet.c
+udp.c
+dhcp.c
+acd.c
+正在生成代码...
+正在编译...
+tcp.c
+tcp_in.c
+tcp_out.c
+正在生成代码...
+PASS: DHCP + 2 TCP roles + UDP; SYN/SYN-ACK/ACK, second accept rejected, fragmented/coalesced echo, MTU/UDP broadcast
+PASS: chained RX/window zero and reopen, app queue full, actual TCP segment/heap exhaustion, delayed ACK and retransmission recovery
+PASS: peer zero-window backpressure and recovery; PBUF_POOL exhaustion/drop/recovery
+PASS: peer FIN/RST, CLOSEPEND retry, TIME_WAIT churn, PCB/timer exhaustion, connect refusal/timeout, DHCP relink
+Host injection peaks: heap=12240 bytes; timeout=7; TCP PCB=6; TCP listen=1; TCP segment=24; UDP PCB=2; PBUF_POOL=24

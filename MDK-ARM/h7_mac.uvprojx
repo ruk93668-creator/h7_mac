@@ -3575,7 +3575,7 @@
             <v6Rtti>0</v6Rtti>
             <VariousControls>
               <MiscControls>--preinclude ../CM7/BSP/bsp_sdram_hal_config.h --preinclude ../CM7/BSP/bsp_dcmi_hal_config.h --preinclude ../CM7/BSP/bsp_usb_hal_config.h --preinclude ../CM7/BSP/bsp_sdmmc_hal_config.h </MiscControls>
-              <Define>CORE_CM7,USE_HAL_DRIVER,STM32H747xx,USE_PWR_LDO_SUPPLY,APP_VIDEO_MJPEG_MODE=1,ETH_LWIP_DHCP,ETH_LWIP_E5</Define>
+              <Define>CORE_CM7,USE_HAL_DRIVER,STM32H747xx,USE_PWR_LDO_SUPPLY,APP_VIDEO_MJPEG_MODE=1,ETH_LWIP_DHCP,ETH_LWIP_E5,ETH_NETWORK_SERVICE</Define>
               <Undefine />
               <IncludePath>../CM7/Core/Inc;../Drivers/STM32H7xx_HAL_Driver/Inc;../Drivers/STM32H7xx_HAL_Driver/Inc/Legacy;../Drivers/CMSIS/Device/ST/STM32H7xx/Include;../Drivers/CMSIS/Include;..\Common\Inc;..\Board\Inc;..\CM7\ApplicationV3\Core;..\CM7\Service;..\CM7\Device\Inc;..\CM7\Media\Inc;..\CM7\Platform;..\CM7\BSP;..\CM7\Framework;..\CM7\Device\Components\OV5640;../Middlewares/ST/STM32_USB_Device_Library/Core/Inc;../Middlewares/Third_Party/FreeRTOS/Source/include;../Middlewares/Third_Party/FreeRTOS/Source/portable/RVDS/ARM_CM7/r0p1;../Middlewares/Third_Party/FatFs;../Platform/Ethernet;../CM7/Service/Ethernet;../ThirdParty/lwip/src/include</IncludePath>
             </VariousControls>
@@ -4916,6 +4916,11 @@
               <FileType>5</FileType>
               <FilePath>../CM7/ApplicationV3/Services/USB/usb_service.h</FilePath>
             </File>
+            <File>
+              <FileName>network_service.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>../CM7/ApplicationV3/Services/Network/network_service.c</FilePath>
+            </File>
           </Files>
         </Group>
         <Group>
@@ -5408,6 +5413,11 @@
               <FileName>eth_lwip_assert.c</FileName>
               <FileType>1</FileType>
               <FilePath>../Platform/Ethernet/eth_lwip_assert.c</FilePath>
+            </File>
+            <File>
+              <FileName>eth_execution.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>../Platform/Ethernet/eth_execution.c</FilePath>
             </File>
           </Files>
         </Group>

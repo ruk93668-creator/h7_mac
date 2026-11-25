@@ -1,6 +1,6 @@
 """Shared source lists for the isolated E4 Keil and host builds."""
 
-PORT = ['Platform/Ethernet/eth_netif.c', 'Platform/Ethernet/eth_network.c']
+PORT = ['Platform/Ethernet/eth_execution.c', 'Platform/Ethernet/eth_netif.c', 'Platform/Ethernet/eth_network.c']
 LWIP = ['ThirdParty/lwip/src/' + name for name in (
     'core/def.c', 'core/init.c', 'core/inet_chksum.c', 'core/ip.c',
     'core/mem.c', 'core/memp.c', 'core/netif.c', 'core/pbuf.c', 'core/raw.c',

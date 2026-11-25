@@ -1,3 +1,4 @@
+#include "eth_execution.h"
 //NO_SYS：同一个循环管理 MAC 和 lwIP 定时器
 #include "eth_network.h"
 #include "lwip/init.h"
@@ -226,6 +227,9 @@ static int EthNetwork_FallbackValid(const EthNetworkAddressConfig_t *config)
 err_t eth_network_init_address(EthNetwork_t *network, const uint8_t mac[6],
 	const EthNetworkAddressConfig_t *config)
 {
+    if (!eth_execution_allowed())
+        return ERR_IF;
+
 	err_t result;
 	int use_static;
 
@@ -250,6 +254,9 @@ err_t eth_network_init_address(EthNetwork_t *network, const uint8_t mac[6],
 err_t eth_network_init(EthNetwork_t *network, const uint8_t mac[6],
 	const ip4_addr_t *ip, const ip4_addr_t *mask, const ip4_addr_t *gateway)
 {
+    if (!eth_execution_allowed())
+        return ERR_IF;
+
 #if LWIP_DHCP
 	EthNetworkAddressConfig_t config = {.mode = ETH_ADDRESS_STATIC};
 	if (ip == NULL || mask == NULL || gateway == NULL)
@@ -265,6 +272,9 @@ err_t eth_network_init(EthNetwork_t *network, const uint8_t mac[6],
 
 void eth_network_poll(EthNetwork_t *network)
 {
+    if (!eth_execution_allowed())
+        return;
+
 	uint32_t now;
 
 	if (network == NULL || network != s_owner)

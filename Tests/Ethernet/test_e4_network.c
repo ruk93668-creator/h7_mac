@@ -1,5 +1,6 @@
 //真实 lwIP 和适配层，MAC 复制接口由确定性的主机桩替代
 #include "eth_network.h"
+#include "eth_execution.h"
 #include "lwip/stats.h"
 #include "lwip/timeouts.h"
 #include "lwip/pbuf.h"
@@ -505,6 +506,12 @@ static void TestDhcp(const char *scenario)
 }
 #endif
 
+static int s_context_allowed = 1;
+static int TestExecutionOwner(void *context)
+{
+    return context == &s_context_allowed && s_context_allowed;
+}
+
 int main(int argc, char **argv)
 {
 	ip4_addr_t ip;
@@ -657,5 +664,20 @@ int main(int argc, char **argv)
 		netif_dhcp_data(interface) == NULL && lwip_stats.memp[MEMP_UDP_PCB]->used == 0U);
 #endif
 	puts("PASS: netif stays administratively up, renegotiation and IPv4 recovery");
+    assert(!eth_execution_bind(NULL, NULL));
+    assert(eth_execution_bind(TestExecutionOwner, &s_context_allowed));
+    assert(!eth_execution_bind(TestExecutionOwner, &s_context_allowed));
+    BuildArp();
+    s_pending_rx = 1U;
+    count = s_tx_count;
+    s_context_allowed = 0;
+    eth_network_poll(&s_network);
+    assert(s_pending_rx == 1U && s_tx_count == count);
+    assert(eth_netif_init(interface) == ERR_IF);
+    s_context_allowed = 1;
+    eth_network_poll(&s_network);
+    assert(s_pending_rx == 0U);
+    puts("PASS: bound context rejects foreign polling and admits original owner");
+
 	return 0;
 }

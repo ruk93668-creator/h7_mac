@@ -1,3 +1,4 @@
+#include "eth_execution.h"
 #include "eth_transport.h"
 #include "lwip/sys.h"
 
@@ -10,6 +11,9 @@ static uint8_t s_udp, s_server, s_client_wait;
 
 err_t eth_transport_init(EthNetwork_t *network, const EthTransportConfig_t *config)
 {
+    if (!eth_execution_allowed())
+        return ERR_IF;
+
 	err_t result;
 	if (s_network)
 		return ERR_USE;
@@ -28,6 +32,9 @@ err_t eth_transport_init(EthNetwork_t *network, const EthTransportConfig_t *conf
 
 void eth_transport_poll(void)
 {
+    if (!eth_execution_allowed())
+        return;
+
 	struct netif *interface;
 	uint32_t now;
 	int ready;
@@ -90,6 +97,9 @@ void eth_transport_poll(void)
 
 void eth_transport_get_statistics(EthTransportStats_t *stats)
 {
+    if (!eth_execution_allowed())
+        return;
+
 	unsigned role;
 	if (!stats)
 		return;
@@ -106,5 +116,8 @@ void eth_transport_get_statistics(EthTransportStats_t *stats)
 
 int eth_transport_ready(void)
 {
+    if (!eth_execution_allowed())
+        return 0;
+
 	return s_stats.ready != 0U;
 }

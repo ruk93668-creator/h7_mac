@@ -1,3 +1,4 @@
+#include "eth_execution.h"
 //pbuf 和 DMA 内存的所有权始终独立
 #include "eth_netif.h"
 #include "lwip/etharp.h"
@@ -7,6 +8,8 @@ typedef char eth_header_size_check[(sizeof(struct eth_hdr) == 14U) ? 1 : -1];
 
 static err_t EthNetif_Output(struct netif *netif, struct pbuf *packet)
 {
+    if (!eth_execution_allowed())
+        return ERR_IF;
 	EthNetif_t *context = netif->state;
 	EthResult_t result;
 	uint32_t ticket;
@@ -43,6 +46,9 @@ static err_t EthNetif_Output(struct netif *netif, struct pbuf *packet)
 
 err_t eth_netif_init(struct netif *netif)
 {
+    if (!eth_execution_allowed())
+        return ERR_IF;
+
 	if (netif == NULL || netif->state == NULL)
 		return ERR_ARG;
 	if (eth_mac_get_address(netif->hwaddr) != ETH_OK)
@@ -59,6 +65,9 @@ err_t eth_netif_init(struct netif *netif)
 
 void eth_netif_poll(struct netif *netif)
 {
+    if (!eth_execution_allowed())
+        return;
+
 	EthNetif_t *context = netif->state;
 	unsigned index;
 

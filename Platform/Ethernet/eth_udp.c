@@ -1,3 +1,4 @@
+#include "eth_execution.h"
 #include "eth_udp.h"
 #include "lwip/udp.h"
 #include "lwip/pbuf.h"
@@ -44,6 +45,9 @@ static void EthUdp_Receive(void *arg, struct udp_pcb *pcb, struct pbuf *packet,
 
 err_t eth_udp_start(struct netif *netif, uint16_t port, EthUdpReceive_t receive, void *arg)
 {
+    if (!eth_execution_allowed())
+        return ERR_IF;
+
 	err_t result;
 	if (!netif || !port || !receive)
 		return ERR_ARG;
@@ -70,6 +74,9 @@ err_t eth_udp_start(struct netif *netif, uint16_t port, EthUdpReceive_t receive,
 
 void eth_udp_stop(void)
 {
+    if (!eth_execution_allowed())
+        return;
+
 	if (s_udp)
 	{
 		udp_remove(s_udp);
@@ -79,6 +86,9 @@ void eth_udp_stop(void)
 
 err_t eth_udp_send(const ip4_addr_t *ip, uint16_t port, const void *data, uint16_t length)
 {
+    if (!eth_execution_allowed())
+        return ERR_IF;
+
 	struct pbuf *packet;
 	err_t result;
 	if (!ip || ip4_addr_isany(ip) || !port || !data || !length || length > ETH_UDP_MAX)
@@ -118,6 +128,9 @@ err_t eth_udp_send(const ip4_addr_t *ip, uint16_t port, const void *data, uint16
 
 void eth_udp_get_statistics(EthUdpStats_t *stats)
 {
+    if (!eth_execution_allowed())
+        return;
+
 	if (stats != NULL)
 		*stats = s_stats;
 }

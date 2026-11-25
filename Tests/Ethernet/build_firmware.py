@@ -45,7 +45,7 @@ for group in list(t.find('Groups')):
         t.find('Groups').remove(group)
 define=t.find('./TargetOption/TargetArmAds/Cads/VariousControls/Define')
 define.text=','.join(value for value in (define.text or '').split(',')
-                     if value not in {'ETH_LWIP_DHCP', 'ETH_LWIP_E5'})
+                     if value not in {'ETH_LWIP_DHCP', 'ETH_LWIP_E5', 'ETH_NETWORK_SERVICE'})
 link_misc=t.find('.//LDads/Misc')
 link_misc.text='\n'.join(value for value in (link_misc.text or '').splitlines()
                           if not value.startswith(('--keep=eth_network_', '--keep=eth_http_', '--keep=eth_transport_', '--keep=eth_udp_')))
