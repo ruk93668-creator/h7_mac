@@ -1,0 +1,41 @@
+{
+  "baseline": "b6d17eccbe6542dca4ca5ffacf50f8d6d91f454c",
+  "remote": {
+    "main": "851c1115fe097f7fd2e0bdcaa5f7b3f8c03feb71",
+    "codex/ethernet-bringup": "b6d17eccbe6542dca4ca5ffacf50f8d6d91f454c"
+  },
+  "sources": {
+    "Common/Inc/runtime_event.h": {
+      "sha256": "02e38bf644acd177aa03291436a9db848bef0fcf5b75e132de1046cc352b8a33",
+      "lines": 45
+    },
+    "CM7/ApplicationV3/Core/app_services.c": {
+      "sha256": "f18bbe309240f4c576ba8dc20a0ee4e17a229b398c7c6ec46064e252c992c4d7",
+      "lines": 275
+    },
+    "CM7/ApplicationV3/Core/app_messages.c": {
+      "sha256": "197a926853b3cdf458c9639348e8131e113e859372df5767bb6d652260206063",
+      "lines": 166
+    },
+    "CM7/ApplicationV3/Runtime/queue_pool.c": {
+      "sha256": "f308b57f619c0c2f1b52697bb3095c869d7c1a939b95d40ae2e4921213cca009",
+      "lines": 344
+    },
+    "CM7/ApplicationV3/Services/Camera/camera_service.c": {
+      "sha256": "da5ad2df52fdaf73bcd5e38bce34aa6a9b532c45cbcc6b17aaf708735bbb879c",
+      "lines": 663
+    },
+    "Platform/Ethernet/eth_network.c": {
+      "sha256": "115073c86e0c592601e22618e19f8ea014cd3703f915bf5f35248fb9864c6af4",
+      "lines": 283
+    },
+    "Platform/Ethernet/eth_transport.c": {
+      "sha256": "fb08f3b0d52724fa4ef7435786f79f3c55efae11f9223d0bc7860f390adafdd6",
+      "lines": 110
+    },
+    "CM7/Service/Ethernet/eth_http.c": {
+      "sha256": "aebea6af548730e269c278829e320565dd395981c03860d127f29d8152586434",
+      "lines": 397
+    }
+  }
+}
