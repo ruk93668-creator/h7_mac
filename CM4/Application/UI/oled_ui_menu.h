@@ -12,6 +12,7 @@ SysResult_t OledUi_MenuRender(OledDevice_t *oled, const OledUiPageState_t *state
 
 SysResult_t OledUi_MenuRenderVisual(OledDevice_t *oled, const OledUiPageState_t *state,
     const OledUiVisual_t *visual, const OledUiStatus_t *status);
+//把活动弹窗叠加至当前可写帧
 SysResult_t OledUi_MenuPopup(OledDevice_t *oled, const OledUiPopup_t *popup, uint32_t now);
 
 #endif

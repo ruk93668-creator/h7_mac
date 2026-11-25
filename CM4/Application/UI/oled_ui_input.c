@@ -1,7 +1,9 @@
 #include "oled_ui_input.h"
 #include <stddef.h>
 
+//按键电平必须连续稳定的时间，单位ms
 #define OLED_UI_PRESS_FILTER_MS 20U
+//发送长按事件所需的持续时间，单位ms
 #define OLED_UI_LONG_PRESS_MS 700U
 
 void OledUi_InputInit(OledUiInput_t *input, uint8_t phase, bool pressed, uint32_t now)
@@ -109,6 +111,7 @@ SysResult_t OledUi_InputPush(OledUiInputQueue_t *queue, uint32_t event, bool phy
     return SYS_OK;
 }
 
+//取出最早入队的事件，空队列返回零
 uint32_t OledUi_InputTake(OledUiInputQueue_t *queue)
 {
     uint32_t event, i;
@@ -122,6 +125,7 @@ uint32_t OledUi_InputTake(OledUiInputQueue_t *queue)
     return event;
 }
 
+//切页后清除旧上下文事件并累计丢弃数量
 void OledUi_InputDiscard(OledUiInputQueue_t *queue)
 {
     if (queue != NULL)

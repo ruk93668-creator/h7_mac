@@ -3,9 +3,12 @@
 #include <stddef.h>
 #include <string.h>
 
+//在编译期计算静态页面或菜单表的元素数
 #define OLED_UI_COUNT(array) (sizeof(array) / sizeof((array)[0]))
+//在编译期检查各静态表的容量约束
 #define OLED_UI_ASSERT(name, condition) typedef char name[(condition) ? 1 : -1]
 
+//系统主菜单入口及各项跳转目标
 static const OledUiMenuItem_t s_system[] =
 {
     {"Camera", OLED_UI_ITEM_OPEN, OLED_UI_PAGE_CAMERA},
@@ -16,6 +19,7 @@ static const OledUiMenuItem_t s_system[] =
     {"System Monitor", OLED_UI_ITEM_OPEN, OLED_UI_PAGE_SYSTEM_MONITOR},
     {"UI Tools", OLED_UI_ITEM_OPEN, OLED_UI_PAGE_TOOLS}
 };
+//Camera子菜单及只读诊断入口
 static const OledUiMenuItem_t s_camera[] =
 {
     {"Status", OLED_UI_ITEM_OPEN, OLED_UI_PAGE_CAMERA_STATUS},
@@ -23,13 +27,16 @@ static const OledUiMenuItem_t s_camera[] =
     {"USB", OLED_UI_ITEM_OPEN, OLED_UI_PAGE_USB},
     {"Back", OLED_UI_ITEM_BACK, OLED_UI_PAGE_SYSTEM}
 };
+//网络页仅保留返回项，等待正式数据源
 static const OledUiMenuItem_t s_network[] = {{"Back", OLED_UI_ITEM_BACK, OLED_UI_PAGE_SYSTEM}};
+//Storage子菜单及可用信息入口
 static const OledUiMenuItem_t s_storage[] =
 {
     {"Info", OLED_UI_ITEM_OPEN, OLED_UI_PAGE_STORAGE_INFO},
     {"Back", OLED_UI_ITEM_BACK, OLED_UI_PAGE_SYSTEM}
 };
 
+//系统诊断菜单及各只读详情页入口
 static const OledUiMenuItem_t s_system_monitor[] =
 {
     {"Tasks", OLED_UI_ITEM_OPEN, OLED_UI_PAGE_TASKS},
@@ -39,6 +46,7 @@ static const OledUiMenuItem_t s_system_monitor[] =
     {"Back", OLED_UI_ITEM_BACK, OLED_UI_PAGE_SYSTEM}
 };
 
+//固定的页面ID、父子关系和渲染数据表
 static const OledUiPage_t s_pages[] =
 {
     {OLED_UI_PAGE_MONITOR, OLED_UI_PAGE_COUNT, OLED_UI_PAGE_TYPE_MONITOR, "IPC MONITOR", NULL, NULL, 0},
@@ -97,6 +105,7 @@ static SysResult_t OledUi_PageValidate(const OledUiPageState_t *state)
     return SYS_OK;
 }
 
+//从固定表取得指定页面描述
 SysResult_t OledUi_PageGet(OledUiPageId_t id, const OledUiPage_t **page)
 {
     if (page == NULL || (uint32_t)id >= OLED_UI_PAGE_COUNT)
@@ -106,6 +115,7 @@ SysResult_t OledUi_PageGet(OledUiPageId_t id, const OledUiPage_t **page)
     return SYS_OK;
 }
 
+//验证状态并取得当前页面描述
 SysResult_t OledUi_PageGetCurrent(const OledUiPageState_t *state, const OledUiPage_t **page)
 {
     SysResult_t result;
@@ -118,6 +128,7 @@ SysResult_t OledUi_PageGetCurrent(const OledUiPageState_t *state, const OledUiPa
     return result;
 }
 
+//取得当前菜单项，空页面返回错误
 SysResult_t OledUi_PageGetSelected(const OledUiPageState_t *state, const OledUiMenuItem_t **item)
 {
     const OledUiPage_t *page;
@@ -135,6 +146,7 @@ SysResult_t OledUi_PageGetSelected(const OledUiPageState_t *state, const OledUiM
     return SYS_OK;
 }
 
+//初始化页面状态并打开四行监控首页
 SysResult_t OledUi_PageInit(OledUiPageState_t *state)
 {
     if (state == NULL)
@@ -143,6 +155,7 @@ SysResult_t OledUi_PageInit(OledUiPageState_t *state)
     return SYS_OK;
 }
 
+//打开指定页面并保留各页原有游标
 SysResult_t OledUi_PageOpen(OledUiPageState_t *state, OledUiPageId_t id)
 {
     const OledUiPage_t *target;
@@ -161,6 +174,7 @@ SysResult_t OledUi_PageOpen(OledUiPageState_t *state, OledUiPageId_t id)
     return SYS_OK;
 }
 
+//返回父页，根页面留在原处
 SysResult_t OledUi_PageBack(OledUiPageState_t *state)
 {
     const OledUiPage_t *page;
@@ -197,16 +211,19 @@ static SysResult_t OledUi_PageMove(OledUiPageState_t *state, int32_t step)
     return SYS_OK;
 }
 
+//将当前菜单游标向下一项移动
 SysResult_t OledUi_PageMoveNext(OledUiPageState_t *state)
 {
     return OledUi_PageMove(state, 1);
 }
 
+//将当前菜单游标向上一项移动
 SysResult_t OledUi_PageMovePrevious(OledUiPageState_t *state)
 {
     return OledUi_PageMove(state, -1);
 }
 
+//按当前页上下文处理导航事件
 SysResult_t OledUi_PageDispatch(OledUiPageState_t *state, uint32_t event)
 {
     const OledUiMenuItem_t *item;

@@ -1,8 +1,17 @@
 //UI2测试使用真实状态机、Device绘图和Application刷新事务。
+//驱动正式事件队列和消费入口；序号与结果仅由测试夹具记录。
+static struct
+{
+    uint32_t ack;
+    SysResult_t result;
+} s_test_input;
+
 static void Ui2Post(uint32_t event)
 {
-    g_oled_ui2_debug.event = event;
-    g_oled_ui2_debug.request++;
+    s_test_input.result = OledUi_InputPush(&s_oled_input_queue, event, false);
+    if (s_test_input.result == SYS_OK)
+        s_test_input.result = App_OledConsumeInput();
+    s_test_input.ack++;
     App_OledRun();
 }
 
@@ -109,16 +118,16 @@ static uint32_t Ui2Case(uint32_t id)
         if (id == 72U)
         {
             Step(100);
-            CHECK(s_tx_count == 1U && s_ui2_state.current == OLED_UI_PAGE_MONITOR);
+            CHECK(s_tx_count == 1U && s_page_state.current == OLED_UI_PAGE_MONITOR);
             memcpy(s_saved, s_oled.framebuffer, OLED_BUFFER_SIZE);
             Ui2Post(OLED_UI_EVENT_OPEN_MENU);
             CHECK(s_oled.refresh_state == OLED_REFRESH_WAIT_CMD);
-            CHECK(g_oled_ui2_debug.ack == 1U && s_ui2_state.current == OLED_UI_PAGE_SYSTEM);
+            CHECK(s_test_input.ack == 1U && s_page_state.current == OLED_UI_PAGE_SYSTEM);
             s_active = 0U; s_ready = 1U; s_completion = SYS_OK;
             App_OledRun();
             CHECK(s_oled.refresh_state == OLED_REFRESH_WAIT_DATA);
             Ui2Post(OLED_UI_EVENT_NEXT);
-            CHECK(g_oled_ui2_debug.ack == 2U && s_ui2_state.cursor[OLED_UI_PAGE_SYSTEM].selected == 1U);
+            CHECK(s_test_input.ack == 2U && s_page_state.cursor[OLED_UI_PAGE_SYSTEM].selected == 1U);
             CHECK(memcmp(s_saved, s_oled.framebuffer, OLED_BUFFER_SIZE) == 0);
             for (i = 1U; i < 8U; i++)
             {
@@ -132,7 +141,7 @@ static uint32_t Ui2Case(uint32_t id)
             for (i=0U; i<8U; i++) Complete(SYS_OK);
             Ui2Post(OLED_UI_EVENT_BACK);
             Step(300);
-            CHECK(s_ui2_state.current == OLED_UI_PAGE_MONITOR && s_oled.framebuffer[383] == 0U);
+            CHECK(s_page_state.current == OLED_UI_PAGE_MONITOR && s_oled.framebuffer[383] == 0U);
         }
         else
         {
@@ -147,7 +156,7 @@ static uint32_t Ui2Case(uint32_t id)
             Step(100);
             CHECK(s_tx_count == 0U && s_oled.refresh_state == OLED_REFRESH_IDLE);
             CHECK(memcmp(frame,s_oled.framebuffer,sizeof(frame)) == 0);
-            CHECK(s_ui2_state.current == OLED_UI_PAGE_SYSTEM);
+            CHECK(s_page_state.current == OLED_UI_PAGE_SYSTEM);
             if (id == 73U)
                 CHECK(g_oled_monitor_debug.render_errors == 1U);
             else

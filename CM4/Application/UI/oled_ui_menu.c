@@ -2,8 +2,11 @@
 #include "oled_ui_draw.h"
 #include <stddef.h>
 
+//菜单每个条目的行高，单位像素
 #define OLED_UI_ROW_HEIGHT 8
+//菜单标题可读取的最大字节数
 #define OLED_UI_TITLE_LIMIT 20U
+//普通菜单标签显示的最大字符数
 #define OLED_UI_LABEL_LIMIT 18U
 
 //标题与三条菜单行均按8像素对齐。选中行最后反色。
@@ -99,6 +102,7 @@ SysResult_t OledUi_MenuRender(OledDevice_t *oled, const OledUiPageState_t *state
     return OledUi_MenuRenderVisual(oled, state, NULL, NULL);
 }
 
+//把活动弹窗叠加至当前可写帧
 SysResult_t OledUi_MenuPopup(OledDevice_t *oled, const OledUiPopup_t *popup, uint32_t now)
 {
     uint32_t age;

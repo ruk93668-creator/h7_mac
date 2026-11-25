@@ -1,8 +1,11 @@
 #include "oled_ui_anim.h"
 #include <stddef.h>
 
+//菜单切换和高亮移动的持续时间，单位ms
 #define OLED_UI_ANIM_MS 240U
+//长标签移进一字的时间，单位ms
 #define OLED_UI_MARQUEE_MS 320U
+//长标签长度扫描的最大字节数
 #define OLED_UI_TEXT_SCAN 64U
 
 //定点插值终点准确，毫秒差使用无符号减法处理回绕。
@@ -64,6 +67,7 @@ void OledUi_AnimSample(OledUiAnim_t *anim, const OledUiPageState_t *state,
         (uint8_t)(1U + visual->age * 126U / OLED_UI_ANIM_MS) : 0U;
 }
 
+//返回给定停留时间下长标签的可见起点
 const char *OledUi_AnimText(const char *text, uint32_t width, uint32_t age)
 {
     uint32_t count = 0U, offset, excess;
@@ -109,12 +113,14 @@ void OledUi_PopupOpen(OledUiPopup_t *popup, const char *title, const char *body,
     popup->active = true;
 }
 
+//弹窗到达持续时间后结束显示
 void OledUi_PopupTick(OledUiPopup_t *popup, uint32_t now)
 {
     if (popup->active && now - popup->opened >= popup->duration)
         popup->active = false;
 }
 
+//活动弹窗消费确认或返回事件并阻止事件传至底页
 bool OledUi_PopupEvent(OledUiPopup_t *popup, uint32_t event, uint32_t now)
 {
     OledUi_PopupTick(popup, now);

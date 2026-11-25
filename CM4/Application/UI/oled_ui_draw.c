@@ -158,12 +158,14 @@ static SysResult_t OledUi_DrawArea(OledDevice_t *oled,
     return SYS_OK;
 }
 
+//绘制矩形外边缘
 SysResult_t OledUi_DrawRect(OledDevice_t *oled,
     int16_t x, int16_t y, uint16_t width, uint16_t height, bool on)
 {
     return OledUi_DrawArea(oled, x, y, width, height, 0U, OLED_UI_OUTLINE, on, NULL, 0U);
 }
 
+//用指定像素值覆盖矩形内部
 SysResult_t OledUi_FillRect(OledDevice_t *oled,
     int16_t x, int16_t y, uint16_t width, uint16_t height, bool on)
 {
@@ -176,6 +178,7 @@ SysResult_t OledUi_DrawRoundRect(OledDevice_t *oled,
     return OledUi_DrawArea(oled, x, y, width, height, radius, OLED_UI_OUTLINE, on, NULL, 0U);
 }
 
+//按原像素值翻转裁剪区域
 SysResult_t OledUi_InvertArea(OledDevice_t *oled,
     int16_t x, int16_t y, uint16_t width, uint16_t height)
 {

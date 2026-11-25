@@ -58,12 +58,33 @@ static uint32_t Ui2InputCase(void)
     CHECK(OledUi_InputSample(&input, 0U, true, 800U) == 0U);
     CHECK(OledUi_InputSample(&input, 0U, false, 801U) == 0U);
     CHECK(OledUi_InputSample(&input, 0U, false, 821U) == 0U);
+    //LSE占用PC15时保护GPIO，主监控仍可正常初始化。
+    g_test_rcc.BDCR = RCC_BDCR_LSEON;
+    CHECK(BSP_U7_Init() == SYS_ERR_NOT_SUPPORTED);
+    CHECK(s_gpio_enabled == 0U && s_gpio_reads == 0U);
     CHECK(Init() == 0U);
+    CHECK(g_oled_u7_result == SYS_ERR_NOT_SUPPORTED && !s_u7_ready);
+    Step(1U);
+    CHECK(s_gpio_enabled == 0U && s_gpio_reads == 0U);
+
+    g_test_rcc.BDCR = 0U;
+    CHECK(App_OledU7Init() == SYS_OK && s_u7_ready);
+    CHECK(s_gpio_pins[GPIOI] == (GPIO_PIN_6 | GPIO_PIN_9));
+    CHECK(s_gpio_pins[GPIOC] == GPIO_PIN_15 && s_gpio_invalid == 0U);
+    CHECK(s_gpio_reads == 3U);
+    s_gpio_low[GPIOI] = GPIO_PIN_9;
+    Step(2U);
+    Step(22U);
+    s_gpio_low[GPIOI] = 0U;
+    Step(30U);
+    Step(50U);
+    CHECK(s_page_state.current == OLED_UI_PAGE_SYSTEM && s_gpio_invalid == 0U);
+    CHECK(OledUi_PageInit(&s_page_state) == SYS_OK);
     CHECK(OledUi_InputPush(&s_oled_input_queue, OLED_UI_EVENT_OPEN_MENU, false) == SYS_OK);
     CHECK(OledUi_InputPush(&s_oled_input_queue, OLED_UI_EVENT_NEXT, false) == SYS_OK);
     CHECK(App_OledConsumeInput() == SYS_OK);
-    CHECK(s_ui2_state.current == OLED_UI_PAGE_SYSTEM);
-    CHECK(s_ui2_state.cursor[OLED_UI_PAGE_SYSTEM].selected == 0U);
+    CHECK(s_page_state.current == OLED_UI_PAGE_SYSTEM);
+    CHECK(s_page_state.cursor[OLED_UI_PAGE_SYSTEM].selected == 0U);
     CHECK(g_oled_ui_dropped_inputs == 1U);
     return 0U;
 }

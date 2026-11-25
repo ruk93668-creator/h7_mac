@@ -164,6 +164,11 @@ bool OledUi_StatusBuild(OledUiPageId_t page, const IpcApplicationView_t *view,
     {
         OledUi_StatusAppend(status->lines[0], "CM7 ");
         OledUi_StatusAppend(status->lines[0], OledUi_StatusPeer(view->peer_state));
+        OledUi_StatusAppend(status->lines[0], " HB ");
+        if (counters->heartbeat_valid && view->peer_state == IPC_PEER_ONLINE)
+            OledUi_StatusNumber(status->lines[0], counters->peer_heartbeat);
+        else
+            OledUi_StatusAppend(status->lines[0], "N/A");
         OledUi_StatusAppend(status->lines[1], "V ");
         OledUi_StatusNumber(status->lines[1], view->valid_mask & IPC_APP_ALL);
         OledUi_StatusAppend(status->lines[1], " F ");
@@ -202,6 +207,7 @@ static bool OledUi_SystemValid(const OledUiSystemStatus_t *system)
     return true;
 }
 
+//按会话和任务ID恢复选中项并限制索引
 uint8_t OledUi_SystemTaskSelect(const OledUiSystemStatus_t *system, OledUiTaskCursor_t *cursor,
     int32_t direction)
 {
@@ -291,6 +297,7 @@ static void OledUi_SystemTask(const OledUiSystemStatus_t *system,
     }
 }
 
+//根据会话、时效和有效位组织系统诊断文本
 bool OledUi_SystemBuild(OledUiPageId_t page, const IpcApplicationView_t *ipc,
     const OledUiSystemStatus_t *system, const OledUiTaskCursor_t *cursor,
     uint32_t now, OledUiStatus_t *status)

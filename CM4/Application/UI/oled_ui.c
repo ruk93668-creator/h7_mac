@@ -7,6 +7,7 @@
 
 //每个字符占6列8行，其中5列保存字形，末列和末行留空
 #define OLED_UI_CELL_WIDTH 6U
+//监控首页的字格行高，单位像素
 #define OLED_UI_CELL_HEIGHT 8U
 
 //保存可打印ASCII的5列字形，位0对应字符顶部

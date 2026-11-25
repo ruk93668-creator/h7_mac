@@ -11,13 +11,16 @@
 //已写像素由调用者按需要回滚。接口不可从中断调用，不提交刷新。
 SysResult_t OledUi_DrawLine(OledDevice_t *oled,
     int16_t x0, int16_t y0, int16_t x1, int16_t y1, bool on);
+//绘制矩形外边缘
 SysResult_t OledUi_DrawRect(OledDevice_t *oled,
     int16_t x, int16_t y, uint16_t width, uint16_t height, bool on);
+//用指定像素值覆盖矩形内部
 SysResult_t OledUi_FillRect(OledDevice_t *oled,
     int16_t x, int16_t y, uint16_t width, uint16_t height, bool on);
 //圆角半径限制为较短边减一的一半；半径零等同普通边框。
 SysResult_t OledUi_DrawRoundRect(OledDevice_t *oled,
     int16_t x, int16_t y, uint16_t width, uint16_t height, uint16_t radius, bool on);
+//按原像素值翻转裁剪区域
 SysResult_t OledUi_InvertArea(OledDevice_t *oled,
     int16_t x, int16_t y, uint16_t width, uint16_t height);
 //每行独立按字节对齐、MSB在左。0清除、1点亮。length为可读字节数。

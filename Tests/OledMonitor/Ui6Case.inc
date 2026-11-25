@@ -27,8 +27,8 @@ static uint32_t Ui6Case(uint32_t id)
         CHECK(s_oled.refresh_state == OLED_REFRESH_WAIT_CMD && s_tx_count == 1U);
         memcpy(s_saved, s_oled.framebuffer, OLED_BUFFER_SIZE);
         Ui2Post(events[i % sizeof(events)]);
-        CHECK(s_ui2_state.current == pages[i % sizeof(pages)]);
-        CHECK(g_oled_ui2_debug.ack == i + 1U && g_oled_ui2_debug.result == SYS_OK);
+        CHECK(s_page_state.current == pages[i % sizeof(pages)]);
+        CHECK(s_test_input.ack == i + 1U && s_test_input.result == SYS_OK);
 
         for (page = 0U; page < 4U; page++)
         {

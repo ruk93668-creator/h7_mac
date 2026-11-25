@@ -72,19 +72,18 @@ version=run([cc,'--vsn']).strip()
 rows=[]
 for opt in ['O0','O2']:
  obj=OUT/('monitor_'+opt+'.o');axf=obj.with_suffix('.axf')
- flags=[cc,'--cpu','Cortex-M4','--c99','-'+opt,'-DOLED_UI3_U7_ENABLED=0']
- if UI2:flags+=['-DOLED_UI2_TEST_INPUT=1']
- for inc in ['CM4/Device/Inc','CM4/BSP','Common/Inc','Board/Inc','CM4/Application','CM4/Framework','CM4/Platform','CM4/Service']:
+ flags=[cc,'--cpu','Cortex-M4','--c99','-'+opt]
+ if UI2:flags+=['-DOLED_MONITOR_TEST_MENU=1']
+ for inc in ['Tests/OledMonitor/HalStub','CM4/Application/UI','CM4/Device/Inc','CM4/BSP','Common/Inc','Board/Inc','CM4/Application','CM4/Framework','CM4/Platform','CM4/Service']:
   flags+=['-I',ROOT/inc]
  run(flags+['-c',HERE/'monitor_test.c','-o',obj])
  draw=OUT/('draw_'+opt+'.o')
- run(flags+['-c',ROOT/'CM4/Application/oled_ui_draw.c','-o',draw])
+ run(flags+['-c',ROOT/'CM4/Application/UI/oled_ui_draw.c','-o',draw])
  extra=[]
- if UI2:
-  for part in ('page','menu','input','anim','status','compat'):
-   path=OUT/('ui2_'+part+'_'+opt+'.o')
-   run(flags+['-c',ROOT/('CM4/Application/oled_ui_'+part+'.c'),'-o',path])
-   extra.append(path)
+ for part in ('page','menu','input','anim','status','tools','font'):
+  path=OUT/('ui_'+part+'_'+opt+'.o')
+  run(flags+['-c',ROOT/('CM4/Application/UI/oled_ui_'+part+'.c'),'-o',path])
+  extra.append(path)
  run([cc.with_name('armlink.exe'),obj,draw,*extra,'--entry','OledMonitor_TestRun','--scatter',HERE/'test.sct',
       '--keep=*(.framework_init)','--keep=*(.device_export)','--no_scanlib','-o',axf])
  with axf.open('rb') as f:
