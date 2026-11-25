@@ -4095,11 +4095,6 @@
               <FilePath>../CM4/Application/app_oled.c</FilePath>
             </File>
             <File>
-              <FileName>oled_ui.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>../CM4/Application/oled_ui.c</FilePath>
-            </File>
-            <File>
               <FileName>app_oled.h</FileName>
               <FileType>5</FileType>
               <FilePath>../CM4/Application/app_oled.h</FilePath>
@@ -4473,6 +4468,180 @@
           </Files>
         </Group>
         <Group>
+          <GroupName>CM4\Application\UI</GroupName>
+          <GroupOption>
+            <CommonProperty>
+              <UseCPPCompiler>0</UseCPPCompiler>
+              <RVCTCodeConst>0</RVCTCodeConst>
+              <RVCTZI>0</RVCTZI>
+              <RVCTOtherData>0</RVCTOtherData>
+              <ModuleSelection>0</ModuleSelection>
+              <IncludeInBuild>0</IncludeInBuild>
+              <AlwaysBuild>2</AlwaysBuild>
+              <GenerateAssemblyFile>2</GenerateAssemblyFile>
+              <AssembleAssemblyFile>2</AssembleAssemblyFile>
+              <PublicsOnly>2</PublicsOnly>
+              <StopOnExitCode>11</StopOnExitCode>
+              <CustomArgument></CustomArgument>
+              <IncludeLibraryModules></IncludeLibraryModules>
+              <ComprImg>1</ComprImg>
+            </CommonProperty>
+            <GroupArmAds>
+              <Cads>
+                <interw>2</interw>
+                <Optim>0</Optim>
+                <oTime>2</oTime>
+                <SplitLS>2</SplitLS>
+                <OneElfS>2</OneElfS>
+                <Strict>2</Strict>
+                <EnumInt>2</EnumInt>
+                <PlainCh>2</PlainCh>
+                <Ropi>2</Ropi>
+                <Rwpi>2</Rwpi>
+                <wLevel>4</wLevel>
+                <uThumb>2</uThumb>
+                <uSurpInc>2</uSurpInc>
+                <uC99>2</uC99>
+                <uGnu>2</uGnu>
+                <useXO>2</useXO>
+                <v6Lang>0</v6Lang>
+                <v6LangP>0</v6LangP>
+                <vShortEn>2</vShortEn>
+                <vShortWch>2</vShortWch>
+                <v6Lto>2</v6Lto>
+                <v6WtE>2</v6WtE>
+                <v6Rtti>2</v6Rtti>
+                <VariousControls>
+                  <MiscControls></MiscControls>
+                  <Define></Define>
+                  <Undefine></Undefine>
+                  <IncludePath></IncludePath>
+                </VariousControls>
+              </Cads>
+              <Aads>
+                <interw>2</interw>
+                <Ropi>2</Ropi>
+                <Rwpi>2</Rwpi>
+                <thumb>2</thumb>
+                <SplitLS>2</SplitLS>
+                <SwStkChk>2</SwStkChk>
+                <NoWarn>2</NoWarn>
+                <uSurpInc>2</uSurpInc>
+                <useXO>2</useXO>
+                <ClangAsOpt>0</ClangAsOpt>
+                <VariousControls>
+                  <MiscControls></MiscControls>
+                  <Define></Define>
+                  <Undefine></Undefine>
+                  <IncludePath></IncludePath>
+                </VariousControls>
+              </Aads>
+            </GroupArmAds>
+          </GroupOption>
+          <Files>
+            <File>
+              <FileName>oled_ui_assets.inc</FileName>
+              <FileType>5</FileType>
+              <FilePath>../CM4/Application/UI/Assets/oled_ui_assets.inc</FilePath>
+            </File>
+            <File>
+              <FileName>oled_ui_bitmaps.inc</FileName>
+              <FileType>5</FileType>
+              <FilePath>../CM4/Application/UI/Assets/oled_ui_bitmaps.inc</FilePath>
+            </File>
+            <File>
+              <FileName>oled_ui.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>../CM4/Application/UI/oled_ui.c</FilePath>
+            </File>
+            <File>
+              <FileName>oled_ui.h</FileName>
+              <FileType>5</FileType>
+              <FilePath>../CM4/Application/UI/oled_ui.h</FilePath>
+            </File>
+            <File>
+              <FileName>oled_ui_anim.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>../CM4/Application/UI/oled_ui_anim.c</FilePath>
+            </File>
+            <File>
+              <FileName>oled_ui_anim.h</FileName>
+              <FileType>5</FileType>
+              <FilePath>../CM4/Application/UI/oled_ui_anim.h</FilePath>
+            </File>
+            <File>
+              <FileName>oled_ui_draw.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>../CM4/Application/UI/oled_ui_draw.c</FilePath>
+            </File>
+            <File>
+              <FileName>oled_ui_draw.h</FileName>
+              <FileType>5</FileType>
+              <FilePath>../CM4/Application/UI/oled_ui_draw.h</FilePath>
+            </File>
+            <File>
+              <FileName>oled_ui_input.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>../CM4/Application/UI/oled_ui_input.c</FilePath>
+            </File>
+            <File>
+              <FileName>oled_ui_input.h</FileName>
+              <FileType>5</FileType>
+              <FilePath>../CM4/Application/UI/oled_ui_input.h</FilePath>
+            </File>
+            <File>
+              <FileName>oled_ui_menu.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>../CM4/Application/UI/oled_ui_menu.c</FilePath>
+            </File>
+            <File>
+              <FileName>oled_ui_menu.h</FileName>
+              <FileType>5</FileType>
+              <FilePath>../CM4/Application/UI/oled_ui_menu.h</FilePath>
+            </File>
+            <File>
+              <FileName>oled_ui_page.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>../CM4/Application/UI/oled_ui_page.c</FilePath>
+            </File>
+            <File>
+              <FileName>oled_ui_page.h</FileName>
+              <FileType>5</FileType>
+              <FilePath>../CM4/Application/UI/oled_ui_page.h</FilePath>
+            </File>
+            <File>
+              <FileName>oled_ui_status.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>../CM4/Application/UI/oled_ui_status.c</FilePath>
+            </File>
+            <File>
+              <FileName>oled_ui_status.h</FileName>
+              <FileType>5</FileType>
+              <FilePath>../CM4/Application/UI/oled_ui_status.h</FilePath>
+            </File>
+            <File>
+              <FileName>oled_ui_tools.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>../CM4/Application/UI/oled_ui_tools.c</FilePath>
+            </File>
+            <File>
+              <FileName>oled_ui_tools.h</FileName>
+              <FileType>5</FileType>
+              <FilePath>../CM4/Application/UI/oled_ui_tools.h</FilePath>
+            </File>
+            <File>
+              <FileName>oled_ui_font.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>../CM4/Application/UI/oled_ui_font.c</FilePath>
+            </File>
+            <File>
+              <FileName>oled_ui_font.h</FileName>
+              <FileType>5</FileType>
+              <FilePath>../CM4/Application/UI/oled_ui_font.h</FilePath>
+            </File>
+          </Files>
+        </Group>
+        <Group>
           <GroupName>CM4\BSP</GroupName>
           <GroupOption>
             <CommonProperty>
@@ -4553,6 +4722,16 @@
               <FileName>bsp_iic.h</FileName>
               <FileType>5</FileType>
               <FilePath>../CM4/BSP/bsp_iic.h</FilePath>
+            </File>
+            <File>
+              <FileName>bsp_u7.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>../CM4/BSP/bsp_u7.c</FilePath>
+            </File>
+            <File>
+              <FileName>bsp_u7.h</FileName>
+              <FileType>5</FileType>
+              <FilePath>../CM4/BSP/bsp_u7.h</FilePath>
             </File>
           </Files>
         </Group>
