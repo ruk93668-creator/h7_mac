@@ -6,6 +6,7 @@
 
 //128列只能放下21个6像素字符，末列保留2像素
 #define OLED_UI_COLUMNS 21U
+//四行IPC监控首页的文本行数
 #define OLED_UI_ROWS 4U
 
 //根据完整IPC副本绘制四行监控画面，只允许在刷新IDLE时调用

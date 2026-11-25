@@ -24,7 +24,7 @@ typedef struct
 //供Keil观察界面更新、错误和刷新进展
 extern volatile AppOledDebug_t g_oled_monitor_debug;
 
-//获取OLED并启动唯一100ms界面更新Timer
+//初始化OLED并登记唯一50ms Timer，监控首页每100ms更新
 SysResult_t App_OledInit(void);
 
 //持续轮询OLED，推进四页异步刷新

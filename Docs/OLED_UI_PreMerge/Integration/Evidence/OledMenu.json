@@ -1,0 +1,1792 @@
+{
+  "compiler": "Product: MDK Plus 5.32\r\nComponent: ARM Compiler 5.06 update 7 (build 960)\r\nTool: armcc [4d365d]\r\nFor support see http://www.arm.com/support\r\nSoftware supplied by: ARM Limited",
+  "summary": {
+    "total": 178,
+    "passed": 178,
+    "failed": 0,
+    "assertions": 459050
+  },
+  "cases": [
+    {
+      "case": 0,
+      "name": "A字形与第六列留白",
+      "optimization": "O0",
+      "result": "PASS",
+      "checks": 15,
+      "failure_line": 0,
+      "error": null,
+      "host_seconds": 0.005252
+    },
+    {
+      "case": 1,
+      "name": "全部95个ASCII字形",
+      "optimization": "O0",
+      "result": "PASS",
+      "checks": 671,
+      "failure_line": 0,
+      "error": null,
+      "host_seconds": 0.013357
+    },
+    {
+      "case": 2,
+      "name": "右下角坐标裁剪",
+      "optimization": "O0",
+      "result": "PASS",
+      "checks": 8,
+      "failure_line": 0,
+      "error": null,
+      "host_seconds": 0.004962
+    },
+    {
+      "case": 3,
+      "name": "非ASCII替换问号",
+      "optimization": "O0",
+      "result": "PASS",
+      "checks": 12,
+      "failure_line": 0,
+      "error": null,
+      "host_seconds": 0.004996
+    },
+    {
+      "case": 4,
+      "name": "空参数拒绝",
+      "optimization": "O0",
+      "result": "PASS",
+      "checks": 8,
+      "failure_line": 0,
+      "error": null,
+      "host_seconds": 0.004971
+    },
+    {
+      "case": 5,
+      "name": "刷新BUSY禁止绘图",
+      "optimization": "O0",
+      "result": "PASS",
+      "checks": 518,
+      "failure_line": 0,
+      "error": null,
+      "host_seconds": 0.001828
+    },
+    {
+      "case": 6,
+      "name": "缺失绘图Ops",
+      "optimization": "O0",
+      "result": "PASS",
+      "checks": 6,
+      "failure_line": 0,
+      "error": null,
+      "host_seconds": 0.001718
+    },
+    {
+      "case": 7,
+      "name": "清屏失败",
+      "optimization": "O0",
+      "result": "PASS",
+      "checks": 7,
+      "failure_line": 0,
+      "error": null,
+      "host_seconds": 0.001728
+    },
+    {
+      "case": 8,
+      "name": "像素失败",
+      "optimization": "O0",
+      "result": "PASS",
+      "checks": 6,
+      "failure_line": 0,
+      "error": null,
+      "host_seconds": 0.002202
+    },
+    {
+      "case": 9,
+      "name": "长画面变短无残留",
+      "optimization": "O0",
+      "result": "PASS",
+      "checks": 264,
+      "failure_line": 0,
+      "error": null,
+      "host_seconds": 0.006355
+    },
+    {
+      "case": 10,
+      "name": "Y8格式",
+      "optimization": "O0",
+      "result": "PASS",
+      "checks": 7,
+      "failure_line": 0,
+      "error": null,
+      "host_seconds": 0.004567
+    },
+    {
+      "case": 11,
+      "name": "RGB565格式",
+      "optimization": "O0",
+      "result": "PASS",
+      "checks": 7,
+      "failure_line": 0,
+      "error": null,
+      "host_seconds": 0.005236
+    },
+    {
+      "case": 12,
+      "name": "YUY2格式",
+      "optimization": "O0",
+      "result": "PASS",
+      "checks": 7,
+      "failure_line": 0,
+      "error": null,
+      "host_seconds": 0.004755
+    },
+    {
+      "case": 13,
+      "name": "JPEG格式",
+      "optimization": "O0",
+      "result": "PASS",
+      "checks": 7,
+      "failure_line": 0,
+      "error": null,
+      "host_seconds": 0.004533
+    },
+    {
+      "case": 14,
+      "name": "零FPS",
+      "optimization": "O0",
+      "result": "PASS",
+      "checks": 1,
+      "failure_line": 0,
+      "error": null,
+      "host_seconds": 0.000715
+    },
+    {
+      "case": 15,
+      "name": "不足1FPS",
+      "optimization": "O0",
+      "result": "PASS",
+      "checks": 1,
+      "failure_line": 0,
+      "error": null,
+      "host_seconds": 0.001111
+    },
+    {
+      "case": 16,
+      "name": "FPS一位小数",
+      "optimization": "O0",
+      "result": "PASS",
+      "checks": 1,
+      "failure_line": 0,
+      "error": null,
+      "host_seconds": 0.000715
+    },
+    {
+      "case": 17,
+      "name": "FPS大值",
+      "optimization": "O0",
+      "result": "PASS",
+      "checks": 1,
+      "failure_line": 0,
+      "error": null,
+      "host_seconds": 0.000539
+    },
+    {
+      "case": 18,
+      "name": "正常四行排版",
+      "optimization": "O0",
+      "result": "PASS",
+      "checks": 10,
+      "failure_line": 0,
+      "error": null,
+      "host_seconds": 0.004754
+    },
+    {
+      "case": 19,
+      "name": "USB启动但无完成FPS",
+      "optimization": "O0",
+      "result": "PASS",
+      "checks": 7,
+      "failure_line": 0,
+      "error": null,
+      "host_seconds": 0.004164
+    },
+    {
+      "case": 20,
+      "name": "Camera与USB停止",
+      "optimization": "O0",
+      "result": "PASS",
+      "checks": 7,
+      "failure_line": 0,
+      "error": null,
+      "host_seconds": 0.004587
+    },
+    {
+      "case": 21,
+      "name": "Camera与USB停止中",
+      "optimization": "O0",
+      "result": "PASS",
+      "checks": 7,
+      "failure_line": 0,
+      "error": null,
+      "host_seconds": 0.004505
+    },
+    {
+      "case": 22,
+      "name": "IPC初始化",
+      "optimization": "O0",
+      "result": "PASS",
+      "checks": 7,
+      "failure_line": 0,
+      "error": null,
+      "host_seconds": 0.002866
+    },
+    {
+      "case": 23,
+      "name": "CM7失联",
+      "optimization": "O0",
+      "result": "PASS",
+      "checks": 9,
+      "failure_line": 0,
+      "error": null,
+      "host_seconds": 0.003404
+    },
+    {
+      "case": 24,
+      "name": "启动超时",
+      "optimization": "O0",
+      "result": "PASS",
+      "checks": 9,
+      "failure_line": 0,
+      "error": null,
+      "host_seconds": 0.002992
+    },
+    {
+      "case": 25,
+      "name": "协议错误",
+      "optimization": "O0",
+      "result": "PASS",
+      "checks": 9,
+      "failure_line": 0,
+      "error": null,
+      "host_seconds": 0.00293
+    },
+    {
+      "case": 26,
+      "name": "未知通信状态",
+      "optimization": "O0",
+      "result": "PASS",
+      "checks": 7,
+      "failure_line": 0,
+      "error": null,
+      "host_seconds": 0.003043
+    },
+    {
+      "case": 27,
+      "name": "读取错误",
+      "optimization": "O0",
+      "result": "PASS",
+      "checks": 7,
+      "failure_line": 0,
+      "error": null,
+      "host_seconds": 0.002546
+    },
+    {
+      "case": 28,
+      "name": "短暂BUSY缓存",
+      "optimization": "O0",
+      "result": "PASS",
+      "checks": 10,
+      "failure_line": 0,
+      "error": null,
+      "host_seconds": 0.005308
+    },
+    {
+      "case": 29,
+      "name": "所有来源无效",
+      "optimization": "O0",
+      "result": "PASS",
+      "checks": 7,
+      "failure_line": 0,
+      "error": null,
+      "host_seconds": 0.003199
+    },
+    {
+      "case": 30,
+      "name": "Camera无效",
+      "optimization": "O0",
+      "result": "PASS",
+      "checks": 7,
+      "failure_line": 0,
+      "error": null,
+      "host_seconds": 0.00507
+    },
+    {
+      "case": 31,
+      "name": "USB无效",
+      "optimization": "O0",
+      "result": "PASS",
+      "checks": 7,
+      "failure_line": 0,
+      "error": null,
+      "host_seconds": 0.005204
+    },
+    {
+      "case": 32,
+      "name": "Control无效",
+      "optimization": "O0",
+      "result": "PASS",
+      "checks": 7,
+      "failure_line": 0,
+      "error": null,
+      "host_seconds": 0.004261
+    },
+    {
+      "case": 33,
+      "name": "Camera陈旧",
+      "optimization": "O0",
+      "result": "PASS",
+      "checks": 8,
+      "failure_line": 0,
+      "error": null,
+      "host_seconds": 0.003951
+    },
+    {
+      "case": 34,
+      "name": "USB陈旧",
+      "optimization": "O0",
+      "result": "PASS",
+      "checks": 7,
+      "failure_line": 0,
+      "error": null,
+      "host_seconds": 0.004223
+    },
+    {
+      "case": 35,
+      "name": "Control陈旧",
+      "optimization": "O0",
+      "result": "PASS",
+      "checks": 7,
+      "failure_line": 0,
+      "error": null,
+      "host_seconds": 0.0042
+    },
+    {
+      "case": 36,
+      "name": "全部陈旧",
+      "optimization": "O0",
+      "result": "PASS",
+      "checks": 8,
+      "failure_line": 0,
+      "error": null,
+      "host_seconds": 0.00564
+    },
+    {
+      "case": 37,
+      "name": "Camera故障",
+      "optimization": "O0",
+      "result": "PASS",
+      "checks": 7,
+      "failure_line": 0,
+      "error": null,
+      "host_seconds": 0.004752
+    },
+    {
+      "case": 38,
+      "name": "USB故障",
+      "optimization": "O0",
+      "result": "PASS",
+      "checks": 7,
+      "failure_line": 0,
+      "error": null,
+      "host_seconds": 0.007242
+    },
+    {
+      "case": 39,
+      "name": "Control故障",
+      "optimization": "O0",
+      "result": "PASS",
+      "checks": 7,
+      "failure_line": 0,
+      "error": null,
+      "host_seconds": 0.00549
+    },
+    {
+      "case": 40,
+      "name": "真实IPC年龄499/500ms与Tick回绕",
+      "optimization": "O0",
+      "result": "PASS",
+      "checks": 12,
+      "failure_line": 0,
+      "error": null,
+      "host_seconds": 0.004557
+    },
+    {
+      "case": 41,
+      "name": "计数最大值",
+      "optimization": "O0",
+      "result": "PASS",
+      "checks": 8,
+      "failure_line": 0,
+      "error": null,
+      "host_seconds": 0.004415
+    },
+    {
+      "case": 42,
+      "name": "INT32_MIN错误码",
+      "optimization": "O0",
+      "result": "PASS",
+      "checks": 1,
+      "failure_line": 0,
+      "error": null,
+      "host_seconds": 0.000767
+    },
+    {
+      "case": 43,
+      "name": "重复初始化不创建Timer",
+      "optimization": "O0",
+      "result": "PASS",
+      "checks": 10,
+      "failure_line": 0,
+      "error": null,
+      "host_seconds": 0.002975
+    },
+    {
+      "case": 44,
+      "name": "初始化前轮询",
+      "optimization": "O0",
+      "result": "PASS",
+      "checks": 1,
+      "failure_line": 0,
+      "error": null,
+      "host_seconds": 0.00029
+    },
+    {
+      "case": 45,
+      "name": "99/100ms启动",
+      "optimization": "O0",
+      "result": "PASS",
+      "checks": 12,
+      "failure_line": 0,
+      "error": null,
+      "host_seconds": 0.006345
+    },
+    {
+      "case": 46,
+      "name": "异步发送期间不改Framebuffer",
+      "optimization": "O0",
+      "result": "PASS",
+      "checks": 21,
+      "failure_line": 0,
+      "error": null,
+      "host_seconds": 0.006842
+    },
+    {
+      "case": 47,
+      "name": "提交BUSY恢复原Framebuffer",
+      "optimization": "O0",
+      "result": "PASS",
+      "checks": 523,
+      "failure_line": 0,
+      "error": null,
+      "host_seconds": 0.01139
+    },
+    {
+      "case": 48,
+      "name": "提交IO错误与重试",
+      "optimization": "O0",
+      "result": "PASS",
+      "checks": 523,
+      "failure_line": 0,
+      "error": null,
+      "host_seconds": 0.009519
+    },
+    {
+      "case": 49,
+      "name": "完成IO错误与恢复",
+      "optimization": "O0",
+      "result": "PASS",
+      "checks": 16,
+      "failure_line": 0,
+      "error": null,
+      "host_seconds": 0.009685
+    },
+    {
+      "case": 50,
+      "name": "四页命令数据顺序和字节一致",
+      "optimization": "O0",
+      "result": "PASS",
+      "checks": 566,
+      "failure_line": 0,
+      "error": null,
+      "host_seconds": 0.007855
+    },
+    {
+      "case": 51,
+      "name": "画面变化等旧帧完成后更新",
+      "optimization": "O0",
+      "result": "PASS",
+      "checks": 570,
+      "failure_line": 0,
+      "error": null,
+      "host_seconds": 0.008405
+    },
+    {
+      "case": 52,
+      "name": "IPC接口失败不发送",
+      "optimization": "O0",
+      "result": "PASS",
+      "checks": 9,
+      "failure_line": 0,
+      "error": null,
+      "host_seconds": 0.003773
+    },
+    {
+      "case": 53,
+      "name": "绘图失败恢复原Framebuffer",
+      "optimization": "O0",
+      "result": "PASS",
+      "checks": 521,
+      "failure_line": 0,
+      "error": null,
+      "host_seconds": 0.006607
+    },
+    {
+      "case": 54,
+      "name": "Timer对象池满",
+      "optimization": "O0",
+      "result": "PASS",
+      "checks": 18,
+      "failure_line": 0,
+      "error": null,
+      "host_seconds": 0.001885
+    },
+    {
+      "case": 55,
+      "name": "缺失设备",
+      "optimization": "O0",
+      "result": "PASS",
+      "checks": 1,
+      "failure_line": 0,
+      "error": null,
+      "host_seconds": 0.000366
+    },
+    {
+      "case": 56,
+      "name": "设备未READY",
+      "optimization": "O0",
+      "result": "PASS",
+      "checks": 2,
+      "failure_line": 0,
+      "error": null,
+      "host_seconds": 0.0006
+    },
+    {
+      "case": 57,
+      "name": "缺失Ops不建Timer",
+      "optimization": "O0",
+      "result": "PASS",
+      "checks": 2,
+      "failure_line": 0,
+      "error": null,
+      "host_seconds": 0.001346
+    },
+    {
+      "case": 58,
+      "name": "底部裁剪",
+      "optimization": "O0",
+      "result": "PASS",
+      "checks": 2,
+      "failure_line": 0,
+      "error": null,
+      "host_seconds": 0.000684
+    },
+    {
+      "case": 59,
+      "name": "极大坐标裁剪",
+      "optimization": "O0",
+      "result": "PASS",
+      "checks": 2,
+      "failure_line": 0,
+      "error": null,
+      "host_seconds": 0.000734
+    },
+    {
+      "case": 60,
+      "name": "A4保留且A5已删除",
+      "optimization": "O0",
+      "result": "PASS",
+      "checks": 8,
+      "failure_line": 0,
+      "error": null,
+      "host_seconds": 0.003894
+    },
+    {
+      "case": 61,
+      "name": "UI1 全屏边框、水平和垂直线逐像素比对",
+      "optimization": "O0",
+      "result": "PASS",
+      "checks": 4101,
+      "failure_line": 0,
+      "error": null,
+      "host_seconds": 0.011129
+    },
+    {
+      "case": 62,
+      "name": "UI1 极值交叉线、反向线、陡斜线和单点",
+      "optimization": "O0",
+      "result": "PASS",
+      "checks": 4135,
+      "failure_line": 0,
+      "error": null,
+      "host_seconds": 0.003437
+    },
+    {
+      "case": 63,
+      "name": "UI1 极值尺寸、负坐标裁剪、零尺寸与屏外图元",
+      "optimization": "O0",
+      "result": "PASS",
+      "checks": 4104,
+      "failure_line": 0,
+      "error": null,
+      "host_seconds": 0.007458
+    },
+    {
+      "case": 64,
+      "name": "UI1 反色跨三页且区域外保持原值",
+      "optimization": "O0",
+      "result": "PASS",
+      "checks": 4612,
+      "failure_line": 0,
+      "error": null,
+      "host_seconds": 0.002345
+    },
+    {
+      "case": 65,
+      "name": "UI1 圆角轮廓和半径限幅",
+      "optimization": "O0",
+      "result": "PASS",
+      "checks": 4099,
+      "failure_line": 0,
+      "error": null,
+      "host_seconds": 0.002394
+    },
+    {
+      "case": 66,
+      "name": "UI1 位图长度、空指针、裁剪和跨页",
+      "optimization": "O0",
+      "result": "PASS",
+      "checks": 4104,
+      "failure_line": 0,
+      "error": null,
+      "host_seconds": 0.00235
+    },
+    {
+      "case": 67,
+      "name": "UI1 ASCII边界、非NUL结尾及双向裁剪",
+      "optimization": "O0",
+      "result": "PASS",
+      "checks": 13,
+      "failure_line": 0,
+      "error": null,
+      "host_seconds": 0.001874
+    },
+    {
+      "case": 68,
+      "name": "UI1 全部接口在非IDLE保持原帧及错误契约",
+      "optimization": "O0",
+      "result": "PASS",
+      "checks": 534,
+      "failure_line": 0,
+      "error": null,
+      "host_seconds": 0.001444
+    },
+    {
+      "case": 69,
+      "name": "UI2 固定页面表、初始化、非法ID及失败后状态保留",
+      "optimization": "O0",
+      "result": "PASS",
+      "checks": 170,
+      "failure_line": 0,
+      "error": null,
+      "host_seconds": 0.001362
+    },
+    {
+      "case": 70,
+      "name": "UI2 快速输入、滚动、空页、单项与父子游标恢复",
+      "optimization": "O0",
+      "result": "PASS",
+      "checks": 125,
+      "failure_line": 0,
+      "error": null,
+      "host_seconds": 0.002322
+    },
+    {
+      "case": 71,
+      "name": "UI2 标题、窗口文字、高亮、屏边及非IDLE互斥",
+      "optimization": "O0",
+      "result": "PASS",
+      "checks": 18,
+      "failure_line": 0,
+      "error": null,
+      "host_seconds": 0.007355
+    },
+    {
+      "case": 72,
+      "name": "UI2 忙期间事件只改变逻辑状态，下一帧显示并可恢复监控",
+      "optimization": "O0",
+      "result": "PASS",
+      "checks": 24,
+      "failure_line": 0,
+      "error": null,
+      "host_seconds": 0.010888
+    },
+    {
+      "case": 73,
+      "name": "UI2 菜单像素失败整帧回滚并重试",
+      "optimization": "O0",
+      "result": "PASS",
+      "checks": 13,
+      "failure_line": 0,
+      "error": null,
+      "host_seconds": 0.020049
+    },
+    {
+      "case": 74,
+      "name": "UI2 刷新提交BUSY整帧回滚并重试",
+      "optimization": "O0",
+      "result": "PASS",
+      "checks": 13,
+      "failure_line": 0,
+      "error": null,
+      "host_seconds": 0.011512
+    },
+    {
+      "case": 75,
+      "name": "UI2 刷新提交IO错误整帧回滚并重试",
+      "optimization": "O0",
+      "result": "PASS",
+      "checks": 13,
+      "failure_line": 0,
+      "error": null,
+      "host_seconds": 0.019353
+    },
+    {
+      "case": 76,
+      "name": "UI2 U7 相位、抖动、短按、长按与Tick回绕",
+      "optimization": "O0",
+      "result": "PASS",
+      "checks": 86,
+      "failure_line": 0,
+      "error": null,
+      "host_seconds": 0.009009
+    },
+    {
+      "case": 77,
+      "name": "UI4 动画中间帧、滚动、长文本与时间回绕",
+      "optimization": "O0",
+      "result": "PASS",
+      "checks": 12,
+      "failure_line": 0,
+      "error": null,
+      "host_seconds": 0.002689
+    },
+    {
+      "case": 78,
+      "name": "UI4 弹窗副本、确认、取消、绘制与超时",
+      "optimization": "O0",
+      "result": "PASS",
+      "checks": 10,
+      "failure_line": 0,
+      "error": null,
+      "host_seconds": 0.031031
+    },
+    {
+      "case": 79,
+      "name": "UI5 Camera与USB有效、过期、失联和故障模型",
+      "optimization": "O0",
+      "result": "PASS",
+      "checks": 18,
+      "failure_line": 0,
+      "error": null,
+      "host_seconds": 0.003691
+    },
+    {
+      "case": 80,
+      "name": "UI5 Ethernet/Storage缺失与本地诊断字段",
+      "optimization": "O0",
+      "result": "PASS",
+      "checks": 12,
+      "failure_line": 0,
+      "error": null,
+      "host_seconds": 0.001811
+    },
+    {
+      "case": 81,
+      "name": "UI6 6000帧连续状态切换、IPC抖动与跨Tick回绕",
+      "optimization": "O0",
+      "result": "PASS",
+      "checks": 198008,
+      "failure_line": 0,
+      "error": null,
+      "host_seconds": 13.183618
+    },
+    {
+      "case": 82,
+      "name": "菜单50ms、监控100ms与忙期跳帧",
+      "optimization": "O0",
+      "result": "PASS",
+      "checks": 25,
+      "failure_line": 0,
+      "error": null,
+      "host_seconds": 0.018892
+    },
+    {
+      "case": 83,
+      "name": "系统监控导航与无发布数据",
+      "optimization": "O0",
+      "result": "PASS",
+      "checks": 18,
+      "failure_line": 0,
+      "error": null,
+      "host_seconds": 0.001724
+    },
+    {
+      "case": 84,
+      "name": "系统任务ID、重建、截断、低栈、失联及过期",
+      "optimization": "O0",
+      "result": "PASS",
+      "checks": 16,
+      "failure_line": 0,
+      "error": null,
+      "host_seconds": 0.001995
+    },
+    {
+      "case": 85,
+      "name": "系统Heap边界、累计峰值与CPU有效性",
+      "optimization": "O0",
+      "result": "PASS",
+      "checks": 12,
+      "failure_line": 0,
+      "error": null,
+      "host_seconds": 0.001541
+    },
+    {
+      "case": 86,
+      "name": "OLED_UI 字模、光标和数值编辑边界",
+      "optimization": "O0",
+      "result": "PASS",
+      "checks": 71,
+      "failure_line": 0,
+      "error": null,
+      "host_seconds": 0.003181
+    },
+    {
+      "case": 87,
+      "name": "OLED_UI 图标、过渡、滚动和弹窗连续帧",
+      "optimization": "O0",
+      "result": "PASS",
+      "checks": 585,
+      "failure_line": 0,
+      "error": null,
+      "host_seconds": 0.16168
+    },
+    {
+      "case": 88,
+      "name": "合并前：弹窗与局部页面切换时隔离旧输入",
+      "optimization": "O0",
+      "result": "PASS",
+      "checks": 31,
+      "failure_line": 0,
+      "error": null,
+      "host_seconds": 0.004334
+    },
+    {
+      "case": 0,
+      "name": "A字形与第六列留白",
+      "optimization": "O2",
+      "result": "PASS",
+      "checks": 15,
+      "failure_line": 0,
+      "error": null,
+      "host_seconds": 0.003605
+    },
+    {
+      "case": 1,
+      "name": "全部95个ASCII字形",
+      "optimization": "O2",
+      "result": "PASS",
+      "checks": 671,
+      "failure_line": 0,
+      "error": null,
+      "host_seconds": 0.00726
+    },
+    {
+      "case": 2,
+      "name": "右下角坐标裁剪",
+      "optimization": "O2",
+      "result": "PASS",
+      "checks": 8,
+      "failure_line": 0,
+      "error": null,
+      "host_seconds": 0.00321
+    },
+    {
+      "case": 3,
+      "name": "非ASCII替换问号",
+      "optimization": "O2",
+      "result": "PASS",
+      "checks": 12,
+      "failure_line": 0,
+      "error": null,
+      "host_seconds": 0.003286
+    },
+    {
+      "case": 4,
+      "name": "空参数拒绝",
+      "optimization": "O2",
+      "result": "PASS",
+      "checks": 8,
+      "failure_line": 0,
+      "error": null,
+      "host_seconds": 0.003441
+    },
+    {
+      "case": 5,
+      "name": "刷新BUSY禁止绘图",
+      "optimization": "O2",
+      "result": "PASS",
+      "checks": 518,
+      "failure_line": 0,
+      "error": null,
+      "host_seconds": 0.001401
+    },
+    {
+      "case": 6,
+      "name": "缺失绘图Ops",
+      "optimization": "O2",
+      "result": "PASS",
+      "checks": 6,
+      "failure_line": 0,
+      "error": null,
+      "host_seconds": 0.001223
+    },
+    {
+      "case": 7,
+      "name": "清屏失败",
+      "optimization": "O2",
+      "result": "PASS",
+      "checks": 7,
+      "failure_line": 0,
+      "error": null,
+      "host_seconds": 0.001351
+    },
+    {
+      "case": 8,
+      "name": "像素失败",
+      "optimization": "O2",
+      "result": "PASS",
+      "checks": 6,
+      "failure_line": 0,
+      "error": null,
+      "host_seconds": 0.001764
+    },
+    {
+      "case": 9,
+      "name": "长画面变短无残留",
+      "optimization": "O2",
+      "result": "PASS",
+      "checks": 264,
+      "failure_line": 0,
+      "error": null,
+      "host_seconds": 0.004611
+    },
+    {
+      "case": 10,
+      "name": "Y8格式",
+      "optimization": "O2",
+      "result": "PASS",
+      "checks": 7,
+      "failure_line": 0,
+      "error": null,
+      "host_seconds": 0.00351
+    },
+    {
+      "case": 11,
+      "name": "RGB565格式",
+      "optimization": "O2",
+      "result": "PASS",
+      "checks": 7,
+      "failure_line": 0,
+      "error": null,
+      "host_seconds": 0.003382
+    },
+    {
+      "case": 12,
+      "name": "YUY2格式",
+      "optimization": "O2",
+      "result": "PASS",
+      "checks": 7,
+      "failure_line": 0,
+      "error": null,
+      "host_seconds": 0.003339
+    },
+    {
+      "case": 13,
+      "name": "JPEG格式",
+      "optimization": "O2",
+      "result": "PASS",
+      "checks": 7,
+      "failure_line": 0,
+      "error": null,
+      "host_seconds": 0.003507
+    },
+    {
+      "case": 14,
+      "name": "零FPS",
+      "optimization": "O2",
+      "result": "PASS",
+      "checks": 1,
+      "failure_line": 0,
+      "error": null,
+      "host_seconds": 0.00078
+    },
+    {
+      "case": 15,
+      "name": "不足1FPS",
+      "optimization": "O2",
+      "result": "PASS",
+      "checks": 1,
+      "failure_line": 0,
+      "error": null,
+      "host_seconds": 0.000839
+    },
+    {
+      "case": 16,
+      "name": "FPS一位小数",
+      "optimization": "O2",
+      "result": "PASS",
+      "checks": 1,
+      "failure_line": 0,
+      "error": null,
+      "host_seconds": 0.000795
+    },
+    {
+      "case": 17,
+      "name": "FPS大值",
+      "optimization": "O2",
+      "result": "PASS",
+      "checks": 1,
+      "failure_line": 0,
+      "error": null,
+      "host_seconds": 0.000627
+    },
+    {
+      "case": 18,
+      "name": "正常四行排版",
+      "optimization": "O2",
+      "result": "PASS",
+      "checks": 10,
+      "failure_line": 0,
+      "error": null,
+      "host_seconds": 0.003699
+    },
+    {
+      "case": 19,
+      "name": "USB启动但无完成FPS",
+      "optimization": "O2",
+      "result": "PASS",
+      "checks": 7,
+      "failure_line": 0,
+      "error": null,
+      "host_seconds": 0.003249
+    },
+    {
+      "case": 20,
+      "name": "Camera与USB停止",
+      "optimization": "O2",
+      "result": "PASS",
+      "checks": 7,
+      "failure_line": 0,
+      "error": null,
+      "host_seconds": 0.00326
+    },
+    {
+      "case": 21,
+      "name": "Camera与USB停止中",
+      "optimization": "O2",
+      "result": "PASS",
+      "checks": 7,
+      "failure_line": 0,
+      "error": null,
+      "host_seconds": 0.003131
+    },
+    {
+      "case": 22,
+      "name": "IPC初始化",
+      "optimization": "O2",
+      "result": "PASS",
+      "checks": 7,
+      "failure_line": 0,
+      "error": null,
+      "host_seconds": 0.00213
+    },
+    {
+      "case": 23,
+      "name": "CM7失联",
+      "optimization": "O2",
+      "result": "PASS",
+      "checks": 9,
+      "failure_line": 0,
+      "error": null,
+      "host_seconds": 0.00219
+    },
+    {
+      "case": 24,
+      "name": "启动超时",
+      "optimization": "O2",
+      "result": "PASS",
+      "checks": 9,
+      "failure_line": 0,
+      "error": null,
+      "host_seconds": 0.002153
+    },
+    {
+      "case": 25,
+      "name": "协议错误",
+      "optimization": "O2",
+      "result": "PASS",
+      "checks": 9,
+      "failure_line": 0,
+      "error": null,
+      "host_seconds": 0.002212
+    },
+    {
+      "case": 26,
+      "name": "未知通信状态",
+      "optimization": "O2",
+      "result": "PASS",
+      "checks": 7,
+      "failure_line": 0,
+      "error": null,
+      "host_seconds": 0.002244
+    },
+    {
+      "case": 27,
+      "name": "读取错误",
+      "optimization": "O2",
+      "result": "PASS",
+      "checks": 7,
+      "failure_line": 0,
+      "error": null,
+      "host_seconds": 0.001983
+    },
+    {
+      "case": 28,
+      "name": "短暂BUSY缓存",
+      "optimization": "O2",
+      "result": "PASS",
+      "checks": 10,
+      "failure_line": 0,
+      "error": null,
+      "host_seconds": 0.003473
+    },
+    {
+      "case": 29,
+      "name": "所有来源无效",
+      "optimization": "O2",
+      "result": "PASS",
+      "checks": 7,
+      "failure_line": 0,
+      "error": null,
+      "host_seconds": 0.002198
+    },
+    {
+      "case": 30,
+      "name": "Camera无效",
+      "optimization": "O2",
+      "result": "PASS",
+      "checks": 7,
+      "failure_line": 0,
+      "error": null,
+      "host_seconds": 0.003273
+    },
+    {
+      "case": 31,
+      "name": "USB无效",
+      "optimization": "O2",
+      "result": "PASS",
+      "checks": 7,
+      "failure_line": 0,
+      "error": null,
+      "host_seconds": 0.003661
+    },
+    {
+      "case": 32,
+      "name": "Control无效",
+      "optimization": "O2",
+      "result": "PASS",
+      "checks": 7,
+      "failure_line": 0,
+      "error": null,
+      "host_seconds": 0.00355
+    },
+    {
+      "case": 33,
+      "name": "Camera陈旧",
+      "optimization": "O2",
+      "result": "PASS",
+      "checks": 8,
+      "failure_line": 0,
+      "error": null,
+      "host_seconds": 0.00331
+    },
+    {
+      "case": 34,
+      "name": "USB陈旧",
+      "optimization": "O2",
+      "result": "PASS",
+      "checks": 7,
+      "failure_line": 0,
+      "error": null,
+      "host_seconds": 0.005551
+    },
+    {
+      "case": 35,
+      "name": "Control陈旧",
+      "optimization": "O2",
+      "result": "PASS",
+      "checks": 7,
+      "failure_line": 0,
+      "error": null,
+      "host_seconds": 0.006701
+    },
+    {
+      "case": 36,
+      "name": "全部陈旧",
+      "optimization": "O2",
+      "result": "PASS",
+      "checks": 8,
+      "failure_line": 0,
+      "error": null,
+      "host_seconds": 0.004235
+    },
+    {
+      "case": 37,
+      "name": "Camera故障",
+      "optimization": "O2",
+      "result": "PASS",
+      "checks": 7,
+      "failure_line": 0,
+      "error": null,
+      "host_seconds": 0.00407
+    },
+    {
+      "case": 38,
+      "name": "USB故障",
+      "optimization": "O2",
+      "result": "PASS",
+      "checks": 7,
+      "failure_line": 0,
+      "error": null,
+      "host_seconds": 0.004968
+    },
+    {
+      "case": 39,
+      "name": "Control故障",
+      "optimization": "O2",
+      "result": "PASS",
+      "checks": 7,
+      "failure_line": 0,
+      "error": null,
+      "host_seconds": 0.004809
+    },
+    {
+      "case": 40,
+      "name": "真实IPC年龄499/500ms与Tick回绕",
+      "optimization": "O2",
+      "result": "PASS",
+      "checks": 12,
+      "failure_line": 0,
+      "error": null,
+      "host_seconds": 0.004974
+    },
+    {
+      "case": 41,
+      "name": "计数最大值",
+      "optimization": "O2",
+      "result": "PASS",
+      "checks": 8,
+      "failure_line": 0,
+      "error": null,
+      "host_seconds": 0.006125
+    },
+    {
+      "case": 42,
+      "name": "INT32_MIN错误码",
+      "optimization": "O2",
+      "result": "PASS",
+      "checks": 1,
+      "failure_line": 0,
+      "error": null,
+      "host_seconds": 0.001365
+    },
+    {
+      "case": 43,
+      "name": "重复初始化不创建Timer",
+      "optimization": "O2",
+      "result": "PASS",
+      "checks": 10,
+      "failure_line": 0,
+      "error": null,
+      "host_seconds": 0.002395
+    },
+    {
+      "case": 44,
+      "name": "初始化前轮询",
+      "optimization": "O2",
+      "result": "PASS",
+      "checks": 1,
+      "failure_line": 0,
+      "error": null,
+      "host_seconds": 0.000571
+    },
+    {
+      "case": 45,
+      "name": "99/100ms启动",
+      "optimization": "O2",
+      "result": "PASS",
+      "checks": 12,
+      "failure_line": 0,
+      "error": null,
+      "host_seconds": 0.008713
+    },
+    {
+      "case": 46,
+      "name": "异步发送期间不改Framebuffer",
+      "optimization": "O2",
+      "result": "PASS",
+      "checks": 21,
+      "failure_line": 0,
+      "error": null,
+      "host_seconds": 0.007304
+    },
+    {
+      "case": 47,
+      "name": "提交BUSY恢复原Framebuffer",
+      "optimization": "O2",
+      "result": "PASS",
+      "checks": 523,
+      "failure_line": 0,
+      "error": null,
+      "host_seconds": 0.005433
+    },
+    {
+      "case": 48,
+      "name": "提交IO错误与重试",
+      "optimization": "O2",
+      "result": "PASS",
+      "checks": 523,
+      "failure_line": 0,
+      "error": null,
+      "host_seconds": 0.007777
+    },
+    {
+      "case": 49,
+      "name": "完成IO错误与恢复",
+      "optimization": "O2",
+      "result": "PASS",
+      "checks": 16,
+      "failure_line": 0,
+      "error": null,
+      "host_seconds": 0.010759
+    },
+    {
+      "case": 50,
+      "name": "四页命令数据顺序和字节一致",
+      "optimization": "O2",
+      "result": "PASS",
+      "checks": 566,
+      "failure_line": 0,
+      "error": null,
+      "host_seconds": 0.007102
+    },
+    {
+      "case": 51,
+      "name": "画面变化等旧帧完成后更新",
+      "optimization": "O2",
+      "result": "PASS",
+      "checks": 570,
+      "failure_line": 0,
+      "error": null,
+      "host_seconds": 0.007474
+    },
+    {
+      "case": 52,
+      "name": "IPC接口失败不发送",
+      "optimization": "O2",
+      "result": "PASS",
+      "checks": 9,
+      "failure_line": 0,
+      "error": null,
+      "host_seconds": 0.003216
+    },
+    {
+      "case": 53,
+      "name": "绘图失败恢复原Framebuffer",
+      "optimization": "O2",
+      "result": "PASS",
+      "checks": 521,
+      "failure_line": 0,
+      "error": null,
+      "host_seconds": 0.005497
+    },
+    {
+      "case": 54,
+      "name": "Timer对象池满",
+      "optimization": "O2",
+      "result": "PASS",
+      "checks": 18,
+      "failure_line": 0,
+      "error": null,
+      "host_seconds": 0.002604
+    },
+    {
+      "case": 55,
+      "name": "缺失设备",
+      "optimization": "O2",
+      "result": "PASS",
+      "checks": 1,
+      "failure_line": 0,
+      "error": null,
+      "host_seconds": 0.000352
+    },
+    {
+      "case": 56,
+      "name": "设备未READY",
+      "optimization": "O2",
+      "result": "PASS",
+      "checks": 2,
+      "failure_line": 0,
+      "error": null,
+      "host_seconds": 0.000543
+    },
+    {
+      "case": 57,
+      "name": "缺失Ops不建Timer",
+      "optimization": "O2",
+      "result": "PASS",
+      "checks": 2,
+      "failure_line": 0,
+      "error": null,
+      "host_seconds": 0.00131
+    },
+    {
+      "case": 58,
+      "name": "底部裁剪",
+      "optimization": "O2",
+      "result": "PASS",
+      "checks": 2,
+      "failure_line": 0,
+      "error": null,
+      "host_seconds": 0.000375
+    },
+    {
+      "case": 59,
+      "name": "极大坐标裁剪",
+      "optimization": "O2",
+      "result": "PASS",
+      "checks": 2,
+      "failure_line": 0,
+      "error": null,
+      "host_seconds": 0.000373
+    },
+    {
+      "case": 60,
+      "name": "A4保留且A5已删除",
+      "optimization": "O2",
+      "result": "PASS",
+      "checks": 8,
+      "failure_line": 0,
+      "error": null,
+      "host_seconds": 0.00216
+    },
+    {
+      "case": 61,
+      "name": "UI1 全屏边框、水平和垂直线逐像素比对",
+      "optimization": "O2",
+      "result": "PASS",
+      "checks": 4101,
+      "failure_line": 0,
+      "error": null,
+      "host_seconds": 0.010269
+    },
+    {
+      "case": 62,
+      "name": "UI1 极值交叉线、反向线、陡斜线和单点",
+      "optimization": "O2",
+      "result": "PASS",
+      "checks": 4135,
+      "failure_line": 0,
+      "error": null,
+      "host_seconds": 0.001919
+    },
+    {
+      "case": 63,
+      "name": "UI1 极值尺寸、负坐标裁剪、零尺寸与屏外图元",
+      "optimization": "O2",
+      "result": "PASS",
+      "checks": 4104,
+      "failure_line": 0,
+      "error": null,
+      "host_seconds": 0.003725
+    },
+    {
+      "case": 64,
+      "name": "UI1 反色跨三页且区域外保持原值",
+      "optimization": "O2",
+      "result": "PASS",
+      "checks": 4612,
+      "failure_line": 0,
+      "error": null,
+      "host_seconds": 0.00152
+    },
+    {
+      "case": 65,
+      "name": "UI1 圆角轮廓和半径限幅",
+      "optimization": "O2",
+      "result": "PASS",
+      "checks": 4099,
+      "failure_line": 0,
+      "error": null,
+      "host_seconds": 0.001571
+    },
+    {
+      "case": 66,
+      "name": "UI1 位图长度、空指针、裁剪和跨页",
+      "optimization": "O2",
+      "result": "PASS",
+      "checks": 4104,
+      "failure_line": 0,
+      "error": null,
+      "host_seconds": 0.001536
+    },
+    {
+      "case": 67,
+      "name": "UI1 ASCII边界、非NUL结尾及双向裁剪",
+      "optimization": "O2",
+      "result": "PASS",
+      "checks": 13,
+      "failure_line": 0,
+      "error": null,
+      "host_seconds": 0.001109
+    },
+    {
+      "case": 68,
+      "name": "UI1 全部接口在非IDLE保持原帧及错误契约",
+      "optimization": "O2",
+      "result": "PASS",
+      "checks": 534,
+      "failure_line": 0,
+      "error": null,
+      "host_seconds": 0.001155
+    },
+    {
+      "case": 69,
+      "name": "UI2 固定页面表、初始化、非法ID及失败后状态保留",
+      "optimization": "O2",
+      "result": "PASS",
+      "checks": 170,
+      "failure_line": 0,
+      "error": null,
+      "host_seconds": 0.001047
+    },
+    {
+      "case": 70,
+      "name": "UI2 快速输入、滚动、空页、单项与父子游标恢复",
+      "optimization": "O2",
+      "result": "PASS",
+      "checks": 125,
+      "failure_line": 0,
+      "error": null,
+      "host_seconds": 0.001493
+    },
+    {
+      "case": 71,
+      "name": "UI2 标题、窗口文字、高亮、屏边及非IDLE互斥",
+      "optimization": "O2",
+      "result": "PASS",
+      "checks": 18,
+      "failure_line": 0,
+      "error": null,
+      "host_seconds": 0.004772
+    },
+    {
+      "case": 72,
+      "name": "UI2 忙期间事件只改变逻辑状态，下一帧显示并可恢复监控",
+      "optimization": "O2",
+      "result": "PASS",
+      "checks": 24,
+      "failure_line": 0,
+      "error": null,
+      "host_seconds": 0.009768
+    },
+    {
+      "case": 73,
+      "name": "UI2 菜单像素失败整帧回滚并重试",
+      "optimization": "O2",
+      "result": "PASS",
+      "checks": 13,
+      "failure_line": 0,
+      "error": null,
+      "host_seconds": 0.015368
+    },
+    {
+      "case": 74,
+      "name": "UI2 刷新提交BUSY整帧回滚并重试",
+      "optimization": "O2",
+      "result": "PASS",
+      "checks": 13,
+      "failure_line": 0,
+      "error": null,
+      "host_seconds": 0.009003
+    },
+    {
+      "case": 75,
+      "name": "UI2 刷新提交IO错误整帧回滚并重试",
+      "optimization": "O2",
+      "result": "PASS",
+      "checks": 13,
+      "failure_line": 0,
+      "error": null,
+      "host_seconds": 0.012516
+    },
+    {
+      "case": 76,
+      "name": "UI2 U7 相位、抖动、短按、长按与Tick回绕",
+      "optimization": "O2",
+      "result": "PASS",
+      "checks": 86,
+      "failure_line": 0,
+      "error": null,
+      "host_seconds": 0.004378
+    },
+    {
+      "case": 77,
+      "name": "UI4 动画中间帧、滚动、长文本与时间回绕",
+      "optimization": "O2",
+      "result": "PASS",
+      "checks": 12,
+      "failure_line": 0,
+      "error": null,
+      "host_seconds": 0.001303
+    },
+    {
+      "case": 78,
+      "name": "UI4 弹窗副本、确认、取消、绘制与超时",
+      "optimization": "O2",
+      "result": "PASS",
+      "checks": 10,
+      "failure_line": 0,
+      "error": null,
+      "host_seconds": 0.010131
+    },
+    {
+      "case": 79,
+      "name": "UI5 Camera与USB有效、过期、失联和故障模型",
+      "optimization": "O2",
+      "result": "PASS",
+      "checks": 18,
+      "failure_line": 0,
+      "error": null,
+      "host_seconds": 0.00137
+    },
+    {
+      "case": 80,
+      "name": "UI5 Ethernet/Storage缺失与本地诊断字段",
+      "optimization": "O2",
+      "result": "PASS",
+      "checks": 12,
+      "failure_line": 0,
+      "error": null,
+      "host_seconds": 0.00107
+    },
+    {
+      "case": 81,
+      "name": "UI6 6000帧连续状态切换、IPC抖动与跨Tick回绕",
+      "optimization": "O2",
+      "result": "PASS",
+      "checks": 198008,
+      "failure_line": 0,
+      "error": null,
+      "host_seconds": 9.95986
+    },
+    {
+      "case": 82,
+      "name": "菜单50ms、监控100ms与忙期跳帧",
+      "optimization": "O2",
+      "result": "PASS",
+      "checks": 25,
+      "failure_line": 0,
+      "error": null,
+      "host_seconds": 0.012375
+    },
+    {
+      "case": 83,
+      "name": "系统监控导航与无发布数据",
+      "optimization": "O2",
+      "result": "PASS",
+      "checks": 18,
+      "failure_line": 0,
+      "error": null,
+      "host_seconds": 0.001578
+    },
+    {
+      "case": 84,
+      "name": "系统任务ID、重建、截断、低栈、失联及过期",
+      "optimization": "O2",
+      "result": "PASS",
+      "checks": 16,
+      "failure_line": 0,
+      "error": null,
+      "host_seconds": 0.002141
+    },
+    {
+      "case": 85,
+      "name": "系统Heap边界、累计峰值与CPU有效性",
+      "optimization": "O2",
+      "result": "PASS",
+      "checks": 12,
+      "failure_line": 0,
+      "error": null,
+      "host_seconds": 0.001651
+    },
+    {
+      "case": 86,
+      "name": "OLED_UI 字模、光标和数值编辑边界",
+      "optimization": "O2",
+      "result": "PASS",
+      "checks": 71,
+      "failure_line": 0,
+      "error": null,
+      "host_seconds": 0.002059
+    },
+    {
+      "case": 87,
+      "name": "OLED_UI 图标、过渡、滚动和弹窗连续帧",
+      "optimization": "O2",
+      "result": "PASS",
+      "checks": 585,
+      "failure_line": 0,
+      "error": null,
+      "host_seconds": 0.121035
+    },
+    {
+      "case": 88,
+      "name": "合并前：弹窗与局部页面切换时隔离旧输入",
+      "optimization": "O2",
+      "result": "PASS",
+      "checks": 31,
+      "failure_line": 0,
+      "error": null,
+      "host_seconds": 0.008081
+    }
+  ],
+  "hardware_verified": false
+}

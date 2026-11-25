@@ -1,0 +1,82 @@
+[
+  {
+    "optimization": "O0",
+    "id": 58,
+    "pass": true,
+    "return": 0,
+    "failure_line": 0,
+    "error": null,
+    "trace": [
+      [
+        0,
+        83,
+        40,
+        3,
+        40,
+        0,
+        1,
+        0
+      ]
+    ]
+  },
+  {
+    "optimization": "O0",
+    "id": 59,
+    "pass": true,
+    "return": 0,
+    "failure_line": 0,
+    "error": null,
+    "trace": [
+      [
+        0,
+        16,
+        7,
+        4,
+        6,
+        4294967287,
+        1,
+        4294967287
+      ]
+    ]
+  },
+  {
+    "optimization": "O2",
+    "id": 58,
+    "pass": true,
+    "return": 0,
+    "failure_line": 0,
+    "error": null,
+    "trace": [
+      [
+        0,
+        83,
+        40,
+        3,
+        40,
+        0,
+        1,
+        0
+      ]
+    ]
+  },
+  {
+    "optimization": "O2",
+    "id": 59,
+    "pass": true,
+    "return": 0,
+    "failure_line": 0,
+    "error": null,
+    "trace": [
+      [
+        0,
+        16,
+        7,
+        4,
+        6,
+        4294967287,
+        1,
+        4294967287
+      ]
+    ]
+  }
+]
