@@ -1,19 +1,55 @@
-# 联合软件验收状态
+# N4 — 最终软件联合验收
 
-本轮 SOFTWARE_BLOCKED，未形成 N1–N3 实现，不引用 R1 的测试 PASS 作为正式功能集成结果。
+审查日期：2026-11-26（Asia/Shanghai）。源码冻结：`78580073610ff4cfe06a4b004b1b0d75bffef499`；main：`851c1115fe097f7fd2e0bdcaa5f7b3f8c03feb71`。
 
-| 范围 | 本轮状态 |
-| --- | --- |
-| ApplicationV3 服务和媒体接口源码阅读 | 已执行，证据见 SOURCE_EVIDENCE.json |
-| Network 任务与上下文限制 | NOT_RUN |
-| START/STOP/RESTART 与事务回执 | NOT_RUN |
-| DHCP、TCP 关闭和资源退休联合故障注入 | NOT_RUN |
-| Camera 原帧归还与多消费者组合 | NOT_RUN |
-| 正式 CM7 JPEG、Raw、CM4 重构建 | NOT_RUN |
-| 九个 Ethernet 独立固件 | NOT_RUN |
-| 六组 Ethernet 主机回归 | NOT_RUN |
-| 相关 ApplicationV3、Media、USB、Storage、OLED、IPC V2 | NOT_RUN |
-| 内存、队列和任务增量 | NOT_VERIFIED，尚无集成实现 |
-| 旧 IPC Status | 历史 FAIL 保留，日志仍在 Q11_R1_Evidence |
+**PASS（本轮软件门禁）**；旧IPC Status保留FAIL/BASELINE_FAIL，不记PASS。
+最终源码从无未提交修改的独立副本构建，所有结果关联同一源码提交和文件SHA。
+ARMCC5.06 update7 build960；MSVC；Cortex测试使用真实生产Service、FreeRTOS Queue/List和上游lwIP。
+只模拟硬件/调度身份/网络对端，不能作为实板证据。
 
-应复用现有 ARMCC/Unicorn 和真实 lwIP 模拟 MAC 框架，以生产 Service 实现和原有队列接口驱动测试，不能直接写服务状态。每个阶段需要正常、故障、超时、重复身份和资源耗尽证据，验证通过后再进入下一阶段。
+| 目标 | 结果 | Error / Warning |
+|---|---|---|
+| cm7_jpeg | PASS | 0 / 0 |
+| cm7_raw | PASS | 0 / 0 |
+| cm4 | PASS | 0 / 0 |
+| firmware_e35 | PASS | 0 / 0 |
+| firmware_e4 | PASS | 0 / 0 |
+| firmware_e42 | PASS | 0 / 0 |
+| firmware_e5 | PASS | 0 / 0 |
+| firmware_e6 | PASS | 0 / 0 |
+| firmware_e7 | PASS | 0 / 0 |
+| firmware_e7_v1 | PASS | 0 / 0 |
+| firmware_e7_v1_axi | PASS | 0 / 0 |
+| firmware_e7_v1_qvga | PASS | 0 / 0 |
+| production_network | PASS | 0 / 0 |
+| hardware_acceptance | PASS | 0 / 0 |
+
+| 回归 | 结果 |
+|---|---|
+| e41 | PASS |
+| e42 | PASS |
+| e5 | PASS |
+| e6 | PASS |
+| e7 | PASS |
+| e7_qvga | PASS |
+| application_v3 | PASS |
+| media_lease | PASS |
+| frame_dispatcher | PASS |
+| storage_fs | PASS |
+| uvc_reader | PASS |
+| camera_i2c_O0 | PASS |
+| camera_i2c_O2 | PASS |
+| oled | PASS |
+| ipc_v2 | PASS |
+| ipc_status_legacy | FAIL / BASELINE_FAIL |
+| phy_dma_mac | PASS |
+
+ApplicationV3 O0/O2合计170/170，覆盖唯一拥有者/ISR、START/STOP/RESTART、停止失败重试、
+真实DORA/ACD/T1、Client连接中停止、UDP耗尽恢复、队满BUSY及完成顺序、bound PCB阻止提前停止、
+停止态timer、Camera队满/取消/旧epoch/归还失败、真实RST及重新握手再次借帧、四服务组合、
+100轮软件回收、验收生产者无DHCP不得计数及失败后保留证据清理。
+
+旧IPC Status在main与候选均因status_test.c缺app_status.h失败；原日志保留。
+当前IPC V2和OLED通过，相关生产代码未改。没有修改旧测试或主线IPC来消除失败。
+旧168/170记录和119场景修复前后数据均保留，不扩大120ms等待或关闭错误检测。
+实际MPU/CCR、DMA停止、100轮实板和60分钟并行仍NOT_RUN。

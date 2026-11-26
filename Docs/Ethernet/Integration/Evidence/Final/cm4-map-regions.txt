@@ -1,0 +1,5 @@
+    Execution Region ER_IROM1 (Exec base: 0x08100000, Load base: 0x08100000, Size: 0x0000f224, Max: 0x00100000, ABSOLUTE)
+    Execution Region ER_FW_INIT (Exec base: 0x0810f224, Load base: 0x0810f224, Size: 0x0000003c, Max: 0xffffffff, ABSOLUTE)
+    Execution Region ER_DEVICE_EXPORT (Exec base: 0x0810f260, Load base: 0x0810f260, Size: 0x00000004, Max: 0xffffffff, ABSOLUTE)
+    Execution Region RW_IRAM1 (Exec base: 0x10000000, Load base: 0x0810f268, Size: 0x00001150, Max: 0x00048000, ABSOLUTE, COMPRESSED[0x0000002c])
+    Execution Region RW_SHARED (Exec base: 0x38000000, Load base: 0x0810f264, Size: 0x00000140, Max: 0x00001000, ABSOLUTE, UNINIT, COMPRESSED[0x00000004])

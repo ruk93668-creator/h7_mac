@@ -1,11 +1,28 @@
-# 唯一网络执行上下文审查
+# N1 — 唯一网络执行上下文
 
-状态 SOFTWARE_BLOCKED。尚未新增 Network Task，现有正式任务清单中没有 Network。当前协议仍只能在独立测试循环运行。
+审查日期：2026-11-26（Asia/Shanghai）。源码冻结：`78580073610ff4cfe06a4b004b1b0d75bffef499`；main：`851c1115fe097f7fd2e0bdcaa5f7b3f8c03feb71`。
 
-证据为 Common/Inc/runtime_event.h:9–14 的五个任务身份，CM7/ApplicationV3/Core/app_services.c:27–91 的三个服务清单，以及 Runtime/service_record.c:85–94 按该清单分配发布信号的规则。任务创建应继续使用 AppV3_CreateThread 和 AppV3_ServiceRun，完成 Record 初始化与启动报告后再运行网络。
+**PASS（软件）**。真实NetworkTask已接入ApplicationV3 Registry、Record、Mailbox、Events和BOOT屏障。
+没有新增第二套Framework、全局网络Mutex或动态任务。
 
-需要新增独立 Network 身份和静态 Service 记录，并同步审查 App_Events 的所有目标启动屏障、任务计数、Record 信号槽与业务结果槽。既有名字查找只提供身份，不能作为 lwIP 写权限。Network 所有者校验应同时检查任务与 ISR 上下文。其他任务只提交邮箱请求，诊断由值类型快照读取。
+| 项目 | 实际配置 |
+|---|---|
+| 任务身份 | NETWORK=5，原有0–4不变 |
+| 任务资源 | 优先级2，2048字/8192字节静态栈，8字节对齐 |
+| 调度 | 10ms轮询，邮箱/队列事件唤醒；RX沿用有界预算 |
+| 邮箱 | 4条值类型命令，成功入队不表示完成 |
+| 固定池 | 12消息槽、4 Record信号槽、共16 QueueSlot |
+| 其他任务 | Camera/USB/Storage/Control/IPC优先级和栈未改 |
 
-建议执行顺序为 Network Poll、Transport Poll、HTTP Poll、生命周期收尾、Mailbox Flush，然后有界阻塞。独立网络 RX budget 已存在。IRQ 只保留原硬件事件处理，唤醒属于提示。所有 timer 和 Raw API 调用仍由同一 Network Task 执行。
+NetworkTask一次绑定eth_execution。正式配置使用ETH_NETWORK_SERVICE，入口拒绝其他任务、ISR以及不可调度上下文。
+LWIP_ASSERT_CORE_LOCKED也检查同一拥有者，直接越权进入Raw API按原Error_Handler策略处理。
+独立验证保留原单循环配置入口，不能用于绕过正式绑定。
 
-本轮没有实现上述身份、所有者门禁和任务，所以合法/非法所有者、多任务请求、定时器、积压与任务公平性专项均为 NOT_RUN。
+RX、TX reclaim、Link、DHCP、TCP/UDP、HTTP/MJPEG和sys_check_timeouts均由NetworkTask执行。
+STOP后仍维护全局cyclic timer，不重新启动netif/MAC。ETH ISR只确认/锁存硬件事件，不运行lwIP；
+当前由10ms轮询兜底，不在未核准的ETH IRQ优先级调用内核。
+
+其他任务通过原Service Request/Events交互，不借出PCB/Pbuf/Descriptor。
+回调在同一任务同步执行，不递归poll。QUERY走原值类型终结；g_network_status为只读调试镜像。
+跨字段一致快照应在暂停CPU后读取，业务方不能直接读取lwIP内部对象。
+最终六组Ethernet及170/170生产场景通过；原生队满和未完成请求均按原BUSY语义验证。

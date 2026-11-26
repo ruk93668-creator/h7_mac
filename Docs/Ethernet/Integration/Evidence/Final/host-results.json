@@ -1,0 +1,77 @@
+{
+  "source_commit": "78580073610ff4cfe06a4b004b1b0d75bffef499",
+  "section": "host",
+  "results": {
+    "e41": {
+      "exit": 0,
+      "status": "PASS"
+    },
+    "e42": {
+      "exit": 0,
+      "status": "PASS"
+    },
+    "e5": {
+      "exit": 0,
+      "status": "PASS"
+    },
+    "e6": {
+      "exit": 0,
+      "status": "PASS"
+    },
+    "e7": {
+      "exit": 0,
+      "status": "PASS"
+    },
+    "e7_qvga": {
+      "exit": 0,
+      "status": "PASS"
+    },
+    "application_v3": {
+      "exit": 0,
+      "status": "PASS"
+    },
+    "media_lease": {
+      "exit": 0,
+      "status": "PASS"
+    },
+    "frame_dispatcher": {
+      "exit": 0,
+      "status": "PASS"
+    },
+    "storage_fs": {
+      "exit": 0,
+      "status": "PASS"
+    },
+    "uvc_reader": {
+      "exit": 0,
+      "status": "PASS"
+    },
+    "camera_i2c_O0": {
+      "exit": 0,
+      "status": "PASS"
+    },
+    "camera_i2c_O2": {
+      "exit": 0,
+      "status": "PASS"
+    },
+    "oled": {
+      "exit": 0,
+      "status": "PASS"
+    },
+    "ipc_v2": {
+      "exit": 0,
+      "status": "PASS"
+    },
+    "ipc_status_legacy": {
+      "exit": 1,
+      "status": "FAIL",
+      "classification": "BASELINE_FAIL"
+    },
+    "phy_dma_mac": {
+      "exit": 0,
+      "status": "PASS"
+    }
+  },
+  "source_stable": true,
+  "hardware": "NOT_RUN"
+}

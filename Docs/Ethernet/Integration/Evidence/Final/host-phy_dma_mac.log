@@ -1,0 +1,35 @@
+eth_phy.c
+test_phy.c
+正在生成代码...
+PASS: PHY identity, arguments, reset, latch-low and MDIO failures
+eth_dma.c
+test_dma.c
+正在生成代码...
+PASS: DMA init, OWN, guards, full/empty, copy, reclaim, errors, 1000 wraps
+eth_phy.c
+eth_dma.c
+eth_mac.c
+eth_board_stm32h747.c
+test_mac.c
+正在生成代码...
+PASS: MAC init/link/mode/start/stop, MDIO/reset/flush faults, DMA IRQ and recovery
+PASS: MAC initialization failure is reported and latched
+PASS: MAC initialization failure is reported and latched
+eth_dma.c
+test_engine.c
+正在生成代码...
+PASS: independent DMA cursor/tail model, exhaustion/resume, 3000 frames each
+eth_test_rx.c
+test_rx_check.c
+正在生成代码...
+PASS: fixed RX payload, sequence, missing, duplicate, reorder and session gates
+PASS: MDC divider boundaries (12 cases)
+e35_frame.c
+test_e35_frame.c
+正在生成代码...
+PASS E3.5 frame lengths/session/direction/corruption
+...
+----------------------------------------------------------------------
+Ran 3 tests in 0.039s
+
+OK

@@ -1,0 +1,8 @@
+{
+  "source_commit": "78580073610ff4cfe06a4b004b1b0d75bffef499",
+  "base": "851c1115fe097f7fd2e0bdcaa5f7b3f8c03feb71",
+  "artifact": "Diff/full-mainline.patch.gz",
+  "sha256": "34b06957ef1e100cc7bcee6d367527e73cdb94ef96c1d61204324ebe104067e0",
+  "bytes": 43073704,
+  "storage": "local acceptance ZIP; not duplicated in Git"
+}

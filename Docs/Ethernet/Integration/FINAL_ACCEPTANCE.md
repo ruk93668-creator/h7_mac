@@ -1,11 +1,18 @@
-# 本轮正式集成状态
+# Ethernet N1–N5 最终交付
 
-**SOFTWARE_BLOCKED**
+**READY_FOR_HARDWARE_ACCEPTANCE**
 
-本轮尚未完成用户要求的 N1–N5 联合开发。已读取并核验 b6d17eccbe6542dca4ca5ffacf50f8d6d91f454c 隔离仓库，审查 ApplicationV3 的 Registry、任务、Record、Mailbox、Events、消息通道、Camera 帧交接和网络单例。具体软件缺口见 FINAL_REMAINING_RISKS.md。
+审查日期：2026-11-26（Asia/Shanghai）。源码冻结：`78580073610ff4cfe06a4b004b1b0d75bffef499`；main：`851c1115fe097f7fd2e0bdcaa5f7b3f8c03feb71`。
 
-没有新增正式 Network Task、生命周期或媒体 Provider。N1–N4 的本轮验收均未执行，没有新正式 AXF/HEX/MAP 或可供用户烧录的 N1–N5 固件。N5 文档仅为待执行验收清单。当前不能标记 READY_FOR_HARDWARE_ACCEPTANCE 或 READY_FOR_MERGE。
+正式Network任务、唯一lwIP上下文、启停/重启、Camera消息消费者、私有JPEG和Keil生产接入已经实施。
+最终干净源码十四固件全部0 Error/0 Warning；六组Ethernet、170/170生产场景及相关主线回归通过。
+旧IPC Status仍为FAIL/BASELINE_FAIL，与main同因，未改旧IPC或旧测试制造通过。
 
-读取的源文件及远端身份见 SOURCE_EVIDENCE.json。生产仍是 R1 候选。原工作区、用户 RTE、本地 Q11/R1 报告和 main 保留，历史失败和原始证据保留。未创建 PR、烧录或合并。
+浏览器RST遗留申请、停止态timer及恢复首错有源码修正和前后证据。
+早期168/170检查点及“通过”表述勘误保留，未改变断言等待时间。
+原工作区和RTE保护，CM4/500ms、USB、Storage、Media、BSP及上游lwIP保留。
+源码、架构、预算、完整Diff、MAP、SHA、日志及验收操作在本目录和交付包。
 
-本报告明确记录未完成范围，不能作为用户目标已经实现的交付证明。
+软件READY不等于硬件PASS或READY_FOR_MERGE。
+实际MPU/DCache/DMA、100轮、60分钟、历史FIFO Error和20FPS由用户实板验收。
+没有烧录、创建PR、修改远端main或合并main；完成后等待用户验收及独立审核。

@@ -1,0 +1,26 @@
+eth_execution.c
+eth_netif.c
+eth_network.c
+test_e4_network.c
+def.c
+init.c
+inet_chksum.c
+ip.c
+mem.c
+memp.c
+netif.c
+pbuf.c
+raw.c
+stats.c
+sys.c
+timeouts.c
+etharp.c
+icmp.c
+ip4.c
+ip4_addr.c
+ethernet.c
+正在生成代码...
+PASS: real lwIP static netif, ARP, ICMP (odd and max MTU), NO_SYS timer
+PASS: chained TX, frame boundaries, ring BUSY/reclaim, input rejection, pool exhaustion, RX budget
+PASS: netif stays administratively up, renegotiation and IPv4 recovery
+PASS: bound context rejects foreign polling and admits original owner
