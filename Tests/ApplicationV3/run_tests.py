@@ -124,7 +124,7 @@ def main():
             scenarios = range(98, 104)
         if args.production and not args.raw_uvc:
             scenarios = [*range(24), 28, 29, *range(38, 53), *range(63, 75),
-                         *range(88, 96), 104, *range(105, 127)]
+                         *range(88, 96), 104, *range(105, 128)]
         for scenario in scenarios:
             row = harness.execute(name, "AppV3_TestRun", scenario)
             if scenario < 49:

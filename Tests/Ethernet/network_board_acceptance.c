@@ -9,6 +9,7 @@ volatile uint32_t g_n5_cycles = 100U;
 volatile uint32_t g_n5_dwell_ms = 1000U;
 volatile uint32_t g_n5_joint_ms = 3600000U;
 volatile uint32_t g_n5_file_number;
+volatile uint32_t g_n5_ready_ms = 30000U;
 volatile NetworkBoardAcceptanceStatus_t g_n5_acceptance;
 
 static uint32_t s_mode, s_started, s_mask;
@@ -25,7 +26,10 @@ static void Acceptance_Start(void)
 {
     SysResult_t result = AppV3Supervisor_Set(s_mask, g_n5_file_number);
     if (result == SYS_OK)
+    {
+        s_started = Platform_TimeGetMs();
         g_n5_acceptance.phase = NETWORK_ACCEPTANCE_STARTING;
+    }
     else if (result != SYS_ERR_BUSY)
         Acceptance_Fail(result);
 }
@@ -50,6 +54,7 @@ void NetworkBoardAcceptance_Poll(void)
         if (g_n5_command != 1U && g_n5_command != 2U)
             return;
         if (g_n5_cycles == 0U || g_n5_cycles > 1000U ||
+            g_n5_ready_ms == 0U || g_n5_ready_ms > 0x7fffffffU ||
             (g_n5_command == 2U && g_n5_file_number == 0U))
         {
             Acceptance_Fail(SYS_ERR_INVALID_ARG);
@@ -85,6 +90,19 @@ void NetworkBoardAcceptance_Poll(void)
         if (status.active != (s_mask | APP_V3_PIPE_CAMERA))
         {
             Acceptance_Fail(SYS_ERR_PROTOCOL);
+            return;
+        }
+        //通过原有 QUERY 终结读取就绪位，不从 Control 访问 lwIP 内部对象。
+        if ((status.network.hardware.flags & 7U) != 7U)
+        {
+            if (now - s_started >= g_n5_ready_ms)
+                Acceptance_Fail(SYS_ERR_TIMEOUT);
+            else if (status.pending_id == 0U)
+            {
+                result = AppV3Supervisor_Query(APP_V3_PIPE_NETWORK);
+                if (result != SYS_OK && result != SYS_ERR_BUSY)
+                    Acceptance_Fail(result);
+            }
             return;
         }
         s_started = now;

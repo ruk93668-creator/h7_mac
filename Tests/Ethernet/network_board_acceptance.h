@@ -29,6 +29,7 @@ typedef struct
 //联合长稳必须先由用户指定非零 file_number，避免隐式开始 SD 写入。
 extern volatile uint32_t g_n5_command, g_n5_cycles, g_n5_dwell_ms;
 extern volatile uint32_t g_n5_joint_ms, g_n5_file_number;
+extern volatile uint32_t g_n5_ready_ms;//等待真实 Link/IP/listener 就绪的上限，默认30秒
 extern volatile NetworkBoardAcceptanceStatus_t g_n5_acceptance;
 
 //只能由 ControlTask 每轮调用；不访问 lwIP、CameraCapture 或 DMA。

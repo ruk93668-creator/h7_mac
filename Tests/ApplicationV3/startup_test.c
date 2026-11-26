@@ -2884,6 +2884,8 @@ static uint32_t Test_NetworkAcceptanceProducer(const AppV3Context_t *context, ui
     fixture_storage.segment_bytes = 1024U;
     CHECK(Test_HardwareBoot(context) == 0U);
     g_hardware.usb_configured = g_hardware.uvc_present = true;
+    g_network_link = g_network_dhcp_server = scenario == 127U ? 0U : 1U;
+    g_n5_ready_ms = scenario == 127U ? 1000U : 30000U;
     g_n5_cycles = 3U;
     g_n5_dwell_ms = 100U;
     if (scenario == 122U)
@@ -2896,7 +2898,7 @@ static uint32_t Test_NetworkAcceptanceProducer(const AppV3Context_t *context, ui
     }
     else
         g_n5_command = 1U;
-    for (i = 0U; i < 100U; ++i)
+    for (i = 0U; i < 400U; ++i)
     {
         owner = RUNTIME_TARGET_CONTROL;
         NetworkBoardAcceptance_Poll();
@@ -2906,12 +2908,29 @@ static uint32_t Test_NetworkAcceptanceProducer(const AppV3Context_t *context, ui
         Test_SupervisorStep(RUNTIME_TARGET_USB);
         Test_SupervisorStep(RUNTIME_TARGET_STORAGE);
         Test_SupervisorStep(RUNTIME_TARGET_NETWORK);
+        business_event_count = 0U;
         g_hardware.now_ms += 100U;
         if (g_n5_acceptance.phase == NETWORK_ACCEPTANCE_DONE ||
             g_n5_acceptance.phase == NETWORK_ACCEPTANCE_FAULT)
             break;
     }
-    if (scenario == 122U)
+    if (scenario == 127U)
+    {
+        CHECK(g_n5_acceptance.phase == NETWORK_ACCEPTANCE_FAULT &&
+            g_n5_acceptance.first_fault == SYS_ERR_TIMEOUT && g_n5_acceptance.completed == 0U);
+        g_n5_command = 3U;
+        for (i = 0U; i < 12U; ++i)
+        {
+            owner = RUNTIME_TARGET_CONTROL;
+            NetworkBoardAcceptance_Poll();
+            Test_SupervisorStep(RUNTIME_TARGET_NETWORK);
+            Test_SupervisorStep(RUNTIME_TARGET_CAMERA);
+            business_event_count = 0U;
+        }
+        CHECK(g_n5_acceptance.phase == NETWORK_ACCEPTANCE_FAULT &&
+            g_n5_acceptance.first_fault == SYS_ERR_TIMEOUT && g_n5_acceptance.active == 0U);
+    }
+    else if (scenario == 122U)
     {
         CHECK(g_n5_acceptance.phase == NETWORK_ACCEPTANCE_FAULT &&
             g_n5_acceptance.first_fault == SYS_ERR_INVALID_ARG);
@@ -3399,7 +3418,7 @@ uint32_t AppV3_TestRun(uint32_t scenario)
         return Test_NetworkCommandBackpressure(context);
     if (scenario == 124U || scenario == 125U)
         return Test_NetworkTransportResources(context, scenario);
-    if (scenario >= 121U && scenario <= 123U)
+    if (scenario == 127U || (scenario >= 121U && scenario <= 123U))
         return Test_NetworkAcceptanceProducer(context, scenario);
     if (scenario == 119U)
         return Test_NetworkBrowser(context);
