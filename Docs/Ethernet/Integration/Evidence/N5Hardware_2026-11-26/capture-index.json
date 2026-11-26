@@ -1,69 +1,69 @@
 [
   {
-    "file": "Original/start_fail_01/N5_DHCP_DIAG_01.pcapng",
+    "file": "Captures/N5_DHCP_DIAG_01.pcapng",
     "bytes": 15024,
     "sha256": "4aee29cf94c26ea3bc7341ae3d0a8e1a2392f124d6380c43e1bbf56bc57de6a0",
     "packets": 40,
     "provenance": "Wireshark manual save"
   },
   {
-    "file": "Original/start_fail_01/N5_DHCP_RECOVERY_01.pcapng",
+    "file": "Captures/N5_DHCP_RECOVERY_01.pcapng",
     "bytes": 73088,
     "sha256": "e0a5112fbb0e88966bf1313fe29c98955d3eca0dae66ef84c7120edef8804676",
     "packets": 439,
     "provenance": "Wireshark manual save"
   },
   {
-    "file": "Original/frame_diag_03/N5_FRAME_DIAG_03.pcapng",
+    "file": "Captures/N5_FRAME_DIAG_03.pcapng",
     "bytes": 34692,
     "sha256": "b64ff3076f438062123084e579d404ca39a6fdb51ba317d7dcc56e9ea86dacb7",
     "packets": 217,
     "provenance": "Wireshark manual save"
   },
   {
-    "file": "Original/frame_diag_03/N5_FRAME_DIAG_04.pcapng",
+    "file": "Captures/N5_FRAME_DIAG_04.pcapng",
     "bytes": 5248,
     "sha256": "cc5a1eb4a7870d367512c97be8b4121436ba4f32e3611ccf08b6ae5a32251478",
     "packets": 27,
     "provenance": "Wireshark manual save"
   },
   {
-    "file": "Original/start_retry_02/N5_START_VIDEO_02.pcapng",
+    "file": "Captures/N5_START_VIDEO_02.pcapng",
     "bytes": 56704,
     "sha256": "7cf4c6692044a7084125f90b1ba5b7633cd78bdcdd4b951522afef93fa5a197c",
     "packets": 304,
     "provenance": "Wireshark manual save"
   },
   {
-    "file": "Original/frame_diag_03/auto_frame_20261126_173852_097663.pcapng",
+    "file": "Captures/auto_frame_20261126_173852_097663.pcapng",
     "bytes": 908,
     "sha256": "cc6260b825297fdd9c038862670eb86a565f6a61b33685208e6922701accac8d",
     "packets": 4,
     "provenance": "scoped dumpcap capture"
   },
   {
-    "file": "Original/frame_diag_03/auto_frame_20261126_175022_599865.pcapng",
+    "file": "Captures/auto_frame_20261126_175022_599865.pcapng",
     "bytes": 1352,
     "sha256": "d070fc5734d8f44d10420ad1e1bd0194fa9b538a9a055e48a7183272376907fd",
     "packets": 8,
     "provenance": "scoped dumpcap capture"
   },
   {
-    "file": "Original/frame_diag_03/auto_frame_newip_175144_638789.pcapng",
+    "file": "Captures/auto_frame_newip_175144_638789.pcapng",
     "bytes": 1464,
     "sha256": "2df75d3feaf742b113deb0b989bbcc2107bcc1018defd580a49901c65813179a",
     "packets": 10,
     "provenance": "scoped dumpcap capture"
   },
   {
-    "file": "Original/frame_diag_03/auto_probe_20261126_174541_683479.pcapng",
+    "file": "Captures/auto_probe_20261126_174541_683479.pcapng",
     "bytes": 1208,
     "sha256": "3bd1e8cf004866e3781f0e9b6d7cc279fbd2ec6077da60daf0da929f8f92fb39",
     "packets": 6,
     "provenance": "scoped dumpcap capture"
   },
   {
-    "file": "Original/frame_diag_03/no_break_frame_180201_014652.pcapng",
+    "file": "Captures/no_break_frame_180201_014652.pcapng",
     "bytes": 2336,
     "sha256": "deebe2aaf69a5d5519a85af629c37bc78dd0f2c2eaf46f23b1f1cfbe52a01150",
     "packets": 18,

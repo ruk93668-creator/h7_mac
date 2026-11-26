@@ -1,9 +1,0 @@
-{
-  "phase": 5,
-  "lease_valid": 1,
-  "command": 1,
-  "observation": "user Watch screenshot after instructions to rebind Windows sharing",
-  "board_ip": "not yet read",
-  "recovery_pcap": "pending",
-  "original_start": "FAIL"
-}
