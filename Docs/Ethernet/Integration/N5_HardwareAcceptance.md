@@ -52,8 +52,8 @@ PHY Up不等于租约完成；Connected不等于视频/吞吐通过。
 包括ACK中T1/T2实际选项。
 
 ```powershell
-python -B Tests/Ethernet/e6_peer.py --board-ip 实际IP --camera --frames 1000 --output hw_basic.json
-python -B Tests/Ethernet/e6_peer.py --board-ip 实际IP --camera --frames 50 --reconnect 10 --rst --output hw_rst.json
+python -B Tests/Ethernet/e6_peer.py --board-ip 实际IP --camera --width 320 --height 240 --frames 1000 --output hw_basic.json
+python -B Tests/Ethernet/e6_peer.py --board-ip 实际IP --camera --width 320 --height 240 --frames 50 --reconnect 10 --rst --output hw_rst.json
 ```
 也检查慢读/停读、普通结束。原帧和私有借用必须归还，PCB/SEG/PBUF/heap回基线。
 cyclic timer是全局资源，STOP后基础条目不为零，不能强行清成零。
@@ -76,7 +76,7 @@ phase=5是FAIL；g_n5_command=3只请求真实清理，保留首错，不清变�
 设g_n5_joint_ms=3660000给PC启动留1分钟，g_n5_ready_ms=30000，g_n5_command=2。
 确认active=15、OLED/IPC正常及实际网络就绪，在1分钟内启动：
 ```powershell
-python -B Tests/Ethernet/e6_peer.py --board-ip 实际IP --camera --frames 1000 --seconds 3600 --min-fps 9.33 --output hw_joint_60min.json
+python -B Tests/Ethernet/e6_peer.py --board-ip 实际IP --camera --width 320 --height 240 --frames 1000 --seconds 3600 --min-fps 9.33 --output hw_joint_60min.json
 ```
 9.33FPS是既有实测参照，须记录同等场景/帧大小；不能降低门槛造PASS。
 20FPS另用--min-fps 20单独报告，未达到保留OPEN/FAIL，不与长稳混写。

@@ -26,38 +26,58 @@ def jpeg_size(data):
         require(length >= 2 and offset + length + 2 <= len(data), 'invalid JPEG segment length')
         if kind == 0xc0:
             require(length >= 8, 'invalid JPEG frame segment')
+            components = data[offset + 9]
+            require(1 <= components <= 4 and length == 8 + 3 * components,
+                    'invalid JPEG frame components')
             height, width = struct.unpack_from('!HH', data, offset + 5)
+            require(width > 0 and height > 0, 'invalid JPEG dimensions')
             return width, height
         require(kind not in (0xda, 0xd9), 'JPEG frame header missing')
         offset += length + 2
     raise ValueError('JPEG frame header missing')
 
 
-def read_frame(stream, expected):
-    require(stream.readline(64) == b'--h7frame\r\n', 'invalid multipart boundary')
-    fields = {}
-    for _ in range(8):
-        line = stream.readline(128)
-        if line == b'\r\n':
-            break
-        name, sep, value = line.rstrip(b'\r\n').partition(b':')
-        name = name.lower()
-        require(line.endswith(b'\r\n') and sep and name not in fields, 'invalid multipart field')
-        fields[name] = value.strip()
-    else:
-        raise ValueError('too many multipart fields')
-    require(fields.get(b'content-type') == b'image/jpeg', 'invalid part Content-Type')
-    size = fields.get(b'content-length', b'')
-    seq = fields.get(b'x-frame-sequence', b'')
-    crc = fields.get(b'x-frame-crc32', b'')
-    require(size.isdigit() and len(size) <= 5 and seq.isdigit() and len(seq) <= 10 and
-            re.fullmatch(rb'[0-9a-fA-F]{8}', crc), 'invalid length, sequence or CRC field')
-    require(4 <= int(size) <= 65535 and int(seq) == expected, 'invalid length or frame sequence')
-    data = stream.read(int(size))
-    require(len(data) == int(size) and stream.read(2) == b'\r\n', 'incomplete JPEG or trailer')
-    require(zlib.crc32(data) == int(crc, 16), 'JPEG CRC mismatch')
-    require(jpeg_size(data) == (160, 120), 'unexpected JPEG dimensions')
-    return len(data), crc.decode('ascii')
+def read_frame(stream, expected, width=160, height=120, validation=None):
+    try:
+        require(stream.readline(64) == b'--h7frame\r\n', 'invalid multipart boundary')
+        fields = {}
+        for _ in range(8):
+            line = stream.readline(128)
+            if line == b'\r\n':
+                break
+            name, sep, value = line.rstrip(b'\r\n').partition(b':')
+            name = name.lower()
+            require(line.endswith(b'\r\n') and sep and name not in fields, 'invalid multipart field')
+            fields[name] = value.strip()
+        else:
+            raise ValueError('too many multipart fields')
+        require(fields.get(b'content-type') == b'image/jpeg', 'invalid part Content-Type')
+        size = fields.get(b'content-length', b'')
+        seq = fields.get(b'x-frame-sequence', b'')
+        crc = fields.get(b'x-frame-crc32', b'')
+        require(size.isdigit() and len(size) <= 5 and seq.isdigit() and len(seq) <= 10 and
+                re.fullmatch(rb'[0-9a-fA-F]{8}', crc), 'invalid length, sequence or CRC field')
+        require(4 <= int(size) <= 65535 and int(seq) == expected, 'invalid length or frame sequence')
+        data = stream.read(int(size))
+        require(len(data) == int(size) and stream.read(2) == b'\r\n', 'incomplete JPEG or trailer')
+        require(zlib.crc32(data) == int(crc, 16), 'JPEG CRC mismatch')
+        if validation is not None:
+            validation['crc_verified_frames'] += 1
+        actual = jpeg_size(data)
+        dimensions = dict(width=actual[0], height=actual[1])
+        if validation is not None and dimensions not in validation['observed_dimensions']:
+            validation['observed_dimensions'].append(dimensions)
+        require(actual == (width, height),
+                f'unexpected JPEG dimensions: expected {width}x{height}, got {actual[0]}x{actual[1]}')
+        if validation is not None:
+            validation['frames_checked'] += 1
+            validation['status'] = 'PASS'
+        return len(data), crc.decode('ascii')
+    except ValueError as exc:
+        if validation is not None:
+            validation['status'] = 'FAIL'
+            validation['error'] = str(exc)
+        raise
 
 
 def connect(args):
@@ -105,7 +125,10 @@ def routes(args):
     return outcomes
 
 
-def measure(args):
+def measure(args, validation=None):
+    width, height = getattr(args, 'width', 160), getattr(args, 'height', 120)
+    if validation is None:
+        validation = jpeg_validation()
     count = bytes_received = 0
     first = last = None
     checksums = set()
@@ -116,7 +139,7 @@ def measure(args):
                     'multipart/x-mixed-replace; boundary=h7frame', 'invalid MJPEG response')
             require(response.headers.get('Content-Length') is None, 'unexpected stream Content-Length')
             while count < args.frames or (args.seconds and (first is None or last - first < args.seconds)):
-                length, crc = read_frame(response, count + 1)
+                length, crc = read_frame(response, count + 1, width, height, validation)
                 last = time.monotonic()
                 if first is None:
                     first = last
@@ -151,7 +174,12 @@ def measure(args):
             'stream did not show all eight different fixtures')
     return dict(frames=count, jpeg_bytes=bytes_received, seconds=elapsed, fps=fps,
                 jpeg_mbps=8 * bytes_received / elapsed / 1e6 if elapsed else 0,
-                unique_frames=len(checksums), jpeg_min_bytes=min_size, jpeg_max_bytes=max_size, shutdown=shutdown)
+                unique_frames=len(checksums), jpeg_min_bytes=min_size, jpeg_max_bytes=max_size, shutdown=shutdown,
+                expected_resolution=dict(width=width, height=height), jpeg_validation=validation)
+
+
+def jpeg_validation():
+    return dict(status='NOT_RUN', frames_checked=0, crc_verified_frames=0, observed_dimensions=[])
 
 
 def main():
@@ -160,6 +188,8 @@ def main():
     parser.add_argument('--local-ip')
     parser.add_argument('--port', type=int, default=80)
     parser.add_argument('--frames', type=int, default=10)
+    parser.add_argument('--width', type=int, default=160, help='expected JPEG SOF width (1..65535)')
+    parser.add_argument('--height', type=int, default=120, help='expected JPEG SOF height (1..65535)')
     parser.add_argument('--seconds', type=float, default=0)
     parser.add_argument('--min-fps', type=float, default=0)
     parser.add_argument('--timeout', type=float, default=8)
@@ -172,18 +202,22 @@ def main():
     parser.add_argument('--camera', action='store_true', help='validate a live source without requiring the eight fixture CRCs')
     parser.add_argument('--output', type=Path, required=True)
     args = parser.parse_args()
-    if (args.frames < 1 or args.reconnect < 1 or not 1 <= args.port <= 65535 or args.timeout <= 0 or
+    if (not 1 <= args.width <= 65535 or not 1 <= args.height <= 65535 or
+            args.frames < 1 or args.reconnect < 1 or not 1 <= args.port <= 65535 or args.timeout <= 0 or
             any(value < 0 for value in (args.seconds, args.min_fps, args.slow_ms,
                                         args.stop_read_seconds, args.receive_buffer))):
         parser.error('invalid test limits')
     args.output.parent.mkdir(parents=True, exist_ok=True)
-    result = dict(status='FAIL', routes={}, sessions=[])
+    result = dict(status='FAIL', routes={}, sessions=[],
+                  expected_resolution=dict(width=args.width, height=args.height), jpeg_validation=[])
     with args.output.open('x', encoding='utf-8') as output:
         try:
             if not args.stream_only:
                 result['routes'] = routes(args)
             for _ in range(args.reconnect):
-                result['sessions'].append(measure(args))
+                validation = jpeg_validation()
+                result['jpeg_validation'].append(validation)
+                result['sessions'].append(measure(args, validation))
                 time.sleep(.05)
             result['status'] = 'PASS'
         except (OSError, ValueError, http.client.HTTPException) as exc:
