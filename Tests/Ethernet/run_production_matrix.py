@@ -111,6 +111,8 @@ def main():
             run(key, [sys.executable, "-B", "Tests/Ethernet/build_firmware.py", flag])
         run("production_network", [sys.executable, "-B", "Tests/Ethernet/build_production.py",
                                     "--output", out / "production_network"])
+        run("hardware_acceptance", [sys.executable, "-B", "Tests/Ethernet/build_production.py",
+                                     "--acceptance", "--output", out / "hardware_acceptance"])
 
     if args.section in ("host", "all"):
         # Some historical runners publish tracked JSON/Markdown. Preserve their prior bytes.

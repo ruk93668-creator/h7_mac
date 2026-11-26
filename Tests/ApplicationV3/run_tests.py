@@ -55,7 +55,7 @@ def main():
     harness.cc.extend(("-I", ROOT / "Platform/Ethernet",
                        "-I", ROOT / "ThirdParty/lwip/src/include",
                        "-I", ROOT / "CM7/Service/Ethernet",
-                       "-DETH_LWIP_DHCP", "-DETH_LWIP_E5", "-DETH_NETWORK_SERVICE"))
+                       "-DETH_NETWORK_SERVICE"))
     harness.cc.extend(("-I", V3 / "Core", "-I", V3 / "Tasks", "-I", V3 / "Runtime", "--split_sections"))
     if args.production:
         harness.cc.extend(("-I", Path(__file__).with_name("BoardProfiles"), "-DAPP_V3_VERIFY_PRODUCT=1"))
@@ -124,7 +124,7 @@ def main():
             scenarios = range(98, 104)
         if args.production and not args.raw_uvc:
             scenarios = [*range(24), 28, 29, *range(38, 53), *range(63, 75),
-                         *range(88, 96), 104, *range(105, 124)]
+                         *range(88, 96), 104, *range(105, 127)]
         for scenario in scenarios:
             row = harness.execute(name, "AppV3_TestRun", scenario)
             if scenario < 49:

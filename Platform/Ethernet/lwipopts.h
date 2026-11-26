@@ -1,4 +1,4 @@
-//独立 Ethernet 单循环协议栈配置
+//NO_SYS 协议栈配置：正式 Service 由唯一任务串行执行，独立验证保留原配置入口。
 #ifndef ETH_LWIPOPTS_H
 #define ETH_LWIPOPTS_H
 
@@ -12,10 +12,10 @@
 #define LWIP_ARP 1
 #define LWIP_ICMP 1
 #define LWIP_RAW 1
-#ifdef ETH_LWIP_DHCP
+#if defined(ETH_NETWORK_SERVICE) || defined(ETH_LWIP_DHCP)
 #define LWIP_UDP 1
 #define LWIP_DHCP 1
-#ifdef ETH_LWIP_E5
+#if defined(ETH_NETWORK_SERVICE) || defined(ETH_LWIP_E5)
 #define MEMP_NUM_UDP_PCB 2
 #else
 #define MEMP_NUM_UDP_PCB 1
@@ -24,7 +24,7 @@
 #define LWIP_UDP 0
 #define LWIP_DHCP 0
 #endif
-#ifdef ETH_LWIP_E5
+#if defined(ETH_NETWORK_SERVICE) || defined(ETH_LWIP_E5)
 #define LWIP_TCP 1
 #define SO_REUSE 1
 #define TCP_MSS 1460
@@ -54,7 +54,7 @@
 #else
 #define MEM_ALIGNMENT 4
 #endif
-#ifdef ETH_LWIP_E5
+#if defined(ETH_NETWORK_SERVICE) || defined(ETH_LWIP_E5)
 #define MEM_SIZE (12 * 1024)
 #define PBUF_POOL_SIZE 24
 #else

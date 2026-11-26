@@ -62,6 +62,11 @@ typedef enum
     NETWORK_SERVICE_CLOSE_CLIENT
 } NetworkServiceOperation_t;
 
+//登记的普通任务提交，禁止 ISR、NetworkTask 自调度及阻塞等待。
+//command_id 必须非零，且在同一来源内单调递增；argument 复制为值，不借用调用者 Buffer。
+//SYS_OK 仅表示入队，队满返回 SYS_ERR_BUSY；业务结果通过现有 Service Events 取得。
+//STOP/RESTART 最多等待 130 秒退休；失败保留未退休资源，须显式 STOP 重试，不得清状态冒充完成。
+//全局 lwIP 初始化和定时器持续存在；成功 STOP 只证明协议端点、netif、DMA 和帧租约已退出。
 SysResult_t NetworkService_Request(uint32_t command_id,
     NetworkServiceOperation_t operation, uint32_t argument);
 

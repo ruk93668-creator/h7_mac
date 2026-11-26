@@ -14,6 +14,8 @@
 #define NETWORK_STOP_TIMEOUT_MS 130000U
 #define NETWORK_POLL_MS 10U
 #define NETWORK_HTTP 0x100U
+//沿用 E7 的 50ms 请求周期；实际帧率由复制、背压和 TCP ACK 决定。
+#define NETWORK_FRAME_PERIOD_MS 50U
 
 static struct
 {
@@ -124,7 +126,7 @@ static SysResult_t NetworkService_Start(uint32_t mode)
     s_network.started = true;
     if (mode & NETWORK_HTTP)
     {
-        result = eth_http_init_source(&s_interface, NetworkFrames_Source(), 200U);
+        result = eth_http_init_source(&s_interface, NetworkFrames_Source(), NETWORK_FRAME_PERIOD_MS);
         s_network.http_bound = result == ERR_OK;
     }
     else
@@ -294,6 +296,8 @@ uint32_t AppV3_NetworkAdvance(void)
         else if (!s_network.stopping)
             NetworkService_DataPoll();
     }
+    if (!s_network.started)
+        eth_network_timers_poll();
     NetworkFrames_Poll(s_network.started && s_network.http_bound && !s_network.stopping &&
         s_network.hardware.state == APP_V3_HW_ACTIVE);
     NetworkService_Observe();

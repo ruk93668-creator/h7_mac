@@ -1,7 +1,7 @@
 //实板验收命令生产者；只由生成的验收版 ControlTask 调用，正式产品不编入。
 #include "network_board_acceptance.h"
-#include "supervisor.h"
-#include "app_messages.h"
+#include "../../CM7/ApplicationV3/Tasks/supervisor.h"
+#include "../../CM7/ApplicationV3/Core/app_messages.h"
 #include "platform_time.h"
 
 volatile uint32_t g_n5_command;

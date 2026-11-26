@@ -312,6 +312,13 @@ void eth_network_poll(EthNetwork_t *network)
 #endif
 }
 
+//netif 生命周期结束后，全局 cyclic timer 仍由同一拥有者推进。
+void eth_network_timers_poll(void)
+{
+    if (eth_execution_allowed() && s_lwip_initialized)
+        sys_check_timeouts();
+}
+
 err_t eth_network_stop(EthNetwork_t *network)
 {
     if (!eth_execution_allowed())

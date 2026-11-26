@@ -26,6 +26,8 @@ extern uint32_t g_network_frame_ready, g_network_frame_releases, g_network_relea
 #include "eth_http.h"
 #include "lwip/stats.h"
 #include "lwip/dhcp.h"
+#include "lwip/udp.h"
+#include "lwip/timeouts.h"
 #include "lwip/priv/tcp_priv.h"
 extern uint32_t g_network_stop_fail, g_network_link, g_network_init_calls;
 
@@ -2794,6 +2796,87 @@ static uint32_t Test_ProductRejectsArchivedOperations(const AppV3Context_t *cont
 #endif
 
 extern uint32_t g_network_dhcp_server;
+//验证正式 Client 连接尝试及业务 UDP PCB 耗尽后的真实清理。
+static uint32_t Test_NetworkTransportResources(const AppV3Context_t *context, uint32_t scenario)
+{
+    uint32_t count, ticket;
+    struct udp_pcb *held[2] = {NULL, NULL};
+    ip4_addr_t peer;
+    CHECK(Test_StartBusiness(context) == 0U);
+    CHECK(AppV3Business_Subscribe(RUNTIME_TARGET_NETWORK, Test_StoreEvent, NULL, &ticket) == SYS_OK);
+    g_network_link = 1U;
+    CHECK(NetworkService_Request(1U, NETWORK_SERVICE_START, 0U) == SYS_OK);
+    CHECK(Test_ServiceStep(RUNTIME_TARGET_NETWORK) == SYS_OK);
+    Test_PollHardware(RUNTIME_TARGET_NETWORK);
+    CHECK(AppV3Business_Drain(&count) == SYS_OK && count == 1U);
+    if (scenario == 125U)
+    {
+        owner = RUNTIME_TARGET_NETWORK;
+        held[0] = udp_new();
+        held[1] = udp_new();
+        CHECK(held[0] != NULL && held[1] != NULL);
+        owner = RUNTIME_TARGET_CONTROL;
+    }
+    g_hardware.now_ms += 10U;
+    Test_PollHardware(RUNTIME_TARGET_NETWORK);
+    if (scenario == 125U)
+    {
+        CHECK(g_network_status.transport.udp_start == ERR_MEM);
+        owner = RUNTIME_TARGET_NETWORK;
+        udp_remove(held[0]);
+        udp_remove(held[1]);
+        owner = RUNTIME_TARGET_CONTROL;
+        g_hardware.now_ms += 1000U;
+        Test_PollHardware(RUNTIME_TARGET_NETWORK);
+        CHECK(g_network_status.transport.udp_start == ERR_OK && g_network_status.udp_pcb.used == 1U);
+    }
+    else
+    {
+        IP4_ADDR(&peer, 192, 168, 50, 1);
+        CHECK(NetworkService_Request(2U, NETWORK_SERVICE_CONNECT, peer.addr) == SYS_OK);
+        CHECK(Test_ServiceStep(RUNTIME_TARGET_NETWORK) == SYS_OK);
+        Test_PollHardware(RUNTIME_TARGET_NETWORK);
+        CHECK(AppV3Business_Drain(&count) == SYS_OK && count == 1U);
+        CHECK(business_events[business_event_count - 1U].result == SYS_OK);
+        CHECK(g_network_status.tcp_pcb.used == 1U &&
+            g_network_status.transport.tcp[ETH_TCP_CLIENT].state == ETH_TCP_CONNECTING);
+    }
+    CHECK(NetworkService_Request(3U, NETWORK_SERVICE_STOP, 0U) == SYS_OK);
+    CHECK(Test_ServiceStep(RUNTIME_TARGET_NETWORK) == SYS_OK);
+    Test_PollHardware(RUNTIME_TARGET_NETWORK);
+    CHECK(AppV3Business_Drain(&count) == SYS_OK && count == 1U);
+    CHECK(business_events[business_event_count - 1U].result == SYS_OK);
+    CHECK(g_network_status.tcp_pcb.used == 0U && g_network_status.udp_pcb.used == 0U &&
+        g_network_status.tcp_seg.used == 0U && g_network_status.pbuf.used == 0U);
+    CHECK(AppV3Business_Unsubscribe(ticket) == SYS_OK);
+    return 0U;
+}
+
+static uint32_t Test_NetworkCommandBackpressure(const AppV3Context_t *context)
+{
+    uint32_t i, count, ticket;
+    CHECK(Test_StartBusiness(context) == 0U);
+    CHECK(AppV3Business_Subscribe(RUNTIME_TARGET_NETWORK, Test_StoreEvent, NULL, &ticket) == SYS_OK);
+    for (i = 1U; i <= 4U; ++i)
+        CHECK(NetworkService_Request(i, NETWORK_SERVICE_QUERY, 0U) == SYS_OK);
+    CHECK(NetworkService_Request(5U, NETWORK_SERVICE_QUERY, 0U) == SYS_ERR_BUSY);
+    for (i = 1U; i <= 4U; ++i)
+    {
+        //已有待完成请求时 Event Loop 按契约返回 BUSY，队首保留至下一轮。
+        CHECK(Test_ServiceStep(RUNTIME_TARGET_NETWORK) == (i < 4U ? SYS_ERR_BUSY : SYS_OK));
+        Test_PollHardware(RUNTIME_TARGET_NETWORK);
+        CHECK(AppV3Business_Drain(&count) == SYS_OK && count == 1U);
+        CHECK(business_events[business_event_count - 1U].command_id == i);
+    }
+    CHECK(NetworkService_Request(5U, NETWORK_SERVICE_QUERY, 0U) == SYS_OK);
+    CHECK(Test_ServiceStep(RUNTIME_TARGET_NETWORK) == SYS_OK);
+    Test_PollHardware(RUNTIME_TARGET_NETWORK);
+    CHECK(AppV3Business_Drain(&count) == SYS_OK && count == 1U);
+    CHECK(business_events[business_event_count - 1U].result == SYS_OK);
+    CHECK(AppV3Business_Unsubscribe(ticket) == SYS_OK);
+    return 0U;
+}
+
 static uint32_t Test_NetworkAcceptanceProducer(const AppV3Context_t *context, uint32_t scenario)
 {
     uint32_t i;
@@ -2963,6 +3046,15 @@ static uint32_t Test_NetworkDhcpHttp(const AppV3Context_t *context)
     return 0U;
 }
 
+static uint32_t s_stopped_timer_calls;
+static void Test_NetworkStoppedTimer(void *context)
+{
+    (void)context;
+    if (!App_MessagesIsOwner(RUNTIME_TARGET_NETWORK))
+        g_failure = __LINE__;
+    ++s_stopped_timer_calls;
+}
+
 static uint32_t Test_NetworkRetirementGate(const AppV3Context_t *context)
 {
     struct tcp_pcb *pcb;
@@ -2996,6 +3088,12 @@ static uint32_t Test_NetworkRetirementGate(const AppV3Context_t *context)
     CHECK(AppV3Business_Drain(&count) == SYS_OK && count == 1U);
     CHECK(business_events[business_event_count - 1U].result == SYS_OK);
     CHECK(netif_list == NULL && lwip_stats.memp[MEMP_TCP_PCB]->used == 0U);
+    owner = RUNTIME_TARGET_NETWORK;
+    sys_timeout(20U, Test_NetworkStoppedTimer, NULL);
+    owner = RUNTIME_TARGET_CONTROL;
+    g_hardware.now_ms += 21U;
+    Test_PollHardware(RUNTIME_TARGET_NETWORK);
+    CHECK(s_stopped_timer_calls == 1U);
     CHECK(AppV3Business_Unsubscribe(ticket) == SYS_OK);
     return 0U;
 }
@@ -3297,6 +3395,10 @@ uint32_t AppV3_TestRun(uint32_t scenario)
     if (scenario >= 96U && scenario <= 97U)
         return Test_RecordBoard(context, scenario);
 #endif
+    if (scenario == 126U)
+        return Test_NetworkCommandBackpressure(context);
+    if (scenario == 124U || scenario == 125U)
+        return Test_NetworkTransportResources(context, scenario);
     if (scenario >= 121U && scenario <= 123U)
         return Test_NetworkAcceptanceProducer(context, scenario);
     if (scenario == 119U)
