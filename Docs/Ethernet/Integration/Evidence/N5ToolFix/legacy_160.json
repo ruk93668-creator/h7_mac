@@ -1,0 +1,55 @@
+{
+  "status": "PASS",
+  "routes": {
+    "200 /": 200,
+    "200 /health": 200,
+    "204 /favicon.ico": 204,
+    "404 /missing": 404,
+    "431 /": 431
+  },
+  "sessions": [
+    {
+      "frames": 8,
+      "jpeg_bytes": 48814,
+      "seconds": 0.03200000000651926,
+      "fps": 218.74999995543476,
+      "jpeg_mbps": 12.20349999751382,
+      "unique_frames": 8,
+      "jpeg_min_bytes": 5052,
+      "jpeg_max_bytes": 7545,
+      "shutdown": "fin_received",
+      "expected_resolution": {
+        "width": 160,
+        "height": 120
+      },
+      "jpeg_validation": {
+        "status": "PASS",
+        "frames_checked": 8,
+        "crc_verified_frames": 8,
+        "observed_dimensions": [
+          {
+            "width": 160,
+            "height": 120
+          }
+        ]
+      }
+    }
+  ],
+  "expected_resolution": {
+    "width": 160,
+    "height": 120
+  },
+  "jpeg_validation": [
+    {
+      "status": "PASS",
+      "frames_checked": 8,
+      "crc_verified_frames": 8,
+      "observed_dimensions": [
+        {
+          "width": 160,
+          "height": 120
+        }
+      ]
+    }
+  ]
+}

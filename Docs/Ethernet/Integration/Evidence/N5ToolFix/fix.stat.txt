@@ -1,0 +1,6 @@
+ Docs/Ethernet/Integration/N5_HardwareAcceptance.md |   6 +-
+ Tests/Ethernet/e6_peer.py                          |  96 +++++++++++------
+ Tests/Ethernet/e6_peer_fixtures/README.md          |  10 ++
+ Tests/Ethernet/e6_peer_fixtures/qvga.jpg           | Bin 0 -> 13031 bytes
+ Tests/Ethernet/test_e6_peer.py                     | 113 ++++++++++++++++++++-
+ 5 files changed, 189 insertions(+), 36 deletions(-)

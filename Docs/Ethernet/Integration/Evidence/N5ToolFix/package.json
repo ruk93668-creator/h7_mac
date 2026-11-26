@@ -1,0 +1,12 @@
+{
+  "path": "C:\\Users\\29062\\AppData\\Local\\Temp\\h7_q11_04dmg4_u\\n5_tool_fix\\output\\Ethernet\\delivery\\Ethernet_N5_ToolFix_f9e17cf3.zip",
+  "sha256": "8eff3e368bc3f4f60ad0a08e32d8e03ce83afd5b93c023f5e5afb0d5e0b08f4c",
+  "files": 162,
+  "size": 139219891,
+  "tool_fix_commit": "f9e17cf3c58cfa911cab69178399c9827bd97a42",
+  "firmware_unchanged": true,
+  "original_zip_unchanged": true,
+  "all_entries_verified": true,
+  "hardware": "NOT_RUN",
+  "status": "READY_FOR_REVIEW"
+}

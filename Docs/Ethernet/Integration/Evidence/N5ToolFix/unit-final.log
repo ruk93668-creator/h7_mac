@@ -1,0 +1,14 @@
+test_cli_invalid_resolution_rejected_before_network (test_e6_peer.TestE6Peer.test_cli_invalid_resolution_rejected_before_network) ... ok
+test_cli_json_defaults_qvga_and_mismatches (test_e6_peer.TestE6Peer.test_cli_json_defaults_qvga_and_mismatches) ... ok
+test_corrupt_payload_retains_crc_assertion (test_e6_peer.TestE6Peer.test_corrupt_payload_retains_crc_assertion) ... ok
+test_dimension_mismatch_both_directions (test_e6_peer.TestE6Peer.test_dimension_mismatch_both_directions) ... ok
+test_fixtures_and_multiple_parts (test_e6_peer.TestE6Peer.test_fixtures_and_multiple_parts) ... ok
+test_invalid_sof_and_lengths_with_matching_crc (test_e6_peer.TestE6Peer.test_invalid_sof_and_lengths_with_matching_crc) ... ok
+test_qvga_frame (test_e6_peer.TestE6Peer.test_qvga_frame) ... ok
+test_real_socket_client_fin_reset_reconnect (test_e6_peer.TestE6Peer.test_real_socket_client_fin_reset_reconnect) ... ok
+test_rejects_invalid_part (test_e6_peer.TestE6Peer.test_rejects_invalid_part) ... ok
+
+----------------------------------------------------------------------
+Ran 9 tests in 3.238s
+
+OK

@@ -1,0 +1,508 @@
+diff --git a/Docs/Ethernet/Integration/N5_HardwareAcceptance.md b/Docs/Ethernet/Integration/N5_HardwareAcceptance.md
+index 7aad395..fffc4dc 100644
+--- a/Docs/Ethernet/Integration/N5_HardwareAcceptance.md
++++ b/Docs/Ethernet/Integration/N5_HardwareAcceptance.md
+@@ -52,8 +52,8 @@ PHY Up不等于租约完成；Connected不等于视频/吞吐通过。
+ 包括ACK中T1/T2实际选项。
+ 
+ ```powershell
+-python -B Tests/Ethernet/e6_peer.py --board-ip 实际IP --camera --frames 1000 --output hw_basic.json
+-python -B Tests/Ethernet/e6_peer.py --board-ip 实际IP --camera --frames 50 --reconnect 10 --rst --output hw_rst.json
++python -B Tests/Ethernet/e6_peer.py --board-ip 实际IP --camera --width 320 --height 240 --frames 1000 --output hw_basic.json
++python -B Tests/Ethernet/e6_peer.py --board-ip 实际IP --camera --width 320 --height 240 --frames 50 --reconnect 10 --rst --output hw_rst.json
+ ```
+ 也检查慢读/停读、普通结束。原帧和私有借用必须归还，PCB/SEG/PBUF/heap回基线。
+ cyclic timer是全局资源，STOP后基础条目不为零，不能强行清成零。
+@@ -76,7 +76,7 @@ phase=5是FAIL；g_n5_command=3只请求真实清理，保留首错，不清变
+ 设g_n5_joint_ms=3660000给PC启动留1分钟，g_n5_ready_ms=30000，g_n5_command=2。
+ 确认active=15、OLED/IPC正常及实际网络就绪，在1分钟内启动：
+ ```powershell
+-python -B Tests/Ethernet/e6_peer.py --board-ip 实际IP --camera --frames 1000 --seconds 3600 --min-fps 9.33 --output hw_joint_60min.json
++python -B Tests/Ethernet/e6_peer.py --board-ip 实际IP --camera --width 320 --height 240 --frames 1000 --seconds 3600 --min-fps 9.33 --output hw_joint_60min.json
+ ```
+ 9.33FPS是既有实测参照，须记录同等场景/帧大小；不能降低门槛造PASS。
+ 20FPS另用--min-fps 20单独报告，未达到保留OPEN/FAIL，不与长稳混写。
+diff --git a/Tests/Ethernet/e6_peer.py b/Tests/Ethernet/e6_peer.py
+index b39869b..cb1f2e9 100644
+--- a/Tests/Ethernet/e6_peer.py
++++ b/Tests/Ethernet/e6_peer.py
+@@ -26,38 +26,58 @@ def jpeg_size(data):
+         require(length >= 2 and offset + length + 2 <= len(data), 'invalid JPEG segment length')
+         if kind == 0xc0:
+             require(length >= 8, 'invalid JPEG frame segment')
++            components = data[offset + 9]
++            require(1 <= components <= 4 and length == 8 + 3 * components,
++                    'invalid JPEG frame components')
+             height, width = struct.unpack_from('!HH', data, offset + 5)
++            require(width > 0 and height > 0, 'invalid JPEG dimensions')
+             return width, height
+         require(kind not in (0xda, 0xd9), 'JPEG frame header missing')
+         offset += length + 2
+     raise ValueError('JPEG frame header missing')
+ 
+ 
+-def read_frame(stream, expected):
+-    require(stream.readline(64) == b'--h7frame\r\n', 'invalid multipart boundary')
+-    fields = {}
+-    for _ in range(8):
+-        line = stream.readline(128)
+-        if line == b'\r\n':
+-            break
+-        name, sep, value = line.rstrip(b'\r\n').partition(b':')
+-        name = name.lower()
+-        require(line.endswith(b'\r\n') and sep and name not in fields, 'invalid multipart field')
+-        fields[name] = value.strip()
+-    else:
+-        raise ValueError('too many multipart fields')
+-    require(fields.get(b'content-type') == b'image/jpeg', 'invalid part Content-Type')
+-    size = fields.get(b'content-length', b'')
+-    seq = fields.get(b'x-frame-sequence', b'')
+-    crc = fields.get(b'x-frame-crc32', b'')
+-    require(size.isdigit() and len(size) <= 5 and seq.isdigit() and len(seq) <= 10 and
+-            re.fullmatch(rb'[0-9a-fA-F]{8}', crc), 'invalid length, sequence or CRC field')
+-    require(4 <= int(size) <= 65535 and int(seq) == expected, 'invalid length or frame sequence')
+-    data = stream.read(int(size))
+-    require(len(data) == int(size) and stream.read(2) == b'\r\n', 'incomplete JPEG or trailer')
+-    require(zlib.crc32(data) == int(crc, 16), 'JPEG CRC mismatch')
+-    require(jpeg_size(data) == (160, 120), 'unexpected JPEG dimensions')
+-    return len(data), crc.decode('ascii')
++def read_frame(stream, expected, width=160, height=120, validation=None):
++    try:
++        require(stream.readline(64) == b'--h7frame\r\n', 'invalid multipart boundary')
++        fields = {}
++        for _ in range(8):
++            line = stream.readline(128)
++            if line == b'\r\n':
++                break
++            name, sep, value = line.rstrip(b'\r\n').partition(b':')
++            name = name.lower()
++            require(line.endswith(b'\r\n') and sep and name not in fields, 'invalid multipart field')
++            fields[name] = value.strip()
++        else:
++            raise ValueError('too many multipart fields')
++        require(fields.get(b'content-type') == b'image/jpeg', 'invalid part Content-Type')
++        size = fields.get(b'content-length', b'')
++        seq = fields.get(b'x-frame-sequence', b'')
++        crc = fields.get(b'x-frame-crc32', b'')
++        require(size.isdigit() and len(size) <= 5 and seq.isdigit() and len(seq) <= 10 and
++                re.fullmatch(rb'[0-9a-fA-F]{8}', crc), 'invalid length, sequence or CRC field')
++        require(4 <= int(size) <= 65535 and int(seq) == expected, 'invalid length or frame sequence')
++        data = stream.read(int(size))
++        require(len(data) == int(size) and stream.read(2) == b'\r\n', 'incomplete JPEG or trailer')
++        require(zlib.crc32(data) == int(crc, 16), 'JPEG CRC mismatch')
++        if validation is not None:
++            validation['crc_verified_frames'] += 1
++        actual = jpeg_size(data)
++        dimensions = dict(width=actual[0], height=actual[1])
++        if validation is not None and dimensions not in validation['observed_dimensions']:
++            validation['observed_dimensions'].append(dimensions)
++        require(actual == (width, height),
++                f'unexpected JPEG dimensions: expected {width}x{height}, got {actual[0]}x{actual[1]}')
++        if validation is not None:
++            validation['frames_checked'] += 1
++            validation['status'] = 'PASS'
++        return len(data), crc.decode('ascii')
++    except ValueError as exc:
++        if validation is not None:
++            validation['status'] = 'FAIL'
++            validation['error'] = str(exc)
++        raise
+ 
+ 
+ def connect(args):
+@@ -105,7 +125,10 @@ def routes(args):
+     return outcomes
+ 
+ 
+-def measure(args):
++def measure(args, validation=None):
++    width, height = getattr(args, 'width', 160), getattr(args, 'height', 120)
++    if validation is None:
++        validation = jpeg_validation()
+     count = bytes_received = 0
+     first = last = None
+     checksums = set()
+@@ -116,7 +139,7 @@ def measure(args):
+                     'multipart/x-mixed-replace; boundary=h7frame', 'invalid MJPEG response')
+             require(response.headers.get('Content-Length') is None, 'unexpected stream Content-Length')
+             while count < args.frames or (args.seconds and (first is None or last - first < args.seconds)):
+-                length, crc = read_frame(response, count + 1)
++                length, crc = read_frame(response, count + 1, width, height, validation)
+                 last = time.monotonic()
+                 if first is None:
+                     first = last
+@@ -151,7 +174,12 @@ def measure(args):
+             'stream did not show all eight different fixtures')
+     return dict(frames=count, jpeg_bytes=bytes_received, seconds=elapsed, fps=fps,
+                 jpeg_mbps=8 * bytes_received / elapsed / 1e6 if elapsed else 0,
+-                unique_frames=len(checksums), jpeg_min_bytes=min_size, jpeg_max_bytes=max_size, shutdown=shutdown)
++                unique_frames=len(checksums), jpeg_min_bytes=min_size, jpeg_max_bytes=max_size, shutdown=shutdown,
++                expected_resolution=dict(width=width, height=height), jpeg_validation=validation)
++
++
++def jpeg_validation():
++    return dict(status='NOT_RUN', frames_checked=0, crc_verified_frames=0, observed_dimensions=[])
+ 
+ 
+ def main():
+@@ -160,6 +188,8 @@ def main():
+     parser.add_argument('--local-ip')
+     parser.add_argument('--port', type=int, default=80)
+     parser.add_argument('--frames', type=int, default=10)
++    parser.add_argument('--width', type=int, default=160, help='expected JPEG SOF width (1..65535)')
++    parser.add_argument('--height', type=int, default=120, help='expected JPEG SOF height (1..65535)')
+     parser.add_argument('--seconds', type=float, default=0)
+     parser.add_argument('--min-fps', type=float, default=0)
+     parser.add_argument('--timeout', type=float, default=8)
+@@ -172,18 +202,22 @@ def main():
+     parser.add_argument('--camera', action='store_true', help='validate a live source without requiring the eight fixture CRCs')
+     parser.add_argument('--output', type=Path, required=True)
+     args = parser.parse_args()
+-    if (args.frames < 1 or args.reconnect < 1 or not 1 <= args.port <= 65535 or args.timeout <= 0 or
++    if (not 1 <= args.width <= 65535 or not 1 <= args.height <= 65535 or
++            args.frames < 1 or args.reconnect < 1 or not 1 <= args.port <= 65535 or args.timeout <= 0 or
+             any(value < 0 for value in (args.seconds, args.min_fps, args.slow_ms,
+                                         args.stop_read_seconds, args.receive_buffer))):
+         parser.error('invalid test limits')
+     args.output.parent.mkdir(parents=True, exist_ok=True)
+-    result = dict(status='FAIL', routes={}, sessions=[])
++    result = dict(status='FAIL', routes={}, sessions=[],
++                  expected_resolution=dict(width=args.width, height=args.height), jpeg_validation=[])
+     with args.output.open('x', encoding='utf-8') as output:
+         try:
+             if not args.stream_only:
+                 result['routes'] = routes(args)
+             for _ in range(args.reconnect):
+-                result['sessions'].append(measure(args))
++                validation = jpeg_validation()
++                result['jpeg_validation'].append(validation)
++                result['sessions'].append(measure(args, validation))
+                 time.sleep(.05)
+             result['status'] = 'PASS'
+         except (OSError, ValueError, http.client.HTTPException) as exc:
+diff --git a/Tests/Ethernet/e6_peer_fixtures/README.md b/Tests/Ethernet/e6_peer_fixtures/README.md
+new file mode 100644
+index 0000000..671b0cf
+--- /dev/null
++++ b/Tests/Ethernet/e6_peer_fixtures/README.md
+@@ -0,0 +1,10 @@
++# Peer parser QVGA fixture
++
++qvga.jpg is a test-only baseline JPEG. It is not compiled into any firmware or included in the original eight E6 fixtures.
++
++Source: ../e6_jpeg_fixtures/frame0.jpg, resized to 320x240 using Pillow 12.2.0 NEAREST,
++saved as JPEG quality=85, progressive=False. Pillow decoded the resulting file successfully.
++The tests read the committed JPEG bytes and require no Pillow runtime dependency.
++
++Source SHA-256: ba5c8f6cea8743414f2c341967f43d30d54261a7e90ff7fecace229c70f65978
++QVGA SHA-256: fcd034a287bf10d80c775c0edfea9093cf476e0469c7e2b6117a0d746b9959bc
+diff --git a/Tests/Ethernet/e6_peer_fixtures/qvga.jpg b/Tests/Ethernet/e6_peer_fixtures/qvga.jpg
+new file mode 100644
+index 0000000000000000000000000000000000000000..6d4c56e7edccd813617762d54e6550603ca4997c
+GIT binary patch
+literal 13031
+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
+
+literal 0
+HcmV?d00001
+
+diff --git a/Tests/Ethernet/test_e6_peer.py b/Tests/Ethernet/test_e6_peer.py
+index 7a5fada..1e0874c 100644
+--- a/Tests/Ethernet/test_e6_peer.py
++++ b/Tests/Ethernet/test_e6_peer.py
+@@ -1,15 +1,20 @@
+ from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
+-from io import BytesIO
++from contextlib import redirect_stderr, redirect_stdout
++from io import BytesIO, StringIO
+ from pathlib import Path
++import json
+ import select
++import tempfile
+ import threading
+ from types import SimpleNamespace
+ import unittest
++from unittest.mock import patch
+ import zlib
+ 
+ import e6_peer as peer
+ 
+ 
++QVGA = Path(__file__).with_name('e6_peer_fixtures').joinpath('qvga.jpg').read_bytes()
+ FIXTURES = [path.read_bytes() for path in sorted(Path(__file__).with_name('e6_jpeg_fixtures').glob('*.jpg'))]
+ 
+ 
+@@ -32,7 +37,7 @@ class Handler(BaseHTTPRequestHandler):
+             self.send_header('Connection', 'close')
+             self.end_headers()
+             try:
+-                for index, frame in enumerate(FIXTURES, 1):
++                for index, frame in enumerate(getattr(self.server, 'frames', FIXTURES), 1):
+                     self.wfile.write(part(frame, index))
+                 if select.select([self.connection], [], [], 2)[0]:
+                     self.connection.recv(1)
+@@ -74,6 +79,110 @@ class TestE6Peer(unittest.TestCase):
+                 with self.assertRaises(ValueError):
+                     peer.read_frame(BytesIO(data), 1)
+ 
++    def test_qvga_frame(self):
++        validation = peer.jpeg_validation()
++        self.assertEqual(peer.jpeg_size(QVGA), (320, 240))
++        self.assertEqual(peer.read_frame(BytesIO(part(QVGA, 1)), 1, 320, 240, validation),
++                         (len(QVGA), f'{zlib.crc32(QVGA):08X}'))
++        self.assertEqual(validation, dict(status='PASS', frames_checked=1, crc_verified_frames=1,
++                                         observed_dimensions=[dict(width=320, height=240)]))
++
++    def test_dimension_mismatch_both_directions(self):
++        for frame, width, height, actual in ((FIXTURES[0], 320, 240, (160, 120)),
++                                             (QVGA, 160, 120, (320, 240))):
++            with self.subTest(expected=(width, height)):
++                validation = peer.jpeg_validation()
++                with self.assertRaisesRegex(ValueError, 'unexpected JPEG dimensions'):
++                    peer.read_frame(BytesIO(part(frame, 1)), 1, width, height, validation)
++                self.assertEqual(validation['status'], 'FAIL')
++                self.assertEqual(validation['frames_checked'], 0)
++                self.assertEqual(validation['crc_verified_frames'], 1)
++                self.assertEqual(validation['observed_dimensions'],
++                                 [dict(width=actual[0], height=actual[1])])
++
++    def test_corrupt_payload_retains_crc_assertion(self):
++        data = bytearray(part(QVGA, 1))
++        data[-8] ^= 1
++        validation = peer.jpeg_validation()
++        with self.assertRaisesRegex(ValueError, 'JPEG CRC mismatch'):
++            peer.read_frame(BytesIO(data), 1, 320, 240, validation)
++        self.assertEqual(validation['status'], 'FAIL')
++        self.assertEqual(validation['crc_verified_frames'], 0)
++
++    def test_invalid_sof_and_lengths_with_matching_crc(self):
++        sof = QVGA.index(b'\xff\xc0')
++        cases = {}
++        for name, relative, value in (('short_sof', 2, b'\x00\x07'),
++                                       ('oversized_segment', 2, b'\xff\xff'),
++                                       ('zero_width', 7, b'\x00\x00'),
++                                       ('zero_height', 5, b'\x00\x00'),
++                                       ('zero_components', 9, b'\x00'),
++                                       ('missing_component_records', 9, b'\x04'),
++                                       ('missing_sof', 1, b'\xc4')):
++            frame = bytearray(QVGA)
++            frame[sof + relative:sof + relative + len(value)] = value
++            cases[name] = bytes(frame)
++        cases['missing_eoi'] = QVGA[:-2]
++        cases['truncated_sof'] = QVGA[:sof + 8] + b'\xff\xd9'
++        for name, frame in cases.items():
++            with self.subTest(case=name):
++                validation = peer.jpeg_validation()
++                with self.assertRaises(ValueError):
++                    peer.read_frame(BytesIO(part(frame, 1)), 1, 320, 240, validation)
++                self.assertEqual(validation['status'], 'FAIL')
++                self.assertEqual(validation['frames_checked'], 0)
++
++    def test_cli_json_defaults_qvga_and_mismatches(self):
++        with ThreadingHTTPServer(('127.0.0.1', 0), Handler) as server, tempfile.TemporaryDirectory() as tmp:
++            worker = threading.Thread(target=server.serve_forever, daemon=True)
++            worker.start()
++            try:
++                cases = [('legacy', FIXTURES, [], (160, 120), 0),
++                         ('qvga', [QVGA] * 8, ['--width', '320', '--height', '240'], (320, 240), 0),
++                         ('small_mismatch', FIXTURES, ['--width', '320', '--height', '240'], (320, 240), 1),
++                         ('large_mismatch', [QVGA] * 8, [], (160, 120), 1)]
++                for name, frames, options, expected, code in cases:
++                    with self.subTest(case=name):
++                        server.frames = frames
++                        out = Path(tmp) / (name + '.json')
++                        argv = ['e6_peer.py', '--board-ip', '127.0.0.1', '--port', str(server.server_port),
++                                '--frames', '8', '--slow-ms', '5', '--output', str(out), *options,
++                                *(['--camera'] if name != 'legacy' else [])]
++                        with patch('sys.argv', argv), redirect_stdout(StringIO()):
++                            self.assertEqual(peer.main(), code)
++                        result = json.loads(out.read_text())
++                        self.assertEqual(result['status'], 'FAIL' if code else 'PASS')
++                        self.assertEqual(result['expected_resolution'], dict(width=expected[0], height=expected[1]))
++                        check = result['jpeg_validation'][0]
++                        self.assertEqual(check['status'], result['status'])
++                        if not code:
++                            session = result['sessions'][0]
++                            self.assertEqual(session['frames'], 8)
++                            self.assertEqual(session['jpeg_bytes'], sum(map(len, frames)))
++                            self.assertGreater(session['fps'], 0)
++                            self.assertEqual(check['frames_checked'], 8)
++                            self.assertEqual(check['crc_verified_frames'], 8)
++                            self.assertEqual(check['observed_dimensions'], [result['expected_resolution']])
++                        else:
++                            self.assertEqual(check['frames_checked'], 0)
++                            self.assertIn('unexpected JPEG dimensions', result['error'])
++            finally:
++                server.shutdown()
++                worker.join()
++
++    def test_cli_invalid_resolution_rejected_before_network(self):
++        for option in ('--width', '--height'):
++            for value in ('0', '-1', '65536', '1.5', 'invalid'):
++                with self.subTest(option=option, value=value), tempfile.TemporaryDirectory() as tmp:
++                    out = Path(tmp) / 'invalid.json'
++                    argv = ['e6_peer.py', '--board-ip', '127.0.0.1', '--output', str(out), option, value]
++                    with patch('sys.argv', argv), patch.object(peer, 'connect') as connect, redirect_stderr(StringIO()):
++                        with self.assertRaises(SystemExit) as raised:
++                            peer.main()
++                        self.assertEqual(raised.exception.code, 2)
++                        connect.assert_not_called()
++                        self.assertFalse(out.exists())
++
+     def test_real_socket_client_fin_reset_reconnect(self):
+         with ThreadingHTTPServer(('127.0.0.1', 0), Handler) as server:
+             worker = threading.Thread(target=server.serve_forever, daemon=True)

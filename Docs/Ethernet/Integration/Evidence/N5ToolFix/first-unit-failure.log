@@ -1,0 +1,32 @@
+test_cli_invalid_resolution_rejected_before_network (test_e6_peer.TestE6Peer.test_cli_invalid_resolution_rejected_before_network) ... ok
+test_cli_json_defaults_qvga_and_mismatches (test_e6_peer.TestE6Peer.test_cli_json_defaults_qvga_and_mismatches) ... 
+  test_cli_json_defaults_qvga_and_mismatches (test_e6_peer.TestE6Peer.test_cli_json_defaults_qvga_and_mismatches) (case='legacy') ... FAIL
+  test_cli_json_defaults_qvga_and_mismatches (test_e6_peer.TestE6Peer.test_cli_json_defaults_qvga_and_mismatches) (case='qvga') ... FAIL
+test_corrupt_payload_retains_crc_assertion (test_e6_peer.TestE6Peer.test_corrupt_payload_retains_crc_assertion) ... ok
+test_dimension_mismatch_both_directions (test_e6_peer.TestE6Peer.test_dimension_mismatch_both_directions) ... ok
+test_fixtures_and_multiple_parts (test_e6_peer.TestE6Peer.test_fixtures_and_multiple_parts) ... ok
+test_invalid_sof_and_lengths_with_matching_crc (test_e6_peer.TestE6Peer.test_invalid_sof_and_lengths_with_matching_crc) ... ok
+test_qvga_frame (test_e6_peer.TestE6Peer.test_qvga_frame) ... ok
+test_real_socket_client_fin_reset_reconnect (test_e6_peer.TestE6Peer.test_real_socket_client_fin_reset_reconnect) ... ok
+test_rejects_invalid_part (test_e6_peer.TestE6Peer.test_rejects_invalid_part) ... ok
+
+======================================================================
+FAIL: test_cli_json_defaults_qvga_and_mismatches (test_e6_peer.TestE6Peer.test_cli_json_defaults_qvga_and_mismatches) (case='legacy')
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "C:\Users\29062\AppData\Local\Temp\h7_q11_04dmg4_u\n5_tool_fix\Tests\Ethernet\test_e6_peer.py", line 162, in test_cli_json_defaults_qvga_and_mismatches
+    self.assertGreater(session['fps'], 0)
+AssertionError: 0.0 not greater than 0
+
+======================================================================
+FAIL: test_cli_json_defaults_qvga_and_mismatches (test_e6_peer.TestE6Peer.test_cli_json_defaults_qvga_and_mismatches) (case='qvga')
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "C:\Users\29062\AppData\Local\Temp\h7_q11_04dmg4_u\n5_tool_fix\Tests\Ethernet\test_e6_peer.py", line 162, in test_cli_json_defaults_qvga_and_mismatches
+    self.assertGreater(session['fps'], 0)
+AssertionError: 0.0 not greater than 0
+
+----------------------------------------------------------------------
+Ran 9 tests in 3.134s
+
+FAILED (failures=2)

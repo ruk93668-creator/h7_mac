@@ -1,0 +1,30 @@
+{
+  "status": "FAIL",
+  "routes": {
+    "200 /": 200,
+    "200 /health": 200,
+    "204 /favicon.ico": 204,
+    "404 /missing": 404,
+    "431 /": 431
+  },
+  "sessions": [],
+  "expected_resolution": {
+    "width": 320,
+    "height": 240
+  },
+  "jpeg_validation": [
+    {
+      "status": "FAIL",
+      "frames_checked": 0,
+      "crc_verified_frames": 1,
+      "observed_dimensions": [
+        {
+          "width": 160,
+          "height": 120
+        }
+      ],
+      "error": "unexpected JPEG dimensions: expected 320x240, got 160x120"
+    }
+  ],
+  "error": "unexpected JPEG dimensions: expected 320x240, got 160x120"
+}
