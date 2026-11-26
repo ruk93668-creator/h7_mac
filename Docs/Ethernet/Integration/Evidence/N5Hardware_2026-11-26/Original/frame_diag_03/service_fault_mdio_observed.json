@@ -1,0 +1,18 @@
+{
+  "address": "192.168.137.45",
+  "user_reported": {
+    "network_lifecycle": 5,
+    "network_flags": 3,
+    "mac_state": 2,
+    "irq_dma_error": 0,
+    "irq_mac_error": 0,
+    "mdio_errors": 11
+  },
+  "network_capture": {
+    "name": "auto_frame_newip_175144_638789.pcapng",
+    "sha256": "2df75d3feaf742b113deb0b989bbcc2107bcc1018defd580a49901c65813179a",
+    "board_tcp80_response": "RST/ACK"
+  },
+  "conclusion": "HTTP unavailable in service FAULT. MDIO failures are a supported trigger candidate, not timestamp-proven.",
+  "jpeg_frame_this_run": "NOT_RUN"
+}

@@ -1,0 +1,16 @@
+{
+  "source": "user Keil Watch screenshots",
+  "hardware_start": "FAIL",
+  "phase": 5,
+  "first_fault": -8,
+  "active": 9,
+  "network_lifecycle": 5,
+  "mac_state": 2,
+  "dhcp_state": 3,
+  "lease_valid": 0,
+  "initial_pcap": "NOT_CAPTURED",
+  "late_diagnostic_capture": "user reports started; awaiting file",
+  "root_cause": "NOT_DETERMINED",
+  "watch_correction": "g_network_status.address.ip.addr; current_ip field does not exist",
+  "pc_sharing": "user screenshot WLAN shared to USB Ethernet 3; host observed 192.168.137.1/24 and 100Mbps"
+}

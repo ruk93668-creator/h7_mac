@@ -1,0 +1,18 @@
+{
+  "status": "FAIL",
+  "routes": {},
+  "sessions": [],
+  "expected_resolution": {
+    "width": 320,
+    "height": 240
+  },
+  "jpeg_validation": [
+    {
+      "status": "NOT_RUN",
+      "frames_checked": 0,
+      "crc_verified_frames": 0,
+      "observed_dimensions": []
+    }
+  ],
+  "error": "timed out"
+}

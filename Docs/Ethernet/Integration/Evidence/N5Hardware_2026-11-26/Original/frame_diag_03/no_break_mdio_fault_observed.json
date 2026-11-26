@@ -1,0 +1,27 @@
+{
+  "test": "N5 single cycle after running no-breakpoint initialization script",
+  "watch_source": "user typed Keil Command result",
+  "watch": {
+    "phase": 2,
+    "network_flags": 3,
+    "network_lifecycle": 5,
+    "mdio_errors": 9
+  },
+  "host": {
+    "board_ip": "192.168.137.45",
+    "board_mac": "02:47:47:00:00:01",
+    "ping": "REPLY",
+    "tcp80": "RST/ACK",
+    "jpeg_validation": "NOT_RUN"
+  },
+  "pcap": {
+    "path": "no_break_frame_180201_014652.pcapng",
+    "sha256": "deebe2aaf69a5d5519a85af629c37bc78dd0f2c2eaf46f23b1f1cfbe52a01150"
+  },
+  "client_json": {
+    "path": "no_break_frame_180201_014652.json",
+    "sha256": "e319b17f6ad6588863ea2eac2c81a9db3f6f8ca022201715c93e6c67108575a0"
+  },
+  "conclusion": "HTTP service loss reproduced in the no-breakpoint run. Counter alone cannot distinguish pre-existing MDIO busy from completion polling timeout.",
+  "separate_video_failure": "start_retry_02/first_frame_crc.json"
+}

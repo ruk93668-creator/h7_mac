@@ -1,0 +1,4 @@
+Capturing on '以太网 3'
+File: output\Ethernet\hardware\N5_2026-11-26\frame_diag_03\auto_frame_20261126_175022_599865.pcapng
+Packets captured: 8
+Packets received/dropped on interface '以太网 3': 8/0 (pcap:0/dumpcap:0/flushed:0/ps_ifdrop:0) (100.0%)
