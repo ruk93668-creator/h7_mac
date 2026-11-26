@@ -113,6 +113,8 @@ static SysResult_t NetworkService_Start(uint32_t mode)
     g_network_status.memory_valid = (uint32_t)eth_memory_valid();
     if (!g_network_status.memory_valid)
         return SYS_ERR_INVALID_STATE;
+    //与 Camera 的新 START 一致：资源已退出后建立本事务快照，历史计数保留在驱动/内存统计。
+    s_network.hardware = (AppV3HardwareReport_t){.state = APP_V3_HW_STARTING};
     address.mode = (EthNetworkAddressMode_t)(mode & 3U);
     IP4_ADDR(&address.ip, 192, 168, 50, 2);
     IP4_ADDR(&address.mask, 255, 255, 255, 0);
@@ -298,6 +300,8 @@ uint32_t AppV3_NetworkAdvance(void)
     }
     if (!s_network.started)
         eth_network_timers_poll();
+    if (s_network.http_bound && !eth_http_stream_active())
+        NetworkFrames_WithdrawDemand();
     NetworkFrames_Poll(s_network.started && s_network.http_bound && !s_network.stopping &&
         s_network.hardware.state == APP_V3_HW_ACTIVE);
     NetworkService_Observe();

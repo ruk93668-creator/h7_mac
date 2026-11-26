@@ -38,6 +38,7 @@ static struct
     bool copied;
     bool cancel_sent;
     bool stopping;
+    bool withdrawn;//当前客户端已离开，不能把其迟到 OFFER 发布为新副本
 } s_frames;
 
 //与 E7 实测策略相同，每八字节复制后等待 SDRAM 访问完成。
@@ -116,7 +117,7 @@ static void NetworkFrames_Receive(const AppMessage_t *message)
             view.tail = frame->size_bytes2;
             view.fifo = (const uint8_t *)CAMERA_MJPEG_FIFO_BASE;
             view.fifo_size = CAMERA_MJPEG_FIFO_BYTES;
-            if (!s_frames.stopping && frame->format == CAMERA_PIXEL_FORMAT_JPEG &&
+            if (!s_frames.stopping && !s_frames.withdrawn && frame->format == CAMERA_PIXEL_FORMAT_JPEG &&
                 eth_jpeg_copy(&view, s_jpeg, sizeof(s_jpeg),
                     NetworkFrames_Barrier, &s_frames.frame.crc32))
             {
@@ -124,7 +125,7 @@ static void NetworkFrames_Receive(const AppMessage_t *message)
                 s_frames.frame.length = (uint16_t)frame->size_bytes;
                 s_frames.copied = true;
             }
-            else
+            else if (!s_frames.stopping && !s_frames.withdrawn)
                 ++s_frames.invalid;
             s_frames.state = NETWORK_FRAME_RETURN_PENDING;
         }
@@ -139,6 +140,16 @@ static void NetworkFrames_Receive(const AppMessage_t *message)
         ++s_frames.returned;
         s_frames.state = NETWORK_FRAME_CONSUMED_PENDING;
     }
+}
+
+void NetworkFrames_WithdrawDemand(void)
+{
+    if (!eth_execution_allowed())
+        return;
+    s_frames.demand = false;
+    s_frames.ready = false;
+    if (s_frames.state != NETWORK_FRAME_IDLE)
+        s_frames.withdrawn = true;
 }
 
 void NetworkFrames_BeginStop(void)
@@ -179,12 +190,13 @@ void NetworkFrames_Poll(bool accepting)
             s_frames.identity = message;
             s_frames.requested = now;
             s_frames.cancel_sent = false;
+            s_frames.withdrawn = false;
             s_frames.demand = false;
             s_frames.state = NETWORK_FRAME_WAIT_OFFER;
         }
     }
     else if (s_frames.state == NETWORK_FRAME_WAIT_OFFER &&
-        (s_frames.stopping || now - s_frames.requested >= NETWORK_FRAME_WAIT_MS) &&
+        (s_frames.stopping || s_frames.withdrawn || now - s_frames.requested >= NETWORK_FRAME_WAIT_MS) &&
         !s_frames.cancel_sent)
     {
         message = s_frames.identity;
@@ -205,7 +217,7 @@ void NetworkFrames_Poll(bool accepting)
             else
             {
                 s_frames.state = NETWORK_FRAME_IDLE;
-                s_frames.ready = s_frames.copied && !s_frames.stopping;
+                s_frames.ready = s_frames.copied && !s_frames.stopping && !s_frames.withdrawn;
                 s_frames.copied = false;
                 s_frames.identity = (AppMessage_t){.command_id = 0U};
             }

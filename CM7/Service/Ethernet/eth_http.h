@@ -64,4 +64,8 @@ void eth_http_begin_stop(void);
 //Transport 全部退休后解除旧服务配置；否则返回 ERR_INPROGRESS。
 err_t eth_http_finish_stop(void);
 
+//唯一 Raw API 拥有者读取：只有实际打开的 MJPEG 连接才返回 1。
+//用于撤销已断开客户端的帧需求，不借出连接或帧指针。
+int eth_http_stream_active(void);
+
 #endif

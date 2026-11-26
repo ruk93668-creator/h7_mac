@@ -436,3 +436,9 @@ err_t eth_http_finish_stop(void)
     s_http.mjpeg.state = ETH_MJPEG_IDLE;
     return ERR_OK;
 }
+
+int eth_http_stream_active(void)
+{
+    return eth_execution_allowed() && s_http.state == HTTP_STREAM &&
+        eth_tcp_get_state(s_http.handle) == ETH_TCP_OPEN;
+}

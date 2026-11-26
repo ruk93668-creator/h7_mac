@@ -3000,6 +3000,34 @@ static uint32_t Test_NetworkBrowser(const AppV3Context_t *context)
     CHECK(NetworkFrames_Retired());
     CHECK(eth_tcp_get_state(eth_tcp_handle(ETH_TCP_SERVER)) == ETH_TCP_IDLE);
     owner = RUNTIME_TARGET_CONTROL;
+    g_network_frame_bytes = 20U;
+    g_network_frame_ready = 1U;
+    Test_NetworkBrowserOpen();
+    borrowed = false;
+    for (i = 0U; i < 120U; ++i)
+    {
+        Test_PollHardware(RUNTIME_TARGET_CAMERA);
+        g_hardware.now_ms += 10U;
+        Test_PollHardware(RUNTIME_TARGET_NETWORK);
+        if (g_network_status.http.stream_state == ETH_MJPEG_FRAME_DATA)
+        {
+            owner = RUNTIME_TARGET_NETWORK;
+            borrowed = !NetworkFrames_Retired();
+            owner = RUNTIME_TARGET_CONTROL;
+            break;
+        }
+    }
+    CHECK(borrowed && g_network_frame_releases == 2U && g_network_status.http.sessions == 2U);
+    Test_NetworkBrowserReset();
+    for (i = 0U; i < 12U; ++i)
+    {
+        Test_PollHardware(RUNTIME_TARGET_CAMERA);
+        g_hardware.now_ms += 10U;
+        Test_PollHardware(RUNTIME_TARGET_NETWORK);
+    }
+    owner = RUNTIME_TARGET_NETWORK;
+    CHECK(NetworkFrames_Retired());
+    owner = RUNTIME_TARGET_CONTROL;
     CHECK(NetworkService_Request(3U, NETWORK_SERVICE_STOP, 0U) == SYS_OK);
     CHECK(Test_ServiceStep(RUNTIME_TARGET_NETWORK) == SYS_OK);
     Test_PollHardware(RUNTIME_TARGET_NETWORK);
@@ -3280,6 +3308,7 @@ static uint32_t Test_NetworkLifecycle(const AppV3Context_t *context, uint32_t sc
         CHECK(business_events[business_event_count - 1U].result == SYS_OK);
         CHECK(business_events[business_event_count - 1U].hardware.state == APP_V3_HW_ACTIVE);
         CHECK(g_network_init_calls == 1U);
+        CHECK(business_events[business_event_count - 1U].hardware.first_fault == SYS_OK);
         if (scenario == 108U && round == 0U)
             g_network_stop_fail = 1U;
         CHECK(NetworkService_Request(round * 4U + 2U, NETWORK_SERVICE_STOP, 0U) == SYS_OK);
