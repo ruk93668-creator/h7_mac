@@ -113,7 +113,8 @@ def main():
     for name, address, maximum in (("RW_ETHERNET_DMA", 0x24078000, 0x8000),
                                     ("RW_ETHERNET_CPU", 0x24010000, 0x10000),
                                     ("RW_NETWORK_JPEG", 0x24020000, 0xF000),
-                                    ("RW_IRAM1", 0x20000000, 0x20000)):
+                                    ("RW_ETH_MDIO_FAULT", 0x2001FFC0, 0x40),
+                                    ("RW_IRAM1", 0x20000000, 0x1FFC0)):
         found = re.search(r"Execution Region " + name +
                           r" \(Exec base: (0x[\da-f]+).*?Size: (0x[\da-f]+), Max: (0x[\da-f]+)",
                           mapping, re.I)

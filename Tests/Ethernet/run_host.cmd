@@ -23,6 +23,8 @@ Tests\Ethernet\build\test_mac.exe init_missing
 if errorlevel 1 exit /b 1
 Tests\Ethernet\build\test_mac.exe init_reset
 if errorlevel 1 exit /b 1
+Tests\Ethernet\build\test_mac.exe mdio_timeout
+if errorlevel 1 exit /b 1
 cl /nologo /W4 /WX /std:c11 /IPlatform\Ethernet Platform\Ethernet\eth_dma.c Tests\Ethernet\test_engine.c /FoTests\Ethernet\build\ /FeTests\Ethernet\build\test_engine.exe
 if errorlevel 1 exit /b 1
 Tests\Ethernet\build\test_engine.exe

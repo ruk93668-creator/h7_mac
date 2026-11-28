@@ -101,6 +101,10 @@ if not e4 and not baseline:
         raise SystemExit('unexpected production Ethernet CPU region')
     scatter_text=re.sub(r'^    RW_NETWORK_JPEG [^\n]*\n    \{[^}]*\}\n\n',
                         '', scatter_text, flags=re.M)
+    scatter_text=re.sub(r'^    RW_ETH_MDIO_FAULT [^\n]*\n    \{[^}]*\}\n\n',
+                        '', scatter_text, flags=re.M)
+    scatter_text=scatter_text.replace('RW_IRAM1 0x20000000 0x0001FFC0',
+                                      'RW_IRAM1 0x20000000 0x00020000')
     if smoke or e35:
         scatter_text=re.sub(r'(?ms)^[ \t]*(?:ER_FW_INIT|ER_DEVICE_EXPORT|RW_SHARED|RW_SDMMC_DMA)[^{]*\{[^}]*\}[ \t]*\r?\n',
                             '', scatter_text)

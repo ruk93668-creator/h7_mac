@@ -33,6 +33,15 @@ typedef struct
     NetworkPoolStatus_t tcp_seg;//lwIP TCP 段池
     NetworkPoolStatus_t udp_pcb;//DHCP 与业务 UDP 共用池
     NetworkPoolStatus_t timers;//协议超时条目池
+    EthResult_t last_driver_result;//最近链路采样或接口关闭的结果
+    EthResult_t fault_driver;//当前运行事务首个故障的驱动分类
+    SysResult_t first_fault;//自动恢复后仍保留首个运行故障
+    SysResult_t stop_result;//最近一次资源退休的进行中或终结结果
+    uint32_t mdio_streak;//连续失败的实际链路采样次数
+    uint32_t recovery_attempts;//本次开机的自动重建次数
+    uint32_t recovery_successes;//达到 Link、IPv4 和 Listener 就绪的次数
+    bool draining;//资源仍归本服务所有，禁止链路管理
+    bool recovering;//等待退休、冷却或端点就绪
 } NetworkServiceStatus_t;
 
 extern volatile NetworkServiceStatus_t g_network_status;
@@ -65,7 +74,8 @@ typedef enum
 //登记的普通任务提交，禁止 ISR、NetworkTask 自调度及阻塞等待。
 //command_id 必须非零，且在同一来源内单调递增；argument 复制为值，不借用调用者 Buffer。
 //SYS_OK 仅表示入队，队满返回 SYS_ERR_BUSY；业务结果通过现有 Service Events 取得。
-//STOP/RESTART 最多等待 130 秒退休；失败保留未退休资源，须显式 STOP 重试，不得清状态冒充完成。
+//STOP/RESTART 加入当前退休并取消自动重建，最多等待本轮 130 秒截止点。
+//失败保留未退休资源，由显式 STOP/RESTART 开始新一轮有界退休。
 //全局 lwIP 初始化和定时器持续存在；成功 STOP 只证明协议端点、netif、DMA 和帧租约已退出。
 SysResult_t NetworkService_Request(uint32_t command_id,
     NetworkServiceOperation_t operation, uint32_t argument);

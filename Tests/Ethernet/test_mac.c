@@ -113,7 +113,7 @@ int main(
 		assert((fake_eth.MACMDIOAR & 0xF00U) == (uint32_t)strtoul(argv[3], NULL, 10));
 		return 0;
 	}
-	if (argc > 1)
+	if (argc > 1 && strcmp(argv[1], "mdio_timeout") != 0)
 	{
 		if (strcmp(argv[1], "init_reset") == 0)
 		{
@@ -140,6 +140,29 @@ int main(
 		puts("PASS: MAC initialization failure is reported and latched");
 		return 0;
 	}
+	if (argc == 2 && strcmp(argv[1], "mdio_timeout") == 0)
+	{
+		EthMdioFault_t first;
+		phy_regs[2] = 7U;
+		phy_regs[3] = 0xC130U;
+		assert(eth_mac_init(mac) == ETH_OK);
+		fail_mdio = 1U;
+		assert(eth_mac_start() == ETH_MDIO);
+		assert(eth_mac_get_statistics(&s) == ETH_OK && s.mdio_wait_timeouts == 1U);
+		first = s.first_mdio_fault;
+		assert(first.stage == ETH_MDIO_WAIT_TIMEOUT && first.phy_register == 2U &&
+			first.phy_address == 0U && first.write == 0U && first.tick_ms != 0U);
+		assert(first.macmdioar == fake_eth.MACMDIOAR && first.macmdiodr == fake_eth.MACMDIODR);
+		assert(first.hclk_hz == hclk && first.mdc_clock_range == ETH_MACMDIOAR_CR_DIV102);
+		assert(eth_mac_start() == ETH_MDIO);
+		fail_mdio = 0U;
+		assert(eth_mac_recover(mac) == ETH_OK);
+		assert(eth_mac_get_statistics(&s) == ETH_OK && s.mdio_busy_on_entry == 1U &&
+			s.phy_register_read_errors == 2U &&
+			memcmp(&first, &s.first_mdio_fault, sizeof(first)) == 0);
+		puts("PASS: MDIO timeout first snapshot survives subsequent busy and peripheral reset");
+		return 0;
+	}
 	assert(eth_mac_start() == ETH_STATE);
 	assert(eth_mac_init(NULL) == ETH_ARGUMENT);
 	valid_memory = 0U;
@@ -161,6 +184,15 @@ int main(
 	assert(eth_mac_start() == ETH_OK && irq_enabled);
     assert(eth_mac_recover(NULL) == ETH_ARGUMENT);
     assert(eth_mac_get_statistics(&s) == ETH_OK && s.state == ETH_MAC_RUNNING);
+	fake_eth.MACMDIOAR |= ETH_MACMDIOAR_MB;
+	fake_eth.MACMDIODR = 0x1234U;
+	assert(eth_mac_service() == ETH_MDIO && irq_enabled);
+	assert(eth_mac_get_statistics(&s) == ETH_OK && s.state == ETH_MAC_RUNNING &&
+		s.mdio_busy_on_entry == 1U && s.phy_register_read_errors == 1U);
+	assert(s.first_mdio_fault.stage == ETH_MDIO_BUSY_ON_ENTRY &&
+		s.first_mdio_fault.phy_register == 1U && s.first_mdio_fault.macmdiodr == 0x1234U &&
+		(s.first_mdio_fault.macmdioar & ETH_MACMDIOAR_MB) != 0U);
+	assert(eth_mac_service() == ETH_OK);
 	assert(fake_eth.DMACCR == ETH_DMACCR_DSL_128BIT);
 	assert(fake_eth.DMACTDRLR == 3U && fake_eth.DMACRDRLR == 3U);
 	assert(eth_mac_tx_submit(frame, sizeof(frame), &ticket) == ETH_OK);
@@ -198,6 +230,9 @@ int main(
 	assert(eth_mac_get_link(&link) == ETH_OK && link.speed_mbps == 10U && link.full_duplex);
 	phy_regs[31] = 0x1008U;
 	assert(eth_mac_get_link(&link) == ETH_OK && link.speed_mbps == 100U && !link.full_duplex);
+	phy_regs[31] = 0x1000U;
+	assert(eth_mac_get_link(&link) == ETH_PHY_STATUS);
+	phy_regs[31] = 0x1008U;
 	fail_reset = 1U;
 	assert(eth_mac_start() == ETH_TIMEOUT);
 	fail_reset = 0U;
@@ -206,7 +241,10 @@ int main(
 	assert(eth_mac_start() == ETH_PHY_MISSING);
 	phy_regs[2] = 7U;
 	fail_mdio = 1U;
-	assert(eth_mac_start() == ETH_IO);
+	assert(eth_mac_start() == ETH_MDIO);
+	assert(eth_mac_get_statistics(&s) == ETH_OK && s.mdio_wait_timeouts == 1U &&
+		s.mdio_errors == 2U && s.phy_status_errors == 1U &&
+		s.first_mdio_fault.stage == ETH_MDIO_BUSY_ON_ENTRY);
 	fail_mdio = 0U;
 	assert(eth_mac_stop() == ETH_OK);
 	assert(eth_mac_start() == ETH_OK);

@@ -7,6 +7,9 @@ static EthMacState_t s_state;
 uint32_t g_network_stop_fail;
 uint32_t g_network_link;
 uint32_t g_network_init_calls;
+uint32_t g_network_start_calls, g_network_stop_calls, g_network_samples;
+uint32_t g_network_fault_samples;
+EthResult_t g_network_fault_result;
 uint32_t g_network_browser, g_network_browser_bytes;
 static uint32_t s_peer_sequence, s_peer_ack;
 uint32_t g_network_dhcp_server, g_network_discover, g_network_request, g_network_ack;
@@ -52,6 +55,7 @@ EthResult_t eth_mac_recover(const uint8_t mac[6])
 
 EthResult_t eth_mac_stop(void)
 {
+    ++g_network_stop_calls;
     if (g_network_stop_fail)
         return ETH_TIMEOUT;
     if (s_state == ETH_MAC_OFF)
@@ -65,6 +69,7 @@ EthResult_t eth_mac_start(void)
 {
     if (s_state != ETH_MAC_READY)
         return ETH_STATE;
+    ++g_network_start_calls;
     s_state = ETH_MAC_RUNNING;
     return ETH_OK;
 }
@@ -95,7 +100,15 @@ EthResult_t eth_mac_get_address(uint8_t mac[6])
 
 EthResult_t eth_mac_service(void)
 {
-    return g_network_link ? ETH_OK : ETH_LINK_DOWN;
+    ++g_network_samples;
+    if (g_network_fault_samples != 0U)
+    {
+        --g_network_fault_samples;
+        if (g_network_fault_result != ETH_MDIO)
+            s_state = ETH_MAC_FAULT;
+        return g_network_fault_result;
+    }
+    return g_network_link ? ETH_OK : eth_mac_stop() == ETH_OK ? ETH_LINK_DOWN : ETH_TIMEOUT;
 }
 
 static void Fixture_Put16(uint8_t *data, uint16_t value)

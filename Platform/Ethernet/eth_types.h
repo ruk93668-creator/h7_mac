@@ -17,7 +17,9 @@ typedef enum
 	ETH_CAPACITY = -5,
 	ETH_TIMEOUT = -6,
 	ETH_MEMORY = -7,
-	ETH_PHY_MISSING = -8
+	ETH_PHY_MISSING = -8,
+	ETH_MDIO = -9,//MDIO 未完成，当前 PHY 状态未知
+	ETH_PHY_STATUS = -10//PHY 状态已读出，协商模式非法
 } EthResult_t;
 typedef struct
 {

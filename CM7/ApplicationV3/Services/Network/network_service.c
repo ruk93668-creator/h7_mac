@@ -13,6 +13,10 @@
 //保留旧 PCB 直到确认退休，等待包含 lwIP TIME_WAIT 的完整生命周期。
 #define NETWORK_STOP_TIMEOUT_MS 130000U
 #define NETWORK_POLL_MS 10U
+#define NETWORK_MDIO_FAULT_STREAK 3U
+#define NETWORK_RECOVERY_COOLDOWN_MS 500U
+#define NETWORK_RECOVERY_READY_MS 30000U
+#define NETWORK_READY_FLAGS 7U
 #define NETWORK_HTTP 0x100U
 //沿用 E7 的 50ms 请求周期；实际帧率由复制、背压和 TCP ACK 决定。
 #define NETWORK_FRAME_PERIOD_MS 50U
@@ -32,7 +36,14 @@ static struct
     bool interface_owned;//初始化中途失败也保留实例，STOP 成功才撤销
     bool transport_bound;//已绑定配置，可能仍有 TIME_WAIT PCB
     bool http_bound;//动态 Source 有效期覆盖全部私有帧借用
-    bool stopping;
+    uint32_t recovery_tick;//冷却或重建后等待端点就绪的起点
+    SysResult_t stop_result;//主动与自动 STOP 共用的资源退休结果
+    EthResult_t fault_driver;//当前运行事务的首个驱动故障
+    bool draining;//直到资源退休前，禁止链路管理及新业务
+    bool stop_pending;//本次有界 STOP 仍在推进
+    bool recovery_available;//每个显式 START/RESTART 最多一次自动重建
+    bool recovery_pending;//已触发自动重建，先等资源退休与冷却
+    bool recovery_wait_ready;//已开始重建，等待 Link、IPv4 与 Listener
 } s_network;
 
 static EthNetwork_t s_interface __attribute__((aligned(32)));
@@ -71,7 +82,8 @@ static void NetworkService_Observe(void)
             flags |= 8U;
         s_network.hardware.primary =
             ip4_addr_get_u32(netif_ip4_addr(&s_interface.interface));
-        s_network.hardware.detail = (uint32_t)s_interface.last_driver_result;
+        if (s_network.hardware.first_fault == SYS_OK)
+            s_network.hardware.detail = (uint32_t)s_interface.last_driver_result;
     }
     s_network.hardware.flags = flags;
     ++g_network_status.heartbeat;
@@ -79,6 +91,13 @@ static void NetworkService_Observe(void)
     g_network_status.lifecycle = (uint32_t)s_network.hardware.state;
     g_network_status.flags = flags;
     g_network_status.address = s_interface.address;
+    g_network_status.last_driver_result = s_interface.last_driver_result;
+    g_network_status.fault_driver = s_network.fault_driver;
+    g_network_status.first_fault = s_network.hardware.first_fault;
+    g_network_status.stop_result = s_network.stop_result;
+    g_network_status.mdio_streak = s_interface.mdio_streak;
+    g_network_status.draining = s_network.draining;
+    g_network_status.recovering = s_network.recovery_pending || s_network.recovery_wait_ready;
     if (!s_network.stack_observable)
         return;
     (void)eth_mac_get_statistics((EthStatistics_t *)&g_network_status.driver);
@@ -101,20 +120,34 @@ static void NetworkService_Observe(void)
     g_network_status.heap.errors = lwip_stats.mem.err;
 }
 
-static SysResult_t NetworkService_Start(uint32_t mode)
+static bool NetworkService_ModeValid(uint32_t mode)
+{
+    return (mode & ~UINT32_C(0x103)) == 0U && (mode & 3U) <= 2U;
+}
+
+static SysResult_t NetworkService_Start(uint32_t mode, bool automatic)
 {
     EthNetworkAddressConfig_t address = {.mode = ETH_ADDRESS_STATIC};
     EthTransportConfig_t transport = {0};
     err_t result;
-    if ((mode & ~UINT32_C(0x103)) != 0U || (mode & 3U) > 2U)
+    if (!NetworkService_ModeValid(mode))
         return SYS_ERR_INVALID_ARG;
     if (s_network.started || s_network.interface_owned)
         return SYS_ERR_ALREADY_EXISTS;
     g_network_status.memory_valid = (uint32_t)eth_memory_valid();
     if (!g_network_status.memory_valid)
         return SYS_ERR_INVALID_STATE;
-    //与 Camera 的新 START 一致：资源已退出后建立本事务快照，历史计数保留在驱动/内存统计。
-    s_network.hardware = (AppV3HardwareReport_t){.state = APP_V3_HW_STARTING};
+    //只有显式新事务清除运行故障快照。驱动的首次 MDIO 现场独立保存。
+    if (!automatic)
+    {
+        s_network.hardware = (AppV3HardwareReport_t){.state = APP_V3_HW_STARTING};
+        s_network.fault_driver = ETH_OK;
+        s_network.stop_result = SYS_OK;
+        s_network.recovery_available = true;
+    }
+    else
+        s_network.hardware.state = APP_V3_HW_STARTING;
+    s_network.mode = mode;
     address.mode = (EthNetworkAddressMode_t)(mode & 3U);
     IP4_ADDR(&address.ip, 192, 168, 50, 2);
     IP4_ADDR(&address.mask, 255, 255, 255, 0);
@@ -141,12 +174,11 @@ static SysResult_t NetworkService_Start(uint32_t mode)
     s_network.transport_bound = result == ERR_OK;
     if (result != ERR_OK)
         return SYS_ERR_IO;
-    s_network.mode = mode;
     return SYS_OK;
 }
 
 //非 HTTP 通道提供有界回送，发送环不足时不消费接收数据。
-static void NetworkService_DataPoll(void)
+static SysResult_t NetworkService_DataPoll(void)
 {
     uint8_t data[256];
     unsigned role;
@@ -166,17 +198,15 @@ static void NetworkService_DataPoll(void)
         {
             amount = eth_tcp_read(handle, data, amount);
             if (amount != 0U && eth_tcp_send(handle, data, amount) != ERR_OK)
-            {
-                s_network.hardware.first_fault = SYS_ERR_IO;
-                s_network.hardware.state = APP_V3_HW_FAULT;
-            }
+                return SYS_ERR_IO;
         }
     }
+    return SYS_OK;
 }
 
 static void NetworkService_BeginStop(void)
 {
-    if (s_network.stopping)
+    if (s_network.stop_pending)
         return;
     NetworkFrames_BeginStop();
     if (s_network.http_bound)
@@ -184,7 +214,9 @@ static void NetworkService_BeginStop(void)
     if (s_network.transport_bound)
         eth_transport_begin_stop();
     s_network.stop_started = Platform_TimeGetMs();
-    s_network.stopping = true;
+    s_network.draining = true;
+    s_network.stop_pending = true;
+    s_network.stop_result = SYS_ERR_BUSY;
     s_network.hardware.state = APP_V3_HW_QUIESCING;
 }
 
@@ -215,8 +247,79 @@ static SysResult_t NetworkService_Stop(void)
         s_network.interface_owned = false;
     }
     s_network.started = false;
-    s_network.stopping = false;
+    s_network.draining = false;
     return SYS_OK;
+}
+
+static void NetworkService_RecordFault(SysResult_t result, EthResult_t driver)
+{
+    if (s_network.hardware.first_fault == SYS_OK)
+    {
+        s_network.hardware.first_fault = result;
+        s_network.fault_driver = driver;
+        s_network.hardware.detail = (uint32_t)driver;
+    }
+}
+
+static void NetworkService_Fault(SysResult_t result, EthResult_t driver)
+{
+    NetworkService_RecordFault(result, driver);
+    //连续 MDIO 故障才允许一次自动重建。启动失败、PHY 状态或 DMA 故障等待显式请求。
+    s_network.recovery_pending = driver == ETH_MDIO && s_network.recovery_available &&
+        s_network.hardware.state == APP_V3_HW_ACTIVE;
+    s_network.recovery_available = false;
+    s_network.recovery_wait_ready = false;
+    NetworkService_BeginStop();
+}
+
+static void NetworkService_AdvanceStop(uint32_t now)
+{
+    SysResult_t result;
+    if (!s_network.stop_pending)
+        return;
+    result = NetworkService_Stop();
+    if (result == SYS_ERR_BUSY && now - s_network.stop_started < NETWORK_STOP_TIMEOUT_MS)
+        return;
+    s_network.stop_pending = false;
+    s_network.stop_result = result == SYS_ERR_BUSY ? SYS_ERR_TIMEOUT : result;
+    if (s_network.stop_result != SYS_OK)
+    {
+        NetworkService_RecordFault(s_network.stop_result, s_interface.last_driver_result);
+        s_network.recovery_pending = false;
+    }
+    s_network.recovery_tick = now;
+    s_network.hardware.state = s_network.hardware.first_fault == SYS_OK ?
+        APP_V3_HW_READY : APP_V3_HW_FAULT;
+}
+
+static void NetworkService_AdvanceRecovery(uint32_t now)
+{
+    if (s_network.recovery_pending && !s_network.draining &&
+        now - s_network.recovery_tick >= NETWORK_RECOVERY_COOLDOWN_MS)
+    {
+        SysResult_t result;
+        s_network.recovery_pending = false;
+        ++g_network_status.recovery_attempts;
+        result = NetworkService_Start(s_network.mode, true);
+        if (result != SYS_OK)
+            NetworkService_Fault(result, s_interface.last_driver_result);
+        else
+        {
+            s_network.recovery_wait_ready = true;
+            s_network.recovery_tick = now;
+        }
+    }
+    if (s_network.recovery_wait_ready)
+    {
+        if ((s_network.hardware.flags & NETWORK_READY_FLAGS) == NETWORK_READY_FLAGS)
+        {
+            s_network.recovery_wait_ready = false;
+            s_network.hardware.state = APP_V3_HW_ACTIVE;
+            ++g_network_status.recovery_successes;
+        }
+        else if (now - s_network.recovery_tick >= NETWORK_RECOVERY_READY_MS)
+            NetworkService_Fault(SYS_ERR_TIMEOUT, s_interface.last_driver_result);
+    }
 }
 
 //一次只接受一个事务，旧命令和结果仍由共用 Mailbox 保留。
@@ -237,13 +340,21 @@ static SysResult_t NetworkService_Readable(AppV3Queue_t queue, void *argument)
     if (result == SYS_OK &&
         (command.operation < NETWORK_SERVICE_START || command.operation > NETWORK_SERVICE_CLOSE_CLIENT))
         result = SYS_ERR_NOT_SUPPORTED;
+    if (result == SYS_OK && command.operation == NETWORK_SERVICE_RESTART &&
+        !NetworkService_ModeValid(command.argument))
+        result = SYS_ERR_INVALID_ARG;
     if (result != SYS_OK)
         return AppV3Mailbox_CompleteHardware(&s_network.mailbox, &command, result, &s_network.hardware);
     s_network.request.command = command;
     s_network.request.started_ms = Platform_TimeGetMs();
     s_network.request.pending = true;
     if (command.operation == NETWORK_SERVICE_STOP || command.operation == NETWORK_SERVICE_RESTART)
+    {
+        s_network.recovery_pending = false;
+        s_network.recovery_wait_ready = false;
+        s_network.recovery_available = false;
         NetworkService_BeginStop();
+    }
     return SYS_OK;
 }
 
@@ -274,88 +385,110 @@ void AppV3_NetworkDiscard(void)
         AppV3Mailbox_Discard(&s_network.mailbox, &s_endpoint);
 }
 
-uint32_t AppV3_NetworkAdvance(void)
+static void NetworkService_HandleRequest(void)
 {
     SysResult_t result = SYS_OK;
-    uint32_t operation;
-    if (!NetworkService_IsOwner(NULL))
-        return NETWORK_POLL_MS;
-    if (s_network.started)
+    uint32_t operation = s_network.request.command.operation;
+    if (operation == NETWORK_SERVICE_STOP || operation == NETWORK_SERVICE_RESTART)
     {
-        eth_network_poll(&s_interface);
-        if (!s_network.stopping && s_interface.last_driver_result != ETH_OK &&
-            s_interface.last_driver_result != ETH_LINK_DOWN &&
-            s_interface.last_driver_result != ETH_BUSY)
+        if (s_network.stop_pending)
+            return;
+        result = s_network.stop_result;
+        if (result == SYS_OK)
         {
-            //协议资源继续退休；故障只能由显式 STOP/RESTART 恢复，避免循环重启硬件。
-            NetworkService_BeginStop();
-            s_network.hardware.first_fault = SYS_ERR_IO;
-            s_network.hardware.state = APP_V3_HW_FAULT;
+            s_network.hardware.state = APP_V3_HW_READY;
+            if (operation == NETWORK_SERVICE_RESTART)
+                result = NetworkService_Start(s_network.request.command.argument, false);
         }
-        eth_transport_poll();
-        if (s_network.http_bound)
-            eth_http_poll();
-        else if (!s_network.stopping)
-            NetworkService_DataPoll();
     }
-    if (!s_network.started)
-        eth_network_timers_poll();
-    if (s_network.http_bound && !eth_http_stream_active())
-        NetworkFrames_WithdrawDemand();
-    NetworkFrames_Poll(s_network.started && s_network.http_bound && !s_network.stopping &&
-        s_network.hardware.state == APP_V3_HW_ACTIVE);
-    NetworkService_Observe();
-    if (!s_network.request.pending)
-        return NETWORK_POLL_MS;
-    operation = s_network.request.command.operation;
-    if (operation == NETWORK_SERVICE_START)
+    else if (operation == NETWORK_SERVICE_START)
     {
-        if (s_network.hardware.state == APP_V3_HW_FAULT)
+        if (s_network.hardware.state == APP_V3_HW_FAULT || s_network.draining ||
+            s_network.recovery_wait_ready)
             result = SYS_ERR_INVALID_STATE;
         else
-            result = NetworkService_Start(s_network.request.command.argument);
+            result = NetworkService_Start(s_network.request.command.argument, false);
     }
     else if (operation == NETWORK_SERVICE_CONNECT)
     {
         ip4_addr_t peer;
         ip4_addr_set_u32(&peer, s_network.request.command.argument);
-        if (!s_network.started || s_network.http_bound || !eth_transport_ready() ||
-            ip4_addr_isany(&peer) || ip4_addr_ismulticast(&peer) || ip4_addr_isloopback(&peer))
+        if (s_network.hardware.state != APP_V3_HW_ACTIVE || s_network.http_bound ||
+            !eth_transport_ready() || ip4_addr_isany(&peer) ||
+            ip4_addr_ismulticast(&peer) || ip4_addr_isloopback(&peer))
             result = SYS_ERR_INVALID_STATE;
         else if (eth_tcp_client_connect(&s_interface.interface, &peer, 5004U) != ERR_OK)
             result = SYS_ERR_IO;
     }
     else if (operation == NETWORK_SERVICE_CLOSE_CLIENT)
     {
-        err_t closed = eth_tcp_close(eth_tcp_handle(ETH_TCP_CLIENT));
-        if (closed != ERR_OK && closed != ERR_ALREADY && closed != ERR_CONN)
-            result = SYS_ERR_IO;
+        if (s_network.hardware.state != APP_V3_HW_ACTIVE || s_network.http_bound)
+            result = SYS_ERR_INVALID_STATE;
+        else
+        {
+            err_t closed = eth_tcp_close(eth_tcp_handle(ETH_TCP_CLIENT));
+            if (closed != ERR_OK && closed != ERR_ALREADY && closed != ERR_CONN)
+                result = SYS_ERR_IO;
+        }
     }
-    else if (operation == NETWORK_SERVICE_STOP || operation == NETWORK_SERVICE_RESTART)
+    if ((operation == NETWORK_SERVICE_START || operation == NETWORK_SERVICE_RESTART) &&
+        s_network.hardware.state == APP_V3_HW_STARTING)
     {
-        result = NetworkService_Stop();
-        if (result == SYS_ERR_BUSY &&
-            Platform_TimeGetMs() - s_network.stop_started < NETWORK_STOP_TIMEOUT_MS)
-            return NETWORK_POLL_MS;
-        if (result == SYS_ERR_BUSY)
-            result = SYS_ERR_TIMEOUT;
-        if (result == SYS_OK && operation == NETWORK_SERVICE_RESTART)
-            result = NetworkService_Start(s_network.request.command.argument);
+        if (result == SYS_OK)
+            s_network.hardware.state = APP_V3_HW_ACTIVE;
+        else
+            NetworkService_Fault(result, s_interface.last_driver_result);
     }
-    if (result == SYS_ERR_IO || result == SYS_ERR_TIMEOUT || result == SYS_ERR_PROTOCOL)
-    {
-        if (s_network.hardware.first_fault == SYS_OK)
-            s_network.hardware.first_fault = result;
-        s_network.hardware.state = APP_V3_HW_FAULT;
-    }
-    else if (result == SYS_OK && operation != NETWORK_SERVICE_QUERY)
-        s_network.hardware.state = s_network.started ? APP_V3_HW_ACTIVE : APP_V3_HW_READY;
-    //START 的终结表示软件服务已接纳，不表示 DHCP 或 listener 已建立。
+    //START 的终结表示软件服务已接纳，地址与 Listener 通过 QUERY 检查。
     s_network.request.pending = false;
     NetworkService_Observe();
     if (AppV3Mailbox_CompleteHardware(&s_network.mailbox, &s_network.request.command,
-        result, &s_network.hardware) != SYS_OK && !s_network.mailbox.pending_valid)
-        s_network.hardware.state = APP_V3_HW_FAULT;
+        result, &s_network.hardware) != SYS_OK && !s_network.mailbox.pending_valid &&
+        !s_network.draining)
+        NetworkService_Fault(SYS_ERR_PROTOCOL, ETH_OK);
+}
+
+uint32_t AppV3_NetworkAdvance(void)
+{
+    uint32_t now;
+    if (!NetworkService_IsOwner(NULL))
+        return NETWORK_POLL_MS;
+    if (s_network.draining)
+        eth_network_drain_poll(&s_interface);
+    else if (s_network.started)
+    {
+        EthResult_t driver;
+        eth_network_poll(&s_interface);
+        driver = s_interface.last_driver_result;
+        if (driver == ETH_MDIO)
+        {
+            if (s_interface.mdio_streak >= NETWORK_MDIO_FAULT_STREAK)
+                NetworkService_Fault(SYS_ERR_IO, driver);
+        }
+        else if (driver != ETH_OK && driver != ETH_LINK_DOWN && driver != ETH_BUSY)
+            NetworkService_Fault(SYS_ERR_IO, driver);
+    }
+    else
+        eth_network_timers_poll();
+
+    if (s_network.transport_bound)
+        eth_transport_poll();
+    if (s_network.http_bound && !s_network.draining)
+        eth_http_poll();
+    else if (s_network.transport_bound && !s_network.draining &&
+        NetworkService_DataPoll() != SYS_OK)
+        NetworkService_Fault(SYS_ERR_IO, ETH_OK);
+    if (s_network.http_bound && !eth_http_stream_active())
+        NetworkFrames_WithdrawDemand();
+    NetworkFrames_Poll(s_network.started && s_network.http_bound && !s_network.draining &&
+        s_network.hardware.state == APP_V3_HW_ACTIVE);
+
+    now = Platform_TimeGetMs();
+    NetworkService_AdvanceStop(now);
+    NetworkService_Observe();
+    NetworkService_AdvanceRecovery(now);
+    if (s_network.request.pending)
+        NetworkService_HandleRequest();
     return NETWORK_POLL_MS;
 }
 

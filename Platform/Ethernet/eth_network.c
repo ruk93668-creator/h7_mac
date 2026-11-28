@@ -177,13 +177,17 @@ static void EthNetwork_Service(EthNetwork_t *network)
 		else if (result == ETH_OK)
 			result = ETH_LINK_DOWN;
 	}
-	else if (result != ETH_OK || statistics.state != ETH_MAC_RUNNING)
+	else if (result != ETH_MDIO && (result != ETH_OK || statistics.state != ETH_MAC_RUNNING))
 	{
 		EthNetwork_LinkDown(network);
-		(void)eth_mac_get_link(&network->phy);
+		network->phy.up = 0U;
 		if (result == ETH_OK)
 			result = ETH_STATE;
 	}
+	if (result != ETH_MDIO)
+		network->mdio_streak = 0U;
+	else if (network->mdio_streak < UINT8_MAX)
+		++network->mdio_streak;
 	network->last_driver_result = result;
 }
 
@@ -227,6 +231,7 @@ static err_t EthNetwork_Init(EthNetwork_t *network, const uint8_t mac[6],
 	netif_set_default(&network->interface);
 	netif_set_up(&network->interface);
 	network->initialized = 1U;
+	network->mdio_streak = 0U;
 	network->service_tick = sys_now() - ETH_NETWORK_SERVICE_MS;
 	return ERR_OK;
 }
@@ -310,6 +315,15 @@ void eth_network_poll(EthNetwork_t *network)
 #if LWIP_DHCP
 	EthNetwork_AddressPoll(network, sys_now());
 #endif
+}
+
+void eth_network_drain_poll(EthNetwork_t *network)
+{
+	if (!eth_execution_allowed() || network == NULL || network != s_owner)
+		return;
+	if (network->initialized)
+		eth_netif_poll(&network->interface);
+	eth_network_timers_poll();
 }
 
 //netif 生命周期结束后，全局 cyclic timer 仍由同一拥有者推进。

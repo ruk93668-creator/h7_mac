@@ -2951,9 +2951,12 @@ extern uint32_t g_network_browser_bytes, g_network_frame_bytes;
 void Test_UseNetworkJpegFixture(void);
 void Test_NetworkBrowserOpen(void);
 void Test_NetworkBrowserReset(void);
+extern uint32_t g_network_start_calls, g_network_stop_calls, g_network_samples;
+extern uint32_t g_network_fault_samples;
+extern EthResult_t g_network_fault_result;
 
 //真实 TCP 三次握手、HTTP 请求、Camera 消息副本和 RST 清理闭环。
-static uint32_t Test_NetworkBrowser(const AppV3Context_t *context, bool verify_complete_frame)
+static uint32_t Test_NetworkBrowser(const AppV3Context_t *context, uint32_t scenario)
 {
     uint32_t i;
     bool borrowed = false;
@@ -2968,7 +2971,7 @@ static uint32_t Test_NetworkBrowser(const AppV3Context_t *context, bool verify_c
     g_network_link = 1U;
     g_network_dhcp_server = 1U;
     g_network_frame_bytes = 4096U;
-    if (verify_complete_frame)
+    if (scenario == 128U)
         Test_UseNetworkJpegFixture();
     g_network_frame_ready = 1U;
     CHECK(NetworkService_Request(2U, NETWORK_SERVICE_START, 0x100U) == SYS_OK);
@@ -2992,7 +2995,35 @@ static uint32_t Test_NetworkBrowser(const AppV3Context_t *context, bool verify_c
         }
     }
     CHECK(borrowed && g_network_frame_releases == 1U && g_network_browser_bytes != 0U);
-    if (verify_complete_frame)
+    if (scenario == 130U)
+    {
+        g_network_fault_result = ETH_MDIO;
+        g_network_fault_samples = 3U;
+        for (i = 0U; i < 3U; ++i)
+        {
+            g_hardware.now_ms += 10U;
+            Test_PollHardware(RUNTIME_TARGET_NETWORK);
+        }
+        CHECK(g_network_status.draining && g_network_status.tcp_listen.used == 0U);
+        CHECK(g_network_status.http.stream_state == ETH_MJPEG_STOPPING);
+        CHECK(g_network_frame_releases == 1U && g_network_start_calls == 1U);
+        Test_NetworkBrowserReset();
+        for (i = 0U; i < 600U && g_network_status.recovery_successes == 0U; ++i)
+        {
+            Test_PollHardware(RUNTIME_TARGET_CAMERA);
+            g_hardware.now_ms += 250U;
+            Test_PollHardware(RUNTIME_TARGET_NETWORK);
+        }
+        CHECK(g_network_status.recovery_successes == 1U && g_network_status.tcp_listen.used == 1U);
+        CHECK(g_network_status.tcp_pcb.used == 0U && g_network_status.tcp_seg.used == 0U &&
+            g_network_status.pbuf.used == 0U && g_network_frame_releases == 1U);
+        CHECK(g_network_start_calls == 2U && g_network_stop_calls == 1U);
+        owner = RUNTIME_TARGET_NETWORK;
+        CHECK(NetworkFrames_Retired());
+        owner = RUNTIME_TARGET_CONTROL;
+        return 0U;
+    }
+    if (scenario == 128U)
     {
         for (i = 0U; i < 120U && g_network_status.http.stream.frames_completed == 0U; ++i)
         {
@@ -3369,6 +3400,117 @@ static uint32_t Test_NetworkLifecycle(const AppV3Context_t *context, uint32_t sc
     return 0U;
 }
 
+static void Test_NetworkTick(uint32_t ms)
+{
+    g_hardware.now_ms += ms;
+    Test_PollHardware(RUNTIME_TARGET_NETWORK);
+}
+
+static uint32_t Test_NetworkFault(const AppV3Context_t *context, uint32_t scenario)
+{
+    uint32_t i, samples;
+    uint32_t mode = scenario == 133U ? 0x101U : 0U;
+    ip4_addr_t peer;
+    CHECK(Test_HardwareBoot(context) == 0U);
+    g_network_link = g_network_dhcp_server = 1U;
+    CHECK(NetworkService_Request(1U, NETWORK_SERVICE_START, mode) == SYS_OK);
+    CHECK(Test_ServiceStep(RUNTIME_TARGET_NETWORK) == SYS_OK);
+    Test_PollHardware(RUNTIME_TARGET_NETWORK);
+    CHECK(Test_ReadHardwareResult(RUNTIME_TARGET_NETWORK, 1U, APP_V3_HW_ACTIVE, SYS_OK));
+    for (i = 0U; i < 120U && g_network_status.flags != 7U; ++i)
+        Test_NetworkTick(100U);
+    CHECK(g_network_status.flags == 7U);
+
+    if (scenario == 129U)
+    {
+        g_network_fault_result = ETH_MDIO;
+        g_network_fault_samples = 1U;
+        Test_NetworkTick(10U);
+        samples = g_network_samples;
+        for (i = 0U; i < 4U; ++i)
+            Test_PollHardware(RUNTIME_TARGET_NETWORK);
+        CHECK(g_network_samples == samples && g_network_status.mdio_streak == 1U &&
+            g_network_status.flags == 7U && g_network_stop_calls == 0U);
+        Test_NetworkTick(10U);
+        CHECK(g_network_status.mdio_streak == 0U && g_network_status.first_fault == SYS_OK);
+        g_network_link = 0U;
+        Test_NetworkTick(10U);
+        CHECK((g_network_status.flags & 5U) == 0U &&
+            g_network_status.lifecycle == APP_V3_HW_ACTIVE && g_network_status.first_fault == SYS_OK);
+        g_network_link = 1U;
+        Test_NetworkTick(10U);
+        CHECK(g_network_status.flags == 7U && g_network_start_calls == 2U &&
+            g_network_status.recovery_attempts == 0U);
+        return 0U;
+    }
+    if (scenario != 133U)
+    {
+        IP4_ADDR(&peer, 192, 168, 50, 1);
+        CHECK(NetworkService_Request(2U, NETWORK_SERVICE_CONNECT, peer.addr) == SYS_OK);
+        CHECK(Test_ServiceStep(RUNTIME_TARGET_NETWORK) == SYS_OK);
+        Test_PollHardware(RUNTIME_TARGET_NETWORK);
+        CHECK(Test_ReadHardwareResult(RUNTIME_TARGET_NETWORK, 2U, APP_V3_HW_ACTIVE, SYS_OK));
+        CHECK(g_network_status.tcp_pcb.used == 1U && g_network_status.udp_pcb.used == 1U);
+    }
+    g_network_stop_fail = scenario == 132U;
+    g_network_fault_result = scenario == 132U ? ETH_IO : ETH_MDIO;
+    g_network_fault_samples = 3U;
+    for (i = 0U; i < 3U; ++i)
+        Test_NetworkTick(10U);
+    CHECK(g_network_status.lifecycle == APP_V3_HW_FAULT &&
+        g_network_status.first_fault == SYS_ERR_IO && g_network_status.tcp_listen.used == 0U &&
+        g_network_status.udp_pcb.used == 0U && g_network_status.tcp_pcb.used == 0U);
+    CHECK(g_network_stop_calls == 1U && g_network_start_calls == 1U);
+    if (scenario == 132U)
+    {
+        CHECK(g_network_status.draining && g_network_status.stop_result == SYS_ERR_IO);
+        for (i = 0U; i < 20U; ++i)
+            Test_NetworkTick(1000U);
+        CHECK(g_network_stop_calls == 1U && g_network_start_calls == 1U &&
+            g_network_status.recovery_attempts == 0U);
+        CHECK(NetworkService_Request(3U, NETWORK_SERVICE_START, 0U) == SYS_OK);
+        CHECK(Test_ServiceStep(RUNTIME_TARGET_NETWORK) == SYS_OK);
+        Test_PollHardware(RUNTIME_TARGET_NETWORK);
+        CHECK(Test_ReadHardwareResult(RUNTIME_TARGET_NETWORK, 3U, APP_V3_HW_FAULT, SYS_ERR_INVALID_STATE));
+        g_network_stop_fail = g_network_fault_samples = 0U;
+        CHECK(NetworkService_Request(4U, NETWORK_SERVICE_STOP, 0U) == SYS_OK);
+        CHECK(Test_ServiceStep(RUNTIME_TARGET_NETWORK) == SYS_OK);
+        Test_PollHardware(RUNTIME_TARGET_NETWORK);
+        CHECK(Test_ReadHardwareResult(RUNTIME_TARGET_NETWORK, 4U, APP_V3_HW_READY, SYS_OK));
+        CHECK(g_network_stop_calls == 2U && !g_network_status.draining && netif_list == NULL);
+        return 0U;
+    }
+    CHECK(netif_list == NULL && !g_network_status.draining && g_network_status.stop_result == SYS_OK);
+    if (scenario == 133U)
+        g_network_dhcp_server = 0U;
+    Test_NetworkTick(490U);
+    CHECK(g_network_start_calls == 1U);
+    for (i = 0U; i < 315U && g_network_status.recovery_successes == 0U; ++i)
+        Test_NetworkTick(100U);
+    CHECK(g_network_status.recovery_attempts == 1U);
+    if (scenario == 133U)
+    {
+        CHECK(g_network_status.lifecycle == APP_V3_HW_FAULT && netif_list == NULL &&
+            g_network_status.recovery_successes == 0U && g_network_status.udp_pcb.used == 0U);
+        return 0U;
+    }
+    CHECK(g_network_status.recovery_successes == 1U && g_network_status.flags == 7U &&
+        g_network_status.lifecycle == APP_V3_HW_ACTIVE && g_network_start_calls == 2U);
+    g_network_fault_samples = 3U;
+    for (i = 0U; i < 10U; ++i)
+        Test_NetworkTick(100U);
+    CHECK(g_network_status.lifecycle == APP_V3_HW_FAULT && !g_network_status.recovering &&
+        g_network_status.recovery_attempts == 1U && g_network_start_calls == 2U && netif_list == NULL);
+    CHECK(NetworkService_Request(3U, NETWORK_SERVICE_RESTART, 0U) == SYS_OK);
+    CHECK(Test_ServiceStep(RUNTIME_TARGET_NETWORK) == SYS_OK);
+    Test_PollHardware(RUNTIME_TARGET_NETWORK);
+    CHECK(Test_ReadHardwareResult(RUNTIME_TARGET_NETWORK, 3U, APP_V3_HW_ACTIVE, SYS_OK));
+    Test_NetworkTick(10U);
+    CHECK(g_network_status.flags == 7U && g_network_status.first_fault == SYS_OK &&
+        g_network_start_calls == 3U);
+    return 0U;
+}
+
 uint32_t AppV3_TestRun(uint32_t scenario)
 {
     const AppV3Context_t *context;
@@ -3462,8 +3604,10 @@ uint32_t AppV3_TestRun(uint32_t scenario)
         return Test_NetworkTransportResources(context, scenario);
     if (scenario == 127U || (scenario >= 121U && scenario <= 123U))
         return Test_NetworkAcceptanceProducer(context, scenario);
-    if (scenario == 119U || scenario == 128U)
-        return Test_NetworkBrowser(context, scenario == 128U);
+    if (scenario == 119U || scenario == 128U || scenario == 130U)
+        return Test_NetworkBrowser(context, scenario);
+    if (scenario >= 129U && scenario <= 133U)
+        return Test_NetworkFault(context, scenario);
     if (scenario == 118U)
         return Test_NetworkDhcpHttp(context);
     if (scenario == 117U)

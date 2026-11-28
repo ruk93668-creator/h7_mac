@@ -22,6 +22,27 @@ typedef struct
 	//协商或强制模式速率
 	uint16_t speed_mbps;
 } EthLinkState_t;
+
+typedef enum
+{
+	ETH_MDIO_NONE = 0,
+	ETH_MDIO_BUSY_ON_ENTRY,
+	ETH_MDIO_WAIT_TIMEOUT
+} EthMdioStage_t;
+
+typedef struct
+{
+	uint32_t stage;//EthMdioStage_t，NONE 表示尚未记录
+	uint32_t tick_ms;//发生故障时的 HAL 时基，暖复位后属于前一轮启动
+	uint32_t macmdioar;//失败现场，保留 MB、命令和时钟范围字段
+	uint32_t macmdiodr;//失败现场，访问失败时不可视为有效 PHY 数据
+	uint32_t hclk_hz;//失败时读取的 HCLK
+	uint32_t mdc_clock_range;//配置的 MACMDIOAR.CR 编码
+	uint32_t phy_address;
+	uint32_t phy_register;
+	uint32_t write;//0 读，1 写
+} EthMdioFault_t;
+
 typedef struct
 {
 	//MAC/DMA 软件运行状态
@@ -52,6 +73,11 @@ typedef struct
 	uint32_t mdio_errors;
 	//实际读取的 PHY 标识
 	uint32_t phy_id;
+	uint32_t mdio_busy_on_entry;
+	uint32_t mdio_wait_timeouts;
+	uint32_t phy_register_read_errors;//MDIO 读失败，包含在 mdio_errors 中
+	uint32_t phy_status_errors;//寄存器读取成功，但协商结果不合法
+	EthMdioFault_t first_mdio_fault;//驱动复位前锁存，CM7 正式构建使用 UNINIT
 } EthStatistics_t;
 
 //仅由同一任务串行调用，HAL 毫秒时基必须正常运行

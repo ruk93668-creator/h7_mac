@@ -65,6 +65,7 @@ typedef struct
 	uint32_t link_downs;
 	uint32_t service_tick;
 	uint8_t initialized;
+	uint8_t mdio_streak;//仅统计实际链路采样连续失败次数
 #if LWIP_DHCP
 	EthNetworkAddressConfig_t address_config;
 	EthNetworkAddressStatus_t address;
@@ -85,6 +86,10 @@ err_t eth_network_init_address(EthNetwork_t *network, const uint8_t mac[6],
 #endif
 //只轮询已初始化的当前拥有者，推进 RX、DHCP 和 lwIP 定时器，不可用于 ISR。
 void eth_network_poll(EthNetwork_t *network);
+
+//关闭端点期间只处理在途 RX 和协议定时器，同一拥有者调用。
+//禁止 PHY 探测、MAC 启动或新建 DHCP 客户端。
+void eth_network_drain_poll(EthNetwork_t *network);
 
 //由唯一拥有者推进全局定时器；STOP 后仍需调用，未初始化时无操作。
 //不访问 netif、启动 MAC 或建立服务；拒绝 ISR 和其他任务。

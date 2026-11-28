@@ -27,6 +27,19 @@ static EthMacState_t s_state = ETH_MAC_OFF;
 static EthLinkState_t s_active_link;
 static uint8_t s_mac_address[6];
 static uint32_t s_mdio_div;
+
+//有效标记最后发布。正式 CM7 暖复位保留 DTCM，掉电后的内容不作保证。
+#define ETH_MDIO_FAULT_MAGIC UINT32_C(0x4D444931)
+static struct
+{
+	uint32_t magic;
+	uint32_t check;
+	EthMdioFault_t fault;
+} s_mdio_first
+#if defined(ETH_NETWORK_SERVICE)
+	__attribute__((section(".eth_mdio_fault"), zero_init))
+#endif
+;
 static volatile uint32_t s_irq_fault;
 static volatile uint32_t s_irq_tx;
 static volatile uint32_t s_irq_rx;
@@ -156,7 +169,7 @@ EthResult_t eth_mac_init(const uint8_t mac[6])
 		{
 			++s_statistics.init_errors;
 			s_state = ETH_MAC_FAULT;
-			return found == ETH_PHY_IO ? ETH_IO : ETH_PHY_MISSING;
+			return found == ETH_PHY_IO ? ETH_MDIO : ETH_PHY_MISSING;
 		}
 	}
 	s_state = ETH_MAC_READY;
@@ -198,24 +211,27 @@ EthResult_t eth_mac_get_link(EthLinkState_t *snapshot)
 	if (s_state == ETH_MAC_OFF)
 		return ETH_STATE;
 	if (eth_phy_read_link(&s_phy, &link) != ETH_PHY_OK)
-		return ETH_IO;
+		return ETH_MDIO;
 	snapshot->up = link.up;
 	snapshot->autoneg_complete = link.autoneg_complete;
 	if (!link.up)
 		return ETH_OK;
 	if (EthMac_ReadPhyRegister(NULL, 0U, 0U, &control) != 0)
-		return ETH_IO;
+		return ETH_MDIO;
 	if ((control & 0x1000U) != 0U)
 	{
 		if (!link.autoneg_complete)
 			return ETH_BUSY;
 		if (EthMac_ReadPhyRegister(NULL, 0U, 31U, &special) != 0)
-			return ETH_IO;
+			return ETH_MDIO;
 		if ((special & 0x1000U) == 0U)
 			return ETH_BUSY;
 		special = (uint16_t)((special >> 2) & 7U);
 		if (special != 1U && special != 2U && special != 5U && special != 6U)
-			return ETH_IO;
+		{
+			++s_statistics.phy_status_errors;
+			return ETH_PHY_STATUS;
+		}
 		snapshot->speed_mbps = (special & 2U) != 0U ? 100U : 10U;
 		snapshot->full_duplex = (uint8_t)((special & 4U) != 0U);
 	}
@@ -242,7 +258,7 @@ EthResult_t eth_mac_start(void)
 	{
 		EthPhyResult_t found = eth_phy_probe(&s_phy, &s_statistics.phy_id);
 		if (found != ETH_PHY_OK)
-			return found == ETH_PHY_IO ? ETH_IO : ETH_PHY_MISSING;
+			return found == ETH_PHY_IO ? ETH_MDIO : ETH_PHY_MISSING;
 	}
 	result = eth_mac_get_link(&link);
 	if (result != ETH_OK || !link.up)
@@ -372,6 +388,9 @@ EthResult_t eth_mac_service(void)
 	if (result != ETH_OK)
 		return result;
 	result = eth_mac_get_link(&link);
+	//MDIO 失败只表明本次读不到链路；保持上次确认的运行状态。
+	if (result == ETH_MDIO)
+		return result;
 	if (result != ETH_OK || !link.up || link.speed_mbps != s_active_link.speed_mbps ||
 		link.full_duplex != s_active_link.full_duplex)
 	{
@@ -390,6 +409,21 @@ EthResult_t eth_mac_get_address(uint8_t mac[6])
 		return ETH_STATE;
 	memcpy(mac, s_mac_address, 6U);
 	return ETH_OK;
+}
+
+static uint32_t EthMac_MdioCheck(const EthMdioFault_t *fault)
+{
+	return ~ETH_MDIO_FAULT_MAGIC ^ fault->stage ^ fault->tick_ms ^ fault->macmdioar ^
+		fault->macmdiodr ^ fault->hclk_hz ^ fault->mdc_clock_range ^ fault->phy_address ^
+		fault->phy_register ^ fault->write;
+}
+
+static int EthMac_MdioFaultValid(void)
+{
+	return s_mdio_first.magic == ETH_MDIO_FAULT_MAGIC &&
+		(s_mdio_first.fault.stage == ETH_MDIO_BUSY_ON_ENTRY ||
+		 s_mdio_first.fault.stage == ETH_MDIO_WAIT_TIMEOUT) &&
+		s_mdio_first.check == EthMac_MdioCheck(&s_mdio_first.fault);
 }
 
 //短暂屏蔽中断以取得一致统计快照
@@ -413,6 +447,8 @@ EthResult_t eth_mac_get_statistics(EthStatistics_t *snapshot)
 	snapshot->last_dma_status = s_last_dma;
 	snapshot->last_mac_status = s_last_mac;
 	__set_PRIMASK(mask);
+	if (EthMac_MdioFaultValid())
+		snapshot->first_mdio_fault = s_mdio_first.fault;
 	return ETH_OK;
 }
 
@@ -469,6 +505,37 @@ static int EthMac_WaitClear(
 	return 0;
 }
 
+static void EthMac_RecordMdioFault(EthMdioStage_t stage, uint8_t address, uint8_t reg, int write)
+{
+	uint32_t macmdioar = ETH->MACMDIOAR;
+	uint32_t macmdiodr = ETH->MACMDIODR;
+
+	++s_statistics.mdio_errors;
+	if (stage == ETH_MDIO_BUSY_ON_ENTRY)
+		++s_statistics.mdio_busy_on_entry;
+	else
+		++s_statistics.mdio_wait_timeouts;
+	if (!write)
+		++s_statistics.phy_register_read_errors;
+	if (EthMac_MdioFaultValid())
+		return;
+
+	s_mdio_first.magic = 0U;
+	s_mdio_first.fault.stage = (uint32_t)stage;
+	s_mdio_first.fault.tick_ms = HAL_GetTick();
+	s_mdio_first.fault.macmdioar = macmdioar;
+	s_mdio_first.fault.macmdiodr = macmdiodr;
+	s_mdio_first.fault.hclk_hz = HAL_RCC_GetHCLKFreq();
+	s_mdio_first.fault.mdc_clock_range = s_mdio_div;
+	s_mdio_first.fault.phy_address = address;
+	s_mdio_first.fault.phy_register = reg;
+	s_mdio_first.fault.write = (uint32_t)write;
+	s_mdio_first.check = EthMac_MdioCheck(&s_mdio_first.fault);
+	__DSB();
+	s_mdio_first.magic = ETH_MDIO_FAULT_MAGIC;
+	__DSB();
+}
+
 //串行执行一次有界 MDIO 读写
 static int EthMac_AccessPhyRegister(
 	void *context,
@@ -481,7 +548,7 @@ static int EthMac_AccessPhyRegister(
 	(void)context;
 	if ((ETH->MACMDIOAR & ETH_MACMDIOAR_MB) != 0U)
 	{
-		++s_statistics.mdio_errors;
+		EthMac_RecordMdioFault(ETH_MDIO_BUSY_ON_ENTRY, address, reg, write);
 		return -1;
 	}
 	if (write)
@@ -490,7 +557,7 @@ static int EthMac_AccessPhyRegister(
 		(write ? ETH_MACMDIOAR_MOC_WR : ETH_MACMDIOAR_MOC_RD) | ETH_MACMDIOAR_MB;
 	if (EthMac_WaitClear(&ETH->MACMDIOAR, ETH_MACMDIOAR_MB, ETH_MAC_MDIO_TIMEOUT_MS) != 0)
 	{
-		++s_statistics.mdio_errors;
+		EthMac_RecordMdioFault(ETH_MDIO_WAIT_TIMEOUT, address, reg, write);
 		return -1;
 	}
 	if (!write)

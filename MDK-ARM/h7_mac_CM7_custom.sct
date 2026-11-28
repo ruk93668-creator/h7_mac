@@ -58,7 +58,12 @@ LR_IROM1 0x08000000 0x00100000
         *(.network_jpeg)
     }
 
-    RW_IRAM1 0x20000000 0x00020000
+    RW_ETH_MDIO_FAULT 0x2001FFC0 UNINIT 0x00000040
+    {
+        *(.eth_mdio_fault)
+    }
+
+    RW_IRAM1 0x20000000 0x0001FFC0
     {
         .ANY (+RW +ZI)
     }
