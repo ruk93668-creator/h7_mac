@@ -1,0 +1,17 @@
+{
+  "scope": {
+    "H0": "PASS",
+    "H1": "PASS",
+    "H2": "PASS",
+    "H3": "NOT_RUN"
+  },
+  "candidate": "5768c9f9afaf248cdcf4e1d155dce11c69a71b2c",
+  "evidence": {
+    "H0": "H0_Firmware_SHA256.json",
+    "H1": "H1_Final_Summary.json",
+    "H2": "H2_DHCP_HTTP.json",
+    "pcapng": "H2_DHCP_HTTP.pcapng"
+  },
+  "historical_H1_failure_retained": "H1_Flash_Verify.json",
+  "review_gate": "Independent review before H3"
+}
