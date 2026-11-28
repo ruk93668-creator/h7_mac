@@ -112,7 +112,7 @@ def main():
     regions = {}
     for name, address, maximum in (("RW_ETHERNET_DMA", 0x24078000, 0x8000),
                                     ("RW_ETHERNET_CPU", 0x24010000, 0x10000),
-                                    ("RW_NETWORK_JPEG", 0xD07F0000, 0xF000),
+                                    ("RW_NETWORK_JPEG", 0x24020000, 0xF000),
                                     ("RW_IRAM1", 0x20000000, 0x20000)):
         found = re.search(r"Execution Region " + name +
                           r" \(Exec base: (0x[\da-f]+).*?Size: (0x[\da-f]+), Max: (0x[\da-f]+)",
@@ -121,6 +121,14 @@ def main():
                          "max": int(found[3], 16)} if found else None
         if not found or int(found[1], 16) != address or int(found[3], 16) != maximum:
             fresh = False
+    jpeg_region = regions["RW_NETWORK_JPEG"]
+    jpeg_section = re.findall(r"^\s*0x24020000\s+-\s+0x0000f000\b[^\n]*\.network_jpeg\s+network_frames\.o\s*$",
+                              mapping, re.I | re.M)
+    jpeg_buffer = re.findall(r"^\s*s_jpeg\s+0x24020000\s+Data\s+61440\s+network_frames\.o\(\.network_jpeg\)\s*$",
+                             mapping, re.I | re.M)
+    jpeg_mapping_valid = bool(jpeg_region and jpeg_region["size"] == 0xF000 and
+                              len(jpeg_section) == len(jpeg_buffer) == 1)
+    fresh = fresh and jpeg_mapping_valid
     after = {p.relative_to(ROOT).as_posix(): sha(p) for p in input_files}
     report = {
         "source_commit": commit, "source_stable": before == after,
@@ -128,7 +136,7 @@ def main():
         "rte_before": hashlib.sha256(rte_before).hexdigest(), "rte_after": sha(rte),
         "exit": result.returncode, "errors": int(match[1]) if match else None,
         "warnings": int(match[2]) if match else None, "fresh_layout": fresh,
-        "regions": regions, "artifacts": {k: {"path": str(p), "sha256": sha(p)}
+        "regions": regions, "jpeg_mapping_valid": jpeg_mapping_valid, "artifacts": {k: {"path": str(p), "sha256": sha(p)}
                                         for k, p in files.items() if p.is_file()},
         "control_source_sha256": sha(generated) if args.acceptance else
             sha(ROOT / "CM7/ApplicationV3/Tasks/service_tasks.c"),

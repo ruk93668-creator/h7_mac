@@ -2948,11 +2948,12 @@ static uint32_t Test_NetworkAcceptanceProducer(const AppV3Context_t *context, ui
 }
 
 extern uint32_t g_network_browser_bytes, g_network_frame_bytes;
+void Test_UseNetworkJpegFixture(void);
 void Test_NetworkBrowserOpen(void);
 void Test_NetworkBrowserReset(void);
 
 //真实 TCP 三次握手、HTTP 请求、Camera 消息副本和 RST 清理闭环。
-static uint32_t Test_NetworkBrowser(const AppV3Context_t *context)
+static uint32_t Test_NetworkBrowser(const AppV3Context_t *context, bool verify_complete_frame)
 {
     uint32_t i;
     bool borrowed = false;
@@ -2967,6 +2968,8 @@ static uint32_t Test_NetworkBrowser(const AppV3Context_t *context)
     g_network_link = 1U;
     g_network_dhcp_server = 1U;
     g_network_frame_bytes = 4096U;
+    if (verify_complete_frame)
+        Test_UseNetworkJpegFixture();
     g_network_frame_ready = 1U;
     CHECK(NetworkService_Request(2U, NETWORK_SERVICE_START, 0x100U) == SYS_OK);
     CHECK(Test_ServiceStep(RUNTIME_TARGET_NETWORK) == SYS_OK);
@@ -2989,6 +2992,16 @@ static uint32_t Test_NetworkBrowser(const AppV3Context_t *context)
         }
     }
     CHECK(borrowed && g_network_frame_releases == 1U && g_network_browser_bytes != 0U);
+    if (verify_complete_frame)
+    {
+        for (i = 0U; i < 120U && g_network_status.http.stream.frames_completed == 0U; ++i)
+        {
+            Test_PollHardware(RUNTIME_TARGET_CAMERA);
+            g_hardware.now_ms += 10U;
+            Test_PollHardware(RUNTIME_TARGET_NETWORK);
+        }
+        CHECK(g_network_status.http.stream.frames_completed == 1U && g_network_frame_releases == 1U);
+    }
     Test_NetworkBrowserReset();
     for (i = 0U; i < 12U; ++i)
     {
@@ -3449,8 +3462,8 @@ uint32_t AppV3_TestRun(uint32_t scenario)
         return Test_NetworkTransportResources(context, scenario);
     if (scenario == 127U || (scenario >= 121U && scenario <= 123U))
         return Test_NetworkAcceptanceProducer(context, scenario);
-    if (scenario == 119U)
-        return Test_NetworkBrowser(context);
+    if (scenario == 119U || scenario == 128U)
+        return Test_NetworkBrowser(context, scenario == 128U);
     if (scenario == 118U)
         return Test_NetworkDhcpHttp(context);
     if (scenario == 117U)

@@ -35,6 +35,11 @@ void eth_memory_configure(void)
     region.IsCacheable = MPU_ACCESS_CACHEABLE;
     region.IsBufferable = MPU_ACCESS_BUFFERABLE;
     HAL_MPU_ConfigRegion(&region);
+
+    //仅 CPU 访问的 JPEG 私有副本，沿用 E7 AXI 对照版的 64 KiB 缓存属性。
+    region.Number = MPU_REGION_NUMBER6;
+    region.BaseAddress = 0x24020000U;
+    HAL_MPU_ConfigRegion(&region);
 #endif
 }
 

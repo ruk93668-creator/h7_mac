@@ -35,11 +35,12 @@ def build(name,sources,entry,defs=[]):
  with axf.open('rb') as f:
   e=ELFFile(f);syms={s.name:s['st_value'] for s in e.get_section_by_name('.symtab').iter_symbols()};sections=[(s['sh_addr'],s.data()) for s in e.iter_sections() if s['sh_flags']&2 and s['sh_type']=='SHT_PROGBITS' and s['sh_size']]
  images[name]=(syms,sections)
-def execute(name,entry,id):
+def execute(name,entry,id,observe=None):
  syms,sections=images[name];u=Uc(UC_ARCH_ARM,UC_MODE_THUMB|UC_MODE_MCLASS)
  for a,n in [(0x08000000,0x100000),(0x20000000,0x80000),(0xE000E000,0x2000),(0x01000000,0x1000)]+EXTRA_REGIONS:u.mem_map(a,n)
  for a,d in sections:u.mem_write(a,d)
  u.reg_write(UC_ARM_REG_SP,0x2007fff0);u.reg_write(UC_ARM_REG_LR,0x01000001);u.reg_write(UC_ARM_REG_R0,id)
+ if observe is not None:observe(u,syms)
  error=None
  try:u.emu_start(syms[entry]|1,0x01000000,count=3000000)
  except Exception as ex:error=str(ex)

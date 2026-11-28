@@ -1,5 +1,6 @@
 #include "mjpeg_avi.h"
 #include "hardware_fixture.h"
+#include "../Ethernet/e6_jpeg_fixtures/e6_jpeg_fixtures.h"
 #include "ov5640_device.h"
 #include "usb_mode.h"
 #include "usb_uvc.h"
@@ -478,6 +479,14 @@ SysResult_t MjpegAvi_Finish(MjpegAvi_t *avi)
 }
 
 
+static bool s_network_use_fixture;
+
+void Test_UseNetworkJpegFixture(void)
+{
+    s_network_use_fixture = true;
+    g_network_frame_bytes = e6_jpeg_frames[0].length;
+}
+
 SysResult_t CameraCapture_StreamAcquireJpeg(CameraFrameConsumer_t consumer,
     CameraMjpegLease_t *lease, CameraFrame_t *frame)
 {
@@ -489,12 +498,22 @@ SysResult_t CameraCapture_StreamAcquireJpeg(CameraFrameConsumer_t consumer,
             return SYS_ERR_INVALID_STATE;
         if (!s_camera_running || !g_network_frame_ready || s_jpeg_network.id != 0U)
             return SYS_ERR_BUSY;
-        memset(data, 0x55, g_network_frame_bytes - 4U);
-        memset(tail, 0x55, 4U);
-        data[0] = 0xffU;
-        data[1] = 0xd8U;
-        tail[2] = 0xffU;
-        tail[3] = 0xd9U;
+        if (s_network_use_fixture)
+        {
+            const uint8_t *jpeg = e6_jpeg_frames[0].data;
+            memcpy(data, jpeg, g_network_frame_bytes - 4U);
+            memcpy(tail, jpeg + g_network_frame_bytes - 4U, 4U);
+            s_network_use_fixture = false;
+        }
+        else
+        {
+            memset(data, 0x55, g_network_frame_bytes - 4U);
+            memset(tail, 0x55, 4U);
+            data[0] = 0xffU;
+            data[1] = 0xd8U;
+            tail[2] = 0xffU;
+            tail[3] = 0xd9U;
+        }
         g_network_frame_ready = 0U;
         s_jpeg_network = (CameraMjpegLease_t){s_capture_generation,
             ++g_hardware.frame_acquire_calls, consumer};

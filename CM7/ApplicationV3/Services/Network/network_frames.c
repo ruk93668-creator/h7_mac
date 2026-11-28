@@ -18,7 +18,7 @@ typedef enum
     NETWORK_FRAME_CONSUMED_PENDING
 } NetworkFrameState_t;
 
-//独立私有副本，链接器放入 SDRAM；永不交给 Camera DMA。
+//独立私有副本，链接器放入 AXI SRAM；相机和网口 DMA 均不访问。
 static uint8_t s_jpeg[NETWORK_JPEG_CAPACITY]
     __attribute__((section(".network_jpeg"), zero_init, aligned(32)));
 static struct
@@ -41,7 +41,7 @@ static struct
     bool withdrawn;//当前客户端已离开，不能把其迟到 OFFER 发布为新副本
 } s_frames;
 
-//与 E7 实测策略相同，每八字节复制后等待 SDRAM 访问完成。
+//按 E7 策略从 SDRAM FIFO 分段读取，每最多八字节执行一次 DSB。
 static void NetworkFrames_Barrier(void)
 {
     __DSB();

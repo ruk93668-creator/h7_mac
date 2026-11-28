@@ -21,7 +21,11 @@ def main():
     parser.add_argument("--section", choices=("build", "host", "all"), default="all")
     parser.add_argument("--output", type=Path, default=ROOT / "output/Ethernet/final")
     parser.add_argument("--deps", type=Path)
+    parser.add_argument("--formal-only", action="store_true",
+                        help="rebuild the three formal targets and two network profiles")
     args = parser.parse_args()
+    if args.formal_only and args.section != "build":
+        parser.error("--formal-only requires --section build")
     out = args.output.resolve()
     out.mkdir(parents=True, exist_ok=True)
     git = ["git", "-c", "safe.directory=" + ROOT.as_posix()]
@@ -105,8 +109,9 @@ def main():
                             if size else None}
             save()
             print(key, results[key], flush=True)
-        for flag in ("--e35", "--e4", "--e42", "--e5", "--e6", "--e7",
-                     "--e7-v1", "--e7-v1-axi", "--e7-v1-qvga"):
+        independent_targets = ("--e35", "--e4", "--e42", "--e5", "--e6", "--e7",
+                               "--e7-v1", "--e7-v1-axi", "--e7-v1-qvga")
+        for flag in (() if args.formal_only else independent_targets):
             key = "firmware_" + flag[2:].replace("-", "_")
             run(key, [sys.executable, "-B", "Tests/Ethernet/build_firmware.py", flag])
         run("production_network", [sys.executable, "-B", "Tests/Ethernet/build_production.py",

@@ -44,7 +44,12 @@ def main():
     )
     harness = importlib.util.module_from_spec(spec)
     spec.loader.exec_module(harness)
-    harness.EXTRA_REGIONS = [(0xD0000000, 0x800000)]
+    harness.EXTRA_REGIONS = [(0xD0000000, 0x800000), (0x24020000, 0x10000)]
+    # Keep the production address for the JPEG section in the Cortex-M harness.
+    scatter = harness.sc.read_text()
+    assert scatter.count("RW_TEST 0x20000000") == 1
+    harness.sc.write_text(scatter.replace("RW_TEST 0x20000000",
+        "RW_NETWORK_JPEG 0x24020000 UNINIT 0xF000 { *(.network_jpeg) } RW_TEST 0x20000000"))
     # C1's Python runner only supplies ARMCC5 linking and Cortex-M execution.
     legacy_includes = {ROOT / "CM7/Application", ROOT / "CM7/Application/Tasks"}
     harness.cc = [flag for index, flag in enumerate(harness.cc)
@@ -94,6 +99,7 @@ def main():
         V3 / "Services/Network/network_frames.c",
         *[ROOT / p for p in PORT + TRANSPORT + SERVICE + LWIP + LWIP_DHCP + LWIP_TCP],
         Path(__file__).with_name("network_fixture.c"),
+        ROOT / "Tests/Ethernet/e6_jpeg_fixtures/e6_jpeg_fixtures.c",
         ROOT / "Tests/Ethernet/network_board_acceptance.c",
         V3 / "Tasks/service_tasks.c",
         *sorted((V3 / "Runtime").glob("*.c")),
@@ -124,9 +130,18 @@ def main():
             scenarios = range(98, 104)
         if args.production and not args.raw_uvc:
             scenarios = [*range(24), 28, 29, *range(38, 53), *range(63, 75),
-                         *range(88, 96), 104, *range(105, 128)]
+                         *range(88, 96), 104, *range(105, 129)]
         for scenario in scenarios:
-            row = harness.execute(name, "AppV3_TestRun", scenario)
+            if scenario == 128:
+                from jpeg_crc_trace import JpegCrcTrace
+                trace = JpegCrcTrace(
+                    output / (name + ".axf"),
+                    ROOT / "Tests/Ethernet/e6_jpeg_fixtures/frame0.jpg")
+                row = harness.execute(name, "AppV3_TestRun", scenario, observe=trace.attach)
+                row["jpeg_crc"] = trace.result()
+                row["pass"] = row["pass"] and row["jpeg_crc"]["pass"]
+            else:
+                row = harness.execute(name, "AppV3_TestRun", scenario)
             if scenario < 49:
                 row.pop("trace", None)
             results.append({"optimization": optimization, "id": scenario, **row})
