@@ -1,0 +1,150 @@
+{
+  "timestamp": "2026-11-28T17:19:20.874694+08:00",
+  "software_candidate": "5768c9f9afaf248cdcf4e1d155dce11c69a71b2c",
+  "delivery_commit": "e384e31e7836211f109db13cf52f1de7da64c8b7",
+  "main_baseline": "851c1115fe097f7fd2e0bdcaa5f7b3f8c03feb71",
+  "files": {
+    "build_manifest": {
+      "path": "C:\\Users\\29062\\AppData\\Local\\Temp\\h7_q11_04dmg4_u\\n5_joint_verified\\output\\Ethernet\\n5_joint_final_build\\hardware_acceptance\\manifest.json",
+      "expected_sha256": "c1cc5632ce55847e2c5c47213fbec17654a910479ac3256e066a53b05b67b0f7",
+      "actual_sha256": "c1cc5632ce55847e2c5c47213fbec17654a910479ac3256e066a53b05b67b0f7",
+      "size_bytes": 43190,
+      "status": "PASS"
+    },
+    "axf": {
+      "path": "C:\\Users\\29062\\AppData\\Local\\Temp\\h7_q11_04dmg4_u\\n5_joint_verified\\output\\Ethernet\\n5_joint_final_build\\hardware_acceptance\\h7_network_acceptance.axf",
+      "expected_sha256": "cf3480182c79f9154ec162f13396a414df4ea437f9cb859244c50ad30f1aa88f",
+      "actual_sha256": "cf3480182c79f9154ec162f13396a414df4ea437f9cb859244c50ad30f1aa88f",
+      "size_bytes": 4048248,
+      "status": "PASS",
+      "verified_copy": "D:\\32\\STM32H7\\h7_mac_wk\\output\\Ethernet\\hardware\\N5_R2_R3_H0_H1_H2_20261128_171920\\firmware\\h7_network_acceptance.axf"
+    },
+    "hex": {
+      "path": "C:\\Users\\29062\\AppData\\Local\\Temp\\h7_q11_04dmg4_u\\n5_joint_verified\\output\\Ethernet\\n5_joint_final_build\\hardware_acceptance\\h7_network_acceptance.hex",
+      "expected_sha256": "a5201251f69132b6ac06880cae042e867cb05dbca1126593e4e3d6dc811481e0",
+      "actual_sha256": "a5201251f69132b6ac06880cae042e867cb05dbca1126593e4e3d6dc811481e0",
+      "size_bytes": 613211,
+      "status": "PASS",
+      "verified_copy": "D:\\32\\STM32H7\\h7_mac_wk\\output\\Ethernet\\hardware\\N5_R2_R3_H0_H1_H2_20261128_171920\\firmware\\h7_network_acceptance.hex"
+    },
+    "map": {
+      "path": "C:\\Users\\29062\\AppData\\Local\\Temp\\h7_q11_04dmg4_u\\n5_joint_verified\\output\\Ethernet\\n5_joint_final_build\\hardware_acceptance\\h7_network_acceptance.map",
+      "expected_sha256": "0bd7de772b37c18fdb40eec6f7a21d71bb20bf037216f51f67a42a2032817103",
+      "actual_sha256": "0bd7de772b37c18fdb40eec6f7a21d71bb20bf037216f51f67a42a2032817103",
+      "size_bytes": 1299558,
+      "status": "PASS",
+      "verified_copy": "D:\\32\\STM32H7\\h7_mac_wk\\output\\Ethernet\\hardware\\N5_R2_R3_H0_H1_H2_20261128_171920\\firmware\\h7_network_acceptance.map"
+    },
+    "acceptance_project": {
+      "path": "C:\\Users\\29062\\AppData\\Local\\Temp\\h7_q11_04dmg4_u\\n5_joint_verified\\MDK-ARM\\h7_mac_ethernet_acceptance.uvprojx",
+      "expected_sha256": "559637d14c1149ca745bb0bfb108b9ed29caba2278c71fcf7515a1f5481a5bbb",
+      "actual_sha256": "559637d14c1149ca745bb0bfb108b9ed29caba2278c71fcf7515a1f5481a5bbb",
+      "size_bytes": 90336,
+      "status": "PASS"
+    },
+    "generated_acceptance_control": {
+      "path": "C:\\Users\\29062\\AppData\\Local\\Temp\\h7_q11_04dmg4_u\\n5_joint_verified\\output\\Ethernet\\n5_joint_final_build\\hardware_acceptance\\service_tasks_acceptance.c",
+      "expected_sha256": "ec055851424f3c4c1a304d782bdc53e8c6eb62c1a6f9329634bedc84144b5b9f",
+      "actual_sha256": "ec055851424f3c4c1a304d782bdc53e8c6eb62c1a6f9329634bedc84144b5b9f",
+      "size_bytes": 22241,
+      "status": "PASS"
+    },
+    "MDK-ARM/h7_mac.uvprojx": {
+      "path": "C:\\Users\\29062\\AppData\\Local\\Temp\\h7_q11_04dmg4_u\\n5_joint_verified\\MDK-ARM\\h7_mac.uvprojx",
+      "expected_sha256": "995919c792789d1540b421367c527cdfc648795a464e141dc2ea68334b995c08",
+      "actual_sha256": "995919c792789d1540b421367c527cdfc648795a464e141dc2ea68334b995c08",
+      "size_bytes": 208258,
+      "status": "PASS"
+    },
+    "MDK-ARM/h7_mac_CM7_custom.sct": {
+      "path": "C:\\Users\\29062\\AppData\\Local\\Temp\\h7_q11_04dmg4_u\\n5_joint_verified\\MDK-ARM\\h7_mac_CM7_custom.sct",
+      "expected_sha256": "acafa7edb1fb1246d48606272265d57a19860a95e11031e4ca6d056472bb680b",
+      "actual_sha256": "acafa7edb1fb1246d48606272265d57a19860a95e11031e4ca6d056472bb680b",
+      "size_bytes": 1345,
+      "status": "PASS"
+    },
+    "CM7/ApplicationV3/Tasks/service_tasks.c": {
+      "path": "C:\\Users\\29062\\AppData\\Local\\Temp\\h7_q11_04dmg4_u\\n5_joint_verified\\CM7\\ApplicationV3\\Tasks\\service_tasks.c",
+      "expected_sha256": "fe7f578902b23e5a80225fae126abe1727475d9aadbc543c6736a83d23898c05",
+      "actual_sha256": "fe7f578902b23e5a80225fae126abe1727475d9aadbc543c6736a83d23898c05",
+      "size_bytes": 20729,
+      "status": "PASS"
+    },
+    "Tests/Ethernet/network_board_acceptance.c": {
+      "path": "C:\\Users\\29062\\AppData\\Local\\Temp\\h7_q11_04dmg4_u\\n5_joint_verified\\Tests\\Ethernet\\network_board_acceptance.c",
+      "expected_sha256": "f187039efe7955719e1795c4b5a75893bc4e0a1fd8aa1e81fb83711a8d28a432",
+      "actual_sha256": "f187039efe7955719e1795c4b5a75893bc4e0a1fd8aa1e81fb83711a8d28a432",
+      "size_bytes": 5007,
+      "status": "PASS"
+    },
+    "Tests/Ethernet/network_board_acceptance.h": {
+      "path": "C:\\Users\\29062\\AppData\\Local\\Temp\\h7_q11_04dmg4_u\\n5_joint_verified\\Tests\\Ethernet\\network_board_acceptance.h",
+      "expected_sha256": "4b0996e7b340fdb7094376dd3a8a6cd7163342d9e0eff28d23760b76f2f5bb6e",
+      "actual_sha256": "4b0996e7b340fdb7094376dd3a8a6cd7163342d9e0eff28d23760b76f2f5bb6e",
+      "size_bytes": 1526,
+      "status": "PASS"
+    },
+    "Tests/Ethernet/build_production.py": {
+      "path": "C:\\Users\\29062\\AppData\\Local\\Temp\\h7_q11_04dmg4_u\\n5_joint_verified\\Tests\\Ethernet\\build_production.py",
+      "expected_sha256": "f7df728c564045ff303a45d2e3aa6d75a83efc438f4c4039c397f91737ddd4d1",
+      "actual_sha256": "f7df728c564045ff303a45d2e3aa6d75a83efc438f4c4039c397f91737ddd4d1",
+      "size_bytes": 8943,
+      "status": "PASS"
+    }
+  },
+  "H0": "PASS",
+  "H1": "NOT_RUN",
+  "H2": "NOT_RUN",
+  "checkout_head": "5768c9f9afaf248cdcf4e1d155dce11c69a71b2c",
+  "delivery_head": "e384e31e7836211f109db13cf52f1de7da64c8b7",
+  "delivery_ref": "codex/ethernet-n5-r2-r3-joint",
+  "all_build_inputs": {
+    "checked": 360,
+    "mismatches": []
+  },
+  "keil": {
+    "target": "h7_mac_CM7",
+    "defines": [
+      "CORE_CM7",
+      "USE_HAL_DRIVER",
+      "STM32H747xx",
+      "USE_PWR_LDO_SUPPLY",
+      "ETH_NETWORK_SERVICE",
+      "APP_NETWORK_BOOT=0",
+      "APP_VIDEO_MJPEG_MODE=1"
+    ],
+    "profile": "HARDWARE_ACCEPTANCE",
+    "output_name": "h7_network_acceptance"
+  },
+  "flash_payload": {
+    "bytes": 217992,
+    "records": {
+      "4": 4,
+      "0": 13625,
+      "5": 1,
+      "1": 1
+    },
+    "ranges_inclusive": [
+      [
+        "0x08000000",
+        "0x08035387"
+      ]
+    ],
+    "same_addressed_bytes_as_axf": true,
+    "writes_cm4_flash_bank": false
+  },
+  "refs_observed": {
+    "origin/codex/ethernet-n5-r2-r3-joint": "e384e31e7836211f109db13cf52f1de7da64c8b7",
+    "origin/main": "851c1115fe097f7fd2e0bdcaa5f7b3f8c03feb71"
+  },
+  "pc_environment": {
+    "ethernet_alias": "以太网 3",
+    "interface_index": 10,
+    "link_status": "Up",
+    "link_speed": "100 Mbps",
+    "host_ipv4": "192.168.137.1/24",
+    "windows_shared_access": "Running",
+    "cmsis_dap_usb_enumerated": true,
+    "board_revision_and_physical_topology": "PENDING_OPERATOR_CONFIRMATION"
+  }
+}

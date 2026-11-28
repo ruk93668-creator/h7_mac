@@ -1,0 +1,50 @@
+{
+  "date": "2026-11-28",
+  "phase": "H1",
+  "status": "FAIL",
+  "source": "用户提供的 Keil 输出，已按行存档",
+  "H0": "PASS",
+  "H2": "NOT_RUN",
+  "attempts": [
+    {
+      "finished_at": "17:38:10",
+      "status": "FAIL",
+      "reason": "Internal DLL Error / Target DLL has been cancelled",
+      "board_flash_contents": "UNKNOWN"
+    },
+    {
+      "finished_at": "17:38:40",
+      "status": "FAIL",
+      "programmer_report": "Verify OK",
+      "reason": "计划为仅烧录验收 CM7 HEX。日志显示加载验收 CM7 AXF，且预下载脚本额外加载旧工程 CM4 HEX。此结果不满足 CM7 HEX 单独下载验收。",
+      "board_flash_contents": "NOT_INDEPENDENTLY_VERIFIED"
+    }
+  ],
+  "acceptance_project": {
+    "path": "C:\\Users\\29062\\AppData\\Local\\Temp\\h7_q11_04dmg4_u\\n5_joint_verified\\MDK-ARM\\h7_mac_ethernet_acceptance.uvprojx",
+    "sha256": "559637d14c1149ca745bb0bfb108b9ed29caba2278c71fcf7515a1f5481a5bbb",
+    "utility_init_file": "program_cm4.ini",
+    "update_before_debugging": "1"
+  },
+  "attached_script": {
+    "path": "C:\\Users\\29062\\AppData\\Local\\Temp\\h7_q11_04dmg4_u\\n5_joint_verified\\MDK-ARM\\program_cm4.ini",
+    "sha256": "18273c1bd27c64280cbf9db922c8e1cccd65e0d6ca641bade2b5129a4196e68a",
+    "archive_copy": "H1_observed_program_cm4.ini"
+  },
+  "external_cm4_hex": {
+    "path": "D:\\32\\STM32H7\\h7_mac\\MDK-ARM\\h7_mac_CM4\\h7_mac_CM4.hex",
+    "sha256": "bf555747c73c784cde252adc8f43624780e55b7de7857f93cdba17a71b8a5ca7",
+    "data_bytes": 62100,
+    "intervals_inclusive": [
+      [
+        "0x08100000",
+        "0x0810F293"
+      ]
+    ],
+    "scope": "本机文件读得的地址和哈希，不是板上 Flash 读回"
+  },
+  "expected_only_cm7_hex_sha256": "a5201251f69132b6ac06880cae042e867cb05dbca1126593e4e3d6dc811481e0",
+  "raw_log_archive": "H1_flash_verify_user_paste_1738.log",
+  "watch_snapshot": "NOT_RUN",
+  "first_mdio_fault": "NOT_READ"
+}

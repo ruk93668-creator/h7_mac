@@ -1,0 +1,49 @@
+2026-11-28 18:00:01,247 WARNING Board ID 9AE0 is not recognized
+2026-11-28 18:00:01,281 INFO Target type is stm32h747xihx
+2026-11-28 18:00:01,540 INFO debugvar 'DbgMCU_APB1L_Fz1' = 0xe00bff (14683135)
+2026-11-28 18:00:01,541 INFO debugvar 'DbgMCU_APB1L_Fz2' = 0xe00bff (14683135)
+2026-11-28 18:00:01,541 INFO debugvar 'DbgMCU_APB2_Fz1' = 0x20070003 (537329667)
+2026-11-28 18:00:01,541 INFO debugvar 'DbgMCU_APB2_Fz2' = 0x20070003 (537329667)
+2026-11-28 18:00:01,541 INFO debugvar 'DbgMCU_APB3_Fz1' = 0x40 (64)
+2026-11-28 18:00:01,543 INFO debugvar 'DbgMCU_APB3_Fz2' = 0x40 (64)
+2026-11-28 18:00:01,545 INFO debugvar 'DbgMCU_APB4_Fz1' = 0xc1e80 (794240)
+2026-11-28 18:00:01,545 INFO debugvar 'DbgMCU_APB4_Fz2' = 0xc1e80 (794240)
+2026-11-28 18:00:01,545 INFO debugvar 'DbgMCU_CR' = 0x7 (7)
+2026-11-28 18:00:01,545 INFO debugvar 'TraceClk_Pin' = 0x40002 (262146)
+2026-11-28 18:00:01,545 INFO debugvar 'TraceD0_Pin' = 0x40003 (262147)
+2026-11-28 18:00:01,545 INFO debugvar 'TraceD1_Pin' = 0x40004 (262148)
+2026-11-28 18:00:01,545 INFO debugvar 'TraceD2_Pin' = 0x40005 (262149)
+2026-11-28 18:00:01,545 INFO debugvar 'TraceD3_Pin' = 0x40006 (262150)
+2026-11-28 18:00:01,549 INFO DP IDR = 0x6ba02477 (v2 rev6)
+2026-11-28 18:00:01,566 INFO AHB-AP#0 IDR = 0x84770001 (AHB-AP var0 rev8)
+2026-11-28 18:00:01,568 INFO AHB-AP#1 IDR = 0x84770001 (AHB-AP var0 rev8)
+2026-11-28 18:00:01,571 INFO APB-AP#2 IDR = 0x54770002 (APB-AP var0 rev5)
+2026-11-28 18:00:01,573 ERROR Error reading AP#3 IDR: invalid AP BASE value 0x24770011
+2026-11-28 18:00:01,575 INFO AHB-AP#0 Class 0x1 ROM table #0 @ 0xe00fe000 (designer=020:ST part=450)
+2026-11-28 18:00:01,577 INFO [0]<e00ff000:ROM class=1 designer=43b:Arm part=4c7>
+2026-11-28 18:00:01,578 INFO   AHB-AP#0 Class 0x1 ROM table #1 @ 0xe00ff000 (designer=43b:Arm part=4c7)
+2026-11-28 18:00:01,579 INFO   [0]<e000e000:SCS v7-M class=14 designer=43b:Arm part=00c>
+2026-11-28 18:00:01,580 INFO   [1]<e0001000:DWT v7-M class=14 designer=43b:Arm part=002>
+2026-11-28 18:00:01,581 INFO   [2]<e0002000:FPB v7-M class=14 designer=43b:Arm part=00e>
+2026-11-28 18:00:01,583 INFO   [3]<e0000000:ITM v7-M class=14 designer=43b:Arm part=001>
+2026-11-28 18:00:01,584 INFO [1]<e0041000:ETM M7 class=9 designer=43b:Arm part=975 devtype=13 archid=4a13 devid=0:0:0>
+2026-11-28 18:00:01,586 INFO [2]<e0043000:CTI CS-400 class=9 designer=43b:Arm part=906 devtype=14 archid=0000 devid=40800:0:0>
+2026-11-28 18:00:01,588 INFO APB-AP#2 Class 0x1 ROM table #0 @ 0xe00e0000 (designer=020:ST part=450)
+2026-11-28 18:00:01,591 INFO [2]<e00e3000:SWO CS-400 class=9 designer=43b:Arm part=914 devtype=11 archid=0000 devid=ea0:0:0>
+2026-11-28 18:00:01,592 INFO [3]<e00e4000:Trace Funnel CS-400 class=9 designer=43b:Arm part=908 devtype=12 archid=0000 devid=32:0:0>
+2026-11-28 18:00:01,594 INFO [4]<e00e5000:TSGEN class=15 designer=43b:Arm part=101>
+2026-11-28 18:00:01,594 INFO [5]<e00f0000:ROM class=1 designer=020:ST part=001>
+2026-11-28 18:00:01,595 INFO   APB-AP#2 Class 0x1 ROM table #1 @ 0xe00f0000 (designer=020:ST part=001)
+2026-11-28 18:00:01,597 INFO   [0]<e00f1000:CTI CS-400 class=9 designer=43b:Arm part=906 devtype=14 archid=0000 devid=40800:0:0>
+2026-11-28 18:00:01,599 INFO   [2]<e00f3000:Trace Funnel CS-400 class=9 designer=43b:Arm part=908 devtype=12 archid=0000 devid=34:0:0>
+2026-11-28 18:00:01,601 INFO   [3]<e00f4000:ETF class=9 designer=43b:Arm part=961 devtype=32 archid=0000 devid=380:0:0>
+2026-11-28 18:00:01,603 INFO   [4]<e00f5000:TPIU CS-400 class=9 designer=43b:Arm part=912 devtype=11 archid=0000 devid=a0:0:0>
+2026-11-28 18:00:01,605 INFO CPU core #0: Cortex-M7 r1p1, v7.0-M architecture
+2026-11-28 18:00:01,606 INFO   Extensions: [DSP, FPU, FPU_DP, FPU_V5, MPU]
+2026-11-28 18:00:01,606 INFO   FPU present: FPv5-D16-M
+2026-11-28 18:00:01,607 INFO 4 hardware watchpoints
+2026-11-28 18:00:01,608 INFO 8 hardware breakpoints, 1 literal comparators
+2026-11-28 18:00:03,077 INFO Erasing...
+2026-11-28 18:00:07,037 INFO Programming...
+2026-11-28 18:00:12,813 INFO Erased 262144 bytes (2 sectors), programmed 262144 bytes (256 pages), identical 0 bytes (0 pages) at 26.30 kB/s
+2026-11-28 18:00:16,482 INFO VERIFY_OK: 217992 bytes matched the approved HEX. CM4 first sector unchanged.

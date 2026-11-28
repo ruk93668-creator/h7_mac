@@ -1,0 +1,202 @@
+{
+  "status": "PASS",
+  "actual": {
+    "ccr": "0x00050200",
+    "mpu_ctrl": "0x00000005",
+    "regions": {
+      "2": {
+        "rnr": "0x00000002",
+        "rbar": "0xD0000002",
+        "rasr": "0x130C002D",
+        "base": "0xD0000000",
+        "status": "PASS"
+      },
+      "3": {
+        "rnr": "0x00000003",
+        "rbar": "0x24000003",
+        "rasr": "0x130C001D",
+        "base": "0x24000000",
+        "status": "PASS"
+      },
+      "4": {
+        "rnr": "0x00000004",
+        "rbar": "0x24078004",
+        "rasr": "0x130C001D",
+        "base": "0x24078000",
+        "status": "PASS"
+      },
+      "5": {
+        "rnr": "0x00000005",
+        "rbar": "0x24010005",
+        "rasr": "0x130B001F",
+        "base": "0x24010000",
+        "status": "PASS"
+      },
+      "6": {
+        "rnr": "0x00000006",
+        "rbar": "0x24020006",
+        "rasr": "0x130B001F",
+        "base": "0x24020000",
+        "status": "PASS"
+      }
+    },
+    "network_status": {
+      "g_network_status_address": "0x2000A1C0",
+      "heartbeat": "0x000098F8",
+      "heartbeat_decimal": 39160,
+      "lifecycle": "0x00000001",
+      "lifecycle_decoded": "APP_V3_HW_READY",
+      "flags": "0x00000000",
+      "first_mdio_fault_address": "0x2000A268"
+    },
+    "first_mdio_fault": {
+      "stage": "0x00000000",
+      "tick_ms": "0x00000000",
+      "macmdioar": "0x00000000",
+      "macmdiodr": "0x00000000",
+      "hclk_hz": "0x00000000",
+      "mdc_clock_range": "0x00000000",
+      "phy_address": "0x00000000",
+      "phy_register": "0x00000000",
+      "write": "0x00000000"
+    }
+  },
+  "expected": {
+    "ccr_dc_mask": "0x00010000",
+    "mpu_enable_mask": "0x1",
+    "regions": {
+      "2": {
+        "base": "0xD0000000",
+        "rasr": "0x130C002D"
+      },
+      "3": {
+        "base": "0x24000000",
+        "rasr": "0x130C001D"
+      },
+      "4": {
+        "base": "0x24078000",
+        "rasr": "0x130C001D"
+      },
+      "5": {
+        "base": "0x24010000",
+        "rasr": "0x130B001F"
+      },
+      "6": {
+        "base": "0x24020000",
+        "rasr": "0x130B001F"
+      }
+    }
+  },
+  "decoded": {
+    "dcache_enabled": true,
+    "mpu_enabled": true,
+    "privileged_default_memory_map": true
+  },
+  "evidence": [
+    {
+      "attachment": "QQ_1795860254438.png",
+      "archived_path": "H1_Watch_R3_QQ_1795860254438.png",
+      "source": "user-supplied Keil Watch 1",
+      "readback_fields": [
+        "CCR",
+        "MPU_CTRL",
+        "RNR",
+        "RBAR",
+        "RASR"
+      ]
+    },
+    {
+      "attachment": "QQ_1795860373598.png",
+      "archived_path": "H1_Watch_R4_QQ_1795860373598.png",
+      "source": "user-supplied Keil Watch 1",
+      "readback_fields": [
+        "CCR",
+        "MPU_CTRL",
+        "RNR",
+        "RBAR",
+        "RASR"
+      ],
+      "raw": {
+        "ccr": "0x00050200",
+        "mpu_ctrl": "0x00000005",
+        "rnr": "0x00000004",
+        "rbar": "0x24078004",
+        "rasr": "0x130C001D",
+        "base": "0x24078000"
+      }
+    },
+    {
+      "attachment": "QQ_1795860484439.png",
+      "archived_path": "H1_Watch_R5_QQ_1795860484439.png",
+      "source": "user-supplied Keil Watch 1",
+      "readback_fields": [
+        "CCR",
+        "MPU_CTRL",
+        "RNR",
+        "RBAR",
+        "RASR"
+      ],
+      "raw": {
+        "ccr": "0x00050200",
+        "mpu_ctrl": "0x00000005",
+        "rnr": "0x00000005",
+        "rbar": "0x24010005",
+        "rasr": "0x130B001F",
+        "base": "0x24010000"
+      }
+    },
+    {
+      "attachment": "QQ_1795860543229.png",
+      "archived_path": "H1_Watch_R6_QQ_1795860543229.png",
+      "source": "user-supplied Keil Watch 1",
+      "readback_fields": [
+        "CCR",
+        "MPU_CTRL",
+        "RNR",
+        "RBAR",
+        "RASR"
+      ],
+      "raw": {
+        "ccr": "0x00050200",
+        "mpu_ctrl": "0x00000005",
+        "rnr": "0x00000006",
+        "rbar": "0x24020006",
+        "rasr": "0x130B001F",
+        "base": "0x24020000"
+      }
+    },
+    {
+      "attachment": "QQ_1795860607896.png",
+      "archived_path": "H1_Watch_R2_QQ_1795860607896.png",
+      "source": "user-supplied Keil Watch 1",
+      "readback_fields": [
+        "CCR",
+        "MPU_CTRL",
+        "RNR",
+        "RBAR",
+        "RASR"
+      ],
+      "raw": {
+        "ccr": "0x00050200",
+        "mpu_ctrl": "0x00000005",
+        "rnr": "0x00000002",
+        "rbar": "0xD0000002",
+        "rasr": "0x130C002D",
+        "base": "0xD0000000"
+      }
+    },
+    {
+      "attachment": "QQ_1795860754106.png",
+      "archived_path": "H1_Watch_Network_Ready_QQ_1795860754106.png",
+      "source": "user-supplied Keil Watch 2",
+      "readback_fields": [
+        "g_network_status.heartbeat",
+        "g_network_status.lifecycle",
+        "g_network_status.flags",
+        "g_network_status.driver.first_mdio_fault"
+      ]
+    }
+  ],
+  "register_checks": "PASS",
+  "network_watch": "PASS"
+}

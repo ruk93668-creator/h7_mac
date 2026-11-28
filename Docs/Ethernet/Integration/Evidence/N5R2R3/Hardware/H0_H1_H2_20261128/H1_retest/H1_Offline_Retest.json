@@ -1,0 +1,27 @@
+{
+  "time": "2026-11-28T17:52:24.951283+08:00",
+  "status": "PASS",
+  "hardware": "NOT_RUN",
+  "cases": {
+    "pinned_DFP_registers_exact_STM32H747_target": "PASS",
+    "H0_HEX_hash_range_and_DFP_sector_geometry": "PASS",
+    "programming_autoload_and_CM4_init_disabled": "PASS",
+    "Watch_symbols_only_no_autorun_or_stale_breakpoint": "PASS",
+    "installed_pyOCD_parser_emits_one_CM7_chunk": "PASS",
+    "verified_byte_mismatch_detected": "PASS",
+    "short_readback_rejected": "PASS",
+    "simulated_single_HEX_sector_program_and_readback": "PASS",
+    "wrong_core_rejected_before_program": "PASS",
+    "CM4_first_sector_change_rejected": "PASS",
+    "Watch_layout_presets_checked": "PASS",
+    "modified_HEX_rejected_before_probe": "PASS",
+    "original_AXF_HEX_MAP_and_project_hashes_preserved": "PASS"
+  },
+  "hex_sha256": "a5201251f69132b6ac06880cae042e867cb05dbca1126593e4e3d6dc811481e0",
+  "pack_sha256": "42a2358e0cb7344a9a54ee14c95eb17af20ccbe44bd2b0a08b24fefbfb67b8c8",
+  "erase_sector_coverage": [
+    "0x08000000-0x0801FFFF",
+    "0x08020000-0x0803FFFF"
+  ],
+  "cm7_payload_sha256": "a41cf1e258611ec1a0037932026a56ba7a44310e37acaf3972fa5f8924b67d9e"
+}

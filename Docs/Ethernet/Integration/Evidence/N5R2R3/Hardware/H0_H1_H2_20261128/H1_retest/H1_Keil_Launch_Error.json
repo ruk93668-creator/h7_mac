@@ -1,0 +1,14 @@
+{
+  "timestamp": "2026-11-28T17:59:29.723902+08:00",
+  "status": "LAUNCH_ERROR_BEFORE_PROGRAM",
+  "observed_message": "--- Error: failed to execute ' '",
+  "retry_directories_found": [],
+  "watch_project_flash_commands_disabled": true,
+  "board_flash_verify": "NOT_RUN",
+  "archived_firmware_hashes_preserved": true,
+  "live_original_project_sha256": "a193f25dc0ff641c08cc960abb43ab858c407ad603e9193dfc139b9fde8852d6",
+  "original_project_H0_sha256": "559637d14c1149ca745bb0bfb108b9ed29caba2278c71fcf7515a1f5481a5bbb",
+  "original_project_live_bytes_match_H0": false,
+  "offline_launch_verified": "python.exe -B h1_cm7_only.py => OFFLINE_PREFLIGHT_OK",
+  "interpretation": "The error is consistent with Keil resolving an empty download command in the Watch-only project. No separate CM7 retry was launched."
+}

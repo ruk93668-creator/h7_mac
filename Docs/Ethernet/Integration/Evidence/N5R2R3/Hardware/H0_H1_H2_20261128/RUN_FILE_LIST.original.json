@@ -1,0 +1,227 @@
+{
+  "generated_at": "2026-11-28T18:25:00.163304+08:00",
+  "scope": {
+    "H0": "PASS",
+    "H1_previous_attempt": "FAIL",
+    "H1_retest_software_setup": "PASS",
+    "H1_retest_hardware": "FLASH_VERIFY_PASS",
+    "H2": "PASS",
+    "H1_retest_launcher": "KEIL_LAUNCH_ERROR",
+    "H1_watch": "PASS",
+    "H1_mpu_dcache": "PASS",
+    "H1_network_watch": "PASS",
+    "H1": "PASS",
+    "H2_http": "PASS",
+    "H2_dhcp_capture": "PASS",
+    "H2_arp": "PASS",
+    "H3": "NOT_RUN"
+  },
+  "files": [
+    {
+      "file": "firmware/h7_network_acceptance.axf",
+      "sha256": "cf3480182c79f9154ec162f13396a414df4ea437f9cb859244c50ad30f1aa88f",
+      "bytes": 4048248
+    },
+    {
+      "file": "firmware/h7_network_acceptance.hex",
+      "sha256": "a5201251f69132b6ac06880cae042e867cb05dbca1126593e4e3d6dc811481e0",
+      "bytes": 613211
+    },
+    {
+      "file": "firmware/h7_network_acceptance.map",
+      "sha256": "0bd7de772b37c18fdb40eec6f7a21d71bb20bf037216f51f67a42a2032817103",
+      "bytes": 1299558
+    },
+    {
+      "file": "H0_Firmware_SHA256.json",
+      "sha256": "2caba7899b2a4de3b9abbc93c017bd7d0fc0ef6133bf6806d606fd5b4e90f44b",
+      "bytes": 7413
+    },
+    {
+      "file": "H0_Firmware_SHA256.md",
+      "sha256": "0ab2487b99cbe15e1c40258da9e1d3b174d9df782a165fe30b66e0015850c376",
+      "bytes": 1608
+    },
+    {
+      "file": "H0_H1_H2_Final_Summary.json",
+      "sha256": "2233f9d49120ceb9dd4c511f42e0133aeecbf13318122f590ca39e3868e2bea5",
+      "bytes": 440
+    },
+    {
+      "file": "H1_CM7_Flash_Verify_Review.json",
+      "sha256": "194485786e2d6e23deeac440b34cecf7d7e9cfe79713c026e9cddc6f420b6401",
+      "bytes": 1277
+    },
+    {
+      "file": "H1_DCache_MPU_Snapshot.json",
+      "sha256": "7447275beb2bde248ee86a9b5368c21b07319a5c98ee7edfe8a1aada2260388e",
+      "bytes": 5061
+    },
+    {
+      "file": "H1_Final_Summary.json",
+      "sha256": "71cb477466a72613b103ed9c2f149e89afbfbe3ebd7792856eeeb0b6efa22499",
+      "bytes": 569
+    },
+    {
+      "file": "H1_Flash_Verify.json",
+      "sha256": "a9aaee1859d470e3f7170afb181836ba2bad688f5538e4f74ad9b66c763009fc",
+      "bytes": 1984
+    },
+    {
+      "file": "H1_Flash_Verify.md",
+      "sha256": "0e528267929f538fa27d2d32ddec5c62b5cb4a25efc8b2331631ff50f59746d7",
+      "bytes": 5580
+    },
+    {
+      "file": "H1_flash_verify_user_paste_1738.log",
+      "sha256": "264f6047ba1bed529a49f6bb2f5bae98e04c2debc3201ce82960b1afa5eab21e",
+      "bytes": 651
+    },
+    {
+      "file": "H1_observed_program_cm4.ini",
+      "sha256": "18273c1bd27c64280cbf9db922c8e1cccd65e0d6ca641bade2b5129a4196e68a",
+      "bytes": 68
+    },
+    {
+      "file": "H1_retest/h1_cm7_only.py",
+      "sha256": "d54ba3cee77bee59441dbc48df1411155b64c9d0a9cb14772c14408df53d8572",
+      "bytes": 7305
+    },
+    {
+      "file": "H1_retest/H1_Keil_Config.json",
+      "sha256": "1092ab4959ccaca016256bb7153b22f94dc607136e713c156332400aaba16ef4",
+      "bytes": 1861
+    },
+    {
+      "file": "H1_retest/H1_Keil_Launch_Error.json",
+      "sha256": "1207eb23bf3b31f06b44fb238b38f20b00d8ba0b9b0bf10c17e26d29c9abe463",
+      "bytes": 824
+    },
+    {
+      "file": "H1_retest/H1_Offline_Retest.json",
+      "sha256": "30b00b5e0cdbae2c4585783262842bbca4abc996954a64ca9429844bb368c594",
+      "bytes": 1194
+    },
+    {
+      "file": "H1_retest/H1_RETEST_PREPARATION.md",
+      "sha256": "66f327bf262ca82975dd07f70a56764da5f22c5d202cc16b3545e9ef6e284ee4",
+      "bytes": 2017
+    },
+    {
+      "file": "H1_retest/H1_Run_CM7_ONLY.cmd",
+      "sha256": "399bac5dc4166f2603277caf06ec68b9a2e9454f41731447f613ebe31da524eb",
+      "bytes": 225
+    },
+    {
+      "file": "H1_retest/retry_20261128_180000_895066/cm7_flash_readback.bin",
+      "sha256": "a41cf1e258611ec1a0037932026a56ba7a44310e37acaf3972fa5f8924b67d9e",
+      "bytes": 217992
+    },
+    {
+      "file": "H1_retest/retry_20261128_180000_895066/H1_flash_programmer.log",
+      "sha256": "b54b01cddd383b7f9ef07f1ecfd9e5d5fd590e113d712d75cadc83d9601278f8",
+      "bytes": 4253
+    },
+    {
+      "file": "H1_retest/retry_20261128_180000_895066/H1_program_verify.json",
+      "sha256": "4f948b8671cb150101ae142c275d4da886c93c3982b6471c5ab0e3496c21c70d",
+      "bytes": 977
+    },
+    {
+      "file": "H1_Watch_Network_Ready_QQ_1795860754106.png",
+      "sha256": "882d47f88076481f5c75dcb3d8d87a631aed1d6f387c0128c6bc9ef16abc4743",
+      "bytes": 124271
+    },
+    {
+      "file": "H1_Watch_R2_QQ_1795860607896.png",
+      "sha256": "d031005e19533622805838a6e37feb1751ab36b46606c370a93d94abc9df8639",
+      "bytes": 61499
+    },
+    {
+      "file": "H1_Watch_R3_QQ_1795860254438.png",
+      "sha256": "4c891b17c19f40f415affba109f3d2f74a4c1de493f8569b49389f283ff1af71",
+      "bytes": 66777
+    },
+    {
+      "file": "H1_Watch_R4_QQ_1795860373598.png",
+      "sha256": "1062fd4a8e52fb67dba8eda8ec8241f410a9b5b3e9583c6a16f1a2362e11a178",
+      "bytes": 208401
+    },
+    {
+      "file": "H1_Watch_R5_QQ_1795860484439.png",
+      "sha256": "7d73baf4ec7777c1d794a8fca11b77983fba0a55848b631505dee4586c73d374",
+      "bytes": 60688
+    },
+    {
+      "file": "H1_Watch_R6_QQ_1795860543229.png",
+      "sha256": "84c81cca811413c8e5569c1b5224f2b6762a3cdfbd8753fb58aea4eb2db49754",
+      "bytes": 61458
+    },
+    {
+      "file": "H2_capture_analysis/arp.csv",
+      "sha256": "22e648a9f39f4b5a6799a8361ccbbe64238595520bcc225c104484b39d9711ee",
+      "bytes": 855
+    },
+    {
+      "file": "H2_capture_analysis/capinfos.tsv",
+      "sha256": "c37c3b9e3ce5be735a26d45e15b27715bfc7a8f6119c4fb9baa99e0b54077866",
+      "bytes": 217
+    },
+    {
+      "file": "H2_capture_analysis/dhcp.csv",
+      "sha256": "65c64060fe3b8106a0f95fbf7febc0d53b521f15a0e6451e5c5c44eaec5e059c",
+      "bytes": 1151
+    },
+    {
+      "file": "H2_capture_analysis/health_tcp.csv",
+      "sha256": "62a5ff9c559ce9c631f16f736d6deaefba5cc2d43e3b77efab3c2989e497ef5a",
+      "bytes": 1349
+    },
+    {
+      "file": "H2_DHCP_HTTP.json",
+      "sha256": "12c791c9097376ca6b66ef169c4cb37be259b0580b27c97307ddfa948a32f187",
+      "bytes": 1939
+    },
+    {
+      "file": "H2_DHCP_HTTP.md",
+      "sha256": "628d02352f4b5d5340ec669d30f593305534509ef38bf2080cf69d396a82ae78",
+      "bytes": 2688
+    },
+    {
+      "file": "H2_DHCP_HTTP.pcapng",
+      "sha256": "9aba35fc1d0890d4676d46c4c58f43797437cd8c3bdb4ebd9155b2eead1366d9",
+      "bytes": 33936
+    },
+    {
+      "file": "H2_http_20261128_182150_850773/body.bin",
+      "sha256": "dc51b8c96c2d745df3bd5590d990230a482fd247123599548e0632fdbf97fc22",
+      "bytes": 3
+    },
+    {
+      "file": "H2_http_20261128_182150_850773/curl_stderr.log",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    {
+      "file": "H2_http_20261128_182150_850773/curl_stdout.json",
+      "sha256": "69789c8ddbbe268660b6593a29a6f0557336d86edfd8589732327ddde013a559",
+      "bytes": 1576
+    },
+    {
+      "file": "H2_http_20261128_182150_850773/H2_HTTP_check.json",
+      "sha256": "742ae20b8b71c5f284f4ae05a3bfad2e95846b3fb132690745ea27374a3565fd",
+      "bytes": 434
+    },
+    {
+      "file": "H2_http_20261128_182150_850773/headers.txt",
+      "sha256": "ae1716a574a5111e9bf04de452f8fa322b947c25904a6f96235d77de1586b029",
+      "bytes": 123
+    },
+    {
+      "file": "hardware_acceptance_manifest_reference.json",
+      "sha256": "c1cc5632ce55847e2c5c47213fbec17654a910479ac3256e066a53b05b67b0f7",
+      "bytes": 43190
+    }
+  ],
+  "pending_operator_evidence": []
+}

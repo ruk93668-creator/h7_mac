@@ -1,0 +1,11 @@
+Load "C:\\\Users\\\29062\\\AppData\\\Local\\\Temp\\\h7_q11_04dmg4_u\\\n5_joint_verified\\\output\\\Ethernet\\\n5_joint_final_build\\\hardware_acceptance\\\h7_network_acceptance.axf"
+Internal DLL Error
+Error: Flash Download failed  -  Target DLL has been cancelled
+Flash Load finished at 17:38:10
+Load "C:\\\Users\\\29062\\\AppData\\\Local\\\Temp\\\h7_q11_04dmg4_u\\\n5_joint_verified\\\output\\\Ethernet\\\n5_joint_final_build\\\hardware_acceptance\\\h7_network_acceptance.axf"
+Include "program_cm4.ini"
+LOAD "D:\\\32\\\STM32H7\\\h7_mac\\\MDK-ARM\\\h7_mac_CM4\\\h7_mac_CM4.hex"
+Erase Done.
+Programming Done.
+Verify OK.
+Flash Load finished at 17:38:40

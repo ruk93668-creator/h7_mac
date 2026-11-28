@@ -1,0 +1,46 @@
+{
+  "status": "CONFIGURED",
+  "board_operation": "NOT_RUN",
+  "base_project": "C:\\Users\\29062\\AppData\\Local\\Temp\\h7_q11_04dmg4_u\\n5_joint_verified\\MDK-ARM\\h7_mac_ethernet_acceptance.uvprojx",
+  "base_project_sha256": "559637d14c1149ca745bb0bfb108b9ed29caba2278c71fcf7515a1f5481a5bbb",
+  "debug_files": [
+    {
+      "path": "C:\\Users\\29062\\AppData\\Local\\Temp\\h7_q11_04dmg4_u\\n5_joint_verified\\MDK-ARM\\h7_mac_ethernet_h1_watch.uvprojx",
+      "sha256": "b3debc9438d6649ea7663b205c06486d4423039526d7b0195afd674279ac3381"
+    },
+    {
+      "path": "C:\\Users\\29062\\AppData\\Local\\Temp\\h7_q11_04dmg4_u\\n5_joint_verified\\MDK-ARM\\h7_mac_ethernet_h1_watch.uvoptx",
+      "sha256": "b999602bb8122a2ef6b99f01e5b609f5d7d7b9d1ea29b26238898ceed741f3b1"
+    },
+    {
+      "path": "C:\\Users\\29062\\AppData\\Local\\Temp\\h7_q11_04dmg4_u\\n5_joint_verified\\MDK-ARM\\h7_mac_ethernet_h1_watch_symbols.ini",
+      "sha256": "8d2bf6e23fe3aeb0215635fc24e8e154afbedd669d7cc4746471bb1c0ce26442"
+    }
+  ],
+  "changes": [
+    "Keil Utilities native/external programming disabled",
+    "Keil update before debugging off",
+    "Keil Flash Init File unset",
+    "existing breakpoints cleared",
+    "symbols loaded with NOCODE and INCREMENTAL",
+    "isolated output directory for debug copy"
+  ],
+  "source_or_firmware_rebuilt": false,
+  "preset_watch_expressions": {
+    "1": [
+      "*((unsigned int *)0xE000ED14)",
+      "*((unsigned int *)0xE000ED94)",
+      "*((unsigned int *)0xE000ED98)",
+      "*((unsigned int *)0xE000ED9C)",
+      "*((unsigned int *)0xE000EDA0)"
+    ],
+    "2": [
+      "g_network_status",
+      "g_network_status.heartbeat",
+      "g_network_status.lifecycle",
+      "g_network_status.flags",
+      "g_network_status.driver.first_mdio_fault",
+      "g_n5_acceptance.phase"
+    ]
+  }
+}

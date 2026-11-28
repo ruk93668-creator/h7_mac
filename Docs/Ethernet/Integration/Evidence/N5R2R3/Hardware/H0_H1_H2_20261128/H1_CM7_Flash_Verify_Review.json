@@ -1,0 +1,34 @@
+{
+  "scope": "CM7_FLASH_VERIFY",
+  "status": "PASS",
+  "attempt_directory": "H1_retest/retry_20261128_180000_895066",
+  "finished_at": "2026-11-28T18:00:16.482+08:00",
+  "board_cpuid": "0x411FC271",
+  "hex_sha256": "a5201251f69132b6ac06880cae042e867cb05dbca1126593e4e3d6dc811481e0",
+  "readback_sha256": "a41cf1e258611ec1a0037932026a56ba7a44310e37acaf3972fa5f8924b67d9e",
+  "independent_byte_comparison": true,
+  "verified_address_ranges_inclusive": [
+    [
+      "0x08000000",
+      "0x08035387"
+    ]
+  ],
+  "verified_byte_count": 217992,
+  "flash_programming": {
+    "erased_sector_count": 2,
+    "erase_byte_count": 262144
+  },
+  "cm4_first_sector": {
+    "scope": "Compare during this retry only, not CM4 firmware identification",
+    "before": "98bcafc1915354bf4848bde1d49cb9a0f2790a5c242c0af7a6ea139092fec153",
+    "after": "98bcafc1915354bf4848bde1d49cb9a0f2790a5c242c0af7a6ea139092fec153",
+    "unchanged": true
+  },
+  "programmer_messages": [
+    "Board ID 9AE0 not recognized",
+    "AP#3 IDR invalid AP BASE value 0x24770011"
+  ],
+  "not_affected": "CM7 discovery, erase, program and independent byte readback were completed",
+  "H1_remaining": "DCache, MPU Regions 2/3/4/5/6 and NetworkService Watch readback",
+  "H2": "NOT_RUN"
+}

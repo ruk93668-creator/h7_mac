@@ -1,0 +1,20 @@
+{
+  "scope": "CM7_FLASH_VERIFY",
+  "status": "PASS",
+  "phase": "COMPLETE",
+  "hex": "D:\\32\\STM32H7\\h7_mac_wk\\output\\Ethernet\\hardware\\N5_R2_R3_H0_H1_H2_20261128_171920\\firmware\\h7_network_acceptance.hex",
+  "hex_sha256": "a5201251f69132b6ac06880cae042e867cb05dbca1126593e4e3d6dc811481e0",
+  "pack_sha256": "42a2358e0cb7344a9a54ee14c95eb17af20ccbe44bd2b0a08b24fefbfb67b8c8",
+  "cm7_range": [
+    "0x08000000",
+    "0x08035387"
+  ],
+  "erase": "sector",
+  "expected_payload_sha256": "a41cf1e258611ec1a0037932026a56ba7a44310e37acaf3972fa5f8924b67d9e",
+  "probe": "Arm DAPLink CMSIS-DAP",
+  "cpuid": "0x411FC271",
+  "cm4_first_sector_sha256_before": "98bcafc1915354bf4848bde1d49cb9a0f2790a5c242c0af7a6ea139092fec153",
+  "cm7_readback_sha256": "a41cf1e258611ec1a0037932026a56ba7a44310e37acaf3972fa5f8924b67d9e",
+  "cm4_first_sector_sha256_after": "98bcafc1915354bf4848bde1d49cb9a0f2790a5c242c0af7a6ea139092fec153",
+  "payload_bytes_verified": 217992
+}

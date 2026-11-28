@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-11-28T18:25:00.163304+08:00",
+  "generated_at": "2026-11-28T19:05:51.230725+08:00",
   "scope": {
     "H0": "PASS",
     "H1_previous_attempt": "FAIL",
@@ -16,7 +16,119 @@
     "H2_arp": "PASS",
     "H3": "NOT_RUN"
   },
+  "source_commit": "e57b4c44cf1ae18316dd4f5943760fa6051f89a4",
+  "purpose": "H0/H1 GitHub evidence archive",
+  "source_run_inventory": {
+    "file": "RUN_FILE_LIST.original.json",
+    "sha256": "32b7472568e836cab784cf3048de068f38407cf5154b289bda0c397ecc8795c3",
+    "files_checked": 41,
+    "files_matching": 41,
+    "missing": [],
+    "sha256_mismatches": []
+  },
+  "missing_h0_h1_evidence": [],
+  "local_only_h2_files": [
+    {
+      "file": "H2_capture_analysis/arp.csv",
+      "sha256": "22e648a9f39f4b5a6799a8361ccbbe64238595520bcc225c104484b39d9711ee",
+      "bytes": 855
+    },
+    {
+      "file": "H2_capture_analysis/capinfos.tsv",
+      "sha256": "c37c3b9e3ce5be735a26d45e15b27715bfc7a8f6119c4fb9baa99e0b54077866",
+      "bytes": 217
+    },
+    {
+      "file": "H2_capture_analysis/dhcp.csv",
+      "sha256": "65c64060fe3b8106a0f95fbf7febc0d53b521f15a0e6451e5c5c44eaec5e059c",
+      "bytes": 1151
+    },
+    {
+      "file": "H2_capture_analysis/health_tcp.csv",
+      "sha256": "62a5ff9c559ce9c631f16f736d6deaefba5cc2d43e3b77efab3c2989e497ef5a",
+      "bytes": 1349
+    },
+    {
+      "file": "H2_DHCP_HTTP.json",
+      "sha256": "12c791c9097376ca6b66ef169c4cb37be259b0580b27c97307ddfa948a32f187",
+      "bytes": 1939
+    },
+    {
+      "file": "H2_http_20261128_182150_850773/body.bin",
+      "sha256": "dc51b8c96c2d745df3bd5590d990230a482fd247123599548e0632fdbf97fc22",
+      "bytes": 3
+    },
+    {
+      "file": "H2_http_20261128_182150_850773/curl_stderr.log",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    {
+      "file": "H2_http_20261128_182150_850773/curl_stdout.json",
+      "sha256": "69789c8ddbbe268660b6593a29a6f0557336d86edfd8589732327ddde013a559",
+      "bytes": 1576
+    },
+    {
+      "file": "H2_http_20261128_182150_850773/H2_HTTP_check.json",
+      "sha256": "742ae20b8b71c5f284f4ae05a3bfad2e95846b3fb132690745ea27374a3565fd",
+      "bytes": 434
+    },
+    {
+      "file": "H2_http_20261128_182150_850773/headers.txt",
+      "sha256": "ae1716a574a5111e9bf04de452f8fa322b947c25904a6f96235d77de1586b029",
+      "bytes": 123
+    }
+  ],
+  "keil_file_provenance": [
+    {
+      "file": "Keil/H0_verified/h7_mac_ethernet_acceptance.uvprojx",
+      "manifest_sha256": "559637d14c1149ca745bb0bfb108b9ed29caba2278c71fcf7515a1f5481a5bbb",
+      "actual_sha256": "559637d14c1149ca745bb0bfb108b9ed29caba2278c71fcf7515a1f5481a5bbb",
+      "provenance": "byte-identical reconstruction from the verified candidate and recorded configuration",
+      "observed_after_open": {
+        "file": "Keil/live_after_open/h7_mac_ethernet_acceptance.uvprojx",
+        "sha256": "a193f25dc0ff641c08cc960abb43ab858c407ad603e9193dfc139b9fde8852d6"
+      }
+    },
+    {
+      "file": "Keil/H0_verified/service_tasks_acceptance.c",
+      "manifest_sha256": "ec055851424f3c4c1a304d782bdc53e8c6eb62c1a6f9329634bedc84144b5b9f",
+      "actual_sha256": "ec055851424f3c4c1a304d782bdc53e8c6eb62c1a6f9329634bedc84144b5b9f",
+      "provenance": "observed original file"
+    },
+    {
+      "file": "Keil/H1_verified/h7_mac_ethernet_h1_watch.uvprojx",
+      "manifest_sha256": "b3debc9438d6649ea7663b205c06486d4423039526d7b0195afd674279ac3381",
+      "actual_sha256": "b3debc9438d6649ea7663b205c06486d4423039526d7b0195afd674279ac3381",
+      "provenance": "byte-identical reconstruction from the verified candidate and recorded configuration",
+      "observed_after_open": {
+        "file": "Keil/live_after_open/h7_mac_ethernet_h1_watch.uvprojx",
+        "sha256": "345ffdf16204f648ba00b123bbca2659961d6d6d6f9c03021626e49f2036ba0a"
+      }
+    },
+    {
+      "file": "Keil/H1_verified/h7_mac_ethernet_h1_watch.uvoptx",
+      "manifest_sha256": "b999602bb8122a2ef6b99f01e5b609f5d7d7b9d1ea29b26238898ceed741f3b1",
+      "actual_sha256": "b999602bb8122a2ef6b99f01e5b609f5d7d7b9d1ea29b26238898ceed741f3b1",
+      "provenance": "byte-identical reconstruction from the verified candidate and recorded configuration",
+      "observed_after_open": {
+        "file": "Keil/live_after_open/h7_mac_ethernet_h1_watch.uvoptx",
+        "sha256": "09ce1b18019448098c4d78374581cd531da49e050cbbe4a7434b7662d917e70b"
+      }
+    },
+    {
+      "file": "Keil/H1_verified/h7_mac_ethernet_h1_watch_symbols.ini",
+      "manifest_sha256": "8d2bf6e23fe3aeb0215635fc24e8e154afbedd669d7cc4746471bb1c0ce26442",
+      "actual_sha256": "8d2bf6e23fe3aeb0215635fc24e8e154afbedd669d7cc4746471bb1c0ce26442",
+      "provenance": "observed original file"
+    }
+  ],
   "files": [
+    {
+      "file": "EVIDENCE_ARCHIVE.md",
+      "sha256": "8e95cc5425bfaf4c121bbc6fecb17fc366791a1f9a9c9587c15d4d00d89a8f94",
+      "bytes": 2964
+    },
     {
       "file": "firmware/h7_network_acceptance.axf",
       "sha256": "cf3480182c79f9154ec162f13396a414df4ea437f9cb859244c50ad30f1aa88f",
@@ -158,31 +270,6 @@
       "bytes": 61458
     },
     {
-      "file": "H2_capture_analysis/arp.csv",
-      "sha256": "22e648a9f39f4b5a6799a8361ccbbe64238595520bcc225c104484b39d9711ee",
-      "bytes": 855
-    },
-    {
-      "file": "H2_capture_analysis/capinfos.tsv",
-      "sha256": "c37c3b9e3ce5be735a26d45e15b27715bfc7a8f6119c4fb9baa99e0b54077866",
-      "bytes": 217
-    },
-    {
-      "file": "H2_capture_analysis/dhcp.csv",
-      "sha256": "65c64060fe3b8106a0f95fbf7febc0d53b521f15a0e6451e5c5c44eaec5e059c",
-      "bytes": 1151
-    },
-    {
-      "file": "H2_capture_analysis/health_tcp.csv",
-      "sha256": "62a5ff9c559ce9c631f16f736d6deaefba5cc2d43e3b77efab3c2989e497ef5a",
-      "bytes": 1349
-    },
-    {
-      "file": "H2_DHCP_HTTP.json",
-      "sha256": "12c791c9097376ca6b66ef169c4cb37be259b0580b27c97307ddfa948a32f187",
-      "bytes": 1939
-    },
-    {
       "file": "H2_DHCP_HTTP.md",
       "sha256": "628d02352f4b5d5340ec669d30f593305534509ef38bf2080cf69d396a82ae78",
       "bytes": 2688
@@ -193,35 +280,59 @@
       "bytes": 33936
     },
     {
-      "file": "H2_http_20261128_182150_850773/body.bin",
-      "sha256": "dc51b8c96c2d745df3bd5590d990230a482fd247123599548e0632fdbf97fc22",
-      "bytes": 3
-    },
-    {
-      "file": "H2_http_20261128_182150_850773/curl_stderr.log",
-      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
-      "bytes": 0
-    },
-    {
-      "file": "H2_http_20261128_182150_850773/curl_stdout.json",
-      "sha256": "69789c8ddbbe268660b6593a29a6f0557336d86edfd8589732327ddde013a559",
-      "bytes": 1576
-    },
-    {
-      "file": "H2_http_20261128_182150_850773/H2_HTTP_check.json",
-      "sha256": "742ae20b8b71c5f284f4ae05a3bfad2e95846b3fb132690745ea27374a3565fd",
-      "bytes": 434
-    },
-    {
-      "file": "H2_http_20261128_182150_850773/headers.txt",
-      "sha256": "ae1716a574a5111e9bf04de452f8fa322b947c25904a6f96235d77de1586b029",
-      "bytes": 123
-    },
-    {
       "file": "hardware_acceptance_manifest_reference.json",
       "sha256": "c1cc5632ce55847e2c5c47213fbec17654a910479ac3256e066a53b05b67b0f7",
       "bytes": 43190
+    },
+    {
+      "file": "Keil/H0_verified/build.log",
+      "sha256": "7db93cb50e3e479e62bf106615333d9f0714f9c8cf3ec16c2472a7fc5c2d4620",
+      "bytes": 8689
+    },
+    {
+      "file": "Keil/H0_verified/h7_mac_ethernet_acceptance.uvprojx",
+      "sha256": "559637d14c1149ca745bb0bfb108b9ed29caba2278c71fcf7515a1f5481a5bbb",
+      "bytes": 90336
+    },
+    {
+      "file": "Keil/H0_verified/service_tasks_acceptance.c",
+      "sha256": "ec055851424f3c4c1a304d782bdc53e8c6eb62c1a6f9329634bedc84144b5b9f",
+      "bytes": 22241
+    },
+    {
+      "file": "Keil/H1_verified/h7_mac_ethernet_h1_watch.uvoptx",
+      "sha256": "b999602bb8122a2ef6b99f01e5b609f5d7d7b9d1ea29b26238898ceed741f3b1",
+      "bytes": 7732
+    },
+    {
+      "file": "Keil/H1_verified/h7_mac_ethernet_h1_watch.uvprojx",
+      "sha256": "b3debc9438d6649ea7663b205c06486d4423039526d7b0195afd674279ac3381",
+      "bytes": 90296
+    },
+    {
+      "file": "Keil/H1_verified/h7_mac_ethernet_h1_watch_symbols.ini",
+      "sha256": "8d2bf6e23fe3aeb0215635fc24e8e154afbedd669d7cc4746471bb1c0ce26442",
+      "bytes": 154
+    },
+    {
+      "file": "Keil/live_after_open/h7_mac_ethernet_acceptance.uvprojx",
+      "sha256": "a193f25dc0ff641c08cc960abb43ab858c407ad603e9193dfc139b9fde8852d6",
+      "bytes": 89990
+    },
+    {
+      "file": "Keil/live_after_open/h7_mac_ethernet_h1_watch.uvoptx",
+      "sha256": "09ce1b18019448098c4d78374581cd531da49e050cbbe4a7434b7662d917e70b",
+      "bytes": 110447
+    },
+    {
+      "file": "Keil/live_after_open/h7_mac_ethernet_h1_watch.uvprojx",
+      "sha256": "345ffdf16204f648ba00b123bbca2659961d6d6d6f9c03021626e49f2036ba0a",
+      "bytes": 89841
+    },
+    {
+      "file": "RUN_FILE_LIST.original.json",
+      "sha256": "32b7472568e836cab784cf3048de068f38407cf5154b289bda0c397ecc8795c3",
+      "bytes": 7655
     }
-  ],
-  "pending_operator_evidence": []
+  ]
 }
