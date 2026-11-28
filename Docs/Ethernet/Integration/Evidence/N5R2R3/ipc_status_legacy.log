@@ -1,0 +1,14 @@
+Traceback (most recent call last):
+  File "C:\Users\29062\AppData\Local\Temp\h7_q11_04dmg4_u\n5_joint_verified\Tests\IpcStatus\run_tests.py", line 32, in <module>
+    obj=folder/(Path(src).stem+'.o');run(flags+['-c',ROOT/src,'-o',obj]);objects.append(obj)
+                                     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\29062\AppData\Local\Temp\h7_q11_04dmg4_u\n5_joint_verified\Tests\IpcStatus\run_tests.py", line 17, in run
+    if r.returncode:raise RuntimeError(text)
+                    ^^^^^^^^^^^^^^^^^^^^^^^^
+RuntimeError: "C:\Users\29062\AppData\Local\Temp\h7_q11_04dmg4_u\n5_joint_verified\Tests\IpcStatus\status_test.c", line 6: Error:  #5: cannot open source input file "app_status.h": No such file or directory
+
+  #include "app_status.h"
+
+                         ^
+
+C:\Users\29062\AppData\Local\Temp\h7_q11_04dmg4_u\n5_joint_verified\Tests\IpcStatus\status_test.c: 0 warnings, 1 error

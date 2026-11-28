@@ -1,0 +1,332 @@
+{
+  "test_commit": "5768c9f9afaf248cdcf4e1d155dce11c69a71b2c",
+  "hardware": "NOT_RUN",
+  "targets": {
+    "cm7_jpeg": {
+      "artifacts": {
+        "axf": {
+          "name": "h7_mac_CM7.axf",
+          "sha256": "accbafe2b782978590d032fb623942e57b0c2c0c738019674ead351a4b1a10d5"
+        },
+        "map": {
+          "name": "h7_mac_CM7.map",
+          "sha256": "42317577359de2ab73340ae62ca5d083395abf36d96b894d37d14371c2d69720"
+        }
+      },
+      "regions": {
+        "RW_IRAM1": {
+          "base": 536870912,
+          "size": 83288,
+          "max": 131008,
+          "attributes": "ABSOLUTE, COMPRESSED[0x00000170]"
+        },
+        "RW_ETH_MDIO_FAULT": {
+          "base": 537001920,
+          "size": 44,
+          "max": 64,
+          "attributes": "ABSOLUTE, UNINIT"
+        },
+        "RW_SDMMC_DMA": {
+          "base": 603979776,
+          "size": 32768,
+          "max": 32768,
+          "attributes": "ABSOLUTE, UNINIT"
+        },
+        "RW_ETHERNET_CPU": {
+          "base": 604045312,
+          "size": 43232,
+          "max": 65536,
+          "attributes": "ABSOLUTE"
+        },
+        "RW_NETWORK_JPEG": {
+          "base": 604110848,
+          "size": 61440,
+          "max": 61440,
+          "attributes": "ABSOLUTE, UNINIT"
+        },
+        "RW_ETHERNET_DMA": {
+          "base": 604471296,
+          "size": 12544,
+          "max": 32768,
+          "attributes": "ABSOLUTE, UNINIT"
+        },
+        "RW_SHARED": {
+          "base": 939524096,
+          "size": 320,
+          "max": 4096,
+          "attributes": "ABSOLUTE, UNINIT, COMPRESSED[0x00000004]"
+        }
+      },
+      "warnings": 0,
+      "errors": 0,
+      "map_symbol_evidence": [
+        "s_mdio_first                             0x2001ffc0   Data          44  eth_mac.o(.eth_mdio_fault)",
+        "s_jpeg                                   0x24020000   Data       61440  network_frames.o(.network_jpeg)",
+        "0x2001ffc0        -       0x0000002c   Zero   RW        12028    .eth_mdio_fault     eth_mac.o",
+        "0x24020000        -       0x0000f000   Zero   RW         6594    .network_jpeg       network_frames.o"
+      ],
+      "video_default": {
+        "width": 320,
+        "height": 240,
+        "format": 3,
+        "fps": 25,
+        "max_frame_bytes": 40000
+      }
+    },
+    "cm7_raw": {
+      "artifacts": {
+        "axf": {
+          "name": "h7_mac_CM7.axf",
+          "sha256": "0e7f31364be62d76b79fbc053f5a6a540220bc173fc9a529add158e0faac7dc7"
+        },
+        "map": {
+          "name": "h7_mac_CM7.map",
+          "sha256": "42317577359de2ab73340ae62ca5d083395abf36d96b894d37d14371c2d69720"
+        }
+      },
+      "regions": {
+        "RW_IRAM1": {
+          "base": 536870912,
+          "size": 83288,
+          "max": 131008,
+          "attributes": "ABSOLUTE, COMPRESSED[0x00000170]"
+        },
+        "RW_ETH_MDIO_FAULT": {
+          "base": 537001920,
+          "size": 44,
+          "max": 64,
+          "attributes": "ABSOLUTE, UNINIT"
+        },
+        "RW_SDMMC_DMA": {
+          "base": 603979776,
+          "size": 32768,
+          "max": 32768,
+          "attributes": "ABSOLUTE, UNINIT"
+        },
+        "RW_ETHERNET_CPU": {
+          "base": 604045312,
+          "size": 43232,
+          "max": 65536,
+          "attributes": "ABSOLUTE"
+        },
+        "RW_NETWORK_JPEG": {
+          "base": 604110848,
+          "size": 61440,
+          "max": 61440,
+          "attributes": "ABSOLUTE, UNINIT"
+        },
+        "RW_ETHERNET_DMA": {
+          "base": 604471296,
+          "size": 12544,
+          "max": 32768,
+          "attributes": "ABSOLUTE, UNINIT"
+        },
+        "RW_SHARED": {
+          "base": 939524096,
+          "size": 320,
+          "max": 4096,
+          "attributes": "ABSOLUTE, UNINIT, COMPRESSED[0x00000004]"
+        }
+      },
+      "warnings": 0,
+      "errors": 0,
+      "map_symbol_evidence": [
+        "s_mdio_first                             0x2001ffc0   Data          44  eth_mac.o(.eth_mdio_fault)",
+        "s_jpeg                                   0x24020000   Data       61440  network_frames.o(.network_jpeg)",
+        "0x2001ffc0        -       0x0000002c   Zero   RW        12028    .eth_mdio_fault     eth_mac.o",
+        "0x24020000        -       0x0000f000   Zero   RW         6594    .network_jpeg       network_frames.o"
+      ],
+      "video_default": {
+        "width": 160,
+        "height": 120,
+        "format": 2,
+        "fps": 10,
+        "max_frame_bytes": 0
+      }
+    },
+    "cm4": {
+      "artifacts": {
+        "axf": {
+          "name": "h7_mac_CM4.axf",
+          "sha256": "894ef4949e780203455d320cff2e26a6ea394e772e4775e2691f778969f60abd"
+        },
+        "map": {
+          "name": "h7_mac_CM4.map",
+          "sha256": "126570ba8828c6fe07c6b78813ba427971b806387853355c0073bbf83905302e"
+        },
+        "hex": {
+          "name": "h7_mac_CM4.hex",
+          "sha256": "bf555747c73c784cde252adc8f43624780e55b7de7857f93cdba17a71b8a5ca7"
+        }
+      },
+      "regions": {
+        "RW_IRAM1": {
+          "base": 268435456,
+          "size": 4432,
+          "max": 294912,
+          "attributes": "ABSOLUTE, COMPRESSED[0x0000002c]"
+        },
+        "RW_SHARED": {
+          "base": 939524096,
+          "size": 320,
+          "max": 4096,
+          "attributes": "ABSOLUTE, UNINIT, COMPRESSED[0x00000004]"
+        }
+      },
+      "warnings": 0,
+      "errors": 0
+    },
+    "production_network": {
+      "artifacts": {
+        "axf": {
+          "name": "h7_network.axf",
+          "sha256": "ab76889d1ecc728c91695c2f33f61fdf75b5f273fb8c2237e97d620cecd9ad58"
+        },
+        "map": {
+          "name": "h7_network.map",
+          "sha256": "a438facd80fa9b98daf24a99e7d6506a386d14fb708b090fcb3d4377937b755a"
+        },
+        "hex": {
+          "name": "h7_network.hex",
+          "sha256": "dbc43200d4e9d22cdb0ab62fdc06ff59ed61880d1ee676af4ce4b0d3e14e1649"
+        }
+      },
+      "regions": {
+        "RW_IRAM1": {
+          "base": 536870912,
+          "size": 83288,
+          "max": 131008,
+          "attributes": "ABSOLUTE, COMPRESSED[0x00000170]"
+        },
+        "RW_ETH_MDIO_FAULT": {
+          "base": 537001920,
+          "size": 44,
+          "max": 64,
+          "attributes": "ABSOLUTE, UNINIT"
+        },
+        "RW_SDMMC_DMA": {
+          "base": 603979776,
+          "size": 32768,
+          "max": 32768,
+          "attributes": "ABSOLUTE, UNINIT"
+        },
+        "RW_ETHERNET_CPU": {
+          "base": 604045312,
+          "size": 43232,
+          "max": 65536,
+          "attributes": "ABSOLUTE"
+        },
+        "RW_NETWORK_JPEG": {
+          "base": 604110848,
+          "size": 61440,
+          "max": 61440,
+          "attributes": "ABSOLUTE, UNINIT"
+        },
+        "RW_ETHERNET_DMA": {
+          "base": 604471296,
+          "size": 12544,
+          "max": 32768,
+          "attributes": "ABSOLUTE, UNINIT"
+        },
+        "RW_SHARED": {
+          "base": 939524096,
+          "size": 320,
+          "max": 4096,
+          "attributes": "ABSOLUTE, UNINIT, COMPRESSED[0x00000004]"
+        }
+      },
+      "warnings": 0,
+      "errors": 0,
+      "map_symbol_evidence": [
+        "s_mdio_first                             0x2001ffc0   Data          44  eth_mac.o(.eth_mdio_fault)",
+        "s_jpeg                                   0x24020000   Data       61440  network_frames.o(.network_jpeg)",
+        "0x2001ffc0        -       0x0000002c   Zero   RW        12028    .eth_mdio_fault     eth_mac.o",
+        "0x24020000        -       0x0000f000   Zero   RW         6594    .network_jpeg       network_frames.o"
+      ],
+      "video_default": {
+        "width": 320,
+        "height": 240,
+        "format": 3,
+        "fps": 25,
+        "max_frame_bytes": 40000
+      }
+    },
+    "hardware_acceptance": {
+      "artifacts": {
+        "axf": {
+          "name": "h7_network_acceptance.axf",
+          "sha256": "cf3480182c79f9154ec162f13396a414df4ea437f9cb859244c50ad30f1aa88f"
+        },
+        "map": {
+          "name": "h7_network_acceptance.map",
+          "sha256": "0bd7de772b37c18fdb40eec6f7a21d71bb20bf037216f51f67a42a2032817103"
+        },
+        "hex": {
+          "name": "h7_network_acceptance.hex",
+          "sha256": "a5201251f69132b6ac06880cae042e867cb05dbca1126593e4e3d6dc811481e0"
+        }
+      },
+      "regions": {
+        "RW_IRAM1": {
+          "base": 536870912,
+          "size": 83344,
+          "max": 131008,
+          "attributes": "ABSOLUTE, COMPRESSED[0x0000017c]"
+        },
+        "RW_ETH_MDIO_FAULT": {
+          "base": 537001920,
+          "size": 44,
+          "max": 64,
+          "attributes": "ABSOLUTE, UNINIT"
+        },
+        "RW_SDMMC_DMA": {
+          "base": 603979776,
+          "size": 32768,
+          "max": 32768,
+          "attributes": "ABSOLUTE, UNINIT"
+        },
+        "RW_ETHERNET_CPU": {
+          "base": 604045312,
+          "size": 43232,
+          "max": 65536,
+          "attributes": "ABSOLUTE"
+        },
+        "RW_NETWORK_JPEG": {
+          "base": 604110848,
+          "size": 61440,
+          "max": 61440,
+          "attributes": "ABSOLUTE, UNINIT"
+        },
+        "RW_ETHERNET_DMA": {
+          "base": 604471296,
+          "size": 12544,
+          "max": 32768,
+          "attributes": "ABSOLUTE, UNINIT"
+        },
+        "RW_SHARED": {
+          "base": 939524096,
+          "size": 320,
+          "max": 4096,
+          "attributes": "ABSOLUTE, UNINIT, COMPRESSED[0x00000004]"
+        }
+      },
+      "warnings": 0,
+      "errors": 0,
+      "map_symbol_evidence": [
+        "s_mdio_first                             0x2001ffc0   Data          44  eth_mac.o(.eth_mdio_fault)",
+        "s_jpeg                                   0x24020000   Data       61440  network_frames.o(.network_jpeg)",
+        "0x2001ffc0        -       0x0000002c   Zero   RW        12032    .eth_mdio_fault     eth_mac.o",
+        "0x24020000        -       0x0000f000   Zero   RW         6594    .network_jpeg       network_frames.o"
+      ],
+      "video_default": {
+        "width": 320,
+        "height": 240,
+        "format": 3,
+        "fps": 25,
+        "max_frame_bytes": 40000
+      }
+    }
+  },
+  "protected_path_diff_at_r1": [],
+  "original_worktree_rte_sha256_before_after": "270b61dded9e5eeb243f633224ced83b1c81bc11f38abf5bc68e9d03d072ba8d"
+}
