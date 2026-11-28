@@ -108,7 +108,9 @@ EthResult_t eth_mac_service(void)
             s_state = ETH_MAC_FAULT;
         return g_network_fault_result;
     }
-    return g_network_link ? ETH_OK : eth_mac_stop() == ETH_OK ? ETH_LINK_DOWN : ETH_TIMEOUT;
+    if (g_network_link)
+        return ETH_OK;
+    return eth_mac_stop() == ETH_OK ? ETH_LINK_DOWN : ETH_TIMEOUT;
 }
 
 static void Fixture_Put16(uint8_t *data, uint16_t value)

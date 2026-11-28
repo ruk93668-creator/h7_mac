@@ -130,7 +130,7 @@ def main():
             scenarios = range(98, 104)
         if args.production and not args.raw_uvc:
             scenarios = [*range(24), 28, 29, *range(38, 53), *range(63, 75),
-                         *range(88, 96), 104, *range(105, 134)]
+                         *range(88, 96), 104, *range(105, 136)]
         for scenario in scenarios:
             if scenario == 128:
                 from jpeg_crc_trace import JpegCrcTrace

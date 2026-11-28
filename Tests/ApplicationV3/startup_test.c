@@ -2997,6 +2997,7 @@ static uint32_t Test_NetworkBrowser(const AppV3Context_t *context, uint32_t scen
     CHECK(borrowed && g_network_frame_releases == 1U && g_network_browser_bytes != 0U);
     if (scenario == 130U)
     {
+        uint32_t completed;
         g_network_fault_result = ETH_MDIO;
         g_network_fault_samples = 3U;
         for (i = 0U; i < 3U; ++i)
@@ -3021,6 +3022,17 @@ static uint32_t Test_NetworkBrowser(const AppV3Context_t *context, uint32_t scen
         owner = RUNTIME_TARGET_NETWORK;
         CHECK(NetworkFrames_Retired());
         owner = RUNTIME_TARGET_CONTROL;
+        completed = g_network_status.http.stream.frames_completed;
+        g_network_frame_ready = 1U;
+        Test_NetworkBrowserOpen();
+        for (i = 0U; i < 120U && g_network_status.http.stream.frames_completed == completed; ++i)
+        {
+            Test_PollHardware(RUNTIME_TARGET_CAMERA);
+            g_hardware.now_ms += 10U;
+            Test_PollHardware(RUNTIME_TARGET_NETWORK);
+        }
+        CHECK(g_network_status.http.stream.frames_completed == completed + 1U &&
+            g_network_frame_releases == 2U && g_network_status.http.sessions == 2U);
         return 0U;
     }
     if (scenario == 128U)
@@ -3243,10 +3255,18 @@ static uint32_t Test_NetworkFrames(const AppV3Context_t *context, uint32_t scena
     g_hardware.frame_ready = true;
     Test_PollHardware(RUNTIME_TARGET_CAMERA);
     CHECK(Test_ReadHardwareResult(RUNTIME_TARGET_CAMERA, 1U, APP_V3_HW_ACTIVE, SYS_OK));
+    if (scenario == 134U)
+        g_network_link = 1U;
     CHECK(NetworkService_Request(2U, NETWORK_SERVICE_START, 0x100U) == SYS_OK);
     CHECK(Test_ServiceStep(RUNTIME_TARGET_NETWORK) == SYS_OK);
     Test_PollHardware(RUNTIME_TARGET_NETWORK);
     CHECK(Test_ReadHardwareResult(RUNTIME_TARGET_NETWORK, 2U, APP_V3_HW_ACTIVE, SYS_OK));
+    if (scenario == 134U)
+    {
+        g_hardware.now_ms += 10U;
+        Test_PollHardware(RUNTIME_TARGET_NETWORK);
+        CHECK(g_network_status.flags == 7U);
+    }
     owner = RUNTIME_TARGET_NETWORK;
     source = NetworkFrames_Source();
     CHECK(source != NULL && NetworkFrames_Retired());
@@ -3266,6 +3286,40 @@ static uint32_t Test_NetworkFrames(const AppV3Context_t *context, uint32_t scena
         NetworkFrames_Poll(true);
     }
     CHECK(!NetworkFrames_Retired());
+    if (scenario == 134U)
+    {
+        owner = RUNTIME_TARGET_CONTROL;
+        g_network_frame_ready = 1U;
+        //Camera 接受请求并发布真实 OFFER；暂缓它处理归还，覆盖故障与租约交叉。
+        Test_PollHardware(RUNTIME_TARGET_CAMERA);
+        g_network_fault_result = ETH_MDIO;
+        g_network_fault_samples = 3U;
+        for (i = 0U; i < 3U; ++i)
+        {
+            g_hardware.now_ms += 10U;
+            Test_PollHardware(RUNTIME_TARGET_NETWORK);
+        }
+        CHECK(g_network_status.draining && g_network_status.stop_result == SYS_ERR_BUSY &&
+            g_network_stop_calls == 0U && g_network_frame_releases == 0U);
+        g_hardware.now_ms += 130000U;
+        Test_PollHardware(RUNTIME_TARGET_NETWORK);
+        CHECK(g_network_status.lifecycle == APP_V3_HW_FAULT &&
+            g_network_status.draining && g_network_status.stop_result == SYS_ERR_TIMEOUT);
+        CHECK(g_network_stop_calls == 0U && g_network_status.recovery_attempts == 0U);
+        for (i = 0U; i < 12U; ++i)
+        {
+            Test_PollHardware(RUNTIME_TARGET_CAMERA);
+            g_hardware.now_ms += 10U;
+            Test_PollHardware(RUNTIME_TARGET_NETWORK);
+        }
+        CHECK(g_network_frame_releases == 1U && g_network_stop_calls == 0U);
+        CHECK(NetworkService_Request(3U, NETWORK_SERVICE_STOP, 0U) == SYS_OK);
+        CHECK(Test_ServiceStep(RUNTIME_TARGET_NETWORK) == SYS_OK);
+        Test_PollHardware(RUNTIME_TARGET_NETWORK);
+        CHECK(Test_ReadHardwareResult(RUNTIME_TARGET_NETWORK, 3U, APP_V3_HW_READY, SYS_OK));
+        CHECK(g_network_stop_calls == 1U && netif_list == NULL && !g_network_status.draining);
+        return 0U;
+    }
     if (scenario == 111U)
     {
         NetworkFrames_BeginStop();
@@ -3481,6 +3535,18 @@ static uint32_t Test_NetworkFault(const AppV3Context_t *context, uint32_t scenar
         return 0U;
     }
     CHECK(netif_list == NULL && !g_network_status.draining && g_network_status.stop_result == SYS_OK);
+    if (scenario == 135U)
+    {
+        CHECK(g_network_status.recovering);
+        CHECK(NetworkService_Request(3U, NETWORK_SERVICE_STOP, 0U) == SYS_OK);
+        CHECK(Test_ServiceStep(RUNTIME_TARGET_NETWORK) == SYS_OK);
+        Test_PollHardware(RUNTIME_TARGET_NETWORK);
+        CHECK(Test_ReadHardwareResult(RUNTIME_TARGET_NETWORK, 3U, APP_V3_HW_READY, SYS_OK));
+        Test_NetworkTick(1000U);
+        CHECK(g_network_status.recovery_attempts == 0U && g_network_start_calls == 1U &&
+            netif_list == NULL && !g_network_status.recovering);
+        return 0U;
+    }
     if (scenario == 133U)
         g_network_dhcp_server = 0U;
     Test_NetworkTick(490U);
@@ -3606,7 +3672,9 @@ uint32_t AppV3_TestRun(uint32_t scenario)
         return Test_NetworkAcceptanceProducer(context, scenario);
     if (scenario == 119U || scenario == 128U || scenario == 130U)
         return Test_NetworkBrowser(context, scenario);
-    if (scenario >= 129U && scenario <= 133U)
+    if (scenario == 134U)
+        return Test_NetworkFrames(context, scenario);
+    if ((scenario >= 129U && scenario <= 133U) || scenario == 135U)
         return Test_NetworkFault(context, scenario);
     if (scenario == 118U)
         return Test_NetworkDhcpHttp(context);

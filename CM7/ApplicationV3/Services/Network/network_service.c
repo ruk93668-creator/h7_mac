@@ -16,7 +16,6 @@
 #define NETWORK_MDIO_FAULT_STREAK 3U
 #define NETWORK_RECOVERY_COOLDOWN_MS 500U
 #define NETWORK_RECOVERY_READY_MS 30000U
-#define NETWORK_READY_FLAGS 7U
 #define NETWORK_HTTP 0x100U
 //沿用 E7 的 50ms 请求周期；实际帧率由复制、背压和 TCP ACK 决定。
 #define NETWORK_FRAME_PERIOD_MS 50U
@@ -98,9 +97,9 @@ static void NetworkService_Observe(void)
     g_network_status.mdio_streak = s_interface.mdio_streak;
     g_network_status.draining = s_network.draining;
     g_network_status.recovering = s_network.recovery_pending || s_network.recovery_wait_ready;
+    (void)eth_mac_get_statistics((EthStatistics_t *)&g_network_status.driver);
     if (!s_network.stack_observable)
         return;
-    (void)eth_mac_get_statistics((EthStatistics_t *)&g_network_status.driver);
     eth_transport_get_statistics((EthTransportStats_t *)&g_network_status.transport);
     eth_http_get_statistics((EthHttpStats_t *)&g_network_status.http);
 #define NETWORK_POOL_READ(field, pool) do { \
@@ -311,7 +310,8 @@ static void NetworkService_AdvanceRecovery(uint32_t now)
     }
     if (s_network.recovery_wait_ready)
     {
-        if ((s_network.hardware.flags & NETWORK_READY_FLAGS) == NETWORK_READY_FLAGS)
+        if (netif_is_link_up(&s_interface.interface) &&
+            !ip4_addr_isany(netif_ip4_addr(&s_interface.interface)) && eth_tcp_listening())
         {
             s_network.recovery_wait_ready = false;
             s_network.hardware.state = APP_V3_HW_ACTIVE;
@@ -422,7 +422,7 @@ static void NetworkService_HandleRequest(void)
     }
     else if (operation == NETWORK_SERVICE_CLOSE_CLIENT)
     {
-        if (s_network.hardware.state != APP_V3_HW_ACTIVE || s_network.http_bound)
+        if (s_network.hardware.state != APP_V3_HW_ACTIVE)
             result = SYS_ERR_INVALID_STATE;
         else
         {
@@ -480,13 +480,14 @@ uint32_t AppV3_NetworkAdvance(void)
         NetworkService_Fault(SYS_ERR_IO, ETH_OK);
     if (s_network.http_bound && !eth_http_stream_active())
         NetworkFrames_WithdrawDemand();
-    NetworkFrames_Poll(s_network.started && s_network.http_bound && !s_network.draining &&
-        s_network.hardware.state == APP_V3_HW_ACTIVE);
+    //新 HTTP 实例在等待 Listener 就绪时也保留 Source 的接收状态。
+    //只有已打开的 MJPEG 会话可提出新需求，draining 期间只处理归还。
+    NetworkFrames_Poll(s_network.started && s_network.http_bound && !s_network.draining);
 
     now = Platform_TimeGetMs();
     NetworkService_AdvanceStop(now);
-    NetworkService_Observe();
     NetworkService_AdvanceRecovery(now);
+    NetworkService_Observe();
     if (s_network.request.pending)
         NetworkService_HandleRequest();
     return NETWORK_POLL_MS;

@@ -88,7 +88,8 @@ err_t eth_network_init_address(EthNetwork_t *network, const uint8_t mac[6],
 void eth_network_poll(EthNetwork_t *network);
 
 //关闭端点期间只处理在途 RX 和协议定时器，同一拥有者调用。
-//禁止 PHY 探测、MAC 启动或新建 DHCP 客户端。
+//跳过 PHY 探测、MAC 启动和地址轮询。已有地址的协议定时器继续运行，
+//直到调用 eth_network_stop 退休 DHCP 并撤销 netif。
 void eth_network_drain_poll(EthNetwork_t *network);
 
 //由唯一拥有者推进全局定时器；STOP 后仍需调用，未初始化时无操作。

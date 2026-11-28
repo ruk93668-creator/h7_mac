@@ -28,7 +28,7 @@ static EthLinkState_t s_active_link;
 static uint8_t s_mac_address[6];
 static uint32_t s_mdio_div;
 
-//有效标记最后发布。正式 CM7 暖复位保留 DTCM，掉电后的内容不作保证。
+//有效标记最后发布。正式 CM7 启动不清除此区，读回前校验记录完整性。
 #define ETH_MDIO_FAULT_MAGIC UINT32_C(0x4D444931)
 static struct
 {
