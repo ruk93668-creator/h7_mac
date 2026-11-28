@@ -1,0 +1,88 @@
+{
+  "source_commit": "78580073610ff4cfe06a4b004b1b0d75bffef499",
+  "section": "build",
+  "results": {
+    "cm7_jpeg": {
+      "exit": 0,
+      "errors": 0,
+      "warnings": 0,
+      "status": "PASS",
+      "size": {
+        "code": 209482,
+        "ro": 6018,
+        "rw": 1620,
+        "zi": 231820
+      }
+    },
+    "cm7_raw": {
+      "exit": 0,
+      "errors": 0,
+      "warnings": 0,
+      "status": "PASS",
+      "size": {
+        "code": 209482,
+        "ro": 6018,
+        "rw": 1620,
+        "zi": 231820
+      }
+    },
+    "cm4": {
+      "exit": 0,
+      "errors": 0,
+      "warnings": 0,
+      "status": "PASS",
+      "size": {
+        "code": 41578,
+        "ro": 20474,
+        "rw": 1040,
+        "zi": 3712
+      }
+    },
+    "firmware_e35": {
+      "exit": 0,
+      "status": "PASS"
+    },
+    "firmware_e4": {
+      "exit": 0,
+      "status": "PASS"
+    },
+    "firmware_e42": {
+      "exit": 0,
+      "status": "PASS"
+    },
+    "firmware_e5": {
+      "exit": 0,
+      "status": "PASS"
+    },
+    "firmware_e6": {
+      "exit": 0,
+      "status": "PASS"
+    },
+    "firmware_e7": {
+      "exit": 0,
+      "status": "PASS"
+    },
+    "firmware_e7_v1": {
+      "exit": 0,
+      "status": "PASS"
+    },
+    "firmware_e7_v1_axi": {
+      "exit": 0,
+      "status": "PASS"
+    },
+    "firmware_e7_v1_qvga": {
+      "exit": 0,
+      "status": "PASS"
+    },
+    "production_network": {
+      "exit": 0,
+      "status": "PASS"
+    },
+    "hardware_acceptance": {
+      "exit": 0,
+      "status": "PASS"
+    }
+  },
+  "source_stable": false,
+  "hardware": "NOT_RUN"
+}

@@ -1,0 +1,61 @@
+{
+  "code_commit": "322f8b780f7b3717ca2c34b93b84f12341488818",
+  "hardware": "NOT_RUN",
+  "status": "READY_FOR_REVIEW",
+  "checks": {
+    "formal_build_targets": [
+      "cm7_jpeg",
+      "cm7_raw",
+      "cm4",
+      "production_network",
+      "hardware_acceptance"
+    ],
+    "application_v3": {
+      "O0": 86,
+      "O2": 86
+    },
+    "network_host": {
+      "e5": "PASS",
+      "e6": "PASS",
+      "e7": "PASS",
+      "e7-qvga": "PASS"
+    },
+    "same_frame_crc": "PASS_HOST"
+  },
+  "original_rte_sha256": "270b61dded9e5eeb243f633224ced83b1c81bc11f38abf5bc68e9d03d072ba8d",
+  "changes": [
+    "M\tCM7/ApplicationV3/Services/Network/network_frames.c",
+    "M\tMDK-ARM/h7_mac_CM7_custom.sct",
+    "M\tPlatform/Ethernet/eth_memory.c",
+    "M\tTests/ApplicationV3/hardware_fixture.c",
+    "A\tTests/ApplicationV3/jpeg_crc_trace.py",
+    "M\tTests/ApplicationV3/run_tests.py",
+    "M\tTests/ApplicationV3/startup_test.c",
+    "M\tTests/CameraLifecycleC1/run_tests.py",
+    "M\tTests/Ethernet/build_production.py",
+    "M\tTests/Ethernet/run_production_matrix.py"
+  ],
+  "evidence_sha256": {
+    "application-v3-results.json": "e21153ce4aecfae8400670dafb4af771fe7491099a6462c1d0ab0d28536b96cf",
+    "application-v3.log": "a516f9d03af803d8c2a321f16f3cfb382a5005ec4a604293c8d6c02f6aa925d0",
+    "build-results.json": "9a79bbed9eb81bc2354fa3824b9d3f621b4c19f16d77954acdf50f468c86d62b",
+    "cm4-build.log": "b32f90fd11aecbe631b37baf906858818e9a4983e2ad223edee17440aefee871",
+    "cm7_jpeg-build.log": "123eaf4122a81b7fb9106b82714572e05b1822d8650cd8e35cb82a5abfbecdb0",
+    "cm7_raw-build.log": "476e81a8178b088ab7821d5053968d2e223e7232d4e9686a2e77bb5404cdde2f",
+    "e5-host.log": "7ce98d872be26ec0511925324fa1c9003490aa04db7afb2e90a90d5e153d5371",
+    "e6-host.log": "03eb6e9ba1549a10fb87e693f0dd84f1ca2d3ab6f9411bbb0aebb1e7c3d9f7e6",
+    "e7-host.log": "036174e52eb65e2774ecc635b19181c44e985e867d03bd82ee94ad1e9f4626d3",
+    "e7-qvga-host.log": "036174e52eb65e2774ecc635b19181c44e985e867d03bd82ee94ad1e9f4626d3",
+    "hardware_acceptance-build.log": "8de20a0415f31e4edc689fa349a4184a97830de5eb6b67d51cc24f2b44f5e981",
+    "hardware_acceptance-manifest.json": "6f067e72231989225dd8a7a77753cff4a42990d2060ced0bc53645e4bb89ddc2",
+    "initial-build-console.log": "a7732955aec110827667f95af187ca9a8c10c37b579ad32affdbb4009527b556",
+    "initial-build-results.json": "1dcf5562a33d4ec02235d67f22a03d4ad776523a0f5188daf339dd13fb200734",
+    "initial-crc-observer-failures.json": "5a8680cd7dc2e681d2dc1710681792066e6588abef9418ae7c2258e038fd01b6",
+    "map-audit.json": "e146337cb64de20c0429c6894f70abfd3497b612864faf120989d696c7d5f914",
+    "mpu-register-write-audit.json": "1a00323e17d77abe210b9caff46007174d2c178fefe70b971288963b7e2ea784",
+    "production_network-build.log": "3a2a3bc80784d137483c2dba41bb1ccd616a007136e2200a2b7c45631087ed90",
+    "production_network-manifest.json": "4269e9daf0af6c340ad94fc4a23cfd04049356082e26f8b02a7f937cef1197b5",
+    "same-frame-crc.json": "8a00dba5f66ddb2aacd452d4db4f7fdb35b870af630c7eee172602087309f71b",
+    "source-sha256.json": "d4d28c10ac1c60f7e411ddea2274ce8ffd5459d64dc80da9c92dffc5c42ac805"
+  }
+}

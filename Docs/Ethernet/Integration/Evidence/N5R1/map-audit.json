@@ -1,0 +1,374 @@
+{
+  "baseline": "78580073610ff4cfe06a4b004b1b0d75bffef499",
+  "code_commit": "322f8b780f7b3717ca2c34b93b84f12341488818",
+  "protected_path_diff": [],
+  "profiles": {
+    "cm7_jpeg": {
+      "baseline_map_sha256": "f08d2e484e9a4bed4f9f69cfdfc5cbcc88e0d6aaa70eed4105dbdbbeb22a30bc",
+      "candidate_map_sha256": "1786d666643ca8bf8ccfd3b46bdc588f488a079356487d78da7607e410cc0f81",
+      "baseline_rw": {
+        "RW_IRAM1": {
+          "base": 536870912,
+          "size": 83136,
+          "max": 131072,
+          "attributes": "ABSOLUTE, COMPRESSED[0x00000170]"
+        },
+        "RW_SDMMC_DMA": {
+          "base": 603979776,
+          "size": 32768,
+          "max": 32768,
+          "attributes": "ABSOLUTE, UNINIT"
+        },
+        "RW_ETHERNET_CPU": {
+          "base": 604045312,
+          "size": 43232,
+          "max": 65536,
+          "attributes": "ABSOLUTE"
+        },
+        "RW_ETHERNET_DMA": {
+          "base": 604471296,
+          "size": 12544,
+          "max": 32768,
+          "attributes": "ABSOLUTE, UNINIT"
+        },
+        "RW_SHARED": {
+          "base": 939524096,
+          "size": 320,
+          "max": 4096,
+          "attributes": "ABSOLUTE, UNINIT, COMPRESSED[0x00000004]"
+        },
+        "RW_NETWORK_JPEG": {
+          "base": 3497984000,
+          "size": 61440,
+          "max": 61440,
+          "attributes": "ABSOLUTE, UNINIT"
+        }
+      },
+      "candidate_rw": {
+        "RW_IRAM1": {
+          "base": 536870912,
+          "size": 83136,
+          "max": 131072,
+          "attributes": "ABSOLUTE, COMPRESSED[0x00000170]"
+        },
+        "RW_SDMMC_DMA": {
+          "base": 603979776,
+          "size": 32768,
+          "max": 32768,
+          "attributes": "ABSOLUTE, UNINIT"
+        },
+        "RW_ETHERNET_CPU": {
+          "base": 604045312,
+          "size": 43232,
+          "max": 65536,
+          "attributes": "ABSOLUTE"
+        },
+        "RW_NETWORK_JPEG": {
+          "base": 604110848,
+          "size": 61440,
+          "max": 61440,
+          "attributes": "ABSOLUTE, UNINIT"
+        },
+        "RW_ETHERNET_DMA": {
+          "base": 604471296,
+          "size": 12544,
+          "max": 32768,
+          "attributes": "ABSOLUTE, UNINIT"
+        },
+        "RW_SHARED": {
+          "base": 939524096,
+          "size": 320,
+          "max": 4096,
+          "attributes": "ABSOLUTE, UNINIT, COMPRESSED[0x00000004]"
+        }
+      },
+      "candidate_axf_sha256": "2e77c04c20ba610f1d8e34d27cbc72e58507655cfbbfb954841875d053d5b0cb",
+      "map_path": "output\\r1\\build\\cm7_jpeg\\h7_mac_CM7.map",
+      "network_jpeg_owner": "network_frames.o(.network_jpeg)"
+    },
+    "cm7_raw": {
+      "baseline_map_sha256": "f08d2e484e9a4bed4f9f69cfdfc5cbcc88e0d6aaa70eed4105dbdbbeb22a30bc",
+      "candidate_map_sha256": "1786d666643ca8bf8ccfd3b46bdc588f488a079356487d78da7607e410cc0f81",
+      "baseline_rw": {
+        "RW_IRAM1": {
+          "base": 536870912,
+          "size": 83136,
+          "max": 131072,
+          "attributes": "ABSOLUTE, COMPRESSED[0x00000170]"
+        },
+        "RW_SDMMC_DMA": {
+          "base": 603979776,
+          "size": 32768,
+          "max": 32768,
+          "attributes": "ABSOLUTE, UNINIT"
+        },
+        "RW_ETHERNET_CPU": {
+          "base": 604045312,
+          "size": 43232,
+          "max": 65536,
+          "attributes": "ABSOLUTE"
+        },
+        "RW_ETHERNET_DMA": {
+          "base": 604471296,
+          "size": 12544,
+          "max": 32768,
+          "attributes": "ABSOLUTE, UNINIT"
+        },
+        "RW_SHARED": {
+          "base": 939524096,
+          "size": 320,
+          "max": 4096,
+          "attributes": "ABSOLUTE, UNINIT, COMPRESSED[0x00000004]"
+        },
+        "RW_NETWORK_JPEG": {
+          "base": 3497984000,
+          "size": 61440,
+          "max": 61440,
+          "attributes": "ABSOLUTE, UNINIT"
+        }
+      },
+      "candidate_rw": {
+        "RW_IRAM1": {
+          "base": 536870912,
+          "size": 83136,
+          "max": 131072,
+          "attributes": "ABSOLUTE, COMPRESSED[0x00000170]"
+        },
+        "RW_SDMMC_DMA": {
+          "base": 603979776,
+          "size": 32768,
+          "max": 32768,
+          "attributes": "ABSOLUTE, UNINIT"
+        },
+        "RW_ETHERNET_CPU": {
+          "base": 604045312,
+          "size": 43232,
+          "max": 65536,
+          "attributes": "ABSOLUTE"
+        },
+        "RW_NETWORK_JPEG": {
+          "base": 604110848,
+          "size": 61440,
+          "max": 61440,
+          "attributes": "ABSOLUTE, UNINIT"
+        },
+        "RW_ETHERNET_DMA": {
+          "base": 604471296,
+          "size": 12544,
+          "max": 32768,
+          "attributes": "ABSOLUTE, UNINIT"
+        },
+        "RW_SHARED": {
+          "base": 939524096,
+          "size": 320,
+          "max": 4096,
+          "attributes": "ABSOLUTE, UNINIT, COMPRESSED[0x00000004]"
+        }
+      },
+      "candidate_axf_sha256": "59ee68976a865bfb748754e75b66ac0b1f7fdf3cf43ddf91dc0e29e360e031c1",
+      "map_path": "output\\r1\\build\\cm7_raw\\h7_mac_CM7.map",
+      "network_jpeg_owner": "network_frames.o(.network_jpeg)"
+    },
+    "cm4": {
+      "baseline_map_sha256": "b6c4bdad7a0d6a8c1cdfdc4a787e5aab4b9bfb3bdb0b5c5524b50e40cee38d2b",
+      "candidate_map_sha256": "ea6a2ac275186c15eea89dd69fc49443022e79415c5b9381af6e4424b06a0b44",
+      "baseline_rw": {
+        "RW_IRAM1": {
+          "base": 268435456,
+          "size": 4432,
+          "max": 294912,
+          "attributes": "ABSOLUTE, COMPRESSED[0x0000002c]"
+        },
+        "RW_SHARED": {
+          "base": 939524096,
+          "size": 320,
+          "max": 4096,
+          "attributes": "ABSOLUTE, UNINIT, COMPRESSED[0x00000004]"
+        }
+      },
+      "candidate_rw": {
+        "RW_IRAM1": {
+          "base": 268435456,
+          "size": 4432,
+          "max": 294912,
+          "attributes": "ABSOLUTE, COMPRESSED[0x0000002c]"
+        },
+        "RW_SHARED": {
+          "base": 939524096,
+          "size": 320,
+          "max": 4096,
+          "attributes": "ABSOLUTE, UNINIT, COMPRESSED[0x00000004]"
+        }
+      },
+      "candidate_axf_sha256": "5dfc5391c452e0fd158dae98ff5f9e079645642f8db8e6a9b0483be12459f25e",
+      "map_path": "output\\r1\\build\\cm4\\h7_mac_CM4.map",
+      "network_jpeg_owner": null
+    },
+    "production_network": {
+      "baseline_map_sha256": "17195716ae816e75e2517c7c5abc3d3995665168387c6a280087a424c5c34348",
+      "candidate_map_sha256": "28b9dd172cc1ef24ed7eb3635ebfe0979ec75b42502bc41e04aaca32fe2ef11d",
+      "baseline_rw": {
+        "RW_IRAM1": {
+          "base": 536870912,
+          "size": 83136,
+          "max": 131072,
+          "attributes": "ABSOLUTE, COMPRESSED[0x00000170]"
+        },
+        "RW_SDMMC_DMA": {
+          "base": 603979776,
+          "size": 32768,
+          "max": 32768,
+          "attributes": "ABSOLUTE, UNINIT"
+        },
+        "RW_ETHERNET_CPU": {
+          "base": 604045312,
+          "size": 43232,
+          "max": 65536,
+          "attributes": "ABSOLUTE"
+        },
+        "RW_ETHERNET_DMA": {
+          "base": 604471296,
+          "size": 12544,
+          "max": 32768,
+          "attributes": "ABSOLUTE, UNINIT"
+        },
+        "RW_SHARED": {
+          "base": 939524096,
+          "size": 320,
+          "max": 4096,
+          "attributes": "ABSOLUTE, UNINIT, COMPRESSED[0x00000004]"
+        },
+        "RW_NETWORK_JPEG": {
+          "base": 3497984000,
+          "size": 61440,
+          "max": 61440,
+          "attributes": "ABSOLUTE, UNINIT"
+        }
+      },
+      "candidate_rw": {
+        "RW_IRAM1": {
+          "base": 536870912,
+          "size": 83136,
+          "max": 131072,
+          "attributes": "ABSOLUTE, COMPRESSED[0x00000170]"
+        },
+        "RW_SDMMC_DMA": {
+          "base": 603979776,
+          "size": 32768,
+          "max": 32768,
+          "attributes": "ABSOLUTE, UNINIT"
+        },
+        "RW_ETHERNET_CPU": {
+          "base": 604045312,
+          "size": 43232,
+          "max": 65536,
+          "attributes": "ABSOLUTE"
+        },
+        "RW_NETWORK_JPEG": {
+          "base": 604110848,
+          "size": 61440,
+          "max": 61440,
+          "attributes": "ABSOLUTE, UNINIT"
+        },
+        "RW_ETHERNET_DMA": {
+          "base": 604471296,
+          "size": 12544,
+          "max": 32768,
+          "attributes": "ABSOLUTE, UNINIT"
+        },
+        "RW_SHARED": {
+          "base": 939524096,
+          "size": 320,
+          "max": 4096,
+          "attributes": "ABSOLUTE, UNINIT, COMPRESSED[0x00000004]"
+        }
+      },
+      "candidate_axf_sha256": "f8eb54377158765af099adeccb6ad95895e49a4a90876cff7fff22c366ed1d55",
+      "map_path": "output\\r1\\build\\production_network\\h7_network.map",
+      "network_jpeg_owner": "network_frames.o(.network_jpeg)"
+    },
+    "hardware_acceptance": {
+      "baseline_map_sha256": "f6e94e0c7096b5a4b1c1753de6f8bcbf5eae8b4dd6c033b14216916c70e6be97",
+      "candidate_map_sha256": "1c41f58e7a8699f6815bed174fff413490f02ed834255fa87ba66a8b7405b942",
+      "baseline_rw": {
+        "RW_IRAM1": {
+          "base": 536870912,
+          "size": 83200,
+          "max": 131072,
+          "attributes": "ABSOLUTE, COMPRESSED[0x0000017c]"
+        },
+        "RW_SDMMC_DMA": {
+          "base": 603979776,
+          "size": 32768,
+          "max": 32768,
+          "attributes": "ABSOLUTE, UNINIT"
+        },
+        "RW_ETHERNET_CPU": {
+          "base": 604045312,
+          "size": 43232,
+          "max": 65536,
+          "attributes": "ABSOLUTE"
+        },
+        "RW_ETHERNET_DMA": {
+          "base": 604471296,
+          "size": 12544,
+          "max": 32768,
+          "attributes": "ABSOLUTE, UNINIT"
+        },
+        "RW_SHARED": {
+          "base": 939524096,
+          "size": 320,
+          "max": 4096,
+          "attributes": "ABSOLUTE, UNINIT, COMPRESSED[0x00000004]"
+        },
+        "RW_NETWORK_JPEG": {
+          "base": 3497984000,
+          "size": 61440,
+          "max": 61440,
+          "attributes": "ABSOLUTE, UNINIT"
+        }
+      },
+      "candidate_rw": {
+        "RW_IRAM1": {
+          "base": 536870912,
+          "size": 83200,
+          "max": 131072,
+          "attributes": "ABSOLUTE, COMPRESSED[0x0000017c]"
+        },
+        "RW_SDMMC_DMA": {
+          "base": 603979776,
+          "size": 32768,
+          "max": 32768,
+          "attributes": "ABSOLUTE, UNINIT"
+        },
+        "RW_ETHERNET_CPU": {
+          "base": 604045312,
+          "size": 43232,
+          "max": 65536,
+          "attributes": "ABSOLUTE"
+        },
+        "RW_NETWORK_JPEG": {
+          "base": 604110848,
+          "size": 61440,
+          "max": 61440,
+          "attributes": "ABSOLUTE, UNINIT"
+        },
+        "RW_ETHERNET_DMA": {
+          "base": 604471296,
+          "size": 12544,
+          "max": 32768,
+          "attributes": "ABSOLUTE, UNINIT"
+        },
+        "RW_SHARED": {
+          "base": 939524096,
+          "size": 320,
+          "max": 4096,
+          "attributes": "ABSOLUTE, UNINIT, COMPRESSED[0x00000004]"
+        }
+      },
+      "candidate_axf_sha256": "22b6eeea0c9064404cde492b2bd807cf97464590670a9e0330cb71761b4006e9",
+      "map_path": "output\\r1\\build\\hardware_acceptance\\h7_network_acceptance.map",
+      "network_jpeg_owner": "network_frames.o(.network_jpeg)"
+    }
+  }
+}

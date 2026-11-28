@@ -1,0 +1,74 @@
+[
+  {
+    "optimization": "O0",
+    "id": 128,
+    "pass": false,
+    "return": 0,
+    "failure_line": 0,
+    "error": null,
+    "trace": [],
+    "jpeg_crc": {
+      "pass": false,
+      "hardware": "NOT_RUN",
+      "sequence": 1,
+      "fifo_tail_bytes": 4,
+      "private_address": "0x24020000",
+      "expected_crc32": "0582F333",
+      "wire_header_crc32": null,
+      "stages": {
+        "camera_fifo": {
+          "length": 5294,
+          "crc32": "0582F333"
+        },
+        "axi_private": {
+          "length": 5294,
+          "crc32": "0582F333"
+        },
+        "tcp_application_ring": {
+          "length": 0,
+          "crc32": null
+        },
+        "simulated_pc_receiver": {
+          "length": 0,
+          "crc32": null
+        }
+      }
+    }
+  },
+  {
+    "optimization": "O2",
+    "id": 128,
+    "pass": false,
+    "return": 0,
+    "failure_line": 0,
+    "error": null,
+    "trace": [],
+    "jpeg_crc": {
+      "pass": false,
+      "hardware": "NOT_RUN",
+      "sequence": 1,
+      "fifo_tail_bytes": 4,
+      "private_address": "0x24020000",
+      "expected_crc32": "0582F333",
+      "wire_header_crc32": null,
+      "stages": {
+        "camera_fifo": {
+          "length": 5294,
+          "crc32": "0582F333"
+        },
+        "axi_private": {
+          "length": 5294,
+          "crc32": "0582F333"
+        },
+        "tcp_application_ring": {
+          "length": 0,
+          "crc32": null
+        },
+        "simulated_pc_receiver": {
+          "length": 0,
+          "crc32": null
+        }
+      }
+    }
+  }
+]

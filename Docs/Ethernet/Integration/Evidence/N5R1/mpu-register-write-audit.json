@@ -1,0 +1,87 @@
+{
+  "measurement": "Cortex-M Unicorn execution of linked eth_memory_configure and HAL_MPU_ConfigRegion, observing simulated register writes only",
+  "hardware": "NOT_RUN",
+  "profiles": {
+    "cm7_jpeg": {
+      "sha256": "2e77c04c20ba610f1d8e34d27cbc72e58507655cfbbfb954841875d053d5b0cb",
+      "regions": {
+        "4": {
+          "rasr": "0x130C001D",
+          "rbar": "0x24078000"
+        },
+        "5": {
+          "rasr": "0x130B001F",
+          "rbar": "0x24010000"
+        },
+        "6": {
+          "rasr": "0x130B001F",
+          "rbar": "0x24020000"
+        }
+      }
+    },
+    "cm7_raw": {
+      "sha256": "59ee68976a865bfb748754e75b66ac0b1f7fdf3cf43ddf91dc0e29e360e031c1",
+      "regions": {
+        "4": {
+          "rasr": "0x130C001D",
+          "rbar": "0x24078000"
+        },
+        "5": {
+          "rasr": "0x130B001F",
+          "rbar": "0x24010000"
+        },
+        "6": {
+          "rasr": "0x130B001F",
+          "rbar": "0x24020000"
+        }
+      }
+    },
+    "production_network": {
+      "sha256": "f8eb54377158765af099adeccb6ad95895e49a4a90876cff7fff22c366ed1d55",
+      "regions": {
+        "4": {
+          "rasr": "0x130C001D",
+          "rbar": "0x24078000"
+        },
+        "5": {
+          "rasr": "0x130B001F",
+          "rbar": "0x24010000"
+        },
+        "6": {
+          "rasr": "0x130B001F",
+          "rbar": "0x24020000"
+        }
+      }
+    },
+    "hardware_acceptance": {
+      "sha256": "22b6eeea0c9064404cde492b2bd807cf97464590670a9e0330cb71761b4006e9",
+      "regions": {
+        "4": {
+          "rasr": "0x130C001D",
+          "rbar": "0x24078000"
+        },
+        "5": {
+          "rasr": "0x130B001F",
+          "rbar": "0x24010000"
+        },
+        "6": {
+          "rasr": "0x130B001F",
+          "rbar": "0x24020000"
+        }
+      }
+    }
+  },
+  "baseline": {
+    "sha256": "6053616bdb9edc135a48de501e5fc1931a00a14b0eca5b3d98ddb004e28e54b3",
+    "regions": {
+      "4": {
+        "rasr": "0x130C001D",
+        "rbar": "0x24078000"
+      },
+      "5": {
+        "rasr": "0x130B001F",
+        "rbar": "0x24010000"
+      }
+    }
+  }
+}
